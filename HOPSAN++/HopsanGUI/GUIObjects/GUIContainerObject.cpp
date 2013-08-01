@@ -2884,23 +2884,25 @@ void ContainerObject::measureSimulationTime()
     QLabel *pDescriptionLabel = new QLabel("The simulation time for each component is measured as the average simulation time over specified number of time steps. Results may differ slightly each measurement due to external factors such as other processes on the computer.");
     pDescriptionLabel->setWordWrap(true);
 
-    QTableView *pComponentTable = new QTableView(pDialog);
-    pComponentTable->setModel(pComponentModel);
-    pComponentTable->setColumnWidth(0,400);
-    pComponentTable->setColumnWidth(1,200);
-    pComponentTable->setSortingEnabled(true);
-    pComponentTable->setAlternatingRowColors(true);
-    pComponentTable->verticalHeader()->setVisible(false);
-    pComponentTable->setVisible(false);
+    mpComponentTable = new QTableView(pDialog);
+    mpComponentTable->setModel(pComponentModel);
+    mpComponentTable->setColumnWidth(0,400);
+    mpComponentTable->setColumnWidth(1,200);
+    mpComponentTable->setSortingEnabled(true);
+    mpComponentTable->setAlternatingRowColors(true);
+    mpComponentTable->verticalHeader()->setVisible(false);
+    mpComponentTable->setVisible(false);
+    mpComponentTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    QTableView *pTypeTable = new QTableView(pDialog);
-    pTypeTable->setModel(pTypeModel);
-    pTypeTable->setColumnWidth(0,400);
-    pTypeTable->setColumnWidth(1,200);
-    pTypeTable->setSortingEnabled(true);
-    pTypeTable->setAlternatingRowColors(true);
-    pTypeTable->verticalHeader()->setVisible(false);
-    pTypeTable->setVisible(true);
+    mpTypeTable = new QTableView(pDialog);
+    mpTypeTable->setModel(pTypeModel);
+    mpTypeTable->setColumnWidth(0,400);
+    mpTypeTable->setColumnWidth(1,200);
+    mpTypeTable->setSortingEnabled(true);
+    mpTypeTable->setAlternatingRowColors(true);
+    mpTypeTable->verticalHeader()->setVisible(false);
+    mpTypeTable->setVisible(true);
+    mpTypeTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     QGroupBox *pHowToShowResultsGroupBox = new QGroupBox(pDialog);
     QRadioButton *pTypeRadioButton = new QRadioButton(tr("Show results for component types"));
@@ -2912,6 +2914,74 @@ void ContainerObject::measureSimulationTime()
     //pHowToShowResultsLayout->addStretch(1);
     pHowToShowResultsGroupBox->setLayout(pHowToShowResultsLayout);
 
+    QPushButton *pDoneButton = new QPushButton("Done", pDialog);
+    QPushButton *pChartButton = new QPushButton("Show Bar Chart", pDialog);
+    pChartButton->setCheckable(true);
+    pChartButton->setChecked(false);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+    pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
+    pButtonBox->addButton(pChartButton, QDialogButtonBox::ActionRole);
+
+    QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
+    pLayout->addWidget(pHowToShowResultsGroupBox);
+    pLayout->addWidget(pDescriptionLabel);
+    pLayout->addWidget(mpComponentTable);
+    pLayout->addWidget(mpTypeTable);
+    pLayout->addWidget(pButtonBox);
+
+    connect(pTypeRadioButton, SIGNAL(toggled(bool)), mpTypeTable, SLOT(setVisible(bool)));
+    connect(pComponentRadioButton, SIGNAL(toggled(bool)), mpComponentTable, SLOT(setVisible(bool)));
+    connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(close()));
+    //connect(pChartButton, SIGNAL(toggled(bool)), pPlotWindow, SLOT(setVisible(bool)));
+    connect(pChartButton, SIGNAL(clicked()), this, SLOT(plotMeasuredSimulationTime()));
+
+    pDialog->setLayout(pLayout);
+    pDialog->show();
+    qApp->processEvents();
+    qDebug() << mpComponentTable->size();
+    pDialog->setFixedSize(640, 480);
+    pDialog->adjustSize();
+    pDialog->setModal(false);
+    pDialog->exec();
+
+
+    delete(pDialog);
+}
+
+void ContainerObject::plotMeasuredSimulationTime()
+{
+    QItemSelectionModel *pSelect;
+    QStandardItemModel *pModel;
+    if(mpTypeTable->isVisible())
+    {
+        pSelect = mpTypeTable->selectionModel();
+        pModel = qobject_cast<QStandardItemModel*>(mpTypeTable->model());
+    }
+    else
+    {
+        pSelect = mpComponentTable->selectionModel();
+        pModel = qobject_cast<QStandardItemModel*>(mpComponentTable->model());
+    }
+
+
+    QStringList typeNames;
+    QList<double> typeTimes;
+    if(!pSelect->selectedRows().isEmpty())
+    {
+        for(int i=0; i<pSelect->selectedRows().size(); ++i)
+        {
+            typeNames.append(pModel->data(pSelect->selectedRows(0)[i]).toString());
+            typeTimes.append(pModel->data(pSelect->selectedRows(1)[i]).toString().remove(" ms").toDouble());
+        }
+    }
+    else
+    {
+        for(int i=0; i<pModel->rowCount(); ++i)
+        {
+            typeNames.append(pModel->item(i,0)->data(Qt::DisplayRole).toString());
+            typeTimes.append(pModel->item(i,1)->data(Qt::DisplayRole).toString().remove(" ms").toDouble());
+        }
+    }
 
     //Bar chart model for typenames
     QStandardItemModel *pBarChartModel = new QStandardItemModel(1,typeNames.size(),this);
@@ -2928,40 +2998,7 @@ void ContainerObject::measureSimulationTime()
     pPlotWindow->getCurrentPlotTab()->setTabName("Time measurements");
     pPlotWindow->addBarChart(pBarChartModel);
     pPlotWindow->setAttribute(Qt::WA_DeleteOnClose, false);
-    pPlotWindow->hide();
-
-
-    QPushButton *pDoneButton = new QPushButton("Done", pDialog);
-    QPushButton *pChartButton = new QPushButton("Show Bar Chart", pDialog);
-    pChartButton->setCheckable(true);
-    pChartButton->setChecked(false);
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
-    pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
-    pButtonBox->addButton(pChartButton, QDialogButtonBox::ActionRole);
-
-    QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
-    pLayout->addWidget(pHowToShowResultsGroupBox);
-    pLayout->addWidget(pDescriptionLabel);
-    pLayout->addWidget(pComponentTable);
-    pLayout->addWidget(pTypeTable);
-    pLayout->addWidget(pButtonBox);
-
-    connect(pTypeRadioButton, SIGNAL(toggled(bool)), pTypeTable, SLOT(setVisible(bool)));
-    connect(pComponentRadioButton, SIGNAL(toggled(bool)), pComponentTable, SLOT(setVisible(bool)));
-    connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(close()));
-    connect(pChartButton, SIGNAL(toggled(bool)), pPlotWindow, SLOT(setVisible(bool)));
-
-    pDialog->setLayout(pLayout);
-    pDialog->show();
-    qApp->processEvents();
-    qDebug() << pComponentTable->size();
-    pDialog->setFixedSize(640, 480);
-    pDialog->adjustSize();
-    pDialog->setModal(false);
-    pDialog->exec();
-
-
-    delete(pDialog);
+    pPlotWindow->show();
 }
 
 

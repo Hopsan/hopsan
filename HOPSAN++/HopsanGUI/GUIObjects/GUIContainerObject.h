@@ -40,6 +40,7 @@ class QGraphicsScene;
 class Port;
 class Widget;
 class TextBoxWidget;
+class QTableView;
 
 using namespace std;
 
@@ -227,6 +228,7 @@ public slots:
 
     //Simulation time measurements
     void measureSimulationTime();
+    void plotMeasuredSimulationTime();
 
     //External/internal subsystems
     bool isAncestorOfExternalSubsystem();
@@ -342,6 +344,10 @@ protected:
     QString mEmail;
     QString mAffiliation;
     QString mDescription;
+
+    //Time measurement dialog
+    QTableView *mpComponentTable;
+    QTableView *mpTypeTable;
 };
 
 #endif // GUICONTAINEROBJECT_H
