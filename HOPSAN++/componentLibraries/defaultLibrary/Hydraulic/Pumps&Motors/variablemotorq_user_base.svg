@@ -51,17 +51,17 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.0585938"
-     inkscape:cx="47.321946"
-     inkscape:cy="84.175494"
+     inkscape:zoom="6.1171876"
+     inkscape:cx="45.646943"
+     inkscape:cy="48.908596"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="923"
-     inkscape:window-height="694"
-     inkscape:window-x="355"
-     inkscape:window-y="24"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1280"
+     inkscape:window-height="732"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true">
     <sodipodi:guide
@@ -125,7 +125,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 10.414557,1.5025225 -16.6017411,0 -16.6017419,-1e-7 8.300871,-14.3775294 8.3008708,-14.377531 8.3008706,14.37753 z"
-       transform="matrix(0.4818772,0,0,-0.31298839,456.27431,280.79041)" />
+       transform="matrix(0.39857259,0,0,-0.25888046,455.75889,285.61332)" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.25;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        d="m 453.29284,357.72365 0,-19.55695"
@@ -151,10 +151,10 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 10.414557,1.5025225 -16.6017411,0 -16.6017419,-1e-7 8.300871,-14.3775294 8.3008708,-14.377531 8.3008706,14.37753 z"
-       transform="matrix(-0.4818772,0,0,0.31298839,450.31138,297.62355)" />
+       transform="matrix(-0.39857259,0,0,0.25888046,450.8268,299.53643)" />
     <g
        id="g3034"
-       transform="translate(7.1159481,13.40884)"
+       transform="matrix(0.82712481,0,0,0.82712481,84.248863,64.455396)"
        style="stroke-width:1.5;stroke-miterlimit:3.25;stroke-dasharray:none">
       <path
          transform="matrix(0.4818772,0,0,-0.31298839,449.15836,306.34494)"

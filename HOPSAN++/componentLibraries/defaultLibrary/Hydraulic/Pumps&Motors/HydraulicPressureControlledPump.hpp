@@ -64,8 +64,8 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPREF = addPowerPort("PREF", "NodeHydraulic");
 
-            addInputVariable("eps", "NodeSignal", "", 1.0, &mpEps);
-            addInputVariable("a", "NodeSignal", "rad", 0, &mpA);
+            addOutputVariable("eps", "NodeSignal", "", 1.0, &mpEps);
+            addOutputVariable("a", "NodeSignal", "rad", 0, &mpA);
             addInputVariable("p_dif", "Reference pressure difference", "Pa", 1000000, &mpPdif);
             addInputVariable("omega_p", "Pump movement", "rad/s", 125, &mpMovement);
             addInputVariable("q_max", "Nomainal maximal flow", "m^3/s", 0.00125, &mpQmax);
@@ -225,7 +225,7 @@ namespace hopsan {
             (*mpND_p3) = c3;
             (*mpND_q3) = 0.0;
             (*mpEps) = q2/qmax;
-            (*mpA) += movement/mTimestep;
+            (*mpA) += movement*mTimestep;
         }
 
 

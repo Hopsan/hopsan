@@ -17,7 +17,7 @@
             <movable>
                 <icon userpath="pressurecontrolledpump_user_movable_2.svg"/>
                 <data port="a" dataname="Value"/> 
-                <movement x="0" y="0" a="-1e-06"/>
+                <movement x="0" y="0" a="57.295645531"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="90.726" y="49.998"/>
             </movable>

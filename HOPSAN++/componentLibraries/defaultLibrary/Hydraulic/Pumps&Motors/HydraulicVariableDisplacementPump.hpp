@@ -31,7 +31,7 @@ namespace hopsan {
     class HydraulicVariableDisplacementPump : public ComponentQ
     {
     private:
-        double *mpN, *mpDp, *mpKcp, *mpEps;             // rad/s
+        double *mpN, *mpDp, *mpKcp, *mpEps, *mpA;             // rad/s
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
@@ -48,6 +48,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
+            addOutputVariable("a", "Angle", "", 0.0, &mpA);
             addInputVariable("eps", "Displacement setting", "", 1.0, &mpEps);
             addInputVariable("omega_p", "Angular Velocity", "rad/s", 50.0, &mpN);
             addInputVariable("D_p", "Displacement", "m^3/rev", 0.00005, &mpDp);
@@ -133,6 +134,7 @@ namespace hopsan {
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
+            (*mpA) += n*mTimestep;
         }
     };
 }

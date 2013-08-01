@@ -16,7 +16,7 @@
 			<replacable typename="HydraulicVariableDisplacementMotorQ"/>
 		</replacables>
         <animation>
-            <icon userpath="fixedmotorq_user.svg"/>
+            <icon userpath="fixedmotorq_user_base.svg"/>
             <movable>
                 <icon userpath="fixedmotorq_user_movable.svg"/>
                 <data port="P3" dataname="Angle"/> 

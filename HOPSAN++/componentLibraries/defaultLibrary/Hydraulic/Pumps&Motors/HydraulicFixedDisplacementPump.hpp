@@ -134,7 +134,7 @@ namespace hopsan {
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
-            (*mpND_a) += n/mTimestep;
+            (*mpND_a) += n*mTimestep;
         }
     };
 }
