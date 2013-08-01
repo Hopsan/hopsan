@@ -37,6 +37,7 @@
 #include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
+#include "GUIObjects/GUIModelObject.h"
 
 
 TerminalWidget::TerminalWidget(MainWindow *pParent)
@@ -636,7 +637,8 @@ void TerminalConsole::handleTabKeyPress()
     {
         mAutoCompleteFilter = this->document()->lastBlock().text();
         mAutoCompleteFilter = mAutoCompleteFilter.right(mAutoCompleteFilter.size()-3);
-        QStringList args = splitWithRespectToQuotations(mAutoCompleteFilter, ' ');
+        QStringList args;
+        splitWithRespectToQuotations(mAutoCompleteFilter, ' ', args);
 
         QStringList availableCommands = getHandler()->getCommands();
         for(int c=0; c<availableCommands.size(); ++c)
@@ -679,6 +681,23 @@ void TerminalConsole::handleTabKeyPress()
                     parameters[v].prepend(parameterCmds[c]);
                 }
                 mAutoCompleteResults.append(parameters);
+            }
+        }
+
+        QStringList componentCmds = QStringList() << "reco ";
+        for(int c=0; c<componentCmds.size(); ++c)
+        {
+            if(mAutoCompleteFilter.startsWith(componentCmds[c]))
+            {
+                QList<ModelObject*> components;
+                QStringList componentNames;
+                getHandler()->getComponents(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-componentCmds[c].size())+"*",components);
+                for(int v=0; v<components.size(); ++v)
+                {
+                    componentNames.append(components[v]->getName());
+                    componentNames.last().prepend(componentCmds[c]);
+                }
+                mAutoCompleteResults.append(componentNames);
             }
         }
 

@@ -62,7 +62,7 @@ void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
 bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString);
 double findSmallestValueGreaterThanZero(QVector<double> data);
-QStringList splitWithRespectToQuotations(const QString str, const QChar c);
+void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split);
 void santizeName(QString &rString);
 bool isNameValid(const QString &rString);
 

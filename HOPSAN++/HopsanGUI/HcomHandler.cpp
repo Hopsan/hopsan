@@ -124,6 +124,14 @@ void HcomHandler::createCommands()
     dipaCmd.group = "Parameter Commands";
     mCmdList << dipaCmd;
 
+    HcomCommand adpaCmd;
+    adpaCmd.cmd = "adpa";
+    adpaCmd.description.append("Add (system) parameter");
+    adpaCmd.help.append("Usage: adpa [parameter] [value]");
+    adpaCmd.fnc = &HcomHandler::executeAddParameterCommand;
+    adpaCmd.group = "Parameter Commands";
+    mCmdList << adpaCmd;
+
     HcomCommand chpaCmd;
     chpaCmd.cmd = "chpa";
     chpaCmd.description.append("Change parameter value");
@@ -265,6 +273,14 @@ void HcomHandler::createCommands()
     loadrCmd.fnc = &HcomHandler::executeLoadRecentCommand;
     loadrCmd.group = "Model Commands";
     mCmdList << loadrCmd;
+
+    HcomCommand recoCmd;
+    recoCmd.cmd = "reco";
+    recoCmd.description.append("Renames a component");
+    recoCmd.help.append("Usage: reco [oldname] [newname]");
+    recoCmd.fnc = &HcomHandler::executeRenameComponentCommand;
+    recoCmd.group = "Model Commands";
+    mCmdList << recoCmd;
 
     HcomCommand pwdCmd;
     pwdCmd.cmd = "pwd";
@@ -553,7 +569,8 @@ void HcomHandler::executeExitCommand(const QString /*cmd*/)
 //! @brief Execute function for "sim" command
 void HcomHandler::executeSimulateCommand(const QString cmd)
 {
-    QStringList splitCmd = splitWithRespectToQuotations(cmd, ' ');
+    QStringList splitCmd;
+    splitWithRespectToQuotations(cmd, ' ', splitCmd);
     if(splitCmd.size() > 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
@@ -631,25 +648,47 @@ void HcomHandler::executeDisplayParameterCommand(const QString cmd)
 }
 
 
+void HcomHandler::executeAddParameterCommand(const QString cmd)
+{
+    QStringList splitCmd;
+    splitWithRespectToQuotations(cmd, ' ', splitCmd);
+    if(splitCmd.size() != 2)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.","",false);
+        return;
+    }
+
+    ContainerObject *pContainer = gpMainWindow->mpModelHandler->getCurrentViewContainerObject();
+    if(pContainer)
+    {
+        CoreParameterData paramData(splitCmd[0], splitCmd[1], "double");
+        pContainer->setOrAddParameter(paramData);
+//        gpMainWindow->mpSystemParametersWidget->update();
+    }
+}
+
+
 //! @brief Execute function for "chpa" command
 void HcomHandler::executeChangeParameterCommand(const QString cmd)
 {
     QStringList splitCmd;
-    bool withinQuotations = false;
-    int start=0;
-    for(int i=0; i<cmd.size(); ++i)
-    {
-        if(cmd[i] == '\"')
-        {
-            withinQuotations = !withinQuotations;
-        }
-        if(cmd[i] == ' ' && !withinQuotations)
-        {
-            splitCmd.append(cmd.mid(start, i-start));
-            start = i+1;
-        }
-    }
-    splitCmd.append(cmd.right(cmd.size()-start));
+    splitWithRespectToQuotations(cmd, ' ', splitCmd);
+//    QStringList splitCmd;
+//    bool withinQuotations = false;
+//    int start=0;
+//    for(int i=0; i<cmd.size(); ++i)
+//    {
+//        if(cmd[i] == '\"')
+//        {
+//            withinQuotations = !withinQuotations;
+//        }
+//        if(cmd[i] == ' ' && !withinQuotations)
+//        {
+//            splitCmd.append(cmd.mid(start, i-start));
+//            start = i+1;
+//        }
+//    }
+//    splitCmd.append(cmd.right(cmd.size()-start));
 //    for(int i=0; i<splitCmd.size(); ++i)
 //    {
 //        splitCmd[i].remove("\"");
@@ -861,7 +900,8 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 //! @brief Execute function for "exec" command
 void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
-    QStringList splitCmd = splitWithRespectToQuotations(cmd, ' ');
+    QStringList splitCmd;
+    splitWithRespectToQuotations(cmd, ' ', splitCmd);
     if(splitCmd.size() < 1)
     {
         mpConsole->printErrorMessage("Too few arguments.", "", false);
@@ -947,7 +987,8 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
 //! @brief Execute function for "wrhi" command
 void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 {
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    QStringList split;
+    splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
@@ -990,7 +1031,8 @@ void HcomHandler::executePrintCommand(const QString /*cmd*/)
 //! @brief Execute function for "chpw" command
 void HcomHandler::executeChangePlotWindowCommand(const QString cmd)
 {
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    QStringList split;
+    splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
@@ -1011,7 +1053,8 @@ void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
 //! @brief Execute function for "disp" command
 void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
 {
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    QStringList split;
+    splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
@@ -1113,16 +1156,18 @@ void HcomHandler::executePokeCommand(const QString cmd)
 //! @brief Execute function for "alias" command
 void HcomHandler::executeDefineAliasCommand(const QString cmd)
 {
-    if(splitWithRespectToQuotations(cmd, ' ').size() != 2)
+    QStringList splitCmd;
+    splitWithRespectToQuotations(cmd, ' ', splitCmd);
+    if(splitCmd.size() != 2)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
 
-    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
+    QString variable = splitCmd[0];
     toShortDataNames(variable);
     variable.remove("\"");
-    QString alias = splitWithRespectToQuotations(cmd, ' ')[1];
+    QString alias = splitCmd[1];
 
     SharedLogVariableDataPtrT pVariable = getVariablePtr(variable);
 
@@ -1340,6 +1385,24 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
 void HcomHandler::executeLoadRecentCommand(const QString /*cmd*/)
 {
     gpMainWindow->mpModelHandler->loadModel(gConfig.getRecentModels().first());
+}
+
+
+void HcomHandler::executeRenameComponentCommand(const QString cmd)
+{
+    QStringList split;
+    splitWithRespectToQuotations(cmd, ' ', split);
+    if(split.size() != 2)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    ContainerObject *pContainer = gpMainWindow->mpModelHandler->getCurrentViewContainerObject();
+    if(pContainer)
+    {
+        pContainer->renameModelObject(split[0], split[1]);
+    }
 }
 
 
@@ -1635,7 +1698,8 @@ void HcomHandler::executeExportToFMUCommand(const QString cmd)
 //! @brief Execute function for "chts" command
 void HcomHandler::executeChangeTimestepCommand(const QString cmd)
 {
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    QStringList split;
+    splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 2)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
@@ -1667,7 +1731,8 @@ void HcomHandler::executeChangeTimestepCommand(const QString cmd)
 //! @brief Execute function for "ihts" command
 void HcomHandler::executeInheritTimestepCommand(const QString cmd)
 {
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    QStringList split;
+    splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);

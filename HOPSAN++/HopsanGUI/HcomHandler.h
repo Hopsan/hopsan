@@ -80,6 +80,7 @@ private:
     void executePlotLeftAxisCommand(const QString cmd);
     void executePlotRightAxisCommand(const QString cmd);
     void executeDisplayParameterCommand(const QString cmd);
+    void executeAddParameterCommand(const QString cmd);
     void executeChangeParameterCommand(const QString cmd);
     void executeChangeSimulationSettingsCommand(const QString cmd);
     void executeHelpCommand(const QString cmd);
@@ -96,6 +97,7 @@ private:
     void executeSaveToPloCommand(const QString cmd);
     void executeLoadModelCommand(const QString cmd);
     void executeLoadRecentCommand(const QString cmd);
+    void executeRenameComponentCommand(const QString cmd);
     void executePwdCommand(const QString cmd);
     void executeMwdCommand(const QString cmd);
     void executeChangeDirectoryCommand(const QString cmd);

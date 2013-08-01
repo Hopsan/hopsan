@@ -707,9 +707,9 @@ double findSmallestValueGreaterThanZero(QVector<double> data)
 //! @brief Splits a string at specified character, but does not split inside parentheses
 //! @param str String to split
 //! @param c Character to split at
-QStringList splitWithRespectToQuotations(const QString str, const QChar c)
+//! @param split Referens to list with split strings
+void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split)
 {
-    QStringList ret;
     bool withinQuotations=false;
     int start=0;
     int len=0;
@@ -721,14 +721,13 @@ QStringList splitWithRespectToQuotations(const QString str, const QChar c)
         }
         else if(str[i] == c && !withinQuotations)
         {
-            ret.append(str.mid(start,len));
+            split.append(str.mid(start,len));
             start=start+len+1;
             len=-1;
         }
         ++len;
     }
-    ret.append(str.mid(start,len));
-    return ret;
+    split.append(str.mid(start,len));
 }
 
 //! @brief Reimplementation of the core function santize name
