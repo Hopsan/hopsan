@@ -584,13 +584,13 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     //Select path to MSVC library depending on user selection
     QString msvcPath;
     if(compiler == 0)                           //MSVC2008 32-bit
-        msvcPath = mExecPath+"MSVC2008_x86/";
+        msvcPath = mBinPath+"MSVC2008_x86/";
     else if(compiler == 1)                      //MSVC2008 64-bit
-        msvcPath = mExecPath+"MSVC2008_x64/";
+        msvcPath = mBinPath+"MSVC2008_x64/";
     else if(compiler == 2)                      //MSVC2010 32-bit
-        msvcPath = mExecPath+"MSVC2010_x86/";
+        msvcPath = mBinPath+"MSVC2010_x86/";
     else if(compiler == 3)                      //MSVC2010 64-bit
-        msvcPath = mExecPath+"MSVC2010_x64/";
+        msvcPath = mBinPath+"MSVC2010_x64/";
 
 
     //Copy MSVC binaries to export folder

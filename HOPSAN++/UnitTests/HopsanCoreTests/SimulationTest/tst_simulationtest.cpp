@@ -669,7 +669,7 @@ private Q_SLOTS:
                 "    };\n"
                 "}\n";
         QStringList errorMsgs;
-        examineCode(code, errorMsgs);
+        //examineCode(code, errorMsgs);
 
         //Run FMUChecker
         QStringList args;
@@ -689,9 +689,80 @@ private Q_SLOTS:
     {
         QTest::addColumn<ComponentSystem*>("system");
         double start, stop;
+        removeDir(QDir::currentPath()+"/fmu/");
+        QDir().mkpath(QDir::currentPath()+"/fmu/");
         QString path = QDir::currentPath()+"/../../../Models/unittestmodel_export.hmf";
         QFile file(path);
         file.copy(QDir::currentPath()+"/fmu/unittestmodel_export.hmf");
+        QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
+    }
+
+    void Generator_Simulink_Export()
+    {
+        QFETCH(ComponentSystem*, system);
+
+        QString pwd = QDir::currentPath();
+
+        //Generate S-function
+        GeneratorHandler *pHandler = new GeneratorHandler();
+        pHandler->callSimulinkExportGenerator(HString(pwd.toStdString().c_str())+"/simulink/", "unittestmodel_export.hmf", system, false, 0, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
+
+        QVERIFY2(QFile::exists(pwd+"/simulink/externalLibs.txt"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.dll"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.exp"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.lib"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanSimulink.cpp"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanSimulinkCompile.m"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanSimulinkPortLabels.m"), "Failed to generate S-function, all files not found.");
+    }
+
+    void Generator_Simulink_Export_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        double start, stop;
+        QString path = QDir::currentPath()+"/../../../Models/unittestmodel_export.hmf";
+        removeDir(QDir::currentPath()+"/simulink/");
+        QDir().mkpath(QDir::currentPath()+"/simulink/");
+        QFile file(path);
+        file.copy(QDir::currentPath()+"/simulink/unittestmodel_export.hmf");
+        QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
+    }
+
+    void Generator_Labview_Export()
+    {
+        QFETCH(ComponentSystem*, system);
+
+        QString pwd = QDir::currentPath();
+        HString pwdPath = HString(pwd.toStdString().c_str());
+
+        //Generate S-function
+        GeneratorHandler *pHandler = new GeneratorHandler();
+        pHandler->callLabViewSITGenerator(pwdPath+"/labview/unittestmodel_export.cpp", system, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
+
+        QVERIFY2(QFile::exists(pwd+"/labview/codegen.c"), "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/labview/hopsanrt-wrapper.h"), "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/labview/HOW_TO_COMPILE.txt"), "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/labview/model.h"), "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/labview/SIT_API.h"), "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/labview/unittestmodel_export.cpp"), "Failed to generate LabVIEW files, all files not found.");
+
+        QDir includeDir(pwd+"/labview/HopsanCore/include");
+        QVERIFY2(includeDir.exists() && !includeDir.entryList().isEmpty(), "Failed to generate LabVIEW files: Include files not found.");
+        QDir srcDir(pwd+"/labview/HopsanCore/src");
+        QVERIFY2(srcDir.exists() && !srcDir.entryList().isEmpty(), "Failed to generate LabVIEW files: Source files not found.");
+        QDir dependenciesDir(pwd+"/labview/HopsanCore/Dependencies");
+        QVERIFY2(dependenciesDir.exists() && !dependenciesDir.entryList(QDir::AllEntries).isEmpty(), "Failed to generate LabVIEW files: Dependency files not found.");
+        QDir libDir(pwd+"/labview/componentLibraries/defaultLibrary");
+        QVERIFY2(libDir.exists() && !libDir.entryList().isEmpty(), "Failed to generate LabVIEW files: Default library files not found.");
+    }
+
+    void Generator_Labview_Export_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        double start, stop;
+        QString path = QDir::currentPath()+"/../../../Models/unittestmodel_export.hmf";
+        removeDir(QDir::currentPath()+"/labview/");
+        QDir().mkpath(QDir::currentPath()+"/labview/");
         QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
     }
 
@@ -846,6 +917,24 @@ private Q_SLOTS:
             if(!assignedBeforeUse[i])
                 errors.append("WARNING: Member variable \""+memberNames[i]+"\" is used uninitialized!");
         }
+    }
+
+    void removeDir(QString path)
+    {
+        QDir dir;
+        dir.setPath(path);
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+        {
+            if (info.isDir())
+            {
+                removeDir(info.absoluteFilePath());
+            }
+            else
+            {
+                QFile::remove(info.absoluteFilePath());
+            }
+        }
+        dir.rmdir(path);
     }
 };
 
