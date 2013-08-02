@@ -188,7 +188,8 @@ SOURCES += main.cpp \
     HcomHandler.cpp \
     Widgets/HVCWidget.cpp \
     ModelHandler.cpp \
-    Widgets/ModelWidget.cpp
+    Widgets/ModelWidget.cpp \
+    OptimizationHandler.cpp
 
 
 
@@ -266,7 +267,8 @@ HEADERS += MainWindow.h \
     HcomHandler.h \
     Widgets/HVCWidget.h \
     ModelHandler.h \
-    Widgets/ModelWidget.h
+    Widgets/ModelWidget.h \
+    OptimizationHandler.h
 
 OTHER_FILES += \
     ../hopsandefaults \

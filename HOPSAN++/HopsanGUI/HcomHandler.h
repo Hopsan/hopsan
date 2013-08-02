@@ -34,6 +34,7 @@ class TerminalConsole;
 class ModelObject;
 class HcomCommand;
 class ModelWidget;
+class OptimizationHandler;
 
 
 
@@ -46,8 +47,6 @@ class HcomHandler : public QObject
 public:
     //Enums
     enum VariableType{Scalar, DataVector};
-    enum OptDataType{Int, Double};
-    enum OptAlgorithmType{Uninitialized, Complex, ParticleSwarm};
 
     //Constructor
     HcomHandler(TerminalConsole *pConsole);
@@ -61,15 +60,22 @@ public:
     QStringList getCommands() const;
     QMap<QString, double> getLocalVariables() const;
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
-    double getOptimizationObjectiveValue(int idx);
 
     //Public utilities
     void toShortDataNames(QString &variable) const;
 
+    void setWorkingDirectory(QString dir);
+    QString getWorkingDirectory() const;
+
+    bool hasFunction(const QString &func) const;
+    bool isAborted() const;
+    double getVar(const QString &var) const;
+
+    OptimizationHandler *mpOptHandler;
+    TerminalConsole *mpConsole;
+
 public slots:
     void abortHCOM();
-    void optPlotPoints();
-    void optPlotBestWorstObj();
 
 private:
 
@@ -131,8 +137,6 @@ private:
     QString getParameterValue(QString parameter) const;
     void getVariables(const QString str, QStringList &variables) const;
     void getVariablesThatStartsWithString(const QString str, QStringList &variables) const;
-    void setWorkingDirectory(QString dir);
-    QString getWorkingDirectory() const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
@@ -143,21 +147,6 @@ private:
     QString getArgument(const QString cmd, const int idx) const;
     void returnScalar(const double retval);
     void registerFunction(const QString func, const QString description, const SymHop::Function fptr);
-
-    void optComplexInit();
-    void optComplexRun();
-    void optComplexForget();
-    void optComplexCalculatebestandworstid();
-    void optComplexFindcenter();
-    bool optComlexCheckconvergence();
-    double optComplexMaxpardiff();
-
-    void optParticleInit();
-    void optParticleRun();
-
-
-
-    TerminalConsole *mpConsole;
 
     //Used to abort HCOM evaluation
     bool mAborted;
@@ -180,31 +169,6 @@ private:
 
     //Functions
     QMap<QString, QStringList> mFunctions;
-
-    //Optimization
-    int mOptNumPoints;
-    int mOptNumParameters;
-    QVector<double> mOptParMin, mOptParMax;
-    QVector< QVector<double> > mOptParameters, mOptOldParameters;
-    QVector< QVector<double> > mOptVelocities, mOptBestKnowns;
-    QVector<double> mOptObjectives, mOptBestObjectives, mOptBestPoint;
-    OptAlgorithmType mOptAlgorithm;
-    OptDataType mOptParameterType;
-    int mOptWorstCounter;
-    double mOptBestObj;
-    double mOptMaxEvals;
-    double mOptAlpha, mOptRfak, mOptGamma, mOptKf;
-    double mOptOmega, mOptC1, mOptC2;
-    double mOptWorst;
-    int mOptWorstId, mOptBestId, mOptLastWorstId;
-    QVector<double> mOptCenter;
-    int mOptConvergenceReason;
-    double mOptParTol, mOptFuncTol;
-    bool mOptMulticore;
-    bool mOptPlotPoints;
-    bool mOptPlotBestWorst;
-    bool mOptPlotVariables;
-    ModelWidget *mpOptModel;
 };
 
 
