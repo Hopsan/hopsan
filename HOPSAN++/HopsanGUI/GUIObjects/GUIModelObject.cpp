@@ -406,6 +406,14 @@ void ModelObject::showLosses()
 
     mTotalLosses = 0.0;
 
+    QString unit = " J";
+    double div = 1;
+    if(mpParentContainerObject->mpAvgPwrRadioButton->isChecked())
+    {
+        unit = " W";
+        div = mpParentContainerObject->getLogDataHandler()->getTimeVectorCopy(-1).last();
+    }
+
     if(getTypeCQS() == "S")
         return;
 
@@ -478,18 +486,20 @@ void ModelObject::showLosses()
             }
         }
         QString totalString;
-        totalString.setNum(mTotalLosses);
+        totalString.setNum(mTotalLosses/div);
         QString totalAddedString;
-        totalAddedString.setNum(-mTotalLosses);
+        totalAddedString.setNum(-mTotalLosses/div);
 
         QString label;
         if(mTotalLosses > 0)
         {
-            label = "<p><span style=\"background-color:lightyellow; color:red\"><b>&#160;&#160;Total losses: " + totalString + " J&#160;&#160;</b>";
+            label = "<p><span style=\"background-color:lightyellow; color:red\"><b>&#160;&#160;Total losses: " + totalString + unit+"&#160;&#160;</b>";
         }
         else
         {
-            label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;Added energy: <b>" + totalAddedString + " J</b>&#160;&#160;";
+            QString added = "Added energy";
+            if(unit == " W") added = "Added power";
+            label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;"+added+": <b>" + totalAddedString + unit+"</b>&#160;&#160;";
         }
 
         QMap<QString, double>::iterator it;
@@ -497,11 +507,13 @@ void ModelObject::showLosses()
         {
             if(it.value() > 0 && it.value() != mTotalLosses)
             {
-                label.append("<br>&#160;&#160;"+it.key()+" losses: <b>" + QString::number(it.value()) + " J</b>&#160;&#160;");
+                label.append("<br>&#160;&#160;"+it.key()+" losses: <b>" + QString::number(it.value()/div) + unit+"</b>&#160;&#160;");
             }
             else if(it.value() < 0 && it.value() != mTotalLosses)
             {
-                label.append("<br><font color=\"green\">&#160;&#160;Added " + QString::number(it.value()) + " energy: <b>" + QString::number(it.value()) + " J</b>&#160;&#160;</font>");
+                QString energyOrPower = "energy";
+                if(unit == " W") energyOrPower = "power";
+                label.append("<br><font color=\"green\">&#160;&#160;Added " + QString::number(it.value()/div) + " "+energyOrPower+": <b>" + QString::number(it.value()) + unit+"</b>&#160;&#160;</font>");
             }
         }
 

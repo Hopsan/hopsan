@@ -41,6 +41,7 @@ class Port;
 class Widget;
 class TextBoxWidget;
 class QTableView;
+class QRadioButton;
 
 using namespace std;
 
@@ -155,6 +156,7 @@ public:
 
     //Losses methods
     bool areLossesVisible();
+    QRadioButton *mpAvgPwrRadioButton;
 
 public slots:
 
@@ -338,6 +340,7 @@ protected:
     bool mLossesVisible;
     QDialog *mpLossesDialog;
     QSlider *mpMinLossesSlider;
+    QRadioButton *mpEnergyRadioButton;
 
     //Model information
     QString mAuthor;

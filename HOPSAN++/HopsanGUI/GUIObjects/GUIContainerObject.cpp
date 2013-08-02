@@ -2599,6 +2599,15 @@ void ContainerObject::showLosses(bool show)
     mpLossesDialog = new QDialog(gpMainWindow);
     mpLossesDialog->setWindowTitle("Calculate Losses");
 
+    QGroupBox *pUnitGroupBox = new QGroupBox(mpLossesDialog);
+    mpEnergyRadioButton = new QRadioButton(tr("Energy losses"));
+    mpAvgPwrRadioButton = new QRadioButton(tr("Average power losses"));
+    mpEnergyRadioButton->setChecked(true);
+    QVBoxLayout *pUnitLayout = new QVBoxLayout;
+    pUnitLayout->addWidget(mpEnergyRadioButton);
+    pUnitLayout->addWidget(mpAvgPwrRadioButton);
+    pUnitGroupBox->setLayout(pUnitLayout);
+
     QCheckBox *pIgnoreSmallLossesCheckBox = new QCheckBox("Ignore small losses in bar chart plot");
     pIgnoreSmallLossesCheckBox->setChecked(true);
 
@@ -2635,11 +2644,12 @@ void ContainerObject::showLosses(bool show)
 
     QGridLayout *pLossesDialogLayout = new QGridLayout;
     pLossesDialogLayout->addWidget(pInfoLabel, 0, 0, 1, 3);
-    pLossesDialogLayout->addWidget(pIgnoreSmallLossesCheckBox, 1, 0, 1, 3);
-    pLossesDialogLayout->addLayout(pSliderLayout, 2, 0, 1, 3);
-    pLossesDialogLayout->addWidget(pToolBar, 3, 0, 1, 1);
-    pLossesDialogLayout->addWidget(pCancelButton, 3, 1, 1, 1);
-    pLossesDialogLayout->addWidget(pNextButton, 3, 2, 1, 1);
+    pLossesDialogLayout->addWidget(pUnitGroupBox, 1, 0, 1, 3);
+    pLossesDialogLayout->addWidget(pIgnoreSmallLossesCheckBox, 2, 0, 1, 3);
+    pLossesDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 3);
+    pLossesDialogLayout->addWidget(pToolBar, 4, 0, 1, 1);
+    pLossesDialogLayout->addWidget(pCancelButton, 4, 1, 1, 1);
+    pLossesDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
 
     mpLossesDialog->setLayout(pLossesDialogLayout);
 
@@ -2657,6 +2667,9 @@ void ContainerObject::showLossesFromDialog()
 {
     mpLossesDialog->close();
     mLossesVisible=true;
+
+    bool usePower = mpAvgPwrRadioButton->isChecked();
+    double time = this->mpLogDataHandler->getTimeVectorCopy(-1).last();
 
     double limit=0;
     if(mpMinLossesSlider->isEnabled())
@@ -2683,6 +2696,7 @@ void ContainerObject::showLossesFromDialog()
         if(componentTotal > 0)
             totalLosses += componentTotal;
     }
+    if(usePower) totalLosses /= time;
 
     //Count number of component that are to be plotted, and store their names
     int nComponents=0;
@@ -2698,6 +2712,7 @@ void ContainerObject::showLossesFromDialog()
             ++nComponents;
             componentNames.append(moit.value()->getName());
             componentLosses.append(componentTotal);
+            if(usePower) componentLosses.last() /= time;
         }
     }
 
