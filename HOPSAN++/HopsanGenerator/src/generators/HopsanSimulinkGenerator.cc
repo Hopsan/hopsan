@@ -63,6 +63,11 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         }
         else if(pComponent->getTypeName() == "SignalOutputInterface")
         {
+            if(names[i] == "DEBUG")
+            {
+                printErrorMessage("Output interface with name \"DEBUG\" is not allowed (reserved name)!");
+                return;
+            }
             outputComponents.append(names[i].c_str());
             outputPorts.append("in");
         }
