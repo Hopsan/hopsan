@@ -84,6 +84,7 @@ public slots:
     void createPlotWindowFromTab();
     void saveToXml();
     void importPlo();
+    void importCsv();
 
     void loadFromXml();
     void performFrequencyAnalysis(PlotCurve *curve);
@@ -128,6 +129,7 @@ private:
     QAction *mpPanButton;
     QAction *mpSaveButton;
     QToolButton *mpExportButton;
+    QToolButton *mpImportButton;
     //QToolButton *mpExportGfxButton;
     QAction *mpLoadFromXmlButton;
     QAction *mpGridButton;
@@ -138,9 +140,11 @@ private:
     QAction *mpAllGenerationsUp;
 
     QAction *mpBodePlotButton;
+    QMenu *mpImportMenu;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
-    QAction *mpImportClassicData;
+    QAction *mpImportPloAction;
+    QAction *mpImportCsvAction;
     QAction *mpExportToCsvAction;
     QAction *mpExportToHvcAction;
     QAction *mpExportToMatlabAction;

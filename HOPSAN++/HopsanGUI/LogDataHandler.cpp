@@ -40,6 +40,9 @@
 #include "Widgets/PlotWidget.h"
 #include "PlotHandler.h"
 
+#include "ComponentUtilities/CSVParser.h"
+#include "HopsanTypes.h"
+
 //! @brief Constructor for plot data object
 //! @param pParent Pointer to parent container object
 LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
@@ -211,7 +214,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
 
     QFile file(rImportFilePath);
     QFileInfo fileInfo(file);
-    gConfig.setModelicaModelsDir(fileInfo.absolutePath());
+    gConfig.setModelicaModelsDir(fileInfo.absolutePath());      //! @todo Why is Modelica dir used for PLO files???
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -335,6 +338,68 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
 
             SharedLogVariableDataPtrT pNewData = insertVariableBasedOnDescription(varDesc, timeVecPtr, importedPLODataVector[i].mDataValues);
             pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
+        }
+
+        emit newDataAvailable();
+    }
+
+    // Limit number of plot generations if there are too many
+    limitPlotGenerations();
+}
+
+
+void LogDataHandler::importFromCsv(QString rImportFilePath)
+{
+    if(rImportFilePath.isEmpty())
+    {
+
+        rImportFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
+                                                       gConfig.getModelicaModelsDir(),
+                                                       tr("Comma-separated values files (*.csv)"));
+    }
+    if(rImportFilePath.isEmpty())
+    {
+        return;
+    }
+
+    QFile file(rImportFilePath);
+    QFileInfo fileInfo(file);
+    gConfig.setModelicaModelsDir(fileInfo.absolutePath());      //! @todo Why is Modelica dir used for CSV files???
+
+    CoreCSVParserAccess *pParser = new CoreCSVParserAccess(rImportFilePath);
+
+    if(!pParser->isOk())
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("CSV file could not be parsed.");
+        return;
+    }
+
+    int cols = pParser->getNumberOfColumns();
+    QList<QVector<double> > data;
+    for(int c=0; c<cols; ++c)
+    {
+        QVector<double> vec = pParser->getColumn(c);
+        data.append(vec);
+    }
+
+    delete(pParser);
+
+    if (!data.isEmpty())
+    {
+        ++mGenerationNumber;
+        SharedLogVariableDataPtrT timeVecPtr(0);
+
+        //Ugly, assume that first vector is always time
+        timeVecPtr = insertTimeVariable(data[0]);
+        timeVecPtr->mpVariableDescription->mVariableSourceType = VariableDescription::ImportedVariableType;
+
+        for (int i=1; i<data.size(); ++i)
+        {
+            VariableDescription varDesc;
+            varDesc.mDataName = "CSV"+QString::number(i);
+            varDesc.mVariableSourceType = VariableDescription::ImportedVariableType;
+
+            /*SharedLogVariableDataPtrT pNewData = */insertVariableBasedOnDescription(varDesc, timeVecPtr, data[i]);
         }
 
         emit newDataAvailable();

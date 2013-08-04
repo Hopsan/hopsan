@@ -53,6 +53,7 @@ public:
     void collectPlotDataFromModel(bool overWriteLastGeneration=false);
     void exportToPlo(QString filePath, QStringList variables);
     void importFromPlo(QString rImportFilePath=QString());
+    void importFromCsv(QString rImportFilePath=QString());
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
 
     SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);

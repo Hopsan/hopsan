@@ -200,12 +200,25 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
     connect(mpSaveButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpImportClassicData = new QAction(this);
-    mpImportClassicData->setToolTip("Import from Old Hopsan File (.plo)");
-    mpImportClassicData->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ImportPlot.png"));
-    mpImportClassicData->setShortcut(QKeySequence("Ctrl+I"));
-    connect(mpImportClassicData, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpImportPloAction = new QAction(this);
+    mpImportPloAction->setText("Import from Old Hopsan File (.plo)");
+    mpImportPloAction->setToolTip("Import from Old Hopsan File (.plo)");
 
+    mpImportCsvAction = new QAction(this);
+    mpImportCsvAction->setText("Import from Comma-Separated Values File (.csv)");
+    mpImportCsvAction->setToolTip("Import from Comma-Separated Values File (.csv)");
+
+    mpImportMenu = new QMenu(mpToolBar);
+    mpImportMenu->addAction(mpImportPloAction);
+    mpImportMenu->addAction(mpImportCsvAction);
+
+    mpImportButton = new QToolButton(mpToolBar);
+    mpImportButton->setToolTip("Import Plot Data");
+    mpImportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ImportPlot.png"));
+    mpImportButton->setMenu(mpImportMenu);
+    mpImportButton->setPopupMode(QToolButton::InstantPopup);
+    mpImportButton->setMouseTracking(true);
+    connect(mpImportPloAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpExportToXmlAction = new QAction("Export to Extensible Markup Language File (.xml)", mpToolBar);
     mpExportToCsvAction = new QAction("Export to Comma-Separeted Values File (.csv)", mpToolBar);
@@ -354,7 +367,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addAction(mpNewPlotButton);
     mpToolBar->addAction(mpLoadFromXmlButton);
     mpToolBar->addAction(mpSaveButton);
-    mpToolBar->addAction(mpImportClassicData);
+    mpToolBar->addWidget(mpImportButton);
     mpToolBar->addWidget(mpExportButton);
     //mpToolBar->addWidget(mpExportGfxButton);
     mpToolBar->addAction(mpExportToGraphicsAction);
@@ -406,7 +419,8 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     // Establish toolbar button signal and slots connections
     connect(mpNewPlotButton,                    SIGNAL(triggered()),            this,               SLOT(addPlotTab()));
     connect(mpLoadFromXmlButton,                SIGNAL(triggered()),            this,               SLOT(loadFromXml()));
-    connect(mpImportClassicData,                SIGNAL(triggered()),            this,               SLOT(importPlo()));
+    connect(mpImportPloAction,                  SIGNAL(triggered()),            this,               SLOT(importPlo()));
+    connect(mpImportCsvAction,                  SIGNAL(triggered()),            this,               SLOT(importCsv()));
     connect(mpSaveButton,                       SIGNAL(triggered()),            this,               SLOT(saveToXml()));
     connect(mpBodePlotButton,                   SIGNAL(triggered()),            this,               SLOT(createBodePlot()));
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
@@ -574,7 +588,13 @@ void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 
 void PlotWindow::importPlo()
 {
-    gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromPlo();;
+    gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromPlo();
+}
+
+
+void PlotWindow::importCsv()
+{
+    gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromCsv();
 }
 
 
@@ -1091,10 +1111,10 @@ void PlotWindow::showToolBarHelpPopup()
 //    {
 //        showHelpPopupMessage("Show/hide variable lists.");
 //    }
-    else if(pHoveredAction == mpImportClassicData)
-    {
-        showHelpPopupMessage("Import Data from Old Hopsan.");
-    }
+//    else if(pHoveredAction == mpImportButton)
+//    {
+//        showHelpPopupMessage("Import Data from Old Hopsan.");
+//    }
     else if(pHoveredAction == mpLegendButton)
     {
         showHelpPopupMessage("Legend settings.");
@@ -1227,7 +1247,7 @@ void PlotWindow::changedTab()
             mpZoomButton->setDisabled(false);
             mpOriginalZoomButton->setDisabled(false);
             mpPanButton->setDisabled(false);
-            mpImportClassicData->setDisabled(false);
+            mpImportPloAction->setDisabled(false);
             mpSaveButton->setDisabled(false);
             mpExportToCsvAction->setDisabled(false);
             mpExportToHvcAction->setDisabled(false);

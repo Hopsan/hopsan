@@ -1040,7 +1040,7 @@ void PlotTab::exportToXml()
 }
 
 
-//! @brief Slot that exports plot tab to a specified comma-separated value file (.csv)
+//! @brief Slot that exports plot tab to a specified comma-separated values file (.csv)
 void PlotTab::exportToCsv()
 {
     //Open file dialog and initialize the file stream
@@ -1048,7 +1048,7 @@ void PlotTab::exportToCsv()
     QFileInfo fileInfo;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
                                             gConfig.getPlotDataDir(),
-                                            tr("Comma-separated values (*.csv)"));
+                                            tr("Comma-separated values files (*.csv)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
     gConfig.setPlotDataDir(fileInfo.absolutePath());

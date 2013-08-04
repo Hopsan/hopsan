@@ -1566,7 +1566,7 @@ void SystemContainer::exportToSimulinkCoSim()
     {
         compiler=2;
     }
-    else if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())
+    else/* if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())*/
     {
         compiler=3;
     }

@@ -38,6 +38,7 @@
 #include "Widgets/MessageWidget.h"
 #include "common.h"
 #include "Utilities/GUIUtilities.h"
+#include "ComponentUtilities/CSVParser.h"
 
 using namespace std;
 
@@ -1171,3 +1172,44 @@ QString getHopsanCoreVersion()
 {
     return QString::fromStdString(gHopsanCore.getCoreVersion());
 }
+
+
+CoreCSVParserAccess::CoreCSVParserAccess(QString file)
+{
+    bool success;
+    mpParser = new hopsan::CSVParser(success, hopsan::HString(file.toStdString().c_str()));
+    if(!success)
+    {
+        mpParser = 0;
+    }
+}
+
+bool CoreCSVParserAccess::isOk()
+{
+    return mpParser != 0;
+}
+
+int CoreCSVParserAccess::getNumberOfRows()
+{
+    if(mpParser)
+        return this->mpParser->getNumDataRows();
+    else
+        return 0;
+}
+
+int CoreCSVParserAccess::getNumberOfColumns()
+{
+    if(mpParser)
+        return this->mpParser->getNumDataCols();
+    else
+        return 0;
+}
+
+QVector<double> CoreCSVParserAccess::getColumn(int col)
+{
+    if(mpParser)
+        return QVector<double>::fromStdVector(mpParser->getDataColumn(col));
+    else
+        return QVector<double>();
+}
+
