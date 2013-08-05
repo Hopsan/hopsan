@@ -366,6 +366,23 @@ void PlotTab::applyAxisLabelSettings()
     updateLabels();
 }
 
+void PlotTab::lockAxisToCurrentLimits()
+{
+    mpXminSpinBox->setValue(mXAxisLimits[FirstPlot].min);
+    mpXmaxSpinBox->setValue(mXAxisLimits[FirstPlot].max);
+
+    mpYLminSpinBox->setValue(mYLAxisLimits[FirstPlot].min);
+    mpYLmaxSpinBox->setValue(mYLAxisLimits[FirstPlot].max);
+
+    mpYRminSpinBox->setValue(mYRAxisLimits[FirstPlot].min);
+    mpYRmaxSpinBox->setValue(mYRAxisLimits[FirstPlot].max);
+
+    mpXAutoCheckBox->setChecked(false);
+    mpYLAutoCheckBox->setChecked(false);
+    mpYRAutoCheckBox->setChecked(false);
+
+    applyAxisSettings();
+}
 
 void PlotTab::openLegendSettingsDialog()
 {

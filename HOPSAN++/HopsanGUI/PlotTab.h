@@ -113,6 +113,7 @@ protected:
 
 public slots:
     void rescaleAxesToCurves();
+    void lockAxisToCurrentLimits();
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();

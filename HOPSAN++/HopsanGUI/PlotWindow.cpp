@@ -286,6 +286,11 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpLocktheAxis->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
     connect(mpLocktheAxis, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpLockAxisToCurrentLimitsButton = new QAction(this);
+    mpLockAxisToCurrentLimitsButton->setToolTip("Lock Axis To Current Limits");
+    mpLockAxisToCurrentLimitsButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Lock.png"));
+    connect(mpLockAxisToCurrentLimitsButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpNewWindowFromTabButton = new QAction(this);
     mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
     mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-OpenTabInNewPlotWindow.png"));
@@ -386,6 +391,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addAction(mpBackgroundColorButton);
     mpToolBar->addAction(mpLegendButton);
     mpToolBar->addAction(mpLocktheAxis);
+    mpToolBar->addAction(mpLockAxisToCurrentLimitsButton);
     mpToolBar->addAction(mpCurveInfoDock->toggleViewAction());
     mpToolBar->addAction(pLocalPlotWidgetDock->toggleViewAction());
     mpToolBar->addSeparator();
@@ -426,6 +432,8 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
     connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(changedTab()));
+
+    connect(mpLockAxisToCurrentLimitsButton,    SIGNAL(triggered()),            mpPlotTabWidget->getCurrentTab(), SLOT(lockAxisToCurrentLimits()));
 
     // Hide curve settings area by default if screen size is to small
     if(sh*sw < 800*1280)
@@ -1117,11 +1125,15 @@ void PlotWindow::showToolBarHelpPopup()
 //    }
     else if(pHoveredAction == mpLegendButton)
     {
-        showHelpPopupMessage("Legend settings.");
+        showHelpPopupMessage("Open the legend settings dialog.");
     }
     else if(pHoveredAction == mpLocktheAxis)
     {
-        showHelpPopupMessage("Lock Axis.");
+        showHelpPopupMessage("Open the lock axis dialog.");
+    }
+    else if(pHoveredAction == mpLockAxisToCurrentLimitsButton)
+    {
+        showHelpPopupMessage("Lock all axes to current limits.");
     }
 }
 
@@ -1207,6 +1219,7 @@ void PlotWindow::changedTab()
     disconnect(mpExportToGraphicsAction,    SIGNAL(triggered()),    0,  0);
     //disconnect(mpExportPngAction,           SIGNAL(triggered()),    0,  0);
     disconnect(mpLegendButton,              SIGNAL(triggered()),    0,  0);
+    disconnect(mpLockAxisToCurrentLimitsButton, SIGNAL(triggered()),    0,  0);
     disconnect(mpLocktheAxis,               SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsDown,        SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsUp,          SIGNAL(triggered()),    0,  0);
