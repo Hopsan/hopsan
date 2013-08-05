@@ -406,9 +406,9 @@ void Configuration::loadStyleSettings(QDomElement &rDomElement)
 
         ConnectorStyleEnumT style;
         if(type=="Power") style = PowerConnectorStyle;
-        if(type=="Signal") style = SignalConnectorStyle;
-        if(type=="Broken") style = BrokenConnectorStyle;
-        if(type=="Undefined") style = UndefinedConnectorStyle;
+        else if(type=="Signal") style = SignalConnectorStyle;
+        else if(type=="Broken") style = BrokenConnectorStyle;
+        /*if(type=="Undefined")*/else style = UndefinedConnectorStyle;
 
         if(!mPenStyles.contains(style))
         {

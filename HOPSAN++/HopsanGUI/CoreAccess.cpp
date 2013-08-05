@@ -33,7 +33,6 @@
 #include "ComponentSystem.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include "DesktopHandler.h"
-#include "MainWindow.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
@@ -55,6 +54,11 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
     rGUIParam.mIsEnabled = pCoreParam->isEnabled();
 }
 
+
+CoreGeneratorAccess::CoreGeneratorAccess(LibraryWidget *pLibrary)
+{
+    mpLibrary = pLibrary;
+}
 
 bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath, QString target)
 {
@@ -98,12 +102,12 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             QMessageBox existWarningBox(QMessageBox::Warning, "Warning","Another FMU with same name exist. Do you want unload this library and then overwrite it?", 0, 0);
             existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
             existWarningBox.addButton("No", QMessageBox::RejectRole);
-            existWarningBox.setWindowIcon(gpMainWindow->windowIcon());
+            existWarningBox.setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
             bool doIt = (existWarningBox.exec() == QMessageBox::AcceptRole);
 
             if(doIt)
             {
-                gpMainWindow->mpLibrary->unloadExternalLibrary(fmuName, "FMU");
+                mpLibrary->unloadExternalLibrary(fmuName, "FMU");
                 removeDir(QDir::cleanPath(gDesktopHandler.getFMUPath()+fmuName));
             }
             else
@@ -126,7 +130,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             fmuIcon.close();
 
             //Load library
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(gDesktopHandler.getFMUPath() + fmuName, "FMU");
+            mpLibrary->loadAndRememberExternalLibrary(gDesktopHandler.getFMUPath() + fmuName, "FMU");
             return true;
         }
     }

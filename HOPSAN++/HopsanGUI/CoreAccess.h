@@ -30,9 +30,11 @@
 #include <QPair>
 #include <QStringList>
 
+//Forward declrations of HopsanGUI classes
+class LibraryWidget;
 class SystemContainer;
 
-//Forward declaration of hopsan core classes
+//Forward declaration of HopsanCore classes
 namespace hopsan {
 class ComponentSystem;
 class Port;
@@ -57,6 +59,7 @@ private:
 class CoreGeneratorAccess
 {
 public:
+    CoreGeneratorAccess(LibraryWidget *pLibrary);
     bool generateFromModelica(QString code, QString outputPath="", QString target="");
     bool generateFromCpp(QString code, bool showOutputDialog=true, QString outputPath="");
     bool generateFromFmu(QString path);
@@ -65,6 +68,9 @@ public:
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
     bool compileComponentLibrary(QString path, QString name, QString extraLibs="");
+
+private:
+    LibraryWidget *mpLibrary;
 };
 
 class CoreLibraryAccess

@@ -22,31 +22,15 @@
 //!
 //$Id$
 
-//#include <QtGui>
+//Qt includes
 #include <QTabBar>
 #include <QTabWidget>
-//#include <QSizePolicy>
-//#include <QHash>
 
-#include "ProjectTabWidget.h"
-//#include "HcomWidget.h"
-#include "MainWindow.h"
-//#include "GraphicsView.h"
-//#include "InitializationThread.h"
-//#include "ProgressBarThread.h"
+//Hopsan includes
 #include "Configuration.h"
-//#include "Utilities/XMLUtilities.h"
-//#include "GUIObjects/GUISystem.h"
-//#include "GUIObjects/GUIWidgets.h"
-//#include "GUIObjects/GUIModelObject.h"
-//#include "Widgets/LibraryWidget.h"
-//#include "version_gui.h"
-//#include "GUIConnector.h"
-//#include "Widgets/HcomWidget.h"
-//#include "DesktopHandler.h"
-//#include "Widgets/DebuggerWidget.h"
+#include "MainWindow.h"
 #include "ModelHandler.h"
-//#include "SimulationThreadHandler.h"
+#include "ProjectTabWidget.h"
 
 //! @class CentralTabWidget
 //! @brief The CentralTabWidget class is the central tab widget in the main window

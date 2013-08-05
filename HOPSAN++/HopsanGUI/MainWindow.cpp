@@ -245,7 +245,6 @@ MainWindow::MainWindow(QWidget *parent)
     tabifyDockWidget(mpPyDockWidget, mpMessageDock);
     tabifyDockWidget(mpMessageDock, mpTerminalDock);
 
-
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
     mpHelpPopup->setAttribute(Qt::WA_TransparentForMouseEvents, true);
@@ -488,23 +487,33 @@ void MainWindow::createActions()
     mpNewAction->setShortcut(tr("New"));
     mpNewAction->setToolTip(tr("Create New Project"));
     connect(mpNewAction, SIGNAL(triggered()), mpModelHandler, SLOT(addNewModel()));
+    connect(mpNewAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpNewAction, "Create a new empty model.");
 
     mpOpenAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Open.png"), tr("&Open"), this);
     mpOpenAction->setShortcut(QKeySequence("Ctrl+o"));
     mpOpenAction->setToolTip(tr("Load Model File (Ctrl+O)"));
     connect(mpOpenAction, SIGNAL(triggered()), mpModelHandler, SLOT(loadModel()));
+    connect(mpOpenAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpOpenAction, "Open an existing model.");
 
     mpSaveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
     mpSaveAction->setShortcut(QKeySequence("Ctrl+s"));
     mpSaveAction->setToolTip(tr("Save Model File (Ctrl+S)"));
+    connect(mpSaveAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpSaveAction, "Save current model.");
 
     mpSaveAsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Save As"), this);
     mpSaveAsAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     mpSaveAsAction->setToolTip(tr("Save Model File As (Ctrl+Alt+S)"));
+    connect(mpSaveAsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpSaveAsAction, "Save current model as new file.");
 
     mpExportModelParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportParameters.png"), tr("&Export Model Parameters"), this);
     mpExportModelParametersAction->setShortcut(QKeySequence("Ctrl+Alt+E"));
     mpExportModelParametersAction->setToolTip(tr("Export Model Parameters (Ctrl+Alt+P)"));
+    connect(mpExportModelParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpExportModelParametersAction, "Export model parameter set to XML.");
 
     mpCloseAction = new QAction(this);
     mpCloseAction->setText("Close");
@@ -515,11 +524,15 @@ void MainWindow::createActions()
     mpUndoAction->setText("Undo");
     mpUndoAction->setShortcut(QKeySequence(tr("Ctrl+z")));
     mpUndoAction->setToolTip(tr("Undo One Step (Ctrl+Z)"));
+    connect(mpUndoAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpUndoAction, "Undo last action in current model.");
 
     mpRedoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Redo.png"), tr("&Redo"), this);
     mpRedoAction->setText("Redo");
     mpRedoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
     mpRedoAction->setToolTip(tr("Redo One Step (Ctrl+Y)"));
+    connect(mpRedoAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpRedoAction, "Redo last undone action in current model.");
 
     mpOpenUndoAction = new QAction(tr("&Undo History"), this);
     mpOpenUndoAction->setToolTip("Undo History (Ctrl+Shift+U)");
@@ -537,6 +550,7 @@ void MainWindow::createActions()
     mpOpenSystemParametersAction->setCheckable(true);
     connect(mpOpenSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
     connect(mpOpenSystemParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpOpenSystemParametersAction, "Opens the list of system parameters in current model.");
 
     mpOpenHvcWidgetAction = new QAction(tr("&Model Validation"), this);
     mpOpenHvcWidgetAction->setToolTip("Open the HopsanValidationConfiguration Widget");
@@ -545,20 +559,28 @@ void MainWindow::createActions()
     mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     mpCutAction->setShortcut(tr("Ctrl+x"));
     mpCutAction->setToolTip(tr("Cut (Ctrl+X)"));
+    connect(mpCutAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    connect(mpCutAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpCutAction, "Cut selected components.");
 
     mpCopyAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Copy.png"), tr("&Copy"), this);
     mpCopyAction->setShortcut(tr("Ctrl+c"));
     mpCopyAction->setToolTip("Copy (Ctrl+C)");
+    connect(mpCopyAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpCopyAction, "Copy selected components.");
 
     mpPasteAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Paste.png"), tr("&Paste"), this);
     mpPasteAction->setShortcut(tr("Ctrl+v"));
     mpPasteAction->setToolTip(tr("Paste (Ctrl+V)"));
+    connect(mpPasteAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpPasteAction, "Paste copied components in current model.");
 
     mpSimulateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Simulate"), this);
     mpSimulateAction->setToolTip(tr("Simulate Current Project (Ctrl+Shift+S)"));
     mpSimulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
     connect(mpSimulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpSimulateAction, SIGNAL(triggered()), this, SLOT(simulateKeyWasPressed()));
+    mHelpPopupTextMap.insert(mpSimulateAction, "Starts a new simulation of current model.");
 
     mpCoSimulationAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Start Co-Simulation"), this);
     mpCoSimulationAction->setToolTip(tr("Start Co-Simulation"));
@@ -568,23 +590,27 @@ void MainWindow::createActions()
     mpOpenDebuggerAction->setToolTip(tr("Launch Debugger"));
     connect(mpOpenDebuggerAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpOpenDebuggerAction,  SIGNAL(triggered()), mpModelHandler, SLOT(launchDebugger()));
+    mHelpPopupTextMap.insert(mpOpenDebuggerAction, "Open debugger dialog to examine the current model in detail.");
 
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
     mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
     mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+z"));
     connect(mpOptimizeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpOptimizeAction, SIGNAL(triggered()), mpOptimizationDialog, SLOT(open()));
+    mHelpPopupTextMap.insert(mpOptimizeAction, "Open optimization dialog to initialize numerical optimization of current model.");
 
     mpSensitivityAnalysisAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SensitivityAnalysis.png"), tr("&Sensitivity Analysis"), this);
     mpSensitivityAnalysisAction->setToolTip(tr("Open Sensitivity Analysis Dialog (Ctrl+Shift+A)"));
     mpSensitivityAnalysisAction->setShortcut(QKeySequence("Ctrl+Shift+A"));
     connect(mpSensitivityAnalysisAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpSensitivityAnalysisAction, SIGNAL(triggered()), mpSensitivityAnalysisDialog, SLOT(open()));
+    mHelpPopupTextMap.insert(mpSensitivityAnalysisAction, "Perform sensitivity analysis of current model.");
 
     mpMeasureSimulationTimeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-MeasureSimulationTime.png"), tr("&Measure Simulation Times"), this);
     mpMeasureSimulationTimeAction->setToolTip(tr("Measure Simulation Times"));
     connect(mpMeasureSimulationTimeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpMeasureSimulationTimeAction, SIGNAL(triggered()), mpModelHandler, SLOT(measureSimulationTime()));
+    mHelpPopupTextMap.insert(mpMeasureSimulationTimeAction, "Measure simulation time for each component in current model.");
 
     mpPlotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
@@ -592,6 +618,7 @@ void MainWindow::createActions()
     mpPlotAction->setShortcut(QKeySequence("Ctrl+Shift+p"));
     connect(mpPlotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
     connect(mpPlotAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpPlotAction, "Opens the list with all available plot variables from current model.");
 
     mpLoadLibsAction = new QAction(this);
     mpLoadLibsAction->setText("Load Libraries");
@@ -601,53 +628,78 @@ void MainWindow::createActions()
     mpPropertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");
     mpPropertiesAction->setShortcut(QKeySequence("Ctrl+Shift+m"));
     connect(mpPropertiesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpPropertiesAction, "Opens a dialog with settings for the current model.");
 
     mpOptionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
     mpOptionsAction->setToolTip("Options (Ctrl+Shift+O)");
     mpOptionsAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
     connect(mpOptionsAction, SIGNAL(triggered()), mpOptionsDialog, SLOT(show()));
+    connect(mpOptionsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpOptionsAction, "Open options dialog to change program settings.");
 
     mpAnimateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Animation.png"), tr("&Animate"), this);
     mpAnimateAction->setToolTip("Animate");
     connect(mpAnimateAction, SIGNAL(triggered()),mpModelHandler, SLOT(openAnimation()));
+    connect(mpAnimateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpAnimateAction, "Open current model in animation mode.");
 
     mpAlignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
     mpAlignXAction->setText("Align Vertical");
+    mHelpPopupTextMap.insert(mpAlignXAction, "Align selected components horizontally to last selected component.");
+    connect(mpAlignXAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpAlignYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignY.png"), tr("&Align Horizontal (by last selected)"), this);
     mpAlignYAction->setText("Align Horizontal");
+    mHelpPopupTextMap.insert(mpAlignYAction, "Align selected components vertically to last selected component.");
+    connect(mpAlignYAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpRotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left (Ctrl+E)"), this);
     mpRotateLeftAction->setText("Rotate Left (Ctrl+E)");
     mpRotateLeftAction->setShortcut(QKeySequence("Ctrl+E"));
+    mHelpPopupTextMap.insert(mpRotateLeftAction, "Rotate selected components counter-clockwise.");
+    connect(mpRotateLeftAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpRotateRightAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateRight.png"), tr("&Rotate Right (Ctrl+R)"), this);
     mpRotateRightAction->setText("Rotate Right (Ctrl+R)");
     mpRotateRightAction->setShortcut(QKeySequence("Ctrl+R"));
+    mHelpPopupTextMap.insert(mpRotateRightAction, "Rotate selected components clockwise.");
+    connect(mpRotateRightAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpFlipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Flip Horizontal"), this);
     mpFlipHorizontalAction->setText("Flip Horizontal (Ctrl+F)");
     mpFlipHorizontalAction->setShortcut(QKeySequence("Ctrl+F"));
+    mHelpPopupTextMap.insert(mpFlipHorizontalAction, "Flip selected components horizontally.");
+    connect(mpFlipHorizontalAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpFlipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Flip Vertical"), this);
     mpFlipVerticalAction->setText("Flip Vertical (Ctrl+D");
     mpFlipVerticalAction->setShortcut(QKeySequence("Ctrl+D"));
+    mHelpPopupTextMap.insert(mpFlipVerticalAction, "Flip selected components vertically.");
+    connect(mpFlipVerticalAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpResetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom (Ctrl+0)"), this);
     mpResetZoomAction->setText("Reset Zoom (Ctrl+0)");
     mpResetZoomAction->setShortcut(QKeySequence("Ctrl+0"));
+    connect(mpResetZoomAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpResetZoomAction, "Reset zoom to 100%.");
 
     mpZoomInAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomIn.png"), tr("&Zoom In (Ctrl+Plus)"), this);
     mpZoomInAction->setText("Zoom In (Ctrl+Plus)");
     mpZoomInAction->setShortcut(QKeySequence("Ctrl++"));
+    connect(mpZoomInAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpZoomInAction, "Increase zoom level.");
 
     mpZoomOutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomOut.png"), tr("&Zoom Out (Ctrl+Minus)"), this);
     mpZoomOutAction->setText("Zoom Out (Ctrl+Minus)");
     mpZoomOutAction->setShortcut(QKeySequence("Ctrl+-"));
+    connect(mpZoomOutAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpZoomOutAction, "Decrease zoom level.");
 
     mpCenterViewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-CenterView.png"), tr("&Center View (Ctrl+Space)"), this);
     mpCenterViewAction->setText("Center View (Ctrl+Space)");
     mpCenterViewAction->setShortcut(QKeySequence("Ctrl+Space"));
+    connect(mpCenterViewAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpCenterViewAction, "Center view in current model.");
 
     QIcon toggleNamesIcon;
     toggleNamesIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleNames.png", QSize(), QIcon::Normal, QIcon::On);
@@ -656,22 +708,47 @@ void MainWindow::createActions()
     mpToggleNamesAction->setCheckable(true);
     mpToggleNamesAction->setChecked(gConfig.getToggleNamesButtonCheckedLastSession());
     mpToggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
+    connect(mpToggleNamesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpToggleNamesAction, "Toggle  visibility of component names for all components.");
 
     mpPrintAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Print.png"), tr("&Print Model"), this);
     mpPrintAction->setText("Print Model");
+    connect(mpPrintAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpPrintAction, "Print current model.");
 
     mpExportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportPdf.png"), tr("&Export To PDF"), this);
     mpExportPDFAction->setText("Export Model to PDF");
+    connect(mpExportPDFAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpExportPDFAction, "Export current model to Portable Document Format (PDF).");
 
     mpExportPNGAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportPng.png"), tr("&Export To PNG"), this);
     mpExportPNGAction->setText("Export Model to PNG");
+    connect(mpExportPNGAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpExportPNGAction, "Export current model to Portable Network Graphics (PNG).");
 
     mpImportFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ImportFmu.png"), tr("Import Functional Mock-up Unit (FMU)"), this);
+    mHelpPopupTextMap.insert(mpImportFMUAction, "Import Functional Mock-up Unit (FMU).");
+    connect(mpImportFMUAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpExportToSimulinkAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulink.png"), tr("Export to Simulink S-function Source Files"), this);
+    mHelpPopupTextMap.insert(mpExportToSimulinkAction, "Export model to Simulink S-function.");
+    connect(mpExportToSimulinkAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpExportToSimulinkCoSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Export to Simulink Co-Simulation S-function Source Files"), this);
+    mHelpPopupTextMap.insert(mpExportToSimulinkCoSimAction, "Export model Simulink S-function for co-simulation (under development).");
+    connect(mpExportToSimulinkCoSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpExportToFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"), tr("Export to Functional Mock-up Unit (FMU)"), this);
+    mHelpPopupTextMap.insert(mpExportToFMUAction, "Export model to Functional Mock-up Unit (FMU).");
+    connect(mpExportToFMUAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpExportToLabviewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSIT.png"), tr("Export to LabVIEW/SIT"), this);
+    mHelpPopupTextMap.insert(mpExportToLabviewAction, "Export model to LabVIEW Veristand.");
+    connect(mpExportToLabviewAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpLoadModelParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-LoadModelParameters.png"), tr("Load Model Parameters"), this);
+    mHelpPopupTextMap.insert(mpLoadModelParametersAction, "Load model parameter set from XML.");
+    connect(mpLoadModelParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpAboutAction = new QAction(this);
     mpAboutAction->setText("About");
@@ -709,6 +786,8 @@ void MainWindow::createActions()
     mpTogglePortsAction->setCheckable(true);
     mpTogglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
     mpTogglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
+    connect(mpTogglePortsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpTogglePortsAction, "Toggle visibility of unconnected ports.");
 
     QIcon toggleSignalsIcon;
     toggleSignalsIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleSignal.png", QSize(), QIcon::Normal, QIcon::On);
@@ -716,6 +795,8 @@ void MainWindow::createActions()
     mpToggleSignalsAction->setText("Show Signal Components");
     mpToggleSignalsAction->setCheckable(true);
     mpToggleSignalsAction->setChecked(true);      //! @todo Shall depend on gConfig setting
+    connect(mpToggleSignalsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpToggleSignalsAction, "Toggle signal components visibility.");
 
     mpDebug1Action = new QAction(this);
     mpDebug1Action->setShortcut(QKeySequence("Ctrl+D+1"));
@@ -732,16 +813,21 @@ void MainWindow::createActions()
     mpShowLossesAction->setCheckable(true);
     this->addAction(mpShowLossesAction);
     connect(mpShowLossesAction, SIGNAL(triggered(bool)), mpModelHandler, SLOT(showLosses(bool)));
+    connect(mpShowLossesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpShowLossesAction, "Show energy or power losses from last simulation.");
 
-    mpStartTimeLineEdit = new QLineEdit("0.0");
+
+    mpStartTimeLineEdit = new MainWindowLineEdit("0.0", this);
     mpStartTimeLineEdit->setMaximumWidth(70);
     mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-1e4, 1e6, 10, mpStartTimeLineEdit));
-    mpTimeStepLineEdit = new QLineEdit("0.001");
+    mpTimeStepLineEdit = new MainWindowLineEdit("0.001", this);
     mpTimeStepLineEdit->setMaximumWidth(70);
     mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+    mpTimeStepLineEdit->setMouseTracking(true);
+    //mpTimeStepLineEdit->setToolTip("Set time step for simulation");
     //mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 1e3, 10, mpTimeStepLineEdit));
-    mpStopTimeLineEdit = new QLineEdit("10.0");
+    mpStopTimeLineEdit = new MainWindowLineEdit("10.0", this);
     //mpStopTimeLineEdit->setValidator(new QDoubleValidator(-10000, 1000000, 10, this));
     mpStopTimeLineEdit->setMaximumWidth(70);
     mpStopTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
@@ -896,6 +982,7 @@ void MainWindow::createToolbars()
     //File toolbar, contains all file handling stuff (open, save etc)
     mpFileToolBar = addToolBar(tr("File Toolbar"));
     mpFileToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
+    mpFileToolBar->setAttribute(Qt::WA_MouseTracking);
     mpFileToolBar->addAction(mpNewAction);
     mpFileToolBar->addAction(mpOpenAction);
     mpFileToolBar->addAction(mpSaveAction);
@@ -904,6 +991,7 @@ void MainWindow::createToolbars()
 
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
     mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
+    mpConnectivityToolBar->setAttribute(Qt::WA_MouseTracking);
     mpConnectivityToolBar->addAction(mpExportModelParametersAction);
     mpConnectivityToolBar->addAction(mpLoadModelParametersAction);
     mpConnectivityToolBar->addSeparator();
@@ -969,6 +1057,7 @@ void MainWindow::createToolbars()
     mpEditToolBar = new QToolBar(tr("Edit Toolbar"));
     addToolBar(Qt::LeftToolBarArea, mpEditToolBar);
     mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
+    mpEditToolBar->setAttribute(Qt::WA_MouseTracking);
     mpEditToolBar->addAction(mpCutAction);
     mpEditToolBar->addAction(mpCopyAction);
     mpEditToolBar->addAction(mpPasteAction);
@@ -980,6 +1069,7 @@ void MainWindow::createToolbars()
     mpViewToolBar = new QToolBar(tr("View Toolbar"));
     addToolBar(Qt::LeftToolBarArea, mpViewToolBar);
     mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
+    mpViewToolBar->setAttribute(Qt::WA_MouseTracking);
     mpViewToolBar->addAction(mpCenterViewAction);
     mpViewToolBar->addAction(mpResetZoomAction);
     mpViewToolBar->addAction(mpZoomInAction);
@@ -991,6 +1081,7 @@ void MainWindow::createToolbars()
     //Tools toolbar, contains all tools used to modify the model
     mpToolsToolBar = new QToolBar(tr("Tools Toolbar"));
     addToolBar(Qt::LeftToolBarArea, mpToolsToolBar);
+    mpToolsToolBar->setAttribute(Qt::WA_MouseTracking);
     mpToolsToolBar->addAction(mpAlignXAction);
     mpToolsToolBar->addAction(mpAlignYAction);
     mpToolsToolBar->addAction(mpRotateRightAction);
@@ -1132,44 +1223,36 @@ void MainWindow::updateSystemParametersActionButton(bool)
 //! @brief Shows help popup for the toolbar icon that is currently hovered by the mouse pointer
 void MainWindow::showToolBarHelpPopup()
 {
+    //Check all tool bars to see if an action is hovered by cursor
     QCursor cursor;
     QAction *pHoveredAction = mpSimToolBar->actionAt(mpSimToolBar->mapFromGlobal(cursor.pos()));
-    if(pHoveredAction == mpSimulateAction)
-    {
-        showHelpPopupMessage("Starts a new simulation of current model.");
-    }
-    else if(pHoveredAction == mpOpenDebuggerAction)
-    {
-        showHelpPopupMessage("Open debugger dialog to examine the current model in detail.");
-    }
-    else if(pHoveredAction == mpOptimizeAction)
-    {
-        showHelpPopupMessage("Open optimization dialog to initialize numerical optimization of current model.");
-    }
-    else if(pHoveredAction == mpSensitivityAnalysisAction)
-    {
-        showHelpPopupMessage("Perform sensitivity analysis of current model.");
-    }
-    else if(pHoveredAction == mpMeasureSimulationTimeAction)
-    {
-        showHelpPopupMessage("Measure simulation time for each component in current model.");
-    }
-    else if(pHoveredAction == mpPlotAction)
-    {
-        showHelpPopupMessage("Opens the list with all available plot variables from current model.");
-    }
-    else if(pHoveredAction == mpOpenSystemParametersAction)
-    {
-        showHelpPopupMessage("Opens the list of system parameters in current model.");
-    }
-    else if(pHoveredAction == mpPropertiesAction)
-    {
-        showHelpPopupMessage("Opens a dialog with settings for the current model.");
-    }
+    if(!pHoveredAction)
+        pHoveredAction = mpFileToolBar->actionAt(mpFileToolBar->mapFromGlobal(cursor.pos()));
+    if(!pHoveredAction)
+        pHoveredAction = mpConnectivityToolBar->actionAt(mpConnectivityToolBar->mapFromGlobal(cursor.pos()));
+    if(!pHoveredAction)
+        pHoveredAction = mpEditToolBar->actionAt(mpEditToolBar->mapFromGlobal(cursor.pos()));
+    if(!pHoveredAction)
+        pHoveredAction = mpToolsToolBar->actionAt(mpToolsToolBar->mapFromGlobal(cursor.pos()));
+    if(!pHoveredAction)
+        pHoveredAction = mpViewToolBar->actionAt(mpViewToolBar->mapFromGlobal(cursor.pos()));
 
-    if(mpTimeStepLineEdit->underMouse())
+    //See if action exists in map, or if a line edit is hovered
+    if(mHelpPopupTextMap.contains(pHoveredAction))
     {
-        qDebug() << "Hovering time step!";
+        showHelpPopupMessage(mHelpPopupTextMap.find(pHoveredAction).value());
+    }
+    else if(mpStartTimeLineEdit->underMouse())
+    {
+        showHelpPopupMessage("Set start time (in seconds) for simulation.");
+    }
+    else if(mpTimeStepLineEdit->underMouse())
+    {
+        showHelpPopupMessage("Set time step (in seconds) for simulation.");
+    }
+    if(mpStopTimeLineEdit->underMouse())
+    {
+        showHelpPopupMessage("Set stop time (in seconds) for simulation.");
     }
 }
 
@@ -1565,4 +1648,17 @@ void MainWindow::simulateKeyWasPressed()
 void MainWindow::openHVCWidget()
 {
     mpHVCWidget->setVisible(true);
+}
+
+
+MainWindowLineEdit::MainWindowLineEdit(const QString &text, MainWindow *parent)
+    : QLineEdit(text, parent)
+{
+    mpParentMainWindow = parent;
+}
+
+void MainWindowLineEdit::mouseMoveEvent(QMouseEvent *e)
+{
+    mpParentMainWindow->showToolBarHelpPopup();
+    return QLineEdit::mouseMoveEvent(e);
 }

@@ -778,7 +778,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     printVar(randomName);
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(this);
 
     if(modelica)
     {
@@ -992,7 +992,7 @@ void LibraryWidget::importFmu()
     }
     gConfig.setFmuImportDir(fmuFileInfo.absolutePath());
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(this);
     pCoreAccess->generateFromFmu(filePath);
     delete(pCoreAccess);
 }
@@ -1817,7 +1817,7 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess;
+            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gDesktopHandler.getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
@@ -1835,7 +1835,7 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess;
+            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
             QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
             coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);

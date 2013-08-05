@@ -3187,7 +3187,7 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         codeStream << "}\n\n";
         //codeStream << "#endif // "+typeName.toUpper()+"_HPP_INCLUDED\n";
 
-        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
         pCoreAccess->generateFromCpp(code, false);
         delete(pCoreAccess);
         QDir libDir = QDir();

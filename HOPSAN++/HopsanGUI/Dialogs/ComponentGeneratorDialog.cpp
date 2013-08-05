@@ -448,7 +448,7 @@ void ComponentGeneratorDialog::closeTab(int i)
 void ComponentGeneratorDialog::tabChanged()
 {
     QTextDocument *doc = qobject_cast<QTextDocument *>(sender());
-    QPlainTextEdit *textEdit;
+    QPlainTextEdit *textEdit=0;
 
     for(int t=0; t<mEquationTextFieldPtrs.size(); ++t)
     {
@@ -483,7 +483,7 @@ void ComponentGeneratorDialog::generateComponent()
         if(code.endsWith("end "+name+";"))
         {
             //It is (probably) a Modelica model, try and compile it
-            CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+            CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
             QString libPath = gDesktopHandler.getGeneratedComponentsPath()+name+"/";
             pCoreAccess->generateFromModelica(code, libPath);
             delete(pCoreAccess);
@@ -512,7 +512,7 @@ void ComponentGeneratorDialog::generateComponent()
 
         qDebug() << "C++";
 
-        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
         pCoreAccess->generateFromCpp(code);
         delete(pCoreAccess);
 

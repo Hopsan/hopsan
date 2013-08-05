@@ -866,7 +866,7 @@ void SystemContainer::exportToLabView()
     QFileInfo file(filePath);
     gConfig.setLabViewExportDir(file.absolutePath());
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
     pCoreAccess->generateToLabViewSIT(filePath, this);
     delete(pCoreAccess);
 }
@@ -919,7 +919,7 @@ void SystemContainer::exportToFMU(QString savePath)
     //Save model to hmf in export directory
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
     pCoreAccess->generateToFmu(savePath, this);
     delete(pCoreAccess);
 
@@ -1455,13 +1455,13 @@ void SystemContainer::exportToSimulink()
     {
         compiler=2;
     }
-    else if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())
+    else/* if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())*/
     {
         compiler=3;
     }
 
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
     pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked(), compiler);
     delete(pCoreAccess);
 
@@ -1572,7 +1572,7 @@ void SystemContainer::exportToSimulinkCoSim()
     }
 
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
     pCoreAccess->generateToSimulinkCoSim(savePath, this, pDisablePortLabels->isChecked(), compiler);
     delete(pCoreAccess);
 

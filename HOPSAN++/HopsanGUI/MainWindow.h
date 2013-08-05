@@ -52,11 +52,13 @@ class TerminalWidget;
 class UndoWidget;
 class HVCWidget;
 class ModelHandler;
+class MainWindowLineEdit;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    friend class MainWindowLineEdit;
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -140,7 +142,6 @@ public:
     QAction *mpToggleNamesAction;
     QAction *mpTogglePortsAction;
     QAction *mpToggleSignalsAction;
-    QAction *mpShowPortsAction;
     QAction *mpExportGfxAction;
     QAction *mpPrintAction;
     QAction *mpExportPDFAction;
@@ -220,9 +221,9 @@ private:
     ComponentGeneratorDialog *mpComponentGeneratorDialog;
 
     //Simulation setup line edits
-    QLineEdit *mpStartTimeLineEdit;
-    QLineEdit *mpTimeStepLineEdit;
-    QLineEdit *mpStopTimeLineEdit;
+    MainWindowLineEdit *mpStartTimeLineEdit;
+    MainWindowLineEdit *mpTimeStepLineEdit;
+    MainWindowLineEdit *mpStopTimeLineEdit;
 
     //Dock area widgets
     QDockWidget *mpMessageDock;
@@ -273,10 +274,26 @@ private:
     QGroupBox *mpHelpPopupGroupBox;
     QHBoxLayout *mpHelpPopupGroupBoxLayout;
     QTimer *mpHelpPopupTimer;
+    QMap<QAction*, QString> mHelpPopupTextMap;
 
     //Auto update
     QNetworkReply *mpDownloadStatus;
     QProgressDialog *mpDownloadDialog;
+};
+
+
+class MainWindowLineEdit : public QLineEdit
+{
+    Q_OBJECT
+
+public:
+    MainWindowLineEdit(const QString &text, MainWindow *parent);
+
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *e);
+
+private:
+    MainWindow *mpParentMainWindow;
 };
 
 #endif // MAINWINDOW_H
