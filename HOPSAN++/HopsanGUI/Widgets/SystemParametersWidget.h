@@ -89,9 +89,9 @@ public:
 public slots:
     void update();
     void update(ContainerObject* pNewContainer);
+    void openAddParameterDialog();
 
 protected slots:
-    void openAddParameterDialog();
     bool addParameter();
     void addParameterAndCloseDialog();
     void removeSelected();

@@ -639,8 +639,20 @@ void VariableTableWidget::selectSystemParameterAtRow(int row)
         actionParamMap.insert(tempAction, paramDataVector[i].mName);
     }
 
+    if(!menu.isEmpty())
+    {
+        menu.addSeparator();
+    }
+    QAction *pAddAction = menu.addAction("Add System Parameter");
+
+
     QCursor cursor;
     QAction *selectedAction = menu.exec(cursor.pos());
+    if(selectedAction == pAddAction)
+    {
+        gpMainWindow->mpSystemParametersWidget->openAddParameterDialog();
+        return;
+    }
     QString parNameString = actionParamMap.value(selectedAction);
     if(!parNameString.isEmpty())
     {
