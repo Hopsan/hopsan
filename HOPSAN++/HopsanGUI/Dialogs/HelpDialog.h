@@ -28,14 +28,12 @@
 #include <QWebView>
 #include <QDialog>
 
-class MainWindow;
-
 class HelpDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    HelpDialog(MainWindow *parent = 0);
+    HelpDialog(QWidget *parent = 0);
 
 public slots:
     void open();

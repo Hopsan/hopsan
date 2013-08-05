@@ -22,12 +22,18 @@
 //!
 //$Id$
 
+//Qt includes
 #include <QWebView>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QAction>
 
-#include "MainWindow.h"
-#include "HelpDialog.h"
+//Hopsan includes
 #include "common.h"
 #include "DesktopHandler.h"
+#include "HelpDialog.h"
 
 //! @class HelpDialog
 //! @brief A class for displaying the "Help" dialog
@@ -37,10 +43,10 @@
 
 //! Constructor for the help dialog
 //! @param parent Pointer to the main window
-HelpDialog::HelpDialog(MainWindow *parent)
+HelpDialog::HelpDialog(QWidget *parent)
     : QDialog(parent)
 {
-    this->setWindowIcon(gpMainWindow->windowIcon());
+    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setObjectName("HelpDialog");
     this->setWindowTitle("Hopsan User Guide");
     this->setMinimumSize(640, 480);
@@ -48,8 +54,19 @@ HelpDialog::HelpDialog(MainWindow *parent)
 
     mpHelp = new QWebView(this);
 
+    QAction *pBackAction = mpHelp->pageAction(QWebPage::Back);
+    pBackAction->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-StepLeft.png")));
+    QAction *pForwardAction = mpHelp->pageAction(QWebPage::Forward);
+    pForwardAction->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-StepRight.png")));
+
+    QToolBar *pToolBar = new QToolBar(this);
+    pToolBar->addAction(pBackAction);
+    pToolBar->addAction(pForwardAction);
+
     QVBoxLayout *pLayout = new QVBoxLayout(this);
+    pLayout->addWidget(pToolBar);
     pLayout->addWidget(mpHelp);
+    pLayout->setStretch(1,1);
     this->setLayout(pLayout);
 
     //! @todo Set size depending one screen size
