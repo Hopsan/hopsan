@@ -102,6 +102,8 @@ public:
     QString getFmuExportDir();
     QString getLabViewExportDir();
 
+    int getParallelAlgorithm();
+
     void setLibraryStyle(int value);
     void setAlwaysLoadLastSession(bool value);
     void setShowPopupHelp(bool value);
@@ -144,6 +146,8 @@ public:
     void setFmuImportDir(QString value);
     void setFmuExportDir(QString value);
     void setLabViewExportDir(QString value);
+
+    void setParallelAlgorithm(int value);
 
 private:
     void loadUserSettings(QDomElement &rDomElement);
@@ -197,6 +201,8 @@ private:
     QString mFmuImportDir;
     QString mFmuExportDir;
     QString mLabViewExportDir;
+
+    int mParallelAlgorighm;
 
     QMap < ConnectorStyleEnumT, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

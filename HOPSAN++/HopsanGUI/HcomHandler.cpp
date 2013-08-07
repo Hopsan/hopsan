@@ -1202,6 +1202,17 @@ void HcomHandler::executeSetCommand(const QString cmd)
         }
         gConfig.setNumberOfThreads(nThreads);
     }
+    else if(pref == "algorithm")
+    {
+        bool ok;
+        int algorithm = value.toInt(&ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Unknown value.","",false);
+            return;
+        }
+        gConfig.setParallelAlgorithm(algorithm);
+    }
     else if(pref == "cachetodisk")
     {
         if(value != "on" && value != "off")

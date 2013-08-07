@@ -81,7 +81,6 @@ public:
     TerminalConsole(TerminalWidget *pParent=0);
     void printFirstInfo();
     HcomHandler *getHandler();
-    QString getOutput();
 
     void printCoreMessages();
     void printFatalMessage(QString message);

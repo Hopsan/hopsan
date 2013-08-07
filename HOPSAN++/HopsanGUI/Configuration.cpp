@@ -317,6 +317,9 @@ void Configuration::loadDefaultsFromXml()
     }
     file.close();
 
+    //Internal settings, not stored in xml (change later)
+    mParallelAlgorighm = 0;
+
     return;
 }
 
@@ -1003,6 +1006,11 @@ QString Configuration::getLabViewExportDir()
     return mLabViewExportDir;
 }
 
+int Configuration::getParallelAlgorithm()
+{
+    return mParallelAlgorighm;
+}
+
 
 //! @brief Set function for library style option
 //! @param value Desired setting
@@ -1334,4 +1342,9 @@ void Configuration::setFmuExportDir(QString value)
 void Configuration::setLabViewExportDir(QString value)
 {
     mLabViewExportDir = value;
+}
+
+void Configuration::setParallelAlgorithm(int value)
+{
+    mParallelAlgorighm = value;
 }

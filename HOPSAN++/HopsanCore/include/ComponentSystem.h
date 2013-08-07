@@ -33,6 +33,8 @@ namespace tbb {
 
 namespace hopsan {
 
+    enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm};
+
     class ConnectionAssistant
     {
     public:
@@ -105,8 +107,8 @@ namespace hopsan {
         bool initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem);
         bool initializeSystem(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
 
-        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false);
-        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
+        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
+        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
 
         void finalizeSystem(ComponentSystem* pSystem);
         void finalizeSystem(std::vector<ComponentSystem*> &rSystemVector);
@@ -196,7 +198,7 @@ namespace hopsan {
         virtual bool preInitialize();
         bool initialize(const double startT, const double stopT);
         void simulate(const double stopT);
-        void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
+        void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, const bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
         void finalize();
 
         bool simulateAndMeasureTime(const size_t nSteps);

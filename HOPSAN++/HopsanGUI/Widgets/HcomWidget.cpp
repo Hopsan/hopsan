@@ -236,12 +236,6 @@ HcomHandler *TerminalConsole::getHandler()
     return mpParent->mpHandler;
 }
 
-QString TerminalConsole::getOutput()
-{
-
-}
-
-
 //! @brief Obtains messages from core and prints them in the message widget
 void TerminalConsole::printCoreMessages()
 {

@@ -257,8 +257,8 @@ private:
 
     // Parameter registration
     //! @todo clean this up /Peter
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int dummy);
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int dummy);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
 

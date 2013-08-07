@@ -26,6 +26,7 @@
 #include <QDebug>
 #include <QDir>
 #include "GUIObjects/GUISystem.h"
+#include "Configuration.h"
 
 //HopsanCore includes
 #include "HopsanCore.h"
@@ -295,7 +296,8 @@ bool CoreSimulationHandler::initialize(const double startTime, const double stop
 
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
 {
-    return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
+    hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gConfig.getParallelAlgorithm());
+    return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged, algorithm);
 }
 
 void CoreSimulationHandler::runCoSimulation(CoreSystemAccess* pCoreSystemAccess)
@@ -310,7 +312,8 @@ bool CoreSimulationHandler::simulate(const double startTime, const double stopTi
     {
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
+    hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gConfig.getParallelAlgorithm());
+    return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged, algorithm);
 }
 
 void CoreSimulationHandler::finalize(CoreSystemAccess* pCoreSystemAccess)
@@ -675,7 +678,8 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, int nThre
     if(nThreads >= 0)
     {
         qDebug() << "Starting multicore simulation";
-        mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads, modelHasNotChanged);
+        hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gConfig.getParallelAlgorithm());
+        mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads, modelHasNotChanged, algorithm);
         qDebug() << "Finished multicore simulation";
         //mpCoreComponentSystem->simulateMultiThreadedOld(mStartTime, mFinishTime);
     }

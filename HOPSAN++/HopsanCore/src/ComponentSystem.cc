@@ -73,7 +73,7 @@ bool SimulationHandler::initializeSystem(const double startT, const double stopT
     return isOk;
 }
 
-bool SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges)
+bool SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges, ParallelAlgorithmT algorithm)
 {
     if (nDesiredThreads < 0)
     {
@@ -81,13 +81,13 @@ bool SimulationHandler::simulateSystem(const double startT, const double stopT, 
     }
     else
     {
-        pSystem->simulateMultiThreaded(startT, stopT, nDesiredThreads, noChanges);
+        pSystem->simulateMultiThreaded(startT, stopT, nDesiredThreads, noChanges, algorithm);
     }
 
     return !pSystem->wasSimulationAborted();
 }
 
-bool SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges)
+bool SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges, ParallelAlgorithmT algorithm)
 {
     if (rSystemVector.size() > 1)
     {
@@ -102,7 +102,7 @@ bool SimulationHandler::simulateSystem(const double startT, const double stopT, 
     }
     else if (rSystemVector.size() == 1)
     {
-        return simulateSystem(startT, stopT, nDesiredThreads, rSystemVector[0], noChanges);
+        return simulateSystem(startT, stopT, nDesiredThreads, rSystemVector[0], noChanges, algorithm);
     }
 
     return false;
@@ -2723,7 +2723,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
 //#endif
 //}
 
-void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges)
+void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges, const ParallelAlgorithmT algorithm)
 {
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
 
@@ -2766,70 +2766,66 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     simTasks = new tbb::task_group;
 
     //Execute simulation
-#define BARRIER_SYNC
-#ifdef BARRIER_SYNC
-    mvTimePtrs.push_back(&mTime);
-    BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
-    BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
-    BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
-    BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
-
-    simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-                                mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, nSteps, nThreads, 0,
-                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-
-    for(size_t t=1; t < nThreads; ++t)
+    if(algorithm == OfflineSchedulingAlgorithm)
     {
-        simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-                                   mSplitNodeVector[t], mTime, mTimestep, nSteps, nThreads, t,
-                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+        mvTimePtrs.push_back(&mTime);
+        BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
+        BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
+        BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
+        BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
+
+        simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
+                                    mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, nSteps, nThreads, 0,
+                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+
+        for(size_t t=1; t < nThreads; ++t)
+        {
+            simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
+                                       mSplitNodeVector[t], mTime, mTimestep, nSteps, nThreads, t,
+                                       pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+        }
+
+        simTasks->wait();                                           //Wait for all tasks to finish
+
+        delete(simTasks);                                           //Clean up
+        delete(pBarrierLock_S);
+        delete(pBarrierLock_C);
+        delete(pBarrierLock_Q);
+        delete(pBarrierLock_N);
     }
-
-    simTasks->wait();                                           //Wait for all tasks to finish
-
-    delete(simTasks);                                           //Clean up
-    delete(pBarrierLock_S);
-    delete(pBarrierLock_C);
-    delete(pBarrierLock_Q);
-    delete(pBarrierLock_N);
-#else
-    vector<Component*> tempVector;
-    for(int i=mComponentSignalptrs.size()-1; i>-1; --i)
+    else if(algorithm == TaskPoolAlgorithm)
     {
-        tempVector.push_back(mComponentSignalptrs[i]);
+        TaskPool *pTaskPoolS = new TaskPool(mComponentSignalptrs);
+        TaskPool *pTaskPoolC = new TaskPool(mComponentCptrs);
+        TaskPool *pTaskPoolQ = new TaskPool(mComponentQptrs);
+
+        tbb::task_group *masterTasks;
+        tbb::task_group *slaveTasks;
+        masterTasks = new tbb::task_group;
+        slaveTasks = new tbb::task_group;
+
+        tbb::atomic<double> *pTime = new tbb::atomic<double>;
+        *pTime = mTime;
+        tbb::atomic<bool> *pStop = new tbb::atomic<bool>;
+        *pTime = false;
+
+        masterTasks->run(taskSimPoolMaster(pTaskPoolS, pTaskPoolC, pTaskPoolQ, mTimestep, nSteps, this, &mTime, pTime, pStop));
+
+        for(size_t t=1; t < nThreads; ++t)
+        {
+            slaveTasks->run(taskSimPoolSlave(pTaskPoolC, pTaskPoolQ, pTime, pStop));
+        }
+
+        masterTasks->wait();                                           //Wait for all tasks to finish
+        slaveTasks->cancel();
+
+        delete(masterTasks);                                       //Clean up
+        delete(slaveTasks);
+        delete(pTaskPoolS);
+        delete(pTaskPoolC);
+        delete(pTaskPoolQ);
+        delete(pStop);
     }
-    mComponentSignalptrs = tempVector;
-    tempVector.clear();
-    for(int i=mComponentCptrs.size()-1; i>-1; --i)
-    {
-        tempVector.push_back(mComponentCptrs[i]);
-    }
-    mComponentCptrs = tempVector;
-    tempVector.clear();
-    for(int i=mComponentQptrs.size()-1; i>-1; --i)
-    {
-        tempVector.push_back(mComponentQptrs[i]);
-    }
-    mComponentQptrs = tempVector;
-
-    cout << "Creating task pools!" << endl;
-
-    TaskPool<Component> *sPool = new TaskPool<Component>(mComponentSignalptrs, nThreads);
-    TaskPool<Component> *qPool = new TaskPool<Component>(mComponentQptrs, nThreads);
-    TaskPool<Component> *cPool = new TaskPool<Component>(mComponentCptrs, nThreads);
-    TaskPool<Node> *nPool = new TaskPool<Node>(mSubNodePtrs, nThreads);
-
-    cout << "Starting task threads!";
-   // assert("Starting task threads"==0);
-
-    for(size_t t=0; t < nThreads; ++t)
-    {
-        simTasks->run(taskSimPool(sPool, qPool, cPool, nPool, mTime, mTimestep, nSteps, t, this));
-    }
-    simTasks->wait();                                           //Wait for all tasks to finish
-
-    delete(simTasks);                                           //Clean up
-#endif
 }
 
 

@@ -454,7 +454,7 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 //! @todo remove the dummy argument once the public deprecated version of this function is removed
 //! @todo Using a reference is not that clear, we should use a ptr instead
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int dummy)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int /*dummy*/)
 {
     // We allow the : exception for registring start value parameters
     if (!isNameValid(rName, "#"))
@@ -471,7 +471,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", &rValue);
 }
 
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int dummy)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int /*dummy*/)
 {
     if (!isNameValid(rName))
     {

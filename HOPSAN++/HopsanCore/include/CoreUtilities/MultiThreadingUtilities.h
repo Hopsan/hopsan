@@ -24,74 +24,6 @@ using namespace hopsan;
 
 size_t determineActualNumberOfThreads(const size_t nDesiredThreads);
 
-
-template <class T>
-class TaskPool
-{
-public:
-    TaskPool(std::vector<T*> data, int nThreads)
-    {
-        mData = data;
-        mStartIdx=mData.size()-1;
-        std::vector<T*> tempData;
-        for(size_t i=0; i<mData.size(); ++i)
-        {
-            tempData.push_back(mData[i]);
-            tempData.push_back(0);
-            tempData.push_back(0);
-            tempData.push_back(0);
-        }
-        mData = tempData;
-        mnThreads=nThreads;
-        reset();
-//#ifdef USETBB
-//        mpGetMutex = new tbb::mutex();
-//#else
-//        mpGetMutex = 0;
-//#endif
-    }
-
-    inline void reset()
-    {
-        mIdx = mStartIdx;
-    }
-
-
-    inline bool isFinished()
-    {
-        return mIdx <= -mnThreads;
-    }
-
-
-    inline int getAndDecrementIndex()
-    {
-#ifdef USETBB
-        return mIdx.fetch_and_store(mIdx-1);
-#else
-        return mIdx--;
-#endif
-    }
-
-
-    inline T* getDataPtr(int idx)
-    {
-        return mData[idx*4];
-    }
-
-private:
-    int mStartIdx;
-    std::vector<T*> mData;
-    //tbb::mutex *mpGetMutex;
-#ifdef USETBB
-    tbb::atomic<int> mIdx;
-#else
-    int mIdx;
-#endif
-    int mnThreads;
-};
-
-
-
 //! @brief Class for barrier locks in multi-threaded simulations.
 class BarrierLock
 {
@@ -154,100 +86,6 @@ private:
     double mTime;
 };
 
-
-
-
-//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
-class taskSimPool
-{
-public:
-    taskSimPool(TaskPool<Component> *sPool, TaskPool<Component> *qPool, TaskPool<Component> *cPool, TaskPool<Node> *nPool,
-                double startTime, double timeStep, size_t numSimSteps, int threadId, ComponentSystem* pSystem)
-    {
-        mTime = startTime;
-        mNumSimSteps = numSimSteps;
-        mTimeStep = timeStep;
-        msPool = sPool;
-        mqPool = qPool;
-        mcPool = cPool;
-        mnPool = nPool;
-        mThreadId = threadId;
-        mpSystem = pSystem;
-    }
-
-    void operator() ()
-    {
-        for(size_t i=0; i<mNumSimSteps; ++i)
-        {
-            int idx;
-
-            mTime += mTimeStep;
-
-            //! Signal Components !//
-
-            idx = msPool->getAndDecrementIndex();
-            while(idx>=0)
-            {
-                Component *pComponent = msPool->getDataPtr(idx);
-                pComponent->simulate(mTime);
-                idx = msPool->getAndDecrementIndex();
-            }
-            while(!msPool->isFinished()) {}
-            if(mThreadId == 0) { mnPool->reset(); }
-
-            //! C Components !//
-
-            idx = mcPool->getAndDecrementIndex();
-            while(idx>=0)
-            {
-                Component *pComponent = mcPool->getDataPtr(idx);
-                pComponent->simulate(mTime);
-                idx = mcPool->getAndDecrementIndex();
-            }
-            while(!mcPool->isFinished()) {}
-            if(mThreadId == 0) { mqPool->reset(); }
-
-            idx = mnPool->getAndDecrementIndex();
-            while(idx>=0)
-            {
-                idx = mnPool->getAndDecrementIndex();
-            }
-            while(!mnPool->isFinished()) {}
-            if(mThreadId == 0) { msPool->reset(); }
-
-            //! Q Components !//
-
-            idx = mqPool->getAndDecrementIndex();
-            while(idx>=0)
-            {
-                Component *pComponent = mqPool->getDataPtr(idx);
-                pComponent->simulate(mTime);
-                idx = mqPool->getAndDecrementIndex();
-            }
-
-            //! Log Nodes !//
-
-            if(mThreadId == 0)      //Hack because of Peters log data changes, must be fixed
-            {
-                mpSystem->logTimeAndNodes(i);
-            }
-
-            while(!mqPool->isFinished()) {}
-            if(mThreadId == 0) { mcPool->reset(); }
-
-        }
-    }
-private:
-    size_t mNumSimSteps;
-    double mTimeStep;
-    double mTime;
-    TaskPool<Component> *msPool;
-    TaskPool<Component> *mqPool;
-    TaskPool<Component> *mcPool;
-    TaskPool<Node> *mnPool;
-    int mThreadId;
-    ComponentSystem *mpSystem;
-};
 
 
 
@@ -509,6 +347,326 @@ public:
 private:
     vector<ComponentSystem *> mSystemPtrs;
     double mStopTime;
+};
+
+
+
+
+
+
+
+
+////////////////////////////////////////
+//// Component-Threads Implementation //
+////////////////////////////////////////
+
+////! @brief Class for simulating whole systems multi threaded
+//class taskSimComponentC
+//{
+//public:
+
+//    //! @brief Constructor for master simulation thead class.
+//    //! @param pSystem Pointer to the system to simulate
+//    taskSimComponentC(Component* pComp, vector<taskSimComponent *> neighbourPtrs, size_t stopIteration, bool *pStart, double timeStep)
+//    {
+//        mpComp = pComp;
+//        mIsCtype = (pComp->getTypeCQSString() == "C");
+//        mNeighbourPtrs = neighbourPtrs;
+//        mStopIteration = stopIteration;
+//        mpStart = pStart;
+//        mTimeStep = timeStep;
+//        mnNeighbours = mNodePtrs.size();
+//    }
+
+//    //! @brief Executable code for master simulation thread
+//    void operator() ()
+//    {
+//        while(!pStart) {}
+
+//        double time=0;
+
+//        for(iteration=0; mIter<mStopIteration; ++mIter)
+//        {
+//            while(!checkNeighbours()) {}
+
+//            time += mTimeStep;
+//            mpComp->simulate(time);
+//        }
+//    }
+
+//    size_t mIter;
+
+//private:
+//    bool checkNeighbours()
+//    {
+//        for(size_t n=0; n<mnNeighbours; ++n)
+//        {
+//            if(mNeighbourPtrs[n]->mIter != this->mIter)
+//                return false;
+//        }
+//        return true;
+//    }
+
+//    Component *mpComp;
+//    vector<taskSimComponent *> mNeighbourPtrs;
+//    size_t mStopIteration;
+//    bool *mpStart;
+//    double mTimeStep;
+//    size_t mnNeighbours;
+//    bool mIsCtype;
+//    bool mIsStype;
+//};
+
+
+
+////! @brief Class for simulating whole systems multi threaded
+//class taskSimNode
+//{
+//public:
+
+//    //! @brief Constructor for master simulation thead class.
+//    //! @param pSystem Pointer to the system to simulate
+//    taskSimComponent(vector<ComponentSystem *> systemPtrs, double stopTime)
+//    {
+//        mSystemPtrs = systemPtrs;
+//        mStopTime = stopTime;
+//    }
+
+//    //! @brief Executable code for master simulation thread
+//    void operator() ()
+//    {
+//        for(size_t i=0; i<mSystemPtrs.size(); ++i)
+//        {
+//            mSystemPtrs[i]->simulate(mStopTime);
+//        }
+//    }
+//private:
+//    vector<ComponentSystem *> mSystemPtrs;
+//    double mStopTime;
+//};
+
+
+
+
+//////////////////////////////
+// Task Pool Implementation //
+//////////////////////////////
+
+
+class TaskPool
+{
+public:
+    TaskPool(std::vector<Component*> componentPtrs)
+    {
+        mComponentPtrs = componentPtrs;
+        mSize = componentPtrs.size();
+        mCurrentIdx = 0;
+        mnDone = 0;
+    }
+
+    Component *getComponent()
+    {
+        size_t idx = mCurrentIdx++;
+
+        if(idx < mSize)
+            return mComponentPtrs[idx];
+        else
+            return 0;
+    }
+
+    void reportDone()
+    {
+        ++mnDone;
+    }
+
+    bool isReady()
+    {
+        return mnDone == mSize;
+    }
+
+    void open()
+    {
+        mCurrentIdx = 0;
+        mnDone = 0;
+        mOpen=true;
+    }
+
+    void close()
+    {
+        mOpen=false;
+    }
+
+    bool isOpen()
+    {
+        return mOpen;
+    }
+
+private:
+    std::vector<Component*> mComponentPtrs;
+    size_t mSize;
+#ifdef USETBB
+    tbb::atomic<size_t> mCurrentIdx;
+    tbb::atomic<size_t> mnDone;
+    tbb::atomic<bool> mOpen;
+#else
+    int mCurrentIdx;
+    size_t mnDone;
+    bool mOpen;
+#endif
+};
+
+
+//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+class taskSimPoolSlave
+{
+public:
+#ifdef USETBB
+    taskSimPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
+#else
+    taskSimPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, double *pTime, bool *pStop)
+#endif
+    {
+        mpTaskPoolC = pTaskPoolC;
+        mpTaskPoolQ = pTaskPoolQ;
+        mpStop = pStop;
+        mpTime = pTime;
+    }
+
+    void operator() ()
+    {
+        Component *pComp;
+        while(!(*mpStop))
+        //for(size_t i=0; i<mnSteps && !(*mpStop); ++i)
+        {
+            //C-pool
+            if(mpTaskPoolC->isOpen())
+            {
+                pComp = mpTaskPoolC->getComponent();
+                while(pComp)
+                {
+                    pComp->simulate(*mpTime);
+                    mpTaskPoolC->reportDone();
+                    pComp = mpTaskPoolC->getComponent();
+                }
+                while(mpTaskPoolC->isOpen()) {}
+            }
+
+            //Q-pool
+            if(mpTaskPoolQ->isOpen())
+            {
+                pComp = mpTaskPoolQ->getComponent();
+                while(pComp)
+                {
+                    pComp->simulate(*mpTime);
+                    mpTaskPoolQ->reportDone();
+                    pComp = mpTaskPoolQ->getComponent();
+                }
+                while(mpTaskPoolQ->isOpen()) {}
+            }
+        }
+    }
+
+private:
+    TaskPool *mpTaskPoolC;
+    TaskPool *mpTaskPoolQ;
+#ifdef USETBB
+    tbb::atomic<bool> *mpStop;
+    tbb::atomic<double> *mpTime;
+#else
+    bool *mpStop;
+    double *mpTime;
+#endif
+};
+
+
+//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+class taskSimPoolMaster
+{
+public:
+#ifdef USETBB
+    taskSimPoolMaster(TaskPool *pTaskPoolS, TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, double timeStep,
+                      size_t nSteps, ComponentSystem *pSystem, double *pSystemTime, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
+#else
+    taskSimPoolMaster(TaskPool *pTaskPoolS, TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, double startTime, double timeStep,
+                      size_t nSteps, ComponentSystem *pSystem, double *pSystemTime, double *pTime, bool *pStop)
+#endif
+    {
+        mpTaskPoolS = pTaskPoolS;
+        mpTaskPoolC = pTaskPoolC;
+        mpTaskPoolQ = pTaskPoolQ;
+        mTimeStep = timeStep;
+        mnSteps = nSteps;
+        mpSystem = pSystem;
+        mpSystemTime = pSystemTime;
+        mpStop = pStop;
+        mpTime = pTime;
+    }
+
+    void operator() ()
+    {
+        Component* pComp;
+        for(size_t i=0; i<mnSteps; ++i)
+        {
+            (*mpTime) = (*mpTime)+mTimeStep;
+
+            //S-pool
+            mpTaskPoolS->open();
+            pComp = mpTaskPoolS->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*mpTime);
+                mpTaskPoolS->reportDone();
+                pComp = mpTaskPoolS->getComponent();
+            }
+            while(!mpTaskPoolS->isReady()) {}
+            mpTaskPoolS->close();
+
+            //C-pool
+            mpTaskPoolC->open();
+            pComp = mpTaskPoolC->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*mpTime);
+                mpTaskPoolC->reportDone();
+                pComp = mpTaskPoolC->getComponent();
+            }
+            while(!mpTaskPoolC->isReady()) {}
+            mpTaskPoolC->close();
+
+            //Q-pool
+            mpTaskPoolQ->open();
+            pComp = mpTaskPoolQ->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*mpTime);
+                mpTaskPoolQ->reportDone();
+                pComp = mpTaskPoolQ->getComponent();
+            }
+            while(!mpTaskPoolQ->isReady()) {}
+            mpTaskPoolQ->close();
+
+            *mpSystemTime = *mpTime;                  //Update time in component system
+            mpSystem->logTimeAndNodes(i+1);            //Log all nodes
+        }
+
+        *mpStop=true;
+    }
+private:
+    TaskPool *mpTaskPoolS;
+    TaskPool *mpTaskPoolC;
+    TaskPool *mpTaskPoolQ;
+    double mTime;
+    double mTimeStep;
+    size_t mnSteps;
+    ComponentSystem *mpSystem;
+    double *mpSystemTime;
+#ifdef USETBB
+    tbb::atomic<bool> *mpStop;
+    tbb::atomic<double> *mpTime;
+#else
+    bool *mpStop;
+    double *mpTime;
+#endif
 };
 
 

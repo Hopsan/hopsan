@@ -529,6 +529,7 @@ void WelcomeWidget::checkVersion(bool)
     //Verify that the loaded page is the correct one, otherwise do not show it
     if(mpWeb->page()->currentFrame()->metaData().contains("type", "hopsanngnews"))
     {
+#ifndef DEVELOPMENT
         QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
         webVersionString.remove('.');
         double webVersion = webVersionString.toDouble();
@@ -536,11 +537,10 @@ void WelcomeWidget::checkVersion(bool)
         thisVersionString.remove('.');
         double thisVersion = thisVersionString.toDouble();
         webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
-#ifndef DEVELOPMENT
         mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
         mpNewVersionButton->setVisible(webVersion>thisVersion);
-#endif
         mpUpdateLink = mpWeb->page()->currentFrame()->metaData().find("hopsanupdatelink").value();
+#endif
     }
 }
 
