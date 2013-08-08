@@ -446,7 +446,7 @@ private:
 //};
 
 
-
+#ifdef USETBB
 
 //////////////////////////////
 // Task Pool Implementation //
@@ -504,15 +504,9 @@ public:
 private:
     std::vector<Component*> mComponentPtrs;
     size_t mSize;
-#ifdef USETBB
     tbb::atomic<size_t> mCurrentIdx;
     tbb::atomic<size_t> mnDone;
     tbb::atomic<bool> mOpen;
-#else
-    int mCurrentIdx;
-    size_t mnDone;
-    bool mOpen;
-#endif
 };
 
 
@@ -520,11 +514,7 @@ private:
 class taskSimPoolSlave
 {
 public:
-#ifdef USETBB
     taskSimPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
-#else
-    taskSimPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, double *pTime, bool *pStop)
-#endif
     {
         mpTaskPoolC = pTaskPoolC;
         mpTaskPoolQ = pTaskPoolQ;
@@ -569,13 +559,8 @@ public:
 private:
     TaskPool *mpTaskPoolC;
     TaskPool *mpTaskPoolQ;
-#ifdef USETBB
     tbb::atomic<bool> *mpStop;
     tbb::atomic<double> *mpTime;
-#else
-    bool *mpStop;
-    double *mpTime;
-#endif
 };
 
 
@@ -583,13 +568,9 @@ private:
 class taskSimPoolMaster
 {
 public:
-#ifdef USETBB
     taskSimPoolMaster(TaskPool *pTaskPoolS, TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, double timeStep,
                       size_t nSteps, ComponentSystem *pSystem, double *pSystemTime, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
-#else
-    taskSimPoolMaster(TaskPool *pTaskPoolS, TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, double startTime, double timeStep,
-                      size_t nSteps, ComponentSystem *pSystem, double *pSystemTime, double *pTime, bool *pStop)
-#endif
+
     {
         mpTaskPoolS = pTaskPoolS;
         mpTaskPoolC = pTaskPoolC;
@@ -660,14 +641,375 @@ private:
     size_t mnSteps;
     ComponentSystem *mpSystem;
     double *mpSystemTime;
-#ifdef USETBB
     tbb::atomic<bool> *mpStop;
     tbb::atomic<double> *mpTime;
-#else
-    bool *mpStop;
-    double *mpTime;
-#endif
 };
 
+
+/////////////////////////////
+// Task-stealing algorithm //
+/////////////////////////////
+
+class ThreadSafeVector
+{
+public:
+    ThreadSafeVector(std::vector<Component*> data, size_t maxSize)
+    {
+        mVector.resize(maxSize);
+        for(size_t i=0; i<data.size(); ++i)
+        {
+            mVector[i] = data[i];
+        }
+        firstIdx=0;
+        lastIdx=max(size_t(1), data.size())-1;
+        mpMutex = new tbb::mutex();
+    }
+
+
+    Component *tryAndTakeFirst()
+    {
+        Component *ret;
+        mpMutex->lock();
+        if(firstIdx != lastIdx)
+        {
+            ret = mVector[firstIdx];
+            mVector[firstIdx++] = 0;
+        }
+        else
+        {
+            ret = mVector[firstIdx];
+            mVector[firstIdx] = 0;
+        }
+        mpMutex->unlock();
+        return ret;
+    }
+
+    Component *tryAndTakeLast()
+    {
+        Component *ret;
+        mpMutex->lock();
+        if(lastIdx != firstIdx)
+        {
+            ret = mVector[lastIdx];
+            mVector[lastIdx--] = 0;
+        }
+        else
+        {
+            ret = mVector[lastIdx];
+            mVector[lastIdx] = 0;
+
+        }
+        mpMutex->unlock();
+        return ret;
+    }
+
+    void insert(Component* comp)
+    {
+        mpMutex->lock();
+        if(firstIdx > 0)
+        {
+            mVector[--firstIdx] = comp;
+        }
+        else
+        {
+            mVector[++lastIdx] = comp;
+        }
+        mpMutex->unlock();
+    }
+
+private:
+    std::vector<Component*> mVector;
+    size_t firstIdx, lastIdx;
+    tbb::mutex *mpMutex;
+};
+
+
+
+//! @brief Class for master simulation thread, that is responsible for syncronizing the simulation
+class taskSimStealingMaster
+{
+public:
+    taskSimStealingMaster(ComponentSystem *pSystem, vector<Component*> sVector, std::vector<ThreadSafeVector*> *cVectors, std::vector<ThreadSafeVector*> *qVectors,
+                          vector<double *> pSimTimes, double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
+                          BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N, size_t maxSize)
+    {
+        mpSystem = pSystem;
+        mVectorS = sVector;
+        mpUnFinishedVectorsC = cVectors;
+        mpUnFinishedVectorsQ = qVectors;
+        mpFinishedVectorC = new ThreadSafeVector(std::vector<Component*>(), maxSize);
+        mpFinishedVectorQ = new ThreadSafeVector(std::vector<Component*>(), maxSize);
+        mpSimTimes = pSimTimes;
+        mTime = startTime;
+        mNumSimSteps = numSimSteps;
+        mTimeStep = timeStep;
+        mnThreads = nThreads;
+        mThreadID = threadID;
+        mpBarrier_S = pBarrier_S;
+        mpBarrier_C = pBarrier_C;
+        mpBarrier_Q = pBarrier_Q;
+        mpBarrier_N = pBarrier_N;
+    }
+
+    //! @brief Executable code for master simulation thread
+    void operator() ()
+    {
+        ThreadSafeVector *pTemp;
+        Component *pComp;
+
+        for(size_t s=0; s<mNumSimSteps; ++s)
+        {
+            if(mpSystem->wasSimulationAborted()) break;
+
+            mTime += mTimeStep;
+
+            //! Signal Components !//
+
+            while(!mpBarrier_S->allArrived()) {}
+            mpBarrier_C->lock();
+            mpBarrier_S->unlock();
+
+            //Simulate signal components
+            for(size_t i=0; i<mVectorS.size(); ++i)
+            {
+                mVectorS[i]->simulate(mTime);
+            }
+
+            //! C Components !//
+
+            while(!mpBarrier_C->allArrived()) {}    //C barrier
+            mpBarrier_Q->lock();
+            mpBarrier_C->unlock();
+
+            //SIMULATE C
+
+            //Switch Q vectors
+            pTemp = mpUnFinishedVectorsQ->at(mThreadID);
+            mpUnFinishedVectorsQ->at(mThreadID) = mpFinishedVectorQ;
+            mpFinishedVectorQ = pTemp;
+
+            //Simulate own components
+            pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
+            while(pComp)
+            {
+                pComp->simulate(mTime);
+                mpFinishedVectorC->insert(pComp);
+                pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
+            }
+
+            //Steal components
+            for(size_t i=0; i<mnThreads; ++i)
+            {
+                if(i == mThreadID) continue;
+                pComp = mpUnFinishedVectorsC->at(i)->tryAndTakeLast();
+                while(pComp)
+                {
+                    pComp->simulate(mTime);
+                    mpFinishedVectorC->insert(pComp);
+                    pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeLast();
+                }
+            }
+
+            //! Q Components !//
+
+            while(!mpBarrier_Q->allArrived()) {}    //Q barrier
+            mpBarrier_N->lock();
+            mpBarrier_Q->unlock();
+
+            //SIMULATE Q
+
+            //Switch C vectors
+            pTemp = mpUnFinishedVectorsC->at(mThreadID);
+            mpUnFinishedVectorsC->at(mThreadID) = mpFinishedVectorC;
+            mpFinishedVectorC = pTemp;
+
+            //Simulate own components
+            pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
+            while(pComp)
+            {
+                pComp->simulate(mTime);
+                mpFinishedVectorQ->insert(pComp);
+                pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
+            }
+
+            //Steal components
+            for(size_t i=0; i<mnThreads; ++i)
+            {
+                if(i == mThreadID) continue;
+                pComp = mpUnFinishedVectorsQ->at(i)->tryAndTakeLast();
+                while(pComp)
+                {
+                    pComp->simulate(mTime);
+                    mpFinishedVectorQ->insert(pComp);
+                    pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeLast();
+                }
+            }
+
+            for(size_t i=0; i<mpSimTimes.size(); ++i)
+                *mpSimTimes[i] = mTime;
+
+            //! Log Nodes !//
+
+            while(!mpBarrier_N->allArrived()) {}    //N barrier
+            mpBarrier_S->lock();
+            mpBarrier_N->unlock();
+
+            mpSystem->logTimeAndNodes(s+1);
+
+        }
+    }
+private:
+    ComponentSystem *mpSystem;
+    vector<Component*> mVectorS;
+    ThreadSafeVector *mpFinishedVectorC;
+    ThreadSafeVector *mpFinishedVectorQ;
+    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsC;
+    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsQ;
+    vector<Node*> mVectorN;
+    size_t mNumSimSteps;
+    double mTimeStep;
+    double mTime;
+    vector<double *> mpSimTimes;
+    size_t mnThreads;
+    size_t mThreadID;
+    BarrierLock *mpBarrier_S;
+    BarrierLock *mpBarrier_C;
+    BarrierLock *mpBarrier_Q;
+    BarrierLock *mpBarrier_N;
+};
+
+
+
+class taskSimStealingSlave
+{
+public:
+    taskSimStealingSlave(ComponentSystem *pSystem, std::vector<ThreadSafeVector*> *cVectors, std::vector<ThreadSafeVector*> *qVectors,
+                         double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
+                         BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N, size_t maxSize)
+    {
+        mpSystem = pSystem;
+        mpUnFinishedVectorsC = cVectors;
+        mpUnFinishedVectorsQ = qVectors;
+        mpFinishedVectorC = new ThreadSafeVector(std::vector<Component*>(), maxSize);
+        mpFinishedVectorQ = new ThreadSafeVector(std::vector<Component*>(), maxSize);
+        mTime = startTime;
+        mNumSimSteps = numSimSteps;
+        mTimeStep = timeStep;
+        mnThreads = nThreads;
+        mThreadID = threadID;
+        mpBarrier_S = pBarrier_S;
+        mpBarrier_C = pBarrier_C;
+        mpBarrier_Q = pBarrier_Q;
+        mpBarrier_N = pBarrier_N;
+    }
+
+    void operator() ()
+    {
+        ThreadSafeVector *pTemp;
+        Component *pComp;
+
+        for(size_t i=0; i<mNumSimSteps; ++i)
+        {
+            if(mpSystem->wasSimulationAborted()) break;
+
+            mTime += mTimeStep;
+
+            //! Signal Components !//
+
+            mpBarrier_S->increment();
+            while(mpBarrier_S->isLocked()){}                         //Wait at S barrier
+
+            //! C Components !//
+
+            mpBarrier_C->increment();
+            while(mpBarrier_C->isLocked()){}                         //Wait at C barrier
+
+            //C-COMPONENTS
+
+            //Switch Q vectors
+            pTemp = mpUnFinishedVectorsQ->at(mThreadID);
+            mpUnFinishedVectorsQ->at(mThreadID) = mpFinishedVectorQ;
+            mpFinishedVectorQ = pTemp;
+
+            //Simulate own components
+            pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
+            while(pComp)
+            {
+                pComp->simulate(mTime);
+                mpFinishedVectorC->insert(pComp);
+                pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
+            }
+
+            //Steal components
+            for(size_t i=0; i<mnThreads; ++i)
+            {
+                if(i == mThreadID) continue;
+                pComp = mpUnFinishedVectorsC->at(i)->tryAndTakeLast();
+                while(pComp)
+                {
+                    pComp->simulate(mTime);
+                    mpFinishedVectorC->insert(pComp);
+                    pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeLast();
+                }
+            }
+
+            //! Q Components !//
+
+            mpBarrier_Q->increment();
+            while(mpBarrier_Q->isLocked()){}                         //Wait at Q barrier
+
+            //Q-COMPONENTS
+
+            //Switch C vectors
+            pTemp = mpUnFinishedVectorsC->at(mThreadID);
+            mpUnFinishedVectorsC->at(mThreadID) = mpFinishedVectorC;
+            mpFinishedVectorC = pTemp;
+
+            //Simulate own components
+            pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
+            while(pComp)
+            {
+                pComp->simulate(mTime);
+                mpFinishedVectorQ->insert(pComp);
+                pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
+            }
+
+            //Steal components
+            for(size_t i=0; i<mnThreads; ++i)
+            {
+                if(i == mThreadID) continue;
+                pComp = mpUnFinishedVectorsQ->at(i)->tryAndTakeLast();
+                while(pComp)
+                {
+                    pComp->simulate(mTime);
+                    mpFinishedVectorQ->insert(pComp);
+                    pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeLast();
+                }
+            }
+
+            //! Log Nodes !//
+
+            mpBarrier_N->increment();
+            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
+        }
+    }
+private:
+    ComponentSystem *mpSystem;
+    ThreadSafeVector *mpFinishedVectorC;
+    ThreadSafeVector *mpFinishedVectorQ;
+    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsC;
+    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsQ;
+    size_t mNumSimSteps;
+    double mTimeStep;
+    double mTime;
+    size_t mThreadID;
+    size_t mnThreads;
+    BarrierLock *mpBarrier_S;
+    BarrierLock *mpBarrier_C;
+    BarrierLock *mpBarrier_Q;
+    BarrierLock *mpBarrier_N;
+};
+
+#endif // USETBB
 
 #endif // MULTITHREADINGUTILITIES_H

@@ -2734,7 +2734,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         mSplitSignalVector.clear();
         mSplitNodeVector.clear();
 
-        simulateAndMeasureTime(100);                                  //Measure time
+        simulateAndMeasureTime(100);                                //Measure time
         sortComponentVectorsByMeasuredTime();                       //Sort component vectors
 
         for(size_t q=0; q<mComponentQptrs.size(); ++q)
@@ -2768,6 +2768,8 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     //Execute simulation
     if(algorithm == OfflineSchedulingAlgorithm)
     {
+        addInfoMessage("Using offline scheduling algorithm.");
+
         mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
         BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
@@ -2795,6 +2797,8 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     else if(algorithm == TaskPoolAlgorithm)
     {
+        addInfoMessage("Using task pool algorithm.");
+
         TaskPool *pTaskPoolS = new TaskPool(mComponentSignalptrs);
         TaskPool *pTaskPoolC = new TaskPool(mComponentCptrs);
         TaskPool *pTaskPoolQ = new TaskPool(mComponentQptrs);
@@ -2825,6 +2829,50 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         delete(pTaskPoolC);
         delete(pTaskPoolQ);
         delete(pStop);
+    }
+    else if(algorithm == WorkStealingAlgorithm)
+    {
+        addInfoMessage("Using work stealing algorithm.");
+
+        mvTimePtrs.push_back(&mTime);
+        BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
+        BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
+        BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
+        BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
+
+        size_t maxSize = mComponentCptrs.size()+mComponentQptrs.size()+mComponentSignalptrs.size();
+
+        std::vector<ThreadSafeVector *> *pVectorsC = new std::vector<ThreadSafeVector *>();
+        for(size_t i=0; i<mSplitCVector.size(); ++i)
+        {
+            pVectorsC->push_back(new ThreadSafeVector(mSplitCVector[i], maxSize));
+        }
+
+        std::vector<ThreadSafeVector *> *pVectorsQ = new std::vector<ThreadSafeVector *>();
+        for(size_t i=0; i<mSplitQVector.size(); ++i)
+        {
+            pVectorsQ->push_back(new ThreadSafeVector(mSplitQVector[i], maxSize));
+        }
+
+        simTasks->run(taskSimStealingMaster(this, mComponentSignalptrs, pVectorsC, pVectorsQ,                          //Create master thread
+                                            mvTimePtrs, mTime, mTimestep, nSteps, nThreads, 0,
+                                            pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N, maxSize));
+
+        for(size_t t=1; t < nThreads; ++t)
+        {
+            simTasks->run(taskSimStealingSlave(this, pVectorsC, pVectorsQ, mTime, mTimestep, nSteps, nThreads, t,       //Create slave threads
+                                               pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N, maxSize));
+        }
+
+        simTasks->wait();                                           //Wait for all tasks to finish
+
+        delete(simTasks);                                           //Clean up
+        delete(pBarrierLock_S);
+        delete(pBarrierLock_C);
+        delete(pBarrierLock_Q);
+        delete(pBarrierLock_N);
+        delete(pVectorsC);
+        delete(pVectorsQ);
     }
 }
 
