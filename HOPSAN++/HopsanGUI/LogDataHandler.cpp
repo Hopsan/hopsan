@@ -204,7 +204,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
     {
 
         rImportFilePath = QFileDialog::getOpenFileName(0,tr("Choose Hopsan .plo File"),
-                                                       gConfig.getModelicaModelsDir(),
+                                                       gConfig.getPlotDataDir(),
                                                        tr("Hopsan File (*.plo)"));
     }
     if(rImportFilePath.isEmpty())
@@ -214,7 +214,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
 
     QFile file(rImportFilePath);
     QFileInfo fileInfo(file);
-    gConfig.setModelicaModelsDir(fileInfo.absolutePath());      //! @todo Why is Modelica dir used for PLO files???
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -354,7 +354,7 @@ void LogDataHandler::importFromCsv(QString rImportFilePath)
     {
 
         rImportFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gConfig.getModelicaModelsDir(),
+                                                       gConfig.getPlotDataDir(),
                                                        tr("Comma-separated values files (*.csv)"));
     }
     if(rImportFilePath.isEmpty())
@@ -364,7 +364,7 @@ void LogDataHandler::importFromCsv(QString rImportFilePath)
 
     QFile file(rImportFilePath);
     QFileInfo fileInfo(file);
-    gConfig.setModelicaModelsDir(fileInfo.absolutePath());      //! @todo Why is Modelica dir used for CSV files???
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
 
     CoreCSVParserAccess *pParser = new CoreCSVParserAccess(rImportFilePath);
 
@@ -484,6 +484,18 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
 bool LogDataHandler::isEmpty()
 {
     return mLogDataMap.isEmpty();
+}
+
+void LogDataHandler::clear()
+{
+    // Remove old generation in each data variable container
+    mLogDataMap.clear();
+
+    // Clear from generations cache object map
+    mGenerationCacheMap.clear();
+
+    //Update generation number
+    mGenerationNumber = -1;
 }
 
 

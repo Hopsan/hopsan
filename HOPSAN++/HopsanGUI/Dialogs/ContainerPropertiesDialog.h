@@ -111,6 +111,7 @@ private slots:
     void browseUser();
     void browseIso();
     void browseScript();
+    void clearLogData();
 };
 
 #endif // CONTAINERPROPERTIESDIALOG_H

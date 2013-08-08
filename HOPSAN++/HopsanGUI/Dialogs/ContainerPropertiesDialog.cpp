@@ -232,6 +232,11 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpSettingsLayout->addWidget(mpNSamplesLabel, 6, 0);
         mpSettingsLayout->addWidget(mpNSamplesEdit, 6, 1);
 
+        QPushButton *pClearLogDataButton = new QPushButton("Clear All Log Data", this);
+        pClearLogDataButton->setEnabled(!mpContainerObject->getLogDataHandler()->isEmpty());
+        connect(pClearLogDataButton, SIGNAL(clicked()), this, SLOT(clearLogData()));
+        mpSettingsLayout->addWidget(pClearLogDataButton, 7,0);
+
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
 
         // System Parameters Group Box
@@ -494,5 +499,19 @@ void ContainerPropertiesDialog::browseScript()
     if (!scriptFileName.isEmpty())
     {
         mpPyScriptPath->setText(scriptFileName);
+    }
+}
+
+void ContainerPropertiesDialog::clearLogData()
+{
+    QMessageBox existWarningBox(QMessageBox::Warning, "Warning","ALL log data in current model will be cleared. Continue?", 0, 0);
+    existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
+    existWarningBox.addButton("No", QMessageBox::RejectRole);
+    existWarningBox.setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+    bool doIt = (existWarningBox.exec() == QMessageBox::AcceptRole);
+
+    if(doIt)
+    {
+        mpContainerObject->getLogDataHandler()->clear();
     }
 }

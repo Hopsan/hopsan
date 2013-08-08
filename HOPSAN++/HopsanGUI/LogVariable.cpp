@@ -987,6 +987,8 @@ void LogVariableContainer::removeAllGenerations()
     {
         removeDataGeneration(gens[it]);
     }
+
+    mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
 }
 
 LogVariableContainer::LogVariableContainer(const VariableDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()

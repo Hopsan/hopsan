@@ -65,6 +65,7 @@ public:
     bool deleteVariable(const QString &a);
 
     bool isEmpty();
+    void clear();
 
     const SharedLogVariableDataPtrT getTimeVectorPtr(int generation) const;
     QVector<double> getTimeVectorCopy(int generation) const;
