@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[      7816,        214]
+NotebookDataLength[      7813,        214]
 NotebookOptionsPosition[      6936,        183]
-NotebookOutlinePosition[      7356,        199]
-CellTagsIndexPosition[      7313,        196]
+NotebookOutlinePosition[      7353,        199]
+CellTagsIndexPosition[      7310,        196]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -181,8 +181,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{967, 674},
-WindowMargins->{{103, Automatic}, {Automatic, 22}},
+WindowSize->{967, 573},
+WindowMargins->{{0, Automatic}, {0, Automatic}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
   CharacterEncoding -> "WindowsANSI"]
