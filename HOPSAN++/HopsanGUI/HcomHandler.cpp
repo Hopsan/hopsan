@@ -256,6 +256,14 @@ void HcomHandler::createCommands()
     saplCmd.group = "Plot Commands";
     mCmdList << saplCmd;
 
+    HcomCommand replCmd;
+    replCmd.cmd = "repl";
+    replCmd.description.append("Loads plot files from .CSV or .PLO");
+    replCmd.help.append("Usage: repl [filepath]");
+    replCmd.fnc = &HcomHandler::executeLoadVariableCommand;
+    replCmd.group = "Plot Commands";
+    mCmdList << replCmd;
+
     HcomCommand loadCmd;
     loadCmd.cmd = "load";
     loadCmd.description.append("Loads a model file");
@@ -428,6 +436,13 @@ void HcomHandler::createCommands()
     lp1Cmd.fnc = &HcomHandler::executeLp1Command;
     lp1Cmd.group = "Variable Commands";
     mCmdList << lp1Cmd;
+
+    HcomCommand semtCmd;
+    semtCmd.cmd = "semt";
+    semtCmd.description.append("Applies low-pass filter of first degree to vector");
+    semtCmd.help.append("Usage: semt [on/off threads algorithm]");
+    semtCmd.fnc = &HcomHandler::executeSetMultiThreadingCommand;
+    mCmdList << semtCmd;
 }
 
 void HcomHandler::generateCommandsHelpText()
@@ -1363,6 +1378,48 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->exportToPlo(path, allVariables);
 }
 
+void HcomHandler::executeLoadVariableCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    QString filePath = getArgument(cmd,0);
+
+    QFile file(filePath);
+    if(!file.exists())
+    {
+        mpConsole->printErrorMessage("File not found!", "", false);
+        return;
+    }
+
+    bool csv;
+    if(filePath.endsWith(".csv") || filePath.endsWith(".CSV"))
+    {
+        csv=true;
+    }
+    else if(filePath.endsWith(".plo") || filePath.endsWith(".PLO"))
+    {
+        csv=false;
+    }
+    else
+    {
+        mpConsole->printWarningMessage("Unknown file extension, assuming that it is a PLO file.");
+        csv=false;
+    }
+
+    if(csv)
+    {
+        gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->importFromCsv(filePath);
+    }
+    else
+    {
+        gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->importFromPlo(filePath);
+    }
+}
+
 
 //! @brief Execute function for "load" command
 void HcomHandler::executeLoadModelCommand(const QString cmd)
@@ -2107,6 +2164,60 @@ void HcomHandler::executeEditCommand(const QString cmd)
 void HcomHandler::executeLp1Command(const QString /*cmd*/)
 {
 
+}
+
+
+void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
+{
+    QStringList args = getArguments(cmd);
+    int nArgs = args.size();
+    if(nArgs < 2 || nArgs > 3)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    bool useMultiThreading;
+    if(args[0] == "on")
+    {
+        useMultiThreading=true;
+    }
+    else if(args[0] == "off")
+    {
+        useMultiThreading=false;
+    }
+    else
+    {
+        mpConsole->printErrorMessage("Unknown argument, use \"on\" or \"off\"");
+        return;
+    }
+
+    bool ok;
+    int nThreads;
+    if(nArgs > 1)
+    {
+        nThreads = args[1].toInt(&ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Unknown data type. Only int is supported for argument 2.");
+            return;
+        }
+    }
+
+    int algorithm=0;
+    if(nArgs > 2)
+    {
+        algorithm = args[2].toInt(&ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Unknown data type. Only int is supported for argument 3.");
+            return;
+        }
+    }
+
+    gConfig.setUseMultiCore(useMultiThreading);
+    if(nArgs > 1) gConfig.setNumberOfThreads(nThreads);
+    if(nArgs > 2) gConfig.setParallelAlgorithm(algorithm);
 }
 
 

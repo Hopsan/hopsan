@@ -101,6 +101,7 @@ private:
     void executeDefineAliasCommand(const QString cmd);
     void executeSetCommand(const QString cmd);
     void executeSaveToPloCommand(const QString cmd);
+    void executeLoadVariableCommand(const QString cmd);
     void executeLoadModelCommand(const QString cmd);
     void executeLoadRecentCommand(const QString cmd);
     void executeRenameComponentCommand(const QString cmd);
@@ -123,6 +124,7 @@ private:
     void executeEchoCommand(const QString cmd);
     void executeEditCommand(const QString cmd);
     void executeLp1Command(const QString cmd);
+    void executeSetMultiThreadingCommand(const QString cmd);
 
     //Help functions
     void createCommands();

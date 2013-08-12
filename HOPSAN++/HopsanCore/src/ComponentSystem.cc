@@ -3304,7 +3304,7 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
         //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
 //! @brief Simulate function that overrides multi-threaded simulation call with a single-threaded call
 //! In case multi-threaded support is not available
-void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/, ParallelAlgorithmT /*algorithm*/)
+void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/, ParallelAlgorithmT /*algorithm*/)
 {
     this->addErrorMessage("Multi-threaded simulation not available, TBB library is not present.");
     this->simulate(stopT);

@@ -572,6 +572,8 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     printMessage("Extracting HopsanCore source code...");
 
     //Copy HopsanCore files to export directory
+    qDebug() << "TARGET DIR: " << fileInfo.absoluteDir().path();
+
     if(!this->copyIncludeFilesToDir(fileInfo.absoluteDir().path()))
         return;
     if(!this->copySourceFilesToDir(fileInfo.absoluteDir().path()))
@@ -606,7 +608,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(componentsSourceCodeFile.exists())
     {
         QDir zipDir;
-        zipDir = QDir::cleanPath(mExecPath + "../ThirdParty/7z");
+        zipDir = QDir::cleanPath(mBinPath + "../ThirdParty/7z");
     #ifdef WIN32
         QStringList arguments;
         arguments << "x" << componentsSourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path() << "-aoa" << "-phopsanhejsan";

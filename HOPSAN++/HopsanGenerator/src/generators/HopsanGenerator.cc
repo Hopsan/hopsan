@@ -69,8 +69,6 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
     mCoreIncludePath = coreIncludePath;
     mBinPath = binPath;
 
-    mExecPath = qApp->applicationDirPath().append('/');
-
     mShowDialog = showDialog;
 
     if(mShowDialog)
@@ -576,13 +574,6 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 }
 
 
-void HopsanGenerator::setExecPath(const QString path)
-{
-    mExecPath = path;
-    printMessage("Setting exeuctable path: " + path);
-}
-
-
 void HopsanGenerator::setOutputPath(const QString path)
 {
     mOutputPath = path;
@@ -712,7 +703,7 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
     //Make sure HopsanCore include files are available
     QStringList includeFiles = getHopsanCoreIncludeFiles(skipDependencies);
 
-    if(!assertFilesExist(mExecPath, includeFiles))
+    if(!assertFilesExist(mBinPath, includeFiles))
         return false;
 
     QDir saveDir;
@@ -727,7 +718,7 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
 
     Q_FOREACH(const QString &file, includeFiles)
     {
-        if(!copyFile(mExecPath+file, path+file.right(file.size()-3))) return false;
+        if(!copyFile(mBinPath+file, path+file.right(file.size()-3))) return false;
         QFile::setPermissions(path+file.right(file.size()-3), QFile::WriteOther);
     }
 
@@ -746,7 +737,7 @@ bool HopsanGenerator::copySourceFilesToDir(QString path) const
 
     //Make sure HopsanCore source files are available
     QStringList srcFiles = getHopsanCoreSourceFiles();
-    if(!assertFilesExist(mExecPath, srcFiles))
+    if(!assertFilesExist(mBinPath, srcFiles))
         return false;
 
     QDir saveDir;
@@ -758,7 +749,7 @@ bool HopsanGenerator::copySourceFilesToDir(QString path) const
 
     Q_FOREACH(const QString &file, srcFiles)
     {
-        if(!copyFile(mExecPath+file, path+file.right(file.size()-3))) return false;
+        if(!copyFile(mBinPath+file, path+file.right(file.size()-3))) return false;
         QFile::setPermissions(path+file.right(file.size()-3), QFile::WriteOther);
     }
 
@@ -780,7 +771,7 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
     saveDir.cd("componentLibraries");
     saveDir.cd("defaultLibrary");
 
-    copyDir( QString(mExecPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
+    copyDir( QString(mBinPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
 
     QStringList allFiles;
     findAllFilesInFolderAndSubFolders(saveDir.path(),"hpp",allFiles);

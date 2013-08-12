@@ -32,10 +32,10 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     fmuFileInfo.setFile(path);
 
     QDir zipDir;
-    zipDir = QDir::cleanPath(mExecPath + "../ThirdParty/7z");
+    zipDir = QDir::cleanPath(mBinPath + "../ThirdParty/7z");
 
     QDir gccDir;
-    gccDir = QDir::cleanPath(mExecPath + "../ThirdParty/mingw32/bin");
+    gccDir = QDir::cleanPath(mBinPath + "../ThirdParty/mingw32/bin");
 
     QString fmuName = fmuFileInfo.fileName();
     fmuName.chop(4);
@@ -124,16 +124,16 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
         hmfFile.setFileName(fmuDir.path() + "/" + hmfList.at(i));
         if(hmfFile.exists())
         {
-            QFile().remove(mExecPath+hmfList.at(i));
-            if(QFile().exists(mExecPath+hmfList.at(i)))
+            QFile().remove(mBinPath+hmfList.at(i));
+            if(QFile().exists(mBinPath+hmfList.at(i)))
             {
                 printErrorMessage("Unable to copy "+hmfFile.fileName()+" to /bin directory: File already exists.");
                 return;
             }
-            hmfFile.copy(mExecPath + hmfList.at(i));
+            hmfFile.copy(mBinPath + hmfList.at(i));
             hmfFile.remove();
-            hmfFile.setFileName(mExecPath + hmfList.at(i));
-            printMessage("Copying " + hmfFile.fileName() + " to " + mExecPath + hmfList.at(i)+"...");
+            hmfFile.setFileName(mBinPath + hmfList.at(i));
+            printMessage("Copying " + hmfFile.fileName() + " to " + mBinPath + hmfList.at(i)+"...");
         }
     }
     fmuDir.setFilter(QDir::NoFilter);
@@ -645,9 +645,9 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     //Move FMI source files to compile directory
 
 #ifdef WIN32
-    QString fmiSrcPath = mExecPath + "../ThirdParty/fmi/";
+    QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/";
 #elif linux
-    QString fmiSrcPath = mExecPath + "../ThirdParty/fmi/linux/";
+    QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/linux/";
 #endif
 
     if(!copyFile(fmiSrcPath+"sim_support.c", fmuDir.path()+"/sim_support.c")) return;
@@ -1048,13 +1048,13 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     printMessage("Copying FMI files...");
 
-    QFile fmuModelFunctionsHFile(mExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
+    QFile fmuModelFunctionsHFile(mBinPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
     fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
-    QFile fmiModelTypesHFile(mExecPath + "/../ThirdParty/fmi/fmiModelTypes.h");
+    QFile fmiModelTypesHFile(mBinPath + "/../ThirdParty/fmi/fmiModelTypes.h");
     fmiModelTypesHFile.copy(savePath + "/fmiModelTypes.h");
-    QFile fmiTemplateCFile(mExecPath + "/../ThirdParty/fmi/fmuTemplate.c");
+    QFile fmiTemplateCFile(mBinPath + "/../ThirdParty/fmi/fmuTemplate.c");
     fmiTemplateCFile.copy(savePath + "/fmuTemplate.c");
-    QFile fmiTemplateHFile(mExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
+    QFile fmiTemplateHFile(mBinPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
     if(!assertFilesExist(savePath, QStringList() << "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h"))
@@ -1177,7 +1177,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     printMessage("Compressing files...");
 
 #ifdef WIN32
-    QString program = mExecPath + "../ThirdParty/7z/7z";
+    QString program = mBinPath + "../ThirdParty/7z/7z";
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
 #elif linux && __i386__
