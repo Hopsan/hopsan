@@ -809,6 +809,12 @@ void PlotTab::removeCurve(PlotCurve *curve)
         resetXTimeVector();
     }
 
+    // Reset zoom if last curve was removed (makes no sense to keep it zoomed in)
+    if(mPlotCurvePtrs[plotID].isEmpty())
+    {
+        resetZoom();
+    }
+
     rescaleAxesToCurves();
     updateLabels();
     update();
