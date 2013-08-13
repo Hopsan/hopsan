@@ -1092,6 +1092,7 @@ void PlotCurve::openScaleDialog()
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
     setTimePlotScalingAndOffset(mpTimeScaleComboBox->currentText().split(" ")[0].toDouble(), mpTimeOffsetSpinBox->value());
+    mpParentPlotTab->mpQwtPlots[FirstPlot]->setAxisTitle(QwtPlot::xBottom, "Time ["+mpTimeScaleComboBox->currentText().split(" ")[1].remove("(").remove(")")+"] ");     //!< @todo Not so nice fix... /Robert
 }
 
 void PlotCurve::updateValuePlotScaleFromDialog()
