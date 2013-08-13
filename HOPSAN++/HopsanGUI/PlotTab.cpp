@@ -1903,6 +1903,7 @@ void PlotTab::update()
             PlotCurve *pCurve = mMarkerPtrs[plotID].at(i)->getCurve();
             mMarkerPtrs[plotID].at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
             mMarkerPtrs[plotID].at(i)->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
+            mMarkerPtrs[plotID].at(i)->refreshLabel(pCurve->sample(pCurve->closestPoint(pos)).x(), mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
             //!< @todo label text will be wrong if curve data has changed
             //!< @todo label text will be wrong if plot sclae or offset change
         }
