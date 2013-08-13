@@ -279,6 +279,11 @@ bool SysParamTableModel::hasParameter(const QString name)
     }
 }
 
+void SysParamTableModel::sortByColumn(int c)
+{
+    this->sort(c);
+}
+
 void SysParamTableModel::setContainer(ContainerObject *pContainerObject)
 {
     mpContainerObject = pContainerObject;
@@ -347,13 +352,18 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
 
     pGridLayout->setContentsMargins(4,4,4,4);
 
-    SysParamTableModel *pModel = new SysParamTableModel(mpContainerObject, this);
-    mpSysParamTableView->setModel(pModel);
+    mpModel = new SysParamTableModel(mpContainerObject, this);
+
+    mpProxyModel = new QSortFilterProxyModel(this);
+    mpProxyModel->setSourceModel(mpModel);
+    mpSysParamTableView->setModel(mpProxyModel);
+    mpSysParamTableView->setSortingEnabled(true);
 
     update();
 
     connect(mpAddButton, SIGNAL(clicked()), this, SLOT(openAddParameterDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeSelected()));
+    //connect(mpSysParamTableView->horizontalHeader(), SIGNAL(sectionClicked(int)), mpProxyModel, SLOT(sortByColumn(int)));
 }
 
 void SystemParametersWidget::update(ContainerObject *pNewContainer)
@@ -376,7 +386,7 @@ void SystemParametersWidget::update(ContainerObject *pNewContainer)
 void SystemParametersWidget::update()
 {
     // Set container will refresh the internal parameter data and emit layoutChanged to the view
-    qobject_cast<SysParamTableModel*>(mpSysParamTableView->model())->setContainer(mpContainerObject);
+    mpModel->setContainer(mpContainerObject);
 
     if (mpContainerObject)
     {
@@ -451,8 +461,7 @@ void SystemParametersWidget::openAddParameterDialog()
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 bool SystemParametersWidget::addParameter()
 {
-    SysParamTableModel* pModel = qobject_cast<SysParamTableModel*>(mpSysParamTableView->model());
-    if (pModel->hasParameter(mpNameBox->text()))
+    if (mpModel->hasParameter(mpNameBox->text()))
     {
         //! @todo maybe we should warn about overwriting instead
         QMessageBox::critical(0, "Hopsan GUI",
@@ -462,7 +471,7 @@ bool SystemParametersWidget::addParameter()
     else
     {
         CoreParameterData data(mpNameBox->text(), mpValueBox->text(), mpTypeBox->currentText());
-        if (pModel->addOrSetParameter(data))
+        if (mpModel->addOrSetParameter(data))
         {
             return true;
         }

@@ -72,6 +72,9 @@ public:
     bool addOrSetParameter(CoreParameterData &rParameterData);
     bool hasParameter(const QString name);
 
+public slots:
+    void sortByColumn(int c);
+
 protected:
     void removeParameter(const int row);
 
@@ -99,6 +102,8 @@ protected slots:
 private:
     ContainerObject *mpContainerObject;
     QTableView *mpSysParamTableView;
+    QSortFilterProxyModel *mpProxyModel;
+    SysParamTableModel *mpModel;
 
     QDialog *mpAddParameterDialog;
     QLineEdit *mpNameBox;
