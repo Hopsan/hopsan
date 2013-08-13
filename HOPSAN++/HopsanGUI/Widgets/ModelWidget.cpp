@@ -521,7 +521,7 @@ void ModelWidget::setEditingEnabled(bool value)
 void ModelWidget::collectPlotData()
 {
     //If we collect plot data, we can plot and calculate losses, so enable these buttons
-    gpMainWindow->mpPlotAction->setEnabled(true);
+    //gpMainWindow->mpPlotAction->setEnabled(true);
     gpMainWindow->mpShowLossesAction->setEnabled(true);
    // gpMainWindow->mpAnimateAction->setEnabled(true);
 

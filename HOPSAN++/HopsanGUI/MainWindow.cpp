@@ -403,8 +403,8 @@ void MainWindow::initializeWorkspace()
 //! @brief Opens the plot widget.
 void MainWindow::openPlotWidget()
 {
-    if(mpModelHandler->count() != 0)
-    {
+//    if(mpModelHandler->count() != 0)
+//    {
         if(!mpPlotWidgetDock->isVisible())
         {
             mpPlotWidgetDock->setWidget(mpPlotWidget);
@@ -419,7 +419,7 @@ void MainWindow::openPlotWidget()
             mpPlotWidgetDock->hide();
             mpPlotAction->setChecked(false);
         }
-    }
+//    }
 }
 
 

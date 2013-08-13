@@ -347,7 +347,10 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, pLocalPlotWidgetDock);
     pLocalPlotWidgetDock->setWidget(pLocalPlotWidget);
-    pLocalPlotWidget->mpPlotVariableTree->setLogDataHandler(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
+    if(gpMainWindow->mpModelHandler->count() != 0)
+    {
+        pLocalPlotWidget->mpPlotVariableTree->setLogDataHandler(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
+    }
 
     pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
     pLocalPlotWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowVariableList.png"));

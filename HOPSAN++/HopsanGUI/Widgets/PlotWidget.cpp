@@ -527,22 +527,37 @@ PlotTreeWidget::PlotTreeWidget(QWidget *pParent)
 
     this->setMouseTracking(true);
 
+    mpNewWindowButton = new QPushButton(tr("&Open New Plot Window"), this);
+    mpNewWindowButton->setAutoDefault(false);
+    mpNewWindowButton->setFixedHeight(30);
+    QFont tempFont = mpNewWindowButton->font();
+    tempFont.setBold(true);
+    mpNewWindowButton->setFont(tempFont);
+
     mpLoadButton = new QPushButton(tr("&Load Plot Window from XML"), this);
     mpLoadButton->setAutoDefault(false);
     mpLoadButton->setFixedHeight(30);
-    QFont tempFont = mpLoadButton->font();
+    tempFont = mpLoadButton->font();
     tempFont.setBold(true);
     mpLoadButton->setFont(tempFont);
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpPlotVariableTree,0,0,1,1);
-    mpLayout->addWidget(mpLoadButton, 1, 0, 1, 1);
+    mpLayout->addWidget(mpNewWindowButton, 1, 0, 1, 1);
+    mpLayout->addWidget(mpLoadButton, 2, 0, 1, 1);
     mpLayout->setContentsMargins(4,4,4,4);
 
+    connect(mpNewWindowButton, SIGNAL(clicked()), this, SLOT(openNewPlotWindow()));
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
-    mpLoadButton->setDisabled(true); //!< @todo Fix /Peter
+    mpLoadButton->setHidden(true);      //!< @todo Fix /Peter
+    //mpLoadButton->setDisabled(true);
 
     connect(gpMainWindow->mpLibrary, SIGNAL(hovered()), this, SLOT(clearHoverEffects()));
+}
+
+void PlotTreeWidget::openNewPlotWindow()
+{
+    gpPlotHandler->createPlotWindow();
 }
 
 

@@ -2316,7 +2316,7 @@ void ContainerObject::updateMainWindowButtons()
     gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
 
-    gpMainWindow->mpPlotAction->setDisabled(mpLogDataHandler->isEmpty());
+    //gpMainWindow->mpPlotAction->setDisabled(mpLogDataHandler->isEmpty());
     gpMainWindow->mpShowLossesAction->setDisabled(mpLogDataHandler->isEmpty());
     //gpMainWindow->mpAnimateAction->setDisabled(mpNewPlotData->isEmpty());
 }

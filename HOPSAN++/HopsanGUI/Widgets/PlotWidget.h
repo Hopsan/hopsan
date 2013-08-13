@@ -88,6 +88,7 @@ public:
     PlotVariableTree *mpPlotVariableTree;
 
 public slots:
+    void openNewPlotWindow();
     void loadFromXml();
     void clearHoverEffects();
 
@@ -95,6 +96,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
 
 private:
+    QPushButton *mpNewWindowButton;
     QPushButton *mpLoadButton;
     QGridLayout *mpLayout;
 };
