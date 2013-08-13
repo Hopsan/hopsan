@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5565" hopsancoreversion="0.6.x_r5557">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5667" hopsancoreversion="0.6.x_r5640">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_HopsanBrake</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_HopsanEngine</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaGearBox</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaVehicle</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaWheel</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
     <email>robert.braun@liu.se</email>
     <affiliation>Linköping University</affiliation>
-    <description>This example model demonstrates a distributed model of an in-line axial piston machine. As the swash-plate rotates, the pistons will move back and forth. At the same time the swash plate alternate between opening to the low and high pressure sides. Efficiencies are calculated in sub-systems.&#xd;&#xd;
+    <description>This example model demonstrates a distributed model of an in-line axial piston machine. As the swash-plate rotates, the pistons will move back and forth. At the same time the swash plate alternate between opening to the low and high pressure sides. Efficiencies are calculated in sub-systems.&#xd;&#xd;&#xd;
 This model also works well with the animation feature.</description>
   </info>
   <system logsamples="10000" typename="Subsystem" name="In_Line_Axial_Piston_Machine">
@@ -42,7 +37,7 @@ This model also works well with the animation feature.</description>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="1000"/>
-      <viewport x="2523.15" y="2538.22" zoom="0.59727"/>
+      <viewport x="2589.5" y="2468.5" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -77,21 +72,21 @@ This model also works well with the animation feature.</description>
     <objects>
       <component typename="HydraulicVolume" name="Hydraulic_Volume_1">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="1e6" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P2::Flow"/>
-          <parameter unit="Pa" value="1e6" type="double" name="P2::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P2::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P2::HeatFlow"/>
-          <parameter unit="-" value="0.3" type="double" name="alpha::Value"/>
-          <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
-          <parameter unit="[Pa]" value="1e+09" type="double" name="Beta_e"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="1e6" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
+          <parameter unit="Pa" value="1e6" type="double" name="P2#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
+          <parameter unit="-" value="0.3" type="double" name="alpha#Value"/>
+          <parameter unit="m^3" value="0.001" type="double" name="V"/>
+          <parameter unit="Pa" value="1e+09" type="double" name="Beta_e"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -115,21 +110,21 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicVolume" name="Hydraulic_Volume_2">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="1e6" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P2::Flow"/>
-          <parameter unit="Pa" value="1e6" type="double" name="P2::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P2::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P2::HeatFlow"/>
-          <parameter unit="-" value="0.3" type="double" name="alpha::Value"/>
-          <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
-          <parameter unit="[Pa]" value="1e+09" type="double" name="Beta_e"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="1e6" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
+          <parameter unit="Pa" value="1e6" type="double" name="P2#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
+          <parameter unit="-" value="0.3" type="double" name="alpha#Value"/>
+          <parameter unit="m^3" value="0.001" type="double" name="V"/>
+          <parameter unit="Pa" value="1e+09" type="double" name="Beta_e"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -153,12 +148,12 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="MechanicTorqueSensor" name="Torque_Transducer">
         <parameters>
-          <parameter unit="rad/s" value="0" type="double" name="P1::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="P1::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="P1::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="P1::EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="P1#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="P1#EquivalentInertia"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanicRotational" name="P1"/>
@@ -182,11 +177,11 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicMultiTankC" name="C_type_Multi_Port_Tank_1">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="MP::Flow"/>
-          <parameter unit="K" value="0" type="double" name="MP::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="MP::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="MP::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="MP#Flow"/>
+          <parameter unit="K" value="0" type="double" name="MP#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="MP#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="MP#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="MP#HeatFlow"/>
           <parameter unit="Pa" value="0" type="double" name="p"/>
         </parameters>
         <ports>
@@ -205,12 +200,12 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="MechanicAngularVelocitySensor" name="Angular_Velocity_Transducer">
         <parameters>
-          <parameter unit="rad/s" value="0" type="double" name="P1::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="P1::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="P1::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="P1::EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="P1#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="P1#EquivalentInertia"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanicRotational" name="P1"/>
@@ -234,11 +229,11 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicMultiTankC" name="C_type_Multi_Port_Tank_2">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="MP::Flow"/>
-          <parameter unit="K" value="0" type="double" name="MP::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="MP::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="MP::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="MP#Flow"/>
+          <parameter unit="K" value="0" type="double" name="MP#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="MP#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="MP#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="MP#HeatFlow"/>
           <parameter unit="Pa" value="2e6" type="double" name="p"/>
         </parameters>
         <ports>
@@ -266,7 +261,7 @@ This model also works well with the animation feature.</description>
           <pose x="2816.11903" y="2326.497516" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="8.62264926715849e-308"/>
-          <viewport x="2523.15" y="2538.22" zoom="0.59727"/>
+          <viewport x="2589.5" y="2468.5" zoom="1"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -309,8 +304,8 @@ This model also works well with the animation feature.</description>
         <objects>
           <component typename="SignalDivide" name="Divide_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in1::Value"/>
-              <parameter unit="-" value="0" type="double" name="in2::Value"/>
+              <parameter unit="-" value="0" type="double" name="in1#Value"/>
+              <parameter unit="-" value="0" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -330,11 +325,11 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalLP1Filter" name="lp1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="0" type="double" name="out::Value"/>
-              <parameter unit="[rad/s]" value="20" type="double" name="omega"/>
-              <parameter unit="[-]" value="-1.5e+300" type="double" name="y_min"/>
-              <parameter unit="[-]" value="1.5e+300" type="double" name="y_max"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="0" type="double" name="out#Value"/>
+              <parameter unit="rad/s" value="20" type="double" name="omega"/>
+              <parameter unit="-" value="-1.5e+300" type="double" name="y_min"/>
+              <parameter unit="-" value="1.5e+300" type="double" name="y_max"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -353,22 +348,42 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalLP1Filter" name="First_order_low_pass_filter">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="0" type="double" name="out::Value"/>
-              <parameter unit="[rad/s]" value="20" type="double" name="omega"/>
-              <parameter unit="[-]" value="-1.5e+300" type="double" name="y_min"/>
-              <parameter unit="[-]" value="1.5e+300" type="double" name="y_max"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="0" type="double" name="out#Value"/>
+              <parameter unit="rad/s" value="20" type="double" name="omega"/>
+              <parameter unit="-" value="-1.5e+300" type="double" name="y_min"/>
+              <parameter unit="-" value="1.5e+300" type="double" name="y_max"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
               <port nodetype="NodeSignal" name="out"/>
             </ports>
             <hopsangui>
-              <pose x="2407.007221" y="2303.020892" flipped="false" a="0"/>
+              <pose x="2428.007221" y="2303.020892" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
                 <modelobject typename="SignalLP1Filter" displayname="First_order_low_pass_filter">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalGain" name="Gain_1">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="-1" type="double" name="k#Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="in"/>
+              <port nodetype="NodeSignal" name="out"/>
+            </ports>
+            <hopsangui>
+              <pose x="2342.027889" y="2386.933833" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <animation flowspeed="100"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalGain" displayname="Gain_1">
                   <ports/>
                 </modelobject>
               </hopsanobjectappearance>
@@ -383,16 +398,16 @@ This model also works well with the animation feature.</description>
           </systemport>
           <component typename="SignalSaturation" name="Saturation_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="1000" type="double" name="y_upper::Value"/>
-              <parameter unit="-" value="0.1" type="double" name="y_lower::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="1000" type="double" name="y_upper#Value"/>
+              <parameter unit="-" value="0.1" type="double" name="y_lower#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
               <port nodetype="NodeSignal" name="out"/>
             </ports>
             <hopsangui>
-              <pose x="2587.775785" y="2265.893105" flipped="false" a="0"/>
+              <pose x="2608.775785" y="2265.893105" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
@@ -404,16 +419,16 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalSaturation" name="Saturation_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="100000000" type="double" name="y_upper::Value"/>
-              <parameter unit="-" value="0.000001" type="double" name="y_lower::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="100000000" type="double" name="y_upper#Value"/>
+              <parameter unit="-" value="0.000001" type="double" name="y_lower#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
               <port nodetype="NodeSignal" name="out"/>
             </ports>
             <hopsangui>
-              <pose x="2407.007221" y="2214.006675" flipped="false" a="0"/>
+              <pose x="2455.007221" y="2214.006675" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
@@ -425,23 +440,23 @@ This model also works well with the animation feature.</description>
           </component>
           <systemport typename="HopsanGUIContainerPort" name="q_ideal">
             <hopsangui>
-              <pose x="2324.373914" y="2386.933833" flipped="false" a="0"/>
+              <pose x="2274.373914" y="2386.933833" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
             </hopsangui>
           </systemport>
           <component typename="SignalSaturation" name="Saturation_3">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="-0.00001" type="double" name="y_upper::Value"/>
-              <parameter unit="-" value="-100000" type="double" name="y_lower::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="-0.00001" type="double" name="y_upper#Value"/>
+              <parameter unit="-" value="-100000" type="double" name="y_lower#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
               <port nodetype="NodeSignal" name="out"/>
             </ports>
             <hopsangui>
-              <pose x="2408.194658" y="2359.437155" flipped="false" a="0"/>
+              <pose x="2429.194658" y="2359.437155" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
@@ -453,11 +468,11 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalLP1Filter" name="lp1_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="0" type="double" name="out::Value"/>
-              <parameter unit="[rad/s]" value="20" type="double" name="omega"/>
-              <parameter unit="[-]" value="-1.5e+300" type="double" name="y_min"/>
-              <parameter unit="[-]" value="1.5e+300" type="double" name="y_max"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="0" type="double" name="out#Value"/>
+              <parameter unit="rad/s" value="20" type="double" name="omega"/>
+              <parameter unit="-" value="-1.5e+300" type="double" name="y_min"/>
+              <parameter unit="-" value="1.5e+300" type="double" name="y_max"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -474,13 +489,33 @@ This model also works well with the animation feature.</description>
               </hopsanobjectappearance>
             </hopsangui>
           </component>
+          <component typename="SignalGain" name="Gain">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="-1" type="double" name="k#Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="in"/>
+              <port nodetype="NodeSignal" name="out"/>
+            </ports>
+            <hopsangui>
+              <pose x="2389.505068" y="2214.006675" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <animation flowspeed="100"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalGain" displayname="Gain">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
           <component typename="SignalLP1Filter" name="lp1_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="0" type="double" name="out::Value"/>
-              <parameter unit="[rad/s]" value="20" type="double" name="omega"/>
-              <parameter unit="[-]" value="-1.5e+300" type="double" name="y_min"/>
-              <parameter unit="[-]" value="1.5e+300" type="double" name="y_max"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="0" type="double" name="out#Value"/>
+              <parameter unit="rad/s" value="20" type="double" name="omega"/>
+              <parameter unit="-" value="-1.5e+300" type="double" name="y_min"/>
+              <parameter unit="-" value="1.5e+300" type="double" name="y_max"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -499,8 +534,8 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalMultiply" name="Multiply">
             <parameters>
-              <parameter unit="-" value="1" type="double" name="in1::Value"/>
-              <parameter unit="-" value="1" type="double" name="in2::Value"/>
+              <parameter unit="-" value="1" type="double" name="in1#Value"/>
+              <parameter unit="-" value="1" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -520,8 +555,8 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalDivide" name="Divide">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in1::Value"/>
-              <parameter unit="-" value="0" type="double" name="in2::Value"/>
+              <parameter unit="-" value="0" type="double" name="in1#Value"/>
+              <parameter unit="-" value="0" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -529,7 +564,7 @@ This model also works well with the animation feature.</description>
               <port nodetype="NodeSignal" name="in2"/>
             </ports>
             <hopsangui>
-              <pose x="2514.587986" y="2265.893105" flipped="true" a="180"/>
+              <pose x="2535.587986" y="2265.893105" flipped="true" a="180"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
@@ -555,9 +590,9 @@ This model also works well with the animation feature.</description>
           </systemport>
           <component typename="SignalSaturation" name="Saturation">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="1000" type="double" name="y_upper::Value"/>
-              <parameter unit="-" value="0.1" type="double" name="y_lower::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="1000" type="double" name="y_upper#Value"/>
+              <parameter unit="-" value="0.1" type="double" name="y_lower#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -576,7 +611,7 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalSink" name="Ideal_effective_torque">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -596,14 +631,14 @@ This model also works well with the animation feature.</description>
           </component>
           <systemport typename="HopsanGUIContainerPort" name="T_ideal">
             <hopsangui>
-              <pose x="2324.373914" y="2213.843105" flipped="false" a="0"/>
+              <pose x="2274.373914" y="2214.006675" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
             </hopsangui>
           </systemport>
           <component typename="SignalSink" name="Ideal_effective_flow">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -623,14 +658,14 @@ This model also works well with the animation feature.</description>
           </component>
           <systemport typename="HopsanGUIContainerPort" name="T_effective">
             <hopsangui>
-              <pose x="2324.373914" y="2130.839693" flipped="false" a="0"/>
+              <pose x="2274.373914" y="2130.839693" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
             </hopsangui>
           </systemport>
           <systemport typename="HopsanGUIContainerPort" name="q_effective">
             <hopsangui>
-              <pose x="2324.373914" y="2303.020892" flipped="false" a="0"/>
+              <pose x="2274.373914" y="2303.020892" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
             </hopsangui>
@@ -652,8 +687,8 @@ This model also works well with the animation feature.</description>
           <connect endport="out" endcomponent="Divide" startport="in" startcomponent="Saturation_1">
             <hopsangui>
               <coordinates>
-                <coordinate x="2567.77578499999981431756" y="2265.89310500000010506483"/>
-                <coordinate x="2527.08798600000000078580" y="2265.89310500000010506483"/>
+                <coordinate x="2588.77578499999981431756" y="2265.89310500000010506483"/>
+                <coordinate x="2548.08798600000000078580" y="2265.89310500000010506483"/>
               </coordinates>
               <geometries>
                 <geometry>diagonal</geometry>
@@ -664,20 +699,8 @@ This model also works well with the animation feature.</description>
           <connect endport="in1" endcomponent="Divide_2" startport="T_effective" startcomponent="T_effective">
             <hopsangui>
               <coordinates>
-                <coordinate x="2324.37391399999978602864" y="2130.83969299999989743810"/>
+                <coordinate x="2274.37391399999978602864" y="2130.83969299999989743810"/>
                 <coordinate x="2502.08798600000000078580" y="2130.83969299999989743810"/>
-              </coordinates>
-              <geometries>
-                <geometry>diagonal</geometry>
-              </geometries>
-              <style>solid</style>
-            </hopsangui>
-          </connect>
-          <connect endport="in" endcomponent="Ideal_effective_flow" startport="q_ideal" startcomponent="q_ideal">
-            <hopsangui>
-              <coordinates>
-                <coordinate x="2324.37391399999978602864" y="2386.93383300000004965113"/>
-                <coordinate x="2865.47513500000013664248" y="2386.93383300000004965113"/>
               </coordinates>
               <geometries>
                 <geometry>diagonal</geometry>
@@ -688,20 +711,8 @@ This model also works well with the animation feature.</description>
           <connect endport="in" endcomponent="First_order_low_pass_filter" startport="q_effective" startcomponent="q_effective">
             <hopsangui>
               <coordinates>
-                <coordinate x="2324.37391399999978602864" y="2303.02089200000000346336"/>
-                <coordinate x="2382.00722099999984493479" y="2303.02089200000000346336"/>
-              </coordinates>
-              <geometries>
-                <geometry>diagonal</geometry>
-              </geometries>
-              <style>solid</style>
-            </hopsangui>
-          </connect>
-          <connect endport="in" endcomponent="Saturation_2" startport="T_ideal" startcomponent="T_ideal">
-            <hopsangui>
-              <coordinates>
-                <coordinate x="2324.37391399999978602864" y="2213.84310499999992316589"/>
-                <coordinate x="2387.00722099999984493479" y="2214.00667500000008658390"/>
+                <coordinate x="2274.37391399999978602864" y="2303.02089200000000346336"/>
+                <coordinate x="2403.00722099999984493479" y="2303.02089200000000346336"/>
               </coordinates>
               <geometries>
                 <geometry>diagonal</geometry>
@@ -712,7 +723,7 @@ This model also works well with the animation feature.</description>
           <connect endport="in" endcomponent="Ideal_effective_torque" startport="out" startcomponent="Saturation_2">
             <hopsangui>
               <coordinates>
-                <coordinate x="2427.00722099999984493479" y="2214.00667500000008658390"/>
+                <coordinate x="2475.00722099999984493479" y="2214.00667500000008658390"/>
                 <coordinate x="2865.47513500000013664248" y="2213.84310499999992316589"/>
               </coordinates>
               <geometries>
@@ -738,18 +749,6 @@ This model also works well with the animation feature.</description>
               <coordinates>
                 <coordinate x="2790.54058100000020203879" y="2063.42310099999986050534"/>
                 <coordinate x="2885.47513500000013664248" y="2063.42310099999986050534"/>
-              </coordinates>
-              <geometries>
-                <geometry>diagonal</geometry>
-              </geometries>
-              <style>solid</style>
-            </hopsangui>
-          </connect>
-          <connect endport="q_ideal" endcomponent="q_ideal" startport="in" startcomponent="Saturation_3">
-            <hopsangui>
-              <coordinates>
-                <coordinate x="2388.19465799999989030766" y="2359.43715500000007523340"/>
-                <coordinate x="2324.37391399999978602864" y="2386.93383300000004965113"/>
               </coordinates>
               <geometries>
                 <geometry>diagonal</geometry>
@@ -784,7 +783,7 @@ This model also works well with the animation feature.</description>
           <connect endport="in" endcomponent="lp1_2" startport="out" startcomponent="Saturation_1">
             <hopsangui>
               <coordinates>
-                <coordinate x="2607.77578499999981431756" y="2265.89310500000010506483"/>
+                <coordinate x="2628.77578499999981431756" y="2265.89310500000010506483"/>
                 <coordinate x="2740.54058100000020203879" y="2265.89310500000010506483"/>
               </coordinates>
               <geometries>
@@ -808,8 +807,8 @@ This model also works well with the animation feature.</description>
           <connect endport="in1" endcomponent="Divide" startport="out" startcomponent="First_order_low_pass_filter">
             <hopsangui>
               <coordinates>
-                <coordinate x="2432.00722099999984493479" y="2303.02089200000000346336"/>
-                <coordinate x="2502.08798600000000078580" y="2265.89310500000010506483"/>
+                <coordinate x="2453.00722099999984493479" y="2303.02089200000000346336"/>
+                <coordinate x="2523.08798600000000078580" y="2265.89310500000010506483"/>
               </coordinates>
               <geometries>
                 <geometry>diagonal</geometry>
@@ -832,7 +831,7 @@ This model also works well with the animation feature.</description>
           <connect endport="in" endcomponent="Ideal_effective_flow" startport="out" startcomponent="First_order_low_pass_filter">
             <hopsangui>
               <coordinates>
-                <coordinate x="2432.00722099999984493479" y="2303.02089200000000346336"/>
+                <coordinate x="2453.00722099999984493479" y="2303.02089200000000346336"/>
                 <coordinate x="2865.47513500000013664248" y="2386.93383300000004965113"/>
               </coordinates>
               <geometries>
@@ -844,7 +843,7 @@ This model also works well with the animation feature.</description>
           <connect endport="in" endcomponent="Ideal_effective_torque" startport="T_effective" startcomponent="T_effective">
             <hopsangui>
               <coordinates>
-                <coordinate x="2324.37391399999978602864" y="2130.83969299999989743810"/>
+                <coordinate x="2274.37391399999978602864" y="2130.83969299999989743810"/>
                 <coordinate x="2865.47513500000013664248" y="2213.84310499999992316589"/>
               </coordinates>
               <geometries>
@@ -856,8 +855,8 @@ This model also works well with the animation feature.</description>
           <connect endport="out" endcomponent="Saturation_3" startport="in2" startcomponent="Divide">
             <hopsangui>
               <coordinates>
-                <coordinate x="2514.58798600000000078580" y="2278.39310500000010506483"/>
-                <coordinate x="2428.19465799999989030766" y="2359.43715500000007523340"/>
+                <coordinate x="2535.58798600000000078580" y="2278.39310500000010506483"/>
+                <coordinate x="2449.19465799999989030766" y="2359.43715500000007523340"/>
               </coordinates>
               <geometries>
                 <geometry>diagonal</geometry>
@@ -868,7 +867,7 @@ This model also works well with the animation feature.</description>
           <connect endport="in2" endcomponent="Divide_2" startport="out" startcomponent="Saturation_2">
             <hopsangui>
               <coordinates>
-                <coordinate x="2427.00722099999984493479" y="2214.00667500000008658390"/>
+                <coordinate x="2475.00722099999984493479" y="2214.00667500000008658390"/>
                 <coordinate x="2514.58798600000000078580" y="2143.33969299999989743810"/>
               </coordinates>
               <geometries>
@@ -880,8 +879,68 @@ This model also works well with the animation feature.</description>
           <connect endport="in2" endcomponent="Multiply" startport="out" startcomponent="Saturation_1">
             <hopsangui>
               <coordinates>
-                <coordinate x="2607.77578499999981431756" y="2265.89310500000010506483"/>
+                <coordinate x="2628.77578499999981431756" y="2265.89310500000010506483"/>
                 <coordinate x="2673.06933200000003125751" y="2075.92310099999986050534"/>
+              </coordinates>
+              <geometries>
+                <geometry>diagonal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in" endcomponent="Saturation_2" startport="out" startcomponent="Gain">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2402.00506765274394638254" y="2214.00667500000008658390"/>
+                <coordinate x="2435.00722099999984493479" y="2214.00667500000008658390"/>
+              </coordinates>
+              <geometries>
+                <geometry>diagonal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="T_ideal" endcomponent="T_ideal" startport="in" startcomponent="Gain">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2377.00506765274394638254" y="2214.00667500000008658390"/>
+                <coordinate x="2274.37391399999978602864" y="2214.00667500000008658390"/>
+              </coordinates>
+              <geometries>
+                <geometry>diagonal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="q_ideal" endcomponent="q_ideal" startport="in" startcomponent="Gain_1">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2329.52788862415900439373" y="2386.93383300000004965113"/>
+                <coordinate x="2274.37391399999978602864" y="2386.93383300000004965113"/>
+              </coordinates>
+              <geometries>
+                <geometry>diagonal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in" endcomponent="Saturation_3" startport="out" startcomponent="Gain_1">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2354.52788862415900439373" y="2386.93383300000004965113"/>
+                <coordinate x="2409.19465799999989030766" y="2359.43715500000007523340"/>
+              </coordinates>
+              <geometries>
+                <geometry>diagonal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in" endcomponent="Ideal_effective_flow" startport="out" startcomponent="Gain_1">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2354.52788862415900439373" y="2386.93383300000004965113"/>
+                <coordinate x="2865.47513500000013664248" y="2386.93383300000004965113"/>
               </coordinates>
               <geometries>
                 <geometry>diagonal</geometry>
@@ -900,9 +959,9 @@ This model also works well with the animation feature.</description>
         <aliases/>
         <hopsangui>
           <pose x="2579.657028" y="2345.728933" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="8.62264926715849e-308"/>
-          <viewport x="2523.15" y="2538.22" zoom="0.59727"/>
+          <viewport x="2589.5" y="2468.5" zoom="1"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -951,8 +1010,8 @@ This model also works well with the animation feature.</description>
           </systemport>
           <component typename="SignalMultiply" name="q_ideal">
             <parameters>
-              <parameter unit="-" value="1" type="double" name="in1::Value"/>
-              <parameter unit="-" value="1" type="double" name="in2::Value"/>
+              <parameter unit="-" value="1" type="double" name="in1#Value"/>
+              <parameter unit="-" value="1" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -972,7 +1031,7 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalConstant" name="2PI">
             <parameters>
-              <parameter unit="-" value="6.2832" type="double" name="y::Value"/>
+              <parameter unit="-" value="6.2832" type="double" name="y#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="y"/>
@@ -990,8 +1049,8 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalDivide" name="Divide_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in1::Value"/>
-              <parameter unit="-" value="0" type="double" name="in2::Value"/>
+              <parameter unit="-" value="0" type="double" name="in1#Value"/>
+              <parameter unit="-" value="0" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -1097,7 +1156,7 @@ This model also works well with the animation feature.</description>
       </system>
       <component typename="SignalSink" name="Output_Pressure">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -1117,13 +1176,13 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPressureReliefValve" name="Adjustable_Pressure_Relief_Valve">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="xv::Value"/>
-          <parameter unit="-" value="2e7" type="double" name="p_max::Value"/>
-          <parameter unit="-" value="0.01" type="double" name="tao::Value"/>
-          <parameter unit="-" value="500000" type="double" name="p_h::Value"/>
-          <parameter unit="[(m^3/s)/Pa]" value="1e-08" type="double" name="k_cs"/>
-          <parameter unit="[(m^3/s)/Pa]" value="1e-08" type="double" name="k_cf"/>
-          <parameter unit="[m^3/s]" value="0.1" type="double" name="q_nom"/>
+          <parameter unit="-" value="0" type="double" name="xv#Value"/>
+          <parameter unit="-" value="2e7" type="double" name="p_max#Value"/>
+          <parameter unit="-" value="0.01" type="double" name="tao#Value"/>
+          <parameter unit="-" value="500000" type="double" name="p_h#Value"/>
+          <parameter unit="(m^3/s)/Pa" value="1e-08" type="double" name="k_cs"/>
+          <parameter unit="(m^3/s)/Pa" value="1e-08" type="double" name="k_cf"/>
+          <parameter unit="m^3/s" value="0.1" type="double" name="q_nom"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1148,16 +1207,16 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicValvePlate" name="ValvePlate">
         <parameters>
-          <parameter unit="-" value="127.7" type="double" name="phi_P::Value"/>
-          <parameter unit="-" value="valveplate_pc1" type="double" name="phi_1::Value"/>
-          <parameter unit="-" value="valveplate_pc2" type="double" name="phi_2::Value"/>
-          <parameter unit="-" value="7.8533" type="double" name="Delta_alpha::Value"/>
-          <parameter unit="-" value="30.3" type="double" name="alpha_f::Value"/>
-          <parameter unit="-" value="0.029" type="double" name="R_f::Value"/>
-          <parameter unit="-" value="6" type="double" name="theta_1::Value"/>
-          <parameter unit="-" value="90" type="double" name="theta_2::Value"/>
-          <parameter unit="-" value="876" type="double" name="rho::Value"/>
-          <parameter unit="-" value="160" type="double" name="movement::Value"/>
+          <parameter unit="-" value="127.7" type="double" name="phi_P#Value"/>
+          <parameter unit="-" value="valveplate_pc1" type="double" name="phi_1#Value"/>
+          <parameter unit="-" value="valveplate_pc2" type="double" name="phi_2#Value"/>
+          <parameter unit="-" value="7.8533" type="double" name="Delta_alpha#Value"/>
+          <parameter unit="-" value="30.3" type="double" name="alpha_f#Value"/>
+          <parameter unit="-" value="0.029" type="double" name="R_f#Value"/>
+          <parameter unit="-" value="6" type="double" name="theta_1#Value"/>
+          <parameter unit="-" value="90" type="double" name="theta_2#Value"/>
+          <parameter unit="-" value="876" type="double" name="rho#Value"/>
+          <parameter unit="-" value="160" type="double" name="movement#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="movement"/>
@@ -1181,21 +1240,21 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicVolume" name="Hydraulic_Volume">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="1e6" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P2::Flow"/>
-          <parameter unit="Pa" value="1e6" type="double" name="P2::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P2::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P2::HeatFlow"/>
-          <parameter unit="-" value="0.1" type="double" name="alpha::Value"/>
-          <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
-          <parameter unit="[Pa]" value="1e+09" type="double" name="Beta_e"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="1e6" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
+          <parameter unit="Pa" value="1e6" type="double" name="P2#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
+          <parameter unit="-" value="0.1" type="double" name="alpha#Value"/>
+          <parameter unit="m^3" value="0.001" type="double" name="V"/>
+          <parameter unit="Pa" value="1e+09" type="double" name="Beta_e"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1219,7 +1278,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalSink" name="Output_Pressure_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -1239,7 +1298,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalAnimationGauge" name="eta_vol">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
           <parameter unit="" value="1" type="double" name="max"/>
         </parameters>
         <ports>
@@ -1267,8 +1326,8 @@ This model also works well with the animation feature.</description>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2063.233663" y="2614.685827" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <pose x="2053" y="2613" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
               <start x="6.5" y="6.5" a="0"/>
@@ -1284,7 +1343,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalSink" name="Efficiencies">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -1313,9 +1372,9 @@ This model also works well with the animation feature.</description>
         <aliases/>
         <hopsangui>
           <pose x="2349.217863" y="2297.386885" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="8.62264926715849e-308"/>
-          <viewport x="2523.15" y="2538.22" zoom="0.59727"/>
+          <viewport x="2589.5" y="2468.5" zoom="1"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1352,8 +1411,8 @@ This model also works well with the animation feature.</description>
         <objects>
           <component typename="SignalMultiply" name="Multiply_1">
             <parameters>
-              <parameter unit="-" value="1" type="double" name="in1::Value"/>
-              <parameter unit="-" value="1" type="double" name="in2::Value"/>
+              <parameter unit="-" value="1" type="double" name="in1#Value"/>
+              <parameter unit="-" value="1" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -1373,8 +1432,8 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalGain" name="x2_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="n_pistons" type="double" name="k::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="n_pistons" type="double" name="k#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1400,7 +1459,7 @@ This model also works well with the animation feature.</description>
           </systemport>
           <component typename="SignalConstant" name="A_piston">
             <parameters>
-              <parameter unit="-" value="p_area" type="double" name="y::Value"/>
+              <parameter unit="-" value="p_area" type="double" name="y#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="y"/>
@@ -1418,7 +1477,7 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalTan" name="Tan">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1437,7 +1496,7 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalConstant" name="r_swivel">
             <parameters>
-              <parameter unit="-" value="sw_radius" type="double" name="y::Value"/>
+              <parameter unit="-" value="sw_radius" type="double" name="y#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="y"/>
@@ -1455,8 +1514,8 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalMultiply" name="Multiply">
             <parameters>
-              <parameter unit="-" value="1" type="double" name="in1::Value"/>
-              <parameter unit="-" value="1" type="double" name="in2::Value"/>
+              <parameter unit="-" value="1" type="double" name="in1#Value"/>
+              <parameter unit="-" value="1" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -1476,8 +1535,8 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalGain" name="x2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="2" type="double" name="k::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="2" type="double" name="k#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1496,7 +1555,7 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalConstant" name="Constant_1">
             <parameters>
-              <parameter unit="-" value="sw_angle" type="double" name="y::Value"/>
+              <parameter unit="-" value="sw_angle" type="double" name="y#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="y"/>
@@ -1622,25 +1681,25 @@ This model also works well with the animation feature.</description>
       </system>
       <component typename="HydraulicPumpPiston" name="Piston_1">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1672,25 +1731,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston_2">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1722,25 +1781,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston_3">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1772,25 +1831,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston_4">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1822,7 +1881,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalAnimationGauge" name="eta_hm_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
           <parameter unit="" value="1" type="double" name="max"/>
         </parameters>
         <ports>
@@ -1846,25 +1905,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston_5">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1896,15 +1955,15 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="MechanicCylinderBlockWithSwashPlate" name="CylinderBlock">
         <parameters>
-          <parameter unit="-" value="cylinder_block_viscous_friction" type="double" name="B::Value"/>
-          <parameter unit="-" value="swivel_radius" type="double" name="r::Value"/>
-          <parameter unit="-" value="swivel_offset" type="double" name="theta_offset::Value"/>
-          <parameter unit="-" value="0" type="double" name="angle::Value"/>
-          <parameter unit="-" value="0" type="double" name="torque::Value"/>
-          <parameter unit="-" value="0" type="double" name="movement::Value"/>
-          <parameter unit="[kgm^2]" value="cylinder_block_inertia" type="double" name="J"/>
-          <parameter unit="[kg]" value="piston_mass" type="double" name="m_p"/>
-          <parameter unit="[m]" value="piston_radius" type="double" name="r_p"/>
+          <parameter unit="-" value="cylinder_block_viscous_friction" type="double" name="B#Value"/>
+          <parameter unit="-" value="swivel_radius" type="double" name="r#Value"/>
+          <parameter unit="-" value="swivel_offset" type="double" name="theta_offset#Value"/>
+          <parameter unit="-" value="0" type="double" name="angle#Value"/>
+          <parameter unit="-" value="0" type="double" name="torque#Value"/>
+          <parameter unit="-" value="0" type="double" name="movement#Value"/>
+          <parameter unit="kgm^2" value="cylinder_block_inertia" type="double" name="J"/>
+          <parameter unit="kg" value="piston_mass" type="double" name="m_p"/>
+          <parameter unit="m" value="piston_radius" type="double" name="r_p"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="movement"/>
@@ -1931,25 +1990,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston_6">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -1981,7 +2040,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalConstant" name="Constant_1">
         <parameters>
-          <parameter unit="-" value="swivel_angle" type="double" name="y::Value"/>
+          <parameter unit="-" value="swivel_angle" type="double" name="y#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="y"/>
@@ -1999,25 +2058,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston_7">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2049,7 +2108,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalDisplay" name="Display">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2067,12 +2126,12 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPressureSensor" name="Pressure_Transducer_1">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="293" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2096,25 +2155,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston_8">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2146,25 +2205,25 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPumpPiston" name="Piston">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="start_pressure" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="0.05" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="piston_area" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="piston_damping" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e9" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="leakage" type="double" name="c_leak::Value"/>
-          <parameter unit="-" value="piston_spring" type="double" name="F_0::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="start_pressure" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="0.05" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="piston_area" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="piston_deadvolume" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="piston_damping" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e9" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="leakage" type="double" name="c_leak#Value"/>
+          <parameter unit="-" value="piston_spring" type="double" name="F_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2196,12 +2255,12 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicPressureSensor" name="Pressure_Transducer">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="293" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2225,7 +2284,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalAnimationGauge" name="eta_tot">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
           <parameter unit="" value="1" type="double" name="max"/>
         </parameters>
         <ports>
@@ -2249,7 +2308,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicLaminarOrifice" name="Laminar_Orifice_1">
         <parameters>
-          <parameter unit="-" value="2.5e-6" type="double" name="Kc::Value"/>
+          <parameter unit="-" value="2.5e-6" type="double" name="Kc#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2278,7 +2337,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicLaminarOrifice" name="Laminar_Orifice_2">
         <parameters>
-          <parameter unit="-" value="1e-8" type="double" name="Kc::Value"/>
+          <parameter unit="-" value="1e-8" type="double" name="Kc#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2307,8 +2366,8 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalSubtract" name="Subtract">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="in2::Value"/>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -2328,7 +2387,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalAnimationGauge" name="eta_tot_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
           <parameter unit="" value="160" type="double" name="max"/>
         </parameters>
         <ports>
@@ -2352,12 +2411,12 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicFlowSensor" name="q_effective">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="293" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2381,16 +2440,16 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="MechanicMotor" name="Motor">
         <parameters>
-          <parameter unit="-" value="-80" type="double" name="omega_ref::Value"/>
-          <parameter unit="-" value="-10" type="double" name="K_p::Value"/>
-          <parameter unit="-" value="-10" type="double" name="K_i::Value"/>
-          <parameter unit="-" value="0" type="double" name="K_d::Value"/>
-          <parameter unit="rad/s" value="0" type="double" name="P1::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="P1::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="P1::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="P1::EquivalentInertia"/>
+          <parameter unit="-" value="-80" type="double" name="omega_ref#Value"/>
+          <parameter unit="-" value="5" type="double" name="K_p#Value"/>
+          <parameter unit="-" value="5" type="double" name="K_i#Value"/>
+          <parameter unit="-" value="0" type="double" name="K_d#Value"/>
+          <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="P1#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="P1#EquivalentInertia"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanicRotational" name="P1"/>
@@ -2411,8 +2470,8 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalGain" name="Gain_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="-0.10471975511965977462" type="double" name="k::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="-0.10471975511965977462" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2431,8 +2490,8 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalGain" name="Gain_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="-1" type="double" name="k::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="-1" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2451,8 +2510,8 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalGain" name="Gain_3">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="motor_speed" type="double" name="k::Value"/>
+          <parameter unit="-" value="1" type="double" name="in#Value"/>
+          <parameter unit="-" value="motor_speed" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2471,8 +2530,8 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalGain" name="Gain_4">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="-1" type="double" name="k::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="1" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2491,12 +2550,12 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="HydraulicFlowSensor" name="Flow_Rate_Transducer_1">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="293" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -2520,7 +2579,7 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalSink" name="Output_flow">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2540,8 +2599,8 @@ This model also works well with the animation feature.</description>
       </component>
       <component typename="SignalGain" name="Gain_5">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="-1" type="double" name="k::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="-1" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2567,9 +2626,9 @@ This model also works well with the animation feature.</description>
         <aliases/>
         <hopsangui>
           <pose x="2576.656885" y="2257.814104" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="8.62264926715849e-308"/>
-          <viewport x="2523.15" y="2538.22" zoom="0.59727"/>
+          <viewport x="2589.5" y="2468.5" zoom="1"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -2615,8 +2674,8 @@ This model also works well with the animation feature.</description>
           </systemport>
           <component typename="SignalMultiply" name="q_ideal">
             <parameters>
-              <parameter unit="-" value="1" type="double" name="in1::Value"/>
-              <parameter unit="-" value="1" type="double" name="in2::Value"/>
+              <parameter unit="-" value="1" type="double" name="in1#Value"/>
+              <parameter unit="-" value="1" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -2643,7 +2702,7 @@ This model also works well with the animation feature.</description>
           </systemport>
           <component typename="SignalConstant" name="2PI">
             <parameters>
-              <parameter unit="-" value="6.2832" type="double" name="y::Value"/>
+              <parameter unit="-" value="6.2832" type="double" name="y#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="y"/>
@@ -2661,8 +2720,8 @@ This model also works well with the animation feature.</description>
           </component>
           <component typename="SignalDivide" name="Divide_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in1::Value"/>
-              <parameter unit="-" value="0" type="double" name="in2::Value"/>
+              <parameter unit="-" value="0" type="double" name="in1#Value"/>
+              <parameter unit="-" value="0" type="double" name="in2#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -2761,7 +2820,7 @@ This model also works well with the animation feature.</description>
       </system>
       <component typename="SignalAnimationGauge" name="eta_hm">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
           <parameter unit="" value="1" type="double" name="max"/>
         </parameters>
         <ports>
@@ -2769,7 +2828,7 @@ This model also works well with the animation feature.</description>
         </ports>
         <hopsangui>
           <pose x="2350.065847" y="2826.754619" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
               <start x="0" y="0" a="-150"/>
@@ -2788,14 +2847,6 @@ This model also works well with the animation feature.</description>
           <pose x="2835.000000" y="2552.000000"/>
           <textobject fontcolor="#00c800" text="System" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
           <size width="158.950789" height="179.162488"/>
-          <line width="2.000000" visible="1" style="dashline"/>
-        </hopsangui>
-      </textboxwidget>
-      <textboxwidget>
-        <hopsangui>
-          <pose x="2227.000000" y="2466.000000"/>
-          <textobject fontcolor="#ff0000" text="Inline Machine" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
-          <size width="599.094222" height="265.062209"/>
           <line width="2.000000" visible="1" style="dashline"/>
         </hopsangui>
       </textboxwidget>
@@ -2821,6 +2872,14 @@ This model also works well with the animation feature.</description>
           <textobject fontcolor="#005500" text="Example: In-Line Axial Piston Machine" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
           <size width="424.078125" height="41.000000"/>
           <line width="2.000000" visible="0" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2227.848662" y="2466.086529"/>
+          <textobject fontcolor="#ff0000" text="Inline Machine" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="599.094222" height="265.062209"/>
+          <line width="2.000000" visible="1" style="dashline"/>
         </hopsangui>
       </textboxwidget>
     </objects>
@@ -2971,126 +3030,6 @@ This model also works well with the animation feature.</description>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="in" endcomponent="Gain_3" startport="out" startcomponent="Motor_Speed">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2078.23366299999997863779" y="2614.68582699999979013228"/>
-            <coordinate x="2099.02105500000016036211" y="2614.68582699999979013228"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.42902999999978419510" y="2540.00751600000012331293"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_1">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.42902999999978419510" y="2559.61751599999979589484"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_2">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.27477499999986321200" y="2579.53502900000012232340"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_3">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.27477499999986321200" y="2599.14580400000022564200"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_4">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.27477499999986321200" y="2619.48910599999999249121"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_5">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.27477499999986321200" y="2637.67714999999998326530"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_6">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.27477499999986321200" y="2657.07715000000007421477"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_7">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.27477499999986321200" y="2676.84576900000001842272"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_8">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2480.14751599999999598367" y="2696.78012900000021545566"/>
-            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
-          </coordinates>
-          <geometries>
-            <geometry>diagonal</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
@@ -3693,6 +3632,114 @@ This model also works well with the animation feature.</description>
           <geometries>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_8">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.14751599999999598367" y="2696.78012900000021545566"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_7">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.27477499999986321200" y="2676.84576900000001842272"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_6">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.27477499999986321200" y="2657.07715000000007421477"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_5">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.27477499999986321200" y="2637.67714999999998326530"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_4">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.27477499999986321200" y="2619.48910599999999249121"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_3">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.27477499999986321200" y="2599.14580400000022564200"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.27477499999986321200" y="2579.53502900000012232340"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.42902999999978419510" y="2559.61751599999979589484"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="ValvePlate" startport="P1" startcomponent="Piston">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2480.42902999999978419510" y="2540.00751600000012331293"/>
+            <coordinate x="2548.57683399999996254337" y="2619.48910599999999249121"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>

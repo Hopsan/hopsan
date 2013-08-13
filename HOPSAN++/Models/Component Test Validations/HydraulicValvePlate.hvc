@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.1">
+  <validation hopsanguiversion="0.6.x_r5667" time="075823" date="20130813" hopsancoreversion="0.6.x_r5640">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicValvePlate.hmf</modelfile>
+    <component name="Pressure_Transducer">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>HydraulicValvePlate.csv</csvfile>
+          <column>1</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+    <component name="Pressure_Transducer_1">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>HydraulicValvePlate.csv</csvfile>
+          <column>2</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+  </validation>
+</hopsanvalidationconfiguration>

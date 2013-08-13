@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.1">
+  <validation hopsanguiversion="0.6.x_r5667" time="074857" date="20130813" hopsancoreversion="0.6.x_r5640">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicCylinderBlockTest.hmf</modelfile>
+    <component name="Position_Transducer_1">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>CylinderBlockTest.csv</csvfile>
+          <column>1</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+    <component name="Position_Transducer">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>CylinderBlockTest.csv</csvfile>
+          <column>2</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+    <component name="Torque_Transducer">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>CylinderBlockTest.csv</csvfile>
+          <column>3</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+  </validation>
+</hopsanvalidationconfiguration>
