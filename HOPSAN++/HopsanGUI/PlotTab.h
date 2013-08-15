@@ -91,6 +91,8 @@ public:
     bool hasLogarithmicBottomAxis();
     bool isZoomed(const int plotId) const;
 
+    bool isLocked();
+
     void showPlot(HopsanPlotIDEnumT plotID, bool visible);
     void setBottomAxisLogarithmic(bool value);
     void setLegendsVisible(bool value);
@@ -113,7 +115,7 @@ protected:
 
 public slots:
     void rescaleAxesToCurves();
-    void lockAxisToCurrentLimits();
+    void lockAxisToCurrentLimits(bool lock);
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
@@ -246,6 +248,7 @@ private:
     QLineEdit *mpUserDefinedYlLabel;
     QLineEdit *mpUserDefinedYrLabel;
     QCheckBox *mpUserDefinedLabelsCheckBox;
+    bool mIsLocked;
 
     typedef struct _AxisLimits // Persistent axis limits
     {

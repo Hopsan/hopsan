@@ -50,6 +50,7 @@
 #include "qwt_symbol.h"
 #include "qwt_text_label.h"
 #include <qwt_dyngrid_layout.h>
+#include "qwt_plot_zoomer.h"
 
 
 const double DoubleMax = std::numeric_limits<double>::max();
@@ -72,6 +73,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mRightAxisLogarithmic = false;
     mBottomAxisLogarithmic = false;
     mIsSpecialPlot = false;
+    mIsLocked = false;
 
     mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
     for(int i=0; i<mCurveColors.size(); ++i)
@@ -366,22 +368,28 @@ void PlotTab::applyAxisLabelSettings()
     updateLabels();
 }
 
-void PlotTab::lockAxisToCurrentLimits()
+void PlotTab::lockAxisToCurrentLimits(bool lock)
 {
-    mpXminSpinBox->setValue(mXAxisLimits[FirstPlot].min);
-    mpXmaxSpinBox->setValue(mXAxisLimits[FirstPlot].max);
+    qDebug() << "Lock = " << lock;
 
-    mpYLminSpinBox->setValue(mYLAxisLimits[FirstPlot].min);
-    mpYLmaxSpinBox->setValue(mYLAxisLimits[FirstPlot].max);
+    mIsLocked = true;
 
-    mpYRminSpinBox->setValue(mYRAxisLimits[FirstPlot].min);
-    mpYRmaxSpinBox->setValue(mYRAxisLimits[FirstPlot].max);
+    mpXminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().left());
+    mpXmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().right()/*mXAxisLimits[FirstPlot].max*/);
 
-    mpXAutoCheckBox->setChecked(false);
-    mpYLAutoCheckBox->setChecked(false);
-    mpYRAutoCheckBox->setChecked(false);
+    mpYLminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().top());
+    mpYLmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().bottom());
+
+    mpYRminSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().top());
+    mpYRmaxSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().bottom());
+
+    mpXAutoCheckBox->setChecked(!lock);
+    mpYLAutoCheckBox->setChecked(!lock);
+    mpYRAutoCheckBox->setChecked(!lock);
 
     applyAxisSettings();
+
+    mIsLocked=lock;
 }
 
 void PlotTab::openLegendSettingsDialog()
@@ -569,6 +577,14 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
 //! @brief Rescales the axes and the zommers so that all plot curves will fit
 void PlotTab::rescaleAxesToCurves()
 {
+    if(!mIsLocked)
+    {
+        mpZoomerLeft[FirstPlot]->zoom(0);
+        mpZoomerRight[FirstPlot]->zoom(0);
+        mpZoomerLeft[SecondPlot]->zoom(0);
+        mpZoomerRight[SecondPlot]->zoom(0);
+    }
+
     // Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {
@@ -2072,6 +2088,11 @@ bool PlotTab::isZoomed(const int plotId) const
 //    uint r = mpZoomerRight[plotId]->zoomRectIndex();
 //    qDebug() << "id,l,r: " << plotId <<" "<< l <<" "<< r;
     return (mpZoomerLeft[plotId]->zoomRectIndex() > 0);// && (mpZoomerRight[plotId]->zoomRectIndex() > 1);
+}
+
+bool PlotTab::isLocked()
+{
+    return mIsLocked;
 }
 
 

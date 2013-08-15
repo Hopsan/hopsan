@@ -289,6 +289,8 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpLockAxisToCurrentLimitsButton = new QAction(this);
     mpLockAxisToCurrentLimitsButton->setToolTip("Lock Axis To Current Limits");
     mpLockAxisToCurrentLimitsButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Lock.png"));
+    mpLockAxisToCurrentLimitsButton->setCheckable(true);
+    mpLockAxisToCurrentLimitsButton->setChecked(false);
     connect(mpLockAxisToCurrentLimitsButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpNewWindowFromTabButton = new QAction(this);
@@ -436,7 +438,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
     connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(changedTab()));
 
-    connect(mpLockAxisToCurrentLimitsButton,    SIGNAL(triggered()),            mpPlotTabWidget->getCurrentTab(), SLOT(lockAxisToCurrentLimits()));
+    connect(mpLockAxisToCurrentLimitsButton,    SIGNAL(toggled(bool)),            mpPlotTabWidget->getCurrentTab(), SLOT(lockAxisToCurrentLimits(bool)));
 
     // Hide curve settings area by default if screen size is to small
     if(sh*sw < 800*1280)
@@ -1226,6 +1228,7 @@ void PlotWindow::changedTab()
     disconnect(mpLocktheAxis,               SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsDown,        SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsUp,          SIGNAL(triggered()),    0,  0);
+    disconnect(mpLockAxisToCurrentLimitsButton, SIGNAL(toggled(bool)),  0,  0);
 
     // If there are any tabs then show the widget and reestablish connections to the current tab
     if(mpPlotTabWidget->count() > 0)
@@ -1308,9 +1311,11 @@ void PlotWindow::changedTab()
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));
         connect(mpAllGenerationsDown,       SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsDown()));
         connect(mpAllGenerationsUp,         SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsUp()));
+        connect(mpLockAxisToCurrentLimitsButton, SIGNAL(triggerd(bool)),pCurrentTab,    SLOT(lockAxisToCurrentLimits(bool)));
 
         // Set the plottab specific info layout
         mpCurveInfoStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);
+        mpLockAxisToCurrentLimitsButton->setChecked(pCurrentTab->isLocked());
     }
     else
     {
