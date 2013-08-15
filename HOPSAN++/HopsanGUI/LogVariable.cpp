@@ -718,6 +718,11 @@ bool LogVariableData::isCachingDataToDisk() const
     return mpCachedDataVector->isCached();
 }
 
+LogVariableContainer *LogVariableData::getLogVariableContainer()
+{
+    return mpParentVariableContainer;
+}
+
 bool LogVariableData::indexInRange(const int idx) const
 {
     //! @todo Do we need to check timevector also ? (or should we assume thay are the same)
@@ -988,7 +993,7 @@ void LogVariableContainer::removeAllGenerations()
         removeDataGeneration(gens[it]);
     }
 
-    mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
+    //mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
 }
 
 LogVariableContainer::LogVariableContainer(const VariableDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()

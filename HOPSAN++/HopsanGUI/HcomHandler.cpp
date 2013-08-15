@@ -235,6 +235,14 @@ void HcomHandler::createCommands()
     aliasCmd.group = "Variable Commands";
     mCmdList << aliasCmd;
 
+    HcomCommand rmvarCmd;
+    rmvarCmd.cmd = "rmvar";
+    rmvarCmd.description.append("Removes specified variable");
+    rmvarCmd.help.append("Usage: rmvar [variable]");
+    rmvarCmd.fnc = &HcomHandler::executeRemoveVariableCommand;
+    rmvarCmd.group = "Variable Commands";
+    mCmdList << rmvarCmd;
+
     HcomCommand setCmd;
     setCmd.cmd = "set";
     setCmd.description.append("Sets Hopsan preferences");
@@ -1182,6 +1190,29 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
 
     return;
+}
+
+void HcomHandler::executeRemoveVariableCommand(const QString cmd)
+{
+    //mpConsole->printErrorMessage("Not implemented yet :(", "", false);
+    QStringList varNames = getArguments(cmd);
+
+    for(int s=0; s<varNames.size(); ++s)
+    {
+        if(varNames[s].count(".") < 3 && varNames[s].endsWith("*"))     //Ugly hack because generation asterix is handled separately
+        {
+            varNames[s].append(".*");
+        }
+
+        QStringList variables;
+        getVariables(varNames[s], variables);
+        for(int v=0; v<variables.size(); ++v)
+        {
+            deletePlotCurve(variables[v]);
+        }
+    }
+
+
 }
 
 
@@ -2308,6 +2339,57 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 }
 
 
+//! @brief Adds a plot curve to specified axis in current plot
+//! @param cmd Name of variable
+//! @param axis Axis to add curve to
+void HcomHandler::deletePlotCurve(QString cmd) const
+{
+    bool allGens=false;
+    int generation;
+    if(cmd.count(".") == 2)
+    {
+        allGens=true;
+    }
+    else if(cmd.endsWith(".*"))
+    {
+        allGens=true;
+        cmd.chop(2);
+    }
+    else
+    {
+        QString end = cmd.section(".",-1);
+        generation = end.toInt()-1;
+        cmd.chop(end.size()+1);
+    }
+
+
+    cmd.remove("\"");
+
+    SystemContainer *pCurrentSystem = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
+    if(!pCurrentSystem) { return; }
+
+    SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
+    if(!pData)
+    {
+        mpConsole->printErrorMessage("Variable not found.","",false);
+        return;
+    }
+
+    if(allGens)
+    {
+        pData->getLogVariableContainer()->removeAllGenerations();
+    }
+    else
+    {
+        if(generation == -1)
+        {
+            generation = pData->getHighestGeneration();
+        }
+        pData->getLogVariableContainer()->removeDataGeneration(generation);
+    }
+}
+
+
 //! @brief Removes all curves at specified axis in current plot
 //! @param axis Axis to remove from
 void HcomHandler::removePlotCurves(const int axis) const
@@ -2987,13 +3069,17 @@ void HcomHandler::getVariables(QString str, QStringList &variables) const
     if(ok || end == "*")
     {
         str.chop(end.size()+1);
+        end.prepend(".");
     }
     else if(end == "L")
     {
         str.chop(end.size()+1);
-        end = "0";     //0 because log data handler starts from 0 while the GUI shows values from 1, the conversion means that 0 => -1 = latest generation
+        end = ".0";     //0 because log data handler starts from 0 while the GUI shows values from 1, the conversion means that 0 => -1 = latest generation
     }
-
+    else
+    {
+        end="";
+    }
     if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
@@ -3059,7 +3145,7 @@ void HcomHandler::getVariables(QString str, QStringList &variables) const
         }
         if(ok)
         {
-            variables.append(names[n]+"."+end);
+            variables.append(names[n]+end);
         }
     }
 }

@@ -100,6 +100,7 @@ private:
     void executePeekCommand(const QString cmd);
     void executePokeCommand(const QString cmd);
     void executeDefineAliasCommand(const QString cmd);
+    void executeRemoveVariableCommand(const QString cmd);
     void executeSetCommand(const QString cmd);
     void executeSaveToPloCommand(const QString cmd);
     void executeLoadVariableCommand(const QString cmd);
@@ -133,6 +134,7 @@ private:
     void changePlotVariables(const QString cmd, const int axis) const;
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
+    void deletePlotCurve(QString cmd) const;
     QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk);
     void getComponents(QString str, QList<ModelObject*> &components);
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);

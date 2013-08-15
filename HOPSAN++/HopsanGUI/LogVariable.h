@@ -225,6 +225,7 @@ public:
     void setCacheDataToDisk(const bool toDisk);
     bool isCachingDataToDisk() const;
 
+    LogVariableContainer *getLogVariableContainer();
     LogDataHandler *getLogDataHandler();
 
 public slots:
