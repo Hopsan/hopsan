@@ -527,6 +527,10 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
 
 bool VariableTableWidget::setStartValues()
 {
+    //Hack that will make sure all values currently being edited is set before using them
+    setDisabled(true);
+    setEnabled(true);
+
     bool addedUndoPost = false;
     bool allok=true;
     for (int row=0; row<rowCount(); ++row)
