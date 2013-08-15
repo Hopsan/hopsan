@@ -2271,6 +2271,13 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis) const
 //! @param axis Axis to add curve to
 void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 {
+    bool allGens=false;
+    if(cmd.endsWith(".*"))
+    {
+        allGens=true;
+        cmd.chop(2);
+    }
+
     cmd.remove("\"");
 
     SystemContainer *pCurrentSystem = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
@@ -2283,7 +2290,21 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
         return;
     }
 
-    gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pData, axis);
+    if(allGens)
+    {
+        for(int i=pData->getLowestGeneration(); i<=pData->getHighestGeneration(); ++i)
+        {
+            SharedLogVariableDataPtrT pGenData = getVariablePtr(cmd+"."+QString::number(i));
+            if(pData)
+            {
+                gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pGenData, axis);
+            }
+        }
+    }
+    else
+    {
+        gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pData, axis);
+    }
 }
 
 
@@ -2958,8 +2979,21 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
 //! @param str String to look for
 //! @param variables Reference to list of found variables
-void HcomHandler::getVariables(const QString str, QStringList &variables) const
+void HcomHandler::getVariables(QString str, QStringList &variables) const
 {
+    bool ok;
+    QString end = str.section(".",-1);
+    end.toInt(&ok);
+    if(ok || end == "*")
+    {
+        str.chop(end.size()+1);
+    }
+    else if(end == "L")
+    {
+        str.chop(end.size()+1);
+        end = "0";     //0 because log data handler starts from 0 while the GUI shows values from 1, the conversion means that 0 => -1 = latest generation
+    }
+
     if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
@@ -3025,7 +3059,7 @@ void HcomHandler::getVariables(const QString str, QStringList &variables) const
         }
         if(ok)
         {
-            variables.append(names[n]);
+            variables.append(names[n]+"."+end);
         }
     }
 }
@@ -3203,6 +3237,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 }
 
 
+
 //! @brief Returns a pointer to a data variable for given full data name
 //! @param fullName Full concatinated name of the variable
 //! @returns Pointer to the data variable
@@ -3214,11 +3249,12 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
     }
 
     fullName.replace(".","#");
+
     int generation = -1;
 
     if(fullName.count("#") == 1 || fullName.count("#") == 3)
     {
-        generation = fullName.split("#").last().toInt();
+        generation = fullName.split("#").last().toInt()-1;      //Subtract 1 due to zero indexing
         fullName.chop(fullName.split("#").last().size()+1);
     }
 

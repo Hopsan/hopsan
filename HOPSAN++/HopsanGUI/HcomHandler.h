@@ -57,6 +57,7 @@ public:
     //Public access functions
     QString runScriptCommands(QStringList &lines, bool *abort);
     SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
+    //SharedLogVariableDataPtrT getVariablePtr(QString fullName, const int generation) const;
     QStringList getCommands() const;
     QMap<QString, double> getLocalVariables() const;
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
@@ -137,7 +138,7 @@ private:
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;
-    void getVariables(const QString str, QStringList &variables) const;
+    void getVariables(QString str, QStringList &variables) const;
     void getVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
