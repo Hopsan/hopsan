@@ -335,21 +335,21 @@ void PlotTab::openAxisLabelDialog()
 void PlotTab::applyAxisSettings()
 {
     //If a box is not checked then use manual settings AND remember the value since we do not know how to ask for it later
-    if(!mpXAutoCheckBox->isChecked())
+    //if(!mpXAutoCheckBox->isChecked())
     {
         this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
         mXAxisLimits[FirstPlot].min = mpXminSpinBox->value();
         mXAxisLimits[FirstPlot].max = mpXmaxSpinBox->value();
     }
 
-    if(!mpYLAutoCheckBox->isChecked())
+    //if(!mpYLAutoCheckBox->isChecked())
     {
         this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
         mYLAxisLimits[FirstPlot].min = mpYLminSpinBox->value();
         mYLAxisLimits[FirstPlot].max = mpYLmaxSpinBox->value();
     }
 
-    if(!mpYRAutoCheckBox->isChecked())
+    //if(!mpYRAutoCheckBox->isChecked())
     {
         this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
         mYRAxisLimits[FirstPlot].min = mpYRminSpinBox->value();
@@ -359,7 +359,7 @@ void PlotTab::applyAxisSettings()
     // If anyone of the boxes are checked we call rescale in case we just unchecked it as it needs to auto refresh
     if (mpXAutoCheckBox->isChecked() || mpYLAutoCheckBox->isChecked() || mpYRAutoCheckBox->isChecked())
     {
-        this->rescaleAxesToCurves();
+//        this->rescaleAxesToCurves();
     }
 }
 
@@ -577,14 +577,6 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
 //! @brief Rescales the axes and the zommers so that all plot curves will fit
 void PlotTab::rescaleAxesToCurves()
 {
-    if(!mIsLocked)
-    {
-        mpZoomerLeft[FirstPlot]->zoom(0);
-        mpZoomerRight[FirstPlot]->zoom(0);
-        mpZoomerLeft[SecondPlot]->zoom(0);
-        mpZoomerRight[SecondPlot]->zoom(0);
-    }
-
     // Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {
