@@ -36,6 +36,7 @@
 
 //Other includes
 #include <limits>
+#include <qwt_plot_zoomer.h>
 
 const double DoubleMax = std::numeric_limits<double>::max();
 
@@ -1099,7 +1100,23 @@ void PlotCurve::openScaleDialog()
 //! @brief Updates the scaling of a plot curve form values in scaling dialog
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
-    setTimePlotScalingAndOffset(mpTimeScaleComboBox->currentText().split(" ")[0].toDouble(), mpTimeOffsetSpinBox->value());
+    double newScale = mpTimeScaleComboBox->currentText().split(" ")[0].toDouble();
+    double oldScale = mpData->getTimeVector()->getPlotScale();
+
+    setTimePlotScalingAndOffset(newScale, mpTimeOffsetSpinBox->value());
+
+    //Update zoom rectangle to new scale if zoomed
+    if(mpParentPlotTab->isZoomed(FirstPlot))
+    {
+        QRectF oldZoomRect = mpParentPlotTab->mpZoomerLeft[FirstPlot]->zoomRect();
+        QRectF newZoomRect = QRectF(oldZoomRect.x()*newScale/oldScale, oldZoomRect.y(), oldZoomRect.width()*newScale/oldScale, oldZoomRect.height());
+
+        mpParentPlotTab->resetZoom();
+
+        mpParentPlotTab->mpZoomerLeft[FirstPlot]->zoom(newZoomRect);
+        mpParentPlotTab->update();
+    }
+
     mpParentPlotTab->mpQwtPlots[FirstPlot]->setAxisTitle(QwtPlot::xBottom, "Time ["+mpTimeScaleComboBox->currentText().split(" ")[1].remove("(").remove(")")+"] ");     //!< @todo Not so nice fix... /Robert
 }
 

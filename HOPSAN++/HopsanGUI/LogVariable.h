@@ -168,6 +168,7 @@ public:
     ~LogVariableData();
 
     const SharedVariableDescriptionT getVariableDescription() const;
+    const SharedLogVariableDataPtrT getTimeVector() const;
     const QString &getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;

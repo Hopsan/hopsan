@@ -178,6 +178,11 @@ const SharedVariableDescriptionT LogVariableData::getVariableDescription() const
     return mpVariableDescription;
 }
 
+const SharedLogVariableDataPtrT LogVariableData::getTimeVector() const
+{
+    return mSharedTimeVectorPtr;
+}
+
 const QString &LogVariableData::getAliasName() const
 {
     return mpVariableDescription->mAliasName;
