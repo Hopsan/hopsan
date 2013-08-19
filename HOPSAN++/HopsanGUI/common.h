@@ -56,6 +56,12 @@
 #define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
 #define HOPSANGUISCOPECOMPONENTTYPENAME "SignalSink"
 
+#ifdef WIN32
+#define LIBEXT ".dll"
+#else
+#define LIBEXT ".so"
+#endif
+
 //! @todo all of these dont have to be common
 //Enums
 enum SelectionStatusEnumT {Deselected, Selected};

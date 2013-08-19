@@ -789,7 +789,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
         pCoreAccess->compileComponentLibrary(libPath, randomName);
     }
 
-    QString newLibFileName = QDir::cleanPath(libPath)+"/"+randomName+".dll";
+    QString newLibFileName = QDir::cleanPath(libPath)+"/"+randomName+QString(LIBEXT);
 
     if(!QFile::exists(newLibFileName))
     {
