@@ -149,7 +149,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     //Output parameters
 <<<13>>>}
      
-     static void mdlTerminate(SimStruct *S){}
+static void mdlTerminate(SimStruct *S)
+{
+    pComponentSystem->finalize();
+}
      
      
  /* Simulink/Simulink Coder Interfaces */
