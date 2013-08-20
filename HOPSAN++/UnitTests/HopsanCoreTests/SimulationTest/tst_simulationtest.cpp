@@ -29,7 +29,7 @@ class SimulationTests : public QObject
 public:
     SimulationTests()
     {
-        mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+        mHopsanCore.loadExternalComponentLib(QString("../../"+QString(DEFAULTCOMPONENTLIB)).toStdString().c_str());
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 "<hopsanmodelfile hmfversion=\"0.4\" hopsanguiversion=\"0.6.0\" hopsancoreversion=\"0.6.0\">"
                 "  <system logsamples=\"2048\" typename=\"Subsystem\" name=\"unittestmodel\">"
@@ -602,25 +602,20 @@ private Q_SLOTS:
         pComp = mHopsanCore.createComponent("SignalGain");
         QTest::newRow("0") << pComp->getPort("in") << false;
         QTest::newRow("1") << pComp->getPort("out") << false;
-        mHopsanCore.removeComponent(pComp);
 
         pComp = mHopsanCore.createComponent("SignalSink");
         QTest::newRow("2") << pComp->getPort("in") << true;
-        mHopsanCore.removeComponent(pComp);
 
         pComp = mHopsanCore.createComponent("HydraulicCylinderC");
         QTest::newRow("3") << pComp->getPort("P1") << true;
         QTest::newRow("4") << pComp->getPort("P2") << true;
         QTest::newRow("5") << pComp->getPort("P3") << false;
-        mHopsanCore.removeComponent(pComp);
 
         pComp = mHopsanCore.createComponent("HydraulicLaminarOrifice");
         QTest::newRow("6") << pComp->getPort("P1") << false;
-        mHopsanCore.removeComponent(pComp);
 
         pComp = mHopsanCore.createComponent("MechanicMultiPortTranslationalMass");
         QTest::newRow("7") << pComp->getPort("P1") << true;
-        mHopsanCore.removeComponent(pComp);
     }
 
     void Node_Get_Write_Port_Component_Pointer()
