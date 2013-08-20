@@ -566,12 +566,31 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     printMessage("Moving files to output directory...");
 
     QFile soFile(mTempPath+libFileName);
-    QFile::remove(mOutputPath + libFileName);
-    soFile.copy(mOutputPath + libFileName);
-    file.copy(mOutputPath+fileInfo.fileName());
+    QFile targetSoFile(mOutputPath+libFileName);
+    if(targetSoFile.exists() && !targetSoFile.remove())
+    {
+        printErrorMessage("Failed to remove existing binary file:"+targetSoFile.errorString());
+        return;
+    }
+    targetSoFile.close();
+
+    qDebug() << "Copying "+soFile.fileName()+" to "+mOutputPath+libFileName;
+    if(!soFile.copy(mOutputPath + libFileName))
+    {
+        printErrorMessage("Failed to copy new binary to output directory: "+soFile.errorString());
+        return;
+    }
+    if(!file.copy(mOutputPath+fileInfo.fileName()))
+    {
+        printErrorMessage("Failed to copy source code file to output directory: "+file.errorString());
+    }
     QFileInfo ccLibFileInfo(ccLibFile);
-    ccLibFile.copy(mOutputPath+ccLibFileInfo.fileName());
+    if(!ccLibFile.copy(mOutputPath+ccLibFileInfo.fileName()))
+    {
+        printErrorMessage("Failed to copy library source file to output directory: "+ccLibFile.errorString());
+    }
 }
+
 
 
 void HopsanGenerator::setOutputPath(const QString path)

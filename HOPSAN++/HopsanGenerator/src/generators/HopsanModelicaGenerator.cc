@@ -1,9 +1,13 @@
 #include "generators/HopsanModelicaGenerator.h"
 #include "GeneratorUtilities.h"
 #include "symhop/SymHop.h"
+#include <QtConcurrentMap>
 
 
 using namespace SymHop;
+
+
+Expression gTempExpr;
 
 HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QString binPath, bool showDialog)
     : HopsanGenerator(coreIncludePath, binPath, showDialog)
@@ -614,7 +618,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int e=0; e<equations.size(); ++e)
     {
         equations[e].toLeftSided();
-        //qDebug() << "LEFT SIDED: " << equations[e].toString();
+        qDebug() << "LEFT SIDED: " << equations[e].toString();
     }
 
     //Generate a preferred path for sorting, based on the location of derivatives of state variables
@@ -644,7 +648,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         equations[e] = equations[e].bilinearTransform();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        //qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
+        qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
     }
 
 
@@ -653,7 +657,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         equations[e].linearize();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        //qDebug() << "LINEARIZED: " << equations[e].toString();
+        qDebug() << "LINEARIZED: " << equations[e].toString();
         equations[e].replaceBy((*equations[e].getLeft()));
     }
 
@@ -666,7 +670,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         equations[e].expand();
         equations[e].toDelayForm(delayTerms, delaySteps);
         equations[e]._simplify(Expression::FullSimplification);
-        //qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
+        qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
     }
 
 
@@ -724,33 +728,33 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     QList<QList<Expression> > jacobian;
     for(int e=0; e<equations.size(); ++e)
     {
-        //Remove all delay operators, since they shall not be in the Jacobian anyway
-        Expression tempExpr = equations[e];
+         //Remove all delay operators, since they shall not be in the Jacobian anyway
+        gTempExpr = equations[e];
+        gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
 
-       // tempExpr.replace(Expression("Z", Expression::NoSimplifications), Expression("0.0", Expression::NoSimplifications));
-       // tempExpr.replace(Expression("-Z",Expression::NoSimplifications), Expression("0.0", Expression::NoSimplifications));
+        QList<Expression> result = QtConcurrent::blockingMapped(stateVars, concurrentDiff);
 
-        tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+        jacobian.append(result);
 
-        //Now differentiate all jacobian elements
-        jacobian.append(QList<Expression>());
-        for(int j=0; j<stateVars.size(); ++j)
-        {
-            bool ok = true;
-            //Expression negExpr = stateVars[j];
-            //negExpr.changeSign();
-            //tempExpr.replace(negExpr, Expression::fromFactorsDivisors(QList<Expression>() << stateVars[j] << Expression("-1.0", Expression::NoSimplifications), QList<Expression>()));
-            Expression derExpr = tempExpr.derivative(stateVars[j], ok);
-            //qDebug() << "Derivating \""+tempExpr.toString()+"\" with respect to \""+stateVars[j].toString();
-            //qDebug() << "Result: \""+derExpr.toString()+"\"";
-            jacobian[e].append(derExpr);
-            if(!ok)
-            {
-                printErrorMessage("Failed to differentiate expression: " + equations[e].toString() + " for variable " + stateVars[j].toString());
-                return;
-            }
-            jacobian[e].last()._simplify(Expression::FullSimplification);
-        }
+//        //Now differentiate all jacobian elements
+//        jacobian.append(QList<Expression>());
+//        for(int j=0; j<stateVars.size(); ++j)
+//        {
+//            bool ok = true;
+//            //Expression negExpr = stateVars[j];
+//            //negExpr.changeSign();
+//            //tempExpr.replace(negExpr, Expression::fromFactorsDivisors(QList<Expression>() << stateVars[j] << Expression("-1.0", Expression::NoSimplifications), QList<Expression>()));
+//            Expression derExpr = tempExpr.derivative(stateVars[j], ok);
+//            //qDebug() << "Derivating \""+tempExpr.toString()+"\" with respect to \""+stateVars[j].toString();
+//            //qDebug() << "Result: \""+derExpr.toString()+"\"";
+//            jacobian[e].append(derExpr);
+//            if(!ok)
+//            {
+//                printErrorMessage("Failed to differentiate expression: " + equations[e].toString() + " for variable " + stateVars[j].toString());
+//                return;
+//            }
+//            jacobian[e].last()._simplify(Expression::FullSimplification);
+//        }
     }
 
 
@@ -927,6 +931,24 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             comp.varInits << "";
         }
     }
+}
+
+
+
+
+Expression concurrentDiff(Expression expr)
+{
+    Expression tempExpr = gTempExpr;
+
+    bool ok = true;
+    Expression derExpr = tempExpr.derivative(expr, ok);
+    if(!ok)
+    {
+        //printErrorMessage("Failed to differentiate expression: " + tempExpr.toString() + " for variable " + expr.toString());
+        return Expression(0);
+    }
+    derExpr._simplify(Expression::FullSimplification);
+    return derExpr;
 }
 
 

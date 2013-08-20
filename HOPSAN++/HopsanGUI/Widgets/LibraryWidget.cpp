@@ -768,6 +768,26 @@ void LibraryWidget::recompileComponent()
 
 bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, const QString modelicaCode)
 {
+    QStringList libs = QDir(libPath).entryList(QStringList() << "*.dll" << "*.so");
+    for(int l=0; l<libs.size(); ++l)
+    {
+        mpCoreAccess->unLoadComponentLib(libPath+libs[l]);
+        QFile testFile(libs[l]);
+        if(!testFile.open(QFile::ReadWrite))
+        {
+            testFile.close();
+            loadAndRememberExternalLibrary(libPath);
+            gpMainWindow->mpModelHandler->restoreState();
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Binary file \""+libs[l]+"\" is not writable! Component cannot be recompiled.");
+            return false;
+        }
+        else
+        {
+            testFile.close();
+        }
+    }
+
+
     bool success=true;
 
     QDateTime time = QDateTime();
@@ -798,8 +818,6 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     qDebug() << "Success!";
 
-    gpMainWindow->mpModelHandler->saveState();
-
     if(!mpCoreAccess->loadComponentLib(newLibFileName))
     {
         qDebug() << "Failed to load library!";
@@ -808,9 +826,11 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     qDebug() << "Loaded successfully!";
 
+    gpMainWindow->mpModelHandler->saveState();
+
     //Unload all dll:s in folder
     QDir libDir(libPath);
-    QStringList libList = libDir.entryList(QStringList() << "*.dll");
+    QStringList libList = libDir.entryList(QStringList() << "*.dll" << "*.so");
     for(int j=0; j<libList.size(); ++j)
     {
         QString fileName = QDir::cleanPath(libPath)+"/"+libList[j];
@@ -1171,7 +1191,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         filters << "*.so";
     #endif
     libDirObject.setNameFilters(filters);
-    QStringList libList = libDirObject.entryList();
+    QStringList libList = libDirObject.entryList(filters, QDir::NoFilter, QDir::Time);
     bool success=false;
     for (int i = 0; i < libList.size(); ++i)
     {

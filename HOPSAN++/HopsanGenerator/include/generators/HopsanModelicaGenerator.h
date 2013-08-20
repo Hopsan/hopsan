@@ -3,6 +3,11 @@
 
 #include "HopsanGenerator.h"
 
+extern SymHop::Expression gTempExpr;
+
+
+SymHop::Expression concurrentDiff(SymHop::Expression expr);
+
 class HopsanModelicaGenerator : public HopsanGenerator
 {
 public:

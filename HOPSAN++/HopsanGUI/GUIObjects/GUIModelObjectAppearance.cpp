@@ -620,8 +620,12 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     mTypeName       = domElement.attribute(CAF_TYPENAME, mTypeName);
     mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, "");
     mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
-    mSourceCode     = domElement.attribute(CAF_SOURCECODE, "");
-    mLibPath        = domElement.attribute(CAF_LIBPATH, "");
+    QString newSourceCode     = domElement.attribute(CAF_SOURCECODE, "");
+    if(!newSourceCode.isEmpty())
+        mSourceCode = newSourceCode;
+    QString newLibPath        = domElement.attribute(CAF_LIBPATH, "");
+    if(!newLibPath.isEmpty())
+        mLibPath = newLibPath;
     mIsRecompilable   = parseAttributeBool(domElement, CAF_RECOMPILABLE, false);
 
     //Use typename if displayname not set

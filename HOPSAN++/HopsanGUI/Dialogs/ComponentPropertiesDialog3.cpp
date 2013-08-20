@@ -158,6 +158,14 @@ void ComponentPropertiesDialog3::editPortPos()
     connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
 }
 
+void ComponentPropertiesDialog3::recompile()
+{
+    QString libPath = this->mpModelObject->getAppearanceData()->getLibPath();
+    bool isModelica = mpModelObject->getAppearanceData()->getSourceCodeFile().endsWith(".mo");
+    QString code = mpSourceCodeTextEdit->toPlainText();
+    gpMainWindow->mpLibrary->recompileComponent(libPath, isModelica, code);
+}
+
 bool ComponentPropertiesDialog3::setAliasNames()
 {
     return mpVariableTableWidget->setAliasNames();
@@ -252,16 +260,20 @@ QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
 QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
 {
     QPushButton *pEditPortPos = new QPushButton(tr("&Move ports"), this);
+    mpRecompileButton = new QPushButton(tr("&Recompile"), this);
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
     pOkButton->setDefault(true);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Vertical, this);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(mpRecompileButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pEditPortPos, QDialogButtonBox::ActionRole);
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pEditPortPos, SIGNAL(clicked()), this, SLOT(editPortPos()));
+    connect(mpRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
+    mpRecompileButton->setVisible(false);
     return pButtonBox;
 }
 
@@ -312,6 +324,8 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
 
 QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
 {
+    mpRecompileButton->setVisible(true);
+
     rFilePath.prepend(mpModelObject->getAppearanceData()->getBasePath());
     QFile file(rFilePath);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -320,22 +334,26 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     code = t.readAll();
     file.close();
 
-    QTextEdit *pSourceCodeTextEdit = new QTextEdit();
-    pSourceCodeTextEdit->setReadOnly(true);
-    pSourceCodeTextEdit->setText(code);
+    mpSourceCodeTextEdit = new QTextEdit();
+    mpSourceCodeTextEdit->setReadOnly(false);
+    mpSourceCodeTextEdit->setText(code);
     if(rFilePath.endsWith(".hpp"))
     {
         //! @todo who own and who deleats
-        CppHighlighter *pHighLighter = new CppHighlighter(pSourceCodeTextEdit->document());
+        CppHighlighter *pHighLighter = new CppHighlighter(mpSourceCodeTextEdit->document());
         Q_UNUSED(pHighLighter);
     }
     else if(rFilePath.endsWith(".mo"))
     {
-        ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(pSourceCodeTextEdit->document());
+        ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(mpSourceCodeTextEdit->document());
         Q_UNUSED(pHighLighter);
     }
 
-    return pSourceCodeTextEdit;
+    QWidget *pTempWidget = new QWidget(this);
+    QVBoxLayout *pLayout = new QVBoxLayout(pTempWidget);
+    pLayout->addWidget(mpSourceCodeTextEdit);
+
+    return pTempWidget;//return pSourceCodeTextEdit;
 }
 
 void ComponentPropertiesDialog3::createEditStuff()
