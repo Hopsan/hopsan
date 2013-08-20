@@ -128,6 +128,7 @@ public:
 
 public slots:
     void setTimeStep(const double timeStep);
+    void setVisibleIfSignal(bool visible);
 
 signals:
 

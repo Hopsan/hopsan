@@ -107,6 +107,11 @@ void SystemContainer::commonConstructorCode()
     }
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
+
+    if(mpParentContainerObject)
+    {
+        connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisibleIfSignal(bool)));
+    }
 }
 
 
@@ -1617,6 +1622,14 @@ void SystemContainer::setTimeStep(const double timeStep)
 {
     mpCoreSystemAccess->setDesiredTimeStep(timeStep);
     this->hasChanged();
+}
+
+void SystemContainer::setVisibleIfSignal(bool visible)
+{
+    if(this->getTypeCQS() == "S")
+    {
+        this->setVisible(visible);
+    }
 }
 
 //! Returns the time step value of the current project.
