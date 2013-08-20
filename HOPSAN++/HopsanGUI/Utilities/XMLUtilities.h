@@ -135,6 +135,12 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_TRUETAG "true"
 #define HMF_FALSETAG "false"
 
+#define HMF_PLOTSCALES "plotscales"
+#define HMF_PLOTSCALE "plotscale"
+#define HMF_PLOTSCALEPORTDATANAME "portdataname"
+#define HMF_PLOTSCALEDESCRIPTION "description"
+#define HMF_PLOTSCALEVALUE "scale"
+
 #define HMF_POSETAG "pose"
 #define HMF_VIEWPORTTAG "viewport"
 #define HMF_NAMETEXTTAG "nametext"

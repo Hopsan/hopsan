@@ -78,15 +78,21 @@ public:
 
     virtual QString getDefaultParameterValue(const QString paramName) const;
 
+    virtual bool setParameterValue(QString name, QString valueTxt, bool force=false);
+    virtual QString getStartValueTxt(QString portName, QString variable);
+    virtual bool setStartValue(QString portName, QString variable, QString sysParName);
+
     // VariableAlias method
     //! @todo parameters and portvaraibles should be more similar in the future, so that we do not need handle them separately
     virtual QVector< QPair<QString,QString> > getVariableAliasList();
     virtual void getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions);
     virtual void getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions);
 
-    virtual bool setParameterValue(QString name, QString valueTxt, bool force=false);
-    virtual QString getStartValueTxt(QString portName, QString variable);
-    virtual bool setStartValue(QString portName, QString variable, QString sysParName);
+    // Custom variable plot unit methods
+    void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);
+    void unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName);
+    void getCustomPlotUnitsOrScales(QMap<QString, QStringList> &rCustomUnitsOrScales);
+    void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, QStringList &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
 
     // Load and save methods
     virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
@@ -172,6 +178,7 @@ protected:
 
     QMap<QString, QString> mDefaultParameterValues;
     QStringList mActiveDynamicParameterPortNames;
+    QMap<QString, QStringList> mRegisteredCustomPlotUnitsOrScales;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

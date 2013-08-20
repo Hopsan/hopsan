@@ -383,6 +383,14 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                     dom_port = dom_port.nextSiblingElement("port");
                 }
             }
+
+            // Load any custom set plot scales
+            QDomElement plotscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PLOTSCALES).firstChildElement(HMF_PLOTSCALE);
+            while (!plotscale.isNull())
+            {
+                pObj->registerCustomPlotUnitOrScale(plotscale.attribute(HMF_PLOTSCALEPORTDATANAME), plotscale.attribute(HMF_PLOTSCALEDESCRIPTION), plotscale.attribute(HMF_PLOTSCALEVALUE));
+                plotscale = plotscale.nextSiblingElement(HMF_PLOTSCALE);
+            }
         }
 
         return pObj;

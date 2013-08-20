@@ -53,6 +53,25 @@ private:
     int mMaxVisibleRows;
 };
 
+class PlotScaleSelectionWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    PlotScaleSelectionWidget(const int row, const CoreVariameterDescription &rData, ModelObject *pModelObject);
+
+private slots:
+    void createPlotScaleSelectionMenu();
+    void registerCustomScale();
+
+
+private:
+    QLineEdit *mpPlotScaleEdit;
+    ModelObject *mpModelObject;
+    QString mVariableTypeName, mVariablePortDataName;
+
+
+};
+
 class VariableTableWidget :public TableWidgetTotalSize
 {
     Q_OBJECT
@@ -69,6 +88,9 @@ private slots:
     void makePortAtRow(int row, bool isPort);
     void cellChangedSlot(const int row, const int col);
 
+signals:
+    void setCustomPlotScaleText(QString);
+
 private:
     void createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype);
     void createSeparatorRow(const int row, const QString name);
@@ -77,6 +99,7 @@ private:
     //void setStartValue(const int row);
     bool setAliasName(const int row);
     ModelObject *mpModelObject;
+    QMap<int, CoreVariameterDescription> mVariableDescriptions;
 };
 
 class ComponentPropertiesDialog3 : public QDialog

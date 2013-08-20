@@ -781,18 +781,15 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     setItem(row,Value,pItem);
     selectValueTextColor(row);
 
-    pItem = new QTableWidgetItem("--");
-    pItem->setTextAlignment(Qt::AlignCenter);
-    pItem->setFlags(Qt::NoItemFlags);
-    if (variametertype > Constant)
-    {
-        pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
-    }
-    setItem(row,Scale,pItem);
+    // Create the custom plot unit display and selection button
+    QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(row, rData, mpModelObject);
+    this->setIndexWidget(model()->index(row,Scale), pPlotScaleWidget);
+
 
     // Set tool buttons
     QWidget* pTooButtons = new QWidget();
     QHBoxLayout* pToolButtonsLayout = new QHBoxLayout(pTooButtons);
+    pToolButtonsLayout->setContentsMargins(0,0,0,0);
 
     RowAwareToolButton *pResetDefaultToolButton = new RowAwareToolButton(row);
     pResetDefaultToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
@@ -820,6 +817,8 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     }
     pToolButtonsLayout->addStretch(2);
     this->setIndexWidget(model()->index(row,Buttons), pTooButtons);
+
+    mVariableDescriptions.insert(row, rData);
 }
 
 void VariableTableWidget::createSeparatorRow(const int row, const QString name)
@@ -925,4 +924,97 @@ void RowAwareCheckBox::setRow(const int row)
 void RowAwareCheckBox::checkedSlot(const bool state)
 {
     emit checkedAtRow(mRow, state);
+}
+
+
+PlotScaleSelectionWidget::PlotScaleSelectionWidget(const int row, const CoreVariameterDescription &rData, ModelObject *pModelObject)
+{
+    mVariableTypeName = rData.mName;
+    mVariablePortDataName = rData.mPortName+"#"+rData.mName;
+    mpModelObject = pModelObject;
+
+    QHBoxLayout* pPlotScaleWidgetLayout = new QHBoxLayout(this);
+    pPlotScaleWidgetLayout->setContentsMargins(0,0,0,0);
+    pPlotScaleWidgetLayout->setSpacing(0);
+    mpPlotScaleEdit = new QLineEdit();
+    mpPlotScaleEdit->setAlignment(Qt::AlignCenter);
+    mpPlotScaleEdit->setFrame(false);
+    pPlotScaleWidgetLayout->addWidget(mpPlotScaleEdit);
+    connect(mpPlotScaleEdit, SIGNAL(editingFinished()), this, SLOT(registerCustomScale()));
+
+    QStringList currCustom;
+    pModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, currCustom);
+    if (currCustom.size() > 1) // Check if data exists
+    {
+        // If description not given, display the scale value
+        if (currCustom[0].isEmpty())
+        {
+            mpPlotScaleEdit->setText(currCustom[1]);
+        }
+        // If description given use it (usually the custom unit)
+        else
+        {
+            mpPlotScaleEdit->setText(currCustom[0]);
+        }
+    }
+
+    RowAwareToolButton *pScaleSelectionButton =  new RowAwareToolButton(row);
+    pScaleSelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
+    pScaleSelectionButton->setToolTip("Select Unit Scaling");
+    pScaleSelectionButton->setFixedSize(24,24);
+    connect(pScaleSelectionButton, SIGNAL(triggeredAtRow(int)), this, SLOT(createPlotScaleSelectionMenu()));
+    pPlotScaleWidgetLayout->addWidget(pScaleSelectionButton);
+}
+
+void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
+{
+    QMenu menu;
+    QMap<QString, double> unitScales = gConfig.getCustomUnits(mVariableTypeName);
+    if (!unitScales.isEmpty())
+    {
+        QList<QString> keys = unitScales.keys();
+        QMap<QAction*, int> actionScaleMap;
+
+        for (int i=0; i<keys.size(); ++i)
+        {
+            QAction *tempAction = menu.addAction(keys[i]);
+            actionScaleMap.insert(tempAction, i);
+            tempAction->setIconVisibleInMenu(false);
+        }
+
+        //! @todo maybe add this
+        //    if(!menu.isEmpty())
+        //    {
+        //        menu.addSeparator();
+        //    }
+        //    QAction *pAddAction = menu.addAction("Add global unit scale");
+        QAction *pAddAction = 0;
+
+
+        QCursor cursor;
+        QAction *selectedAction = menu.exec(cursor.pos());
+        if(selectedAction == pAddAction)
+        {
+            //! @todo maybe add this
+            return;
+        }
+
+        int idx = actionScaleMap.value(selectedAction,-1);
+        if (idx >= 0)
+        {
+            QString key =  keys.at(idx);
+            if(!key.isEmpty())
+            {
+                // Set the selected unit scale
+                mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, key, QString("%1").arg(unitScales.value(key)));
+                mpPlotScaleEdit->setText(key);
+            }
+        }
+    }
+}
+
+void PlotScaleSelectionWidget::registerCustomScale()
+{
+    //! @todo need to check if text is valid number
+    mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", mpPlotScaleEdit->text());
 }

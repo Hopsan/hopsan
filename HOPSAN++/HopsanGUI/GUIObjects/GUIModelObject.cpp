@@ -776,6 +776,37 @@ void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &
     mpParentContainerObject->getCoreSystemAccessPtr()->getVariameters(this->getName(), rVariameterDescriptions);
 }
 
+void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue)
+{
+    if (rScaleValue.isEmpty())
+    {
+        unregisterCustomPlotUnitOrScale(rVariablePortDataName);
+    }
+    else
+    {
+        QStringList descAndScale;
+        descAndScale.append(rDescription);
+        descAndScale.append(rScaleValue);
+        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, descAndScale);
+    }
+}
+
+void ModelObject::unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName)
+{
+    mRegisteredCustomPlotUnitsOrScales.remove(rVariablePortDataName);
+}
+
+void ModelObject::getCustomPlotUnitsOrScales(QMap<QString, QStringList> &rCustomUnitsOrScales)
+{
+    rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales;
+}
+
+void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, QStringList &rCustomUnitsOrScales)
+{
+    // Empty stringlist to indicate, no data
+     rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, QStringList());
+}
+
 
 //! @brief Function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
@@ -884,21 +915,42 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
         rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
     }
 
-    //Save GUI realted stuff
+    // Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
 
-        //Save center pos in parent coordinates (same as scene coordinates for model objects)
+    // Save center pos in parent coordinates (same as scene coordinates for model objects)
     QPointF cpos = this->getCenterPos();
-
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
+
+    // Save the taext displaying the component name
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
     nametext.setAttribute("position", getNameTextPos());
     nametext.setAttribute("visible", mpNameText->isVisible());
 
+    // Save any custom selected plot scales
+    if (!mRegisteredCustomPlotUnitsOrScales.isEmpty())
+    {
+        QDomElement plotscales = appendDomElement(xmlGuiStuff, HMF_PLOTSCALES);
+        QMap<QString, QStringList>::iterator psit;
+        for (psit=mRegisteredCustomPlotUnitsOrScales.begin(); psit!=mRegisteredCustomPlotUnitsOrScales.end(); ++psit)
+        {
+            QStringList &val = psit.value();
+            //check size to prevent crash if something goes wrong
+            if (val.size() > 1)
+            {
+                QDomElement plotscale = appendDomElement(plotscales, HMF_PLOTSCALE);
+                plotscale.setAttribute(HMF_PLOTSCALEPORTDATANAME, psit.key());
+                plotscale.setAttribute(HMF_PLOTSCALEDESCRIPTION, val[0]);
+                plotscale.setAttribute(HMF_PLOTSCALEVALUE, val[1]);
+            }
+        }
+    }
 
+    // Save animation settings
     QDomElement animationElement = appendDomElement(xmlGuiStuff, "animation");
     mModelObjectAppearance.getAnimationDataPtr()->saveToDomElement(animationElement);
 
+    // Return dom node with appended gui contents
     return xmlGuiStuff;
 }
 
