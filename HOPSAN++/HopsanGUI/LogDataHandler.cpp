@@ -90,6 +90,11 @@ LogDataHandler::~LogDataHandler()
     }
 }
 
+void LogDataHandler::setParentContainerObject(ContainerObject *pParent)
+{
+    mpParentContainerObject = pParent;
+}
+
 
 void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
 {

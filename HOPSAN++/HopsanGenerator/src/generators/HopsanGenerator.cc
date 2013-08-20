@@ -381,8 +381,9 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
                 varName = varNames[v] + QString::number(portId);
             writeOutputs.append("            (*mpND_"+varName+") = "+varName+";\n");
         }
+        ++portId;
     }
-    ++portId;
+
     QString writeStartValues = "";
     if(overwriteStartValues)
     {

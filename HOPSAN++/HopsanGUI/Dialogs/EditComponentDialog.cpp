@@ -501,7 +501,35 @@ void CreateComponentWizard::generate()
                     nodeTypes << t;
             }
 
-            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+nodeTypes[p]+"\");\n");
+            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+nodeTypes[p]+"\");\n\n");
+
+
+            QStringList varNames;
+            if(nodeTypes[p] != "NodeSignal")
+            {
+                varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
+            }
+            else
+            {
+                if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
+                if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
+            }
+
+            QStringList varLabels = NodeInfo(nodeTypes[p]).variableLabels;
+            QString numStr, defaultValue;
+            if(portTypes[p] != "ReadPort" && portTypes[p] != "WritePort")
+            {
+                numStr = QString::number(p+1);
+            }
+            else
+            {
+                defaultValue = ", "+mPortDefaultSpinBoxPtrs[p]->text();
+            }
+
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append("        setDefaultStartValue(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+defaultValue+");\n");
+            }
         }
         output.append("    }\n\n");
 
@@ -536,7 +564,7 @@ void CreateComponentWizard::generate()
 
             for(int v=0; v<varNames.size(); ++v)
             {
-                output.append("        mpND_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+defaultValue+");\n");
+                output.append("        mpND_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+");\n");
             }
         }
         output.append("\n");

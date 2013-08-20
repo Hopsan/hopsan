@@ -50,6 +50,8 @@ public:
     typedef QList<QVector<double> > TimeListT;
     typedef QList<VariableDescription> FavoriteListT;
 
+    void setParentContainerObject(ContainerObject *pParent);
+
     void collectPlotDataFromModel(bool overWriteLastGeneration=false);
     void exportToPlo(QString filePath, QStringList variables);
     void importFromPlo(QString rImportFilePath=QString());

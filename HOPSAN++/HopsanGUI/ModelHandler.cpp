@@ -590,17 +590,18 @@ void ModelHandler::restoreState()
             getCurrentTopLevelSystem()->setModelFile(mStateInfoHmfList[i]);
             QString basePath = QFileInfo(mStateInfoHmfList[i]).absolutePath();
             QStringListIterator objIt(getCurrentTopLevelSystem()->getModelObjectNames());
-            while (objIt.hasNext())
-            {
-                getCurrentTopLevelSystem()->getModelObject(objIt.next())->getAppearanceData()->setBasePath(basePath);
-            }
+//            while (objIt.hasNext())
+//            {
+//                //getCurrentTopLevelSystem()->getModelObject(objIt.next())->getAppearanceData()->setBasePath(basePath);
+//            }
         }
         else
         {
             loadModel(mStateInfoHmfList[i]);
         }
-        gpMainWindow->mpCentralTabs->setTabText(i, mStateInfoTabNames[i]);
+        gpMainWindow->mpCentralTabs->setTabText(i+1, mStateInfoTabNames[i]);
         getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
+        mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());
     }
 }
 

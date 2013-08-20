@@ -308,7 +308,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
         output = output.remove(output.size()-1, 1);
     }
 #elif linux
-    QString gccCommand = "cd "+path+" && gcc "+flags+" ";
+    QString gccCommand = "cd \""+path+"\" && gcc "+flags+" ";
     gccCommand.append(c+" -fpermissive -o "+o+".so "+i+" "+l);
     qDebug() << "Command = " << gccCommand;
     gccCommand +=" 2>&1";

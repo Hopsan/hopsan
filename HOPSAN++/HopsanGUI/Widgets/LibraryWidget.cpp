@@ -767,7 +767,9 @@ void LibraryWidget::recompileComponent()
 
 
 bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, const QString modelicaCode)
-{
+{ 
+    gpMainWindow->mpModelHandler->saveState();
+
     QStringList libs = QDir(libPath).entryList(QStringList() << "*.dll" << "*.so");
     for(int l=0; l<libs.size(); ++l)
     {
@@ -825,8 +827,6 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
     }
 
     qDebug() << "Loaded successfully!";
-
-    gpMainWindow->mpModelHandler->saveState();
 
     //Unload all dll:s in folder
     QDir libDir(libPath);
@@ -1665,7 +1665,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
 //            }
 //        }
 
-        gpMainWindow->mpModelHandler->saveState();
+        //gpMainWindow->mpModelHandler->saveState();
 
 //        QMessageBox::StandardButton button = QMessageBox::Ok;
 //        if (gpMainWindow->mpModelHandler->count() > 0 && doWarn)
@@ -1682,7 +1682,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
             update();
 //        }
 
-        gpMainWindow->mpModelHandler->restoreState();
+        //gpMainWindow->mpModelHandler->restoreState();
     }
 
 }
@@ -1789,7 +1789,9 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
     if(pSelectedAction == pUnloadLibraryFolder)
     {
+        gpMainWindow->mpModelHandler->saveState();
         unloadExternalLibrary(pTree->mName, pTree->mpParent->mName);
+        gpMainWindow->mpModelHandler->restoreState();
     }
 
     if(pSelectedAction == pEditComponentAction)

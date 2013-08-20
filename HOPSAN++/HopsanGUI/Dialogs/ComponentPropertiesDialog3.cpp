@@ -22,31 +22,29 @@
 //!
 //$Id: ComponentPropertiesDialog3.cpp 4807 2012-11-28 14:07:11Z petno25 $
 
+//Qt includes
 #include <QtGui>
 #include <QDebug>
 
+//Hopsan includes
+#include "common.h"
 #include "ComponentPropertiesDialog3.h"
-
-#include "MainWindow.h"
 #include "Configuration.h"
-
-#include "UndoStack.h"
-#include "GUIPort.h"
-
-#include "Widgets/MessageWidget.h"
-
-#include "Widgets/SystemParametersWidget.h"
-#include "Widgets/LibraryWidget.h"
-
-#include "GUIObjects/GUIComponent.h"
-#include "GUIObjects/GUIContainerObject.h"
-
-#include "Utilities/GUIUtilities.h"
+#include "DesktopHandler.h"
+#include "Dialogs/ComponentGeneratorDialog.h"
+#include "Dialogs/EditComponentDialog.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
-
-#include "Dialogs/ComponentGeneratorDialog.h"
+#include "GUIObjects/GUIComponent.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "GUIPort.h"
+#include "MainWindow.h"
+#include "UndoStack.h"
+#include "Utilities/GUIUtilities.h"
+#include "Widgets/LibraryWidget.h"
+#include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
+#include "Widgets/SystemParametersWidget.h"
 
 
 
@@ -64,6 +62,51 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     : QDialog(pParent)
 {
     mpModelObject = pModelObject;
+
+    if(mpModelObject->getTypeName() == "ModelicaComponent")
+    {
+        this->hide();
+
+        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica);
+        pEditDialog->exec();
+
+        if(pEditDialog->result() == QDialog::Accepted)
+        {
+            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+            QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
+            QString dummy = gDesktopHandler.getGeneratedComponentsPath();
+            QString libPath = dummy+typeName+"/";
+            coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName);
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+            mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
+        }
+        delete(pEditDialog);
+
+        this->close();
+        return;
+    }
+    else if(mpModelObject->getTypeName() == "CppComponent")
+    {
+        this->hide();
+
+        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp);
+        pEditDialog->exec();
+
+        if(pEditDialog->result() == QDialog::Accepted)
+        {
+            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+            QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
+            QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
+            coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+            mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
+        }
+        delete(pEditDialog);
+
+        this->close();
+        return;
+    }
+
     this->setPalette(gConfig.getPalette());
     setWindowTitle(tr("Component Properties"));
     //    if(mpModelObject->getTypeName().startsWith("CppComponent"))
@@ -134,19 +177,19 @@ void ComponentPropertiesDialog3::okPressed()
 {
     setName();
 
-    if(mpModelObject->getTypeName().startsWith("CppComponent"))
-    {
-        recompileCppFromDialog();
-    }
-    else
-    {
+//    if(mpModelObject->getTypeName().startsWith("CppComponent"))
+//    {
+//        recompileCppFromDialog();
+//    }
+//    else
+//    {
         setAliasNames();
 
         if (setVariableValues())
         {
             close();
         }
-    }
+ //   }
 
 }
 
@@ -160,10 +203,41 @@ void ComponentPropertiesDialog3::editPortPos()
 
 void ComponentPropertiesDialog3::recompile()
 {
+    QString basePath = this->mpModelObject->getAppearanceData()->getBasePath();
     QString libPath = this->mpModelObject->getAppearanceData()->getLibPath();
-    bool isModelica = mpModelObject->getAppearanceData()->getSourceCodeFile().endsWith(".mo");
-    QString code = mpSourceCodeTextEdit->toPlainText();
-    gpMainWindow->mpLibrary->recompileComponent(libPath, isModelica, code);
+    QString fileName = this->mpModelObject->getAppearanceData()->getSourceCodeFile();
+
+    bool modelica = mpModelObject->getAppearanceData()->getSourceCodeFile().endsWith(".mo");
+    QString sourceCode = mpSourceCodeTextEdit->toPlainText();
+
+    //Read source code from file
+    QFile oldSourceFile(basePath+fileName);
+    if(!oldSourceFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+    QString oldSourceCode;
+    while(!oldSourceFile.atEnd())
+    {
+        oldSourceCode.append(oldSourceFile.readLine());
+    }
+    oldSourceFile.close();
+
+    QFile sourceFile(basePath+fileName);
+    if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+        return;
+    sourceFile.write(sourceCode.toStdString().c_str());
+    sourceFile.close();
+
+    if(!gpMainWindow->mpLibrary->recompileComponent(basePath+libPath, modelica, sourceCode))
+    {
+        qDebug() << "Failure!";
+        QFile sourceFile(basePath+fileName);
+        if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+            return;
+        sourceFile.write(oldSourceCode.toStdString().c_str());
+        sourceFile.close();
+    }
+
+    this->close();
 }
 
 bool ComponentPropertiesDialog3::setAliasNames()
@@ -411,7 +485,7 @@ void ComponentPropertiesDialog3::createEditStuff()
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(pPropertiesWidget, "Properties");
     pTabWidget->addTab(pHelpWidget, "Description");
-    if(!filePath.isEmpty())
+    if(!filePath.isEmpty());
     {
         QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
         pTabWidget->addTab(pSourceBrowser, "Source Code");

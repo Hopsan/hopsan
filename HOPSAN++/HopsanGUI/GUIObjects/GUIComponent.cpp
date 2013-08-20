@@ -148,11 +148,15 @@ void Component::openPropertiesDialog()
 {
     //ComponentPropertiesDialog dialog(this, gpMainWindow);
     ComponentPropertiesDialog3 dialog(this, mpDialogParentWidget);
-    connect(this, SIGNAL(objectDeleted()), &dialog, SLOT(reject()));
-    //! @todo should we have delete on close
-    dialog.setModal(false);
-    dialog.show();
-    dialog.exec();
+
+    if(getTypeName() != "ModelicaComponent" && getTypeName() != "CppComponent")
+    {
+        connect(this, SIGNAL(objectDeleted()), &dialog, SLOT(reject()));
+        //! @todo should we have delete on close
+        dialog.setModal(false);
+        dialog.show();
+        dialog.exec();
+    }
 }
 
 

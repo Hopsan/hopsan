@@ -535,14 +535,14 @@ void ComponentPropertiesDialog::okPressed()
     mpComponent->getParentContainerObject()->renameModelObject(mpComponent->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
-    if(mpComponent->getTypeName().startsWith("CppComponent"))
-    {
-        recompileCppFromDialog();
-    }
-    else
-    {
+//    if(mpComponent->getTypeName().startsWith("CppComponent"))
+//    {
+//        recompileCppFromDialog();
+//    }
+//    else
+//    {
         setParametersAndStartValues();
-    }
+//    }
 }
 
 

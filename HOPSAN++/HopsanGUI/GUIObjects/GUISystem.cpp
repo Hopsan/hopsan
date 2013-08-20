@@ -712,10 +712,10 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
                 }
             }
 
-            if(pObj && pObj->getTypeName().startsWith("CppComponent"))
-            {
-                recompileCppComponents(pObj);
-            }
+//            if(pObj && pObj->getTypeName().startsWith("CppComponent"))
+//            {
+//                recompileCppComponents(pObj);
+//            }
 
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
