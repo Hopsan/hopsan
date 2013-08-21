@@ -219,14 +219,14 @@ void CreateComponentWizard::updatePage(int i)
             mPortIdPtrs.append(new QLabel(QString::number(portId), this));
             mPortNameLineEditPtrs.append(new QLineEdit("P"+QString::number(portId), this));
             mPortTypeComboBoxPtrs.append(new QComboBox(this));
-            mPortTypeComboBoxPtrs.last()->addItems(QStringList() << "Signal Input" << "Signal Output");
+            mPortTypeComboBoxPtrs.last()->addItems(QStringList() << "NodeSignalIn" << "NodeSignalOut");
             QStringList nodeTypes;
             NodeInfo::getNodeTypes(nodeTypes);
             Q_FOREACH(const QString &type, nodeTypes)
             {
                 QString name = NodeInfo(type).niceName;
                 name.replace(0, 1, name[0].toUpper());
-                mPortTypeComboBoxPtrs.last()->addItem(name);
+                mPortTypeComboBoxPtrs.last()->addItem(type);
             }
             mPortDefaultSpinBoxPtrs.append(new QDoubleSpinBox(this));
             mPortDefaultSpinBoxPtrs.last()->setValue(0);
@@ -294,15 +294,15 @@ void CreateComponentWizard::generate()
     for(int p=0; p<mPortIdPtrs.size(); ++p)
     {
         QString portType = mPortTypeComboBoxPtrs[p]->currentText();
-        if(portType      == "Signal Input")             { portType = "NodeSignalIn"; }
-        else if(portType == "Signal Output")            { portType = "NodeSignalOut"; }
+        if(portType      == "NodeSignalIn")             { portType = "NodeSignalIn"; }
+        else if(portType == "NodeSignalOut")            { portType = "NodeSignalOut"; }
         QStringList nodeTypes;
         NodeInfo::getNodeTypes(nodeTypes);
-        Q_FOREACH(const QString &type, nodeTypes)
-        {
-            if(portType.toLower() == NodeInfo(type).niceName)
-                portType = type;
-        }
+//        Q_FOREACH(const QString &type, nodeTypes)
+//        {
+//            if(portType.toLower() == NodeInfo(type).niceName)
+//                portType = type;
+//        }
 
         if(nodeToPortMap.contains(portType))
         {
@@ -371,29 +371,27 @@ void CreateComponentWizard::generate()
 
         //Port local variables
         output.append("    double ");
-        int np = 1;
-        QMap<QString, QStringList>::iterator pit;
-        for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
+        //QMap<QString, QStringList>::iterator pit;
+        //for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
+        //{
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
             QStringList varNames;
             QString numStr;
-            varNames << NodeInfo(pit.key()).qVariables << NodeInfo(pit.key()).cVariables;
-            if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
+            QString portName = mPortNameLineEditPtrs[p]->text();
+            QString portType = mPortTypeComboBoxPtrs[p]->currentText();
+            varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
+            numStr = QString::number(p+1);
+            if(portType == "NodeSignalIn" || portType == "NodeSignalOut")
             {
-                varNames << mPortNameLineEditPtrs[np-1]->text();
+                varNames.clear();
+                varNames << portName;
+                numStr = "";
             }
-            for(int i=0; i<pit.value().size(); ++i)
+
+            for(int v=0; v<varNames.size(); ++v)
             {
-                numStr = QString::number(np);
-                if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
-                {
-                    numStr = "";
-                }
-                for(int v=0; v<varNames.size(); ++v)
-                {
-                    output.append(varNames[v]+numStr+", ");
-                }
-                ++np;
+                output.append(varNames[v]+numStr+", ");
             }
         }
         output.chop(2);
@@ -413,29 +411,26 @@ void CreateComponentWizard::generate()
 
         //Node data pointers
         output.append("    double ");
-        np = 1;
-        for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
             QStringList varNames;
-            varNames << NodeInfo(pit.key()).qVariables << NodeInfo(pit.key()).cVariables;
+            QString portName = mPortNameLineEditPtrs[p]->text();
+            QString portType = mPortTypeComboBoxPtrs[p]->currentText();
+            varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
             QString numStr;
 
-            for(int i=0; i<pit.value().size(); ++i)
+            if(portType == "NodeSignalIn" || portType == "NodeSignalOut")
             {
-                if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
-                {
-                    varNames.clear();
-                    varNames << mPortNameLineEditPtrs[np-1]->text();
-                }
-                if(pit.key() != "NodeSignalIn" && pit.key() != "NodeSignalOut")
-                {
-                    numStr = QString::number(np);
-                }
-                for(int v=0; v<varNames.size(); ++v)
-                {
-                    output.append("*mpND_"+varNames[v]+numStr+", ");
-                }
-                ++np;
+                varNames.clear();
+                varNames << portName;
+            }
+            if(portType != "NodeSignalIn" && portType != "NodeSignalOut")
+            {
+                numStr = QString::number(p+1);
+            }
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append("*mpND_"+varNames[v]+numStr+", ");
             }
         }
         output.chop(2);
@@ -461,22 +456,14 @@ void CreateComponentWizard::generate()
         output.append("    void configure()\n");
         output.append("    {\n");
 
-        //Initiate parameters
-        for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
-        {
-            QString name = mParameterNameLineEditPtrs[p]->text();
-            QString value = mParameterValueLineEditPtrs[p]->text();
-            output.append("        "+name+" = "+value+";\n");
-        }
-        if(!mParameterNameLineEditPtrs.isEmpty()) { output.append("\n"); }
-
         //Register parameters
         for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
         {
             QString name = mParameterNameLineEditPtrs[p]->text();
             QString desc = mParameterDescriptionLineEditPtrs[p]->text();
             QString unit = mParameterUnitLineEditPtrs[p]->text();
-            output.append("        registerParameter(\""+name+"\", \""+desc+"\", \""+unit+"\", "+name+");\n");
+            QString value = mParameterValueLineEditPtrs[p]->text();
+            output.append("        addConstant(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", "+name+");\n");
         }
         if(!mParameterNameLineEditPtrs.isEmpty()) { output.append("\n"); }
 
@@ -487,19 +474,20 @@ void CreateComponentWizard::generate()
             portNames << mPortNameLineEditPtrs[p]->text();
             QString type = mPortTypeComboBoxPtrs[p]->currentText();
 
-            if(type      == "Signal Input")             { portTypes << "ReadPort"; }
-            else if(type == "Signal Output")            { portTypes << "WritePort"; }
+            if(type      == "NodeSignalIn")             { portTypes << "ReadPort"; }
+            else if(type == "NodeSignalOut")            { portTypes << "WritePort"; }
             else                                        { portTypes << "PowerPort"; }
 
-            if(type      == "Signal Input")             { nodeTypes << "NodeSignal"; }
-            else if(type == "Signal Output")            { nodeTypes << "NodeSignal"; }
-            QStringList allNodeTypes;
-            NodeInfo::getNodeTypes(allNodeTypes);
-            Q_FOREACH(const QString &t, allNodeTypes)
-            {
-                if(type.toLower() == NodeInfo(t).niceName)
-                    nodeTypes << t;
-            }
+            nodeTypes << type;
+//            if(type      == "NodeSignalIn")             { nodeTypes << "NodeSignal"; }
+//            else if(type == "NodeSignalOut")            { nodeTypes << "NodeSignal"; }
+//            QStringList allNodeTypes;
+//            NodeInfo::getNodeTypes(allNodeTypes);
+//            Q_FOREACH(const QString &t, allNodeTypes)
+//            {
+//                if(type.toLower() == NodeInfo(t).niceName)
+//                    nodeTypes << t;
+//            }
 
             output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+nodeTypes[p]+"\");\n\n");
 
@@ -528,7 +516,8 @@ void CreateComponentWizard::generate()
 
             for(int v=0; v<varNames.size(); ++v)
             {
-                output.append("        setDefaultStartValue(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+defaultValue+");\n");
+                if(!defaultValue.isEmpty())
+                    output.append("        setDefaultStartValue(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+defaultValue+");\n");
             }
         }
         output.append("    }\n\n");
@@ -541,7 +530,7 @@ void CreateComponentWizard::generate()
         for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
             QStringList varNames;
-            if(nodeTypes[p] != "NodeSignal")
+            if(nodeTypes[p] != "NodeSignalIn" && nodeTypes[p] != "NodeSignalOut")
             {
                 varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
             }
@@ -552,6 +541,8 @@ void CreateComponentWizard::generate()
             }
 
             QStringList varLabels = NodeInfo(nodeTypes[p]).variableLabels;
+            if(nodeTypes[p].startsWith("NodeSignal"))
+                varLabels = NodeInfo("NodeSignal").variableLabels;
             QString numStr, defaultValue;
             if(portTypes[p] != "ReadPort" && portTypes[p] != "WritePort")
             {
@@ -564,7 +555,10 @@ void CreateComponentWizard::generate()
 
             for(int v=0; v<varNames.size(); ++v)
             {
-                output.append("        mpND_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+");\n");
+                QString actualNodeType = nodeTypes[p];
+                if(actualNodeType.startsWith("NodeSignal"))
+                    actualNodeType = "NodeSignal";
+                output.append("        mpND_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+actualNodeType+"::"+varLabels[v]+");\n");
             }
         }
         output.append("\n");
