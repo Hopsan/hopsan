@@ -6,5 +6,6 @@
 #include "Benchmarking/HopsanDefaultBenchmarkingComponents.h"
 
 #include "MechanicVehicle1D.hpp"
+#include "CombustionEngine.hpp"
 
 #endif // HOPSANDEFAULTSPECIALCOMPONENTS_H

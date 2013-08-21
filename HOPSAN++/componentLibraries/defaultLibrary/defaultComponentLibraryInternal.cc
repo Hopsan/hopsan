@@ -208,6 +208,9 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicMotor", MechanicMotor::Creator);
     pComponentFactory->registerCreatorFunction("MechanicPulley", MechanicPulley::Creator);
 
+    pComponentFactory->registerCreatorFunction("CombustionEngine", CombustionEngine::Creator);
+
+
     //Electric components
     #include "Electric/HopsanDefaultElectricComponents.cci"
 

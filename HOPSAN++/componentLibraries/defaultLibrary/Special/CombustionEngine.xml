@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="CombustionEngine" displayname="Combustion Engine" libpath="" recompilable="true">
+    <icons>
+        <icon scale="1" path="CombustionEngine.svg" iconrotation="OFF" type="user"/>
+    </icons>
+    <ports>
+      <port name="in" x="0.5" y="0" a="270"/>
+      <port name="P1" x="1.0" y="0.83" a="0"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

@@ -300,7 +300,8 @@ HEADERS += \
     Special/AeroComponents/AeroAircraft6DOFS.hpp \
     Special/AeroComponents/AeroAircraft6DOFSS.hpp \
     Special/AeroComponents/AeroCombustionChamberMono.hpp \
-    Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp
+    Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp \
+    Special/CombustionEngine.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
