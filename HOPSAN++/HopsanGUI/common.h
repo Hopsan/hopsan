@@ -106,6 +106,7 @@ class UnitScale
 public:
     UnitScale() {}
     UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale) {}
+    void clear() {mUnit.clear(); mScale.clear();}
     QString mUnit;
     QString mScale;
 };

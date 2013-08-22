@@ -118,6 +118,8 @@ void LogVariableData::setPlotOffset(double offset)
 
 void LogVariableData::setPlotScaleAndOffset(const double scale, const double offset)
 {
+    mCustomUnitScale.mUnit.clear();
+    mCustomUnitScale.mScale = QString("%1").arg(scale);
     mDataPlotScale = scale;
     mDataPlotOffset = offset;
     emit dataChanged();
@@ -149,8 +151,9 @@ void LogVariableData::setTimePlotScaleAndOffset(const double scale, const double
 
 void LogVariableData::setPlotScale(double scale)
 {
+    mCustomUnitScale.mUnit.clear();
+    mCustomUnitScale.mScale = QString("%1").arg(scale);
     mDataPlotScale = scale;
-    emit dataChanged();
 }
 
 LogVariableData::LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
@@ -1082,25 +1085,6 @@ double LogVariableData::peekData(const int idx) const
 }
 
 
-//LogVariableTime::LogVariableTime(const QVector<double> &rVector)
-//{
-//    mScale = 1.0;
-//    mTimeData = rVector;
-//    emit dataChanged();
-//}
-
-//void LogVariableTime::setScale(const double scale)
-//{
-//    mScale *= scale;
-//    emit dataChanged();
-//}
-
-//LogVariableTime::LogVariableTime()
-//{
-//    mScale = 1.0;
-//}
-
-
 double LogVariableData::getPlotScale() const
 {
     return mDataPlotScale;
@@ -1110,9 +1094,17 @@ void LogVariableData::setCustomUnitScale(const UnitScale &rUnitScale)
 {
     mCustomUnitScale = rUnitScale;
     mDataPlotScale = rUnitScale.mScale.toDouble();
+    emit dataChanged();
 }
 
 const UnitScale &LogVariableData::getCustomUnitScale() const
 {
     return mCustomUnitScale;
+}
+
+void LogVariableData::removeCustomUnitScale()
+{
+    mCustomUnitScale.clear();
+    mDataPlotScale = 1.0;
+    emit dataChanged();
 }

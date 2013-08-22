@@ -485,7 +485,7 @@ void ComponentPropertiesDialog3::createEditStuff()
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(pPropertiesWidget, "Properties");
     pTabWidget->addTab(pHelpWidget, "Description");
-    if(!filePath.isEmpty());
+    if(!filePath.isEmpty())
     {
         QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
         pTabWidget->addTab(pSourceBrowser, "Source Code");
