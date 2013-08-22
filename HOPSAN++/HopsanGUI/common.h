@@ -101,4 +101,13 @@ extern QSplashScreen *gpSplash;
 
 extern QString gHopsanCoreVersion;
 
+class UnitScale
+{
+public:
+    UnitScale() {}
+    UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale) {}
+    QString mUnit;
+    QString mScale;
+};
+
 #endif // COMMON_H

@@ -307,7 +307,7 @@ void Port::openRightClickMenu(QPoint screenPos)
 
     bool hasData = !getParentContainerObject()->getLogDataHandler()->isEmpty();
 
-    QVector<QAction *> parameterActions;    //Why is it called "parameterActions"???
+    QVector<QAction *> parameterActions;    //! @todo Why is it called "parameterActions"???
     QVector<QAction *> aliasActions;
     QAction *tempAction;
     QAction *aliasAction;
@@ -323,7 +323,18 @@ void Port::openRightClickMenu(QPoint screenPos)
         }
         else
         {
-            tempAction = menu.addAction(QString("Plot "+variableNames[i]+" ["+gConfig.getDefaultUnit(variableNames[i])+"]"));
+            QString unit;
+            UnitScale custUS;
+            mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+variableNames[i], custUS);
+            if (custUS.mScale.isEmpty())
+            {
+                unit = gConfig.getDefaultUnit(variableNames[i]);
+            }
+            else
+            {
+                unit = custUS.mUnit;
+            }
+            tempAction = menu.addAction(QString("Plot "+variableNames[i]+" ["+unit+"]"));
         }
         parameterActions.append(tempAction);
 

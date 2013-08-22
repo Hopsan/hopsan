@@ -235,6 +235,11 @@ const QString &LogVariableData::getDataUnit() const
     return mpVariableDescription->mDataUnit;
 }
 
+const QString &LogVariableData::getPlotScaleDataUnit() const
+{
+    return mCustomUnitScale.mUnit;
+}
+
 bool LogVariableData::hasAliasName() const
 {
     return !mpVariableDescription->mAliasName.isEmpty();
@@ -1099,4 +1104,15 @@ double LogVariableData::peekData(const int idx) const
 double LogVariableData::getPlotScale() const
 {
     return mDataPlotScale;
+}
+
+void LogVariableData::setCustomUnitScale(const UnitScale &rUnitScale)
+{
+    mCustomUnitScale = rUnitScale;
+    mDataPlotScale = rUnitScale.mScale.toDouble();
+}
+
+const UnitScale &LogVariableData::getCustomUnitScale() const
+{
+    return mCustomUnitScale;
 }

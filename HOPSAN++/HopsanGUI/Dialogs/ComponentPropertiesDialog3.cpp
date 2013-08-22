@@ -1016,19 +1016,19 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const int row, const CoreVari
     pPlotScaleWidgetLayout->addWidget(mpPlotScaleEdit);
     connect(mpPlotScaleEdit, SIGNAL(editingFinished()), this, SLOT(registerCustomScale()));
 
-    QStringList currCustom;
+    UnitScale currCustom;
     pModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, currCustom);
-    if (currCustom.size() > 1) // Check if data exists
+    if (!currCustom.mScale.isEmpty()) // Check if data exists
     {
-        // If description not given, display the scale value
-        if (currCustom[0].isEmpty())
+        // If unit not given, display the scale value
+        if (currCustom.mUnit.isEmpty())
         {
-            mpPlotScaleEdit->setText(currCustom[1]);
+            mpPlotScaleEdit->setText(currCustom.mScale);
         }
         // If description given use it (usually the custom unit)
         else
         {
-            mpPlotScaleEdit->setText(currCustom[0]);
+            mpPlotScaleEdit->setText(currCustom.mUnit);
         }
     }
 

@@ -91,8 +91,8 @@ public:
     // Custom variable plot unit methods
     void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);
     void unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName);
-    void getCustomPlotUnitsOrScales(QMap<QString, QStringList> &rCustomUnitsOrScales);
-    void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, QStringList &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
+    const QMap<QString, UnitScale> &getCustomPlotUnitsOrScales() const;
+    void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
 
     // Load and save methods
     virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
@@ -178,7 +178,7 @@ protected:
 
     QMap<QString, QString> mDefaultParameterValues;
     QStringList mActiveDynamicParameterPortNames;
-    QMap<QString, QStringList> mRegisteredCustomPlotUnitsOrScales;
+    QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

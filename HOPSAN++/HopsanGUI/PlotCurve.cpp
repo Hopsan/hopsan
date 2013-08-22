@@ -273,7 +273,7 @@ void CurveInfoBox::updateInfo()
 
 void CurveInfoBox::refreshTitle()
 {
-    mpTitle->setText(mpParentPlotCurve->getCurveName() + " ["+mpParentPlotCurve->getDataUnit()+"]");
+    mpTitle->setText(mpParentPlotCurve->getCurveName() + " ["+mpParentPlotCurve->getDataCustomPlotUnit()+"]");
 }
 
 void CurveInfoBox::refreshActive(bool active)
@@ -368,7 +368,8 @@ void PlotCurve::commonConstructorCode(int axisY,
                                       HopsanPlotIDEnumT plotID,
                                       HopsanPlotCurveTypeEnumT curveType)
 {
-    mCustomDataUnitScale = 1.0;
+    mCustomCurveScale = 1.0;
+    mCustomCurveDataUnitScale = 1.0;
     mpCurveSymbol = 0;
     mCurveSymbolSize = 8;
     mIsActive = false;
@@ -492,17 +493,36 @@ QString PlotCurve::getDataName()
 
 
 //! @brief Returns the current data unit of a plot curve
-QString PlotCurve::getDataUnit()
+const QString &PlotCurve::getDataCustomPlotUnit() const
 {
-    if (mCustomDataUnit.isEmpty())
+    return mpData->getPlotScaleDataUnit();
+}
+
+const QString &PlotCurve::getDataOriginalUnit() const
+{
+    return mpData->getDataUnit();
+}
+
+const QString &PlotCurve::getCurrentUnit() const
+{
+    if (mCustomCurveDataUnit.isEmpty())
     {
-        return mpData->getDataUnit();
+        const QString &unit = getDataCustomPlotUnit();
+        if (unit.isEmpty())
+        {
+            return getDataOriginalUnit();
+        }
+        else
+        {
+            return unit;
+        }
     }
     else
     {
-        return mCustomDataUnit;
+        return mCustomCurveDataUnit;
     }
 }
+
 
 const SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr() const
 {
@@ -601,23 +621,33 @@ bool PlotCurve::setGeneration(int generation)
 //! @brief Sets the unit of a plot curve
 //! @param unit Name of new unit
 //! @note If unit is not registered for data then nothing will happen
-void PlotCurve::setCustomDataUnit(QString unit)
+void PlotCurve::setCustomCurveDataUnit(const QString &rUnit)
 {
-    if (gConfig.hasUnitScale(getDataName(),unit))
+    if (gConfig.hasUnitScale(getDataName(),rUnit))
     {
-        setCustomDataUnit(unit, gConfig.getUnitScale(getDataName(),unit));
+        setCustomCurveDataUnit(rUnit, gConfig.getUnitScale(getDataName(), rUnit));
     }
 }
 
 //! @brief Sets a custom unit and scale of a plot curve
 //! @param unit Name of new unit
 //! @param scale What scaling towards default (usually SI) unit to use
-void PlotCurve::setCustomDataUnit(const QString unit, double scale)
+void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
 {
-    mCustomDataUnit = unit;
-    mCustomDataUnitScale = scale;
+    mCustomCurveDataUnit = rUnit;
+    mCustomCurveDataUnitScale = scale*1.0/mpData->getPlotScale();
 
     updateCurve();
+
+    //! @todo shouldnt these be triggered by signal in update curve?
+    mpParentPlotTab->updateLabels();
+    mpParentPlotTab->update();
+}
+
+void PlotCurve::removeCustomCurveDataUnit()
+{
+    mCustomCurveDataUnit.clear();
+    mCustomCurveDataUnitScale = 1.0;
 
     //! @todo shouldnt these be triggered by signal in update curve?
     mpParentPlotTab->updateLabels();
@@ -637,7 +667,9 @@ void PlotCurve::setTimePlotScalingAndOffset(double scale, double offset)
 
 void PlotCurve::setValuePlotScalingAndOffset(double scale, double offset)
 {
-    mpData->setPlotScaleAndOffset(scale, offset);
+    //mpData->setPlotScaleAndOffset(scale, offset);
+    mpData->setPlotOffset(offset);
+    mCustomCurveScale = scale;
 }
 
 
@@ -1042,22 +1074,35 @@ void PlotCurve::openScaleDialog()
         mpTimeOffsetSpinBox->setEnabled(false);
     }
 
-    QLabel *pYScaleLabel = new QLabel("Y-Axis Scale: ", pScaleDialog);
+    QLabel *pYPlotScaleLabel = new QLabel("Data Plot Scale: ", pScaleDialog);
+    QLabel *pYPlotScale = new QLabel(pScaleDialog);
+    QLabel *pYPlotScaleUnit = new QLabel(pScaleDialog);
+    if (mpData)
+    {
+        pYPlotScale->setText(QString("%1").arg(mpData->getPlotScale()));
+        pYPlotScaleUnit->setText(mpData->getPlotScaleDataUnit());
+    }
+    else
+    {
+        pYPlotScale->setText("0");
+        pYPlotScale->setEnabled(false);
+        pYPlotScaleUnit->setEnabled(false);
+    }
+
+    QLabel *pCurveUnitScaleLabel = new QLabel("Curve Unit Scale: ", pScaleDialog);
+    QLabel *pCurveUnitScale = new QLabel(pScaleDialog);
+    QLabel *pCurveUnitScaleUnit = new QLabel(pScaleDialog);
+    pCurveUnitScale->setText(QString("%1").arg(mCustomCurveDataUnitScale));
+    pCurveUnitScaleUnit->setText(mCustomCurveDataUnit);
+
+    QLabel *pYScaleLabel = new QLabel("Custom Curve Scale: ", pScaleDialog);
     mpYScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYScaleSpinBox->setSingleStep(0.1);
     mpYScaleSpinBox->setDecimals(10);
     mpYScaleSpinBox->setRange(-DoubleMax, DoubleMax);
-    if (mpData)
-    {
-        mpYScaleSpinBox->setValue(mpData->getPlotScale());
-    }
-    else
-    {
-        mpYScaleSpinBox->setValue(0);
-        mpYScaleSpinBox->setEnabled(false);
-    }
+    mpYScaleSpinBox->setValue(mCustomCurveScale);
 
-    QLabel *pYOffsetLabel = new QLabel("Y-Axis Offset: ", pScaleDialog);
+    QLabel *pYOffsetLabel = new QLabel("Data Offset: ", pScaleDialog);
     mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYOffsetSpinBox->setDecimals(10);
     mpYOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
@@ -1081,11 +1126,17 @@ void PlotCurve::openScaleDialog()
     pDialogLayout->addWidget(mpTimeScaleComboBox,0,1);
     pDialogLayout->addWidget(pXOffsetLabel,1,0);
     pDialogLayout->addWidget(mpTimeOffsetSpinBox,1,1);
-    pDialogLayout->addWidget(pYScaleLabel,2,0);
-    pDialogLayout->addWidget(mpYScaleSpinBox,2,1);
-    pDialogLayout->addWidget(pYOffsetLabel,3,0);
-    pDialogLayout->addWidget(mpYOffsetSpinBox,3,1);
-    pDialogLayout->addWidget(pButtonBox,4,0,1,2);
+    pDialogLayout->addWidget(pYPlotScaleLabel,2,0);
+    pDialogLayout->addWidget(pYPlotScale,2,1);
+    pDialogLayout->addWidget(pYPlotScaleUnit,2,2);
+    pDialogLayout->addWidget(pCurveUnitScaleLabel,3,0);
+    pDialogLayout->addWidget(pCurveUnitScale,3,1);
+    pDialogLayout->addWidget(pCurveUnitScaleUnit,3,2);
+    pDialogLayout->addWidget(pYScaleLabel,4,0);
+    pDialogLayout->addWidget(mpYScaleSpinBox,4,1);
+    pDialogLayout->addWidget(pYOffsetLabel,5,0);
+    pDialogLayout->addWidget(mpYOffsetSpinBox,5,1);
+    pDialogLayout->addWidget(pButtonBox,6,0,1,2);
     pScaleDialog->setLayout(pDialogLayout);
     pScaleDialog->show();
 
@@ -1186,6 +1237,8 @@ void PlotCurve::updateCurve()
 
     if(mpCustomXdata.isNull())
     {
+        const double yScale = mCustomCurveScale*mCustomCurveDataUnitScale*dataScale;
+
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
         if (mpData->getSharedTimePointer())
         {
@@ -1196,7 +1249,7 @@ void PlotCurve::updateCurve()
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = tempX[i]*timeScale + timeOffset;
-                tempY[i] = tempY[i]*mCustomDataUnitScale*dataScale + dataOffset;
+                tempY[i] = tempY[i]*yScale + dataOffset;
             }
         }
         else
@@ -1206,12 +1259,14 @@ void PlotCurve::updateCurve()
             for (int i=0; i< tempX.size(); ++i)
             {
                 tempX[i] = i;
-                tempY[i] = tempY[i]*mCustomDataUnitScale*dataScale + dataOffset;
+                tempY[i] = tempY[i]*yScale + dataOffset;
             }
         }
     }
     else
     {
+        const double yScale = mCustomCurveScale*mCustomCurveDataUnitScale*dataScale;
+
         // Use special X-data
         // We copy here, it should be faster then peek (at least when data is cached on disc)
         tempX = mpCustomXdata->getDataVectorCopy();
@@ -1220,7 +1275,7 @@ void PlotCurve::updateCurve()
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
             tempX[i] = tempX[i]*xScale + xOffset;
-            tempY[i] = tempY[i]*mCustomDataUnitScale*dataScale + dataOffset;
+            tempY[i] = tempY[i]*yScale + dataOffset;
         }
     }
 

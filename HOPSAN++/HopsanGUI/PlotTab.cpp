@@ -496,39 +496,7 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
         }
     }
 
-    // Use the default unit for this curve, unless it is a "Value" with an actual unit set
-    QString defaultUnit = gConfig.getDefaultUnit(pCurve->getDataName());
-    if ( pCurve->getDataName() != "Value" && (defaultUnit != pCurve->getDataUnit()) )
-    {
-        pCurve->setCustomDataUnit(defaultUnit);
-    }
-    else if (pCurve->getDataUnit() == "-")
-    {
-        pCurve->setCustomDataUnit(defaultUnit);
-    }
-
-    // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
-    QString customUnit;
-    for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
-    {
-        if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == pCurve->getAxisY())
-        {
-            if(customUnit.isEmpty())
-            {
-                customUnit = mPlotCurvePtrs[plotID].at(i)->getDataUnit();
-            }
-            else if(customUnit != mPlotCurvePtrs[plotID].at(i)->getDataUnit())  //Unit is different between the other curves, so don't use it
-            {
-                customUnit = QString();
-                break;
-            }
-        }
-    }
-    if(!customUnit.isEmpty())
-    {
-        pCurve->setCustomDataUnit(customUnit);
-    }
-
+    determineAddedCurveUnitOrScale(pCurve, plotID);
 
     mPlotCurvePtrs[plotID].append(pCurve);
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
@@ -885,7 +853,7 @@ void PlotTab::updateLabels()
                 QStringList leftUnits, rightUnits;
                 for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
                 {
-                    QString newUnit = QString(mPlotCurvePtrs[plotID].at(i)->getDataName() + " [" + mPlotCurvePtrs[plotID].at(i)->getDataUnit() + "]");
+                    QString newUnit = QString(mPlotCurvePtrs[plotID].at(i)->getDataName() + " [" + mPlotCurvePtrs[plotID].at(i)->getCurrentUnit() + "]");
                     if( !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
                     {
                         if(!mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).isEmpty())
@@ -2038,7 +2006,7 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
                     varTag.setAttribute("component", mPlotCurvePtrs[FirstPlot][i]->getComponentName());
                     varTag.setAttribute("port", mPlotCurvePtrs[FirstPlot][i]->getPortName());
                     varTag.setAttribute("type", mPlotCurvePtrs[FirstPlot][i]->getDataName());
-                    varTag.setAttribute("unit", mPlotCurvePtrs[FirstPlot][i]->getDataUnit());
+                    varTag.setAttribute("unit", mPlotCurvePtrs[FirstPlot][i]->getDataCustomPlotUnit());
                 }
             }
         }
@@ -2636,6 +2604,51 @@ void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlo
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
 }
 
+void PlotTab::determineAddedCurveUnitOrScale(PlotCurve *pCurve, int plotID)
+{
+    // If a custom plotunit is set then use that
+    const QString &custPlotUnit = pCurve->getDataCustomPlotUnit();
+    if (custPlotUnit.isEmpty())
+    {
+        // Else use the default unit for this curve, unless it is a "Value" with an actual unit set
+        const QString &dataUnit = pCurve->getDataOriginalUnit();
+        QString defaultUnit = gConfig.getDefaultUnit(pCurve->getDataName());
+
+        if ( (pCurve->getDataName() != "Value") && (defaultUnit != dataUnit) )
+        {
+            pCurve->setCustomCurveDataUnit(defaultUnit);
+        }
+        //! @todo maybe this elseif can be removed in the future
+        else if (pCurve->getDataCustomPlotUnit() == "-")
+        {
+            pCurve->setCustomCurveDataUnit(defaultUnit);
+        }
+
+        // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
+        QString customUnit;
+        for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+        {
+            if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == pCurve->getAxisY())
+            {
+                if(customUnit.isEmpty())
+                {
+                    customUnit = mPlotCurvePtrs[plotID].at(i)->getCurrentUnit();
+                }
+                else if(customUnit != mPlotCurvePtrs[plotID].at(i)->getCurrentUnit())  //Unit is different between the other curves, so don't use it
+                {
+                    customUnit = QString();
+                    break;
+                }
+            }
+        }
+        if(!customUnit.isEmpty())
+        {
+            pCurve->setCustomCurveDataUnit(customUnit);
+        }
+    }
+    // Else the given plot unit in the data will be used
+}
+
 
 QSizeF PlotTab::calcMMSize() const
 {
@@ -3047,7 +3060,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     // Change unit on selected curve
     if(selectedAction->parentWidget()->parentWidget() == changeUnitsMenu)
     {
-        actionToCurveMap.find(selectedAction).value()->setCustomDataUnit(selectedAction->text());
+        actionToCurveMap.find(selectedAction).value()->setCustomCurveDataUnit(selectedAction->text());
     }
 
 

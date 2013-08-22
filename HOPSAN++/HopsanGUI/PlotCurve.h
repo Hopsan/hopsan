@@ -141,10 +141,13 @@ public:
     QString getComponentName();
     QString getPortName();
     QString getDataName();
-    QString getDataUnit();
+    const QString &getDataOriginalUnit() const;
+    const QString &getDataCustomPlotUnit() const;
+    const QString &getCurrentUnit() const;
 
-    void setCustomDataUnit(const QString unit);
-    void setCustomDataUnit(const QString unit, double scale);
+    void setCustomCurveDataUnit(const QString &rUnit);
+    void setCustomCurveDataUnit(const QString &rUnit, double scale);
+    void removeCustomCurveDataUnit();
     void setTimePlotScalingAndOffset(double scale, double offset);
     void setValuePlotScalingAndOffset(double scale, double offset);
 
@@ -199,8 +202,9 @@ private:
     SharedLogVariableDataPtrT mpCustomXdata;
     bool mHaveCustomData;
 
-    QString mCustomDataUnit;
-    double mCustomDataUnitScale;
+    QString mCustomCurveDataUnit;
+    double mCustomCurveDataUnitScale;
+    double mCustomCurveScale;
 
     // Curve properties settings
     CurveInfoBox *mpPlotCurveInfoBox;

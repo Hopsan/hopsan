@@ -33,6 +33,7 @@
 #include <QPointer>
 
 #include "CachableDataVector.h"
+#include "common.h"
 
 #define TIMEVARIABLENAME "Time"
 
@@ -178,6 +179,7 @@ public:
     const QString &getPortName() const;
     const QString &getDataName() const;
     const QString &getDataUnit() const;
+    const QString &getPlotScaleDataUnit() const;
     bool hasAliasName() const;
     int getGeneration() const;
     int getLowestGeneration() const;
@@ -187,6 +189,8 @@ public:
     const SharedLogVariableDataPtrT getSharedTimePointer() const;
     double getPlotOffset() const;
     double getPlotScale() const;
+    void setCustomUnitScale(const UnitScale &rUnitScale);
+    const UnitScale &getCustomUnitScale() const;
     QVector<double> getDataVectorCopy();
     int getDataSize() const;
     double first() const;
@@ -253,6 +257,7 @@ private:
     QPointer<LogVariableContainer> mpParentVariableContainer;
     SharedVariableDescriptionT mpVariableDescription;
 
+    UnitScale mCustomUnitScale;
     double mDataPlotScale;
     double mDataPlotOffset;
     int mGeneration;

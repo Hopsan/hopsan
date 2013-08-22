@@ -160,6 +160,7 @@ private:
     void constructAxisLabelDialog();
     void setLegendSymbol(const QString symStyle);
     void setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
+    void determineAddedCurveUnitOrScale(PlotCurve *pCurve, int plotID);
 
     QGridLayout *mpTabLayout;
     QSint::BarChartPlotter *mpBarPlot;

@@ -573,7 +573,14 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
                     varDesc.mAliasName  = varDescs[i].mAlias;
                     varDesc.mVariableSourceType = VariableDescription::ModelVariableType;
 
-                    insertVariableBasedOnDescription(varDesc, timeVecPtr, dataVec);
+                    SharedLogVariableDataPtrT pNewData = insertVariableBasedOnDescription(varDesc, timeVecPtr, dataVec);
+
+                    UnitScale us;
+                    pModelObject->getCustomPlotUnitOrScale(varDesc.mPortName+"#"+varDesc.mDataName, us);
+                    if (!us.mScale.isEmpty())
+                    {
+                        pNewData->setCustomUnitScale(us);
+                    }
                 }
             }
         }
@@ -597,30 +604,6 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
         --mGenerationNumber;
     }
 }
-
-
-////! @brief Renames a component in the plot data storage
-////! @note Always call this after renaming an object, or plot data for the object will not be accessible.
-////! @param[in] oldName Previous name of object
-////! @param[in] newName New name of object
-//void LogDataHandler::updateObjectName(QString oldName, QString newName)
-//{
-//    //! @todo FIXA /Peter (or do we even need it at all)
-////    for(int i=0; i<mPlotData.size(); ++i)
-////    {
-////        if(mPlotData.at(i).contains(oldName))
-////        {
-////            DataMapT generation;
-////            generation = mPlotData.at(i);
-////            DataMapT oldPlotData;
-////            oldPlotData = mPlotData.at(i).find(oldName).value();
-////            generation.insert(newName, oldPlotData);
-////            generation.remove(oldName);
-////            mPlotData.removeAt(i);
-////            mPlotData.insert(i, generation);
-////        }
-////    }
-//}
 
 
 //! @brief Returns the plot data for specified variable

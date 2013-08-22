@@ -784,10 +784,7 @@ void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortData
     }
     else
     {
-        QStringList descAndScale;
-        descAndScale.append(rDescription);
-        descAndScale.append(rScaleValue);
-        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, descAndScale);
+        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, UnitScale(rDescription, rScaleValue));
     }
 }
 
@@ -796,15 +793,15 @@ void ModelObject::unregisterCustomPlotUnitOrScale(const QString &rVariablePortDa
     mRegisteredCustomPlotUnitsOrScales.remove(rVariablePortDataName);
 }
 
-void ModelObject::getCustomPlotUnitsOrScales(QMap<QString, QStringList> &rCustomUnitsOrScales)
+const QMap<QString, UnitScale> &ModelObject::getCustomPlotUnitsOrScales() const
 {
-    rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales;
+    return mRegisteredCustomPlotUnitsOrScales;
 }
 
-void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, QStringList &rCustomUnitsOrScales)
+void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales)
 {
     // Empty stringlist to indicate, no data
-     rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, QStringList());
+     rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
 }
 
 
@@ -931,18 +928,14 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     if (!mRegisteredCustomPlotUnitsOrScales.isEmpty())
     {
         QDomElement plotscales = appendDomElement(xmlGuiStuff, HMF_PLOTSCALES);
-        QMap<QString, QStringList>::iterator psit;
+        QMap<QString, UnitScale>::iterator psit;
         for (psit=mRegisteredCustomPlotUnitsOrScales.begin(); psit!=mRegisteredCustomPlotUnitsOrScales.end(); ++psit)
         {
-            QStringList &val = psit.value();
-            //check size to prevent crash if something goes wrong
-            if (val.size() > 1)
-            {
-                QDomElement plotscale = appendDomElement(plotscales, HMF_PLOTSCALE);
-                plotscale.setAttribute(HMF_PLOTSCALEPORTDATANAME, psit.key());
-                plotscale.setAttribute(HMF_PLOTSCALEDESCRIPTION, val[0]);
-                plotscale.setAttribute(HMF_PLOTSCALEVALUE, val[1]);
-            }
+            UnitScale &val = psit.value();
+            QDomElement plotscale = appendDomElement(plotscales, HMF_PLOTSCALE);
+            plotscale.setAttribute(HMF_PLOTSCALEPORTDATANAME, psit.key());
+            plotscale.setAttribute(HMF_PLOTSCALEDESCRIPTION, val.mUnit);
+            plotscale.setAttribute(HMF_PLOTSCALEVALUE, val.mScale);
         }
     }
 
