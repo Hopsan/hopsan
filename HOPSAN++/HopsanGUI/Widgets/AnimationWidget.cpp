@@ -429,6 +429,7 @@ void AnimationWidget::updateAnimation()
         mIndex = mCurrentAnimationTime/mTotalTime*mnSamples;
         mIndex = round(std::min(mTimeValues.size()-1, std::max(0, mIndex)));
         mpTimeSlider->setValue(mIndex);
+        //! @todo Crash on next line when mIndex = -1, this should not happen
         mpTimeDisplay->setText(QString::number(mTimeValues.at(mIndex)));
 
         //Update animated connectors and components

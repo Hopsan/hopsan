@@ -174,7 +174,10 @@ void AnimatedComponent::updateAnimation()
             {
                 for(int i=0; i<mpData->at(m).size(); ++i)
                 {
-                    data.append(mpData->at(m).at(i).at(mpAnimationWidget->getIndex()));
+                    if(!mpData->at(m).at(i).isEmpty())
+                    {
+                        data.append(mpData->at(m).at(i).at(mpAnimationWidget->getIndex()));
+                    }
                 }
             }
 
