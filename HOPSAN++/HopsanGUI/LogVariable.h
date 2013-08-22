@@ -41,41 +41,8 @@
 class LogVariableData;
 class LogDataHandler;
 
-//class LogVariableTime : public QObject
-//{
-//    Q_OBJECT
-//private:
-//    double mScale;
-//    QVector<double> mTimeData;
-
-//public:
-//    LogVariableTime();
-//    LogVariableTime(const QVector<double> &rVector);
-//    void setScale(const double scale);
-//    inline double getScale() const { return mScale; }
-
-//    inline const QVector<double> &data() const { return mTimeData; }
-//    inline int size() const { return mTimeData.size(); }
-//    inline const double &at(int idx) const { return mTimeData[idx]; }
-
-//signals:
-//    void dataChanged();
-//};
-
-
-//class UniqueSharedTimeVectorPtrHelper
-//{
-//public:
-//    SharedTimeVectorPtrT makeSureUnique(const QVector<double> &rTimeVector);
-
-//private:
-//    QVector< SharedTimeVectorPtrT > mSharedTimeVecPointers;
-//};
-
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
-
-
 
 //! @class VariableDescription
 //! @brief Container class for strings describing a plot variable
@@ -189,6 +156,7 @@ public:
     const UnitScale &getCustomUnitScale() const;
     void removeCustomUnitScale();
     const QString &getPlotScaleDataUnit() const;
+    const QString &getCurrentPlotDataUnit() const;
     double getPlotScale() const;
     double getPlotOffset() const;
 

@@ -307,7 +307,37 @@ void PlotTab::applyLegendSettings()
         mpExternalLegend = 0;
 //    }
 
-    rescaleAxesToCurves();
+        rescaleAxesToCurves();
+}
+
+void PlotTab::applyTimeScalingSettings()
+{
+    QString newUnit = extractBetweenFromQString(mpTimeScaleComboBox->currentText().split(" ").last(), '[', ']');
+    QString newScaleStr = mpTimeScaleComboBox->currentText().split(" ")[0];
+    double newScale = newScaleStr.toDouble();
+    //! @todo make sure we have at least one curve here, also this is not correct since different curves may have different generation, should be able to ask the zoomer about this instead, or have some refresh zoom slot that handles all of it
+    double oldScale = mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->getPlotScale();
+
+    //! @todo this will only affect the generation for the first curve
+    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
+    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setPlotOffset(mpTimeOffsetSpinBox->value());
+    //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
+
+    //! @todo offset step size should follow scale change to make more sense, (when you click the spinbox), also for ydata scaling
+
+    // Update zoom rectangle to new scale if zoomed
+    if(isZoomed(FirstPlot))
+    {
+        QRectF oldZoomRect = mpZoomerLeft[FirstPlot]->zoomRect();
+        QRectF newZoomRect = QRectF(oldZoomRect.x()*newScale/oldScale, oldZoomRect.y(), oldZoomRect.width()*newScale/oldScale, oldZoomRect.height());
+
+        resetZoom();
+
+        mpZoomerLeft[FirstPlot]->zoom(newZoomRect);
+        update();
+    }
+
+    updateLabels();
 }
 
 
@@ -329,6 +359,65 @@ void PlotTab::openAxisSettingsDialog()
 void PlotTab::openAxisLabelDialog()
 {
     mpUserDefinedLabelsDialog->exec();
+}
+
+void PlotTab::openTimeScalingDialog()
+{
+    QDialog *pScaleDialog = new QDialog(mpParentPlotWindow);
+    pScaleDialog->setWindowTitle("Change Time scaling and offset");
+
+    QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
+    mpTimeScaleComboBox = new QComboBox(pScaleDialog);
+    QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
+    mpTimeOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
+    mpTimeOffsetSpinBox->setDecimals(10);
+    mpTimeOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
+    mpTimeOffsetSpinBox->setSingleStep(0.1);
+
+//    if (mpData->getSharedTimePointer())
+//    {
+    //! @todo would be nice if we ould sort on scale size
+        QMap<QString,double> units = gConfig.getCustomUnits(TIMEVARIABLENAME);
+        QString currUnit = extractBetweenFromQString(mpQwtPlots[0]->axisTitle(QwtPlot::xBottom).text(), '[', ']');
+        QMap<QString,double>::iterator it;
+        int ctr=0;
+        for (it = units.begin(); it != units.end(); ++it)
+        {
+            mpTimeScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
+            if (currUnit == it.key())
+            {
+                mpTimeScaleComboBox->setCurrentIndex(ctr);
+            }
+            ++ctr;
+        }
+
+        //! @todo offset
+        //mpTimeOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
+//    }
+//    else
+//    {
+//        mpTimeScaleComboBox->setCurrentIndex(0);
+//        mpTimeScaleComboBox->setEnabled(false);
+//        mpTimeOffsetSpinBox->setValue(0);
+//        mpTimeOffsetSpinBox->setEnabled(false);
+//    }
+
+        QPushButton *pDoneButton = new QPushButton("Close", pScaleDialog);
+        QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+        pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
+
+        QGridLayout *pGridLayout = new QGridLayout(pScaleDialog);
+        pGridLayout->addWidget(pXScaleLabel, 0, 0);
+        pGridLayout->addWidget(mpTimeScaleComboBox, 0, 1);
+        pGridLayout->addWidget(pXOffsetLabel, 1, 0);
+        pGridLayout->addWidget(mpTimeOffsetSpinBox, 1, 1);
+        pGridLayout->addWidget(pButtonBox, 2, 1);
+
+        connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
+        connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(applyTimeScalingSettings()));
+        connect(mpTimeOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(applyTimeScalingSettings()));
+
+        pScaleDialog->show();
 }
 
 //! @todo currently only supports settings axis for top plot
@@ -888,6 +977,7 @@ void PlotTab::updateLabels()
                     QString text;
                     for (int i=0; i<customXdatas.size(); ++i)
                     {
+                        //! @todo should we not use the plotscale here
                         text.append(customXdatas[i]->getDataName() + " [" + customXdatas[i]->getDataUnit() + "], ");
                     }
                     text.chop(2);
@@ -899,7 +989,7 @@ void PlotTab::updateLabels()
                     SharedLogVariableDataPtrT pTime = mPlotCurvePtrs[plotID].first()->getTimeVectorPtr();
                     if (pTime)
                     {
-                        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(pTime->getDataName()+" ["+pTime->getDataUnit()+"] "));
+                        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(pTime->getDataName()+" ["+pTime->getCurrentPlotDataUnit()+"] "));
                     }
 
                     // Else no automatic x-label

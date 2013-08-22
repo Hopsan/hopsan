@@ -126,6 +126,11 @@
         <defaultunit unit="Pa" name="Pressure"/>
         <defaultunit unit="Nm" name="Torque"/>
         <defaultunit unit="m/s" name="Velocity"/>
+	<defaultunit unit="s" name="Time"/>
+	<customunit unit="s" scale="1" name="Time"/>
+	<customunit unit="ms" scale="1e3" name="Time"/>
+	<customunit unit="us" scale="1e6" name="Time"/>
+	<customunit unit="ns" scale="1e9" name="Time"/>
         <customunit unit="V" scale="1" name="Voltage"/>
         <customunit unit="A" scale="1" name="Current"/>
         <customunit unit="deg" scale="57.296" name="Angle"/>

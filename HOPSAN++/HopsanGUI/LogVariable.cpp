@@ -118,8 +118,7 @@ void LogVariableData::setPlotOffset(double offset)
 
 void LogVariableData::setPlotScaleAndOffset(const double scale, const double offset)
 {
-    mCustomUnitScale.mUnit.clear();
-    mCustomUnitScale.mScale = QString("%1").arg(scale);
+    mCustomUnitScale.setOnlyScale(scale);
     mDataPlotScale = scale;
     mDataPlotOffset = offset;
     emit dataChanged();
@@ -151,9 +150,9 @@ void LogVariableData::setTimePlotScaleAndOffset(const double scale, const double
 
 void LogVariableData::setPlotScale(double scale)
 {
-    mCustomUnitScale.mUnit.clear();
-    mCustomUnitScale.mScale = QString("%1").arg(scale);
+    mCustomUnitScale.setOnlyScale(scale);
     mDataPlotScale = scale;
+    emit dataChanged();
 }
 
 LogVariableData::LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
@@ -241,6 +240,18 @@ const QString &LogVariableData::getDataUnit() const
 const QString &LogVariableData::getPlotScaleDataUnit() const
 {
     return mCustomUnitScale.mUnit;
+}
+
+const QString &LogVariableData::getCurrentPlotDataUnit() const
+{
+    if (mCustomUnitScale.mUnit.isEmpty())
+    {
+        return getDataUnit();
+    }
+    else
+    {
+        return mCustomUnitScale.mUnit;
+    }
 }
 
 bool LogVariableData::hasAliasName() const
@@ -1021,35 +1032,6 @@ LogVariableContainer::~LogVariableContainer()
     mDataGenerations.clear();
 }
 
-//SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(const QVector<double> &rTimeVector)
-//{
-//    const int nElements = rTimeVector.size();
-//    if (nElements > 0)
-//    {
-//        const double newFirst = rTimeVector[0];
-//        const double newLast = rTimeVector[nElements-1];
-
-//        for (int idx=0; idx<mSharedTimeVecPointers.size(); ++idx)
-//        {
-//            const int oldElements = mSharedTimeVecPointers[idx]->size();
-//            const double oldFirst = mSharedTimeVecPointers[idx]->at(0);
-//            const double oldLast = mSharedTimeVecPointers[idx]->at(oldElements-1);
-//            if ( (oldElements == nElements) &&
-//                 fuzzyEqual(newFirst, oldFirst, 1e-10) &&
-//                 fuzzyEqual(newLast, oldLast, 1e-10) )
-//            {
-//                return mSharedTimeVecPointers[idx];
-//            }
-//        }
-
-//        // If we did not already return then add this pointer
-//        mSharedTimeVecPointers.append(SharedTimeVectorPtrT(new LogVariableTime(rTimeVector)));
-//        return mSharedTimeVecPointers.last();
-//    }
-//    return SharedTimeVectorPtrT();
-//}
-
-
 QVector<double> LogVariableData::getDataVectorCopy()
 {
     QVector<double> vec;
@@ -1093,7 +1075,7 @@ double LogVariableData::getPlotScale() const
 void LogVariableData::setCustomUnitScale(const UnitScale &rUnitScale)
 {
     mCustomUnitScale = rUnitScale;
-    mDataPlotScale = rUnitScale.mScale.toDouble();
+    mDataPlotScale = rUnitScale.toDouble();
     emit dataChanged();
 }
 

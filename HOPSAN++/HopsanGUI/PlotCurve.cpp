@@ -368,7 +368,7 @@ void PlotCurve::commonConstructorCode(int axisY,
                                       HopsanPlotIDEnumT plotID,
                                       HopsanPlotCurveTypeEnumT curveType)
 {
-    mCustomCurveScale = 1.0;
+    mCustomAdditionalCurveScale = 1.0;
     mCustomCurveDataUnitScale = 1.0;
     mpCurveSymbol = 0;
     mCurveSymbolSize = 8;
@@ -669,7 +669,7 @@ void PlotCurve::setValuePlotScalingAndOffset(double scale, double offset)
 {
     //mpData->setPlotScaleAndOffset(scale, offset);
     mpData->setPlotOffset(offset);
-    mCustomCurveScale = scale;
+    mCustomAdditionalCurveScale = scale;
 }
 
 
@@ -1024,55 +1024,55 @@ void PlotCurve::openScaleDialog()
     QDialog *pScaleDialog = new QDialog(mpParentPlotTab->mpParentPlotWindow);
     pScaleDialog->setWindowTitle("Change data plot-scale and plot-offsets");
 
-    QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
+//    QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
 
-    //! @todo this should not be handled here, it should be the same as custom units for variables such as pressure and similar
-    mpTimeScaleComboBox = new QComboBox(pScaleDialog);
-    mpTimeScaleComboBox->addItem("1 (s)");
-    mpTimeScaleComboBox->addItem("1e3 (ms)");
-    mpTimeScaleComboBox->addItem("1e6 ("+QObject::trUtf8("μ")+"s)");
-    mpTimeScaleComboBox->addItem("1e9 (ns)");
-    if (mpData->getSharedTimePointer())
-    {
-        const double scale = mpData->getSharedTimePointer()->getPlotScale();
-        if (qFuzzyCompare(scale, 1))
-        {
-            mpTimeScaleComboBox->setCurrentIndex(0);
-        }
-        if (qFuzzyCompare(scale, 1e3))
-        {
-            mpTimeScaleComboBox->setCurrentIndex(1);
-        }
-        else if (qFuzzyCompare(scale, 1e6))
-        {
-            mpTimeScaleComboBox->setCurrentIndex(2);
-        }
-        else if (qFuzzyCompare(scale, 1e9))
-        {
-            mpTimeScaleComboBox->setCurrentIndex(3);
-        }
-    }
-    else
-    {
-        mpTimeScaleComboBox->setCurrentIndex(0);
-        mpTimeScaleComboBox->setEnabled(false);
-    }
+//    //! @todo this should not be handled here, it should be the same as custom units for variables such as pressure and similar
+//    mpTimeScaleComboBox = new QComboBox(pScaleDialog);
+//    mpTimeScaleComboBox->addItem("1 (s)");
+//    mpTimeScaleComboBox->addItem("1e3 (ms)");
+//    mpTimeScaleComboBox->addItem("1e6 ("+QObject::trUtf8("μ")+"s)");
+//    mpTimeScaleComboBox->addItem("1e9 (ns)");
+//    if (mpData->getSharedTimePointer())
+//    {
+//        const QString &scale = mpData->getSharedTimePointer()->getCustomUnitScale().mScale;
+//        if (scale == "1")
+//        {
+//            mpTimeScaleComboBox->setCurrentIndex(0);
+//        }
+//        else if (scale == "1e3")
+//        {
+//            mpTimeScaleComboBox->setCurrentIndex(1);
+//        }
+//        else if (scale == "1e6")
+//        {
+//            mpTimeScaleComboBox->setCurrentIndex(2);
+//        }
+//        else if (scale == "1e9")
+//        {
+//            mpTimeScaleComboBox->setCurrentIndex(3);
+//        }
+//    }
+//    else
+//    {
+//        mpTimeScaleComboBox->setCurrentIndex(0);
+//        mpTimeScaleComboBox->setEnabled(false);
+//    }
 
 
-    QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
-    mpTimeOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpTimeOffsetSpinBox->setDecimals(10);
-    mpTimeOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpTimeOffsetSpinBox->setSingleStep(0.1);
-    if (mpData->getSharedTimePointer())
-    {
-        mpTimeOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
-    }
-    else
-    {
-        mpTimeOffsetSpinBox->setValue(0);
-        mpTimeOffsetSpinBox->setEnabled(false);
-    }
+//    QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
+//    mpTimeOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
+//    mpTimeOffsetSpinBox->setDecimals(10);
+//    mpTimeOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
+//    mpTimeOffsetSpinBox->setSingleStep(0.1);
+//    if (mpData->getSharedTimePointer())
+//    {
+//        mpTimeOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
+//    }
+//    else
+//    {
+//        mpTimeOffsetSpinBox->setValue(0);
+//        mpTimeOffsetSpinBox->setEnabled(false);
+//    }
 
     QLabel *pYPlotScaleLabel = new QLabel("Data Plot Scale: ", pScaleDialog);
     QLabel *pYPlotScale = new QLabel(pScaleDialog);
@@ -1100,7 +1100,7 @@ void PlotCurve::openScaleDialog()
     mpYScaleSpinBox->setSingleStep(0.1);
     mpYScaleSpinBox->setDecimals(10);
     mpYScaleSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYScaleSpinBox->setValue(mCustomCurveScale);
+    mpYScaleSpinBox->setValue(mCustomAdditionalCurveScale);
 
     QLabel *pYOffsetLabel = new QLabel("Data Offset: ", pScaleDialog);
     mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
@@ -1122,27 +1122,27 @@ void PlotCurve::openScaleDialog()
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout(pScaleDialog);
-    pDialogLayout->addWidget(pXScaleLabel,0,0);
-    pDialogLayout->addWidget(mpTimeScaleComboBox,0,1);
-    pDialogLayout->addWidget(pXOffsetLabel,1,0);
-    pDialogLayout->addWidget(mpTimeOffsetSpinBox,1,1);
-    pDialogLayout->addWidget(pYPlotScaleLabel,2,0);
-    pDialogLayout->addWidget(pYPlotScale,2,1);
-    pDialogLayout->addWidget(pYPlotScaleUnit,2,2);
-    pDialogLayout->addWidget(pCurveUnitScaleLabel,3,0);
-    pDialogLayout->addWidget(pCurveUnitScale,3,1);
-    pDialogLayout->addWidget(pCurveUnitScaleUnit,3,2);
-    pDialogLayout->addWidget(pYScaleLabel,4,0);
-    pDialogLayout->addWidget(mpYScaleSpinBox,4,1);
-    pDialogLayout->addWidget(pYOffsetLabel,5,0);
-    pDialogLayout->addWidget(mpYOffsetSpinBox,5,1);
-    pDialogLayout->addWidget(pButtonBox,6,0,1,2);
+//    pDialogLayout->addWidget(pXScaleLabel,0,0);
+//    pDialogLayout->addWidget(mpTimeScaleComboBox,0,1);
+//    pDialogLayout->addWidget(pXOffsetLabel,1,0);
+//    pDialogLayout->addWidget(mpTimeOffsetSpinBox,1,1);
+    pDialogLayout->addWidget(pYPlotScaleLabel,0,0);
+    pDialogLayout->addWidget(pYPlotScale,0,1);
+    pDialogLayout->addWidget(pYPlotScaleUnit,0,2);
+    pDialogLayout->addWidget(pCurveUnitScaleLabel,1,0);
+    pDialogLayout->addWidget(pCurveUnitScale,1,1);
+    pDialogLayout->addWidget(pCurveUnitScaleUnit,1,2);
+    pDialogLayout->addWidget(pYScaleLabel,2,0);
+    pDialogLayout->addWidget(mpYScaleSpinBox,2,1);
+    pDialogLayout->addWidget(pYOffsetLabel,3,0);
+    pDialogLayout->addWidget(mpYOffsetSpinBox,3,1);
+    pDialogLayout->addWidget(pButtonBox,4,0,1,2);
     pScaleDialog->setLayout(pDialogLayout);
     pScaleDialog->show();
 
     connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
-    connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateTimePlotScaleFromDialog()));
-    connect(mpTimeOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
+//    connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateTimePlotScaleFromDialog()));
+//    connect(mpTimeOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
     connect(mpYScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
     connect(mpYOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
 }
@@ -1237,7 +1237,7 @@ void PlotCurve::updateCurve()
 
     if(mpCustomXdata.isNull())
     {
-        const double yScale = mCustomCurveScale*mCustomCurveDataUnitScale*dataScale;
+        const double yScale = mCustomAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
 
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
         if (mpData->getSharedTimePointer())
@@ -1265,7 +1265,7 @@ void PlotCurve::updateCurve()
     }
     else
     {
-        const double yScale = mCustomCurveScale*mCustomCurveDataUnitScale*dataScale;
+        const double yScale = mCustomAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
 
         // Use special X-data
         // We copy here, it should be faster then peek (at least when data is cached on disc)

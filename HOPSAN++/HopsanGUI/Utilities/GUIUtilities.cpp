@@ -764,3 +764,17 @@ bool isNameValid(const QString &rString)
     return true;
 }
 
+//! @brief From a QString extract text between first and last
+QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, const QChar &rLast)
+{
+    int f = rString.indexOf(rFirst);
+    int l = rString.lastIndexOf(rLast);
+    if ((f > -1) && (l > -1))
+    {
+        if (l-(f+1) > 0)
+        {
+            return rString.mid(f+1,l-f-1);
+        }
+    }
+    return "";
+}

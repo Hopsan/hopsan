@@ -102,6 +102,7 @@ private slots:
 };
 
 
+
 //! @brief Class describing a plot curve in plot window
 class PlotCurve : public QObject, public QwtPlotCurve
 {
@@ -204,7 +205,7 @@ private:
 
     QString mCustomCurveDataUnit;
     double mCustomCurveDataUnitScale;
-    double mCustomCurveScale;
+    double mCustomAdditionalCurveScale;
 
     // Curve properties settings
     CurveInfoBox *mpPlotCurveInfoBox;

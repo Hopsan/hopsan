@@ -120,9 +120,11 @@ public slots:
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
     void openAxisLabelDialog();
+    void openTimeScalingDialog();
     void applyAxisSettings();
     void applyAxisLabelSettings();
     void applyLegendSettings();
+    void applyTimeScalingSettings();
     void enableZoom(bool value);
     void resetZoom();
     void enableArrow(bool value);
@@ -250,6 +252,10 @@ private:
     QLineEdit *mpUserDefinedYrLabel;
     QCheckBox *mpUserDefinedLabelsCheckBox;
     bool mIsLocked;
+
+    // Time scaling member variables
+    QComboBox *mpTimeScaleComboBox;
+    QDoubleSpinBox *mpTimeOffsetSpinBox;
 
     typedef struct _AxisLimits // Persistent axis limits
     {

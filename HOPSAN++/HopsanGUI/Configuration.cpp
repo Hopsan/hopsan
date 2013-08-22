@@ -478,24 +478,28 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement)
         defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
     }
 
-    if(!mCustomUnits.contains("Pressure")) mCustomUnits.insert("Pressure", QMap<QString, double>());
-    if(!mCustomUnits.contains("Flow")) mCustomUnits.insert("Flow", QMap<QString, double>());
-    if(!mCustomUnits.contains("Force")) mCustomUnits.insert("Force", QMap<QString, double>());
-    if(!mCustomUnits.contains("Position")) mCustomUnits.insert("Position", QMap<QString, double>());
-    if(!mCustomUnits.contains("Velocity")) mCustomUnits.insert("Velocity", QMap<QString, double>());
-    if(!mCustomUnits.contains("Torque")) mCustomUnits.insert("Torque", QMap<QString, double>());
-    if(!mCustomUnits.contains("Angle")) mCustomUnits.insert("Angle", QMap<QString, double>());
-    if(!mCustomUnits.contains("AngularVelocity")) mCustomUnits.insert("AngularVelocity", QMap<QString, double>());
-    if(!mCustomUnits.contains("Value")) mCustomUnits.insert("Value", QMap<QString, double>());
-    if(!mCustomUnits.contains("Voltage")) mCustomUnits.insert("Voltage", QMap<QString, double>());
-    if(!mCustomUnits.contains("Current")) mCustomUnits.insert("Current", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Pressure")) mCustomUnits.insert("Pressure", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Flow")) mCustomUnits.insert("Flow", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Force")) mCustomUnits.insert("Force", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Position")) mCustomUnits.insert("Position", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Velocity")) mCustomUnits.insert("Velocity", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Torque")) mCustomUnits.insert("Torque", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Angle")) mCustomUnits.insert("Angle", QMap<QString, double>());
+//    if(!mCustomUnits.contains("AngularVelocity")) mCustomUnits.insert("AngularVelocity", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Value")) mCustomUnits.insert("Value", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Voltage")) mCustomUnits.insert("Voltage", QMap<QString, double>());
+//    if(!mCustomUnits.contains("Current")) mCustomUnits.insert("Current", QMap<QString, double>());
     QDomElement customUnitElement = rDomElement.firstChildElement("customunit");
     while (!customUnitElement.isNull())
     {
         QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
         QString unitName = customUnitElement.attribute("unit");
         double unitScale = customUnitElement.attribute("scale").toDouble();
-        if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
+        if (!mCustomUnits.contains(physicalQuantity))
+        {
+            mCustomUnits.insert(physicalQuantity, QMap<QString, double>());
+        }
+        if(!mCustomUnits.value(physicalQuantity).contains(unitName))
         {
             mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
         }

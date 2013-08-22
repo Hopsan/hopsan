@@ -293,6 +293,11 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpLockAxisToCurrentLimitsButton->setChecked(false);
     connect(mpLockAxisToCurrentLimitsButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpOpentimeScaleDialog = new QAction(this);
+    mpOpentimeScaleDialog->setToolTip("Open Time-Scale Dialog");
+    mpOpentimeScaleDialog->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+
+
     mpNewWindowFromTabButton = new QAction(this);
     mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
     mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-OpenTabInNewPlotWindow.png"));
@@ -391,6 +396,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addAction(mpBodePlotButton);
     mpToolBar->addAction(mpAllGenerationsDown);
     mpToolBar->addAction(mpAllGenerationsUp);
+    mpToolBar->addAction(mpOpentimeScaleDialog);
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpGridButton);
     mpToolBar->addAction(mpBackgroundColorButton);
@@ -1229,6 +1235,7 @@ void PlotWindow::changedTab()
     disconnect(mpAllGenerationsDown,        SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsUp,          SIGNAL(triggered()),    0,  0);
     disconnect(mpLockAxisToCurrentLimitsButton, SIGNAL(toggled(bool)),  0,  0);
+    disconnect(mpOpentimeScaleDialog,       SIGNAL(triggered()), 0, 0);
 
     // If there are any tabs then show the widget and reestablish connections to the current tab
     if(mpPlotTabWidget->count() > 0)
@@ -1312,6 +1319,7 @@ void PlotWindow::changedTab()
         connect(mpAllGenerationsDown,       SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsDown()));
         connect(mpAllGenerationsUp,         SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsUp()));
         connect(mpLockAxisToCurrentLimitsButton, SIGNAL(triggerd(bool)),pCurrentTab,    SLOT(lockAxisToCurrentLimits(bool)));
+        connect(mpOpentimeScaleDialog,       SIGNAL(triggered()),    pCurrentTab,    SLOT(openTimeScalingDialog()));
 
         // Set the plottab specific info layout
         mpCurveInfoStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);

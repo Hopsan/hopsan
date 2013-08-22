@@ -101,12 +101,24 @@ extern QSplashScreen *gpSplash;
 
 extern QString gHopsanCoreVersion;
 
+//! @todo this should not be in common.h
 class UnitScale
 {
 public:
     UnitScale() {}
     UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale) {}
     void clear() {mUnit.clear(); mScale.clear();}
+    double toDouble() const {return mScale.toDouble();}
+    bool isEmpty() const {return mScale.isEmpty();}
+    void setScale(const double scale)
+    {
+        mScale = QString("%1").arg(scale);
+    }
+    void setOnlyScale(const double scale)
+    {
+        mUnit.clear();
+        mScale = QString("%1").arg(scale);
+    }
     QString mUnit;
     QString mScale;
 };

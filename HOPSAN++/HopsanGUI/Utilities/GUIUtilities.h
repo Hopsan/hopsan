@@ -65,6 +65,7 @@ double findSmallestValueGreaterThanZero(QVector<double> data);
 void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split);
 void santizeName(QString &rString);
 bool isNameValid(const QString &rString);
+QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, const QChar &rLast);
 
 
 //Optimization
