@@ -274,7 +274,7 @@ void LibraryWidget::checkForFailedComponents()
             pRecompLayout->addWidget(pIsRecompLabel, n, 2);
             pRecompLayout->setAlignment(pIsRecompLabel, Qt::AlignCenter);
             QCheckBox *pDoRecompBox = new QCheckBox(this);
-            boxToTypeMap.insert(pDoRecompBox, mFailedComponentsLibPaths.at(mFailedComponentsAreRecompilable.indexOf(itr.value())));
+            boxToTypeMap.insert(pDoRecompBox, itr.key()/*mFailedComponentsLibPaths.at(mFailedComponentsAreRecompilable.indexOf(itr.value()))*/);
             pDoRecompBox->setCheckable(true);
             pDoRecompBox->setChecked(itr.value());
             pDoRecompBox->setEnabled(itr.value());
