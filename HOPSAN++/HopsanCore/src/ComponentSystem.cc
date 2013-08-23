@@ -261,7 +261,7 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
     mKeepStartValues = false;
-    mRequestedNumLogSamples = 2048;
+    mRequestedNumLogSamples = 0; //This has to be 0 since we want loging to be disabled by default
 #ifdef USETBB
     mpStopMutex = new tbb::mutex();
 #else
