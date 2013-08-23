@@ -107,6 +107,10 @@ class UnitScale
 public:
     UnitScale() {}
     UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale) {}
+    UnitScale(const QString &rUnit, const double scale) : mUnit(rUnit)
+    {
+        setScale(scale);
+    }
     void clear() {mUnit.clear(); mScale.clear();}
     double toDouble() const {return mScale.toDouble();}
     bool isEmpty() const {return mScale.isEmpty();}

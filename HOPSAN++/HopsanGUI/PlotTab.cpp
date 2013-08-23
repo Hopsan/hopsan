@@ -977,8 +977,7 @@ void PlotTab::updateLabels()
                     QString text;
                     for (int i=0; i<customXdatas.size(); ++i)
                     {
-                        //! @todo should we not use the plotscale here
-                        text.append(customXdatas[i]->getDataName() + " [" + customXdatas[i]->getDataUnit() + "], ");
+                        text.append(customXdatas[i]->getDataName() + QString(" [%1], ").arg(customXdatas[i]->getPlotScaleDataUnit()));
                     }
                     text.chop(2);
                     mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, text);
@@ -989,7 +988,7 @@ void PlotTab::updateLabels()
                     SharedLogVariableDataPtrT pTime = mPlotCurvePtrs[plotID].first()->getTimeVectorPtr();
                     if (pTime)
                     {
-                        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(pTime->getDataName()+" ["+pTime->getCurrentPlotDataUnit()+"] "));
+                        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, pTime->getDataName()+QString(" [%1] ").arg(pTime->getActualPlotDataUnit()));
                     }
 
                     // Else no automatic x-label

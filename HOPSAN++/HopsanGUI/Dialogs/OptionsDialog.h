@@ -60,6 +60,7 @@ private slots:
     void addTorqueUnit();
     void addAngleUnit();
     void addAngularVelocityUnit();
+    void addTimeUnit();
     void addCustomUnitDialog(QString physicalQuantity);
     void addCustomUnit();
     void updateCustomUnits();
@@ -76,7 +77,7 @@ private:
     QCheckBox *mpInvertWheelCheckBox;
     QCheckBox *mpAntiAliasingCheckBox;
     QCheckBox *mpSnappingCheckBox;
-    QLabel *mpBackgroundColorLabel;
+
     QToolButton *mpBackgroundColorButton;
     QWidget *mpInterfaceWidget;
     QGridLayout *mpInterfaceLayout;
@@ -91,52 +92,26 @@ private:
     QWidget *mpSimulationWidget;
     QGridLayout *mpSimulationLayout;
 
-    QLabel *mpGenerationLimitLabel;
     QSpinBox *mpGenerationLimitSpinBox;
     QCheckBox *mpCacheLogDataCeckBox;
-    QLabel *mpPressureUnitLabel;
+
     QComboBox *mpPressureUnitComboBox;
-    QPushButton *mpAddPressureUnitButton;
-    QLabel *mpFlowUnitLabel;
     QComboBox *mpFlowUnitComboBox;
-    QPushButton *mpAddFlowUnitButton;
-    QLabel *mpForceUnitLabel;
     QComboBox *mpForceUnitComboBox;
-    QPushButton *mpAddForceUnitButton;
-    QLabel *mpPositionUnitLabel;
     QComboBox *mpPositionUnitComboBox;
-    QPushButton *mpAddPositionUnitButton;
-    QLabel *mpVelocityUnitLabel;
     QComboBox *mpVelocityUnitComboBox;
-    QPushButton *mpAddVelocityUnitButton;
-    QLabel *mpTorqueUnitLabel;
     QComboBox *mpTorqueUnitComboBox;
-    QPushButton *mpAddTorqueUnitButton;
-    QLabel *mpAngleUnitLabel;
     QComboBox *mpAngleUnitComboBox;
-    QPushButton *mpAddAngleUnitButton;
-    QLabel *mpAngularVelocityUnitLabel;
     QComboBox *mpAngularVelocityUnitComboBox;
-    QPushButton *mpAddAngularVelocityUnitButton;
+    QComboBox *mpTimeUnitComboBox;
+
     QWidget *mpPlottingWidget;
     QGridLayout *mpPlottingLayout;
 
-    QPushButton *mpResetButton;
-    QPushButton *mpOpenXmlButton;
-    QPushButton *mpCancelButton;
-    QPushButton *mpApplyButton;
-    QPushButton *mpOkButton;
-    QDialogButtonBox *mpButtonBox;
-
-    QWidget *mpCentralwidget;
-
     QDialog *mpAddUnitDialog;
-    QLabel *mpNameLabel;
     QLineEdit *mpUnitNameBox;
-    QLabel *mpScaleLabel;
     QLineEdit *mpScaleBox;
-    QPushButton *mpDoneInUnitDialogButton;
-    QPushButton *mpCancelInUnitDialogButton;
+
     QString mPhysicalQuantityToModify;
 };
 

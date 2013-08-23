@@ -559,6 +559,14 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
                         //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(timeVec);
 
                         timeVecPtr = insertTimeVariable(timeVec);
+
+                        // Set the custom unit scaling to the default
+                        QString defaultTimeUnit = gConfig.getDefaultUnit(TIMEVARIABLENAME);
+                        if (defaultTimeUnit != timeVecPtr->getDataUnit())
+                        {
+                            timeVecPtr->setCustomUnitScale(UnitScale(defaultTimeUnit, gConfig.getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                        }
+
                         timeVectorObtained = true;
                     }
 

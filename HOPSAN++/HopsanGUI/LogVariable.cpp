@@ -242,7 +242,7 @@ const QString &LogVariableData::getPlotScaleDataUnit() const
     return mCustomUnitScale.mUnit;
 }
 
-const QString &LogVariableData::getCurrentPlotDataUnit() const
+const QString &LogVariableData::getActualPlotDataUnit() const
 {
     if (mCustomUnitScale.mUnit.isEmpty())
     {

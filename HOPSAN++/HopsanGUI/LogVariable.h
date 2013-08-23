@@ -156,7 +156,7 @@ public:
     const UnitScale &getCustomUnitScale() const;
     void removeCustomUnitScale();
     const QString &getPlotScaleDataUnit() const;
-    const QString &getCurrentPlotDataUnit() const;
+    const QString &getActualPlotDataUnit() const;
     double getPlotScale() const;
     double getPlotOffset() const;
 
