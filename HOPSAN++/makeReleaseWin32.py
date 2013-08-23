@@ -10,13 +10,13 @@ tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
 scriptFile="HopsanReleaseInnoSetupScript.iss"
 hopsanDir=os.getcwd()
-dependecyBinFiles=".\\hopsan_bincontents_Qt484_MinGW44_Py275_OpenSSL101e.7z"
+dependecyBinFiles=".\\hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z"
 
 inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
 innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
-qtlibDirList = ["C:\Qt\4.8.4"]
-qtcreatorDirList = ["C:\Qt\qtcreator-2.6.0", "C:\Qt\qtcreator-2.6.1", "C:\Qt\qtcreator-2.6.2", "C:\Qt\qtcreator-2.7.1"]
-mingwDirList = ["C:\Qt\MinGW-gcc440_1\mingw\bin", "C:\mingw\bin"]
+qtlibDirList = ["C:\Qt\4.8.5"]
+qtcreatorDirList = ["C:\Qt\qtcreator-2.7.1"]
+mingwDirList = ["C:\Qt\MinGW-gcc440_1\mingw\bin", "C:\Qt\mingw\bin"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 

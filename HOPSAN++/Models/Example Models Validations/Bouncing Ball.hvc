@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
   <validation hopsanguiversion="0.6.0" time="134751" date="20130729" hopsancoreversion="0.6.0">
-    <modelfile>../../../../../../../Program Files/Hopsan/Models/Example Models/Bouncing Ball.hmf</modelfile>
+    <modelfile>../Example Models/Bouncing Ball.hmf</modelfile>
     <component name="Force_Source">
       <port name="P1">
         <variable name="Position">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
   <validation hopsanguiversion="0.6.0" time="135449" date="20130729" hopsancoreversion="0.6.0">
-    <modelfile>../../../../../../../Program Files/Hopsan/Models/Example Models/Pressure Relief Valve Characteristics.hmf</modelfile>
+    <modelfile>../Example Models/Pressure Relief Valve Characteristics.hmf</modelfile>
     <component name="Turbulent_Orifice">
       <port name="P2">
         <variable name="Pressure">

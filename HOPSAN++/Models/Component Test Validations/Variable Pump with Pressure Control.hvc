@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
   <validation hopsanguiversion="0.6.0" time="135617" date="20130729" hopsancoreversion="0.6.0">
-    <modelfile>Variable Pump with Pressure Control.hmf</modelfile>
+    <modelfile>../Component Test/HydraulicComponent Test/Variable Pump with Pressure Control.hmf</modelfile>
     <component name="Hydraulic_Volume">
       <port name="P1">
         <variable name="Pressure">
