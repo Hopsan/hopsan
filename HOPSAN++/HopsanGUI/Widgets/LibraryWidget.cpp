@@ -957,16 +957,13 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
             libName = "External Libraries";
         }
 
-        //! @todo Why don't we replace it if it does already exist? Now we cannot update appearance data...
         if(!mpContentsTree->findChildByName(libName))
         {
             pExternalTree = mpContentsTree->addChild(libName);
         }
         else
         {
-//            pExternalTree = mpContentsTree->findChildByName(libName);
-            mpContentsTree->removeChild(libName);
-            pExternalTree = mpContentsTree->addChild(libName);
+            pExternalTree = mpContentsTree->findChildByName(libName);
         }
 
         libDirObject.cdUp();

@@ -61,8 +61,8 @@ private:
     tbb::atomic<int*> mpCounter;
     tbb::atomic<bool*> mpLock;
 #else
-    int mCounter;
-    bool mLock;
+    int *mpCounter;
+    bool *mpLock;
 #endif
 };
 
