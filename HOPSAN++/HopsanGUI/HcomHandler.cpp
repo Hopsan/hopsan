@@ -243,6 +243,22 @@ void HcomHandler::createCommands()
     rmvarCmd.group = "Variable Commands";
     mCmdList << rmvarCmd;
 
+    HcomCommand chdfscCmd;
+    chdfscCmd.cmd = "chdfsc";
+    chdfscCmd.description.append("Change plot scale of specified variable");
+    chdfscCmd.help.append("Usage: chdfsc [variable scale]");
+    chdfscCmd.fnc = &HcomHandler::executeChangePlotScaleCommand;
+    chdfscCmd.group = "Variable Commands";
+    mCmdList << chdfscCmd;
+
+    HcomCommand didfscCmd;
+    didfscCmd.cmd = "didfsc";
+    didfscCmd.description.append("Display plot scale of specified variable");
+    didfscCmd.help.append("Usage: didfsc [variable]");
+    didfscCmd.fnc = &HcomHandler::executeDisplayPlotScaleCommand;
+    didfscCmd.group = "Variable Commands";
+    mCmdList << didfscCmd;
+
     HcomCommand setCmd;
     setCmd.cmd = "set";
     setCmd.description.append("Sets Hopsan preferences");
@@ -1109,6 +1125,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
         if (err.isEmpty())
         {
             returnScalar(r);
+            mpConsole->print(QString::number(r));
         }
         else
         {
@@ -1213,6 +1230,78 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
     }
 
 
+}
+
+void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 2)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    QString varName = getArgument(cmd,0);
+    double scale = getArgument(cmd,1).toDouble();
+
+    QStringList vars;
+    getVariables(varName,vars);
+    if(vars.isEmpty())
+    {
+        mpConsole->printErrorMessage("Unknown variable.","",false);
+        return;
+    }
+    Q_FOREACH(const QString var, vars)
+    {
+        SharedLogVariableDataPtrT pVar = getVariablePtr(var);
+        pVar.data()->setPlotScale(scale);
+    }
+}
+
+void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    SharedLogVariableDataPtrT pVar = getVariablePtr(cmd);
+    if(!pVar.isNull())
+    {
+        QString scale = pVar.data()->getCustomUnitScale().mScale;
+        QString unit = pVar.data()->getCustomUnitScale().mUnit;
+        if(!scale.isEmpty() && !unit.isEmpty())
+        {
+            mpConsole->print(scale+" ["+unit+"]");
+            returnScalar(scale.toDouble());
+        }
+        else if(!scale.isEmpty())
+        {
+            mpConsole->print(scale);
+            returnScalar(scale.toDouble());
+        }
+        else
+        {
+            scale = QString::number(pVar.data()->getPlotScale());
+            unit = pVar.data()->getPlotScaleDataUnit();
+            if(!scale.isEmpty() && !unit.isEmpty())
+            {
+                mpConsole->print(scale+" ["+unit+"]");
+                returnScalar(scale.toDouble());
+            }
+            else if(!scale.isEmpty())
+            {
+                mpConsole->print(scale);
+                returnScalar(scale.toDouble());
+            }
+        }
+    }
+    else
+    {
+        mpConsole->printErrorMessage("Variable not found.", "", false);
+    }
+
+    return;
 }
 
 
@@ -1889,7 +1978,11 @@ void HcomHandler::executeAbsCommand(const QString cmd)
     {
         bool ok;
         double retval = fabs(getNumber(varName, &ok));
-        if(ok) returnScalar(retval);
+        if(ok)
+        {
+            returnScalar(retval);
+            mpConsole->print(QString::number(retval));
+        }
         else
         {
             mpConsole->printErrorMessage("Variable not found.", "", false);
@@ -1932,6 +2025,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
 
         returnScalar(mpOptHandler->mOptLastWorstId);
+        mpConsole->print(QString::number(mpOptHandler->mOptLastWorstId));
         return;
     }
     if(split.size() == 1 && split[0] == "best")
@@ -1948,6 +2042,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
 
         returnScalar(mpOptHandler->mOptBestId);
+        mpConsole->print(QString::number(mpOptHandler->mOptBestId));
         return;
     }
     if(split[0] == "set")
@@ -3306,6 +3401,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         if(evalOk && type==Scalar)
         {
             returnScalar(value.toDouble());
+            mpConsole->print(QString::number(value.toDouble()));
             return true;
         }
         else if(evalOk && type==DataVector)
@@ -3572,7 +3668,7 @@ void HcomHandler::returnScalar(const double retval)
 {
     mLocalVars.insert("ans", retval);
     mRetvalType = Scalar;
-    mpConsole->print(QString::number(retval));
+    //mpConsole->print(QString::number(retval));
 }
 
 void HcomHandler::registerFunction(const QString func, const QString description, const SymHop::Function fptr)

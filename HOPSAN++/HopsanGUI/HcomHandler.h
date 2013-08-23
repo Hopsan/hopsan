@@ -101,6 +101,8 @@ private:
     void executePokeCommand(const QString cmd);
     void executeDefineAliasCommand(const QString cmd);
     void executeRemoveVariableCommand(const QString cmd);
+    void executeChangePlotScaleCommand(const QString cmd);
+    void executeDisplayPlotScaleCommand(const QString cmd);
     void executeSetCommand(const QString cmd);
     void executeSaveToPloCommand(const QString cmd);
     void executeLoadVariableCommand(const QString cmd);
