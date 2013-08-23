@@ -158,6 +158,15 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
+    //Load Simulink Co-Simulation generator function
+    callSimulinkExportGenerator = (call_simulink_export_generator_t)dlsym(lib_ptr, "callSimulinkExportGenerator");
+    dlsym_error = dlerror();
+    if(dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
     //! @todo Shall not be here, since Simulink export does not currently work under Linux
     //Load Simulink Co-Simulation generator function
     callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)dlsym(lib_ptr, "callSimulinkCoSimExportGenerator");
