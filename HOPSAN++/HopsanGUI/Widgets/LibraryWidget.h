@@ -191,6 +191,7 @@ public:
     LibraryContentsTree *findChildByName(QString name);
     LibraryContentsTree *findChildByPath(QString path);
     LibraryComponent *addComponent(ModelObjectAppearance *pAppearanceData);
+    bool removeComponent(QString name);
     LibraryComponent *findComponent(const QString type, const QString subType);
 
     QString mName;

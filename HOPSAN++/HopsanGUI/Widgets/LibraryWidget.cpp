@@ -1403,6 +1403,13 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
 
         if (success)
         {
+            if(pAppearanceData->getTypeName() == "MyCoolMass")
+            {
+                double ko=3;
+                double apa=ko;
+            }
+            mpContentsTree->removeComponent(pAppearanceData->getTypeName());
+            qDebug() << "Removing: " << pAppearanceData->getTypeName();
             pTree->addComponent(pAppearanceData);
             mLoadedComponents << pAppearanceData->getTypeName();
             qDebug() << "Adding: " << pAppearanceData->getTypeName();
@@ -2156,6 +2163,31 @@ bool LibraryContentsTree::removeChild(QString name)
         }
     }
     return false;       //Not found
+}
+
+
+//! @brief Recurses the tree and removes all occurances of specified component
+//! @param name Name of component to remove
+bool LibraryContentsTree::removeComponent(QString name)
+{
+    bool retval=false;
+    for(int i=0; i<mComponentPtrs.size(); ++i)
+    {
+        if(mComponentPtrs.at(i)->getFullTypeName() == name)
+        {
+            delete(mComponentPtrs[i]);
+            mComponentPtrs.remove(i);
+            return true;
+        }
+    }
+    for(int i=0; i<mChildNodesPtrs.size(); ++i)
+    {
+        if(mChildNodesPtrs[i]->removeComponent(name))
+        {
+            retval=true;
+        }
+    }
+    return retval;       //Not found
 }
 
 //! @brief Returns a pointer to sub library with specified name, or zero if it does not exist.
