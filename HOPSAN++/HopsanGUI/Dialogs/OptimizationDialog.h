@@ -40,60 +40,6 @@
 class MainWindow;
 
 
-class PythonHighlighter : public QSyntaxHighlighter
-{
-    Q_OBJECT
-
-public:
-    PythonHighlighter(QTextDocument *parent = 0);
-
-protected:
-    void highlightBlock(const QString &text);
-
-private:
-    struct HighlightingRule
-    {
-        QRegExp pattern;
-        QTextCharFormat format;
-    };
-    QVector<HighlightingRule> highlightingRules;
-
-    QTextCharFormat keywordFormat;
-    QTextCharFormat singleLineCommentFormat;
-    QTextCharFormat multiLineCommentFormat;
-    QTextCharFormat quotationFormat;
-    QTextCharFormat tagFormat;
-    QTextCharFormat functionFormat;
-};
-
-
-class HcomHighlighter : public QSyntaxHighlighter
-{
-    Q_OBJECT
-
-public:
-    HcomHighlighter(QTextDocument *parent = 0);
-
-protected:
-    void highlightBlock(const QString &text);
-
-private:
-    struct HighlightingRule
-    {
-        QRegExp pattern;
-        QTextCharFormat format;
-    };
-    QVector<HighlightingRule> highlightingRules;
-
-    QTextCharFormat commandFormat;
-    QTextCharFormat singleLineCommentFormat;
-    QTextCharFormat multiLineCommentFormat;
-    QTextCharFormat quotationFormat;
-    QTextCharFormat tagFormat;
-    QTextCharFormat functionFormat;
-};
-
-
 class OptimizationDialog : public QWizard
 {
     Q_OBJECT

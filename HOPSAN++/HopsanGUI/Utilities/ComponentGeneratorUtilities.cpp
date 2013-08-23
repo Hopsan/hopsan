@@ -38,14 +38,6 @@
 using namespace std;
 
 
-//! @brief Returns a list with supported functions for equation-based model genereation
-//! @todo Duplicated with HopsanGenerator
-QStringList getSupportedFunctionsList()
-{
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow";
-}
-
-
 //! @brief Returns a list of custom Hopsan functions that need to be allowed in the symbolic library
 //! @todo Duplicated with HopsanGenerator
 QStringList getCustomFunctionList()

@@ -599,6 +599,12 @@ void ModelHandler::restoreState()
         {
             loadModel(mStateInfoHmfList[i]);
         }
+        if(mModelPtrs.size() < i+1)
+        {
+            addNewModel();
+        }
+        gpMainWindow->mpCentralTabs->setCurrentIndex(i+1);
+        this->mCurrentIdx = i;
         gpMainWindow->mpCentralTabs->setTabText(i+1, mStateInfoTabNames[i]);
         getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
         mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());

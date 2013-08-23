@@ -22,30 +22,28 @@
 //!
 //$Id$
 
+//C++ includes
 #include <cassert>
 
+//Qt includes
 #include <QFont>
 
+//Hopsan includes
+#include "common.h"
 #include "Configuration.h"
-#include "GUIPort.h"
+#include "CoreAccess.h"
+#include "DesktopHandler.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
 #include "Dialogs/EditComponentDialog.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
+#include "GUIPort.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
+#include "Utilities/HighlightingUtilities.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/PyDockWidget.h"
-#include "common.h"
-#include "CoreAccess.h"
 #include "Widgets/LibraryWidget.h"
-#include "DesktopHandler.h"
-
-
-
-
-
-
+#include "Widgets/PyDockWidget.h"
 
 
 EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)

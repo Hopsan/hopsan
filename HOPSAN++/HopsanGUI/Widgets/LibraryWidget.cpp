@@ -43,6 +43,7 @@
 #include "common.h"
 #include "version_gui.h"
 #include "Dialogs/EditComponentDialog.h"
+#include "Utilities/HighlightingUtilities.h"
 
 using namespace std;
 using namespace hopsan;
@@ -820,6 +821,42 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     qDebug() << "Success!";
 
+
+    QStringList xmlFiles = QDir(libPath).entryList(QStringList() << "*.xml");
+    QFile xmlFile(QDir::cleanPath(libPath)+"/"+xmlFiles.first());
+    QDialog *pXmlDialog = new QDialog(this);
+    pXmlDialog->resize(1024, 768);
+    QTextEdit *pXmlTextEdit = new QTextEdit(pXmlDialog);
+    xmlFile.open(QFile::ReadOnly);
+    XmlHighlighter *pXmlHighlighter = new XmlHighlighter(pXmlTextEdit->document());
+    Q_UNUSED(pXmlHighlighter);
+    pXmlTextEdit->setPlainText(xmlFile.readAll());
+    xmlFile.close();
+    QDialogButtonBox *pXmlButtonBox = new QDialogButtonBox(pXmlDialog);
+    pXmlButtonBox->addButton(QDialogButtonBox::Ok);
+    pXmlButtonBox->addButton(QDialogButtonBox::Cancel);
+    QVBoxLayout *pLayout = new QVBoxLayout(pXmlDialog);
+    pLayout->addWidget(pXmlTextEdit);
+    pLayout->addWidget(pXmlButtonBox);
+
+    connect(pXmlButtonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), pXmlDialog, SLOT(reject()));
+    connect(pXmlButtonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), pXmlDialog, SLOT(accept()));
+    int reply = pXmlDialog->exec();
+
+    qDebug() << "Reply = " << reply;
+
+    if(reply == QDialog::Accepted)
+    {
+        qDebug() << "Accepted!";
+
+        xmlFile.open(QFile::WriteOnly | QFile::Truncate);
+        xmlFile.write(pXmlTextEdit->toPlainText().toStdString().c_str());
+        xmlFile.close();
+    }
+    delete pXmlDialog;
+
+
+
     if(!mpCoreAccess->loadComponentLib(newLibFileName))
     {
         qDebug() << "Failed to load library!";
@@ -919,13 +956,17 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
         {
             libName = "External Libraries";
         }
+
+        //! @todo Why don't we replace it if it does already exist? Now we cannot update appearance data...
         if(!mpContentsTree->findChildByName(libName))
         {
             pExternalTree = mpContentsTree->addChild(libName);
         }
         else
         {
-            pExternalTree = mpContentsTree->findChildByName(libName);
+//            pExternalTree = mpContentsTree->findChildByName(libName);
+            mpContentsTree->removeChild(libName);
+            pExternalTree = mpContentsTree->addChild(libName);
         }
 
         libDirObject.cdUp();

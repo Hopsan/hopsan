@@ -41,6 +41,7 @@
 #include "MainWindow.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
+#include "Utilities/HighlightingUtilities.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"

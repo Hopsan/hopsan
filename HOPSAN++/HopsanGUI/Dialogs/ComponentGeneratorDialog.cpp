@@ -22,210 +22,27 @@
 //!
 //$Id$
 
+//C++ includes
 #include <cassert>
 
+//Qt includes
 #include <QFont>
 
+//Hopsan includes
+#include "common.h"
 #include "Configuration.h"
-#include "GUIPort.h"
+#include "CoreAccess.h"
+#include "DesktopHandler.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
+#include "GUIPort.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
+#include "Utilities/HighlightingUtilities.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/PyDockWidget.h"
-#include "common.h"
-#include "CoreAccess.h"
 #include "Widgets/LibraryWidget.h"
-#include "DesktopHandler.h"
-
-
-
-CppHighlighter::CppHighlighter(QTextDocument *parent)
-    : QSyntaxHighlighter(parent)
-{
-    HighlightingRule rule;
-
-    keywordFormat.setForeground(Qt::darkYellow);
-    keywordFormat.setFontWeight(QFont::Normal);
-    QStringList keywordPatterns;
-    keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
-                    << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
-                    << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
-                    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
-                    << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
-                    << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
-                    << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
-                    << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
-                    << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
-                    << "\\bvoid\\b" << "\\bvolatile\\b" << "\\busing\\b";
-    foreach (const QString &pattern, keywordPatterns) {
-        rule.pattern = QRegExp(pattern);
-        rule.format = keywordFormat;
-        highlightingRules.append(rule);
-    }
-
-    preProcessorFormat.setForeground(Qt::darkBlue);
-    preProcessorFormat.setFontWeight(QFont::Normal);
-    keywordPatterns.clear();
-    keywordPatterns << "^#?\\binclude\\b" << "^#?\\bifdef\\b" << "^#?\\bifndef\\b"
-                    << "^#?\\belseif\\b" << "^#?\\belse\\b" << "^#?\\bendif\\b";
-    foreach (const QString &pattern, keywordPatterns) {
-        rule.pattern = QRegExp(pattern);
-        rule.format = preProcessorFormat;
-        highlightingRules.append(rule);
-    }
-
-    classFormat.setFontWeight(QFont::Bold);
-    classFormat.setForeground(Qt::darkMagenta);
-    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
-    rule.format = classFormat;
-    highlightingRules.append(rule);
-
-    singleLineCommentFormat.setForeground(Qt::red);
-    rule.pattern = QRegExp("//[^\n]*");
-    rule.format = singleLineCommentFormat;
-    highlightingRules.append(rule);
-
-    multiLineCommentFormat.setForeground(Qt::red);
-
-    quotationFormat.setForeground(Qt::darkGreen);
-    rule.pattern = QRegExp("<.*>");
-    rule.format = quotationFormat;
-    highlightingRules.append(rule);
-
-    tagFormat.setForeground(Qt::darkGreen);
-    rule.pattern = QRegExp("\".*\"");
-    rule.format = quotationFormat;
-    highlightingRules.append(rule);
-
-    functionFormat.setFontItalic(true);
-    functionFormat.setForeground(Qt::blue);
-    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
-    rule.format = functionFormat;
-    highlightingRules.append(rule);
-
-    commentStartExpression = QRegExp("/\\*");
-    commentEndExpression = QRegExp("\\*/");
-}
-
-void CppHighlighter::highlightBlock(const QString &text)
-{
-    foreach (const HighlightingRule &rule, highlightingRules) {
-        QRegExp expression(rule.pattern);
-        int index = expression.indexIn(text);
-        while (index >= 0) {
-            int length = expression.matchedLength();
-            setFormat(index, length, rule.format);
-            index = expression.indexIn(text, index + length);
-        }
-    }
-    setCurrentBlockState(0);
-
-    int startIndex = 0;
-    if (previousBlockState() != 1)
-        startIndex = commentStartExpression.indexIn(text);
-
-    while (startIndex >= 0) {
-        int endIndex = commentEndExpression.indexIn(text, startIndex);
-        int commentLength;
-        if (endIndex == -1) {
-            setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
-        } else {
-            commentLength = endIndex - startIndex
-                            + commentEndExpression.matchedLength();
-        }
-        setFormat(startIndex, commentLength, multiLineCommentFormat);
-        startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
-    }
-}
-
-
-
-
-
-ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
-    : QSyntaxHighlighter(parent)
-{
-    HighlightingRule rule;
-
-    //Functions
-    keywordFormat.setForeground(Qt::darkBlue);
-    keywordFormat.setFontWeight(QFont::Bold);
-    QStringList keywordPatterns;
-    keywordPatterns  << "\\bVariableLimits\\b" << "\\bVariable2Limits\\b";       //These are special and will not be treated as normal functions later on
-    QStringList functions = getSupportedFunctionsList();
-    for(int i=0; i<functions.size(); ++i)
-    {
-        keywordPatterns << "\\b"+functions[i]+"\\b";
-    }
-
-    foreach (const QString &pattern, keywordPatterns)
-    {
-        rule.pattern = QRegExp(pattern);
-        rule.format = keywordFormat;
-        highlightingRules.append(rule);
-    }
-
-    //Model structure keywords
-    keywordFormat.setForeground(Qt::darkRed);
-    keywordFormat.setFontWeight(QFont::Bold);
-    keywordPatterns.clear();
-    keywordPatterns  << "\\bmodel\\b" << "\\bequation\\b" << "\\balgorithm\\b" << "\\bend\\b" << "\\bannotation\\b";
-
-    foreach (const QString &pattern, keywordPatterns)
-    {
-        rule.pattern = QRegExp(pattern);
-        rule.format = keywordFormat;
-        highlightingRules.append(rule);
-    }
-
-    //Parameter and type keywords
-    keywordFormat.setForeground(Qt::darkBlue);
-    keywordFormat.setFontWeight(QFont::Bold);
-    keywordPatterns.clear();
-    keywordPatterns  << "\\bparameter\\b" << "\\bReal\\b";
-
-    foreach (const QString &pattern, keywordPatterns)
-    {
-        rule.pattern = QRegExp(pattern);
-        rule.format = keywordFormat;
-        highlightingRules.append(rule);
-    }
-
-    //Comments
-    keywordFormat.setForeground(Qt::darkGreen);
-    keywordFormat.setFontWeight(QFont::Normal);
-    rule.pattern = QRegExp("//[^\n]*");
-    rule.format = keywordFormat;
-    highlightingRules.append(rule);
-
-    //Quotations
-    keywordFormat.setForeground(Qt::darkGreen);
-    keywordFormat.setFontWeight(QFont::Normal);
-    rule.pattern = QRegExp("\".*\"");
-    rule.format = keywordFormat;
-    highlightingRules.append(rule);
-}
-
-
-void ModelicaHighlighter::highlightBlock(const QString &text)
-{
-    foreach (const HighlightingRule &rule, highlightingRules)
-    {
-        QRegExp expression(rule.pattern);
-        int index = expression.indexIn(text);
-        while (index >= 0)
-        {
-            int length = expression.matchedLength();
-            setFormat(index, length, rule.format);
-            index = expression.indexIn(text, index + length);
-        }
-    }
-}
-
+#include "Widgets/PyDockWidget.h"
 
 
 //! @brief Constructor

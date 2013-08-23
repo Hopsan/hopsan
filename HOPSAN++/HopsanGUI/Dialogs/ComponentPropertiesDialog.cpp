@@ -22,32 +22,29 @@
 //!
 //$Id$
 
+//Qt includes
 #include <QtGui>
 #include <QDebug>
 
+//Hopsan includes
 #include "ComponentPropertiesDialog.h"
-
-#include "MainWindow.h"
 #include "Configuration.h"
-
-#include "UndoStack.h"
-#include "GUIPort.h"
-
-#include "Widgets/MessageWidget.h"
-
-#include "Widgets/SystemParametersWidget.h"
-#include "Widgets/LibraryWidget.h"
-
-#include "GUIObjects/GUIComponent.h"
-#include "GUIObjects/GUIContainerObject.h"
-
-#include "Utilities/GUIUtilities.h"
+#include "CoreAccess.h"
+#include "Dialogs/ComponentGeneratorDialog.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
-#include "Dialogs/ComponentGeneratorDialog.h"
+#include "GUIObjects/GUIComponent.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "GUIPort.h"
+#include "MainWindow.h"
+#include "UndoStack.h"
+#include "Utilities/GUIUtilities.h"
+#include "Utilities/HighlightingUtilities.h"
+#include "Widgets/LibraryWidget.h"
+#include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
+#include "Widgets/SystemParametersWidget.h"
 
-#include "CoreAccess.h"
 
 //! @class ComponentPropertiesDialog
 //! @brief The ComponentPropertiesDialog class is a Widget used to interact with component parameters.
