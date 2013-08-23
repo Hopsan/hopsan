@@ -365,11 +365,11 @@ void ComponentPropertiesDialog::createCppEditStuff()
     QLabel *pOutputPortsLabel = new QLabel("Output ports:", this);
 
     mpInputPortsSpinBox = new QSpinBox(this);
-    mpInputPortsSpinBox->setValue(mpComponent->getCppInputs());
+    //mpInputPortsSpinBox->setValue(mpComponent->getCppInputs());
     mpInputPortsSpinBox->setSingleStep(1);
 
     mpOutputPortsSpinBox = new QSpinBox(this);
-    mpOutputPortsSpinBox->setValue(mpComponent->getCppOutputs());
+    //mpOutputPortsSpinBox->setValue(mpComponent->getCppOutputs());
     mpOutputPortsSpinBox->setSingleStep(1);
 
     QHBoxLayout *pPortsLayout = new QHBoxLayout();
@@ -379,7 +379,7 @@ void ComponentPropertiesDialog::createCppEditStuff()
     pPortsLayout->addWidget(mpOutputPortsSpinBox);
 
     mpTextEdit = new QTextEdit(this);
-    mpTextEdit->setPlainText(mpComponent->getCppCode());
+    //mpTextEdit->setPlainText(mpComponent->getCppCode());
     CppHighlighter *pTextEditHighlighter = new CppHighlighter(mpTextEdit->document());
     Q_UNUSED(pTextEditHighlighter);
 
@@ -466,7 +466,7 @@ void ComponentPropertiesDialog::createModelicaEditStuff()
     connect(mpEditPortPos, SIGNAL(clicked()), SLOT(editPortPos()));
 
     mpTextEdit = new QTextEdit(this);
-    mpTextEdit->setPlainText(mpComponent->getModelicaCode());
+    //mpTextEdit->setPlainText(mpComponent->getModelicaCode());
     mpTextEdit->setMinimumWidth(640);
     ModelicaHighlighter *pTextEditHighlighter = new ModelicaHighlighter(mpTextEdit->document());
     Q_UNUSED(pTextEditHighlighter);
@@ -570,11 +570,11 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
 
 void ComponentPropertiesDialog::recompileCppFromDialog()
 {
-    mpComponent->setCppCode(mpTextEdit->toPlainText());
-    mpComponent->setCppInputs(mpInputPortsSpinBox->value());
-    mpComponent->setCppOutputs(mpOutputPortsSpinBox->value());
+    //mpComponent->setCppCode(mpTextEdit->toPlainText());
+    //mpComponent->setCppInputs(mpInputPortsSpinBox->value());
+    //mpComponent->setCppOutputs(mpOutputPortsSpinBox->value());
 
-    mpComponent->getParentContainerObject()->recompileCppComponents(mpComponent);
+    //mpComponent->getParentContainerObject()->recompileCppComponents(mpComponent);
 
     this->close();
 }

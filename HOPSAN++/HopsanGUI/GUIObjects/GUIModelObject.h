@@ -131,14 +131,6 @@ public slots:
     void setIcon(GraphicsTypeEnumT);
     void showLosses();
     void hideLosses();
-    void setCppCode(QString code);
-    void setCppInputs(int n);
-    void setCppOutputs(int n);
-    QString getCppCode();
-    int getCppInputs();
-    int getCppOutputs();
-    void setModelicaCode(QString code);
-    QString getModelicaCode();
     void redrawConnectors();
 
 signals:
@@ -192,9 +184,6 @@ protected:
     QString mCppCode;
     int mnCppInputs;
     int mnCppOutputs;
-
-    // Used by Modelica components
-    QString mModelicaCode;
 
     bool mDragCopying;
     QWidget *mpDialogParentWidget;

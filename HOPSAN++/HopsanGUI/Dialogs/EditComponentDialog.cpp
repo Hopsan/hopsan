@@ -479,17 +479,12 @@ void CreateComponentWizard::generate()
             else                                        { portTypes << "PowerPort"; }
 
             nodeTypes << type;
-//            if(type      == "NodeSignalIn")             { nodeTypes << "NodeSignal"; }
-//            else if(type == "NodeSignalOut")            { nodeTypes << "NodeSignal"; }
-//            QStringList allNodeTypes;
-//            NodeInfo::getNodeTypes(allNodeTypes);
-//            Q_FOREACH(const QString &t, allNodeTypes)
-//            {
-//                if(type.toLower() == NodeInfo(t).niceName)
-//                    nodeTypes << t;
-//            }
 
-            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+nodeTypes[p]+"\");\n\n");
+            QString actualNodeType = nodeTypes[p];
+            if(actualNodeType.startsWith("NodeSignal"))
+                actualNodeType = "NodeSignal";
+
+            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+actualNodeType+"\");\n\n");
 
 
             QStringList varNames;

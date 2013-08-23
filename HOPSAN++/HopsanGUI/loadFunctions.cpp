@@ -276,15 +276,6 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
         pObj->setNameTextPos(nameTextPos);
         pObj->setSubTypeName(subtype); //!< @todo is this really needed
 
-        //Read c++ code (if CppComponent)
-        QDomElement cppCode = rDomElement.firstChildElement(HMF_CPPCODETAG);
-        if(!cppCode.isNull())
-        {
-            pObj->setCppCode(cppCode.text());
-            pObj->setCppInputs(cppCode.attribute(HMF_CPPINPUTS).toInt());
-            pObj->setCppOutputs(cppCode.attribute(HMF_CPPOUTPUTS).toInt());
-        }
-
         //First set flip (before rotate, Important!)
         //! @todo For now If flipped than we need to rotate in wrong direction also, saving saves flipped rotation angle i think but changing save and load would couse old models to load incorrectly
         if (isFlipped)

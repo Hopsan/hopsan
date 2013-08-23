@@ -122,7 +122,6 @@ protected:
     bool setAliasNames();
     bool setVariableValues();
     void setName();
-    void recompileCppFromDialog();
     virtual void closeEvent(QCloseEvent* event);
 
 private:

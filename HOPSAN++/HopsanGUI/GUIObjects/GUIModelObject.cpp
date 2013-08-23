@@ -114,8 +114,6 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
 
     mnCppInputs = 0;
     mnCppOutputs = 0;
-
-    mModelicaCode = "model ModelicaComponent \"My Modelica Component\"\nannotation(hopsanCqsType = \"Q\");\n\n//  Add nodes here\n//\n//  Example:\n//\n//  NodeHydraulic P1, P2\n//  NodeSignalOut X, Y;\n\n\n//  Add parameters here\n//\n//  Example:\n//\n//  parameter Real rho(unit=\"kg/m^3\")=870 \"Oil Density\";\n\n// Add local variables here\n//\n// Example:\n//\n//  Real Av \"Valve Cross Section Area\";\n\nalgorithm\n\n//  Write initial algorithms here\n\nequation\n\n//  Write equations here\n\nalgorithm\n\n//  Write final algorithms here\n\nend ModelicaComponent;";
 }
 
 
@@ -542,49 +540,6 @@ void ModelObject::hideLosses()
 }
 
 
-void ModelObject::setCppCode(QString code)
-{
-    mCppCode = code;
-}
-
-void ModelObject::setCppInputs(int n)
-{
-    mnCppInputs = n;
-}
-
-void ModelObject::setCppOutputs(int n)
-{
-    mnCppOutputs = n;
-}
-
-QString ModelObject::getCppCode()
-{
-    return mCppCode;
-}
-
-int ModelObject::getCppInputs()
-{
-    return mnCppInputs;
-}
-
-int ModelObject::getCppOutputs()
-{
-    return mnCppOutputs;
-}
-
-void ModelObject::setModelicaCode(QString code)
-{
-    mModelicaCode = code;
-}
-
-
-QString ModelObject::getModelicaCode()
-{
-    return mModelicaCode;
-}
-
-
-
 void ModelObject::redrawConnectors()
 {
     for(int i=0; i<mConnectorPtrs.size(); ++i)
@@ -894,15 +849,6 @@ void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContent
         rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
     }
     rDomElement.setAttribute(HMF_NAMETAG, getName());
-
-    if(getTypeName().startsWith("CppComponent") && contents==FullModel)
-    {
-        rDomElement.setAttribute(HMF_TYPENAME, "CppComponent");
-        appendDomTextNode(rDomElement, HMF_CPPCODETAG, mCppCode);
-        QDomElement cppElement = rDomElement.firstChildElement(HMF_CPPCODETAG);
-        cppElement.setAttribute(HMF_CPPINPUTS, mnCppInputs);
-        cppElement.setAttribute(HMF_CPPOUTPUTS, mnCppOutputs);
-    }
 }
 
 QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)

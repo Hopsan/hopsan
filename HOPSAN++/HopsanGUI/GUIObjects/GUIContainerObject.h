@@ -236,8 +236,6 @@ public slots:
     bool isAncestorOfExternalSubsystem();
     bool isExternal();
 
-    void recompileCppComponents(ModelObject *pComponent=0);
-
 signals:
 
     //Selection signals

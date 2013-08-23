@@ -283,17 +283,6 @@ void ComponentPropertiesDialog3::setName()
     mpModelObject->getParentContainerObject()->renameModelObject(mpModelObject->getName(), mpNameEdit->text());
 }
 
-void ComponentPropertiesDialog3::recompileCppFromDialog()
-{
-    mpModelObject->setCppCode(mpTextEdit->toPlainText());
-    mpModelObject->setCppInputs(mpInputPortsSpinBox->value());
-    mpModelObject->setCppOutputs(mpOutputPortsSpinBox->value());
-
-    mpModelObject->getParentContainerObject()->recompileCppComponents(mpModelObject);
-
-    this->close();
-}
-
 void ComponentPropertiesDialog3::closeEvent(QCloseEvent* event)
 {
     emit lockModelWidget(false);
