@@ -21,6 +21,32 @@
 ******************************
     Version History
 ******************************
+0.6.1
+- Feature: Import CSV data directly to plot window
+- Feature: Plot window can be opened without simulating the model first
+- Feature: System parameters can now be added from component properties dialog
+- Feature: System parameters can now be sorted by name, value or type
+- Feature: HCOM command for importing PLO and CSV data
+- Feature: HCOM command for renaming components
+- Feature: HCOM command for adding system parameters
+- Feature: Alias can now be set by right-clicking ports
+- Feature: Quick-lock axis button in plot window
+- Feature: Losses calculator can now show average power loss
+- Feature: Documentation and source code in component properties dialog now appear in their own tabs
+- Feature: Button in model preferences dialog to quickly clear all log data in model
+- Feature: Forward and backward buttons in help dialog
+
+- Fixed: Plot curve markers now update their positions and labels correctly when switching generaetions
+- Fixed: Plot curve colors are now re-used in proper order
+- Fixed: Zoom scale in plots are now reset when last curve is removed
+- Fixed: If a model fails to load, it does not appear in the recent models list
+- Fixed: Error message if save operation fails
+
+- Enhancement: Added hover tool-tip for all icons and line edits in main window
+- Enhancement: In time measurement tool, only selected components/types are included in bar chart
+
+- Other: Fixed bad parameterization of inline axial piston machine example model
+
 0.6.0
 - Important: The handling of Parameter Startvalues and "dynamic" parameter/ports have changed significantly in this release.
              Read the important information above.
