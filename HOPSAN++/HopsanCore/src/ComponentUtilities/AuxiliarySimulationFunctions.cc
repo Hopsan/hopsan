@@ -95,14 +95,17 @@ bool hopsan::fuzzyEqual(const double x, const double y, const double epsilon)
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::signedSquareL(const double x, const double x0)
 {
-    return (-sqrt(x0) + sqrt(x0 + fabs(x))) * sign(x);
+//    return (-sqrt(x0) + sqrt(x0 + fabs(x))) * sign(x);
+    return fabs(x)*pow(1/(pow(x0,4) + pow(fabs(x),2)),0.25)*sign(x);
 }
 
 
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::dxSignedSquareL(const double x, const double x0)
 {
-    return (1.0 / (sqrt(x0 + fabs(x)) * 2.0));
+//    return (1.0 / (sqrt(x0 + fabs(x)) * 2.0));
+    return (pow(1/(pow(x0,4) + pow(fabs(x),2)),1.25)*(2*pow(x0,4) + pow(fabs(x),2))*
+            dxAbs(x)*sign(x))/2.;
 }
 
 
