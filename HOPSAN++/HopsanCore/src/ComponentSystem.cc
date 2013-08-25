@@ -43,6 +43,7 @@
 #include "atomic.h"
 #include "tick_count.h"
 #include "task_group.h"
+#include "parallel_for.h"
 #endif
 
 using namespace std;
@@ -2873,6 +2874,50 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         delete(pBarrierLock_N);
         delete(pVectorsC);
         delete(pVectorsQ);
+    }
+    else if(algorithm == OfflineSchedulingLoopAlgorithm)
+    {
+        addInfoMessage("Using offline scheduling algorithm with parallel for-loops.");
+
+        // Round to nearest, we may not get exactly the stop time that we want
+        size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
+
+        //Simulate
+        for (size_t i=0; i<numSimulationSteps; ++i)
+        {
+            if (mStopSimulation)
+            {
+                break;
+            }
+
+            mTime += mTimestep; //mTime is updated here before the simulation,
+                                //mTime is the current time during the simulateOneTimestep
+
+            //Signal components
+            for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+            {
+                simTasks->run(TaskSimOneComponentOneStep(mComponentSignalptrs[s], mTime));
+            }
+            simTasks->wait();
+
+            //C components
+            for (size_t c=0; c < mComponentCptrs.size(); ++c)
+            {
+                simTasks->run(TaskSimOneComponentOneStep(mComponentCptrs[c], mTime));
+            }
+            simTasks->wait();
+
+            //Q components
+            for (size_t q=0; q < mComponentQptrs.size(); ++q)
+            {
+                simTasks->run(TaskSimOneComponentOneStep(mComponentQptrs[q], mTime));
+            }
+            simTasks->wait();
+
+            ++mTotalTakenSimulationSteps;
+
+            logTimeAndNodes(mTotalTakenSimulationSteps);
+        }
     }
 }
 

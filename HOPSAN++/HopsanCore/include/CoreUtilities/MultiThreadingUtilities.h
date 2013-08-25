@@ -1012,6 +1012,32 @@ private:
     BarrierLock *mpBarrier_N;
 };
 
+
+//////////////////////////////////////////
+// Offline Scheduling In Loop Algorithm //
+//////////////////////////////////////////
+
+
+class TaskSimOneComponentOneStep
+{
+public:
+    TaskSimOneComponentOneStep(Component * pComp, double stopTime)
+    {
+        mpComp = pComp;
+        mStopTime = stopTime;
+    }
+
+    void operator() ()
+    {
+        mpComp->simulate(mStopTime);
+    }
+
+private:
+    Component *mpComp;
+    double mStopTime;
+};
+
+
 #endif // USETBB
 
 #endif // MULTITHREADINGUTILITIES_H
