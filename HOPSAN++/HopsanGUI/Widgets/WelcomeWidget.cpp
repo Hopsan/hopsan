@@ -123,27 +123,32 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLastSessionFrame->setLayout(mpLastSessionLayout);
 
     mpRecentList = new QListWidget(this);
-    mpRecentList->setFixedSize(mFrameW*2+mSpacing-20,mFrameH-50);
+    mpRecentList->setMinimumSize(mFrameW*2+mSpacing-20,mFrameH-50);
+    mpRecentList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpRecentList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpRecentList->setMouseTracking(true);
+    //mpRecentList->setResizeMode(QListView::Adjust);
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
     mpRecentText = new QLabel("Recent Models", this);
     mpRecentText->setAlignment(Qt::AlignCenter);
     mpRecentText->setMouseTracking(true);
     mpRecentLayout = new QVBoxLayout(this);
-    mpRecentLayout->addWidget(mpRecentList,1, Qt::AlignCenter);
+    mpRecentLayout->addWidget(mpRecentList,1, Qt::AlignTop);
     mpRecentLayout->addWidget(mpRecentText,0,Qt::AlignBottom);
+    mpRecentLayout->setStretch(0,1);
     mpRecentFrame = new QFrame(this);
     mpRecentFrame->setFrameShape(QFrame::StyledPanel);
     mpRecentFrame->setMouseTracking(true);
-    mpRecentFrame->setFixedSize(mFrameW*2+mSpacing,mFrameH);
+    mpRecentFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
     mpRecentFrame->setLayout(mpRecentLayout);
+    mpRecentFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     updateRecentList();
 
 
     mpExampleList = new QListWidget(this);
-    mpExampleList->setFixedSize(mFrameW*2+mSpacing-20,mFrameH-50);
+    mpExampleList->setMinimumSize(mFrameW*2+mSpacing-20,mFrameH-50);
+    mpExampleList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpExampleList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpExampleList->setMouseTracking(true);
     connect(mpExampleList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openExampleModel()));
@@ -151,13 +156,15 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleText->setAlignment(Qt::AlignCenter);
     mpExampleText->setMouseTracking(true);
     mpExampleLayout = new QVBoxLayout(this);
-    mpExampleLayout->addWidget(mpExampleList,1, Qt::AlignCenter);
+    mpExampleLayout->addWidget(mpExampleList,1, Qt::AlignTop);
     mpExampleLayout->addWidget(mpExampleText,0,Qt::AlignBottom);
+    mpExampleLayout->setStretch(0,1);
     mpExampleFrame = new QFrame(this);
     mpExampleFrame->setFrameShape(QFrame::StyledPanel);
     mpExampleFrame->setMouseTracking(true);
-    mpExampleFrame->setFixedSize(mFrameW*2+mSpacing,mFrameH);
+    mpExampleFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
     mpExampleFrame->setLayout(mpExampleLayout);
+    mpExampleFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
     QStringList filters;
     filters << "*.hmf";
@@ -214,7 +221,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadingWebLayout->setAlignment(mpLoadingWebProgressBar, Qt::AlignCenter);
     mpLoadingWebWidget = new QWidget(this);
     //mpLoadingWebWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    mpLoadingWebWidget->setFixedHeight(168);
+    //mpLoadingWebWidget->setFixedHeight(168);
     //mpLoadingWebWidget->setFixedWidth(mFrameW*1.9);
     mpLoadingWebWidget->setLayout(mpLoadingWebLayout);
 
@@ -232,7 +239,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     //mpNewsScrollWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsScrollLayout = new QVBoxLayout(mpNewsScrollWidget);
     mpNewsScrollArea = new QScrollArea(this);
-    //mpNewsScrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    mpNewsScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpNewsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mpNewsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpNewsScrollArea->setWidget(mpNewsScrollWidget);
@@ -252,7 +259,8 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     //mpNewsFrame->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsFrame->setFrameShape(QFrame::StyledPanel);
     mpNewsFrame->setMouseTracking(true);
-    mpNewsFrame->setFixedSize(mFrameW*2,mFrameH*2+mSpacing);
+    mpNewsFrame->setMinimumSize(mFrameW*2,mFrameH*2+mSpacing);
+    mpNewsFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpNewsFrame->setLayout(mpNewsLayout);
 
     mpAutoUpdateAction = new QAction("Launch Auto Updater", this);
@@ -284,12 +292,12 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLayout->addWidget(mpExampleFrame,                     2, 2, 1, 2);
     mpLayout->addWidget(mpNewsFrame,                        1, 4, 2, 1);
     mpLayout->addWidget(mpNewVersionButton,                 0, 4, 1, 1);
-    mpLayout->addWidget(new QWidget(this),                  3, 0, 1, 4);
-    mpLayout->addWidget(new QWidget(this),                  0, 5, 2, 1);
+    //mpLayout->addWidget(new QWidget(this),                  3, 0, 1, 4);
+    //mpLayout->addWidget(new QWidget(this),                  0, 5, 2, 1);
     mpLayout->setSpacing(mSpacing);
-    mpLayout->setRowStretch(3,1);
-    mpLayout->setColumnStretch(5, 1);
-    mpLayout->setSizeConstraint(QLayout::SetFixedSize);
+    mpLayout->setRowStretch(2,1);
+    mpLayout->setColumnStretch(4, 1);
+    //mpLayout->setSizeConstraint(QLayout::SetFixedSize);
     //mpLayout->addWidget(pTestLabel);
 
     this->setLayout(mpLayout);
