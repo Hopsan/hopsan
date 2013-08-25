@@ -2875,9 +2875,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         delete(pVectorsC);
         delete(pVectorsQ);
     }
-    else if(algorithm == OfflineSchedulingLoopAlgorithm)
+    else if(algorithm == ParallelForAlgorithm)
     {
-        addInfoMessage("Using offline scheduling algorithm with parallel for-loops.");
+        addInfoMessage("Using parallel for-loop algorithm using task objects.");
 
         // Round to nearest, we may not get exactly the stop time that we want
         size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
@@ -2913,6 +2913,38 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
                 simTasks->run(TaskSimOneComponentOneStep(mComponentQptrs[q], mTime));
             }
             simTasks->wait();
+
+            ++mTotalTakenSimulationSteps;
+
+            logTimeAndNodes(mTotalTakenSimulationSteps);
+        }
+    }
+    else if(algorithm == ParallelForTbbAlgorithm)
+    {
+        addInfoMessage("Using parallel for loop algorithm with TBB templates.");
+
+        // Round to nearest, we may not get exactly the stop time that we want
+        size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
+
+        //Simulate
+        for (size_t i=0; i<numSimulationSteps; ++i)
+        {
+            if (mStopSimulation)
+            {
+                break;
+            }
+
+            mTime += mTimestep; //mTime is updated here before the simulation,
+                                //mTime is the current time during the simulateOneTimestep
+
+            //Signal components
+            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentSignalptrs.size()), BodySimulateComponentVector( mComponentSignalptrs, mTime));
+
+            //C components
+            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentCptrs.size()), BodySimulateComponentVector( mComponentCptrs, mTime));
+
+            //Q components
+            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentQptrs.size()), BodySimulateComponentVector( mComponentQptrs, mTime));
 
             ++mTotalTakenSimulationSteps;
 

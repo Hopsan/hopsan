@@ -33,7 +33,7 @@ namespace tbb {
 
 namespace hopsan {
 
-    enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm, WorkStealingAlgorithm, OfflineSchedulingLoopAlgorithm};
+    enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm, WorkStealingAlgorithm, ParallelForAlgorithm, ParallelForTbbAlgorithm};
 
     class ConnectionAssistant
     {

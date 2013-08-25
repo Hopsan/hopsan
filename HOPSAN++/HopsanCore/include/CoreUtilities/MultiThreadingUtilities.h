@@ -10,10 +10,11 @@
 #include <vector>
 
 #ifdef USETBB
-#include "mutex.h"
 #include "atomic.h"
-#include "tick_count.h"
+#include "blocked_range.h"
+#include "mutex.h"
 #include "task_group.h"
+#include "tick_count.h"
 #endif
 
 #include "Component.h"
@@ -1013,10 +1014,9 @@ private:
 };
 
 
-//////////////////////////////////////////
-// Offline Scheduling In Loop Algorithm //
-//////////////////////////////////////////
-
+/////////////////////////////////////////////
+// Parallel for loop algorithm using tasks //
+/////////////////////////////////////////////
 
 class TaskSimOneComponentOneStep
 {
@@ -1036,6 +1036,34 @@ private:
     Component *mpComp;
     double mStopTime;
 };
+
+
+////////////////////////////////////////////////
+// Parallel for algorithm using TBB templates //
+////////////////////////////////////////////////
+
+class BodySimulateComponentVector
+{
+public:
+    BodySimulateComponentVector(std::vector<Component *> vComponentPtrs, double stopTime)
+    {
+        mvComponentPtrs = vComponentPtrs;
+        mStopTime = stopTime;
+    }
+
+    void operator() ( const tbb::blocked_range<int>& r ) const
+    {
+        for (int i=r.begin(); i!=r.end(); ++i)
+        {
+            mvComponentPtrs[i]->simulate(mStopTime);
+        }
+    }
+
+private:
+    std::vector<Component *> mvComponentPtrs;
+    double mStopTime;
+};
+
 
 
 #endif // USETBB
