@@ -145,8 +145,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     // Legend Stuff
     constructLegendSettingsDialog();
 
-    mpExternalLegend = 0; //No external legend by default
-
     mpRightPlotLegend = new PlotLegend(QwtPlot::yRight);
     mpRightPlotLegend->attach(this->getPlot());
     mpRightPlotLegend->setAlignment(Qt::AlignRight | Qt::AlignTop);
@@ -281,33 +279,9 @@ void PlotTab::applyLegendSettings()
         mpLeftPlotLegend->hide();
     }
 
-//    // Handle external legend
-//    if (mpLegendsExternalEnabledCheckBox->isChecked())
-//    {
-//        if (mpExternalLegend == 0)
-//        {
-//            mpExternalLegend = new QwtLegend();
-//            mpExternalLegend->setAutoFillBackground(false);
-//            mpExternalLegend->setFrameStyle(QFrame::NoFrame | QFrame::Sunken);
-//            mpExternalLegend->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-//            mpQwtPlots[FirstPlot]->insertLegend(mpExternalLegend, QwtPlot::TopLegend);
-//        }
+    mpQwtPlots[FirstPlot]->insertLegend(NULL, QwtPlot::TopLegend);
 
-//        QFont font = mpExternalLegend->font();
-//        font.setPointSize(mpLegendFontSize->value());
-//        mpExternalLegend->setFont(font);
-
-//        QString symStyle = mpLegendSymbolType->currentText();
-//        setLegendSymbol(symStyle);
-//    }
-//    else
-//    {
-        mpQwtPlots[FirstPlot]->insertLegend(NULL, QwtPlot::TopLegend);
-        // Since it is deleted set ptr to NULL
-        mpExternalLegend = 0;
-//    }
-
-        rescaleAxesToCurves();
+    rescaleAxesToCurves();
 }
 
 void PlotTab::applyTimeScalingSettings()
@@ -344,6 +318,7 @@ void PlotTab::applyTimeScalingSettings()
 //! @todo currently only supports settings axis for top plot
 void PlotTab::openAxisSettingsDialog()
 {
+    // Set values before buttons are connected to avoid triggering rescale
     mpXminSpinBox->setValue(mXAxisLimits[FirstPlot].min);
     mpXmaxSpinBox->setValue(mXAxisLimits[FirstPlot].max);
 
@@ -353,7 +328,29 @@ void PlotTab::openAxisSettingsDialog()
     mpYRminSpinBox->setValue(mYRAxisLimits[FirstPlot].min);
     mpYRmaxSpinBox->setValue(mYRAxisLimits[FirstPlot].max);
 
+    // Connect the buttons, to adjust whenever changes are made
+    connect(mpXminSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXmaxSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXLockedCheckBox,  SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(mpYLLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(mpYRLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+
     mpSetAxisDialog->exec();
+
+    // Disconnect the buttons again to prevent triggering apply when data is changed in code
+    disconnect(mpXminSpinBox,      0, 0, 0);
+    disconnect(mpXmaxSpinBox,      0, 0, 0);
+    disconnect(mpYLminSpinBox,     0, 0, 0);
+    disconnect(mpYLmaxSpinBox,     0, 0, 0);
+    disconnect(mpYRminSpinBox,     0, 0, 0);
+    disconnect(mpYRmaxSpinBox,     0, 0, 0);
+    disconnect(mpXLockedCheckBox,  0, 0, 0);
+    disconnect(mpYLLockedCheckBox, 0, 0, 0);
+    disconnect(mpYRLockedCheckBox, 0, 0, 0);
 }
 
 void PlotTab::openAxisLabelDialog()
@@ -423,33 +420,18 @@ void PlotTab::openTimeScalingDialog()
 //! @todo currently only supports settings axis for top plot
 void PlotTab::applyAxisSettings()
 {
-    //If a box is not checked then use manual settings AND remember the value since we do not know how to ask for it later
-    //if(!mpXAutoCheckBox->isChecked())
-    {
-        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
-        mXAxisLimits[FirstPlot].min = mpXminSpinBox->value();
-        mXAxisLimits[FirstPlot].max = mpXmaxSpinBox->value();
-    }
+    // Set the new axis limits
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
+    mXAxisLimits[FirstPlot].min = mpXminSpinBox->value();
+    mXAxisLimits[FirstPlot].max = mpXmaxSpinBox->value();
 
-    //if(!mpYLAutoCheckBox->isChecked())
-    {
-        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
-        mYLAxisLimits[FirstPlot].min = mpYLminSpinBox->value();
-        mYLAxisLimits[FirstPlot].max = mpYLmaxSpinBox->value();
-    }
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
+    mYLAxisLimits[FirstPlot].min = mpYLminSpinBox->value();
+    mYLAxisLimits[FirstPlot].max = mpYLmaxSpinBox->value();
 
-    //if(!mpYRAutoCheckBox->isChecked())
-    {
-        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
-        mYRAxisLimits[FirstPlot].min = mpYRminSpinBox->value();
-        mYRAxisLimits[FirstPlot].max = mpYRmaxSpinBox->value();
-    }
-
-    // If anyone of the boxes are checked we call rescale in case we just unchecked it as it needs to auto refresh
-    if (mpXAutoCheckBox->isChecked() || mpYLAutoCheckBox->isChecked() || mpYRAutoCheckBox->isChecked())
-    {
-//        this->rescaleAxesToCurves();
-    }
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
+    mYRAxisLimits[FirstPlot].min = mpYRminSpinBox->value();
+    mYRAxisLimits[FirstPlot].max = mpYRmaxSpinBox->value();
 }
 
 void PlotTab::applyAxisLabelSettings()
@@ -472,9 +454,9 @@ void PlotTab::lockAxisToCurrentLimits(bool lock)
     mpYRminSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().top());
     mpYRmaxSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().bottom());
 
-    mpXAutoCheckBox->setChecked(!lock);
-    mpYLAutoCheckBox->setChecked(!lock);
-    mpYRAutoCheckBox->setChecked(!lock);
+    mpXLockedCheckBox->setChecked(lock);
+    mpYLLockedCheckBox->setChecked(lock);
+    mpYRLockedCheckBox->setChecked(lock);
 
     applyAxisSettings();
 
@@ -781,21 +763,21 @@ void PlotTab::rescaleAxesToCurves()
             }
 
 
-            // Scale the axes autoamtically if that option is set
-            if (mpXAutoCheckBox->isChecked())
+            // Scale the axes autoamtically if not locked
+            if (!mpXLockedCheckBox->isChecked())
             {
                 mXAxisLimits[plotID].min = xAxisLim.min;
                 mXAxisLimits[plotID].max = xAxisLim.max;
                 mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, mXAxisLimits[plotID].min, mXAxisLimits[plotID].max);
                 //mpQwtPlots[plotID]->setAxisAutoScale(QwtPlot::xBottom,true);
             }
-            if (mpYLAutoCheckBox->isChecked())
+            if (!mpYLLockedCheckBox->isChecked())
             {
                 mYLAxisLimits[plotID].min = ylAxisLim.min-0.05*leftAxisRange;
                 mYLAxisLimits[plotID].max = ylAxisLim.max+0.05*leftAxisRange;
                 rescaleAxisToMakeRoomForLegend(plotID, QwtPlot::yLeft, mYLAxisLimits[plotID]);
             }
-            if (mpYRAutoCheckBox->isChecked())
+            if (!mpYRLockedCheckBox->isChecked())
             {
                 mYRAxisLimits[plotID].min = yrAxisLim.min-0.05*rightAxisRange;
                 mYRAxisLimits[plotID].max = yrAxisLim.max+0.05*rightAxisRange;
@@ -1821,6 +1803,10 @@ void PlotTab::resetZoom()
     mpZoomerRight[FirstPlot]->zoom(0);
     mpZoomerLeft[SecondPlot]->zoom(0);
     mpZoomerRight[SecondPlot]->zoom(0);
+
+    lockAxisToCurrentLimits(false);
+    //! @todo we really need to toggle to button in mainwindo somhow from here, need to signal back to plotwindow if this happens
+
     rescaleAxesToCurves();
 }
 
@@ -2510,15 +2496,16 @@ void PlotTab::constructAxisSettingsDialog()
     mpSetAxisDialog = new QDialog(this);
     mpSetAxisDialog->setWindowTitle("Set Axis Limits");
 
-    mpXAutoCheckBox = new QCheckBox("Auto limits");
-    mpXAutoCheckBox->setCheckable(true);
-    mpXAutoCheckBox->setChecked(true);
-    mpYLAutoCheckBox = new QCheckBox("Auto limits");
-    mpYLAutoCheckBox->setCheckable(true);
-    mpYLAutoCheckBox->setChecked(true);
-    mpYRAutoCheckBox = new QCheckBox("Auto limits");
-    mpYRAutoCheckBox->setCheckable(true);
-    mpYRAutoCheckBox->setChecked(true);
+    //! @todo If these are not visible they can be bools
+    mpXLockedCheckBox = new QCheckBox("Locked Limits");
+    mpXLockedCheckBox->setCheckable(true);
+    mpXLockedCheckBox->setChecked(false);
+    mpYLLockedCheckBox = new QCheckBox("Locked Limits");
+    mpYLLockedCheckBox->setCheckable(true);
+    mpYLLockedCheckBox->setChecked(false);
+    mpYRLockedCheckBox = new QCheckBox("Locked Limits");
+    mpYRLockedCheckBox->setCheckable(true);
+    mpYRLockedCheckBox->setChecked(false);
 
     mpXminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
     mpXminSpinBox->setRange(-DoubleMax, DoubleMax);
@@ -2567,7 +2554,7 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
     pAxisLimitsDialogLayout->addWidget(mpYLminSpinBox, r, c+1);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(mpYLAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->addWidget(mpYLLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
     pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
 
     r=0;c=6;
@@ -2579,7 +2566,7 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
     pAxisLimitsDialogLayout->addWidget(mpYRminSpinBox, r, c+1);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(mpYRAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->addWidget(mpYRLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
 
     r=3,c=3;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("X Axis")),r,c,1,2, Qt::AlignCenter);
@@ -2590,7 +2577,7 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
     pAxisLimitsDialogLayout->addWidget(mpXminSpinBox, r, c+1);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(mpXAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->addWidget(mpXLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
     pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
 
     r=6;c=7;
@@ -2598,15 +2585,7 @@ void PlotTab::constructAxisSettingsDialog()
 
     mpSetAxisDialog->setLayout(pAxisLimitsDialogLayout);
 
-    connect(mpXminSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpXmaxSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYLminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYLmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYRminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYRmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpXAutoCheckBox,    SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
-    connect(mpYLAutoCheckBox,   SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
-    connect(mpYRAutoCheckBox,   SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    // Connect persistent connections
     connect(pFinishedButton,    SIGNAL(clicked()),              mpSetAxisDialog, SLOT(close()));
 
 }

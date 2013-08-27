@@ -213,12 +213,9 @@ private:
 
 
     // Legend related member variables
-    QwtLegend *mpExternalLegend;
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
     QCheckBox *mpLegendsInternalEnabledCheckBox;
-    //QCheckBox *mpLegendsExternalEnabledCheckBox;
     QCheckBox *mpLegendsAutoOffsetCheckBox;
-    //QCheckBox *mpLegendsOffYREnabledCheckBox;
     QDialog *mpLegendSettingsDialog;
     QComboBox *mpLegendLPosition;
     QComboBox *mpLegendRPosition;
@@ -237,9 +234,9 @@ private:
 
     // Axis settings related member variables
     QDialog *mpSetAxisDialog;
-    QCheckBox *mpXAutoCheckBox;
-    QCheckBox *mpYLAutoCheckBox;
-    QCheckBox *mpYRAutoCheckBox;
+    QCheckBox *mpXLockedCheckBox;
+    QCheckBox *mpYLLockedCheckBox;
+    QCheckBox *mpYRLockedCheckBox;
     QDoubleSpinBox *mpXminSpinBox;
     QDoubleSpinBox *mpXmaxSpinBox;
     QDoubleSpinBox *mpYLminSpinBox;
