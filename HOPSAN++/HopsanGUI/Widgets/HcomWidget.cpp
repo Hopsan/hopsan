@@ -654,7 +654,14 @@ void TerminalConsole::handleTabKeyPress()
             if(args[0] == variableCmds[c])
             {
                 QStringList variables;
-                getHandler()->getVariablesThatStartsWithString(args.last()/*mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size())*/,variables);
+                if(args.size() > 1)
+                {
+                    getHandler()->getVariablesThatStartsWithString(args.last()/*mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size())*/,variables);
+                }
+                else
+                {
+                    getHandler()->getVariablesThatStartsWithString("",variables);
+                }
                 for(int v=0; v<variables.size(); ++v)
                 {
                     QString temp;

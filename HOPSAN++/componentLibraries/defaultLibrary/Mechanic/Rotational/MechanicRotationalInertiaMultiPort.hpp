@@ -90,22 +90,22 @@ namespace hopsan {
 
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                mvpN_t1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::Torque, 0.0);
-                mvpN_a1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::Angle, 0.0);
-                mvpN_w1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::AngularVelocity, 0.0);
-                mvpN_me1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::EquivalentInertia, 0.0);
-                mvpN_c1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::WaveVariable, 0.0);
-                mvpN_Zx1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::CharImpedance, 0.0);
+                mvpN_t1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::Torque);
+                mvpN_a1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::Angle);
+                mvpN_w1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::AngularVelocity);
+                mvpN_me1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::EquivalentInertia);
+                mvpN_c1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::WaveVariable);
+                mvpN_Zx1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanicRotational::CharImpedance);
             }
 
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                mvpN_t2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::Torque, 0.0);
-                mvpN_a2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::Angle, 0.0);
-                mvpN_w2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::AngularVelocity, 0.0);
-                mvpN_me2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::EquivalentInertia, 0.0);
-                mvpN_c2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::WaveVariable, 0.0);
-                mvpN_Zx2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::CharImpedance, 0.0);
+                mvpN_t2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::Torque);
+                mvpN_a2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::Angle);
+                mvpN_w2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::AngularVelocity);
+                mvpN_me2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::EquivalentInertia);
+                mvpN_c2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::WaveVariable);
+                mvpN_Zx2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanicRotational::CharImpedance);
             }
 
 
