@@ -337,7 +337,7 @@ QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pEditPortPos, SIGNAL(clicked()), this, SLOT(editPortPos()));
     connect(mpRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
-    mpRecompileButton->setVisible(false);
+    mpRecompileButton->setEnabled(false);
     return pButtonBox;
 }
 
@@ -388,7 +388,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
 
 QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
 {
-    mpRecompileButton->setVisible(true);
+    mpRecompileButton->setEnabled(true);
 
     rFilePath.prepend(mpModelObject->getAppearanceData()->getBasePath());
     QFile file(rFilePath);
