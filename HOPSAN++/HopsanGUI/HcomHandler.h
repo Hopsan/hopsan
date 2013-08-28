@@ -86,6 +86,9 @@ private:
     void executePlotCommand(const QString cmd);
     void executePlotLeftAxisCommand(const QString cmd);
     void executePlotRightAxisCommand(const QString cmd);
+    void executeAddPlotCommand(const QString cmd);
+    void executeAddPlotLeftAxisCommand(const QString cmd);
+    void executeAddPlotRightAxisCommand(const QString cmd);
     void executeDisplayParameterCommand(const QString cmd);
     void executeAddParameterCommand(const QString cmd);
     void executeChangeParameterCommand(const QString cmd);
@@ -133,7 +136,7 @@ private:
     //Help functions
     void createCommands();
     void generateCommandsHelpText();
-    void changePlotVariables(const QString cmd, const int axis) const;
+    void changePlotVariables(const QString cmd, const int axis, bool hold=false) const;
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
     void deletePlotCurve(QString cmd) const;

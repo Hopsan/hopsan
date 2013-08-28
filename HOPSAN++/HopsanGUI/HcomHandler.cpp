@@ -104,8 +104,32 @@ void HcomHandler::createCommands()
     chpvCmd.description.append("Change plot variables in current plot");
     chpvCmd.help.append("Usage: chpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]");
     chpvCmd.fnc = &HcomHandler::executePlotCommand;
-    simCmd.group = "Plot Commands";
+    chpvCmd.group = "Plot Commands";
     mCmdList << chpvCmd;
+
+    HcomCommand adpvCmd;
+    adpvCmd.cmd = "adpv";
+    adpvCmd.description.append("Add plot variables in current plot");
+    adpvCmd.help.append("Usage: adpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]");
+    adpvCmd.fnc = &HcomHandler::executeAddPlotCommand;
+    adpvCmd.group = "Plot Commands";
+    mCmdList << adpvCmd;
+
+    HcomCommand adpvlCmd;
+    adpvlCmd.cmd = "adpvl";
+    adpvlCmd.description.append("Adds plot variables on left axis in current plot");
+    adpvlCmd.help.append(" Usage: adpvl [var1 var2 ... ]");
+    adpvlCmd.fnc = &HcomHandler::executeAddPlotLeftAxisCommand;
+    adpvlCmd.group = "Plot Commands";
+    mCmdList << adpvlCmd;
+
+    HcomCommand adpvrCmd;
+    adpvrCmd.cmd = "adpvr";
+    adpvrCmd.description.append("Adds plot variables on right axis in current plot");
+    adpvrCmd.help.append(" Usage: adpvr [var1 var2 ... ]");
+    adpvrCmd.fnc = &HcomHandler::executeAddPlotRightAxisCommand;
+    adpvrCmd.group = "Plot Commands";
+    mCmdList << adpvrCmd;
 
     HcomCommand exitCmd;
     exitCmd.cmd = "exit";
@@ -631,6 +655,7 @@ void HcomHandler::executePlotCommand(const QString cmd)
 }
 
 
+
 //! @brief Execute function for "chpvl" command
 void HcomHandler::executePlotLeftAxisCommand(const QString cmd)
 {
@@ -642,6 +667,27 @@ void HcomHandler::executePlotLeftAxisCommand(const QString cmd)
 void HcomHandler::executePlotRightAxisCommand(const QString cmd)
 {
     changePlotVariables(cmd, 1);
+}
+
+
+//! @brief Execute function for "adpv" command
+void HcomHandler::executeAddPlotCommand(const QString cmd)
+{
+    changePlotVariables(cmd, -1, true);
+}
+
+
+//! @brief Execute function for "adpvl" command
+void HcomHandler::executeAddPlotLeftAxisCommand(const QString cmd)
+{
+    changePlotVariables(cmd, 0, true);
+}
+
+
+//! @brief Execute function for "adpvr" command
+void HcomHandler::executeAddPlotRightAxisCommand(const QString cmd)
+{
+    changePlotVariables(cmd, 1, true);
 }
 
 
@@ -2359,15 +2405,15 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
 //! @brief Changes plot variables on specified axes
 //! @param cmd Command containing the plot variables
 //! @param axis Axis specification (0=left, 1=right, -1=both, separeted by "-r")
-void HcomHandler::changePlotVariables(const QString cmd, const int axis) const
+void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool hold) const
 {
     QStringList varNames = getArguments(cmd);
 
-    if(axis == -1 || axis == 0)
+    if((axis == -1 || axis == 0) && !hold)
     {
         removePlotCurves(QwtPlot::yLeft);
     }
-    if(axis == -1 || axis == 1)
+    if((axis == -1 || axis == 1) && !hold)
     {
         removePlotCurves(QwtPlot::yRight);
     }
