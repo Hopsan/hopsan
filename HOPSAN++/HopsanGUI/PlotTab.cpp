@@ -73,7 +73,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mRightAxisLogarithmic = false;
     mBottomAxisLogarithmic = false;
     mIsSpecialPlot = false;
-    mIsLocked = false;
+    mAreAxesLocked = false;
 
     mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
     for(int i=0; i<mCurveColors.size(); ++i)
@@ -83,19 +83,19 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
 
     for(int plotID=0; plotID<2; ++plotID)
     {
-        //Plots
+        // Plots
         mpQwtPlots[plotID] = new QwtPlot(this);
         mpQwtPlots[plotID]->setMouseTracking(true);
         mpQwtPlots[plotID]->setAcceptDrops(false);
         mpQwtPlots[plotID]->setCanvasBackground(QColor(Qt::white));
         mpQwtPlots[plotID]->setAutoReplot(true);
 
-        //Panning Tool
+        // Panning Tool
         mpPanner[plotID] = new QwtPlotPanner(mpQwtPlots[plotID]->canvas());
         mpPanner[plotID]->setMouseButton(Qt::LeftButton);
         mpPanner[plotID]->setEnabled(false);
 
-        //Rubber Band Zoom
+        // Rubber Band Zoom
         QPen rubberBandPen(Qt::green);
         rubberBandPen.setWidth(2);
 
@@ -106,7 +106,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpZoomerLeft[plotID]->setTrackerMode(QwtPicker::AlwaysOff);
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-        //mpZoomerLeft[plotID]->setZoomBase(QRectF());
         mpZoomerLeft[plotID]->setEnabled(false);
 
         mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpQwtPlots[plotID]->canvas());   //Zoomer for right y axis
@@ -118,7 +117,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpZoomerRight[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
         mpZoomerRight[plotID]->setEnabled(false);
 
-        //Wheel Zoom
+        // Wheel Zoom
         mpMagnifier[plotID] = new QwtPlotMagnifier(mpQwtPlots[plotID]->canvas());
         mpMagnifier[plotID]->setAxisEnabled(QwtPlot::yLeft, true);
         mpMagnifier[plotID]->setAxisEnabled(QwtPlot::yRight, true);
@@ -443,7 +442,7 @@ void PlotTab::lockAxisToCurrentLimits(bool lock)
 {
     qDebug() << "Lock = " << lock;
 
-    mIsLocked = true;
+    mAreAxesLocked = true;
 
     mpXminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().left());
     mpXmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().right()/*mXAxisLimits[FirstPlot].max*/);
@@ -460,7 +459,7 @@ void PlotTab::lockAxisToCurrentLimits(bool lock)
 
     applyAxisSettings();
 
-    mIsLocked=lock;
+    mAreAxesLocked=lock;
 }
 
 void PlotTab::openLegendSettingsDialog()
@@ -588,6 +587,26 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
         if(stop) break;
     }
 
+    // If this is the first curve on one of the axis, then then exis will just be enabled and we need to normalize the zoom (copy from the other curve)
+    if (!mpQwtPlots[plotID]->axisEnabled(pCurve->getAxisY()))
+    {
+        mpQwtPlots[plotID]->enableAxis(pCurve->getAxisY());
+        if (pCurve->getAxisY() == QwtPlot::yLeft)
+        {
+            if (mpQwtPlots[plotID]->axisEnabled(QwtPlot::yRight))
+            {
+                mpZoomerLeft[plotID]->setZoomStack(mpZoomerRight[plotID]->zoomStack());
+            }
+        }
+        if (pCurve->getAxisY() == QwtPlot::yRight)
+        {
+            if (mpQwtPlots[plotID]->axisEnabled(QwtPlot::yLeft))
+            {
+                mpZoomerRight[plotID]->setZoomStack(mpZoomerLeft[plotID]->zoomStack());
+            }
+        }
+    }
+
     // Count num curves by axis
     if (pCurve->getAxisY() == QwtPlot::yLeft)
     {
@@ -597,13 +616,11 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
     {
         ++mNumYrCurves[plotID];
     }
-
-    mpQwtPlots[plotID]->enableAxis(pCurve->getAxisY());
     pCurve->setZ(CurveZOrderType);
     pCurve->setLineWidth(2);
-
     setLegendSymbol(mpLegendSymbolType->currentText());
 
+    //! @todo maybe make it possible to rescale only selected axis, instead of always recscaling both of them
     rescaleAxesToCurves();
     updateLabels();
     mpQwtPlots[plotID]->replot();
@@ -1784,14 +1801,31 @@ void PlotTab::enableZoom(bool value)
     {
         mpParentPlotWindow->mpArrowButton->setChecked(false);
     }
+
+    // Enable or disable for first plot
     mpZoomerLeft[FirstPlot]->setEnabled(value);
-    if(value)   { mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::RectRubberBand); }
-    else        { mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::NoRubberBand); }
+    if(value)
+    {
+        mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::RectRubberBand);
+    }
+    else
+    {
+        mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::NoRubberBand);
+    }
     mpZoomerRight[FirstPlot]->setEnabled(value);
+
+    // Enable or disable for second plot
     mpZoomerLeft[SecondPlot]->setEnabled(value);
-    if(value)   { mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::RectRubberBand); }
-    else        { mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::NoRubberBand); }
+    if(value)
+    {
+        mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::RectRubberBand);
+    }
+    else
+    {
+        mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::NoRubberBand);
+    }
     mpZoomerRight[SecondPlot]->setEnabled(value);
+
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
@@ -1799,15 +1833,14 @@ void PlotTab::resetZoom()
 {
 //    qDebug() << "Zoom stack L0: " << mpZoomerLeft[FirstPlot]->zoomStack().size();
 //    qDebug() << "Zoom stack R0: " << mpZoomerRight[FirstPlot]->zoomStack().size();
-    mpZoomerLeft[FirstPlot]->zoom(0);
-    mpZoomerRight[FirstPlot]->zoom(0);
-    mpZoomerLeft[SecondPlot]->zoom(0);
-    mpZoomerRight[SecondPlot]->zoom(0);
-
-    lockAxisToCurrentLimits(false);
-    //! @todo we really need to toggle to button in mainwindo somhow from here, need to signal back to plotwindow if this happens
-
-    rescaleAxesToCurves();
+    if (!mAreAxesLocked)
+    {
+        mpZoomerLeft[FirstPlot]->zoom(0);
+        mpZoomerRight[FirstPlot]->zoom(0);
+        mpZoomerLeft[SecondPlot]->zoom(0);
+        mpZoomerRight[SecondPlot]->zoom(0);
+        rescaleAxesToCurves();
+    }
 }
 
 void PlotTab::enableArrow(bool value)
@@ -1828,7 +1861,6 @@ void PlotTab::enableArrow(bool value)
         mpPanner[FirstPlot]->setEnabled(false);
         mpPanner[SecondPlot]->setEnabled(false);
     }
-
 }
 
 
@@ -2125,9 +2157,9 @@ bool PlotTab::isZoomed(const int plotId) const
     return (mpZoomerLeft[plotId]->zoomRectIndex() > 0);// && (mpZoomerRight[plotId]->zoomRectIndex() > 1);
 }
 
-bool PlotTab::isLocked()
+bool PlotTab::areAxesLocked()
 {
-    return mIsLocked;
+    return mAreAxesLocked;
 }
 
 

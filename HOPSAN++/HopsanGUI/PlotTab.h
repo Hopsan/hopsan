@@ -91,7 +91,7 @@ public:
     bool hasLogarithmicBottomAxis();
     bool isZoomed(const int plotId) const;
 
-    bool isLocked();
+    bool areAxesLocked();
 
     void showPlot(HopsanPlotIDEnumT plotID, bool visible);
     void setBottomAxisLogarithmic(bool value);
@@ -248,7 +248,7 @@ private:
     QLineEdit *mpUserDefinedYlLabel;
     QLineEdit *mpUserDefinedYrLabel;
     QCheckBox *mpUserDefinedLabelsCheckBox;
-    bool mIsLocked;
+    bool mAreAxesLocked;
 
     // Time scaling member variables
     QComboBox *mpTimeScaleComboBox;

@@ -152,5 +152,6 @@
         <file>graphics/uiicons/Hopsan-Debug.png</file>
         <file>graphics/uiicons/Hopsan-ImportPlot.png</file>
         <file>graphics/uiicons/Hopsan-Lock.png</file>
+        <file>graphics/uiicons/Hopsan-AxisTimeScale.png</file>
     </qresource>
 </RCC>

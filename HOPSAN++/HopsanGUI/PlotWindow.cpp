@@ -295,7 +295,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpOpentimeScaleDialog = new QAction(this);
     mpOpentimeScaleDialog->setToolTip("Open Time-Scale Dialog");
-    mpOpentimeScaleDialog->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+    mpOpentimeScaleDialog->setIcon(QIcon(QString(ICONPATH) + "Hopsan-AxisTimeScale.png"));
 
 
     mpNewWindowFromTabButton = new QAction(this);
@@ -1323,7 +1323,7 @@ void PlotWindow::changedTab()
 
         // Set the plottab specific info layout
         mpCurveInfoStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);
-        mpLockAxisToCurrentLimitsButton->setChecked(pCurrentTab->isLocked());
+        mpLockAxisToCurrentLimitsButton->setChecked(pCurrentTab->areAxesLocked());
     }
     else
     {

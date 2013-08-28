@@ -604,12 +604,13 @@ bool PlotCurve::setGeneration(int generation)
         updatePlotInfoBox();
         mpParentPlotTab->update();
 
-        if(!mpParentPlotTab->isLocked())
+        if(!mpParentPlotTab->areAxesLocked())
         {
-            mpParentPlotTab->mpZoomerLeft[FirstPlot]->zoom(0);
-            mpParentPlotTab->mpZoomerRight[FirstPlot]->zoom(0);
-            mpParentPlotTab->mpZoomerLeft[SecondPlot]->zoom(0);
-            mpParentPlotTab->mpZoomerRight[SecondPlot]->zoom(0);
+            mpParentPlotTab->resetZoom();
+//            mpParentPlotTab->mpZoomerLeft[FirstPlot]->zoom(0);
+//            mpParentPlotTab->mpZoomerRight[FirstPlot]->zoom(0);
+//            mpParentPlotTab->mpZoomerLeft[SecondPlot]->zoom(0);
+//            mpParentPlotTab->mpZoomerRight[SecondPlot]->zoom(0);
         }
 
         return true;
