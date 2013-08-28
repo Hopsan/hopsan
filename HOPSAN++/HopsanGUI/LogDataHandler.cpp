@@ -1280,7 +1280,7 @@ bool LogDataHandler::deleteVariable(const QString &a)
     LogDataMapT::iterator it = mLogDataMap.find(a);
     if(it != mLogDataMap.end())
     {
-        it.value()->removeAllGenerations();
+        //it.value()->removeAllGenerations();   //We don't need to remove generations here, they will be removed by the destructor anyway
         it.value()->deleteLater();
         mLogDataMap.erase(it);
         return true;

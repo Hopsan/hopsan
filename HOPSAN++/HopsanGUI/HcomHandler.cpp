@@ -1224,10 +1224,10 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 
     for(int s=0; s<varNames.size(); ++s)
     {
-        if(varNames[s].count(".") < 3 && varNames[s].endsWith("*"))     //Ugly hack because generation asterix is handled separately
-        {
-            varNames[s].append(".*");
-        }
+//        if(varNames[s].count(".") < 3 && varNames[s].endsWith("*"))     //Ugly hack because generation asterix is handled separately
+//        {
+//            varNames[s].append(".*");
+//        }
 
         QStringList variables;
         getVariables(varNames[s], variables);
@@ -2448,22 +2448,18 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 void HcomHandler::deletePlotCurve(QString cmd) const
 {
     bool allGens=false;
-    int generation;
-    if(cmd.count(".") == 2)
-    {
-        allGens=true;
-    }
-    else if(cmd.endsWith(".*"))
-    {
-        allGens=true;
-        cmd.chop(2);
-    }
-    else
+    int generation=-1;
+    if(cmd.contains("."))
     {
         QString end = cmd.section(".",-1);
-        generation = end.toInt()-1;
-        cmd.chop(end.size()+1);
+        bool ok;
+        generation = end.toInt(&ok)-1;
+        if(ok)
+        {
+            cmd.chop(end.size()+1);
+        }
     }
+
 
 
     cmd.remove("\"");
@@ -2474,20 +2470,24 @@ void HcomHandler::deletePlotCurve(QString cmd) const
     SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
     if(!pData)
     {
-        mpConsole->printErrorMessage("Variable not found.","",false);
-        return;
+        if(cmd.endsWith(".*"))
+        {
+            cmd.chop(2);
+            pData = getVariablePtr(cmd);
+        }
+        if(!pData)
+        {
+            mpConsole->printErrorMessage("Variable not found: "+cmd,"",false);
+            return;
+        }
     }
 
-    if(allGens)
+    if(allGens || generation < 0)
     {
-        pData->getLogVariableContainer()->removeAllGenerations();
+        pData->getLogVariableContainer()->getLogDataHandler()->deleteVariable(pData->getLogVariableContainer()->getFullVariableName());
     }
     else
     {
-        if(generation == -1)
-        {
-            generation = pData->getHighestGeneration();
-        }
         pData->getLogVariableContainer()->removeDataGeneration(generation);
     }
 }
