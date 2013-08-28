@@ -80,7 +80,7 @@ public:
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getOnlyVariablesAtGeneration(const int generation);
     int getLatestGeneration() const;
-    QStringList getPlotDataNames();
+    QStringList getPlotDataNames(int generation=-1);
 
     void definePlotAlias(QString fullName);
     bool definePlotAlias(const QString alias, const QString fullName);
