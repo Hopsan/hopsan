@@ -123,7 +123,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLastSessionFrame->setLayout(mpLastSessionLayout);
 
     mpRecentList = new QListWidget(this);
-    mpRecentList->setMinimumSize(mFrameW*2+mSpacing-20,mFrameH-50);
+    //mpRecentList->setMinimumSize(mFrameW*2+mSpacing-20,mFrameH-50);
     mpRecentList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpRecentList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpRecentList->setMouseTracking(true);
@@ -133,13 +133,14 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpRecentText->setAlignment(Qt::AlignCenter);
     mpRecentText->setMouseTracking(true);
     mpRecentLayout = new QVBoxLayout(this);
-    mpRecentLayout->addWidget(mpRecentList,1, Qt::AlignTop);
+    mpRecentLayout->addWidget(mpRecentList,1);
     mpRecentLayout->addWidget(mpRecentText,0,Qt::AlignBottom);
-    mpRecentLayout->setStretch(0,1);
+    //mpRecentLayout->setStretch(0,1);
     mpRecentFrame = new QFrame(this);
     mpRecentFrame->setFrameShape(QFrame::StyledPanel);
     mpRecentFrame->setMouseTracking(true);
-    mpRecentFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
+    //mpRecentFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
+    mpRecentFrame->setMinimumWidth(mFrameW+mSpacing);
     mpRecentFrame->setLayout(mpRecentLayout);
     mpRecentFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -147,7 +148,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
 
     mpExampleList = new QListWidget(this);
-    mpExampleList->setMinimumSize(mFrameW*2+mSpacing-20,mFrameH-50);
+    //mpExampleList->setMinimumSize(mFrameW*2+mSpacing-20,mFrameH-50);
     mpExampleList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpExampleList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpExampleList->setMouseTracking(true);
@@ -156,13 +157,14 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleText->setAlignment(Qt::AlignCenter);
     mpExampleText->setMouseTracking(true);
     mpExampleLayout = new QVBoxLayout(this);
-    mpExampleLayout->addWidget(mpExampleList,1, Qt::AlignTop);
+    mpExampleLayout->addWidget(mpExampleList,1);
     mpExampleLayout->addWidget(mpExampleText,0,Qt::AlignBottom);
     mpExampleLayout->setStretch(0,1);
     mpExampleFrame = new QFrame(this);
     mpExampleFrame->setFrameShape(QFrame::StyledPanel);
     mpExampleFrame->setMouseTracking(true);
-    mpExampleFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
+    //mpExampleFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
+    mpExampleFrame->setMinimumWidth(mFrameW+mSpacing);
     mpExampleFrame->setLayout(mpExampleLayout);
     mpExampleFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
@@ -259,7 +261,8 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     //mpNewsFrame->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsFrame->setFrameShape(QFrame::StyledPanel);
     mpNewsFrame->setMouseTracking(true);
-    mpNewsFrame->setMinimumSize(mFrameW*2,mFrameH*2+mSpacing);
+    //mpNewsFrame->setMinimumSize(mFrameW*2,mFrameH*2+mSpacing);
+    //mpNewsFrame->setMinimumWidth(mFrameW*2);
     mpNewsFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpNewsFrame->setLayout(mpNewsLayout);
 
@@ -500,18 +503,20 @@ void WelcomeWidget::showNews(QNetworkReply *pReply)
             QString title = entryElement.firstChildElement("title").text();
             QString link = entryElement.firstChildElement("link").attribute("href");
             QString date = entryElement.firstChildElement("updated").text().left(10);
-            QString html = entryElement.firstChildElement("content").text().left(120).append("...");
+            QString html = entryElement.firstChildElement("content").text();//.left(120).append("...");
 
             QLabel *pTitleLabel = new QLabel("<a href=\""+link+"\">"+title+"</a>", this);
             pTitleLabel->setOpenExternalLinks(true);
             QFont boldFont = pTitleLabel->font();
             boldFont.setBold(true);
             pTitleLabel->setFont(boldFont);
+            pTitleLabel->setWordWrap(true);
 
             QLabel *pDateLabel = new QLabel(date, this);
             QFont italicFont = pDateLabel->font();
             italicFont.setItalic(true);
             pDateLabel->setFont(italicFont);
+            pDateLabel->setWordWrap(true);
 
             QLabel *pContentLabel = new QLabel(html, this);
             pContentLabel->setWordWrap(true);
@@ -523,6 +528,7 @@ void WelcomeWidget::showNews(QNetworkReply *pReply)
 
             entryElement = entryElement.nextSiblingElement("entry");
         }
+        mpNewsScrollLayout->addWidget(new QWidget(mpNewsScrollWidget), 1);
 
         mpLoadingWebWidget->setVisible(false);
     }
