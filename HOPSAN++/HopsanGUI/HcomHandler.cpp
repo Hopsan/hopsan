@@ -1080,20 +1080,28 @@ void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
 //! @brief Execute function for "disp" command
 void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
 {
-    QStringList split;
-    splitWithRespectToQuotations(cmd, ' ', split);
-    if(split.size() != 1)
+    if(getNumberOfArguments(cmd) < 2)
+    {
+        QStringList output;
+        if(cmd.isEmpty())
+        {
+            getVariables("*.L", output);
+        }
+        else
+        {
+            getVariables(cmd, output);
+        }
+        output.removeDuplicates();
+
+        for(int o=0; o<output.size(); ++o)
+        {
+            mpConsole->print(output[o]);
+        }
+    }
+    else
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
-    }
-
-    QStringList output;
-    getVariables(cmd, output);
-
-    for(int o=0; o<output.size(); ++o)
-    {
-        mpConsole->print(output[o]);
     }
 }
 
@@ -3158,27 +3166,43 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @param variables Reference to list of found variables
 void HcomHandler::getVariables(QString str, QStringList &variables) const
 {
+    if(gpMainWindow->mpModelHandler->count() == 0) { return; }
+
     bool ok;
     QString end = str.section(".",-1);
-    end.toInt(&ok);
-    if(ok || end == "*")
+    int generation = end.toInt(&ok)-1;
+    if(generation < 0 && ok) return;  //There are no generations smaller than zero
+    if(ok)
     {
         str.chop(end.size()+1);
         end.prepend(".");
     }
+    else if(end == "*")
+    {
+        str.chop(end.size()+1);
+        end = "";
+    }
     else if(end == "L")
     {
         str.chop(end.size()+1);
-        end = ".0";     //0 because log data handler starts from 0 while the GUI shows values from 1, the conversion means that 0 => -1 = latest generation
+        end = ".1";     //0 because log data handler starts from 0 while the GUI shows values from 1, the conversion means that 0 => -1 = latest generation
+        generation = 0;
+    }
+    else if(end == "H")
+    {
+        str.chop(end.size()+1);
+        generation = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getHighestGenerationNumber();
+        end = "."+QString::number(generation+1);
+
     }
     else
     {
-        end="";
+        generation = -1;
+        end = "";
     }
-    if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
-    QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
+    QStringList names = pSystem->getLogDataHandler()->getPlotDataNames(generation);
     names.append(pSystem->getAliasNames());
 
     //Add quotation marks around component name if it contains spaces
@@ -3204,12 +3228,16 @@ void HcomHandler::getVariables(QString str, QStringList &variables) const
         QString name = names[n];
         if(splitStr.size() == 1)   //Special case, no asterixes
         {
-            ok = (name == splitStr[0]);
+            if(splitStr[0].isEmpty())
+                ok = true;
+            else
+                ok = (name == splitStr[0]);
         }
         else        //Other cases, loop substrings and check them
         {
             for(int s=0; s<splitStr.size(); ++s)
             {
+                if(splitStr[s].isEmpty()) continue;
                 if(s==0)
                 {
                     if(!name.startsWith(splitStr[s]))
