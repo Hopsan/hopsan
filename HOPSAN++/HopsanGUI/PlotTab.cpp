@@ -54,9 +54,8 @@
 
 
 const double DoubleMax = std::numeric_limits<double>::max();
-const double DoubleEps = std::numeric_limits<double>::epsilon();
-const double Double20Eps = 20*std::numeric_limits<double>::epsilon();
-const double QwtLowestAxisLabelValue = 2e-12; //!< @todo Using this as lowest limit since there seems to be a "bug" in Qwt that prevents lower values from showing on the axis
+const double DoubleMin = std::numeric_limits<double>::min();
+const double Double100Min = 100*DoubleMin;
 const double in2mm = 25.4;
 
 //! @brief Constructor for plot tabs.
@@ -679,7 +678,7 @@ void PlotTab::rescaleAxesToCurves()
                         if(mLeftAxisLogarithmic)
                         {
                             //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), DoubleEps);
+                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), Double100Min);
                             ylAxisLim.min = qMin(ylAxisLim.min, minVal);
                         }
                         else
@@ -694,7 +693,7 @@ void PlotTab::rescaleAxesToCurves()
                         if(mRightAxisLogarithmic)
                         {
                             //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), DoubleEps);
+                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), Double100Min);
                             yrAxisLim.min = qMin(yrAxisLim.min, minVal);
                         }
                         else
@@ -730,32 +729,32 @@ void PlotTab::rescaleAxesToCurves()
 
             const double sameLimFrac = 0.1;
             // Max and min must not be same value; if they are, decrease/increase
-            if ( (ylAxisLim.max - ylAxisLim.min) < QwtLowestAxisLabelValue)
+            if ( (ylAxisLim.max - ylAxisLim.min) < Double100Min)
             {
 //                ylAxisLim.max += ylAxisLim.max;
 //                ylAxisLim.min -= ylAxisLim.min;
-                ylAxisLim.max += qMax(qAbs(ylAxisLim.max) * sameLimFrac, QwtLowestAxisLabelValue);
-                ylAxisLim.min -= qMax(qAbs(ylAxisLim.min) * sameLimFrac, QwtLowestAxisLabelValue);
+                ylAxisLim.max += qMax(qAbs(ylAxisLim.max) * sameLimFrac, Double100Min);
+                ylAxisLim.min -= qMax(qAbs(ylAxisLim.min) * sameLimFrac, Double100Min);
             }
 
-            if ( (yrAxisLim.max - yrAxisLim.min) < QwtLowestAxisLabelValue)
+            if ( (yrAxisLim.max - yrAxisLim.min) < Double100Min)
             {
 //                yrAxisLim.max += yrAxisLim.max;
 //                yrAxisLim.min -= yrAxisLim.min;
 //                yrAxisLim.max += QwtLowestAxisLabelValue;
 //                yrAxisLim.min -= QwtLowestAxisLabelValue;
-                yrAxisLim.max += qMax(qAbs(yrAxisLim.max) * sameLimFrac, QwtLowestAxisLabelValue);
-                yrAxisLim.min -= qMax(qAbs(yrAxisLim.min) * sameLimFrac, QwtLowestAxisLabelValue);
+                yrAxisLim.max += qMax(qAbs(yrAxisLim.max) * sameLimFrac, Double100Min);
+                yrAxisLim.min -= qMax(qAbs(yrAxisLim.min) * sameLimFrac, Double100Min);
             }
 
-            if ( (xAxisLim.max - xAxisLim.min) < QwtLowestAxisLabelValue)
+            if ( (xAxisLim.max - xAxisLim.min) < Double100Min)
             {
 //                xAxisLim.max += xAxisLim.max;
 //                xAxisLim.min -= xAxisLim.min;
 //                xAxisLim.max += QwtLowestAxisLabelValue;
 //                xAxisLim.min -= QwtLowestAxisLabelValue;
-                xAxisLim.max += qMax(qAbs(xAxisLim.max) * sameLimFrac, QwtLowestAxisLabelValue);
-                xAxisLim.min -= qMax(qAbs(xAxisLim.min) * sameLimFrac, QwtLowestAxisLabelValue);
+                xAxisLim.max += qMax(qAbs(xAxisLim.max) * sameLimFrac, Double100Min);
+                xAxisLim.min -= qMax(qAbs(xAxisLim.min) * sameLimFrac, Double100Min);
             }
 
             // Calculate the axis ranges (used for calculating margins at top and bottom
