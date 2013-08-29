@@ -64,6 +64,7 @@ public:
 
     //Public utilities
     void toShortDataNames(QString &variable) const;
+    void toLongDataNames(QString &var) const;
 
     void setWorkingDirectory(QString dir);
     QString getWorkingDirectory() const;
@@ -104,6 +105,8 @@ private:
     void executePokeCommand(const QString cmd);
     void executeDefineAliasCommand(const QString cmd);
     void executeRemoveVariableCommand(const QString cmd);
+    void executeChangeDefaultPlotScaleCommand(const QString cmd);
+    void executeDisplayDefaultPlotScaleCommand(const QString cmd);
     void executeChangePlotScaleCommand(const QString cmd);
     void executeDisplayPlotScaleCommand(const QString cmd);
     void executeSetCommand(const QString cmd);

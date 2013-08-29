@@ -269,19 +269,35 @@ void HcomHandler::createCommands()
 
     HcomCommand chdfscCmd;
     chdfscCmd.cmd = "chdfsc";
-    chdfscCmd.description.append("Change plot scale of specified variable");
+    chdfscCmd.description.append("Change default plot scale of specified variable");
     chdfscCmd.help.append("Usage: chdfsc [variable scale]");
-    chdfscCmd.fnc = &HcomHandler::executeChangePlotScaleCommand;
+    chdfscCmd.fnc = &HcomHandler::executeChangeDefaultPlotScaleCommand;
     chdfscCmd.group = "Variable Commands";
     mCmdList << chdfscCmd;
 
     HcomCommand didfscCmd;
     didfscCmd.cmd = "didfsc";
-    didfscCmd.description.append("Display plot scale of specified variable");
+    didfscCmd.description.append("Display default plot scale of specified variable");
     didfscCmd.help.append("Usage: didfsc [variable]");
-    didfscCmd.fnc = &HcomHandler::executeDisplayPlotScaleCommand;
+    didfscCmd.fnc = &HcomHandler::executeDisplayDefaultPlotScaleCommand;
     didfscCmd.group = "Variable Commands";
     mCmdList << didfscCmd;
+
+    HcomCommand chscCmd;
+    chscCmd.cmd = "chsc";
+    chscCmd.description.append("Change plot scale of specified variable");
+    chscCmd.help.append("Usage: chsc [variable scale]");
+    chscCmd.fnc = &HcomHandler::executeChangePlotScaleCommand;
+    chscCmd.group = "Variable Commands";
+    mCmdList << chscCmd;
+
+    HcomCommand discCmd;
+    discCmd.cmd = "disc";
+    discCmd.description.append("Display plot scale of specified variable");
+    discCmd.help.append("Usage: disc [variable]");
+    discCmd.fnc = &HcomHandler::executeDisplayPlotScaleCommand;
+    discCmd.group = "Variable Commands";
+    mCmdList << discCmd;
 
     HcomCommand setCmd;
     setCmd.cmd = "set";
@@ -1286,6 +1302,84 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 
 }
 
+void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 2)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    QString scale = getArgument(cmd,1);
+
+    QStringList vars;
+    getVariables(getArgument(cmd,0),vars);
+    if(vars.isEmpty())
+    {
+        mpConsole->printErrorMessage("Unknown variable.","",false);
+        return;
+    }
+    Q_FOREACH(const QString var, vars)
+    {
+        QString varName = var;
+        int size1  = varName.section(".",-1).size()+1;
+        varName.chop(size1);
+        int size2 = varName.section(".",-1).size()+1;
+        varName.chop(size2);
+        QList<ModelObject*> components;
+        getComponents(varName, components);
+        if(components.size() != 1)
+            continue;
+
+        //SharedLogVariableDataPtrT pVar = getVariablePtr(var);
+        //pVar.data()->setPlotScale(scale);
+        QString description = "";
+        QString longVarName = var.right(size1+size2-1);
+        toLongDataNames(longVarName);
+        components[0]->registerCustomPlotUnitOrScale(longVarName, description, scale);
+    }
+}
+
+void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    QString var = cmd;
+
+    int size1  =var.section(".",-1).size()+1;
+    var.chop(size1);
+    int size2 = var.section(".",-1).size()+1;
+    var.chop(size2);
+    QList<ModelObject*> components;
+    getComponents(var, components);
+    if(components.size() != 1)
+        return;
+
+    UnitScale unitScale;
+    QString portAndVarName = cmd.right(size1+size2-1);
+    toLongDataNames(portAndVarName);
+    components[0]->getCustomPlotUnitOrScale(portAndVarName, unitScale);
+
+    QString scale = unitScale.mScale;
+    QString unit = unitScale.mUnit;
+    if(!unit.isEmpty())
+    {
+        mpConsole->print(scale+" ["+unit+"]");
+        returnScalar(scale.toDouble());
+    }
+    else
+    {
+        mpConsole->print(scale);
+        returnScalar(scale.toDouble());
+    }
+
+    return;
+}
+
 void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 2)
@@ -1310,6 +1404,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
         pVar.data()->setPlotScale(scale);
     }
 }
+
 
 void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
 {
@@ -1485,65 +1580,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         getVariables(splitCmdMajor[i], variables);
         for(int v=0; v<variables.size(); ++v)
         {
-            variables[v].replace(".", "#");
-            variables[v].remove("\"");
-
-            if(variables[v].endsWith("#x"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#Position");
-            }
-            else if(variables[v].endsWith("#v"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#Velocity");
-            }
-            else if(variables[v].endsWith("#f"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#Force");
-            }
-            else if(variables[v].endsWith("#p"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#Pressure");
-            }
-            else if(variables[v].endsWith("#q"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#Flow");
-            }
-            else if(variables[v].endsWith("#val"))
-            {
-                variables[v].chop(4);
-                variables[v].append("#Value");
-            }
-            else if(variables[v].endsWith("#Zc"))
-            {
-                variables[v].chop(3);
-                variables[v].append("#CharImpedance");
-            }
-            else if(variables[v].endsWith("#c"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#WaveVariable");
-            }
-            else if(variables[v].endsWith("#me"))
-            {
-                variables[v].chop(3);
-                variables[v].append("#EquivalentMass");
-            }
-            else if(variables[v].endsWith("#Q"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#HeatFlow");
-            }
-            else if(variables[v].endsWith("#t"))
-            {
-                variables[v].chop(2);
-                variables[v].append("#Temperature");
-            }
-
+            toLongDataNames(variables[v]);
         }
         allVariables.append(variables);
         //splitCmdMajor[i] = getVariablePtr(splitCmdMajor[i])->getFullVariableName();
@@ -3666,6 +3703,70 @@ void HcomHandler::toShortDataNames(QString &variable) const
     {
         variable.chop(12);
         variable.append(".t");
+    }
+}
+
+
+
+void HcomHandler::toLongDataNames(QString &var) const
+{
+    var.replace(".", "#");
+    var.remove("\"");
+
+    if(var.endsWith("#x"))
+    {
+        var.chop(2);
+        var.append("#Position");
+    }
+    else if(var.endsWith("#v"))
+    {
+        var.chop(2);
+        var.append("#Velocity");
+    }
+    else if(var.endsWith("#f"))
+    {
+        var.chop(2);
+        var.append("#Force");
+    }
+    else if(var.endsWith("#p"))
+    {
+        var.chop(2);
+        var.append("#Pressure");
+    }
+    else if(var.endsWith("#q"))
+    {
+        var.chop(2);
+        var.append("#Flow");
+    }
+    else if(var.endsWith("#val"))
+    {
+        var.chop(4);
+        var.append("#Value");
+    }
+    else if(var.endsWith("#Zc"))
+    {
+        var.chop(3);
+        var.append("#CharImpedance");
+    }
+    else if(var.endsWith("#c"))
+    {
+        var.chop(2);
+        var.append("#WaveVariable");
+    }
+    else if(var.endsWith("#me"))
+    {
+        var.chop(3);
+        var.append("#EquivalentMass");
+    }
+    else if(var.endsWith("#Q"))
+    {
+        var.chop(2);
+        var.append("#HeatFlow");
+    }
+    else if(var.endsWith("#t"))
+    {
+        var.chop(2);
+        var.append("#Temperature");
     }
 }
 
