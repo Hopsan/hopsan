@@ -1582,7 +1582,7 @@ int LogDataHandler::getLatestGeneration() const
 }
 
 
-QStringList LogDataHandler::getPlotDataNames(int generation)
+QStringList LogDataHandler::getLogDataVariableNames(QString separator, int generation)
 {
     QStringList retval;
     LogDataMapT::iterator dit = mLogDataMap.begin();
@@ -1590,7 +1590,7 @@ QStringList LogDataHandler::getPlotDataNames(int generation)
     {
         if(generation < 0 || dit.value()->hasDataGeneration(generation))
         {
-            retval.append(dit.value()->getFullVariableNameWithSeparator("."));
+            retval.append(dit.value()->getFullVariableNameWithSeparator(separator));
         }
     }
     return retval;

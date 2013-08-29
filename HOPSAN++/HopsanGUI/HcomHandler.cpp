@@ -3248,7 +3248,7 @@ void HcomHandler::getVariables(QString str, QStringList &variables) const
     }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
-    QStringList names = pSystem->getLogDataHandler()->getPlotDataNames(generation);
+    QStringList names = pSystem->getLogDataHandler()->getLogDataVariableNames(".", generation);
     names.append(pSystem->getAliasNames());
 
     //Add quotation marks around component name if it contains spaces
@@ -3327,7 +3327,7 @@ void HcomHandler::getVariablesThatStartsWithString(const QString str, QStringLis
     if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
-    QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
+    QStringList names = pSystem->getLogDataHandler()->getLogDataVariableNames(".");
     names.append(pSystem->getAliasNames());
 
     //Add quotation marks around component name if it contains spaces
