@@ -1403,12 +1403,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
 
         if (success)
         {
-            if(pAppearanceData->getTypeName() == "MyCoolMass")
-            {
-                double ko=3;
-                double apa=ko;
-            }
-            mpContentsTree->removeComponent(pAppearanceData->getTypeName());
+            mpContentsTree->removeComponent(makeFullTypeString(pAppearanceData->getTypeName(), pAppearanceData->getSubTypeName()));
             qDebug() << "Removing: " << pAppearanceData->getTypeName();
             pTree->addComponent(pAppearanceData);
             mLoadedComponents << pAppearanceData->getTypeName();

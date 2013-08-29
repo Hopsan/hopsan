@@ -316,13 +316,13 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
     {
         QDomElement movableElement = appendDomElement(rDomElement, "movable");
         QDomElement startElement = appendDomElement(movableElement, "start");
-        startElement.setAttribute("x", startX[i]);
-        startElement.setAttribute("y", startY[i]);
-        startElement.setAttribute("a", startTheta[i]);
+        setQrealAttribute(startElement, "x", startX[i]);
+        setQrealAttribute(startElement, "y", startY[i]);
+        setQrealAttribute(startElement, "a", startTheta[i]);
         QDomElement movementElement = appendDomElement(movableElement, "movement");
-        movementElement.setAttribute("x", speedX[i]);
-        movementElement.setAttribute("y", speedY[i]);
-        movementElement.setAttribute("a", speedTheta[i]);
+        setQrealAttribute(movementElement, "x", speedX[i]);
+        setQrealAttribute(movementElement, "y", speedY[i]);
+        setQrealAttribute(movementElement, "a", speedTheta[i]);
     }
 }
 
