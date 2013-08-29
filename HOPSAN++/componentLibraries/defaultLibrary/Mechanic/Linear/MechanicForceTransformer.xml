@@ -16,6 +16,7 @@
                 <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
+                <movingport portname="P1" startx="39.566" starty="6.946"/>
             </movable>
         </animation> 
     </modelobject>   

@@ -140,6 +140,20 @@ AnimatedConnector::~AnimatedConnector()
 //! @brief Updates the animated connector
 void AnimatedConnector::updateAnimation()
 {
+    QPointF startPos = mapFromItem(mpStartComponent->mpModelObject, mpStartComponent->getPortPos(mStartPortName));
+    double x1 = startPos.x();
+    double y1 = startPos.y();
+    double x2 = mpLines.first()->line().x2();
+    double y2 = mpLines.first()->line().y2();
+    mpLines.first()->setLine(x1, y1, x2, y2);
+
+    QPointF endPos = mapFromItem(mpEndComponent->mpModelObject, mpEndComponent->getPortPos(mEndPortName));
+    x1 = mpLines.last()->line().x1();
+    y1 = mpLines.last()->line().y1();
+    x2 = endPos.x();
+    y2 = endPos.y();
+    mpLines.last()->setLine(x1, y1, x2, y2);
+
     if(mpConnector->getStartPort()->getNodeType() != "NodeHydraulic")
     {
         return;
@@ -173,21 +187,6 @@ void AnimatedConnector::updateAnimation()
     {
         mpLines[i]->setPen(tempPen);
     }
-
-    QPointF startPos = mapFromItem(mpStartComponent->mpModelObject, mpStartComponent->getPortPos(mStartPortName));
-    double x1 = startPos.x();
-    double y1 = startPos.y();
-    double x2 = mpLines.first()->line().x2();
-    double y2 = mpLines.first()->line().y2();
-    mpLines.first()->setLine(x1, y1, x2, y2);
-
-
-    QPointF endPos = mapFromItem(mpEndComponent->mpModelObject, mpEndComponent->getPortPos(mEndPortName));
-    x1 = mpLines.last()->line().x1();
-    y1 = mpLines.last()->line().y1();
-    x2 = endPos.x();
-    y2 = endPos.y();
-    mpLines.last()->setLine(x1, y1, x2, y2);
 }
 
 
@@ -214,6 +213,8 @@ AnimatedConnectorLine::AnimatedConnectorLine(qreal x1, qreal y1, qreal x2, qreal
     mHasEndArrow = false;
     mArrowSize = 8.0;
     mArrowAngle = 0.5;
+
+    this->setVisible(mpParentConnector->mpConnector->getLastLine()->isVisible());
 }
 
 

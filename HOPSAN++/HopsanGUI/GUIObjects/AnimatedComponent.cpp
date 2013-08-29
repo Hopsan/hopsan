@@ -473,6 +473,8 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     }
 
     mIdx = idx;
+
+    this->setVisible(mpAnimatedComponent->mpModelObject->isVisible());
 }
 
 
