@@ -707,7 +707,7 @@ void HcomHandler::executeAddPlotRightAxisCommand(const QString cmd)
 }
 
 
-//! @brief Execute function for "disp" command
+//! @brief Execute function for "dipa" command
 void HcomHandler::executeDisplayParameterCommand(const QString cmd)
 {
     QStringList parameters;
@@ -799,6 +799,17 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
             if(pSystem->getParameterNames().contains(parameterNames[p]))
             {
                 pSystem->setParameterValue(parameterNames[p], newValue);
+            }
+            else if(!pSystem->getFullNameFromAlias(parameterNames[p]).isEmpty())
+            {
+                QString nameFromAlias = pSystem->getFullNameFromAlias(parameterNames[p]);
+                QString compName = nameFromAlias.section("#",0,0);
+                QString parName = nameFromAlias.right(nameFromAlias.size()-compName.size()-1);
+                ModelObject *pComponent = pSystem->getModelObject(compName);
+                if(pComponent)
+                {
+                    pComponent->setParameterValue(parName, newValue);
+                }
             }
             else
             {
@@ -3151,6 +3162,8 @@ void HcomHandler::getParameters(const QString str, QStringList &parameters)
 
         for(int p=0; p<parameterNames.size(); ++p)
         {
+            parameterNames[p].replace("#", ".");
+            toShortDataNames(parameterNames[p]);
             allParameters.append(componentNames[n]+"."+parameterNames[p]);
         }
     }
@@ -3165,6 +3178,19 @@ void HcomHandler::getParameters(const QString str, QStringList &parameters)
         }
         allParameters.append(systemParameters[s]);
     }
+
+    QStringList aliasNames = pSystem->getAliasNames();
+    Q_FOREACH(const QString &alias, aliasNames)
+    {
+        QString fullName = pSystem->getFullNameFromAlias(alias);
+        fullName.replace("#",".");
+        toShortDataNames(fullName);
+        if(allParameters.contains(fullName))
+        {
+            allParameters.append(alias);
+        }
+    }
+
 
     if(str.contains("*"))
     {
@@ -3222,9 +3248,15 @@ void HcomHandler::getParameters(const QString str, QStringList &parameters)
 //! @brief Returns the value of specified parameter
 QString HcomHandler::getParameterValue(QString parameter) const
 {
+    toLongDataNames(parameter);
     parameter.remove("\"");
-    QString compName = parameter.split(".").first();
-    QString parName = parameter.split(".").last();
+    QString compName = parameter.split("#").first();
+    QString parName = parameter.right(parameter.size()-compName.size()-1);
+
+    QString shortParName = parName;
+    shortParName.prepend(".");
+    toShortDataNames(shortParName);
+    shortParName.remove(0,1);
 
     if(gpMainWindow->mpModelHandler->count() == 0)
     {
@@ -3233,9 +3265,19 @@ QString HcomHandler::getParameterValue(QString parameter) const
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     ModelObject *pComp = pSystem->getModelObject(compName);
+    QString fullNameFromAlias = pSystem->getFullNameFromAlias(parName);
+    ModelObject *pCompFromAlias = pSystem->getModelObject(fullNameFromAlias.section("#",0,0));
     if(pComp && pComp->getParameterNames().contains(parName))
     {
         return pComp->getParameterValue(parName);
+    }
+    else if(pComp && pComp->getParameterNames().contains(shortParName))
+    {
+        return pComp->getParameterValue(shortParName);
+    }
+    else if(pCompFromAlias && pCompFromAlias->getParameterNames().contains(fullNameFromAlias.section("#",1)))
+    {
+        return pCompFromAlias->getParameterValue(fullNameFromAlias.section("#",1));
     }
     else if(pSystem->getParameterNames().contains(parameter))
     {
