@@ -158,6 +158,7 @@ public:
     // Node data access
     double readNodeSafeSlow(const HString &rPortName, const HString &rDataName);
     void writeNodeSafeSlow(const HString &rPortName, const HString &rDataName, const double value);
+    void setInitialValue(const HString &rPortName, const HString &rDataName, const double value);
 
     // System parent
     ComponentSystem *getSystemParent();
