@@ -356,6 +356,8 @@ void AnimationWidget::play()
 //! @todo The plot data object in container should perhaps be cleared of these generations
 void AnimationWidget::playRT()
 {
+    if(!mpContainer->getCoreSystemAccessPtr()->isSimulationOk()) return;
+
     mpContainer->getCoreSystemAccessPtr()->initialize(0,10,0);
     mRealTime = true;
     mpTimeSlider->setValue(1);
