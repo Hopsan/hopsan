@@ -71,7 +71,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pAuthorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pAuthorsText = new QLabel();
-    pAuthorsText->setText(tr("Björn Eriksson, Peter Nordin, Robert Braun\n"));
+    pAuthorsText->setText(trUtf8("Björn Eriksson, Peter Nordin, Robert Braun\n"));
     pAuthorsText->setWordWrap(true);
     pAuthorsText->setAlignment(Qt::AlignCenter);
 
@@ -111,7 +111,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pContactHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContactText = new QLabel();
-    pContactText->setText(tr("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: robert.braun@liu.se"));
+    pContactText->setText(trUtf8("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: robert.braun@liu.se"));
     pContactText->setWordWrap(true);
     pContactText->setAlignment(Qt::AlignCenter);
 
