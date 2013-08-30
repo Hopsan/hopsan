@@ -134,7 +134,7 @@ private:
 
     //The sliders
     QSlider* mpTimeSlider;
-    QSlider* mpSpeedSlider;
+    QDoubleSpinBox* mpSpeedSpinBox;
 
     //Time display widget
     QLineEdit* mpTimeDisplay;
@@ -172,7 +172,7 @@ private:
     double mnSamples;
 
 public slots:
-    void changeSpeed(int newSpeed);
+    void changeSpeed(double newSpeed);
     void changeIndex(int newIndex);
 };
 

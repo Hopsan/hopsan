@@ -332,6 +332,10 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
         {
             mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getIconPath(ISOGraphics, Absolute);
         }
+        if(mpAnimationData->baseIconPath.isEmpty())
+        {
+            mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getDefaultMissingIconPath();
+        }
         baseAppearance->setIconPath(mpAnimationData->baseIconPath, UserGraphics, Absolute);
     }
     else

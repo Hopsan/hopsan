@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5733" hopsancoreversion="0.6.x_r5689">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5788" hopsancoreversion="0.6.x_r5750">
   <requirements>
-    <componentlibrary>HopsanGeneratedComponent_CombustionEngine</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_CombustionEngineCpp</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_MyCoolMass</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_MyCos</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_MyLog</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_MyMass</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_MySine</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_apa</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_gfs</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_gra</componentlibrary>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_AircraftRudder</componentlibrary>
-    <componentlibrary>CppRudderLibrary</componentlibrary>
-    <componentlibrary>ACMechanicLibrary</componentlibrary>
-    <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
-    <componentlibrary>ACMechanicLibrary</componentlibrary>
-    <componentlibrary>ACRotationalLibrary</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
@@ -53,7 +37,7 @@ This model also works well with the animation feature.</description>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="1000"/>
-      <viewport x="2519.67" y="2690.28" zoom="0.70922"/>
+      <viewport x="2308.76" y="2602.25" zoom="1.18743"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -113,8 +97,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -151,8 +135,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -180,8 +164,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -232,8 +216,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="-120"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="-120.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -277,7 +261,7 @@ This model also works well with the animation feature.</description>
           <pose x="2816.11903" y="2326.497516" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="0"/>
-          <viewport x="2519.67" y="2690.28" zoom="0.70922"/>
+          <viewport x="2308.76" y="2602.25" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -980,7 +964,7 @@ This model also works well with the animation feature.</description>
           <pose x="2579.657028" y="2345.728933" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="0"/>
-          <viewport x="2519.67" y="2690.28" zoom="0.70922"/>
+          <viewport x="2308.76" y="2602.25" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1213,8 +1197,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="-5000000" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="-5000000.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1284,8 +1268,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1328,8 +1312,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-150"/>
-              <movement x="0" y="0" a="-300"/>
+              <start x="0.000000" y="0.000000" a="-150.000000"/>
+              <movement x="0.000000" y="0.000000" a="-300.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1349,8 +1333,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="37" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="37.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1393,7 +1377,7 @@ This model also works well with the animation feature.</description>
           <pose x="2349.217863" y="2297.386885" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="0"/>
-          <viewport x="2519.67" y="2690.28" zoom="0.70922"/>
+          <viewport x="2308.76" y="2602.25" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1426,6 +1410,9 @@ This model also works well with the animation feature.</description>
             <parameters/>
             <objectives/>
           </optimization>
+          <hopsanundo>
+            <post number="-1"/>
+          </hopsanundo>
         </hopsangui>
         <objects>
           <component typename="SignalMultiply" name="Multiply_1">
@@ -1729,16 +1716,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1779,16 +1766,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1829,16 +1816,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1879,16 +1866,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1929,16 +1916,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -1972,8 +1959,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="57.3"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2014,16 +2001,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2082,16 +2069,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2137,8 +2124,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="-6e-06"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="-0.000006"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2179,16 +2166,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2229,16 +2216,16 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1" y="21" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.000000" y="21.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-15" a="0"/>
-              <movement x="0" y="-250" a="0"/>
+              <start x="0.000000" y="-15.000000" a="0.000000"/>
+              <movement x="0.000000" y="-250.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2266,8 +2253,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="-6e-06"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="-0.000006"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2290,8 +2277,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-150"/>
-              <movement x="0" y="0" a="-300"/>
+              <start x="0.000000" y="0.000000" a="-150.000000"/>
+              <movement x="0.000000" y="0.000000" a="-300.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2315,12 +2302,12 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="3" a="0"/>
-              <movement x="0" y="5000000000" a="0"/>
+              <start x="0.000000" y="3.000000" a="0.000000"/>
+              <movement x="0.000000" y="5000000000.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-3" a="0"/>
-              <movement x="0" y="-5000000000" a="0"/>
+              <start x="0.000000" y="-3.000000" a="0.000000"/>
+              <movement x="0.000000" y="-5000000000.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2344,12 +2331,12 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="3" a="0"/>
-              <movement x="0" y="5000000000" a="0"/>
+              <start x="0.000000" y="3.000000" a="0.000000"/>
+              <movement x="0.000000" y="5000000000.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="-3" a="0"/>
-              <movement x="0" y="-5000000000" a="0"/>
+              <start x="0.000000" y="-3.000000" a="0.000000"/>
+              <movement x="0.000000" y="-5000000000.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2393,8 +2380,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-150"/>
-              <movement x="0" y="0" a="-300"/>
+              <start x="0.000000" y="0.000000" a="-150.000000"/>
+              <movement x="0.000000" y="0.000000" a="-300.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2422,8 +2409,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="45"/>
-              <movement x="0" y="0" a="90"/>
+              <start x="0.000000" y="0.000000" a="45.000000"/>
+              <movement x="0.000000" y="0.000000" a="90.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2561,8 +2548,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="45"/>
-              <movement x="0" y="0" a="90"/>
+              <start x="0.000000" y="0.000000" a="45.000000"/>
+              <movement x="0.000000" y="0.000000" a="90.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -2623,7 +2610,7 @@ This model also works well with the animation feature.</description>
           <pose x="2576.656885" y="2257.814104" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="0"/>
-          <viewport x="2519.67" y="2690.28" zoom="0.70922"/>
+          <viewport x="2308.76" y="2602.25" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -2829,8 +2816,8 @@ This model also works well with the animation feature.</description>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-150"/>
-              <movement x="0" y="0" a="-300"/>
+              <start x="0.000000" y="0.000000" a="-150.000000"/>
+              <movement x="0.000000" y="0.000000" a="-300.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">

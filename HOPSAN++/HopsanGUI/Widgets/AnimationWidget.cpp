@@ -105,10 +105,11 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     mpTimeSlider = new QSlider(Qt::Horizontal);
 
-    mpSpeedSlider = new QSlider(Qt::Horizontal);
-    mpSpeedSlider->setMinimum(-200);
-    mpSpeedSlider->setMaximum(200);
-    mpSpeedSlider->setSingleStep(1);
+    mpSpeedSpinBox = new QDoubleSpinBox(this);
+    mpSpeedSpinBox->setMinimum(-10.0);
+    mpSpeedSpinBox->setMaximum(10.0);
+    mpSpeedSpinBox->setDecimals(2);
+    mpSpeedSpinBox->setSingleStep(0.01);
 
     //Create the layout and add widgets
     mpLayout= new QGridLayout(this);
@@ -119,7 +120,8 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpLayout->addWidget(mpPlayRealTimeButton,   0,  4);
     mpLayout->addWidget(mpRewindButton,         0,  5);
     mpLayout->addWidget(mpSpeedLabel,           0,  6);
-    mpLayout->addWidget(mpSpeedSlider,          0,  7);
+    //mpLayout->addWidget(mpSpeedSlider,          0,  7);
+    mpLayout->addWidget(mpSpeedSpinBox,         0,  7);
     mpLayout->addWidget(mpTimeLabel,            0,  8);
     mpLayout->addWidget(mpTimeSlider,           0,  9);
     mpLayout->addWidget(mpTimeDisplay,          0,  10);
@@ -174,7 +176,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     }
 
     //Set initial values for speed slider
-    mpSpeedSlider->setValue(mSimulationSpeed);
+    mpSpeedSpinBox->setValue(1.0);
 
 
     QStringList hiddenComponents;
@@ -243,7 +245,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     connect(mpTimeSlider,           SIGNAL(sliderPressed()),    this,   SLOT(pause()));
     connect(mpTimeSlider,           SIGNAL(valueChanged(int)),  this,   SLOT(changeIndex(int)));
     connect(mpTimeSlider,           SIGNAL(sliderMoved(int)),   this,   SLOT(updateMovables()));
-    connect(mpSpeedSlider,          SIGNAL(valueChanged(int)),  this,   SLOT(changeSpeed(int)));
+    connect(mpSpeedSpinBox,         SIGNAL(valueChanged(double)), this, SLOT(changeSpeed(double)));
 
     //Connect timer with update function
     connect(mpTimer,                SIGNAL(timeout()),          this,   SLOT(updateAnimation()));
@@ -368,9 +370,9 @@ void AnimationWidget::playRT()
 
 //! @brief Slot that changes animation speed
 //! @param [in] newSpeed New speed for animation
-void AnimationWidget::changeSpeed(int newSpeed)
+void AnimationWidget::changeSpeed(double newSpeed)
 {
-    updateAnimationSpeed(double(newSpeed)/double(mSpeedSliderSensitivity));
+    updateAnimationSpeed(newSpeed/*double(newSpeed)/double(mSpeedSliderSensitivity)*/);
 }
 
 

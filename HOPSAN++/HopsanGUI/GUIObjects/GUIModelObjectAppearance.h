@@ -128,6 +128,7 @@ public:
     QString getBasePath() const;
     QString getFullAvailableIconPath(GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
+    QString getDefaultMissingIconPath() const;
     qreal   getIconScale(const GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconRotationBehaviour(const GraphicsTypeEnumT gfxType=UserGraphics);
     QPointF getNameTextPos() const;

@@ -259,69 +259,84 @@ namespace hopsan {
             double ret=0;
 
             x = fmod(x-start-min_angle, 360);
-            x = x/360.0*2*Rf*pi;
-            phi = phi/360.0*2*Rf*pi;
-            g1 = g1/360.0*2*Rf*pi;
-            g2 = g2/360.0*2*Rf*pi;
-            r = r/360.0*2*Rf*pi;
-            R = R/360.0*2*Rf*pi;
-            th11 = th11/180.0*pi;
-            th21 = th21/180.0*pi;
-            th12 = th12/180.0*pi;
-            th22 = th22/180.0*pi;
-
-            double w1 = 2*g1*tan(th11)*tan(th21/2.0);
-            double w2 = 2*g2*tan(th12)*tan(th22/2.0);
-
-            double k2 = r*r*pi/2.0;
-            double k3 = g1*g1*tan(th11)*tan(th11)*tan(th21/2.0);
-            double k5 = g2*g2*tan(th12)*tan(th12)*tan(th22/2.0);
+            double temp = 1.0/360.0*2*Rf*pi;
+            x = x*temp;
+            phi = phi*temp;
+            g1 = g1*temp;
+            g2 = g2*temp;
+            r = r*temp;
+            R = R*temp;
 
             if(x >= 0 && x <= g1)
             {
+                th11 = th11/180.0*pi;
+                th21 = th21/180.0*pi;
+                double w1 = 2*g1*tan(th11)*tan(th21/2.0);
                 double A1 = x*x/g1*w1/2.0;
                 double A2 = x*x*tan(th11)*tan(th11)*tan(th21/2.0);
                 ret = std::min(A1, A2);
             }
             else if(x >= g1 && x <= g1+2*r)
             {
+                double k3 = g1*g1*tan(th11)*tan(th11)*tan(th21/2.0);
                 double d = 2*r-x+g1;
                 double A = 2*r*r*acos(d/(2.0*r)) - 0.5*d*sqrt(4*r*r-d*d);
                 ret = k3 + A;
             }
             else if(x >= g1+2*r && x <= R)
             {
+                double k2 = r*r*pi/2.0;
+                double k3 = g1*g1*tan(th11)*tan(th11)*tan(th21/2.0);
                 ret = k3 + k2 + (x-g1-2*r)*2.0*r + k2 ;
             }
             else if(x >= R && x <= R+g1)
             {
+                th11 = th11/180.0*pi;
+                th21 = th21/180.0*pi;
+                double w1 = 2*g1*tan(th11)*tan(th21/2.0);
                 double A1 = (g1+R-x)*(g1+R-x)/g1*w1/2.0;
                 double A2 = (g1+R-x)*(g1+R-x)*tan(th11)*tan(th11)*tan(th21/2.0);
+                double k2 = r*r*pi/2.0;
                 ret = std::min(A1, A2) + k2 + (x-g1-2.0*r)*2.0*r + k2;
             }
 
             else if(x >= R+g1 && x <= g1+phi)
             {
+                double k2 = r*r*pi/2.0;
                 ret = k2 + (R-2.0*r)*2.0*r + k2;
             }
             else if(x >= g1+phi && x <= g1+phi+g2)
             {
+                double k2 = r*r*pi/2.0;
+                th11 = th11/180.0*pi;
+                th21 = th21/180.0*pi;
+                th12 = th12/180.0*pi;
+                th22 = th22/180.0*pi;
+                double w2 = 2*g2*tan(th12)*tan(th22/2.0);
                 double A1 = (x-g1-phi)*(x-g1-phi)/g1*w2/2.0;
                 double A2 = (x-g1-phi)*(x-g1-phi)*tan(th11)*tan(th11)*tan(th21/2.0);
                 ret = k2 + (R-2*r+phi+g1-x)*2.0*r + k2 + std::min(A1, A2);
             }
             else if(x >= g1+phi+g2 && x <= g1+phi+R-2*r)
             {
+                double k2 = r*r*pi/2.0;
+                double k5 = g2*g2*tan(th12)*tan(th12)*tan(th22/2.0);
                 ret = k2 + (R-2*r+phi+g1-x)*2.0*r + k2 + k5;
             }
             else if(x >= g1+phi+R-2*r && x <= g1+phi+R)
             {
+                double k5 = g2*g2*tan(th12)*tan(th12)*tan(th22/2.0);
                 double d = x-g1-phi-R+2*r;
                 double A = 2*r*r*acos(d/(2.0*r)) - 0.5*d*sqrt(4*r*r-d*d);
                 ret = A + k5;
             }
             else if(x >= g1+phi+R && x <= g1+phi+R+g2)
             {
+                th11 = th11/180.0*pi;
+                th21 = th21/180.0*pi;
+                th12 = th12/180.0*pi;
+                th22 = th22/180.0*pi;
+                double w2 = 2*g2*tan(th12)*tan(th22/2.0);
                 double A1 = (R-x+g1+phi+g2)*(R-x+g1+phi+g2)/g1*w2/2.0;
                 double A2 = (R-x+g1+phi+g2)*(R-x+g1+phi+g2)*tan(th11)*tan(th11)*tan(th21/2.0);
                 ret = std::min(A1, A2);

@@ -159,7 +159,8 @@ namespace hopsan {
 
             //Calculate constants
             double angle = (*mpAngle);
-            double s = r*tan(angle);
+            double ta = tan(angle);
+            double s = r*ta;
             double diff = 2*3.1416/mNumPorts1;
 
             //Calculate torque
@@ -170,13 +171,14 @@ namespace hopsan {
             {
                 c1[i] = (*mvpND_c1[i]);
                 Zc1[i] = (*mvpND_Zc1[i]);
-                cp += c1[i]*tan(angle)*r*cos(a1-offset-diff*i);
-                Zp += Zc1[i]*tan(angle)*r*cos(a1-offset-diff*i)*tan(angle)*r*cos(a1-offset-diff*i);
+                double co = cos(a1-offset-diff*i);
+                cp += c1[i]*ta*r*co;
+                Zp += Zc1[i]*ta*r*co*ta*r*co;
             }
 
             //Inertia equations
             mDenX[1] = B+Zp+Zx2;
-            mDenV[0] = B+Zp+Zx2;
+            mDenV[0] = mDenX[1];
             mFilterX.setDen(mDenX);
             mFilterV.setDen(mDenV);
 
@@ -189,8 +191,9 @@ namespace hopsan {
             //Calculate positions and velocities
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                v1[i] = s*cos(a1-offset-diff*i)*w1;
-                x1[i] = startX+s*sin(a1-offset-diff*i);
+                double a = a1-offset-diff*i;
+                v1[i] = s*cos(a)*w1;
+                x1[i] = startX+s*sin(a);
             }
 
             //Piston forces

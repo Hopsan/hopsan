@@ -440,6 +440,11 @@ QString ModelObjectAppearance::getIconPath(const GraphicsTypeEnumT gfxType, cons
     }
 }
 
+QString ModelObjectAppearance::getDefaultMissingIconPath() const
+{
+    return QString(OBJECTICONPATH) + mDefaultMissingIconPath;
+}
+
 //! @todo This is a bit wrong, it will return the scale for the availiable type not necessarily the requested
 qreal ModelObjectAppearance::getIconScale(const GraphicsTypeEnumT gfxType)
 {

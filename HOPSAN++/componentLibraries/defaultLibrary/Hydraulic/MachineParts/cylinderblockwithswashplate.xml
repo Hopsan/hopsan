@@ -15,7 +15,7 @@
             <icon userpath="svg/swashplate_base.svg"/>
             <movable>
                 <icon userpath="svg/swashplate_movable.svg"/>
-                <data port="angle" dataname="Value"/> 
+                <data port="angle" dataname="Value#Value"/> 
                 <movement x="0" y="0" a="57.3"/>
                 <start x="0" y="0" a="0"/> 
                 <resize x="0" y="0"/>
