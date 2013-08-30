@@ -669,8 +669,10 @@ void PlotCurve::setTimePlotScalingAndOffset(double scale, double offset)
 void PlotCurve::setValuePlotScalingAndOffset(double scale, double offset)
 {
     //mpData->setPlotScaleAndOffset(scale, offset);
-    mpData->setPlotOffset(offset);
     mCustomAdditionalCurveScale = scale;
+    mpData->setPlotOffset(offset);
+    //! @todo the dataChanged signal is emitted inside setPlotOffset, but this is strange since it sets teh data ofset instead of teh local curve needs fixing by /Peter
+    // offset should be local and update should be called locally
 }
 
 
