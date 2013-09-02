@@ -71,7 +71,7 @@ enum ConnectorGeometryEnumT {Vertical, Horizontal, Diagonal};
 enum RenameRestrictionEnumT {Unrestricted, CoreRenameOnly};
 enum UndoStatusEnumT {NoUndo, Undo};
 enum SaveTargetEnumT {ExistingFile, NewFile};
-enum SaveContentsEnumT {FullModel, ParametersOnly};
+enum SaveContentsEnumT {FullModel, ParametersOnly, CurrentContainerOnly};
 enum ConnectorStyleEnumT {PowerConnectorStyle, SignalConnectorStyle, BrokenConnectorStyle, UndefinedConnectorStyle};
 enum HopsanPlotIDEnumT {FirstPlot, SecondPlot};
 enum HopsanPlotCurveTypeEnumT {PortVariableType, FrequencyAnalysisType, NyquistType, BodeGainType, BodePhaseType, GeneralType};

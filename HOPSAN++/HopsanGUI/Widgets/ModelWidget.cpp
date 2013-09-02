@@ -83,7 +83,7 @@ ModelWidget::ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent)
     tempFont.setBold(true);
     pExternalSystemLabel->setFont(tempFont);
     pExternalSystemLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    QPushButton *pOpenExternalSystemButton = new QPushButton("Edit in new tab");
+    QPushButton *pOpenExternalSystemButton = new QPushButton("Load As Internal System");
     pOpenExternalSystemButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     connect(pOpenExternalSystemButton, SIGNAL(clicked()), this, SLOT(openCurrentContainerInNewTab()));
     QHBoxLayout *pExternalSystemLayout = new QHBoxLayout();
@@ -587,10 +587,15 @@ void ModelWidget::openCurrentContainerInNewTab()
         }
         else
         {
-            mpParentModelHandler->loadModel(pContainer->getModelFileInfo().filePath());
+            //mpParentModelHandler->loadModel(pContainer->getModelFileInfo().filePath());
+            pContainer->setModelFile("");
+            setEditingEnabled(true);
+            mpExternalSystemWidget->setVisible(false);
             break;
         }
     }
+
+
 }
 
 

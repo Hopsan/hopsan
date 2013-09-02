@@ -2422,7 +2422,49 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             return;
         }
 
-        mpModelWidget->saveTo(modelFilePath, FullModel);
+
+        //! @todo Duplicated code, but we cannot use code from ModelWidget, because it can only save top level system...
+        QFile file(modelFilePath);   //Create a QFile object
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+            return;
+        }
+
+        //Save xml document
+        QDomDocument domDocument;
+        QDomElement rootElement;
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+
+        // Save the required external lib names
+        QVector<QString> extLibNames;
+        CoreLibraryAccess coreLibAccess;
+        coreLibAccess.getLoadedLibNames(extLibNames);
+
+        QDomElement reqDom = appendDomElement(rootElement, "requirements");
+        for (int i=0; i<extLibNames.size(); ++i)
+        {
+            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+        }
+
+        //Save the model component hierarcy
+        this->saveToDomElement(rootElement, FullModel);
+
+        //Save to file
+        QFile xmlFile(modelFilePath);
+        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + modelFilePath);
+            return;
+        }
+        QTextStream out(&xmlFile);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        domDocument.save(out, XMLINDENTATION);
+
+        //Close the file
+        xmlFile.close();
+
+       // mpModelWidget->saveTo(modelFilePath, FullModel);
     }
 
     //Dont call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
