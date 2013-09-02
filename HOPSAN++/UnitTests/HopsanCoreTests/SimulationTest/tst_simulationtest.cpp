@@ -8,8 +8,10 @@
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary.dll"
+#define LIBEXT ".dll"
 #else
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary.so"
+#define LIBEXT ".so"
 #endif
 #endif
 
@@ -632,6 +634,7 @@ private Q_SLOTS:
         QTest::newRow("0") << mpSystemFromText->getSubComponent("TestGain")->getPort("in")->getNodePtr() << mpSystemFromText->getSubComponent("TestStep");
     }
 
+#ifdef WIN32
     void Generator_FMU_Export()
     {
         QFETCH(ComponentSystem*, system);
@@ -722,6 +725,7 @@ private Q_SLOTS:
         file.copy(QDir::currentPath()+"/simulink/unittestmodel_export.hmf");
         QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
     }
+#endif
 
     void Generator_Labview_Export()
     {
@@ -772,7 +776,7 @@ private Q_SLOTS:
         GeneratorHandler *pHandler = new GeneratorHandler();
         pHandler->callModelicaGenerator(code, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false, HString(pwd.toStdString().c_str())+"/modelica/", name);
 
-        QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(".dll")).c_str())), "Failure! Modelica generator failed to generate dll.");
+        QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(LIBEXT)).c_str())), "Failure! Modelica generator failed to generate dll.");
     }
 
     void Generator_Modelica_data()
