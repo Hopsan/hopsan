@@ -526,34 +526,36 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 
     printMessage("Writing " + comp.typeName + ".xml...");
 
-    //! @todo Fix appearance file generation without ModelObjectAppearance
     QFile xmlFile;
     xmlFile.setFileName(QString(mOutputPath)+comp.typeName+".xml");
-    if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    if(!xmlFile.exists())
     {
-        printErrorMessage("Failed to open " + comp.typeName + ".xml  for writing.");
-        return;
+        if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            printErrorMessage("Failed to open " + comp.typeName + ".xml  for writing.");
+            return;
+        }
+        QTextStream xmlStream(&xmlFile);
+        xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
+        QString sourceFile = customSourceFile;
+        if(sourceFile.isEmpty()) sourceFile = outputFile+".hpp";
+        xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\" sourcecode=\""+sourceFile+"\" libpath=\"\" recompilable=\"true\">\n";
+        xmlStream << "    <icons/>\n";
+        xmlStream << "    <ports>\n";
+        double xDelay = 1.0/(comp.portNames.size()+1.0);
+        double xPos = xDelay;
+        double yPos = 0;
+        for(int i=0; i<comp.portNames.size(); ++i)
+        {
+            xmlStream << "      <port name=\"" << comp.portNames[i] << "\" x=\"" << xPos << "\" y=\"" << yPos << "\" a=\"" << 270 << "\"/>\n";
+            xPos += xDelay;
+        }
+        xmlStream << "    </ports>\n";
+        xmlStream << "  </modelobject>\n";
+        xmlStream << "</hopsanobjectappearance>\n";
+        xmlFile.close();
     }
-    QTextStream xmlStream(&xmlFile);
-    xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
-    QString sourceFile = customSourceFile;
-    if(sourceFile.isEmpty()) sourceFile = outputFile+".hpp";
-    xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\" sourcecode=\""+sourceFile+"\" libpath=\"\" recompilable=\"true\">\n";
-    xmlStream << "    <icons/>\n";
-    xmlStream << "    <ports>\n";
-    double xDelay = 1.0/(comp.portNames.size()+1.0);
-    double xPos = xDelay;
-    double yPos = 0;
-    for(int i=0; i<comp.portNames.size(); ++i)
-    {
-        xmlStream << "      <port name=\"" << comp.portNames[i] << "\" x=\"" << xPos << "\" y=\"" << yPos << "\" a=\"" << 270 << "\"/>\n";
-        xPos += xDelay;
-    }
-    xmlStream << "    </ports>\n";
-    xmlStream << "  </modelobject>\n";
-    xmlStream << "</hopsanobjectappearance>\n";
-    xmlFile.close();
 
     QString libFileName = outputFile;
 #ifdef WIN32
