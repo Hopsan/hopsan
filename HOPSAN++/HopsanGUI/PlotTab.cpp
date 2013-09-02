@@ -317,22 +317,22 @@ void PlotTab::applyTimeScalingSettings()
 void PlotTab::openAxisSettingsDialog()
 {
     // Set values before buttons are connected to avoid triggering rescale
-    mpXminSpinBox->setValue(mXAxisLimits[FirstPlot].min);
-    mpXmaxSpinBox->setValue(mXAxisLimits[FirstPlot].max);
+    mpXminSpinBox->setText(QString("%1").arg(mXAxisLimits[FirstPlot].min));
+    mpXmaxSpinBox->setText(QString("%1").arg(mXAxisLimits[FirstPlot].max));
 
-    mpYLminSpinBox->setValue(mYLAxisLimits[FirstPlot].min);
-    mpYLmaxSpinBox->setValue(mYLAxisLimits[FirstPlot].max);
+    mpYLminSpinBox->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].min));
+    mpYLmaxSpinBox->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].max));
 
-    mpYRminSpinBox->setValue(mYRAxisLimits[FirstPlot].min);
-    mpYRmaxSpinBox->setValue(mYRAxisLimits[FirstPlot].max);
+    mpYRminSpinBox->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].min));
+    mpYRmaxSpinBox->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].max));
 
     // Connect the buttons, to adjust whenever changes are made
-    connect(mpXminSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpXmaxSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYLminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYLmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYRminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYRmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXminSpinBox,      SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXmaxSpinBox,      SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLminSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLmaxSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRminSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRmaxSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
     connect(mpXLockedCheckBox,  SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
     connect(mpYLLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
     connect(mpYRLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
@@ -419,17 +419,17 @@ void PlotTab::openTimeScalingDialog()
 void PlotTab::applyAxisSettings()
 {
     // Set the new axis limits
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
-    mXAxisLimits[FirstPlot].min = mpXminSpinBox->value();
-    mXAxisLimits[FirstPlot].max = mpXmaxSpinBox->value();
+    mXAxisLimits[FirstPlot].min = mpXminSpinBox->text().toDouble();
+    mXAxisLimits[FirstPlot].max = mpXmaxSpinBox->text().toDouble();
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mXAxisLimits[FirstPlot].min, mXAxisLimits[FirstPlot].max);
 
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
-    mYLAxisLimits[FirstPlot].min = mpYLminSpinBox->value();
-    mYLAxisLimits[FirstPlot].max = mpYLmaxSpinBox->value();
+    mYLAxisLimits[FirstPlot].min = mpYLminSpinBox->text().toDouble();
+    mYLAxisLimits[FirstPlot].max = mpYLmaxSpinBox->text().toDouble();
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mYLAxisLimits[FirstPlot].min, mYLAxisLimits[FirstPlot].max);
 
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
-    mYRAxisLimits[FirstPlot].min = mpYRminSpinBox->value();
-    mYRAxisLimits[FirstPlot].max = mpYRmaxSpinBox->value();
+    mYRAxisLimits[FirstPlot].min = mpYRminSpinBox->text().toDouble();
+    mYRAxisLimits[FirstPlot].max = mpYRmaxSpinBox->text().toDouble();
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mYRAxisLimits[FirstPlot].min, mYRAxisLimits[FirstPlot].max);
 }
 
 void PlotTab::applyAxisLabelSettings()
@@ -443,14 +443,23 @@ void PlotTab::lockAxisToCurrentLimits(bool lock)
 
     mAreAxesLocked = true;
 
-    mpXminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().left());
-    mpXmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().right()/*mXAxisLimits[FirstPlot].max*/);
+//    mpXminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().left());
+//    mpXmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().right()/*mXAxisLimits[FirstPlot].max*/);
 
-    mpYLminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().top());
-    mpYLmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().bottom());
+//    mpYLminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().top());
+//    mpYLmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().bottom());
 
-    mpYRminSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().top());
-    mpYRmaxSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().bottom());
+//    mpYRminSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().top());
+//    mpYRmaxSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().bottom());
+
+    mXAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().left();
+    mXAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().right();/*mXAxisLimits[FirstPlot].max*/
+
+    mYLAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().top();
+    mYLAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().bottom();
+
+    mYRAxisLimits[FirstPlot].min = mpZoomerRight[FirstPlot]->zoomRect().top();
+    mYRAxisLimits[FirstPlot].max = mpZoomerRight[FirstPlot]->zoomRect().bottom();
 
     mpXLockedCheckBox->setChecked(lock);
     mpYLLockedCheckBox->setChecked(lock);
@@ -2527,7 +2536,6 @@ void PlotTab::constructAxisSettingsDialog()
     mpSetAxisDialog = new QDialog(this);
     mpSetAxisDialog->setWindowTitle("Set Axis Limits");
 
-    //! @todo If these are not visible they can be bools
     mpXLockedCheckBox = new QCheckBox("Locked Limits");
     mpXLockedCheckBox->setCheckable(true);
     mpXLockedCheckBox->setChecked(false);
@@ -2538,35 +2546,26 @@ void PlotTab::constructAxisSettingsDialog()
     mpYRLockedCheckBox->setCheckable(true);
     mpYRLockedCheckBox->setChecked(false);
 
-    mpXminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpXminSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpXminSpinBox->setDecimals(10);
-    mpXminSpinBox->setSingleStep(0.1);
+    QDoubleValidator *pDoubleValidator = new QDoubleValidator(mpSetAxisDialog);
 
-    mpXmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpXmaxSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpXmaxSpinBox->setDecimals(10);
-    mpXmaxSpinBox->setSingleStep(0.1);
+    mpXminSpinBox = new QLineEdit(mpSetAxisDialog);
+    mpXminSpinBox->setValidator(pDoubleValidator);
 
-    mpYLminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYLminSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYLminSpinBox->setDecimals(10);
-    mpYLminSpinBox->setSingleStep(0.1);
+    mpXmaxSpinBox = new QLineEdit(mpSetAxisDialog);
+    mpXmaxSpinBox->setValidator(pDoubleValidator);
 
-    mpYLmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYLmaxSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYLmaxSpinBox->setDecimals(10);
-    mpYLmaxSpinBox->setSingleStep(0.1);
+    mpYLminSpinBox = new QLineEdit(mpSetAxisDialog);
+    mpYLminSpinBox->setValidator(pDoubleValidator);
 
-    mpYRminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYRminSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYRminSpinBox->setDecimals(10);
-    mpYRminSpinBox->setSingleStep(0.1);
+    mpYLmaxSpinBox = new QLineEdit(mpSetAxisDialog);
+    mpYLmaxSpinBox->setValidator(pDoubleValidator);
 
-    mpYRmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYRmaxSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYRmaxSpinBox->setDecimals(10);
-    mpYRmaxSpinBox->setSingleStep(0.1);
+    mpYRminSpinBox = new QLineEdit(mpSetAxisDialog);
+    mpYRminSpinBox->setValidator(pDoubleValidator);
+
+    mpYRmaxSpinBox = new QLineEdit(mpSetAxisDialog);
+    mpYRmaxSpinBox->setValidator(pDoubleValidator);
+
 
     QPushButton *pFinishedButton = new QPushButton("Done", mpSetAxisDialog);
     QDialogButtonBox *pFinishedButtonBox = new QDialogButtonBox(Qt::Horizontal);

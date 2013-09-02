@@ -237,12 +237,12 @@ private:
     QCheckBox *mpXLockedCheckBox;
     QCheckBox *mpYLLockedCheckBox;
     QCheckBox *mpYRLockedCheckBox;
-    QDoubleSpinBox *mpXminSpinBox;
-    QDoubleSpinBox *mpXmaxSpinBox;
-    QDoubleSpinBox *mpYLminSpinBox;
-    QDoubleSpinBox *mpYLmaxSpinBox;
-    QDoubleSpinBox *mpYRminSpinBox;
-    QDoubleSpinBox *mpYRmaxSpinBox;
+    QLineEdit *mpXminSpinBox;
+    QLineEdit *mpXmaxSpinBox;
+    QLineEdit *mpYLminSpinBox;
+    QLineEdit *mpYLmaxSpinBox;
+    QLineEdit *mpYRminSpinBox;
+    QLineEdit *mpYRmaxSpinBox;
     QDialog *mpUserDefinedLabelsDialog;
     QLineEdit *mpUserDefinedXLabel;
     QLineEdit *mpUserDefinedYlLabel;
