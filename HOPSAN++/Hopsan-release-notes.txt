@@ -4,6 +4,10 @@
 
 - See the issue-tracker (link on web page) for all known issues.
 
+- Older versions of Hopsan may crash if the configuration file is saved with a newer version. Delete the configuration file to solve this. 
+  In Windows it is usually located in: c:\Users\XXXXX\AppData\Local\Temp\Hopsan
+  In Ubuntu it is usually located in: /home/XXXXX/.local/share/data/Hopsan
+
 - On WindowsXP fonts may look strange, ex: decimal point not visible. You need to activate ClearType font smoothing in Windows:
   Desktop->Properties->Appearance->Effects
 
