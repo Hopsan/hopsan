@@ -82,7 +82,7 @@ public:
     bool isSubObjectSelected();
 
     // Alias methods
-    void setVariableAlias(QString compName, QString portName, QString varName, QString alias);
+    bool setVariableAlias(QString compName, QString portName, QString varName, QString alias);
     QString getFullNameFromAlias(const QString alias);
     QStringList getAliasNames();
 

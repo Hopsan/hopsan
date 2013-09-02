@@ -789,6 +789,13 @@ bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName
 
     //
 
+    QString comp,port,var;
+    splitConcatName(fullName, comp,port,var);
+    if(!mpParentContainerObject->setVariableAlias(comp,port,var,alias))
+    {
+        return false;
+    }
+
     LogVariableContainer *pData = mLogDataMap.value(fullName);
     if (pData)
     {
@@ -798,10 +805,6 @@ bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName
         {
             undefinePlotAlias(pData->getAliasName());
         }
-
-        QString comp,port,var;
-        splitConcatName(fullName, comp,port,var);
-        mpParentContainerObject->setVariableAlias(comp,port,var,alias);
         //! @todo instead of bool return the uniqe changed alias should be returned
         mLogDataMap.insert(alias, pData);
         pData->setAliasName(alias);

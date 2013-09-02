@@ -1278,9 +1278,11 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
     variable.remove("\"");
     QString alias = splitCmd[1];
 
-    SharedLogVariableDataPtrT pVariable = getVariablePtr(variable);
+    //SharedLogVariableDataPtrT pVariable = getVariablePtr(variable);
 
-    if(!pVariable || !gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, pVariable->getFullVariableName()))
+    QString longName = variable;
+    toLongDataNames(longName);
+    if(/*!pVariable || */!gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, longName/*pVariable->getFullVariableName()*/))
     {
         mpConsole->printErrorMessage("Failed to assign variable alias.","",false);
     }

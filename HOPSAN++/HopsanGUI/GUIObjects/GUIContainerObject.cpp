@@ -1963,10 +1963,10 @@ bool ContainerObject::isSubObjectSelected()
     return (mSelectedModelObjectsList.size() > 0);
 }
 
-void ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
+bool ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
     mpModelWidget->hasChanged();
-    getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
+    return getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
 }
 
 QString ContainerObject::getFullNameFromAlias(const QString alias)
