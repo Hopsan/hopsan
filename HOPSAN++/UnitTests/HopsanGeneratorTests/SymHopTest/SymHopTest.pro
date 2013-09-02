@@ -21,12 +21,12 @@ CONFIG(debug, debug|release) {
 
 INCLUDEPATH += $${PWD}/../../../HopsanGenerator/include/
 LIBS += -L$${PWD}/../../../bin -lHopsanGenerator$${DEBUG_EXT}
+LIBS += -L$${PWD}/../../../bin -lHopsanCore$${DEBUG_EXT}
 
 unix{
 QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 }
-
 
 SOURCES += \
     tst_symhoptest.cpp

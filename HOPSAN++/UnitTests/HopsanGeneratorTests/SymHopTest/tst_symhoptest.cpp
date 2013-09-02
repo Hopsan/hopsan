@@ -3,10 +3,10 @@
 
 using namespace SymHop;
 
-Q_DECLARE_METATYPE(Expression*);
-Q_DECLARE_METATYPE(Expression);
-Q_DECLARE_METATYPE(int);
-Q_DECLARE_METATYPE(QString);
+Q_DECLARE_METATYPE(Expression*)
+Q_DECLARE_METATYPE(Expression)
+Q_DECLARE_METATYPE(int)
+Q_DECLARE_METATYPE(QString)
 
 class SymHopTests : public QObject
 {
@@ -222,6 +222,26 @@ private Q_SLOTS:
         QTest::addColumn<Expression>("expr2");
         QTest::newRow("0") << Expression("(x+y)/(x+y^z)") << Expression("z");
         QTest::newRow("1") << Expression("sin(cos(x))") << Expression("x");
+    }
+
+    void SymHop_Derivative()
+    {
+        QFETCH(Expression, expr);
+        QFETCH(Expression, der);
+        bool ok;
+        Expression temp = expr.derivative(Expression("x"), ok);
+        QString failmsg("Failure! Expression: "+der.toString()+" != "+temp.toString());
+        QVERIFY2(temp == der, failmsg.toStdString().c_str());
+    }
+
+    void SymHop_Derivative_data()
+    {
+        QTest::addColumn<Expression>("expr");
+        QTest::addColumn<Expression>("der");
+        QTest::newRow("0") << Expression(5) << Expression(0);
+        QTest::newRow("1") << Expression("3*x") << Expression(3);
+        QTest::newRow("2") << Expression("3*x*x") << Expression("6*x");
+        QTest::newRow("3") << Expression("4*sin(2*x)") << Expression("8*cos(2*x)");
     }
 };
 

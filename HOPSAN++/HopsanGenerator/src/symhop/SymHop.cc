@@ -129,15 +129,16 @@ Expression::Expression(const double value)
         this->replaceBy(Expression::fromTwoFactors(Expression("-1"), Expression(-1*value)));
         return;
     }
-    mString = QString::number(value);
+    mString = QString::number(value, 'f', 20);
 
     //Make sure numerical symbols have double precision
-    bool isInt;
-    mString.toInt(&isInt);
-    if(isInt && !mString.contains("."))
-    {
-        mString.append(".0");
-    }
+//    bool isInt;
+//    mString.toInt(&isInt);
+//    if(isInt)
+//    {
+//        //mString.append(".0");
+//        mString = QString::number(mString.toDouble(), 'f', 20);
+//    }
 }
 
 //! @brief Common constructor code that constructs an Expression from a string list
@@ -953,14 +954,14 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 
             delayTerm.factorMostCommonFactor();
 
-            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size())+".getIdx", QList<Expression>() << Expression(1)));
+            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size(), 'f', 20)+".getIdx", QList<Expression>() << Expression(1)));
 
-            QString term = "mDelay"+QString::number(rDelayTerms.size())+".getIdx(1.0)";
+            QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20);+".getIdx(1.0)";
             ret.append(term);
             ret.append("+");
 
             rDelayTerms.append(delayTerm);
-            rDelaySteps.append(QString::number(i));
+            rDelaySteps.append(QString::number(i, 'f', 20));
         }
     }
     for(int t=0; t<termMap[0].size(); ++t)
@@ -2149,7 +2150,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
 
         if(mFactors.size() == 1 && mDivisors.isEmpty()) { replaceBy(mFactors.first()); }
 
-        if(mFactors.contains(Expression("0"))) { replaceBy(Expression(0.0)); }    //Replace "0*x" and "x*0" with "0.0"
+        if(mFactors.contains(Expression(0))) { replaceBy(Expression(0)); }    //Replace "0*x" and "x*0" with "0.0"
 
         int nNeg = mFactors.count(Expression("-1"))+mDivisors.count(Expression("-1"));        //Remove unnecessary negatives
         if(nNeg > 1)
@@ -2175,10 +2176,10 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
 
 
-        mTerms.removeAll(Expression("0.0"));
+        mTerms.removeAll(Expression(0));
         if(mTerms.isEmpty())
         {
-            replaceBy(Expression("0.0"));
+            replaceBy(Expression(0));
         }
 
         //Join all similar terms together (i.e. replace "2*x+x+x+y" with "4*x+y")
@@ -2217,7 +2218,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
             if(mpBase->isNumericalSymbol() && mpPower->isNumericalSymbol())
             {
                 double value = pow(mpBase->toDouble(),mpPower->toDouble());
-                this->replaceBy(Expression(QString::number(value)));
+                this->replaceBy(Expression(QString::number(value, 'f', 20)));
             }
         }
     }
@@ -2245,7 +2246,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
         if(foundOne)
         {
-            mTerms << Expression(QString::number(value));
+            mTerms << Expression(QString::number(value, 'f', 20));
         }
 
         mTerms.removeAll(Expression("0.0"));
@@ -2294,7 +2295,8 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
         if(foundOne)
         {
-            mFactors << Expression(QString::number(value, 'f', 20));
+            QString str = QString::number(value, 'f', 20);
+            mFactors << Expression(str);
             this->replaceBy(Expression::fromFactorsDivisors(mFactors, mDivisors));
         }
 
