@@ -345,6 +345,9 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
             pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
         }
 
+        // We do not want imported data to be removed automatically
+        preventGenerationAutoRemoval(mGenerationNumber);
+
         emit newDataAvailable();
     }
 
@@ -406,6 +409,9 @@ void LogDataHandler::importFromCsv(QString rImportFilePath)
 
             /*SharedLogVariableDataPtrT pNewData = */insertVariableBasedOnDescription(varDesc, timeVecPtr, data[i]);
         }
+
+        // We do not want imported data to be removed automatically
+        preventGenerationAutoRemoval(mGenerationNumber);
 
         emit newDataAvailable();
     }
@@ -470,6 +476,9 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
             }
 
             csvFile.close();
+
+            // We do not want imported data to be removed automatically
+            preventGenerationAutoRemoval(mGenerationNumber);
 
             emit newDataAvailable();
         }
@@ -917,11 +926,11 @@ void LogDataHandler::preventGenerationAutoRemoval(const int gen)
         dit.value()->preventAutoRemove(gen);
     }
 
-    // Remember generation to keep
-    if (!mKeepGenerationsList.contains(gen))
-    {
-        mKeepGenerationsList.prepend(gen);
-    }
+//    // Remember generation to keep
+//    if (!mKeepGenerationsList.contains(gen))
+//    {
+//        mKeepGenerationsList.prepend(gen);
+//    }
 }
 
 void LogDataHandler::allowGenerationAutoRemoval(const int gen)
@@ -933,8 +942,8 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
         dit.value()->allowAutoRemove(gen);
     }
 
-    // Remove generation to keep
-    mKeepGenerationsList.removeOne(gen);
+//    // Remove generation to keep
+//    mKeepGenerationsList.removeOne(gen);
 }
 
 ContainerObject *LogDataHandler::getParentContainerObject()
@@ -1642,13 +1651,13 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
             tookOwnershipOfSomeData = true;
         }
 
-        // Take ownership of keep generation list contents
-        if (pOtherHandler->mKeepGenerationsList.contains(generation))
-        {
-            mKeepGenerationsList.append(mGenerationNumber);
-            pOtherHandler->mKeepGenerationsList.removeOne(generation);
-            tookOwnershipOfSomeData=true;
-        }
+//        // Take ownership of keep generation list contents
+//        if (pOtherHandler->mKeepGenerationsList.contains(generation))
+//        {
+//            mKeepGenerationsList.append(mGenerationNumber);
+//            pOtherHandler->mKeepGenerationsList.removeOne(generation);
+//            tookOwnershipOfSomeData=true;
+//        }
 
         // Take the data, and only increment this->mGeneration if data was taken
         LogDataMapT::iterator odit; //odit = OtherDataIterator

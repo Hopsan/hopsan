@@ -171,7 +171,7 @@ private:
 
     FavoriteListT mFavoriteVariables;
     QMap<int, SharedMultiDataVectorCacheT> mGenerationCacheMap;
-    QList<int> mKeepGenerationsList;
+    //QList<int> mKeepGenerationsList;
 
     int mnPlotCurves;
     int mGenerationNumber;
