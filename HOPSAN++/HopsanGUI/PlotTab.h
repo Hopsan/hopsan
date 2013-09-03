@@ -149,6 +149,7 @@ public slots:
     void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
 
 private slots:
+    void setAxisLimitsFromZoom();
     QString updateXmlOutputTextInDialog();
     void saveToXml();
 
@@ -237,12 +238,12 @@ private:
     QCheckBox *mpXLockedCheckBox;
     QCheckBox *mpYLLockedCheckBox;
     QCheckBox *mpYRLockedCheckBox;
-    QLineEdit *mpXminSpinBox;
-    QLineEdit *mpXmaxSpinBox;
-    QLineEdit *mpYLminSpinBox;
-    QLineEdit *mpYLmaxSpinBox;
-    QLineEdit *mpYRminSpinBox;
-    QLineEdit *mpYRmaxSpinBox;
+    QLineEdit *mpXminLineEdit;
+    QLineEdit *mpXmaxLineEdit;
+    QLineEdit *mpYLminLineEdit;
+    QLineEdit *mpYLmaxLineEdit;
+    QLineEdit *mpYRminLineEdit;
+    QLineEdit *mpYRmaxLineEdit;
     QDialog *mpUserDefinedLabelsDialog;
     QLineEdit *mpUserDefinedXLabel;
     QLineEdit *mpUserDefinedYlLabel;
@@ -252,7 +253,7 @@ private:
 
     // Time scaling member variables
     QComboBox *mpTimeScaleComboBox;
-    QDoubleSpinBox *mpTimeOffsetSpinBox;
+    QLineEdit *mpTimeOffsetLineEdit;
 
     typedef struct _AxisLimits // Persistent axis limits
     {

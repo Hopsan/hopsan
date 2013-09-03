@@ -106,6 +106,11 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
         mpZoomerLeft[plotID]->setEnabled(false);
+        if (plotID == FirstPlot)
+        {
+            connect(mpZoomerLeft[plotID], SIGNAL(zoomed(QRectF)), this, SLOT(setAxisLimitsFromZoom()));
+        }
+
 
         mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpQwtPlots[plotID]->canvas());   //Zoomer for right y axis
         mpZoomerRight[plotID]->setMaxStackDepth(10000);
@@ -292,7 +297,7 @@ void PlotTab::applyTimeScalingSettings()
 
     //! @todo this will only affect the generation for the first curve
     mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
-    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setPlotOffset(mpTimeOffsetSpinBox->value());
+    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setPlotOffset(mpTimeOffsetLineEdit->text().toDouble());
     //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
 
     //! @todo offset step size should follow scale change to make more sense, (when you click the spinbox), also for ydata scaling
@@ -317,22 +322,22 @@ void PlotTab::applyTimeScalingSettings()
 void PlotTab::openAxisSettingsDialog()
 {
     // Set values before buttons are connected to avoid triggering rescale
-    mpXminSpinBox->setText(QString("%1").arg(mXAxisLimits[FirstPlot].min));
-    mpXmaxSpinBox->setText(QString("%1").arg(mXAxisLimits[FirstPlot].max));
+    mpXminLineEdit->setText(QString("%1").arg(mXAxisLimits[FirstPlot].min));
+    mpXmaxLineEdit->setText(QString("%1").arg(mXAxisLimits[FirstPlot].max));
 
-    mpYLminSpinBox->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].min));
-    mpYLmaxSpinBox->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].max));
+    mpYLminLineEdit->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].min));
+    mpYLmaxLineEdit->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].max));
 
-    mpYRminSpinBox->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].min));
-    mpYRmaxSpinBox->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].max));
+    mpYRminLineEdit->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].min));
+    mpYRmaxLineEdit->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].max));
 
     // Connect the buttons, to adjust whenever changes are made
-    connect(mpXminSpinBox,      SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
-    connect(mpXmaxSpinBox,      SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYLminSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYLmaxSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYRminSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
-    connect(mpYRmaxSpinBox,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXminLineEdit,      SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXmaxLineEdit,      SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLminLineEdit,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLmaxLineEdit,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRminLineEdit,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRmaxLineEdit,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
     connect(mpXLockedCheckBox,  SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
     connect(mpYLLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
     connect(mpYRLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
@@ -340,12 +345,12 @@ void PlotTab::openAxisSettingsDialog()
     mpSetAxisDialog->exec();
 
     // Disconnect the buttons again to prevent triggering apply when data is changed in code
-    disconnect(mpXminSpinBox,      0, 0, 0);
-    disconnect(mpXmaxSpinBox,      0, 0, 0);
-    disconnect(mpYLminSpinBox,     0, 0, 0);
-    disconnect(mpYLmaxSpinBox,     0, 0, 0);
-    disconnect(mpYRminSpinBox,     0, 0, 0);
-    disconnect(mpYRmaxSpinBox,     0, 0, 0);
+    disconnect(mpXminLineEdit,      0, 0, 0);
+    disconnect(mpXmaxLineEdit,      0, 0, 0);
+    disconnect(mpYLminLineEdit,     0, 0, 0);
+    disconnect(mpYLmaxLineEdit,     0, 0, 0);
+    disconnect(mpYRminLineEdit,     0, 0, 0);
+    disconnect(mpYRmaxLineEdit,     0, 0, 0);
     disconnect(mpXLockedCheckBox,  0, 0, 0);
     disconnect(mpYLLockedCheckBox, 0, 0, 0);
     disconnect(mpYRLockedCheckBox, 0, 0, 0);
@@ -364,71 +369,65 @@ void PlotTab::openTimeScalingDialog()
     QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
     mpTimeScaleComboBox = new QComboBox(pScaleDialog);
     QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
-    mpTimeOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpTimeOffsetSpinBox->setDecimals(10);
-    mpTimeOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpTimeOffsetSpinBox->setSingleStep(0.1);
+    mpTimeOffsetLineEdit = new QLineEdit(pScaleDialog);
+    mpTimeOffsetLineEdit->setValidator(new QDoubleValidator(pScaleDialog));
 
-//    if (mpData->getSharedTimePointer())
-//    {
-    //! @todo would be nice if we ould sort on scale size
-        QMap<QString,double> units = gConfig.getCustomUnits(TIMEVARIABLENAME);
-        QString currUnit = extractBetweenFromQString(mpQwtPlots[0]->axisTitle(QwtPlot::xBottom).text(), '[', ']');
-        QMap<QString,double>::iterator it;
-        int ctr=0;
-        for (it = units.begin(); it != units.end(); ++it)
+    //! @todo what if generation does not have time
+    //! @todo would be nice if we could sort on scale size
+    QMap<QString,double> units = gConfig.getCustomUnits(TIMEVARIABLENAME);
+    QString currUnit = extractBetweenFromQString(mpQwtPlots[0]->axisTitle(QwtPlot::xBottom).text(), '[', ']');
+    QMap<QString,double>::iterator it;
+    int ctr=0;
+    for (it = units.begin(); it != units.end(); ++it)
+    {
+        mpTimeScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
+        if (currUnit == it.key())
         {
-            mpTimeScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
-            if (currUnit == it.key())
-            {
-                mpTimeScaleComboBox->setCurrentIndex(ctr);
-            }
-            ++ctr;
+            mpTimeScaleComboBox->setCurrentIndex(ctr);
         }
+        ++ctr;
+    }
 
-        //! @todo offset
-        //mpTimeOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
-//    }
-//    else
-//    {
-//        mpTimeScaleComboBox->setCurrentIndex(0);
-//        mpTimeScaleComboBox->setEnabled(false);
-//        mpTimeOffsetSpinBox->setValue(0);
-//        mpTimeOffsetSpinBox->setEnabled(false);
-//    }
+    //! @todo This should be one per generation
+    if (mPlotCurvePtrs[FirstPlot].size() > 0)
+    {
+        mpTimeOffsetLineEdit->setText(QString("%1").arg(mPlotCurvePtrs[FirstPlot][0]->getLogDataVariablePtr()->getPlotOffset()));
+    }
 
-        QPushButton *pDoneButton = new QPushButton("Close", pScaleDialog);
-        QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-        pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
 
-        QGridLayout *pGridLayout = new QGridLayout(pScaleDialog);
-        pGridLayout->addWidget(pXScaleLabel, 0, 0);
-        pGridLayout->addWidget(mpTimeScaleComboBox, 0, 1);
-        pGridLayout->addWidget(pXOffsetLabel, 1, 0);
-        pGridLayout->addWidget(mpTimeOffsetSpinBox, 1, 1);
-        pGridLayout->addWidget(pButtonBox, 2, 1);
+    QPushButton *pDoneButton = new QPushButton("Close", pScaleDialog);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
 
-        connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
-        connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(applyTimeScalingSettings()));
-        connect(mpTimeOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(applyTimeScalingSettings()));
+    QGridLayout *pGridLayout = new QGridLayout(pScaleDialog);
+    pGridLayout->addWidget(pXScaleLabel, 0, 0);
+    pGridLayout->addWidget(mpTimeScaleComboBox, 0, 1);
+    pGridLayout->addWidget(pXOffsetLabel, 1, 0);
+    pGridLayout->addWidget(mpTimeOffsetLineEdit, 1, 1);
+    pGridLayout->addWidget(pButtonBox, 2, 1);
 
-        pScaleDialog->show();
+    connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
+    connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(applyTimeScalingSettings()));
+    connect(mpTimeOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(applyTimeScalingSettings()));
+
+    pScaleDialog->show();
+    //! @todo is the dialog ever removed
 }
 
 //! @todo currently only supports settings axis for top plot
 void PlotTab::applyAxisSettings()
 {
     // Set the new axis limits
-    mXAxisLimits[FirstPlot].min = mpXminSpinBox->text().toDouble();
-    mXAxisLimits[FirstPlot].max = mpXmaxSpinBox->text().toDouble();
+    mXAxisLimits[FirstPlot].min = mpXminLineEdit->text().toDouble();
+    mXAxisLimits[FirstPlot].max = mpXmaxLineEdit->text().toDouble();
     this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mXAxisLimits[FirstPlot].min, mXAxisLimits[FirstPlot].max);
 
-    mYLAxisLimits[FirstPlot].min = mpYLminSpinBox->text().toDouble();
-    mYLAxisLimits[FirstPlot].max = mpYLmaxSpinBox->text().toDouble();
+    mYLAxisLimits[FirstPlot].min = mpYLminLineEdit->text().toDouble();
+    mYLAxisLimits[FirstPlot].max = mpYLmaxLineEdit->text().toDouble();
     this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mYLAxisLimits[FirstPlot].min, mYLAxisLimits[FirstPlot].max);
 
-    mYRAxisLimits[FirstPlot].min = mpYRminSpinBox->text().toDouble();
-    mYRAxisLimits[FirstPlot].max = mpYRmaxSpinBox->text().toDouble();
+    mYRAxisLimits[FirstPlot].min = mpYRminLineEdit->text().toDouble();
+    mYRAxisLimits[FirstPlot].max = mpYRmaxLineEdit->text().toDouble();
     this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mYRAxisLimits[FirstPlot].min, mYRAxisLimits[FirstPlot].max);
 }
 
@@ -437,35 +436,27 @@ void PlotTab::applyAxisLabelSettings()
     updateLabels();
 }
 
+//! @todo currently only supports settings axis for top plot
 void PlotTab::lockAxisToCurrentLimits(bool lock)
 {
     qDebug() << "Lock = " << lock;
-
-    mAreAxesLocked = true;
-
-//    mpXminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().left());
-//    mpXmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().right()/*mXAxisLimits[FirstPlot].max*/);
-
-//    mpYLminSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().top());
-//    mpYLmaxSpinBox->setValue(mpZoomerLeft[FirstPlot]->zoomRect().bottom());
-
-//    mpYRminSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().top());
-//    mpYRmaxSpinBox->setValue(mpZoomerRight[FirstPlot]->zoomRect().bottom());
-
-    mXAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().left();
-    mXAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().right();/*mXAxisLimits[FirstPlot].max*/
-
-    mYLAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().top();
-    mYLAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().bottom();
-
-    mYRAxisLimits[FirstPlot].min = mpZoomerRight[FirstPlot]->zoomRect().top();
-    mYRAxisLimits[FirstPlot].max = mpZoomerRight[FirstPlot]->zoomRect().bottom();
 
     mpXLockedCheckBox->setChecked(lock);
     mpYLLockedCheckBox->setChecked(lock);
     mpYRLockedCheckBox->setChecked(lock);
 
-    applyAxisSettings();
+    // Remember current axis limit and set them to the axis
+    mXAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().left();
+    mXAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().right();
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mXAxisLimits[FirstPlot].min, mXAxisLimits[FirstPlot].max);
+
+    mYLAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().top();
+    mYLAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().bottom();
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mYLAxisLimits[FirstPlot].min, mYLAxisLimits[FirstPlot].max);
+
+    mYRAxisLimits[FirstPlot].min = mpZoomerRight[FirstPlot]->zoomRect().top();
+    mYRAxisLimits[FirstPlot].max = mpZoomerRight[FirstPlot]->zoomRect().bottom();
+    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mYRAxisLimits[FirstPlot].min, mYRAxisLimits[FirstPlot].max);
 
     mAreAxesLocked=lock;
 }
@@ -2052,6 +2043,31 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos, bool movable)
     pMarker->setMovable(movable);
 }
 
+void PlotTab::setAxisLimitsFromZoom()
+{
+    // If we are at zoom-level then set from zoom
+    if (isZoomed(FirstPlot))
+    {
+        QRectF leftRect = mpZoomerLeft[FirstPlot]->zoomRect();
+        QRectF rightRect = mpZoomerRight[FirstPlot]->zoomRect();
+
+        mXAxisLimits[FirstPlot].min = leftRect.bottomLeft().x();
+        mXAxisLimits[FirstPlot].max = leftRect.bottomRight().x();
+
+        //! @todo the y coords seem to be inverted
+        mYLAxisLimits[FirstPlot].max = leftRect.bottomLeft().y();
+        mYLAxisLimits[FirstPlot].min = leftRect.topLeft().y();
+
+        mYRAxisLimits[FirstPlot].max = rightRect.bottomRight().y();
+        mYRAxisLimits[FirstPlot].min = rightRect.topRight().y();
+    }
+    // If we are back at original zoom, then rescale in case curves were added to a disabled axis during zoomed state
+    else
+    {
+        rescaleAxesToCurves();
+    }
+}
+
 
 //! @brief Saves the current tab to a DOM element (XML)
 //! @param rDomElement Reference to the dom element to save to
@@ -2548,23 +2564,23 @@ void PlotTab::constructAxisSettingsDialog()
 
     QDoubleValidator *pDoubleValidator = new QDoubleValidator(mpSetAxisDialog);
 
-    mpXminSpinBox = new QLineEdit(mpSetAxisDialog);
-    mpXminSpinBox->setValidator(pDoubleValidator);
+    mpXminLineEdit = new QLineEdit(mpSetAxisDialog);
+    mpXminLineEdit->setValidator(pDoubleValidator);
 
-    mpXmaxSpinBox = new QLineEdit(mpSetAxisDialog);
-    mpXmaxSpinBox->setValidator(pDoubleValidator);
+    mpXmaxLineEdit = new QLineEdit(mpSetAxisDialog);
+    mpXmaxLineEdit->setValidator(pDoubleValidator);
 
-    mpYLminSpinBox = new QLineEdit(mpSetAxisDialog);
-    mpYLminSpinBox->setValidator(pDoubleValidator);
+    mpYLminLineEdit = new QLineEdit(mpSetAxisDialog);
+    mpYLminLineEdit->setValidator(pDoubleValidator);
 
-    mpYLmaxSpinBox = new QLineEdit(mpSetAxisDialog);
-    mpYLmaxSpinBox->setValidator(pDoubleValidator);
+    mpYLmaxLineEdit = new QLineEdit(mpSetAxisDialog);
+    mpYLmaxLineEdit->setValidator(pDoubleValidator);
 
-    mpYRminSpinBox = new QLineEdit(mpSetAxisDialog);
-    mpYRminSpinBox->setValidator(pDoubleValidator);
+    mpYRminLineEdit = new QLineEdit(mpSetAxisDialog);
+    mpYRminLineEdit->setValidator(pDoubleValidator);
 
-    mpYRmaxSpinBox = new QLineEdit(mpSetAxisDialog);
-    mpYRmaxSpinBox->setValidator(pDoubleValidator);
+    mpYRmaxLineEdit = new QLineEdit(mpSetAxisDialog);
+    mpYRmaxLineEdit->setValidator(pDoubleValidator);
 
 
     QPushButton *pFinishedButton = new QPushButton("Done", mpSetAxisDialog);
@@ -2579,10 +2595,10 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("Left Y Axis")),r,c,1,2, Qt::AlignCenter);
     ++r;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpYLmaxSpinBox, r, c+1);
+    pAxisLimitsDialogLayout->addWidget(mpYLmaxLineEdit, r, c+1);
     ++r;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpYLminSpinBox, r, c+1);
+    pAxisLimitsDialogLayout->addWidget(mpYLminLineEdit, r, c+1);
     ++r;
     pAxisLimitsDialogLayout->addWidget(mpYLLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
     pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
@@ -2591,21 +2607,21 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("Right Y Axis")),r,c,1,2, Qt::AlignCenter);
     ++r;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpYRmaxSpinBox, r, c+1);
+    pAxisLimitsDialogLayout->addWidget(mpYRmaxLineEdit, r, c+1);
     ++r;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpYRminSpinBox, r, c+1);
+    pAxisLimitsDialogLayout->addWidget(mpYRminLineEdit, r, c+1);
     ++r;
     pAxisLimitsDialogLayout->addWidget(mpYRLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
 
     r=3,c=3;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("X Axis")),r,c,1,2, Qt::AlignCenter);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpXmaxSpinBox, r, c+1);
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c+1, Qt::AlignCenter);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpXminSpinBox, r, c+1);
+    pAxisLimitsDialogLayout->addWidget(mpXminLineEdit, r, c);
+    pAxisLimitsDialogLayout->addWidget(mpXmaxLineEdit, r, c+1);
     ++r;
     pAxisLimitsDialogLayout->addWidget(mpXLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
     pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
