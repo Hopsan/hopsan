@@ -604,14 +604,10 @@ bool PlotCurve::setGeneration(int generation)
         updatePlotInfoBox();
         mpParentPlotTab->update();
 
-        if(!mpParentPlotTab->areAxesLocked())
-        {
+//        if(!mpParentPlotTab->areAxesLocked())
+//        {
             mpParentPlotTab->resetZoom();
-//            mpParentPlotTab->mpZoomerLeft[FirstPlot]->zoom(0);
-//            mpParentPlotTab->mpZoomerRight[FirstPlot]->zoom(0);
-//            mpParentPlotTab->mpZoomerLeft[SecondPlot]->zoom(0);
-//            mpParentPlotTab->mpZoomerRight[SecondPlot]->zoom(0);
-        }
+//        }
 
         return true;
     }
@@ -1099,26 +1095,14 @@ void PlotCurve::openScaleDialog()
     pCurveUnitScaleUnit->setText(mCustomCurveDataUnit);
 
     QLabel *pYScaleLabel = new QLabel("Custom Curve Scale: ", pScaleDialog);
-    mpYScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpYScaleSpinBox->setSingleStep(0.1);
-    mpYScaleSpinBox->setDecimals(10);
-    mpYScaleSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYScaleSpinBox->setValue(mCustomAdditionalCurveScale);
+    mpYCustomScaleLineEdit = new QLineEdit(pScaleDialog);
+    mpYCustomScaleLineEdit->setValidator(new QDoubleValidator(mpYCustomScaleLineEdit));
+    mpYCustomScaleLineEdit->setText(QString("%1").arg(mCustomAdditionalCurveScale));
 
     QLabel *pYOffsetLabel = new QLabel("Data Offset: ", pScaleDialog);
-    mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpYOffsetSpinBox->setDecimals(10);
-    mpYOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYOffsetSpinBox->setSingleStep(0.1);
-    if (mpData->getSharedTimePointer())
-    {
-        mpYOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
-    }
-    else
-    {
-        mpYOffsetSpinBox->setValue(0);
-        mpYOffsetSpinBox->setEnabled(false);
-    }
+    mpYCustomOffsetLineEdit = new QLineEdit(pScaleDialog);
+    mpYCustomOffsetLineEdit->setValidator(new QDoubleValidator(mpYCustomOffsetLineEdit));
+    mpYCustomOffsetLineEdit->setText(QString("%1").arg(mpData->getPlotOffset()));
 
     QPushButton *pDoneButton = new QPushButton("Done", pScaleDialog);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -1136,18 +1120,25 @@ void PlotCurve::openScaleDialog()
     pDialogLayout->addWidget(pCurveUnitScale,1,1);
     pDialogLayout->addWidget(pCurveUnitScaleUnit,1,2);
     pDialogLayout->addWidget(pYScaleLabel,2,0);
-    pDialogLayout->addWidget(mpYScaleSpinBox,2,1);
+    pDialogLayout->addWidget(mpYCustomScaleLineEdit,2,1);
     pDialogLayout->addWidget(pYOffsetLabel,3,0);
-    pDialogLayout->addWidget(mpYOffsetSpinBox,3,1);
+    pDialogLayout->addWidget(mpYCustomOffsetLineEdit,3,1);
     pDialogLayout->addWidget(pButtonBox,4,0,1,2);
     pScaleDialog->setLayout(pDialogLayout);
-    pScaleDialog->show();
+
 
     connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
 //    connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateTimePlotScaleFromDialog()));
 //    connect(mpTimeOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
-    connect(mpYScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
-    connect(mpYOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
+    connect(mpYCustomScaleLineEdit, SIGNAL(textChanged(QString)), SLOT(updateValuePlotScaleFromDialog()));
+    connect(mpYCustomOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(updateValuePlotScaleFromDialog()));
+
+    pScaleDialog->exec();
+    //! @todo is the dialog ever deleted ?
+
+    // Disconnect again to avoid triggering value update the next time the dialog is built
+    disconnect(mpYCustomScaleLineEdit, 0, 0, 0);
+    disconnect(mpYCustomOffsetLineEdit, 0, 0, 0);
 }
 
 
@@ -1176,7 +1167,7 @@ void PlotCurve::updateTimePlotScaleFromDialog()
 
 void PlotCurve::updateValuePlotScaleFromDialog()
 {
-    setValuePlotScalingAndOffset(mpYScaleSpinBox->value(), mpYOffsetSpinBox->value());
+    setValuePlotScalingAndOffset(mpYCustomScaleLineEdit->text().toDouble(), mpYCustomOffsetLineEdit->text().toDouble());
 }
 
 

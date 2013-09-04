@@ -214,8 +214,8 @@ private:
     int mAxisY;
     QComboBox *mpTimeScaleComboBox;
     QDoubleSpinBox *mpTimeOffsetSpinBox;
-    QDoubleSpinBox *mpYScaleSpinBox;
-    QDoubleSpinBox *mpYOffsetSpinBox;
+    QLineEdit *mpYCustomScaleLineEdit;
+    QLineEdit *mpYCustomOffsetLineEdit;
     PlotTab *mpParentPlotTab;
 
     // Line properties

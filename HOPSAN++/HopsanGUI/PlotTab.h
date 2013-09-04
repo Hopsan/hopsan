@@ -57,6 +57,31 @@ class PainterWidget;
 
 enum PlotTabZOrderT {GridLinesZOrderType, LegendBelowCurveZOrderType, CurveZOrderType, ActiveCurveZOrderType, LegendAboveCurveZOrderType, CurveMarkerZOrderType};
 
+class HopQwtInterval : public QwtInterval
+{
+public:
+    HopQwtInterval( double minValue, double maxValue ) : QwtInterval(minValue, maxValue) {}
+    void extendMin(const double value);
+    void extendMax(const double value);
+
+    HopQwtInterval&operator=( const QwtInterval& rhs )
+    {
+        setInterval(rhs.minValue(), rhs.maxValue(), rhs.borderFlags());
+        return *this;
+    }
+};
+
+class HopQwtPlot : public QwtPlot
+{
+    Q_OBJECT
+public:
+    HopQwtPlot(QWidget *pParent) : QwtPlot(pParent) {}
+public slots:
+    void replot();
+signals:
+    void afterReplot();
+};
+
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
 {
@@ -91,8 +116,6 @@ public:
     bool hasLogarithmicBottomAxis();
     bool isZoomed(const int plotId) const;
 
-    bool areAxesLocked();
-
     void showPlot(HopsanPlotIDEnumT plotID, bool visible);
     void setBottomAxisLogarithmic(bool value);
     void setLegendsVisible(bool value);
@@ -115,7 +138,7 @@ protected:
 
 public slots:
     void rescaleAxesToCurves();
-    void lockAxisToCurrentLimits(bool lock);
+    void toggleAxisLock();
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
@@ -137,10 +160,8 @@ public slots:
     void exportToHvc(QString fileName="");
     void exportToMatlab();
     void exportToGnuplot();
-    //void exportToPdf();
     void exportToGraphics();
     void exportToOldHop();
-    //void exportToPng();
 
     void shiftAllGenerationsDown();
     void shiftAllGenerationsUp();
@@ -149,9 +170,10 @@ public slots:
     void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
 
 private slots:
-    void setAxisLimitsFromZoom();
     QString updateXmlOutputTextInDialog();
     void saveToXml();
+    void refreshLockCheckBoxPositions();
+    void axisLockHandler();
 
     void exportImage();
     void changedGraphicsExportSettings();
@@ -170,7 +192,7 @@ private:
 
     QScrollArea *mpCurveInfoScrollArea;
 
-    QwtPlot *mpQwtPlots[2];
+    HopQwtPlot *mpQwtPlots[2];
     QList<PlotCurve *> mPlotCurvePtrs[2];
     quint32 mNumYlCurves[2];
     quint32 mNumYrCurves[2];
@@ -232,12 +254,15 @@ private:
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
     bool mBottomAxisLogarithmic;
+    QCheckBox *mpXLockCheckBox;
+    QCheckBox *mpYLLockCheckBox;
+    QCheckBox *mpYRLockCheckBox;
 
     // Axis settings related member variables
     QDialog *mpSetAxisDialog;
-    QCheckBox *mpXLockedCheckBox;
-    QCheckBox *mpYLLockedCheckBox;
-    QCheckBox *mpYRLockedCheckBox;
+    QCheckBox *mpXLockDialogCheckBox;
+    QCheckBox *mpYLLockDialogCheckBox;
+    QCheckBox *mpYRLockDialogCheckBox;
     QLineEdit *mpXminLineEdit;
     QLineEdit *mpXmaxLineEdit;
     QLineEdit *mpYLminLineEdit;
@@ -249,21 +274,12 @@ private:
     QLineEdit *mpUserDefinedYlLabel;
     QLineEdit *mpUserDefinedYrLabel;
     QCheckBox *mpUserDefinedLabelsCheckBox;
-    bool mAreAxesLocked;
 
     // Time scaling member variables
     QComboBox *mpTimeScaleComboBox;
     QLineEdit *mpTimeOffsetLineEdit;
 
-    typedef struct _AxisLimits // Persistent axis limits
-    {
-        double min, max;
-    }AxisLimitsT;
-    AxisLimitsT mXAxisLimits[2];
-    AxisLimitsT mYLAxisLimits[2];
-    AxisLimitsT mYRAxisLimits[2];
-
-    void rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, AxisLimitsT &rAxisLimits);
+    void rescaleAxisLimitsToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
     void calculateLegendBufferOffsets(const int plotId, const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
 };
 

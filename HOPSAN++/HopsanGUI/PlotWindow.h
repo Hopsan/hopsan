@@ -155,7 +155,7 @@ private:
     //QAction *mpExportPngAction;
     QAction *mpExportToGraphicsAction;
     QAction *mpLocktheAxis;
-    QAction *mpLockAxisToCurrentLimitsButton;
+    QAction *mpToggleAxisLockButton;
     QAction *mpOpentimeScaleDialog;
 
     QDockWidget *mpCurveInfoDock;

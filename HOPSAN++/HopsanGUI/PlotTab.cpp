@@ -72,7 +72,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mRightAxisLogarithmic = false;
     mBottomAxisLogarithmic = false;
     mIsSpecialPlot = false;
-    mAreAxesLocked = false;
 
     mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
     for(int i=0; i<mCurveColors.size(); ++i)
@@ -83,7 +82,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     for(int plotID=0; plotID<2; ++plotID)
     {
         // Plots
-        mpQwtPlots[plotID] = new QwtPlot(this);
+        mpQwtPlots[plotID] = new HopQwtPlot(this);
         mpQwtPlots[plotID]->setMouseTracking(true);
         mpQwtPlots[plotID]->setAcceptDrops(false);
         mpQwtPlots[plotID]->setCanvasBackground(QColor(Qt::white));
@@ -106,11 +105,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
         mpZoomerLeft[plotID]->setEnabled(false);
-        if (plotID == FirstPlot)
-        {
-            connect(mpZoomerLeft[plotID], SIGNAL(zoomed(QRectF)), this, SLOT(setAxisLimitsFromZoom()));
-        }
-
 
         mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpQwtPlots[plotID]->canvas());   //Zoomer for right y axis
         mpZoomerRight[plotID]->setMaxStackDepth(10000);
@@ -130,6 +124,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpMagnifier[plotID]->setMouseButton(Qt::NoButton, Qt::NoModifier);
         mpMagnifier[plotID]->setEnabled(true);
 
+        // Grid
         mpGrid[plotID] = new QwtPlotGrid;
         mpGrid[plotID]->enableXMin(true);
         mpGrid[plotID]->enableYMin(true);
@@ -142,6 +137,24 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mNumYlCurves[plotID] = 0;
         mNumYrCurves[plotID] = 0;
     }
+
+    // Attach lock boxes to first plot
+    mpXLockCheckBox = new QCheckBox(mpQwtPlots[FirstPlot]->axisWidget(QwtPlot::xBottom));
+    mpXLockCheckBox->setCheckable(true);
+    mpXLockCheckBox->setToolTip("Lock the x-axis");
+    mpYLLockCheckBox = new QCheckBox(mpQwtPlots[FirstPlot]->axisWidget(QwtPlot::yLeft));
+    mpYLLockCheckBox->setCheckable(true);
+    mpYLLockCheckBox->setToolTip("Lock the left y-axis");
+    mpYRLockCheckBox = new QCheckBox(mpQwtPlots[FirstPlot]->axisWidget(QwtPlot::yRight));
+    mpYRLockCheckBox->setCheckable(true);
+    mpYRLockCheckBox->setToolTip("Lock the right y-axis");
+    connect(mpXLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(axisLockHandler()));
+    connect(mpYLLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(axisLockHandler()));
+    connect(mpYRLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(axisLockHandler()));
+
+    // Connect the refresh signal for repositioning the lock boxes
+    connect(mpQwtPlots[FirstPlot], SIGNAL(afterReplot()), this, SLOT(refreshLockCheckBoxPositions()));
+
 
     mpBarPlot = new QSint::BarChartPlotter(this);
 
@@ -322,14 +335,18 @@ void PlotTab::applyTimeScalingSettings()
 void PlotTab::openAxisSettingsDialog()
 {
     // Set values before buttons are connected to avoid triggering rescale
-    mpXminLineEdit->setText(QString("%1").arg(mXAxisLimits[FirstPlot].min));
-    mpXmaxLineEdit->setText(QString("%1").arg(mXAxisLimits[FirstPlot].max));
+    mpXminLineEdit->setText(QString("%1").arg(mpQwtPlots[FirstPlot]->axisInterval(QwtPlot::xBottom).minValue()));
+    mpXmaxLineEdit->setText(QString("%1").arg(mpQwtPlots[FirstPlot]->axisInterval(QwtPlot::xBottom).maxValue()));
 
-    mpYLminLineEdit->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].min));
-    mpYLmaxLineEdit->setText(QString("%1").arg(mYLAxisLimits[FirstPlot].max));
+    mpYLminLineEdit->setText(QString("%1").arg(mpQwtPlots[FirstPlot]->axisInterval(QwtPlot::yLeft).minValue()));
+    mpYLmaxLineEdit->setText(QString("%1").arg(mpQwtPlots[FirstPlot]->axisInterval(QwtPlot::yLeft).maxValue()));
 
-    mpYRminLineEdit->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].min));
-    mpYRmaxLineEdit->setText(QString("%1").arg(mYRAxisLimits[FirstPlot].max));
+    mpYRminLineEdit->setText(QString("%1").arg(mpQwtPlots[FirstPlot]->axisInterval(QwtPlot::yRight).minValue()));
+    mpYRmaxLineEdit->setText(QString("%1").arg(mpQwtPlots[FirstPlot]->axisInterval(QwtPlot::yRight).maxValue()));
+
+    mpXLockDialogCheckBox->setChecked(mpXLockCheckBox->isChecked());
+    mpYLLockDialogCheckBox->setChecked(mpYLLockCheckBox->isChecked());
+    mpYRLockDialogCheckBox->setChecked(mpYRLockCheckBox->isChecked());
 
     // Connect the buttons, to adjust whenever changes are made
     connect(mpXminLineEdit,      SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
@@ -338,9 +355,9 @@ void PlotTab::openAxisSettingsDialog()
     connect(mpYLmaxLineEdit,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
     connect(mpYRminLineEdit,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
     connect(mpYRmaxLineEdit,     SIGNAL(textChanged(QString)),   this,           SLOT(applyAxisSettings()));
-    connect(mpXLockedCheckBox,  SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
-    connect(mpYLLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
-    connect(mpYRLockedCheckBox, SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(mpXLockDialogCheckBox,   SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(mpYLLockDialogCheckBox,  SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(mpYRLockDialogCheckBox,  SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
 
     mpSetAxisDialog->exec();
 
@@ -351,9 +368,9 @@ void PlotTab::openAxisSettingsDialog()
     disconnect(mpYLmaxLineEdit,     0, 0, 0);
     disconnect(mpYRminLineEdit,     0, 0, 0);
     disconnect(mpYRmaxLineEdit,     0, 0, 0);
-    disconnect(mpXLockedCheckBox,  0, 0, 0);
-    disconnect(mpYLLockedCheckBox, 0, 0, 0);
-    disconnect(mpYRLockedCheckBox, 0, 0, 0);
+    disconnect(mpXLockDialogCheckBox,  0, 0, 0);
+    disconnect(mpYLLockDialogCheckBox, 0, 0, 0);
+    disconnect(mpYRLockDialogCheckBox, 0, 0, 0);
 }
 
 void PlotTab::openAxisLabelDialog()
@@ -418,17 +435,13 @@ void PlotTab::openTimeScalingDialog()
 void PlotTab::applyAxisSettings()
 {
     // Set the new axis limits
-    mXAxisLimits[FirstPlot].min = mpXminLineEdit->text().toDouble();
-    mXAxisLimits[FirstPlot].max = mpXmaxLineEdit->text().toDouble();
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mXAxisLimits[FirstPlot].min, mXAxisLimits[FirstPlot].max);
+    mpQwtPlots[FirstPlot]->setAxisScale(QwtPlot::xBottom, mpXminLineEdit->text().toDouble(),  mpXmaxLineEdit->text().toDouble());
+    mpQwtPlots[FirstPlot]->setAxisScale(QwtPlot::yLeft,   mpYLminLineEdit->text().toDouble(), mpYLmaxLineEdit->text().toDouble());
+    mpQwtPlots[FirstPlot]->setAxisScale(QwtPlot::yRight,  mpYRminLineEdit->text().toDouble(), mpYRmaxLineEdit->text().toDouble());
 
-    mYLAxisLimits[FirstPlot].min = mpYLminLineEdit->text().toDouble();
-    mYLAxisLimits[FirstPlot].max = mpYLmaxLineEdit->text().toDouble();
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mYLAxisLimits[FirstPlot].min, mYLAxisLimits[FirstPlot].max);
-
-    mYRAxisLimits[FirstPlot].min = mpYRminLineEdit->text().toDouble();
-    mYRAxisLimits[FirstPlot].max = mpYRmaxLineEdit->text().toDouble();
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mYRAxisLimits[FirstPlot].min, mYRAxisLimits[FirstPlot].max);
+    mpXLockCheckBox->setChecked(mpXLockDialogCheckBox->isChecked());
+    mpYLLockCheckBox->setChecked(mpYLLockDialogCheckBox->isChecked());
+    mpYRLockCheckBox->setChecked(mpYRLockDialogCheckBox->isChecked());
 }
 
 void PlotTab::applyAxisLabelSettings()
@@ -437,28 +450,30 @@ void PlotTab::applyAxisLabelSettings()
 }
 
 //! @todo currently only supports settings axis for top plot
-void PlotTab::lockAxisToCurrentLimits(bool lock)
+//! @brief Toggles the axis lock on/off for the enabled axis
+void PlotTab::toggleAxisLock()
 {
-    qDebug() << "Lock = " << lock;
+    // First check if they are locked
+    bool allLocked = mpXLockCheckBox->isChecked();
+    if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft))
+    {
+        allLocked *= mpYLLockCheckBox->isChecked();
+    }
+    if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yRight))
+    {
+        allLocked *= mpYRLockCheckBox->isChecked();
+    }
 
-    mpXLockedCheckBox->setChecked(lock);
-    mpYLLockedCheckBox->setChecked(lock);
-    mpYRLockedCheckBox->setChecked(lock);
-
-    // Remember current axis limit and set them to the axis
-    mXAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().left();
-    mXAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().right();
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mXAxisLimits[FirstPlot].min, mXAxisLimits[FirstPlot].max);
-
-    mYLAxisLimits[FirstPlot].min = mpZoomerLeft[FirstPlot]->zoomRect().top();
-    mYLAxisLimits[FirstPlot].max = mpZoomerLeft[FirstPlot]->zoomRect().bottom();
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mYLAxisLimits[FirstPlot].min, mYLAxisLimits[FirstPlot].max);
-
-    mYRAxisLimits[FirstPlot].min = mpZoomerRight[FirstPlot]->zoomRect().top();
-    mYRAxisLimits[FirstPlot].max = mpZoomerRight[FirstPlot]->zoomRect().bottom();
-    this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mYRAxisLimits[FirstPlot].min, mYRAxisLimits[FirstPlot].max);
-
-    mAreAxesLocked=lock;
+    // Now switch to the other state (but only if axis is enabled)
+    mpXLockCheckBox->setChecked(!allLocked);
+    if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft))
+    {
+        mpYLLockCheckBox->setChecked(!allLocked);
+    }
+    if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yRight))
+    {
+        mpYRLockCheckBox->setChecked(!allLocked);
+    }
 }
 
 void PlotTab::openLegendSettingsDialog()
@@ -629,195 +644,176 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
 }
 
 
-//! @brief Rescales the axes and the zommers so that all plot curves will fit
+//! @brief Rescales the axes and the zoomers so that all plot curves will fit
 void PlotTab::rescaleAxesToCurves()
 {
     // Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {
-        // Ignore if zoomed
-        if (!isZoomed(plotID))
+        // Set defaults when no axis available
+        HopQwtInterval xAxisLim(0,10), ylAxisLim(0,10), yrAxisLim(0,10);
+
+        // Cycle plots, ignore if no curves
+        if(!mPlotCurvePtrs[plotID].empty())
         {
-            AxisLimitsT xAxisLim, ylAxisLim, yrAxisLim;
-
-            // Set defaults when no axis available
-            xAxisLim.min=0;  xAxisLim.max=10;
-            ylAxisLim.min=0; ylAxisLim.max=10;
-            yrAxisLim.min=0; yrAxisLim.max=10;
-
-            // Cycle plots, ignore if no curves
-            if(!mPlotCurvePtrs[plotID].empty())
+            // Init left/right min max
+            if (mNumYlCurves[plotID] > 0)
             {
-                // Init left/right min max
-                if (mNumYlCurves[plotID] > 0)
+                ylAxisLim.setInterval(DoubleMax,DoubleMin);
+            }
+            if (mNumYrCurves[plotID] > 0)
+            {
+                yrAxisLim.setInterval(DoubleMax,DoubleMin);
+            }
+
+            // Initialize values for X axis by using the first curve
+            xAxisLim.setMinValue(mPlotCurvePtrs[plotID].first()->minXValue());
+            xAxisLim.setMaxValue(mPlotCurvePtrs[plotID].first()->maxXValue());
+
+            bool someoneHasCustomXdata = false;
+            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+            {
+                // First check if some curve has a custom x-axis and plot does not
+                someoneHasCustomXdata = someoneHasCustomXdata || mPlotCurvePtrs[plotID].at(i)->hasCustomXData();
+                if (!mHasCustomXData && someoneHasCustomXdata)
                 {
-                    ylAxisLim.min = DoubleMax; ylAxisLim.max = -DoubleMax;
-                }
-                if (mNumYrCurves[plotID] > 0)
-                {
-                    yrAxisLim.min = DoubleMax; yrAxisLim.max = -DoubleMax;
+                    //! @todo maybe should do this with signal slot instead, to avoid unesisarry checks all the time
+                    setTabOnlyCustomXVector(mPlotCurvePtrs[plotID].at(i)->getCustomXData());
                 }
 
-                // Initialize values for X axis by using the first curve
-                xAxisLim.min=mPlotCurvePtrs[plotID].first()->minXValue();
-                xAxisLim.max=mPlotCurvePtrs[plotID].first()->maxXValue();
-
-                bool someoneHasCustomXdata = false;
-                for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+                if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                 {
-                    // First check if some curve hav a custom x-axis and plot does not
-                    someoneHasCustomXdata = someoneHasCustomXdata || mPlotCurvePtrs[plotID].at(i)->hasCustomXData();
-                    if (!mHasCustomXData && someoneHasCustomXdata)
+                    if(mLeftAxisLogarithmic)
                     {
-                        //! @todo maybe should do this with signal slot instead, to avoid unesisarry checks all the time
-                        setTabOnlyCustomXVector(mPlotCurvePtrs[plotID].at(i)->getCustomXData());
+                        // Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                        ylAxisLim.extendMin(qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), Double100Min));
                     }
-
-                    if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
+                    else
                     {
-                        if(mLeftAxisLogarithmic)
-                        {
-                            //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), Double100Min);
-                            ylAxisLim.min = qMin(ylAxisLim.min, minVal);
-                        }
-                        else
-                        {
-                            ylAxisLim.min = qMin( ylAxisLim.min, mPlotCurvePtrs[plotID].at(i)->minYValue());
-                        }
-                        ylAxisLim.max = qMax(ylAxisLim.max, mPlotCurvePtrs[plotID].at(i)->maxYValue());
+                        ylAxisLim.extendMin(mPlotCurvePtrs[plotID].at(i)->minYValue());
                     }
-
-                    if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight)
-                    {
-                        if(mRightAxisLogarithmic)
-                        {
-                            //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), Double100Min);
-                            yrAxisLim.min = qMin(yrAxisLim.min, minVal);
-                        }
-                        else
-                        {
-                            yrAxisLim.min = qMin(yrAxisLim.min, mPlotCurvePtrs[plotID].at(i)->minYValue());
-                        }
-                        yrAxisLim.max = qMax(yrAxisLim.max, mPlotCurvePtrs[plotID].at(i)->maxYValue());
-                    }
-
-                    // find min / max x-value
-                    xAxisLim.min = qMin(xAxisLim.min, mPlotCurvePtrs[plotID].at(i)->minXValue());
-                    xAxisLim.max = qMax(xAxisLim.max, mPlotCurvePtrs[plotID].at(i)->maxXValue());
+                    ylAxisLim.extendMax(mPlotCurvePtrs[plotID].at(i)->maxYValue());
                 }
 
-                if (mHasCustomXData && !someoneHasCustomXdata)
+                if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight)
                 {
-                    this->resetXTimeVector();
+                    if(mRightAxisLogarithmic)
+                    {
+                        // Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                        yrAxisLim.extendMin(qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), Double100Min));
+                    }
+                    else
+                    {
+                        yrAxisLim.extendMin(mPlotCurvePtrs[plotID].at(i)->minYValue());
+                    }
+                    yrAxisLim.extendMax(mPlotCurvePtrs[plotID].at(i)->maxYValue());
                 }
+
+                // find min / max x-value
+                xAxisLim.extendMin(mPlotCurvePtrs[plotID].at(i)->minXValue());
+                xAxisLim.extendMax(mPlotCurvePtrs[plotID].at(i)->maxXValue());
             }
 
-            // Fix incorrect or bad limit values
-            if(ylAxisLim.min > ylAxisLim.max)
+            if (mHasCustomXData && !someoneHasCustomXdata)
             {
-                //! @todo use QwtInterval instaead of custom struct
-                ylAxisLim.min = 0;
-                ylAxisLim.max = 10;
+                this->resetXTimeVector();
             }
-            if(yrAxisLim.min > yrAxisLim.max)
-            {
-                yrAxisLim.min = 0;
-                yrAxisLim.max = 10;
-            }
-
-            const double sameLimFrac = 0.1;
-            // Max and min must not be same value; if they are, decrease/increase
-            if ( (ylAxisLim.max - ylAxisLim.min) < Double100Min)
-            {
-//                ylAxisLim.max += ylAxisLim.max;
-//                ylAxisLim.min -= ylAxisLim.min;
-                ylAxisLim.max += qMax(qAbs(ylAxisLim.max) * sameLimFrac, Double100Min);
-                ylAxisLim.min -= qMax(qAbs(ylAxisLim.min) * sameLimFrac, Double100Min);
-            }
-
-            if ( (yrAxisLim.max - yrAxisLim.min) < Double100Min)
-            {
-//                yrAxisLim.max += yrAxisLim.max;
-//                yrAxisLim.min -= yrAxisLim.min;
-//                yrAxisLim.max += QwtLowestAxisLabelValue;
-//                yrAxisLim.min -= QwtLowestAxisLabelValue;
-                yrAxisLim.max += qMax(qAbs(yrAxisLim.max) * sameLimFrac, Double100Min);
-                yrAxisLim.min -= qMax(qAbs(yrAxisLim.min) * sameLimFrac, Double100Min);
-            }
-
-            if ( (xAxisLim.max - xAxisLim.min) < Double100Min)
-            {
-//                xAxisLim.max += xAxisLim.max;
-//                xAxisLim.min -= xAxisLim.min;
-//                xAxisLim.max += QwtLowestAxisLabelValue;
-//                xAxisLim.min -= QwtLowestAxisLabelValue;
-                xAxisLim.max += qMax(qAbs(xAxisLim.max) * sameLimFrac, Double100Min);
-                xAxisLim.min -= qMax(qAbs(xAxisLim.min) * sameLimFrac, Double100Min);
-            }
-
-            // Calculate the axis ranges (used for calculating margins at top and bottom
-            double leftAxisRange = ylAxisLim.max-ylAxisLim.min;
-            double rightAxisRange = yrAxisLim.max-yrAxisLim.min;
-
-            //If plot has log scale, we use a different approach for calculating margins
-            //(fixed margins would not make sense with a log scale)
-
-            //! @todo In new qwt the type in the transform has been removed, Trying with dynamic cast instead
-            if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
-            {
-                leftAxisRange = 0;
-                ylAxisLim.max = ylAxisLim.max*2.0;
-                ylAxisLim.min = ylAxisLim.min/2.0;
-            }
-            if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
-            {
-                rightAxisRange = 0;
-                yrAxisLim.max = yrAxisLim.max*2.0;
-                yrAxisLim.min = yrAxisLim.min/2.0;
-            }
-
-
-            // Scale the axes autoamtically if not locked
-            if (!mpXLockedCheckBox->isChecked())
-            {
-                mXAxisLimits[plotID].min = xAxisLim.min;
-                mXAxisLimits[plotID].max = xAxisLim.max;
-                mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, mXAxisLimits[plotID].min, mXAxisLimits[plotID].max);
-                //mpQwtPlots[plotID]->setAxisAutoScale(QwtPlot::xBottom,true);
-            }
-            if (!mpYLLockedCheckBox->isChecked())
-            {
-                mYLAxisLimits[plotID].min = ylAxisLim.min-0.05*leftAxisRange;
-                mYLAxisLimits[plotID].max = ylAxisLim.max+0.05*leftAxisRange;
-                rescaleAxisToMakeRoomForLegend(plotID, QwtPlot::yLeft, mYLAxisLimits[plotID]);
-            }
-            if (!mpYRLockedCheckBox->isChecked())
-            {
-                mYRAxisLimits[plotID].min = yrAxisLim.min-0.05*rightAxisRange;
-                mYRAxisLimits[plotID].max = yrAxisLim.max+0.05*rightAxisRange;
-                rescaleAxisToMakeRoomForLegend(plotID, QwtPlot::yRight, mYRAxisLimits[plotID]);
-            }
-            //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis
-
-            // Create the zoom base (origianl zoom) rectangle
-            leftAxisRange = mYLAxisLimits[plotID].max - mYLAxisLimits[plotID].min;
-            rightAxisRange = mYRAxisLimits[plotID].max - mYRAxisLimits[plotID].min;
-            double xAxisRange = mXAxisLimits[plotID].max - mXAxisLimits[plotID].min;
-            QRectF tempDoubleRect;
-            tempDoubleRect.setX(mXAxisLimits[plotID].min);
-            tempDoubleRect.setWidth(xAxisRange);
-            tempDoubleRect.setY(mYLAxisLimits[plotID].min);
-            tempDoubleRect.setHeight(leftAxisRange);
-            mpZoomerLeft[plotID]->setZoomBase(tempDoubleRect);
-            tempDoubleRect.setY(mYRAxisLimits[plotID].min);
-            tempDoubleRect.setHeight(rightAxisRange);
-            mpZoomerRight[plotID]->setZoomBase(tempDoubleRect);
-
-            // Now call the actual refresh of the axes
-            mpQwtPlots[plotID]->updateAxes();
         }
+
+        // Fix incorrect or bad limit values
+        if(!ylAxisLim.isValid())
+        {
+            ylAxisLim.setInterval(0,10);
+        }
+        if(!yrAxisLim.isValid())
+        {
+            yrAxisLim.setInterval(0,10);
+        }
+
+        const double sameLimFrac = 0.1;
+        // Max and min must not be same value; if they are, decrease/increase
+        if ( (ylAxisLim.width()) < Double100Min)
+        {
+            ylAxisLim.extendMax(ylAxisLim.maxValue()+qMax(qAbs(ylAxisLim.maxValue()) * sameLimFrac, Double100Min));
+            ylAxisLim.extendMin(ylAxisLim.minValue()-qMax(qAbs(ylAxisLim.minValue()) * sameLimFrac, Double100Min));
+        }
+
+        if ( (yrAxisLim.width()) < Double100Min)
+        {
+            yrAxisLim.extendMax(yrAxisLim.maxValue()+qMax(qAbs(yrAxisLim.maxValue()) * sameLimFrac, Double100Min));
+            yrAxisLim.extendMin(yrAxisLim.maxValue()-qMax(qAbs(yrAxisLim.minValue()) * sameLimFrac, Double100Min));
+        }
+
+        if ( (xAxisLim.width()) < Double100Min)
+        {
+            xAxisLim.extendMax(xAxisLim.maxValue()+qMax(qAbs(xAxisLim.maxValue()) * sameLimFrac, Double100Min));
+            xAxisLim.extendMin(xAxisLim.minValue()-qMax(qAbs(xAxisLim.minValue()) * sameLimFrac, Double100Min));
+        }
+
+        // If plot has log scale, we use a different approach for calculating margins
+        // (fixed margins would not make sense with a log scale)
+
+        //! @todo In new qwt the type in the transform has been removed, Trying with dynamic cast instead
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
+        {
+            ylAxisLim.setInterval(ylAxisLim.minValue()/2.0, ylAxisLim.maxValue()*2.0);
+        }
+        else
+        {
+            // For linear scale expand by 5%
+            //! @todo no need to add 5% if sameLimFrac has been added above
+            ylAxisLim.setInterval(ylAxisLim.minValue()-0.05*ylAxisLim.width(), ylAxisLim.maxValue()+0.05*ylAxisLim.width());
+        }
+
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
+        {
+            yrAxisLim.setInterval(yrAxisLim.minValue()/2.0, yrAxisLim.maxValue()*2.0);
+        }
+        else
+        {
+            // For linear scale expand by 5%
+            yrAxisLim.setInterval(yrAxisLim.minValue()-0.05*yrAxisLim.width(), yrAxisLim.maxValue()+0.05*yrAxisLim.width());
+        }
+
+
+
+        // Create the zoom base (original zoom) rectangle for the left and right axis
+        QRectF baseZoomRect;
+        baseZoomRect.setX(xAxisLim.minValue());
+        baseZoomRect.setWidth(xAxisLim.width());
+
+        // Scale the axes autoamtically if not locked
+        if (!mpXLockCheckBox->isChecked())
+        {
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, xAxisLim.minValue(), xAxisLim.maxValue());
+        }
+
+        if (!mpYLLockCheckBox->isChecked())
+        {
+            rescaleAxisLimitsToMakeRoomForLegend(plotID, QwtPlot::yLeft, ylAxisLim);
+            //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, ylAxisLim.minValue(), ylAxisLim.maxValue());
+            baseZoomRect.setY(ylAxisLim.minValue());
+            baseZoomRect.setHeight(ylAxisLim.width());
+            mpZoomerLeft[plotID]->setZoomBase(baseZoomRect);
+        }
+
+        if (!mpYRLockCheckBox->isChecked())
+        {
+            rescaleAxisLimitsToMakeRoomForLegend(plotID, QwtPlot::yRight, yrAxisLim);
+            //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yrAxisLim.minValue(), yrAxisLim.maxValue());
+            baseZoomRect.setY(yrAxisLim.minValue());
+            baseZoomRect.setHeight(yrAxisLim.width());
+            mpZoomerRight[plotID]->setZoomBase(baseZoomRect);
+        }
+
+        //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis, this is a todo problem with legend buffer ofset
+
+        refreshLockCheckBoxPositions();
+
+        // Now call the actual refresh of the axes
+        mpQwtPlots[plotID]->updateAxes();
     }
 }
 
@@ -1832,14 +1828,19 @@ void PlotTab::resetZoom()
 {
 //    qDebug() << "Zoom stack L0: " << mpZoomerLeft[FirstPlot]->zoomStack().size();
 //    qDebug() << "Zoom stack R0: " << mpZoomerRight[FirstPlot]->zoomStack().size();
-    if (!mAreAxesLocked)
+    if (!mpYLLockCheckBox->isChecked() && !mpXLockCheckBox->isChecked())
     {
         mpZoomerLeft[FirstPlot]->zoom(0);
-        mpZoomerRight[FirstPlot]->zoom(0);
         mpZoomerLeft[SecondPlot]->zoom(0);
-        mpZoomerRight[SecondPlot]->zoom(0);
-        rescaleAxesToCurves();
     }
+
+    if (!mpYRLockCheckBox->isChecked() && !mpXLockCheckBox->isChecked())
+    {
+        mpZoomerRight[FirstPlot]->zoom(0);
+        mpZoomerRight[SecondPlot]->zoom(0);
+    }
+
+    rescaleAxesToCurves();
 }
 
 void PlotTab::enableArrow(bool value)
@@ -2043,32 +2044,6 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos, bool movable)
     pMarker->setMovable(movable);
 }
 
-void PlotTab::setAxisLimitsFromZoom()
-{
-    // If we are at zoom-level then set from zoom
-    if (isZoomed(FirstPlot))
-    {
-        QRectF leftRect = mpZoomerLeft[FirstPlot]->zoomRect();
-        QRectF rightRect = mpZoomerRight[FirstPlot]->zoomRect();
-
-        mXAxisLimits[FirstPlot].min = leftRect.bottomLeft().x();
-        mXAxisLimits[FirstPlot].max = leftRect.bottomRight().x();
-
-        //! @todo the y coords seem to be inverted
-        mYLAxisLimits[FirstPlot].max = leftRect.bottomLeft().y();
-        mYLAxisLimits[FirstPlot].min = leftRect.topLeft().y();
-
-        mYRAxisLimits[FirstPlot].max = rightRect.bottomRight().y();
-        mYRAxisLimits[FirstPlot].min = rightRect.topRight().y();
-    }
-    // If we are back at original zoom, then rescale in case curves were added to a disabled axis during zoomed state
-    else
-    {
-        rescaleAxesToCurves();
-    }
-}
-
-
 //! @brief Saves the current tab to a DOM element (XML)
 //! @param rDomElement Reference to the dom element to save to
 //! @param dateTime Tells whether or not date and time should be included
@@ -2180,12 +2155,6 @@ bool PlotTab::isZoomed(const int plotId) const
 //    qDebug() << "id,l,r: " << plotId <<" "<< l <<" "<< r;
     return (mpZoomerLeft[plotId]->zoomRectIndex() > 0);// && (mpZoomerRight[plotId]->zoomRectIndex() > 1);
 }
-
-bool PlotTab::areAxesLocked()
-{
-    return mAreAxesLocked;
-}
-
 
 //! @todo this only tunrs on internal legend automatically, maybe need an otehr version with two arguments
 void PlotTab::setLegendsVisible(bool value)
@@ -2304,6 +2273,33 @@ void PlotTab::saveToXml()
     file.close();
 
     mpExportXmlDialog->close();
+}
+
+void PlotTab::refreshLockCheckBoxPositions()
+{
+    const int space = 2;
+
+    // Calculate placement for time loc box
+    QFont font = mpQwtPlots[0]->axisFont(QwtPlot::xBottom); //Assume same font on all axes
+    mpXLockCheckBox->move(0,mpQwtPlots[0]->axisScaleDraw(QwtPlot::xBottom)->extent(font)+space);
+
+    // We do not need to refresh left y axis since lock box will be in 0,0 allways, but we add space
+    mpYLLockCheckBox->move(-space,0);
+
+    // Calculate placement for right axis lock box
+    mpYRLockCheckBox->move(mpQwtPlots[0]->axisScaleDraw(QwtPlot::yRight)->extent(font)+space,0);
+}
+
+void PlotTab::axisLockHandler()
+{
+    mpMagnifier[FirstPlot]->setAxisEnabled(QwtPlot::xBottom, !mpXLockCheckBox->isChecked());
+    mpPanner[FirstPlot]->setAxisEnabled(QwtPlot::xBottom, !mpXLockCheckBox->isChecked());
+
+    mpMagnifier[FirstPlot]->setAxisEnabled(QwtPlot::yLeft, !mpYLLockCheckBox->isChecked());
+    mpPanner[FirstPlot]->setAxisEnabled(QwtPlot::yLeft, !mpYLLockCheckBox->isChecked());
+
+    mpMagnifier[FirstPlot]->setAxisEnabled(QwtPlot::yRight, !mpYRLockCheckBox->isChecked());
+    mpPanner[FirstPlot]->setAxisEnabled(QwtPlot::yRight, !mpYRLockCheckBox->isChecked());
 }
 
 void PlotTab::exportImage()
@@ -2430,9 +2426,6 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendsInternalEnabledCheckBox->setCheckable(true);
     mpLegendsInternalEnabledCheckBox->setChecked(true); //Internal on by default
 
-//    mpLegendsExternalEnabledCheckBox = new QCheckBox(this);
-//    mpLegendsExternalEnabledCheckBox->setCheckable(true);
-
     mpLegendLPosition = new QComboBox(this);
     mpLegendLPosition->addItem("Top");
     mpLegendLPosition->addItem("Bottom");
@@ -2532,7 +2525,6 @@ void PlotTab::constructLegendSettingsDialog()
     connect(mpLegendFontSize, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendCols, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendsInternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
-    //connect(mpLegendsExternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(mpLegendBgType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendSymbolType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendLPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
@@ -2552,15 +2544,15 @@ void PlotTab::constructAxisSettingsDialog()
     mpSetAxisDialog = new QDialog(this);
     mpSetAxisDialog->setWindowTitle("Set Axis Limits");
 
-    mpXLockedCheckBox = new QCheckBox("Locked Limits");
-    mpXLockedCheckBox->setCheckable(true);
-    mpXLockedCheckBox->setChecked(false);
-    mpYLLockedCheckBox = new QCheckBox("Locked Limits");
-    mpYLLockedCheckBox->setCheckable(true);
-    mpYLLockedCheckBox->setChecked(false);
-    mpYRLockedCheckBox = new QCheckBox("Locked Limits");
-    mpYRLockedCheckBox->setCheckable(true);
-    mpYRLockedCheckBox->setChecked(false);
+    mpXLockDialogCheckBox = new QCheckBox("Locked Limits");
+    mpXLockDialogCheckBox->setCheckable(true);
+    mpXLockDialogCheckBox->setChecked(false);
+    mpYLLockDialogCheckBox = new QCheckBox("Locked Limits");
+    mpYLLockDialogCheckBox->setCheckable(true);
+    mpYLLockDialogCheckBox->setChecked(false);
+    mpYRLockDialogCheckBox = new QCheckBox("Locked Limits");
+    mpYRLockDialogCheckBox->setCheckable(true);
+    mpYRLockDialogCheckBox->setChecked(false);
 
     QDoubleValidator *pDoubleValidator = new QDoubleValidator(mpSetAxisDialog);
 
@@ -2600,7 +2592,7 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
     pAxisLimitsDialogLayout->addWidget(mpYLminLineEdit, r, c+1);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(mpYLLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->addWidget(mpYLLockDialogCheckBox, r, c, 1, 2, Qt::AlignCenter);
     pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
 
     r=0;c=6;
@@ -2612,7 +2604,7 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
     pAxisLimitsDialogLayout->addWidget(mpYRminLineEdit, r, c+1);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(mpYRLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->addWidget(mpYRLockDialogCheckBox, r, c, 1, 2, Qt::AlignCenter);
 
     r=3,c=3;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("X Axis")),r,c,1,2, Qt::AlignCenter);
@@ -2623,7 +2615,7 @@ void PlotTab::constructAxisSettingsDialog()
     pAxisLimitsDialogLayout->addWidget(mpXminLineEdit, r, c);
     pAxisLimitsDialogLayout->addWidget(mpXmaxLineEdit, r, c+1);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(mpXLockedCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->addWidget(mpXLockDialogCheckBox, r, c, 1, 2, Qt::AlignCenter);
     pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
 
     r=6;c=7;
@@ -2840,7 +2832,7 @@ void PlotTab::updateGraphicsExportSizeEdits()
     mpImageSetHeight->setValue(newSize.height());
 }
 
-void PlotTab::rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, PlotTab::AxisLimitsT &rAxisLimits)
+void PlotTab::rescaleAxisLimitsToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, QwtInterval &rAxisLimits)
 {
     //! @todo only works for top buffer right now
     if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotId]->axisScaleEngine(axisId)))
@@ -2851,7 +2843,7 @@ void PlotTab::rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Ax
     else
     {
         // Curves range
-        const double cr = rAxisLimits.max - rAxisLimits.min;
+        const double cr = rAxisLimits.width();
 
         // Find largest legend height in pixels
         double lht, lhb;
@@ -2864,17 +2856,13 @@ void PlotTab::rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Ax
         // Divid with the curves value range to get the scale
         double s = (ah-(lht+lhb))/cr; //[px/unit]
         //qDebug() << "s: " << s;
-        if (s < std::numeric_limits<double>::epsilon())
-        {
-            s = 1;
-        }
+        s = qMax(s,Double100Min); // Limit to prevent div by 0
+
         // Calculate new axis range for current axis height given the scale
         const double ar = ah/s;
 
-        rAxisLimits.max = rAxisLimits.min + ar - lhb/s;
-        rAxisLimits.min = rAxisLimits.min - lhb/s;
-        //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
-        mpQwtPlots[plotId]->setAxisScale(axisId, rAxisLimits.min, rAxisLimits.max);
+        rAxisLimits.setMaxValue(rAxisLimits.minValue() + ar - lhb/s);
+        rAxisLimits.setMinValue(rAxisLimits.minValue() - lhb/s);
     }
 }
 
@@ -3275,4 +3263,23 @@ void PainterWidget::paintEvent(QPaintEvent *)
         painter.setPen( Qt::NoPen );		// do not draw outline
         painter.drawRect(mX,mY,mWidth,mHeight);	// draw filled rectangle
     }
+}
+
+//! @brief Extend interval min even if it is invalid
+void HopQwtInterval::extendMin(const double value)
+{
+    setMinValue(qMin(value,minValue()));
+}
+
+//! @brief Extend interval max even if it is invalid
+void HopQwtInterval::extendMax(const double value)
+{
+    setMaxValue(qMax(value,maxValue()));
+}
+
+
+void HopQwtPlot::replot()
+{
+    QwtPlot::replot();
+    emit afterReplot();
 }

@@ -286,12 +286,10 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpLocktheAxis->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
     connect(mpLocktheAxis, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpLockAxisToCurrentLimitsButton = new QAction(this);
-    mpLockAxisToCurrentLimitsButton->setToolTip("Lock Axis To Current Limits");
-    mpLockAxisToCurrentLimitsButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Lock.png"));
-    mpLockAxisToCurrentLimitsButton->setCheckable(true);
-    mpLockAxisToCurrentLimitsButton->setChecked(false);
-    connect(mpLockAxisToCurrentLimitsButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpToggleAxisLockButton = new QAction(this);
+    mpToggleAxisLockButton->setToolTip("Lock Axis To Current Limits");
+    mpToggleAxisLockButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Lock.png"));
+    connect(mpToggleAxisLockButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpOpentimeScaleDialog = new QAction(this);
     mpOpentimeScaleDialog->setToolTip("Open Time-Scale Dialog");
@@ -402,7 +400,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addAction(mpBackgroundColorButton);
     mpToolBar->addAction(mpLegendButton);
     mpToolBar->addAction(mpLocktheAxis);
-    mpToolBar->addAction(mpLockAxisToCurrentLimitsButton);
+    mpToolBar->addAction(mpToggleAxisLockButton);
     mpToolBar->addAction(mpCurveInfoDock->toggleViewAction());
     mpToolBar->addAction(pLocalPlotWidgetDock->toggleViewAction());
     mpToolBar->addSeparator();
@@ -443,8 +441,6 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
     connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(changedTab()));
-
-    connect(mpLockAxisToCurrentLimitsButton,    SIGNAL(toggled(bool)),            mpPlotTabWidget->getCurrentTab(), SLOT(lockAxisToCurrentLimits(bool)));
 
     // Hide curve settings area by default if screen size is to small
     if(sh*sw < 800*1280)
@@ -1142,7 +1138,7 @@ void PlotWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Open the lock axis dialog.");
     }
-    else if(pHoveredAction == mpLockAxisToCurrentLimitsButton)
+    else if(pHoveredAction == mpToggleAxisLockButton)
     {
         showHelpPopupMessage("Lock all axes to current limits.");
     }
@@ -1226,16 +1222,13 @@ void PlotWindow::changedTab()
     disconnect(mpExportToOldHopAction,      SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToMatlabAction,      SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToGnuplotAction,     SIGNAL(triggered()),    0,  0);
-    //disconnect(mpExportPdfAction,           SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToGraphicsAction,    SIGNAL(triggered()),    0,  0);
-    //disconnect(mpExportPngAction,           SIGNAL(triggered()),    0,  0);
     disconnect(mpLegendButton,              SIGNAL(triggered()),    0,  0);
-    disconnect(mpLockAxisToCurrentLimitsButton, SIGNAL(triggered()),    0,  0);
     disconnect(mpLocktheAxis,               SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsDown,        SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsUp,          SIGNAL(triggered()),    0,  0);
-    disconnect(mpLockAxisToCurrentLimitsButton, SIGNAL(toggled(bool)),  0,  0);
-    disconnect(mpOpentimeScaleDialog,       SIGNAL(triggered()), 0, 0);
+    disconnect(mpOpentimeScaleDialog,       SIGNAL(triggered()),    0,  0);
+    disconnect(mpToggleAxisLockButton,      SIGNAL(triggered()),    0,  0);
 
     // If there are any tabs then show the widget and reestablish connections to the current tab
     if(mpPlotTabWidget->count() > 0)
@@ -1248,7 +1241,6 @@ void PlotWindow::changedTab()
             mpArrowButton->setDisabled(true);
             mpZoomButton->setDisabled(true);
             mpOriginalZoomButton->setDisabled(true);
-            //mpParentPlotWindow->mpImportClassicData>setDisabled(true);
             mpPanButton->setDisabled(true);
             mpSaveButton->setDisabled(true);
             mpExportToCsvAction->setDisabled(true);
@@ -1262,7 +1254,6 @@ void PlotWindow::changedTab()
             mpNewWindowFromTabButton->setDisabled(true);
             mpResetXVectorButton->setDisabled(true);
             mpBodePlotButton->setDisabled(true);
-            //mpExportPdfAction->setDisabled(true);
             mpExportToGraphicsAction->setDisabled(true);
             mpAllGenerationsDown->setDisabled(true);
             mpAllGenerationsUp->setDisabled(true);
@@ -1280,14 +1271,12 @@ void PlotWindow::changedTab()
             mpExportToGnuplotAction->setDisabled(false);
             mpExportToOldHopAction->setDisabled(false);
             mpExportToMatlabAction->setDisabled(false);
-            //mpExportGfxButton->setDisabled(false);
             mpLoadFromXmlButton->setDisabled(false);
             mpGridButton->setDisabled(false);
             mpBackgroundColorButton->setDisabled(false);
             mpNewWindowFromTabButton->setDisabled(false);
             mpResetXVectorButton->setDisabled(false);
             mpBodePlotButton->setDisabled(false);
-            //mpExportPdfAction->setDisabled(false);
             mpExportToGraphicsAction->setDisabled(false);
             mpAllGenerationsDown->setDisabled(false);
             mpAllGenerationsUp->setDisabled(false);
@@ -1311,19 +1300,16 @@ void PlotWindow::changedTab()
         connect(mpExportToMatlabAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToMatlab()));
         connect(mpExportToGnuplotAction,    SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGnuplot()));
         connect(mpExportToOldHopAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToOldHop()));
-        //connect(mpExportPdfAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPdf()));
-        //connect(mpExportPngAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPng()));
         connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
         connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));
         connect(mpAllGenerationsDown,       SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsDown()));
         connect(mpAllGenerationsUp,         SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsUp()));
-        connect(mpLockAxisToCurrentLimitsButton, SIGNAL(triggerd(bool)),pCurrentTab,    SLOT(lockAxisToCurrentLimits(bool)));
-        connect(mpOpentimeScaleDialog,       SIGNAL(triggered()),    pCurrentTab,    SLOT(openTimeScalingDialog()));
+        connect(mpOpentimeScaleDialog,      SIGNAL(triggered()),    pCurrentTab,    SLOT(openTimeScalingDialog()));
+        connect(mpToggleAxisLockButton,     SIGNAL(triggered()),    pCurrentTab,    SLOT(toggleAxisLock()));
 
         // Set the plottab specific info layout
         mpCurveInfoStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);
-        mpLockAxisToCurrentLimitsButton->setChecked(pCurrentTab->areAxesLocked());
     }
     else
     {
