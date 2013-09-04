@@ -35,7 +35,7 @@
             <movable>
                 <icon userpath="ackumulator_movable1.svg"/>
                 <data port="Va" dataname="Value"/> 
-                <divisor name="V0"/>
+                <divisor name="V0#Value"/>
                 <start x="0" y="-50" a="0"/>
                 <movement x="0" y="-50" a="0"/>
                 <transformorigin x="0" y="0"/>                
