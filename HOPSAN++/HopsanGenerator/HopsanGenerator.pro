@@ -24,6 +24,12 @@ INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------
 
+#--------------------------------------------------
+# Add the include path to (SymHop)
+INCLUDEPATH *= $${PWD}/../SymHop/include/
+LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
+#--------------------------------------------------
+
 # -------------------------------------------------
 # Non platform specific HopsanCompGen options
 # -------------------------------------------------
@@ -52,7 +58,6 @@ unix {
 SOURCES += \
     src/HopsanGeneratorLib.cc \
     src/GeneratorUtilities.cc \
-    src/symhop/SymHop.cc \
     src/generators/HopsanGenerator.cc \
     src/generators/HopsanSimulinkGenerator.cc \
     src/generators/HopsanModelicaGenerator.cc \
@@ -62,7 +67,6 @@ SOURCES += \
 HEADERS += \
     include/win32dll.h \
     include/GeneratorUtilities.h \
-    include/symhop/SymHop.h \
     include/generators/HopsanGenerator.h \
     include/generators/HopsanModelicaGenerator.h \
     include/generators/HopsanSimulinkGenerator.h \

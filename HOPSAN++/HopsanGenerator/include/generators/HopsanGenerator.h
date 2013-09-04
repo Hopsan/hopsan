@@ -39,7 +39,7 @@
 #include <QDomElement>
 #include "win32dll.h"
 
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 #include "GeneratorUtilities.h"
 
 //class ModelObjectAppearance;

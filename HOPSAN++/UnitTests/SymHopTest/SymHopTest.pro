@@ -6,7 +6,7 @@
 QT       += testlib
 QT       -= gui
 
-TARGET = ../../../../bin/tst_symhoptest
+TARGET = ../../bin/tst_symhoptest
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -19,9 +19,8 @@ CONFIG(debug, debug|release) {
   DEBUG_EXT =
 }
 
-INCLUDEPATH += $${PWD}/../../../HopsanGenerator/include/
-LIBS += -L$${PWD}/../../../bin -lHopsanGenerator$${DEBUG_EXT}
-LIBS += -L$${PWD}/../../../bin -lHopsanCore$${DEBUG_EXT}
+INCLUDEPATH += $${PWD}/../../SymHop/include/
+LIBS += -L$${PWD}/../../bin -lSymHop$${DEBUG_EXT}
 
 unix{
 QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'

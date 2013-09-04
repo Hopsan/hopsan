@@ -46,6 +46,11 @@ INCLUDEPATH *= $${PWD}/../HopsanGenerator/include/
 LIBS *= -L$${PWD}/../bin -lHopsanGenerator$${DEBUG_EXT}
 #--------------------------------------------------------
 
+#--------------------------------------------------------
+# Set SymHop Paths
+INCLUDEPATH *= $${PWD}/../SymHop/include/
+LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
+#--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set our own HopsanGUI Include Path

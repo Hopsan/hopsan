@@ -1,6 +1,6 @@
 #include "generators/HopsanModelicaGenerator.h"
 #include "GeneratorUtilities.h"
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 #include <QtConcurrentMap>
 
 

@@ -45,7 +45,7 @@
 #include "Widgets/ModelWidget.h"
 
 //HopsanGenerator includes
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 
 //Dependency includes
 #include "qwt_plot.h"

@@ -25,7 +25,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 
 using namespace std;
 using namespace SymHop;

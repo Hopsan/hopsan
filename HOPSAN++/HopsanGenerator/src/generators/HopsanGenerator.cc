@@ -44,7 +44,7 @@
 #endif
 
 #include "generators/HopsanGenerator.h"
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 
 #include "ComponentSystem.h"
 #include "Port.h"

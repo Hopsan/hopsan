@@ -46,7 +46,7 @@
 
 #include "GeneratorUtilities.h"
 #include "generators/HopsanGenerator.h"
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 
 #include "HopsanEssentials.h"
 #include "ComponentSystem.h"

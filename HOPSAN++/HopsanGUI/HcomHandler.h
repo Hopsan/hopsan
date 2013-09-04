@@ -27,7 +27,7 @@
 #define HCOMHANDLER_H
 
 #include "LogVariable.h"
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 
 class TerminalWidget;
 class TerminalConsole;

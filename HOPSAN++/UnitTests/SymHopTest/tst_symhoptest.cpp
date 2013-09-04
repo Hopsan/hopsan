@@ -1,5 +1,5 @@
 #include <QtTest>
-#include "symhop/SymHop.h"
+#include "SymHop.h"
 
 using namespace SymHop;
 
