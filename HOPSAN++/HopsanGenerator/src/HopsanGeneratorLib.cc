@@ -41,7 +41,7 @@ using namespace std;
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, string coreIncludePath, string binPath, bool showDialog=false, string outputPath="", string target="")
 {
-    qDebug() << "Called Modelica generator (in dll)!";
+    //qDebug() << "Called Modelica generator (in dll)!";
 
     HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->setOutputPath(QString(outputPath.c_str()));

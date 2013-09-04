@@ -618,7 +618,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int e=0; e<equations.size(); ++e)
     {
         equations[e].toLeftSided();
-        qDebug() << "LEFT SIDED: " << equations[e].toString();
+        //qDebug() << "LEFT SIDED: " << equations[e].toString();
     }
 
     //Generate a preferred path for sorting, based on the location of derivatives of state variables
@@ -648,7 +648,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         equations[e] = equations[e].bilinearTransform();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
+        //qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
     }
 
 
@@ -657,7 +657,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         equations[e].linearize();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        qDebug() << "LINEARIZED: " << equations[e].toString();
+        //qDebug() << "LINEARIZED: " << equations[e].toString();
         equations[e].replaceBy((*equations[e].getLeft()));
     }
 
@@ -670,7 +670,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         equations[e].expand();
         equations[e].toDelayForm(delayTerms, delaySteps);
         equations[e]._simplify(Expression::FullSimplification);
-        qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
+        //qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
     }
 
 

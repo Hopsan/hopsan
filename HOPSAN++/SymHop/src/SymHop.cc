@@ -53,8 +53,19 @@ using namespace SymHop;
 //FIXED
 Expression::Expression(const QString indata, const ExpressionSimplificationT simplifications)
 {
-    QString::number(indata.toDouble(), 'f', 20);
-    commonConstructorCode(QStringList() << indata, simplifications);
+    bool ok;
+    QString temp = QString::number(indata.toDouble(&ok), 'f', 20);
+
+    //If it is a number, make sure it has correct precision and remove extra zeros at end. Otherwise use original string.
+    if(ok)
+    {
+        while(temp.endsWith("00")) { temp.chop(1); }
+        commonConstructorCode(QStringList() << temp, simplifications);
+    }
+    else
+    {
+        commonConstructorCode(QStringList() << indata, simplifications);
+    }
 }
 
 
@@ -130,6 +141,7 @@ Expression::Expression(const double value)
         return;
     }
     mString = QString::number(value, 'f', 20);
+    while(mString.endsWith("00")) { mString.chop(1); }
 
     //Make sure numerical symbols have double precision
 //    bool isInt;
@@ -954,7 +966,7 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 
             delayTerm.factorMostCommonFactor();
 
-            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size(), 'f', 20)+".getIdx", QList<Expression>() << Expression(1)));
+            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size())+".getIdx", QList<Expression>() << Expression(1)));
 
             QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20);+".getIdx(1.0)";
             ret.append(term);
@@ -962,6 +974,7 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 
             rDelayTerms.append(delayTerm);
             rDelaySteps.append(QString::number(i, 'f', 20));
+            while(rDelaySteps.last().endsWith("00")) { rDelaySteps.last().chop(1); }
         }
     }
     for(int t=0; t<termMap[0].size(); ++t)
@@ -2218,7 +2231,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
             if(mpBase->isNumericalSymbol() && mpPower->isNumericalSymbol())
             {
                 double value = pow(mpBase->toDouble(),mpPower->toDouble());
-                this->replaceBy(Expression(QString::number(value, 'f', 20)));
+                this->replaceBy(Expression(value));
             }
         }
     }
@@ -2246,7 +2259,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
         if(foundOne)
         {
-            mTerms << Expression(QString::number(value, 'f', 20));
+            mTerms << Expression(value);
         }
 
         mTerms.removeAll(Expression("0.0"));
@@ -2295,8 +2308,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
         if(foundOne)
         {
-            QString str = QString::number(value, 'f', 20);
-            mFactors << Expression(str);
+            mFactors << Expression(value);
             this->replaceBy(Expression::fromFactorsDivisors(mFactors, mDivisors));
         }
 

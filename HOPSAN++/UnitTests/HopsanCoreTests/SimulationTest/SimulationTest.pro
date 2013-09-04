@@ -6,9 +6,10 @@
 QT       += testlib
 QT       -= gui
 
-TARGET = ../../../../bin/tst_simulationtest
+TARGET =  tst_simulationtest
 CONFIG   += console
 CONFIG   -= app_bundle
+DESTDIR = $${PWD}/../../../bin
 
 TEMPLATE = app
 

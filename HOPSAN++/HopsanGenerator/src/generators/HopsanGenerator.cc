@@ -577,7 +577,7 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     }
     targetSoFile.close();
 
-    qDebug() << "Copying "+soFile.fileName()+" to "+mOutputPath+libFileName;
+    //qDebug() << "Copying "+soFile.fileName()+" to "+mOutputPath+libFileName;
     if(!soFile.copy(mOutputPath + libFileName))
     {
         printErrorMessage("Failed to copy new binary to output directory: "+soFile.errorString());

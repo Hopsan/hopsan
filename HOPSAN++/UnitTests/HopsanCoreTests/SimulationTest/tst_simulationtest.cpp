@@ -31,7 +31,7 @@ class SimulationTests : public QObject
 public:
     SimulationTests()
     {
-        mHopsanCore.loadExternalComponentLib(QString("../../"+QString(DEFAULTCOMPONENTLIB)).toStdString().c_str());
+        mHopsanCore.loadExternalComponentLib(QString(DEFAULTCOMPONENTLIB).toStdString().c_str());
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 "<hopsanmodelfile hmfversion=\"0.4\" hopsanguiversion=\"0.6.0\" hopsancoreversion=\"0.6.0\">"
                 "  <system logsamples=\"2048\" typename=\"Subsystem\" name=\"unittestmodel\">"
@@ -71,7 +71,7 @@ public:
 
         mpSystemFromText = mHopsanCore.loadHMFModel(xmlStr);
         double startT, stopT;
-        mpSystemFromFile = mHopsanCore.loadHMFModel("../../../Models/unittestmodel.hmf",startT,stopT);
+        mpSystemFromFile = mHopsanCore.loadHMFModel("../Models/unittestmodel.hmf",startT,stopT);
     }
 
 private:
@@ -736,7 +736,7 @@ private Q_SLOTS:
 
         //Generate S-function
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callLabViewSITGenerator(pwdPath+"/labview/unittestmodel_export.cpp", system, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
+        pHandler->callLabViewSITGenerator(pwdPath+"/labview/unittestmodel_export.cpp", system, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/", false);
 
         QVERIFY2(QFile::exists(pwd+"/labview/codegen.c"), "Failed to generate LabVIEW files, all files not found.");
         QVERIFY2(QFile::exists(pwd+"/labview/hopsanrt-wrapper.h"), "Failed to generate LabVIEW files, all files not found.");
@@ -759,7 +759,7 @@ private Q_SLOTS:
     {
         QTest::addColumn<ComponentSystem*>("system");
         double start, stop;
-        QString path = QDir::currentPath()+"/../../../Models/unittestmodel_export.hmf";
+        QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
         removeDir(QDir::currentPath()+"/labview/");
         QDir().mkpath(QDir::currentPath()+"/labview/");
         QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
@@ -774,7 +774,7 @@ private Q_SLOTS:
 
         //Generate FMU
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callModelicaGenerator(code, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false, HString(pwd.toStdString().c_str())+"/modelica/", name);
+        pHandler->callModelicaGenerator(code, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/", false, HString(pwd.toStdString().c_str())+"/modelica/", name);
 
         QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(LIBEXT)).c_str())), "Failure! Modelica generator failed to generate dll.");
     }

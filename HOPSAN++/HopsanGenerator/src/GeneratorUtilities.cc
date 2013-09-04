@@ -310,7 +310,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
 #elif linux
     QString gccCommand = "cd \""+path+"\" && gcc "+flags+" ";
     gccCommand.append(c+" -fpermissive -o "+o+".so "+i+" "+l);
-    qDebug() << "Command = " << gccCommand;
+    //qDebug() << "Command = " << gccCommand;
     gccCommand +=" 2>&1";
     FILE *fp;
     char line[130];
