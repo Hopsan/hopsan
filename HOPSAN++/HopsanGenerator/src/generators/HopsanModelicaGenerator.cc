@@ -18,8 +18,6 @@ HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QStrin
 
 void HopsanModelicaGenerator::generateFromModelica(QString code)
 {
-    validateFunctions();
-
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;

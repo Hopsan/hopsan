@@ -6,9 +6,11 @@
 QT       += testlib
 QT       -= gui
 
-TARGET = ../../bin/tst_symhoptest
+TARGET = tst_symhoptest
 CONFIG   += console
 CONFIG   -= app_bundle
+DESTDIR = $${PWD}/../../bin
+
 
 TEMPLATE = app
 

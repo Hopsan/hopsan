@@ -162,8 +162,6 @@ bool sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > 
 void removeDuplicates(QList<Expression> &rSet);
 
 bool isWhole(const double value);
-
-void validateFunctions();
 }
 
 bool fuzzyEqual(const double &x, const double &y);
