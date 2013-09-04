@@ -25,6 +25,46 @@
 ******************************
     Version History
 ******************************
+0.6.2
+- Update: Updated to Qt 4.8.5 (Windows)
+
+- Feature: HCOM Add plot variable command (adpv) in addition to chpv
+- Feature: HCOM commands for changing and displaying plot scales for variables
+- Feature: HCOM command for removing variables
+- Feature: Custom plot scales can now be set in the component properties, they are stored in the model.
+- Feature: Default/custom plot Time unit can now be set/added
+- Feature: Plot tab axes can now be locked
+- Feature: HCOM: chdfsc changes default plot scale, A new chsc command has been added for plot window local scaling
+
+- Enhancement: Replaced the speed slider for animation with a spinbox
+- Enhancement: Plot axis and curve scaling limits can now be manually set using text instead of spinbox (Ex: you can write 1e-12 or similar for fine tuning limits)
+- Enhancement: Plot time scaling has been moved to its own dialog as it may affect more then one curve. (For now it only works if all curves in a plot have the same generation)
+- Enhancement: The welcome widget is now resized to use all available space.
+- Enhancement: HCOM: disp will only show specified generation, or last generation if none is specified
+- Enhancement: Hide signals function will now also hide sub systems of signal type
+- Enhancement: It should now be possible to recompile Modelica and C++ components without closing the model
+- Enhancement: Components are be re-compilable from inside the component properties dialog
+
+- Fixed: Imported data is no longer removed automatically when plot data limit is reached
+- Fixed: "Save subsystem as" actually no longer saves the mother system
+- Fixed: Plot axis labels always show 0 if value less then 1.0e-12 (was a Qwt 6.1 "bug")
+- Fixed: Real-time animation now checks model before simulation
+- Fixed: Axis lock and zoom now works "as it should"
+- Fixed: HCOM now understand alias when dealing with parameters (startvalues and constants)
+- Fixed: HCOM rmvar crashes
+- Fixed: Mechanic mass and inertia with multi-port components no longer overwrites start values with 0.0
+- Fixed: LogData should no longer be auto re-enabled in SIT export and maybe other exports as well (would lead to crash after t_end in real-time simulation)
+- Fixed: Code generation wizard no-longer generates non-compilable code
+- Fixed: Components dialog now get the source code tab if component is loaded from hmf
+- Fixed: Zoom rectangle now changed properly when changing time unit 
+- Fixed: Value is no longer reset if user closes component properties dialog while editing a value
+- Fixed: Sfunctions exports now call finilize
+- Fixed: If an external subsystem file is renamed or removed, it is impossible to edit the subsystem
+- Fixed: If you generate a component, change the svg icon and then re-generates it, icon is reset to default
+
+- Fixed: Other related issues that were never entered into the issue tracker
+
+
 0.6.1
 - Feature: Import CSV data directly to plot window
 - Feature: Plot window can be opened without simulating the model first
@@ -55,8 +95,8 @@
 - Important: The handling of Parameter Startvalues and "dynamic" parameter/ports have changed significantly in this release.
              Read the important information above.
 
-- Update: Updated to Qt 4.8.4
-- Update: Updated to Python 2.7.5
+- Update: Updated to Qt 4.8.4 (Windows)
+- Update: Updated to Python 2.7.5 (Windows)
 - Update: Updated to PythonQt2.1_Qt4.8
 - Update: Updated to Qwt6.1.0
 
