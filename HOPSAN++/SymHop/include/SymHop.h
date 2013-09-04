@@ -153,18 +153,18 @@ private:
     QStringList splitWithRespectToParentheses(const QString str, const QChar c);
 };
 
-QString getFunctionDerivative(const QString &key);
-QStringList getSupportedFunctionsList();
-QStringList getCustomFunctionList();
+QString DLLIMPORTEXPORT getFunctionDerivative(const QString &key);
+QStringList DLLIMPORTEXPORT getSupportedFunctionsList();
+QStringList DLLIMPORTEXPORT getCustomFunctionList();
 
-bool findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0, QList<int> preferredPath=QList<int>());
-bool sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder);
-void removeDuplicates(QList<Expression> &rSet);
+bool DLLIMPORTEXPORT findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0, QList<int> preferredPath=QList<int>());
+bool DLLIMPORTEXPORT sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder);
+void DLLIMPORTEXPORT removeDuplicates(QList<Expression> &rSet);
 
-bool isWhole(const double value);
+bool DLLIMPORTEXPORT isWhole(const double value);
 }
 
-bool fuzzyEqual(const double &x, const double &y);
-void hAssert(const bool cond);
+//bool fuzzyEqual(const double &x, const double &y);
+//void hAssert(const bool cond);
 
 #endif // SYMHOP_H

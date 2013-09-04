@@ -19,12 +19,20 @@ INCLUDEPATH *= $${PWD}/include/
 #--------------------------------------------------
 
 # -------------------------------------------------
+# Platform specific additional project options
+# -------------------------------------------------
+win32 {
+    DEFINES += DLLLIBEXPORT
+}
+
+# -------------------------------------------------
 # Project files
 # -------------------------------------------------
 
 SOURCES += src/SymHop.cc
 
-HEADERS += include/SymHop.h
+HEADERS += include/SymHop.h \
+    include/win32dll.h
 
 
 

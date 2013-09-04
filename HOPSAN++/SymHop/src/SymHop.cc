@@ -30,6 +30,26 @@
 using namespace std;
 using namespace SymHop;
 
+// Local help functions
+bool fuzzyEqual(const double &x, const double &y)
+{
+    if(y>0)
+        return (x<=y*1.0000001 && x*1.0000001>=y);
+    else
+        return (x>=y*1.0000001 && x*1.0000001<=y);
+}
+
+
+
+void hAssert(const bool cond)
+{
+    if(!cond)
+    {
+        qDebug() << "hAssert FAILED!";
+    }
+}
+//---------------------------------------------------
+
 //! @class Expression
 //! @brief The Expression class implement a class for symbolic expressions
 //! @author Robert Braun <robert.braun@liu.se>
@@ -3017,23 +3037,4 @@ QStringList Expression::splitWithRespectToParentheses(const QString str, const Q
     }
     ret.append(str.mid(start,len));
     return ret;
-}
-
-
-bool fuzzyEqual(const double &x, const double &y)
-{
-    if(y>0)
-        return (x<=y*1.0000001 && x*1.0000001>=y);
-    else
-        return (x>=y*1.0000001 && x*1.0000001<=y);
-}
-
-
-
-void hAssert(const bool cond)
-{
-    if(!cond)
-    {
-        qDebug() << "hAssert FAILED!";
-    }
 }

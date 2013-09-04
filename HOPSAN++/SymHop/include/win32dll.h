@@ -41,9 +41,9 @@
 //! This only applies to Windows operation systems
 //!
 
-#ifdef STATICCORE
+#ifdef STATICLIB
 #define DLLIMPORTEXPORT
-#elif defined DOCOREDLLEXPORT
+#elif defined DLLLIBEXPORT
 #define DLLIMPORTEXPORT DLLEXPORT /* DLL export */
 #else
 #define DLLIMPORTEXPORT DLLIMPORT /* EXE import */
