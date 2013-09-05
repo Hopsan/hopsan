@@ -73,9 +73,6 @@ HEADERS += \
     include/generators/HopsanFMIGenerator.h \
     include/generators/HopsanLabViewGenerator.h
 
-OTHER_FILES += \
-    HopsanCoreBuild.prf
-
 RESOURCES += \
     templates.qrc
 

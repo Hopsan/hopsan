@@ -20,7 +20,7 @@
 //!
 //! @brief Contains the SymHop library for symbolic expressions
 //!
-//$Id: SymHop.cc 4874 2013-01-10 12:28:51Z robbr48 $
+//$Id$
 
 #include <cassert>
 #include <cmath>

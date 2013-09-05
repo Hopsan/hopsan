@@ -8,7 +8,8 @@ TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
 
-QT += xml core gui
+QT += core
+QT -= gui
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
@@ -19,10 +20,21 @@ INCLUDEPATH *= $${PWD}/include/
 #--------------------------------------------------
 
 # -------------------------------------------------
+# Non platform specific HopsanCompGen options
+# -------------------------------------------------
+CONFIG(debug, debug|release) {
+  DEFINES *= DEBUGCOMPILING
+  QMAKE_CXXFLAGS += -pedantic -Wno-long-long
+}
+CONFIG(release, debug|release) {
+  DEFINES *= RELEASECOMPILING
+}
+
+# -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    DEFINES += DLLLIBEXPORT
+    DEFINES += SYMHOPDLLEXPORT
     DEFINES -= UNICODE
 }
 

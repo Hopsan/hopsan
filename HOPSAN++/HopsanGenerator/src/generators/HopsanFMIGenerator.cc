@@ -586,7 +586,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
 
     int nInputPorts = inVarValueRefs.size()+inoutVarValueRefs.size();
     int nOutputPorts = outVarValueRefs.size()+inoutVarValueRefs.size();
-    double scale = max(max(nInputPorts, nOutputPorts)/2.0, 1.0);
+    double scale = qMax(qMax(nInputPorts, nOutputPorts)/2.0, 1.0);
     QString scaleStr = QString::number(scale);
 
     QTextStream fmuXmlStream(&fmuXmlFile);

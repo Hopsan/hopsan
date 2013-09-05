@@ -20,19 +20,16 @@
 //!
 //! @brief Contains the SymHop library for symbolic expressions
 //!
-//$Id: SymHop.h 4881 2013-01-11 13:29:41Z robbr48 $
+//$Id$
 
 #ifndef SYMHOP_H
 #define SYMHOP_H
 
-//#include <QtGui>
 #include <QString>
 #include <QList>
 #include <QStringList>
 #include <QDebug>
 #include "win32dll.h"
-
-using namespace std;
 
 namespace SymHop {
 

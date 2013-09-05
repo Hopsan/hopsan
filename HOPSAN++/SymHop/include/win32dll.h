@@ -20,7 +20,7 @@
 //!
 //! @brief Handles DLLIMPORT, DLLEXPORT and DLLIMPORTEXPORT for win32 dll support
 //!
-//$Id: win32dll.h 4628 2012-08-20 13:00:12Z robbr48 $
+//$Id$
 
 #ifndef WIN32DLL_H_INCLUDED
 #define WIN32DLL_H_INCLUDED
@@ -43,7 +43,7 @@
 
 #ifdef STATICLIB
 #define DLLIMPORTEXPORT
-#elif defined DLLLIBEXPORT
+#elif defined SYMHOPDLLEXPORT
 #define DLLIMPORTEXPORT DLLEXPORT /* DLL export */
 #else
 #define DLLIMPORTEXPORT DLLIMPORT /* EXE import */

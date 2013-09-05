@@ -48,8 +48,8 @@ LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set HopsanGenerator Paths
-INCLUDEPATH *= $${PWD}/../HopsanGenerator/include/
-LIBS *= -L$${PWD}/../bin -lHopsanGenerator$${DEBUG_EXT}
+#INCLUDEPATH *= $${PWD}/../HopsanGenerator/include/
+#LIBS *= -L$${PWD}/../bin -lHopsanGenerator$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
