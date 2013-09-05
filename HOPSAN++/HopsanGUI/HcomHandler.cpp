@@ -2501,15 +2501,6 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
 //! @param axis Axis to add curve to
 void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 {
-    bool allGens=false;
-    if(cmd.endsWith(".*"))
-    {
-        allGens=true;
-        cmd.chop(2);
-    }
-
-    cmd.remove("\"");
-
     SystemContainer *pCurrentSystem = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
 
@@ -2520,20 +2511,10 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
         return;
     }
 
-    if(allGens)
+    SharedLogVariableDataPtrT pGenData = getVariablePtr(cmd);
+    if(pData)
     {
-        for(int i=pData->getLowestGeneration(); i<=pData->getHighestGeneration(); ++i)
-        {
-            SharedLogVariableDataPtrT pGenData = getVariablePtr(cmd+"."+QString::number(i));
-            if(pData)
-            {
-                gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pGenData, axis);
-            }
-        }
-    }
-    else
-    {
-        gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pData, axis);
+        gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pGenData, axis);
     }
 }
 
@@ -3295,109 +3276,56 @@ void HcomHandler::getVariables(QString str, QStringList &variables) const
 {
     if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
-    bool ok;
-    QString end = str.section(".",-1);
-    int generation = end.toInt(&ok)-1;
-    if(generation < 0 && ok) return;  //There are no generations smaller than zero
-    if(ok)
+    if(str.endsWith(".L"))
     {
-        str.chop(end.size()+1);
-        end.prepend(".");
+        str.chop(1);
+        int generation = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLowestGenerationNumber();
+        str.append(QString::number(generation+1));
     }
-    else if(end == "*")
+    else if(str.endsWith(".H"))
     {
-        str.chop(end.size()+1);
-        end = "";
-    }
-    else if(end == "L")
-    {
-        str.chop(end.size()+1);
-        end = ".1";     //0 because log data handler starts from 0 while the GUI shows values from 1, the conversion means that 0 => -1 = latest generation
-        generation = 0;
-    }
-    else if(end == "H")
-    {
-        str.chop(end.size()+1);
-        generation = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getHighestGenerationNumber();
-        end = "."+QString::number(generation+1);
-
-    }
-    else
-    {
-        generation = -1;
-        end = "";
+        str.chop(2);
+        int generation = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getHighestGenerationNumber();
+        str.append(QString::number(generation+1));
     }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
-    QStringList names = pSystem->getLogDataHandler()->getLogDataVariableNames(".", generation);
+    QStringList names = pSystem->getLogDataHandler()->getLogDataVariableNames("#", -1);
     names.append(pSystem->getAliasNames());
 
-    //Add quotation marks around component name if it contains spaces
-    for(int n=0; n<names.size(); ++n)
+    QStringList namesWithGeneration;
+    for(int i=pSystem->getLogDataHandler()->getLowestGenerationNumber(); i<pSystem->getLogDataHandler()->getHighestGenerationNumber()+1; ++i)
     {
-        if(names[n].split(".").first().contains(" "))
+        for(int n=0; n<names.size(); ++n)
         {
-            names[n].prepend("\"");
-            names[n].insert(names[n].indexOf("."),"\"");
-        }
-    }
-
-    //Translate long data names to short equivalents
-    for(int n=0; n<names.size(); ++n)
-    {
-        toShortDataNames(names[n]);
-    }
-
-    QStringList splitStr = str.split("*");
-    for(int n=0; n<names.size(); ++n)
-    {
-        bool ok=true;
-        QString name = names[n];
-        if(splitStr.size() == 1)   //Special case, no asterixes
-        {
-            if(splitStr[0].isEmpty())
-                ok = true;
-            else
-                ok = (name == splitStr[0]);
-        }
-        else        //Other cases, loop substrings and check them
-        {
-            for(int s=0; s<splitStr.size(); ++s)
+            QString shortName = names[n];
+            toShortDataNames(shortName);
+            if(!pSystem->getLogDataHandler()->getPlotData(names[n],i).isNull())
             {
-                if(splitStr[s].isEmpty()) continue;
-                if(s==0)
-                {
-                    if(!name.startsWith(splitStr[s]))
-                    {
-                        ok=false;
-                        break;
-                    }
-                    name.remove(0, splitStr[s].size());
-                }
-                else if(s==splitStr.size()-1)
-                {
-                    if(!name.endsWith(splitStr[s]))
-                    {
-                        ok=false;
-                        break;
-                    }
-                }
-                else
-                {
-                    if(!name.contains(splitStr[s]))
-                    {
-                        ok=false;
-                        break;
-                    }
-                    name.remove(0, name.indexOf(splitStr[s])+splitStr[s].size());
-                }
+                namesWithGeneration.append(shortName+"."+QString::number(i+1));
             }
         }
-        if(ok)
+    }
+
+    QRegExp re(str, Qt::CaseSensitive, QRegExp::Wildcard);
+    Q_FOREACH(const QString name, namesWithGeneration)
+    {
+        if(re.exactMatch(name))
+            variables.append(name);
+    }
+
+    //Found no variables, try without generations
+    if(variables.isEmpty())
+    {
+        Q_FOREACH(const QString name, namesWithGeneration)
         {
-            variables.append(names[n]+end);
+            QString choppedName = name;
+            choppedName.chop(name.section(".",-1,-1).size()+1);
+            if(re.exactMatch(choppedName))
+                variables.append(choppedName);
         }
     }
+    variables.removeDuplicates();
 }
 
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
@@ -3587,7 +3515,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 
     fullName.replace(".","#");
 
-    int generation = -1;
+    int generation=-1;
 
     if(fullName.count("#") == 1 || fullName.count("#") == 3)
     {
@@ -3693,6 +3621,8 @@ double HcomHandler::getNumber(const QString str, bool *ok)
 //! @param variable Reference to variable string
 void HcomHandler::toShortDataNames(QString &variable) const
 {
+    variable.replace("#",".");
+
     if(variable.endsWith(".Position"))
     {
         variable.chop(9);
