@@ -453,8 +453,12 @@ void PlotTab::applyAxisLabelSettings()
 //! @brief Toggles the axis lock on/off for the enabled axis
 void PlotTab::toggleAxisLock()
 {
+    bool allLocked = false;
     // First check if they are locked
-    bool allLocked = mpXLockCheckBox->isChecked();
+    if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::xBottom))
+    {
+        allLocked = mpXLockCheckBox->isChecked();
+    }
     if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft))
     {
         allLocked *= mpYLLockCheckBox->isChecked();
@@ -465,7 +469,10 @@ void PlotTab::toggleAxisLock()
     }
 
     // Now switch to the other state (but only if axis is enabled)
-    mpXLockCheckBox->setChecked(!allLocked);
+    if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::xBottom))
+    {
+        mpXLockCheckBox->setChecked(!allLocked);
+    }
     if (mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft))
     {
         mpYLLockCheckBox->setChecked(!allLocked);
@@ -868,9 +875,12 @@ void PlotTab::removeCurve(PlotCurve *curve)
         resetXTimeVector();
     }
 
-    // Reset zoom if last curve was removed (makes no sense to keep it zoomed in)
+    // Reset zoom and remove axis locks if last curve was removed (makes no sense to keep it zoomed in)
     if(mPlotCurvePtrs[plotID].isEmpty())
     {
+        mpXLockCheckBox->setChecked(false);
+        mpYLLockCheckBox->setChecked(false);
+        mpYRLockCheckBox->setChecked(false);
         resetZoom();
     }
 

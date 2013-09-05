@@ -61,6 +61,7 @@
 - Fixed: Sfunctions exports now call finilize
 - Fixed: If an external subsystem file is renamed or removed, it is impossible to edit the subsystem
 - Fixed: If you generate a component, change the svg icon and then re-generates it, icon is reset to default
+- Fixed: Crash on startup if configfile contained un-supported unit scales. (Old Hopsan versions would crash if a newer version had been run.)
 
 - Fixed: Other related issues that were never entered into the issue tracker
 
