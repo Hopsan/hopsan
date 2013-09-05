@@ -988,7 +988,7 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 
             retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size())+".getIdx", QList<Expression>() << Expression(1)));
 
-            QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20);+".getIdx(1.0)";
+            QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20)+".getIdx(1.0)";
             ret.append(term);
             ret.append("+");
 
