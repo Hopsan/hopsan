@@ -1158,7 +1158,7 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
         QStringList output;
         if(cmd.isEmpty())
         {
-            getVariables("*.L", output);
+            getVariables("*.H", output);
         }
         else
         {
