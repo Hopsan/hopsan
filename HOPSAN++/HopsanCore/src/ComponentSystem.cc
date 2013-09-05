@@ -2971,9 +2971,10 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
 
 
     // Measure time for each component during specified amount of steps
-    double time=mTime; // Init time
+    double time;
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
     {
+        time = mTime; // Init time
         tbb::tick_count comp_start = tbb::tick_count::now();
         for(size_t t=0; t<nSteps; ++t)
         {
@@ -2984,9 +2985,9 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
         mComponentSignalptrs[s]->setMeasuredTime((comp_end-comp_start).seconds());
     }
 
-    time=mTime; // Reset time
     for(size_t c=0; c<mComponentCptrs.size(); ++c)
     {
+        time=mTime; // Reset time
         tbb::tick_count comp_start = tbb::tick_count::now();
         for(size_t t=0; t<nSteps; ++t)
         {
@@ -2997,9 +2998,9 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
         mComponentCptrs[c]->setMeasuredTime((comp_end-comp_start).seconds());
     }
 
-    time=mTime; // Reset time
     for(size_t q=0; q<mComponentQptrs.size(); ++q)
     {
+        time=mTime; // Reset time
         tbb::tick_count comp_start = tbb::tick_count::now();
         for(size_t t=0; t<nSteps; ++t)
         {
