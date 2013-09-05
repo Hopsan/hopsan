@@ -50,8 +50,8 @@ win32 {
     #DEFINES += STATICCORE      #Use this if you are compiling the core into a program directly or building a static lib
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
     DEFINES -= UNICODE
-    LIBS += -lole32
-    LIBS += -loleaut32
+    #LIBS += -lole32
+    #LIBS += -loleaut32
 
     #--------------------------------------------------------
     # Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
@@ -66,6 +66,9 @@ win32 {
         message(Compiling HopsanCore WITHOUT TBB support)
     }
     #--------------------------------------------------------
+
+    # Enable auto-import
+    QMAKE_LFLAGS += -Wl,--enable-auto-import
 
     #Generate the svnrevnum.h file
     system($${PWD}/../getSvnRevision.bat)

@@ -95,7 +95,8 @@ win32 {
     LIBS += -L$${PYTHON_PATH}/libs
 
     #Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
-    QMAKE_LFLAGS += -Wl,--large-address-aware
+    #Also enable auto-import
+    QMAKE_LFLAGS += -Wl,--large-address-aware,--enable-auto-import
 
     CONFIG(debug, debug|release) {
         CONFIG += console #Use this for consol app support (cout output, you aslo need to run in consol but hopsan seems slow)
