@@ -35,38 +35,35 @@ public:
     BarrierLock(size_t nThreads)
     {
         mnThreads=nThreads;
-        mpCounter = new int;
-        mpLock = new bool;
-
-        lock();
+        mCounter = 0;
+        mLock = true;
     }
 
     //! @brief Locks the barrier.
-    inline void lock() { *mpCounter=0; *mpLock=true; }
+    inline void lock() { mCounter=0; mLock=true; }
 
     //! @brief Unlocks the barrier.
-    inline void unlock() { *mpLock=false; }
+    inline void unlock() { mLock=false; }
 
     //! @brief Returns whether or not the barrier is locked.
-    inline bool isLocked() { return *mpLock; }
+    inline bool isLocked() { return mLock; }
 
     //! @brief Increments barrier counter by one.
-    inline void increment() { ++(*mpCounter); }
+    inline void increment() { ++mCounter; }
 
     //! @brief Returns whether or not all threads have incremented the barrier.
-    inline bool allArrived() { return (*mpCounter == (mnThreads-1)); }      //One less due to master thread
+    inline bool allArrived() { return (mCounter == (mnThreads-1)); }      //One less due to master thread
 
 private:
     int mnThreads;
 #ifdef USETBB
-    tbb::atomic<int*> mpCounter;
-    tbb::atomic<bool*> mpLock;
+    tbb::atomic<int> mCounter;
+    tbb::atomic<bool> mLock;
 #else
-    int *mpCounter;
-    bool *mpLock;
+    int mCounter;
+    bool mLock;
 #endif
 };
-
 
 
 
