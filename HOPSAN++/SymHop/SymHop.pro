@@ -23,6 +23,7 @@ INCLUDEPATH *= $${PWD}/include/
 # -------------------------------------------------
 win32 {
     DEFINES += DLLLIBEXPORT
+    DEFINES -= UNICODE
 }
 
 # -------------------------------------------------
