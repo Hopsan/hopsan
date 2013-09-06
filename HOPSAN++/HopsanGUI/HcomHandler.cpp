@@ -51,6 +51,10 @@
 #include "qwt_plot.h"
 
 
+
+#define HCOMERR(text) mpConsole->printErrorMessage(text,"",false)
+
+
 HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 {
     mAborted = false;
@@ -617,7 +621,7 @@ void HcomHandler::executeCommand(QString cmd)
     if(idx<0)
     {
         if(evaluateArithmeticExpression(cmd)) { return; }
-        mpConsole->printErrorMessage("Unrecognized command: " + majorCmd, "", false);
+        HCOMERR("Unrecognized command: " + majorCmd);
     }
     else
     {
@@ -640,7 +644,7 @@ void HcomHandler::executeSimulateCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', splitCmd);
     if(splitCmd.size() > 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     else if(splitCmd.size() == 1 && splitCmd[0] == "all")
@@ -658,7 +662,7 @@ void HcomHandler::executeSimulateCommand(const QString cmd)
     }
     else
     {
-        mpConsole->printErrorMessage("Unknown argument.", "", false);
+        HCOMERR("Unknown argument.");
         return;
     }
 }
@@ -743,7 +747,7 @@ void HcomHandler::executeAddParameterCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', splitCmd);
     if(splitCmd.size() != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.","",false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -794,11 +798,18 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         getParameters(splitCmd[0], parameterNames);
         QString newValue = splitCmd[1];
 
+        if(parameterNames.isEmpty())
+        {
+            HCOMERR("Parameter(s) not found.");
+        }
+
+        int nChanged=0;
         for(int p=0; p<parameterNames.size(); ++p)
         {
             if(pSystem->getParameterNames().contains(parameterNames[p]))
             {
-                pSystem->setParameterValue(parameterNames[p], newValue);
+                if(pSystem->setParameterValue(parameterNames[p], newValue))
+                    ++nChanged;
             }
             else if(!pSystem->getFullNameFromAlias(parameterNames[p]).isEmpty())
             {
@@ -808,7 +819,8 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                 ModelObject *pComponent = pSystem->getModelObject(compName);
                 if(pComponent)
                 {
-                    pComponent->setParameterValue(parName, newValue);
+                    if(pComponent->setParameterValue(parName, newValue))
+                        ++nChanged;
                 }
             }
             else
@@ -829,22 +841,28 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                             VariableType varType;
                             if(pSystem->getParameterNames().contains(newValue)) //System parameter
                             {
-                                components[c]->setParameterValue(parameters[p], newValue);
+                                if(components[c]->setParameterValue(parameters[p], newValue))
+                                    ++nChanged;
                             }
                             else
                             {
-                                components[c]->setParameterValue(parameters[p], evaluateExpression(newValue, &varType, &ok));
+                                if(components[c]->setParameterValue(parameters[p], evaluateExpression(newValue, &varType, &ok)))
+                                    ++nChanged;
                             }
                         }
                     }
                 }
             }
         }
-        mpConsole->print("Changed value for "+QString::number(parameterNames.size())+" parameters.");
+        int nFailed = parameterNames.size()-nChanged;
+        if(nChanged>0)
+            mpConsole->print("Changed value for "+QString::number(nChanged)+" parameters.");
+        if(nFailed>0)
+            HCOMERR("Failed to change value for "+QString::number(parameterNames.size())+" parameters.");
     }
     else
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.","",false);
+        HCOMERR("Wrong number of arguments.");
     }
 }
 
@@ -889,12 +907,12 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
         }
         else
         {
-            mpConsole->printErrorMessage("Failed to apply simulation settings.","",false);
+            HCOMERR("Failed to apply simulation settings.");
         }
     }
     else
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
     }
 }
 
@@ -976,7 +994,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 
         if(idx < 0)
         {
-            mpConsole->printErrorMessage("No help available for this command.","",false);
+            HCOMERR("No help available for this command.");
         }
         else
         {
@@ -1004,7 +1022,7 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', splitCmd);
     if(splitCmd.size() < 1)
     {
-        mpConsole->printErrorMessage("Too few arguments.", "", false);
+        HCOMERR("Too few arguments.");
         return;
     }
 
@@ -1034,7 +1052,7 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
                 file.setFileName(path+".hcom");
                 if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
                 {
-                    mpConsole->printErrorMessage("Unable to read file.","",false);
+                    HCOMERR("Unable to read file.");
                     return;
                 }
             }
@@ -1091,7 +1109,7 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1108,7 +1126,7 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        mpConsole->printErrorMessage("Unable to write to file.","",false);
+        HCOMERR("Unable to write to file.");
         return;
     }
 
@@ -1124,7 +1142,7 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 //! @brief Execute function for "print" command
 void HcomHandler::executePrintCommand(const QString /*cmd*/)
 {
-    mpConsole->printErrorMessage("Function not yet implemented.","",false);
+    HCOMERR("Function not yet implemented.");
 }
 
 
@@ -1135,7 +1153,7 @@ void HcomHandler::executeChangePlotWindowCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1173,7 +1191,7 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
     }
     else
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 }
@@ -1185,7 +1203,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
     QStringList split = cmd.split(" ");
     if(split.size() != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1194,7 +1212,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
     int id = getNumber(split.last(), &ok);
     if(!ok)
     {
-        mpConsole->printErrorMessage("Illegal value.","",false);
+        HCOMERR("Illegal value.");
         return;
     }
 
@@ -1210,12 +1228,12 @@ void HcomHandler::executePeekCommand(const QString cmd)
         }
         else
         {
-            mpConsole->printErrorMessage(err,"",false);
+            HCOMERR(err);
         }
     }
     else
     {
-        mpConsole->printErrorMessage("Data variable not found","",false);
+        HCOMERR("Data variable not found");
     }
 }
 
@@ -1226,7 +1244,7 @@ void HcomHandler::executePokeCommand(const QString cmd)
     QStringList split = cmd.split(" ");
     if(split.size() != 3)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1236,7 +1254,7 @@ void HcomHandler::executePokeCommand(const QString cmd)
     double value = getNumber(split.last(), &ok2);
     if(!ok1 || !ok2)
     {
-        mpConsole->printErrorMessage("Illegal value.","",false);
+        HCOMERR("Illegal value.");
         return;
     }
 
@@ -1251,12 +1269,12 @@ void HcomHandler::executePokeCommand(const QString cmd)
         }
         else
         {
-            mpConsole->printErrorMessage(err,"",false);
+            HCOMERR(err);
         }
     }
     else
     {
-        mpConsole->printErrorMessage("Data variable not found.","",false);
+        HCOMERR("Data variable not found.");
     }
     return;
 }
@@ -1269,7 +1287,7 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', splitCmd);
     if(splitCmd.size() != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1284,7 +1302,7 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
     toLongDataNames(longName);
     if(/*!pVariable || */!gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, longName/*pVariable->getFullVariableName()*/))
     {
-        mpConsole->printErrorMessage("Failed to assign variable alias.","",false);
+        HCOMERR("Failed to assign variable alias.");
     }
 
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
@@ -1294,7 +1312,7 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
 
 void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 {
-    //mpConsole->printErrorMessage("Not implemented yet :(", "", false);
+    //HCOMERR("Not implemented yet :(");
     QStringList varNames = getArguments(cmd);
 
     for(int s=0; s<varNames.size(); ++s)
@@ -1319,7 +1337,7 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1329,7 +1347,7 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
     getVariables(getArgument(cmd,0),vars);
     if(vars.isEmpty())
     {
-        mpConsole->printErrorMessage("Unknown variable.","",false);
+        HCOMERR("Unknown variable.");
         return;
     }
     Q_FOREACH(const QString var, vars)
@@ -1357,7 +1375,7 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1397,7 +1415,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1408,7 +1426,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     getVariables(varName,vars);
     if(vars.isEmpty())
     {
-        mpConsole->printErrorMessage("Unknown variable.","",false);
+        HCOMERR("Unknown variable.");
         return;
     }
     Q_FOREACH(const QString var, vars)
@@ -1423,7 +1441,7 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1460,7 +1478,7 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
     }
     else
     {
-        mpConsole->printErrorMessage("Variable not found.", "", false);
+        HCOMERR("Variable not found.");
     }
 
     return;
@@ -1473,7 +1491,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
     QStringList splitCmd = cmd.split(" ");
     if(splitCmd.size() != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     QString pref = splitCmd[0];
@@ -1483,7 +1501,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
     {
         if(value != "on" && value != "off")
         {
-            mpConsole->printErrorMessage("Unknown value.","",false);
+            HCOMERR("Unknown value.");
             return;
         }
         gConfig.setUseMultiCore(value=="on");
@@ -1494,7 +1512,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         int nThreads = value.toInt(&ok);
         if(!ok)
         {
-            mpConsole->printErrorMessage("Unknown value.","",false);
+            HCOMERR("Unknown value.");
             return;
         }
         gConfig.setNumberOfThreads(nThreads);
@@ -1505,7 +1523,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         int algorithm = value.toInt(&ok);
         if(!ok)
         {
-            mpConsole->printErrorMessage("Unknown value.","",false);
+            HCOMERR("Unknown value.");
             return;
         }
         gConfig.setParallelAlgorithm(algorithm);
@@ -1514,7 +1532,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
     {
         if(value != "on" && value != "off")
         {
-            mpConsole->printErrorMessage("Unknown value.","",false);
+            HCOMERR("Unknown value.");
         }
         gConfig.setCacheLogData(value=="on");
     }
@@ -1524,7 +1542,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         int limit = value.toInt(&ok);
         if(!ok)
         {
-            mpConsole->printErrorMessage("Unknown value.","",false);
+            HCOMERR("Unknown value.");
             return;
         }
         gConfig.setGenerationLimit(limit);
@@ -1535,14 +1553,14 @@ void HcomHandler::executeSetCommand(const QString cmd)
         int samples = value.toInt(&ok);
         if(!ok)
         {
-            mpConsole->printErrorMessage("Unknown value.","",false);
+            HCOMERR("Unknown value.");
             return;
         }
         gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->setNumberOfLogSamples(samples);
     }
     else
     {
-        mpConsole->printErrorMessage("Unknown command.","",false);
+        HCOMERR("Unknown command.");
     }
 }
 
@@ -1553,7 +1571,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     QStringList split = cmd.split(" ");
     if(split.size() < 2)
     {
-        mpConsole->printErrorMessage("Too few arguments.", "", false);
+        HCOMERR("Too few arguments.");
         return;
     }
     QString path = split.first();
@@ -1606,7 +1624,7 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1615,7 +1633,7 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
     QFile file(filePath);
     if(!file.exists())
     {
-        mpConsole->printErrorMessage("File not found!", "", false);
+        HCOMERR("File not found!");
         return;
     }
 
@@ -1674,7 +1692,7 @@ void HcomHandler::executeRenameComponentCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -1697,7 +1715,7 @@ void HcomHandler::executeMwdCommand(const QString /*cmd*/)
     if(gpMainWindow->mpModelHandler->count() > 0)
         mpConsole->print(gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path());
     else
-        mpConsole->printErrorMessage("No model is open.", "", false);
+        HCOMERR("No model is open.");
 }
 
 
@@ -1706,7 +1724,7 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        HCOMERR("Wrong number of arguments");
         return;
     }
 
@@ -1730,7 +1748,7 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
     }
     else
     {
-        mpConsole->printErrorMessage("Illegal directory.", "", false);
+        HCOMERR("Illegal directory.");
         return;
     }
 
@@ -1743,7 +1761,7 @@ void HcomHandler::executeListFilesCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 0)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        HCOMERR("Wrong number of arguments");
         return;
     }
 
@@ -1768,7 +1786,7 @@ void HcomHandler::executeCloseModelCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 0)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        HCOMERR("Wrong number of arguments");
         return;
     }
 
@@ -1784,7 +1802,7 @@ void HcomHandler::executeChangeTabCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        HCOMERR("Wrong number of arguments");
         return;
     }
 
@@ -1797,7 +1815,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) < 5)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        HCOMERR("Wrong number of arguments");
         return;
     }
     QStringList args = getArguments(cmd);
@@ -1818,7 +1836,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
             //Absolute
             if(args.size() != 4)
             {
-                mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+                HCOMERR("Wrong number of arguments.");
                 return;
             }
             xPos = args[1].toDouble();
@@ -1830,14 +1848,14 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
             //East of
             if(args.size() != 4)
             {
-                mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+                HCOMERR("Wrong number of arguments.");
                 return;
             }
             QString otherName = args[1];
             Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
-                mpConsole->printErrorMessage("Master component not found.");
+                HCOMERR("Master component not found.");
                 return;
             }
             double offset = args[2].toDouble();
@@ -1850,14 +1868,14 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
             //West of
             if(args.size() != 4)
             {
-                mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+                HCOMERR("Wrong number of arguments.");
                 return;
             }
             QString otherName = args[1];
             Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
-                mpConsole->printErrorMessage("Master component not found.");
+                HCOMERR("Master component not found.");
                 return;
             }
             double offset = args[2].toDouble();
@@ -1870,14 +1888,14 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
             //North of
             if(args.size() != 4)
             {
-                mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+                HCOMERR("Wrong number of arguments.");
                 return;
             }
             QString otherName = args[1];
             Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
-                mpConsole->printErrorMessage("Master component not found.");
+                HCOMERR("Master component not found.");
                 return;
             }
             double offset = args[2].toDouble();
@@ -1890,14 +1908,14 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
             //South of
             if(args.size() != 4)
             {
-                mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+                HCOMERR("Wrong number of arguments.");
                 return;
             }
             QString otherName = args[1];
             Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
-                mpConsole->printErrorMessage("Master component not found.");
+                HCOMERR("Master component not found.");
                 return;
             }
             double offset = args[2].toDouble();
@@ -1911,7 +1929,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
     Component *pObj = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->addModelObject(typeName, pos, rot));
     if(!pObj)
     {
-        mpConsole->printErrorMessage("Failed to add new component. Incorrect typename?", "", false);
+        HCOMERR("Failed to add new component. Incorrect typename?");
     }
     else
     {
@@ -1927,7 +1945,7 @@ void HcomHandler::executeConnectCommand(const QString cmd)
     QStringList args = getArguments(cmd);
     if(args.size() != 4)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        HCOMERR("Wrong number of arguments");
         return;
     }
 
@@ -1956,7 +1974,7 @@ void HcomHandler::executeCreateModelCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 0)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        HCOMERR("Wrong number of arguments");
         return;
     }
     gpMainWindow->mpModelHandler->addNewModel();
@@ -1968,7 +1986,7 @@ void HcomHandler::executeExportToFMUCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.");
+        HCOMERR("Wrong number of arguments.");
     }
 
     gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->exportToFMU(getArgument(cmd, 0));
@@ -1982,7 +2000,7 @@ void HcomHandler::executeChangeTimestepCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 2)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     QString component = split[0];
@@ -1993,11 +2011,11 @@ void HcomHandler::executeChangeTimestepCommand(const QString cmd)
     double value = evaluateExpression(split[1], &retType, &isNumber).toDouble();
     if(!isNumber)
     {
-        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
+        HCOMERR("Second argument is not a number.");
     }
     else if(!gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->hasModelObject(component))
     {
-        mpConsole->printErrorMessage("Component not found.", "", false);
+        HCOMERR("Component not found.");
     }
     else
     {
@@ -2015,14 +2033,14 @@ void HcomHandler::executeInheritTimestepCommand(const QString cmd)
     splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     QString component = split[0];
 
     if(!gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->hasModelObject(component))
     {
-        mpConsole->printErrorMessage("Component not found.", "", false);
+        HCOMERR("Component not found.");
     }
     else
     {
@@ -2038,7 +2056,7 @@ void HcomHandler::executeBodeCommand(const QString cmd)
     int nArgs = getNumberOfArguments(cmd);
     if(nArgs < 2 || nArgs > 4)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -2048,7 +2066,7 @@ void HcomHandler::executeBodeCommand(const QString cmd)
     SharedLogVariableDataPtrT pData2 = getVariablePtr(var2);
     if(!pData1 || !pData2)
     {
-        mpConsole->printErrorMessage("Data variable not found.", "", false);
+        HCOMERR("Data variable not found.");
         return;
     }
     int fMax = 500;
@@ -2068,7 +2086,7 @@ void HcomHandler::executeAbsCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     QString varName = getArgument(cmd,0);
@@ -2089,7 +2107,7 @@ void HcomHandler::executeAbsCommand(const QString cmd)
         }
         else
         {
-            mpConsole->printErrorMessage("Variable not found.", "", false);
+            HCOMERR("Variable not found.");
         }
     }
 }
@@ -2103,12 +2121,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 //    {
 //        if(mOptAlgorithm == Uninitialized)
 //        {
-//            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+//            HCOMERR("Optimization not initialized.");
 //            return;
 //        }
 //        if(mOptAlgorithm != Complex)
 //        {
-//            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
+//            HCOMERR("Only available for complex algorithm.");
 //            return;
 //        }
 
@@ -2119,12 +2137,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
     {
         if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Uninitialized)
         {
-            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+            HCOMERR("Optimization not initialized.");
             return;
         }
         if(mpOptHandler->mOptAlgorithm != OptimizationHandler::Complex)
         {
-            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
+            HCOMERR("Only available for complex algorithm.");
             return;
         }
 
@@ -2136,12 +2154,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
     {
         if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Uninitialized)
         {
-            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+            HCOMERR("Optimization not initialized.");
             return;
         }
         if(mpOptHandler->mOptAlgorithm != OptimizationHandler::Complex)
         {
-            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
+            HCOMERR("Only available for complex algorithm.");
             return;
         }
 
@@ -2157,19 +2175,19 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             int nPoint = getNumber(split[2], &ok);
             if(!ok)
             {
-                mpConsole->printErrorMessage("Argument number 2 must be a number.");
+                HCOMERR("Argument number 2 must be a number.");
                 return;
             }
             if(nPoint < 0 || nPoint > mpOptHandler->mOptObjectives.size()-1)
             {
-                mpConsole->printErrorMessage("Index out of range.");
+                HCOMERR("Index out of range.");
                 return;
             }
 
             double val = getNumber(split[3], &ok);
             if(!ok)
             {
-                mpConsole->printErrorMessage("Argument number 3 must be a number.");
+                HCOMERR("Argument number 3 must be a number.");
                 return;
             }
 
@@ -2182,12 +2200,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             int nPoint = getNumber(split[2], &ok);
             if(!ok)
             {
-                mpConsole->printErrorMessage("Argument number 2 must be a number.");
+                HCOMERR("Argument number 2 must be a number.");
                 return;
             }
             if(nPoint < 0 || nPoint > mpOptHandler->mOptParameters.size()-1)
             {
-                mpConsole->printErrorMessage("Index out of range.");
+                HCOMERR("Index out of range.");
                 return;
             }
 
@@ -2195,14 +2213,14 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             double min = getNumber(split[3], &ok);
             if(!ok)
             {
-                mpConsole->printErrorMessage("Argument number 3 must be a number.");
+                HCOMERR("Argument number 3 must be a number.");
                 return;
             }
 
             double max = getNumber(split[4], &ok);
             if(!ok)
             {
-                mpConsole->printErrorMessage("Argument number 4 must be a number.");
+                HCOMERR("Argument number 4 must be a number.");
                 return;
             }
 
@@ -2224,7 +2242,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else
         {
-            mpConsole->printErrorMessage("Unknown optimization setting: "+split[1], "", false);
+            HCOMERR("Unknown optimization setting: "+split[1]);
         }
     }
 
@@ -2240,7 +2258,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else
         {
-            mpConsole->printErrorMessage("Unknown algorithm. Only complex is supported.", "", false);
+            HCOMERR("Unknown algorithm. Only complex is supported.");
             return;
         }
 
@@ -2254,7 +2272,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else
         {
-            mpConsole->printErrorMessage("Unknown data type. Only int and double are supported.");
+            HCOMERR("Unknown data type. Only int and double are supported.");
             return;
         }
 
@@ -2326,14 +2344,14 @@ void HcomHandler::executeCallFunctionCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     QString funcName = getArgument(cmd,0);
 
     if(!mFunctions.contains(funcName))
     {
-        mpConsole->printErrorMessage("Undefined function.", "", false);
+        HCOMERR("Undefined function.");
         return;
     }
 
@@ -2355,7 +2373,7 @@ void HcomHandler::executeEchoCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     QString arg = getArgument(cmd,0);
@@ -2371,7 +2389,7 @@ void HcomHandler::executeEchoCommand(const QString cmd)
     }
     else
     {
-        mpConsole->printErrorMessage("Unknown argument, use \"on\" or \"off\"");
+        HCOMERR("Unknown argument, use \"on\" or \"off\"");
     }
 }
 
@@ -2381,7 +2399,7 @@ void HcomHandler::executeEditCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -2401,9 +2419,9 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
 {
     QStringList args = getArguments(cmd);
     int nArgs = args.size();
-    if(nArgs < 2 || nArgs > 3)
+    if(nArgs < 1 || nArgs > 3)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
@@ -2418,7 +2436,7 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
     }
     else
     {
-        mpConsole->printErrorMessage("Unknown argument, use \"on\" or \"off\"");
+        HCOMERR("Unknown argument, use \"on\" or \"off\"");
         return;
     }
 
@@ -2429,7 +2447,7 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
         nThreads = args[1].toInt(&ok);
         if(!ok)
         {
-            mpConsole->printErrorMessage("Unknown data type. Only int is supported for argument 2.");
+            HCOMERR("Unknown data type. Only int is supported for argument 2.");
             return;
         }
     }
@@ -2440,7 +2458,7 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
         algorithm = args[2].toInt(&ok);
         if(!ok)
         {
-            mpConsole->printErrorMessage("Unknown data type. Only int is supported for argument 3.");
+            HCOMERR("Unknown data type. Only int is supported for argument 3.");
             return;
         }
     }
@@ -2507,7 +2525,7 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
     SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
     if(!pData)
     {
-        mpConsole->printErrorMessage("Variable not found.","",false);
+        HCOMERR("Variable not found.");
         return;
     }
 
@@ -2554,7 +2572,7 @@ void HcomHandler::deletePlotCurve(QString cmd) const
         }
         if(!pData)
         {
-            mpConsole->printErrorMessage("Variable not found: "+cmd,"",false);
+            HCOMERR("Variable not found: "+cmd);
             return;
         }
     }
@@ -2907,7 +2925,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
                 lines[l] = lines[l].trimmed();
                 if(l>lines.size()-1)
                 {
-                    mpConsole->printErrorMessage("Missing REPEAT in while loop.","",false);
+                    HCOMERR("Missing REPEAT in while loop.");
                     return QString();
                 }
 
@@ -2954,7 +2972,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
                 lines[l] = lines[l].trimmed();
                 if(l>lines.size()-1)
                 {
-                    mpConsole->printErrorMessage("Missing ENDIF in if-statement.","",false);
+                    HCOMERR("Missing ENDIF in if-statement.");
                     return QString();
                 }
                 if(lines[l].startsWith("endif"))
@@ -2981,7 +2999,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
             {
                 if(!evalOk)
                 {
-                    mpConsole->printErrorMessage("Evaluation of if-statement argument failed.","",false);
+                    HCOMERR("Evaluation of if-statement argument failed.");
                     return QString();
                 }
                 QString gotoLabel = runScriptCommands(ifCode, abort);
@@ -2998,7 +3016,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
             {
                 if(!evalOk)
                 {
-                    mpConsole->printErrorMessage("Evaluation of if-statement argument failed.","",false);
+                    HCOMERR("Evaluation of if-statement argument failed.");
                     return QString();
                 }
                 QString gotoLabel = runScriptCommands(elseCode, abort);
@@ -3284,7 +3302,7 @@ void HcomHandler::getVariables(QString str, QStringList &variables) const
     }
     else if(str.endsWith(".H"))
     {
-        str.chop(2);
+        str.chop(1);
         int generation = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getHighestGenerationNumber();
         str.append(QString::number(generation+1));
     }
@@ -3416,7 +3434,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         getVariables(left, vars);
         if(!vars.isEmpty() && type==Scalar)
         {
-            mpConsole->printErrorMessage("Not very clever to assign a data vector with a scalar.", "", false);
+            HCOMERR("Not very clever to assign a data vector with a scalar.");
             return true;
         }
 
@@ -3439,7 +3457,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //        if(!leftIsOk && !plotDataNames.contains(left))
         if(!leftIsOk && (gpMainWindow->mpModelHandler->count() == 0 || !getVariablePtr(left)))
         {
-            mpConsole->printErrorMessage("Illegal variable name.","",false);
+            HCOMERR("Illegal variable name.");
             return false;
         }
 
