@@ -1210,6 +1210,9 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
 //! @param change Tells what it is that has changed
 QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    if(mpParentContainerObject && !mpParentContainerObject->hasModelObject(this->getName()))
+        return value;
+
     WorkspaceObject::itemChange(change, value);   //This must be done BEFORE the snapping code to avoid an event loop. This is because snap uses "moveBy()", which triggers a new itemChange event.
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)

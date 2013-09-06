@@ -650,7 +650,7 @@ void ContainerObject::deleteModelObject(QString objectName, UndoStatusEnumT undo
         }
 
         mModelObjectMap.erase(it);
-        mSelectedModelObjectsList.removeOne(obj_ptr);
+        mSelectedModelObjectsList.removeAll(obj_ptr);
         mpScene->removeItem(obj_ptr);
         obj_ptr->deleteInHopsanCore();
         obj_ptr->deleteLater();
@@ -918,7 +918,9 @@ bool ContainerObject::renameParameter(const QString oldName, const QString newNa
 //! @brief Notifies container object that a gui model object has been selected
 void ContainerObject::rememberSelectedModelObject(ModelObject *object)
 {
-    mSelectedModelObjectsList.append(object);
+    QString name = object->getName();
+    if(mModelObjectMap.contains(name) && mModelObjectMap.find(name).value() == object)
+        mSelectedModelObjectsList.append(object);
 }
 
 
@@ -1758,6 +1760,9 @@ void ContainerObject::groupSelected(QPointF pt)
 
 void ContainerObject::replaceComponent(QString name, QString newType)
 {
+    this->deselectAll();
+    mSelectedModelObjectsList.clear();
+
     ModelObject *obj = getModelObject(name);
 
     qDebug() << "Replacing " << obj->getTypeName() << " with " << newType;
@@ -1825,6 +1830,9 @@ void ContainerObject::replaceComponent(QString name, QString newType)
             newObj->setParameterValue(parNames.at(i), parValues.at(i), true);
         }
     }
+
+    this->deselectAll();
+    mSelectedModelObjectsList.clear();
 }
 
 

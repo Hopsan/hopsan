@@ -448,7 +448,7 @@ bool ModelHandler::closeAllModels()
 
     while(mModelPtrs.size() > 0)
     {
-        gConfig.addLastSessionModel(getCurrentTopLevelSystem()->getModelFileInfo().filePath());
+        gConfig.addLastSessionModel(mModelPtrs.last()->getViewContainerObject()->getModelFileInfo().filePath());
         if (!closeModel(mModelPtrs.size()-1))
         {
             return false;
