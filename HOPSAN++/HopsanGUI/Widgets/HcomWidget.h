@@ -44,7 +44,7 @@ class TerminalWidget : public QWidget
 {
     Q_OBJECT
 public:
-    TerminalWidget(MainWindow *pParent=0);
+    TerminalWidget(QWidget *pParent=0);
     QSize sizeHint() const;
     void loadConfig();
     void saveConfig();
@@ -143,6 +143,9 @@ private:
     bool mShowInfoMessages;
     bool mShowWarningMessages;
     bool mShowDebugMessages;
+
+    //Audio
+    QSound *mpErrorSound;
 };
 
 

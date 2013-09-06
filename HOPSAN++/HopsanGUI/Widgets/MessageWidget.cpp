@@ -23,7 +23,7 @@
 //!
 
 #include "MessageWidget.h"
-#include "MainWindow.h"
+//#include "MainWindow.h"
 #include "CoreAccess.h"
 #include "Configuration.h"
 #include "HcomWidget.h"
@@ -39,10 +39,12 @@ using namespace hopsan;
 
 //! @brief Constructor for the message widget class
 //! @param pParent Parent pointer (not necessary)
-MessageWidget::MessageWidget(MainWindow *pParent)
+MessageWidget::MessageWidget(QWidget *pParent, TerminalWidget *pTerminalWidget)
     : QWidget(pParent)
 {
     this->setMouseTracking(true);
+
+    mpTerminalWidget = pTerminalWidget;
 
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setReadOnly(true);
@@ -303,7 +305,8 @@ void MessageWidget::clear()
 //! @todo Is this function necessary? All it does is calling another one...
 void MessageWidget::checkMessages()
 {
-    gpMainWindow->mpTerminalWidget->checkMessages(); //!< @todo quickhack by peter to make terminal print all messages
+    //gpMainWindow->mpTerminalWidget->checkMessages(); //!< @todo quickhack by peter to make terminal print all messages
+    mpTerminalWidget->checkMessages();
     printCoreMessages();
 }
 

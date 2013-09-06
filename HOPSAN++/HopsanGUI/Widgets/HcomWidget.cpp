@@ -34,13 +34,13 @@
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
 #include "HcomHandler.h"
-#include "MainWindow.h"
+//#include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "GUIObjects/GUIModelObject.h"
 
 
-TerminalWidget::TerminalWidget(MainWindow *pParent)
+TerminalWidget::TerminalWidget(QWidget *pParent)
     : QWidget(pParent)
 {
     this->setMouseTracking(true);
@@ -219,6 +219,8 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
 
     mCurrentHistoryItem=-1;
     this->append(">> ");
+
+    mpErrorSound = new QSound(QString(SOUNDSPATH)+"error.wav");
 }
 
 
@@ -259,7 +261,7 @@ void TerminalConsole::printCoreMessages()
     }
     if(playErrorSound)
     {
-        QSound::play(QString(SOUNDSPATH) + "error.wav");
+        mpErrorSound->play();
     }
 }
 
@@ -267,13 +269,13 @@ void TerminalConsole::printCoreMessages()
 void TerminalConsole::printFatalMessage(QString message)
 {
     QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now attempt to exit.", "Ok");
-    gpMainWindow->close();
+    this->parentWidget()->close();//gpMainWindow->close();
 }
 
 
 void TerminalConsole::printErrorMessage(QString message, QString tag, bool timeStamp)
 {
-    QSound::play(QString(SOUNDSPATH) + "error.wav");
+    mpErrorSound->play();
     appendOneMessage(GUIMessage(message.prepend("Error: "), "error", tag), timeStamp);
 }
 

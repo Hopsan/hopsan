@@ -30,12 +30,13 @@
 class MainWindow;
 class CoreMessagesAccess;
 class GUIMessage;
+class TerminalWidget;
 
 class MessageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    MessageWidget(MainWindow *pParent=0);
+    MessageWidget(QWidget *pParent=0, TerminalWidget *pTerminalWidget=0);
     void printCoreMessages();
     void printGUIInfoMessage(QString message, QString tag=QString());
     void printGUIErrorMessage(QString message, QString tag=QString());
@@ -75,6 +76,7 @@ private:
     int mSubsequentTags;
 
     CoreMessagesAccess *mpCoreAccess;
+    TerminalWidget *mpTerminalWidget;
 
     QTextEdit *mpTextEdit;
     QGridLayout *mpLayout;

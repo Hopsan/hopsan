@@ -98,17 +98,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpConfig = &gConfig;
 
-    //Create the message widget and its dock (must be done before everything that uses it!)
-    mpMessageDock = new QDockWidget(tr("Messages"), this);
-    mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    mpMessageWidget = new MessageWidget(this);
-    mpMessageDock->setWidget(mpMessageWidget);
-    mpMessageDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
-    addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
-    mpMessageDock->hide();
-    //mpMessageWidget->checkMessages();
-    //mpMessageWidget->printGUIInfoMessage(tr("HopsanGUI, Version: ") + QString(HOPSANGUIVERSION));
-
     //Create the terminal widget
     mpTerminalDock = new QDockWidget(tr("Terminal"), this);
     mpTerminalDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -118,6 +107,17 @@ MainWindow::MainWindow(QWidget *parent)
     mpTerminalDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpTerminalDock);
     mpTerminalDock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    //Create the message widget and its dock (must be done before everything that uses it!)
+    mpMessageDock = new QDockWidget(tr("Messages"), this);
+    mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    mpMessageWidget = new MessageWidget(this, mpTerminalWidget);
+    mpMessageDock->setWidget(mpMessageWidget);
+    mpMessageDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
+    mpMessageDock->hide();
+    //mpMessageWidget->checkMessages();
+    //mpMessageWidget->printGUIInfoMessage(tr("HopsanGUI, Version: ") + QString(HOPSANGUIVERSION));
 
     mpTerminalWidget->checkMessages();
     mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
