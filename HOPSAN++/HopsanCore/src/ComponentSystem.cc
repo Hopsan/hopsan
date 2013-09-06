@@ -78,6 +78,7 @@ bool SimulationHandler::simulateSystem(const double startT, const double stopT, 
 {
     if (nDesiredThreads < 0)
     {
+        pSystem->addInfoMessage("Using single-threaded algorithm.");
         pSystem->simulate(stopT);
     }
     else
@@ -2728,6 +2729,10 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 {
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
 
+    std::stringstream ss;
+    ss << nThreads;
+    HString threadStr = ss.str().c_str();
+
     if(!noChanges)
     {
         mSplitCVector.clear();
@@ -2769,7 +2774,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     //Execute simulation
     if(algorithm == OfflineSchedulingAlgorithm)
     {
-        addInfoMessage("Using offline scheduling algorithm.");
+        addInfoMessage("Using offline scheduling algorithm with "+threadStr+" threads.");
 
         mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
@@ -2798,7 +2803,8 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     else if(algorithm == TaskPoolAlgorithm)
     {
-        addInfoMessage("Using task pool algorithm.");
+
+        addInfoMessage("Using task pool algorithm with "+threadStr+" threads.");
 
         TaskPool *pTaskPoolS = new TaskPool(mComponentSignalptrs);
         TaskPool *pTaskPoolC = new TaskPool(mComponentCptrs);
@@ -2833,7 +2839,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     else if(algorithm == WorkStealingAlgorithm)
     {
-        addInfoMessage("Using work stealing algorithm.");
+        addInfoMessage("Using work stealing algorithm with "+threadStr+" threads.");
 
         mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
@@ -2877,7 +2883,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     else if(algorithm == ParallelForAlgorithm)
     {
-        addInfoMessage("Using parallel for-loop algorithm using task objects.");
+        addInfoMessage("Using parallel for-loop algorithm 1 with unlimited number of threads.");
 
         // Round to nearest, we may not get exactly the stop time that we want
         size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
@@ -2921,7 +2927,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     else if(algorithm == ParallelForTbbAlgorithm)
     {
-        addInfoMessage("Using parallel for loop algorithm with TBB templates.");
+        addInfoMessage("Using parallel for loop algorithm 2 with unlimited number of threads.");
 
         // Round to nearest, we may not get exactly the stop time that we want
         size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
