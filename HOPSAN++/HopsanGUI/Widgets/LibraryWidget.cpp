@@ -775,7 +775,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
     for(int l=0; l<libs.size(); ++l)
     {
         mpCoreAccess->unLoadComponentLib(libPath+libs[l]);
-        QFile testFile(libs[l]);
+        QFile testFile(libPath+libs[l]);
         if(!testFile.open(QFile::ReadWrite))
         {
             testFile.close();
