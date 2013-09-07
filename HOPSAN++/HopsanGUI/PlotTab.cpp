@@ -572,7 +572,7 @@ void PlotTab::resizeEvent(QResizeEvent *event)
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
 //! @param desiredColor Desired color for curve (will override default colors)
-void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT plotID)
+void PlotTab::addCurve(PlotCurve *pCurve, QColor /*desiredColor*/, HopsanPlotIDEnumT plotID)
 {
     if(mHasCustomXData)
     {

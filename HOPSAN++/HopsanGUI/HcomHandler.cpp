@@ -1825,9 +1825,9 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
     args.removeFirst();
     args.removeFirst();
 
-    double xPos;
-    double yPos;
-    double rot;
+    double xPos=0;
+    double yPos=0;
+    double rot=0;
 
     if(!args.isEmpty())
     {
@@ -1923,6 +1923,16 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
             yPos = pOther->getCenterPos().y()+offset;
             rot = args[3].toDouble();
         }
+        else
+        {
+            HCOMERR("Unknown argument: " +args.first());
+            return;
+        }
+    }
+    else
+    {
+        HCOMERR("Missing argument.");
+        return;
     }
 
     QPointF pos = QPointF(xPos, yPos);
@@ -2441,7 +2451,7 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
     }
 
     bool ok;
-    int nThreads;
+    int nThreads=0;
     if(nArgs > 1)
     {
         nThreads = args[1].toInt(&ok);

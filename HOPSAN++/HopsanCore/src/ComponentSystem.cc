@@ -3388,14 +3388,14 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
         //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
 //! @brief Simulate function that overrides multi-threaded simulation call with a single-threaded call
 //! In case multi-threaded support is not available
-void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/, ParallelAlgorithmT /*algorithm*/)
+void ComponentSystem::simulateMultiThreaded(const double /*startT*/, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/, ParallelAlgorithmT /*algorithm*/)
 {
-    this->addErrorMessage("Multi-threaded simulation not available, TBB library is not present.");
+    this->addErrorMessage("Multi-threaded simulation not available, TBB library is not present. Simulating single-threaded.");
     this->simulate(stopT);
 }
 
 
-bool ComponentSystem::simulateAndMeasureTime(const size_t steps)
+bool ComponentSystem::simulateAndMeasureTime(const size_t /*steps*/)
 {
     this->addErrorMessage("Unable to measure simulation time without TBB library.");
     return false;
@@ -3418,27 +3418,27 @@ void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSyst
 }
 
 
-void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplitCVector, size_t nThreads)
+void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &/*rSplitCVector*/, size_t /*nThreads*/)
 {
-
+    addWarningMessage("Called distributeCcomponents(), but TBB is not avaialble.");
 }
 
 
-void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplitQVector, size_t nThreads)
+void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &/*rSplitQVector*/, size_t /*nThreads*/)
 {
-
+    addWarningMessage("Called distributeQcomponents(), but TBB is not avaialble.");
 }
 
 
-void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &rSplitSignalVector, size_t nThreads)
+void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &/*rSplitSignalVector*/, size_t /*nThreads*/)
 {
-
+    addWarningMessage("Called distributeSignalcomponents(), but TBB is not avaialble.");
 }
 
 
-void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNodeVector, size_t nThreads)
+void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &/*rSplitNodeVector*/, size_t /*nThreads*/)
 {
-
+    addWarningMessage("Called distributeNodePointers(), but TBB is not avaialble.");
 }
 
 #endif
@@ -3674,6 +3674,8 @@ vector<double> *ComponentSystem::getLogTimeVector()
 bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
     (void)startT;
+    (void)nDesiredThreads;
+    (void)noChanges;
 #ifdef USETBB
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
