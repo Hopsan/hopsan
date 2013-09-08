@@ -88,6 +88,8 @@ public:
     int getGenerationLimit() const;
     bool getCacheLogData() const;
 
+    bool getAutoLimitLogDataGenerations();
+
     QString getLoadModelDir();
     QString getModelGfxDir();
     QString getPlotDataDir();
@@ -131,6 +133,7 @@ public:
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
     void setCacheLogData(const bool value);
+    void setAutoLimitLogDataGenerations(const bool value);
     void setLoadModelDir(QString value);
     void setModelGfxDir(QString value);
     void setPlotDataDir(QString value);
@@ -186,6 +189,7 @@ private:
     bool mGroupMessagesByTag;
     int mGenerationLimit;
     bool mCacheLogData;
+    bool mAutoLimitLogDataGenerations;
     QString mLoadModelDir;
     QString mModelGfxDir;
     QString mPlotDataDir;

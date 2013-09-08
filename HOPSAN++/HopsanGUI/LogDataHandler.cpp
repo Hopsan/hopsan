@@ -897,6 +897,34 @@ void LogDataHandler::limitPlotGenerations()
 {
     if ( (mGenerationNumber - gConfig.getGenerationLimit()) > 0 )
     {
+        if(!gConfig.getAutoLimitLogDataGenerations())
+        {
+            QDialog *pDialog = new QDialog(gpMainWindow);
+            pDialog->setWindowTitle("Hopsan");
+            QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
+            QLabel *pLabel = new QLabel("Log data generation limit reached! Discard last generation?");
+            QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard last generation", pDialog);
+            pAutoLimitCheckBox->setChecked(false);
+            QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+            QPushButton *pDiscardButton = pButtonBox->addButton("Discard", QDialogButtonBox::AcceptRole);
+            QPushButton *pKeepButton = pButtonBox->addButton("Keep", QDialogButtonBox::RejectRole);
+            connect(pDiscardButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
+            connect(pKeepButton, SIGNAL(clicked()), pDialog, SLOT(reject()));
+            connect(pAutoLimitCheckBox, SIGNAL(toggled(bool)), pKeepButton, SLOT(setDisabled(bool)));
+            pLayout->addWidget(pLabel);
+            pLayout->addWidget(pAutoLimitCheckBox);
+            pLayout->addWidget(pButtonBox);
+
+            int retval = pDialog->exec();
+
+            gConfig.setAutoLimitLogDataGenerations(pAutoLimitCheckBox->isChecked());
+
+            if(retval == QDialog::Rejected)
+            {
+                return;
+            }
+        }
+
         // Remove old generation in each data variable container
         LogDataMapT::iterator dit = mLogDataMap.begin();
         for ( ; dit!=mLogDataMap.end(); ++dit)

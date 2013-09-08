@@ -319,6 +319,7 @@ void Configuration::loadDefaultsFromXml()
 
     //Internal settings, not stored in xml (change later)
     mParallelAlgorighm = 0;
+    mAutoLimitLogDataGenerations = true;
 
     return;
 }
@@ -849,6 +850,11 @@ bool Configuration::getCacheLogData() const
     return mCacheLogData;
 }
 
+bool Configuration::getAutoLimitLogDataGenerations()
+{
+    return mAutoLimitLogDataGenerations;
+}
+
 
 //! @brief Returns the last used model directory
 QString Configuration::getLoadModelDir()
@@ -1254,6 +1260,11 @@ void Configuration::setCacheLogData(const bool value)
 {
     mCacheLogData = value;
     saveToXml();
+}
+
+void Configuration::setAutoLimitLogDataGenerations(const bool value)
+{
+    mAutoLimitLogDataGenerations = value;
 }
 
 
