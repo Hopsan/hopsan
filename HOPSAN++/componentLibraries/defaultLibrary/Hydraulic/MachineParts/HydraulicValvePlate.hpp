@@ -278,6 +278,8 @@ namespace hopsan {
             }
             else if(x >= g1 && x <= g1+2*r)
             {
+                th11 = th11/180.0*pi;
+                th21 = th21/180.0*pi;
                 double k3 = g1*g1*tan(th11)*tan(th11)*tan(th21/2.0);
                 double d = 2*r-x+g1;
                 double A = 2*r*r*acos(d/(2.0*r)) - 0.5*d*sqrt(4*r*r-d*d);
@@ -285,6 +287,8 @@ namespace hopsan {
             }
             else if(x >= g1+2*r && x <= R)
             {
+                th11 = th11/180.0*pi;
+                th21 = th21/180.0*pi;
                 double k2 = r*r*pi/2.0;
                 double k3 = g1*g1*tan(th11)*tan(th11)*tan(th21/2.0);
                 ret = k3 + k2 + (x-g1-2*r)*2.0*r + k2 ;
@@ -319,12 +323,16 @@ namespace hopsan {
             }
             else if(x >= g1+phi+g2 && x <= g1+phi+R-2*r)
             {
+                th12 = th12/180.0*pi;
+                th22 = th22/180.0*pi;
                 double k2 = r*r*pi/2.0;
                 double k5 = g2*g2*tan(th12)*tan(th12)*tan(th22/2.0);
                 ret = k2 + (R-2*r+phi+g1-x)*2.0*r + k2 + k5;
             }
             else if(x >= g1+phi+R-2*r && x <= g1+phi+R)
             {
+                th12 = th12/180.0*pi;
+                th22 = th22/180.0*pi;
                 double k5 = g2*g2*tan(th12)*tan(th12)*tan(th22/2.0);
                 double d = x-g1-phi-R+2*r;
                 double A = 2*r*r*acos(d/(2.0*r)) - 0.5*d*sqrt(4*r*r-d*d);

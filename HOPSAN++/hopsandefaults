@@ -18,6 +18,7 @@
         <groupmessagesbytag>true</groupmessagesbytag>
         <generationlimit>100</generationlimit>
 	<cachelogdata>true</cachelogdata>
+        <autolimitgenerations>false</autolimitgenerations>
         <loadmodeldir/>
     </settings>
     <style>

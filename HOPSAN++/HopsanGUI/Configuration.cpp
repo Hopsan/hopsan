@@ -70,6 +70,7 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
     appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
     appendDomIntegerNode(settings, "generationlimit", mGenerationLimit);
+    appendDomBooleanNode(settings, "autolimitgenerations", mAutoLimitLogDataGenerations);
     appendDomBooleanNode(settings, "cachelogdata", mCacheLogData);
     appendDomTextNode(settings, "loadmodeldir", mLoadModelDir);
     appendDomTextNode(settings, "modelgfxdir", mModelGfxDir);
@@ -319,7 +320,6 @@ void Configuration::loadDefaultsFromXml()
 
     //Internal settings, not stored in xml (change later)
     mParallelAlgorighm = 0;
-    mAutoLimitLogDataGenerations = true;
 
     return;
 }
@@ -361,6 +361,8 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"));
     if(!rDomElement.firstChildElement("cachelogdata").isNull())
         mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement("cachelogdata"));
+    if(!rDomElement.firstChildElement("autolimitgenerations").isNull())
+        mAutoLimitLogDataGenerations = parseDomBooleanNode(rDomElement.firstChildElement("autolimitgenerations"));
     if(!rDomElement.firstChildElement("loadmodeldir").isNull())
         mLoadModelDir = rDomElement.firstChildElement("loadmodeldir").text();
     if(!rDomElement.firstChildElement("modelgfxdir").isNull())

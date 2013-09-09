@@ -2462,7 +2462,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     // Make sure timestep is not to low
     if (mTimestep < 10*(std::numeric_limits<double>::min)())
     {
-        addErrorMessage("The timestep is to low");
+        addErrorMessage("The timestep is too low.");
         return false;
     }
 
@@ -2818,16 +2818,62 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         tbb::atomic<double> *pTime = new tbb::atomic<double>;
         *pTime = mTime;
         tbb::atomic<bool> *pStop = new tbb::atomic<bool>;
-        *pTime = false;
+        *pStop = false;
 
-        masterTasks->run(taskSimPoolMaster(pTaskPoolS, pTaskPoolC, pTaskPoolQ, mTimestep, nSteps, this, &mTime, pTime, pStop));
+        //masterTasks->run(taskSimPoolMaster(pTaskPoolS, pTaskPoolC, pTaskPoolQ, mTimestep, nSteps, this, &mTime, pTime, pStop));
 
         for(size_t t=1; t < nThreads; ++t)
         {
             slaveTasks->run(taskSimPoolSlave(pTaskPoolC, pTaskPoolQ, pTime, pStop));
         }
 
-        masterTasks->wait();                                           //Wait for all tasks to finish
+        Component *pComp;
+        for(size_t i=0; i<nSteps; ++i)
+        {
+            *pTime = *pTime+mTimestep;
+
+            //S-pool
+            pTaskPoolS->open();
+            pComp = pTaskPoolS->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*pTime);
+                pTaskPoolS->reportDone();
+                pComp = pTaskPoolS->getComponent();
+            }
+            while(!pTaskPoolS->isReady()) {}
+            pTaskPoolS->close();
+
+            //C-pool
+            pTaskPoolC->open();
+            pComp = pTaskPoolC->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*pTime);
+                pTaskPoolC->reportDone();
+                pComp = pTaskPoolC->getComponent();
+            }
+            while(!pTaskPoolC->isReady()) {}
+            pTaskPoolC->close();
+
+            //Q-pool
+            pTaskPoolQ->open();
+            pComp = pTaskPoolQ->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*pTime);
+                pTaskPoolQ->reportDone();
+                pComp = pTaskPoolQ->getComponent();
+            }
+            while(!pTaskPoolQ->isReady()) {}
+            pTaskPoolQ->close();
+
+            mTime =  *pTime;
+            logTimeAndNodes(i+1);            //Log all nodes
+        }
+        *pStop=true;
+
+        //masterTasks->wait();                                           //Wait for all tasks to finish
         slaveTasks->cancel();
 
         delete(masterTasks);                                       //Clean up

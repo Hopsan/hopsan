@@ -897,12 +897,12 @@ void LogDataHandler::limitPlotGenerations()
 {
     if ( (mGenerationNumber - gConfig.getGenerationLimit()) > 0 )
     {
-        if(!gConfig.getAutoLimitLogDataGenerations())
+        if(!gConfig.getAutoLimitLogDataGenerations() && getLowestGenerationNumber() < mGenerationNumber-gConfig.getGenerationLimit())
         {
             QDialog *pDialog = new QDialog(gpMainWindow);
             pDialog->setWindowTitle("Hopsan");
             QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
-            QLabel *pLabel = new QLabel("Log data generation limit reached! Discard last generation?");
+            QLabel *pLabel = new QLabel("Log data generation limit reached! Discard generations that exceed limit?");
             QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard last generation", pDialog);
             pAutoLimitCheckBox->setChecked(false);
             QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);

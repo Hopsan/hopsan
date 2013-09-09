@@ -156,8 +156,9 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpGenerationLimitSpinBox->setMaximum(5000000);
     mpGenerationLimitSpinBox->setSingleStep(1);
 
-    QLabel *pCacheLogDataLabel = new QLabel(tr("Cache log data on hard drive"));
-    mpCacheLogDataCeckBox = new QCheckBox();
+    mpAutoLimitGenerationsCheckBox = new QCheckBox("Autoremove last generation when limit is reached");
+
+    mpCacheLogDataCeckBox = new QCheckBox("Cache log data on hard drive");
 
     //! @todo these should not be harcoded, should be build automatically depending on the contents from gConfigure loaded from have subtags in XML
     QLabel *pPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
@@ -192,8 +193,9 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     int r=0;
     mpPlottingWidget = new QWidget(this);
     mpPlottingLayout = new QGridLayout;
-    mpPlottingLayout->addWidget(pCacheLogDataLabel,                r, 0);
-    mpPlottingLayout->addWidget(mpCacheLogDataCeckBox,             r, 1);
+    mpPlottingLayout->addWidget(mpCacheLogDataCeckBox,             r, 0, 1, 3);
+    ++r;
+    mpPlottingLayout->addWidget(mpAutoLimitGenerationsCheckBox,    r, 0, 1, 3);
     ++r;
     mpPlottingLayout->addWidget(pGenerationLimitLabel,             r, 0, 1, 3);
     mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,          r, 2, 1, 1);
@@ -354,6 +356,7 @@ void OptionsDialog::updateValues()
     gConfig.setProgressBarStep(mpProgressBarSpinBox->value());
     gConfig.setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
     gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
+    gConfig.setAutoLimitLogDataGenerations(mpAutoLimitGenerationsCheckBox->isChecked());
     gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
     gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
@@ -441,6 +444,7 @@ void OptionsDialog::show()
     mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
     mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
     mpGenerationLimitSpinBox->setValue(gConfig.getGenerationLimit());
+    mpAutoLimitGenerationsCheckBox->setChecked(gConfig.getAutoLimitLogDataGenerations());
     mpCacheLogDataCeckBox->setChecked(gConfig.getCacheLogData());
     updateCustomUnits();
 

@@ -894,8 +894,8 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
         if(allOk)
         {
             gpMainWindow->setStartTimeInToolBar(startT);
-            gpMainWindow->setTimeStepInToolBar(timeStep);
             gpMainWindow->setStopTimeInToolBar(stopT);
+            gpMainWindow->setTimeStepInToolBar(timeStep);
             if(splitCmd.size() == 4)
             {
                 ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
@@ -2948,7 +2948,14 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
 
             //Evaluate expression using SymHop
             SymHop::Expression symHopExpr = SymHop::Expression(argument);
-            while(symHopExpr.evaluate(mLocalVars) > 0)
+            QMap<QString, double> localVars = mLocalVars;
+            QStringList localPars;
+            getParameters("*", localPars);
+            for(int p=0; p<localPars.size(); ++p)
+            {
+                localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
+            }
+            while(symHopExpr.evaluate(localVars) > 0)
             {
                 qApp->processEvents();
                 if(mAborted)
@@ -2966,6 +2973,15 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
                 if(!gotoLabel.isEmpty())
                 {
                     return gotoLabel;
+                }
+
+                //Update local variables for SymHop in case they have changed
+                localVars = mLocalVars;
+                QStringList localPars;
+                getParameters("*", localPars);
+                for(int p=0; p<localPars.size(); ++p)
+                {
+                    localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
                 }
             }
         }

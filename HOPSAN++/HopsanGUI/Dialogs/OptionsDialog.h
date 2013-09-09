@@ -93,7 +93,9 @@ private:
     QGridLayout *mpSimulationLayout;
 
     QSpinBox *mpGenerationLimitSpinBox;
+    QCheckBox *mpAutoLimitGenerationsCheckBox;
     QCheckBox *mpCacheLogDataCeckBox;
+
 
     QComboBox *mpPressureUnitComboBox;
     QComboBox *mpFlowUnitComboBox;
