@@ -891,18 +891,44 @@ int LogDataHandler::getHighestGenerationNumber() const
     return max;
 }
 
+int LogDataHandler::getNumberOfGenerations() const
+{
+    int nGens=0;
+    for(int i=getLowestGenerationNumber(); i<=getHighestGenerationNumber(); ++i)
+    {
+        bool genExists=false;
+        LogDataMapT::const_iterator it;
+        for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
+        {
+            if(it.value()->hasDataGeneration(i))
+            {
+                genExists=true;
+            }
+        }
+        if(genExists)
+        {
+            qDebug() << "Generation " << i << " exists!";
+            ++nGens;
+        }
+    }
+
+    qDebug() << "nGens = " << nGens;
+
+    return nGens;
+}
+
 
 //! @brief Limits number of plot generations to value specified in configuration
 void LogDataHandler::limitPlotGenerations()
 {
-    if ( (mGenerationNumber - gConfig.getGenerationLimit()) > 0 )
+    if (getNumberOfGenerations() > gConfig.getGenerationLimit())
     {
-        if(!gConfig.getAutoLimitLogDataGenerations() && getLowestGenerationNumber() < mGenerationNumber-gConfig.getGenerationLimit())
+        if(!gConfig.getAutoLimitLogDataGenerations())
         {
             QDialog *pDialog = new QDialog(gpMainWindow);
             pDialog->setWindowTitle("Hopsan");
             QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
-            QLabel *pLabel = new QLabel("Log data generation limit reached! Discard generations that exceed limit?");
+            QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(gConfig.getGenerationLimit())+"<br>Number of data generations: "+QString::number(getNumberOfGenerations())+"<br><br><b>Discard "+QString::number(getNumberOfGenerations()-gConfig.getGenerationLimit())+" generations(s)?</b>");
             QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard last generation", pDialog);
             pAutoLimitCheckBox->setChecked(false);
             QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
@@ -926,25 +952,41 @@ void LogDataHandler::limitPlotGenerations()
         }
 
         // Remove old generation in each data variable container
-        LogDataMapT::iterator dit = mLogDataMap.begin();
-        for ( ; dit!=mLogDataMap.end(); ++dit)
+        int idx=getLowestGenerationNumber();
+        while(getNumberOfGenerations() > gConfig.getGenerationLimit() && idx <= getHighestGenerationNumber())
         {
-            dit.value()->removeGenerationsOlderThen(mGenerationNumber - gConfig.getGenerationLimit());
+            // Remove old generation in each data variable container
+            LogDataMapT::iterator dit = mLogDataMap.begin();
+            for ( ; dit!=mLogDataMap.end(); ++dit)
+            {
+                dit.value()->removeDataGeneration(idx);
+            }
+
+            // Clear from generations cache object map
+            mGenerationCacheMap.remove(idx);
+            ++idx;
         }
 
-        // Clear from generations cache object map
-        QList<int> gens = mGenerationCacheMap.keys();
-        for (int i=0; i<gens.size(); ++i)
-        {
-            if (gens[i] < (mGenerationNumber - gConfig.getGenerationLimit()) )
-            {
-                mGenerationCacheMap.remove(gens[i]);
-            }
-            else
-            {
-                break;
-            }
-        }
+//        // Remove old generation in each data variable container
+//        LogDataMapT::iterator dit = mLogDataMap.begin();
+//        for ( ; dit!=mLogDataMap.end(); ++dit)
+//        {
+//            dit.value()->removeGenerationsOlderThen(mGenerationNumber - gConfig.getGenerationLimit());
+//        }
+
+//        // Clear from generations cache object map
+//        QList<int> gens = mGenerationCacheMap.keys();
+//        for (int i=0; i<gens.size(); ++i)
+//        {
+//            if (gens[i] < (mGenerationNumber - gConfig.getGenerationLimit()) )
+//            {
+//                mGenerationCacheMap.remove(gens[i]);
+//            }
+//            else
+//            {
+//                break;
+//            }
+//        }
     }
 }
 

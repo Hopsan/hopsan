@@ -91,6 +91,7 @@ public:
 
     int getLowestGenerationNumber() const;
     int getHighestGenerationNumber() const;
+    int getNumberOfGenerations() const;
     void limitPlotGenerations();
     void preventGenerationAutoRemoval(const int gen);
     void allowGenerationAutoRemoval(const int gen);
