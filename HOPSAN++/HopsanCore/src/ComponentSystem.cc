@@ -2873,8 +2873,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         }
         *pStop=true;
 
+
         //masterTasks->wait();                                           //Wait for all tasks to finish
-        slaveTasks->cancel();
+        slaveTasks->wait();
 
         delete(masterTasks);                                       //Clean up
         delete(slaveTasks);

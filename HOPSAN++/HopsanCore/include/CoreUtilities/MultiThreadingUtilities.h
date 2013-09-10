@@ -460,18 +460,18 @@ public:
     {
         mComponentPtrs = componentPtrs;
         mSize = componentPtrs.size();
-        mCurrentIdx = 0;
+        mCurrentIdx.store(0);
         mnDone = 0;
+        mOpen=false;
     }
 
     Component *getComponent()
     {
-        size_t idx = mCurrentIdx++;
-
-        if(idx < mSize)
-            return mComponentPtrs[idx];
-        else
+        size_t idx = mCurrentIdx.fetch_and_increment();
+        if(idx >= mSize)
             return 0;
+        else
+            return mComponentPtrs[idx];
     }
 
     void reportDone()
@@ -481,14 +481,14 @@ public:
 
     bool isReady()
     {
-        return mnDone == mSize;
+        return mnDone >= mSize;
     }
 
     void open()
     {
-        mCurrentIdx = 0;
-        mnDone = 0;
-        mOpen=true;
+        mCurrentIdx.store(0);
+        mnDone.store(0);
+        mOpen.store(true);
     }
 
     void close()
