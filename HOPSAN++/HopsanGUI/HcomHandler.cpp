@@ -52,6 +52,9 @@
 
 
 
+#define HCOMPRINT(text) mpConsole->print(text);
+#define HCOMINFO(text) mpConsole->printInfoMessage(text,"",false)
+#define HCOMWARN(text) mpConsole->printWarningMessage(text,"",false)
 #define HCOMERR(text) mpConsole->printErrorMessage(text,"",false)
 
 
@@ -91,14 +94,14 @@ void HcomHandler::createCommands()
     HcomCommand helpCmd;
     helpCmd.cmd = "help";
     helpCmd.description.append("Shows help information");
-    helpCmd.help.append("Usage: help [command]");
+    helpCmd.help.append(" Usage: help [command]");
     helpCmd.fnc = &HcomHandler::executeHelpCommand;
     mCmdList << helpCmd;
 
     HcomCommand simCmd;
     simCmd.cmd = "sim";
     simCmd.description.append("Simulates current model (or all open models)");
-    simCmd.help.append("Usage: sim [all]");
+    simCmd.help.append(" Usage: sim [all]");
     simCmd.fnc = &HcomHandler::executeSimulateCommand;
     simCmd.group = "Simulation Commands";
     mCmdList << simCmd;
@@ -106,7 +109,7 @@ void HcomHandler::createCommands()
     HcomCommand chpvCmd;
     chpvCmd.cmd = "chpv";
     chpvCmd.description.append("Change plot variables in current plot");
-    chpvCmd.help.append("Usage: chpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]");
+    chpvCmd.help.append(" Usage: chpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]");
     chpvCmd.fnc = &HcomHandler::executePlotCommand;
     chpvCmd.group = "Plot Commands";
     mCmdList << chpvCmd;
@@ -114,7 +117,7 @@ void HcomHandler::createCommands()
     HcomCommand adpvCmd;
     adpvCmd.cmd = "adpv";
     adpvCmd.description.append("Add plot variables in current plot");
-    adpvCmd.help.append("Usage: adpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]");
+    adpvCmd.help.append(" Usage: adpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]");
     adpvCmd.fnc = &HcomHandler::executeAddPlotCommand;
     adpvCmd.group = "Plot Commands";
     mCmdList << adpvCmd;
@@ -138,14 +141,14 @@ void HcomHandler::createCommands()
     HcomCommand exitCmd;
     exitCmd.cmd = "exit";
     exitCmd.description.append("Exits the program");
-    exitCmd.help.append("Usage: exit [no arguments]");
+    exitCmd.help.append(" Usage: exit [no arguments]");
     exitCmd.fnc = &HcomHandler::executeExitCommand;
     mCmdList << exitCmd;
 
     HcomCommand dipaCmd;
     dipaCmd.cmd = "dipa";
     dipaCmd.description.append("Display parameter value");
-    dipaCmd.help.append("Usage: dipa [parameter]");
+    dipaCmd.help.append(" Usage: dipa [parameter]");
     dipaCmd.fnc = &HcomHandler::executeDisplayParameterCommand;
     dipaCmd.group = "Parameter Commands";
     mCmdList << dipaCmd;
@@ -153,7 +156,7 @@ void HcomHandler::createCommands()
     HcomCommand adpaCmd;
     adpaCmd.cmd = "adpa";
     adpaCmd.description.append("Add (system) parameter");
-    adpaCmd.help.append("Usage: adpa [parameter] [value]");
+    adpaCmd.help.append(" Usage: adpa [parameter] [value]");
     adpaCmd.fnc = &HcomHandler::executeAddParameterCommand;
     adpaCmd.group = "Parameter Commands";
     mCmdList << adpaCmd;
@@ -161,7 +164,7 @@ void HcomHandler::createCommands()
     HcomCommand chpaCmd;
     chpaCmd.cmd = "chpa";
     chpaCmd.description.append("Change parameter value");
-    chpaCmd.help.append("Usage: chpa [parameter value]");
+    chpaCmd.help.append(" Usage: chpa [parameter value]");
     chpaCmd.fnc = &HcomHandler::executeChangeParameterCommand;
     chpaCmd.group = "Parameter Commands";
     mCmdList << chpaCmd;
@@ -169,7 +172,7 @@ void HcomHandler::createCommands()
     HcomCommand chssCmd;
     chssCmd.cmd = "chss";
     chssCmd.description.append("Change simulation settings");
-    chssCmd.help.append("Usage: chss [starttime timestep stoptime [samples]]");
+    chssCmd.help.append(" Usage: chss [starttime timestep stoptime [samples]]");
     chssCmd.fnc = &HcomHandler::executeChangeSimulationSettingsCommand;
     chssCmd.group = "Simulation Commands";
     mCmdList << chssCmd;
@@ -177,7 +180,7 @@ void HcomHandler::createCommands()
     HcomCommand execCmd;
     execCmd.cmd = "exec";
     execCmd.description.append("Executes a script file");
-    execCmd.help.append("Usage: exec [filepath]");
+    execCmd.help.append(" Usage: exec [filepath]");
     execCmd.fnc = &HcomHandler::executeRunScriptCommand;
     execCmd.group = "File Commands";
     mCmdList << execCmd;
@@ -185,7 +188,7 @@ void HcomHandler::createCommands()
     HcomCommand wrhiCmd;
     wrhiCmd.cmd = "wrhi";
     wrhiCmd.description.append("Writes history to file");
-    wrhiCmd.help.append("Usage: wrhi [filepath]");
+    wrhiCmd.help.append(" Usage: wrhi [filepath]");
     wrhiCmd.fnc = &HcomHandler::executeWriteHistoryToFileCommand;
     wrhiCmd.group = "File Commands";
     mCmdList << wrhiCmd;
@@ -193,15 +196,22 @@ void HcomHandler::createCommands()
     HcomCommand printCmd;
     printCmd.cmd = "print";
     printCmd.description.append("Prints arguments on the screen");
-    printCmd.help.append("Usage: print [\"Text\" (variable)]\n");
-    printCmd.help.append("Note: Not implemented yet.");
+    printCmd.help.append(" Usage: print [-flag \"string\"]\n");
+    printCmd.help.append(" Flags (optional):\n");
+    printCmd.help.append(" -i Info message\n");
+    printCmd.help.append(" -w Warning message\n");
+    printCmd.help.append(" -e Error message\n");
+    printCmd.help.append(" Variables can be printed by putting them in dollar signs.\n");
+    printCmd.help.append(" Example:\n");
+    printCmd.help.append(" >> print -w \"x=$x$\"\n");
+    printCmd.help.append(" Warning: x=12");
     printCmd.fnc = &HcomHandler::executePrintCommand;
     mCmdList << printCmd;
 
     HcomCommand chpwCmd;
     chpwCmd.cmd = "chpw";
     chpwCmd.description.append("Changes current plot window");
-    chpwCmd.help.append("Usage: chpw [number]");
+    chpwCmd.help.append(" Usage: chpw [number]");
     chpwCmd.fnc = &HcomHandler::executeChangePlotWindowCommand;
     chpwCmd.group = "Plot Commands";
     mCmdList << chpwCmd;
@@ -233,7 +243,7 @@ void HcomHandler::createCommands()
     HcomCommand dispCmd;
     dispCmd.cmd = "disp";
     dispCmd.description.append("Shows a list of all variables matching specified name filter (using asterisks)");
-    dispCmd.help.append("Usage: disp [filter]");
+    dispCmd.help.append(" Usage: disp [filter]");
     dispCmd.fnc = &HcomHandler::executeDisplayVariablesCommand;
     dispCmd.group = "Variable Commands";
     mCmdList << dispCmd;
@@ -241,7 +251,7 @@ void HcomHandler::createCommands()
     HcomCommand peekCmd;
     peekCmd.cmd = "peek";
     peekCmd.description.append("Shows the value at a specified index in a specified data variable");
-    peekCmd.help.append("Usage: peek [variable index]");
+    peekCmd.help.append(" Usage: peek [variable index]");
     peekCmd.group = "Variable Commands";
     peekCmd.fnc = &HcomHandler::executePeekCommand;
 
@@ -250,7 +260,7 @@ void HcomHandler::createCommands()
     HcomCommand pokeCmd;
     pokeCmd.cmd = "poke";
     pokeCmd.description.append("Changes the value at a specified index in a specified data variable");
-    pokeCmd.help.append("Usage: poke [variable index newvalue]");
+    pokeCmd.help.append(" Usage: poke [variable index newvalue]");
     pokeCmd.fnc = &HcomHandler::executePokeCommand;
     pokeCmd.group = "Variable Commands";
     mCmdList << pokeCmd;
@@ -258,7 +268,7 @@ void HcomHandler::createCommands()
     HcomCommand aliasCmd;
     aliasCmd.cmd = "alias";
     aliasCmd.description.append("Defines an alias for a variable");
-    aliasCmd.help.append("Usage: alias [variable alias]");
+    aliasCmd.help.append(" Usage: alias [variable alias]");
     aliasCmd.fnc = &HcomHandler::executeDefineAliasCommand;
     aliasCmd.group = "Variable Commands";
     mCmdList << aliasCmd;
@@ -266,7 +276,7 @@ void HcomHandler::createCommands()
     HcomCommand rmvarCmd;
     rmvarCmd.cmd = "rmvar";
     rmvarCmd.description.append("Removes specified variable");
-    rmvarCmd.help.append("Usage: rmvar [variable]");
+    rmvarCmd.help.append(" Usage: rmvar [variable]");
     rmvarCmd.fnc = &HcomHandler::executeRemoveVariableCommand;
     rmvarCmd.group = "Variable Commands";
     mCmdList << rmvarCmd;
@@ -274,7 +284,7 @@ void HcomHandler::createCommands()
     HcomCommand chdfscCmd;
     chdfscCmd.cmd = "chdfsc";
     chdfscCmd.description.append("Change default plot scale of specified variable");
-    chdfscCmd.help.append("Usage: chdfsc [variable scale]");
+    chdfscCmd.help.append(" Usage: chdfsc [variable scale]");
     chdfscCmd.fnc = &HcomHandler::executeChangeDefaultPlotScaleCommand;
     chdfscCmd.group = "Variable Commands";
     mCmdList << chdfscCmd;
@@ -282,7 +292,7 @@ void HcomHandler::createCommands()
     HcomCommand didfscCmd;
     didfscCmd.cmd = "didfsc";
     didfscCmd.description.append("Display default plot scale of specified variable");
-    didfscCmd.help.append("Usage: didfsc [variable]");
+    didfscCmd.help.append(" Usage: didfsc [variable]");
     didfscCmd.fnc = &HcomHandler::executeDisplayDefaultPlotScaleCommand;
     didfscCmd.group = "Variable Commands";
     mCmdList << didfscCmd;
@@ -290,7 +300,7 @@ void HcomHandler::createCommands()
     HcomCommand chscCmd;
     chscCmd.cmd = "chsc";
     chscCmd.description.append("Change plot scale of specified variable");
-    chscCmd.help.append("Usage: chsc [variable scale]");
+    chscCmd.help.append(" Usage: chsc [variable scale]");
     chscCmd.fnc = &HcomHandler::executeChangePlotScaleCommand;
     chscCmd.group = "Variable Commands";
     mCmdList << chscCmd;
@@ -298,7 +308,7 @@ void HcomHandler::createCommands()
     HcomCommand discCmd;
     discCmd.cmd = "disc";
     discCmd.description.append("Display plot scale of specified variable");
-    discCmd.help.append("Usage: disc [variable]");
+    discCmd.help.append(" Usage: disc [variable]");
     discCmd.fnc = &HcomHandler::executeDisplayPlotScaleCommand;
     discCmd.group = "Variable Commands";
     mCmdList << discCmd;
@@ -319,7 +329,7 @@ void HcomHandler::createCommands()
     HcomCommand saplCmd;
     saplCmd.cmd = "sapl";
     saplCmd.description.append("Saves plot file to .PLO");
-    saplCmd.help.append("Usage: sapl [filepath variables]");
+    saplCmd.help.append(" Usage: sapl [filepath variables]");
     saplCmd.fnc = &HcomHandler::executeSaveToPloCommand;
     saplCmd.group = "Plot Commands";
     mCmdList << saplCmd;
@@ -327,7 +337,7 @@ void HcomHandler::createCommands()
     HcomCommand replCmd;
     replCmd.cmd = "repl";
     replCmd.description.append("Loads plot files from .CSV or .PLO");
-    replCmd.help.append("Usage: repl [filepath]");
+    replCmd.help.append(" Usage: repl [filepath]");
     replCmd.fnc = &HcomHandler::executeLoadVariableCommand;
     replCmd.group = "Plot Commands";
     mCmdList << replCmd;
@@ -335,7 +345,7 @@ void HcomHandler::createCommands()
     HcomCommand loadCmd;
     loadCmd.cmd = "load";
     loadCmd.description.append("Loads a model file");
-    loadCmd.help.append("Usage: load [filepath variables]");
+    loadCmd.help.append(" Usage: load [filepath variables]");
     loadCmd.fnc = &HcomHandler::executeLoadModelCommand;
     loadCmd.group = "Model Commands";
     mCmdList << loadCmd;
@@ -343,7 +353,7 @@ void HcomHandler::createCommands()
     HcomCommand loadrCmd;
     loadrCmd.cmd = "loadr";
     loadrCmd.description.append("Loads most recent model file");
-    loadrCmd.help.append("Usage: loadr [no arguments]");
+    loadrCmd.help.append(" Usage: loadr [no arguments]");
     loadrCmd.fnc = &HcomHandler::executeLoadRecentCommand;
     loadrCmd.group = "Model Commands";
     mCmdList << loadrCmd;
@@ -351,7 +361,7 @@ void HcomHandler::createCommands()
     HcomCommand recoCmd;
     recoCmd.cmd = "reco";
     recoCmd.description.append("Renames a component");
-    recoCmd.help.append("Usage: reco [oldname] [newname]");
+    recoCmd.help.append(" Usage: reco [oldname] [newname]");
     recoCmd.fnc = &HcomHandler::executeRenameComponentCommand;
     recoCmd.group = "Model Commands";
     mCmdList << recoCmd;
@@ -359,7 +369,7 @@ void HcomHandler::createCommands()
     HcomCommand pwdCmd;
     pwdCmd.cmd = "pwd";
     pwdCmd.description.append("Displays present working directory");
-    pwdCmd.help.append("Usage: pwd [no arguments]");
+    pwdCmd.help.append(" Usage: pwd [no arguments]");
     pwdCmd.fnc = &HcomHandler::executePwdCommand;
     pwdCmd.group = "File Commands";
     mCmdList << pwdCmd;
@@ -367,7 +377,7 @@ void HcomHandler::createCommands()
     HcomCommand mwdCmd;
     mwdCmd.cmd = "mwd";
     mwdCmd.description.append("Displays working directory of current model");
-    mwdCmd.help.append("Usage: mwd [no arguments]");
+    mwdCmd.help.append(" Usage: mwd [no arguments]");
     mwdCmd.fnc = &HcomHandler::executeMwdCommand;
     mwdCmd.group = "File Commands";
     mCmdList << mwdCmd;
@@ -383,7 +393,7 @@ void HcomHandler::createCommands()
     HcomCommand lsCmd;
     lsCmd.cmd = "ls";
     lsCmd.description.append("List files in current directory");
-    lsCmd.help.append("Usage: ls [no arguments]");
+    lsCmd.help.append(" Usage: ls [no arguments]");
     lsCmd.fnc = &HcomHandler::executeListFilesCommand;
     lsCmd.group = "File Commands";
     mCmdList << lsCmd;
@@ -391,14 +401,14 @@ void HcomHandler::createCommands()
     HcomCommand closeCmd;
     closeCmd.cmd = "close";
     closeCmd.description.append("Closes current model");
-    closeCmd.help.append("Usage: close [no arguments]");
+    closeCmd.help.append(" Usage: close [no arguments]");
     closeCmd.fnc = &HcomHandler::executeCloseModelCommand;
     mCmdList << closeCmd;
 
     HcomCommand chtabCmd;
     chtabCmd.cmd = "chtab";
     chtabCmd.description.append("Changes current model tab");
-    chtabCmd.help.append("Usage: chtab [index]");
+    chtabCmd.help.append(" Usage: chtab [index]");
     chtabCmd.fnc = &HcomHandler::executeChangeTabCommand;
     chtabCmd.group = "Model Commands";
     mCmdList << chtabCmd;
@@ -414,7 +424,7 @@ void HcomHandler::createCommands()
     HcomCommand cocoCmd;
     cocoCmd.cmd = "coco";
     cocoCmd.description.append("Connect components in current model");
-    cocoCmd.help.append("Usage: coco [comp1 port1 comp2 port2]");
+    cocoCmd.help.append(" Usage: coco [comp1 port1 comp2 port2]");
     cocoCmd.fnc = &HcomHandler::executeConnectCommand;
     cocoCmd.group = "Model Commands";
     mCmdList << cocoCmd;
@@ -422,7 +432,7 @@ void HcomHandler::createCommands()
     HcomCommand crmoCmd;
     crmoCmd.cmd = "crmo";
     crmoCmd.description.append("Creates a new model");
-    crmoCmd.help.append("Usage: crmo [no arguments]");
+    crmoCmd.help.append(" Usage: crmo [no arguments]");
     crmoCmd.fnc = &HcomHandler::executeCreateModelCommand;
     crmoCmd.group = "Model Commands";
     mCmdList << crmoCmd;
@@ -430,14 +440,14 @@ void HcomHandler::createCommands()
     HcomCommand fmuCmd;
     fmuCmd.cmd = "fmu";
     fmuCmd.description.append("Exports current model to Functional Mockup Unit (FMU)");
-    fmuCmd.help.append("Usage: fmu [path]");
+    fmuCmd.help.append(" Usage: fmu [path]");
     fmuCmd.fnc = &HcomHandler::executeExportToFMUCommand;
     mCmdList << fmuCmd;
 
     HcomCommand chtsCmd;
     chtsCmd.cmd = "chts";
     chtsCmd.description.append("Change time step of sub-component");
-    chtsCmd.help.append("Usage: chts [comp timestep]");
+    chtsCmd.help.append(" Usage: chts [comp timestep]");
     chtsCmd.fnc = &HcomHandler::executeChangeTimestepCommand;
     chtsCmd.group = "Simulation Commands";
     mCmdList << chtsCmd;
@@ -445,7 +455,7 @@ void HcomHandler::createCommands()
     HcomCommand intsCmd;
     intsCmd.cmd = "ints";
     intsCmd.description.append("Inherit time step of sub-component from system time step");
-    intsCmd.help.append("Usage: ints [comp]");
+    intsCmd.help.append(" Usage: ints [comp]");
     intsCmd.fnc = &HcomHandler::executeInheritTimestepCommand;
     intsCmd.group = "Simulation Commands";
     mCmdList << intsCmd;
@@ -453,7 +463,7 @@ void HcomHandler::createCommands()
     HcomCommand bodeCmd;
     bodeCmd.cmd = "bode";
     bodeCmd.description.append("Creates a bode plot from specified curves");
-    bodeCmd.help.append("Usage: bode [invar outvar maxfreq]");
+    bodeCmd.help.append(" Usage: bode [invar outvar maxfreq]");
     bodeCmd.fnc = &HcomHandler::executeBodeCommand;
     bodeCmd.group = "Plot Commands";
     mCmdList << bodeCmd;
@@ -461,7 +471,7 @@ void HcomHandler::createCommands()
     HcomCommand absCmd;
     absCmd.cmd = "abs";
     absCmd.description.append("Calculates absolute value of scalar of variable");
-    absCmd.help.append("Usage: abs [var]");
+    absCmd.help.append(" Usage: abs [var]");
     absCmd.fnc = &HcomHandler::executeAbsCommand;
     absCmd.group = "Variable Commands";
     mCmdList << absCmd;
@@ -469,7 +479,7 @@ void HcomHandler::createCommands()
     HcomCommand optCmd;
     optCmd.cmd = "opt";
     optCmd.description.append("Initialize an optimization");
-    optCmd.help.append("Usage: opt [algorithm partype parnum parmin parmax -flags]");
+    optCmd.help.append(" Usage: opt [algorithm partype parnum parmin parmax -flags]");
     optCmd.help.append("\nAlgorithms:   Flags:");
     optCmd.help.append("\ncomplex       alpha");
     optCmd.fnc = &HcomHandler::executeOptimizationCommand;
@@ -478,21 +488,21 @@ void HcomHandler::createCommands()
     HcomCommand callCmd;
     callCmd.cmd = "call";
     callCmd.description.append("Calls a pre-defined function");
-    callCmd.help.append("Usage: call [funcname]");
+    callCmd.help.append(" Usage: call [funcname]");
     callCmd.fnc = &HcomHandler::executeCallFunctionCommand;
     mCmdList << callCmd;
 
     HcomCommand echoCmd;
     echoCmd.cmd = "echo";
     echoCmd.description.append("Sets terminal output on or off");
-    echoCmd.help.append("Usage: echo [on/off]");
+    echoCmd.help.append(" Usage: echo [on/off]");
     echoCmd.fnc = &HcomHandler::executeEchoCommand;
     mCmdList << echoCmd;
 
     HcomCommand editCmd;
     editCmd.cmd = "edit";
     editCmd.description.append("Open file in external editor");
-    editCmd.help.append("Usage: edit [filepath]");
+    editCmd.help.append(" Usage: edit [filepath]");
     editCmd.fnc = &HcomHandler::executeEditCommand;
     editCmd.group = "File Commands";
     mCmdList << editCmd;
@@ -500,7 +510,7 @@ void HcomHandler::createCommands()
     HcomCommand lp1Cmd;
     lp1Cmd.cmd = "lp1";
     lp1Cmd.description.append("Applies low-pass filter of first degree to vector");
-    lp1Cmd.help.append("Usage: lp1 [var]");
+    lp1Cmd.help.append(" Usage: lp1 [var]");
     lp1Cmd.fnc = &HcomHandler::executeLp1Command;
     lp1Cmd.group = "Variable Commands";
     mCmdList << lp1Cmd;
@@ -508,7 +518,7 @@ void HcomHandler::createCommands()
     HcomCommand semtCmd;
     semtCmd.cmd = "semt";
     semtCmd.description.append("Applies low-pass filter of first degree to vector");
-    semtCmd.help.append("Usage: semt [on/off threads algorithm]");
+    semtCmd.help.append(" Usage: semt [on/off threads algorithm]");
     semtCmd.fnc = &HcomHandler::executeSetMultiThreadingCommand;
     mCmdList << semtCmd;
 }
@@ -736,7 +746,7 @@ void HcomHandler::executeDisplayParameterCommand(const QString cmd)
             output.append(" ");
         }
         output.append(getParameterValue(parameters[p]));
-        mpConsole->print(output);
+        HCOMPRINT(output);
     }
 }
 
@@ -856,7 +866,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         }
         int nFailed = parameterNames.size()-nChanged;
         if(nChanged>0)
-            mpConsole->print("Changed value for "+QString::number(nChanged)+" parameters.");
+            HCOMPRINT("Changed value for "+QString::number(nChanged)+" parameters.");
         if(nFailed>0)
             HCOMERR("Failed to change value for "+QString::number(parameterNames.size())+" parameters.");
     }
@@ -885,6 +895,7 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
         if(!ok) { allOk=false; }
 
         int samples;
+        (void)samples;
         if(splitCmd.size() == 4)
         {
             samples = splitCmd[3].toInt(&ok);
@@ -924,8 +935,8 @@ void HcomHandler::executeHelpCommand(const QString cmd)
     temp.remove(" ");
     if(temp.isEmpty())
     {
-        mpConsole->print("-------------------------------------------------------------------------");
-        mpConsole->print(" Hopsan HCOM Terminal v0.1");
+        HCOMPRINT("-------------------------------------------------------------------------");
+        HCOMPRINT(" Hopsan HCOM Terminal v0.1");
         QString commands;
         int n=0;
         QStringList groups;
@@ -980,9 +991,9 @@ void HcomHandler::executeHelpCommand(const QString cmd)
             commands.append(funcIt.value()+"\n");
         }
 
-        mpConsole->print(commands);
-        mpConsole->print(" Type: \"help [command]\" for more information about a specific command.");
-        mpConsole->print("-------------------------------------------------------------------------");
+        HCOMPRINT(commands);
+        HCOMPRINT(" Type: \"help [command]\" for more information about a specific command.");
+        HCOMPRINT("-------------------------------------------------------------------------");
     }
     else
     {
@@ -998,7 +1009,14 @@ void HcomHandler::executeHelpCommand(const QString cmd)
         }
         else
         {
-            int length=max(mCmdList[idx].description.size(), mCmdList[idx].help.size())+2;
+            QStringList helpLines = mCmdList[idx].help.split("\n");
+            int helpLength=0;
+            Q_FOREACH(const QString &line, helpLines)
+            {
+                if(line.size() > helpLength)
+                    helpLength = line.size();
+            }
+            int length=max(mCmdList[idx].description.size(), helpLength)+2;
             QString delimiterLine;
             for(int i=0; i<length; ++i)
             {
@@ -1009,7 +1027,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
             QString helpLine = mCmdList[idx].help;
             helpLine.prepend(" ");
             helpLine.replace("\n", "\n ");
-            mpConsole->print(delimiterLine+"\n"+descLine+"\n"+helpLine+"\n"+delimiterLine);
+            HCOMPRINT(delimiterLine+"\n"+descLine+"\n"+helpLine+"\n"+delimiterLine);
         }
     }
 }
@@ -1140,9 +1158,62 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 
 
 //! @brief Execute function for "print" command
-void HcomHandler::executePrintCommand(const QString /*cmd*/)
+void HcomHandler::executePrintCommand(const QString cmd)
 {
-    HCOMERR("Function not yet implemented.");
+    if(cmd.isEmpty())
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    QString str = cmd;
+
+    QString arg = getArgument(str,0);
+    if(arg == "-e" || arg == "-w" || arg == "-i")
+    {
+        str.remove(0,3);
+    }
+
+    if(!str.startsWith("\"") || !str.endsWith("\""))
+    {
+        HCOMERR("Expected a string.");
+        return;
+    }
+
+    int failed=0;
+    while(str.count("$") > 1+failed*2)
+    {
+        QString varName = str.section("$",1+failed,1+failed);
+        bool ok;
+        VariableType type;
+        QString varStr = evaluateExpression(varName, &type, &ok);
+        if(ok && type == Scalar)
+        {
+            str.replace("$"+varName+"$", varStr);
+        }
+        else
+        {
+            ++failed;
+        }
+    }
+
+    str = str.mid(1,str.size()-2);
+    if(arg == "-e")
+    {
+        HCOMERR(str);
+    }
+    else if(arg == "-w")
+    {
+        HCOMWARN(str);
+    }
+    else if(arg == "-i")
+    {
+        HCOMINFO(str);
+    }
+    else
+    {
+        HCOMPRINT(str);
+    }
 }
 
 
@@ -1164,7 +1235,7 @@ void HcomHandler::executeChangePlotWindowCommand(const QString cmd)
 //! @brief Execute function for "dipw" command
 void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
 {
-    mpConsole->print(mCurrentPlotWindowName);
+    HCOMPRINT(mCurrentPlotWindowName);
 }
 
 
@@ -1186,7 +1257,7 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
 
         for(int o=0; o<output.size(); ++o)
         {
-            mpConsole->print(output[o]);
+            HCOMPRINT(output[o]);
         }
     }
     else
@@ -1224,7 +1295,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
         if (err.isEmpty())
         {
             returnScalar(r);
-            mpConsole->print(QString::number(r));
+            HCOMPRINT(QString::number(r));
         }
         else
         {
@@ -1265,7 +1336,7 @@ void HcomHandler::executePokeCommand(const QString cmd)
         double r = pData->pokeData(id, value, err);
         if (err.isEmpty())
         {
-            mpConsole->print(QString::number(r));
+            HCOMPRINT(QString::number(r));
         }
         else
         {
@@ -1399,12 +1470,12 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
     QString unit = unitScale.mUnit;
     if(!unit.isEmpty())
     {
-        mpConsole->print(scale+" ["+unit+"]");
+        HCOMPRINT(scale+" ["+unit+"]");
         returnScalar(scale.toDouble());
     }
     else
     {
-        mpConsole->print(scale);
+        HCOMPRINT(scale);
         returnScalar(scale.toDouble());
     }
 
@@ -1452,12 +1523,12 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
         QString unit = pVar.data()->getCustomUnitScale().mUnit;
         if(!scale.isEmpty() && !unit.isEmpty())
         {
-            mpConsole->print(scale+" ["+unit+"]");
+            HCOMPRINT(scale+" ["+unit+"]");
             returnScalar(scale.toDouble());
         }
         else if(!scale.isEmpty())
         {
-            mpConsole->print(scale);
+            HCOMPRINT(scale);
             returnScalar(scale.toDouble());
         }
         else
@@ -1466,12 +1537,12 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
             unit = pVar.data()->getPlotScaleDataUnit();
             if(!scale.isEmpty() && !unit.isEmpty())
             {
-                mpConsole->print(scale+" ["+unit+"]");
+                HCOMPRINT(scale+" ["+unit+"]");
                 returnScalar(scale.toDouble());
             }
             else if(!scale.isEmpty())
             {
-                mpConsole->print(scale);
+                HCOMPRINT(scale);
                 returnScalar(scale.toDouble());
             }
         }
@@ -1648,7 +1719,7 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
     }
     else
     {
-        mpConsole->printWarningMessage("Unknown file extension, assuming that it is a PLO file.");
+        HCOMWARN("Unknown file extension, assuming that it is a PLO file.");
         csv=false;
     }
 
@@ -1707,15 +1778,19 @@ void HcomHandler::executeRenameComponentCommand(const QString cmd)
 //! @brief Execute function for "pwd" command
 void HcomHandler::executePwdCommand(const QString /*cmd*/)
 {
-    mpConsole->print(mPwd);
+    HCOMPRINT(mPwd);
 }
 
 void HcomHandler::executeMwdCommand(const QString /*cmd*/)
 {
     if(gpMainWindow->mpModelHandler->count() > 0)
-        mpConsole->print(gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path());
+    {
+        HCOMPRINT(gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path());
+    }
     else
+    {
         HCOMERR("No model is open.");
+    }
 }
 
 
@@ -1732,7 +1807,7 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
     if(cmd == "mwd")
     {
         mPwd = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path();
-        mpConsole->print(mPwd);
+        HCOMPRINT(mPwd);
         return;
     }
 
@@ -1752,7 +1827,7 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
         return;
     }
 
-    mpConsole->print(mPwd);
+    HCOMPRINT(mPwd);
 }
 
 
@@ -1776,7 +1851,7 @@ void HcomHandler::executeListFilesCommand(const QString cmd)
     }
     for(int c=0; c<contents.size(); ++c)
     {
-        mpConsole->print(contents[c]);
+        HCOMPRINT(contents[c]);
     }
 }
 
@@ -1943,7 +2018,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
     }
     else
     {
-        mpConsole->print("Added "+typeName+" to current model.");
+        HCOMPRINT("Added "+typeName+" to current model.");
         gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->renameModelObject(pObj->getName(), name);
     }
 }
@@ -2031,7 +2106,7 @@ void HcomHandler::executeChangeTimestepCommand(const QString cmd)
     {
         gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getCoreSystemAccessPtr()->setDesiredTimeStep(component, value);
         //gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(false);
-        mpConsole->print("Setting time step of "+component+" to "+QString::number(value));
+        HCOMPRINT("Setting time step of "+component+" to "+QString::number(value));
     }
 }
 
@@ -2055,7 +2130,7 @@ void HcomHandler::executeInheritTimestepCommand(const QString cmd)
     else
     {
         gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getCoreSystemAccessPtr()->setInheritTimeStep(component, true);
-        mpConsole->print("Setting time step of "+component+" to inherited.");
+        HCOMPRINT("Setting time step of "+component+" to inherited.");
     }
 }
 
@@ -2113,7 +2188,7 @@ void HcomHandler::executeAbsCommand(const QString cmd)
         if(ok)
         {
             returnScalar(retval);
-            mpConsole->print(QString::number(retval));
+            HCOMPRINT(QString::number(retval));
         }
         else
         {
@@ -2157,7 +2232,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
 
         returnScalar(mpOptHandler->mOptLastWorstId);
-        mpConsole->print(QString::number(mpOptHandler->mOptLastWorstId));
+        HCOMPRINT(QString::number(mpOptHandler->mOptLastWorstId));
         return;
     }
     if(split.size() == 1 && split[0] == "best")
@@ -2174,7 +2249,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
 
         returnScalar(mpOptHandler->mOptBestId);
-        mpConsole->print(QString::number(mpOptHandler->mOptBestId));
+        HCOMPRINT(QString::number(mpOptHandler->mOptBestId));
         return;
     }
     if(split[0] == "set")
@@ -2370,7 +2445,7 @@ void HcomHandler::executeCallFunctionCommand(const QString cmd)
     runScriptCommands(mFunctions.find(funcName).value(), abort);
     if(*abort)
     {
-        mpConsole->print("Function aborted");
+        HCOMPRINT("Function aborted");
         returnScalar(-1);
         return;
     }
@@ -2890,7 +2965,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
         qApp->processEvents();
         if(mAborted)
         {
-            mpConsole->print("Script aborted.");
+            HCOMPRINT("Script aborted.");
             mAborted = false;
             *abort=true;
         }
@@ -2915,7 +2990,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
                 ++l;
             }
             mFunctions.insert(funcName, funcCommands);
-            mpConsole->print("Defined function: "+funcName);
+            HCOMPRINT("Defined function: "+funcName);
             funcName.clear();
             funcCommands.clear();
         }
@@ -2960,7 +3035,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
                 qApp->processEvents();
                 if(mAborted)
                 {
-                    mpConsole->print("Script aborted.");
+                    HCOMPRINT("Script aborted.");
                     mAborted = false;
                     *abort=true;
                     return "";
@@ -3454,7 +3529,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
         VariableType type;
         bool evalOk;
-        QString value = evaluateExpression(expr.getRight()->toString(), &type, &evalOk);
+        QString right = expr.getRight()->toString();
+        QString value = evaluateExpression(right, &type, &evalOk);
 
         QStringList vars;
         getVariables(left, vars);
@@ -3494,11 +3570,11 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(!pars.isEmpty())
             {
                 executeCommand("chpa "+left+" "+value);
-                mpConsole->print("Assigning "+left+" with "+value);
+                HCOMPRINT("Assigning "+left+" with "+value);
                 return true;
             }
             mLocalVars.insert(left, value.toDouble());
-            mpConsole->print("Assigning "+left+" with "+value);
+            HCOMPRINT("Assigning "+left+" with "+value);
             mLocalVars.insert("ans", value.toDouble());
             return true;
         }
@@ -3528,13 +3604,13 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         if(evalOk && type==Scalar)
         {
             returnScalar(value.toDouble());
-            mpConsole->print(QString::number(value.toDouble()));
+            HCOMPRINT(QString::number(value.toDouble()));
             return true;
         }
         else if(evalOk && type==DataVector)
         {
             mRetvalType = DataVector;
-            mpConsole->print(value);
+            HCOMPRINT(value);
             return true;
         }
         else
@@ -3861,7 +3937,7 @@ void HcomHandler::returnScalar(const double retval)
 {
     mLocalVars.insert("ans", retval);
     mRetvalType = Scalar;
-    //mpConsole->print(QString::number(retval));
+    //HCOMPRINT(QString::number(retval));
 }
 
 void HcomHandler::registerFunction(const QString func, const QString description, const SymHop::Function fptr)
