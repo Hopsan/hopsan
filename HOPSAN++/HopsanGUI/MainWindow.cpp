@@ -1398,7 +1398,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
 
 void MainWindow::showReleaseNotes()
 {
-    QDesktopServices::openUrl(QUrl(gDesktopHandler.getExecPath()+"../Hopsan-release-notes.txt"));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(gDesktopHandler.getExecPath()+"../Hopsan-release-notes.txt"));
 }
 
 

@@ -62,6 +62,7 @@
 - Fixed: If an external subsystem file is renamed or removed, it is impossible to edit the subsystem
 - Fixed: If you generate a component, change the svg icon and then re-generates it, icon is reset to default
 - Fixed: Crash on startup if configfile contained un-supported unit scales. (Old Hopsan versions would crash if a newer version had been run.)
+- Fixed: Unable to open Release-notes when path contains space or backslash
 
 - Fixed: Other related issues that were never entered into the issue tracker
 
