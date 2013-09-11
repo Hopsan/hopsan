@@ -774,7 +774,22 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
     QStringList libs = QDir(libPath).entryList(QStringList() << "*.dll" << "*.so");
     for(int l=0; l<libs.size(); ++l)
     {
+        QStringList rComponents, rNodes;
+        mpCoreAccess->getLibraryContents(libPath+libs[l], rComponents, rNodes);
+        Q_FOREACH(const QString component, rComponents)
+        {
+            mLoadedComponents.removeAll(component);
+
+            LibraryComponent* pLibComp = mpContentsTree->findComponent(component, "");
+            mpContentsTree->removeComponent(pLibComp->getFullTypeName());
+
+            gConfig.removeUserLib(libPath);
+        }
+
         mpCoreAccess->unLoadComponentLib(libPath+libs[l]);
+
+
+
         QFile testFile(libPath+libs[l]);
         if(!testFile.open(QFile::ReadWrite))
         {
@@ -816,6 +831,11 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     if(!QFile::exists(newLibFileName))
     {
+        for(int l=0; l<libs.size(); ++l)
+        {
+            loadAndRememberExternalLibrary(libPath);
+        }
+        gpMainWindow->mpModelHandler->restoreState();
         return false;
     }
 
