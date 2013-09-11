@@ -82,6 +82,28 @@ signals:
     void afterReplot();
 };
 
+class TimeScaleWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    TimeScaleWidget(SharedLogVariableDataPtrT pTime, QWidget *pParent=0);
+    void setScale(const QString &rUnitScale);
+    void setOffset(const QString &rOffset);
+
+signals:
+    void valuesChanged();
+
+public slots:
+    void setVaules();
+
+private:
+    SharedLogVariableDataPtrT mpTime;
+    QComboBox *mpTimeScaleComboBox;
+    QLineEdit *mpTimeOffsetLineEdit;
+
+
+};
+
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
 {
@@ -121,7 +143,7 @@ public:
     void setLegendsVisible(bool value);
 
     void update();
-    void updateLabels();
+
 
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     void exportToCsv(QString fileName);
@@ -139,6 +161,7 @@ protected:
 public slots:
     void rescaleAxesToCurves();
     void toggleAxisLock();
+    void updateLabels();
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
@@ -274,10 +297,6 @@ private:
     QLineEdit *mpUserDefinedYlLabel;
     QLineEdit *mpUserDefinedYrLabel;
     QCheckBox *mpUserDefinedLabelsCheckBox;
-
-    // Time scaling member variables
-    QComboBox *mpTimeScaleComboBox;
-    QLineEdit *mpTimeOffsetLineEdit;
 
     void rescaleAxisLimitsToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
     void calculateLegendBufferOffsets(const int plotId, const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);

@@ -302,30 +302,30 @@ void PlotTab::applyLegendSettings()
 
 void PlotTab::applyTimeScalingSettings()
 {
-    QString newUnit = extractBetweenFromQString(mpTimeScaleComboBox->currentText().split(" ").last(), '[', ']');
-    QString newScaleStr = mpTimeScaleComboBox->currentText().split(" ")[0];
-    double newScale = newScaleStr.toDouble();
-    //! @todo make sure we have at least one curve here, also this is not correct since different curves may have different generation, should be able to ask the zoomer about this instead, or have some refresh zoom slot that handles all of it
-    double oldScale = mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->getPlotScale();
+//    QString newUnit = extractBetweenFromQString(mpTimeScaleComboBox->currentText().split(" ").last(), '[', ']');
+//    QString newScaleStr = mpTimeScaleComboBox->currentText().split(" ")[0];
+//    double newScale = newScaleStr.toDouble();
+//    //! @todo make sure we have at least one curve here, also this is not correct since different curves may have different generation, should be able to ask the zoomer about this instead, or have some refresh zoom slot that handles all of it
+//    double oldScale = mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->getPlotScale();
 
-    //! @todo this will only affect the generation for the first curve
-    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
-    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setPlotOffset(mpTimeOffsetLineEdit->text().toDouble());
-    //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
+//    //! @todo this will only affect the generation for the first curve
+//    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
+//    mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->setPlotOffset(mpTimeOffsetLineEdit->text().toDouble());
+//    //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
 
-    //! @todo offset step size should follow scale change to make more sense, (when you click the spinbox), also for ydata scaling
+//    //! @todo offset step size should follow scale change to make more sense, (when you click the spinbox), also for ydata scaling
 
-    // Update zoom rectangle to new scale if zoomed
-    if(isZoomed(FirstPlot))
-    {
-        QRectF oldZoomRect = mpZoomerLeft[FirstPlot]->zoomRect();
-        QRectF newZoomRect = QRectF(oldZoomRect.x()*newScale/oldScale, oldZoomRect.y(), oldZoomRect.width()*newScale/oldScale, oldZoomRect.height());
+//    // Update zoom rectangle to new scale if zoomed
+//    if(isZoomed(FirstPlot))
+//    {
+//        QRectF oldZoomRect = mpZoomerLeft[FirstPlot]->zoomRect();
+//        QRectF newZoomRect = QRectF(oldZoomRect.x()*newScale/oldScale, oldZoomRect.y(), oldZoomRect.width()*newScale/oldScale, oldZoomRect.height());
 
-        resetZoom();
+//        resetZoom();
 
-        mpZoomerLeft[FirstPlot]->zoom(newZoomRect);
-        update();
-    }
+//        mpZoomerLeft[FirstPlot]->zoom(newZoomRect);
+//        update();
+//    }
 
     updateLabels();
 }
@@ -383,49 +383,47 @@ void PlotTab::openTimeScalingDialog()
     QDialog *pScaleDialog = new QDialog(mpParentPlotWindow);
     pScaleDialog->setWindowTitle("Change Time scaling and offset");
 
-    QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
-    mpTimeScaleComboBox = new QComboBox(pScaleDialog);
-    QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
-    mpTimeOffsetLineEdit = new QLineEdit(pScaleDialog);
-    mpTimeOffsetLineEdit->setValidator(new QDoubleValidator(pScaleDialog));
-
-    //! @todo what if generation does not have time
-    //! @todo would be nice if we could sort on scale size
-    QMap<QString,double> units = gConfig.getCustomUnits(TIMEVARIABLENAME);
-    QString currUnit = extractBetweenFromQString(mpQwtPlots[0]->axisTitle(QwtPlot::xBottom).text(), '[', ']');
-    QMap<QString,double>::iterator it;
-    int ctr=0;
-    for (it = units.begin(); it != units.end(); ++it)
+    // One for each generation, automatic sort on key
+    QMap<int, TimeScaleWidget*> activeGenerations;
+    //! @todo what if massive amount of generations
+    for (int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
-        mpTimeScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
-        if (currUnit == it.key())
+        int gen = mPlotCurvePtrs[FirstPlot][i]->getGeneration();
+        if (!activeGenerations.contains(gen))
         {
-            mpTimeScaleComboBox->setCurrentIndex(ctr);
+            SharedLogVariableDataPtrT pTime = mPlotCurvePtrs[FirstPlot][i]->getTimeVectorPtr();
+            //if (pTime)
+            {
+                TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, pScaleDialog);
+                connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateLabels()));
+                activeGenerations.insert(gen, pTimeScaleW);
+            }
         }
-        ++ctr;
     }
 
-    //! @todo This should be one per generation
-    if (mPlotCurvePtrs[FirstPlot].size() > 0)
+   QGridLayout *pGridLayout = new QGridLayout(pScaleDialog);
+//    pGridLayout->addWidget(new QLabel("Scale: ", pScaleDialog),0,0);
+//    Q
+
+//    pGridLayout->addWidget(new QLabel("Offset: ", pScaleDialog),0,2);
+
+    // Now push scale widgets into grid, in sorted order from map
+    int row = 0;
+    QMap<int, TimeScaleWidget*>::iterator it;
+    for (it=activeGenerations.begin(); it!=activeGenerations.end(); ++it)
     {
-        mpTimeOffsetLineEdit->setText(QString("%1").arg(mPlotCurvePtrs[FirstPlot][0]->getLogDataVariablePtr()->getPlotOffset()));
+        pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(it.key()+1), pScaleDialog), row, 0);
+        pGridLayout->addWidget(it.value(), row, 1);
+        ++row;
     }
 
-
+    // Add button box
     QPushButton *pDoneButton = new QPushButton("Close", pScaleDialog);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
-
-    QGridLayout *pGridLayout = new QGridLayout(pScaleDialog);
-    pGridLayout->addWidget(pXScaleLabel, 0, 0);
-    pGridLayout->addWidget(mpTimeScaleComboBox, 0, 1);
-    pGridLayout->addWidget(pXOffsetLabel, 1, 0);
-    pGridLayout->addWidget(mpTimeOffsetLineEdit, 1, 1);
-    pGridLayout->addWidget(pButtonBox, 2, 1);
-
+    pGridLayout->addWidget(pButtonBox, row, 1);
     connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
-    connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(applyTimeScalingSettings()));
-    connect(mpTimeOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(applyTimeScalingSettings()));
+    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateLabels())); //!< @todo this should ahppen directly when changing scale values
 
     pScaleDialog->show();
     //! @todo is the dialog ever removed
@@ -3292,4 +3290,80 @@ void HopQwtPlot::replot()
 {
     QwtPlot::replot();
     emit afterReplot();
+}
+
+
+TimeScaleWidget::TimeScaleWidget(SharedLogVariableDataPtrT pTime, QWidget *pParent) : QWidget(pParent)
+{
+    mpTime = pTime;
+
+    QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
+    mpTimeScaleComboBox = new QComboBox(this);
+    mpTimeOffsetLineEdit = new QLineEdit(this);
+    mpTimeOffsetLineEdit->setValidator(new QDoubleValidator(this));
+
+    pHBoxLayout->addWidget(new QLabel("Time", this));
+    pHBoxLayout->addWidget(new QLabel("Scale: ", this));
+    pHBoxLayout->addWidget(mpTimeScaleComboBox);
+    pHBoxLayout->addWidget(new QLabel("Offset: ", this));
+    pHBoxLayout->addWidget(mpTimeOffsetLineEdit);
+
+    // Dont do stuff if mpTime = NULL ptr
+    if (mpTime)
+    {
+        // Populate time scale box and try to figure out current time unit
+        //! @todo what if time = 0
+        //! @todo would be nice if we could sort on scale size
+        QMap<QString,double> units = gConfig.getCustomUnits(TIMEVARIABLENAME);
+        QString currUnit = mpTime->getPlotScaleDataUnit();
+        if (currUnit.isEmpty())
+        {
+            currUnit = gConfig.getDefaultUnit(TIMEVARIABLENAME);
+        }
+        QMap<QString,double>::iterator it;
+        int ctr=0;
+        for (it = units.begin(); it != units.end(); ++it)
+        {
+            mpTimeScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
+            if (currUnit == it.key())
+            {
+                mpTimeScaleComboBox->setCurrentIndex(ctr);
+            }
+            ++ctr;
+        }
+
+        // Set the current offset value
+        mpTimeOffsetLineEdit->setText(QString("%1").arg(mpTime->getPlotOffset()));
+
+        // Connect signals to update time scale and ofset when changing values
+        connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setVaules()));
+        connect(mpTimeOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setVaules()));
+    }
+    else
+    {
+        mpTimeScaleComboBox->setDisabled(true);
+        mpTimeOffsetLineEdit->setDisabled(true);
+    }
+}
+
+void TimeScaleWidget::setScale(const QString &rUnitScale)
+{
+    mpTimeScaleComboBox->findText(rUnitScale, Qt::MatchContains);
+    setVaules();
+}
+
+void TimeScaleWidget::setOffset(const QString &rOffset)
+{
+    mpTimeOffsetLineEdit->setText(rOffset);
+    setVaules();
+}
+
+void TimeScaleWidget::setVaules()
+{
+    QString newUnit = extractBetweenFromQString(mpTimeScaleComboBox->currentText().split(" ").last(), '[', ']');
+    QString newScaleStr = mpTimeScaleComboBox->currentText().split(" ")[0];
+    mpTime->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
+    mpTime->setPlotOffset(mpTimeOffsetLineEdit->text().toDouble());
+    emit valuesChanged();
+    //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
 }
