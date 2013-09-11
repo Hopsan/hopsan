@@ -837,6 +837,12 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
             {
                 parameterNames[p].remove("\"");
                 QStringList splitFirstCmd = parameterNames[p].split(".");
+                if(splitFirstCmd.size() == 3)
+                {
+                    QString parName = splitFirstCmd[1]+"."+splitFirstCmd[2];
+                    splitFirstCmd.removeLast();
+                    splitFirstCmd[1] = parName;
+                }
                 if(splitFirstCmd.size() == 2)
                 {
                     QList<ModelObject*> components;
@@ -856,6 +862,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                             }
                             else
                             {
+                                toLongDataNames(parameters[p]);
                                 if(components[c]->setParameterValue(parameters[p], evaluateExpression(newValue, &varType, &ok)))
                                     ++nChanged;
                             }

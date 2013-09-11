@@ -642,6 +642,7 @@ void OptimizationDialog::generateComplexScript()
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
         QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(par);
         setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
@@ -725,6 +726,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
         QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(par);
         setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
