@@ -12,6 +12,7 @@
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 #include <sstream>
+#include <cstring>
 
 using namespace std;
 
@@ -95,6 +96,7 @@ namespace hopsan {
            
             <<<finalcode>>>
         }
+        <<<auxiliaryfunctions>>>
     };
 }
 

@@ -16,7 +16,7 @@ HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QStrin
 }
 
 
-void HopsanModelicaGenerator::generateFromModelica(QString code)
+void HopsanModelicaGenerator::generateFromModelica(QString code, SolverT solver)
 {
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
@@ -34,8 +34,16 @@ void HopsanModelicaGenerator::generateFromModelica(QString code)
     //qDebug() << "Transforming!";
     printMessage("Transforming...");
 
-    //Transform equation system, generate Jacobian
-    generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
+    if(solver == BilinearTransform)
+    {
+        //Transform equation system using Bilinear Transform method
+        generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
+    }
+    else /*if(solver == ForwardEuler || solver == RungeKutta)*/
+    {
+        //Transform equation system using numerical integration methods
+        generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, solver);
+    }
 
     //qDebug() << "Compiling!";
     printMessage("Generating component...");
@@ -932,6 +940,381 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 }
 
 
+void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, SolverT solver)
+{
+    //Create list of equqtions
+    QList<Expression> equations;
+    for(int e=0; e<plainEquations.size(); ++e)
+    {
+        equations.append(Expression(plainEquations.at(e)));
+        if(!equations[e].isEquation())
+        {
+            printErrorMessage("Equation is not an equation.");
+            return;
+        }
+    }
+
+    QMap<QString, QString> varToStateVarMap;
+    QMap<QString, QString> derToStateDerMap;
+    int s=0;
+    Q_FOREACH(const QString &equation, plainEquations)
+    {
+        if(!equation.contains("der(")) continue;
+        int nDer = equation.count("der(");
+        for(int i=0; i<nDer; ++i)
+        {
+            if(equation.section("der(",i, i).right(1)[0].isLetterOrNumber()) continue;
+            QString var = equation.section("der(",i+1,i+1).section(")",0,0);
+            if(!varToStateVarMap.contains(var))
+            {
+                varToStateVarMap.insert(var, "STATEVAR"+QString::number(s));
+                derToStateDerMap.insert("der("+var+")", "der(STATEVAR"+QString::number(s)+")");
+                ++s;
+            }
+        }
+    }
+
+    for(int e=0; e<equations.size(); ++e)
+    {
+        QMapIterator<QString, QString> it(varToStateVarMap);
+        while(it.hasNext())
+        {
+            it.next();
+            equations[e].replace(Expression(it.key()), Expression(it.value()));
+        }
+        QMapIterator<QString, QString> itd(derToStateDerMap);
+        while(itd.hasNext())
+        {
+            itd.next();
+            equations[e].replace(Expression(itd.key()), Expression(itd.value()));
+        }
+    }
+
+    //Generate list of dependencies (i.e. which state variable derivatives exist in each equation)
+    QList<QList<Expression> > dependencies;
+    Q_FOREACH(const Expression &equation, equations)
+    {
+        dependencies.append(QList<Expression>());
+        Q_FOREACH(const QString &var, derToStateDerMap.values())
+        {
+            if(equation.contains(var))
+            {
+                dependencies[equations.indexOf(equation)].append(Expression(var));
+            }
+        }
+    }
+
+    //Sort equations by dependencies
+    QList<Expression> trivialEquations;                     //Trivial equations, not required to resolve state variables
+    QList<Expression> stateEquations;                       //State equations, used to resolve state variables
+    QList<Expression> resolvedDependencies;                 //State variables that has been resolved
+    QMap<Expression*, Expression*> stateDerToEquationMap;   //Map between state equations and corresponding state variable
+    int iterationCounter=0;
+    int e=0;
+    while(!equations.isEmpty())
+    {
+        //Abort if no success after very many iterations
+        ++iterationCounter;
+        if(iterationCounter > plainEquations.size()*100)
+        {
+            printErrorMessage("Unable to resolve dependencies in equation system.");
+            break;
+        }
+
+        //Restart counter
+        if(e >= equations.size())
+            e=0;
+
+        //Remove resolved dependencies
+        for(int i=0; i<resolvedDependencies.size(); ++i)
+        {
+            dependencies[e].removeAll(resolvedDependencies[i]);
+        }
+
+        //No dependencies, equation is trivial
+        if(dependencies[e].isEmpty())
+        {
+            trivialEquations.append(equations[e]);
+            equations.removeAt(e);
+            dependencies.removeAt(e);
+            e=0;
+            continue;
+        }
+
+        //Single dependency, resolve it
+        else if(dependencies[e].size() == 1)
+        {
+            resolvedDependencies.append(dependencies[e][0]);
+            stateEquations.append(equations[e]);
+            stateDerToEquationMap.insert(&resolvedDependencies.last(), &stateEquations.last());
+            equations.removeAt(e);
+            dependencies.removeAt(e);
+            e=0;
+            continue;
+        }
+        ++e;
+    }
+
+    //! @todo Use sorting above in the code below, instead of this hard-coded hack
+
+    // for now: Assume first equation = x0, second equation = x1
+
+    //stateDerToEquationMap.insert(new Expression("der(STATEVAR0)"),&equations[0]);       //! @todo MEMORY LEAK!!!
+    //stateDerToEquationMap.insert(new Expression("der(STATEVAR1)"),&equations[1]);       //! @todo MEMORY LEAK!!!
+
+
+    //Break out the derivative of the state variable in each corresponding equation
+    QMapIterator<Expression*, Expression*> it(stateDerToEquationMap);
+    while(it.hasNext())
+    {
+        it.next();
+
+        Expression stateVar = *it.key();
+        Expression *equation = it.value();
+
+        equation->linearize();
+        equation->toLeftSided();
+        *equation = *equation->getLeft();
+        equation->factor(stateVar);
+        Expression term = equation->getTerms()[0];
+        equation->removeTerm(term);
+        term.replace(stateVar, Expression(1));
+        term._simplify(Expression::FullSimplification, Expression::Recursive);
+        equation->divideBy(term);
+        equation->changeSign();
+        equation->_simplify(Expression::FullSimplification, Expression::Recursive);
+    }
+
+    //Sort remaining equations so that they can be solved
+    QList<Expression> trivialVariables;
+    QList<Expression> knowns;
+    knowns.append(resolvedDependencies);
+    for(int v=0; v<varToStateVarMap.values().size(); ++v)
+    {
+        knowns.append(Expression(varToStateVarMap.values()[v]));
+    }
+    for(int p=0; p<parameters.size(); ++p)
+    {
+        knowns.append(Expression(parameters[p].name));
+    }
+    for(int i=0; i<ports.size(); ++i)
+    {
+        QString num = QString::number(i+1);
+        if(ports[i].porttype == "ReadPort")
+        {
+            knowns.append(Expression(ports[i].name));
+        }
+        else if(ports[i].porttype == "PowerPort" && cqsType == "C")
+        {
+            QStringList qVars;
+            qVars << GeneratorNodeInfo(ports[i].nodetype).qVariables;
+            for(int v=0; v<qVars.size(); ++v)
+            {
+                knowns.append(Expression(qVars[v]+num));
+            }
+        }
+        else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
+        {
+            QStringList cVars;
+            cVars << GeneratorNodeInfo(ports[i].nodetype).cVariables;
+            for(int v=0; v<cVars.size(); ++v)
+            {
+                knowns.append(Expression(cVars[v]+num));
+            }
+        }
+    }
+    if(!sortEquationByVariables(trivialEquations, trivialVariables, knowns))
+    {
+        return;
+    }
+
+    //Break out the variable defined by each trivial equation
+    for(int e=0; e<trivialEquations.size(); ++e)
+    {
+        trivialEquations[e].linearize();
+        trivialEquations[e].toLeftSided();
+        trivialEquations[e] = *trivialEquations[e].getLeft();
+        trivialEquations[e].factor(trivialVariables[e]);
+        Expression term = trivialEquations[e].getTerms()[0];
+        trivialEquations[e].removeTerm(term);
+        term.replace(trivialVariables[e], Expression(1));
+        term._simplify(Expression::FullSimplification, Expression::Recursive);
+        trivialEquations[e].divideBy(term);
+        trivialEquations[e].changeSign();
+        trivialEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
+        trivialEquations[e] = Expression::fromEquation(trivialVariables[e], trivialEquations[e]);
+    }
+
+
+    //Add call to solver
+    trivialEquations.prepend(Expression("solve()"));
+
+    //Initialize state variables, and convert them back at end
+    QMapIterator<QString, QString> itv(varToStateVarMap);
+    while(itv.hasNext())
+    {
+        itv.next();
+        trivialEquations.prepend(itv.value()+"="+itv.key());
+        trivialEquations.append(itv.key()+"="+itv.value());
+    }
+
+
+    //DEBUG OUTPUT
+    Q_FOREACH(const Expression &var, resolvedDependencies)
+    {
+        qDebug() << "STATE VARIABLE: " << var.toString();
+    }
+
+    Q_FOREACH(const Expression &equation, stateEquations)
+    {
+        qDebug() << "STATE EQUATION: " << equation.toString();
+    }
+
+    Q_FOREACH(const Expression &var, trivialVariables)
+    {
+        qDebug() << "TRIVIAL VARIABLE: " << var.toString();
+    }
+
+    Q_FOREACH(const Expression &equation, trivialEquations)
+    {
+        qDebug() << "TRIVIAL EQUATION: " << equation.toString();
+    }
+
+    double apa=3;
+    (void)apa;
+
+
+    //Generate component object
+    comp.typeName = typeName;
+    comp.displayName = displayName;
+    comp.cqsType = cqsType;
+    if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
+
+    for(int i=0; i<ports.size(); ++i)
+    {
+        comp.portNames << ports[i].name;
+        comp.portNodeTypes << ports[i].nodetype;
+        comp.portTypes << ports[i].porttype;
+        comp.portNotReq << ports[i].notrequired;
+        comp.portDefaults << ports[i].defaultvalue;
+    }
+
+    for(int i=0; i<parameters.size(); ++i)
+    {
+        comp.parNames << parameters[i].name;
+        comp.parDisplayNames << parameters[i].displayName;
+        comp.parDescriptions << parameters[i].description;
+        comp.parUnits << parameters[i].unit;
+        comp.parInits << parameters[i].init;
+    }
+
+    for(int i=0; i<variables.size(); ++i)
+    {
+        comp.varNames.append(variables[i].name);
+        comp.varInits.append(variables[i].init);
+        comp.varTypes.append("double");
+    }
+
+    comp.varInits.append("");
+    comp.varNames.append("STATEVARS[2]");
+    comp.varTypes.append("double");
+
+    comp.varInits.append("2");
+    comp.varNames.append("nStateVars");
+    comp.varTypes.append("int");
+
+    Q_FOREACH(const Expression &equation, trivialEquations)
+    {
+        QString equationStr = equation.toString();
+        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
+        comp.simEquations.append(equationStr+";");
+    }
+
+    comp.auxiliaryFunctions.append("double getStateDer(int i)");
+    comp.auxiliaryFunctions.append("{");
+    comp.auxiliaryFunctions.append("    switch(i)");
+    comp.auxiliaryFunctions.append("    {");
+    for(int e=0; e<stateEquations.size(); ++e)
+    {
+        comp.auxiliaryFunctions.append("        case "+QString::number(e)+" :");
+        QString stateEqStr = stateEquations[e].toString();
+        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            stateEqStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
+        comp.auxiliaryFunctions.append("            return "+stateEqStr+";");
+    }
+    comp.auxiliaryFunctions.append("    }");
+    comp.auxiliaryFunctions.append("}");
+    comp.auxiliaryFunctions.append("");
+
+    if(solver == ForwardEuler)
+    {
+        comp.auxiliaryFunctions.append("solve()");
+        comp.auxiliaryFunctions.append("{");
+        comp.auxiliaryFunctions.append("    for(int i=0; i<nStateVars; ++i)");
+        comp.auxiliaryFunctions.append("    {");
+        comp.auxiliaryFunctions.append("        STATEVARS[i] = STATEVARS[i] + mTimestep*getStateDer(i);");
+        comp.auxiliaryFunctions.append("    }");
+        comp.auxiliaryFunctions.append("}");
+    }
+    else /*if(solver == RungeKutta)*/
+    {
+        comp.auxiliaryFunctions.append(
+                "        solve()"
+                "        {"
+                "            double k1[nStateVars], k2[nStateVars], k3[nStateVars], k4[nStateVars];"
+                "            double orgStateVars[nStateVars];"
+                "            memcpy(orgStateVars, STATEVARS, sizeof(double)*nStateVars);"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                k1[i] = getStateDer(i);"
+                "            }"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                STATEVARS[i] = STATEVARS[i] + mTimestep/2.0*k1[i];  "
+                "            }"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                k2[i] = getStateDer(i);"
+                "            }"
+                "            memcpy(STATEVARS, orgStateVars, sizeof(double)*nStateVars);"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                STATEVARS[i] = STATEVARS[i] + mTimestep/2.0*k2[i];  "
+                "            }"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                k3[i] = getStateDer(i);"
+                "            }    "
+                "            memcpy(STATEVARS, orgStateVars, sizeof(double)*nStateVars);"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                STATEVARS[i] = STATEVARS[i] + mTimestep*k3[i];  "
+                "            }"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                k4[i] = getStateDer(i);"
+                "            }     "
+                "            memcpy(STATEVARS, orgStateVars, sizeof(double)*nStateVars);"
+                "            for(int i=0; i<nStateVars; ++i)"
+                "            {"
+                "                STATEVARS[i] = STATEVARS[i] + mTimestep/6.0*(k1[i]+2.0*k2[i]+2.0*k3[i]+k4[i]);  "
+                "            }                "
+                "       }");
+    }
+
+
+    //comp.simEquations.append(stateEquations);
+
+
+    equations.clear();
+}
+
+
 
 
 Expression concurrentDiff(Expression expr)
@@ -950,4 +1333,94 @@ Expression concurrentDiff(Expression expr)
 }
 
 
+//! @brief Sorts and equation system by its depending variables, so that it can be solved equation-by-equation
+//! @param equations List with equations to sort
+//! @param variables Empty list that will contain corresponding variables
+//! @param knowns List of already known parameter, that does not need to be taken into consideration
+bool HopsanModelicaGenerator::sortEquationByVariables(QList<Expression> &equations, QList<Expression> &variables, QList<Expression> &knowns)
+{
+    //Generate list of variables in equations
+    Q_FOREACH(const Expression &equation, equations)
+    {
+        QList<Expression> tempVars = equation.getVariables();
+        Q_FOREACH(const Expression var, tempVars)
+        {
+            if(!variables.contains(var) && !knowns.contains(var))
+                variables.append(var);
+        }
+    }
 
+    if(variables.size() != equations.size())
+    {
+        printErrorMessage("Wrong number of equations! Number of equations: "+QString::number(equations.size())+", number of variables: "+QString::number(variables.size()));
+        return false;
+    }
+
+    //Generate list of dependencies (i.e. which state variable derivatives exist in each equation)
+    QList<QList<Expression> > dependencies;
+    Q_FOREACH(const Expression &equation, equations)
+    {
+        dependencies.append(QList<Expression>());
+        Q_FOREACH(const Expression &var, variables)
+        {
+            if(equation.contains(var))
+            {
+                dependencies[equations.indexOf(equation)].append(Expression(var));
+            }
+        }
+    }
+
+    //Sort equations by dependencies
+    QList<Expression> resolvedEquations;                       //State equations, used to resolve state variables
+    QList<Expression> resolvedVariables;                 //State variables that has been resolved
+
+    int iterationCounter=0;
+    int e=0;
+    while(!equations.isEmpty())
+    {
+        //Abort if no success after very many iterations
+        ++iterationCounter;
+        if(iterationCounter > equations.size()*100)
+        {
+            printErrorMessage("Unable to resolve dependencies in equation system.");
+            return false;
+        }
+
+        //Restart counter
+        if(e >= equations.size())
+            e=0;
+
+        //Remove resolved dependencies
+        for(int i=0; i<resolvedVariables.size(); ++i)
+        {
+            dependencies[e].removeAll(resolvedVariables[i]);
+        }
+
+        //No dependencies, equation is trivial
+        if(dependencies[e].isEmpty())
+        {
+            resolvedEquations.append(equations[e]);
+            equations.removeAt(e);
+            dependencies.removeAt(e);
+            e=0;
+            continue;
+        }
+
+        //Single dependency, resolve it
+        else if(dependencies[e].size() <= 1)
+        {
+            resolvedVariables.append(dependencies[e][0]);
+            resolvedEquations.append(equations[e]);
+            equations.removeAt(e);
+            dependencies.removeAt(e);
+            e=0;
+            continue;
+        }
+        ++e;
+    }
+
+    equations = resolvedEquations;
+    variables = resolvedVariables;
+
+    return true;
+}

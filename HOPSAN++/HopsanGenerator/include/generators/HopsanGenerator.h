@@ -52,6 +52,8 @@ class ComponentSystem;
 class DLLIMPORTEXPORT HopsanGenerator
 {
 public:
+    enum SolverT {BilinearTransform, ForwardEuler, RungeKutta};
+
     HopsanGenerator(const QString coreIncludePath, const QString binPath, const bool showDialog=false);
     void setOutputPath(const QString path);
     void setTarget(const QString fileName);

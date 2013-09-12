@@ -61,13 +61,13 @@ CoreGeneratorAccess::CoreGeneratorAccess(LibraryWidget *pLibrary)
     mpLibrary = pLibrary;
 }
 
-bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath, QString target)
+bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath, QString target, int solver)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
 
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(code.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true, outputPath.toStdString().c_str(), target.toStdString().c_str());
+        pHandler->callModelicaGenerator(code.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true, outputPath.toStdString().c_str(), target.toStdString().c_str(), solver);
         return true;
     }
     delete(pHandler);

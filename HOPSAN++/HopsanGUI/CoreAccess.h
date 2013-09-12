@@ -60,7 +60,7 @@ class CoreGeneratorAccess
 {
 public:
     CoreGeneratorAccess(LibraryWidget *pLibrary);
-    bool generateFromModelica(QString code, QString outputPath="", QString target="");
+    bool generateFromModelica(QString code, QString outputPath="", QString target="", int solver=0);
     bool generateFromCpp(QString code, bool showOutputDialog=true, QString outputPath="");
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);

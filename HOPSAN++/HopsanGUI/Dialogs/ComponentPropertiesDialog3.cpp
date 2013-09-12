@@ -77,7 +77,8 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gDesktopHandler.getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
-            coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName);
+            int solver = pEditDialog->getSolver();
+            coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName, solver);
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
             mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
         }
@@ -210,6 +211,7 @@ void ComponentPropertiesDialog3::recompile()
 
     bool modelica = mpModelObject->getAppearanceData()->getSourceCodeFile().endsWith(".mo");
     QString sourceCode = mpSourceCodeTextEdit->toPlainText();
+    int solver = mpSolverComboBox->currentIndex();
 
     //Read source code from file
     QFile oldSourceFile(basePath+fileName);
@@ -228,7 +230,7 @@ void ComponentPropertiesDialog3::recompile()
     sourceFile.write(sourceCode.toStdString().c_str());
     sourceFile.close();
 
-    if(!gpMainWindow->mpLibrary->recompileComponent(basePath+libPath, modelica, sourceCode))
+    if(!gpMainWindow->mpLibrary->recompileComponent(basePath+libPath, modelica, sourceCode, solver))
     {
         qDebug() << "Failure!";
         QFile sourceFile(basePath+fileName);
@@ -416,6 +418,16 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     QWidget *pTempWidget = new QWidget(this);
     QVBoxLayout *pLayout = new QVBoxLayout(pTempWidget);
     pLayout->addWidget(mpSourceCodeTextEdit);
+
+    QLabel *pSolverLabel = new QLabel("Solver: ", this);
+    mpSolverComboBox = new QComboBox(this);
+    mpSolverComboBox->addItem("Bilinear Transform");
+    mpSolverComboBox->addItem("Forward Euler");
+    mpSolverComboBox->addItem("Runge-Kutta");
+    QHBoxLayout *pSolverLayout = new QHBoxLayout();
+    pSolverLayout->addWidget(pSolverLabel);
+    pSolverLayout->addWidget(mpSolverComboBox);
+    pLayout->addLayout(pSolverLayout);
 
     return pTempWidget;//return pSourceCodeTextEdit;
 }

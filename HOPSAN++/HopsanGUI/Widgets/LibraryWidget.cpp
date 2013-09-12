@@ -767,7 +767,7 @@ void LibraryWidget::recompileComponent()
 }
 
 
-bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, const QString modelicaCode)
+bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, const QString modelicaCode, int solver)
 { 
     gpMainWindow->mpModelHandler->saveState();
 
@@ -820,7 +820,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     if(modelica)
     {
-        pCoreAccess->generateFromModelica(modelicaCode, libPath, randomName);
+        pCoreAccess->generateFromModelica(modelicaCode, libPath, randomName, solver);
     }
     else
     {
@@ -1903,7 +1903,8 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gDesktopHandler.getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
-            coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName);
+            int solver = pEditDialog->getSolver();
+            coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName, solver);
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
         }
         delete(pEditDialog);

@@ -1158,6 +1158,10 @@ void Expression::changeSign()
         {
             this->replaceBy(mFactors.first());
         }
+        if(mFactors.isEmpty())
+        {
+            mFactors.append(Expression("1"));
+        }
     }
     else
     {
@@ -2120,7 +2124,10 @@ bool Expression::_verifyFunctions() const
 //FIXED
 void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecursiveT recursive)
 {
-    //restartFullRecursive:
+    if(this->isSymbol() || this->isVariable())
+    {
+        return;
+    }
 
     if(type == NoSimplifications)
     {

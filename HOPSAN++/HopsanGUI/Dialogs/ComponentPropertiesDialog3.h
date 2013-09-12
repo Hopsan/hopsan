@@ -140,6 +140,7 @@ private:
     QTextEdit *mpTextEdit;
     QPushButton *mpRecompileButton;
     QTextEdit *mpSourceCodeTextEdit;
+    QComboBox *mpSolverComboBox;
 };
 
 #endif // COMPONENTPROPERTIESDIALOG3_H

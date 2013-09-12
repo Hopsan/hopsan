@@ -42,6 +42,7 @@ public:
     enum SourceCodeEnumT {Cpp, Modelica};
     QVBoxLayout *mpVerticalLayout;
     QTextEdit *mpCodeTextEdit;
+    QComboBox *mpSolverComboBox;
     QDialogButtonBox *mpButtonBox;
 
     EditComponentDialog(QString code, SourceCodeEnumT language);
@@ -49,8 +50,10 @@ public:
     void retranslateUi();
 
     QString getCode();
+    int getSolver();
 
     void openCreateComponentWizard(SourceCodeEnumT language);
+
 private slots:
     //void openCreateComponentWizard(SourceCodeEnumT language);
     void setHighlighter(SourceCodeEnumT language);

@@ -131,6 +131,8 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
     if(cqsType == "S")
         cqsType = "Signal";
     this->cqsType = cqsType;
+
+    this->auxiliaryFunctions = QStringList();
 }
 
 
@@ -314,17 +316,18 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     gccCommand +=" 2>&1";
     FILE *fp;
     char line[130];
+    output.append("Compiler command: \""+gccCommand+"\"\n");
     fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
     if ( !fp )
     {
-        output="Could not execute '" + gccCommand + "'! err=%d";
+        output.append("Could not execute '" + gccCommand + "'! err=%d\n");
         return false;
     }
     else
     {
         while ( fgets( line, sizeof line, fp))
         {
-            output = line;
+            output.append(line);
         }
     }
 #endif

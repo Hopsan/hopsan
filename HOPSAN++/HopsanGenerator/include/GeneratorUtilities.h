@@ -148,6 +148,7 @@ public:
     QStringList initEquations;
     QStringList simEquations;
     QStringList finalEquations;
+    QStringList auxiliaryFunctions;
 
     QString plainCode;
 };

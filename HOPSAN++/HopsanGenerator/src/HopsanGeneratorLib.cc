@@ -39,14 +39,14 @@ using namespace std;
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, string coreIncludePath, string binPath, bool showDialog=false, string outputPath="", string target="")
+extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, string coreIncludePath, string binPath, bool showDialog=false, string outputPath="", string target="", int solver=0)
 {
     //qDebug() << "Called Modelica generator (in dll)!";
 
     HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->setOutputPath(QString(outputPath.c_str()));
     pGenerator->setTarget(QString(target.c_str()));
-    pGenerator->generateFromModelica(QString(modelicaCode.c_str()));
+    pGenerator->generateFromModelica(QString(modelicaCode.c_str()), HopsanGenerator::SolverT(solver));
     delete(pGenerator);
 }
 

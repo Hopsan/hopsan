@@ -80,7 +80,7 @@ public:
 
     void checkForFailedComponents();
 
-    bool recompileComponent(QString libPath, const bool modelica=false, const QString modelicaCode=QString());
+    bool recompileComponent(QString libPath, const bool modelica=false, const QString modelicaCode=QString(), int solver=0);
 public slots:
     void generateComponent();
     void addExternalLibrary(QString libDir = QString());

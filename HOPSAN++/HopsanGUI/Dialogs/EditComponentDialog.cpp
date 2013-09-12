@@ -57,7 +57,17 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
     mpCodeTextEdit->setObjectName(QString::fromUtf8("mpCodeTextEdit"));
     mpCodeTextEdit->setTabStopWidth(4);
 
+    QHBoxLayout *pSolverLayout = new QHBoxLayout();
+    QLabel *pSolverLabel = new QLabel("Solver: ", this);
+    mpSolverComboBox = new QComboBox(this);
+    mpSolverComboBox->addItem("Bilinear Transform");
+    mpSolverComboBox->addItem("Forward Euler");
+    mpSolverComboBox->addItem("Runge-Kutta");
+    pSolverLayout->addWidget(pSolverLabel);
+    pSolverLayout->addWidget(mpSolverComboBox);
+
     mpVerticalLayout->addWidget(mpCodeTextEdit);
+    mpVerticalLayout->addLayout(pSolverLayout);
 
     mpButtonBox = new QDialogButtonBox(this);
     mpButtonBox->setObjectName(QString::fromUtf8("mpButtonBox"));
@@ -93,6 +103,12 @@ void EditComponentDialog::retranslateUi()
 QString EditComponentDialog::getCode()
 {
     return mpCodeTextEdit->toPlainText();
+}
+
+
+int EditComponentDialog::getSolver()
+{
+    return mpSolverComboBox->currentIndex();
 }
 
 

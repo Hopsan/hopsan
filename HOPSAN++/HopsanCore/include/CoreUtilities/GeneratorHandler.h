@@ -37,7 +37,7 @@ public:
 
     bool isLoadedSuccessfully();
 
-    typedef void (*call_modelica_generator_t)(HString code, HString codeIncludeDir, HString binDir, bool showDialog, HString outputPath, HString target);
+    typedef void (*call_modelica_generator_t)(HString code, HString codeIncludeDir, HString binDir, bool showDialog, HString outputPath, HString target, int solver);
     typedef void (*call_cpp_generator_t)(HString cppCode, HString coreIncludePath, HString binPath, bool showDialog, HString outputPath);
     typedef void (*call_fmu_import_generator_t)(HString path, HString targetPath, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_fmu_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, HString coreIncludePath, HString binPath, bool showDialog);

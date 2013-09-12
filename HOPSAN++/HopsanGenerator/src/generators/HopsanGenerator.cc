@@ -175,11 +175,34 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     {
         varDeclarations.append("        "+comp.utilities[i]+" "+comp.utilityNames[i]+";\n");
     }
+    int portId=1;
+    for(int i=0; i<comp.portNames.size(); ++i)
+    {
+        QStringList varNames;
+        if(comp.portNodeTypes[i] == "NodeSignal")
+        {
+            varNames << comp.portNames[i];
+        }
+        else
+        {
+            varNames << GeneratorNodeInfo(comp.portNodeTypes[i]).qVariables << GeneratorNodeInfo(comp.portNodeTypes[i]).cVariables;
+        }
+        for(int v=0; v<varNames.size(); ++v)
+        {
+            QString varName;
+            if(comp.portNodeTypes[i] == "NodeSignal")
+                varName = varNames[v];
+            else
+                varName = varNames[v] + QString::number(portId);
+            varDeclarations.append("        double "+varName+";\n");
+        }
+        ++portId;
+    }
 
 
     //Declare node data pointers
     QString dataPtrDeclarations = "        double ";
-    int portId=1;
+    portId=1;
     QStringList allVarNames;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
@@ -340,7 +363,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
                 varName = varNames[v];
             else
                 varName = varNames[v] + QString::number(portId);
-            readInputs.append("            double "+varName+" = (*mpND_"+varName+");\n");
+            readInputs.append("            "+varName+" = (*mpND_"+varName+");\n");
         }
         ++portId;
     }
@@ -407,6 +430,13 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     }
 
 
+    //Auxiliary functions
+    QString auxiliaryFunctions;
+    for(int i=0; i<comp.auxiliaryFunctions.size(); ++i)
+    {
+        auxiliaryFunctions.append("        "+comp.auxiliaryFunctions[i]+"\n");
+    }
+
 
     QFile compTemplateFile(":templates/generalComponentTemplate.hpp");
     if(!compTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -442,6 +472,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     code.replace("<<<simulatecode>>>", simCode);
     code.replace("<<<writeoutputs>>>", writeOutputs);
     code.replace("<<<finalcode>>>", finalCode);
+    code.replace("<<<auxiliaryfunctions>>>", auxiliaryFunctions);
 
     return code;
 }
