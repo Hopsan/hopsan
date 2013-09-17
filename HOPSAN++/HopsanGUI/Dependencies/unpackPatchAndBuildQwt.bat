@@ -21,6 +21,12 @@ REM svn co svn://svn.code.sf.net/p/qwt/code/trunk/qwt %dst%
 REM Unpack using tar
 ..\..\ThirdParty\7z\7z.exe x %filename%.zip -y
 
+echo.
+echo ======================
+echo Patch libQWT
+echo ======================
+..\..\ThirdParty\patch\doit.exe -p0 < %filename%.patch
+
 REM Build
 echo.
 echo ======================

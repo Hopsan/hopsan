@@ -1,0 +1,14 @@
+Index: qwt_abstract_scale_draw.cpp
+===================================================================
+--- qwt-6.1.0/src/qwt_abstract_scale_draw.cpp	(revision 1758)
++++ qwt-6.1.0/src/qwt_abstract_scale_draw.cpp	(revision 1759)
+@@ -369,9 +369,6 @@
+ */
+ QwtText QwtAbstractScaleDraw::label( double value ) const
+ {
+-    if ( qFuzzyCompare( value + 1.0, 1.0 ) )
+-        value = 0.0; 
+-
+     return QLocale().toString( value );
+ }
+ 
