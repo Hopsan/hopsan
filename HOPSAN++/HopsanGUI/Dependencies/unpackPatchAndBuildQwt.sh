@@ -21,7 +21,7 @@ rm -rf $qwtname\_shb
 # Unzip
 unzip -q $qwtzipfile
 #Patch
-patch -p0 < $qwtname.patch
+patch --binary -p0 < $qwtname.patch
 # Create Shadowbbuild directory
 mkdir $qwtname\_shb
 cd $qwtname\_shb
