@@ -667,6 +667,26 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
 
         return onlyNumbers;
     }
+    else if (type == "conditional")
+    {
+        bool onlyNumbers=true;
+        for(int i=1; i<rValue.size(); ++i)
+        {
+            if (!rValue[i].isNumber())
+            {
+                onlyNumbers = false;
+                break;
+            }
+        }
+
+        rValue.prepend(initialSign);
+        if(!onlyNumbers)
+        {
+            rErrorString = QString("Invalid [integer] parameter value \"%1\". Only numbers are allowed.").arg(rValue);
+        }
+
+        return onlyNumbers;
+    }
     else if (type == "bool")
     {
         if ((rValue != "true") && (rValue != "false"))

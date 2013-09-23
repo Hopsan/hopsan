@@ -27,6 +27,7 @@
 #include "win32dll.h"
 #include "HopsanTypes.h"
 #include <vector>
+#include <string>
 
 namespace hopsan {
 
@@ -73,6 +74,7 @@ protected:
     HString mType;
     void* mpData;
     ParameterEvaluatorHandler* mpParentParameters;
+    std::vector<std::string> mConditions;
 };
 
 
@@ -83,7 +85,7 @@ public:
     ~ParameterEvaluatorHandler();
 
     bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
-                      const HString &rUnit, const HString &rType, void* pData=0, bool force=false);
+                      const HString &rUnit, const HString &rType, void* pData=0, bool force=false, std::vector<std::string> conditions = std::vector<std::string>());
     void deleteParameter(const HString &rName);
     bool renameParameter(const HString &rOldName, const HString &rNewName);
 

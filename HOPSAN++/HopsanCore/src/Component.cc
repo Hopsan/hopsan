@@ -409,6 +409,12 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 {
     registerParameter(rName, rDescription, rUnit, rData);
 }
+
+void Component::addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<std::string> &rConditions, int &rData)
+{
+    registerConditionalParameter(rName, rDescription, rConditions, rData);
+}
+
 ///@}
 
 ///@{
@@ -515,6 +521,21 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     else
         mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", &rValue);
 }
+
+void Component::registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<std::string> &rConditions, int &rValue)
+{
+    if (!isNameValid(rName))
+    {
+        addErrorMessage("Will not register Invalid parameter name: "+rName);
+        return;
+    }
+
+    if(mpParameters->hasParameter(rName))
+        mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
+
+    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", "conditional", &rValue, false, rConditions);
+}
+
 ///@}
 
 
@@ -1405,3 +1426,20 @@ HString Component::findFilePath(const HString &rFileName)
 
     return fullPath;
 }
+
+double Component::getStateVariableDerivative(int)
+{
+    addErrorMessage("getStateVariableDerivative() is not implemented in component.");
+    stopSimulation();
+
+    return 0;
+}
+
+double Component::getStateVariableSecondDerivative(int)
+{
+    addErrorMessage("getStateVariableSecondDerivative() is not implemented in component.");
+    stopSimulation();
+
+    return 0;
+}
+

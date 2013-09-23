@@ -112,6 +112,7 @@ public:
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
+    void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<std::string> &rConditions, int &rData);
 
     void setConstantValue(const HString &rName, const double value);
     void setConstantValue(const HString &rName, const int value);
@@ -124,6 +125,7 @@ public:
     //! @todo clean this up /Peter
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
+    void registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<std::string> &rConditions, int &rValue);
     virtual void unRegisterParameter(const HString &rName);
     bool hasParameter(const HString &rName) const;
     const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
@@ -189,6 +191,10 @@ public:
 
     //Searchpath
     HString findFilePath(const HString &rFileName);
+
+    //Numerical integration members
+    virtual double getStateVariableDerivative(int /*i*/);
+    virtual double getStateVariableSecondDerivative(int /*i*/);
 
 protected:
     //==========Protected member functions==========

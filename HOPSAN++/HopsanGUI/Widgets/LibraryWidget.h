@@ -142,6 +142,7 @@ private:
 
     QString mEditComponentTypeName;
     QString mEditComponentSourceCode;
+    int mEditComponentSolver;
     QTextEdit *mpEditComponentTextEdit;
 
     QStringList mFailedRecompilableComponents;

@@ -35,6 +35,7 @@ namespace hopsan {
 class DLLIMPORTEXPORT EquationSystemSolver
 {
 public:
+
     EquationSystemSolver(Component *pParentComponent, int n);
     EquationSystemSolver(Component *pParentComponent, int n, Matrix *pJacobian, Vec *pEquations, Vec *pVariables);
     void solve(Matrix &jacobian, Vec &equations, Vec &variables, int iteration);
@@ -53,6 +54,31 @@ private:
     Vec *mpEquations;
     Vec *mpVariables;
 };
+
+
+//! @ingroup ComponentUtilityClasses
+class DLLIMPORTEXPORT NumericalIntegrationSolver
+{
+public:
+    typedef double (NumericalIntegrationSolver::*callback_function)(int);
+
+    NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars);
+
+    void solveForwardEuler();
+    void solveBackwardEuler();
+    void solveRungeKutta();
+
+    double findRoot(int i);
+
+private:
+    Component *mpParentComponent;
+
+    //Numerical integration members
+    double mTimeStep;
+    std::vector<double> *mpStateVars;
+    int mnStateVars;
+};
+
 
 }
 

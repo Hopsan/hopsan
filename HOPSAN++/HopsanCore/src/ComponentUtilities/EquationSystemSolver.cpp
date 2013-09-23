@@ -28,6 +28,9 @@
 #include "Component.h"
 #include "ComponentUtilities/matrix.h"
 
+#include <cstring>
+#include <stdlib.h>
+
 using namespace hopsan;
 
 //! @class hopsan::EquationSystemSolver
@@ -154,3 +157,101 @@ void EquationSystemSolver::solve()
         (*mpVariables)[i] = (*mpVariables)[i] - (*mpDeltaStateVar)[i];
     }
 }
+
+
+
+
+NumericalIntegrationSolver::NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars)
+{
+    mpParentComponent = pParentComponent;
+    mTimeStep = mpParentComponent->getTimestep();
+    mpStateVars = pStateVars;
+    mnStateVars = pStateVars->size();
+}
+
+
+
+void NumericalIntegrationSolver::solveForwardEuler()
+{
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*mpParentComponent->getStateVariableDerivative(i);
+    }
+}
+
+
+void NumericalIntegrationSolver::solveBackwardEuler()
+{
+    std::vector<double> orgStateVars;
+    orgStateVars= *mpStateVars;
+
+    double tol = 1e-5;
+    bool stop=false;
+    while(!stop)
+    {
+        stop=true;
+        for(int i=0; i<mnStateVars; ++i)
+        {
+            (*mpStateVars)[i] = (*mpStateVars)[i] - ((*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i))/(1-mTimeStep*mpParentComponent->getStateVariableSecondDerivative(i));
+        }
+        for(int i=0; i<mnStateVars; ++i)
+        {
+            double error = (*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i);
+            if(error > tol)
+            {
+                stop=false;
+            }
+        }
+    }
+}
+
+
+void NumericalIntegrationSolver::solveRungeKutta()
+{
+    std::vector<double> k1, k2, k3, k4;
+    k1.resize(mnStateVars);
+    k2.resize(mnStateVars);
+    k3.resize(mnStateVars);
+    k4.resize(mnStateVars);
+
+    std::vector<double> orgStateVars;
+    orgStateVars.resize(mnStateVars);
+
+    orgStateVars= *mpStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k1[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/2.0*k1[i];
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k2[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/2.0*k2[i];
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k3[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*k3[i];
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k4[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/6.0*(k1[i]+2.0*k2[i]+2.0*k3[i]+k4[i]);
+    }
+}
+

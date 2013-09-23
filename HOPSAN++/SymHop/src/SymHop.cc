@@ -1158,7 +1158,7 @@ void Expression::changeSign()
         {
             this->replaceBy(mFactors.first());
         }
-        if(mFactors.isEmpty())
+        else if(mFactors.isEmpty())
         {
             mFactors.append(Expression("1"));
         }
@@ -1186,8 +1186,13 @@ Expression Expression::derivative(const Expression x, bool &ok) const
     ok = true;
     Expression ret;
 
+    //Derivative of self, return 1
+    if(*this == x)
+    {
+        ret = Expression(1);
+    }
     //Equality, differentiate left and right expressions
-    if(this->isEquation())
+    else if(this->isEquation())
     {
         bool success;
         Expression left = mpLeft->derivative(x, success);
@@ -2824,6 +2829,20 @@ QString SymHop::getFunctionDerivative(const QString &key)
     if(key == "onNegative") { return "dxOnNegative"; }
     if(key == "signedSquareL") { return "dxSignedSquareL"; }
     if(key == "limit") { return "dxLimit"; }
+    if(key == "der") { return "dder"; }     //For use with Modelica parser
+
+    //For use with Modelica parser
+    if(key.startsWith("STATEVAR"))
+    {
+        QString tempStr = key;
+        bool ok;
+        int number = tempStr.remove(QString("STATEVAR")).toInt(&ok);
+        if(ok)
+        {
+            return "DSTATEVAR"+QString::number(number);
+        }
+    }
+
     return "";
 }
 

@@ -177,6 +177,10 @@ bool ParameterEvaluator::refreshParameterValueText()
         {
             ss << *static_cast<int*>(mpData);
         }
+        else if(mType=="conditional")
+        {
+            ss << *static_cast<int*>(mpData);//mConditions[*static_cast<int*>(mpData)];
+        }
         else if(mType=="bool")
         {
             if (*static_cast<bool*>(mpData))
@@ -213,7 +217,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
 {
     (void)ignoreMe;
 
-    if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string")))
+    if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="conditional")))
     {
         mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
     }
@@ -262,6 +266,23 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         int tmpParameterValue;
         istringstream is(evaluatedParameterValue.c_str());
         if(is >> tmpParameterValue)
+        {
+            // If a data pointer has been set, then write evaluated value to data variable
+            if( (mpData!=0) && mEnabled )
+            {
+                *static_cast<int*>(mpData) = tmpParameterValue;
+            }
+        }
+        else
+        {
+            success = false;
+        }
+    }
+    else if(mType=="conditional")
+    {
+        int tmpParameterValue;
+        istringstream is(evaluatedParameterValue.c_str());
+        if(is >> tmpParameterValue && tmpParameterValue >= 0 && tmpParameterValue < this->mConditions.size())
         {
             // If a data pointer has been set, then write evaluated value to data variable
             if( (mpData!=0) && mEnabled )
@@ -423,7 +444,7 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 //! @param [in] rType The type of the parameter e.g. double, default: ""
 //! @param [in] pData Only used by Components, system parameters don't use this, default: 0
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force)
+bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<std::string> conditions)
 {
     bool success = false;
     if (!rName.empty())
@@ -432,6 +453,10 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
         {
             //! @todo should make sure that parameter names do not have + - * / . or similar as first charater
             ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rUnit, rType, pData, this);
+            if(rType == "conditional")
+            {
+                newParameter->mConditions = conditions;
+            }
             success = newParameter && newParameter->evaluate();
             if(success || force)
             {

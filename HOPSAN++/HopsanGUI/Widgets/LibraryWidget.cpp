@@ -717,6 +717,7 @@ void LibraryWidget::editComponent()
     if(pEditDialog->result() == QDialog::Accepted)
     {
         mEditComponentSourceCode = pEditDialog->getCode();
+        mEditComponentSolver = pEditDialog->getSolver();
         delete(pEditDialog);
         recompileComponent();
     }
@@ -733,6 +734,7 @@ void LibraryWidget::recompileComponent()
     QString basePath = getAppearanceData(mEditComponentTypeName)->getBasePath();
     QString fileName = getAppearanceData(mEditComponentTypeName)->getSourceCodeFile();
     QString sourceCode = mEditComponentSourceCode;
+    int solver = mEditComponentSolver;
 
     bool modelica = fileName.endsWith(".mo");
 
@@ -755,7 +757,7 @@ void LibraryWidget::recompileComponent()
     sourceFile.write(sourceCode.toStdString().c_str());
     sourceFile.close();
 
-    if(!recompileComponent(basePath+libPath, modelica, sourceCode))
+    if(!recompileComponent(basePath+libPath, modelica, sourceCode, solver))
     {
         qDebug() << "Failure!";
         QFile sourceFile(basePath+fileName);

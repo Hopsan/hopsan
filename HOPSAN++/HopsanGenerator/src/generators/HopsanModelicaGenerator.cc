@@ -1007,8 +1007,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     //Sort equations by dependencies
     QList<Expression> trivialEquations;                     //Trivial equations, not required to resolve state variables
     QList<Expression> stateEquations;                       //State equations, used to resolve state variables
+    QList<Expression> stateEquationsDerivatives;            //Derivatives of state equations, used for root-finding if necessary
     QList<Expression> resolvedDependencies;                 //State variables that has been resolved
     QMap<Expression*, Expression*> stateDerToEquationMap;   //Map between state equations and corresponding state variable
+    QMap<Expression*, Expression*> stateDerDerToEquationMap;   //Map between state equations and corresponding state variable
     int iterationCounter=0;
     int e=0;
     while(!equations.isEmpty())
@@ -1055,6 +1057,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         ++e;
     }
 
+
     //! @todo Use sorting above in the code below, instead of this hard-coded hack
 
     // for now: Assume first equation = x0, second equation = x1
@@ -1076,14 +1079,76 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         equation->toLeftSided();
         *equation = *equation->getLeft();
         equation->factor(stateVar);
-        Expression term = equation->getTerms()[0];
-        equation->removeTerm(term);
-        term.replace(stateVar, Expression(1));
-        term._simplify(Expression::FullSimplification, Expression::Recursive);
-        equation->divideBy(term);
-        equation->changeSign();
-        equation->_simplify(Expression::FullSimplification, Expression::Recursive);
+        if(equation->getTerms().size() == 1)
+        {
+            *equation = Expression(0);   //Only one term, state var must equal zero
+        }
+        else
+        {
+            Expression term = equation->getTerms()[0];
+            equation->removeTerm(term);
+            term.replace(stateVar, Expression(1));
+            term._simplify(Expression::FullSimplification, Expression::Recursive);
+            equation->divideBy(term);
+            equation->changeSign();
+            equation->_simplify(Expression::FullSimplification, Expression::Recursive);
+        }
     }
+
+
+
+    for(int e=0; e<stateEquations.size(); ++e)
+    {
+        Expression equation = stateEquations[e];
+
+        QMap<Expression*, Expression*> renameMap;
+        for(int v=0; v<resolvedDependencies.size(); ++v)
+        {
+            equation.replace(resolvedDependencies[v].getArgument(0), Expression(resolvedDependencies[v].getArgument(0).toString()+"(TIME)"));
+            renameMap.insert(new Expression("D"+resolvedDependencies[v].getArgument(0).toString()+"(TIME)"), &stateEquations[v]);       //! @todo MEMORY LEAK
+        }
+
+        bool ok;
+        equation = equation.derivative(Expression("TIME"), ok);
+
+        QMapIterator<Expression*, Expression*> itr(renameMap);
+        while(itr.hasNext())
+        {
+            itr.next();
+            equation.replace(*itr.key(), *itr.value());
+        }
+
+        stateEquationsDerivatives.append(equation);
+    }
+
+//    //Break out the second derivative of the state variable in each corresponding derivative equation
+//    QMapIterator<Expression*, Expression*> itd(stateDerDerToEquationMap);
+//    while(itd.hasNext())
+//    {
+//        itd.next();
+
+//        Expression stateVar = Expression("d"+(*itd.key()).toString());
+//        Expression *equation = itd.value();
+
+//        equation->linearize();
+//        equation->toLeftSided();
+//        *equation = *equation->getLeft();
+//        equation->factor(stateVar);
+//        if(equation->getTerms().size() == 1)
+//        {
+//            *equation = Expression(0);   //Only one term, derivative of statevar must equal zero
+//        }
+//        else
+//        {
+//            Expression term = equation->getTerms()[0];
+//            equation->removeTerm(term);
+//            term.replace(stateVar, Expression(1));
+//            term._simplify(Expression::FullSimplification, Expression::Recursive);
+//            equation->divideBy(term);
+//            equation->changeSign();
+//            equation->_simplify(Expression::FullSimplification, Expression::Recursive);
+//        }
+//    }
 
     //Sort remaining equations so that they can be solved
     QList<Expression> trivialVariables;
@@ -1147,15 +1212,21 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
 
     //Add call to solver
-    trivialEquations.prepend(Expression("solve()"));
+    trivialEquations[e] = Expression("CALLSOLVER");
+
 
     //Initialize state variables, and convert them back at end
     QMapIterator<QString, QString> itv(varToStateVarMap);
     while(itv.hasNext())
     {
         itv.next();
-        trivialEquations.prepend(itv.value()+"="+itv.key());
+        //trivialEquations.prepend(itv.value()+"="+itv.key());
         trivialEquations.append(itv.key()+"="+itv.value());
+    }
+
+    for(int e=0; e<stateEquations.size(); ++e)
+    {
+        trivialEquations.prepend(Expression::fromEquation(resolvedDependencies[e].getArgument(0), stateEquations[e]));
     }
 
 
@@ -1168,6 +1239,11 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     Q_FOREACH(const Expression &equation, stateEquations)
     {
         qDebug() << "STATE EQUATION: " << equation.toString();
+    }
+
+    Q_FOREACH(const Expression &equation, stateEquationsDerivatives)
+    {
+        qDebug() << "STATE EQUATION DERIVATIVE: " << equation.toString();
     }
 
     Q_FOREACH(const Expression &var, trivialVariables)
@@ -1216,8 +1292,8 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     }
 
     comp.varInits.append("");
-    comp.varNames.append("STATEVARS[2]");
-    comp.varTypes.append("double");
+    comp.varNames.append("STATEVARS");
+    comp.varTypes.append("std::vector<double>");
 
     comp.varInits.append("2");
     comp.varNames.append("nStateVars");
@@ -1230,10 +1306,25 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         {
             equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
         }
-        comp.simEquations.append(equationStr+";");
+        if(equation.toString() == "CALLSOLVER")
+        {
+            if(solver == ForwardEuler)
+            {
+                comp.simEquations.append("mpSolver->solveForwardEuler();");
+            }
+            else /*if(solver == RungeKutta)*/
+            {
+                comp.simEquations.append("mpSolver->solveRungeKutta();");
+            }
+        }
+        else
+        {
+            comp.simEquations.append(equationStr+";");
+        }
     }
 
-    comp.auxiliaryFunctions.append("double getStateDer(int i)");
+    comp.auxiliaryFunctions.append("");
+    comp.auxiliaryFunctions.append("double getStateVariableDerivative(int i)");
     comp.auxiliaryFunctions.append("{");
     comp.auxiliaryFunctions.append("    switch(i)");
     comp.auxiliaryFunctions.append("    {");
@@ -1251,65 +1342,30 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.auxiliaryFunctions.append("}");
     comp.auxiliaryFunctions.append("");
 
-    if(solver == ForwardEuler)
+    comp.auxiliaryFunctions.append("double getStateVariableSecondDerivative(int i)");
+    comp.auxiliaryFunctions.append("{");
+    comp.auxiliaryFunctions.append("    switch(i)");
+    comp.auxiliaryFunctions.append("    {");
+    for(int e=0; e<stateEquations.size(); ++e)
     {
-        comp.auxiliaryFunctions.append("solve()");
-        comp.auxiliaryFunctions.append("{");
-        comp.auxiliaryFunctions.append("    for(int i=0; i<nStateVars; ++i)");
-        comp.auxiliaryFunctions.append("    {");
-        comp.auxiliaryFunctions.append("        STATEVARS[i] = STATEVARS[i] + mTimestep*getStateDer(i);");
-        comp.auxiliaryFunctions.append("    }");
-        comp.auxiliaryFunctions.append("}");
+        comp.auxiliaryFunctions.append("        case "+QString::number(e)+" :");
+        QString stateEqStr = stateEquationsDerivatives[e].toString();
+        for(int s=0; s<stateEquationsDerivatives.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            stateEqStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
+        comp.auxiliaryFunctions.append("            return "+stateEqStr+";");
     }
-    else /*if(solver == RungeKutta)*/
-    {
-        comp.auxiliaryFunctions.append(
-                "        solve()"
-                "        {"
-                "            double k1[nStateVars], k2[nStateVars], k3[nStateVars], k4[nStateVars];"
-                "            double orgStateVars[nStateVars];"
-                "            memcpy(orgStateVars, STATEVARS, sizeof(double)*nStateVars);"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                k1[i] = getStateDer(i);"
-                "            }"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                STATEVARS[i] = STATEVARS[i] + mTimestep/2.0*k1[i];  "
-                "            }"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                k2[i] = getStateDer(i);"
-                "            }"
-                "            memcpy(STATEVARS, orgStateVars, sizeof(double)*nStateVars);"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                STATEVARS[i] = STATEVARS[i] + mTimestep/2.0*k2[i];  "
-                "            }"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                k3[i] = getStateDer(i);"
-                "            }    "
-                "            memcpy(STATEVARS, orgStateVars, sizeof(double)*nStateVars);"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                STATEVARS[i] = STATEVARS[i] + mTimestep*k3[i];  "
-                "            }"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                k4[i] = getStateDer(i);"
-                "            }     "
-                "            memcpy(STATEVARS, orgStateVars, sizeof(double)*nStateVars);"
-                "            for(int i=0; i<nStateVars; ++i)"
-                "            {"
-                "                STATEVARS[i] = STATEVARS[i] + mTimestep/6.0*(k1[i]+2.0*k2[i]+2.0*k3[i]+k4[i]);  "
-                "            }                "
-                "       }");
-    }
+    comp.auxiliaryFunctions.append("    }");
+    comp.auxiliaryFunctions.append("}");
+    comp.auxiliaryFunctions.append("");
 
+    comp.utilityNames.append("mpSolver");
+    comp.utilities.append("NumericalIntegrationSolver*");
+    comp.initEquations.append("STATEVARS.resize(2);");
+    comp.initEquations.append("mpSolver = new NumericalIntegrationSolver(this, &STATEVARS);");
 
     //comp.simEquations.append(stateEquations);
-
 
     equations.clear();
 }
