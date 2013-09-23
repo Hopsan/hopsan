@@ -105,6 +105,7 @@ public:
     QString mType;
     QString mUnit;
     QString mDescription;
+    QStringList mConditions;
     bool    mIsDynamic;
     bool    mIsEnabled;
 };
@@ -139,6 +140,7 @@ public:
     QString mUnit;
     QString mDescription;
     QString mVariabelType;
+    QStringList mConditions;
     int mVariameterType;
     int mVariabelId;
 };

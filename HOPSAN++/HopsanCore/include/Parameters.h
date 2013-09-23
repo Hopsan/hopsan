@@ -59,6 +59,7 @@ public:
     const HString &getValue() const;
     const HString &getUnit() const;
     const HString &getDescription() const;
+    const std::vector<std::string> &getConditions() const;
 
     bool isEnabled() const;
 

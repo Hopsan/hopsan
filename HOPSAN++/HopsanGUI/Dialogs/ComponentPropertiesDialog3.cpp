@@ -547,6 +547,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         variameter.mDescription = parameters[constantsIds[i]].mDescription;
         variameter.mUnit = parameters[constantsIds[i]].mUnit;
         variameter.mDataType = parameters[constantsIds[i]].mType;
+        variameter.mConditions = parameters[constantsIds[i]].mConditions;
         createTableRow(r, variameter, Constant);
         ++r;
     }
@@ -641,7 +642,19 @@ bool VariableTableWidget::setStartValues()
             continue;
         }
 
-        QString value = item(row,VariableTableWidget::Value)->text();
+        //Extract type from row
+        QString type = item(row,VariableTableWidget::Type)->text();
+
+        QString value;
+        if(type == "conditional")
+        {
+            value = QString::number(qobject_cast<QComboBox*>(cellWidget(row, int(VariableTableWidget::Value)))->currentIndex());
+        }
+        else
+        {
+            value = item(row,VariableTableWidget::Value)->text();
+        }
+
         // If startvalue is empty (disabled, then we should not atempt to change it)
         if (value.isEmpty())
         {
@@ -844,18 +857,31 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     setItem(row,Type,pItem);
 
     QString value = mpModelObject->getParameterValue(fullName);
-    pItem = new QTableWidgetItem(value);
-    if (value.isEmpty())
+    if(rData.mDataType == "conditional")
     {
-        pItem->setFlags(Qt::NoItemFlags);
+        QComboBox *pComboBox = new QComboBox(this);
+        for(int i=0; i<rData.mConditions.size(); ++i)
+        {
+            pComboBox->addItem(rData.mConditions[i]);
+        }
+        pComboBox->setCurrentIndex(value.toInt());
+        this->setCellWidget(row, int(Value), pComboBox);
     }
     else
     {
-        pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+        pItem = new QTableWidgetItem(value);
+        if (value.isEmpty())
+        {
+            pItem->setFlags(Qt::NoItemFlags);
+        }
+        else
+        {
+            pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+        }
+        pItem->setTextAlignment(Qt::AlignCenter);
+        setItem(row,Value,pItem);
+        selectValueTextColor(row);
     }
-    pItem->setTextAlignment(Qt::AlignCenter);
-    setItem(row,Value,pItem);
-    selectValueTextColor(row);
 
     // Create the custom plot unit display and selection button
     QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(row, rData, mpModelObject);

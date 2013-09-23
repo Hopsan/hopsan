@@ -365,6 +365,11 @@ const HString &ParameterEvaluator::getDescription() const
     return mDescription;
 }
 
+const std::vector<string> &ParameterEvaluator::getConditions() const
+{
+    return mConditions;
+}
+
 bool ParameterEvaluator::isEnabled() const
 {
     return mEnabled;

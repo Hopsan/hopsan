@@ -53,6 +53,10 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
     rGUIParam.mUnit = QString(pCoreParam->getUnit().c_str());
     rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription().c_str());
     rGUIParam.mIsEnabled = pCoreParam->isEnabled();
+    for(int c=0; c<pCoreParam->getConditions().size(); ++c)
+    {
+        rGUIParam.mConditions.append(QString(pCoreParam->getConditions()[c].c_str()));
+    }
 }
 
 

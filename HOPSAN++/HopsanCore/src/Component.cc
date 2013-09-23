@@ -412,6 +412,7 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 
 void Component::addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<std::string> &rConditions, int &rData)
 {
+    rData=0;    //Always initialize conditionals with first condition
     registerConditionalParameter(rName, rDescription, rConditions, rData);
 }
 
