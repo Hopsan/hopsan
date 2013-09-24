@@ -65,6 +65,7 @@ public:
     NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars);
 
     void solveForwardEuler();
+    void solveMidpointMethod();
     void solveBackwardEuler();
     void solveRungeKutta();
 

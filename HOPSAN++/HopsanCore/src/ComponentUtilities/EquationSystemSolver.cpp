@@ -180,6 +180,36 @@ void NumericalIntegrationSolver::solveForwardEuler()
 }
 
 
+void NumericalIntegrationSolver::solveMidpointMethod()
+{
+    std::vector<double> k1, k2;
+    k1.resize(mnStateVars);
+    k2.resize(mnStateVars);
+
+    std::vector<double> orgStateVars;
+    orgStateVars.resize(mnStateVars);
+
+    orgStateVars= *mpStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k1[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/2.0*k1[i];
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k2[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*k2[i];
+    }
+}
+
+
 void NumericalIntegrationSolver::solveBackwardEuler()
 {
     std::vector<double> orgStateVars;

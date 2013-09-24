@@ -1305,6 +1305,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
     comp.confEquations.append("std::vector<std::string> availableSolvers;");
     comp.confEquations.append("availableSolvers.push_back(\"Forward Euler\");");
+    comp.confEquations.append("availableSolvers.push_back(\"Midpoint Method\");");
     comp.confEquations.append("availableSolvers.push_back(\"Runge-Kutta\");");
     comp.confEquations.append("addConditionalConstant(\"solverType\", \"Solver Type\", availableSolvers, solverType);");
 
@@ -1322,6 +1323,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             comp.simEquations.append("    mpSolver->solveForwardEuler();");
             comp.simEquations.append("}");
             comp.simEquations.append("else if(solverType == 1)");
+            comp.simEquations.append("{");
+            comp.simEquations.append("    mpSolver->solveMidpointMethod();");
+            comp.simEquations.append("}");
+            comp.simEquations.append("else if(solverType == 2)");
             comp.simEquations.append("{");
             comp.simEquations.append("    mpSolver->solveRungeKutta();");
             comp.simEquations.append("}");
