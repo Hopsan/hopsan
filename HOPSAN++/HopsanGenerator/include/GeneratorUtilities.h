@@ -145,6 +145,7 @@ public:
     QStringList portNodeTypes;
     QStringList portDefaults;
     QList<bool> portNotReq;
+    QStringList confEquations;
     QStringList initEquations;
     QStringList simEquations;
     QStringList finalEquations;

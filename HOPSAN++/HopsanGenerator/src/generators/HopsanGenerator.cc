@@ -369,6 +369,13 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     }
 
 
+    //Configure code
+    QString confCode;
+    for(int i=0; i<comp.confEquations.size(); ++i)
+    {
+        confCode.append("            "+comp.confEquations[i]+"\n");
+    }
+
     //Initialize code
     QString initCode;
     for(int i=0; i<comp.initEquations.size(); ++i)
@@ -467,6 +474,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     code.replace("<<<initvars>>>", initializeVariables);
     code.replace("<<<getdataptrs>>>", getDataPtrs);
     code.replace("<<<readinputs>>>", readInputs);
+    code.replace("<<<confcode>>>", confCode);
     code.replace("<<<initcode>>>", initCode);
     code.replace("<<<writestartvalues>>>", writeStartValues);
     code.replace("<<<simulatecode>>>", simCode);
@@ -621,7 +629,7 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     QFileInfo ccLibFileInfo(ccLibFile);
     if(!ccLibFile.copy(mOutputPath+ccLibFileInfo.fileName()))
     {
-        printErrorMessage("Failed to copy library source file to output directory: "+ccLibFile.errorString());
+        printMessage("Unable to copy library source file to output directory: "+ccLibFile.errorString() + " (not required)");
     }
 }
 

@@ -13,6 +13,8 @@
 #include "ComponentUtilities.h"
 #include <sstream>
 #include <cstring>
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -44,6 +46,8 @@ namespace hopsan {
 <<<regpar>>>
 
 <<<addports>>>
+
+            <<<confcode>>>
         }
         
         //Initialize

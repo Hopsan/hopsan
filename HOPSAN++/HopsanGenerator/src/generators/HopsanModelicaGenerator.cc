@@ -39,10 +39,10 @@ void HopsanModelicaGenerator::generateFromModelica(QString code, SolverT solver)
         //Transform equation system using Bilinear Transform method
         generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
     }
-    else /*if(solver == ForwardEuler || solver == RungeKutta)*/
+    else /*if(solver == NumericalIntegration)*/
     {
         //Transform equation system using numerical integration methods
-        generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, solver);
+        generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
     }
 
     //qDebug() << "Compiling!";
@@ -940,7 +940,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 }
 
 
-void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, SolverT solver)
+void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
 {
     //Create list of equqtions
     QList<Expression> equations;
@@ -1212,7 +1212,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
 
     //Add call to solver
-    trivialEquations[e] = Expression("CALLSOLVER");
+    trivialEquations.prepend(Expression("CALLSOLVER"));
 
 
     //Initialize state variables, and convert them back at end
@@ -1220,13 +1220,13 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     while(itv.hasNext())
     {
         itv.next();
-        //trivialEquations.prepend(itv.value()+"="+itv.key());
+        trivialEquations.prepend(itv.value()+"="+itv.key());
         trivialEquations.append(itv.key()+"="+itv.value());
     }
 
     for(int e=0; e<stateEquations.size(); ++e)
     {
-        trivialEquations.prepend(Expression::fromEquation(resolvedDependencies[e].getArgument(0), stateEquations[e]));
+        //trivialEquations.prepend(Expression::fromEquation(resolvedDependencies[e].getArgument(0), stateEquations[e]));
     }
 
 
@@ -1299,6 +1299,15 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.varNames.append("nStateVars");
     comp.varTypes.append("int");
 
+    comp.varInits.append("");
+    comp.varNames.append("solverType");
+    comp.varTypes.append("int");
+
+    comp.confEquations.append("std::vector<std::string> availableSolvers;");
+    comp.confEquations.append("availableSolvers.push_back(\"Forward Euler\");");
+    comp.confEquations.append("availableSolvers.push_back(\"Runge-Kutta\");");
+    comp.confEquations.append("addConditionalConstant(\"solverType\", \"Solver Type\", availableSolvers, solverType);");
+
     Q_FOREACH(const Expression &equation, trivialEquations)
     {
         QString equationStr = equation.toString();
@@ -1308,14 +1317,14 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
         if(equation.toString() == "CALLSOLVER")
         {
-            if(solver == ForwardEuler)
-            {
-                comp.simEquations.append("mpSolver->solveForwardEuler();");
-            }
-            else /*if(solver == RungeKutta)*/
-            {
-                comp.simEquations.append("mpSolver->solveRungeKutta();");
-            }
+            comp.simEquations.append("if(solverType == 0)");
+            comp.simEquations.append("{");
+            comp.simEquations.append("    mpSolver->solveForwardEuler();");
+            comp.simEquations.append("}");
+            comp.simEquations.append("else if(solverType == 1)");
+            comp.simEquations.append("{");
+            comp.simEquations.append("    mpSolver->solveRungeKutta();");
+            comp.simEquations.append("}");
         }
         else
         {

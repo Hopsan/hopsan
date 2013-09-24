@@ -422,8 +422,7 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     QLabel *pSolverLabel = new QLabel("Solver: ", this);
     mpSolverComboBox = new QComboBox(this);
     mpSolverComboBox->addItem("Bilinear Transform");
-    mpSolverComboBox->addItem("Forward Euler");
-    mpSolverComboBox->addItem("Runge-Kutta");
+    mpSolverComboBox->addItem("Numerical Integration");
     QHBoxLayout *pSolverLayout = new QHBoxLayout();
     pSolverLayout->addWidget(pSolverLabel);
     pSolverLayout->addWidget(mpSolverComboBox);

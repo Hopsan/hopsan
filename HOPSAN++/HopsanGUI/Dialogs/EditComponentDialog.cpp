@@ -61,8 +61,7 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
     QLabel *pSolverLabel = new QLabel("Solver: ", this);
     mpSolverComboBox = new QComboBox(this);
     mpSolverComboBox->addItem("Bilinear Transform");
-    mpSolverComboBox->addItem("Forward Euler");
-    mpSolverComboBox->addItem("Runge-Kutta");
+    mpSolverComboBox->addItem("Numerical Integration");
     pSolverLayout->addWidget(pSolverLabel);
     pSolverLayout->addWidget(mpSolverComboBox);
 
