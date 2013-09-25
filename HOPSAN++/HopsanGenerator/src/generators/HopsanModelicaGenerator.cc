@@ -1303,11 +1303,11 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.varNames.append("solverType");
     comp.varTypes.append("int");
 
-    comp.confEquations.append("std::vector<HString> availableSolvers;");
-    comp.confEquations.append("availableSolvers.push_back(HString(\"Forward Euler\"));");
-    comp.confEquations.append("availableSolvers.push_back(HString(\"Midpoint Method\"));");
-    comp.confEquations.append("availableSolvers.push_back(HString(\"Runge-Kutta\"));");
+    comp.confEquations.append("std::vector<HString> availableSolvers = NumericalIntegrationSolver::getAvailableSolverTypes();");
     comp.confEquations.append("addConditionalConstant(\"solverType\", \"Solver Type\", availableSolvers, solverType);");
+
+    comp.initEquations.append("STATEVARS.resize(2);");
+    comp.initEquations.append("mpSolver = new NumericalIntegrationSolver(this, &STATEVARS);");
 
     Q_FOREACH(const Expression &equation, trivialEquations)
     {
@@ -1318,24 +1318,15 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
         if(equation.toString() == "CALLSOLVER")
         {
-            comp.simEquations.append("if(solverType == 0)");
-            comp.simEquations.append("{");
-            comp.simEquations.append("    mpSolver->solveForwardEuler();");
-            comp.simEquations.append("}");
-            comp.simEquations.append("else if(solverType == 1)");
-            comp.simEquations.append("{");
-            comp.simEquations.append("    mpSolver->solveMidpointMethod();");
-            comp.simEquations.append("}");
-            comp.simEquations.append("else if(solverType == 2)");
-            comp.simEquations.append("{");
-            comp.simEquations.append("    mpSolver->solveRungeKutta();");
-            comp.simEquations.append("}");
+            comp.simEquations.append("mpSolver->solve(solverType);");
         }
         else
         {
             comp.simEquations.append(equationStr+";");
         }
     }
+
+    comp.finalEquations.append("delete mpSolver;");
 
     comp.auxiliaryFunctions.append("");
     comp.auxiliaryFunctions.append("double getStateVariableDerivative(int i)");
@@ -1376,8 +1367,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
     comp.utilityNames.append("mpSolver");
     comp.utilities.append("NumericalIntegrationSolver*");
-    comp.initEquations.append("STATEVARS.resize(2);");
-    comp.initEquations.append("mpSolver = new NumericalIntegrationSolver(this, &STATEVARS);");
+
 
     //comp.simEquations.append(stateEquations);
 

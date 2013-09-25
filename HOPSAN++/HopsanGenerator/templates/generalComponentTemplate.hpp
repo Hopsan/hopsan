@@ -100,6 +100,20 @@ namespace hopsan {
            
             <<<finalcode>>>
         }
+
+        //Finalize
+        void deconfigure()
+        {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
+            <<<deconfcode>>>
+        }
+
         <<<auxiliaryfunctions>>>
     };
 }

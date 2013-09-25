@@ -33,7 +33,7 @@
 
 namespace SymHop {
 
-typedef double (*Function)(QString); // function pointer type
+typedef double (*Function)(QString, bool&); // function pointer type
 
 class DLLIMPORTEXPORT Expression
 {

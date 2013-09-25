@@ -624,7 +624,10 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
                 argString.append(mArguments[a].toString()+",");
             }
             argString.chop(1);
-            return (*functions.find(mFunction).value())(argString);
+            bool ok;
+            retval = (*functions.find(mFunction).value())(argString, ok);
+            if(ok)
+                return retval;
         }
         if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables, functions)); }
         else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables, functions)); }
@@ -644,7 +647,8 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
         else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions)); }
 
         else if(mFunction == "der") { retval = 0; }
-
+        else if(mFunction == "min") { retval = fmin(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
+        else if(mFunction == "max") { retval = fmax(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
         else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
 
         else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
@@ -2851,7 +2855,7 @@ QString SymHop::getFunctionDerivative(const QString &key)
 //FIXED
 QStringList SymHop::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max";
 }
 
 

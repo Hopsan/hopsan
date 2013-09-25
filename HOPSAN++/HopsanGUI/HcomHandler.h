@@ -202,15 +202,15 @@ public:
 };
 
 
-double _funcAver(QString str);
-double _funcMin(QString str);
-double _funcMax(QString str);
-double _funcIMin(QString str);
-double _funcIMax(QString str);
-double _funcPeek(QString str);
-double _funcRand(QString str);
-double _funcSize(QString str);
-double _funcObj(QString str);
-double _funcTime(QString);
+double _funcAver(QString str, bool &ok);
+double _funcMin(QString str, bool &ok);
+double _funcMax(QString str, bool &ok);
+double _funcIMin(QString str, bool &ok);
+double _funcIMax(QString str, bool &ok);
+double _funcPeek(QString str, bool &ok);
+double _funcRand(QString str, bool &ok);
+double _funcSize(QString str, bool &ok);
+double _funcObj(QString str, bool &ok);
+double _funcTime(QString, bool &ok);
 
 #endif // HCOMHANDLER_H

@@ -63,11 +63,14 @@ public:
     typedef double (NumericalIntegrationSolver::*callback_function)(int);
 
     NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars);
+    static const std::vector<HString> getAvailableSolverTypes();
 
+    void solve(int solver);
     void solveForwardEuler();
     void solveMidpointMethod();
     void solveBackwardEuler();
     void solveRungeKutta();
+    void solveDormandPrince();
 
     double findRoot(int i);
 

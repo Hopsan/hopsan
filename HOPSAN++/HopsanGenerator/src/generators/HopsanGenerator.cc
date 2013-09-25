@@ -437,6 +437,14 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     }
 
 
+    //Deconfiguration code
+    QString deconfCode;
+    for(int i=0; i<comp.deconfEquations.size(); ++i)
+    {
+        deconfCode.append("            "+comp.deconfEquations[i]+"\n");
+    }
+
+
     //Auxiliary functions
     QString auxiliaryFunctions;
     for(int i=0; i<comp.auxiliaryFunctions.size(); ++i)
@@ -480,6 +488,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     code.replace("<<<simulatecode>>>", simCode);
     code.replace("<<<writeoutputs>>>", writeOutputs);
     code.replace("<<<finalcode>>>", finalCode);
+    code.replace("<<<deconfcode>>>", deconfCode);
     code.replace("<<<auxiliaryfunctions>>>", auxiliaryFunctions);
 
     return code;

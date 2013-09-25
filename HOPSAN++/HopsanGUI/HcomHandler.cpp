@@ -3953,89 +3953,104 @@ void HcomHandler::registerFunction(const QString func, const QString description
     mLocalFunctionDescriptions.insert(func, description);
 }
 
-double _funcAver(QString str)
+double _funcAver(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
     if(pData)
     {
+        ok=true;
         return(pData->averageOfData());
     }
+    ok=false;
     return 0;
 }
 
-double _funcSize(QString str)
+double _funcSize(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
     if(pData)
     {
-         return(pData->getDataSize());
+        ok=true;
+        return(pData->getDataSize());
     }
+    ok=false;
     return 0;
 }
 
-double _funcTime(QString /*str*/)
+double _funcTime(QString /*str*/, bool &ok)
 {
     if(gpMainWindow->mpModelHandler->count() > 0)
     {
+        ok=true;
         return gpMainWindow->mpModelHandler->getCurrentModel()->getLastSimulationTime();
     }
+    ok=false;
     return 0;
 }
 
 
-double _funcObj(QString str)
+double _funcObj(QString str, bool &ok)
 {
     int idx = str.toDouble();
+    ok=true;
     return gpMainWindow->mpTerminalWidget->mpHandler->mpOptHandler->getOptimizationObjectiveValue(idx);
 }
 
-double _funcMin(QString str)
+double _funcMin(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
     if(pData)
     {
+        ok=true;
         return(pData->minOfData());
     }
+    ok=false;
     return 0;
 }
 
-double _funcMax(QString str)
+double _funcMax(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
     if(pData)
     {
+        ok=true;
         return(pData->maxOfData());
     }
+    ok=false;
     return 0;
 }
 
-double _funcIMin(QString str)
+double _funcIMin(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
     if(pData)
     {
+        ok=true;
         return(pData->indexOfMinOfData());
     }
+    ok=false;
     return 0;
 }
 
-double _funcIMax(QString str)
+double _funcIMax(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
     if(pData)
     {
+        ok=true;
         return(pData->indexOfMaxOfData());
     }
+    ok=false;
     return 0;
 }
 
-double _funcPeek(QString str)
+double _funcPeek(QString str, bool &ok)
 {
     QString var = str.section(",",0,0);
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(var);
@@ -4048,14 +4063,17 @@ double _funcPeek(QString str)
 
     if(pData)
     {
+        ok=true;
         QString err;
         return(pData->peekData(idx,err));
     }
+    ok=false;
     return 0;
 }
 
-double _funcRand(QString str)
+double _funcRand(QString str, bool &ok)
 {
     Q_UNUSED(str);
+    ok=true;
     return rand() / (double)RAND_MAX;          //Random value between  0 and 1
 }

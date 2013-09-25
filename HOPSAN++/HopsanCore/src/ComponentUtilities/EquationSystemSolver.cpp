@@ -170,6 +170,39 @@ NumericalIntegrationSolver::NumericalIntegrationSolver(Component *pParentCompone
 }
 
 
+const std::vector<HString> NumericalIntegrationSolver::getAvailableSolverTypes()
+{
+    std::vector<HString> availableSolvers;
+    availableSolvers.push_back(HString("Forward Euler"));
+    availableSolvers.push_back(HString("Midpoint Method"));
+    availableSolvers.push_back(HString("Runge-Kutta"));
+    availableSolvers.push_back(HString("Dormand-Prince"));
+    return availableSolvers;
+}
+
+
+void NumericalIntegrationSolver::solve(const int solverType)
+{
+    switch(solverType)
+    {
+    case 0:
+        solveForwardEuler();
+        break;
+    case 1:
+        solveMidpointMethod();
+        break;
+    case 2:
+        solveRungeKutta();
+        break;
+    case 3:
+        solveDormandPrince();
+        break;
+    default:
+        mpParentComponent->addErrorMessage("Unknown solver type!");
+        mpParentComponent->stopSimulation();
+    }
+}
+
 
 void NumericalIntegrationSolver::solveForwardEuler()
 {
@@ -282,6 +315,83 @@ void NumericalIntegrationSolver::solveRungeKutta()
     for(int i=0; i<mnStateVars; ++i)
     {
         (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/6.0*(k1[i]+2.0*k2[i]+2.0*k3[i]+k4[i]);
+    }
+}
+
+
+void NumericalIntegrationSolver::solveDormandPrince()
+{
+    std::vector<double> k1, k2, k3, k4, k5, k6;
+    k1.resize(mnStateVars);
+    k2.resize(mnStateVars);
+    k3.resize(mnStateVars);
+    k4.resize(mnStateVars);
+    k5.resize(mnStateVars);
+    k6.resize(mnStateVars);
+
+    std::vector<double> orgStateVars;
+    orgStateVars.resize(mnStateVars);
+
+    orgStateVars= *mpStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k1[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/5.0*k1[i];
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k2[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/40.0*(3*k1[i] + 9*k2[i]);
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k3[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*(44.0/45.0*k1[i] - 56.0/15.0*k2[i] + 32.0/9.0*k3[i]);
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k4[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*(19372.0/6561.0*k1[i] - 25360.0/2187.0*k2[i] + 64448.0/6561.0*k3[i] - 212.0/729.0*k4[i]);
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k5[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*(9017.0/3168.0*k1[i] -  355.0/33.0*k2[i] + 46732.0/5247.0*k3[i] + 49.0/176.0*k4[i] - 5103.0/18656.0*k5[i]);
+    }
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        k6[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+
+    *mpStateVars = orgStateVars;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*(35.0/384.0*k1[i] + 500.0/1113.0*k3[i] + 125.0/192.0*k4[i] - 2187.0/6784.0*k5[i] + 11.0/84.0*k6[i]);
     }
 }
 
