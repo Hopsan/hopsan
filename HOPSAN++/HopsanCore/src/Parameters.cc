@@ -365,7 +365,7 @@ const HString &ParameterEvaluator::getDescription() const
     return mDescription;
 }
 
-const std::vector<string> &ParameterEvaluator::getConditions() const
+const std::vector<HString> &ParameterEvaluator::getConditions() const
 {
     return mConditions;
 }
@@ -449,7 +449,7 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 //! @param [in] rType The type of the parameter e.g. double, default: ""
 //! @param [in] pData Only used by Components, system parameters don't use this, default: 0
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<std::string> conditions)
+bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<HString> conditions)
 {
     bool success = false;
     if (!rName.empty())

@@ -59,7 +59,7 @@ public:
     const HString &getValue() const;
     const HString &getUnit() const;
     const HString &getDescription() const;
-    const std::vector<std::string> &getConditions() const;
+    const std::vector<HString> &getConditions() const;
 
     bool isEnabled() const;
 
@@ -75,7 +75,7 @@ protected:
     HString mType;
     void* mpData;
     ParameterEvaluatorHandler* mpParentParameters;
-    std::vector<std::string> mConditions;
+    std::vector<HString> mConditions;
 };
 
 
@@ -86,7 +86,7 @@ public:
     ~ParameterEvaluatorHandler();
 
     bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
-                      const HString &rUnit, const HString &rType, void* pData=0, bool force=false, std::vector<std::string> conditions = std::vector<std::string>());
+                      const HString &rUnit, const HString &rType, void* pData=0, bool force=false, std::vector<HString> conditions = std::vector<HString>());
     void deleteParameter(const HString &rName);
     bool renameParameter(const HString &rOldName, const HString &rNewName);
 

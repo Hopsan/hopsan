@@ -1303,10 +1303,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.varNames.append("solverType");
     comp.varTypes.append("int");
 
-    comp.confEquations.append("std::vector<std::string> availableSolvers;");
-    comp.confEquations.append("availableSolvers.push_back(\"Forward Euler\");");
-    comp.confEquations.append("availableSolvers.push_back(\"Midpoint Method\");");
-    comp.confEquations.append("availableSolvers.push_back(\"Runge-Kutta\");");
+    comp.confEquations.append("std::vector<HString> availableSolvers;");
+    comp.confEquations.append("availableSolvers.push_back(HString(\"Forward Euler\"));");
+    comp.confEquations.append("availableSolvers.push_back(HString(\"Midpoint Method\"));");
+    comp.confEquations.append("availableSolvers.push_back(HString(\"Runge-Kutta\"));");
     comp.confEquations.append("addConditionalConstant(\"solverType\", \"Solver Type\", availableSolvers, solverType);");
 
     Q_FOREACH(const Expression &equation, trivialEquations)

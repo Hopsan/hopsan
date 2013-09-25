@@ -410,7 +410,7 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
     registerParameter(rName, rDescription, rUnit, rData);
 }
 
-void Component::addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<std::string> &rConditions, int &rData)
+void Component::addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rData)
 {
     rData=0;    //Always initialize conditionals with first condition
     registerConditionalParameter(rName, rDescription, rConditions, rData);
@@ -523,7 +523,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", &rValue);
 }
 
-void Component::registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<std::string> &rConditions, int &rValue)
+void Component::registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rValue)
 {
     if (!isNameValid(rName))
     {
