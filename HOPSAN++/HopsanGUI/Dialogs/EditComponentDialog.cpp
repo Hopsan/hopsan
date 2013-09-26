@@ -49,7 +49,9 @@
 EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
 {
     if (this->objectName().isEmpty())
+    {
         this->setObjectName(QString::fromUtf8("EditComponentDialog"));
+    }
     this->resize(640, 480);
     mpVerticalLayout = new QVBoxLayout(this);
     mpVerticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
@@ -58,12 +60,14 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
     mpCodeTextEdit->setTabStopWidth(4);
 
     QHBoxLayout *pSolverLayout = new QHBoxLayout();
-    QLabel *pSolverLabel = new QLabel("Solver: ", this);
+    QLabel *pSolverLabel = new QLabel("Solver method: ", this);
     mpSolverComboBox = new QComboBox(this);
-    mpSolverComboBox->addItem("Bilinear Transform");
-    mpSolverComboBox->addItem("Numerical Integration");
+    mpSolverComboBox->addItem("Bilinear transform");
+    mpSolverComboBox->addItem("Numerical integration");
     pSolverLayout->addWidget(pSolverLabel);
     pSolverLayout->addWidget(mpSolverComboBox);
+    pSolverLayout->addWidget(new QWidget(this));
+    pSolverLayout->setStretch(2, 1);
 
     mpVerticalLayout->addWidget(mpCodeTextEdit);
     mpVerticalLayout->addLayout(pSolverLayout);
@@ -95,7 +99,7 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
 
 void EditComponentDialog::retranslateUi()
 {
-    this->setWindowTitle(QApplication::translate("EditComponentDialog", "Dialog", 0, QApplication::UnicodeUTF8));
+    this->setWindowTitle(QApplication::translate("EditComponentDialog", "Edit Component", 0, QApplication::UnicodeUTF8));
 }
 
 
