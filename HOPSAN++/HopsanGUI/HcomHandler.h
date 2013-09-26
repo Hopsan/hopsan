@@ -117,6 +117,7 @@ private:
     void executeLoadModelCommand(const QString cmd);
     void executeLoadRecentCommand(const QString cmd);
     void executeRenameComponentCommand(const QString cmd);
+    void executeRemoveComponentCommand(const QString cmd);
     void executePwdCommand(const QString cmd);
     void executeMwdCommand(const QString cmd);
     void executeChangeDirectoryCommand(const QString cmd);
@@ -155,10 +156,10 @@ private:
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
     double getNumber(const QString str, bool *ok);
-    QString getDirectory(const QString cmd) const;
-    QStringList getArguments(const QString cmd) const;
-    int getNumberOfArguments(const QString cmd) const;
-    QString getArgument(const QString cmd, const int idx) const;
+    QString getDirectory(const QString &cmd) const;
+    QStringList getArguments(const QString &cmd) const;
+    int getNumberOfArguments(const QString &cmd) const;
+    QString getArgument(const QString &cmd, const int idx) const;
     void returnScalar(const double retval);
     void registerFunction(const QString func, const QString description, const SymHop::Function fptr);
 

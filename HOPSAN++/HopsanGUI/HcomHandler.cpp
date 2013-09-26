@@ -37,6 +37,7 @@
 #include "PlotTab.h"
 #include "PlotWindow.h"
 #include "SimulationThreadHandler.h"
+#include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/PlotWidget.h"
@@ -365,6 +366,14 @@ void HcomHandler::createCommands()
     recoCmd.fnc = &HcomHandler::executeRenameComponentCommand;
     recoCmd.group = "Model Commands";
     mCmdList << recoCmd;
+
+    HcomCommand rmcoCmd;
+    rmcoCmd.cmd = "rmco";
+    rmcoCmd.description.append("Removes specified component(s)");
+    rmcoCmd.help.append(" Usage: rmco [component]");
+    rmcoCmd.fnc = &HcomHandler::executeRemoveComponentCommand;
+    rmcoCmd.group = "Model Commands";
+    mCmdList << rmcoCmd;
 
     HcomCommand pwdCmd;
     pwdCmd.cmd = "pwd";
@@ -1778,6 +1787,29 @@ void HcomHandler::executeRenameComponentCommand(const QString cmd)
     if(pContainer)
     {
         pContainer->renameModelObject(split[0], split[1]);
+    }
+}
+
+void HcomHandler::executeRemoveComponentCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments");
+        return;
+    }
+
+    QList<ModelObject*> components;
+    getComponents(getArgument(cmd, 0), components);
+
+    ContainerObject *pContainer = gpMainWindow->mpModelHandler->getCurrentViewContainerObject();
+    for(int c=0; c<components.size(); ++c)
+    {
+        pContainer->deleteModelObject(components[c]->getName());
+    }
+
+    if(!components.isEmpty())
+    {
+        pContainer->hasChanged();
     }
 }
 
@@ -3939,7 +3971,7 @@ void HcomHandler::toLongDataNames(QString &var) const
 
 
 //! @brief Converts a command to a directory path, or returns an empty string if command is invalid
-QString HcomHandler::getDirectory(const QString cmd) const
+QString HcomHandler::getDirectory(const QString &cmd) const
 {
     if(QDir().exists(QDir().cleanPath(mPwd+"/"+cmd)))
     {
@@ -3957,7 +3989,7 @@ QString HcomHandler::getDirectory(const QString cmd) const
 
 
 //! @brief Returns a list of arguments in a command with respect to quotation marks
-QStringList HcomHandler::getArguments(const QString cmd) const
+QStringList HcomHandler::getArguments(const QString &cmd) const
 {
     QStringList splitCmd;
     bool withinQuotations = false;
@@ -3983,7 +4015,7 @@ QStringList HcomHandler::getArguments(const QString cmd) const
 
 
 //! @brief Returns number of arguments in command with respect to quotation marks
-int HcomHandler::getNumberOfArguments(const QString cmd) const
+int HcomHandler::getNumberOfArguments(const QString &cmd) const
 {
     return getArguments(cmd).size();
 }
@@ -3992,7 +4024,7 @@ int HcomHandler::getNumberOfArguments(const QString cmd) const
 //! @brief Returns argument in command at specified index with respect to quotation marks
 //! @param cmd Command
 //! @param idx Index
-QString HcomHandler::getArgument(const QString cmd, const int idx) const
+QString HcomHandler::getArgument(const QString &cmd, const int idx) const
 {
     return getArguments(cmd).at(idx);
 }
