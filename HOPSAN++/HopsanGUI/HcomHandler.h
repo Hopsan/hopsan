@@ -76,6 +76,8 @@ public:
     OptimizationHandler *mpOptHandler;
     TerminalConsole *mpConsole;
 
+    QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk);
+
 public slots:
     void abortHCOM();
 
@@ -143,7 +145,6 @@ private:
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
     void deletePlotCurve(QString cmd) const;
-    QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk);
     void getComponents(QString str, QList<ModelObject*> &components);
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);

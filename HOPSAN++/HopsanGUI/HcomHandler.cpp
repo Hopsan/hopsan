@@ -2852,6 +2852,72 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             return pLogData->fftVariable(var.data()->getFullVariableName(), timeVar.data()->getFullVariableName(), power);
         }
     }
+    else if(expr.startsWith("gt(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(3, expr.size()-4);
+        if(args.count(",")==1)
+        {
+            QString arg2=args.section(",",1,1);
+            bool success;
+            double limit = arg2.toDouble(&success);
+
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
+            SharedLogVariableDataPtrT resVar = pLogData->defineTempVariable(var.data()->getFullVariableName()+"gt");
+            resVar.data()->assignFrom(var);
+            int size = var.data()->getDataSize();
+            QString error;
+            for(int i=0; i<size; ++i)
+            {
+                if(var.data()->peekData(i, error) > limit)
+                {
+                    resVar.data()->pokeData(i, 1, error);
+                }
+                else
+                {
+                    resVar.data()->pokeData(i, 0, error);
+                }
+            }
+            return resVar.data()->getFullVariableName();
+        }
+        else
+        {
+            return "0";
+        }
+    }
+    else if(expr.startsWith("lt(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(3, expr.size()-4);
+        if(args.count(",")==1)
+        {
+            QString arg2=args.section(",",1,1);
+            bool success;
+            double limit = arg2.toDouble(&success);
+
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
+            SharedLogVariableDataPtrT resVar = pLogData->defineTempVariable(var.data()->getFullVariableName()+"gt");
+            resVar.data()->assignFrom(var);
+            int size = var.data()->getDataSize();
+            QString error;
+            for(int i=0; i<size; ++i)
+            {
+                if(var.data()->peekData(i, error) < limit)
+                {
+                    resVar.data()->pokeData(i, 1, error);
+                }
+                else
+                {
+                    resVar.data()->pokeData(i, 0, error);
+                }
+            }
+            return resVar.data()->getFullVariableName();
+        }
+        else
+        {
+            return "0";
+        }
+    }
 
     //Evaluate expression using SymHop
     SymHop::Expression symHopExpr = SymHop::Expression(expr);
@@ -3957,6 +4023,14 @@ double _funcAver(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
+    if(!pData)
+    {
+        bool success;
+        HcomHandler::VariableType type;
+        QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+    }
+
     if(pData)
     {
         ok=true;
@@ -3969,6 +4043,14 @@ double _funcAver(QString str, bool &ok)
 double _funcSize(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
+
+    if(!pData)
+    {
+        bool success;
+        HcomHandler::VariableType type;
+        QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+    }
 
     if(pData)
     {
@@ -4002,6 +4084,14 @@ double _funcMin(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
+    if(!pData)
+    {
+        bool success;
+        HcomHandler::VariableType type;
+        QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+    }
+
     if(pData)
     {
         ok=true;
@@ -4014,6 +4104,14 @@ double _funcMin(QString str, bool &ok)
 double _funcMax(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
+
+    if(!pData)
+    {
+        bool success;
+        HcomHandler::VariableType type;
+        QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+    }
 
     if(pData)
     {
@@ -4028,6 +4126,14 @@ double _funcIMin(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
 
+    if(!pData)
+    {
+        bool success;
+        HcomHandler::VariableType type;
+        QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+    }
+
     if(pData)
     {
         ok=true;
@@ -4040,6 +4146,14 @@ double _funcIMin(QString str, bool &ok)
 double _funcIMax(QString str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
+
+    if(!pData)
+    {
+        bool success;
+        HcomHandler::VariableType type;
+        QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+    }
 
     if(pData)
     {
@@ -4054,6 +4168,15 @@ double _funcPeek(QString str, bool &ok)
 {
     QString var = str.section(",",0,0);
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(var);
+
+    if(!pData)
+    {
+        bool success;
+        HcomHandler::VariableType type;
+        QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+    }
+
     QString idxStr = str.section(",",1,1);
 
     SymHop::Expression idxExpr = SymHop::Expression(idxStr);
