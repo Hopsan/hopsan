@@ -703,7 +703,7 @@ void LogVariableData::append(const double y)
 
 double LogVariableData::maxOfData() const
 {
-    double ret = std::numeric_limits<double>::min();
+    double ret = -std::numeric_limits<double>::max();
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
     for(int i=0; i<pVector->size(); ++i)
     {
