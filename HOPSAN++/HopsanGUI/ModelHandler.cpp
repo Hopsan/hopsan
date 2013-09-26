@@ -313,9 +313,9 @@ bool ModelHandler::closeModelByTabIndex(int tabIdx)
 }
 
 
-bool ModelHandler::closeModel(ModelWidget *pModel)
+bool ModelHandler::closeModel(ModelWidget *pModel, bool force)
 {
-    return closeModel(mModelPtrs.indexOf(pModel));
+    return closeModel(mModelPtrs.indexOf(pModel), force);
 }
 
 
@@ -323,13 +323,13 @@ bool ModelHandler::closeModel(ModelWidget *pModel)
 //! @param index defines which project to close.
 //! @return true if closing went ok. false if the user canceled the operation.
 //! @see closeAllModels()
-bool ModelHandler::closeModel(int idx)
+bool ModelHandler::closeModel(int idx, bool force)
 {
     // Only remove if we found the model by index
     ModelWidget *pModelToClose = getModel(idx);
     if(pModelToClose)
     {
-        if (!pModelToClose->isSaved())
+        if (!pModelToClose->isSaved() && !force)
         {
             QString modelName = pModelToClose->getTopLevelSystemContainer()->getName();
             QMessageBox msgBox;

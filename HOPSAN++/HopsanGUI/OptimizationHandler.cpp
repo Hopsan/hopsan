@@ -126,6 +126,8 @@ void OptimizationHandler::optComplexRun()
 {
     optPlotPoints();
 
+    optComplexCalculatebestandworstid();
+
     mOptConvergenceReason=0;
 
     if(mOptAlgorithm == Uninitialized)
@@ -301,7 +303,7 @@ void OptimizationHandler::optComplexRun()
     gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
-    gpMainWindow->mpModelHandler->closeModel(mpOptModel);
+    gpMainWindow->mpModelHandler->closeModel(mpOptModel, true);
 
     return;
 }
