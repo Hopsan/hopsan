@@ -1,0 +1,54 @@
+#test
+startL=100
+endL=1000
+stepL = 200
+
+
+
+rmco Signal_Dumm*
+
+define benchmark
+  chss startL stepL endL
+  sim
+  resOff = dummy.out.val
+  res0 = dummy.out.val
+  res1 = dummy.out.val
+  res2 = dummy.out.val
+  res3 = dummy.out.val
+  chss 0 0.001 1
+
+  load1 = startL
+  i=0
+  while (load1<endL)
+
+    semt off
+    sim
+    poke resOff i time()  
+
+    semt on 0 0
+    sim
+    poke res0 i time()  
+
+    semt on 0 1
+    sim
+    poke res1 i time()  
+
+    semt on 0 2
+    sim
+    poke res2 i time()  
+
+    semt on 0 3
+    sim
+    poke res3 i time()  
+
+    load1 = load1+stepL
+    i = i+1
+  repeat
+
+  sapl benchmark.plo resOff res0 res1 res2 res3
+  chpv resOff res0 res1 res2 res3
+  
+enddefine
+
+
+
