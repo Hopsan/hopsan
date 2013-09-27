@@ -679,6 +679,15 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString fullName, co
     {
         return dit.value()->getDataGeneration(generation);
     }
+
+    //Check alias names if not found with normal name
+    for(dit=mLogDataMap.begin(); dit!=mLogDataMap.end(); ++dit)
+    {
+        if(dit.value().data()->getAliasName() == fullName)
+        {
+            return dit.value()->getDataGeneration(generation);
+        }
+    }
     return SharedLogVariableDataPtrT(0);
 }
 
