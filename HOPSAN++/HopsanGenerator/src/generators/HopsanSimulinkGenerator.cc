@@ -32,6 +32,12 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QDir saveDir;
     saveDir.setPath(savePath);
 
+    QString name = pSystem->getName().c_str();
+    if(name.isEmpty())
+    {
+        name = "UnsavedHopsanModel";
+    }
+
     std::vector<HString> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
@@ -132,10 +138,10 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
 
     QFile wrapperFile;
-    wrapperFile.setFileName(savePath + "/HopsanSimulink.cpp");
+    wrapperFile.setFileName(savePath + "/"+name+".cpp");
     if(!wrapperFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open HopsanSimulink.cpp for writing.");
+        printErrorMessage("Failed to open "+name+".cpp for writing.");
         return;
     }
 
@@ -255,7 +261,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
 
 
-    printMessage("Writing HopsanSimulink.cpp...");
+    printMessage("Writing "+name+".cpp...");
 
 
     //How to access dialog parameters:
@@ -564,6 +570,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     wrapperCode.replace("<<<13>>>", wrapperReplace13);
     wrapperCode.replace("<<<15>>>", wrapperReplace15);
     wrapperCode.replace("<<<16>>>", wrapperReplace16);
+    wrapperCode.replace("<<<name>>>", name);
 
     QTextStream wrapperStream(&wrapperFile);
     wrapperStream << wrapperCode;
@@ -576,7 +583,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QTextStream compileStream(&compileFile);
 #ifdef WIN32
     //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /HopsanCore/include/Component.cc /HopsanCore/include/ComponentSystem.cc /HopsanCore/include/HopsanEssentials.cc /HopsanCore/include/Node.cc /HopsanCore/include/Port.cc /HopsanCore/include/Components/Components.cc /HopsanCore/include/CoreUtilities/HmfLoader.cc /HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.cc /HopsanCore/include/CoreUtilities/LoadExternal.cc /HopsanCore/include/Nodes/Nodes.cc /HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /HopsanCore/include/ComponentUtilities/Delay.cc /HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /HopsanCore/include/ComponentUtilities/FirstOrderFilter.cc /HopsanCore/include/ComponentUtilities/Integrator.cc /HopsanCore/include/ComponentUtilities/IntegratorLimited.cc /HopsanCore/include/ComponentUtilities/ludcmp.cc /HopsanCore/include/ComponentUtilities/matrix.cc /HopsanCore/include/ComponentUtilities/SecondOrderFilter.cc /HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.cc /HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.cc /HopsanCore/include/ComponentUtilities/ValveHysteresis.cc\n";
-    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -IHopsanCore/include -lHopsanCore HopsanSimulink.cpp\n";
+    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -IHopsanCore/include -lHopsanCore "+name+".cpp\n";
 
     printMessage("Copying Visual Studio binaries...");
 
@@ -625,7 +632,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     externalLibsFile.close();
 
     if(!assertFilesExist(savePath, QStringList() << modelFile << "externalLibs.txt" <<
-                     "HopsanCore.dll" << "HopsanCore.lib" << "HopsanCore.exp" << "HopsanSimulink.cpp" <<
+                     "HopsanCore.dll" << "HopsanCore.lib" << "HopsanCore.exp" << name+".cpp" <<
                      "HopsanSimulinkCompile.m" << "HopsanSimulinkPortLabels.m"))
     {
         return;

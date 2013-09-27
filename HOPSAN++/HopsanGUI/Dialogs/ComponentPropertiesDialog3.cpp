@@ -326,20 +326,16 @@ QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
 QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
 {
     QPushButton *pEditPortPos = new QPushButton(tr("&Move ports"), this);
-    mpRecompileButton = new QPushButton(tr("&Recompile"), this);
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
     pOkButton->setDefault(true);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Vertical, this);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(mpRecompileButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pEditPortPos, QDialogButtonBox::ActionRole);
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pEditPortPos, SIGNAL(clicked()), this, SLOT(editPortPos()));
-    connect(mpRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
-    mpRecompileButton->setEnabled(false);
     return pButtonBox;
 }
 
@@ -390,8 +386,6 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
 
 QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
 {
-    mpRecompileButton->setEnabled(true);
-
     rFilePath.prepend(mpModelObject->getAppearanceData()->getBasePath());
     QFile file(rFilePath);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -423,9 +417,15 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     mpSolverComboBox = new QComboBox(this);
     mpSolverComboBox->addItem("Bilinear Transform");
     mpSolverComboBox->addItem("Numerical Integration");
+    mpRecompileButton = new QPushButton(tr("&Recompile"), this);
+    mpRecompileButton->setEnabled(true);
+    connect(mpRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
     QHBoxLayout *pSolverLayout = new QHBoxLayout();
     pSolverLayout->addWidget(pSolverLabel);
     pSolverLayout->addWidget(mpSolverComboBox);
+    pSolverLayout->addWidget(new QWidget(this));
+    pSolverLayout->addWidget(mpRecompileButton);
+    pSolverLayout->setStretch(2,1);
     pLayout->addLayout(pSolverLayout);
 
     return pTempWidget;//return pSourceCodeTextEdit;

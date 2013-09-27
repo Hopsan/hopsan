@@ -942,6 +942,9 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 
 void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
 {
+    Q_UNUSED(initAlgorithms);
+    Q_UNUSED(finalAlgorithms);
+
     //Create list of equqtions
     QList<Expression> equations;
     for(int e=0; e<plainEquations.size(); ++e)

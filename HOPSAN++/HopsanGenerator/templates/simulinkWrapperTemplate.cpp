@@ -13,7 +13,7 @@ redistributing any part of this file is prohibited without explicit
 permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-#define S_FUNCTION_NAME HopsanSimulink
+#define S_FUNCTION_NAME <<<name>>>
 #define S_FUNCTION_LEVEL 2
 
 #include <iostream>
