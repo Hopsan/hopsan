@@ -203,6 +203,38 @@ void ComponentPropertiesDialog3::editPortPos()
     connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
 }
 
+void ComponentPropertiesDialog3::copyToNewComponent()
+{
+    QString sourceCode = mpSourceCodeTextEdit->toPlainText();
+
+    QDateTime time = QDateTime();
+    uint t = time.currentDateTime().toTime_t();     //Number of milliseconds since 1970
+    double rd = rand() / (double)RAND_MAX;
+    int r = int(rd*1000000.0);                      //Random number between 0 and 1000000
+    QString randomName = mpModelObject->getTypeName()+QString::number(t)+QString::number(r);
+
+
+    sourceCode.replace("#ifdef "+mpModelObject->getTypeName().toUpper()+"_HPP_INCLUDED", "");
+    sourceCode.replace("#define "+mpModelObject->getTypeName().toUpper()+"_HPP_INCLUDED", "");
+    sourceCode.replace("#endif //  "+mpModelObject->getTypeName().toUpper()+"_HPP_INCLUDED", "");
+    sourceCode.replace("class "+mpModelObject->getTypeName()+" :", "class "+randomName+" :");
+    sourceCode.replace("return new "+mpModelObject->getTypeName()+"()", "return new "+randomName+"()");
+
+    EditComponentDialog *pEditDialog = new EditComponentDialog(sourceCode, EditComponentDialog::Cpp);
+
+    pEditDialog->exec();
+
+    if(pEditDialog->result() == QDialog::Accepted)
+    {
+        CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+        QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
+        QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
+        coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
+        gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+    }
+    delete(pEditDialog);
+}
+
 void ComponentPropertiesDialog3::recompile()
 {
     QString basePath = this->mpModelObject->getAppearanceData()->getBasePath();
@@ -417,6 +449,8 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     mpSolverComboBox = new QComboBox(this);
     mpSolverComboBox->addItem("Bilinear Transform");
     mpSolverComboBox->addItem("Numerical Integration");
+    mpNewComponentButton = new QPushButton(tr("&Copy to new component"), this);
+    connect(mpNewComponentButton, SIGNAL(clicked()), this, SLOT(copyToNewComponent()));
     mpRecompileButton = new QPushButton(tr("&Recompile"), this);
     mpRecompileButton->setEnabled(true);
     connect(mpRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
@@ -424,6 +458,7 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     pSolverLayout->addWidget(pSolverLabel);
     pSolverLayout->addWidget(mpSolverComboBox);
     pSolverLayout->addWidget(new QWidget(this));
+    pSolverLayout->addWidget(mpNewComponentButton);
     pSolverLayout->addWidget(mpRecompileButton);
     pSolverLayout->setStretch(2,1);
     pLayout->addLayout(pSolverLayout);

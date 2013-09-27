@@ -115,6 +115,7 @@ signals:
 protected slots:
     void okPressed();
     void editPortPos();
+    void copyToNewComponent();
     void recompile();
     virtual void reject();
 
@@ -138,6 +139,7 @@ private:
     QSpinBox *mpInputPortsSpinBox;
     QSpinBox *mpOutputPortsSpinBox;
     QTextEdit *mpTextEdit;
+    QPushButton *mpNewComponentButton;
     QPushButton *mpRecompileButton;
     QTextEdit *mpSourceCodeTextEdit;
     QComboBox *mpSolverComboBox;
