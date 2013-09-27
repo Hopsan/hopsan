@@ -904,6 +904,10 @@ QString Expression::toString() const
         }
         if(mDivisors.size() > 0) { ret.chop(1); }
         if(mDivisors.size() > 1) { ret.append(")"); }
+        if(ret.startsWith("-1.0*"))     //Replace -1.0*5 with -5
+        {
+            ret.remove(1, 4);
+        }
     }
     else if(this->isPower())
     {

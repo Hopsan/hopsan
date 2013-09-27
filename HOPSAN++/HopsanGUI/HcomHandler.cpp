@@ -2928,7 +2928,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
 
             *returnType = DataVector;
             SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
-            SharedLogVariableDataPtrT resVar = pLogData->defineTempVariable(var.data()->getFullVariableName()+"gt");
+            SharedLogVariableDataPtrT resVar = pLogData->defineTempVariable(var.data()->getFullVariableName()+"lt");
             resVar.data()->assignFrom(var);
             int size = var.data()->getDataSize();
             QString error;
