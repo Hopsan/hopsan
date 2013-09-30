@@ -2597,7 +2597,7 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
 //! @brief Changes plot variables on specified axes
 //! @param cmd Command containing the plot variables
 //! @param axis Axis specification (0=left, 1=right, -1=both, separeted by "-r")
-void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool hold) const
+void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool hold)
 {
     QStringList varNames = getArguments(cmd);
 
@@ -2628,7 +2628,11 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
         else
         {
             QStringList variables;
-            getVariables(varNames[s], variables);
+            VariableType type;
+            bool ok;
+            QString vars = evaluateExpression(varNames[s], &type, &ok);
+            toShortDataNames(vars);
+            getVariables(vars, variables);
             for(int v=0; v<variables.size(); ++v)
             {
                 addPlotCurve(variables[v], axisId);
@@ -2804,7 +2808,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
     if(!variables.isEmpty())
     {
         *returnType = DataVector;
-        return variables.first();
+        return expr;
     }
 
     //Vector functions
@@ -2884,9 +2888,10 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             return pLogData->fftVariable(var.data()->getFullVariableName(), timeVar.data()->getFullVariableName(), power);
         }
     }
-    else if(expr.startsWith("gt(") && expr.endsWith(")"))
+    else if((expr.startsWith("greaterThan(") || expr.startsWith("gt(")) && expr.endsWith(")"))
     {
-        QString args = expr.mid(3, expr.size()-4);
+        int funcSize = expr.section("(",0,0).size()+1;
+        QString args = expr.mid(funcSize, expr.size()-funcSize-1);
         if(args.count(",")==1)
         {
             QString arg2=args.section(",",1,1);
@@ -2917,9 +2922,10 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             return "0";
         }
     }
-    else if(expr.startsWith("lt(") && expr.endsWith(")"))
+    else if((expr.startsWith("smallerThan(") || expr.startsWith("lt(")) && expr.endsWith(")"))
     {
-        QString args = expr.mid(3, expr.size()-4);
+        int funcSize = expr.section("(",0,0).size()+1;
+        QString args = expr.mid(funcSize, expr.size()-funcSize-1);
         if(args.count(",")==1)
         {
             QString arg2=args.section(",",1,1);
@@ -2949,6 +2955,56 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         {
             return "0";
         }
+    }
+    else if(expr.count("<")==1 && getVariablePtr(expr.section("<",0,0)))
+    {
+
+        bool success;
+        double limit = expr.section("<",1,1).toDouble(&success);
+
+        *returnType = DataVector;
+        SharedLogVariableDataPtrT var = getVariablePtr(expr.section("<",0,0));
+        SharedLogVariableDataPtrT resVar = pLogData->defineTempVariable(var.data()->getFullVariableName()+"lt");
+        resVar.data()->assignFrom(var);
+        int size = var.data()->getDataSize();
+        QString error;
+        for(int i=0; i<size; ++i)
+        {
+            if(var.data()->peekData(i, error) < limit)
+            {
+                resVar.data()->pokeData(i, 1, error);
+            }
+            else
+            {
+                resVar.data()->pokeData(i, 0, error);
+            }
+        }
+        return resVar.data()->getFullVariableName();
+    }
+    else if(expr.count(">")==1 && getVariablePtr(expr.section(">",0,0)))
+    {
+
+        bool success;
+        double limit = expr.section(">",1,1).toDouble(&success);
+
+        *returnType = DataVector;
+        SharedLogVariableDataPtrT var = getVariablePtr(expr.section(">",0,0));
+        SharedLogVariableDataPtrT resVar = pLogData->defineTempVariable(var.data()->getFullVariableName()+"lt");
+        resVar.data()->assignFrom(var);
+        int size = var.data()->getDataSize();
+        QString error;
+        for(int i=0; i<size; ++i)
+        {
+            if(var.data()->peekData(i, error) > limit)
+            {
+                resVar.data()->pokeData(i, 1, error);
+            }
+            else
+            {
+                resVar.data()->pokeData(i, 0, error);
+            }
+        }
+        return resVar.data()->getFullVariableName();
     }
 
     //Evaluate expression using SymHop
@@ -3167,7 +3223,11 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
         }
         else if(lines[l].startsWith("if"))        //Handle if statements
         {
-            QString argument = lines[l].section("(",1).remove(")");
+            qDebug() << "Argument line: " << lines[l];
+            QString argument = lines[l].section("(",1);
+            qDebug() << "Pre-argument: " << argument;
+            argument=argument.trimmed();
+            argument.chop(1);
             qDebug() << "Argument: " << argument;
             QStringList ifCode;
             QStringList elseCode;
@@ -4060,6 +4120,7 @@ double _funcAver(QString str, bool &ok)
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpMainWindow->mpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
+        qDebug() << "evalStr = " << evalStr;
         pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(evalStr);
     }
 

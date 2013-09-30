@@ -142,7 +142,7 @@ private:
     //Help functions
     void createCommands();
     void generateCommandsHelpText();
-    void changePlotVariables(const QString cmd, const int axis, bool hold=false) const;
+    void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
     void deletePlotCurve(QString cmd) const;
