@@ -117,6 +117,7 @@ private:
     void handleDownKeyPress();
     void handleTabKeyPress();
     void handleHomeKeyPress();
+    void handleEscapeKeyPress();
     void cancelAutoComplete();
     void cancelRecentHistory();
 

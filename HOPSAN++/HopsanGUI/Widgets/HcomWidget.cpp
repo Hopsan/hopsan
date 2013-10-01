@@ -480,6 +480,11 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
         handleHomeKeyPress();
         return;
     }
+    else if(event->key() == Qt::Key_Escape)
+    {
+        handleEscapeKeyPress();
+        return;
+    }
 
     if(isOnLastLine())
     {
@@ -533,9 +538,13 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
                 undo();
             }
         }
-        else if(event->key() == Qt::Key_Control)
+        else
         {
-            QTextEdit::keyPressEvent(event);
+            QList<int> otherAllowedKeys = QList<int>() << Qt::Key_Control << Qt::Key_PageUp << Qt::Key_PageDown;
+            if(otherAllowedKeys.contains(event->key()))
+            {
+                QTextEdit::keyPressEvent(event);
+            }
         }
     }
 }
@@ -786,6 +795,19 @@ void TerminalConsole::handleHomeKeyPress()
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     this->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
     this->moveCursor(QTextCursor::NextWord, QTextCursor::MoveAnchor);
+}
+
+void TerminalConsole::handleEscapeKeyPress()
+{
+    this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+    this->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+    this->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
+    this->textCursor().removeSelectedText();
+
+    this->setOutputColor("default");
+    this->insertPlainText(">> ");
+
+    this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
 }
 
 
