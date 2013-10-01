@@ -95,11 +95,11 @@ void DataExplorer::openImportDataDialog()
     QFileInfo fi(fileName);
     if (mpLogDataHandler)
     {
-        if (fi.suffix() == ".plo")
+        if (fi.suffix().toLower() == "plo")
         {
             mpLogDataHandler->importFromPlo(fileName);
         }
-        else if (fi.suffix() == ".csv")
+        else if (fi.suffix().toLower() == "csv")
         {
             mpLogDataHandler->importFromCsv(fileName);
         }
