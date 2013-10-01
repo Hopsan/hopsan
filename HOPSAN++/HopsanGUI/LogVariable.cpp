@@ -988,7 +988,7 @@ void LogVariableContainer::removeDataGeneration(const int generation, const bool
         mDataGenerations.remove(generation);
     }
 
-    // If last data generation removed tehn ask my parent to delete me
+    // If last data generation removed then ask my parent to delete me
     if (mDataGenerations.isEmpty())
     {
         mpParentLogDataHandler->deleteVariable(this->getFullVariableName());

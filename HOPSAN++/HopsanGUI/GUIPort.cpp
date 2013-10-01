@@ -298,64 +298,84 @@ void Port::openRightClickMenu(QPoint screenPos)
 {
     QMenu menu;
 
+    // First build alias menue
     QMenu *pAliasMenu = new QMenu("Define Alias");
-
-    //! @todo maybe we should not show list if no data is availible for plotting (check with logdatahandler maybe)
-    QVector<QString> variableNames;
-    QVector<QString> variableUnits;
-    mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentModelObject->getName(), this->getName(), variableNames, variableUnits);
-
-    bool hasData = !getParentContainerObject()->getLogDataHandler()->isEmpty();
-
-    QVector<QAction *> parameterActions;    //! @todo Why is it called "parameterActions"???
-    QVector<QAction *> aliasActions;
-    QAction *tempAction;
-    QAction *aliasAction;
-    for(int i=0; i<variableNames.size(); ++i)
+    QMap<QAction*, int> aliasActions;
+    QVector<CoreVariameterDescription> variameterDescriptions;
+    mpParentModelObject->getVariameterDescriptions(variameterDescriptions); //!< @todo would be nice to be able to get this info only for a particular port
+    for (int i=0; i<variameterDescriptions.size(); ++i)
     {
-        aliasAction = pAliasMenu->addAction(variableNames[i]);
-        aliasActions.append(aliasAction);
-
-        //! @todo This is a ugly special hack for Siganl Vale but I cant thing of anything better, (maye make it impossible to have custom plotscales for Values)
-        if (variableNames[i] == "Value" && variableUnits[i] != "-")
+        if (variameterDescriptions[i].mPortName == this->getName())
         {
-            tempAction = menu.addAction(QString("Plot "+variableNames[i]+" ["+variableUnits[i]+"]"));
+            QAction *pAliasAction;
+            if (variameterDescriptions[i].mAlias.isEmpty())
+            {
+                pAliasAction = pAliasMenu->addAction(variameterDescriptions[i].mName);
+            }
+            else
+            {
+                pAliasAction = pAliasMenu->addAction(variameterDescriptions[i].mName+" = "+variameterDescriptions[i].mAlias);
+            }
+            aliasActions.insert(pAliasAction,i);
+        }
+    }
+    menu.addMenu(pAliasMenu);
+    menu.addSeparator();
+
+    // Now build plot menue
+    QMap<QAction*, int> plotActions;
+//    //! @todo maybe we should not show list if no data is availible for plotting (check with logdatahandler maybe)
+//    QVector<QString> variableNames;
+//    QVector<QString> variableUnits;
+//    mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentModelObject->getName(), this->getName(), variableNames, variableUnits);
+//    bool hasData = !getParentContainerObject()->getLogDataHandler()->isEmpty();
+
+    QVector<SharedLogVariableDataPtrT> logVars = mpParentModelObject->getParentContainerObject()->getLogDataHandler()->getMultipleLogData(QRegExp(makeConcatName(mpParentModelObject->getName(),this->getName(),".*")));
+    for(int i=0; i<logVars.size(); ++i)
+    {
+        QAction *pTempAction;
+        //! @todo This is a ugly special hack for Signal Value but I cant thing of anything better, (maye make it impossible to have custom plotscales for Values)
+        //! @todo should have a help function for this as similar checks are done elsewere
+        const QString &dataName = logVars[i]->getDataName();
+        const QString &dataUnit = logVars[i]->getDataUnit();
+        if ( dataName == "Value" && dataUnit != "-")
+        {
+            pTempAction = menu.addAction(QString("Plot "+dataName+" ["+dataUnit+"]"));
         }
         else
         {
             QString unit;
             UnitScale custUS;
-            mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+variableNames[i], custUS);
+            mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+dataName, custUS);
             if (custUS.mScale.isEmpty())
             {
-                unit = gConfig.getDefaultUnit(variableNames[i]);
+                unit = gConfig.getDefaultUnit(dataName);
             }
             else
             {
                 unit = custUS.mUnit;
             }
-            tempAction = menu.addAction(QString("Plot "+variableNames[i]+" ["+unit+"]"));
+            pTempAction = menu.addAction(QString("Plot "+dataName+" ["+unit+"]"));
         }
-        parameterActions.append(tempAction);
-
-        aliasAction->setEnabled(hasData);
-        tempAction->setEnabled(hasData);
+        plotActions.insert(pTempAction, i);
+//        pTempAction->setEnabled(hasData);
     }
-    menu.addMenu(pAliasMenu);
-    pAliasMenu->setEnabled(hasData);
 
+    // Execute menue and then check selected action
     QAction *selectedAction = menu.exec(screenPos);
-
-    for(int i=0; i<variableNames.size(); ++i)
+    // Check for alias action
+    QMap<QAction*, int>::iterator it = aliasActions.find(selectedAction);
+    if (it != aliasActions.end())
     {
-        if (selectedAction == parameterActions[i])
+        openDefineAliasDialog(variameterDescriptions[it.value()].mName);
+    }
+    else
+    {
+        // Check for plot action
+        it = plotActions.find(selectedAction);
+        if (it != plotActions.end())
         {
-            //plot(parameterNames[i], parameterUnits[i]);
-            plot(variableNames[i], "");
-        }
-        else if(selectedAction == aliasActions[i])
-        {
-            openDefineAliasDialog(variableNames[i]);
+            plot(logVars[it.value()]->getDataName(), "");
         }
     }
 }
@@ -372,6 +392,7 @@ void Port::openDefineAliasDialog(QString var)
                                           dummy, &ok);
     if(ok)
     {
+        //! @todo should not go through logdatahnadler for this, should access directly, and signal the alias change to logdata handler
         QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),var);
         getParentContainerObject()->getLogDataHandler()->definePlotAlias(alias, fullName);
     }

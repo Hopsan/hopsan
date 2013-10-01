@@ -75,7 +75,8 @@ public:
     QVector<double> getPlotDataValues(const QString fullName, int generation);
     SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedLogVariableDataPtrT getPlotData(const QString fullName, const int generation);
-    SharedLogVariableDataPtrT getPlotDataByAlias(const QString alias, const int generation);
+    QVector<SharedLogVariableDataPtrT> getMultipleLogData(const QRegExp &rNameExp, const int generation=-1) const;
+//    SharedLogVariableDataPtrT getPlotDataByAlias(const QString alias, const int generation);
     bool hasPlotData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getOnlyVariablesAtGeneration(const int generation);

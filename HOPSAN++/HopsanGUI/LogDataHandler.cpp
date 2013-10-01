@@ -680,7 +680,7 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString fullName, co
         return dit.value()->getDataGeneration(generation);
     }
 
-    //Check alias names if not found with normal name
+    // Check alias names if not found with normal name
     for(dit=mLogDataMap.begin(); dit!=mLogDataMap.end(); ++dit)
     {
         if(dit.value().data()->getAliasName() == fullName)
@@ -689,6 +689,24 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString fullName, co
         }
     }
     return SharedLogVariableDataPtrT(0);
+}
+
+QVector<SharedLogVariableDataPtrT> LogDataHandler::getMultipleLogData(const QRegExp &rNameExp, const int generation) const
+{
+    QVector<SharedLogVariableDataPtrT> results;
+    LogDataMapT::const_iterator it;
+    for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
+    {
+        if (it.key().contains(rNameExp))
+        {
+            SharedLogVariableDataPtrT pData = it.value()->getDataGeneration(generation);
+            if (pData)
+            {
+                results.append(pData);
+            }
+        }
+    }
+    return results;
 }
 
 ////! @todo maybe would be better if ONE getPlotData function could handle all cases
@@ -777,29 +795,9 @@ void LogDataHandler::definePlotAlias(QString fullName)
 //! @todo this code should no longer be in LogDataHandler it should be in system or similar
 bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName)
 {
-    //    //! @todo Check that alias is not already used, and deal with it somehow if it is
-    //    if (mPlotAliasMap.contains(alias))
-    //    {
-    //        return false;
-    //    }
-    //    else
-    //    {
-    //        LogDataMapT::iterator dit = mLogDataMap.find(fullName);
-    //        if (dit!=mLogDataMap.end())
-    //        {
-    //            // First remove old alias
-    //            mPlotAliasMap.remove(dit.value()->getAliasName());
-
-    //            // Assign alias
-    //            dit.value()->setAliasName(alias);
-
-    //            // Insert into alias map
-    //            mPlotAliasMap.insert(alias, dit.value().data());
-
-    //
-
     QString comp,port,var;
     splitConcatName(fullName, comp,port,var);
+    // Try to set the new alias, abort if it did not work
     if(!mpParentContainerObject->setVariableAlias(comp,port,var,alias))
     {
         return false;
@@ -817,6 +815,12 @@ bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName
         //! @todo instead of bool return the uniqe changed alias should be returned
         mLogDataMap.insert(alias, pData);
         pData->setAliasName(alias);
+
+
+        //! @todo This is madness, this code needs to be rewritten, maybe alias should not be changable from log data like this, or the code should be smarter
+        //! @todo we also need a signal for when alias name is changed elsewhere
+        // since the alias was undefined above, set it again
+        mpParentContainerObject->setVariableAlias(comp,port,var,alias);
     }
 
     return true;
@@ -827,12 +831,6 @@ bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName
 //! @param[in] alias Alias to remove
 void LogDataHandler::undefinePlotAlias(QString alias)
 {
-    //    LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
-    //    if(pDataContainer)
-    //    {
-    //        QString fullName = pDataContainer->getFullVariableName();
-
-
     LogVariableContainer *data = mLogDataMap.value(alias, 0);
     if (data)
     {
@@ -843,8 +841,6 @@ void LogDataHandler::undefinePlotAlias(QString alias)
 
         mLogDataMap.remove(alias);
     }
-    //        mPlotAliasMap.remove(alias);
-    //    }
 }
 
 
@@ -1393,7 +1389,7 @@ double LogDataHandler::pokeVariable(const QString &a, const int index, const dou
     {
         return pokeVariable(pData1, index, value);
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("In Poke, No such variable: " + a);
     return 0;
 }
 
@@ -1402,12 +1398,28 @@ bool LogDataHandler::deleteVariable(const QString &a)
     LogDataMapT::iterator it = mLogDataMap.find(a);
     if(it != mLogDataMap.end())
     {
-        //it.value()->removeAllGenerations();   //We don't need to remove generations here, they will be removed by the destructor anyway
-        it.value()->deleteLater();
-        mLogDataMap.erase(it);
-        return true;
+        // Figure out if we are deleting by alias name or full name
+        if (it.value()->getAliasName() == a)
+        {
+            return deleteVariable(it.value()->getFullVariableName());
+        }
+        else
+        {
+            // Remember alias if any
+            QString alias = it.value()->getAliasName();
+            // Delete the date
+            it.value()->deleteLater();
+            // Remove data ptr from map
+            mLogDataMap.erase(it);
+            // If an alias was present then also remove it from map
+            if (!alias.isEmpty())
+            {
+                mLogDataMap.remove(alias);
+            }
+            return true;
+        }
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("In Delete, No such variable: " + a);
     return false;
 }
 
@@ -1423,7 +1435,7 @@ double LogDataHandler::peekVariable(const QString &a, const int index)
     {
         return peekVariable(pData1,index);
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("In Peek, No such variable: " + a);
     return 0;
 }
 
