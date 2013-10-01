@@ -36,12 +36,13 @@
 #include "Widgets/HcomWidget.h"
 #include "ModelHandler.h"
 #include "Widgets/PyDockWidget.h"
+#include "MainWindow.h"
 
 class CentralTabWidget;
 
 
 //! @brief Constructor
-OptimizationDialog::OptimizationDialog(MainWindow *parent)
+OptimizationDialog::OptimizationDialog(QWidget *parent)
     : QWizard(parent)
 {
         //Set the name and size of the main window

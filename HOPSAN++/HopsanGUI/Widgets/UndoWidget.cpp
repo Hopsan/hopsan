@@ -44,7 +44,7 @@
 
 //! @brief Construtor for undo list widget
 //! @param parent Pointer to the parent main window
-UndoWidget::UndoWidget(MainWindow *parent)
+UndoWidget::UndoWidget(QWidget *parent)
     : QDialog(parent)
 {
     //Set the name and size of the main window

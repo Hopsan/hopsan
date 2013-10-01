@@ -25,12 +25,9 @@
 #ifndef COMPONENTGENERATORDIALOG_H_INCLUDED
 #define COMPONENTGENERATORDIALOG_H_INCLUDED
 
-#include <QDialog>
-
-#include "MainWindow.h"
+#include <QtGui>
 //#include "Utilities/ComponentGeneratorUtilities.h"  //Needed because we define lists with classes declared here
 
-class MainWindow;
 class ModelObjectAppearance;
 class QTextDocument;
 
@@ -41,7 +38,7 @@ class ComponentGeneratorDialog : public QMainWindow
     friend class ComponentGeneratorWizard;
 
 public:
-    ComponentGeneratorDialog(MainWindow *parent = 0);
+    ComponentGeneratorDialog(QWidget *parent = 0);
 
 private slots:
     void addNewTab();

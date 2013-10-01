@@ -25,18 +25,14 @@
 #ifndef SENSITIVITYANALYSISDIALOG_H
 #define SENSITIVITYANALYSISDIALOG_H
 
-#include <QDialog>
-
-#include "MainWindow.h"
-
-class MainWindow;
+#include <QtGui>
 
 class SensitivityAnalysisDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    SensitivityAnalysisDialog(MainWindow *parent = 0);
+    SensitivityAnalysisDialog(QWidget *parent = 0);
 
 public slots:
     virtual void open();

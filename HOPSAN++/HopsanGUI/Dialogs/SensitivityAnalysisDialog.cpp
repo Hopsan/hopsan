@@ -31,6 +31,7 @@
 #include "Widgets/PlotWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
+#include "MainWindow.h"
 
 #ifndef WIN32
 #include <unistd.h> //Needed for sysctl
@@ -38,10 +39,14 @@
 
 
 //! @brief Constructor
-SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
+
+
+
+//! @brief Reimplementation of open() slot, used to initialize the dialog
+SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     : QDialog(parent)
 {
-        //Set the name and size of the main window
+    //Set the name and size of the main window
     this->resize(640,640);
     this->setWindowTitle("Sensitivity Analysis");
     this->setPalette(gConfig.getPalette());
@@ -123,8 +128,6 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
     connect(mpHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
 }
 
-
-//! @brief Reimplementation of open() slot, used to initialize the dialog
 void SensitivityAnalysisDialog::open()
 {
     mpParametersList->clear();

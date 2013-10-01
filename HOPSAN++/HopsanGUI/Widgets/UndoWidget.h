@@ -33,15 +33,11 @@
 
 #include <QDomElement>
 #include <QDomDocument>
-#include "MainWindow.h"
-
-    //Forward Declarations
-class MainWindow;
 
 class UndoWidget : public QDialog
 {
 public:
-    UndoWidget(MainWindow *parent = 0);
+    UndoWidget(QWidget *parent = 0);
     void show();
     void refreshList();
     QString translateTag(QString tag);

@@ -34,18 +34,16 @@
 #include <QGridLayout>
 #include <QToolButton>
 #include <QComboBox>
-
-#include "MainWindow.h"
-
-class MainWindow;
-
+#include <QWizard>
+#include <QTreeWidgetItem>
+#include <QTextEdit>
 
 class OptimizationDialog : public QWizard
 {
     Q_OBJECT
 
 public:
-    OptimizationDialog(MainWindow *parent = 0);
+    OptimizationDialog(QWidget *parent = 0);
 
 
 private:

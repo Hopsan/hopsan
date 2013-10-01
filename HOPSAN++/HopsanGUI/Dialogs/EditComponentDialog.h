@@ -25,12 +25,10 @@
 #ifndef EDITCOMPONENTDIALOG_H_INCLUDED
 #define EDITCOMPONENTDIALOG_H_INCLUDED
 
-#include <QDialog>
+#include <QtGui>
 
-#include "MainWindow.h"
 //#include "Utilities/ComponentGeneratorUtilities.h"  //Needed because we define lists with classes declared here
 
-class MainWindow;
 class ModelObjectAppearance;
 class QTextDocument;
 

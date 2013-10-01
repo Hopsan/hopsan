@@ -37,6 +37,7 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "GUIPort.h"
+#include "MainWindow.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "Utilities/XMLUtilities.h"
@@ -46,7 +47,7 @@
 
 
 //! @brief Constructor
-ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
+ComponentGeneratorDialog::ComponentGeneratorDialog(QWidget *parent)
     : QMainWindow(parent)
 {
     //Set the name and size of the main window
