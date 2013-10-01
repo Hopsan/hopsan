@@ -49,7 +49,7 @@ namespace hopsan {
 
         void configure()
         {
-            mpP1 = addReadPort("P1", "NodeHydraulic");
+            mpP1 = addReadPort("P1", "NodeHydraulic", "", Port::NotRequired);
             addOutputVariable("out", "Pressure", "Pa", &mpOut);
         }
 

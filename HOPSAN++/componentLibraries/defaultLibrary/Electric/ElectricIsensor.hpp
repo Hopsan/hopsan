@@ -27,7 +27,7 @@ public:
 
      void configure()
      {
-        mpIn=addReadPort("Pel1","NodeElectric");
+        mpIn=addReadPort("Pel1","NodeElectric", "", Port::NotRequired);
         addOutputVariable("Piout","Current","A",&mpNDout);
      }
 

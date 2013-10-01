@@ -25,6 +25,11 @@
 ******************************
     Version History
 ******************************
+0.6.3
+- Fixed: Pneumatic QmSensor was measuring pressure.
+- Fixed: Pneumatic sensors had wrongly named output signal ports
+
+
 0.6.2
 - Update: Updated to Qt 4.8.5 (Windows)
 

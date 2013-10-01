@@ -21,7 +21,7 @@ class PneumaticPsensor : public ComponentSignal
 {
 private:
      Port *mpPp1;
-     double *mpND_pp1, *mpND_psensor;
+     double *mpPp1_P, *mpOut;
 
 public:
      static Component *Creator()
@@ -31,19 +31,19 @@ public:
 
      void configure()
      {
-        mpPp1=addReadPort("Pp1","NodePneumatic");
-        addOutputVariable("out", "Pressure", "Pa", &mpND_psensor);
+        mpPp1=addReadPort("Pp1","NodePneumatic", "", Port::NotRequired);
+        addOutputVariable("out", "Pressure", "Pa", &mpOut);
      }
 
     void initialize()
      {
-        mpND_pp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::Pressure);
+        mpPp1_P=getSafeNodeDataPtr(mpPp1, NodePneumatic::Pressure);
         simulateOneTimestep();
      }
 
     void simulateOneTimestep()
      {
-        (*mpND_psensor) = (*mpND_pp1);
+        (*mpOut) = (*mpPp1_P);
      }
 };
 #endif // PNEUMATICPSENSOR_HPP_INCLUDED

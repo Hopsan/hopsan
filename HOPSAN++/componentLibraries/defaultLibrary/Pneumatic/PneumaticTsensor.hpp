@@ -21,7 +21,7 @@ class PneumaticTsensor : public ComponentSignal
 {
 private:
      Port *mpPp1;
-     double *mpND_Tp1, *mpND_Tsensor;
+     double *mpPp1_T, *mpOut;
 
 public:
      static Component *Creator()
@@ -31,19 +31,19 @@ public:
 
      void configure()
      {
-        mpPp1=addReadPort("Pp1","NodePneumatic");
-        addOutputVariable("out", "Temperature", "K", &mpND_Tsensor);
+        mpPp1=addReadPort("Pp1","NodePneumatic", "", Port::NotRequired);
+        addOutputVariable("out", "Temperature", "K", &mpOut);
      }
 
     void initialize()
      {
-        mpND_Tp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::Temperature);
+        mpPp1_T=getSafeNodeDataPtr(mpPp1, NodePneumatic::Temperature);
         simulateOneTimestep();
      }
 
     void simulateOneTimestep()
      {
-        (*mpND_Tsensor) = (*mpND_Tp1);
+        (*mpOut) = (*mpPp1_T);
      }
 };
 #endif // PNEUMATICTSENSOR_HPP_INCLUDED

@@ -21,7 +21,7 @@ class PneumaticQmsensor : public ComponentSignal
 {
 private:
      Port *mpPp1;
-     double *mpND_pp1, *mpND_qmsensor;
+     double *mpPp1_Qm, *mpOut;
 
 public:
      static Component *Creator()
@@ -31,19 +31,19 @@ public:
 
      void configure()
      {
-        mpPp1=addReadPort("Pp1","NodePneumatic");
-        addOutputVariable("out", "Flow", "kg/s", &mpND_qmsensor);
+        mpPp1=addReadPort("Pp1","NodePneumatic", "", Port::NotRequired);
+        addOutputVariable("out", "Flow", "kg/s", &mpOut);
      }
 
     void initialize()
      {
-        mpND_pp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::Pressure);
+        mpPp1_Qm=getSafeNodeDataPtr(mpPp1, NodePneumatic::MassFlow);
         simulateOneTimestep();
      }
 
     void simulateOneTimestep()
      {
-        (*mpND_qmsensor) = (*mpND_pp1);
+        (*mpOut) = (*mpPp1_Qm);
      }
 };
 #endif // PNEUMATICQMSENSOR_HPP_INCLUDED

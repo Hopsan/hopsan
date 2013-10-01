@@ -7,7 +7,7 @@
         </icons>
     <ports>
       <port x="0.5" y="1" enabled="true" a="90" name="Pp1" autoplaced="true"/>
-      <port x="0.5" y="0" enabled="true" a="270" name="PdEsensor" autoplaced="true"/>
+      <port x="0.5" y="0" enabled="true" a="270" name="out" autoplaced="true"/>
     </ports>
     <animation flowspeed="100"/>
   </modelobject>

@@ -21,7 +21,7 @@ class PneumaticdEsensor : public ComponentSignal
 {
 private:
      Port *mpPp1;
-     double *mpND_dEp1, *mpND_dEsensor;
+     double *mpPp1_dEp1, *mpOut;
 
 public:
      static Component *Creator()
@@ -31,19 +31,19 @@ public:
 
      void configure()
      {
-        mpPp1=addReadPort("Pp1","NodePneumatic");
-        addOutputVariable("out", "EnergyFlow", "J/s", &mpND_dEsensor);
+        mpPp1=addReadPort("Pp1","NodePneumatic", "", Port::NotRequired);
+        addOutputVariable("out", "EnergyFlow", "J/s", &mpOut);
      }
 
     void initialize()
      {
-        mpND_dEp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::EnergyFlow);
+        mpPp1_dEp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::EnergyFlow);
         simulateOneTimestep();
      }
 
     void simulateOneTimestep()
      {
-        (*mpND_dEsensor) = (*mpND_dEp1);
+        (*mpOut) = (*mpPp1_dEp1);
      }
 };
 #endif // PNEUMATICDESENSOR_HPP_INCLUDED

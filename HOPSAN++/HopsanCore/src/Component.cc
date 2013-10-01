@@ -57,7 +57,7 @@ using namespace hopsan;
 //! @ingroup ComponentAuthorFunctions
 
 // This is a dummy variable
-double dummyDouble;
+double dummyDouble=0;
 
 //! @brief Component base class Constructor
 Component::Component()

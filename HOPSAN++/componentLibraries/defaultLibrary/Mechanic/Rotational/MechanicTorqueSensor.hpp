@@ -49,7 +49,7 @@ namespace hopsan {
 
         void configure()
         {
-            mpP1 = addReadPort("P1", "NodeMechanicRotational");
+            mpP1 = addReadPort("P1", "NodeMechanicRotational", "", Port::NotRequired);
             addOutputVariable("out","Torque","Nm",&mpND_out);
         }
 
