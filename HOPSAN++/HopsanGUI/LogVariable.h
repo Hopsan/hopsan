@@ -94,6 +94,7 @@ public:
     int getLowestGeneration() const;
     int getHighestGeneration() const;
     int getNumGenerations() const;
+    QList<int> getGenerations() const;
 
     SharedVariableDescriptionT getVariableDescription() const;
     const QString &getAliasName() const;

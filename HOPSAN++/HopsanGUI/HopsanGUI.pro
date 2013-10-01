@@ -196,7 +196,8 @@ SOURCES += main.cpp \
     ModelHandler.cpp \
     Widgets/ModelWidget.cpp \
     OptimizationHandler.cpp \
-    Utilities/HighlightingUtilities.cpp
+    Utilities/HighlightingUtilities.cpp \
+    Widgets/DataExplorer.cpp
 
 
 
@@ -276,7 +277,8 @@ HEADERS += MainWindow.h \
     ModelHandler.h \
     Widgets/ModelWidget.h \
     OptimizationHandler.h \
-    Utilities/HighlightingUtilities.h
+    Utilities/HighlightingUtilities.h \
+    Widgets/DataExplorer.h
 
 OTHER_FILES += \
     ../hopsandefaults \

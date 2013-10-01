@@ -56,6 +56,7 @@
 #include "Widgets/UndoWidget.h"
 #include "Widgets/WelcomeWidget.h"
 #include "Widgets/HVCWidget.h"
+#include "Widgets/DataExplorer.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -368,6 +369,11 @@ void MainWindow::initializeWorkspace()
     mpPlotWidget = new PlotTreeWidget(this);
     mpPlotWidget->hide();
 
+    // Create the data explorer widget
+    //! @todo does it need to exist in memory all the time?
+    mpDataExplorer = new DataExplorer(this);
+    mpDataExplorer->hide();
+
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
     {
@@ -555,6 +561,10 @@ void MainWindow::createActions()
     mpOpenHvcWidgetAction = new QAction(tr("&Model Validation"), this);
     mpOpenHvcWidgetAction->setToolTip("Open the HopsanValidationConfiguration Widget");
     connect(mpOpenHvcWidgetAction, SIGNAL(triggered()), this, SLOT(openHVCWidget()));
+
+    mpOpenDataExplorerAction = new QAction(tr("&Data Explorer"), this);
+    mpOpenDataExplorerAction->setToolTip("Open the Data Explorer Widget");
+    connect(mpOpenDataExplorerAction, SIGNAL(triggered()), this, SLOT(openDataExplorerWidget()));
 
     mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     mpCutAction->setShortcut(tr("Ctrl+x"));
@@ -940,6 +950,7 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOptionsAction);
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
     mpToolsMenu->addAction(mpOpenHvcWidgetAction);
+    mpToolsMenu->addAction(mpOpenDataExplorerAction);
 
     mpImportMenu->addAction(mpLoadModelParametersAction);
     mpImportMenu->addSeparator();
@@ -1648,6 +1659,11 @@ void MainWindow::simulateKeyWasPressed()
 void MainWindow::openHVCWidget()
 {
     mpHVCWidget->setVisible(true);
+}
+
+void MainWindow::openDataExplorerWidget()
+{
+    mpDataExplorer->setVisible(true);
 }
 
 

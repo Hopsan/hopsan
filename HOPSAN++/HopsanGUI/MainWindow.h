@@ -53,6 +53,7 @@ class UndoWidget;
 class HVCWidget;
 class ModelHandler;
 class MainWindowLineEdit;
+class DataExplorer;
 
 class MainWindow : public QMainWindow
 {
@@ -102,6 +103,8 @@ public:
     QGridLayout *mpCentralGridLayout;
     HelpDialog *mpHelpDialog;   //Should not be public but accessable from other widgets somehow
     HVCWidget *mpHVCWidget;
+    DataExplorer *mpDataExplorer;
+
 
     //Actions (public because other widgets connect to them)
     QAction *mpNewAction;
@@ -121,6 +124,7 @@ public:
     QAction *mpOpenUndoAction;
     QAction *mpOpenSystemParametersAction;
     QAction *mpOpenHvcWidgetAction;
+    QAction *mpOpenDataExplorerAction;
     QAction *mpDisableUndoAction;
     QAction *mpCutAction;
     QAction *mpCopyAction;
@@ -189,6 +193,7 @@ protected:
 private slots:
     void simulateKeyWasPressed();
     void openHVCWidget();
+    void openDataExplorerWidget();
     void openPlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();

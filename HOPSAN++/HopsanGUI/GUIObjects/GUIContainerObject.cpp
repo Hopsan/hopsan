@@ -60,6 +60,7 @@
 #include "Widgets/QuickNavigationWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
+#include "Widgets/DataExplorer.h"
 
 
 
@@ -146,6 +147,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
     gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
 
     // Update main window widgets with data from this container
+    gpMainWindow->mpDataExplorer->setLogdataHandler(this->mpLogDataHandler);
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->setLogDataHandler(this->getLogDataHandler());
     gpMainWindow->mpSystemParametersWidget->update(this);
     gpMainWindow->mpUndoWidget->refreshList();

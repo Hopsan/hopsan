@@ -876,6 +876,27 @@ QString LogDataHandler::getAliasFromFullName(QString fullName)
     return QString();
 }
 
+//! @todo logdatahandler needs to keep track of the generations the it contains, we should not need to ask for each one every time, this could take a long time
+QList<int> LogDataHandler::getGenerations() const
+{
+    QMap<int, void*> allGens;
+
+    // Ask each data variable what gens it is availible in
+    LogDataMapT::const_iterator it;
+    for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
+    {
+        QList<int> gens = it->data()->getGenerations();
+        QList<int>::iterator it;
+        for (it=gens.begin(); it!=gens.end(); ++it)
+        {
+            allGens.insert(*it, 0);
+        }
+    }
+
+    // Now allGens should contain a unique set of all available generations
+    return allGens.keys();
+}
+
 int LogDataHandler::getLowestGenerationNumber() const
 {
     int min=INT_MAX;
@@ -1025,7 +1046,17 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
     }
 
 //    // Remove generation to keep
-//    mKeepGenerationsList.removeOne(gen);
+    //    mKeepGenerationsList.removeOne(gen);
+}
+
+//! @brief Removes a generation (forced removal)
+void LogDataHandler::removeGeneration(const int gen)
+{
+    LogDataMapT::iterator dit = mLogDataMap.begin();
+    for ( ; dit!=mLogDataMap.end(); ++dit)
+    {
+        dit.value()->removeDataGeneration(gen,true);
+    }
 }
 
 ContainerObject *LogDataHandler::getParentContainerObject()

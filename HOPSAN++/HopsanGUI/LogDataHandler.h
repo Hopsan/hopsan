@@ -79,7 +79,6 @@ public:
     bool hasPlotData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getOnlyVariablesAtGeneration(const int generation);
-    int getLatestGeneration() const;
     QStringList getLogDataVariableNames(QString separator, int generation=-1);
 
     void definePlotAlias(QString fullName);
@@ -89,12 +88,15 @@ public:
     QString getFullNameFromAlias(QString alias);
     QString getAliasFromFullName(QString fullName);
 
+    QList<int> getGenerations() const;
     int getLowestGenerationNumber() const;
     int getHighestGenerationNumber() const;
+    int getLatestGeneration() const; //!< @todo Name is a bit unclear, espicially compared to getHighestGenerationNumber()
     int getNumberOfGenerations() const;
     void limitPlotGenerations();
     void preventGenerationAutoRemoval(const int gen);
     void allowGenerationAutoRemoval(const int gen);
+    void removeGeneration(const int gen);
 
     ContainerObject *getParentContainerObject();
     const QList<QDir> &getCacheDirs() const;

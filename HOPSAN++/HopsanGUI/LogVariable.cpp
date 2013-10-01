@@ -893,6 +893,11 @@ int LogVariableContainer::getNumGenerations() const
     return mDataGenerations.size();
 }
 
+QList<int> LogVariableContainer::getGenerations() const
+{
+    return mDataGenerations.keys();
+}
+
 SharedVariableDescriptionT LogVariableContainer::getVariableDescription() const
 {
     return mVariableDescription;
