@@ -1975,8 +1975,18 @@ bool ContainerObject::isSubObjectSelected()
 
 bool ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
-    mpModelWidget->hasChanged();
-    return getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
+    bool isOk = getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
+    if (isOk)
+    {
+        emit aliasChanged(makeConcatName(compName,portName,varName), alias);
+        mpModelWidget->hasChanged();
+    }
+    else
+    {
+        emit checkMessages();
+    }
+
+    return isOk;
 }
 
 QString ContainerObject::getFullNameFromAlias(const QString alias)

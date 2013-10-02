@@ -269,6 +269,8 @@ signals:
 
     void systemParametersChanged();
 
+    void aliasChanged(const QString &rFullName, const QString &rAlias);
+
 protected:
 
     //Protected methods

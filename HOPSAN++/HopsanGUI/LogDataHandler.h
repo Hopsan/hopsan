@@ -72,11 +72,10 @@ public:
     const SharedLogVariableDataPtrT getTimeVectorPtr(int generation) const;
     QVector<double> getTimeVectorCopy(int generation) const;
     QVector<double> getPlotDataValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
-    QVector<double> getPlotDataValues(const QString fullName, int generation);
+    QVector<double> getPlotDataValues(const QString &rName, int generation);
     SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
-    SharedLogVariableDataPtrT getPlotData(const QString fullName, const int generation);
+    SharedLogVariableDataPtrT getPlotData(const QString &rName, const int generation);
     QVector<SharedLogVariableDataPtrT> getMultipleLogData(const QRegExp &rNameExp, const int generation=-1) const;
-//    SharedLogVariableDataPtrT getPlotDataByAlias(const QString alias, const int generation);
     bool hasPlotData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getOnlyVariablesAtGeneration(const int generation);
@@ -84,7 +83,7 @@ public:
 
     void definePlotAlias(QString fullName);
     bool definePlotAlias(const QString alias, const QString fullName);
-    void undefinePlotAlias(QString alias);
+    void undefinePlotAlias(const QString &rAlias);
 
     QString getFullNameFromAlias(QString alias);
     QString getAliasFromFullName(QString fullName);
@@ -160,6 +159,11 @@ public:
 
     void takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation=-2);
 
+public slots:
+    void registerAlias(const QString &rFullName, const QString &rAlias);
+    void unregisterAlias(const QString &rAlias);
+
+
 signals:
     void newDataAvailable();
     void closePlotsWithOwnedData();
@@ -175,7 +179,6 @@ private:
 
     FavoriteListT mFavoriteVariables;
     QMap<int, SharedMultiDataVectorCacheT> mGenerationCacheMap;
-    //QList<int> mKeepGenerationsList;
 
     int mnPlotCurves;
     int mGenerationNumber;
