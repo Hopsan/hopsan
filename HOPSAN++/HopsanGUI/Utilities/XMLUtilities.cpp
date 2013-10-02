@@ -352,6 +352,18 @@ void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const 
 
 }
 
+//! @brief Special purpose help function for adding a Hopsan specific XML tag containing simulationtime information
+//! @param[in] rDomElement The DOM Element to append to
+//! @param[in] start The starttime
+//! @param[in] step The timestep size
+//! @param[in] stop The stoptime
+void appendLogSettingsTag(QDomElement &rDomElement, const double logStartTime, const unsigned int numLogSamples)
+{
+    QDomElement log = appendDomElement(rDomElement, HMF_SIMULATIONLOGSETTINGS);
+    setQrealAttribute(log, "starttime", logStartTime, 10, 'g');
+    log.setAttribute("numsamples", numLogSamples);
+}
+
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing Object Pose information
 //! @param[in] domElement The DOM Element to parse
 //! @param[out] rX The x coordinate
@@ -629,4 +641,11 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
             parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
         }
     }
+}
+
+
+void parseLogSettingsTag(QDomElement domElement, double &rLogStartTime, int &rNumLogSamples)
+{
+    rLogStartTime = parseAttributeQreal(domElement, "starttime", 0);
+    rNumLogSamples = domElement.attribute("numsamples", "0").toInt();
 }

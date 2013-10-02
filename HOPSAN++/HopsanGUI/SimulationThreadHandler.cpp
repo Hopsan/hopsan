@@ -45,7 +45,7 @@ void SimulationWorkerObject::initSimulateFinalize()
     emit setProgressBarText(tr("Initializing..."));
     emit setProgressBarRange(0,0);
     timer.start();
-    initSuccess = simuHandler.initialize(mStartTime, mStopTime, mnLogSamples, coreSystemAccessVector);
+    initSuccess = simuHandler.initialize(mStartTime, mStopTime, mLogStartTime, mnLogSamples, coreSystemAccessVector);
     emit initDone(initSuccess, timer.elapsed());
 
     if (initSuccess)
@@ -145,11 +145,12 @@ void ProgressBarWorkerObject::abort()
     emit aborted();
 }
 
-void SimulationThreadHandler::setSimulationTimeVariables(const double startTime, const double stopTime, const unsigned int nLogSamples)
+void SimulationThreadHandler::setSimulationTimeVariables(const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
     mStartT = startTime;
     mStopT = stopTime;
     mnLogSamples = nLogSamples;
+    mLogStartTime = logStartTime;
 }
 
 void SimulationThreadHandler::setProgressDilaogBehaviour(bool enabled, bool modal)
@@ -171,7 +172,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
 
     mvpSystems = vpSystems;
 
-    mpSimulationWorkerObject = new SimulationWorkerObject(mvpSystems, mStartT, mStopT, mnLogSamples, noChanges);
+    mpSimulationWorkerObject = new SimulationWorkerObject(mvpSystems, mStartT, mStopT, mLogStartTime, mnLogSamples, noChanges);
     mpSimulationWorkerObject->moveToThread(&mSimulationWorkerThread);
 
     connect(this, SIGNAL(startSimulation()), mpSimulationWorkerObject, SLOT(initSimulateFinalize()), Qt::UniqueConnection);

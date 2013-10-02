@@ -305,7 +305,7 @@ bool ModelWidget::simulate_nonblocking()
     //QVector<SystemContainer*> vec;
     //vec.push_back(mpSystem);
     //mSimulationHandler.initSimulateFinalize( vec, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
-    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->initSimulateFinalize(mpToplevelSystem);
 
     return true;
@@ -322,7 +322,7 @@ bool ModelWidget::simulate_blocking()
 
     if(!mSimulateMutex.tryLock()) return false;
 
-    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
     QVector<SystemContainer*> vec;
     vec.push_back(mpToplevelSystem);

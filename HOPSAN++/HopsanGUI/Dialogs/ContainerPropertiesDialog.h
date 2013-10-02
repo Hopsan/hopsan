@@ -52,7 +52,8 @@ private:
     QLineEdit *mpNameEdit;
     QLineEdit *mpUserIconPath;
     QLineEdit *mpIsoIconPath;
-    QLineEdit *mpNSamplesEdit;
+    QLineEdit *mpNumLogSamplesEdit;
+    QLineEdit *mpLogStartTimeEdit;
     QLineEdit *mpIsoIconScaleEdit;
     QLineEdit *mpUserIconScaleEdit;
     QCheckBox *mpIsoCheckBox;
@@ -77,7 +78,6 @@ private:
     QLabel *mpTimeStepLabel;
     QLineEdit *mpTimeStepEdit;
     QHBoxLayout *mpNSamplesLayout;
-    QLabel *mpNSamplesLabel;
     QHBoxLayout *mpCQSLayout;
     QLabel *mpCQSLabel;
     QLabel *mpCQSTypeLabel;

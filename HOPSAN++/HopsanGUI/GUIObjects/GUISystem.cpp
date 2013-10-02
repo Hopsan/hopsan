@@ -86,6 +86,7 @@ void SystemContainer::commonConstructorCode()
         //Set default values
     mLoadType = "EMBEDED";
     mNumberOfLogSamples = 2048;
+    mLogStartTime = 0;
 
         //Create the object in core, and update name
     if (this->mpParentContainerObject == 0)
@@ -227,18 +228,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
     if (mLoadType != "EXTERNAL" && contents == FullModel)
     {
         appendSimulationTimeTag(rDomElement, mpModelWidget->getStartTime().toDouble(), this->getTimeStep(), mpModelWidget->getStopTime().toDouble(), this->doesInheritTimeStep());
-
-//        //AllDataGenerations::AliasMapT::iterator ita;
-//        QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
-//        AllDataGenerations::AliasMapT aliasMap = getPlotDataPtr()->getPlotAliasMap();
-//        for(ita=aliasMap.begin(); ita!=aliasMap.end(); ++ita)
-//        {
-//            QDomElement aliasElement = appendDomElement(xmlAliases, HMF_ALIAS);
-//            aliasElement.setAttribute("alias", ita.key());
-//            aliasElement.setAttribute("component", ita.value().componentName);
-//            aliasElement.setAttribute("port",ita.value().portName);
-//            aliasElement.setAttribute("data",ita.value().dataName);
-//        }
+        appendLogSettingsTag(rDomElement, getLogStartTime(), getNumberOfLogSamples());
     }
 
     //Save the parameter values for the system
@@ -537,10 +527,10 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
 
     // Save Core related stuff
     this->saveCoreDataToDomElement(xmlSubsystem, contents);
-    if(contents==FullModel)
-    {
-        xmlSubsystem.setAttribute(HMF_LOGSAMPLES, mNumberOfLogSamples);
-    }
+//    if(contents==FullModel)
+//    {
+//        xmlSubsystem.setAttribute(HMF_LOGSAMPLES, mNumberOfLogSamples);
+//    }
 
     if(contents==FullModel)
     {
@@ -663,7 +653,9 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         this->setTimeStep(stepT.toDouble());
         mpCoreSystemAccess->setInheritTimeStep(inheritTs);
 
-        //Load number of log samples
+        // Load number of log samples
+        parseLogSettingsTag(rDomElement.firstChildElement(HMF_SIMULATIONLOGSETTINGS), mLogStartTime, mNumberOfLogSamples);
+        //! @deprecated 20131002 we keep this below for backwards compatibility for a while
         if(rDomElement.hasAttribute(HMF_LOGSAMPLES))
         {
             mNumberOfLogSamples = rDomElement.attribute(HMF_LOGSAMPLES).toInt();
@@ -1617,7 +1609,7 @@ void SystemContainer::loadParameterFile()
 
 
 
-//! Function to set the time step of the current system
+//! @brief Function to set the time step of the current system
 void SystemContainer::setTimeStep(const double timeStep)
 {
     mpCoreSystemAccess->setDesiredTimeStep(timeStep);
@@ -1632,7 +1624,7 @@ void SystemContainer::setVisibleIfSignal(bool visible)
     }
 }
 
-//! Returns the time step value of the current project.
+//! @brief Returns the time step value of the current project.
 double SystemContainer::getTimeStep()
 {
     return mpCoreSystemAccess->getDesiredTimeStep();
@@ -1645,7 +1637,7 @@ bool SystemContainer::doesInheritTimeStep()
 }
 
 
-//! Returns the number of samples value of the current project.
+//! @brief Returns the number of samples value of the current project.
 //! @see setNumberOfLogSamples(double)
 size_t SystemContainer::getNumberOfLogSamples()
 {
@@ -1653,11 +1645,21 @@ size_t SystemContainer::getNumberOfLogSamples()
 }
 
 
-//! Sets the number of samples value for the current project
+//! @brief Sets the number of samples value for the current project
 //! @see getNumberOfLogSamples()
 void SystemContainer::setNumberOfLogSamples(size_t nSamples)
 {
     mNumberOfLogSamples = nSamples;
+}
+
+double SystemContainer::getLogStartTime() const
+{
+    return mLogStartTime;
+}
+
+void SystemContainer::setLogStartTime(const double logStartT)
+{
+    mLogStartTime = logStartT;
 }
 
 

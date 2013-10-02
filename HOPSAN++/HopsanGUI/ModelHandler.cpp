@@ -670,13 +670,14 @@ bool ModelHandler::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
 {
     if(!mModelPtrs.isEmpty())
     {
-        //All systems will use start time, stop time and time step from this system
+        // All systems will use start time, stop time and time step from this system
         SystemContainer *pMainSystem = getCurrentTopLevelSystem();
 
-            //Setup simulation parameters
+        // Setup simulation parameters
         double startTime = getCurrentModel()->getStartTime().toDouble();
         double stopTime = getCurrentModel()->getStopTime().toDouble();
         size_t nSamples = pMainSystem->getNumberOfLogSamples();
+        double logStartT = pMainSystem->getLogStartTime();
 
         // Ask core to initialize simulation
         QVector<SystemContainer*> systemsVector;
@@ -685,7 +686,7 @@ bool ModelHandler::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
             systemsVector.append(getTopLevelSystem(i));
         }
 
-        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
         mpSimulationThreadHandler->initSimulateFinalize(systemsVector, modelsHaveNotChanged);
 
         //! @todo fix return code (maybe remove)
@@ -706,6 +707,7 @@ bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
         double startTime = getCurrentModel()->getStartTime().toDouble();
         double stopTime = getCurrentModel()->getStopTime().toDouble();
         size_t nSamples = pMainSystem->getNumberOfLogSamples();
+        double logStartT = pMainSystem->getLogStartTime();
 
         // Ask core to initialize simulation
         QVector<SystemContainer*> systemsVector;
@@ -714,7 +716,7 @@ bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
             systemsVector.append(getTopLevelSystem(i));
         }
 
-        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
         mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, modelsHaveNotChanged);
 

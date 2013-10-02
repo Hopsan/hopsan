@@ -216,12 +216,13 @@ namespace hopsan {
         double getDesiredTimeStep() const;
 
         // Log functions
-        //void logTimeAndNodes(const double time);
         void logTimeAndNodes(const size_t simStep);
         void enableLog();
         void disableLog();
         std::vector<double>* getLogTimeVector();
         void setNumLogSamples(const size_t nLogSamples);
+        double getLogStartTime() const;
+        void setLogStartTime(const double logStartTime);
         size_t getNumLogSamples() const;
         size_t getNumActuallyLoggedSamples() const;
 
@@ -248,12 +249,12 @@ namespace hopsan {
         // Time specific functions
         void setTimestep(const double timestep);
         void adjustTimestep(std::vector<Component*> componentPtrs);
-        void setupLogTimesteps(const double startT, const double stopT, const double Ts, const size_t nLogSamples);
 
         // log specific functions
-        void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
-        void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
-        void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
+        //! @todo restore these in some way
+//        void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
+//        void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
+        void setupLogSlotsAndTs(const double simStartT, const double simStopT, const double simTs);
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
 
         // Add and Remove subcomponent ptrs from storage vectors
@@ -304,7 +305,7 @@ namespace hopsan {
 
         // Log related variables
         size_t mRequestedNumLogSamples, mnLogSlots, mLogCtr;
-        double mLogTimeDt;//, mLastLogTime;
+        double mRequestedLogStartTime, mLogTimeDt;
         bool mEnableLogData;
         std::vector<double> mTimeStorage;
 

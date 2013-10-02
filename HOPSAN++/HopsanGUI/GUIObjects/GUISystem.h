@@ -93,6 +93,8 @@ public:
 
     size_t getNumberOfLogSamples();
     void setNumberOfLogSamples(size_t nSamples);
+    double getLogStartTime() const;
+    void setLogStartTime(const double logStartT);
 
     QString getTypeName() const;
     void setName(QString newName);
@@ -145,6 +147,7 @@ private:
     void commonConstructorCode();
 
     int mNumberOfLogSamples;
+    double mLogStartTime;
 
     QString mLoadType;
     CoreSystemAccess *mpCoreSystemAccess;

@@ -222,20 +222,23 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpSettingsLayout->addWidget(mpTimeStepEdit, 5, 1, 1, 1);
 
             //Log sampels
-        mpNSamplesLabel = new QLabel(tr("Log Samples:"), this);
-        mpNSamplesLabel->setEnabled(true);
-        QString NSamplesText;
-        NSamplesText.setNum(mpContainerObject->getNumberOfLogSamples()); //!< @todo what if group
-        mpNSamplesEdit = new QLineEdit(this);
-        mpNSamplesEdit->setValidator(new QIntValidator(0, 2000000000, this));
-        mpNSamplesEdit->setText(NSamplesText);
-        mpSettingsLayout->addWidget(mpNSamplesLabel, 6, 0);
-        mpSettingsLayout->addWidget(mpNSamplesEdit, 6, 1);
+        mpNumLogSamplesEdit = new QLineEdit(this);
+        mpNumLogSamplesEdit->setValidator(new QIntValidator(0, 2000000000, this));
+        mpNumLogSamplesEdit->setText(QString("%1").arg(mpContainerObject->getNumberOfLogSamples())); //!< @todo what if group
+        mpSettingsLayout->addWidget(new QLabel(tr("Log Samples:"), this), 6, 0);
+        mpSettingsLayout->addWidget(mpNumLogSamplesEdit, 6, 1);
+
+        // Log start time
+        mpLogStartTimeEdit = new QLineEdit(this);
+        mpLogStartTimeEdit->setValidator(new QDoubleValidator(this));
+        mpLogStartTimeEdit->setText(QString("%1").arg(mpContainerObject->getLogStartTime())); //!< @todo what if group
+        mpSettingsLayout->addWidget(new QLabel(tr("Log Start:"), this), 7, 0);
+        mpSettingsLayout->addWidget(mpLogStartTimeEdit, 7, 1);
 
         QPushButton *pClearLogDataButton = new QPushButton("Clear All Log Data", this);
         pClearLogDataButton->setEnabled(!mpContainerObject->getLogDataHandler()->isEmpty());
         connect(pClearLogDataButton, SIGNAL(clicked()), this, SLOT(clearLogData()));
-        mpSettingsLayout->addWidget(pClearLogDataButton, 7,0);
+        mpSettingsLayout->addWidget(pClearLogDataButton, 8,0);
 
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
 
@@ -449,7 +452,8 @@ void ContainerPropertiesDialog::setValues()
     {
         mpContainerObject->getCoreSystemAccessPtr()->setInheritTimeStep(mpTimeStepCheckBox->isChecked());
         mpContainerObject->getCoreSystemAccessPtr()->setDesiredTimeStep(mpTimeStepEdit->text().toDouble());
-        mpContainerObject->setNumberOfLogSamples(mpNSamplesEdit->text().toInt());
+        mpContainerObject->setNumberOfLogSamples(mpNumLogSamplesEdit->text().toInt());
+        mpContainerObject->setLogStartTime(mpLogStartTimeEdit->text().toDouble());
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }
 

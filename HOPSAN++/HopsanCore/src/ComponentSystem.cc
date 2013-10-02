@@ -264,6 +264,7 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mInheritTimestep = true;
     mKeepStartValues = false;
     mRequestedNumLogSamples = 0; //This has to be 0 since we want loging to be disabled by default
+    mRequestedLogStartTime = 0;
 #ifdef USETBB
     mpStopMutex = new tbb::mutex();
 #else
@@ -302,6 +303,16 @@ double ComponentSystem::getDesiredTimeStep() const
 void ComponentSystem::setNumLogSamples(const size_t nLogSamples)
 {
     mRequestedNumLogSamples = nLogSamples;
+}
+
+double ComponentSystem::getLogStartTime() const
+{
+    return mRequestedLogStartTime;
+}
+
+void ComponentSystem::setLogStartTime(const double logStartTime)
+{
+    mRequestedLogStartTime = logStartTime;
 }
 
 //! @brief Returns the desired number of log samples
@@ -2128,36 +2139,65 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
     }
 }
 
-void ComponentSystem::setupLogTimesteps(const double startT, const double stopT, const double Ts, const size_t nLogSamples)
+size_t limitNumLogSlotsToLogOrSimTimeInterval(const double simStartT, const double simStopT, const double simTs, const double logStartT, const size_t nRequestedLogSamples)
 {
-    // We do not want to log negative time
-    const double logStartT = max(startT,0.0);
-
-    // Calc logDt and
-    mLogTimeDt = (stopT-logStartT)/double(nLogSamples-1);
-
-    // Figure out at which samples logging should happen
-    double logT=logStartT;
-    double simT=startT;
-
-    mLogTheseTimeSteps.clear();
-
-    if (nLogSamples > 0)
+    double startT = max(simStartT, logStartT);
+    // Saturate startT to stopT to avoid underflow in size_t if somone enters a logT that is higher the startT
+    if (startT > simStopT)
     {
-        mLogTheseTimeSteps.reserve(nLogSamples);
+        startT = simStopT;
+    }
+
+    // Make sure we dont try to log more samples than we will simulate
+    //! @todo may need som rounding tricks here
+    if ( ((simStopT - startT) / simTs + 1) < nRequestedLogSamples )
+    {
+        return size_t( (simStopT - startT) / simTs + 1);
+
+    }
+    else
+    {
+        return nRequestedLogSamples;
+    }
+}
+
+void ComponentSystem::setupLogSlotsAndTs(const double simStartT, const double simStopT, const double simTs)
+{
+    mnLogSlots = limitNumLogSlotsToLogOrSimTimeInterval(simStartT, simStopT, simTs, mRequestedLogStartTime, mRequestedNumLogSamples);
+    if (mnLogSlots != mRequestedNumLogSamples)
+    {
+        addWarningMessage("Requested nLogSamples: "+to_hstring(mRequestedNumLogSamples)+" but this is more than the total number of simulation samples, limiting to: "+to_hstring(mnLogSlots), "toofewsamples");
+    }
+
+    if (mnLogSlots > 0)
+    {
+        enableLog();
+
+        // We do not want to log before simStartT
+        const double logStartT = max(simStartT,mRequestedLogStartTime);
+
+        // Calc logDt and
+        mLogTimeDt = (simStopT-logStartT)/double(mnLogSlots-1);
+
+        // Figure out at which samples logging should happen
+        double logT=logStartT;
+        double simT=simStartT;
+
+        mLogTheseTimeSteps.clear();
+        mLogTheseTimeSteps.reserve(mnLogSlots);
 
         // Figure out the first simulation step to log (the one where simT >= logT)
-        size_t n = (logT-simT)/double(Ts)+0.5;
+        size_t n = (logT-simT)/double(simTs)+0.5;
         mLogTheseTimeSteps.push_back(n);
         // Fastforward simT
-        simT += double(n)*Ts;
+        simT += double(n)*simTs;
 
         // Now Calculate which additional simulation steps should be logged
-        while (mLogTheseTimeSteps.size() < nLogSamples)
+        while (mLogTheseTimeSteps.size() < mnLogSlots)
         {
             logT += mLogTimeDt;
-            n = size_t((logT-simT)/Ts+0.5);
-            simT += double(n)*Ts;
+            n = size_t((logT-simT)/simTs+0.5);
+            simT += double(n)*simTs;
 
             //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
             mLogTheseTimeSteps.push_back(mLogTheseTimeSteps.back() + n);
@@ -2169,20 +2209,21 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
             cout << "Error: mnLogSlots: " << mnLogSlots << " mLogTheseTimeSteps.size(): " << mLogTheseTimeSteps.size() << endl;
         }
 
-//        //cout << "n: " << n << endl;
-//        cout << "mNumSimulationSteps: " << size_t((stopT-logStartT)/Ts+0.5) << endl;
-//        cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
-//        cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
+        //        //cout << "n: " << n << endl;
+        //        cout << "mNumSimulationSteps: " << size_t((stopT-logStartT)/Ts+0.5) << endl;
+        //        cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
+        //        cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
+
+        //    for (int i=0; i<mTimeStepsToLog.size(); ++i)
+        //    {
+        //        cout << mTimeStepsToLog[i] << " ";
+        //    }
+        //    cout << endl;
     }
     else
     {
-        mEnableLogData = false;
+        disableLog();
     }
-//    for (int i=0; i<mTimeStepsToLog.size(); ++i)
-//    {
-//        cout << mTimeStepsToLog[i] << " ";
-//    }
-//    cout << endl;
 }
 
 //! @brief Determines if all subnodes and subsystems subnodes should log data, Turn ALL ON or OFF
@@ -2467,10 +2508,13 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     }
 
     //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
-    this->setLogSettingsNSamples(mRequestedNumLogSamples, startT, stopT, mTimestep); //! @todo make it possible to use other logtimestep methods
-    this->setupLogTimesteps(startT, stopT, mTimestep, mnLogSlots);
+    //this->setLogSettingsNSamples(mRequestedNumLogSamples, startT, stopT, mTimestep);
 
-    // preAllocate local logspace
+    // This will caluclate the mnLogSlots and other log related variables
+    this->setupLogSlotsAndTs(startT, stopT, mTimestep);
+    //! @todo make it possible to use other logtimestep methods then nLogSamples
+
+    // preAllocate local logspace based on necessary number of logslots
     this->preAllocateLogSpace(startT, stopT, mnLogSlots);
 
     // If we failed allocation then abort
@@ -3611,79 +3655,47 @@ void ComponentSystem::finalize()
     //loadStartValuesFromSimulation();
 }
 
-//! @brief This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
-//! @param [in] nSamples The desired number of log data samples, <=0 (disableLog)
-void ComponentSystem::setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime)
-{
-    if (nSamples > 0)
-    {
-        enableLog();
-
-        start = max(start, 0.0);  // Do not log data for negative time
-
-        // Make sure we dont try to log more samples than we will simulate
-        //! @todo may need som rounding tricks here
-        if ( ((stop - start) / sampletime + 1) < nSamples )
-        {
-            mnLogSlots = size_t((stop - start) / sampletime + 1);
-            addWarningMessage("Requested nLogSamples: "+to_hstring(nSamples)+" but this is more than the total simulation samples, limiting to: "+to_hstring(mnLogSlots), "toofewsamples");
-        }
-        else
-        {
-            mnLogSlots = nSamples;
-        }
-
-        //mLogTimeDt = (stop - start) / double(mnLogSlots); //! @todo remove this
-        //mLastLogTime = start-mLogTimeDt; //! @todo remove this
-    }
-    else
-    {
-        disableLog();
-    }
-}
+////! @brief This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time
+////! @param [in] factor The timestep skip factor, minimum 1.0, but if < 0 then disableLog
+//void ComponentSystem::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
+//{
+//    if (factor > 0)
+//    {
+//        enableLog();
+//        //! @todo maybe only use integer factors
+//        //make sure factor is not less then 1.0
+//        factor = max(1.0, factor);
+//        mLogTimeDt = sampletime * factor;
+//        //mLastLogTime = start-mLogTimeDt;
+//        mnLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
+//        //! @todo FIXA /Peter
+//    }
+//    else
+//    {
+//        disableLog();
+//    }
+//}
 
 
-//! @brief This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time
-//! @param [in] factor The timestep skip factor, minimum 1.0, but if < 0 then disableLog
-void ComponentSystem::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
-{
-    if (factor > 0)
-    {
-        enableLog();
-        //! @todo maybe only use integer factors
-        //make sure factor is not less then 1.0
-        factor = max(1.0, factor);
-        mLogTimeDt = sampletime * factor;
-        //mLastLogTime = start-mLogTimeDt;
-        mnLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
-        //! @todo FIXA /Peter
-    }
-    else
-    {
-        disableLog();
-    }
-}
-
-
-//! @brief This function will set the number of log data slots for preallocation and logDt
-//! @param [in] log_dt The desired log timestep, if log_dt < 0 then disableLog
-void ComponentSystem::setLogSettingsSampleTime(double log_dt, double start, double stop,  double sampletime)
-{
-    if (log_dt > 0)
-    {
-        enableLog();
-        // Make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc)
-        log_dt = max(sampletime,log_dt);
-        mLogTimeDt = log_dt;
-        //mLastLogTime = start-mLogTimeDt;
-        mnLogSlots = size_t((stop-start)/log_dt+0.5); //Round to nearest
-        //! @todo FIXA /Peter
-    }
-    else
-    {
-        disableLog();
-    }
-}
+////! @brief This function will set the number of log data slots for preallocation and logDt
+////! @param [in] log_dt The desired log timestep, if log_dt < 0 then disableLog
+//void ComponentSystem::setLogSettingsSampleTime(double log_dt, double start, double stop,  double sampletime)
+//{
+//    if (log_dt > 0)
+//    {
+//        enableLog();
+//        // Make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc)
+//        log_dt = max(sampletime,log_dt);
+//        mLogTimeDt = log_dt;
+//        //mLastLogTime = start-mLogTimeDt;
+//        mnLogSlots = size_t((stop-start)/log_dt+0.5); //Round to nearest
+//        //! @todo FIXA /Peter
+//    }
+//    else
+//    {
+//        disableLog();
+//    }
+//}
 
 //! @brief Enable node data logging
 void ComponentSystem::enableLog()
@@ -3697,9 +3709,8 @@ void ComponentSystem::disableLog()
 {
     mEnableLogData = false;
 
-    // If log dissabled then free memory if something has been previously allocated
+    // If log disabled, then free memmory if something has been previously allocated
     mTimeStorage.clear();
-    //mDataStorage.clear();
     mLogTheseTimeSteps.clear();
 
     mLogTimeDt = -1.0;

@@ -41,12 +41,13 @@ private:
     QVector<SystemContainer*> mvpSystems;
     double mStartTime;
     double mStopTime;
+    double mLogStartTime;
     unsigned int mnLogSamples;
     bool mNoChanges;
 
 public:
-    SimulationWorkerObject(QVector<SystemContainer*> vpSystems, const double startTime, const double stopTime, const unsigned int nLogSamples, const bool noChanges)
-        : mvpSystems(vpSystems), mStartTime(startTime), mStopTime(stopTime), mnLogSamples(nLogSamples), mNoChanges(noChanges){}
+    SimulationWorkerObject(QVector<SystemContainer*> vpSystems, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples, const bool noChanges)
+        : mvpSystems(vpSystems), mStartTime(startTime), mStopTime(stopTime), mLogStartTime(logStartTime), mnLogSamples(nLogSamples), mNoChanges(noChanges){}
     void connectProgressDialog(QProgressDialog *pProgressDialog);
 
 public slots:
@@ -101,7 +102,7 @@ private:
     QThread mSimulationWorkerThread;
     QThread mProgressBarWorkerThread;
 
-    double mStartT, mStopT;
+    double mStartT, mStopT, mLogStartTime;
     int mnLogSamples;
 
     bool mInitSuccess, mSimuSucess, mFiniSucess, mAborted, mProgressBarEnabled, mProgressBarModal;
@@ -116,7 +117,7 @@ protected slots:
 public:
     SimulationThreadHandler() : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true){}
 
-    void setSimulationTimeVariables(const double startTime, const double stopTime, const unsigned int nLogSamples);
+    void setSimulationTimeVariables(const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     void setProgressDilaogBehaviour(bool enabled, bool modal);
     void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
     void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);

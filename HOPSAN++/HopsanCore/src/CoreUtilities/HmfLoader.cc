@@ -356,7 +356,11 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     pSystem->setDesiredTimestep(Ts);
     pSystem->setInheritTimestep(readBoolAttribute(pSimtimeNode,"inherit_timestep",true));
 
-    //Load number of log samples
+    // Load number of log samples
+    rapidxml::xml_node<> *pLogSettingsNode = pSysNode->first_node("simulationlogsettings");
+    pSystem->setLogStartTime(readDoubleAttribute(pLogSettingsNode, "starttime", pSystem->getLogStartTime()));
+    pSystem->setNumLogSamples(readIntAttribute(pLogSettingsNode, "numsamples", pSystem->getNumLogSamples()));
+    //! @deprecated 20131002 keep this old way of loading for a whild for backwards compatibility
     if(hasAttribute(pSysNode,  "logsamples"))
     {
         pSystem->setNumLogSamples(readIntAttribute(pSysNode, "logsamples", pSystem->getNumLogSamples()));

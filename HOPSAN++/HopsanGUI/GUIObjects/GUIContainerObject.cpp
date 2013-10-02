@@ -2034,6 +2034,18 @@ void ContainerObject::setNumberOfLogSamples(size_t /*nSamples*/)
     assert(false);
 }
 
+double ContainerObject::getLogStartTime() const
+{
+    //Needs to be overloaded
+    assert(false);
+}
+
+void ContainerObject::setLogStartTime(const double logStartT)
+{
+    //Needs to be overloaded
+    assert(false);
+}
+
 
 void ContainerObject::setModelInfo(const QString &author, const QString &email, const QString &affiliation, const QString &description)
 {

@@ -279,20 +279,22 @@ void CoreMessagesAccess::getMessage(QString &rMessage, QString &rType, QString &
     rType = type.c_str();
 }
 
-bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess)
+bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const double logStartTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess)
 {
     //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
     pCoreSystemAccess->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
+    pCoreSystemAccess->getCoreSystemPtr()->setLogStartTime(logStartTime);
     return gHopsanCore.getSimulationHandler()->initializeSystem(startTime, stopTime, pCoreSystemAccess->getCoreSystemPtr());
 }
 
-bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess)
+bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const double logStartTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess)
 {
     std::vector<hopsan::ComponentSystem*> coreSystems;
     for (int i=0; i<rvCoreSystemAccess.size(); ++i)
     {
         //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
         rvCoreSystemAccess[i]->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
+        rvCoreSystemAccess[i]->getCoreSystemPtr()->setLogStartTime(logStartTime);
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
     return gHopsanCore.getSimulationHandler()->initializeSystem(startTime, stopTime, coreSystems);

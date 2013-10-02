@@ -60,11 +60,13 @@ void appendPoseTag(QDomElement &rDomElement, const qreal x, const qreal y, const
 void appendCoordinateTag(QDomElement &rDomElement, const qreal x, const qreal y, const int precision=20);
 void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal zoom);
 void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop, const bool inheritTs);
+void appendLogSettingsTag(QDomElement &rDomElement, const double logStartTime, const unsigned int numLogSamples);
 
 void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, bool &rFlipped);
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
 void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
 void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rStep, QString &rStop, bool &rInheritTs);
+void parseLogSettingsTag(QDomElement domElement, double &rLogStartTime, int &rNumLogSamples);
 
 bool parseAttributeBool(const QDomElement domElement, const QString attributeName, const bool defaultValue);
 qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue);
@@ -159,6 +161,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
 #define HMF_SIMULATIONTIMETAG "simulationtime"
+#define HMF_SIMULATIONLOGSETTINGS "simulationlogsettings"
 #define HMF_SCRIPTFILETAG "scriptfile"
 
 #define HMF_UNDO "hopsanundo"

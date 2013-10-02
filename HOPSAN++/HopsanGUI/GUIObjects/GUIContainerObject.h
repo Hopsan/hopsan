@@ -134,6 +134,8 @@ public:
     //These (overloaded versions) are used in containerPropertiesDialog by systems
     virtual size_t getNumberOfLogSamples();
     virtual void setNumberOfLogSamples(size_t nSamples);
+    virtual double getLogStartTime() const;
+    virtual void setLogStartTime(const double logStartT);
 
     //Model info
     void setModelInfo(const QString &author, const QString &email, const QString &affiliation, const QString &description);
