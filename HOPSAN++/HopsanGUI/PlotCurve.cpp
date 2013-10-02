@@ -368,7 +368,8 @@ void PlotCurve::commonConstructorCode(int axisY,
                                       HopsanPlotIDEnumT plotID,
                                       HopsanPlotCurveTypeEnumT curveType)
 {
-    mCustomAdditionalCurveScale = 1.0;
+    mLocalAdditionalCurveScale = 1.0;
+    mLocalAdditionalCurveOffset = 0.0;
     mCustomCurveDataUnitScale = 1.0;
     mpCurveSymbol = 0;
     mCurveSymbolSize = 8;
@@ -662,13 +663,17 @@ void PlotCurve::setTimePlotScalingAndOffset(double scale, double offset)
     mpData->setTimePlotScaleAndOffset(scale, offset);
 }
 
-void PlotCurve::setValuePlotScalingAndOffset(double scale, double offset)
+void PlotCurve::setLocalCurvePlotScaleAndOffset(const double scale, const double offset)
 {
-    //mpData->setPlotScaleAndOffset(scale, offset);
-    mCustomAdditionalCurveScale = scale;
+    mLocalAdditionalCurveScale = scale;
+    mLocalAdditionalCurveOffset = offset;
+    updateCurve();
+}
+
+void PlotCurve::setDataPlotOffset(const double offset)
+{
     mpData->setPlotOffset(offset);
-    //! @todo the dataChanged signal is emitted inside setPlotOffset, but this is strange since it sets teh data ofset instead of teh local curve needs fixing by /Peter
-    // offset should be local and update should be called locally
+    //The dataChanged signal is emitted inside setPlotOffset
 }
 
 
@@ -1023,57 +1028,6 @@ void PlotCurve::openScaleDialog()
     QDialog *pScaleDialog = new QDialog(mpParentPlotTab->mpParentPlotWindow);
     pScaleDialog->setWindowTitle("Change data plot-scale and plot-offsets");
 
-//    QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
-
-//    //! @todo this should not be handled here, it should be the same as custom units for variables such as pressure and similar
-//    mpTimeScaleComboBox = new QComboBox(pScaleDialog);
-//    mpTimeScaleComboBox->addItem("1 (s)");
-//    mpTimeScaleComboBox->addItem("1e3 (ms)");
-//    mpTimeScaleComboBox->addItem("1e6 ("+QObject::trUtf8("μ")+"s)");
-//    mpTimeScaleComboBox->addItem("1e9 (ns)");
-//    if (mpData->getSharedTimePointer())
-//    {
-//        const QString &scale = mpData->getSharedTimePointer()->getCustomUnitScale().mScale;
-//        if (scale == "1")
-//        {
-//            mpTimeScaleComboBox->setCurrentIndex(0);
-//        }
-//        else if (scale == "1e3")
-//        {
-//            mpTimeScaleComboBox->setCurrentIndex(1);
-//        }
-//        else if (scale == "1e6")
-//        {
-//            mpTimeScaleComboBox->setCurrentIndex(2);
-//        }
-//        else if (scale == "1e9")
-//        {
-//            mpTimeScaleComboBox->setCurrentIndex(3);
-//        }
-//    }
-//    else
-//    {
-//        mpTimeScaleComboBox->setCurrentIndex(0);
-//        mpTimeScaleComboBox->setEnabled(false);
-//    }
-
-
-//    QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
-//    mpTimeOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
-//    mpTimeOffsetSpinBox->setDecimals(10);
-//    mpTimeOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
-//    mpTimeOffsetSpinBox->setSingleStep(0.1);
-//    if (mpData->getSharedTimePointer())
-//    {
-//        mpTimeOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
-//    }
-//    else
-//    {
-//        mpTimeOffsetSpinBox->setValue(0);
-//        mpTimeOffsetSpinBox->setEnabled(false);
-//    }
-
-    QLabel *pYPlotScaleLabel = new QLabel("Data Plot Scale: ", pScaleDialog);
     QLabel *pYPlotScale = new QLabel(pScaleDialog);
     QLabel *pYPlotScaleUnit = new QLabel(pScaleDialog);
     if (mpData)
@@ -1088,57 +1042,60 @@ void PlotCurve::openScaleDialog()
         pYPlotScaleUnit->setEnabled(false);
     }
 
-    QLabel *pCurveUnitScaleLabel = new QLabel("Curve Unit Scale: ", pScaleDialog);
+    mpDataPlotOffsetLineEdit = new QLineEdit(pScaleDialog);
+    mpDataPlotOffsetLineEdit->setValidator(new QDoubleValidator(mpDataPlotOffsetLineEdit));
+    mpDataPlotOffsetLineEdit->setText(QString("%1").arg(mpData->getPlotOffset()));
+
     QLabel *pCurveUnitScale = new QLabel(pScaleDialog);
     QLabel *pCurveUnitScaleUnit = new QLabel(pScaleDialog);
     pCurveUnitScale->setText(QString("%1").arg(mCustomCurveDataUnitScale));
     pCurveUnitScaleUnit->setText(mCustomCurveDataUnit);
 
-    QLabel *pYScaleLabel = new QLabel("Custom Curve Scale: ", pScaleDialog);
-    mpYCustomScaleLineEdit = new QLineEdit(pScaleDialog);
-    mpYCustomScaleLineEdit->setValidator(new QDoubleValidator(mpYCustomScaleLineEdit));
-    mpYCustomScaleLineEdit->setText(QString("%1").arg(mCustomAdditionalCurveScale));
+    mpLocalCurveScaleLineEdit = new QLineEdit(pScaleDialog);
+    mpLocalCurveScaleLineEdit->setValidator(new QDoubleValidator(mpLocalCurveScaleLineEdit));
+    mpLocalCurveScaleLineEdit->setText(QString("%1").arg(mLocalAdditionalCurveScale));
 
-    QLabel *pYOffsetLabel = new QLabel("Data Offset: ", pScaleDialog);
-    mpYCustomOffsetLineEdit = new QLineEdit(pScaleDialog);
-    mpYCustomOffsetLineEdit->setValidator(new QDoubleValidator(mpYCustomOffsetLineEdit));
-    mpYCustomOffsetLineEdit->setText(QString("%1").arg(mpData->getPlotOffset()));
+    mpLocalCurveOffsetLineEdit = new QLineEdit(pScaleDialog);
+    mpLocalCurveOffsetLineEdit->setValidator(new QDoubleValidator(mpLocalCurveOffsetLineEdit));
+    mpLocalCurveOffsetLineEdit->setText(QString("%1").arg(mLocalAdditionalCurveOffset));
+
 
     QPushButton *pDoneButton = new QPushButton("Done", pScaleDialog);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout(pScaleDialog);
-//    pDialogLayout->addWidget(pXScaleLabel,0,0);
-//    pDialogLayout->addWidget(mpTimeScaleComboBox,0,1);
-//    pDialogLayout->addWidget(pXOffsetLabel,1,0);
-//    pDialogLayout->addWidget(mpTimeOffsetSpinBox,1,1);
-    pDialogLayout->addWidget(pYPlotScaleLabel,0,0);
-    pDialogLayout->addWidget(pYPlotScale,0,1);
-    pDialogLayout->addWidget(pYPlotScaleUnit,0,2);
-    pDialogLayout->addWidget(pCurveUnitScaleLabel,1,0);
-    pDialogLayout->addWidget(pCurveUnitScale,1,1);
-    pDialogLayout->addWidget(pCurveUnitScaleUnit,1,2);
-    pDialogLayout->addWidget(pYScaleLabel,2,0);
-    pDialogLayout->addWidget(mpYCustomScaleLineEdit,2,1);
-    pDialogLayout->addWidget(pYOffsetLabel,3,0);
-    pDialogLayout->addWidget(mpYCustomOffsetLineEdit,3,1);
-    pDialogLayout->addWidget(pButtonBox,4,0,1,2);
+    pDialogLayout->addWidget(new QLabel("Affects all curves with data:", pScaleDialog),0,0,1,2,Qt::AlignCenter);
+    pDialogLayout->addWidget(new QLabel("Data Plot Scale: ", pScaleDialog),     1,0);
+    pDialogLayout->addWidget(pYPlotScale,                                       1,1);
+    pDialogLayout->addWidget(pYPlotScaleUnit,                                   1,2);
+    pDialogLayout->addWidget(new QLabel("Data Plot Offset: ", pScaleDialog),    2,0);
+    pDialogLayout->addWidget(mpDataPlotOffsetLineEdit,                          2,1);
+    pDialogLayout->addWidget(new QLabel("Affects only this curve:", pScaleDialog),3,0,1,2,Qt::AlignCenter);
+    pDialogLayout->addWidget(new QLabel("Curve Unit Scale: ", pScaleDialog),    4,0);
+    pDialogLayout->addWidget(pCurveUnitScale,                                   4,1);
+    pDialogLayout->addWidget(pCurveUnitScaleUnit,                               5,2);
+    pDialogLayout->addWidget(new QLabel("Local Curve Scale: ", pScaleDialog),   5,0);
+    pDialogLayout->addWidget(mpLocalCurveScaleLineEdit,                         5,1);
+    pDialogLayout->addWidget(new QLabel("Local Curve Offset: ", pScaleDialog),  6,0);
+    pDialogLayout->addWidget(mpLocalCurveOffsetLineEdit,                        6,1);
+
+    pDialogLayout->addWidget(pButtonBox,7,0,1,2);
     pScaleDialog->setLayout(pDialogLayout);
 
 
     connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
-//    connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateTimePlotScaleFromDialog()));
-//    connect(mpTimeOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
-    connect(mpYCustomScaleLineEdit, SIGNAL(textChanged(QString)), SLOT(updateValuePlotScaleFromDialog()));
-    connect(mpYCustomOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(updateValuePlotScaleFromDialog()));
+    connect(mpLocalCurveScaleLineEdit, SIGNAL(textChanged(QString)), SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
+    connect(mpLocalCurveOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
+    connect(mpDataPlotOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(updateDataPlotOffsetFromDialog()));
 
     pScaleDialog->exec();
     //! @todo is the dialog ever deleted ?
 
     // Disconnect again to avoid triggering value update the next time the dialog is built
-    disconnect(mpYCustomScaleLineEdit, 0, 0, 0);
-    disconnect(mpYCustomOffsetLineEdit, 0, 0, 0);
+    disconnect(mpLocalCurveScaleLineEdit, 0, 0, 0);
+    disconnect(mpLocalCurveOffsetLineEdit, 0, 0, 0);
+    disconnect(mpDataPlotOffsetLineEdit, 0, 0, 0);
 }
 
 
@@ -1165,9 +1122,14 @@ void PlotCurve::updateTimePlotScaleFromDialog()
     mpParentPlotTab->mpQwtPlots[FirstPlot]->setAxisTitle(QwtPlot::xBottom, "Time ["+mpTimeScaleComboBox->currentText().split(" ")[1].remove("(").remove(")")+"] ");     //!< @todo Not so nice fix... /Robert
 }
 
-void PlotCurve::updateValuePlotScaleFromDialog()
+void PlotCurve::updateLocalPlotScaleAndOffsetFromDialog()
 {
-    setValuePlotScalingAndOffset(mpYCustomScaleLineEdit->text().toDouble(), mpYCustomOffsetLineEdit->text().toDouble());
+    setLocalCurvePlotScaleAndOffset(mpLocalCurveScaleLineEdit->text().toDouble(), mpLocalCurveOffsetLineEdit->text().toDouble());
+}
+
+void PlotCurve::updateDataPlotOffsetFromDialog()
+{
+    setDataPlotOffset(mpDataPlotOffsetLineEdit->text().toDouble());
 }
 
 
@@ -1231,7 +1193,8 @@ void PlotCurve::updateCurve()
 
     if(mpCustomXdata.isNull())
     {
-        const double yScale = mCustomAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+        const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+        const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
         if (mpData->getSharedTimePointer())
@@ -1243,7 +1206,7 @@ void PlotCurve::updateCurve()
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = tempX[i]*timeScale + timeOffset;
-                tempY[i] = tempY[i]*yScale + dataOffset;
+                tempY[i] = tempY[i]*yScale + yOffset;
             }
         }
         else
@@ -1253,13 +1216,14 @@ void PlotCurve::updateCurve()
             for (int i=0; i< tempX.size(); ++i)
             {
                 tempX[i] = i;
-                tempY[i] = tempY[i]*yScale + dataOffset;
+                tempY[i] = tempY[i]*yScale + yOffset;
             }
         }
     }
     else
     {
-        const double yScale = mCustomAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+        const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+        const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
         // Use special X-data
         // We copy here, it should be faster then peek (at least when data is cached on disc)
@@ -1269,7 +1233,7 @@ void PlotCurve::updateCurve()
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
             tempX[i] = tempX[i]*xScale + xOffset;
-            tempY[i] = tempY[i]*yScale + dataOffset;
+            tempY[i] = tempY[i]*yScale + yOffset;
         }
     }
 

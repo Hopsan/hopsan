@@ -150,7 +150,8 @@ public:
     void setCustomCurveDataUnit(const QString &rUnit, double scale);
     void removeCustomCurveDataUnit();
     void setTimePlotScalingAndOffset(double scale, double offset);
-    void setValuePlotScalingAndOffset(double scale, double offset);
+    void setLocalCurvePlotScaleAndOffset(const double scale, const double offset);
+    void setDataPlotOffset(const double offset);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
@@ -178,7 +179,8 @@ public slots:
     void setLineColor(QString colorName=QString());
     void openScaleDialog();
     void updateTimePlotScaleFromDialog();
-    void updateValuePlotScaleFromDialog();
+    void updateLocalPlotScaleAndOffsetFromDialog();
+    void updateDataPlotOffsetFromDialog();
     void updateToNewGeneration();
     void updatePlotInfoBox();
     void removeMe();
@@ -205,7 +207,8 @@ private:
 
     QString mCustomCurveDataUnit;
     double mCustomCurveDataUnitScale;
-    double mCustomAdditionalCurveScale;
+    double mLocalAdditionalCurveScale;
+    double mLocalAdditionalCurveOffset;
 
     // Curve properties settings
     CurveInfoBox *mpPlotCurveInfoBox;
@@ -214,8 +217,9 @@ private:
     int mAxisY;
     QComboBox *mpTimeScaleComboBox;
     QDoubleSpinBox *mpTimeOffsetSpinBox;
-    QLineEdit *mpYCustomScaleLineEdit;
-    QLineEdit *mpYCustomOffsetLineEdit;
+    QLineEdit *mpLocalCurveScaleLineEdit;
+    QLineEdit *mpLocalCurveOffsetLineEdit;
+    QLineEdit *mpDataPlotOffsetLineEdit;
     PlotTab *mpParentPlotTab;
 
     // Line properties
