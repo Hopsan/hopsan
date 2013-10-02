@@ -58,6 +58,7 @@ public:
     QString mDataDescription;
     QString mAliasName;
     VariableSourceTypeT mVariableSourceType;
+    QString mImportFileName;
 
     QString getFullName() const;
     QString getFullNameWithSeparator(const QString sep) const;

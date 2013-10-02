@@ -346,6 +346,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
             varDesc.mDataName = importedPLODataVector[i].mDataName;
             varDesc.mVariableSourceType = VariableDescription::ImportedVariableType;
             //! @todo what about reading the unit
+            varDesc.mImportFileName = fileInfo.fileName();
 
             SharedLogVariableDataPtrT pNewData = insertVariableBasedOnDescription(varDesc, timeVecPtr, importedPLODataVector[i].mDataValues);
             pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
@@ -412,6 +413,7 @@ void LogDataHandler::importFromCsv(QString rImportFilePath)
             VariableDescription varDesc;
             varDesc.mDataName = "CSV"+QString::number(i);
             varDesc.mVariableSourceType = VariableDescription::ImportedVariableType;
+            varDesc.mImportFileName = fileInfo.fileName();
 
             /*SharedLogVariableDataPtrT pNewData = */insertVariableBasedOnDescription(varDesc, timeVecPtr, data[i]);
         }
@@ -474,6 +476,8 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
                 //varDesc.mDataDescription = "";
                 //varDesc.mAliasName  = "";
                 varDesc.mVariableSourceType = VariableDescription::ImportedVariableType;
+                QFileInfo fileInfo(csvFilePath);
+                varDesc.mImportFileName = fileInfo.fileName();
 
                 //UniqueSharedTimeVectorPtrHelper helper;
                 //SharedTimeVectorPtrT uniqeTimeVectorPtr = helper.makeSureUnique(timeColumn);

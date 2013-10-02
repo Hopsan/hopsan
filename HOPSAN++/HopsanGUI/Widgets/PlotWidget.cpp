@@ -207,6 +207,7 @@ void PlotVariableTree::updateList()
     PlotVariableTreeItem *plotVariableLevelItem;      //Tree item for variables - reimplemented so they can store information about the variable
 
     QStringList aliasLevelItemList, importLevelItemList;
+    QMap<QString, QTreeWidgetItem*> importedLevelItemMap;
     QMap<QString, QTreeWidgetItem*> componentLevelItemMap;
     QMap<QString, QTreeWidgetItem*>::iterator cilIt;
     QVector<SharedLogVariableDataPtrT> variables = mpLogDataHandler->getAllVariablesAtNewestGeneration();
@@ -249,9 +250,27 @@ void PlotVariableTree::updateList()
                 addTopLevelItem(pImportedLevelItem);
             }
 
-            // Add a sub item with alias name
-            new PlotVariableTreeItem(variables[i], pImportedLevelItem);
-            importLevelItemList.append(variables[i]->getFullVariableName());
+            QString fName = variables[i]->getVariableDescription()->mImportFileName;
+            QTreeWidgetItem *pImportFileLevelItem = importedLevelItemMap.value(variables[i]->getVariableDescription()->mImportFileName, 0);
+            // If this file is not alrady added then create it
+            if (!pImportFileLevelItem)
+            {
+                pImportFileLevelItem = new QTreeWidgetItem();
+                pImportFileLevelItem->setText(0, fName);
+                QFont tempFont = pComponentLevelItem->font(0);
+                tempFont.setBold(true);
+                pImportFileLevelItem->setFont(0, tempFont);
+//                this->addTopLevelItem(pImportFileLevelItem);
+                pComponentLevelItem->setExpanded(expandedItems.contains(pImportedLevelItem->text(0)));
+
+                //Also remember that we created it
+                importedLevelItemMap.insert(fName, pImportFileLevelItem);
+                pImportedLevelItem->addChild(pImportFileLevelItem);
+            }
+
+            // Add a sub item with data name name
+            new PlotVariableTreeItem(variables[i], pImportFileLevelItem);
+            //importLevelItemList.append(variables[i]->getFullVariableName());
         }
         else
         // Ok, we do not need to add this item as an alias
