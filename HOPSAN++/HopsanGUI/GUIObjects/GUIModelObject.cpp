@@ -917,7 +917,7 @@ void ModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     WorkspaceObject::hoverEnterEvent(event);
     this->setZValue(HoveredModelobjectZValue);
     this->showPorts(true);
-    this->showName(NoUndo);
+    mpNameText->show();
 }
 
 
@@ -927,9 +927,9 @@ void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     WorkspaceObject::hoverLeaveEvent(event);
     this->setZValue(ModelobjectZValue);
     this->showPorts(false);
-    if (mpParentContainerObject->areSubComponentNamesHidden())
+    if (/*mpParentContainerObject->areSubComponentNamesHidden() && */!mNameTextVisible)
     {
-        this->hideName(NoUndo);
+        mpNameText->hide();
     }
 }
 
@@ -1123,7 +1123,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         }
     }
     pShowNameAction->setCheckable(true);
-    pShowNameAction->setChecked(mpNameText->isVisible());
+    pShowNameAction->setChecked(/*mpNameText->isVisible()*/mNameTextVisible);
     rMenu.addSeparator();
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
@@ -1174,7 +1174,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     else if (selectedAction == pShowNameAction)
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
-        if(mpNameText->isVisible())
+        if(mNameTextVisible)
         {
             this->hideName();
         }
@@ -1197,6 +1197,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
                 return 0;
             }
         }
+        showName();
         return selectedAction;
     }
     //Return 0 action if any of the above actions were triggered
@@ -1426,6 +1427,7 @@ void ModelObject::hideName(UndoStatusEnumT undoSettings)
 {
     bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(false);
+    mNameTextVisible=false;
     if(undoSettings == Undo && previousStatus == true)
     {
         mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), false);
@@ -1438,6 +1440,7 @@ void ModelObject::showName(UndoStatusEnumT undoSettings)
 {
     bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(true);
+    mNameTextVisible=true;
     if(undoSettings == Undo && previousStatus == false)
     {
         mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), true);

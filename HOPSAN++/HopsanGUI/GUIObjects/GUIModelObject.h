@@ -162,6 +162,8 @@ protected:
     double mTextOffset;
     int mNameTextPos;
 
+    bool mNameTextVisible;
+
     GraphicsTypeEnumT mIconType;
     bool mIconRotation;
     QGraphicsSvgItem *mpIcon;
