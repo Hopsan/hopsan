@@ -433,12 +433,37 @@ void OptimizationDialog::open()
             pComponentItem->insertChild(0, pParameterItem);
         }
     }
+    QTreeWidgetItem *pSystemParametersItem = new QTreeWidgetItem(QStringList() << "_System Parameters");
+    QFont componentFont = pSystemParametersItem->font(0);
+    componentFont.setBold(true);
+    pSystemParametersItem->setFont(0, componentFont);
+    mpParametersList->insertTopLevelItem(0, pSystemParametersItem);
+    QStringList parameterNames = pSystem->getParameterNames();
+    for(int p=0; p<parameterNames.size(); ++p)
+    {
+        QTreeWidgetItem *pParameterItem = new QTreeWidgetItem(QStringList() << parameterNames.at(p));
+        pParameterItem->setCheckState(0, Qt::Unchecked);
+        pSystemParametersItem->insertChild(0, pParameterItem);
+    }
     mpParametersList->sortItems(0,Qt::AscendingOrder);
     mpParametersList->sortItems(1,Qt::AscendingOrder);
     connect(mpParametersList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenParameters(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
     //Clear all objective functions
     mpVariablesList->clear();
+    QTreeWidgetItem *pAliasItem = new QTreeWidgetItem(QStringList() << "_Alias");
+    QFont aliasFont = pAliasItem->font(0);
+    aliasFont.setBold(true);
+    pAliasItem->setFont(0, aliasFont);
+    mpVariablesList->insertTopLevelItem(0, pAliasItem);
+    QStringList aliasNames = pSystem->getAliasNames();
+    for(int a=0; a<aliasNames.size(); ++a)
+    {
+        QTreeWidgetItem *pVariableItem = new QTreeWidgetItem(QStringList() << aliasNames.at(a));
+        pVariableItem->setCheckState(0, Qt::Unchecked);
+        pAliasItem->insertChild(0, pVariableItem);
+    }
+
     for(int c=0; c<componentNames.size(); ++c)
     {
         QTreeWidgetItem *pComponentItem = new QTreeWidgetItem(QStringList() << componentNames.at(c));
@@ -450,11 +475,11 @@ void OptimizationDialog::open()
         for(int p=0; p<ports.size(); ++p)
         {
             QTreeWidgetItem *pPortItem = new QTreeWidgetItem(QStringList() << ports.at(p)->getName());
-            QVector<QString> portNames, portUnits;
-            pSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentNames.at(c), ports.at(p)->getName(), portNames, portUnits);
-            for(int v=0; v<portNames.size(); ++v)
+            QVector<QString> varNames, portUnits;
+            pSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentNames.at(c), ports.at(p)->getName(), varNames, portUnits);
+            for(int v=0; v<varNames.size(); ++v)
             {
-                QTreeWidgetItem *pVariableItem = new QTreeWidgetItem(QStringList() << portNames.at(v));
+                QTreeWidgetItem *pVariableItem = new QTreeWidgetItem(QStringList() << varNames.at(v));
                 pVariableItem->setCheckState(0, Qt::Unchecked);
                 pPortItem->insertChild(0, pVariableItem);
             }
@@ -607,7 +632,15 @@ void OptimizationDialog::generateComplexScript()
         objFunc.replace("<<<id>>>", QString::number(i+1));
         for(int j=0; j<mFunctionComponents[i].size(); ++j)
         {
-            QString varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            QString varName;
+            if(mFunctionComponents[i][j].isEmpty())   //Alias
+            {
+                varName = mFunctionVariables[i][j];
+            }
+            else
+            {
+                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            }
             gpTerminalWidget->mpHandler->toShortDataNames(varName);
             objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
 
@@ -642,7 +675,15 @@ void OptimizationDialog::generateComplexScript()
 
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
-        QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        QString par;
+        if(mSelectedComponents[p] == "_System Parameters")
+        {
+            par = mSelectedParameters[p];
+        }
+        else
+        {
+            par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        }
         gpTerminalWidget->mpHandler->toShortDataNames(par);
         setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
 
@@ -691,7 +732,15 @@ void OptimizationDialog::generateParticleSwarmScript()
         objFunc.replace("<<<id>>>", QString::number(i+1));
         for(int j=0; j<mFunctionComponents[i].size(); ++j)
         {
-            QString varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            QString varName;
+            if(mFunctionComponents[i][j].isEmpty())   //Alias
+            {
+                varName = mFunctionVariables[i][j];
+            }
+            else
+            {
+                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            }
             gpTerminalWidget->mpHandler->toShortDataNames(varName);
             objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
 
@@ -786,7 +835,15 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
         mSelectedComponents.append(item->parent()->text(0));
         mSelectedParameters.append(item->text(0));
         SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
-        QString currentValue = pSystem->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+        QString currentValue;
+        if(item->parent()->text(0) == "_System Parameters")
+        {
+            currentValue = pSystem->getParameterValue(item->text(0));
+        }
+        else
+        {
+            currentValue = pSystem->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+        }
 
         QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + " (" + currentValue + trUtf8(")  < "));
         pLabel->setAlignment(Qt::AlignCenter);
@@ -934,7 +991,14 @@ void OptimizationDialog::removeParameter()
 void OptimizationDialog::updateChosenVariables(QTreeWidgetItem *item, int /*i*/)
 {
     QStringList variable;
-    variable << item->parent()->parent()->text(0) << item->parent()->text(0) << item->text(0);
+    if(item->parent()->text(0) == "_Alias")
+    {
+        variable << "" << "" << item->text(0);
+    }
+    else
+    {
+        variable << item->parent()->parent()->text(0) << item->parent()->text(0) << item->text(0);
+    }
     mSelectedVariables.removeAll(variable);
     if(item->checkState(0) == Qt::Checked)
     {
@@ -978,10 +1042,25 @@ void OptimizationDialog::addObjectiveFunction(int idx, double weight, double nor
     QLineEdit *pExpLineEdit = new QLineEdit(QString().setNum(exp), this);
     pExpLineEdit->setValidator(new QDoubleValidator());
 
-    QString variablesText = mFunctionComponents.last().first()+", "+mFunctionPorts.last().first()+", "+mFunctionVariables.last().first();
+    QString variablesText;
+    if(mFunctionComponents.last().first().isEmpty())
+    {
+        variablesText = mFunctionVariables.last().first();
+    }
+    else
+    {
+        variablesText = mFunctionComponents.last().first()+", "+mFunctionPorts.last().first()+", "+mFunctionVariables.last().first();
+    }
     for(int i=1; i<mFunctionVariables.last().size(); ++i)
     {
-        variablesText.append(" and " + mFunctionComponents.last().at(i)+", "+mFunctionPorts.last().at(i)+", "+mFunctionVariables.last().at(i));
+        if(mFunctionComponents.last().at(i).isEmpty())
+        {
+            variablesText.append(" and "+mFunctionVariables.last().at(i));
+        }
+        else
+        {
+            variablesText.append(" and " + mFunctionComponents.last().at(i)+", "+mFunctionPorts.last().at(i)+", "+mFunctionVariables.last().at(i));
+        }
     }
     QLabel *pFunctionLabel = new QLabel(mpMinMaxComboBox->currentText() + " " + mObjectiveFunctionDescriptions.at(idx)+" for "+variablesText, this);
     mFunctionName.append(mObjectiveFunctionDescriptions.at(idx));
