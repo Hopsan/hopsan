@@ -8,6 +8,7 @@
 class ModelObject;
 class ParameterSettingsLayout;
 class MainWindow;
+class SystemParametersWidget;
 
 class RowAwareToolButton :public QToolButton
 {
@@ -133,6 +134,8 @@ private:
     void createEditStuff();
 
     ModelObject *mpModelObject;
+    LibraryWidget *mpLibrary;
+    SystemParametersWidget *mpSystemParametersWidget;
     QLineEdit *mpNameEdit;
     VariableTableWidget *mpVariableTableWidget;
 

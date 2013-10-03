@@ -27,7 +27,6 @@
 
 
 #include "Configuration.h"
-#include "MainWindow.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
 #include "Widgets/LibraryWidget.h"

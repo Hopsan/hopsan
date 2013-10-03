@@ -26,7 +26,6 @@
 #include <QColor>
 #include <QStyleOptionGraphicsItem>
 
-//#include "MainWindow.h"
 #include "GraphicsView.h"
 #include "AnimatedConnector.h"
 #include "GUIObjects/AnimatedComponent.h"

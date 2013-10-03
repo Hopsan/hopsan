@@ -36,7 +36,7 @@ class AboutDialog : public QDialog
     Q_OBJECT
 
 public:
-    AboutDialog(MainWindow *parent = 0);
+    AboutDialog(QWidget *parent = 0);
     QTimer *timer;
 
 protected:

@@ -27,7 +27,6 @@
 #include <QDebug>
 #include <QGridLayout>
 
-#include "MainWindow.h"
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -325,7 +324,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     pPrimaryLayout->addWidget(mpButtonBox);
     setLayout(pPrimaryLayout);
 
-    if( (mpContainerObject != gpMainWindow->mpModelHandler->getCurrentViewContainerObject()) && (mvParameterLayoutPtrs.size()>0))
+    if( (mpContainerObject != gpModelHandler->getCurrentViewContainerObject()) && (mvParameterLayoutPtrs.size()>0))
     {
         QGridLayout *pParameterLayout = new QGridLayout();
         //mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
@@ -405,12 +404,12 @@ void ContainerPropertiesDialog::setValues()
     if(mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != ISOGraphics)
     {
         this->mpContainerObject->setGfxType(ISOGraphics);
-        gpMainWindow->mpLibrary->setGfxType(ISOGraphics);
+        gpLibraryWidget->setGfxType(ISOGraphics);
     }
     else if(!mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != UserGraphics)
     {
         this->mpContainerObject->setGfxType(UserGraphics);
-        gpMainWindow->mpLibrary->setGfxType(UserGraphics);
+        gpLibraryWidget->setGfxType(UserGraphics);
     }
 
     mpContainerObject->getCoreSystemAccessPtr()->setLoadStartValues(mpUseStartValues->isChecked());

@@ -26,7 +26,6 @@
 #include "OptimizationHandler.h"
 #include "HcomHandler.h"
 #include "ModelHandler.h"
-#include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "GUIObjects/GUISystem.h"
@@ -59,7 +58,7 @@ double OptimizationHandler::getOptimizationObjectiveValue(int idx)
 
 void OptimizationHandler::optComplexInit()
 {
-    gpMainWindow->mpModelHandler->setCurrentModel(mpOptModel);
+    gpModelHandler->setCurrentModel(mpOptModel);
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
@@ -99,13 +98,13 @@ void OptimizationHandler::optComplexInit()
 
     mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
 
-    if(!gpMainWindow->mpModelHandler->getCurrentModel()->isSaved())
+    if(!gpModelHandler->getCurrentModel()->isSaved())
     {
         mpConsole->printErrorMessage("Current model is not saved. Please save it before running an optimization.", "", false);
         return;
     }
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasPlotData("WorstObjective"))
     {
@@ -298,12 +297,12 @@ void OptimizationHandler::optComplexRun()
     }
 
     //! @todo currentWidget MAY hav changed, solve in better way
-    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
+    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget());
     pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
-    gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
+    gpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
-    gpMainWindow->mpModelHandler->closeModel(mpOptModel, true);
+    gpModelHandler->closeModel(mpOptModel, true);
 
     return;
 }
@@ -423,7 +422,7 @@ double OptimizationHandler::optComplexMaxpardiff()
 
 void OptimizationHandler::optParticleInit()
 {
-    gpMainWindow->mpModelHandler->setCurrentModel(mpOptModel);
+    gpModelHandler->setCurrentModel(mpOptModel);
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
@@ -433,12 +432,12 @@ void OptimizationHandler::optParticleInit()
 
     if(mOptMulticore)
     {
-        QString modelPath = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelFileInfo().filePath();
-        gpMainWindow->mpModelHandler->getCurrentModel()->save();
-        gpMainWindow->mpModelHandler->closeAllModels();
+        QString modelPath = gpModelHandler->getCurrentViewContainerObject()->getModelFileInfo().filePath();
+        gpModelHandler->getCurrentModel()->save();
+        gpModelHandler->closeAllModels();
         for(int i=0; i<mOptNumPoints; ++i)
         {
-            gpMainWindow->mpModelHandler->loadModel(modelPath, true);
+            gpModelHandler->loadModel(modelPath, true);
         }
     }
 
@@ -465,7 +464,7 @@ void OptimizationHandler::optParticleInit()
     }
     mOptObjectives.resize(mOptNumPoints);
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasPlotData("WorstObjective"))
     {
@@ -486,7 +485,7 @@ void OptimizationHandler::optParticleRun()
 {
     optPlotPoints();
 
-    //connect(gpMainWindow->mpModelHandler->getCurrentModel()->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SLOT(optPlotPoints(bool)));
+    //connect(gpModelHandler->getCurrentModel()->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SLOT(optPlotPoints(bool)));
 
     mOptConvergenceReason=0;
 
@@ -620,12 +619,12 @@ void OptimizationHandler::optParticleRun()
     }
 
 
-    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
+    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget());
     pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
-    gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
+    gpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
-    gpMainWindow->mpModelHandler->closeModel(mpOptModel);
+    gpModelHandler->closeModel(mpOptModel);
 }
 
 void OptimizationHandler::optPlotPoints()
@@ -638,7 +637,7 @@ void OptimizationHandler::optPlotPoints()
         return;
     }
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mOptNumPoints; ++p)
     {
         QString namex = "par"+QString::number(p)+"x";
@@ -694,7 +693,7 @@ void OptimizationHandler::optPlotBestWorstObj()
 {
     if(!mOptPlotBestWorst) { return; }
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("BestObjective", -1);
     if(bestVar.isNull())
     {

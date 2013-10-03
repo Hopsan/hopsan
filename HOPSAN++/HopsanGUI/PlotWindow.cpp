@@ -352,9 +352,9 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, pLocalPlotWidgetDock);
     pLocalPlotWidgetDock->setWidget(pLocalPlotWidget);
-    if(gpMainWindow->mpModelHandler->count() != 0)
+    if(gpModelHandler->count() != 0)
     {
-        pLocalPlotWidget->mpPlotVariableTree->setLogDataHandler(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
+        pLocalPlotWidget->mpPlotVariableTree->setLogDataHandler(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
     }
 
     pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
@@ -603,13 +603,13 @@ void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 
 void PlotWindow::importPlo()
 {
-    gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromPlo();
+    gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromPlo();
 }
 
 
 void PlotWindow::importCsv()
 {
-    gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromCsv();
+    gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromCsv();
 }
 
 
@@ -710,7 +710,7 @@ void PlotWindow::saveToXml()
 //! @brief Loads a plot window from XML
 void PlotWindow::loadFromXml()
 {
-    gpMainWindow->mpPlotWidget->loadFromXml();
+    gpPlotWidget->loadFromXml();
 }
 
 
@@ -767,7 +767,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     addPlotTab();
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
     getCurrentPlotTab()->updateLabels();
-    LogDataHandler *pLogDataHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pLogDataHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     SharedLogVariableDataPtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
     bool power = mpPowerSpectrumCheckBox->isChecked();
     SharedLogVariableDataPtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedLogVariableDataPtrT(), power);
@@ -1053,17 +1053,17 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         }
     }
 
-    SharedLogVariableDataPtrT gainVar = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
+    SharedLogVariableDataPtrT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
     if(gainVar.isNull())
     {
-        gainVar = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData("bodegain",-1);
+        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData("bodegain",-1);
     }
     gainVar.data()->assignFrom(F, vBodeGain);
 
-    SharedLogVariableDataPtrT phaseVar = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
+    SharedLogVariableDataPtrT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
     if(phaseVar.isNull())
     {
-        phaseVar = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData("bodegain",-1);
+        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData("bodegain",-1);
     }
     phaseVar.data()->assignFrom(F, vBodePhase);
 }

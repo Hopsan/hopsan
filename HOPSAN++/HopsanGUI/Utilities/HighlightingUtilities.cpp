@@ -25,7 +25,6 @@
 #include "common.h"
 #include "HcomHandler.h"
 #include "HighlightingUtilities.h"
-#include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
 
 
@@ -585,7 +584,7 @@ HcomHighlighter::HcomHighlighter(QTextDocument *parent)
 
     commandFormat.setForeground(Qt::darkGreen);
     commandFormat.setFontWeight(QFont::Bold);
-    QStringList commandPatterns = gpMainWindow->mpTerminalWidget->mpHandler->getCommands();
+    QStringList commandPatterns = gpTerminalWidget->mpHandler->getCommands();
     commandPatterns << "define" << "enddefine" << "while" << "if" << "foreach" << "repeat" << "goto" << "end";
     for(int i=0; i<commandPatterns.size(); ++i)
     {

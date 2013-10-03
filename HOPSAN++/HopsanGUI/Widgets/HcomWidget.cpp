@@ -34,7 +34,6 @@
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
 #include "HcomHandler.h"
-//#include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "GUIObjects/GUIModelObject.h"
@@ -269,7 +268,7 @@ void TerminalConsole::printCoreMessages()
 void TerminalConsole::printFatalMessage(QString message)
 {
     QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now attempt to exit.", "Ok");
-    this->parentWidget()->close();//gpMainWindow->close();
+    gpMainWindowWidget->close();//gpMainWindow->close();
 }
 
 

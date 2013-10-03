@@ -36,7 +36,6 @@
 #include "GUIObjects/GUISystem.h"
 #include "HVCWidget.h"
 #include "LogDataHandler.h"
-#include "MainWindow.h"
 #include "ModelHandler.h"
 #include "PlotHandler.h"
 #include "Utilities/XMLUtilities.h"
@@ -222,16 +221,16 @@ void HVCWidget::clearContents()
 void HVCWidget::runHvcTest()
 {
     // First load the model
-    gpMainWindow->mpModelHandler->loadModel(mModelFilePath, true);
+    gpModelHandler->loadModel(mModelFilePath, true);
     // Switch to that tab
 
     // Simulate the system
-    gpMainWindow->mpModelHandler->getCurrentModel()->simulate_blocking();
+    gpModelHandler->getCurrentModel()->simulate_blocking();
 
     // Run each test
     for (int t=0; t<mDataConfigs.size(); ++t)
     {
-        LogDataHandler *pLogDataHandler = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
+        LogDataHandler *pLogDataHandler = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
 
         QVector<int> columns;
         QStringList names;

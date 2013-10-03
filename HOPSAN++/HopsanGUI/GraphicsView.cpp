@@ -25,7 +25,6 @@
 #include "common.h"
 #include "GraphicsView.h"
 
-#include "MainWindow.h"
 #include "Configuration.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
@@ -75,8 +74,8 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     this->updateViewPort();
     this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
 
-    connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
-    connect(this, SIGNAL(hovered()), gpMainWindow->mpPlotWidget, SLOT(clearHoverEffects()));
+    connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
+    connect(this, SIGNAL(hovered()), gpPlotWidget, SLOT(clearHoverEffects()));
 }
 
 
@@ -147,7 +146,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         {
             if(event->mimeData()->urls().at(i).toString().endsWith(".hmf"))
             {
-                gpMainWindow->mpModelHandler->loadModel(event->mimeData()->urls().at(i).toString().remove(0,8));
+                gpModelHandler->loadModel(event->mimeData()->urls().at(i).toString().remove(0,8));
             }
         }
         return;
@@ -460,10 +459,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         mpContainerObject->selectAll();
     }
-    else if(ctrlPressed && event->key() == Qt::Key_Space)
-    {
-        //gpMainWindow->mpTerminalDock->setFocus();
-    }
     else if (ctrlPressed)
     {
         if(mpContainerObject->isCreatingConnector())
@@ -697,7 +692,7 @@ void GraphicsView::exportToPNG()
 {
     //Ask user for resolution scaling
     bool ok;
-    int res = QInputDialog::getDouble(gpMainWindow, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1, &ok);
+    int res = QInputDialog::getDouble(gpMainWindowWidget, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1, &ok);
 
     //Abort if user pressed cancel
     if(!ok)
@@ -728,11 +723,11 @@ void GraphicsView::exportToPNG()
         pScene->render(&painter);
         if(!image.save(fileName))
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to export PNG file: " +fileName);
+            gpTerminalWidget->mpConsole->printErrorMessage("Failed to export PNG file: " +fileName);
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Successfully exported PNG to: " +fileName);
+            gpTerminalWidget->mpConsole->printInfoMessage("Successfully exported PNG to: " +fileName);
         }
     }
 }
@@ -774,8 +769,8 @@ AnimatedGraphicsView::AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pPar
     this->updateViewPort();
     this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
 
-    connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
-    connect(this, SIGNAL(hovered()), gpMainWindow->mpPlotWidget, SLOT(clearHoverEffects()));
+    connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
+    connect(this, SIGNAL(hovered()), gpPlotWidget, SLOT(clearHoverEffects()));
 }
 
 

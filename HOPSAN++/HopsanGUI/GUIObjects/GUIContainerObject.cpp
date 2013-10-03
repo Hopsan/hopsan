@@ -99,7 +99,7 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
     mpLogDataHandler = new LogDataHandler(this);
 
     //Establish connections that should always remain
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpTerminalWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(checkMessages()), gpTerminalWidget, SLOT(checkMessages()), Qt::UniqueConnection);
 
 }
 
@@ -122,9 +122,9 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 {
     connect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getUndoButton(),  SIGNAL(clicked()), this, SLOT(undo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getRedoButton(),  SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()), Qt::UniqueConnection);
+    connect(gpUndoWidget->getUndoButton(),  SIGNAL(clicked()), this, SLOT(undo()), Qt::UniqueConnection);
+    connect(gpUndoWidget->getRedoButton(),  SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
+    connect(gpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()), Qt::UniqueConnection);
 
     connect(gpMainWindow->mpTogglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(showSubcomponentPorts(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
@@ -148,9 +148,9 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 
     // Update main window widgets with data from this container
     gpMainWindow->mpDataExplorer->setLogdataHandler(this->mpLogDataHandler);
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->setLogDataHandler(this->getLogDataHandler());
+    gpPlotWidget->mpPlotVariableTree->setLogDataHandler(this->getLogDataHandler());
     gpMainWindow->mpSystemParametersWidget->update(this);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(this->mUndoDisabled);
 }
@@ -161,13 +161,13 @@ void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 {
     // Update Systemparameter widget to have no contents
     gpMainWindow->mpSystemParametersWidget->update(0);
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->setLogDataHandler(0);
+    gpPlotWidget->mpPlotVariableTree->setLogDataHandler(0);
 
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    disconnect(gpMainWindow->mpUndoWidget->getUndoButton(),  SIGNAL(clicked()), this, SLOT(undo()));
-    disconnect(gpMainWindow->mpUndoWidget->getRedoButton(),  SIGNAL(clicked()), this, SLOT(redo()));
-    disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()));
+    disconnect(gpUndoWidget->getUndoButton(),  SIGNAL(clicked()), this, SLOT(undo()));
+    disconnect(gpUndoWidget->getRedoButton(),  SIGNAL(clicked()), this, SLOT(redo()));
+    disconnect(gpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()));
 
     disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,    SLOT(toggleNames(bool)));
     disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,    SLOT(showSubcomponentPorts(bool)));
@@ -497,7 +497,7 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
 ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, qreal rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
-    ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(fullTypeName);
+    ModelObjectAppearance *pAppearanceData = gpLibraryWidget->getAppearanceData(fullTypeName);
     if(!pAppearanceData)    //Not an existing component
         return 0;       //No error message here, it depends on from where this function is called
     else
@@ -546,7 +546,7 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
 
     if ( mModelObjectMap.contains(mpTempGUIModelObject->getName()) )
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+        gpTerminalWidget->mpConsole->printErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
         //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
     }
     else
@@ -660,7 +660,7 @@ void ContainerObject::deleteModelObject(QString objectName, UndoStatusEnumT undo
     else
     {
         //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
+        gpTerminalWidget->mpConsole->printErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
     emit checkMessages();
     mpModelWidget->getGraphicsView()->updateViewPort();
@@ -701,7 +701,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, UndoSt
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("No GUI Object with name: ") + oldName + " found when attempting rename!");
+            gpTerminalWidget->mpConsole->printErrorMessage(QString("No GUI Object with name: ") + oldName + " found when attempting rename!");
         }
 
         if (undoSettings == Undo)
@@ -1160,7 +1160,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                      {
                          if (disconStartRealPort && disconEndRealPort)
                          {
-                             gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
+                             gpTerminalWidget->mpConsole->printErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
                              success = false;
                          }
 
@@ -1269,14 +1269,14 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
             //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
             if ( startPortIsGroupPort && endPortIsGroupPort )
             {
-                gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
+                gpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
                 return 0;
             }
 
             // Abort with error if trying to connect two undefined group ports to each other
             if ( (pStartRealPort==0) && (pEndRealPort==0) )
             {
-                gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two undefined group ports to each other");
+                gpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two undefined group ports to each other");
                 return 0;
             }
 
@@ -1402,7 +1402,7 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
     else
     {
         // This should never happen, but just in case
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not create connector, connector creation already in progress");
+        gpTerminalWidget->mpConsole->printErrorMessage("Could not create connector, connector creation already in progress");
         return 0;
     }
 }
@@ -1426,7 +1426,7 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
 void ContainerObject::copySelected(CopyStack *xmlStack)
 {
     //Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
-    if(gpMainWindow->mpMessageWidget->textEditHasFocus() || gpMainWindow->mpTerminalWidget->mpConsole->hasFocus())
+    if(gpMainWindow->mpMessageWidget->textEditHasFocus() || gpTerminalWidget->mpConsole->hasFocus())
         return;
 
     QDomElement *copyRoot;
@@ -1534,7 +1534,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement objectElement = copyRoot->firstChildElement(HMF_COMPONENTTAG);
     while(!objectElement.isNull())
     {
-        ModelObject *pObj = loadModelObject(objectElement, gpMainWindow->mpLibrary, this);
+        ModelObject *pObj = loadModelObject(objectElement, gpLibraryWidget, this);
 
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();
@@ -1551,7 +1551,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
     while (!systemElement.isNull())
     {
-        ModelObject* pObj = loadModelObject(systemElement, gpMainWindow->mpLibrary, this, Undo);
+        ModelObject* pObj = loadModelObject(systemElement, gpLibraryWidget, this, Undo);
         renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
 
@@ -1565,7 +1565,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
     while (!systemPortElement.isNull())
     {
-        ModelObject* pObj = loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, this, Undo);
+        ModelObject* pObj = loadContainerPortObject(systemPortElement, gpLibraryWidget, this, Undo);
         renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
 
@@ -2279,7 +2279,7 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
         {
             this->clearUndo();
             mUndoDisabled = true;
-            if(gpMainWindow->mpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
+            if(gpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
             {
                 gpMainWindow->mpUndoAction->setDisabled(true);
                 gpMainWindow->mpRedoAction->setDisabled(true);
@@ -2289,7 +2289,7 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
     else
     {
         mUndoDisabled = false;
-        if(gpMainWindow->mpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
+        if(gpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
         {
             gpMainWindow->mpUndoAction->setDisabled(false);
             gpMainWindow->mpRedoAction->setDisabled(false);
@@ -2459,7 +2459,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QFile file(modelFilePath);   //Create a QFile object
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+            gpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
             return;
         }
 
@@ -2486,7 +2486,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QFile xmlFile(modelFilePath);
         if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + modelFilePath);
+            gpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + modelFilePath);
             return;
         }
         QTextStream out(&xmlFile);
@@ -2754,7 +2754,7 @@ void ContainerObject::showLossesFromDialog()
     //We should not be here if there is no plot data, but let's check to be sure
     if(mpLogDataHandler->isEmpty())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
+        gpTerminalWidget->mpConsole->printErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
         return;
     }
 

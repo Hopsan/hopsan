@@ -35,7 +35,6 @@
 #include "Widgets/LibraryWidget.h"
 #include "UndoStack.h"
 #include "Configuration.h"
-#include "MainWindow.h"
 
 #include <cassert>
 
@@ -56,7 +55,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     mpNameText = 0;
     mTextOffset = 5.0;
     mDragCopying = false;
-    mpDialogParentWidget = new QWidget(gpMainWindow);
+    mpDialogParentWidget = new QWidget(gpMainWindowWidget);
 
         //Set the hmf save tag name
     mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
@@ -631,7 +630,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
         else
         {
             // Port does not exist in core, lets print warning message and remove its appearance data
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Port:  "+portName+"  does not exist in Component:  "+getName()+"  when trying to create port graphics. Ignoring!");
+            gpTerminalWidget->mpConsole->printWarningMessage("Port:  "+portName+"  does not exist in Component:  "+getName()+"  when trying to create port graphics. Ignoring!");
             mModelObjectAppearance.erasePortAppearance(portName);
         }
     }
@@ -1108,7 +1107,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
 
     //QStringList replacements = this->getAppearanceData()->getReplacementObjects();
-    QStringList replacements = gpMainWindow->mpLibrary->getReplacements(this->getTypeName());
+    QStringList replacements = gpLibraryWidget->getReplacements(this->getTypeName());
     qDebug() << "Replacements = " << replacements;
     QList<QAction *> replaceActionList;
     if(!replacements.isEmpty())
@@ -1116,9 +1115,9 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         QMenu *replaceMenu = rMenu.addMenu(tr("Replace component"));
         for(int i=0; i<replacements.size(); ++i)
         {
-            if(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i)))
+            if(gpLibraryWidget->getAppearanceData(replacements.at(i)))
             {
-                QAction *replaceAction = replaceMenu->addAction(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i))->getDisplayName());
+                QAction *replaceAction = replaceMenu->addAction(gpLibraryWidget->getAppearanceData(replacements.at(i))->getDisplayName());
                 replaceActionList.append(replaceAction);
             }
         }
@@ -1501,7 +1500,7 @@ ModelObjectAppearance* ModelObject::getAppearanceData()
 
 const ModelObjectAppearance *ModelObject::getLibraryAppearanceData() const
 {
-    return gpMainWindow->mpLibrary->getAppearanceData(getTypeName());
+    return gpLibraryWidget->getAppearanceData(getTypeName());
 }
 
 //! @brief Refreshes the appearance and position of ports on the model object

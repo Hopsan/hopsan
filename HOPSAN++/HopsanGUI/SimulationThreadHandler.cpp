@@ -24,7 +24,6 @@
 
 #include "SimulationThreadHandler.h"
 
-#include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
 #include "Configuration.h"
 #include "common.h"
@@ -182,7 +181,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
 
     if (gConfig.getEnableProgressBar() && mProgressBarEnabled)
     {
-        mpProgressDialog = new QProgressDialog(gpMainWindow);
+        mpProgressDialog = new QProgressDialog(gpMainWindowWidget);
         mpProgressDialog->setWindowTitle("Running Simulation");
         if (mProgressBarModal)
         {
@@ -213,7 +212,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     if(!gConfig.getUseMulticore())
     {
         QTimer *pCheckMessagesTimer = new QTimer();
-        connect(pCheckMessagesTimer, SIGNAL(timeout()), gpMainWindow->mpTerminalWidget, SLOT(checkMessages()));
+        connect(pCheckMessagesTimer, SIGNAL(timeout()), gpTerminalWidget, SLOT(checkMessages()));
         connect(this, SIGNAL(done(bool)), pCheckMessagesTimer, SLOT(deleteLater()));
         pCheckMessagesTimer->setSingleShot(false);
         pCheckMessagesTimer->start(1000);
@@ -257,24 +256,24 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
     mProgressBarWorkerThread.quit();
 
     //! @todo maybe use signals and slots for messages instead
-    gpMainWindow->mpTerminalWidget->checkMessages();
+    gpTerminalWidget->checkMessages();
 
     // Handle printing of all the error messages
     if (mAborted)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was canceled by user"));
+        gpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was canceled by user"));
     }
     else if (!mInitSuccess)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Initialize was stopped or aborted for some reason"));
+        gpTerminalWidget->mpConsole->printErrorMessage(tr("Initialize was stopped or aborted for some reason"));
     }
     else if (!mSimuSucess)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was stopped or aborted for some reason"));
+        gpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was stopped or aborted for some reason"));
     }
     else if (!mFiniSucess)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Finalize was stopped or aborted for some reason"));
+        gpTerminalWidget->mpConsole->printErrorMessage(tr("Finalize was stopped or aborted for some reason"));
     }
     else
     {
@@ -290,7 +289,7 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
         QString msg = tr("Simulated").append(" '").append(name).append("' ").append(tr("successfully!"));
         msg.append(" ").append(tr("Initialization time: ")).append(QString::number(mInitTime).append(" ms"));
         msg.append(", ").append(tr("Simulation time: ").append(QString::number(mSimuTime)).append(" ms"));
-        gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage(msg);
+        gpTerminalWidget->mpConsole->printInfoMessage(msg);
     }
 
     // Wait until threads have been shut down before we delete objects

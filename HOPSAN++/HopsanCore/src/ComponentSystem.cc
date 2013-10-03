@@ -3048,6 +3048,89 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             logTimeAndNodes(mTotalTakenSimulationSteps);
         }
     }
+    else if(algorithm == RandomTaskPoolAlgorithm)
+    {
+
+        addInfoMessage("Using random task pool algorithm with "+threadStr+" threads.");
+
+        RandomTaskPool *pTaskPoolS = new RandomTaskPool(mComponentSignalptrs);
+        RandomTaskPool *pTaskPoolC = new RandomTaskPool(mComponentCptrs);
+        RandomTaskPool *pTaskPoolQ = new RandomTaskPool(mComponentQptrs);
+
+        tbb::task_group *masterTasks;
+        tbb::task_group *slaveTasks;
+        masterTasks = new tbb::task_group;
+        slaveTasks = new tbb::task_group;
+
+        tbb::atomic<double> *pTime = new tbb::atomic<double>;
+        *pTime = mTime;
+        tbb::atomic<bool> *pStop = new tbb::atomic<bool>;
+        *pStop = false;
+
+        //masterTasks->run(taskSimPoolMaster(pTaskPoolS, pTaskPoolC, pTaskPoolQ, mTimestep, nSteps, this, &mTime, pTime, pStop));
+
+        for(size_t t=1; t < nThreads; ++t)
+        {
+            slaveTasks->run(taskSimRandomPoolSlave(pTaskPoolC, pTaskPoolQ, pTime, pStop));
+        }
+
+        Component *pComp;
+        for(size_t i=0; i<nSteps; ++i)
+        {
+            *pTime = *pTime+mTimestep;
+
+            //S-pool
+            pTaskPoolS->open();
+            pComp = pTaskPoolS->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*pTime);
+                pTaskPoolS->reportDone();
+                pComp = pTaskPoolS->getComponent();
+            }
+            while(!pTaskPoolS->isReady()) {}
+            pTaskPoolS->close();
+
+            //C-pool
+            pTaskPoolC->open();
+            pComp = pTaskPoolC->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*pTime);
+                pTaskPoolC->reportDone();
+                pComp = pTaskPoolC->getComponent();
+            }
+            while(!pTaskPoolC->isReady()) {}
+            pTaskPoolC->close();
+
+            //Q-pool
+            pTaskPoolQ->open();
+            pComp = pTaskPoolQ->getComponent();
+            while(pComp)
+            {
+                pComp->simulate(*pTime);
+                pTaskPoolQ->reportDone();
+                pComp = pTaskPoolQ->getComponent();
+            }
+            while(!pTaskPoolQ->isReady()) {}
+            pTaskPoolQ->close();
+
+            mTime =  *pTime;
+            logTimeAndNodes(i+1);            //Log all nodes
+        }
+        *pStop=true;
+
+
+        //masterTasks->wait();                                           //Wait for all tasks to finish
+        slaveTasks->wait();
+
+        delete(masterTasks);                                       //Clean up
+        delete(slaveTasks);
+        delete(pTaskPoolS);
+        delete(pTaskPoolC);
+        delete(pTaskPoolQ);
+        delete(pStop);
+    }
 }
 
 
@@ -3284,6 +3367,11 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
     for(size_t i=0; i<rSplitCVector.size(); ++i)
     {
         sortComponentVector(rSplitCVector[i]);
+
+        for(size_t j=0; j<rSplitCVector[i].size(); ++j)
+        {
+            addDebugMessage("   "+rSplitCVector[i][j]->getName());
+        }
     }
 }
 
@@ -3332,6 +3420,11 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
     for(size_t i=0; i<rSplitQVector.size(); ++i)
     {
         sortComponentVector(rSplitQVector[i]);
+
+        for(size_t j=0; j<rSplitQVector[i].size(); ++j)
+        {
+            addDebugMessage("   "+rSplitQVector[i][j]->getName());
+        }
     }
 }
 

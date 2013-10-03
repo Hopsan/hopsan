@@ -26,7 +26,6 @@
 #include <assert.h>
 
 #include "UndoStack.h"
-#include "MainWindow.h"
 #include "GUIConnector.h"
 #include "loadFunctions.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -66,9 +65,7 @@ void UndoStack::fromXml(QDomElement &undoElement)
     mDomDocument.replaceChild(undoElement.cloneNode(), mDomDocument.firstChild());
     mUndoRoot = undoElement;
     mCurrentStackPosition = mUndoRoot.lastChildElement().attribute("number").toInt();
-    gpMainWindow->mpUndoWidget->refreshList();
-
-    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(mDomDocument.toString());
+    gpUndoWidget->refreshList();
 }
 
 
@@ -76,8 +73,6 @@ void UndoStack::fromXml(QDomElement &undoElement)
 //! @param errorMsg (optional) Error message that will be displayed in message widget
 void UndoStack::clear(QString errorMsg)
 {
-    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(mDomDocument.toString());
-
     mCurrentStackPosition = -1;
     mUndoRoot.clear();
     mUndoRoot = mDomDocument.createElement(HMF_UNDO);
@@ -85,11 +80,11 @@ void UndoStack::clear(QString errorMsg)
     QDomElement firstPost = appendDomElement(mUndoRoot, "post");
     firstPost.setAttribute("number", mCurrentStackPosition);
 
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 
     if(!errorMsg.isEmpty())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(errorMsg);
+        gpTerminalWidget->mpConsole->printErrorMessage(errorMsg);
     }
 }
 
@@ -116,7 +111,7 @@ void UndoStack::newPost(QString type)
         newPost.setAttribute("type", type);
     }
 
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -140,7 +135,7 @@ void UndoStack::undoOneStep()
         if(stuffElement.attribute("what") == "deletedobject")
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
-            ModelObject* pObj = loadModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NoUndo);
+            ModelObject* pObj = loadModelObject(componentElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
 
             //Load parameter values
             QDomElement xmlParameters = componentElement.firstChildElement(HMF_PARAMETERS);
@@ -154,12 +149,12 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "deletedcontainerport")
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NoUndo);
+            loadContainerPortObject(systemPortElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "deletedsubsystem")
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            loadModelObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NoUndo);
+            loadModelObject(systemPortElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "addedobject")
         {
@@ -507,7 +502,7 @@ void UndoStack::undoOneStep()
         mCurrentStackPosition--;
     }
 
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -563,17 +558,17 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == "addedobject")
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
-            loadModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NoUndo);
+            loadModelObject(componentElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "addedcontainerport")
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NoUndo);
+            loadContainerPortObject(systemPortElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "addedsubsystem")
         {
             QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            loadModelObject(systemElement, gpMainWindow->mpLibrary, mpParentContainerObject, NoUndo);
+            loadModelObject(systemElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "deletedconnector")
         {
@@ -831,7 +826,7 @@ void UndoStack::redoOneStep()
         --mCurrentStackPosition;
     }
 
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -856,7 +851,7 @@ void UndoStack::registerDeletedObject(ModelObject *item)
         stuffElement.setAttribute("what", "deletedobject");
     }
     item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 
     //qDebug() << mDomDocument.toString();
 }
@@ -872,7 +867,7 @@ void UndoStack::registerDeletedConnector(Connector *item)
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "deletedconnector");
     item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -898,7 +893,7 @@ void UndoStack::registerAddedObject(ModelObject *item)
     }
     item->saveToDomElement(stuffElement);
 
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -912,7 +907,7 @@ void UndoStack::registerAddedConnector(Connector *item)
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "addedconnector");
     item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -928,7 +923,7 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
     stuffElement.setAttribute("what", "rename");
     stuffElement.setAttribute("oldname", oldName);
     stuffElement.setAttribute("newname", newName);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -948,7 +943,7 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, Connec
         appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
         appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
         item->saveToDomElement(stuffElement);
-        gpMainWindow->mpUndoWidget->refreshList();
+        gpUndoWidget->refreshList();
     }
 }
 
@@ -966,7 +961,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
     stuffElement.setAttribute(HMF_NAMETAG, objectName);
     appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -981,7 +976,7 @@ void UndoStack::registerRotatedObject(const QString objectName, const qreal angl
     stuffElement.setAttribute("what", "rotate");
     stuffElement.setAttribute("objectname", objectName);
     setQrealAttribute(stuffElement, "angle", angle);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -995,7 +990,7 @@ void UndoStack::registerVerticalFlip(QString objectName)
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "verticalflip");
     stuffElement.setAttribute("objectname", objectName);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1009,7 +1004,7 @@ void UndoStack::registerHorizontalFlip(QString objectName)
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "horizontalflip");
     stuffElement.setAttribute("objectname", objectName);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1029,7 +1024,7 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
     stuffElement.setAttribute("oldvalue", oldValueTxt);
     stuffElement.setAttribute("newvalue", newValueTxt);
     stuffElement.setAttribute("objectname", objectName);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1051,7 +1046,7 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
 //    stuffElement.setAttribute("newvalue", newValueTxt);
 //    stuffElement.setAttribute("objectname", objectName);
 //    stuffElement.setAttribute("portname", portName);
-//    gpMainWindow->mpUndoWidget->refreshList();
+//    gpUndoWidget->refreshList();
 //}
 
 
@@ -1068,7 +1063,7 @@ void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
     stuffElement.setAttribute("what", "namevisibilitychange");
     stuffElement.setAttribute("objectname", objectName);
     stuffElement.setAttribute("isvisible", isVisible);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1082,7 +1077,7 @@ void UndoStack::registerAddedWidget(Widget *item)
         stuffElement.setAttribute("what", "addedtextboxwidget");
     stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1096,7 +1091,7 @@ void UndoStack::registerDeletedWidget(Widget *item)
         stuffElement.setAttribute("what", "deletedtextboxwidget");
     stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1116,7 +1111,7 @@ void UndoStack::registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos
     stuffElement.setAttribute("index", item->getWidgetIndex());
     appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1143,7 +1138,7 @@ void UndoStack::registerResizedTextBoxWidget(const int index, const qreal w_old,
     setQrealAttribute(stuffElement, "h_new", h_new);
     appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 
@@ -1187,7 +1182,7 @@ void UndoStack::registerModifiedTextBoxWidget(int index, QString oldText, QFont 
     else if(oldLineStyle == Qt::DashDotLine)
         stuffElement.setAttribute("linestyle_old", "dashdotline");
 
-    gpMainWindow->mpUndoWidget->refreshList();
+    gpUndoWidget->refreshList();
 }
 
 

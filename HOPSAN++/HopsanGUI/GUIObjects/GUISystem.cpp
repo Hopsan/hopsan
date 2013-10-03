@@ -23,10 +23,10 @@
 //$Id$
 
 #include "GUISystem.h"
-#include "MainWindow.h"
 #include "GraphicsView.h"
 #include "CoreAccess.h"
 #include "loadFunctions.h"
+#include "MainWindow.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "version_gui.h"
@@ -51,7 +51,7 @@ SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelOb
 SystemContainer::SystemContainer(ModelWidget *parentModelWidget, QGraphicsItem *pParent)
     : ContainerObject(QPointF(0,0), 0, 0, Deselected, UserGraphics, 0, pParent)
 {
-    this->mModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
+    this->mModelObjectAppearance = *(gpLibraryWidget->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
     this->mpModelWidget = parentModelWidget;
     this->commonConstructorCode();
     this->mpUndoStack->newPost();
@@ -206,7 +206,7 @@ int SystemContainer::type() const
 void SystemContainer::openPropertiesDialog()
 {
     //! @todo shouldnt this be in the containerproperties class, right now groups are not working thats is why it is here, the containerproperties dialog only works with systems for now
-    ContainerPropertiesDialog dialog(this, gpMainWindow);
+    ContainerPropertiesDialog dialog(this, gpMainWindowWidget);
     dialog.setAttribute(Qt::WA_DeleteOnClose, false);
     dialog.exec();
 }
@@ -683,15 +683,15 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             verifyHmfComponentCompatibility(xmlSubObject, hmfFormatVersion, coreHmfVersion);
-            ModelObject* pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
+            ModelObject* pObj = loadModelObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
             if(pObj == NULL)
             {
-                gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
+                gpTerminalWidget->mpConsole->printErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
                                                                     xmlSubObject.attribute(HMF_TYPENAME) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
 
                 // Insert missing component dummy instead
                 xmlSubObject.setAttribute(HMF_TYPENAME, "MissingComponent");
-                pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
+                pObj = loadModelObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
             }
             else
             {
@@ -729,7 +729,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
-            loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
+            loadModelObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
@@ -737,7 +737,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
-            loadContainerPortObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
+            loadContainerPortObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
@@ -837,7 +837,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
     }
     else
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
+        gpTerminalWidget->mpConsole->printWarningMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
     }
 }
 
@@ -863,7 +863,7 @@ void SystemContainer::exportToLabView()
     QFileInfo file(filePath);
     gConfig.setLabViewExportDir(file.absolutePath());
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
     pCoreAccess->generateToLabViewSIT(filePath, this);
     delete(pCoreAccess);
 }
@@ -916,7 +916,7 @@ void SystemContainer::exportToFMU(QString savePath)
     //Save model to hmf in export directory
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
     pCoreAccess->generateToFmu(savePath, this);
     delete(pCoreAccess);
 
@@ -1012,7 +1012,7 @@ void SystemContainer::exportToFMU(QString savePath)
 //    modelSourceFile.setFileName(savePath + "/" + modelName + ".c");
 //    if(!modelSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open " + modelName + ".c for writing.");
+//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open " + modelName + ".c for writing.");
 //        return;
 //    }
 
@@ -1020,7 +1020,7 @@ void SystemContainer::exportToFMU(QString savePath)
 //    modelDescriptionFile.setFileName(savePath + "/modelDescription.xml");
 //    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open modelDescription.xml for writing.");
+//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open modelDescription.xml for writing.");
 //        return;
 //    }
 
@@ -1028,7 +1028,7 @@ void SystemContainer::exportToFMU(QString savePath)
 //    fmuHeaderFile.setFileName(savePath + "/HopsanFMU.h");
 //    if(!fmuHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open HopsanFMU.h for writing.");
+//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open HopsanFMU.h for writing.");
 //        return;
 //    }
 
@@ -1036,7 +1036,7 @@ void SystemContainer::exportToFMU(QString savePath)
 //    fmuSourceFile.setFileName(savePath + "/HopsanFMU.cpp");
 //    if(!fmuSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open HopsanFMU.cpp for writing.");
+//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open HopsanFMU.cpp for writing.");
 //        return;
 //    }
 
@@ -1045,7 +1045,7 @@ void SystemContainer::exportToFMU(QString savePath)
 //    clBatchFile.setFileName(savePath + "/compile.bat");
 //    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open compile.bat for writing.");
+//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open compile.bat for writing.");
 //        return;
 //    }
 //#endif
@@ -1458,7 +1458,7 @@ void SystemContainer::exportToSimulink()
     }
 
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
     pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked(), compiler);
     delete(pCoreAccess);
 
@@ -1569,7 +1569,7 @@ void SystemContainer::exportToSimulinkCoSim()
     }
 
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
     pCoreAccess->generateToSimulinkCoSim(savePath, this, pDisablePortLabels->isChecked(), compiler);
     delete(pCoreAccess);
 

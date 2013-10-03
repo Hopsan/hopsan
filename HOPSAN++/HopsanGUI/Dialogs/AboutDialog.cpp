@@ -23,12 +23,10 @@
 //$Id$
 
 #include "AboutDialog.h"
-#include "MainWindow.h"
 #include "common.h"
 #include "version_gui.h"
 
-#include <QPixmap>
-#include <QColor>
+#include <QtGui>
 
 //! @class AboutDialog
 //! @brief A class for displaying the "About Hopsan" dialog
@@ -38,7 +36,7 @@
 
 //! Constructor for the about dialog
 //! @param parent Pointer to the main window
-AboutDialog::AboutDialog(MainWindow *parent)
+AboutDialog::AboutDialog(QWidget *parent)
     : QDialog(parent)
 {
         //Set the name and size of the main window

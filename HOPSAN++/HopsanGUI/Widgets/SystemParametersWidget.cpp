@@ -400,7 +400,7 @@ void SystemParametersWidget::update()
         qDebug() << "--------------List isHidden: " << mpSysParamTableView->isHidden();
         qDebug() << "--------------List isVisible: " << mpSysParamTableView->isVisible();
         qDebug() << "--------------SysParWidget isVisible: " << this->isVisible();
-        qDebug() << "--------------SysParWidget Parent isVisible: " << this->parentWidget()->isVisible();
+        qDebug() << "--------------SysParWidget Parent isVisible: " << gpMainWindowWidget->isVisible();
     }
     else
     {

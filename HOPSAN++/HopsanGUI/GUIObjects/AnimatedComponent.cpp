@@ -515,7 +515,7 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mpAnimatedComponent->indexOfMovable(this) > -1)  //Otherwise this is the base icon, which does not have parameters
     {
-        AnimatedIconPropertiesDialog *pDialog = new AnimatedIconPropertiesDialog(mpAnimatedComponent, mpAnimatedComponent->indexOfMovable(this), gpMainWindow);
+        AnimatedIconPropertiesDialog *pDialog = new AnimatedIconPropertiesDialog(mpAnimatedComponent, mpAnimatedComponent->indexOfMovable(this), gpMainWindowWidget);
         pDialog->exec();
         delete(pDialog);
     }

@@ -301,12 +301,12 @@ void ComponentGeneratorDialog::generateComponent()
         if(code.endsWith("end "+name+";"))
         {
             //It is (probably) a Modelica model, try and compile it
-            CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
+            CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
             QString libPath = gDesktopHandler.getGeneratedComponentsPath()+name+"/";
             pCoreAccess->generateFromModelica(code, libPath);
             delete(pCoreAccess);
 
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
 
 //            QString typeName, displayName, cqsType;
 //            QStringList initAlgorithms, equations, finalAlgorithms;
@@ -330,7 +330,7 @@ void ComponentGeneratorDialog::generateComponent()
 
         qDebug() << "C++";
 
-        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpMainWindow->mpLibrary);
+        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
         pCoreAccess->generateFromCpp(code);
         delete(pCoreAccess);
 
@@ -366,7 +366,7 @@ void ComponentGeneratorDialog::loadModel(QString modelFileName)
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read Modelica file.");
+        QMessageBox::information(this, this->tr("Hopsan"), "Unable to read Modelica file.");
         return;
     }
 
@@ -451,7 +451,7 @@ void ComponentGeneratorDialog::saveModel()
     QFile file(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file: "+fileInfo.filePath());
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file: "+fileInfo.filePath());
         return;
     }
 

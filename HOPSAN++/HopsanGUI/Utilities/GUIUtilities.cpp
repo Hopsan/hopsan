@@ -35,7 +35,6 @@
 #endif
 
 #include "GUIUtilities.h"
-#include "MainWindow.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
 #include "Configuration.h"

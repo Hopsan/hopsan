@@ -30,14 +30,13 @@
 
 class Component;
 class ParameterSettingsLayout;
-class MainWindow;
 
 class ComponentPropertiesDialog : public ModelObjectPropertiesDialog
 {
     Q_OBJECT
 
 public:
-    ComponentPropertiesDialog(Component *pComponent, MainWindow *pParent=0);
+    ComponentPropertiesDialog(Component *pComponent, QWidget *pParent=0);
 
 protected slots:
     void okPressed();

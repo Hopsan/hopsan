@@ -47,8 +47,8 @@ CentralTabWidget::CentralTabWidget(MainWindow *pParentMainWindow)
 
     setTabsClosable(true);
 
-    connect(this,   SIGNAL(currentChanged(int)),    gpMainWindow->mpModelHandler, SLOT(selectModelByTabIndex(int)), Qt::UniqueConnection);
-    connect(this,   SIGNAL(tabCloseRequested(int)), gpMainWindow->mpModelHandler, SLOT(closeModelByTabIndex(int)), Qt::UniqueConnection);
+    connect(this,   SIGNAL(currentChanged(int)),    gpModelHandler, SLOT(selectModelByTabIndex(int)), Qt::UniqueConnection);
+    connect(this,   SIGNAL(tabCloseRequested(int)), gpModelHandler, SLOT(closeModelByTabIndex(int)), Qt::UniqueConnection);
 
     //this->hide();
 }

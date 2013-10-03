@@ -24,13 +24,19 @@
 
 
 #include <QGraphicsWidget>
-#include <cassert>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QDialog>
+#include <QGroupBox>
+#include <QDialogButtonBox>
+#include <QFontDialog>
+#include <QColorDialog>
 
+#include <cassert>
 
 #include "GUIWidgets.h"
 #include "GUISystem.h"
 #include "Widgets/ModelWidget.h"
-#include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
 
@@ -307,7 +313,7 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
     //! @todo Make a separate file for this dialog
 
         //Open a dialog where line width and color can be selected
-    mpEditDialog = new QDialog(gpMainWindow);
+    mpEditDialog = new QDialog(gpMainWindowWidget);
     mpEditDialog->setWindowTitle("Edit Box Widget");
 
     mpShowBoxCheckBoxInDialog = new QCheckBox("Show box rectangle");
@@ -594,7 +600,7 @@ void TextBoxWidget::updateWidgetFromDialog()
 void TextBoxWidget::openFontDialog()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, mpTextBoxInDialog->font(), gpMainWindow);
+    QFont font = QFontDialog::getFont(&ok, mpTextBoxInDialog->font(), gpMainWindowWidget);
     if (ok)
     {
         mSelectedFont = font;
@@ -605,7 +611,7 @@ void TextBoxWidget::openFontDialog()
 void TextBoxWidget::openColorDialog()
 {
     QColor color;
-    color = QColorDialog::getColor(mSelectedColor, gpMainWindow);
+    color = QColorDialog::getColor(mSelectedColor, gpMainWindowWidget);
 
     if (color.isValid())
     {

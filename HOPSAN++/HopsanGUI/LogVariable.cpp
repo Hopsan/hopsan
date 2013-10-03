@@ -25,7 +25,7 @@
 #include "Configuration.h"
 #include "LogVariable.h"
 #include "LogDataHandler.h"
-#include "MainWindow.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
 
 #include <limits>
@@ -503,8 +503,8 @@ void LogVariableData::frequencySpectrum(const SharedLogVariableDataPtrT pTime, c
         QString oldString, newString;
         oldString.setNum(pDataVec->size());
         newString.setNum(n);
-        QMessageBox::information(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
-                                 "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
+        QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Wrong Vector Size"),
+                                 gpMainWindowWidget->tr("Size of data vector must be an even power of 2. Number of log samples was reduced from ") + oldString + gpMainWindowWidget->tr(" to ") + newString + ".");
         reduceVectorSize((*pDataVec), n);
         reduceVectorSize(timeVec, n);
     }

@@ -34,7 +34,6 @@
 #include "GUIContainerObject.h"
 #include "GUIComponent.h"
 #include "Widgets/ModelWidget.h"
-#include "MainWindow.h"
 #include "Dialogs/ComponentPropertiesDialog.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
@@ -90,7 +89,7 @@ GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObje
     //! @todo this is not good all mpModelWidget should be set in one common place not in guigroup and guisystem
     this->mpModelWidget = pParentContainer->mpModelWidget;
 
-    gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
+    gpTerminalWidget->mpConsole->printWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
 }
 
 
@@ -234,7 +233,7 @@ GroupContainer::~GroupContainer()
 
 ////        //Get the right appearance data for the group port
 ////        ModelObjectAppearance appData;
-////        appData = *(gpMainWindow->mpLibrary->getAppearanceData("SystemPort"));
+////        appData = *(gpLibraryWidget->getAppearanceData("SystemPort"));
 ////        appData.setName("aPaApA-port");
 
 ////        GUIGroupPort *pGroupPortComponent;

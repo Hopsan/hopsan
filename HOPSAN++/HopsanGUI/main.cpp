@@ -37,6 +37,7 @@
 
 //Global stuff
 MainWindow* gpMainWindow = 0;
+QWidget *gpMainWindowWidget = 0;
 Configuration gConfig;
 DesktopHandler gDesktopHandler;
 CopyStack gCopyStack;

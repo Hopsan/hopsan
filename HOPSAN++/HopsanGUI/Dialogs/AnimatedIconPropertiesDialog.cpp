@@ -28,7 +28,6 @@
 
 #include "GUIObjects/AnimatedComponent.h"
 #include "AnimatedIconPropertiesDialog.h"
-#include "MainWindow.h"
 #include "Configuration.h"
 
 
@@ -40,7 +39,7 @@
 //! @param [in] pAnimatedComponent Pointer to the animated component
 //! @param [in] index Index of movable icon that was double-clicked
 //! @param [in] Pointer to the parent window
-AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pAnimatedComponent, int index, MainWindow *parent)
+AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pAnimatedComponent, int index, QWidget *parent)
     : QDialog(parent)
 {
     this->setPalette(gConfig.getPalette());

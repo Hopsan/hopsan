@@ -131,7 +131,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
 void SensitivityAnalysisDialog::open()
 {
     mpParametersList->clear();
-    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
     QStringList componentNames = pSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {
@@ -191,7 +191,7 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
         mSelectedParameters.append(item->text(0));
         QLabel *pLabel = new QLabel(item->parent()->text(0) + ", " + item->text(0) + ": ");
         //pLabel->setAlignment(Qt::AlignCenter);
-        QString averageValue = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+        QString averageValue = gpModelHandler->getCurrentViewContainerObject()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
         QLineEdit *pAverageLineEdit = new QLineEdit(averageValue, this);
         QLineEdit *pSigmaLineEdit = new QLineEdit("0.0", this);
         pSigmaLineEdit->setValidator(new QDoubleValidator());
@@ -288,11 +288,11 @@ void SensitivityAnalysisDialog::run()
     if(gConfig.getUseMulticore())
     {
         //Close all other containers
-        for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
+        for(int i=0; i<gpModelHandler->count(); ++i)
         {
-            if(gpMainWindow->mpModelHandler->getViewContainerObject(i) != gpMainWindow->mpModelHandler->getCurrentViewContainerObject())
+            if(gpModelHandler->getViewContainerObject(i) != gpModelHandler->getCurrentViewContainerObject())
             {
-                gpMainWindow->mpModelHandler->closeModel(i);
+                gpModelHandler->closeModel(i);
                 --i;
             }
         }
@@ -300,7 +300,7 @@ void SensitivityAnalysisDialog::run()
         //Load more tabs with same model
         for(int i=1; i<nThreads; ++i)
         {
-            gpMainWindow->mpModelHandler->loadModel(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelFileInfo().absoluteFilePath(), true);
+            gpModelHandler->loadModel(gpModelHandler->getCurrentViewContainerObject()->getModelFileInfo().absoluteFilePath(), true);
         }
     }
     else
@@ -308,7 +308,7 @@ void SensitivityAnalysisDialog::run()
         nThreads = 1;
     }
 
-    int nTabs = gpMainWindow->mpModelHandler->count();
+    int nTabs = gpModelHandler->count();
 
     if(gConfig.getUseMulticore())
     {
@@ -320,10 +320,10 @@ void SensitivityAnalysisDialog::run()
                 for(int p=0; p<nParameteres; ++p)
                 {
                     double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
-                    gpMainWindow->mpModelHandler->getViewContainerObject(t)->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                    gpModelHandler->getViewContainerObject(t)->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
                 }
             }
-            gpMainWindow->mpModelHandler->simulateAllOpenModels_blocking(noChange);
+            gpModelHandler->simulateAllOpenModels_blocking(noChange);
             noChange=true;
         }
     }
@@ -334,9 +334,9 @@ void SensitivityAnalysisDialog::run()
             for(int p=0; p<nParameteres; ++p)
             {
                 double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
-                gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                gpModelHandler->getCurrentViewContainerObject()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
             }
-            gpMainWindow->mpModelHandler->getCurrentModel()->simulate_blocking();
+            gpModelHandler->getCurrentModel()->simulate_blocking();
         }
     }
 
@@ -344,7 +344,7 @@ void SensitivityAnalysisDialog::run()
     {
         for(int v=0; v<mOutputVariables.size(); ++v)
         {
-            gpMainWindow->mpModelHandler->setCurrentModel(0);
+            gpModelHandler->setCurrentModel(0);
 
             QString component = mOutputVariables.at(v).at(0);
             QString port = mOutputVariables.at(v).at(1);
@@ -352,25 +352,23 @@ void SensitivityAnalysisDialog::run()
 
             QString fullName = makeConcatName(component,port,variable);
 
-            PlotWindow *pPlotWindow = gpMainWindow->mpModelHandler->getViewContainerObject(0)->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
+            PlotWindow *pPlotWindow = gpModelHandler->getViewContainerObject(0)->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
             pPlotWindow->hidePlotCurveInfo();
             pPlotWindow->setLegendsVisible(false);
 
-            int nGenerations = gpMainWindow->mpModelHandler->getViewContainerObject(0)->getLogDataHandler()->getLatestGeneration()+1;
+            int nGenerations = gpModelHandler->getViewContainerObject(0)->getLogDataHandler()->getLatestGeneration()+1;
             for(int g=nGenerations-nSteps/nThreads; g<nGenerations-1; ++g)
             {
-                gpMainWindow->mpModelHandler->getViewContainerObject(0)->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
-                //gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
+                gpModelHandler->getViewContainerObject(0)->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
             }
 
             //! @todo Why is there two loop bellow why not begin at tab 0 and jsut have one, why nGen-1 on the first one
             for(int t=1; t<nTabs; ++t)
             {
-                gpMainWindow->mpModelHandler->setCurrentModel(t);
+                gpModelHandler->setCurrentModel(t);
                 for(int g=nGenerations-nSteps/nThreads; g<nGenerations; ++g)
                 {
-                    gpMainWindow->mpModelHandler->getViewContainerObject(t)->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
-                    //gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
+                    gpModelHandler->getViewContainerObject(t)->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
                 }
             }
         }
@@ -382,16 +380,15 @@ void SensitivityAnalysisDialog::run()
             QString component = mOutputVariables.at(v).at(0);
             QString port = mOutputVariables.at(v).at(1);
             QString variable = mOutputVariables.at(v).at(2);
-            PlotWindow *pPlotWindow = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
+            PlotWindow *pPlotWindow = gpModelHandler->getCurrentViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
             pPlotWindow->hidePlotCurveInfo();
             pPlotWindow->setLegendsVisible(false);
 
             QString fullName = makeConcatName(component,port,variable);
-            int nGenerations = gpMainWindow->mpModelHandler->getViewContainerObject(0)->getLogDataHandler()->getLatestGeneration()+1;
+            int nGenerations = gpModelHandler->getViewContainerObject(0)->getLogDataHandler()->getLatestGeneration()+1;
             for(int g=nGenerations - nSteps; g<nGenerations; ++g)
             {
-                gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
-                //gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
+                gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
             }
         }
     }

@@ -771,7 +771,7 @@ void LibraryWidget::recompileComponent()
 
 bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, const QString modelicaCode, int solver)
 { 
-    gpMainWindow->mpModelHandler->saveState();
+    gpModelHandler->saveState();
 
     QStringList libs = QDir(libPath).entryList(QStringList() << "*.dll" << "*.so");
     for(int l=0; l<libs.size(); ++l)
@@ -797,8 +797,8 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
         {
             testFile.close();
             loadAndRememberExternalLibrary(libPath);
-            gpMainWindow->mpModelHandler->restoreState();
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Binary file \""+libs[l]+"\" is not writable! Component cannot be recompiled.");
+            gpModelHandler->restoreState();
+            gpTerminalWidget->mpConsole->printErrorMessage("Binary file \""+libs[l]+"\" is not writable! Component cannot be recompiled.");
             return false;
         }
         else
@@ -837,7 +837,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
         {
             loadAndRememberExternalLibrary(libPath);
         }
-        gpMainWindow->mpModelHandler->restoreState();
+        gpModelHandler->restoreState();
         return false;
     }
 
@@ -908,7 +908,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     qDebug() << "Loaded successfully!";
 
-    gpMainWindow->mpModelHandler->restoreState();
+    gpModelHandler->restoreState();
 
     update();
 
@@ -1047,7 +1047,7 @@ void LibraryWidget::addExternalLibrary(QString libDir)
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
+            gpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
         }
 
         checkForFailedComponents();
@@ -1067,7 +1067,7 @@ void LibraryWidget::importFmu()
     QFileInfo fmuFileInfo = QFileInfo(filePath);
     if(!fmuFileInfo.exists())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("File not found: "+filePath);
+        gpTerminalWidget->mpConsole->printErrorMessage("File not found: "+filePath);
         return;
     }
     gConfig.setFmuImportDir(fmuFileInfo.absolutePath());
@@ -1126,7 +1126,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
         QFile file(filename);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + filename);
+            gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + filename);
             continue;
         }
 
@@ -1141,7 +1141,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
             QDomElement cafRoot = domDocument.documentElement();
             if (cafRoot.tagName() != CAF_ROOT)
             {
-                gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                gpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
                 continue;
             }
             else
@@ -1154,7 +1154,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan ComponentAppearance Data file.");
+            gpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan ComponentAppearance Data file.");
             continue;
         }
 
@@ -1167,7 +1167,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
             success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
             if (!success)
             {
-                gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+                gpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
             }
         }
 
@@ -1266,14 +1266,14 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
 
     if(!success && libList.size()>0)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(libDirObject.path() + ": Could not find any working Hopsan library in specified folder!");
-        gpMainWindow->mpTerminalWidget->checkMessages();
+        gpTerminalWidget->mpConsole->printErrorMessage(libDirObject.path() + ": Could not find any working Hopsan library in specified folder!");
+        gpTerminalWidget->checkMessages();
         pParentTree->removeChild(libName);
         gConfig.removeUserLib(libDirObject.path());
         //delete pTree;
         //return;     //No point in continuing since no library was found
     }
-    gpMainWindow->mpTerminalWidget->checkMessages();
+    gpTerminalWidget->checkMessages();
 
     // Load Component XML (CAF Files)
     filters.clear();
@@ -1288,7 +1288,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         QFile file(filename);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + filename);
+            gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + filename);
             continue;
         }
 
@@ -1306,7 +1306,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
                 //QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
 //                                         "The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: "
 //                                         + cafRoot.tagName() + "!=" + CAF_ROOT);
-                gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                gpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
                 continue;
             }
             else
@@ -1413,7 +1413,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
             success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
             if (!success)
             {
-                gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+                gpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
                 mFailedRecompilableComponents << pAppearanceData->getTypeName();
                 mFailedComponentsHaveCode << !pAppearanceData->getSourceCodeFile().isEmpty();
                 mFailedComponentsAreRecompilable << pAppearanceData->isRecompilable();
@@ -1714,12 +1714,12 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
         qDebug() << "Nodes in library: " << nodes;
 
 //        bool doWarn = false;
-//        for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
+//        for(int i=0; i<gpModelHandler->count(); ++i)
 //        {
-//            QStringList modelComponents = gpMainWindow->mpModelHandler->getContainer(i)->getModelObjectNames();
+//            QStringList modelComponents = gpModelHandler->getContainer(i)->getModelObjectNames();
 //            for(int c=0; c<modelComponents.size(); ++c)
 //            {
-//                QString type = gpMainWindow->mpModelHandler->getContainer(i)->getModelObject(modelComponents[c])->getTypeName();
+//                QString type = gpModelHandler->getContainer(i)->getModelObject(modelComponents[c])->getTypeName();
 //                if(components.contains(type))
 //                {
 //                    doWarn = true;
@@ -1727,10 +1727,10 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
 //            }
 //        }
 
-        //gpMainWindow->mpModelHandler->saveState();
+        //gpModelHandler->saveState();
 
 //        QMessageBox::StandardButton button = QMessageBox::Ok;
-//        if (gpMainWindow->mpModelHandler->count() > 0 && doWarn)
+//        if (gpModelHandler->count() > 0 && doWarn)
 //        {
 //            button = QMessageBox::question(this, "Unload Warning!",
 //                                           "You have open models containing components from the library you are trying to unload. Unloading will likely result in a program crash.\n\nDo you want to continue?",
@@ -1744,7 +1744,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
             update();
 //        }
 
-        //gpMainWindow->mpModelHandler->restoreState();
+        //gpModelHandler->restoreState();
     }
 
 }
@@ -1776,7 +1776,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree, const QStri
     }
     //Then remove the tree itself
     mpContentsTree->findChildByName(parentLibDir)->removeChild(pTree->mName);
-    gpMainWindow->mpTerminalWidget->checkMessages();
+    gpTerminalWidget->checkMessages();
 }
 
 
@@ -1831,7 +1831,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     }
 
     QAction *pEditComponentAction = new QAction(this);
-    if(gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(pItem))
+    if(gpLibraryWidget->mTreeItemToContentsMap.contains(pItem))
     {
         pEditComponentAction = menu.addAction("Edit source code");
         ModelObjectAppearance *pAppearanceData = mTreeItemToContentsMap.find(pItem).value()->getAppearanceData();
@@ -1851,14 +1851,14 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
     if(pSelectedAction == pUnloadLibraryFolder)
     {
-        gpMainWindow->mpModelHandler->saveState();
+        gpModelHandler->saveState();
         unloadExternalLibrary(pTree->mName, pTree->mpParent->mName);
-        gpMainWindow->mpModelHandler->restoreState();
+        gpModelHandler->restoreState();
     }
 
     if(pSelectedAction == pEditComponentAction)
     {
-        gpMainWindow->mpLibrary->editComponent(pItem,0);
+        gpLibraryWidget->editComponent(pItem,0);
     }
 
     QWidget::contextMenuEvent(event);
@@ -1894,54 +1894,54 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
 
     QTreeWidgetItem *item = currentItem();
 
-    if(item == gpMainWindow->mpLibrary->mpAddModelicaComponentItem)
+    if(item == gpLibraryWidget->mpAddModelicaComponentItem)
     {
         EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica);
         pEditDialog->exec();
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+            CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gDesktopHandler.getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
             int solver = pEditDialog->getSolver();
             coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName, solver);
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
         }
         delete(pEditDialog);
         this->setCurrentItem(this->topLevelItem(0));        //Reset current item, so that this action does not auto-trigger when clicking somewhere else
         return;
     }
-    if(item == gpMainWindow->mpLibrary->mpAddCppComponentItem)
+    if(item == gpLibraryWidget->mpAddCppComponentItem)
     {
         EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp);
         pEditDialog->exec();
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+            CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
             QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
             coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
         }
         delete(pEditDialog);
         this->setCurrentItem(this->topLevelItem(0));        //Reset current item, so that this action does not auto-trigger when clicking somewhere else
         return;
     }
-    if(item == gpMainWindow->mpLibrary->mpLoadLibraryItem)
+    if(item == gpLibraryWidget->mpLoadLibraryItem)
     {
-        gpMainWindow->mpLibrary->addExternalLibrary();
+        gpLibraryWidget->addExternalLibrary();
         this->setCurrentItem(this->topLevelItem(0));        //Reset current item, so that this action does not auto-trigger when clicking somewhere else
         return;
     }
 
-    if(!gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
+    if(!gpLibraryWidget->mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 
     //Fetch type name and icon from component in the contents tree
-    QString fullTypeName = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(item).value()->getFullTypeName();
-    QIcon icon = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(item).value()->getIcon(gpMainWindow->mpLibrary->mGfxType);
+    QString fullTypeName = gpLibraryWidget->mTreeItemToContentsMap.find(item).value()->getFullTypeName();
+    QIcon icon = gpLibraryWidget->mTreeItemToContentsMap.find(item).value()->getIcon(gpLibraryWidget->mGfxType);
 
     //Create the mimedata (text with type name)
     QMimeData *mimeData = new QMimeData;
@@ -1976,10 +1976,10 @@ void LibraryTreeWidget::mouseMoveEvent(QMouseEvent *event)
 //    QMenu menu;
 
 //    QAction *pEditComponentAction=0;
-//    if(gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(this->currentItem()))
+//    if(gpLibraryWidget->mTreeItemToContentsMap.contains(this->currentItem()))
 //    {
 //        pEditComponentAction = menu.addAction("Edit source code");
-//        ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(this->currentItem()).value()->getAppearanceData();
+//        ModelObjectAppearance *pAppearanceData = gpLibraryWidget->mTreeItemToContentsMap.find(this->currentItem()).value()->getAppearanceData();
 //        pEditComponentAction->setEnabled(pAppearanceData->isRecompilable());
 //    }
 
@@ -1989,7 +1989,7 @@ void LibraryTreeWidget::mouseMoveEvent(QMouseEvent *event)
 
 //    if(pSelectedAction == pEditComponentAction)
 //    {
-//        gpMainWindow->mpLibrary->editComponent(this->currentItem(),0);
+//        gpLibraryWidget->editComponent(this->currentItem(),0);
 //    }
 
 //    delete(pEditComponentAction);
@@ -2018,11 +2018,11 @@ void LibraryListWidget::mousePressEvent(QMouseEvent *event)
 
     QListWidgetItem *item = currentItem();
 
-    if(!gpMainWindow->mpLibrary->mListItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
+    if(!gpLibraryWidget->mListItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 
     //Fetch type name and icon from component in the contents tree
-    QString fullTypeName = gpMainWindow->mpLibrary->mListItemToContentsMap.find(item).value()->getFullTypeName();
-    QIcon icon = gpMainWindow->mpLibrary->mListItemToContentsMap.find(item).value()->getIcon(gpMainWindow->mpLibrary->mGfxType);
+    QString fullTypeName = gpLibraryWidget->mListItemToContentsMap.find(item).value()->getFullTypeName();
+    QIcon icon = gpLibraryWidget->mListItemToContentsMap.find(item).value()->getIcon(gpLibraryWidget->mGfxType);
 
     //Create the mimedata (text with type name)
     QMimeData *mimeData = new QMimeData;

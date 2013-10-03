@@ -36,7 +36,6 @@
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"
-#include "MainWindow.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
@@ -56,7 +55,7 @@
 //! @brief Constructor for the parameter dialog for components
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, MainWindow *pParent)
+ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, QWidget *pParent)
     : ModelObjectPropertiesDialog(pComponent, pParent)
 {
     mpComponent = pComponent;
@@ -116,7 +115,7 @@ void ComponentPropertiesDialog::createEditStuff()
     helpPixMap.load(mpComponent->getAppearanceData()->getBasePath() + mpComponent->getHelpPicture());
     pHelpPicture->setPixmap(helpPixMap);
 
-    QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpComponent->getTypeName())->getDisplayName(), this);
+    QLabel *pHelpHeading = new QLabel(gpLibraryWidget->getAppearanceData(mpComponent->getTypeName())->getDisplayName(), this);
     pHelpHeading->setAlignment(Qt::AlignCenter);
     QFont tempFont = pHelpHeading->font();
     tempFont.setPixelSize(16);

@@ -208,13 +208,13 @@ void ModelWidget::hasChanged()
     //qDebug() << "hasChanged()";
     if (mIsSaved)
     {
-        QString tabName = gpMainWindow->mpCentralTabs->tabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()));
+        QString tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()));
 
         if(!tabName.endsWith("*"))
         {
             tabName.append("*");
         }
-        gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(this), tabName);
+        gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(this), tabName);
 
         mIsSaved = false;
     }
@@ -281,12 +281,12 @@ void ModelWidget::setSaved(bool value)
 {
     if(value)
     {
-        QString tabName = gpMainWindow->mpCentralTabs->tabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()));
+        QString tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()));
         if(tabName.endsWith("*"))
         {
             tabName.chop(1);
         }
-        gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
+        gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
     }
     mIsSaved = value;
 }
@@ -409,12 +409,12 @@ void ModelWidget::exportModelParameters()
 ////    }
 
 ////    QDomElement XMLparameters = appendDomElement(hmfRoot, "parameters");
-////    for(int i = 0; i < gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
+////    for(int i = 0; i < gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
 ////    {
 ////        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
-////        appendDomTextNode(XMLparameter, "componentname", gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
-////        appendDomTextNode(XMLparameter, "parametername", gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
-////        appendDomValueNode2(XMLparameter, "minmax", gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
+////        appendDomTextNode(XMLparameter, "componentname", gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
+////        appendDomTextNode(XMLparameter, "parametername", gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
+////        appendDomValueNode2(XMLparameter, "minmax", gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
 ////    }
 
 ////    //Save the model component hierarcy
@@ -426,7 +426,7 @@ void ModelWidget::exportModelParameters()
 //    QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
 //    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
 //    {
-//        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
+//        gpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
 //        return;
 //    }
 //    QTextStream out(&xmlhmf);
@@ -443,7 +443,7 @@ void ModelWidget::exportModelParameters()
 //    gpMainWindow->updateRecentList();
 //    this->setSaved(true);
 
-//    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
+//    gpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
 
 }
 
@@ -540,10 +540,10 @@ void ModelWidget::openAnimation()
     }
     if(!getTopLevelSystemContainer()->getModelObjectNames().isEmpty())   //Animation widget cannot be created with no objects
     {
-        mpAnimationWidget = new AnimationWidget(gpMainWindow);
+        mpAnimationWidget = new AnimationWidget(this);
         gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);
         mpAnimationWidget->show();
-        gpMainWindow->mpCentralTabs->hide();
+        gpCentralTabWidget->hide();
     }
 }
 
@@ -558,7 +558,7 @@ void ModelWidget::closeAnimation()
     gpMainWindow->mpCentralGridLayout->removeWidget(mpAnimationWidget);
     delete mpAnimationWidget;
     mpAnimationWidget = 0;
-    gpMainWindow->mpCentralTabs->show();
+    gpCentralTabWidget->show();
 }
 
 
@@ -658,7 +658,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             //Set the tab name to the model name, efectively removing *, also mark the tab as saved
         //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
         QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
-        gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
+        gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
         if(contents == FullModel)
         {
             gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
@@ -666,7 +666,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             this->setSaved(true);
         }
 
-        gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
+        gpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
 
         mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
     }
@@ -678,7 +678,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     QFile file(path);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+        gpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
         return false;
     }
 
@@ -727,7 +727,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     QFile xmlFile(path);
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + path);
+        gpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + path);
         return false;
     }
     QTextStream out(&xmlFile);

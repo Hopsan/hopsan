@@ -564,91 +564,136 @@ private:
 };
 
 
-//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
-class taskSimPoolMaster
+/////////////////////////////////////
+// Random Task Pool Implementation //
+/////////////////////////////////////
+
+
+class RandomTaskPool
 {
 public:
-    taskSimPoolMaster(TaskPool *pTaskPoolS, TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, double timeStep,
-                      size_t nSteps, ComponentSystem *pSystem, double *pSystemTime, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
-
+    RandomTaskPool(std::vector<Component*> componentPtrs)
     {
-        mpTaskPoolS = pTaskPoolS;
+        mFinishedComponentPtrs = componentPtrs;
+        mSize = componentPtrs.size();
+        mnDone = 0;
+        mOpen=false;
+        mpMutex = new tbb::mutex();
+    }
+
+    Component *getComponent()
+    {
+        Component *pRetVal;
+        mpMutex->lock();
+        size_t compSize = mComponentPtrs.size();
+        if(compSize == 0)
+            pRetVal=0;
+        else
+        {
+            size_t random = (size_t)rand() / (size_t)RAND_MAX * compSize;
+            pRetVal = mComponentPtrs[random];
+            mFinishedComponentPtrs.push_back(mComponentPtrs[random]);
+            mComponentPtrs.erase(mComponentPtrs.begin()+random);
+        }
+        mpMutex->unlock();
+        return pRetVal;
+    }
+
+    void reportDone()
+    {
+        ++mnDone;
+    }
+
+    bool isReady()
+    {
+        return mnDone >= mSize;
+    }
+
+    void open()
+    {
+        mComponentPtrs=mFinishedComponentPtrs;
+        mFinishedComponentPtrs.clear();
+        mnDone.store(0);
+        mOpen.store(true);
+    }
+
+    void close()
+    {
+        mOpen=false;
+    }
+
+    bool isOpen()
+    {
+        return mOpen;
+    }
+
+private:
+    std::vector<Component*> mComponentPtrs;
+    std::vector<Component*> mFinishedComponentPtrs;
+    size_t mSize;
+    tbb::atomic<size_t> mnDone;
+    tbb::atomic<bool> mOpen;
+   tbb::mutex *mpMutex;
+};
+
+
+//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+class taskSimRandomPoolSlave
+{
+public:
+    taskSimRandomPoolSlave(RandomTaskPool *pTaskPoolC, RandomTaskPool *pTaskPoolQ, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
+    {
         mpTaskPoolC = pTaskPoolC;
         mpTaskPoolQ = pTaskPoolQ;
-        mTimeStep = timeStep;
-        mnSteps = nSteps;
-        mpSystem = pSystem;
-        mpSystemTime = pSystemTime;
         mpStop = pStop;
         mpTime = pTime;
     }
 
     void operator() ()
     {
-        Component* pComp;
-        for(size_t i=0; i<mnSteps; ++i)
+        Component *pComp;
+        while(!(*mpStop))
+        //for(size_t i=0; i<mnSteps && !(*mpStop); ++i)
         {
-            (*mpTime) = (*mpTime)+mTimeStep;
-
-            //S-pool
-            mpTaskPoolS->open();
-            pComp = mpTaskPoolS->getComponent();
-            while(pComp)
-            {
-                pComp->simulate(*mpTime);
-                mpTaskPoolS->reportDone();
-                pComp = mpTaskPoolS->getComponent();
-            }
-            while(!mpTaskPoolS->isReady()) {}
-            mpTaskPoolS->close();
-
             //C-pool
-            mpTaskPoolC->open();
-            pComp = mpTaskPoolC->getComponent();
-            while(pComp)
+            if(mpTaskPoolC->isOpen())
             {
-                pComp->simulate(*mpTime);
-                mpTaskPoolC->reportDone();
                 pComp = mpTaskPoolC->getComponent();
+                while(pComp)
+                {
+                    pComp->simulate(*mpTime);
+                    mpTaskPoolC->reportDone();
+                    pComp = mpTaskPoolC->getComponent();
+                }
+                while(mpTaskPoolC->isOpen()) {}
             }
-            while(!mpTaskPoolC->isReady()) {}
-            mpTaskPoolC->close();
 
             //Q-pool
-            mpTaskPoolQ->open();
-            pComp = mpTaskPoolQ->getComponent();
-            while(pComp)
+            if(mpTaskPoolQ->isOpen())
             {
-                pComp->simulate(*mpTime);
-                mpTaskPoolQ->reportDone();
                 pComp = mpTaskPoolQ->getComponent();
+                while(pComp)
+                {
+                    pComp->simulate(*mpTime);
+                    mpTaskPoolQ->reportDone();
+                    pComp = mpTaskPoolQ->getComponent();
+                }
+                while(mpTaskPoolQ->isOpen()) {}
             }
-            while(!mpTaskPoolQ->isReady()) {}
-            mpTaskPoolQ->close();
-
-            *mpSystemTime = *mpTime;                  //Update time in component system
-            mpSystem->logTimeAndNodes(i+1);            //Log all nodes
         }
-
-        *mpStop=true;
     }
+
 private:
-    TaskPool *mpTaskPoolS;
-    TaskPool *mpTaskPoolC;
-    TaskPool *mpTaskPoolQ;
-    double mTime;
-    double mTimeStep;
-    size_t mnSteps;
-    ComponentSystem *mpSystem;
-    double *mpSystemTime;
+    RandomTaskPool *mpTaskPoolC;
+    RandomTaskPool *mpTaskPoolQ;
     tbb::atomic<bool> *mpStop;
     tbb::atomic<double> *mpTime;
 };
 
-
 /////////////////////////////
 // Task-stealing algorithm //
 /////////////////////////////
+
 
 class ThreadSafeVector
 {

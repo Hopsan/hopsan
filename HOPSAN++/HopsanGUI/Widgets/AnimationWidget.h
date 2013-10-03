@@ -74,7 +74,7 @@ class AnimationWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnimationWidget(MainWindow *parent = 0);
+    AnimationWidget(QWidget *parent = 0);
     ~AnimationWidget();
 
     void closeEvent(QCloseEvent *event);

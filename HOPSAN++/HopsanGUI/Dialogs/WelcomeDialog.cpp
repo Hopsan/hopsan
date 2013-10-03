@@ -293,8 +293,8 @@ void WelcomeDialog::updateGraphics()
 //! @brief Creates a new blank model and exits welcome dialog.
 void WelcomeDialog::createNewModel()
 {
-    gpMainWindow->mpModelHandler->addNewModel();
-    gpMainWindow->mpModelHandler->getCurrentModel()->getGraphicsView()->centerView();
+    gpModelHandler->addNewModel();
+    gpModelHandler->getCurrentModel()->getGraphicsView()->centerView();
     gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
@@ -304,10 +304,10 @@ void WelcomeDialog::createNewModel()
 //! @brief Opens load dialog, and closes the welcome dialog if a model was loaded.
 void WelcomeDialog::loadExistingModel()
 {
-    gpMainWindow->mpModelHandler->loadModel();
-    if(gpMainWindow->mpModelHandler->count() > 0)
+    gpModelHandler->loadModel();
+    if(gpModelHandler->count() > 0)
     {
-        //gpMainWindow->mpModelHandler->getCurrentTab()->getGraphicsView()->centerView();
+        //gpModelHandler->getCurrentTab()->getGraphicsView()->centerView();
         gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
         gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
         this->close();
@@ -321,9 +321,9 @@ void WelcomeDialog::loadLastSession()
 
     for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
     {
-        gpMainWindow->mpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
+        gpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
     }
-    //gpMainWindow->mpModelHandler->getCurrentTab()->getGraphicsView()->centerView();
+    //gpModelHandler->getCurrentTab()->getGraphicsView()->centerView();
     gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
@@ -333,7 +333,7 @@ void WelcomeDialog::loadLastSession()
 //! @brief Opens selected recent model from the list and closes the welcome dialog.
 void WelcomeDialog::openRecentModel()
 {
-    gpMainWindow->mpModelHandler->loadModel(mModelList.at(mpRecentList->currentIndex().row()));
+    gpModelHandler->loadModel(mModelList.at(mpRecentList->currentIndex().row()));
     gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();

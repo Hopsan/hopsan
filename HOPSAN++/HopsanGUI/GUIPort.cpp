@@ -30,7 +30,6 @@
 #include "GUIPort.h"
 #include "GUIConnector.h"
 
-#include "MainWindow.h"
 #include "PlotWindow.h"
 #include "CoreAccess.h"
 #include "GraphicsView.h"
@@ -387,7 +386,7 @@ void Port::openDefineAliasDialog(QString var)
 
     bool ok;
     QString dummy="";
-    QString alias = QInputDialog::getText(gpMainWindow, "Define alias for "+mpParentModelObject->getName()+"."+this->getName()+"."+var+".",
+    QString alias = QInputDialog::getText(gpMainWindowWidget, "Define alias for "+mpParentModelObject->getName()+"."+this->getName()+"."+var+".",
                                           tr("Alias:"), QLineEdit::Normal,
                                           dummy, &ok);
     if(ok)
@@ -649,7 +648,7 @@ void Port::refreshPortLabelText()
         // backwards compatible
         if (!mpPortAppearance->mDescription.isEmpty())
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("You seem to have enterned a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
+            gpTerminalWidget->mpConsole->printWarningMessage("You seem to have enterned a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
             //Append description
             label.append("<br>\"" + mpPortAppearance->mDescription + "\"");
         }

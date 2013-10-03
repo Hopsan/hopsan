@@ -31,7 +31,6 @@
 #include "GUIConnector.h"
 #include "GUIPort.h"
 #include "Widgets/LibraryWidget.h"
-#include "MainWindow.h"
 #include "UndoStack.h"
 #include "Widgets/HcomWidget.h"
 #include "Utilities/GUIUtilities.h"
@@ -123,12 +122,12 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
         }
     }
 
-    gpMainWindow->mpTerminalWidget->checkMessages();
+    gpTerminalWidget->checkMessages();
 
     if (!success)
     {
         const QString str("Failed to load connector between: "+startComponentName+"->"+startPortName+" and "+endComponentName+"->"+endPortName+" in system: "+pContainer->getName());
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(str, "FailedLoadConnector");
+        gpTerminalWidget->mpConsole->printErrorMessage(str, "FailedLoadConnector");
     }
 
     return success;
@@ -169,11 +168,11 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     {
         if (parameterName.contains("#"))
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Startvalue ignored.", "startvaluemismatch");
+            gpTerminalWidget->mpConsole->printWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Startvalue ignored.", "startvaluemismatch");
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter mismatch: "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Parameter ignored.", "parametermismatch");
+            gpTerminalWidget->mpConsole->printWarningMessage("Parameter mismatch: "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Parameter ignored.", "parametermismatch");
         }
         return;
     }
@@ -192,7 +191,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         QString portparname = parameterName.split("::")[0];
         if (theotherparameternames.contains(portparname))
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting:  "+portparname+"  with:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
+            gpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting:  "+portparname+"  with:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
         }
         else
         {

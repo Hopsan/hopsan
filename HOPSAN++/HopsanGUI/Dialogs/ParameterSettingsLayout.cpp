@@ -237,7 +237,7 @@ bool ParameterSettingsLayout::cleanAndVerifyParameterValue()
     }
     else
     {
-        QMessageBox::critical(this->parentWidget(), "Error", error.append(" Resetting parameter value!"));
+        QMessageBox::critical(gpMainWindowWidget, "Error", error.append(" Resetting parameter value!"));
     }
 
     return isok;

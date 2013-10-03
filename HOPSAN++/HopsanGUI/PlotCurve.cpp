@@ -25,7 +25,6 @@
 //Hopsan includes
 #include "Configuration.h"
 #include "LogDataHandler.h"
-#include "MainWindow.h"
 #include "ModelHandler.h"
 #include "PlotCurve.h"
 #include "PlotTab.h"
@@ -404,8 +403,8 @@ void PlotCurve::commonConstructorCode(int axisY,
 
     //Create connections
     //! @todo we should not connect like this /Peter
-    connect(gpMainWindow->mpModelHandler->getCurrentModel(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-    connect(gpMainWindow->mpCentralTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
+    connect(gpModelHandler->getCurrentModel(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
+    connect(gpCentralTabWidget,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
 
     connectDataSignals();
 
@@ -763,7 +762,7 @@ void PlotCurve::toFrequencySpectrum(const bool doPowerSpectrum)
         QString oldString, newString;
         oldString.setNum(dataVec.size());
         newString.setNum(n);
-        QMessageBox::information(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
+        QMessageBox::information(mpParentPlotTab, this->tr("Wrong Vector Size"),
                                  "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
         reduceVectorSize(dataVec, n);
         reduceVectorSize(timeVec, n);
@@ -1011,7 +1010,7 @@ void PlotCurve::setLineColor(QString colorName)
     QColor color;
     if(colorName.isEmpty())
     {
-        color = QColorDialog::getColor(pen().color(), gpMainWindow);
+        color = QColorDialog::getColor(pen().color(), mpParentPlotTab);
         if (!color.isValid()) { return; }
     }
     else

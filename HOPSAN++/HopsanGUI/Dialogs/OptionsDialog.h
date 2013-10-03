@@ -35,14 +35,12 @@
 #include <QToolButton>
 #include <QComboBox>
 
-class MainWindow;
-
 class OptionsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    OptionsDialog(MainWindow *parent = 0);
+    OptionsDialog(QWidget *parent = 0);
 
 public slots:
     void reset();

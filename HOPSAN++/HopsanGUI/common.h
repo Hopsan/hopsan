@@ -85,6 +85,9 @@ enum InternalExternalEnumT {Internal, External};
 class MainWindow;
 extern MainWindow* gpMainWindow;
 
+class QWidget;
+extern QWidget *gpMainWindowWidget;
+
 class Configuration;
 extern Configuration gConfig;
 
@@ -96,6 +99,27 @@ extern CopyStack gCopyStack;
 
 class PlotHandler;
 extern PlotHandler *gpPlotHandler;
+
+class LibraryWidget;
+extern LibraryWidget *gpLibraryWidget;
+
+class TerminalWidget;
+extern TerminalWidget *gpTerminalWidget;
+
+class ModelHandler;
+extern ModelHandler *gpModelHandler;
+
+class PlotTreeWidget;
+extern PlotTreeWidget *gpPlotWidget;
+
+class CentralTabWidget;
+extern CentralTabWidget *gpCentralTabWidget;
+
+class SystemParametersWidget;
+extern SystemParametersWidget *gpSystemParametersWidget;
+
+class UndoWidget;
+extern UndoWidget *gpUndoWidget;
 
 extern QSplashScreen *gpSplash;
 

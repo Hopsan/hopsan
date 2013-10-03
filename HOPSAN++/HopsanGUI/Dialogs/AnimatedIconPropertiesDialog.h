@@ -38,7 +38,7 @@ class AnimatedIconPropertiesDialog : public QDialog
     Q_OBJECT
 
 public:
-    AnimatedIconPropertiesDialog(AnimatedComponent *pAnimatedComponent, int index, MainWindow *parent = 0);
+    AnimatedIconPropertiesDialog(AnimatedComponent *pAnimatedComponent, int index, QWidget *parent = 0);
 
 private slots:
     void setValues();

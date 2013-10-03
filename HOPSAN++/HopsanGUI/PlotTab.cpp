@@ -29,7 +29,6 @@
 //Hopsan includes
 #include "Configuration.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "MainWindow.h"
 #include "ModelHandler.h"
 #include "PlotCurve.h"
 #include "PlotTab.h"
@@ -1080,7 +1079,7 @@ void PlotTab::exportToXml()
 {
 
     //Open a dialog where text and font can be selected
-    mpExportXmlDialog = new QDialog(gpMainWindow);
+    mpExportXmlDialog = new QDialog(this);
     mpExportXmlDialog->setWindowTitle("Export Plot Tab To XML");
 
     QLabel *pXmlIndentationLabel = new QLabel("Indentation: ");
@@ -1155,7 +1154,7 @@ void PlotTab::exportToCsv(QString fileName)
     file.setFileName(fileName);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
         return;
     }
 
@@ -1248,7 +1247,7 @@ void PlotTab::exportToHvc(QString fileName)
     QFile file(fileInfo.absoluteFilePath());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
         return;
     }
 
@@ -1319,7 +1318,7 @@ void PlotTab::exportToMatlab()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
@@ -1465,7 +1464,7 @@ void PlotTab::exportToGnuplot()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
 
@@ -1653,7 +1652,7 @@ void PlotTab::exportToOldHop()
     //    QVector<double> Scalings;
     //    QString ScaleVal;
 
-    //    QString modelPathwayy = gpMainWindow->mpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
+    //    QString modelPathwayy = gpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
     //    QFileInfo fiz(modelPathwayy);
     //    QString namemodel = fiz.baseName();
 
@@ -2266,7 +2265,7 @@ void PlotTab::saveToXml()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
 
@@ -3057,17 +3056,17 @@ void PlotTab::dropEvent(QDropEvent *event)
             if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FirstPlot) >= 1)
             {
 //                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
-//                setCustomXVector(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
-                setCustomXVectorForAll(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1));
+//                setCustomXVector(gpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
+                setCustomXVectorForAll(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1));
                 //! @todo do we need to reset to default unit too ?
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
+                mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
             }
             else
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
+                mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
             }
         }
     }

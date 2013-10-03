@@ -36,7 +36,6 @@
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
 #include "GUIPort.h"
-#include "MainWindow.h"
 #include "ModelHandler.h"
 #include "ModelWidget.h"
 #include "Widgets/AnimationWidget.h"
@@ -45,11 +44,11 @@
 
 //! @brief Constructor for the animation widget class
 //! @param [in] parent Pointer to parent widget
-AnimationWidget::AnimationWidget(MainWindow *parent) :
+AnimationWidget::AnimationWidget(QWidget *parent) :
     QWidget(parent)
 {
     //Define public member pointer variables
-    mpContainer = gpMainWindow->mpModelHandler->getCurrentViewContainerObject();
+    mpContainer = gpModelHandler->getCurrentViewContainerObject();
 
     mpAnimationData = mpContainer->getAppearanceData()->getAnimationDataPtr();
 
@@ -140,7 +139,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mCurrentAnimationTime = 0;
     mLastAnimationTime = 0;
     mSimulationSpeed = 0;
-    mTimeStep = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
+    mTimeStep = gpModelHandler->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
     mFps=60;   //Frames per second
     mSpeedSliderSensitivity=100;
 
@@ -239,7 +238,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     connect(mpPlayRealTimeButton,   SIGNAL(clicked()),          this,   SLOT(playRT()));
     connect(mpPauseButton,          SIGNAL(clicked()),          this,   SLOT(pause()));
     connect(mpStopButton,           SIGNAL(clicked()),          this,   SLOT(stop()));
-    connect(mpCloseButton,          SIGNAL(pressed()),          gpMainWindow->mpModelHandler->getCurrentModel(), SLOT(closeAnimation()));
+    connect(mpCloseButton,          SIGNAL(pressed()),          gpModelHandler->getCurrentModel(), SLOT(closeAnimation()));
 
     //Define slider connections
     connect(mpTimeSlider,           SIGNAL(sliderPressed()),    this,   SLOT(pause()));

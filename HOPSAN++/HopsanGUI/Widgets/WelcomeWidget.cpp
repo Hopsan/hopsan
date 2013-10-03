@@ -305,8 +305,8 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
     this->setLayout(mpLayout);
 
-    connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
-    connect(gpMainWindow->mpCentralTabs, SIGNAL(currentChanged(int)), this, SLOT(autoHide()));
+    connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
+    connect(gpCentralTabWidget, SIGNAL(currentChanged(int)), this, SLOT(autoHide()));
 }
 
 
@@ -436,17 +436,17 @@ void WelcomeWidget::mousePressEvent(QMouseEvent *event)
 {
     if(mpNewFrame->underMouse())
     {
-        gpMainWindow->mpModelHandler->addNewModel();
+        gpModelHandler->addNewModel();
     }
     else if(mpLoadFrame->underMouse())
     {
-        gpMainWindow->mpModelHandler->loadModel();
+        gpModelHandler->loadModel();
     }
     else if(mpLastSessionFrame->underMouse())
     {
         for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
         {
-            gpMainWindow->mpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
+            gpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
         }
     }
     else if(mpOptionsFrame->underMouse())
@@ -462,14 +462,14 @@ void WelcomeWidget::mousePressEvent(QMouseEvent *event)
 //! @brief Opens selected recent model from the list and closes the welcome dialog.
 void WelcomeWidget::openRecentModel()
 {
-    gpMainWindow->mpModelHandler->loadModel(mRecentModelList.at(mpRecentList->currentIndex().row()));
+    gpModelHandler->loadModel(mRecentModelList.at(mpRecentList->currentIndex().row()));
 }
 
 
 //! @brief Slot that loads an example model, based on the name of the calling action
 void WelcomeWidget::openExampleModel()
 {
-    gpMainWindow->mpModelHandler->loadModel(gDesktopHandler.getMainPath()+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
+    gpModelHandler->loadModel(gDesktopHandler.getMainPath()+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
 }
 
 
@@ -582,7 +582,7 @@ void WelcomeWidget::openDownloadPage()
 
 void WelcomeWidget::autoHide()
 {
-    if(gpMainWindow->mpCentralTabs->currentWidget() != this)
+    if(gpCentralTabWidget->currentWidget() != this)
     {
         this->setFixedSize(1,1);
     }

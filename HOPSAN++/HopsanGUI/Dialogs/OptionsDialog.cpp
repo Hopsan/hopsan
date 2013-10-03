@@ -46,7 +46,7 @@ class CentralTabWidget;
 
 //! Constructor for the options dialog
 //! @param parent Pointer to the main window
-OptionsDialog::OptionsDialog(MainWindow *parent)
+OptionsDialog::OptionsDialog(QWidget *parent)
     : QDialog(parent)
 {
     // Set the name and size of the main window
@@ -343,14 +343,14 @@ void OptionsDialog::updateValues()
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
-    for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
+    for(int i=0; i<gpModelHandler->count(); ++i)
     {
-        gpMainWindow->mpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+        gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     }
     gConfig.setBackgroundColor(mPickedBackgroundColor);
-    for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
+    for(int i=0; i<gpModelHandler->count(); ++i)
     {
-        gpMainWindow->mpModelHandler->getModel(i)->getGraphicsView()->updateViewPort();
+        gpModelHandler->getModel(i)->getGraphicsView()->updateViewPort();
     }
     gConfig.setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
     gConfig.setProgressBarStep(mpProgressBarSpinBox->value());
@@ -359,9 +359,9 @@ void OptionsDialog::updateValues()
     gConfig.setAutoLimitLogDataGenerations(mpAutoLimitGenerationsCheckBox->isChecked());
     gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
     gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
-    for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
+    for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
-        gpMainWindow->mpModelHandler->getViewContainerObject(i)->getLogDataHandler()->limitPlotGenerations();
+        gpModelHandler->getViewContainerObject(i)->getLogDataHandler()->limitPlotGenerations();
     }
     gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
     gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());

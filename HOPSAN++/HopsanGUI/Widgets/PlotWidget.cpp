@@ -337,10 +337,10 @@ void PlotVariableTree::updateList()
 //            {
 //                QVector<QString> variableNames;
 //                QVector<QString> variableUnits;
-//                gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), variableNames, variableUnits);
+//                gpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), variableNames, variableUnits);
 //                if(!timeVectorRetained)
 //                {
-//                    time = QVector<double>::fromStdVector(gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
+//                    time = QVector<double>::fromStdVector(gpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
 //                    timeVectorRetained = true;
 //                }
 //                if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
@@ -356,7 +356,7 @@ void PlotVariableTree::updateList()
 //                        variableDescription.dataName = variableNames[i];
 //                        variableDescription.dataUnit = variableUnits[i];
 //                        mAvailableVariables.append(variableDescription);
-//                        if(gpMainWindow->mpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
+//                        if(gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
 //                        {
 //                            tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
 //                        }
@@ -381,7 +381,7 @@ void PlotVariableTree::updateList()
 //            tempPlotVariableTreeItem->setText(0, " <"+alias+"> "+componentName+", "+portName+", "+dataName+", ["+dataUnit+"]");
 //            tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
 //            this->addTopLevelItem(tempPlotVariableTreeItem);
-//            tempPlotVariableTreeItem->setDisabled(!mAvailableVariables.contains(gpMainWindow->mpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i)));
+//            tempPlotVariableTreeItem->setDisabled(!mAvailableVariables.contains(gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i)));
         }
     }
 
@@ -390,7 +390,7 @@ void PlotVariableTree::updateList()
     {
         if(!mAvailableVariables.contains(mpLogDataHandler->getFavoriteVariableList().at(i)))
         {
-           // gpMainWindow->mpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().removeAll(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getPlotDataPtr()->getFavoriteVariableList().at(i));
+           // gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().removeAll(gpModelHandler->getCurrentTopLevelSystem()->getPlotDataPtr()->getFavoriteVariableList().at(i));
         }
     }
 
@@ -399,10 +399,10 @@ void PlotVariableTree::updateList()
 
     // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated.
     // It must first be disconnected in case it was already connected, to avoid duplication of connection.
-//    disconnect(gpMainWindow->mpModelHandler->getCurrentModel(),    SIGNAL(simulationFinished()), this, SLOT(updateList()));
-//    disconnect(gpMainWindow->mpCentralTabs,                     SIGNAL(simulationFinished()), this, SLOT(updateList()));
-//    connect(gpMainWindow->mpModelHandler->getCurrentModel(),       SIGNAL(simulationFinished()), this, SLOT(updateList()));
-//    connect(gpMainWindow->mpCentralTabs,                        SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    disconnect(gpModelHandler->getCurrentModel(),    SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    disconnect(gpCentralTabWidget,                     SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    connect(gpModelHandler->getCurrentModel(),       SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    connect(gpCentralTabWidget,                        SIGNAL(simulationFinished()), this, SLOT(updateList()));
 }
 
 
@@ -495,7 +495,7 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
         }
 
 //! @todo FIXA /Peter
-//        if(!gpMainWindow->mpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
+//        if(!gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
 //        {
 //            addToFavoritesAction = menu.addAction(QString("Add Favorite Variable"));
 //        }
@@ -524,13 +524,13 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
         if(selectedAction == pAddToFavoritesAction)
         {
             //! @todo FIXA /Peter
-            //gpMainWindow->mpModelHandler->getCurrentContainer()->getPlotDataPtr()->setFavoriteVariable(variableDescription.componentName, variableDescription.portName, variableDescription.dataName, variableDescription.dataUnit);
+            //gpModelHandler->getCurrentContainer()->getPlotDataPtr()->setFavoriteVariable(variableDescription.componentName, variableDescription.portName, variableDescription.dataName, variableDescription.dataUnit);
         }
 
         if(selectedAction == pRemoveFromFavoritesAction)
         {
            //! @todo FIXA /Peter
-           //gpMainWindow->mpModelHandler->getCurrentContainer()->getPlotDataPtr()->removeFavoriteVariableByComponentName(pItem->getComponentName());
+           //gpModelHandler->getCurrentContainer()->getPlotDataPtr()->removeFavoriteVariableByComponentName(pItem->getComponentName());
            //this->updateList();
         }
     }
@@ -571,7 +571,7 @@ PlotTreeWidget::PlotTreeWidget(QWidget *pParent)
     mpLoadButton->setHidden(true);      //!< @todo Fix /Peter
     //mpLoadButton->setDisabled(true);
 
-    connect(gpMainWindow->mpLibrary, SIGNAL(hovered()), this, SLOT(clearHoverEffects()));
+    connect(gpLibraryWidget, SIGNAL(hovered()), this, SLOT(clearHoverEffects()));
 }
 
 void PlotTreeWidget::openNewPlotWindow()
@@ -652,9 +652,9 @@ void PlotTreeWidget::loadFromXml()
 //            QString modelName = curveElement.attribute("model");        //Find project tab with model file. Do nothing if not found.
 //            bool foundModel = false;
 //            int i;
-//            for(i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
+//            for(i=0; i<gpModelHandler->count(); ++i)
 //            {
-//                if(gpMainWindow->mpCentralTabs->getSystem(i)->getModelFileInfo().filePath() == modelName)
+//                if(gpCentralTabWidget->getSystem(i)->getModelFileInfo().filePath() == modelName)
 //                {
 //                    foundModel = true;
 //                    break;
@@ -668,9 +668,9 @@ void PlotTreeWidget::loadFromXml()
 //            QString dataUnit = curveElement.attribute("unit");
 //            int axisY = curveElement.attribute("axis").toInt();
 //            if(foundModel &&
-//               gpMainWindow->mpCentralTabs->getContainer(i)->getPlotDataPtr()->size() >= generation &&
-//               gpMainWindow->mpCentralTabs->getContainer(i)->hasModelObject(componentName) &&
-//               gpMainWindow->mpCentralTabs->getContainer(i)->getModelObject(componentName)->getPort(portName) != 0)
+//               gpCentralTabWidget->getContainer(i)->getPlotDataPtr()->size() >= generation &&
+//               gpCentralTabWidget->getContainer(i)->hasModelObject(componentName) &&
+//               gpCentralTabWidget->getContainer(i)->getModelObject(componentName)->getPort(portName) != 0)
 
 //            {
 //                pPlotWindow->addPlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelName);

@@ -291,7 +291,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
 void OptimizationDialog::loadConfiguration()
 {
-    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
 
     OptimizationSettings optSettings = pSystem->getOptimizationSettings();
 
@@ -310,8 +310,8 @@ void OptimizationDialog::loadConfiguration()
     for(int i=0; i<optSettings.mParamters.size(); ++i)
     {
         //Check if component and parameter exists before checking the tree item (otherwise tree item does not exist = crash)
-        if(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
-           gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
+        if(gpModelHandler->getCurrentViewContainerObject()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
+           gpModelHandler->getCurrentViewContainerObject()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
         {
             findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
         }
@@ -387,7 +387,7 @@ void OptimizationDialog::saveConfiguration()
 
 
 
-    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
     pSystem->setOptimizationSettings(optSettings);
 }
 
@@ -416,7 +416,7 @@ void OptimizationDialog::open()
     mpParametersList->clear();
 
     //Populate parameters list
-    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
     QStringList componentNames = pSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {
@@ -562,13 +562,13 @@ void OptimizationDialog::generateScriptFile()
 
     if(mSelectedParameters.isEmpty())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
+        gpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
         return;
     }
 
     if(mSelectedFunctions.isEmpty())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
+        gpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
         return;
     }
 
@@ -581,7 +581,7 @@ void OptimizationDialog::generateScriptFile()
         generateParticleSwarmScript();
         break;
     default :
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Algorithm type undefined.");
+        gpTerminalWidget->mpConsole->printErrorMessage("Algorithm type undefined.");
     }
 }
 
@@ -608,7 +608,7 @@ void OptimizationDialog::generateComplexScript()
         for(int j=0; j<mFunctionComponents[i].size(); ++j)
         {
             QString varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
-            gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(varName);
+            gpTerminalWidget->mpHandler->toShortDataNames(varName);
             objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
 
             if(!plotVarsList.contains(varName))
@@ -643,7 +643,7 @@ void OptimizationDialog::generateComplexScript()
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
         QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
-        gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(par);
+        gpTerminalWidget->mpHandler->toShortDataNames(par);
         setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
@@ -692,7 +692,7 @@ void OptimizationDialog::generateParticleSwarmScript()
         for(int j=0; j<mFunctionComponents[i].size(); ++j)
         {
             QString varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
-            gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(varName);
+            gpTerminalWidget->mpHandler->toShortDataNames(varName);
             objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
 
             if(!plotVarsList.contains(varName))
@@ -727,7 +727,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
         QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
-        gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(par);
+        gpTerminalWidget->mpHandler->toShortDataNames(par);
         setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
@@ -785,7 +785,7 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
     {
         mSelectedComponents.append(item->parent()->text(0));
         mSelectedParameters.append(item->text(0));
-        SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
+        SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
         QString currentValue = pSystem->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
 
         QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + " (" + currentValue + trUtf8(")  < "));
@@ -1086,7 +1086,7 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedParameters.isEmpty())
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
+            gpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
             this->back();
             return;
         }
@@ -1097,7 +1097,7 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedFunctions.isEmpty())
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
+            gpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
             this->back();
             return;
         }
@@ -1122,9 +1122,9 @@ void OptimizationDialog::run()
 
     QStringList commands = mpOutputBox->toPlainText().split("\n");
     bool *abort = new bool;
-    gpMainWindow->mpTerminalWidget->setEnabledAbortButton(true);
-    gpMainWindow->mpTerminalWidget->mpHandler->runScriptCommands(commands, abort);
-    gpMainWindow->mpTerminalWidget->setEnabledAbortButton(false);
+    gpTerminalWidget->setEnabledAbortButton(true);
+    gpTerminalWidget->mpHandler->runScriptCommands(commands, abort);
+    gpTerminalWidget->setEnabledAbortButton(false);
     delete(abort);
 }
 
@@ -1132,9 +1132,9 @@ void OptimizationDialog::run()
 //! @brief Saves generated script to a script file
 void OptimizationDialog::saveScriptFile()
 {
-    QString filePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Script File"),
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Script File"),
                                                  gConfig.getScriptDir(),
-                                                 gpMainWindow->tr("HCOM Script (*.hcom)"));
+                                                 this->tr("HCOM Script (*.hcom)"));
 
     if(filePath.isEmpty())     //Don't save anything if user presses cancel
     {
@@ -1163,12 +1163,12 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
     if(nSelVar > nVar)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Too many variables selected for this function.");
+        gpTerminalWidget->mpConsole->printErrorMessage("Too many variables selected for this function.");
         return false;
     }
     else if(nSelVar < nVar)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Too few variables selected for this function.");
+        gpTerminalWidget->mpConsole->printErrorMessage("Too few variables selected for this function.");
         return false;
     }
     return true;

@@ -22,10 +22,10 @@
 //!
 //$Id$
 
+#include <QDebug>
 
 #include "InitializationThread.h"
 #include "Widgets/ModelWidget.h"
-#include "MainWindow.h"
 #include "CoreAccess.h"
 
 

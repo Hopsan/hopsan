@@ -26,7 +26,6 @@
 #include "GUIContainerObject.h"
 #include "GUIPort.h"
 #include "Dialogs/ContainerPortPropertiesDialog.h"
-#include "MainWindow.h"
 
 ContainerPort::ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -122,7 +121,7 @@ void ContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
 //! @brief Opens the properties dialog
 void ContainerPort::openPropertiesDialog()
 {
-    ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this, gpMainWindow);
+    ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this, gpMainWindowWidget);
     pDialog->exec();
     delete pDialog;
 }

@@ -27,7 +27,6 @@
 #include "PlotWindow.h"
 #include "DesktopHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "common.h"
@@ -110,7 +109,7 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     file.setFileName(filePath);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
 
@@ -229,11 +228,11 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read .PLO file.");
+        QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"), "Unable to read .PLO file.");
         return;
     }
 
-    QProgressDialog progressImportBar(tr("Importing PLO"), QString(), 0, 0, gpMainWindow);
+    QProgressDialog progressImportBar(tr("Importing PLO"), QString(), 0, 0, gpMainWindowWidget);
     progressImportBar.setWindowModality(Qt::WindowModal);
     progressImportBar.setRange(0,0);
     progressImportBar.show();
@@ -385,7 +384,7 @@ void LogDataHandler::importFromCsv(QString rImportFilePath)
 
     if(!pParser->isOk())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("CSV file could not be parsed.");
+        gpTerminalWidget->mpConsole->printErrorMessage("CSV file could not be parsed.");
         return;
     }
 
@@ -494,12 +493,12 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open data file:  "+csvFilePath);
+            gpTerminalWidget->mpConsole->printErrorMessage("Could not open data file:  "+csvFilePath);
         }
     }
     else
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("columns.size() != names.size() in:  LogDataHandler::importTimeVariablesFromCSVColumns()");
+        gpTerminalWidget->mpConsole->printErrorMessage("columns.size() != names.size() in:  LogDataHandler::importTimeVariablesFromCSVColumns()");
     }
 }
 
@@ -780,7 +779,7 @@ QVector<double> LogDataHandler::getTimeVectorCopy(int generation) const
 void LogDataHandler::definePlotAlias(QString fullName)
 {
     bool ok;
-    QString alias = QInputDialog::getText(gpMainWindow, "Define Variable Alias",
+    QString alias = QInputDialog::getText(gpMainWindowWidget, gpMainWindowWidget->tr("Define Variable Alias"),
                                      "Alias:", QLineEdit::Normal, "", &ok);
     if(ok)
     {
@@ -953,7 +952,7 @@ void LogDataHandler::limitPlotGenerations()
     {
         if(!gConfig.getAutoLimitLogDataGenerations())
         {
-            QDialog *pDialog = new QDialog(gpMainWindow);
+            QDialog *pDialog = new QDialog(gpMainWindowWidget);
             pDialog->setWindowTitle("Hopsan");
             QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
             QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(gConfig.getGenerationLimit())+"<br>Number of data generations: "+QString::number(getNumberOfGenerations())+"<br><br><b>Discard "+QString::number(getNumberOfGenerations()-gConfig.getGenerationLimit())+" generations(s)?</b>");
@@ -1391,7 +1390,7 @@ double LogDataHandler::pokeVariable(const QString &a, const int index, const dou
     {
         return pokeVariable(pData1, index, value);
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("In Poke, No such variable: " + a);
+    gpTerminalWidget->mpConsole->printErrorMessage("In Poke, No such variable: " + a);
     return 0;
 }
 
@@ -1421,7 +1420,7 @@ bool LogDataHandler::deleteVariable(const QString &a)
             return true;
         }
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("In Delete, No such variable: " + a);
+    gpTerminalWidget->mpConsole->printErrorMessage("In Delete, No such variable: " + a);
     return false;
 }
 
@@ -1437,7 +1436,7 @@ double LogDataHandler::peekVariable(const QString &a, const int index)
     {
         return peekVariable(pData1,index);
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("In Peek, No such variable: " + a);
+    gpTerminalWidget->mpConsole->printErrorMessage("In Peek, No such variable: " + a);
     return 0;
 }
 
@@ -1454,10 +1453,10 @@ QString LogDataHandler::saveVariable(const QString &currName, const QString &new
             pNewData->assignFrom(pCurrData);
             return pNewData->getFullVariableName();
         }
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not create variable: " + newName);
+        gpTerminalWidget->mpConsole->printErrorMessage("Could not create variable: " + newName);
         return QString();
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Variable: " + currName + " does not exist, or Variable: " + newName + " already exist");
+    gpTerminalWidget->mpConsole->printErrorMessage("Variable: " + currName + " does not exist, or Variable: " + newName + " already exist");
     return QString();
 }
 
@@ -1498,7 +1497,7 @@ double LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index
     double r = a->pokeData(index,value,err);
     if (!err.isEmpty())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(err);
+        gpTerminalWidget->mpConsole->printErrorMessage(err);
     }
     return r;
 }
@@ -1516,7 +1515,7 @@ double LogDataHandler::peekVariable(SharedLogVariableDataPtrT a, const int index
     double r = a->peekData(index, err);
     if (!err.isEmpty())
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(err);
+        gpTerminalWidget->mpConsole->printErrorMessage(err);
     }
     return r;
 }
@@ -1544,7 +1543,7 @@ void LogDataHandler::appendVariable(const QString &a, const double x, const doub
         pData1->append(x,y);
         return;
     }
-    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    gpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
     return;
 }
 
@@ -1622,7 +1621,7 @@ void LogDataHandler::setFavoriteVariable(QString componentName, QString portName
     {
         mFavoriteVariables.append(tempVariable);
     }
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
+    gpPlotWidget->mpPlotVariableTree->updateList();
 
     mpParentContainerObject->mpModelWidget->hasChanged();
 }
@@ -1638,7 +1637,7 @@ void LogDataHandler::removeFavoriteVariableByComponentName(QString componentName
         if((*it).mComponentName == componentName)
         {
             mFavoriteVariables.removeAll((*it));
-            gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
+            gpPlotWidget->mpPlotVariableTree->updateList();
             return;
         }
     }

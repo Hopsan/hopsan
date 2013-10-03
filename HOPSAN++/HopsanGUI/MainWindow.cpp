@@ -76,6 +76,14 @@
 
 // Global
 PlotHandler* gpPlotHandler = 0;
+TerminalWidget *gpTerminalWidget = 0;
+ModelHandler *gpModelHandler = 0;
+LibraryWidget *gpLibraryWidget = 0;
+PlotTreeWidget *gpPlotWidget = 0;
+SystemParametersWidget *gpSystemParametersWidget = 0;
+CentralTabWidget *gpCentralTabWidget = 0;
+UndoWidget *gpUndoWidget = 0;
+
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -85,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
     gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
                                 //! @note This is however not possible, because the gpMainWindow pointer is needed by the MainWindow constructor code.
                                 //! @todo needs some code rewrite to fix this, it is madness
-
+    gpMainWindowWidget = this;
 
     gDesktopHandler.setupPaths();
 
@@ -103,6 +111,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpTerminalDock = new QDockWidget(tr("Terminal"), this);
     mpTerminalDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpTerminalWidget = new TerminalWidget(this);
+    gpTerminalWidget = mpTerminalWidget;
     mpTerminalWidget->mpConsole->printFirstInfo();
     mpTerminalDock->setWidget(mpTerminalWidget);
     mpTerminalDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
@@ -166,6 +175,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibDock = new QDockWidget(tr("Component Library"), this);
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
+    gpLibraryWidget = mpLibrary;
     mpLibDock->setWidget(mpLibrary);
 
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
@@ -179,6 +189,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Create the undo widget and the options dialog
     mpUndoWidget = new UndoWidget(this);
+    gpUndoWidget = mpUndoWidget;
     mpOptionsDialog = new OptionsDialog(this);
 
     //Create the central widget for the main window
@@ -193,9 +204,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Create the model handler object
     mpModelHandler = new ModelHandler(this);
+    gpModelHandler = mpModelHandler;
 
     //Create the main tab container, need at least one tab
     mpCentralTabs = new CentralTabWidget(this);
+    gpCentralTabWidget = mpCentralTabs;
     mpCentralTabs->setObjectName("centralTabs");
     mpCentralTabs->setMouseTracking(true);
     mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
@@ -213,6 +226,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
+    gpSystemParametersWidget = mpSystemParametersWidget;
     mpSystemParametersWidget->setVisible(false);
 
     // Create the HVC Widget
@@ -367,6 +381,7 @@ void MainWindow::initializeWorkspace()
 
     // Create the plot widget, only once! :)
     mpPlotWidget = new PlotTreeWidget(this);
+    gpPlotWidget = mpPlotWidget;
     mpPlotWidget->hide();
 
     // Create the data explorer widget
@@ -1308,6 +1323,7 @@ void MainWindow::launchAutoUpdate()
 }
 
 
+//! @todo Does this function need to be in main window? (Will require more includes of mainwindow.h)
 void MainWindow::openContextHelp()
 {
     QAction *action = qobject_cast<QAction *>(sender());

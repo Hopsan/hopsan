@@ -38,7 +38,6 @@
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"
-#include "MainWindow.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
@@ -73,13 +72,13 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+            CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gDesktopHandler.getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
             int solver = pEditDialog->getSolver();
             coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName, solver);
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
             mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
         }
         delete(pEditDialog);
@@ -96,11 +95,11 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+            CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
             QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
             coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
             mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
         }
         delete(pEditDialog);
@@ -148,7 +147,7 @@ bool VariableTableWidget::cleanAndVerifyParameterValue(QString &rValue, const QS
     }
     else
     {
-        QMessageBox::critical(this->parentWidget(), "Error", error.append(" Resetting parameter value!"));
+        QMessageBox::critical(gpMainWindowWidget, "Error", error.append(" Resetting parameter value!"));
         return false;
     }
 }
@@ -226,11 +225,11 @@ void ComponentPropertiesDialog3::copyToNewComponent()
 
     if(pEditDialog->result() == QDialog::Accepted)
     {
-        CoreGeneratorAccess coreAccess(gpMainWindow->mpLibrary);
+        CoreGeneratorAccess coreAccess(gpLibraryWidget);
         QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
         QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
         coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
-        gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+        gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
     }
     delete(pEditDialog);
 }
@@ -262,7 +261,7 @@ void ComponentPropertiesDialog3::recompile()
     sourceFile.write(sourceCode.toStdString().c_str());
     sourceFile.close();
 
-    if(!gpMainWindow->mpLibrary->recompileComponent(basePath+libPath, modelica, sourceCode, solver))
+    if(!gpLibraryWidget->recompileComponent(basePath+libPath, modelica, sourceCode, solver))
     {
         qDebug() << "Failure!";
         QFile sourceFile(basePath+fileName);
@@ -379,7 +378,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         QGroupBox *pHelpWidget = new QGroupBox();
         QVBoxLayout *pHelpLayout = new QVBoxLayout(pHelpWidget);
 
-        QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpModelObject->getTypeName())->getDisplayName());
+        QLabel *pHelpHeading = new QLabel(gpLibraryWidget->getAppearanceData(mpModelObject->getTypeName())->getDisplayName());
         pHelpHeading->setAlignment(Qt::AlignCenter);
         QFont tempFont = pHelpHeading->font();
         tempFont.setPixelSize(16);
@@ -795,7 +794,7 @@ void VariableTableWidget::selectSystemParameterAtRow(int row)
     QAction *selectedAction = menu.exec(cursor.pos());
     if(selectedAction == pAddAction)
     {
-        gpMainWindow->mpSystemParametersWidget->openAddParameterDialog();
+        gpSystemParametersWidget->openAddParameterDialog();
         return;
     }
     QString parNameString = actionParamMap.value(selectedAction);

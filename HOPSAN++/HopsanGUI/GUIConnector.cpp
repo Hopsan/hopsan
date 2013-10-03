@@ -25,7 +25,6 @@
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
 
-#include "MainWindow.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
