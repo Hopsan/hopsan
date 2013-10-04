@@ -757,6 +757,15 @@ private Q_SLOTS:
         QTest::newRow("5") << Expression("cos(2*x^2)") << Expression("x") << Expression("-sin(2.0*pow(x,2.0))*x*4.0");
     }
 
+
+    bool fuzzyEqual(const double &x, const double &y)
+    {
+        if(y>0)
+            return (x<=y*1.0000001 && x*1.0000001>=y);
+        else
+            return (x>=y*1.0000001 && x*1.0000001<=y);
+    }
+
     void SymHop_Evaluate()
     {
         QFETCH(Expression, expr);
@@ -790,6 +799,7 @@ private Q_SLOTS:
         QTest::newRow("9") << Expression("x+A") << variables << x;
         QTest::newRow("10") << Expression("2e5+2") << variables << 2e5+2;
         QTest::newRow("11") << Expression("2e-5+2") << variables << 2e-5+2;
+        QTest::newRow("12") << Expression("x-5e-3") << variables << x-5e-3;
     }
 };
 
