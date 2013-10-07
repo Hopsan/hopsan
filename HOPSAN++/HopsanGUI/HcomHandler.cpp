@@ -2301,7 +2301,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 HCOMERR("Argument number 2 must be a number.");
                 return;
             }
-            if(nPoint < 0 || nPoint > mpOptHandler->mOptObjectives.size()-1)
+            if(nPoint < 0 || nPoint > mpOptHandler->mOptNumPoints-1)
             {
                 HCOMERR("Index out of range.");
                 return;
@@ -2326,7 +2326,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 HCOMERR("Argument number 2 must be a number.");
                 return;
             }
-            if(nPoint < 0 || nPoint > mpOptHandler->mOptParameters.size()-1)
+            if(nPoint < 0 || nPoint > mpOptHandler->mOptNumParameters-1)
             {
                 HCOMERR("Index out of range.");
                 return;
@@ -2414,8 +2414,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->mOptLastWorstId = -1;
             mpOptHandler->mOptWorstCounter = 0;
             mpOptHandler->mOptParameters.resize(mpOptHandler->mOptNumPoints);
-            mpOptHandler->mOptParMin.resize(mpOptHandler->mOptNumPoints);
-            mpOptHandler->mOptParMax.resize(mpOptHandler->mOptNumPoints);
+            mpOptHandler->mOptParMin.resize(mpOptHandler->mOptNumParameters);
+            mpOptHandler->mOptParMax.resize(mpOptHandler->mOptNumParameters);
             mpOptHandler->mOptMaxEvals = getNumber("maxevals", &ok);
             mpOptHandler->mOptAlpha = getNumber("alpha", &ok);
             mpOptHandler->mOptRfak = getNumber("rfak", &ok);
@@ -2433,8 +2433,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->mOptBestKnowns.resize(mpOptHandler->mOptNumPoints);
             mpOptHandler->mOptBestPoint.resize(mpOptHandler->mOptNumParameters);
             mpOptHandler->mOptBestObjectives.resize(mpOptHandler->mOptNumPoints);
-            mpOptHandler->mOptParMin.resize(mpOptHandler->mOptNumPoints);
-            mpOptHandler->mOptParMax.resize(mpOptHandler->mOptNumPoints);
+            mpOptHandler->mOptParMin.resize(mpOptHandler->mOptNumParameters);
+            mpOptHandler->mOptParMax.resize(mpOptHandler->mOptNumParameters);
             mpOptHandler->mOptMaxEvals = getNumber("maxevals", &ok);
             mpOptHandler->mOptOmega = getNumber("omega", &ok);
             mpOptHandler->mOptC1 = getNumber("c1", &ok);
@@ -3142,7 +3142,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
         }
         else if(lines[l].startsWith("define "))
         {
-            funcName = lines[l].section(" ",1);
+            funcName = lines[l].section(" ",1).trimmed();
             ++l;
             while(!lines[l].startsWith("enddefine"))
             {
