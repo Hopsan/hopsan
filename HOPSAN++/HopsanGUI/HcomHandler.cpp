@@ -817,7 +817,6 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
 
         VariableType returnType;
         bool evalOk;
-        QString newValue = splitCmd[1];
         QString newValue = evaluateExpression(splitCmd[1], &returnType, &evalOk);
         if(!evalOk || !returnType == Scalar)
         {
