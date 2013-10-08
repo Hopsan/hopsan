@@ -2993,7 +2993,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             //Signal components
             for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
             {
-                simTasks->run(TaskSimOneComponentOneStep(mComponentSignalptrs[s], mTime));
+                mComponentSignalptrs[s]->simulate(mTime);
             }
             simTasks->wait();
 
