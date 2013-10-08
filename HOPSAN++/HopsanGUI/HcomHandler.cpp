@@ -814,11 +814,21 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
 
         QStringList parameterNames;
         getParameters(splitCmd[0], parameterNames);
+
+        VariableType returnType;
+        bool evalOk;
         QString newValue = splitCmd[1];
+        QString newValue = evaluateExpression(splitCmd[1], &returnType, &evalOk);
+        if(!evalOk || !returnType == Scalar)
+        {
+            HCOMERR("Could not evaluate new value for parameter.");
+            return;
+        }
 
         if(parameterNames.isEmpty())
         {
             HCOMERR("Parameter(s) not found.");
+            return;
         }
 
         int nChanged=0;
