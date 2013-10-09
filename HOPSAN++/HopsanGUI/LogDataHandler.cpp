@@ -693,13 +693,17 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString &rName, cons
     return SharedLogVariableDataPtrT(0);
 }
 
+//! @brief Returns multiple logdatavariables based on regular expression search. Exluding temp variables.
+//! @param [in] rNameExp The regular expression for the names to match
+//! @param [in] generation The desired generation of the variable
 QVector<SharedLogVariableDataPtrT> LogDataHandler::getMultipleLogData(const QRegExp &rNameExp, const int generation) const
 {
     QVector<SharedLogVariableDataPtrT> results;
     LogDataMapT::const_iterator it;
     for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
     {
-        if (it.key().contains(rNameExp))
+        // For any non temp variable compare name with regexp
+        if ((it.value()->getVariableDescription()->mVariableSourceType != VariableDescription::TempVariableType) && it.key().contains(rNameExp))
         {
             SharedLogVariableDataPtrT pData = it.value()->getDataGeneration(generation);
             if (pData)
