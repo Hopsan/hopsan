@@ -304,6 +304,9 @@ void OptimizationHandler::optComplexRun()
     // Close the obsolete optimisation model
     gpModelHandler->closeModel(mpOptModel, true);
 
+    //Reset original model
+    gpModelHandler->setCurrentModel(pOrgModel);
+
     return;
 }
 
@@ -625,6 +628,9 @@ void OptimizationHandler::optParticleRun()
 
     // Close the obsolete optimisation model
     gpModelHandler->closeModel(mpOptModel);
+
+    //Reset original model
+    gpModelHandler->setCurrentModel(pOrgModel);
 }
 
 void OptimizationHandler::optPlotPoints()
