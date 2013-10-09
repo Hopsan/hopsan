@@ -53,12 +53,11 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_p1) = (*mpND_c1)+(*mpND_Zc1);
+            (*mpND_p1) = 1;
             for(int i=0; i<(*mpIn); ++i)
             {
                 (*mpND_p1) = (*mpND_p1) * i;
             }
-            *mpND_q1 = *mpIn;
         }
     };
 }
