@@ -98,11 +98,11 @@ void OptimizationHandler::optComplexInit()
 
     mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
 
-    if(!gpModelHandler->getCurrentModel()->isSaved())
-    {
-        mpConsole->printErrorMessage("Current model is not saved. Please save it before running an optimization.", "", false);
-        return;
-    }
+//    if(!gpModelHandler->getCurrentModel()->isSaved())
+//    {
+//        mpConsole->printErrorMessage("Current model is not saved. Please save it before running an optimization.", "", false);
+//        return;
+//    }
 
     LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
@@ -150,6 +150,10 @@ void OptimizationHandler::optComplexRun()
 
     //Evaluate initial objevtive values
     mpHcomHandler->executeCommand("call evalall");
+
+    //Calculate best and worst id, and initialize last worst id
+    optComplexCalculatebestandworstid();
+    mOptLastWorstId = mOptWorstId;
 
     //Store parameters for undo
     mOptOldParameters = mOptParameters;
