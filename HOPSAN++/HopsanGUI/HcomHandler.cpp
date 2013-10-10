@@ -2412,7 +2412,14 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 
         //Everything is fine, initialize and run optimization
 
-        mpOptHandler->mpOptModel = gpModelHandler->loadModel(gpModelHandler->getCurrentTopLevelSystem()->getModelFileInfo().absoluteFilePath(), true, true);
+        //Load hidden copy of model to run optimization against
+        QString name = gpModelHandler->getCurrentTopLevelSystem()->getName();
+        QString appearanceDataBasePath = gpModelHandler->getCurrentTopLevelSystem()->getAppearanceData()->getBasePath();
+        QDir().mkpath(gDesktopHandler.getDataPath()+"/optimization/");
+        QString savePath = gDesktopHandler.getDataPath()+"/optimization/"+name+".hmf";
+        gpModelHandler->getCurrentModel()->saveTo(savePath);
+        gpModelHandler->getCurrentTopLevelSystem()->setAppearanceDataBasePath(appearanceDataBasePath);
+        mpOptHandler->mpOptModel = gpModelHandler->loadModel(savePath, true, true);
 
         bool ok;
         if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Complex)
