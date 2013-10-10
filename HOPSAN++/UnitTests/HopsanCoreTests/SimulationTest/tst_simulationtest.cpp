@@ -643,7 +643,7 @@ private Q_SLOTS:
 
         //Generate FMU
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu/", system, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
+        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu/", system, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", false);
 
         QString code = "#include \"ComponentEssentials.h\"\n"
                 "namespace hopsan {\n"
@@ -675,7 +675,7 @@ private Q_SLOTS:
         args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu/unittestmodel_export.fmu";
         QProcess p;
-        p.start(QDir::currentPath()+"/../../../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
+        p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
         p.waitForReadyRead();
         QString output = p.readAllStandardError();
         QStringList errors = output.split("\n");
@@ -689,7 +689,7 @@ private Q_SLOTS:
         double start, stop;
         removeDir(QDir::currentPath()+"/fmu/");
         QDir().mkpath(QDir::currentPath()+"/fmu/");
-        QString path = QDir::currentPath()+"/../../../Models/unittestmodel_export.hmf";
+        QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
         QFile file(path);
         file.copy(QDir::currentPath()+"/fmu/unittestmodel_export.hmf");
         QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
@@ -703,7 +703,7 @@ private Q_SLOTS:
 
         //Generate S-function
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callSimulinkExportGenerator(HString(pwd.toStdString().c_str())+"/simulink/", "unittestmodel_export.hmf", system, false, 0, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
+        pHandler->callSimulinkExportGenerator(HString(pwd.toStdString().c_str())+"/simulink/", "unittestmodel_export.hmf", system, false, 0, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", false);
 
         QVERIFY2(QFile::exists(pwd+"/simulink/externalLibs.txt"), "Failed to generate S-function, all files not found.");
         QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.dll"), "Failed to generate S-function, all files not found.");
@@ -718,7 +718,7 @@ private Q_SLOTS:
     {
         QTest::addColumn<ComponentSystem*>("system");
         double start, stop;
-        QString path = QDir::currentPath()+"/../../../Models/unittestmodel_export.hmf";
+        QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
         removeDir(QDir::currentPath()+"/simulink/");
         QDir().mkpath(QDir::currentPath()+"/simulink/");
         QFile file(path);
@@ -774,7 +774,7 @@ private Q_SLOTS:
 
         //Generate FMU
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callModelicaGenerator(code, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/", false, HString(pwd.toStdString().c_str())+"/modelica/", name);
+        pHandler->callModelicaGenerator(code, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/", false, HString(pwd.toStdString().c_str())+"/modelica/", name, 0);
 
         QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(LIBEXT)).c_str())), "Failure! Modelica generator failed to generate dll.");
     }
