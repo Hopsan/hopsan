@@ -1,5 +1,4 @@
 #include <QtTest>
-#include <QtTest>
 #include "HopsanEssentials.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/GeneratorHandler.h"
