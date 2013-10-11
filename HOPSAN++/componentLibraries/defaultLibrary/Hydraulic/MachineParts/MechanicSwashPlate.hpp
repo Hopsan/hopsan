@@ -63,7 +63,7 @@ namespace hopsan {
             addInputVariable("r", "Swivel Radius", "m", 0.05, &mpR);
             addInputVariable("theta_offset", "Angle Offset", "m", 0.0, &mpOffset);
             addInputVariable("angle", "Angle", "rad", 0, &mpAngle);
-            addInputVariable("movemenet", "?", "?", 0, &mpMovement);
+            addInputVariable("movement", "?", "?", 0, &mpMovement);
             addOutputVariable("torque", "Torque", "Nm", &mpTorque);
 
             //Add ports to the component

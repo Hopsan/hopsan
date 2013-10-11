@@ -176,7 +176,7 @@ void DefaultLibraryXMLTest::testPortNames()
             mo = mo.nextSiblingElement("modelobject");
         }
     }
-    QVERIFY2(isOK, "There were at least one port name missmatch in your XML and CODE");
+    QVERIFY2(isOK, "There were at least one port name mismatch in your XML and CODE");
 }
 
 void DefaultLibraryXMLTest::testSourceCodeLink()
