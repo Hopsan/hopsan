@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="Hydraulic43ValveNeutralSupplyToTank" displayname="4/3 Valve With Supply Open To Tank At Neutral Position">
+    <modelobject sourcecode="Hydraulic43ValveNeutralSupplyToTank.hpp" typename="Hydraulic43ValveNeutralSupplyToTank" displayname="4/3 Valve With Supply Open To Tank At Neutral Position">
         <icons>
             <icon scale="1" path="43valveneutralsupplytotank_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="43valveneutralsupplytotank_iso.svg" iconrotation="ON" type="iso"/>
@@ -17,14 +17,14 @@
             <port x="1" y="0.5" a="0" name="xv"/>
         </ports>
         <animation>
-          <icon userpath="43valve_user_base.svg"/>
+            <icon userpath="43valve_user_base.svg"/>
             <movable>
                 <icon userpath="43valveneutralsupplytotank_user_movable.svg"/>
-                <data port="xv" dataname="Value"/> 
+                <data port="xv" dataname="Value"/>
                 <movement x="-4000" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <adjustable xmin="-40" xmax="40" ymin="0" ymax="0" port="in" dataname="Value" xgain="0.00025" ygain="0"/>
+                <adjustable xgain="0.00025" port="in" ygain="0" ymin="0" xmin="-40" ymax="0" xmax="40" dataname="Value"/>
             </movable>
         </animation>
     </modelobject>

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalTripleRoute" displayname="Route With Three Inputs">
+    <modelobject sourcecode="SignalTripleRoute.hpp" typename="SignalTripleRoute" displayname="Route With Three Inputs">
         <icons>
             <icon scale="1" path="tripleroute.svg" iconrotation="ON" type="iso"/>
         </icons>

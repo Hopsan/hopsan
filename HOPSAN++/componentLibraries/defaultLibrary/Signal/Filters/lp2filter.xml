@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalLP2Filter" displayname="Second order low pass filter">
+    <modelobject sourcecode="SignalLP2Filter.hpp" typename="SignalLP2Filter" displayname="Second order low pass filter">
         <icons>
             <icon scale="1" path="lp2filter.svg" iconrotation="OFF" type="user"/>
         </icons>

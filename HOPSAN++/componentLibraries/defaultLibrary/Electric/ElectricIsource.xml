@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="ElectricIsource" displayname="Ideal Current Source">
+    <modelobject sourcecode="ElectricIsource.hpp" typename="ElectricIsource" displayname="Ideal Current Source">
         <icons>
             <icon scale="1" path="ElectricIsource.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ElectricIsource.svg" iconrotation="ON" type="iso"/>

@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-  <modelobject typename="HydraulicPressureControlValveG" displayname="HydraulicPressureControlValveG">
-   <icons>
-      <icon scale="1" path="HydraulicPressureControlValveG.svg" iconrotation="ON" type="user"/>
-      <icon scale="1" path="HydraulicPressureControlValveG.svg" iconrotation="ON" type="iso"/>
-    </icons>
-    <ports>
-      <port x="1" y="0.1" enabled="true" a="0" name="dxv" autoplaced="true"/>
-      <port x="1" y="0.2" enabled="true" a="0" name="xv" autoplaced="true"/>
-      <port x="1" y="0.5" enabled="true" a="0" name="pref" autoplaced="true"/>
-	  <port x="0.3125" y="0" a="90" name="P1"/>
-      <port x="0.3125" y="1" a="270" name="P2"/>
-      <port x="0.625" y="0.375" a="180" name="P4"/>
-      <port x="0" y="0.375" a="0" name="P3"/>
-    </ports>
-    <animation flowspeed="100"/>
-  </modelobject>
+    <modelobject sourcecode="HydraulicPressureControlValveG.hpp" typename="HydraulicPressureControlValveG" displayname="HydraulicPressureControlValveG">
+        <icons>
+            <icon scale="1" path="HydraulicPressureControlValveG.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicPressureControlValveG.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.1" enabled="true" a="0" name="dxv" autoplaced="true"/>
+            <port x="1" y="0.2" enabled="true" a="0" name="xv" autoplaced="true"/>
+            <port x="1" y="0.5" enabled="true" a="0" name="pref" autoplaced="true"/>
+            <port x="0.3125" y="0" a="90" name="P1"/>
+            <port x="0.3125" y="1" a="270" name="P2"/>
+            <port x="0.625" y="0.375" a="180" name="P4"/>
+            <port x="0" y="0.375" a="0" name="P3"/>
+        </ports>
+        <animation flowspeed="100"/>
+    </modelobject>
 </hopsanobjectappearance>

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicVolume" displayname="Hydraulic Volume">
+    <modelobject sourcecode="HydraulicVolume.hpp" typename="HydraulicVolume" displayname="Hydraulic Volume">
         <icons>
             <icon scale="1" path="volume_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="volume_iso.svg" iconrotation="ON" type="iso"/>
@@ -11,16 +11,16 @@
         </ports>
         <replacables>
             <replacable typename="HydraulicTLMlossless"/>
-	        <replacable typename="HydraulicHose"/>
-		</replacables>
+            <replacable typename="HydraulicHose"/>
+        </replacables>
         <animation>
             <icon userpath="volume_user.svg"/>
             <movable>
                 <icon userpath="volume_user_movable.svg"/>
-                <data port="P1" dataname="Pressure"/> 
+                <data port="P1" dataname="Pressure"/>
                 <start x="0" y="0" a="0"/>
-                <initcolor r="0" g="0" b="255"/>
-                <color r="-0.00001275" g="0" b="0.00001275" idx="0"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
             </movable>
         </animation>
     </modelobject>

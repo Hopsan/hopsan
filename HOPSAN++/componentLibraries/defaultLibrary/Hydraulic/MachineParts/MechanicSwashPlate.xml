@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicSwashPlate" displayname="SwashPlate">
+    <modelobject sourcecode="MechanicSwashPlate.hpp" typename="MechanicSwashPlate" displayname="SwashPlate">
         <icons>
             <icon scale="1" path="svg/swashplate.svg" iconrotation="ON" type="user"/>
         </icons>
@@ -14,9 +14,9 @@
             <icon userpath="svg/swashplate_base.svg"/>
             <movable>
                 <icon userpath="svg/swashplate_movable.svg"/>
-                <data port="angle" dataname="Value"/> 
+                <data port="angle" dataname="Value"/>
                 <movement x="0" y="0" a="57.3"/>
-                <start x="0" y="0" a="0"/> 
+                <start x="0" y="0" a="0"/>
                 <resize x="0" y="0"/>
                 <initscale x="1" y="1"/>
                 <transformorigin x="53.783" y="28.521"/>

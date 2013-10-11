@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalSquare" displayname="Square">
+    <modelobject sourcecode="SignalSquare.hpp" typename="SignalSquare" displayname="Square">
         <icons>
             <icon scale="1" path="SignalSquare.svg" iconrotation="OFF" type="iso"/>
         </icons>

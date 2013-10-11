@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalDummy" displayname="Signal Benchmark Component">
+    <modelobject sourcecode="SignalDummy.hpp" typename="SignalDummy" displayname="Signal Benchmark Component">
         <icons>
             <icon scale="1" path="dummyS.svg" iconrotation="ON" type="iso"/>
         </icons>

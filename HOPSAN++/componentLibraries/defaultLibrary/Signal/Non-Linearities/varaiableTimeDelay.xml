@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalVariableTimeDelay" displayname="Variable Time Delay">
+    <modelobject sourcecode="SignalVariableTimeDelay.hpp" typename="SignalVariableTimeDelay" displayname="Variable Time Delay">
         <icons>
             <icon scale="1" path="variableTimeDelay.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>
-	    <port x="0.5" y="1" a="90" name="dT"/>
+            <port x="0.5" y="1" a="90" name="dT"/>
         </ports>
         <help>
-          <text>Will delay the signal with a variable delay, (0 will still results in one Ts) </text>
+            <text>Will delay the signal with a variable delay, (0 will still results in one Ts) </text>
         </help>
     </modelobject>
 </hopsanobjectappearance>

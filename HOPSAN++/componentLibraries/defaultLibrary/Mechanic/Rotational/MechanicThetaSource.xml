@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
+    <modelobject sourcecode="MechanicThetaSource.hpp" typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
         <icons>
             <icon scale="1" path="MechanicAngularVelocityTransformer.svg" iconrotation="ON" type="iso"/>
         </icons>

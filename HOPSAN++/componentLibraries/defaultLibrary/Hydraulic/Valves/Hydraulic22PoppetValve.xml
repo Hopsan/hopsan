@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="Hydraulic22PoppetValve" displayname="2/2 Poppet Valve">
+    <modelobject sourcecode="Hydraulic22PoppetValve.hpp" typename="Hydraulic22PoppetValve" displayname="2/2 Poppet Valve">
         <icons>
             <icon scale="1" path="22poppetvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>

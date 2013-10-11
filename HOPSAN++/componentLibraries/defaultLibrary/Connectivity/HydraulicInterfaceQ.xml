@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicInterfaceQ" displayname="Hydraulic Interface of Q-type">
+    <modelobject sourcecode="HydraulicInterfaceQ.hpp" typename="HydraulicInterfaceQ" displayname="Hydraulic Interface of Q-type">
         <icons>
             <icon scale="1" path="HydraulicInterfaceQ.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicInterfaceQ.svg" iconrotation="ON" type="iso"/>

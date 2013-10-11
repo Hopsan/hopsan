@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicPressureControlledPump" displayname="Q-Type Pump With Pressure Control">
+    <modelobject sourcecode="HydraulicPressureControlledPump.hpp" typename="HydraulicPressureControlledPump" displayname="Q-Type Pump With Pressure Control">
         <icons>
             <icon scale="1" path="pressurecontrolledpump_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="pressurecontrolledpump_iso.svg" iconrotation="ON" type="iso"/>
@@ -9,21 +9,21 @@
             <port x="0.603809016" y="1" a="90" name="P1"/>
             <port x="0.068255977" y="1" a="90" name="PREF"/>
             <port x="0.603809016" y="0" a="270" name="P2"/>
-	        <port x="1.0" y="0.5" a="0" name="eps"/>
+            <port x="1.0" y="0.5" a="0" name="eps"/>
             <port x="0.0" y="0.5" a="180" name="a"/>
         </ports>
-	<animation>
-	    <icon userpath="pressurecontrolledpump_user_base.svg"/>
+        <animation>
+            <icon userpath="pressurecontrolledpump_user_base.svg"/>
             <movable>
                 <icon userpath="pressurecontrolledpump_user_movable_2.svg"/>
-                <data port="a" dataname="Value"/> 
+                <data port="a" dataname="Value"/>
                 <movement x="0" y="0" a="57.295645531"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="90.726" y="49.998"/>
             </movable>
             <movable>
                 <icon userpath="pressurecontrolledpump_user_movable.svg"/>
-                <data port="eps" dataname="Value"/> 
+                <data port="eps" dataname="Value"/>
                 <movement x="0" y="0" a="-90"/>
                 <start x="45.653" y="9.941" a="0"/>
                 <transformorigin x="44.4925" y="44.4735"/>

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="Hydraulic43LoadSensingValve" displayname="4/3 Load Sensing Valve">
+    <modelobject sourcecode="Hydraulic43LoadSensingValve.hpp" typename="Hydraulic43LoadSensingValve" displayname="4/3 Load Sensing Valve">
         <icons>
             <icon scale="1" path="43lsvalve_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="43lsvalve_iso.svg" iconrotation="ON" type="iso"/>
@@ -16,16 +16,16 @@
             <port x="0" y="0.7" a="180" name="in"/>
             <port x="0.59009009" y="1" a="90" name="PL"/>
             <port x="1" y="0.5" a="0" name="xv"/>
-        </ports>        
-	<animation>
+        </ports>
+        <animation>
             <icon userpath="43lsvalve_user_base.svg"/>
             <movable>
                 <icon userpath="43lsvalve_user.svg"/>
-                <data port="xv" dataname="Value"/> 
+                <data port="xv" dataname="Value"/>
                 <movement x="-6000" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <adjustable xmin="-40" xmax="40" ymin="0" ymax="0" port="in" dataname="Value" xgain="0.00025" ygain="0"/>
+                <adjustable xgain="0.00025" port="in" ygain="0" ymin="0" xmin="-40" ymax="0" xmax="40" dataname="Value"/>
             </movable>
         </animation>
     </modelobject>

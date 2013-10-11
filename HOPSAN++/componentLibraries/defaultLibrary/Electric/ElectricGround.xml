@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="ElectricGround" displayname="Ground">
+    <modelobject sourcecode="ElectricGround.hpp" typename="ElectricGround" displayname="Ground">
         <icons>
             <icon scale="1" path="ElectricGround.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ElectricGround.svg" iconrotation="ON" type="iso"/>

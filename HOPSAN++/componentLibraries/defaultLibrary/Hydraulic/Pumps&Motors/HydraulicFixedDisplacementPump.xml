@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicFixedDisplacementPump" displayname="Q-type Fixed Displacement Pump">
+    <modelobject sourcecode="HydraulicFixedDisplacementPump.hpp" typename="HydraulicFixedDisplacementPump" displayname="Q-type Fixed Displacement Pump">
         <icons>
             <icon scale="1" path="fixedpump_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="fixedpump_iso.svg" iconrotation="ON" type="iso"/>
@@ -10,16 +10,16 @@
             <port x="0.6667" y="0" a="270" name="P2"/>
             <port x="0" y="0.5" a="180" name="a"/>
         </ports>
-		<replacables>
-		    <replacable typename="HydraulicVariableDisplacementPump"/>
-			<replacable typename="HydraulicFixedDisplacementMotorQ"/>
-			<replacable typename="HydraulicVariableDisplacementMotorQ"/>
-		</replacables>
+        <replacables>
+            <replacable typename="HydraulicVariableDisplacementPump"/>
+            <replacable typename="HydraulicFixedDisplacementMotorQ"/>
+            <replacable typename="HydraulicVariableDisplacementMotorQ"/>
+        </replacables>
         <animation>
             <icon userpath="fixedpump_user_base.svg"/>
             <movable>
                 <icon userpath="fixedpump_user_movable.svg"/>
-                <data port="a" dataname="Value"/> 
+                <data port="a" dataname="Value"/>
                 <movement x="0" y="0" a="57.295645531"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="60" y="50.5"/>

@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicCheckValve" displayname="Check Valve">
+    <modelobject sourcecode="HydraulicCheckValve.hpp" typename="HydraulicCheckValve" displayname="Check Valve">
         <icons>
             <icon scale="1" path="checkvalve_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="checkvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <replacables>
             <replacable typename="HydraulicLaminarOrifice"/>
-	        <replacable typename="HydraulicTurbulentOrifice"/>
-			<replacable typename="HydraulicLosslessConnector"/>
+            <replacable typename="HydraulicTurbulentOrifice"/>
+            <replacable typename="HydraulicLosslessConnector"/>
             <replacable typename="HydraulicCheckValveWithOrifice"/>
-            <replacable typename="HydraulicCheckValvePreLoaded"/>   
+            <replacable typename="HydraulicCheckValvePreLoaded"/>
         </replacables>
         <help>
             <text>Hydraulic check valve with turbulent flow equation. This is a Q-type component.</text>

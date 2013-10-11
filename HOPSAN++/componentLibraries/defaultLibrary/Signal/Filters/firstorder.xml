@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalFirstOrderFilter" displayname="General first order filter">
+    <modelobject sourcecode="SignalFirstOrderFilter.hpp" typename="SignalFirstOrderFilter" displayname="General first order filter">
         <icons>
             <icon scale="1" path="firstorder.svg" iconrotation="ON" type="user"/>
         </icons>

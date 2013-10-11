@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicInterfaceC" displayname="Mechanic Interface of C-type">
+    <modelobject sourcecode="MechanicInterfaceC.hpp" typename="MechanicInterfaceC" displayname="Mechanic Interface of C-type">
         <icons>
             <icon scale="1" path="MechanicInterfaceC.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="MechanicInterfaceC.svg" iconrotation="ON" type="iso"/>

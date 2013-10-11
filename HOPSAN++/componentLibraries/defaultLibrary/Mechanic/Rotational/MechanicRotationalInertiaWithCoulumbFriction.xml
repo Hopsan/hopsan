@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicRotationalInertiaWithCoulumbFriction" displayname="Rotational Inertia With Coulomb Friction">
+    <modelobject sourcecode="MechanicRotationalInertiaWithCoulumbFriction.hpp" typename="MechanicRotationalInertiaWithCoulumbFriction" displayname="Rotational Inertia With Coulomb Friction">
         <icons>
             <icon scale="1" path="inertiac_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="inertiac_iso.svg" iconrotation="ON" type="iso"/>

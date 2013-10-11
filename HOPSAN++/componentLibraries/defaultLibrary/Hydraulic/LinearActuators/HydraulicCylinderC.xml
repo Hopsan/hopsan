@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicCylinderC" displayname="C-type Piston">
+    <modelobject sourcecode="HydraulicCylinderC.hpp" typename="HydraulicCylinderC" displayname="C-type Piston">
         <icons>
             <icon scale="1" path="cylinderc_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="cylinderc_iso.svg" iconrotation="ON" type="iso"/>
@@ -18,37 +18,37 @@
             <icon userpath="cylinderc_user_base.svg"/>
             <movable>
                 <icon userpath="cylinderc_user_movable_2.svg"/>
-                <data port="P3" dataname="Position"/> 
-                <data port="P1" dataname="Pressure"/> 
-				<divisor name="s_l#Value"/>
+                <data port="P3" dataname="Position"/>
+                <data port="P1" dataname="Pressure"/>
+                <divisor name="s_l#Value"/>
                 <start x="1.5" y="1.5" a="0"/>
-                <initcolor r="0" g="0" b="255"/>
-                <color r="-0.00001275" g="0" b="0.00001275" idx="1"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="1" r="-0.00001275" b="0.00001275"/>
                 <transformorigin x="0" y="0"/>
-		        <movingport portname="P3" startx="100" starty="20"/>
+                <movingport startx="100" portname="P3" starty="20"/>
             </movable>
             <movable>
                 <icon userpath="cylinderc_user_movable_2.svg"/>
-                <data port="P3" dataname="Position"/> 
+                <data port="P3" dataname="Position"/>
                 <data port="P2" dataname="Pressure"/>
-				<divisor name="s_l#Value"/>
+                <divisor name="s_l#Value"/>
                 <movement x="77" y="0" a="0"/>
-                <start x="11" y="1.5" a="0"/> 
+                <start x="11" y="1.5" a="0"/>
                 <resize x="-1" y="0"/>
                 <initscale x="1" y="1"/>
-                <initcolor r="0" g="0" b="255"/>
-                <color r="-0.00001275" g="0" b="0.00001275" idx="1"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="1" r="-0.00001275" b="0.00001275"/>
                 <transformorigin x="0" y="0"/>
-		        <movingport portname="P3" startx="100" starty="20"/>
+                <movingport startx="100" portname="P3" starty="20"/>
             </movable>
             <movable>
                 <icon userpath="cylinderc_user_movable.svg"/>
-                <data port="P3" dataname="Position"/> 
-				<divisor name="s_l#Value"/>
+                <data port="P3" dataname="Position"/>
+                <divisor name="s_l#Value"/>
                 <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-		        <movingport portname="P3" startx="100" starty="20"/>
+                <movingport startx="100" portname="P3" starty="20"/>
             </movable>
         </animation>
     </modelobject>

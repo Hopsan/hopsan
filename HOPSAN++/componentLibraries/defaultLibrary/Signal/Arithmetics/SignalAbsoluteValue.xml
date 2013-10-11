@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalAbsoluteValue" displayname="Absolute Value">
+    <modelobject sourcecode="SignalAbsoluteValue.hpp" typename="SignalAbsoluteValue" displayname="Absolute Value">
         <icons>
             <icon scale="1" path="SignalAbsoluteValue.svg" iconrotation="OFF" type="iso"/>
         </icons>

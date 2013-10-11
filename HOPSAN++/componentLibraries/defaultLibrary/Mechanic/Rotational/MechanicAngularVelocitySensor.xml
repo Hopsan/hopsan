@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicAngularVelocitySensor" displayname="Angular Velocity Transducer">
+    <modelobject sourcecode="MechanicAngularVelocitySensor.hpp" typename="MechanicAngularVelocitySensor" displayname="Angular Velocity Transducer">
         <icons>
             <icon scale="1" path="angularvelocitysensor_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="angularvelocitysensor_iso.svg" iconrotation="ON" type="iso"/>
@@ -8,15 +8,15 @@
         <ports>
             <port x="0.5" y="1" a="90" name="P1"/>
             <port x="0.5" y="0" a="270" name="out"/>
-        </ports>        
+        </ports>
         <animation>
             <icon userpath="angularvelocitysensor_user_base.svg"/>
             <movable>
                 <icon userpath="sensor_user_movable.svg"/>
-                <data port="out" dataname="Value"/> 
+                <data port="out" dataname="Value"/>
                 <movement x="0" y="0" a="-120"/>
                 <start x="0" y="0" a="-60"/>
-                <transformorigin x="18" y="18"/>                
+                <transformorigin x="18" y="18"/>
             </movable>
         </animation>
     </modelobject>

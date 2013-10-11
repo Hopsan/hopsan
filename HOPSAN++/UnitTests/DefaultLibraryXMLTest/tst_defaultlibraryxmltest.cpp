@@ -42,19 +42,18 @@ private:
 
 typedef QMap<QString, QString> IconNameMapT;
 
-QDomElement loadXMLFileToDOM(const QFileInfo &rXMLFileInfo)
+QDomElement loadXMLFileToDOM(const QFileInfo &rXMLFileInfo, QDomDocument &rDoc)
 {
-    QDomDocument doc;
     QFile file(rXMLFileInfo.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly))
     {
         return QDomElement();
     }
 
-    doc.setContent(&file);
+    rDoc.setContent(&file);
     file.close();
 
-    QDomElement root = doc.documentElement();
+    QDomElement root = rDoc.documentElement();
     if (root.tagName() == "hopsanobjectappearance")
     {
         return root;
@@ -122,7 +121,8 @@ void DefaultLibraryXMLTest::testIconPaths()
     bool isOK = true;
     for (int i=0; i<mAllXMLFiles.size(); ++i)
     {
-        QDomElement mo = loadXMLFileToDOM(mAllXMLFiles[i].absoluteFilePath()).firstChildElement("modelobject");
+        QDomDocument doc;
+        QDomElement mo = loadXMLFileToDOM(mAllXMLFiles[i].absoluteFilePath(),doc).firstChildElement("modelobject");
         while(!mo.isNull())
         {
             IconNameMapT map = extractIconPathsFromMO(mo);
@@ -148,7 +148,8 @@ void DefaultLibraryXMLTest::testPortNames()
     bool isOK = true;
     for (int i=0; i<mAllXMLFiles.size(); ++i)
     {
-        QDomElement mo = loadXMLFileToDOM(mAllXMLFiles[i].absoluteFilePath()).firstChildElement("modelobject");
+        QDomDocument doc;
+        QDomElement mo = loadXMLFileToDOM(mAllXMLFiles[i].absoluteFilePath(),doc).firstChildElement("modelobject");
         while(!mo.isNull())
         {
             QString typeName = extractTypeNameFromMO(mo);
@@ -183,7 +184,8 @@ void DefaultLibraryXMLTest::testSourceCodeLink()
     bool isOK = true;
     for (int i=0; i<mAllXMLFiles.size(); ++i)
     {
-        QDomElement mo = loadXMLFileToDOM(mAllXMLFiles[i].absoluteFilePath()).firstChildElement("modelobject");
+        QDomDocument doc;
+        QDomElement mo = loadXMLFileToDOM(mAllXMLFiles[i].absoluteFilePath(),doc).firstChildElement("modelobject");
         while(!mo.isNull())
         {
             QString typeName = extractTypeNameFromMO(mo);
@@ -192,11 +194,25 @@ void DefaultLibraryXMLTest::testSourceCodeLink()
             if (sourceCode.isEmpty())
             {
                 QWARN(QString("SourceCode attribute not set for component %1!").arg(typeName).toStdString().c_str());
-                isOK = false;
+                //isOK = false;
+
+                // ===================================
+                // Add the code automatically
+//                QString codefile = typeName+".hpp";
+//                mo.setAttribute("sourcecode", codefile);
+//                QFile f(mAllXMLFiles[i].absoluteFilePath());
+//                if (f.open(QIODevice::WriteOnly | QIODevice::Text))
+//                {
+//                    QTextStream out(&f);
+//                    QDomDocument doc = mo.ownerDocument();
+//                    doc.save(out,4);
+//                }
+//                f.close();
+                // ===================================
             }
             else
             {
-                QFileInfo sourceFile(mAllXMLFiles[i].absolutePath() + sourceCode);
+                QFileInfo sourceFile(mAllXMLFiles[i].absolutePath()+"/"+sourceCode);
                 if(!sourceFile.exists())
                 {
                     QWARN(QString("SourceCode file: %1 for component %2 is missing!").arg(sourceFile.absoluteFilePath()).arg(typeName).toStdString().c_str());

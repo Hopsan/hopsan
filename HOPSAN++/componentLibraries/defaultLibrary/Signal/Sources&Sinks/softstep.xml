@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalSoftStep" displayname="Soft step">
+    <modelobject sourcecode="SignalSoftStep.hpp" typename="SignalSoftStep" displayname="Soft step">
         <icons>
             <icon scale="1" path="softstep.svg" iconrotation="OFF" type="iso"/>
         </icons>

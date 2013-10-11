@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalAttitudeTVCcontrol" displayname="SignalAttitudeTVCcontrol">
+    <modelobject sourcecode="SignalAttitudeTVCcontrol.hpp" typename="SignalAttitudeTVCcontrol" displayname="SignalAttitudeTVCcontrol">
         <icons>
             <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.1" y="1" enabled="true" a="90" name="Pphi" autoplaced="true"/>            
+            <port x="0.1" y="1" enabled="true" a="90" name="Pphi" autoplaced="true"/>
             <port x="0.3" y="1" enabled="true" a="90" name="Ptheta" autoplaced="true"/>
             <port x="0.5" y="1" enabled="true" a="90" name="Ppsi" autoplaced="true"/>
             <port x="0" y="0.4" enabled="true" a="180" name="Pthetaref" autoplaced="true"/>

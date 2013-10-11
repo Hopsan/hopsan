@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalTimeDelay" displayname="Time Delay">
+    <modelobject sourcecode="SignalTimeDelay.hpp" typename="SignalTimeDelay" displayname="Time Delay">
         <icons>
             <icon scale="1" path="delay.svg" iconrotation="ON" type="user"/>
         </icons>
@@ -9,7 +9,7 @@
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>
         <help>
-          <text>Will delay the signal at least one Ts (sample time step) </text>
+            <text>Will delay the signal at least one Ts (sample time step) </text>
         </help>
     </modelobject>
 </hopsanobjectappearance>

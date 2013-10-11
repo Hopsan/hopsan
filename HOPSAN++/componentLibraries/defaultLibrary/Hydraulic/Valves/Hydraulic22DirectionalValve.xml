@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="Hydraulic22DirectionalValve" displayname="2/2 On/Off Valve">
+    <modelobject sourcecode="Hydraulic22DirectionalValve.hpp" typename="Hydraulic22DirectionalValve" displayname="2/2 On/Off Valve">
         <icons>
             <icon scale="1" path="22directionalvalve_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="22directionalvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <replacables>
             <replacable typename="Hydraulic22Valve"/>
- 
         </replacables>
         <help>
             <text>Hydraulic on/off valve with second order dynamics. Spool moves to position 1 if input signal is false (&lt; 0.5) or to position 2 if input signal is true (> 0.5). Dynamics is modelled as a low-pass filter with bandwith and damping.</text>
@@ -17,17 +16,17 @@
             <port x="0.827731092436975" y="0" a="270" name="P2"/>
             <port x="0" y="0.7" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="xv"/>
-        </ports>        
+        </ports>
         <animation>
-          <icon userpath="22directionalvalve_user_base.svg"/>
+            <icon userpath="22directionalvalve_user_base.svg"/>
             <movable>
                 <icon userpath="22directionalvalve_user.svg"/>
-                <data port="xv" dataname="Value"/> 
+                <data port="xv" dataname="Value"/>
                 <movement x="-4000" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <adjustable xmin="0" xmax="40" ymin="0" ymax="0" port="in" dataname="Value" xgain="0.025" ygain="0"/>
+                <adjustable xgain="0.025" port="in" ygain="0" ymin="0" xmin="0" ymax="0" xmax="40" dataname="Value"/>
             </movable>
-        </animation> 
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

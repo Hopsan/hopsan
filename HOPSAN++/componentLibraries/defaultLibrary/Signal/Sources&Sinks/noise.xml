@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalNoiseGenerator" displayname="White Noise Generator">
+    <modelobject sourcecode="SignalNoiseGenerator.hpp" typename="SignalNoiseGenerator" displayname="White Noise Generator">
         <icons>
             <icon scale="1" path="noise.svg" iconrotation="OFF" type="iso"/>
         </icons>

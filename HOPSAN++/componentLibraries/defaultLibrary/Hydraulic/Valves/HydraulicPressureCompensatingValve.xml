@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicPressureCompensatingValve" displayname="Pressure Compensating Valve">
+    <modelobject sourcecode="HydraulicPressureCompensatingValve.hpp" typename="HydraulicPressureCompensatingValve" displayname="Pressure Compensating Valve">
         <icons>
             <icon scale="1" path="pcomp_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="pcomp_iso.svg" iconrotation="ON" type="iso"/>
@@ -18,7 +18,7 @@
             <icon userpath="pcomp_user_base.svg"/>
             <movable>
                 <icon userpath="pcomp_user_movable.svg"/>
-                <data port="xv" dataname="Value"/> 
+                <data port="xv" dataname="Value"/>
                 <movement x="-5e6" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>

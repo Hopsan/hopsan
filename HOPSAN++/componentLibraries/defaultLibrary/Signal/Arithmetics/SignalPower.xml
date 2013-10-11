@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalPower" displayname="Power">
+    <modelobject sourcecode="SignalPower.hpp" typename="SignalPower" displayname="Power">
         <icons>
             <icon scale="1" path="SignalPower.svg" iconrotation="OFF" type="iso"/>
         </icons>

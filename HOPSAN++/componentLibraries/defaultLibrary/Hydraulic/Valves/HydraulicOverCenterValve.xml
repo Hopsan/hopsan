@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicOverCenterValve" displayname="Over Center Valve">
+    <modelobject sourcecode="HydraulicOverCenterValve.hpp" typename="HydraulicOverCenterValve" displayname="Over Center Valve">
         <icons>
             <icon scale="1" path="overcentervalve_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="overcentervalve_iso.svg" iconrotation="ON" type="iso"/>

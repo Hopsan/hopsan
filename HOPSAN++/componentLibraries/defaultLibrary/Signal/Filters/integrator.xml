@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalIntegrator2" displayname="Integrator">
+    <modelobject sourcecode="SignalIntegrator2.hpp" typename="SignalIntegrator2" displayname="Integrator">
         <icons>
             <icon scale="1" path="integrator.svg" iconrotation="ON" type="user"/>
         </icons>

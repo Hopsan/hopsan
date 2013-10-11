@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicTranslationalMass" displayname="Translational Mass">
+    <modelobject sourcecode="MechanicTranslationalMass.hpp" typename="MechanicTranslationalMass" displayname="Translational Mass">
         <icons>
             <icon scale="1" path="mass_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="mass_iso.svg" iconrotation="ON" type="iso"/>
@@ -16,13 +16,13 @@
             <icon userpath="mass_user_base.svg"/>
             <movable>
                 <icon userpath="mass_user_movable.svg"/>
-                <data port="P1" dataname="Position"/> 
+                <data port="P1" dataname="Position"/>
                 <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-		<movingport portname="P1" startx="0" starty="20"/>
-		<movingport portname="P2" startx="60" starty="20"/>
+                <movingport startx="0" portname="P1" starty="20"/>
+                <movingport startx="60" portname="P2" starty="20"/>
             </movable>
-        </animation>        
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

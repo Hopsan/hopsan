@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-  <modelobject typename="HydraulicValve63OC" displayname="HydraulicValve63OC">
-    <icons>
-      <icon scale="1" path="HydraulicValve63OC.svg" iconrotation="ON" type="user"/>
-      <icon scale="1" path="HydraulicValve63OC.svg" iconrotation="ON" type="iso"/>
-    </icons>
-    <ports>
-      <port x="0.5" y="0" enabled="true" a="270" name="Pa" autoplaced="true"/>
-      <port x="0.68" y="0" enabled="true" a="270" name="Pb" autoplaced="true"/>
-      <port x="0.5" y="1" enabled="true" a="90" name="Pp" autoplaced="true"/>
-      <port x="0.68" y="1" enabled="true" a="90" name="Pt" autoplaced="true"/>
-      <port x="0.59" y="1" enabled="true" a="90" name="Pocp" autoplaced="true"/>
-      <port x="0.59" y="0" enabled="true" a="270" name="Poct" autoplaced="true"/>
-      <port x="0" y="0.69" enabled="true" a="180" name="xv" autoplaced="true"/>
-    </ports>
-    <animation flowspeed="100"/>
-  </modelobject>
+    <modelobject sourcecode="HydraulicValve63OC.hpp" typename="HydraulicValve63OC" displayname="HydraulicValve63OC">
+        <icons>
+            <icon scale="1" path="HydraulicValve63OC.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicValve63OC.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="0" enabled="true" a="270" name="Pa" autoplaced="true"/>
+            <port x="0.68" y="0" enabled="true" a="270" name="Pb" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="Pp" autoplaced="true"/>
+            <port x="0.68" y="1" enabled="true" a="90" name="Pt" autoplaced="true"/>
+            <port x="0.59" y="1" enabled="true" a="90" name="Pocp" autoplaced="true"/>
+            <port x="0.59" y="0" enabled="true" a="270" name="Poct" autoplaced="true"/>
+            <port x="0" y="0.69" enabled="true" a="180" name="xv" autoplaced="true"/>
+        </ports>
+        <animation flowspeed="100"/>
+    </modelobject>
 </hopsanobjectappearance>

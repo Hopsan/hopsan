@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicPressureReliefValve" displayname="Adjustable Pressure Relief Valve">
+    <modelobject sourcecode="HydraulicPressureReliefValve.hpp" typename="HydraulicPressureReliefValve" displayname="Adjustable Pressure Relief Valve">
         <icons>
             <icon scale="1" path="prv_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="prv_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <replacables>
             <replacable typename="HydraulicPressureDropValve"/>
-	        <replacable typename="HydraulicPressureReducingValve"/>
+            <replacable typename="HydraulicPressureReducingValve"/>
         </replacables>
         <ports>
             <port x="0.4762" y="0" a="270" name="P1"/>
@@ -18,7 +18,7 @@
             <icon userpath="prv_user_base.svg"/>
             <movable>
                 <icon userpath="prv_user_movable.svg"/>
-                <data port="xv" dataname="Value"/> 
+                <data port="xv" dataname="Value"/>
                 <movement x="-5e6" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>

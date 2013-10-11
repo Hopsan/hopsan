@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalHysteresis" displayname="Hysteresis">
+    <modelobject sourcecode="SignalHysteresis.hpp" typename="SignalHysteresis" displayname="Hysteresis">
         <icons>
             <icon scale="1" path="hysteresis.svg" iconrotation="ON" type="iso"/>
         </icons>

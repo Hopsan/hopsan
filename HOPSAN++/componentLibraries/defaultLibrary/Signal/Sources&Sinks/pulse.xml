@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalPulse" displayname="Pulse">
+    <modelobject sourcecode="SignalPulse.hpp" typename="SignalPulse" displayname="Pulse">
         <icons>
             <icon scale="1" path="pulse.svg" iconrotation="OFF" type="iso"/>
         </icons>

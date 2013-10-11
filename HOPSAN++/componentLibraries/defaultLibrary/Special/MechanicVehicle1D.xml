@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicVehicle1D" displayname="1D Road Vehicle">
+    <modelobject sourcecode="MechanicVehicle1D.hpp" typename="MechanicVehicle1D" displayname="1D Road Vehicle">
         <icons>
             <icon scale="1" path="MechanicVehicle1D.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="MechanicVehicle1D.svg" iconrotation="ON" type="iso"/>

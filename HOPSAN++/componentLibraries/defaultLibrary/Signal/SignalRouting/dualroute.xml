@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalDualRoute" displayname="Route With Two Inputs">
+    <modelobject sourcecode="SignalDualRoute.hpp" typename="SignalDualRoute" displayname="Route With Two Inputs">
         <icons>
             <icon scale="1" path="dualroute.svg" iconrotation="ON" type="iso"/>
         </icons>

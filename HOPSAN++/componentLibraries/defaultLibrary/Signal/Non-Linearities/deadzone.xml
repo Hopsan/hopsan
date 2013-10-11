@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalDeadZone" displayname="Dead Zone">
+    <modelobject sourcecode="SignalDeadZone.hpp" typename="SignalDeadZone" displayname="Dead Zone">
         <icons>
             <icon scale="1" path="deadzone.svg" iconrotation="ON" type="iso"/>
         </icons>

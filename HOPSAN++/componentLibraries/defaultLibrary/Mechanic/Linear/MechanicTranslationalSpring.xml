@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicTranslationalSpring" displayname="Translational Spring">
+    <modelobject sourcecode="MechanicTranslationalSpring.hpp" typename="MechanicTranslationalSpring" displayname="Translational Spring">
         <icons>
             <icon scale="1" path="spring_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="spring_iso.svg" iconrotation="ON" type="iso"/>
@@ -16,20 +16,20 @@
             <icon userpath="spring_user_base.svg"/>
             <movable>
                 <icon userpath="spring_user_base.svg"/>
-                <data port="P1" dataname="Position"/> 
+                <data port="P1" dataname="Position"/>
                 <start x="0" y="0" a="0"/>
                 <movement x="8.3333333" y="0" a="0"/>
-		        <movingport portname="P2" startx="33.33333" starty="10"/>
+                <movingport startx="33.33333" portname="P2" starty="10"/>
             </movable>
             <movable>
                 <icon userpath="spring_user.svg"/>
-                <data port="P1" dataname="Position"/> 
-                <data port="P2" dataname="Position"/> 
+                <data port="P1" dataname="Position"/>
+                <data port="P2" dataname="Position"/>
                 <start x="0" y="0" a="0"/>
                 <movement x="-8.3333333" y="0" a="0"/>
                 <resize x="0.5" y="0" idx1="0" idx2="1"/>
                 <initscale x="1" y="1"/>
-		        <movingport portname="P1" startx="0" starty="10"/>
+                <movingport startx="0" portname="P1" starty="10"/>
             </movable>
         </animation>
     </modelobject>

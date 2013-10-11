@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicInterfaceQ" displayname="Mechanic Interface of Q-type">
+    <modelobject sourcecode="MechanicInterfaceQ.hpp" typename="MechanicInterfaceQ" displayname="Mechanic Interface of Q-type">
         <icons>
             <icon scale="1" path="MechanicInterfaceQ.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="MechanicInterfaceQ.svg" iconrotation="ON" type="iso"/>

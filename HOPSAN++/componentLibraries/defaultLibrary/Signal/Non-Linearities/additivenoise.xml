@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalAdditiveNoise" displayname="Additive White Gaussian Noise">
+    <modelobject sourcecode="SignalAdditiveNoise.hpp" typename="SignalAdditiveNoise" displayname="Additive White Gaussian Noise">
         <icons>
             <icon scale="1" path="additivenoise.svg" iconrotation="ON" type="user"/>
         </icons>

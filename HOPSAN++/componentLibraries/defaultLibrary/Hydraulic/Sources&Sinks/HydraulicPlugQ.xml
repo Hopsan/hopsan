@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicPlugQ" displayname="Q-type Plug">
+    <modelobject sourcecode="HydraulicPlugQ.hpp" typename="HydraulicPlugQ" displayname="Q-type Plug">
         <icons>
             <icon scale="1" path="HydraulicPlugQ.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicPlugQ.svg" iconrotation="ON" type="iso"/>

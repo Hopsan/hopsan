@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicForceTransformer" displayname="Force Source">
+    <modelobject sourcecode="MechanicForceTransformer.hpp" typename="MechanicForceTransformer" displayname="Force Source">
         <icons>
             <icon scale="1" path="MechanicForceTransformer.svg" iconrotation="ON" type="iso"/>
         </icons>
@@ -8,16 +8,16 @@
             <port x="1" y="0.5" a="0" name="P1"/>
             <port x="0" y="0.5" a="180" name="F"/>
         </ports>
-	<animation>
+        <animation>
             <icon userpath="forcetransformer_base.svg"/>
             <movable>
                 <icon userpath="MechanicForceTransformer.svg"/>
-                <data port="P1" dataname="Position"/> 
+                <data port="P1" dataname="Position"/>
                 <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <movingport portname="P1" startx="39.566" starty="6.946"/>
+                <movingport startx="39.566" portname="P1" starty="6.946"/>
             </movable>
-        </animation> 
-    </modelobject>   
+        </animation>
+    </modelobject>
 </hopsanobjectappearance>

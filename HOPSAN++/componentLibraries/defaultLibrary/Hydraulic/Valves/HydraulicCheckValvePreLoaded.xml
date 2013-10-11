@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicCheckValvePreLoaded" displayname="Pre-Loaded Check Valve">
+    <modelobject sourcecode="HydraulicCheckValvePreLoaded.hpp" typename="HydraulicCheckValvePreLoaded" displayname="Pre-Loaded Check Valve">
         <icons>
             <icon scale="1" path="checkvalvepreload_user.svg" iconrotation="ON" type="user"/>
         </icons>
         <replacables>
             <replacable typename="HydraulicLaminarOrifice"/>
-	        <replacable typename="HydraulicTurbulentOrifice"/>
-			<replacable typename="HydraulicLosslessConnector"/>
+            <replacable typename="HydraulicTurbulentOrifice"/>
+            <replacable typename="HydraulicLosslessConnector"/>
             <replacable typename="HydraulicCheckValve"/>
             <replacable typename="HydraulicCheckValveWithOrifice"/>
         </replacables>

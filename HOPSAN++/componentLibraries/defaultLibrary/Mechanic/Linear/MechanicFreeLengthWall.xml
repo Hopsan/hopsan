@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicFreeLengthWall" displayname="Fixed Stop With Free Length">
+    <modelobject sourcecode="MechanicFreeLengthWall.hpp" typename="MechanicFreeLengthWall" displayname="Fixed Stop With Free Length">
         <icons>
             <icon scale="1" path="freelengthwall_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="freelengthwall_iso.svg" iconrotation="ON" type="iso"/>

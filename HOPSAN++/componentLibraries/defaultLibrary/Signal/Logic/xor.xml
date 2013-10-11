@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalXor" displayname="Logical Exclusive Or Operator">
+    <modelobject sourcecode="SignalXor.hpp" typename="SignalXor" displayname="Logical Exclusive Or Operator">
         <icons>
             <icon scale="1" path="xor.svg" iconrotation="OFF" type="user"/>
         </icons>

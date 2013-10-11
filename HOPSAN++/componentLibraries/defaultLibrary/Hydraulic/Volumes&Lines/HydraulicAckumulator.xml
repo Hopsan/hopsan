@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicAckumulator" displayname="Gas Accumulator">
+    <modelobject sourcecode="HydraulicAckumulator.hpp" typename="HydraulicAckumulator" displayname="Gas Accumulator">
         <icons>
             <icon scale="1" path="ackumulator_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ackumulator_iso.svg" iconrotation="ON" type="iso"/>
@@ -18,33 +18,33 @@
             <icon userpath="ackumulator_user.svg"/>
             <movable>
                 <icon userpath="ackumulator_movable2.svg"/>
-                <data port="P1" dataname="Pressure" idx="0"/> 
+                <data port="P1" idx="0" dataname="Pressure"/>
                 <start x="0" y="0" a="0"/>
-                <initcolor r="0" g="0" b="255"/>
-                <color r="-0.00001275" g="0" b="0.00001275" idx="0"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
                 <transformorigin x="0" y="0"/>
-            </movable>    
+            </movable>
             <movable>
                 <icon userpath="ackumulator_movable3.svg"/>
-                <data port="P1" dataname="Pressure" idx="0"/>
-                <start x="0" y="0" a="0"/> 
-                <initcolor r="0" g="0" b="255"/>
-                <color r="-0.00001275" g="0" b="0.00001275" idx="0"/>
+                <data port="P1" idx="0" dataname="Pressure"/>
+                <start x="0" y="0" a="0"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
                 <transformorigin x="0" y="0"/>
             </movable>
             <movable>
                 <icon userpath="ackumulator_movable1.svg"/>
-                <data port="Va" dataname="Value"/> 
+                <data port="Va" dataname="Value"/>
                 <divisor name="V0#Value"/>
                 <start x="0" y="-50" a="0"/>
                 <movement x="0" y="-50" a="0"/>
-                <transformorigin x="0" y="0"/>                
+                <transformorigin x="0" y="0"/>
             </movable>
             <movable>
-                <data port="Va" dataname="Value"/> 
+                <data port="Va" dataname="Value"/>
                 <icon userpath="ackumulator_movable4.svg"/>
                 <start x="0" y="0" a="0"/>
-                <transformorigin x="0" y="0"/>                
+                <transformorigin x="0" y="0"/>
             </movable>
         </animation>
     </modelobject>

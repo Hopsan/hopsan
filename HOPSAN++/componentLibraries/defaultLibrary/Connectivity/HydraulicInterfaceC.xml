@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicInterfaceC" displayname="Hydraulic Interface of C-type">
+    <modelobject sourcecode="HydraulicInterfaceC.hpp" typename="HydraulicInterfaceC" displayname="Hydraulic Interface of C-type">
         <icons>
             <icon scale="1" path="HydraulicInterfaceC.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicInterfaceC.svg" iconrotation="ON" type="iso"/>

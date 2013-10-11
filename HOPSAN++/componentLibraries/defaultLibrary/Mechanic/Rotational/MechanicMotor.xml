@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicMotor" displayname="Ideal Motor With Speed Control">
+    <modelobject sourcecode="MechanicMotor.hpp" typename="MechanicMotor" displayname="Ideal Motor With Speed Control">
         <icons>
             <icon scale="1" path="MechanicMotor.svg" iconrotation="OFF" type="user"/>
         </icons>

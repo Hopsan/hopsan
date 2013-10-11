@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalFFBandIn" displayname="FFB and (In)">
+    <modelobject sourcecode="SignalFFBandIn.hpp" typename="SignalFFBandIn" displayname="FFB and (In)">
         <icons>
             <icon scale="1" path="SignalFFBand.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalFFBand.svg" iconrotation="ON" type="iso"/>

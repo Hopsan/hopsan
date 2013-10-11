@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicValvePlate" displayname="ValvePlate">
-	    <icons>
-            <icon type="user" path="svg/valveplate.svg" iconrotation="ON" scale="1.0"/>
+    <modelobject sourcecode="HydraulicValvePlate.hpp" typename="HydraulicValvePlate" displayname="ValvePlate">
+        <icons>
+            <icon scale="1.0" path="svg/valveplate.svg" iconrotation="ON" type="user"/>
         </icons>
         <help picture="svg/valveplate_help.svg"/>
         <ports>

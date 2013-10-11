@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicMachineC" displayname="C-type Variable Displacement Machine">
+    <modelobject sourcecode="HydraulicMachineC.hpp" typename="HydraulicMachineC" displayname="C-type Variable Displacement Machine">
         <icons>
             <icon scale="1" path="machinec_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="machinec_iso.svg" iconrotation="ON" type="iso"/>

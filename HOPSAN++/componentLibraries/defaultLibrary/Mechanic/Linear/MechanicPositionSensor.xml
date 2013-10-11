@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicPositionSensor" displayname="Position Transducer">
+    <modelobject sourcecode="MechanicPositionSensor.hpp" typename="MechanicPositionSensor" displayname="Position Transducer">
         <icons>
             <icon scale="1" path="positionsensor_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="positionsensor_iso.svg" iconrotation="ON" type="iso"/>
@@ -13,7 +13,7 @@
             <icon userpath="positionsensor_user_base.svg"/>
             <movable>
                 <icon userpath="sensor_user_movable.svg"/>
-                <data port="out" dataname="Value"/> 
+                <data port="out" dataname="Value"/>
                 <movement x="0" y="0" a="-120"/>
                 <start x="0" y="0" a="-60"/>
                 <transformorigin x="18" y="18"/>
