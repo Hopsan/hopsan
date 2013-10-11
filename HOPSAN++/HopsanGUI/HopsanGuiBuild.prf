@@ -28,16 +28,17 @@ defineReplace(setQWTPathInfo){
             files =
             libName = qwt
 
-            #Add debug if debugmode in Windows
+            #Add debug if debugmode (only default on for windows)
             dbg_ext =
             win32:CONFIG(debug, debug|release):dbg_ext = d
+            #unix:CONFIG(debug, debug|release):dbg_ext = d
 
             magic_hopsan_libpath = -L$${libDir} -l$${libName}$${dbg_ext}
             magic_hopsan_includepath = $${QWT_PATH}/src
 
-            #Set files to copy,  only qwt[d].dll/libqwt[d].dll
+            #Set files to copy,  only qwt[d].dll/libqwt[d].so
             win32:files = $${libName}$${dbg_ext}$${DLL_EXT}
-            unix:files = lib$${libName}$${DLL_EXT}*
+            unix:files = lib$${libName}$${dbg_ext}$${DLL_EXT}*
 
             #Generate the copy command
             magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
