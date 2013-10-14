@@ -9,7 +9,7 @@
 //!
 //! @file SignalWaypoint.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 28 Jun 2013 13:03:59
+//! @date Wed 3 Jul 2013 09:57:22
 //! @brief Waypoint Controller with way points
 //! @ingroup SignalComponents
 //!
@@ -91,7 +91,7 @@ public:
             addInputVariable("ycWp1", "waypoint lattitude", "deg", \
 58.3812,&mpycWp1);
         //Add outputVariables to the component
-            addOutputVariable("set1","set state","",1.,&mpset1);
+            addOutputVariable("set1","set state","",0.,&mpset1);
             addOutputVariable("altitudeRef","reference \
 altitude","m",0.,&mpaltitudeRef);
             addOutputVariable("headingRef","reference \

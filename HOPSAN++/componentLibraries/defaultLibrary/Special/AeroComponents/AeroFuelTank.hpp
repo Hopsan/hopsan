@@ -9,7 +9,7 @@
 //!
 //! @file AeroFuelTank.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 28 Jun 2013 13:41:25
+//! @date Mon 14 Oct 2013 10:31:30
 //! @brief Calulates the mass of remaining fuel in tank
 //! @ingroup AeroComponents
 //!

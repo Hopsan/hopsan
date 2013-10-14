@@ -9,7 +9,7 @@
 //!
 //! @file SignalStateMonitor.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 28 Jun 2013 13:03:59
+//! @date Wed 3 Jul 2013 09:57:21
 //! @brief Check for steady state
 //! @ingroup SignalComponents
 //!
