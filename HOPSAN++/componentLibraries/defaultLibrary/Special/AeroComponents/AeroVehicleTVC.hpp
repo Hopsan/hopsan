@@ -9,7 +9,7 @@
 //!
 //! @file AeroVehicleTVC.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 2 Jun 2013 13:15:08
+//! @date Mon 14 Oct 2013 15:45:21
 //! @brief Flight dynamics model of aircraft
 //! @ingroup AeroComponents
 //!
@@ -332,39 +332,36 @@ y","rad/s",0.,&mpwturby);
 z","rad/s",0.,&mpwturbz);
 
         //Add inputParammeters to the component
-            addInputVariable("Cd0b", "&mpDrag coef. body", "", \
-0.004,&mpCd0b);
-            addInputVariable("Ctvc", "&mphinge ciefficient TVC", "m/rad", \
+            addInputVariable("Cd0b", "Drag coef. body", "", 0.004,&mpCd0b);
+            addInputVariable("Ctvc", "hinge ciefficient TVC", "m/rad", \
 0.1,&mpCtvc);
-            addInputVariable("CLalphabh", "&mpL. slope c. body h", "", \
+            addInputVariable("CLalphabh", "L. slope c. body h", "", \
 2.,&mpCLalphabh);
-            addInputVariable("CLalphabv", "&mpL. slope c. body v", "", \
+            addInputVariable("CLalphabv", "L. slope c. body v", "", \
 2.,&mpCLalphabv);
-            addInputVariable("hthrust0", "&mpengine vert. pos", "", \
+            addInputVariable("hthrust0", "engine vert. pos", "", \
 0.,&mphthrust0);
-            addInputVariable("Ix", "&mpInertia moment", "kgm2", 1000.,&mpIx);
-            addInputVariable("Ixz", "&mpInertia moment", "kgm2", \
-500.,&mpIxz);
-            addInputVariable("Iy", "&mpInertia moment", "kgm2", 3000.,&mpIy);
-            addInputVariable("Iz", "&mpInertia moment", "kgm2", 3000.,&mpIz);
-            addInputVariable("Me", "&mpEmpty weight", "kg", 5000.,&mpMe);
-            addInputVariable("Sbh", "&mpnorm. hor. proj. area", "", \
-5,&mpSbh);
-            addInputVariable("Sbv", "&mpnorm.body vert. proj. area", "", \
+            addInputVariable("Ix", "Inertia moment", "kgm2", 1000.,&mpIx);
+            addInputVariable("Ixz", "Inertia moment", "kgm2", 500.,&mpIxz);
+            addInputVariable("Iy", "Inertia moment", "kgm2", 3000.,&mpIy);
+            addInputVariable("Iz", "Inertia moment", "kgm2", 3000.,&mpIz);
+            addInputVariable("Me", "Empty weight", "kg", 5000.,&mpMe);
+            addInputVariable("Sbh", "norm. hor. proj. area", "", 5,&mpSbh);
+            addInputVariable("Sbv", "norm.body vert. proj. area", "", \
 5,&mpSbv);
-            addInputVariable("xbach", "&mpbody ac. hor.", "m", 8.5,&mpxbach);
-            addInputVariable("xbacv", "&mpbody ac vert.", "m", 8.5,&mpxbacv);
-            addInputVariable("xbcge", "&mpbody cg", "m", 6.,&mpxbcge);
-            addInputVariable("xcargo", "&mpcargo pos.", "m", 6.,&mpxcargo);
-            addInputVariable("xfuel", "&mp", "m", 6.,&mpxfuel);
-            addInputVariable("xeng", "&mpengine thrust centre position", "m", \
+            addInputVariable("xbach", "body ac. hor.", "m", 8.5,&mpxbach);
+            addInputVariable("xbacv", "body ac vert.", "m", 8.5,&mpxbacv);
+            addInputVariable("xbcge", "body cg", "m", 6.,&mpxbcge);
+            addInputVariable("xcargo", "cargo pos.", "m", 6.,&mpxcargo);
+            addInputVariable("xfuel", "", "m", 6.,&mpxfuel);
+            addInputVariable("xeng", "engine thrust centre position", "m", \
 0.,&mpxeng);
-            addInputVariable("yeng", "&mpengines off. from center", "m", \
+            addInputVariable("yeng", "engines off. from center", "m", \
 0.,&mpyeng);
-            addInputVariable("kground", "&mpGround stiffness (for \
-limitiation)", "N/m", 10000.,&mpkground);
-            addInputVariable("cground", "&mpGround damping (for \
-limitiation)", "Ns/m", 1000.,&mpcground);
+            addInputVariable("kground", "Ground stiffness (for limitiation)", \
+"N/m", 10000.,&mpkground);
+            addInputVariable("cground", "Ground damping (for limitiation)", \
+"Ns/m", 1000.,&mpcground);
         //Add outputVariables to the component
             addOutputVariable("xcg","Horizontal position 1","m",0,&mpxcg);
             addOutputVariable("ycg","Horizontal position 2","m",0,&mpycg);

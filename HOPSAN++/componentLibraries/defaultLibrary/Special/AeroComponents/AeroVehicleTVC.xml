@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="AeroVehicleTVC" displayname="AeroVehicleTVC">
+        <icons>
+            <icon scale="1" path="AeroVehicleTVC.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="AeroVehicleTVC.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.0769231" y="0" enabled="true" a="90" name="thrustl" autoplaced="true"/>
+            <port x="0.307692" y="0" enabled="true" a="90" name="Mfuel" autoplaced="true"/>
+            <port x="0.7" y="1" enabled="true" a="90" name="BetaSlip" autoplaced="true"/>
+            <port x="0" y="0.2" enabled="true" a="90" name="Ptvcly" autoplaced="true"/>
+            <port x="0" y="0.4" enabled="true" a="90" name="Ptvclz" autoplaced="true"/>
+            <port x="0" y="0.6" enabled="true" a="90" name="Ptvcry" autoplaced="true"/>
+            <port x="0" y="0.8" enabled="true" a="90" name="Ptvcrz" autoplaced="true"/>
+            <port x="0.1" y="1" enabled="true" a="90" name="Pzcg" autoplaced="true"/>
+            <port x="0.384615" y="0" enabled="true" a="90" name="Mcargo" autoplaced="true"/>
+            <port x="0.153846" y="0" enabled="true" a="90" name="thrustr" autoplaced="true"/>
+            <port x="0.266667" y="1" enabled="true" a="90" name="Thetao" autoplaced="true"/>
+            <port x="0.538462" y="0" enabled="true" a="90" name="vturbx" autoplaced="true"/>
+            <port x="0.933333" y="1" enabled="true" a="90" name="Fax" autoplaced="true"/>
+            <port x="0.615385" y="0" enabled="true" a="90" name="vturby" autoplaced="true"/>
+            <port x="0.692308" y="0" enabled="true" a="90" name="vturbz" autoplaced="true"/>
+            <port x="0.966667" y="1" enabled="true" a="90" name="Faz" autoplaced="true"/>
+            <port x="0.433333" y="1" enabled="true" a="90" name="Pb" autoplaced="true"/>
+            <port x="0.0666667" y="1" enabled="true" a="90" name="ycg" autoplaced="true"/>
+            <port x="0.666667" y="1" enabled="true" a="90" name="AlphaAttack" autoplaced="true"/>
+            <port x="0.9" y="1" enabled="true" a="90" name="Cd1" autoplaced="true"/>
+            <port x="0.533333" y="1" enabled="true" a="90" name="q0" autoplaced="true"/>
+            <port x="0.566667" y="1" enabled="true" a="90" name="q1" autoplaced="true"/>
+            <port x="0.6" y="1" enabled="true" a="90" name="q2" autoplaced="true"/>
+            <port x="0.633333" y="1" enabled="true" a="90" name="q3" autoplaced="true"/>
+            <port x="0.733333" y="1" enabled="true" a="90" name="altitude" autoplaced="true"/>
+            <port x="0.0333333" y="1" enabled="true" a="90" name="xcg" autoplaced="true"/>
+            <port x="0.333333" y="1" enabled="true" a="90" name="Ub" autoplaced="true"/>
+            <port x="0.233333" y="1" enabled="true" a="90" name="Psi" autoplaced="true"/>
+            <port x="0.766667" y="1" enabled="true" a="90" name="gfx" autoplaced="true"/>
+            <port x="0.8" y="1" enabled="true" a="90" name="gfy" autoplaced="true"/>
+            <port x="0.466667" y="1" enabled="true" a="90" name="Qb" autoplaced="true"/>
+            <port x="0.833333" y="1" enabled="true" a="90" name="gfz" autoplaced="true"/>
+            <port x="0" y="0.6" enabled="true" a="90" name="tvcry" autoplaced="true"/>
+            <port x="0" y="0.8" enabled="true" a="90" name="tvcrz" autoplaced="true"/>
+            <port x="0.769231" y="0" enabled="true" a="90" name="wturbx" autoplaced="true"/>
+            <port x="0.846154" y="0" enabled="true" a="90" name="wturby" autoplaced="true"/>
+            <port x="0.923077" y="0" enabled="true" a="90" name="wturbz" autoplaced="true"/>
+            <port x="0.866667" y="1" enabled="true" a="90" name="CL1" autoplaced="true"/>
+            <port x="0.133333" y="1" enabled="true" a="90" name="vx" autoplaced="true"/>
+            <port x="0.166667" y="1" enabled="true" a="90" name="vy" autoplaced="true"/>
+            <port x="0.366667" y="1" enabled="true" a="90" name="Vb" autoplaced="true"/>
+            <port x="0.2" y="1" enabled="true" a="90" name="vz" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="Rb" autoplaced="true"/>
+            <port x="0.3" y="1" enabled="true" a="90" name="Phi" autoplaced="true"/>
+            <port x="0.461538" y="0" enabled="true" a="90" name="rho" autoplaced="true"/>
+            <port x="0.4" y="1" enabled="true" a="90" name="Wb" autoplaced="true"/>
+            <port x="0.230769" y="0" enabled="true" a="90" name="g0" autoplaced="true"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
