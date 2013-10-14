@@ -51,7 +51,7 @@ qreal parseDomValueNode(QDomElement domElement);
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
 
-int parseDomIntegerNode(QDomElement);
+int parseDomIntegerNode(QDomElement, const int defaultVal);
 
 void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue, const int precision=6,  const char format='f');
 

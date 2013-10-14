@@ -184,7 +184,7 @@ public slots:
     void exportToMatlab();
     void exportToGnuplot();
     void exportToGraphics();
-    void exportToOldHop();
+    void exportToPLO();
 
     void shiftAllGenerationsDown();
     void shiftAllGenerationsUp();

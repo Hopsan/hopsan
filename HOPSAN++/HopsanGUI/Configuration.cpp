@@ -85,6 +85,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "fmuimportdir", mFmuImportDir);
     appendDomTextNode(settings, "fmuexportdir", mFmuExportDir);
     appendDomTextNode(settings, "labviewexportdir", mLabViewExportDir);
+    appendDomIntegerNode(settings, "ploexportversion", mPLOExportVersion);
 
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
@@ -327,8 +328,9 @@ void Configuration::loadDefaultsFromXml()
 //! @brief Utility function that loads user settings from dom element
 void Configuration::loadUserSettings(QDomElement &rDomElement)
 {
-    if(!rDomElement.firstChildElement("librarystyle").isNull())
-        mLibraryStyle = parseDomIntegerNode(rDomElement.firstChildElement("librarystyle"));
+    mLibraryStyle = parseDomIntegerNode(rDomElement.firstChildElement("librarystyle"), mLibraryStyle);
+    mPLOExportVersion = parseDomIntegerNode(rDomElement.firstChildElement("ploexportversion"), mPLOExportVersion);
+
     if(!rDomElement.firstChildElement("alwaysloadlastsession").isNull())
         mAlwaysLoadLastSession = parseDomBooleanNode(rDomElement.firstChildElement("showwelcomedialog"));
     if(!rDomElement.firstChildElement("showpopuphelp").isNull())
@@ -357,8 +359,7 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("toggleportsbuttonchecked"));
     if(!rDomElement.firstChildElement("groupmessagesbytag").isNull())
         mGroupMessagesByTag = parseDomBooleanNode(rDomElement.firstChildElement("groupmessagesbytag"));
-    if(!rDomElement.firstChildElement("generationlimit").isNull())
-        mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"));
+    mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"), mGenerationLimit);
     if(!rDomElement.firstChildElement("cachelogdata").isNull())
         mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement("cachelogdata"));
     if(!rDomElement.firstChildElement("autolimitgenerations").isNull())
@@ -758,6 +759,11 @@ double Configuration::getUnitScale(const QString key, const QString unit) const
     }
 
     return 0;
+}
+
+int Configuration::getPLOExportVersion() const
+{
+    return mPLOExportVersion;
 }
 
 

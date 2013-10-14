@@ -139,6 +139,7 @@ void parsePortDomElement(QDomElement domElement, QString &rPortName, PortAppeara
 
     rPortAppearance.mAutoPlaced = parseAttributeBool(domElement, "autoplaced", true);
     rPortAppearance.mEnabled = parseAttributeBool(domElement, "enabled", parseAttributeBool(domElement, "visible", true));
+    //! @todo should we use enabled or visible, should not be both
 
     //! @todo port descriptions have been moved into core, remove this load code later /Peter
     QDomElement xmlPortDescription = domElement.firstChildElement(CAF_DESCRIPTION);

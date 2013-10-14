@@ -168,7 +168,7 @@ void HVCWidget::openHvcFile()
                             }
 
                             HvcConfig conf;
-                            conf.mDataColumn = parseDomIntegerNode(xmlVariable.firstChildElement("column"));
+                            conf.mDataColumn = parseDomIntegerNode(xmlVariable.firstChildElement("column"), 0);
                             conf.mTolerance = parseDomValueNode(xmlVariable.firstChildElement("tolerance"));
                             conf.mFullVarName = xmlComponent.attribute("name")+"#"+xmlPort.attribute("name")+"#"+xmlVariable.attribute("name");
                             conf.mDataFile = dataFile.fileName();

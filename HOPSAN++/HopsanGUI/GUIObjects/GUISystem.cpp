@@ -327,10 +327,8 @@ void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
 
     if(!rDomElement.firstChildElement("settings").isNull())
     {
-        if(!rDomElement.firstChildElement("settings").firstChildElement("niter").isNull())
-            mOptSettings.mNiter = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("niter"));
-        if(!rDomElement.firstChildElement("settings").firstChildElement("nsearchp").isNull())
-            mOptSettings.mNsearchp = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("nsearchp"));
+        mOptSettings.mNiter = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("niter"), mOptSettings.mNiter);
+        mOptSettings.mNsearchp = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("nsearchp"), mOptSettings.mNsearchp);
         if(!rDomElement.firstChildElement("settings").firstChildElement("refcoeff").isNull())
             mOptSettings.mRefcoeff = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("refcoeff"));
         if(!rDomElement.firstChildElement("settings").firstChildElement("randfac").isNull())

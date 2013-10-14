@@ -257,11 +257,11 @@ void PlotVariableTree::updateList()
             {
                 pImportFileLevelItem = new QTreeWidgetItem();
                 pImportFileLevelItem->setText(0, fName);
-                QFont tempFont = pComponentLevelItem->font(0);
+                QFont tempFont = pImportFileLevelItem->font(0);
                 tempFont.setBold(true);
                 pImportFileLevelItem->setFont(0, tempFont);
 //                this->addTopLevelItem(pImportFileLevelItem);
-                pComponentLevelItem->setExpanded(expandedItems.contains(pImportedLevelItem->text(0)));
+                pImportFileLevelItem->setExpanded(expandedItems.contains(pImportedLevelItem->text(0)));
 
                 //Also remember that we created it
                 importedLevelItemMap.insert(fName, pImportFileLevelItem);

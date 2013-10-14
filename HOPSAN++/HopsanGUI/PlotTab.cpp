@@ -1588,36 +1588,10 @@ void PlotTab::exportToGraphics()
     pGraphicsSettingsDialog->exec();
 }
 
-////! @brief Slot that exports plot tab as vector graphics to specified .pdf file
-//void PlotTab::exportToPdf()
-//{
-//    QString selectedFilter;
-//    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf);;PostScript Format (*.ps)", &selectedFilter);
-//    if ( !fileName.isEmpty() )
-//    {
-//        QFileInfo file(fileName);
-//        gConfig.setPlotGfxDir(file.absolutePath());
 
-//        QwtPlotRenderer renderer;
-
-//        QPrinter *printer = new QPrinter(QPrinter::HighResolution);
-//        printer->setPaperSize(QPrinter::Custom);
-//        printer->setPaperSize(mpQwtPlots[FirstPlot]->size(), QPrinter::Point);
-//        printer->setOrientation(QPrinter::Landscape);
-//        printer->setFullPage(false);
-//        if(selectedFilter == "Portable Document Format (*.pdf)")
-//            printer->setOutputFormat(QPrinter::PdfFormat);
-//        else
-//            printer->setOutputFormat(QPrinter::PostScriptFormat);
-//        printer->setOutputFileName(fileName);
-//        renderer.renderTo(mpQwtPlots[FirstPlot],*printer);
-//    }
-//}
-
-void PlotTab::exportToOldHop()
+void PlotTab::exportToPLO()
 {
-    //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
+    // Open file dialog and initialize the file stream
     QString filePath;
     QFileInfo fileInfo;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To OldHopsan Format File"),
@@ -1633,136 +1607,9 @@ void PlotTab::exportToOldHop()
         variables.append(mPlotCurvePtrs[FirstPlot][c]->getLogDataVariablePtr()->getFullVariableName());
     }
 
+    //! @todo this assumes that all curves belong to the same model
     mPlotCurvePtrs[FirstPlot].first()->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getLogDataHandler()->exportToPlo(filePath, variables);
-
-    //    file.setFileName(fileInfo.filePath());   //Create a QFile object
-    //    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    //    {
-    //        gpMainWindow->mpHcomWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
-    //        return;
-    //    }
-
-    //    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
-    //    QDateTime dateTime = QDateTime::currentDateTime();
-    //    QString dateTimeString = dateTime.toString();
-    //    QFileInfo fii(filePath);
-    //    QString namez = fii.baseName();
-    //    QStringList ScalingvaluesList;
-    //    QStringList StartvaluesList;
-    //    QVector<double> Scalings;
-    //    QString ScaleVal;
-
-    //    QString modelPathwayy = gpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
-    //    QFileInfo fiz(modelPathwayy);
-    //    QString namemodel = fiz.baseName();
-
-    //        //Write initial comment
-    //    fileStream << "    'VERSION' " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
-    //    fileStream << "    1 " << "\n";
-    //    fileStream << "    '"<<namez<<".PLO"<<"'"<<"\n";
-    //    fileStream << "        " << mPlotCurvePtrs[FIRSTPLOT].size()<<"    "<< mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector().size()<<"\n";
-    //    fileStream << "    'Time      '";
-    //    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
-    //    {
-    //        fileStream << ",    'Y" << i<<"      '";
-    //    }
-    //    fileStream <<",    '"<< "\n";
-
-    //        //Write time and data vectors
-    //    QString dummy;
-
-
-    ////    double iMax = Scalings[0]; //set min and max as the first element
-    ////    double iMin = Scalings[0];
-    ////    for (int xi=0; xi<Scalings.size(); xi++)
-    ////    {
-    ////        if (Scalings[xi] < iMin)
-    ////            iMin = Scalings[xi];
-    ////        if (Scalings[xi] > iMax)
-    ////            iMax = Scalings[xi];
-
-    ////        double Scale = (iMax-iMin)/(Scalings.size());
-
-
-    ////    }
-
-
-
-
-    //    for(int kk=0; kk<mPlotCurvePtrs[FIRSTPLOT].size()+1; ++kk)
-    //    {
-
-    //        ScalingvaluesList.append(dummy.setNum(1.0,'E',6));
-    //        fileStream <<"  "<< dummy;
-    //        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
-
-
-    //    }
-    //    fileStream << "\n";
-
-
-    //    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector().size(); ++i)
-    //    {
-    //        dummy.setNum(mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector()[i],'E',6);
-    //        fileStream <<"  "<<dummy;
-    //        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
-
-    //        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT].size(); ++k)
-    //        {
-    //            dummy.setNum(mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector()[i],'E',6);
-    //            Scalings = mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector();
-    //            if(i == 0)
-    //            {
-    //               StartvaluesList.append(dummy.setNum(mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector()[i],'E',6));
-    //            }
-
-    //            fileStream <<"  "<< dummy;
-    //            for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
-
-    //        }
-    //        fileStream << "\n";
-    //    }
-    //    fileStream << "  "+namez+".PLO.DAT_-1" <<"\n";
-    //    fileStream << "  "+namemodel+".for" <<"\n";
-    //    fileStream <<"   Variable     Startvalue     Scaling" <<"\n";
-    //    fileStream <<"------------------------------------------------------" <<"\n";
-    //    for(int ii=0; ii<mPlotCurvePtrs[FIRSTPLOT].size(); ++ii)
-    //    {
-    //        fileStream << "  Y" << ii << "     " << StartvaluesList[ii]<<"      "<<ScalingvaluesList[ii]<<"\n";
-    //    }
-
-
-
-    //    file.close();
 }
-
-////! @brief Slot that exports plot tab as bitmap to specified .png file
-//void PlotTab::exportToPng()
-//{
-//    QString fileName = QFileDialog::getSaveFileName(
-//                this, "Export File Name", gConfig.getPlotGfxDir(),
-//                "Portable Network Graphics (*.png)");
-
-//    if(!fileName.isEmpty())
-//    {
-//        QFileInfo file(fileName);
-//        gConfig.setPlotGfxDir(file.absolutePath());
-
-//        if(mpBarPlot->isVisible())
-//        {
-//            QPixmap pixmap = QPixmap::grabWidget(this);
-//            pixmap.save(fileName);
-//        }
-//        else
-//        {
-//            QPixmap pixmap(mpQwtPlots[FirstPlot]->width(), mpQwtPlots[FirstPlot]->height());
-//            pixmap.fill();
-//            QwtPlotRenderer renderer;
-//            renderer.renderTo(mpQwtPlots[FirstPlot], pixmap);
-//            pixmap.save(fileName);
-//        }
-//    }
-//}
 
 void PlotTab::shiftAllGenerationsDown()
 {

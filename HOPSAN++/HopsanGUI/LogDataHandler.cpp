@@ -103,6 +103,8 @@ void LogDataHandler::setParentContainerObject(ContainerObject *pParent)
 
 void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
 {
+    const int version = gConfig.getPLOExportVersion();
+
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
     QFile file;
@@ -120,38 +122,83 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     QString modelPath = mpParentContainerObject->getModelFileInfo().filePath();
     QFileInfo modelFileInfo(modelPath);
 
-    QStringList plotScaleStringList;
-    QStringList startvaluesList;
+    //QStringList plotScaleStringList;
+    //QStringList startvaluesList;
 
     QList<SharedLogVariableDataPtrT> dataPtrs;
-    dataPtrs.append(getPlotData(TIMEVARIABLENAME, -1)); //!< @todo this assumes that time exists and is named Time
+    QList<int> gens;
     for(int v=0; v<variables.size(); ++v)
     {
         dataPtrs.append(getPlotData(variables[v],-1));
+        gens.append(dataPtrs.last()->getGeneration());
     }
 
+    int timeGen = -1;
+    if (!gens.isEmpty())
+    {
+        if ( gens.count(gens.first()) != gens.size() )
+        {
+            //! @todo some error message or box
+
+        }
+        timeGen = gens.first();
+    }
+
+    // We insert time last when we know what generation the data had, (to avoid taking last time generation that may belong to imported data)
+    SharedLogVariableDataPtrT pTime = getPlotData(TIMEVARIABLENAME, timeGen);
+    if (pTime)
+    {
+        dataPtrs.prepend(pTime);
+    }
+
+
+    // Now begin to write to pro file
     int nDataRows = dataPtrs[0]->getDataSize();
     int nDataCols = dataPtrs.size();
 
     // Write initial Header data
-    fileStream << "    'VERSION'\n";
-    fileStream << "    2\n";
-    fileStream << "    '"<<ploFileInfo.baseName()<<".PLO' " << "'GUIVERSION " << QString(HOPSANGUIVERSION) << "' 'DATE "<<dateTimeString<<"'\n";
-    fileStream << "    " << nDataCols  <<"    "<< nDataRows <<"\n";
-    fileStream << "    'Time'";
-    for(int i=1; i<dataPtrs.size(); ++i)
+    if (version == 1)
     {
-        //! @todo fix this formating so that it looks nice in plo file (need to know length of previous
-        fileStream << ",    '" << dataPtrs[i]->getSmartName()<<"'";
+        fileStream << "    'VERSION'\n";
+        fileStream << "    1\n";
+        fileStream << "    '"<<ploFileInfo.baseName()<<".PLO'\n";
+        fileStream << "    " << nDataCols-1  <<"    "<< nDataRows <<"\n";
+        fileStream << "    'Time'";
+        for(int i=1; i<dataPtrs.size(); ++i)
+        {
+            //! @todo fix this formating so that it looks nice in plo file (need to know length of previous
+            fileStream << ",    '" << dataPtrs[i]->getSmartName()<<"'";
+        }
+        fileStream << "\n";
     }
-    fileStream << "\n";
+    else if (version == 2)
+    {
+        fileStream << "    'VERSION'\n";
+        fileStream << "    2\n";
+        fileStream << "    '"<<ploFileInfo.baseName()<<".PLO' " << "'" << modelFileInfo.fileName() << "' " << "'GUIVERSION " << QString(HOPSANGUIVERSION) << "' 'DATE "<<dateTimeString<<"'\n";
+        fileStream << "    " << nDataCols  <<"    "<< nDataRows <<"\n";
+        if (nDataCols > 0)
+        {
+            fileStream << "    '" << dataPtrs[0]->getSmartName() << "'";
+            for(int i=1; i<dataPtrs.size(); ++i)
+            {
+                //! @todo fix this formating so that it looks nice in plo file (need to know length of previous
+                fileStream << ",    '" << dataPtrs[i]->getSmartName()<<"'";
+            }
+        }
+        else
+        {
+            fileStream << "    'NoData'";
+        }
+        fileStream << "\n";
+    }
 
     // Write plotScalings line
     for(int i=0; i<dataPtrs.size(); ++i)
     {
         QString str;
         str.setNum(dataPtrs[i]->getPlotScale(),'E',6);
-        plotScaleStringList.append(str); //Remember till later
+        //plotScaleStringList.append(str); //Remember till later
         if (str[0] == '-')
         {
             fileStream << " " << str;
@@ -171,11 +218,6 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
         for(int col=0; col<dataPtrs.size(); ++col)
         {
             str.setNum(dataPtrs[col]->peekData(row,err),'E',6);
-//            if(row == 0)
-//            {
-//                startvaluesList.append(str.setNum(dataPtrs[col]->peekData(row,err),'E',6));
-//            }
-
             if (str[0] == '-')
             {
                 fileStream << " " << str;
@@ -187,14 +229,13 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
         }
         fileStream << "\n";
     }
-    fileStream << "  "+ploFileInfo.baseName()+".PLO.DAT_-1" <<"\n";
-    fileStream << "  "+modelFileInfo.fileName() <<"\n";
-//    fileStream <<"   Variable     Startvalue     Scaling" <<"\n";
-//    fileStream <<"------------------------------------------------------" <<"\n";
-//    for(int i=0; i<dataPtrs.size(); ++i)
-//    {
-//        fileStream << "  " << dataPtrs[i]->getSmartName() << "     " << "STARTVALUEGOESHERE"<<"      "<<plotScaleStringList[i]<<"\n";
-//    }
+
+    // Write plot data ending header
+    if (version==1)
+    {
+        fileStream << "  "+ploFileInfo.baseName()+".PLO.DAT_-1" <<"\n";
+        fileStream << "  "+modelFileInfo.fileName() <<"\n";
+    }
 
     file.close();
 }
@@ -237,7 +278,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
     progressImportBar.setRange(0,0);
     progressImportBar.show();
 
-    int nDataRows = 0;
+    unsigned int nDataRows = 0;
     int nDataColumns = 0;
     int ploVersion = 0;
 
@@ -247,7 +288,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
     QTextStream t(&file);
 
     // Read header data
-    for (int lineNum=1; lineNum<7; ++lineNum)
+    for (unsigned int lineNum=1; lineNum<7; ++lineNum)
     {
         QString line = t.readLine().trimmed();
         if(!line.isNull())
@@ -255,19 +296,19 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
             // Check PLO format version
             if(lineNum == 2)
             {
-                ploVersion = line.toInt();
+                ploVersion = line.toUInt();
             }
             // Else check for num data info
             else if(lineNum == 4)
             {
                 QStringList colsandrows = line.simplified().split(" ");
-                nDataColumns = colsandrows[0].toInt();
-                nDataRows = colsandrows[1].toInt();
+                nDataColumns = colsandrows[0].toUInt();
+                nDataRows = colsandrows[1].toUInt();
                 // Reserve memory for reading data
                 importedPLODataVector.resize(nDataColumns);
                 for(int c=0; c<nDataColumns; ++c)
                 {
-                    importedPLODataVector[c].mDataValues.reserve(nDataRows); //! @todo is it +- 0 or 1
+                    importedPLODataVector[c].mDataValues.reserve(nDataRows);
                 }
             }
             // Else check for data header info
@@ -280,7 +321,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
                     importedPLODataVector.resize(nDataColumns);
                     for(int c=0; c<nDataColumns; ++c)
                     {
-                        importedPLODataVector[c].mDataValues.reserve(nDataRows); //! @todo is it +- 0 or 1
+                        importedPLODataVector[c].mDataValues.reserve(nDataRows);
                     }
                 }
 
@@ -307,7 +348,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
     }
 
     // Read the logged data
-    for (int lineNum=7; lineNum<7+nDataRows; ++lineNum)
+    for (unsigned int lineNum=7; lineNum<7+nDataRows; ++lineNum)
     {
         QString line = t.readLine().trimmed();
         if(!line.isNull())
@@ -328,6 +369,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
     // We are done reading, close the file
     file.close();
 
+    // Insert data into log-data handler
     if (importedPLODataVector.size() > 0)
     {
         ++mGenerationNumber;

@@ -81,6 +81,7 @@ public:
     QMap<QString, double> getCustomUnits(QString key);
     bool hasUnitScale(const QString key, const QString unit) const;
     double getUnitScale(const QString key, const QString unit) const;
+    int getPLOExportVersion() const;
 
     bool getGroupMessagesByTag();
     QStringList getTerminalHistory();
@@ -205,6 +206,7 @@ private:
     QString mFmuImportDir;
     QString mFmuExportDir;
     QString mLabViewExportDir;
+    int mPLOExportVersion;
 
     int mParallelAlgorighm;
 

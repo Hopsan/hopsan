@@ -278,10 +278,20 @@ qreal parseDomValueNode(QDomElement domElement)
 
 //! @brief Function that parses one DOM elements containing one text node (based on an integer value)
 //! @param[in] domElement The DOM Element to parse
+//! @param[in] defaultVal The default value to use if DOM element is null or if parsing fails
 //! @returns The extracted value
-int parseDomIntegerNode(QDomElement domElement)
+int parseDomIntegerNode(QDomElement domElement, const int defaultVal)
 {
-    return domElement.text().toInt();
+    if ( !domElement.isNull() )
+    {
+        bool isOk;
+        int val = domElement.text().toInt(&isOk);
+        if (isOk)
+        {
+            return val;
+        }
+    }
+    return defaultVal;
 }
 
 

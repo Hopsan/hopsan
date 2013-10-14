@@ -17,8 +17,9 @@
         <toggleportsbuttonchecked>true</toggleportsbuttonchecked>
         <groupmessagesbytag>true</groupmessagesbytag>
         <generationlimit>100</generationlimit>
-	<cachelogdata>true</cachelogdata>
+        <cachelogdata>true</cachelogdata>
         <autolimitgenerations>false</autolimitgenerations>
+        <ploexportversion>1</ploexportversion>
         <loadmodeldir/>
     </settings>
     <style>
