@@ -6,9 +6,9 @@
             <icon scale="1" path="AeroAtmosphere.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.4" y="1" a="90" name="Tav"/>
+            <port x="0.4" y="1" a="90" name="Ta"/>
             <port x="0.5" y="0" a="90" name="ha"/>
-            <port x="0.2" y="1" a="90" name="rho"/>
+            <port x="0.2" y="1" a="90" name="rhoa"/>
             <port x="0.8" y="1" a="90" name="Vsound"/>
             <port x="0.6" y="1" a="90" name="p0"/>
         </ports>

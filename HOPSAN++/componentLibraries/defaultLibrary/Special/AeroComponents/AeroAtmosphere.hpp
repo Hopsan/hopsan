@@ -9,7 +9,7 @@
 //!
 //! @file AeroAtmosphere.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 28 Jun 2013 13:41:26
+//! @date Mon 14 Oct 2013 10:33:48
 //! @brief model of standard atmosphere
 //! @ingroup AeroComponents
 //!
@@ -39,8 +39,8 @@ private:
      //inputVariables
      double ha;
      //outputVariables
-     double rho;
-     double T;
+     double rhoa;
+     double Ta;
      double p0;
      double Vsound;
      //Expressions variables
@@ -62,8 +62,8 @@ private:
      double *mprhotp;
      double *mpe;
      //outputVariables pointers
-     double *mprho;
-     double *mpT;
+     double *mprhoa;
+     double *mpTa;
      double *mpp0;
      double *mpVsound;
      EquationSystemSolver *mpSolver;
@@ -102,10 +102,11 @@ public:
             addInputVariable("rhotp", "", "kg/m3", 0.363649,&mprhotp);
             addInputVariable("e", "e", "", 2.71828,&mpe);
         //Add outputVariables to the component
-            addOutputVariable("rho","The density at altitude \
-h","kg/m3",1.25,&mprho);
-            addOutputVariable("T","Temperature at altitude h","K",273.,&mpT);
-            addOutputVariable("p0","Pressure at altitude \
+            addOutputVariable("rhoa","The average density at altitude \
+h","kg/m3",1.25,&mprhoa);
+            addOutputVariable("Ta","Average temperature at altitude \
+h","K",273.,&mpTa);
+            addOutputVariable("p0","The average ressure at altitude \
 h","Pa",100000.,&mpp0);
             addOutputVariable("Vsound","Speed of sound at altitude \
 h","m/s",340.,&mpVsound);
@@ -138,8 +139,8 @@ h","m/s",340.,&mpVsound);
         e = (*mpe);
 
         //Read outputVariables from nodes
-        rho = (*mprho);
-        T = (*mpT);
+        rhoa = (*mprhoa);
+        Ta = (*mpTa);
         p0 = (*mpp0);
         Vsound = (*mpVsound);
 
@@ -159,21 +160,21 @@ h","m/s",340.,&mpVsound);
         //LocalExpressions
 
           //Expressions
-          T = (a*ha + Ts)*onNegative(ha - htp) + (a*htp + Ts)*onPositive(ha - \
-htp);
-          rho = rhos*Power(T/Ts,-1 - g0/(a*R))*onNegative(ha - htp) + \
+          Ta = (a*ha + Ts)*onNegative(ha - htp) + (a*htp + Ts)*onPositive(ha \
+- htp);
+          rhoa = rhos*Power(Ta/Ts,-1 - g0/(a*R))*onNegative(ha - htp) + \
 (rhotp*onPositive(ha - htp))/Power(e,(g0*(ha - htp))/(R*Ttp));
-          p0 = (p0s*onNegative(ha - htp))/Power(T/Ts,g0/(a*R)) + \
+          p0 = (p0s*onNegative(ha - htp))/Power(Ta/Ts,g0/(a*R)) + \
 (ptp*onPositive(ha - htp))/Power(e,(g0*(ha - htp))/(R*Ttp));
-          Vsound = Sqrt(gamma*R*T);
+          Vsound = Sqrt(gamma*R*Ta);
 
         //Calculate the delayed parts
 
 
         //Write new values to nodes
         //outputVariables
-        (*mprho)=rho;
-        (*mpT)=T;
+        (*mprhoa)=rhoa;
+        (*mpTa)=Ta;
         (*mpp0)=p0;
         (*mpVsound)=Vsound;
 
