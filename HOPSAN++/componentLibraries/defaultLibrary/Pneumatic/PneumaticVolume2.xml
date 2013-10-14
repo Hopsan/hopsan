@@ -7,7 +7,7 @@
         </icons>
         <ports>
             <port x="0" y="0.5" enabled="true" a="180" name="Pp1" autoplaced="true"/>
-            <port x="0.5" y="1" enabled="true" a="90" name="Pmass" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="mass" autoplaced="true"/>
             <port x="1" y="0.5" enabled="true" a="0" name="Pp2" autoplaced="true"/>
         </ports>
         <animation flowspeed="100"/>

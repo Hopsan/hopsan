@@ -11,8 +11,8 @@
         <ports>
             <port x="0.1016875" y="0.4166666667" a="0" name="P1"/>
             <port x="0.8983125" y="0.4166666667" a="0" name="P2"/>
-            <port x="0.2" y="0.0" a="270" name="Pfs"/>
-            <port x="0.8" y="0.0" a="270" name="Pfk"/>
+            <port x="0.2" y="0.0" a="270" name="f_s" visible="false"/>
+            <port x="0.8" y="0.0" a="270" name="f_k" visible="false"/>
         </ports>
         <animation>
             <icon userpath="massc_user_base.svg"/>
