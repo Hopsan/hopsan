@@ -7,9 +7,9 @@
         </icons>
         <ports>
             <port x="0.5" y="1" enabled="true" a="90" name="PT" autoplaced="true"/>
-            <port x="1" y="0.3" enabled="true" a="0" name="Pmassfuel" autoplaced="true"/>
-            <port x="1" y="0.7" enabled="true" a="0" name="Pconsfuel" autoplaced="true"/>
-            <port x="0.5" y="0" enabled="true" a="270" name="Pgx" autoplaced="true"/>
+            <port x="1" y="0.3" enabled="true" a="0" name="massfuel" autoplaced="true"/>
+            <port x="1" y="0.7" enabled="true" a="0" name="consfuel" autoplaced="true"/>
+            <port x="0.5" y="0" enabled="true" a="270" name="gx" autoplaced="true"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
