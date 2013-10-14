@@ -9,7 +9,7 @@
 //!
 //! @file AeroJetEngine.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 14 Oct 2013 10:31:31
+//! @date Mon 14 Oct 2013 17:41:50
 //! @brief Calulates the mass of remaining fuel in tank
 //! @ingroup AeroComponents
 //!
@@ -43,7 +43,7 @@ private:
      //inputVariables
      double uin;
      double rho;
-     double T;
+     double Ta;
      double p0;
      double Vsound;
      double speed;
@@ -58,7 +58,7 @@ private:
      //inputVariables pointers
      double *mpuin;
      double *mprho;
-     double *mpT;
+     double *mpTa;
      double *mpp0;
      double *mpVsound;
      double *mpspeed;
@@ -105,7 +105,8 @@ public:
             addInputVariable("uin","Throttle setting 0-1","",1.,&mpuin);
             addInputVariable("rho","The density at altitude \
 h","kg/m3",1.25,&mprho);
-            addInputVariable("T","Temperature at altitude h","K",273.,&mpT);
+            addInputVariable("Ta","Temperature at altitude \
+h","K",273.,&mpTa);
             addInputVariable("p0","Pressure at altitude \
 h","Pa",100000.,&mpp0);
             addInputVariable("Vsound","Speed of sound at altitude \
@@ -144,7 +145,7 @@ flow","kg/s",1.,&mpqmfuel);
         //Read inputVariables from nodes
         uin = (*mpuin);
         rho = (*mprho);
-        T = (*mpT);
+        Ta = (*mpTa);
         p0 = (*mpp0);
         Vsound = (*mpVsound);
         speed = (*mpspeed);
@@ -186,7 +187,7 @@ flow","kg/s",1.,&mpqmfuel);
         //Read inputVariables from nodes
         uin = (*mpuin);
         rho = (*mprho);
-        T = (*mpT);
+        Ta = (*mpTa);
         p0 = (*mpp0);
         Vsound = (*mpVsound);
         speed = (*mpspeed);

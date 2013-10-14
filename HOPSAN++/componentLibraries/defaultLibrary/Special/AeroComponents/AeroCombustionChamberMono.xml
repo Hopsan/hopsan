@@ -11,7 +11,7 @@
             <port x="0.1" y="1" enabled="true" a="90" name="pc" autoplaced="true"/>
             <port x="1" y="0.4" enabled="true" a="0" name="rhogas" autoplaced="true"/>
             <port x="1" y="0.7" enabled="true" a="0" name="Ae" autoplaced="true"/>
-            <port x="0" y="0.5" enabled="true" a="90" name="P1" autoplaced="true"/>
+            <port x="0" y="0.5" enabled="true" a="180" name="P1" autoplaced="true"/>
             <port x="1" y="0.8" enabled="true" a="0" name="Pin" autoplaced="true"/>
             <port x="0.5" y="1" enabled="true" a="90" name="mdot" autoplaced="true"/>
             <port x="1" y="0.9" enabled="true" a="0" name="Pout" autoplaced="true"/>
