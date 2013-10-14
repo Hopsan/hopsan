@@ -297,7 +297,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     else if(splitAtSeparator("?", symbols, simplifications)) {}                  //Logical greaater than or equal (replace with function)
     else if(splitAtSeparator("<", symbols, simplifications)) {}                  //Logical smaller than (replace with function)
     else if(splitAtSeparator("|", symbols, simplifications)) {}                  //Logical smaller than or equal (replace with function)
-    else if(symbols.size() == 1 && symbols.first().contains("("))                   //Function
+    else if(symbols.size() == 1 && symbols.first().contains("(") && symbols.first().endsWith(")"))                   //Function
     {
         QString str = symbols.first();
         mFunction = str.left(str.indexOf("("));
