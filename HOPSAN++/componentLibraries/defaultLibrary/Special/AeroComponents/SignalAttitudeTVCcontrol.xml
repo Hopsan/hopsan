@@ -6,15 +6,15 @@
             <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.1" y="1" enabled="true" a="90" name="Pphi" autoplaced="true"/>
-            <port x="0.3" y="1" enabled="true" a="90" name="Ptheta" autoplaced="true"/>
-            <port x="0.5" y="1" enabled="true" a="90" name="Ppsi" autoplaced="true"/>
-            <port x="0" y="0.4" enabled="true" a="180" name="Pthetaref" autoplaced="true"/>
-            <port x="0" y="0.6" enabled="true" a="180" name="Ppsiref" autoplaced="true"/>
-            <port x="0.7" y="1" enabled="true" a="90" name="PRb" autoplaced="true"/>
-            <port x="0.9" y="1" enabled="true" a="90" name="PQb" autoplaced="true"/>
-            <port x="1" y="0.4" enabled="true" a="0" name="Purud" autoplaced="true"/>
-            <port x="1" y="0.6" enabled="true" a="0" name="Puelev" autoplaced="true"/>
+            <port x="0.1" y="1" enabled="true" a="90" name="phi" autoplaced="true"/>
+            <port x="0.3" y="1" enabled="true" a="90" name="theta" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="psi" autoplaced="true"/>
+            <port x="0" y="0.4" enabled="true" a="180" name="thetaref" autoplaced="true"/>
+            <port x="0" y="0.6" enabled="true" a="180" name="psiref" autoplaced="true"/>
+            <port x="0.7" y="1" enabled="true" a="90" name="Rb" autoplaced="true"/>
+            <port x="0.9" y="1" enabled="true" a="90" name="Qb" autoplaced="true"/>
+            <port x="1" y="0.4" enabled="true" a="0" name="urud" autoplaced="true"/>
+            <port x="1" y="0.6" enabled="true" a="0" name="uelev" autoplaced="true"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
