@@ -903,7 +903,7 @@ SharedVariableDescriptionT LogVariableContainer::getVariableDescription() const
     return mVariableDescription;
 }
 
-SharedLogVariableDataPtrT LogVariableContainer::getDataGeneration(const int gen)
+SharedLogVariableDataPtrT LogVariableContainer::getDataGeneration(const int gen) const
 {
     // If generation not specified (<0), then take latest (if not empty),
     if ( (gen < 0) && !mDataGenerations.empty() )
@@ -1042,6 +1042,11 @@ QVector<double> LogVariableData::getDataVectorCopy()
     QVector<double> vec;
     mpCachedDataVector->copyDataTo(vec);
     return vec;
+}
+
+void LogVariableData::sendDataToStream(QTextStream &rStream, QString separator)
+{
+    mpCachedDataVector->streamDataTo(rStream, separator);
 }
 
 int LogVariableData::getDataSize() const

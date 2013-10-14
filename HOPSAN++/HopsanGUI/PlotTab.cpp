@@ -1160,8 +1160,9 @@ void PlotTab::exportToCsv(QString fileName)
 
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
 
-
+    //! @todo this function should use export functions in the log data handler instead
     //Cycle plot curves
+    //! @todo this seems to write column ordered data, we need to support column or row ordered data
     if(mHasCustomXData)
     {
         //! @todo how to handle this with multiple xvectors per curve
@@ -1173,6 +1174,7 @@ void PlotTab::exportToCsv(QString fileName)
             fileStream << xvec[i];
             for(int j=0; j<mPlotCurvePtrs[FirstPlot].size(); ++j)
             {
+                //! @todo copying the entire vector evvery time is total madness
                 fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVectorCopy()[i];
             }
             fileStream << "\n";
@@ -1302,6 +1304,7 @@ void PlotTab::exportToHvc(QString fileName)
 
 
 //! @brief Slot that exports plot tab to a specified matlab script file (.m)
+//! @todo this function should use export functions in the log data handler instead
 void PlotTab::exportToMatlab()
 {
     //Open file dialog and initialize the file stream
@@ -1448,6 +1451,7 @@ void PlotTab::exportToMatlab()
 
 
 //! @brief Slot that exports plot tab to specified gnuplot file  (.dat)
+//! @todo this function should use export functions in the log data handler instead
 void PlotTab::exportToGnuplot()
 {
     //Open file dialog and initialize the file stream
@@ -1601,10 +1605,10 @@ void PlotTab::exportToPLO()
     fileInfo.setFile(filePath);
     gConfig.setPlotDataDir(fileInfo.absolutePath());
 
-    QStringList variables;
+    QVector<SharedLogVariableDataPtrT> variables;
     for(int c=0; c<mPlotCurvePtrs[FirstPlot].size(); ++c)
     {
-        variables.append(mPlotCurvePtrs[FirstPlot][c]->getLogDataVariablePtr()->getFullVariableName());
+        variables.append(mPlotCurvePtrs[FirstPlot][c]->getLogDataVariablePtr());
     }
 
     //! @todo this assumes that all curves belong to the same model

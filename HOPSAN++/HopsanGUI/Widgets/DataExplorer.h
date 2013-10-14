@@ -24,6 +24,7 @@ public slots:
     void setLogdataHandler(LogDataHandler* pLogDataHanlder);
     void refresh();
     void openImportDataDialog();
+    void openExportDataDialog();
 
 private slots:
     void refreshGenerationList();
@@ -32,6 +33,7 @@ private slots:
     void removeGeneration(int gen);
 
 private:
+    QVector<int> gensFromSelected();
     QPointer<LogDataHandler> mpLogDataHandler;
     QWidget *mpGenerationsListWidget;
     QScrollArea *mpGenerationsScrollArea;

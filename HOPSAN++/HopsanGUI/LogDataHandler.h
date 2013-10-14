@@ -53,7 +53,11 @@ public:
     void setParentContainerObject(ContainerObject *pParent);
 
     void collectPlotDataFromModel(bool overWriteLastGeneration=false);
-    void exportToPlo(QString filePath, QStringList variables);
+    void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
+    void exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version=-1) const;
+    void exportToPlo(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables, int version=-1) const;
+    void exportToCSV(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables) const;
+    void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
     void importFromPlo(QString rImportFilePath=QString());
     void importFromCsv(QString rImportFilePath=QString());
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
@@ -74,11 +78,11 @@ public:
     QVector<double> getPlotDataValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     QVector<double> getPlotDataValues(const QString &rName, int generation);
     SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
-    SharedLogVariableDataPtrT getPlotData(const QString &rName, const int generation);
+    SharedLogVariableDataPtrT getPlotData(const QString &rName, const int generation) const;
     QVector<SharedLogVariableDataPtrT> getMultipleLogData(const QRegExp &rNameExp, const int generation=-1) const;
     bool hasPlotData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
-    QVector<SharedLogVariableDataPtrT> getOnlyVariablesAtGeneration(const int generation);
+    QVector<SharedLogVariableDataPtrT> getAllVariablesAtGeneration(const int generation) const;
     QStringList getLogDataVariableNames(QString separator, int generation=-1);
 
     void definePlotAlias(QString fullName);

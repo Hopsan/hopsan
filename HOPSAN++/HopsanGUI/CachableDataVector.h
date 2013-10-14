@@ -31,6 +31,7 @@
 #include <QSharedPointer>
 #include <QVector>
 #include <QMap>
+#include <QTextStream>
 
 ////! @todo this could be a template
 //class CachedSingleDataVector
@@ -129,6 +130,7 @@ public:
     int size() const;
     bool isEmpty() const;
 
+    bool streamDataTo(QTextStream &rTextStream, const QString separator);
     bool copyDataTo(QVector<double> &rData);
     bool replaceData(const QVector<double> &rNewData);
     bool peek(const int idx, double &rVal);

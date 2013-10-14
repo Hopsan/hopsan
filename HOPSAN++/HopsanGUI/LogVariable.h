@@ -31,6 +31,7 @@
 #include <QColor>
 #include <QObject>
 #include <QPointer>
+#include <QTextStream>
 
 #include "CachableDataVector.h"
 #include "common.h"
@@ -90,7 +91,7 @@ public:
     void removeGenerationsOlderThen(const int gen);
     void removeAllGenerations();
 
-    SharedLogVariableDataPtrT getDataGeneration(const int gen=-1);
+    SharedLogVariableDataPtrT getDataGeneration(const int gen=-1) const;
     bool hasDataGeneration(const int gen);
     int getLowestGeneration() const;
     int getHighestGeneration() const;
@@ -164,6 +165,7 @@ public:
 
     const SharedLogVariableDataPtrT getSharedTimePointer() const;
     QVector<double> getDataVectorCopy();
+    void sendDataToStream(QTextStream &rStream, QString separator);
     int getDataSize() const;
     double first() const;
     double last() const;

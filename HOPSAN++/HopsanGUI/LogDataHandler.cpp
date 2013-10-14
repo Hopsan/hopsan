@@ -101,35 +101,56 @@ void LogDataHandler::setParentContainerObject(ContainerObject *pParent)
 }
 
 
-void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
+void LogDataHandler::exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version) const
 {
-    const int version = gConfig.getPLOExportVersion();
+    QVector<SharedLogVariableDataPtrT> dataPtrs;
+    for(int v=0; v<rVariables.size(); ++v)
+    {
+        // Do not try to export missing data
+        SharedLogVariableDataPtrT pData = getPlotData(rVariables[v],-1);
+        if (pData)
+        {
+            dataPtrs.append(pData);
+        }
+        else
+        {
+            gpTerminalWidget->mpConsole->printWarningMessage(QString("In export PLO: %1 was not found, ignoring!").arg(rVariables[v]));
+        }
+    }
+    exportToPlo(rFilePath, dataPtrs, version);
+}
 
-    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables, int version) const
+{
+    if ( (version < 1) || (version > 2) )
+    {
+        version = gConfig.getPLOExportVersion();
+    }
+
+    if(rFilePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
     QFile file;
-    file.setFileName(filePath);   //Create a QFile object
+    file.setFileName(rFilePath);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + rFilePath);
         return;
     }
 
     // Create a QTextStream object to stream the content of file
     QTextStream fileStream(&file);
     QString dateTimeString = QDateTime::currentDateTime().toString();
-    QFileInfo ploFileInfo(filePath);
+    QFileInfo ploFileInfo(rFilePath);
     QString modelPath = mpParentContainerObject->getModelFileInfo().filePath();
     QFileInfo modelFileInfo(modelPath);
 
     //QStringList plotScaleStringList;
     //QStringList startvaluesList;
 
-    QList<SharedLogVariableDataPtrT> dataPtrs;
-    QList<int> gens;
-    for(int v=0; v<variables.size(); ++v)
+    QVector<SharedLogVariableDataPtrT> dataPtrs = rVariables;
+    QVector<int> gens;
+    for(int v=0; v<dataPtrs.size(); ++v)
     {
-        dataPtrs.append(getPlotData(variables[v],-1));
         gens.append(dataPtrs.last()->getGeneration());
     }
 
@@ -138,8 +159,7 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     {
         if ( gens.count(gens.first()) != gens.size() )
         {
-            //! @todo some error message or box
-
+            gpTerminalWidget->mpConsole->printWarningMessage(QString("In export PLO: Data had different generations, time vector may not be correct for all exported data!"));
         }
         timeGen = gens.first();
     }
@@ -238,6 +258,34 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     }
 
     file.close();
+}
+
+void LogDataHandler::exportToCSV(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables) const
+{
+    QFile file;
+    file.setFileName(rFilePath);   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + rFilePath);
+        return;
+    }
+
+    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+
+    // Save each variable to one line each
+    for (int i=0; i<rVariables.size(); ++i)
+    {
+        fileStream << rVariables[i]->getFullVariableName() << "," << rVariables[i]->getAliasName() << "," << rVariables[i]->getDataUnit() << ",";
+        rVariables[i]->sendDataToStream(fileStream, ",");
+        fileStream << "\n";
+    }
+}
+
+void LogDataHandler::exportGenerationToCSV(const QString &rFilePath, const int gen) const
+{
+    QVector<SharedLogVariableDataPtrT> vars = getAllVariablesAtGeneration(gen);
+    // Now export all of them
+    exportToCSV(rFilePath, vars);
 }
 
 class PLOImportData
@@ -673,6 +721,24 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
     }
 }
 
+void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int gen, const int version) const
+{
+    QVector<SharedLogVariableDataPtrT> vars = getAllVariablesAtGeneration(gen);
+
+    // Ok now remove time vector as it will be added again in plo export
+    // This is a hack, yes I know
+    for (int i=0; i<vars.size(); ++i)
+    {
+        if (vars[i]->getDataName() == TIMEVARIABLENAME)
+        {
+            vars.remove(i);
+        }
+    }
+
+    // Now export all of them
+    exportToPlo(rFilePath, vars, version);
+}
+
 
 //! @brief Returns the plot data for specified variable
 //! @param[in] generation Generation of plot data
@@ -722,10 +788,10 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(int generation, QString co
     return getPlotData(concName, generation);
 }
 
-SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString &rName, const int generation)
+SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString &rName, const int generation) const
 {
     // Find the data variable
-    LogDataMapT::iterator dit = mLogDataMap.find(rName);
+    LogDataMapT::const_iterator dit = mLogDataMap.find(rName);
     if (dit != mLogDataMap.end())
     {
         return dit.value()->getDataGeneration(generation);
@@ -1738,12 +1804,12 @@ QVector<SharedLogVariableDataPtrT> LogDataHandler::getAllVariablesAtNewestGenera
     return dataPtrVector;
 }
 
-QVector<SharedLogVariableDataPtrT> LogDataHandler::getOnlyVariablesAtGeneration(const int generation)
+QVector<SharedLogVariableDataPtrT> LogDataHandler::getAllVariablesAtGeneration(const int generation) const
 {
     QVector<SharedLogVariableDataPtrT> dataPtrVector;
 
     // First go through all data variable
-    LogDataMapT::iterator dit = mLogDataMap.begin();
+    LogDataMapT::const_iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
         // Now try to find given generation

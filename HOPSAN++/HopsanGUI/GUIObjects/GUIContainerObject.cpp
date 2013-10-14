@@ -2040,7 +2040,7 @@ double ContainerObject::getLogStartTime() const
     assert(false);
 }
 
-void ContainerObject::setLogStartTime(const double logStartT)
+void ContainerObject::setLogStartTime(const double /*logStartT*/)
 {
     //Needs to be overloaded
     assert(false);

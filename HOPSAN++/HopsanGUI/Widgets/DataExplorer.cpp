@@ -7,6 +7,9 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QButtonGroup>
+#include <QRadioButton>
+#include <QGroupBox>
 
 
 class GenerationItem : public QWidget
@@ -44,13 +47,13 @@ DataExplorer::DataExplorer(QWidget *parent) :
     QGridLayout *pGenerationButtonsLayout = new QGridLayout(pGenerationsButtonWidget);
     QPushButton *pImportGenerationButton = new QPushButton("Import", pGenerationsButtonWidget);
     QPushButton *pExportGenerationsButton = new QPushButton("Export", pGenerationsButtonWidget);
-    pExportGenerationsButton->setEnabled(false);
     QPushButton *pDeleteGenerationsButton = new QPushButton("Remove", pGenerationsButtonWidget);
     pGenerationButtonsLayout->addWidget(pImportGenerationButton,0,0);
     pGenerationButtonsLayout->addWidget(pExportGenerationsButton,1,0);
     pGenerationButtonsLayout->addWidget(pDeleteGenerationsButton,1,1);
     pGenerationButtonsLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
+    connect(pExportGenerationsButton, SIGNAL(clicked()), this, SLOT(openExportDataDialog()));
     connect(pImportGenerationButton, SIGNAL(clicked()), this, SLOT(openImportDataDialog()));
     connect(pDeleteGenerationsButton, SIGNAL(clicked()), this, SLOT(removeSelectedGenerations()));
 
@@ -91,7 +94,7 @@ void DataExplorer::openImportDataDialog()
 {
     QString fileName = QFileDialog::getOpenFileName(this,tr("Choose Hopsan Data File"),
                                                     gConfig.getPlotDataDir(),
-                                                    tr("Data Files (*.plo *.PLO *.csv)"));
+                                                    tr("Data Files (*.plo *.PLO *.csv *.CSV)"));
     QFileInfo fi(fileName);
     if (mpLogDataHandler)
     {
@@ -102,6 +105,100 @@ void DataExplorer::openImportDataDialog()
         else if (fi.suffix().toLower() == "csv")
         {
             mpLogDataHandler->importFromCsv(fileName);
+        }
+    }
+}
+
+void DataExplorer::openExportDataDialog()
+{
+    QDialog exportOptions;
+
+    QButtonGroup *pFormatButtons = new QButtonGroup(&exportOptions);
+    QRadioButton *pPLOv1Button = new QRadioButton("PLO v1");
+    QRadioButton *pPLOv2Button = new QRadioButton("PLO v2");
+    QRadioButton *pCSVButton = new QRadioButton("csv");
+    pFormatButtons->addButton(pPLOv1Button);
+    pFormatButtons->addButton(pPLOv2Button);
+    pFormatButtons->addButton(pCSVButton);
+    pPLOv1Button->setChecked(true);
+
+    QGroupBox *pFormatGroupBox = new QGroupBox("Choose Export Format:", &exportOptions);
+    QHBoxLayout *pFormatButtonLayout = new QHBoxLayout();
+    pFormatButtonLayout->addWidget(pPLOv1Button);
+    pFormatButtonLayout->addWidget(pPLOv2Button);
+    pFormatButtonLayout->addWidget(pCSVButton);
+    pFormatGroupBox->setLayout(pFormatButtonLayout);
+
+
+    QButtonGroup *pFilenameButtons = new QButtonGroup(&exportOptions);
+    QRadioButton *pAppendGenButton = new QRadioButton("Append _gen to each selected generation");
+    QRadioButton *pAskEveryGenButton = new QRadioButton("Ask for filename for each selected generation");
+    pFilenameButtons->addButton(pAppendGenButton);
+    pFilenameButtons->addButton(pAskEveryGenButton);
+    pAppendGenButton->setChecked(true);
+
+    QGroupBox *pFilenameGroupBox = new QGroupBox("Choose Filename Option:", &exportOptions);
+    QVBoxLayout *pFilenameButtonLayout = new QVBoxLayout();
+    pFilenameButtonLayout->addWidget(pAppendGenButton);
+    pFilenameButtonLayout->addWidget(pAskEveryGenButton);
+    pFilenameGroupBox->setLayout(pFilenameButtonLayout);
+
+
+    QGridLayout *pMainLayout = new QGridLayout(&exportOptions);
+    pMainLayout->addWidget(pFormatGroupBox,0,0);
+    pMainLayout->addWidget(pFilenameGroupBox,1,0);
+
+    QPushButton *pExportButton = new QPushButton("Export", &exportOptions);
+    QPushButton *pCancelButton = new QPushButton("Cancel", &exportOptions);
+
+    pMainLayout->addWidget(pExportButton,2,1);
+    pMainLayout->addWidget(pCancelButton,2,2);
+
+    connect(pCancelButton, SIGNAL(clicked()), &exportOptions, SLOT(reject()));
+    connect(pExportButton, SIGNAL(clicked()), &exportOptions, SLOT(accept()));
+
+    if (exportOptions.exec() == QDialog::Accepted)
+    {
+        QVector<int> gens = gensFromSelected();
+        QStringList fNames;
+
+        if (pFilenameButtons->checkedButton() == pAppendGenButton)
+        {
+            QString fileName = QFileDialog::getSaveFileName(this,tr("Choose Hopsan Data File Name"), gConfig.getPlotDataDir(), tr("Data Files (*.plo *.PLO *.csv *.CSV)"));
+            QFileInfo file(fileName);
+            for (int i=0; i<gens.size(); ++i)
+            {
+                fNames.append(file.absolutePath()+"/"+file.baseName()+QString("_%1").arg(gens[i])+"."+file.suffix());
+            }
+        }
+        else
+        {
+            for (int i=0; i<gens.size(); ++i)
+            {
+                fNames.append(QFileDialog::getSaveFileName(this,QString("Choose File Name for Gen: %1").arg(gens[i]), gConfig.getPlotDataDir(), tr("Data Files (*.plo *.PLO *.csv *.CSV)")));
+            }
+        }
+
+        //! @todo maybe open progress bar for large exports
+        for (int i=0; i<fNames.size(); ++i)
+        {
+            QString &file = fNames[i];
+            if (!file.isEmpty())
+            {
+                const int g = gens[i];
+                if (pFormatButtons->checkedButton() == pPLOv1Button)
+                {
+                    mpLogDataHandler->exportGenerationToPlo(file, g, 1);
+                }
+                else if (pFormatButtons->checkedButton() == pPLOv2Button)
+                {
+                    mpLogDataHandler->exportGenerationToPlo(file, g, 2);
+                }
+                else
+                {
+                    mpLogDataHandler->exportGenerationToCSV(file, g);
+                }
+            }
         }
     }
 }
@@ -172,4 +269,18 @@ void DataExplorer::removeGeneration(int gen)
             mGenerationItemMap.remove(gen);
         }
     }
+}
+
+QVector<int> DataExplorer::gensFromSelected()
+{
+    QVector<int> gens;
+    QMap<int,GenerationItem*>::iterator it;
+    for (it = mGenerationItemMap.begin(); it != mGenerationItemMap.end(); ++it)
+    {
+        if (it.value()->mChosenCheckBox.isChecked())
+        {
+            gens.append(it.key());
+        }
+    }
+    return gens;
 }

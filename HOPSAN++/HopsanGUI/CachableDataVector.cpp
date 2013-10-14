@@ -361,6 +361,32 @@ bool CachableDataVector::isEmpty() const
     return (mCacheNumBytes == 0) && mDataVector.isEmpty();
 }
 
+bool CachableDataVector::streamDataTo(QTextStream &rTextStream, const QString separator)
+{
+    if (isCached())
+    {
+        QVector<double> temp;
+        bool isOk = copyDataTo(temp);
+        int i=0;
+        for (; i<temp.size()-1; ++i)
+        {
+            rTextStream << temp[i] << separator;
+        }
+        rTextStream << temp[i];
+        return isOk;
+    }
+    else
+    {
+        int i=0;
+        for (; i<mDataVector.size()-1; ++i)
+        {
+            rTextStream << mDataVector[i] << separator;
+        }
+        rTextStream << mDataVector[i];
+        return true;
+    }
+}
+
 bool CachableDataVector::copyDataTo(QVector<double> &rData)
 {
     if (isCached())
