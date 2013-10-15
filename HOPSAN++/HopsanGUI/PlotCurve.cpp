@@ -272,7 +272,7 @@ void CurveInfoBox::updateInfo()
 
 void CurveInfoBox::refreshTitle()
 {
-    mpTitle->setText(mpParentPlotCurve->getCurveName() + " ["+mpParentPlotCurve->getDataCustomPlotUnit()+"]");
+    mpTitle->setText(mpParentPlotCurve->getCurveName() + " ["+mpParentPlotCurve->getCurrentUnit()+"]");
 }
 
 void CurveInfoBox::refreshActive(bool active)
@@ -492,17 +492,19 @@ QString PlotCurve::getDataName()
 }
 
 
-//! @brief Returns the current data unit of a plot curve
+//! @brief Returns the current custom data unit of a plot curve
 const QString &PlotCurve::getDataCustomPlotUnit() const
 {
     return mpData->getPlotScaleDataUnit();
 }
 
+//! @brief Returns the original data unit of a plot curve
 const QString &PlotCurve::getDataOriginalUnit() const
 {
     return mpData->getDataUnit();
 }
 
+//! @brief Returns the current unit of a plot curve in the following priority (Local unit, Data unit or Original unit)
 const QString &PlotCurve::getCurrentUnit() const
 {
     if (mCustomCurveDataUnit.isEmpty())
@@ -646,6 +648,7 @@ void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
     mCustomCurveDataUnitScale = scale*1.0/mpData->getPlotScale();
 
     updateCurve();
+    updatePlotInfoBox();
 
     //! @todo shouldnt these be triggered by signal in update curve?
     mpParentPlotTab->updateLabels();
