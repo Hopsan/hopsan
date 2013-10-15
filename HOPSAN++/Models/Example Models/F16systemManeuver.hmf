@@ -4,7 +4,7 @@
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
   </requirements>
   <info/>
-  <system typename="Subsystem" name="AircraftWithHydraulcSystemManeuver">
+  <system typename="Subsystem" name="F16systemManeuver">
     <simulationtime stop="300" timestep="0.005" start="0" inherit_timestep="true"/>
     <simulationlogsettings numsamples="2048" starttime="0"/>
     <parameters/>
@@ -19,7 +19,7 @@
       <graphics type="user"/>
       <scriptfile path=""/>
       <hopsanobjectappearance version="0.3">
-        <modelobject typename="Subsystem" displayname="AircraftWithHydraulcSystemManeuver">
+        <modelobject typename="Subsystem" displayname="F16systemManeuver">
           <icons>
             <icon path="subsystemDefault.svg" type="defaultmissing"/>
           </icons>
