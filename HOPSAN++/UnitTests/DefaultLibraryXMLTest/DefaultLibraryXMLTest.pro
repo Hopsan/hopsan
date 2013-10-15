@@ -8,7 +8,7 @@ QT       += xml testlib
 QT       -= gui
 
 
-TARGET = tst_defaultlibraryxmltesttest
+TARGET = tst_defaultlibraryxmltest
 DESTDIR = $${PWD}/../../bin
 CONFIG   += console
 CONFIG   -= app_bundle

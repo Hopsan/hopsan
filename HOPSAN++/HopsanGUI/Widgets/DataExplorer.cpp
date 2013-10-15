@@ -10,6 +10,7 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QGroupBox>
+#include <QProgressBar>
 
 
 class GenerationItem : public QWidget
@@ -40,6 +41,7 @@ DataExplorer::DataExplorer(QWidget *parent) :
     QDialog(parent)
 {
     mpLogDataHandler = 0;
+    mAllSelectedToggle = false;
     QGridLayout *pMainLayout = new QGridLayout();
 
     // Create generations buttons
@@ -48,14 +50,17 @@ DataExplorer::DataExplorer(QWidget *parent) :
     QPushButton *pImportGenerationButton = new QPushButton("Import", pGenerationsButtonWidget);
     QPushButton *pExportGenerationsButton = new QPushButton("Export", pGenerationsButtonWidget);
     QPushButton *pDeleteGenerationsButton = new QPushButton("Remove", pGenerationsButtonWidget);
+    QPushButton *pSelectAllGensButton = new QPushButton("(Un)Select all", pGenerationsButtonWidget);
     pGenerationButtonsLayout->addWidget(pImportGenerationButton,0,0);
     pGenerationButtonsLayout->addWidget(pExportGenerationsButton,1,0);
     pGenerationButtonsLayout->addWidget(pDeleteGenerationsButton,1,1);
+    pGenerationButtonsLayout->addWidget(pSelectAllGensButton,2,0);
     pGenerationButtonsLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     connect(pExportGenerationsButton, SIGNAL(clicked()), this, SLOT(openExportDataDialog()));
     connect(pImportGenerationButton, SIGNAL(clicked()), this, SLOT(openImportDataDialog()));
     connect(pDeleteGenerationsButton, SIGNAL(clicked()), this, SLOT(removeSelectedGenerations()));
+    connect(pSelectAllGensButton, SIGNAL(clicked()), this, SLOT(toggleSelectAllGenerations()));
 
 
     pMainLayout->addWidget(pGenerationsButtonWidget,0,0);
@@ -180,6 +185,7 @@ void DataExplorer::openExportDataDialog()
         }
 
         //! @todo maybe open progress bar for large exports
+
         for (int i=0; i<fNames.size(); ++i)
         {
             QString &file = fNames[i];
@@ -239,15 +245,7 @@ void DataExplorer::refreshDataList()
 
 void DataExplorer::removeSelectedGenerations()
 {
-    QVector<int> gens;
-    QMap<int,GenerationItem*>::iterator it;
-    for (it = mGenerationItemMap.begin(); it != mGenerationItemMap.end(); ++it)
-    {
-        if (it.value()->mChosenCheckBox.isChecked())
-        {
-            gens.append(it.key());
-        }
-    }
+    QVector<int> gens = gensFromSelected();
 
     // Since removeGeneration will also remove from mGenerationItemMap, we cant remove directly in for loop above
     for (int i=0; i<gens.size(); ++i)
@@ -261,13 +259,23 @@ void DataExplorer::removeGeneration(int gen)
     if (mpLogDataHandler)
     {
         mpLogDataHandler->removeGeneration(gen);
-        // We assume that the generation was removed, now delete it from the view (quicker the reloading the view)
+        // We assume that the generation was removed, now delete it from the view (quicker than reloading the view)
         GenerationItem *pItem = mGenerationItemMap.value(gen);
         if (pItem)
         {
             pItem->deleteLater();
             mGenerationItemMap.remove(gen);
         }
+    }
+}
+
+void DataExplorer::toggleSelectAllGenerations()
+{
+    mAllSelectedToggle = !mAllSelectedToggle;
+    QMap<int,GenerationItem*>::iterator it;
+    for (it = mGenerationItemMap.begin(); it != mGenerationItemMap.end(); ++it)
+    {
+        it.value()->mChosenCheckBox.setChecked(mAllSelectedToggle);
     }
 }
 

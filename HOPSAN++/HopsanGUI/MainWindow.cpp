@@ -578,7 +578,8 @@ void MainWindow::createActions()
     connect(mpOpenHvcWidgetAction, SIGNAL(triggered()), this, SLOT(openHVCWidget()));
 
     mpOpenDataExplorerAction = new QAction(tr("&Data Explorer"), this);
-    mpOpenDataExplorerAction->setToolTip("Open the Data Explorer Widget");
+    mpOpenDataExplorerAction->setShortcut(QKeySequence("Ctrl+Shift+d"));
+    mpOpenDataExplorerAction->setToolTip("Open the Data Explorer Widget (Ctrl+Shift+d)");
     connect(mpOpenDataExplorerAction, SIGNAL(triggered()), this, SLOT(openDataExplorerWidget()));
 
     mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);

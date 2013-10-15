@@ -31,6 +31,7 @@ private slots:
     void refreshDataList();
     void removeSelectedGenerations();
     void removeGeneration(int gen);
+    void toggleSelectAllGenerations();
 
 private:
     QVector<int> gensFromSelected();
@@ -38,6 +39,7 @@ private:
     QWidget *mpGenerationsListWidget;
     QScrollArea *mpGenerationsScrollArea;
     QMap<int, GenerationItem*> mGenerationItemMap;
+    bool mAllSelectedToggle;
 
 };
 
