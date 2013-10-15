@@ -38,8 +38,6 @@
             <port x="0.8" y="1" enabled="true" a="90" name="gfy" autoplaced="true"/>
             <port x="0.466667" y="1" enabled="true" a="90" name="Qb" autoplaced="true"/>
             <port x="0.833333" y="1" enabled="true" a="90" name="gfz" autoplaced="true"/>
-            <port x="0" y="0.6" enabled="true" a="90" name="tvcry" autoplaced="true"/>
-            <port x="0" y="0.8" enabled="true" a="90" name="tvcrz" autoplaced="true"/>
             <port x="0.769231" y="0" enabled="true" a="270" name="wturbx" autoplaced="true"/>
             <port x="0.846154" y="0" enabled="true" a="270" name="wturby" autoplaced="true"/>
             <port x="0.923077" y="0" enabled="true" a="270" name="wturbz" autoplaced="true"/>
