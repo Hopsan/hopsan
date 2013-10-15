@@ -77,10 +77,11 @@ public:
     QString getLastScriptFile();
     QString getInitScript();
 
-    QString getDefaultUnit(QString key) const;
-    QMap<QString, double> getCustomUnits(QString key);
-    bool hasUnitScale(const QString key, const QString unit) const;
-    double getUnitScale(const QString key, const QString unit) const;
+    QString getDefaultUnit(const QString &rPhysicalQuantity) const;
+    QMap<QString, double> getCustomUnits(const QString &rPhysicalQuantity);
+    bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
+    double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
+    QStringList getPhysicalQuantitiesForUnit(const QString &rUnit);
     int getPLOExportVersion() const;
 
     bool getGroupMessagesByTag();

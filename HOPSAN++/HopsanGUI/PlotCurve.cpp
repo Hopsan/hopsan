@@ -620,9 +620,20 @@ bool PlotCurve::setGeneration(int generation)
 //! @note If unit is not registered for data then nothing will happen
 void PlotCurve::setCustomCurveDataUnit(const QString &rUnit)
 {
-    if (gConfig.hasUnitScale(getDataName(),rUnit))
+    if (getDataName() != "Value")
     {
-        setCustomCurveDataUnit(rUnit, gConfig.getUnitScale(getDataName(), rUnit));
+        if (gConfig.hasUnitScale(getDataName(),rUnit))
+        {
+            setCustomCurveDataUnit(rUnit, gConfig.getUnitScale(getDataName(), rUnit));
+        }
+    }
+    else
+    {
+        QStringList pqs = gConfig.getPhysicalQuantitiesForUnit(rUnit);
+        if (!pqs.isEmpty())
+        {
+            setCustomCurveDataUnit(rUnit, gConfig.getUnitScale(pqs.first(), rUnit));
+        }
     }
 }
 

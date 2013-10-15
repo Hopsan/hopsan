@@ -2576,9 +2576,27 @@ void PlotTab::determineAddedCurveUnitOrScale(PlotCurve *pCurve, int plotID)
     {
         // Else use the default unit for this curve, unless it is a "Value" with an actual unit set
         const QString &dataUnit = pCurve->getDataOriginalUnit();
-        QString defaultUnit = gConfig.getDefaultUnit(pCurve->getDataName());
+        QString defaultUnit;
+        if ( pCurve->getDataName() != "Value" )
+        {
+            defaultUnit = gConfig.getDefaultUnit(pCurve->getDataName());
+        }
+        else
+        {
+            QStringList pqs = gConfig.getPhysicalQuantitiesForUnit(dataUnit);
+            //! @todo if same unit exist in multiple places we have a problem
+            if (pqs.size() > 1)
+            {
+                gpTerminalWidget->mpConsole->printWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
+            }
+            if (pqs.size() == 1)
+            {
+                defaultUnit = gConfig.getDefaultUnit(pqs.first());
+            }
+        }
 
-        if ( (pCurve->getDataName() != "Value") && (defaultUnit != dataUnit) )
+
+        if (!defaultUnit.isEmpty() && (defaultUnit != dataUnit) )
         {
             pCurve->setCustomCurveDataUnit(defaultUnit);
         }
@@ -2964,7 +2982,19 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     for(itc=mPlotCurvePtrs[FirstPlot].begin(); itc!=mPlotCurvePtrs[FirstPlot].end(); ++itc)
     {
         QMenu *pTempMenu = changeUnitsMenu->addMenu(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
-        unitMap = gConfig.getCustomUnits((*itc)->getDataName());
+        if ((*itc)->getDataName() == "Value")
+        {
+            QStringList pqs = gConfig.getPhysicalQuantitiesForUnit((*itc)->getDataOriginalUnit());
+            if (pqs.size() > 0)
+            {
+                unitMap = gConfig.getCustomUnits(pqs.first());
+            }
+        }
+        else
+        {
+            unitMap = gConfig.getCustomUnits((*itc)->getDataName());
+        }
+
         for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
         {
             QAction *pTempAction = pTempMenu->addAction(itu.key());

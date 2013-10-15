@@ -709,10 +709,10 @@ QStringList Configuration::getLastSessionModels()
 
 //! @brief Returns the selected default unit for the specified physical quantity
 //! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
-QString Configuration::getDefaultUnit(QString key) const
+QString Configuration::getDefaultUnit(const QString &rPhysicalQuantity) const
 {
-    if(mDefaultUnits.contains(key))
-        return this->mDefaultUnits.find(key).value();
+    if(mDefaultUnits.contains(rPhysicalQuantity))
+        return this->mDefaultUnits.find(rPhysicalQuantity).value();
     else
         return "";
 }
@@ -720,12 +720,12 @@ QString Configuration::getDefaultUnit(QString key) const
 
 //! @brief Returns a map with custom units (names and scale factor) for specified physical quantity
 //! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
-QMap<QString, double> Configuration::getCustomUnits(QString key)
+QMap<QString, double> Configuration::getCustomUnits(const QString &rPhysicalQuantity)
 {
     QMap<QString, double> dummy;
-    if(mCustomUnits.contains(key))
+    if(mCustomUnits.contains(rPhysicalQuantity))
     {
-        return mCustomUnits.find(key).value();
+        return mCustomUnits.find(rPhysicalQuantity).value();
     }
     else
     {
@@ -733,11 +733,11 @@ QMap<QString, double> Configuration::getCustomUnits(QString key)
     }
 }
 
-bool Configuration::hasUnitScale(const QString key, const QString unit) const
+bool Configuration::hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const
 {
-    if (mCustomUnits.contains(key))
+    if (mCustomUnits.contains(rPhysicalQuantity))
     {
-        if (mCustomUnits.value(key).contains(unit))
+        if (mCustomUnits.value(rPhysicalQuantity).contains(rUnit))
         {
             return true;
         }
@@ -748,17 +748,33 @@ bool Configuration::hasUnitScale(const QString key, const QString unit) const
 
 //! @brief Returns unit scale for a particular physical quantity and unit
 //! @note Returns 0 if nothing is found
-double Configuration::getUnitScale(const QString key, const QString unit) const
+double Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const
 {
-    if (mCustomUnits.contains(key))
+    if (mCustomUnits.contains(rPhysicalQuantity))
     {
-        if (mCustomUnits.value(key).contains(unit))
+        if (mCustomUnits.value(rPhysicalQuantity).contains(rUnit))
         {
-            return mCustomUnits.value(key).value(unit);
+            return mCustomUnits.value(rPhysicalQuantity).value(rUnit);
         }
     }
 
     return 0;
+}
+
+//! @brief Returns a list of the Physical Quantities associated with this unit (hopefully only one)
+//! @param [in] rUnit The unit to lookup
+QStringList Configuration::getPhysicalQuantitiesForUnit(const QString &rUnit)
+{
+    QStringList list;
+    QMap< QString, QMap<QString, double> >::const_iterator it;
+    for (it=mCustomUnits.begin(); it!=mCustomUnits.end(); ++it)
+    {
+        if (it.value().contains(rUnit))
+        {
+            list.append(it.key());
+        }
+    }
+    return list;
 }
 
 int Configuration::getPLOExportVersion() const

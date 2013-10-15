@@ -323,11 +323,6 @@ void Port::openRightClickMenu(QPoint screenPos)
 
     // Now build plot menue
     QMap<QAction*, int> plotActions;
-//    //! @todo maybe we should not show list if no data is availible for plotting (check with logdatahandler maybe)
-//    QVector<QString> variableNames;
-//    QVector<QString> variableUnits;
-//    mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentModelObject->getName(), this->getName(), variableNames, variableUnits);
-//    bool hasData = !getParentContainerObject()->getLogDataHandler()->isEmpty();
 
     QVector<SharedLogVariableDataPtrT> logVars = mpParentModelObject->getParentContainerObject()->getLogDataHandler()->getMultipleLogData(QRegExp(makeConcatName(mpParentModelObject->getName(),this->getName(),".*")));
     for(int i=0; i<logVars.size(); ++i)
@@ -339,7 +334,26 @@ void Port::openRightClickMenu(QPoint screenPos)
         const QString &dataUnit = logVars[i]->getDataUnit();
         if ( dataName == "Value" && dataUnit != "-")
         {
-            pTempAction = menu.addAction(QString("Plot "+dataName+" ["+dataUnit+"]"));
+            QStringList pqs = gConfig.getPhysicalQuantitiesForUnit(dataUnit);
+            //! @todo if same unit exist in multiple places we have a problem
+            if (pqs.size() > 1)
+            {
+                gpTerminalWidget->mpConsole->printWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
+            }
+            QString defaultUnit;
+            if (pqs.size() == 1)
+            {
+                defaultUnit = gConfig.getDefaultUnit(pqs.first());
+            }
+
+            if (!defaultUnit.isEmpty())
+            {
+                pTempAction = menu.addAction(QString("Plot "+dataName+" ["+defaultUnit+"]"));
+            }
+            else
+            {
+                pTempAction = menu.addAction(QString("Plot "+dataName+" ["+dataUnit+"]"));
+            }
         }
         else
         {
@@ -357,7 +371,6 @@ void Port::openRightClickMenu(QPoint screenPos)
             pTempAction = menu.addAction(QString("Plot "+dataName+" ["+unit+"]"));
         }
         plotActions.insert(pTempAction, i);
-//        pTempAction->setEnabled(hasData);
     }
 
     // Execute menue and then check selected action
