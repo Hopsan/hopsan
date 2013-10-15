@@ -65,27 +65,12 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
 //    prev_fn = signal (SIGSEGV,terminate);
 //    //^^^
 
-    // ========== Hydraulic components ==========
-    // ----- Special Components -----
-    pComponentFactory->registerCreatorFunction("AeroAircraft6DOF", AeroAircraft6DOF::Creator);
-    pComponentFactory->registerCreatorFunction("AeroAircraft6DOFS", AeroAircraft6DOFS::Creator);
-    pComponentFactory->registerCreatorFunction("AeroAircraft6DOFSS", AeroAircraft6DOFSS::Creator);
-    pComponentFactory->registerCreatorFunction("AeroVehicleTVC", AeroVehicleTVC::Creator);
-    pComponentFactory->registerCreatorFunction("AeroAtmosphere", AeroAtmosphere::Creator);
-    pComponentFactory->registerCreatorFunction("AeroJetEngine", AeroJetEngine::Creator);
-    pComponentFactory->registerCreatorFunction("AeroFuelTank", AeroFuelTank::Creator);
-    pComponentFactory->registerCreatorFunction("AeroPropeller", AeroPropeller::Creator);
-  //  pComponentFactory->registerCreatorFunction("AeroCombustionChamberMono", AeroCombustionChamberMono::Creator);
 
-    pComponentFactory->registerCreatorFunction("SignalAttitudeControl", SignalAttitudeControl::Creator);
-    pComponentFactory->registerCreatorFunction("SignalAttitudeTVCcontrol", SignalAttitudeTVCcontrol::Creator);
-    pComponentFactory->registerCreatorFunction("SignalWaypoint", SignalWaypoint::Creator);
-    pComponentFactory->registerCreatorFunction("SignalStateMonitor", SignalStateMonitor::Creator);
-    pComponentFactory->registerCreatorFunction("SignalTimeAccelerator", SignalTimeAccelerator::Creator);
-    pComponentFactory->registerCreatorFunction("SignalEarthCoordinates", SignalEarthCoordinates::Creator);
-
+    // ========== Special Components ==========
+    #include "Special/AeroComponents/HopsanDefaultAerocomponents.cci"
     #include "Special/SignalFFB/HopsanDefaultFBBComponents.cci"
 
+    // ========== Hydraulic components ==========
     // ----- Hydraulic Valves -----
     pComponentFactory->registerCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCheckValveWithOrifice", HydraulicCheckValveWithOrifice::Creator);
