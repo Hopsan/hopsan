@@ -230,6 +230,18 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedL
     }
     fileStream << "\n";
 
+    // If data is cached to disk, we need to move it to ram before writing plo
+    QVector<bool> wasCached;
+    wasCached.reserve(dataPtrs.size());
+    for(int col=0; col<dataPtrs.size(); ++col)
+    {
+        wasCached.push_back(dataPtrs[col]->isCachingDataToDisk());
+        if (dataPtrs[col]->isCachingDataToDisk())
+        {
+            dataPtrs[col]->setCacheDataToDisk(false);
+        }
+    }
+
     // Write data lines
     QString err;
     for(int row=0; row<nDataRows; ++row)
@@ -248,6 +260,12 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedL
             }
         }
         fileStream << "\n";
+    }
+
+    // If data was cached to disk, we need to move it back to cache again
+    for(int col=0; col<dataPtrs.size(); ++col)
+    {
+        dataPtrs[col]->setCacheDataToDisk(wasCached[col]);
     }
 
     // Write plot data ending header

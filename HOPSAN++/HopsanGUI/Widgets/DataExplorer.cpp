@@ -10,7 +10,7 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QGroupBox>
-#include <QProgressBar>
+#include <QProgressDialog>
 
 
 class GenerationItem : public QWidget
@@ -142,7 +142,7 @@ void DataExplorer::openExportDataDialog()
     pFilenameButtons->addButton(pAskEveryGenButton);
     pAppendGenButton->setChecked(true);
 
-    QGroupBox *pFilenameGroupBox = new QGroupBox("Choose Filename Option:", &exportOptions);
+    QGroupBox *pFilenameGroupBox = new QGroupBox("Choose Multi-Generation Filename Option:", &exportOptions);
     QVBoxLayout *pFilenameButtonLayout = new QVBoxLayout();
     pFilenameButtonLayout->addWidget(pAppendGenButton);
     pFilenameButtonLayout->addWidget(pAskEveryGenButton);
@@ -167,7 +167,7 @@ void DataExplorer::openExportDataDialog()
         QVector<int> gens = gensFromSelected();
         QStringList fNames;
 
-        if (pFilenameButtons->checkedButton() == pAppendGenButton)
+        if ((pFilenameButtons->checkedButton() == pAppendGenButton) && (gens.size() > 1))
         {
             QString fileName = QFileDialog::getSaveFileName(this,tr("Choose Hopsan Data File Name"), gConfig.getPlotDataDir(), tr("Data Files (*.plo *.PLO *.csv *.CSV)"));
             QFileInfo file(fileName);
@@ -184,10 +184,23 @@ void DataExplorer::openExportDataDialog()
             }
         }
 
-        //! @todo maybe open progress bar for large exports
+        // Remember this output dir for later use
+        if (!fNames.isEmpty())
+        {
+            QFileInfo exportPath(fNames.last());
+            gConfig.setPlotDataDir(exportPath.absolutePath());
+        }
 
+        //! @todo maybe open progress bar for large exports
+        QProgressDialog progress("Exporting Data", "Cancel", 0, fNames.size(), this);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
         for (int i=0; i<fNames.size(); ++i)
         {
+            // Abort if canceld
+            if (progress.wasCanceled())
+                break;
+
             QString &file = fNames[i];
             if (!file.isEmpty())
             {
@@ -205,6 +218,7 @@ void DataExplorer::openExportDataDialog()
                     mpLogDataHandler->exportGenerationToCSV(file, g);
                 }
             }
+            progress.setValue(i+1);
         }
     }
 }

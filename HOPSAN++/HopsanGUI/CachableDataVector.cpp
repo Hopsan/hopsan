@@ -317,9 +317,9 @@ CachableDataVector::~CachableDataVector()
     }
 }
 
+//! @brief Moves data to and from disk cache
 bool CachableDataVector::setCached(const bool cached)
 {
-    //! @todo should not try to move to from cache if alread cached/not cahced
     bool rc;
     if (cached)
     {
