@@ -26,8 +26,37 @@
     Version History
 ******************************
 0.6.3
+- Feature: HCOM: Command for removing components
+- Feature: HCOM: min and max functions for scalars
+- Feature: HCOM: Less than and greater than functions for vectors
+- Feature: Numerical integration solver utility for Modelica component
+- Feature: Conditional parameters
+- Feature: Save plot data generation to file (plo v1, plo v2, and csv)
+- Feature: Initial work at data explorer widget where generations can be imported/exported or removed
+
+- Enhancement: When changing plot unit for a curve the curve settings label is updated
+- Enhancement: It is not necessary to re-simulate after changing alias names to make them appear in the plot variable list
+- Enhancement: Imported files are listed by filename category (under __Imported__)
+- Enhancement: Added possibility to have local plot offset for curves
+- Enhancement: Allow all sensor components to be unconnected in model
+- Enhancement: Simulink export use model name, instead of "HopsanSimulink"
+- Enhancement: Limit data generation function limits actual number of generations, it does not remove generations "older" than the limit
+- Enhancement: Time scale and offset in time-scale dialogue can now be set for each generation plotted in a plot tab, not just for the first curve generation
+- Enhancement: Asks user what to do when data generation limit is reached (optional)
+- Enhancement: It is now possible to begin logging before time 0
+- Enhancement: Made sure that almost all default component xmls have working sourcecode link
+
 - Fixed: Pneumatic QmSensor was measuring pressure.
-- Fixed: Pneumatic sensors had wrongly named output signal ports
+- Fixed: Some components had GUI/CORE port name mismatch. Implemented test case to prevent this from happening again!
+- Fixed: Some special components have been update
+- Fixed: Some HCOM commands stop working after successful optimization
+- Fixed: HCOM: Max command for vectors cannot handle negative numbers
+- Fixed: Showing name for individual components does not work
+- Fixed: PageUp, PageDown and Escape keys does not work properly in terminal
+- Fixed: Alias variables cannot be accessed by HCOM
+- Fixed: If recompilation of c++ component fails, model "dies", then when trying to reopen it hopsan crash
+- Fixed: Units in signal ports are always SI, even if custom default units are chosen in options dialogue
+- Fixed: Change unit does not seem to work in scopes
 
 
 0.6.2
