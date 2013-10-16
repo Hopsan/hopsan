@@ -9,7 +9,7 @@
 //!
 //! @file SignalSRlatch.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 28 Jun 2013 13:01:40
+//! @date Wed 16 Oct 2013 09:59:45
 //! @brief S-R latch
 //! @ingroup SignalComponents
 //!
@@ -114,8 +114,8 @@ state","",0.,&mpnotQstate);
           //Expressions
           DsetCond = onPositive(-oldSetCond + setCond);
           DresetCond = onPositive(-oldResetCond + resetCond);
-          Qstate = -0.5 - onPositive(-0.5 + DresetCond) + onPositive(-0.5 + \
-DsetCond) + onPositive(-0.5 + oldQstate);
+          Qstate = limit(-2*onPositive(-0.5 + DresetCond) + 2*onPositive(-0.5 \
++ DsetCond) + 2*onPositive(-0.5 + oldQstate),0,1);
           oldQstate = Qstate;
           notQstate = 1 - Qstate;
 
