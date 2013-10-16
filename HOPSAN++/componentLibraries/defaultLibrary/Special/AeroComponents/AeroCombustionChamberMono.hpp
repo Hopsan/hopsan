@@ -9,7 +9,7 @@
 //!
 //! @file AeroCombustionChamberMono.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 14 Oct 2013 17:35:58
+//! @date Tue 15 Oct 2013 08:27:31
 //! @brief Hydraulic volume with two connection
 //! @ingroup AeroComponents
 //!
@@ -154,7 +154,7 @@ public:
             addInputVariable("As", "min effective area", "m2", \
 0.00196,&mpAs);
             addInputVariable("Med", "Design exit Mach", "", 2.5,&mpMed);
-            addInputVariable("alpha", "Damp. factor", "1/s ", 0.,&mpalpha);
+            addInputVariable("alpha", "Damp. factor", "1/s ", 0.3,&mpalpha);
         //Add outputVariables to the component
             addOutputVariable("thrust","thrust","m3/s",0.,&mpthrust);
             addOutputVariable("Tc","cahmber temerature","K",273.,&mpTc);
@@ -306,8 +306,8 @@ R*Abs(Tc))),0.,1.e9))/(Sqrt(gam/(R + R*Abs(Tc)))*Power(R + R*Abs(Tc),2));
           Tc=stateVark[1];
           mdot=stateVark[2];
           //Expressions
-          c1 = c10;
-          c2 = c20;
+          c1 = alpha*c1 + (1 - alpha)*c10;
+          c2 = alpha*c2 + (1 - alpha)*c20;
           Zc1 = (mTimestep*rhofuel*Power(vfuel,2))/(2.*gam*Vc);
           pc = c2 - (mdot*mTimestep*(cv + R)*Tc)/(gam*Vc);
           Ae = (Power(2,(1 + gam)/(2.*(-1 + gam)))*As*Power(1 + ((-1 + \

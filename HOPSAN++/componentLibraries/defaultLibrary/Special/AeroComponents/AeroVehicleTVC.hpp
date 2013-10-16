@@ -360,7 +360,7 @@ z","rad/s",0.,&mpwturbz);
 0.,&mpyeng);
             addInputVariable("kground", "Ground stiffness (for limitiation)", \
 "N/m", 10000.,&mpkground);
-            addInputVariable("cground", "Ground damping (for limitiation)", \
+            addInputVariable("cground", "Grotvcryund damping (for limitiation)", \
 "Ns/m", 1000.,&mpcground);
         //Add outputVariables to the component
             addOutputVariable("xcg","Horizontal position 1","m",0,&mpxcg);
