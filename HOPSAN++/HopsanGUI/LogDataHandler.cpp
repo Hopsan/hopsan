@@ -1179,10 +1179,14 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
 //! @brief Removes a generation (forced removal)
 void LogDataHandler::removeGeneration(const int gen)
 {
-    LogDataMapT::iterator dit = mLogDataMap.begin();
-    for ( ; dit!=mLogDataMap.end(); ++dit)
+    // Note! Here we must iterate through a copy of the values from the map
+    // if we use an iterator in the map we will crash if the removed generation is the final one
+    // Then the data variable itself will also be removed and the iterator will become invalid
+    QList<QPointer<LogVariableContainer> > vars = mLogDataMap.values();
+    QList<QPointer<LogVariableContainer> >::iterator it;
+    for ( it=vars.begin(); it!=vars.end(); ++it)
     {
-        dit.value()->removeDataGeneration(gen,true);
+        (*it)->removeDataGeneration(gen,true);
     }
 }
 
