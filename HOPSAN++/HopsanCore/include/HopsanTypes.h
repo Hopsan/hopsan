@@ -103,12 +103,11 @@ public:
     //! @brief copy constructor
     HVector(const HVector<T> &rOther)
     {
-        clear();
         mpDataArray = new T[rOther.size()];
         mSize = rOther.size();
         for (size_t i=0; i<rOther.size(); ++i)
         {
-            (*mpDataArray)[i] = rOther[i];
+            mpDataArray[i] = rOther[i];
         }
     }
 
@@ -138,14 +137,14 @@ public:
         T* pNewArray = new T[s];
 
         // Check how many elements to copy
-        size_t n = s;
+        size_t nCopy = s;
         if (size() < s)
         {
-            n = size();
+            nCopy = size();
         }
 
         // Copy old data to new array
-        for (size_t i=0; i<n; ++i)
+        for (size_t i=0; i<nCopy; ++i)
         {
             pNewArray[i] = mpDataArray[i];
         }
@@ -155,17 +154,21 @@ public:
 
         // Set new data
         mpDataArray = pNewArray;
-        mSize = n;
+        mSize = s;
     }
 
     //! @brief Resize the array, initializing all values to defaultValue
     //! @param [in] s New size
-    //! @param [in] s defaultValue initialize value for all elements
-    void resize(const size_t s, const T defaultValue)
+    //! @param [in] defaultValue initialize value for all elements
+    void resize(const size_t s, const T &rDefaultValue)
     {
         clear();
-        mpDataArray = new T[s](defaultValue);
+        mpDataArray = new T[s];
         mSize = s;
+        for (size_t i=0; i<mSize; ++i)
+        {
+            mpDataArray[i] = rDefaultValue;
+        }
     }
 
     //! @brief Append data
