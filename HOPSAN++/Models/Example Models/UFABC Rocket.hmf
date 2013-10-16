@@ -5,7 +5,7 @@
   </requirements>
   <info/>
   <system typename="Subsystem" name="UFABC_Rocket">
-    <simulationtime stop="150" timestep="0.002" start="-0.1" inherit_timestep="true"/>
+    <simulationtime stop="200" timestep="0.002" start="-0.1" inherit_timestep="true"/>
     <simulationlogsettings numsamples="2048" starttime="0"/>
     <parameters/>
     <aliases/>
@@ -13,7 +13,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="1822.46" y="1937.14" zoom="0.597271"/>
+      <viewport x="2595.14" y="2331.44" zoom="0.597271"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -285,6 +285,40 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component typename="SignalTime" name="Time">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2871.250216" y="2491.486096" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalTime" displayname="Time">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalStopSimulation" name="Stop_simulation">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+        </ports>
+        <hopsangui>
+          <pose x="3177.110216" y="2442.936096" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalStopSimulation" displayname="Stop_simulation">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <component typename="SignalSink" name="Scope_1">
         <parameters>
           <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
@@ -320,6 +354,26 @@
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalStep" displayname="Step">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalGreaterThan" name="Greater_Than_Comparer">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="10" type="double" name="x_limit#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2943.240216" y="2491.486096" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalGreaterThan" displayname="Greater_Than_Comparer">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -361,6 +415,26 @@
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalRamp" displayname="Ramp_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSmallerThan" name="Smaller_Than_Comparer">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0" type="double" name="x_limit#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2938.220216" y="2399.406096" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSmallerThan" displayname="Smaller_Than_Comparer">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -553,26 +627,6 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalSink" name="Scope_6">
-        <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="in_right"/>
-          <port nodetype="NodeSignal" name="in"/>
-          <port nodetype="NodeSignal" name="in_bottom"/>
-        </ports>
-        <hopsangui>
-          <pose x="2870.474519" y="2510.045386" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalSink" displayname="Scope_6">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
       <component typename="SignalSink" name="Scope_7">
         <parameters>
           <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
@@ -583,7 +637,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2945.061789" y="2233.491999" flipped="false" a="0"/>
+          <pose x="2869.719105" y="2231.817717" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -594,7 +648,7 @@
         </hopsangui>
       </component>
       <system typename="Subsystem" name="Control_system">
-        <simulationtime stop="150" timestep="0.0005" start="-0.1" inherit_timestep="true"/>
+        <simulationtime stop="200" timestep="0.0005" start="-0.1" inherit_timestep="true"/>
         <simulationlogsettings numsamples="2048" starttime="0"/>
         <parameters/>
         <aliases/>
@@ -602,7 +656,7 @@
           <pose x="2266.178946" y="2177.142808" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="1822.46" y="1937.14" zoom="0.597271"/>
+          <viewport x="2595.14" y="2331.44" zoom="0.597271"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1728,8 +1782,49 @@
           </connect>
         </connections>
       </system>
+      <component typename="SignalAnd" name="Logical_And_Operator">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="3037.000216" y="2442.936096" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAnd" displayname="Logical_And_Operator">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalTimeDelay" name="Time_Delay">
+        <parameters>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="3100.440216" y="2442.936096" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalTimeDelay" displayname="Time_Delay">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <system typename="Subsystem" name="Fuel_system">
-        <simulationtime stop="150" timestep="0.0005" start="-0.1" inherit_timestep="true"/>
+        <simulationtime stop="200" timestep="0.0005" start="-0.1" inherit_timestep="true"/>
         <simulationlogsettings numsamples="2048" starttime="0"/>
         <parameters/>
         <aliases/>
@@ -1737,7 +1832,7 @@
           <pose x="2032.578176" y="2229.669223" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="1822.46" y="1937.14" zoom="0.597271"/>
+          <viewport x="2595.14" y="2331.44" zoom="0.597271"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1772,6 +1867,9 @@
             <parameters/>
             <objectives/>
           </optimization>
+          <hopsanundo>
+            <post number="-1"/>
+          </hopsanundo>
         </hopsangui>
         <objects>
           <component typename="SignalSink" name="Scope_10">
@@ -2644,7 +2742,7 @@
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="2917.000000" y="2185.000000"/>
+          <pose x="2908.628591" y="2218.485637"/>
           <textobject fontcolor="#000000" text="Thrust" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
           <size width="100.000000" height="38.368906"/>
           <line width="2.000000" visible="0" style="solidline"/>
@@ -2698,6 +2796,14 @@
           <line width="2.000000" visible="1" style="solidline"/>
         </hopsangui>
       </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="3016.455772" y="2368.495600"/>
+          <textobject fontcolor="#556b2f" text="Stop simulation after impact" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <size width="223.000000" height="40.357013"/>
+          <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
     </objects>
     <connections>
       <connect endport="Thetaref" endcomponent="Control_system" startport="out" startcomponent="Ramp_1">
@@ -2739,22 +2845,6 @@
             <coordinate x="2337.13525555350861395709" y="2187.14280800000005910988"/>
             <coordinate x="2337.13525555350861395709" y="2187.50371300000006158371"/>
             <coordinate x="2379.84292999999979656423" y="2187.50371300000006158371"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="in" endcomponent="Scope_6" startport="out" startcomponent="Ramp_1">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2152.02907400000003690366" y="2162.24605900000005931361"/>
-            <coordinate x="2181.42111080241829768056" y="2162.24605900000005931361"/>
-            <coordinate x="2181.42111080241829768056" y="2510.04538599999978032429"/>
-            <coordinate x="2850.47451899999987290357" y="2510.04538599999978032429"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -2928,22 +3018,6 @@
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="in" endcomponent="Scope_6" startport="Thetao" startcomponent="AeroVehicleTVC">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2539.42213499999979831045" y="2095.04237300000022514723"/>
-            <coordinate x="2687.91094806663522831514" y="2095.04237300000022514723"/>
-            <coordinate x="2687.91094806663522831514" y="2510.04538599999978032429"/>
-            <coordinate x="2850.47451899999987290357" y="2510.04538599999978032429"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
@@ -3342,8 +3416,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2513.73239000000012310920" y="2245.87483299999985320028"/>
-            <coordinate x="2513.73239000000012310920" y="2233.49199899999985063914"/>
-            <coordinate x="2925.06178899999986242619" y="2233.49199899999985063914"/>
+            <coordinate x="2513.73239000000012310920" y="2231.81771714134629291948"/>
+            <coordinate x="2849.71910536057976059965" y="2231.81771714134629291948"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -3381,6 +3455,102 @@
           <geometries>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Greater_Than_Comparer" startport="out" startcomponent="Time">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2883.75021591538870779914" y="2491.48609599327573960181"/>
+            <coordinate x="2910.74421471564164676238" y="2491.48609599327573960181"/>
+            <coordinate x="2910.74421471564164676238" y="2491.48609599327573960181"/>
+            <coordinate x="2930.74421491538896589191" y="2491.48609599327573960181"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Logical_And_Operator" startport="out" startcomponent="Smaller_Than_Comparer">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2950.72021591538850771030" y="2399.40609599327581236139"/>
+            <coordinate x="2991.10844737670049653389" y="2399.40609599327581236139"/>
+            <coordinate x="2991.10844737670049653389" y="2436.93735099327568605077"/>
+            <coordinate x="3024.50267991538839851273" y="2436.93735099327568605077"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Logical_And_Operator" startport="out" startcomponent="Greater_Than_Comparer">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2955.74021591538848952041" y="2491.48609599327573960181"/>
+            <coordinate x="2989.43133132126149575925" y="2491.48609599327573960181"/>
+            <coordinate x="2989.43133132126149575925" y="2448.93200299327600077959"/>
+            <coordinate x="3024.49984291538839897839" y="2448.93200299327600077959"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Time_Delay" startport="out" startcomponent="Logical_And_Operator">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="3049.50021591538870779914" y="2442.93609599327601245022"/>
+            <coordinate x="3060.43704938789505831664" y="2442.93609599327601245022"/>
+            <coordinate x="3060.43704938789505831664" y="2442.93609599327601245022"/>
+            <coordinate x="3080.43704991538879767177" y="2442.93609599327601245022"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Stop_simulation" startport="out" startcomponent="Time_Delay">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="3120.44021591538830762147" y="2442.93609599327601245022"/>
+            <coordinate x="3137.11873586675073966035" y="2442.93609599327601245022"/>
+            <coordinate x="3137.11873586675073966035" y="2442.93609599327601245022"/>
+            <coordinate x="3157.11873591538824257441" y="2442.93609599327601245022"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Smaller_Than_Comparer" startport="altitude" startcomponent="AeroVehicleTVC">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2539.42213499999979831045" y="1944.77592100000038044527"/>
+            <coordinate x="2670.47956455277426357497" y="1944.77592100000038044527"/>
+            <coordinate x="2670.47956455277426357497" y="2399.40609599327581236139"/>
+            <coordinate x="2925.72021591538850771030" y="2399.40609599327581236139"/>
+          </coordinates>
+          <geometries>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
