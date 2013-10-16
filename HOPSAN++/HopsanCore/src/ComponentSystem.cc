@@ -2560,11 +2560,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         {
             //! @todo should we use our own nSamples or the subsystems own ?
             static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mRequestedNumLogSamples);
-        }
-        else
-        {
-            //mComponentSignalptrs[s]->initializeDynamicParameters();
-            //mComponentSignalptrs[s]->updateDynamicParameterValues();
+            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setLogStartTime(mRequestedLogStartTime);
         }
 
         if(!mComponentSignalptrs[s]->initialize(startT, stopT))
@@ -2588,11 +2584,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         {
             //! @todo should we use our own nSamples ore the subsystems own ?
             static_cast<ComponentSystem*>(mComponentCptrs[c])->setNumLogSamples(mRequestedNumLogSamples);
-        }
-        else
-        {
-            //mComponentCptrs[c]->initializeDynamicParameters();
-            //mComponentCptrs[c]->updateDynamicParameterValues();
+            static_cast<ComponentSystem*>(mComponentCptrs[c])->setLogStartTime(mRequestedLogStartTime);
         }
 
         if(!mComponentCptrs[c]->initialize(startT, stopT))
@@ -2616,11 +2608,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         {
             //! @todo should we use our own nSamples ore the subsystems own ?
             static_cast<ComponentSystem*>(mComponentQptrs[q])->setNumLogSamples(mRequestedNumLogSamples);
-        }
-        else
-        {
-            //mComponentQptrs[q]->initializeDynamicParameters();
-            //mComponentQptrs[q]->updateDynamicParameterValues();
+            static_cast<ComponentSystem*>(mComponentQptrs[q])->setLogStartTime(mRequestedLogStartTime);
         }
 
         if(!mComponentQptrs[q]->initialize(startT, stopT))
