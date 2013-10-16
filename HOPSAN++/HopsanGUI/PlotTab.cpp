@@ -379,8 +379,8 @@ void PlotTab::openAxisLabelDialog()
 
 void PlotTab::openTimeScalingDialog()
 {
-    QDialog *pScaleDialog = new QDialog(mpParentPlotWindow);
-    pScaleDialog->setWindowTitle("Change Time scaling and offset");
+    QDialog scaleDialog(mpParentPlotWindow);
+    scaleDialog.setWindowTitle("Change Time scaling and offset");
 
     // One for each generation, automatic sort on key
     QMap<int, TimeScaleWidget*> activeGenerations;
@@ -393,39 +393,35 @@ void PlotTab::openTimeScalingDialog()
             SharedLogVariableDataPtrT pTime = mPlotCurvePtrs[FirstPlot][i]->getTimeVectorPtr();
             //if (pTime)
             {
-                TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, pScaleDialog);
+                TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, &scaleDialog);
                 connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateLabels()));
                 activeGenerations.insert(gen, pTimeScaleW);
             }
         }
     }
 
-   QGridLayout *pGridLayout = new QGridLayout(pScaleDialog);
-//    pGridLayout->addWidget(new QLabel("Scale: ", pScaleDialog),0,0);
-//    Q
-
-//    pGridLayout->addWidget(new QLabel("Offset: ", pScaleDialog),0,2);
+    QGridLayout *pGridLayout = new QGridLayout(&scaleDialog);
 
     // Now push scale widgets into grid, in sorted order from map
-    int row = 0;
+    pGridLayout->addWidget(new QLabel("Changing a generation time scale or offset will affect all variables at generation in all plot windows!",&scaleDialog), 0, 0, 1, 2, Qt::AlignLeft);
+    int row = 1;
     QMap<int, TimeScaleWidget*>::iterator it;
     for (it=activeGenerations.begin(); it!=activeGenerations.end(); ++it)
     {
-        pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(it.key()+1), pScaleDialog), row, 0);
+        pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(it.key()+1), &scaleDialog), row, 0);
         pGridLayout->addWidget(it.value(), row, 1);
         ++row;
     }
 
     // Add button box
-    QPushButton *pDoneButton = new QPushButton("Close", pScaleDialog);
+    QPushButton *pDoneButton = new QPushButton("Close", &scaleDialog);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
     pGridLayout->addWidget(pButtonBox, row, 1);
-    connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
+    connect(pDoneButton,SIGNAL(clicked()),&scaleDialog,SLOT(close()));
     connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateLabels())); //!< @todo this should ahppen directly when changing scale values
 
-    pScaleDialog->show();
-    //! @todo is the dialog ever removed
+    scaleDialog.exec();
 }
 
 //! @todo currently only supports settings axis for top plot
