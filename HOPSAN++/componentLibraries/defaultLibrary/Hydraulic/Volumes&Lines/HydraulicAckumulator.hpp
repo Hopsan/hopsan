@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicAckumulator.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 28 Jun 2013 13:04:34
+//! @date Thu 17 Oct 2013 16:11:53
 //! @brief This is piston with an inertia load
 //! @ingroup HydraulicComponents
 //!
@@ -116,7 +116,7 @@ public:
 1.2,&mpkappa);
             addInputVariable("p0", "Preload pressure", "N/m^2", 1.e7,&mpp0);
         //Add outputVariables to the component
-            addOutputVariable("Va","Oil volume","m^3",0.001,&mpVa);
+            addOutputVariable("Va","Gas volume","m^3",0.001,&mpVa);
             addOutputVariable("pa","Ackumulator oil \
 pressure","Pa",1.e7,&mppa);
             addOutputVariable("xmp","State of charge","m",0.,&mpxmp);
