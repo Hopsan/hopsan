@@ -102,7 +102,7 @@ private:
         mDataValues[Temperature] = 293;
     }
 
-    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
     {
         pOtherNode->setDataValue(WaveVariable, mDataValues[Pressure]);
         //! todo Maybe also write CHARIMP?
@@ -161,7 +161,7 @@ private:
         mDataValues[Temperature] = 293;
     }
 
-    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
     {
         pOtherNode->setDataValue(WaveVariable, mDataValues[Pressure]);
         //! todo Maybe also write CharImpedance?
@@ -193,7 +193,7 @@ private:
         mDataValues[EquivalentMass]=1;
     }
 
-    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
     {
         pOtherNode->setDataValue(WaveVariable, mDataValues[Force]);
         //! todo Maybe also write CharImpedance?
@@ -223,7 +223,7 @@ private:
         setDataCharacteristics(EquivalentInertia, "EquivalentInertia", "Je", "kgm^2", HiddenType);
     }
 
-    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
     {
         pOtherNode->setDataValue(WaveVariable, mDataValues[Torque]);
         //! todo Maybe also write CharImpedance?
@@ -253,7 +253,7 @@ private:
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "V/A", TLMType);
     }
 
-    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
     {
         pOtherNode->setDataValue(WaveVariable, mDataValues[Voltage]);
         //! todo Maybe also write CharImpedance?

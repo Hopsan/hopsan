@@ -54,7 +54,7 @@ namespace hopsan {
         //! @todo remove the uppercase enums later when stable 0.6.0 release exist (to force update)
         enum RequireConnectionEnumT {Required, NotRequired, REQUIRED=Required, NOTREQUIRED=NotRequired};
 
-        //Constructors - Destructors
+        // Constructors - Destructors
         Port(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         virtual ~Port();
 
@@ -62,44 +62,45 @@ namespace hopsan {
         //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to read
         //! @return The data value
-        virtual inline double readNode(const size_t idx, const size_t /*portIdx*/=0) const
+        virtual inline double readNode(const size_t idx, const size_t /*subPortIdx*/=0) const
         {
             return mpNode->mDataValues[idx];
         }
+
         //! @brief Writes a value to the connected node
         //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to write
         //! @param [in] value The value of the data to read
-        virtual inline void writeNode(const size_t idx, const double value, const size_t /*portIdx*/=0) const
+        virtual inline void writeNode(const size_t idx, const double value, const size_t /*subPortIdx*/=0) const
         {
             mpNode->mDataValues[idx] = value;
         }
 
-        virtual double readNodeSafe(const size_t idx, const size_t portIdx=0);
-        virtual void writeNodeSafe(const size_t idx, const double value, const size_t portIdx=0);
+        virtual double readNodeSafe(const size_t idx, const size_t subPortIdx=0);
+        virtual void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
 
-        virtual const Node *getNodePtr(const size_t portIdx=0)const;
-        virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0) const;
-        virtual std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
+        virtual const Node *getNodePtr(const size_t subPortIdx=0)const;
+        virtual double *getNodeDataPtr(const size_t idx, const size_t subPortIdx=0) const;
+        virtual std::vector<double> *getDataVectorPtr(const size_t subPortIdx=0);
 
         virtual size_t getNumDataVariables() const;
-        virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
-        virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
-        virtual int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
+        virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0);
+        virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0);
+        virtual int getNodeDataIdFromName(const HString &rName, const size_t subPortIdx=0);
         virtual void setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription);
 
         const HString &getVariableAlias(const int id);
         int getVariableIdByAlias(const HString &rAlias) const;
 
-        virtual bool haveLogData(const size_t portIdx=0);
-        virtual std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
-        virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
+        virtual bool haveLogData(const size_t subPortIdx=0);
+        virtual std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
+        virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
 
         virtual bool isConnected();
         virtual bool isConnectedTo(Port *pOtherPort);
         bool isConnectionRequired();
-        virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
-        size_t getNumConnectedPorts(const int portIdx=-1);
+        virtual std::vector<Port*> &getConnectedPorts(const int subPortIdx=-1);
+        size_t getNumConnectedPorts(const int subPortIdx=-1);
         virtual size_t getNumPorts();
 
         bool isMultiPort() const;
@@ -114,13 +115,13 @@ namespace hopsan {
         const HString &getDescription() const;
         void setDescription(const HString &rDescription);
 
-        virtual double getStartValue(const size_t idx, const size_t portIdx=0);
+        virtual double getStartValue(const size_t idx, const size_t subPortIdx=0);
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
 
         Component* getComponent() const;
 
-        virtual Node *getNodePtr(const size_t portIdx=0);
+        virtual Node *getNodePtr(const size_t subPortIdx=0);
 
     protected:
         PortTypesEnumT mPortType;
@@ -131,7 +132,7 @@ namespace hopsan {
 
         std::vector<Port*> mConnectedPorts;
 
-        virtual void setDefaultStartValue(const size_t idx, const double value, const size_t portIdx=0);
+        virtual void setDefaultStartValue(const size_t idx, const double value, const size_t subPortIdx=0);
         virtual void disableStartValue(const size_t idx);
 
         virtual Node *getStartNodePtr();
@@ -140,8 +141,8 @@ namespace hopsan {
         virtual Port* addSubPort();
         virtual void removeSubPort(Port* ptr);
 
-        void addConnectedPort(Port* pPort, const size_t portIdx=0);
-        void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
+        void addConnectedPort(Port* pPort, const size_t subPortIdx=0);
+        void eraseConnectedPort(Port* pPort, const size_t subPortIdx=0);
 
         void createStartNode(const HString &rNodeType);
 
@@ -185,24 +186,31 @@ namespace hopsan {
         ~MultiPort();
 
         // Overloaded virtual functions
-        double readNodeSafe(const size_t idx, const size_t portIdx);
-        void writeNodeSafe(const size_t idx, const double value, const size_t portIdx);
-        inline double readNode(const size_t idx, const size_t portIdx) const;
-        inline void writeNode(const size_t idx, const double value, const size_t portIdx) const;
+        double readNodeSafe(const size_t idx, const size_t subPortIdx);
+        void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx);
+        inline double readNode(const size_t idx, const size_t subPortIdx) const
+        {
+            //! @todo handle portIdx ot of range
+            return mSubPortsVector[subPortIdx]->readNode(idx);
+        }
+        inline void writeNode(const size_t idx, const double value, const size_t subPortIdx) const
+        {
+            return mSubPortsVector[subPortIdx]->writeNode(idx,value);
+        }
 
-        const Node *getNodePtr(const size_t portIdx=0)const;
-        double *getNodeDataPtr(const size_t idx, const size_t portIdx) const;
-        std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
+        const Node *getNodePtr(const size_t subPortIdx=0)const;
+        double *getNodeDataPtr(const size_t idx, const size_t subPortIdx) const;
+        std::vector<double> *getDataVectorPtr(const size_t subPortIdx=0);
 
-        const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
-        const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
-        int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
+        const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0);
+        const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0);
+        int getNodeDataIdFromName(const HString &rName, const size_t subPortIdx=0);
 
-        bool haveLogData(const size_t portIdx=0);
-        std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
-        std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
+        bool haveLogData(const size_t subPortIdx=0);
+        std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
+        std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
 
-        double getStartValue(const size_t idx, const size_t portIdx=0);
+        double getStartValue(const size_t idx, const size_t subPortIdx=0);
 
         void loadStartValues();
         void loadStartValuesFromSimulation();
@@ -211,11 +219,11 @@ namespace hopsan {
         bool isConnected();
         size_t getNumPorts();
 
-        std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
+        std::vector<Port*> &getConnectedPorts(const int subPortIdx=-1);
 
     protected:
         void setNode(Node* pNode);
-        Node *getNodePtr(const size_t portIdx=0);
+        Node *getNodePtr(const size_t subPortIdx=0);
         void removeSubPort(Port* ptr);
 
         std::vector<Port*> mSubPortsVector;
@@ -230,7 +238,6 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructor
         PowerPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
     };
 
@@ -242,7 +249,6 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructor
         ReadPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
         void writeNodeSafe(const size_t idx, const double value);
         inline void writeNode(const size_t idx, const double value) const;
@@ -258,12 +264,10 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructor
         PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
 
     protected:
         Port* addSubPort();
-
     };
 
     class ReadMultiPort :public MultiPort
@@ -273,12 +277,10 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructor
         ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
 
     protected:
         Port* addSubPort();
-
     };
 
 
@@ -289,9 +291,7 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructor
         WritePort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
-
         inline double readNode(const size_t idx) const;
     };
 

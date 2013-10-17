@@ -112,7 +112,7 @@ Component* Port::getComponent() const
 
 
 //! @brief Returns a pointer to the connected node or 0 if no node exist
-Node* Port::getNodePtr(const size_t /*portIdx*/)
+Node* Port::getNodePtr(const size_t /*subPortIdx*/)
 {
     return mpNode;
 }
@@ -157,7 +157,7 @@ void Port::loadStartValuesFromSimulation()
 //! @details Safe but slow version, will not crash if idx out of bounds
 //! @return The data value
 //! @ingroup ComponentSimulationFunctions
-double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
+double Port::readNodeSafe(const size_t idx, const size_t /*subPortIdx*/)
 {
     if (idx < mpNode->getNumDataVariables())
     {
@@ -173,7 +173,7 @@ double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
 //! @param [in] value The value of the data to read
 //! @details Safe but slow version, will not crash if idx out of bounds
 //! @ingroup ComponentSimulationFunctions
-void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*portIdx*/)
+void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*subPortIdx*/)
 {
     if (idx < mpNode->getNumDataVariables())
     {
@@ -185,7 +185,7 @@ void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*po
     }
 }
 
-const Node *Port::getNodePtr(const size_t /*portIdx*/) const
+const Node *Port::getNodePtr(const size_t /*subPortIdx*/) const
 {
     return mpNode;
 }
@@ -193,7 +193,7 @@ const Node *Port::getNodePtr(const size_t /*portIdx*/) const
 //! @brief Get a ptr to the data variable in the node
 //! @param [in] idx The id of the data variable to return ptr to
 //! @returns Pointer to data vaariable or 0 if idx was not found
-double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
+double *Port::getNodeDataPtr(const size_t idx, const size_t /*subPortIdx*/) const
 {
     if (idx < mpNode->getNumDataVariables())
     {
@@ -226,7 +226,7 @@ void Port::setNode(Node* pNode)
 
 //! @brief Adds a pointer to an other connected port to a port
 //! @param [in] pPort A pointer to the other port
-void Port::addConnectedPort(Port* pPort, const size_t /*portIdx*/)
+void Port::addConnectedPort(Port* pPort, const size_t /*subPortIdx*/)
 {
     mConnectedPorts.push_back(pPort);
 }
@@ -234,7 +234,7 @@ void Port::addConnectedPort(Port* pPort, const size_t /*portIdx*/)
 
 //! @brief Removes a pointer to an other connected port from a port
 //! @param [in] pPort The pointer to the other port to be removed
-void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
+void Port::eraseConnectedPort(Port* pPort, const size_t /*subPortIdx*/)
 {
     vector<Port*>::iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
@@ -255,14 +255,14 @@ void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
 //! @brief Get a vector of pointers to all other ports connected connected to this one
 //! @returns A refernce to the internal vector of connected port pointers
 //! @todo maybe should return const vector so that contents my not be changed
-vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
+vector<Port*> &Port::getConnectedPorts(const int /*subPortIdx*/)
 {
     return mConnectedPorts;
 }
 
-size_t Port::getNumConnectedPorts(const int portIdx)
+size_t Port::getNumConnectedPorts(const int subPortIdx)
 {
-    return getConnectedPorts(portIdx).size();
+    return getConnectedPorts(subPortIdx).size();
 }
 
 
@@ -351,7 +351,7 @@ Node *Port::getStartNodePtr()
 
 //! @brief Check if log data  exist in the ports node
 //! @returns True or False
-bool Port::haveLogData(const size_t /*portIdx*/)
+bool Port::haveLogData(const size_t /*subPortIdx*/)
 {
     if (mpNode)
     {
@@ -365,7 +365,7 @@ bool Port::haveLogData(const size_t /*portIdx*/)
 //! @brief Get all data names and units from the connected node
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
-const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t /*portIdx*/)
+const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t /*subPortIdx*/)
 {
     // We prefere to use the startnode
     if (mpStartNode)
@@ -383,7 +383,7 @@ const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size
 //! @brief Get node data name and unit for specific node data
 //! @param [in] dataid The node data id
 //! @returns A pointer to teh node data description, or 0 if no node exist
-const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t /*portIdx*/)
+const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t /*subPortIdx*/)
 {
     // We prefere to use the startnode
     if (mpStartNode)
@@ -399,7 +399,7 @@ const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, con
 
 
 //! @brief Wraper for the Node function
-int Port::getNodeDataIdFromName(const HString &rName, const size_t /*portIdx*/)
+int Port::getNodeDataIdFromName(const HString &rName, const size_t /*subPortIdx*/)
 {
     //! @todo since mpNode should always be set maybe we could remove (almost) all the checks (but not for multiports their mpNOde will be 0)
     if (mpNode != 0)
@@ -425,7 +425,7 @@ void Port::setSignalNodeUnitAndDescription(const HString &rUnit, const HString &
 }
 
 
-vector<double> *Port::getLogTimeVectorPtr(const size_t /*portIdx*/)
+vector<double> *Port::getLogTimeVectorPtr(const size_t /*subPortIdx*/)
 {
     if (mpNode != 0)
     {
@@ -439,7 +439,7 @@ vector<double> *Port::getLogTimeVectorPtr(const size_t /*portIdx*/)
 }
 
 
-vector<vector<double> > *Port::getLogDataVectorPtr(const size_t /*portIdx*/)
+vector<vector<double> > *Port::getLogDataVectorPtr(const size_t /*subPortIdx*/)
 {
     if (mpNode != 0)
     {
@@ -452,7 +452,7 @@ vector<vector<double> > *Port::getLogDataVectorPtr(const size_t /*portIdx*/)
 }
 
 
-vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
+vector<double> *Port::getDataVectorPtr(const size_t /*subPortIdx*/)
 {
     if(mpNode != 0)
     {
@@ -475,7 +475,7 @@ size_t Port::getNumDataVariables() const
 //! @brief Get the actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @returns the start value
-double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
+double Port::getStartValue(const size_t idx, const size_t /*subPortIdx*/)
 {
     if(mpStartNode && getComponent()->getSystemParent()->doesKeepStartValues())
     {
@@ -493,7 +493,7 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 //! @brief Set the an actual start value of the port
 //! @param [in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param [in] value is the start value that should be written
-void Port::setDefaultStartValue(const size_t idx, const double value, const size_t /*portIdx*/)
+void Port::setDefaultStartValue(const size_t idx, const double value, const size_t /*subPortIdx*/)
 {
     if(mpStartNode)
     {
@@ -775,21 +775,21 @@ MultiPort::~MultiPort()
 }
 
 
-double MultiPort::readNodeSafe(const size_t idx, const size_t portIdx)
+double MultiPort::readNodeSafe(const size_t idx, const size_t subPortIdx)
 {
-    if (portIdx < mSubPortsVector.size())
+    if (subPortIdx < mSubPortsVector.size())
     {
-        return mSubPortsVector[portIdx]->readNodeSafe(idx);
+        return mSubPortsVector[subPortIdx]->readNodeSafe(idx);
     }
     getComponent()->addErrorMessage("portIdx out of range in MultiPort::readNodeSafe()");
     return -1;
 }
 
-void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t portIdx)
+void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx)
 {
-    if (portIdx < mSubPortsVector.size())
+    if (subPortIdx < mSubPortsVector.size())
     {
-        mSubPortsVector[portIdx]->writeNodeSafe(idx,value);
+        mSubPortsVector[subPortIdx]->writeNodeSafe(idx,value);
     }
     else
     {
@@ -798,51 +798,40 @@ void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t
 }
 
 
-double MultiPort::readNode(const size_t idx, const size_t portIdx) const
+const Node *MultiPort::getNodePtr(const size_t subPortIdx) const
 {
-    //! @todo handle portIdx ot of range
-    return mSubPortsVector[portIdx]->readNode(idx);
-}
-
-void MultiPort::writeNode(const size_t idx, const double value, const size_t portIdx) const
-{
-    return mSubPortsVector[portIdx]->writeNode(idx,value);
-}
-
-const Node *MultiPort::getNodePtr(const size_t portIdx) const
-{
-    return mSubPortsVector[portIdx]->getNodePtr();
+    return mSubPortsVector[subPortIdx]->getNodePtr();
 }
 
 //! @todo why do we even want a unsafe getNodeDataPtr it should be the safe version
-double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx) const
+double *MultiPort::getNodeDataPtr(const size_t idx, const size_t subPortIdx) const
 {
     //If we try to access node data for subport that does not exist then return multiport shared dummy safe ptr
-    if (portIdx >= mSubPortsVector.size())
+    if (subPortIdx >= mSubPortsVector.size())
     {
-        return Port::getNodeDataPtr(idx, portIdx);
+        return Port::getNodeDataPtr(idx, subPortIdx);
     }
     else
     {
-        return mSubPortsVector[portIdx]->getNodeDataPtr(idx);
+        return mSubPortsVector[subPortIdx]->getNodeDataPtr(idx);
     }
 }
 
 
-const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t portIdx)
+const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t subPortIdx)
 {
-    if (portIdx < mSubPortsVector.size())
+    if (subPortIdx < mSubPortsVector.size())
     {
-        return mSubPortsVector[portIdx]->getNodeDataDescriptions();
+        return mSubPortsVector[subPortIdx]->getNodeDataDescriptions();
     }
     return 0;
 }
 
-const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid, const size_t portIdx)
+const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid, const size_t subPortIdx)
 {
     if (isConnected())
     {
-        return mSubPortsVector[portIdx]->getNodeDataDescription(dataid);
+        return mSubPortsVector[subPortIdx]->getNodeDataDescription(dataid);
     }
     else if (mpStartNode)
     {
@@ -851,47 +840,47 @@ const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid
     return 0;
 }
 
-int MultiPort::getNodeDataIdFromName(const HString &rName, const size_t portIdx)
+int MultiPort::getNodeDataIdFromName(const HString &rName, const size_t subPortIdx)
 {
     if (isConnected())
     {
-        return mSubPortsVector[portIdx]->getNodeDataIdFromName(rName);
+        return mSubPortsVector[subPortIdx]->getNodeDataIdFromName(rName);
     }
     return -1;
 }
 
-bool MultiPort::haveLogData(const size_t portIdx)
+bool MultiPort::haveLogData(const size_t subPortIdx)
 {
     if (isConnected())
     {
-        return mSubPortsVector[portIdx]->haveLogData();
+        return mSubPortsVector[subPortIdx]->haveLogData();
     }
     return false;
 }
 
-std::vector<double> *MultiPort::getLogTimeVectorPtr(const size_t portIdx)
+std::vector<double> *MultiPort::getLogTimeVectorPtr(const size_t subPortIdx)
 {
     if (isConnected())
     {
-        return mSubPortsVector[portIdx]->getLogTimeVectorPtr();
+        return mSubPortsVector[subPortIdx]->getLogTimeVectorPtr();
     }
     return 0;
 }
 
-std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t portIdx)
+std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t subPortIdx)
 {
     if (isConnected())
     {
-        return mSubPortsVector[portIdx]->getLogDataVectorPtr();
+        return mSubPortsVector[subPortIdx]->getLogDataVectorPtr();
     }
     return 0;
 }
 
-std::vector<double> *MultiPort::getDataVectorPtr(const size_t portIdx)
+std::vector<double> *MultiPort::getDataVectorPtr(const size_t subPortIdx)
 {
     if (isConnected())
     {
-        return mSubPortsVector[portIdx]->getDataVectorPtr();
+        return mSubPortsVector[subPortIdx]->getDataVectorPtr();
     }
     return 0;
 }
@@ -899,11 +888,11 @@ std::vector<double> *MultiPort::getDataVectorPtr(const size_t portIdx)
 //! @brief Get the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @returns the start value
-double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
+double MultiPort::getStartValue(const size_t idx, const size_t subPortIdx)
 {
     if(mpStartNode && mpComponent->getSystemParent()->doesKeepStartValues())
     {
-        return mSubPortsVector[portIdx]->mpNode->getDataValue(idx);
+        return mSubPortsVector[subPortIdx]->mpNode->getDataValue(idx);
     }
     else if(mpStartNode)
     {
@@ -977,20 +966,20 @@ void MultiPort::removeSubPort(Port* ptr)
 }
 
 //! @brief Retreives Node Ptr from given subnode
-Node *MultiPort::getNodePtr(const size_t portIdx)
+Node *MultiPort::getNodePtr(const size_t subPortIdx)
 {
-    if(mSubPortsVector.size() <= portIdx)
+    if(mSubPortsVector.size() <= subPortIdx)
     {
         mpComponent->addWarningMessage("MultiPort::getNodePtr(): mSubPortsSVector.size() <= portIdx");
         return 0;
     }
-    return mSubPortsVector[portIdx]->getNodePtr();
+    return mSubPortsVector[subPortIdx]->getNodePtr();
 }
 
 //! @note we use -1 as portindex to indicate that we want all subports
-std::vector<Port*> &MultiPort::getConnectedPorts(const int portIdx)
+std::vector<Port*> &MultiPort::getConnectedPorts(const int subPortIdx)
 {
-    if (portIdx<0)
+    if (subPortIdx<0)
     {
         //Ok lets return ALL connected ports
         //! @todo since this function returns a reference to the internal vector we need a new memberVector
@@ -1007,7 +996,7 @@ std::vector<Port*> &MultiPort::getConnectedPorts(const int portIdx)
     }
     else
     {
-        return mSubPortsVector[portIdx]->getConnectedPorts();
+        return mSubPortsVector[subPortIdx]->getConnectedPorts();
     }
 }
 
