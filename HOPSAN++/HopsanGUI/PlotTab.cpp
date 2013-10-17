@@ -326,7 +326,7 @@ void PlotTab::applyTimeScalingSettings()
 //        update();
 //    }
 
-    updateLabels();
+    updateAxisLabels();
 }
 
 
@@ -394,7 +394,7 @@ void PlotTab::openTimeScalingDialog()
             //if (pTime)
             {
                 TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, &scaleDialog);
-                connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateLabels()));
+                connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
                 activeGenerations.insert(gen, pTimeScaleW);
             }
         }
@@ -419,7 +419,7 @@ void PlotTab::openTimeScalingDialog()
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
     pGridLayout->addWidget(pButtonBox, row, 1);
     connect(pDoneButton,SIGNAL(clicked()),&scaleDialog,SLOT(close()));
-    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateLabels())); //!< @todo this should ahppen directly when changing scale values
+    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateAxisLabels())); //!< @todo this should ahppen directly when changing scale values
 
     scaleDialog.exec();
 }
@@ -439,7 +439,7 @@ void PlotTab::applyAxisSettings()
 
 void PlotTab::applyAxisLabelSettings()
 {
-    updateLabels();
+    updateAxisLabels();
 }
 
 //! @todo currently only supports settings axis for top plot
@@ -636,7 +636,7 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor /*desiredColor*/, HopsanPlotIDE
 
     //! @todo maybe make it possible to rescale only selected axis, instead of always recscaling both of them
     rescaleAxesToCurves();
-    updateLabels();
+    updateAxisLabels();
     mpQwtPlots[plotID]->replot();
     mpQwtPlots[plotID]->updateGeometry();
 
@@ -878,7 +878,7 @@ void PlotTab::removeCurve(PlotCurve *curve)
     }
 
     rescaleAxesToCurves();
-    updateLabels();
+    updateAxisLabels();
     update();
 }
 
@@ -924,7 +924,7 @@ void PlotTab::setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlot
 
 
 //! @brief Updates labels on plot axes
-void PlotTab::updateLabels()
+void PlotTab::updateAxisLabels()
 {
     for(int plotID=0; plotID<2; ++plotID)
     {
@@ -939,21 +939,45 @@ void PlotTab::updateLabels()
                 QStringList leftUnits, rightUnits;
                 for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
                 {
-                    QString newUnit = QString(mPlotCurvePtrs[plotID].at(i)->getDataName() + " [" + mPlotCurvePtrs[plotID].at(i)->getCurrentUnit() + "]");
-                    if( !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
+                    // First decide new label
+                    QString newLabel;
+                    // If alias empty then use data name
+                    if (mPlotCurvePtrs[plotID].at(i)->getLogDataVariablePtr()->getAliasName().isEmpty())
                     {
-                        if(!mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).isEmpty())
+
+                        newLabel = QString("%1 [%2]").arg(mPlotCurvePtrs[plotID].at(i)->getDataName()).arg(mPlotCurvePtrs[plotID].at(i)->getCurrentUnit());
+                    }
+                    // Else use the alias name
+                    else
+                    {
+                        newLabel = QString("%1 [%2]").arg(mPlotCurvePtrs[plotID].at(i)->getLogDataVariablePtr()->getAliasName()).arg(mPlotCurvePtrs[plotID].at(i)->getCurrentUnit());
+                    }
+
+                    // If new label is not already on the axis then we may want to add it
+                    if( ( (mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)  && !leftUnits.contains(newLabel)) ||
+                        ( (mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight) && !rightUnits.contains(newLabel)) )
+                    {
+                        // If label on axis is empty then set new text label
+                        if(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).isEmpty())
                         {
-                            mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(", "))));
+                            mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(newLabel));
                         }
-                        mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(newUnit))));
+                        // else append new text to already existing text
+                        else
+                        {
+                            QString currText = mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text();
+                            mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(),
+                                                             QwtText(currText.append(", ").append(newLabel)));
+                        }
+
+                        // Remember the text we just added
                         if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                         {
-                            leftUnits.append(newUnit);
+                            leftUnits.append(newLabel);
                         }
                         if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight)
                         {
-                            rightUnits.append(newUnit);
+                            rightUnits.append(newLabel);
                         }
                     }
                 }
@@ -1063,7 +1087,7 @@ void PlotTab::resetXTimeVector()
 
     rescaleAxesToCurves();
 
-    updateLabels();
+    updateAxisLabels();
     update();
 
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
@@ -2559,7 +2583,7 @@ void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlo
     mHasCustomXData = true;
     mpCustomXData = pData;
 
-    updateLabels();
+    updateAxisLabels();
     update();
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
 }

@@ -651,7 +651,7 @@ void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
     updatePlotInfoBox();
 
     //! @todo shouldnt these be triggered by signal in update curve?
-    mpParentPlotTab->updateLabels();
+    mpParentPlotTab->updateAxisLabels();
     mpParentPlotTab->update();
 }
 
@@ -661,7 +661,7 @@ void PlotCurve::removeCustomCurveDataUnit()
     mCustomCurveDataUnitScale = 1.0;
 
     //! @todo shouldnt these be triggered by signal in update curve?
-    mpParentPlotTab->updateLabels();
+    mpParentPlotTab->updateAxisLabels();
     mpParentPlotTab->update();
 }
 
@@ -735,7 +735,7 @@ void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
     // Redraw curve
     updateCurve();
     mpPlotCurveInfoBox->updateInfo();
-    mpParentPlotTab->updateLabels();
+    mpParentPlotTab->updateAxisLabels();
 //    }
 }
 
@@ -1266,6 +1266,7 @@ void PlotCurve::updateCurveName()
         setTitle(mpData->getAliasName());
     }
     updatePlotInfoBox();
+    mpParentPlotTab->updateAxisLabels();
 }
 
 void PlotCurve::deleteCustomData()

@@ -161,7 +161,7 @@ protected:
 public slots:
     void rescaleAxesToCurves();
     void toggleAxisLock();
-    void updateLabels();
+    void updateAxisLabels();
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();

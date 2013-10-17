@@ -766,7 +766,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
 
     addPlotTab();
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-    getCurrentPlotTab()->updateLabels();
+    getCurrentPlotTab()->updateAxisLabels();
     LogDataHandler *pLogDataHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     SharedLogVariableDataPtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
     bool power = mpPowerSpectrumCheckBox->isChecked();
