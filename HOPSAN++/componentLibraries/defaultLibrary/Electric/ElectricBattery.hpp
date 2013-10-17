@@ -9,7 +9,7 @@
 //!
 //! @file ElectricBattery.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 28 Jun 2013 13:12:20
+//! @date Thu 17 Oct 2013 16:00:44
 //! @brief Battery with static behaviour
 //! @ingroup ElectricComponents
 //!
@@ -26,6 +26,7 @@ private:
      double unom;
      double capacity;
      double kappa;
+     double e;
      Port *mpPel1;
      double delayParts1[9];
      double delayParts2[9];
@@ -63,6 +64,7 @@ private:
      double *mpunom;
      double *mpcapacity;
      double *mpkappa;
+     double *mpe;
      //outputVariables pointers
      double *mpsoc;
      double *mpubatt;
@@ -105,6 +107,7 @@ public:
             addInputVariable("capacity", "capacity", "Ah", 41.,&mpcapacity);
             addInputVariable("kappa", "exponent of discharge function", "", \
 0.1,&mpkappa);
+            addInputVariable("e", "e", "", 2.71828,&mpe);
         //Add outputVariables to the component
             addOutputVariable("soc","soc","",1.,&mpsoc);
             addOutputVariable("ubatt","battery voltage","V",0.,&mpubatt);
@@ -137,6 +140,7 @@ public:
         unom = (*mpunom);
         capacity = (*mpcapacity);
         kappa = (*mpkappa);
+        e = (*mpe);
 
         //Read outputVariables from nodes
         soc = (*mpsoc);
@@ -186,8 +190,9 @@ public:
           systemEquations[0] =soc - limit(-(iel1*mTimestep)/(7200.*capacity) \
 - delayedPart[1][1],0.001,0.999);
           systemEquations[1] =iel1 + cond*(-ubatt + uel1);
-          systemEquations[2] =ubatt - \
-Power(2,kappa)*unom*Power(asin(limit(soc,1.e-9,0.9999)),kappa);
+          systemEquations[2] =ubatt - (Power(2,kappa)*(-1 + \
+Power(e,(10*soc)/kappa))*unom*Power(asin(limit(soc,1.e-9,0.9999)),kappa))/(1 \
++ Power(e,(10*soc)/kappa));
           systemEquations[3] =-cel1 + uel1 - iel1*Zcel1;
 
           //Jacobian matrix
@@ -201,10 +206,15 @@ delayedPart[1][1],0.001,0.999))/(7200.*capacity);
           jacobianMatrix[1][1] = 1;
           jacobianMatrix[1][2] = -cond;
           jacobianMatrix[1][3] = cond;
-          jacobianMatrix[2][0] = \
--((Power(2,kappa)*kappa*unom*Power(asin(limit(soc,1.e-9,0.9999)),-1 + \
-kappa)*dxLimit(soc,1.e-9,0.9999))/Sqrt(1 - \
-Power(limit(soc,1.e-9,0.9999),2)));
+          jacobianMatrix[2][0] = -((Power(2,kappa)*(-1 + \
+Power(e,(10*soc)/kappa))*kappa*unom*Power(asin(limit(soc,1.e-9,0.9999)),-1 + \
+kappa)*dxLimit(soc,1.e-9,0.9999))/((1 + Power(e,(10*soc)/kappa))*Sqrt(1 - \
+Power(limit(soc,1.e-9,0.9999),2)))) + (5*Power(2,1 + \
+kappa)*Power(e,(10*soc)/kappa)*(-1 + \
+Power(e,(10*soc)/kappa))*unom*Power(asin(limit(soc,1.e-9,0.9999)),kappa)*log(\
+e))/(Power(1 + Power(e,(10*soc)/kappa),2)*kappa) - (5*Power(2,1 + \
+kappa)*Power(e,(10*soc)/kappa)*unom*Power(asin(limit(soc,1.e-9,0.9999)),kappa\
+)*log(e))/((1 + Power(e,(10*soc)/kappa))*kappa);
           jacobianMatrix[2][1] = 0;
           jacobianMatrix[2][2] = 1;
           jacobianMatrix[2][3] = 0;
