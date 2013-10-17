@@ -20,8 +20,8 @@
                 <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <movingport startx="0" portname="P1" starty="20"/>
-                <movingport startx="60" portname="P2" starty="20"/>
+		<movingport portname="P1" startx="0" starty="20"/>
+		<movingport portname="P2" startx="65" starty="20"/>
             </movable>
         </animation>
     </modelobject>
