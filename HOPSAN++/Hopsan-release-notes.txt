@@ -46,6 +46,10 @@
 - Enhancement: It is now possible to begin logging before time 0
 - Enhancement: Made sure that almost all default component xmls have working sourcecode link
 - Enhancement: Alias name is now shown on the plot axis instead of data name
+- Enhancement: Improved the look and feel of the component properties dialogue
+               In the "Value" field: Black normal font = Default Value
+                                     Black Bold font = A changed value (no longer default value)
+                                     Gray Italic on light-gray background = Value will have no effect (Input variables that are connected)
 
 - Fixed: Pneumatic QmSensor was measuring pressure.
 - Fixed: Some components had GUI/CORE port name mismatch. Implemented test case to prevent this from happening again!
