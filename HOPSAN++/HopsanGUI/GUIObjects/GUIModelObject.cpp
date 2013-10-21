@@ -678,11 +678,11 @@ void ModelObject::removeExternalPort(QString portName)
 //! @brief Get the default value of a parameter
 //! @param [in] paramName The name of the parameter
 //! @returns QString with default value for parameter, or empty QString if paramName not found
-QString ModelObject::getDefaultParameterValue(const QString paramName) const
+QString ModelObject::getDefaultParameterValue(const QString &rParamName) const
 {
-    if(mDefaultParameterValues.contains(paramName))
+    if(mDefaultParameterValues.contains(rParamName))
     {
-        return mDefaultParameterValues.find(paramName).value();
+        return mDefaultParameterValues.find(rParamName).value();
     }
     else
     {

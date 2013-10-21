@@ -2,47 +2,12 @@
 #define COMPONENTPROPERTIESDIALOG3_H
 
 #include <QtGui>
-//#include "Dialogs/ModelObjectPropertiesDialog.h"
 #include "CoreAccess.h"
 
 class ModelObject;
 class ParameterSettingsLayout;
 class MainWindow;
 class SystemParametersWidget;
-
-class RowAwareToolButton :public QToolButton
-{
-    Q_OBJECT
-public:
-    RowAwareToolButton(const int row);
-    void setRow(const int row);
-
-signals:
-    void triggeredAtRow(int);
-
-private:
-    int mRow;
-
-private slots:
-    void clickedSlot();
-};
-
-class RowAwareCheckBox :public QCheckBox
-{
-    Q_OBJECT
-public:
-    RowAwareCheckBox(const int row);
-    void setRow(const int row);
-
-signals:
-    void checkedAtRow(int, bool);
-
-private:
-    int  mRow;
-
-private slots:
-    void checkedSlot(const bool state);
-};
 
 class TableWidgetTotalSize : public QTableWidget
 {
@@ -54,53 +19,23 @@ private:
     int mMaxVisibleRows;
 };
 
-class PlotScaleSelectionWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    PlotScaleSelectionWidget(const int row, const CoreVariameterDescription &rData, ModelObject *pModelObject);
-
-private slots:
-    void createPlotScaleSelectionMenu();
-    void registerCustomScale();
-
-
-private:
-    QLineEdit *mpPlotScaleEdit;
-    ModelObject *mpModelObject;
-    QString mVariableTypeName, mVariablePortDataName;
-
-
-};
-
 class VariableTableWidget :public TableWidgetTotalSize
 {
     Q_OBJECT
 public:
     enum VariameterTypEnumT {InputVaraiable, OutputVariable, OtherVariable, Constant}; //!< @todo maybe not only here
-    enum ColumnEnumT {Name, Alias, Unit, Description, Type, Value, Scale, Buttons, NumCols};
+    enum ColumnEnumT {Name, Alias, Unit, Description, Value, Scale, ShowPort, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
     bool setAliasNames();
 
-private slots:
-    void resetDefaultValueAtRow(int row);
-    void selectSystemParameterAtRow(int row);
-    void makePortAtRow(int row, bool isPort);
-    void cellChangedSlot(const int row, const int col);
-
-signals:
-    void setCustomPlotScaleText(QString);
-
 private:
     void createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype);
-    void createSeparatorRow(const int row, const QString name);
+    void createSeparatorRow(const int row, const QString &rName, const VariameterTypEnumT variametertype);
     void selectValueTextColor(const int row);
     bool cleanAndVerifyParameterValue(QString &rValue, const QString type);
-    //void setStartValue(const int row);
     bool setAliasName(const int row);
     ModelObject *mpModelObject;
-    QMap<int, CoreVariameterDescription> mVariableDescriptions;
 };
 
 class ComponentPropertiesDialog3 : public QDialog
@@ -147,5 +82,67 @@ private:
     QTextEdit *mpSourceCodeTextEdit;
     QComboBox *mpSolverComboBox;
 };
+
+// Help class declarations
+//----------------------------------------------------------------------
+
+class PlotScaleSelectionWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+
+private slots:
+    void createPlotScaleSelectionMenu();
+    void registerCustomScale();
+
+
+private:
+    QLineEdit *mpPlotScaleEdit;
+    ModelObject *mpModelObject;
+    QString mVariableTypeName, mVariablePortDataName;
+};
+
+
+class ParameterValueSelectionWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent);
+    void setValueText(const QString &rText);
+    QString getValue() const;
+    const QString &getDataType() const;
+public slots:
+    void refreshValueTextStyle();
+private slots:
+    void setValue();
+    void setConditionalValue(const int idx);
+    void resetDefault();
+    void createSysParameterSelectionMenu();
+private:
+    QString mVariableDataType, mVariablePortDataName, mVariablePortName;
+    QLineEdit *mpValueEdit;
+    QComboBox *mpConditionalValueComboBox;
+    VariableTableWidget::VariameterTypEnumT mVariameterType;
+    ModelObject *mpModelObject;
+    void setDefaultValueTextStyle();
+    void decideBackgroundColor(QString &rStyleString);
+};
+
+class HideShowPortWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    HideShowPortWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+signals:
+    void toggled(bool);
+private slots:
+    void hideShowPort(const bool doShow);
+private:
+    QString mPortName;
+    ModelObject *mpModelObject;
+};
+
+//----------------------------------------------------------------------
 
 #endif // COMPONENTPROPERTIESDIALOG3_H

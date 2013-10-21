@@ -76,7 +76,7 @@ public:
     virtual void getParameter(const QString paramName, CoreParameterData &rData);
     virtual QString getParameterValue(const QString paramName);
 
-    virtual QString getDefaultParameterValue(const QString paramName) const;
+    virtual QString getDefaultParameterValue(const QString &rParamName) const;
 
     virtual bool setParameterValue(QString name, QString valueTxt, bool force=false);
     virtual QString getStartValueTxt(QString portName, QString variable);

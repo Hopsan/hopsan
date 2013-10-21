@@ -47,7 +47,6 @@
 #include "Widgets/SystemParametersWidget.h"
 
 
-
 //! @class ComponentPropertiesDialog3
 //! @brief The ComponentPropertiesDialog3 class is a Widget used to interact with component parameters.
 //!
@@ -110,18 +109,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
 
     this->setPalette(gConfig.getPalette());
     setWindowTitle(tr("Component Properties"));
-    //    if(mpModelObject->getTypeName().startsWith("CppComponent"))
-    //    {
-    //        createCppEditStuff();
-    //    }
-    //    else if(mpModelObject->getTypeName().startsWith("ModelicaComponent"))
-    //    {
-    //        createModelicaEditStuff();
-    //    }
-    //    else
-    //    {
     createEditStuff();
-    //    }
 
     connect(this, SIGNAL(lockModelWidget(bool)), mpModelObject->getParentContainerObject()->mpModelWidget, SLOT(lockTab(bool)));
 
@@ -177,21 +165,11 @@ bool VariableTableWidget::setAliasName(const int row)
 void ComponentPropertiesDialog3::okPressed()
 {
     setName();
-
-//    if(mpModelObject->getTypeName().startsWith("CppComponent"))
-//    {
-//        recompileCppFromDialog();
-//    }
-//    else
-//    {
-        setAliasNames();
-
-        if (setVariableValues())
-        {
-            close();
-        }
- //   }
-
+    setAliasNames();
+    if (setVariableValues())
+    {
+        close();
+    }
 }
 
 
@@ -277,32 +255,6 @@ void ComponentPropertiesDialog3::recompile()
 bool ComponentPropertiesDialog3::setAliasNames()
 {
     return mpVariableTableWidget->setAliasNames();
-//    for (int r=0; r<mpVariableTableWidget->rowCount(); ++r)
-//    {
-//        if (mpVariableTableWidget->columnSpan(r,0)>1)
-//        {
-//            // Skip separator rows
-//            continue;
-//        }
-
-//        QString alias = mpVariableTableWidget->item(r,VariableTableWidget::Alias)->text();
-////        if (!alias.isEmpty())
-////        {
-//        //! @todo since alias=empty means unregister we can not skip it, but there should be some check if a variable has changed, so that we do not need to go thourgh set for all variables every freeking time
-//            QString name = mpVariableTableWidget->item(r,VariableTableWidget::Name)->text();
-//            QStringList parts = name.split("::");
-//            if (parts.size() == 2)
-//            {
-//                mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName(), parts[0], parts[1], alias);
-//            }
-////            else
-////            {
-////                return false;
-////            }
-//            //! @todo check if OK
-////        }
-//    }
-//    return true;
 }
 
 
@@ -548,10 +500,9 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     columnHeaders.append("Alias");
     columnHeaders.append("Unit");
     columnHeaders.append("Description");
-    columnHeaders.append("Type");
     columnHeaders.append("Value");
     columnHeaders.append("PlotScale");
-    columnHeaders.append("");
+    columnHeaders.append("Port");
     this->setHorizontalHeaderLabels(columnHeaders);
 
     // Decide which parameters should be shown as Constants
@@ -570,7 +521,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     int r=0;
     if (!constantsIds.isEmpty())
     {
-        createSeparatorRow(r,"Constants");
+        createSeparatorRow(r,"Constants", Constant);
         ++r;
     }
     for (int i=0; i<constantsIds.size(); ++i)
@@ -590,8 +541,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     mpModelObject->getVariameterDescriptions(variameters);
 
     // Write inputVariables
-    createSeparatorRow(r,"InputVariables");
-    ++r;
+    const int inputVarSeparatorRow = r;
     for (int i=0; i<variameters.size(); ++i)
     {
         if (variameters[i].mVariameterType == InputVaraiable)
@@ -600,10 +550,15 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
             ++r;
         }
     }
+    // Insert the separator row if there were any input variables)
+    if (r != inputVarSeparatorRow)
+    {
+        createSeparatorRow(inputVarSeparatorRow,"InputVariables", InputVaraiable);
+        ++r;
+    }
 
     // Write outputVariables
-    createSeparatorRow(r,"OutputVariables");
-    ++r;
+    const int outputVarSeparatorRow = r;
     for (int i=0; i<variameters.size(); ++i)
     {
         if (variameters[i].mVariameterType == OutputVariable)
@@ -611,6 +566,12 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
             createTableRow(r, variameters[i], OutputVariable);
             ++r;
         }
+    }
+    // Insert the separator row if there were any output variables)
+    if (r != outputVarSeparatorRow)
+    {
+        createSeparatorRow(outputVarSeparatorRow,"OutputVariables", OutputVariable);
+        ++r;
     }
 
     // Write remaning port variables
@@ -633,7 +594,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
                         portName.append("     "+desc);
                     }
                 }
-                createSeparatorRow(r,"Port: "+portName);
+                createSeparatorRow(r,"Port: "+portName, OtherVariable);
                 ++r;
             }
 
@@ -644,13 +605,21 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
 
     resizeColumnToContents(Name);
     resizeColumnToContents(Unit);
-    resizeColumnToContents(Type);
-    resizeColumnToContents(Buttons);
+    resizeColumnToContents(Value);
+    resizeColumnToContents(Scale);
+    resizeColumnToContents(ShowPort);
+    setColumnWidth(Description, 2*columnWidth(Description));
 
-    horizontalHeader()->setStretchLastSection(true);
+    horizontalHeader()->setResizeMode(Name, QHeaderView::ResizeToContents);
+//    horizontalHeader()->setResizeMode(Alias, QHeaderView::ResizeToContents);
+    horizontalHeader()->setResizeMode(Unit, QHeaderView::ResizeToContents);
+    horizontalHeader()->setResizeMode(Description, QHeaderView::Stretch);
+    horizontalHeader()->setResizeMode(Value, QHeaderView::ResizeToContents);
+    horizontalHeader()->setResizeMode(Scale, QHeaderView::ResizeToContents);
+    horizontalHeader()->setResizeMode(ShowPort, QHeaderView::ResizeToContents);
+    horizontalHeader()->setClickable(false);
+
     verticalHeader()->hide();
-
-    connect(this, SIGNAL(cellChanged(int,int)), this, SLOT(cellChangedSlot(int,int)));
 }
 
 bool VariableTableWidget::setStartValues()
@@ -663,11 +632,6 @@ bool VariableTableWidget::setStartValues()
     bool allok=true;
     for (int row=0; row<rowCount(); ++row)
     {
-//        if (!setStartValue(r))
-//        {
-//            ok=falase;
-//            break;
-//        }
 
         // First check if row is separator, then skip it
         if (columnSpan(row,0)>1)
@@ -675,18 +639,9 @@ bool VariableTableWidget::setStartValues()
             continue;
         }
 
-        //Extract type from row
-        QString type = item(row,VariableTableWidget::Type)->text();
-
-        QString value;
-        if(type == "conditional")
-        {
-            value = QString::number(qobject_cast<QComboBox*>(cellWidget(row, int(VariableTableWidget::Value)))->currentIndex());
-        }
-        else
-        {
-            value = item(row,VariableTableWidget::Value)->text();
-        }
+        // Extract name and value from row
+        QString name = item(row,VariableTableWidget::Name)->text();
+        QString value = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getValue();
 
         // If startvalue is empty (disabled, then we should not atempt to change it)
         if (value.isEmpty())
@@ -694,16 +649,12 @@ bool VariableTableWidget::setStartValues()
             continue;
         }
 
-        // Extract name and value from row
-        QString name = item(row,VariableTableWidget::Name)->text();
-
-
         // Get the old value to see if a changed has occured
         QString oldValue = mpModelObject->getParameterValue(name);
         if (oldValue != value)
         {
             // Parameter has changed, add to undo stack and set the parameter
-            bool isOk = cleanAndVerifyParameterValue(value, item(row,VariableTableWidget::Type)->text());
+            bool isOk = cleanAndVerifyParameterValue(value, qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getDataType());
             if(isOk)
             {
                 // If we fail to set the parameter, then warning box and reset value
@@ -732,7 +683,7 @@ bool VariableTableWidget::setStartValues()
             else
             {
                 // Reset old value
-                item(row,VariableTableWidget::Value)->setText(oldValue);
+                qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(oldValue);
                 allok = false;
                 break;
             }
@@ -754,95 +705,6 @@ bool VariableTableWidget::setAliasNames()
     return true;
 }
 
-void VariableTableWidget::resetDefaultValueAtRow(int row)
-{
-    QString name = item(row,Name)->text();
-    if(mpModelObject)
-    {
-        QString defaultText = mpModelObject->getDefaultParameterValue(name);
-        if(defaultText != QString())
-        {
-            item(row,Value)->setText(defaultText);
-            item(row,Value)->setTextColor(Qt::gray);
-        }
-    }
-}
-
-void VariableTableWidget::selectSystemParameterAtRow(int row)
-{
-    QMenu menu;
-    QMap<QAction*, QString> actionParamMap;
-
-    QVector<CoreParameterData> paramDataVector;
-    mpModelObject->getParentContainerObject()->getParameters(paramDataVector);
-
-    for (int i=0; i<paramDataVector.size(); ++i)
-    {
-        QAction *tempAction = menu.addAction(paramDataVector[i].mName+" = "+paramDataVector[i].mValue);
-        tempAction->setIconVisibleInMenu(false);
-        actionParamMap.insert(tempAction, paramDataVector[i].mName);
-    }
-
-    if(!menu.isEmpty())
-    {
-        menu.addSeparator();
-    }
-    QAction *pAddAction = menu.addAction("Add System Parameter");
-
-
-    QCursor cursor;
-    QAction *selectedAction = menu.exec(cursor.pos());
-    if(selectedAction == pAddAction)
-    {
-        gpSystemParametersWidget->openAddParameterDialog();
-        return;
-    }
-    QString parNameString = actionParamMap.value(selectedAction);
-    if(!parNameString.isEmpty())
-    {
-        item(row,Value)->setText(parNameString);
-        selectValueTextColor(row);
-    }
-}
-
-void VariableTableWidget::makePortAtRow(int row, bool isPort)
-{
-//! @todo hmm it does not make sense to have startvalues as ports (or maybe it does, but startvalues are run before init and simulate), but then you could have startvalue to startvalue to startvalue ...
-    const QString name = item(row,Name)->text().split("#").at(0);
-    Port * pPort=0;
-    if (isPort)
-    {
-        pPort = mpModelObject->getPort(name);
-        if (pPort)
-        {
-            pPort->setEnable(true);
-            mpModelObject->createRefreshExternalPort(name);
-        }
-        else
-        {
-            pPort = mpModelObject->createRefreshExternalPort(name);
-            if (pPort)
-            {
-                // Make sure that our new port has the "correct" angle
-                pPort->setRotation(180);
-                pPort->setModified(true);
-            }
-        }
-    }
-    else
-    {
-        mpModelObject->hideExternalDynamicParameterPort(name);
-    }
-}
-
-void VariableTableWidget::cellChangedSlot(const int row, const int col)
-{
-    if (col == Value)
-    {
-        selectValueTextColor(row);
-    }
-}
-
 void VariableTableWidget::createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype)
 {
     QString fullName;
@@ -859,11 +721,13 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
         fullName = rData.mPortName+"#"+rData.mName;
     }
 
+    // Set the name field
     pItem = new QTableWidgetItem(fullName);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Name,pItem);
 
+    // Set the alias name field
     pItem = new QTableWidgetItem(rData.mAlias);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags);
@@ -873,124 +737,92 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     }
     setItem(row,Alias,pItem);
 
-    //pItem = new QTableWidgetItem(parseVariableUnit(rData.mUnit));
+    // Set the unit field
     pItem = new QTableWidgetItem(rData.mUnit);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Unit,pItem);
 
+    // Set the description field
     pItem = new QTableWidgetItem(rData.mDescription);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Description,pItem);
 
-    pItem = new QTableWidgetItem(rData.mDataType);
-    pItem->setTextAlignment(Qt::AlignCenter);
-    pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-    setItem(row,Type,pItem);
+    // Set the value field
+    ParameterValueSelectionWidget *pValueWidget = new ParameterValueSelectionWidget(rData, variametertype, mpModelObject, this);
+    this->setIndexWidget(model()->index(row,Value), pValueWidget);
 
-    QString value = mpModelObject->getParameterValue(fullName);
-    if(rData.mDataType == "conditional")
+
+    // Create the custom plot unit display and selection button
+    if (variametertype != Constant)
     {
-        QComboBox *pComboBox = new QComboBox(this);
-        for(int i=0; i<rData.mConditions.size(); ++i)
-        {
-            pComboBox->addItem(rData.mConditions[i]);
-        }
-        pComboBox->setCurrentIndex(value.toInt());
-        this->setCellWidget(row, int(Value), pComboBox);
+        QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(rData, mpModelObject, this);
+        this->setIndexWidget(model()->index(row,Scale), pPlotScaleWidget);
     }
     else
     {
-        pItem = new QTableWidgetItem(value);
-        if (value.isEmpty())
-        {
-            pItem->setFlags(Qt::NoItemFlags);
-        }
-        else
-        {
-            pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
-        }
-        pItem->setTextAlignment(Qt::AlignCenter);
-        setItem(row,Value,pItem);
-        selectValueTextColor(row);
+        pItem = new QTableWidgetItem();
+        pItem->setFlags(Qt::NoItemFlags);
+        setItem(row,Scale,pItem);
     }
 
-    // Create the custom plot unit display and selection button
-    QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(row, rData, mpModelObject);
-    this->setIndexWidget(model()->index(row,Scale), pPlotScaleWidget);
-
-
-    // Set tool buttons
-    QWidget* pTooButtons = new QWidget();
-    QHBoxLayout* pToolButtonsLayout = new QHBoxLayout(pTooButtons);
-    pToolButtonsLayout->setContentsMargins(0,0,0,0);
-
-    RowAwareToolButton *pResetDefaultToolButton = new RowAwareToolButton(row);
-    pResetDefaultToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
-    pResetDefaultToolButton->setToolTip("Reset Default Value");
-    pResetDefaultToolButton->setFixedSize(24,24);
-    connect(pResetDefaultToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(resetDefaultValueAtRow(int)));
-    pToolButtonsLayout->addWidget(pResetDefaultToolButton);
-
-    RowAwareToolButton *pSystemParameterToolButton = new RowAwareToolButton(row);
-    pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
-    pSystemParameterToolButton->setToolTip("Map To System Parameter");
-    pSystemParameterToolButton->setFixedSize(24,24);
-    connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
-    pToolButtonsLayout->addWidget(pSystemParameterToolButton);
-
+    // Set the port hide/show button
     if ( (variametertype == InputVaraiable) || (variametertype == OutputVariable))
     {
-        RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
-        pEnablePortCheckBox->setToolTip("Show/hide port");
-        Port *pPort = mpModelObject->getPort(rData.mPortName);
-        pEnablePortCheckBox->setChecked((pPort && pPort->getPortAppearance()->mEnabled));
-        pEnablePortCheckBox->setFixedSize(24,24);
-        connect(pEnablePortCheckBox, SIGNAL(checkedAtRow(int, bool)), this, SLOT(makePortAtRow(int,bool)));
-        pToolButtonsLayout->addWidget(pEnablePortCheckBox);
+        HideShowPortWidget *pWidget = new HideShowPortWidget(rData, mpModelObject, this);
+        connect(pWidget, SIGNAL(toggled(bool)), pValueWidget, SLOT(refreshValueTextStyle()));
+        this->setIndexWidget(model()->index(row,ShowPort), pWidget);
     }
-    pToolButtonsLayout->addStretch(2);
-    this->setIndexWidget(model()->index(row,Buttons), pTooButtons);
-
-    mVariableDescriptions.insert(row, rData);
+    else
+    {
+        pItem = new QTableWidgetItem();
+        pItem->setFlags(Qt::NoItemFlags);
+        setItem(row,ShowPort,pItem);
+    }
 }
 
-void VariableTableWidget::createSeparatorRow(const int row, const QString name)
+void VariableTableWidget::createSeparatorRow(const int row, const QString &rName, const VariameterTypEnumT variametertype)
 {
-    QTableWidgetItem *pItem;
-    pItem = new QTableWidgetItem(name);
+    insertRow(row);
+
+    QTableWidgetItem *pItem, *pItem2=0;
+    pItem = new QTableWidgetItem(rName);
     pItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     pItem->setBackgroundColor(Qt::lightGray);
-    insertRow(row);
-    setSpan(row,Name,1,NumCols);
-    setItem(row,Name,pItem);
+
+    if ( variametertype == InputVaraiable )
+    {
+        pItem2 = new QTableWidgetItem("Default Value");
+    }
+    else if ( variametertype == OutputVariable )
+    {
+        pItem2 = new QTableWidgetItem("Start Value");
+    }
+    else if ( variametertype == OtherVariable )
+    {
+        pItem2 = new QTableWidgetItem("Start Value");
+    }
+
+    if (pItem2)
+    {
+        pItem2->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        pItem2->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+        pItem2->setBackgroundColor(Qt::lightGray);
+
+        setSpan(row,Name,1,Value);
+        setItem(row,Name,pItem);
+        setSpan(row,Value,1,NumCols-Value);
+        setItem(row,Value,pItem2);
+    }
+    else
+    {
+        setSpan(row,Name,1,NumCols);
+        setItem(row,Name,pItem);
+    }
     resizeRowToContents(row);
 }
-
-void VariableTableWidget::selectValueTextColor(const int row)
-{
-    if(mpModelObject)
-    {
-        const QString name = item(row,Name)->text();
-        const QString value = item(row,Value)->text();
-        if( value == mpModelObject->getDefaultParameterValue(name))
-        {
-            item(row,Value)->setTextColor(Qt::gray);
-        }
-        else
-        {
-            item(row,Value)->setTextColor(Qt::black);
-        }
-    }
-}
-
-//void VariableTableWidget::setStartValue(const int row)
-//{
-
-//}
-
 
 TableWidgetTotalSize::TableWidgetTotalSize(QWidget *pParent) : QTableWidget(pParent)
 {
@@ -1027,50 +859,16 @@ void TableWidgetTotalSize::setMaxVisibleRows(const int maxRows)
 }
 
 
-RowAwareToolButton::RowAwareToolButton(const int row) : QToolButton()
-{
-    setRow(row);
-    connect(this, SIGNAL(clicked(bool)), this, SLOT(clickedSlot()));
-}
-
-void RowAwareToolButton::setRow(const int row)
-{
-    mRow = row;
-}
-
-
-void RowAwareToolButton::clickedSlot()
-{
-    emit triggeredAtRow(mRow);
-}
-
-RowAwareCheckBox::RowAwareCheckBox(const int row) : QCheckBox()
-{
-    setRow(row);
-    connect(this, SIGNAL(clicked(bool)), this, SLOT(checkedSlot(bool)));
-}
-
-void RowAwareCheckBox::setRow(const int row)
-{
-    mRow = row;
-}
-
-
-void RowAwareCheckBox::checkedSlot(const bool state)
-{
-    emit checkedAtRow(mRow, state);
-}
-
-
-PlotScaleSelectionWidget::PlotScaleSelectionWidget(const int row, const CoreVariameterDescription &rData, ModelObject *pModelObject)
+PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent) :
+    QWidget(pParent)
 {
     mVariableTypeName = rData.mName;
     mVariablePortDataName = rData.mPortName+"#"+rData.mName;
     mpModelObject = pModelObject;
 
     QHBoxLayout* pPlotScaleWidgetLayout = new QHBoxLayout(this);
-    pPlotScaleWidgetLayout->setContentsMargins(0,0,0,0);
-    pPlotScaleWidgetLayout->setSpacing(0);
+    //pPlotScaleWidgetLayout->setContentsMargins(0,0,0,0);
+    //pPlotScaleWidgetLayout->setSpacing(0);
     mpPlotScaleEdit = new QLineEdit();
     mpPlotScaleEdit->setAlignment(Qt::AlignCenter);
     mpPlotScaleEdit->setFrame(false);
@@ -1093,11 +891,11 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const int row, const CoreVari
         }
     }
 
-    RowAwareToolButton *pScaleSelectionButton =  new RowAwareToolButton(row);
+    QToolButton *pScaleSelectionButton =  new QToolButton(this);
     pScaleSelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
     pScaleSelectionButton->setToolTip("Select Unit Scaling");
     pScaleSelectionButton->setFixedSize(24,24);
-    connect(pScaleSelectionButton, SIGNAL(triggeredAtRow(int)), this, SLOT(createPlotScaleSelectionMenu()));
+    connect(pScaleSelectionButton, SIGNAL(clicked()), this, SLOT(createPlotScaleSelectionMenu()));
     pPlotScaleWidgetLayout->addWidget(pScaleSelectionButton);
 }
 
@@ -1152,4 +950,274 @@ void PlotScaleSelectionWidget::registerCustomScale()
 {
     //! @todo need to check if text is valid number
     mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", mpPlotScaleEdit->text());
+}
+
+
+ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent) :
+    QWidget(pParent)
+{
+    mpValueEdit = 0;
+    mpConditionalValueComboBox = 0;
+    mpModelObject = pModelObject;
+    mVariameterType = type;
+    mVariablePortName = rData.mPortName;
+
+    //! @todo maybe store the variamter data objects localy, and check for hiden info there, would also make it possible to check for changes without asking core all of the time /Peter
+    if (rData.mPortName.isEmpty())
+    {
+        mVariablePortDataName = rData.mName;
+    }
+    else
+    {
+        mVariablePortDataName = rData.mPortName+"#"+rData.mName;
+    }
+    mVariableDataType = rData.mDataType;
+
+    QHBoxLayout* pLayout = new QHBoxLayout(this);
+
+
+    if (!rData.mDataType.isEmpty())
+    {
+        QLabel *pTypeLetter = new QLabel(rData.mDataType[0], this);
+        pTypeLetter->setToolTip("DataType: "+rData.mDataType);
+        pLayout->addWidget(pTypeLetter);
+    }
+
+    // Only set the rest if a value exist (it does not for disabled startvalues)
+    QString value = mpModelObject->getParameterValue(mVariablePortDataName);
+    if (!value.isEmpty())
+    {
+        mpValueEdit = new QLineEdit(this);
+        mpValueEdit->setAlignment(Qt::AlignCenter);
+        mpValueEdit->setFrame(false);
+
+        if(mVariableDataType == "conditional")
+        {
+            mpConditionalValueComboBox = new QComboBox(this);
+            for(int i=0; i<rData.mConditions.size(); ++i)
+            {
+                mpConditionalValueComboBox->addItem(rData.mConditions[i]);
+            }
+            mpConditionalValueComboBox->setCurrentIndex(value.toInt());
+            pLayout->addWidget(mpConditionalValueComboBox);
+            connect(mpConditionalValueComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setConditionalValue(int)));
+            mpValueEdit->hide();
+        }
+        else
+        {
+            pLayout->addWidget(mpValueEdit);
+            mpValueEdit->setText(value);
+            connect(mpValueEdit, SIGNAL(editingFinished()), this, SLOT(setValue()));
+            refreshValueTextStyle();
+        }
+
+        QToolButton *pResetButton =  new QToolButton(this);
+        pResetButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
+        pResetButton->setToolTip("Reset Default Value");
+        pResetButton->setFixedSize(24,24);
+        connect(pResetButton, SIGNAL(clicked()), this, SLOT(resetDefault()));
+        pLayout->addWidget(pResetButton);
+
+        if(mVariableDataType != "conditional")
+        {
+            QToolButton *pSystemParameterToolButton = new QToolButton(this);
+            pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
+            pSystemParameterToolButton->setToolTip("Map To System Parameter");
+            pSystemParameterToolButton->setFixedSize(24,24);
+            connect(pSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(createSysParameterSelectionMenu()));
+            pLayout->addWidget(pSystemParameterToolButton);
+        }
+    }
+    else
+    {
+        QLabel *pLabel = new QLabel("Disabled",this);
+        pLabel->setStyleSheet("color: Gray;");
+        pLayout->addWidget(pLabel, 1, Qt::AlignCenter);
+    }
+}
+
+void ParameterValueSelectionWidget::setValueText(const QString &rText)
+{
+    if (mpValueEdit)
+    {
+        mpValueEdit->setText(rText);
+        if (mpConditionalValueComboBox)
+        {
+            mpConditionalValueComboBox->setCurrentIndex(rText.toInt());
+        }
+    }
+}
+
+QString ParameterValueSelectionWidget::getValue() const
+{
+    if (mpValueEdit)
+    {
+        return mpValueEdit->text();
+    }
+    else
+    {
+        return QString();
+    }
+}
+
+const QString &ParameterValueSelectionWidget::getDataType() const
+{
+    return mVariableDataType;
+}
+
+void ParameterValueSelectionWidget::setValue()
+{
+    //! @todo maybe do something here, would be nice if we could check if value is OK, or maybe we should even set the value here
+    refreshValueTextStyle();
+}
+
+void ParameterValueSelectionWidget::setConditionalValue(const int idx)
+{
+    mpValueEdit->setText(QString("%1").arg(idx));
+}
+
+void ParameterValueSelectionWidget::resetDefault()
+{
+    if(mpModelObject)
+    {
+        QString defaultText = mpModelObject->getDefaultParameterValue(mVariablePortDataName);
+        if(!defaultText.isEmpty())
+        {
+            mpValueEdit->setText(defaultText);
+            setDefaultValueTextStyle();
+
+            if (mpConditionalValueComboBox)
+            {
+                mpConditionalValueComboBox->setCurrentIndex(defaultText.toInt());
+            }
+        }
+    }
+}
+
+void ParameterValueSelectionWidget::createSysParameterSelectionMenu()
+{
+    QMenu menu;
+    QMap<QAction*, QString> actionParamMap;
+
+    QVector<CoreParameterData> paramDataVector;
+    mpModelObject->getParentContainerObject()->getParameters(paramDataVector);
+
+    for (int i=0; i<paramDataVector.size(); ++i)
+    {
+        QAction *tempAction = menu.addAction(paramDataVector[i].mName+" = "+paramDataVector[i].mValue);
+        tempAction->setIconVisibleInMenu(false);
+        actionParamMap.insert(tempAction, paramDataVector[i].mName);
+    }
+
+    if(!menu.isEmpty())
+    {
+        menu.addSeparator();
+    }
+    QAction *pAddAction = menu.addAction("Add System Parameter");
+
+    QCursor cursor;
+    QAction *selectedAction = menu.exec(cursor.pos());
+    if(selectedAction == pAddAction)
+    {
+        //! @todo maybe the gpSystemParametersWidget should not be global, should be one for each system
+        gpSystemParametersWidget->openAddParameterDialog();
+        return;
+    }
+    QString parNameString = actionParamMap.value(selectedAction);
+    if(!parNameString.isEmpty())
+    {
+        mpValueEdit->setText(parNameString);
+        refreshValueTextStyle();
+    }
+}
+
+void ParameterValueSelectionWidget::refreshValueTextStyle()
+{
+    if(mpModelObject)
+    {
+        if( mpValueEdit->text() == mpModelObject->getDefaultParameterValue(mVariablePortDataName) )
+        {
+            setDefaultValueTextStyle();
+        }
+        else
+        {
+            QString style("color: black; font: bold;");
+            decideBackgroundColor(style);
+            mpValueEdit->setStyleSheet(style);
+        }
+
+    }
+}
+
+void ParameterValueSelectionWidget::setDefaultValueTextStyle()
+{
+    if (mpValueEdit)
+    {
+        QString style("color: black; font: normal;");
+        decideBackgroundColor(style);
+        mpValueEdit->setStyleSheet(style);
+    }
+}
+
+void ParameterValueSelectionWidget::decideBackgroundColor(QString &rStyleString)
+{
+    if (mpValueEdit)
+    {
+        if (mVariameterType == VariableTableWidget::InputVaraiable)
+        {
+            Port *pPort = mpModelObject->getPort(mVariablePortName);
+            if (pPort && pPort->isConnected())
+            {
+                rStyleString.append(" color: gray; background: LightGray; font: italic;");
+                return;
+            }
+        }
+        rStyleString.append(" background: white;");
+    }
+}
+
+
+HideShowPortWidget::HideShowPortWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent) :
+    QWidget(pParent)
+{
+    mpModelObject = pModelObject;
+    mPortName = rData.mPortName;
+
+    QHBoxLayout *pLayout = new QHBoxLayout(this);
+    QCheckBox *pCheckBox = new QCheckBox(this);
+    pLayout->addWidget(pCheckBox,Qt::AlignRight);
+
+    pCheckBox->setToolTip("Show/hide port");
+    Port *pPort = mpModelObject->getPort(mPortName);
+    pCheckBox->setChecked((pPort && pPort->getPortAppearance()->mEnabled));
+    connect(pCheckBox, SIGNAL(toggled(bool)), this, SLOT(hideShowPort(bool)));
+    connect(pCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(toggled(bool)));
+}
+
+void HideShowPortWidget::hideShowPort(const bool doShow)
+{
+    if (doShow)
+    {
+        Port *pPort = mpModelObject->getPort(mPortName);
+        if (pPort)
+        {
+            pPort->setEnable(true);
+            mpModelObject->createRefreshExternalPort(mPortName);
+        }
+        else
+        {
+            pPort = mpModelObject->createRefreshExternalPort(mPortName);
+            if (pPort)
+            {
+                // Make sure that our new port has the "correct" angle
+                //! @todo this is incorrect, can not have hardcoded 180
+                pPort->setRotation(180);
+                pPort->setModified(true);
+            }
+        }
+    }
+    else
+    {
+        mpModelObject->hideExternalDynamicParameterPort(mPortName);
+    }
 }
