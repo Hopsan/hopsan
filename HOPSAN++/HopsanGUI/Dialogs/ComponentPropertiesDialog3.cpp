@@ -866,13 +866,14 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
     mVariablePortDataName = rData.mPortName+"#"+rData.mName;
     mpModelObject = pModelObject;
 
-    QHBoxLayout* pPlotScaleWidgetLayout = new QHBoxLayout(this);
-    //pPlotScaleWidgetLayout->setContentsMargins(0,0,0,0);
-    //pPlotScaleWidgetLayout->setSpacing(0);
+    QHBoxLayout* pLayout = new QHBoxLayout(this);
+    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
+    pLayout->setContentsMargins(margins);
+
     mpPlotScaleEdit = new QLineEdit();
     mpPlotScaleEdit->setAlignment(Qt::AlignCenter);
     mpPlotScaleEdit->setFrame(false);
-    pPlotScaleWidgetLayout->addWidget(mpPlotScaleEdit);
+    pLayout->addWidget(mpPlotScaleEdit);
     connect(mpPlotScaleEdit, SIGNAL(editingFinished()), this, SLOT(registerCustomScale()));
 
     UnitScale currCustom;
@@ -896,7 +897,7 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
     pScaleSelectionButton->setToolTip("Select Unit Scaling");
     pScaleSelectionButton->setFixedSize(24,24);
     connect(pScaleSelectionButton, SIGNAL(clicked()), this, SLOT(createPlotScaleSelectionMenu()));
-    pPlotScaleWidgetLayout->addWidget(pScaleSelectionButton);
+    pLayout->addWidget(pScaleSelectionButton);
 }
 
 void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
@@ -974,6 +975,8 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
     mVariableDataType = rData.mDataType;
 
     QHBoxLayout* pLayout = new QHBoxLayout(this);
+    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
+    pLayout->setContentsMargins(margins);
 
 
     if (!rData.mDataType.isEmpty())
@@ -1184,6 +1187,8 @@ HideShowPortWidget::HideShowPortWidget(const CoreVariameterDescription &rData, M
     mPortName = rData.mPortName;
 
     QHBoxLayout *pLayout = new QHBoxLayout(this);
+    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
+    pLayout->setContentsMargins(margins);
     QCheckBox *pCheckBox = new QCheckBox(this);
     pLayout->addWidget(pCheckBox,Qt::AlignRight);
 
