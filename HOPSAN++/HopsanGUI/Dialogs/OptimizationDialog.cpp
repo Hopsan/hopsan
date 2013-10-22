@@ -108,19 +108,11 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpEpsilonXLineEdit = new QLineEdit("0.0001", this);
     mpEpsilonXLineEdit->setValidator(new QDoubleValidator());
 
-    mpMultiThreadedCheckBox = new QCheckBox("Multi-threaded optimization", this);
-    mpMultiThreadedCheckBox->setChecked(gConfig.getUseMulticore());
+    mpPlotBestWorstCheckBox = new QCheckBox("Plot best and worst objective values", this);
+    mpPlotBestWorstCheckBox->setChecked(false);
 
-    mpThreadsLabel = new QLabel("Number of threads: ");
-    mpThreadsSpinBox = new QSpinBox(this);
-    mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
-    mpThreadsSpinBox->setRange(1,1000000000);
-    mpThreadsSpinBox->setSingleStep(1);
-    mpThreadsSpinBox->setSingleStep(1);
-    mpThreadsLabel->setEnabled(mpMultiThreadedCheckBox->isChecked());
-    mpThreadsSpinBox->setEnabled(mpMultiThreadedCheckBox->isChecked());
-    connect(mpMultiThreadedCheckBox, SIGNAL(toggled(bool)), mpThreadsLabel, SLOT(setEnabled(bool)));
-    connect(mpMultiThreadedCheckBox, SIGNAL(toggled(bool)), mpThreadsSpinBox, SLOT(setEnabled(bool)));
+    mpPlotParticlesCheckBox = new QCheckBox("Plot particles", this);
+    mpPlotParticlesCheckBox->setChecked(false);
 
     mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
     mpPlottingCheckBox->setChecked(true);
@@ -154,10 +146,9 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpSettingsLayout->addWidget(mpEpsilonFLineEdit,     7, 1);
     mpSettingsLayout->addWidget(mpEpsilonXLabel,        8, 0);
     mpSettingsLayout->addWidget(mpEpsilonXLineEdit,     8, 1);
-    mpSettingsLayout->addWidget(mpMultiThreadedCheckBox,9, 0);
-    mpSettingsLayout->addWidget(mpThreadsLabel,         10, 0);
-    mpSettingsLayout->addWidget(mpThreadsSpinBox,       10, 1);
-    mpSettingsLayout->addWidget(mpPlottingCheckBox,     11, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpPlottingCheckBox,     9, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpPlotBestWorstCheckBox,10, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpPlotParticlesCheckBox,11, 0, 1, 2);
     mpSettingsLayout->addWidget(mpExport2CSVBox,        12, 0, 1, 2);
     mpSettingsLayout->addWidget(new QWidget(this),      13, 0, 1, 2);    //Dummy widget for stretching the layout
     mpSettingsLayout->setRowStretch(0, 0);
@@ -690,11 +681,22 @@ void OptimizationDialog::generateComplexScript()
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
 
+    QString extraPlots;
+    if(mpPlotParticlesCheckBox->isChecked())
+    {
+        extraPlots.append("opt set plotpoints on\n");
+    }
+    if(mpPlotBestWorstCheckBox->isChecked())
+    {
+        extraPlots.append("opt set plotbestworst on\n");
+    }
+
 
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<objpars>>>", objPars);
     templateCode.replace("<<<plotvars>>>", plotVars);
+    templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
     templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
@@ -782,14 +784,24 @@ void OptimizationDialog::generateParticleSwarmScript()
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
 
+    QString extraPlots;
+    if(mpPlotParticlesCheckBox->isChecked())
+    {
+        extraPlots.append("opt set plotpoints on\n");
+    }
+    if(mpPlotBestWorstCheckBox->isChecked())
+    {
+        extraPlots.append("opt set plotbestworst on\n");
+    }
 
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<objpars>>>", objPars);
     templateCode.replace("<<<plotvars>>>", plotVars);
+    templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
-    templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
+    templateCode.replace("<<<npoints>>>", QString::number(mpParticlesSpinBox->value()));
     templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
     templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
     templateCode.replace("<<<omega>>>", mpOmegaLineEdit->text());

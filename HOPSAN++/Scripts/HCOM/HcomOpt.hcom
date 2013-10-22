@@ -19,11 +19,9 @@ define evalall
     repeat
 enddefine
 
-define eval
+define setpars
     chpa GainP.k::Value par(evalId,0)
     chpa GainI.k::Value par(evalId,1)
-    sim
-    call obj    
 enddefine
 
 

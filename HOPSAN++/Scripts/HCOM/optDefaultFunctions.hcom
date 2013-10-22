@@ -2,7 +2,9 @@
 define evalworst
     opt worst
     evalId = ans
-    call eval
+    call setpars
+    sim
+    call obj
 enddefine
 
 
@@ -11,7 +13,9 @@ define evalall
     i=0
     while (i<npoints)
         evalId = i
-        call eval
+        call setpars
+        sim
+        call obj
         i=i+1
     repeat
 enddefine

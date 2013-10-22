@@ -23,6 +23,7 @@
 //!
 //HopsanGUI includes
 #include "common.h"
+#include "Configuration.h"
 #include "OptimizationHandler.h"
 #include "HcomHandler.h"
 #include "ModelHandler.h"
@@ -429,7 +430,14 @@ double OptimizationHandler::optComplexMaxpardiff()
 
 void OptimizationHandler::optParticleInit()
 {
-    gpModelHandler->setCurrentModel(mpOptModel);
+    if(gConfig.getUseMulticore())
+    {
+        gpModelHandler->setCurrentModel(mOptModelPtrs.first());
+    }
+    else
+    {
+        gpModelHandler->setCurrentModel(mpOptModel);
+    }
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
@@ -531,6 +539,15 @@ void OptimizationHandler::optParticleRun()
     mOptBestObj = mOptObjectives[mOptBestId];
     mOptBestPoint = mOptParameters[mOptBestId];
 
+    QStringList output;
+    for(int p=0; p<mOptNumPoints; ++p)
+    {
+        output.append("Particle    "+QString::number(p)+":\n");
+        output[p].append("Position: \t\t\tVelocity: \t\t\tLocal best: \t\t\tGlobal best:\n");
+
+    }
+    bool printOutput = true;
+
     int i=0;
     int percent=-1;
     for(; i<mOptMaxEvals && !mpHcomHandler->isAborted(); ++i)
@@ -538,8 +555,42 @@ void OptimizationHandler::optParticleRun()
         qApp->processEvents();
         if(mpHcomHandler->isAborted())
         {
+            qDebug() << output;
             mpConsole->print("Optimization aborted.");
             return;
+        }
+
+        if(printOutput)
+        {
+            for(int p=0; p<mOptNumPoints; ++p)
+            {
+                QString pointInfo;
+                for(int i=0; i<mOptParameters[p].size(); ++i)
+                {
+                    pointInfo.append(QString::number(mOptParameters[p][i])+",");
+                }
+                pointInfo.chop(1);
+                pointInfo.append("\t\t");
+                for(int i=0; i<mOptVelocities[p].size(); ++i)
+                {
+                    pointInfo.append(QString::number(mOptVelocities[p][i])+",");
+                }
+                pointInfo.chop(1);
+                pointInfo.append("\t\t");
+                for(int i=0; i<mOptBestKnowns[p].size(); ++i)
+                {
+                    pointInfo.append(QString::number(mOptBestKnowns[p][i])+",");
+                }
+                pointInfo.chop(1);
+                pointInfo.append("\t\t");
+                for(int i=0; i<mOptBestPoint.size(); ++i)
+                {
+                    pointInfo.append(QString::number(mOptBestPoint[i])+",");
+                }
+                pointInfo.chop(1);
+                pointInfo.append("\n");
+                output[p].append(pointInfo);
+            }
         }
 
         //Print progress %
@@ -575,7 +626,27 @@ void OptimizationHandler::optParticleRun()
         }
 
         //Evaluate objevtive values
-        mpHcomHandler->executeCommand("call evalall");
+        if(gConfig.getUseMulticore())
+        {
+            for(int i=0; i<mOptNumPoints; ++i)
+            {
+                gpModelHandler->setCurrentModel(mOptModelPtrs[i]);
+                mpHcomHandler->executeCommand("evalId = "+QString::number(i));
+                mpHcomHandler->executeCommand("call setpars");
+            }
+            gpModelHandler->simulateMultipleModels_blocking(mOptModelPtrs);
+            for(int i=0; i<mOptNumPoints; ++i)
+            {
+                gpModelHandler->setCurrentModel(mOptModelPtrs[i]);
+                mpHcomHandler->executeCommand("evalId = "+QString::number(i));
+                mpHcomHandler->executeCommand("call obj");
+            }
+            gpModelHandler->setCurrentModel(mOptModelPtrs.first());
+        }
+        else
+        {
+            mpHcomHandler->executeCommand("call evalall");
+        }
         if(mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
             mpHcomHandler->executeCommand("echo on");
@@ -610,6 +681,8 @@ void OptimizationHandler::optParticleRun()
         //optPlotPoints();
     }
 
+    qDebug() << output;
+
     mpHcomHandler->executeCommand("echo on");
 
     switch(mOptConvergenceReason)
@@ -625,13 +698,29 @@ void OptimizationHandler::optParticleRun()
         break;
     }
 
+    mpConsole->print("\nBest point:");
+    for(int i=0; i<mOptNumParameters; ++i)
+    {
+        mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
+    }
+
 
     ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget());
-    pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
+    //pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
     gpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
-    gpModelHandler->closeModel(mpOptModel);
+    if(gConfig.getUseMulticore())
+    {
+        for(int i=0; i<mOptNumPoints; ++i)
+        {
+            gpModelHandler->closeModel(mOptModelPtrs[i]);
+        }
+    }
+    else
+    {
+        gpModelHandler->closeModel(mpOptModel);
+    }
 
     //Reset original model
     gpModelHandler->setCurrentModel(pOrgModel);
@@ -641,9 +730,9 @@ void OptimizationHandler::optPlotPoints()
 {
     if(!mOptPlotPoints) { return; }
 
-    if(mOptNumParameters != 2)
+    if(mOptNumParameters < 2)
     {
-        mpConsole->printErrorMessage("Points can only be plotted with two parameters.");
+        mpConsole->printErrorMessage("Plotting points requires at least two parameters.");
         return;
     }
 
@@ -692,8 +781,6 @@ void OptimizationHandler::optPlotPoints()
                 pTab->getCurves(FirstPlot).at(c)->setLineSymbol("XCross");
             }
         }
-        pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mOptParMin[0], mOptParMax[0]);
-        pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mOptParMin[1], mOptParMax[1]);
         pTab->update();
     }
 }

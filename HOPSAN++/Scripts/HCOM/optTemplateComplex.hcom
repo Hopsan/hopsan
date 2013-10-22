@@ -1,10 +1,8 @@
 # Auto-generated HCOM script for complex algorithm optimization
 
 #Evaluate function
-define eval
+define setpars
 <<<setpars>>>
-    sim
-    call obj    
 enddefine
 
 
@@ -30,6 +28,7 @@ opt init complex double
 
 sim
 chpv <<<plotvars>>>
+<<<extraplots>>>
 
 #Set min and max values for parameters
 <<<setminmax>>>

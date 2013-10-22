@@ -108,10 +108,9 @@ private:
     QLineEdit *mpEpsilonFLineEdit;
     QLabel *mpEpsilonXLabel;
     QLineEdit *mpEpsilonXLineEdit;
-    QCheckBox *mpMultiThreadedCheckBox;
-    QLabel *mpThreadsLabel;
-    QSpinBox *mpThreadsSpinBox;
+    QCheckBox *mpPlotParticlesCheckBox;
     QCheckBox *mpPlottingCheckBox;
+    QCheckBox *mpPlotBestWorstCheckBox;
     QCheckBox *mpExport2CSVBox;
 
     //Parameters page

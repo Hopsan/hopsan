@@ -726,3 +726,55 @@ bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
     return false;
 }
 
+
+
+bool ModelHandler::simulateMultipleModels_nonblocking(QVector<ModelWidget*> models)
+{
+    //All systems will use start time, stop time and time step from this system
+    SystemContainer *pMainSystem = getCurrentTopLevelSystem();
+
+        //Setup simulation parameters
+    double startTime = getCurrentModel()->getStartTime().toDouble();
+    double stopTime = getCurrentModel()->getStopTime().toDouble();
+    size_t nSamples = pMainSystem->getNumberOfLogSamples();
+    double logStartT = pMainSystem->getLogStartTime();
+
+    QVector<SystemContainer*> systemsVector;
+    for(int i=0; i<models.size(); ++i)
+    {
+        systemsVector.append(models[i]->getTopLevelSystemContainer());
+    }
+
+    mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
+    mpSimulationThreadHandler->initSimulateFinalize(systemsVector);
+
+    //! @todo fix return code (maybe remove)
+    return true;
+}
+
+
+bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models)
+{
+    //All systems will use start time, stop time and time step from this system
+    SystemContainer *pMainSystem = getCurrentTopLevelSystem();
+
+        //Setup simulation parameters
+    double startTime = getCurrentModel()->getStartTime().toDouble();
+    double stopTime = getCurrentModel()->getStopTime().toDouble();
+    size_t nSamples = pMainSystem->getNumberOfLogSamples();
+    double logStartT = pMainSystem->getLogStartTime();
+
+    QVector<SystemContainer*> systemsVector;
+    for(int i=0; i<models.size(); ++i)
+    {
+        systemsVector.append(models[i]->getTopLevelSystemContainer());
+    }
+
+    mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
+    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+    mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector);
+
+    //! @todo fix return code (maybe remove)
+    return true;
+}
+

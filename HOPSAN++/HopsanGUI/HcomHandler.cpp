@@ -2419,11 +2419,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         QString savePath = gDesktopHandler.getDataPath()+"/optimization/"+name+".hmf";
         gpModelHandler->getCurrentModel()->saveTo(savePath);
         gpModelHandler->getCurrentTopLevelSystem()->setAppearanceDataBasePath(appearanceDataBasePath);
-        mpOptHandler->mpOptModel = gpModelHandler->loadModel(savePath, true, true);
 
         bool ok;
         if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Complex)
         {
+            mpOptHandler->mpOptModel = gpModelHandler->loadModel(savePath, true, true);
+            gpModelHandler->setCurrentModel(mpOptHandler->mpOptModel);
             mpOptHandler->mOptMulticore=false;
             mpOptHandler->mOptNumPoints = getNumber("npoints", &ok);
             mpOptHandler->mOptNumParameters = getNumber("nparams", &ok);
@@ -2441,8 +2442,21 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(mpOptHandler->mOptAlgorithm == OptimizationHandler::ParticleSwarm)
         {
-            mpOptHandler->mOptMulticore=false;
             mpOptHandler->mOptNumPoints = getNumber("npoints", &ok);
+            if(gConfig.getUseMulticore())
+            {
+                for(int i=0; i<mpOptHandler->mOptNumPoints; ++i)
+                {
+                    mpOptHandler->mOptModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+                }
+                gpModelHandler->setCurrentModel(mpOptHandler->mOptModelPtrs.first());
+            }
+            else
+            {
+                mpOptHandler->mpOptModel = gpModelHandler->loadModel(savePath, true, true);
+                gpModelHandler->setCurrentModel(mpOptHandler->mpOptModel);
+            }
+            mpOptHandler->mOptMulticore=false;
             mpOptHandler->mOptNumParameters = getNumber("nparams", &ok);
             mpOptHandler->mOptParameters.resize(mpOptHandler->mOptNumPoints);
             mpOptHandler->mOptVelocities.resize(mpOptHandler->mOptNumPoints);
@@ -3134,16 +3148,15 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
     QString funcName="";
     QStringList funcCommands;
 
-    qDebug() << "Number of commands to run: " << lines.size();
-
     for(int l=0; l<lines.size(); ++l)
     {
         qApp->processEvents();
         if(mAborted)
         {
             HCOMPRINT("Script aborted.");
-            mAborted = false;
+            //mAborted = false;
             *abort=true;
+            return "";
         }
 
         while(lines[l].startsWith(" "))
@@ -3212,7 +3225,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
                 if(mAborted)
                 {
                     HCOMPRINT("Script aborted.");
-                    mAborted = false;
+                    //mAborted = false;
                     *abort=true;
                     return "";
                 }
@@ -3238,12 +3251,9 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
         }
         else if(lines[l].startsWith("if"))        //Handle if statements
         {
-            qDebug() << "Argument line: " << lines[l];
             QString argument = lines[l].section("(",1);
-            qDebug() << "Pre-argument: " << argument;
             argument=argument.trimmed();
             argument.chop(1);
-            qDebug() << "Argument: " << argument;
             QStringList ifCode;
             QStringList elseCode;
             bool inElse=false;
@@ -4128,7 +4138,6 @@ double _funcAver(QString str, bool &ok)
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        qDebug() << "evalStr = " << evalStr;
         pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
     }
 

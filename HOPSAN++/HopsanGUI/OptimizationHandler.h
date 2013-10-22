@@ -91,6 +91,7 @@ private:
     bool mOptPlotBestWorst;
     bool mOptPlotVariables;
     ModelWidget *mpOptModel;
+    QVector<ModelWidget *> mOptModelPtrs;
 };
 
 #endif // OPTIMIZATIONHANDLER_H
