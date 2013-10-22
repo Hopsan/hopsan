@@ -72,7 +72,7 @@ public:
     QStringList getRecentModels();
     QStringList getRecentGeneratorModels();
     QStringList getLastSessionModels();
-    bool getAlwaysLoadLastSession();
+    bool getAlwaysLoadLastSession() const;
 
     QString getLastScriptFile();
     QString getInitScript();

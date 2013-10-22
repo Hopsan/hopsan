@@ -332,8 +332,7 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     mPLOExportVersion = parseDomIntegerNode(rDomElement.firstChildElement("ploexportversion"), mPLOExportVersion);
 
     mShowHiddenNodeDataVariables = parseDomBooleanNode(rDomElement.firstChildElement("showhiddennodedatavariables"), mShowHiddenNodeDataVariables);
-    //! @todo something is strange with the variable name and the meening of this variable (showwelcomedialog != mAlwaysLoadLastSession)
-    mAlwaysLoadLastSession = parseDomBooleanNode(rDomElement.firstChildElement("showwelcomedialog"), mAlwaysLoadLastSession);
+    mAlwaysLoadLastSession = parseDomBooleanNode(rDomElement.firstChildElement("alwaysloadlastsession"), mAlwaysLoadLastSession);
     mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement("showpopuphelp"), mShowPopupHelp);
     mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement("nativestylesheet"), mUseNativeStyleSheet);
     mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement("antialiasing"), mAntiAliasing);
@@ -569,8 +568,8 @@ int Configuration::getLibraryStyle()
 }
 
 
-//! @brief Returns whether or not the welcome dialog shall be shown
-bool Configuration::getAlwaysLoadLastSession()
+//! @brief Returns whether or not to load the last session
+bool Configuration::getAlwaysLoadLastSession() const
 {
     return this->mAlwaysLoadLastSession;
 }

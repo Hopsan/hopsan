@@ -2,7 +2,7 @@
 <hopsandefaults>
     <settings>
         <librarystyle>0</librarystyle>
-        <showwelcomedialog>true</showwelcomedialog>
+        <alwaysloadlastsession>false</alwaysloadlastsession>
         <showpopuphelp>true</showpopuphelp>
         <nativestylesheet>false</nativestylesheet>
         <backgroundcolor>#ffffff</backgroundcolor>
