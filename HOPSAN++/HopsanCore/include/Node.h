@@ -38,6 +38,9 @@ class ConnectionAssistant;
 class HopsanEssentials;
 
 enum NodeDataVariableTypeEnumT {DefaultType, IntensityType, FlowType, TLMType, HiddenType};
+
+DLLIMPORTEXPORT HString nodeDataVariableTypeAsString(const NodeDataVariableTypeEnumT type);
+
 class NodeDataDescription
 {
 public:

@@ -143,20 +143,19 @@ bool VariableTableWidget::cleanAndVerifyParameterValue(QString &rValue, const QS
 bool VariableTableWidget::setAliasName(const int row)
 {
     // Skip separator rows
-    if (columnSpan(row,0)>1)
+    if (columnSpan(row,0)>2)
     {
         return true;
     }
 
     QString alias = item(row,VariableTableWidget::Alias)->text();
     //! @todo since alias=empty means unregister we can not skip it, but there should be some check if a variable has changed, so that we do not need to go thourgh set for all variables every freeking time
-    QString name = item(row,VariableTableWidget::Name)->text();
+    QString name = item(row,VariableTableWidget::Name)->toolTip();
     QStringList parts = name.split("#");
     if (parts.size() == 2)
     {
         mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName(), parts[0], parts[1], alias);
     }
-    //! @todo check if OK
     return true;
 }
 
@@ -536,7 +535,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         ++r;
     }
 
-    // Now fetch and write the variables
+    // Now fetch and write the input variables
     QVector<CoreVariameterDescription> variameters;
     mpModelObject->getVariameterDescriptions(variameters);
 
@@ -578,7 +577,8 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     QString currPortName;
     for (int i=0; i<variameters.size(); ++i)
     {
-        if (variameters[i].mVariameterType == OtherVariable)
+        if ( (variameters[i].mVariameterType == OtherVariable) &&
+             ( gConfig.getShowHiddenNodeDataVariables() || (variameters[i].mVariabelType != "Hidden") ) )
         {
             // Extract current port name to see if we should make a separator
             QString portName = variameters[i].mPortName;
@@ -640,8 +640,8 @@ bool VariableTableWidget::setStartValues()
         }
 
         // Extract name and value from row
-        QString name = item(row,VariableTableWidget::Name)->text();
-        QString value = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getValue();
+        QString name = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getName();
+        QString value = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getValueText();
 
         // If startvalue is empty (disabled, then we should not atempt to change it)
         if (value.isEmpty())
@@ -707,22 +707,38 @@ bool VariableTableWidget::setAliasNames()
 
 void VariableTableWidget::createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype)
 {
-    QString fullName;
+    QString fullName, name;
     QTableWidgetItem *pItem;
     insertRow(row);
 
     //! @todo maybe store the variamter data objects localy, and check for hiden info there, would also make it possible to check for changes without asking core all of the time /Peter
-    if (rData.mPortName.isEmpty())
+
+    if (variametertype == Constant)
     {
         fullName = rData.mName;
+        name = rData.mName;
     }
-    else
+    else if (variametertype == OtherVariable)
+    {
+        if (rData.mPortName.isEmpty())
+        {
+            fullName = rData.mName;
+        }
+        else
+        {
+            fullName = rData.mPortName+"#"+rData.mName;
+        }
+        name = rData.mName;
+    }
+    else //For input and output variables
     {
         fullName = rData.mPortName+"#"+rData.mName;
+        name = rData.mPortName;
     }
 
     // Set the name field
-    pItem = new QTableWidgetItem(fullName);
+    pItem = new QTableWidgetItem(name);
+    pItem->setToolTip(fullName);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Name,pItem);
@@ -1051,7 +1067,7 @@ void ParameterValueSelectionWidget::setValueText(const QString &rText)
     }
 }
 
-QString ParameterValueSelectionWidget::getValue() const
+QString ParameterValueSelectionWidget::getValueText() const
 {
     if (mpValueEdit)
     {
@@ -1066,6 +1082,11 @@ QString ParameterValueSelectionWidget::getValue() const
 const QString &ParameterValueSelectionWidget::getDataType() const
 {
     return mVariableDataType;
+}
+
+const QString &ParameterValueSelectionWidget::getName() const
+{
+    return mVariablePortDataName;
 }
 
 void ParameterValueSelectionWidget::setValue()

@@ -306,16 +306,19 @@ void Port::openRightClickMenu(QPoint screenPos)
     {
         if (variameterDescriptions[i].mPortName == this->getName())
         {
-            QAction *pAliasAction;
-            if (variameterDescriptions[i].mAlias.isEmpty())
+            if (gConfig.getShowHiddenNodeDataVariables() || (variameterDescriptions[i].mVariabelType != "Hidden"))
             {
-                pAliasAction = pAliasMenu->addAction(variameterDescriptions[i].mName);
+                QAction *pAliasAction;
+                if (variameterDescriptions[i].mAlias.isEmpty())
+                {
+                    pAliasAction = pAliasMenu->addAction(variameterDescriptions[i].mName);
+                }
+                else
+                {
+                    pAliasAction = pAliasMenu->addAction(variameterDescriptions[i].mName+" = "+variameterDescriptions[i].mAlias);
+                }
+                aliasActions.insert(pAliasAction,i);
             }
-            else
-            {
-                pAliasAction = pAliasMenu->addAction(variameterDescriptions[i].mName+" = "+variameterDescriptions[i].mAlias);
-            }
-            aliasActions.insert(pAliasAction,i);
         }
     }
     menu.addMenu(pAliasMenu);

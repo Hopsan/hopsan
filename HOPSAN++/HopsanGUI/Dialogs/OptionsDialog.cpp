@@ -157,8 +157,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpGenerationLimitSpinBox->setSingleStep(1);
 
     mpAutoLimitGenerationsCheckBox = new QCheckBox("Autoremove last generation when limit is reached");
-
     mpCacheLogDataCeckBox = new QCheckBox("Cache log data on hard drive");
+    mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden NodeData variables");
 
     //! @todo these should not be harcoded, should be build automatically depending on the contents from gConfigure loaded from have subtags in XML
     QLabel *pPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
@@ -199,6 +199,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     ++r;
     mpPlottingLayout->addWidget(pGenerationLimitLabel,             r, 0, 1, 3);
     mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,          r, 2, 1, 1);
+    ++r;
+    mpPlottingLayout->addWidget(mpShowHiddenNodeDataVarCheckBox,   r, 0, 1, 3);
     ++r;
     mpPlottingLayout->addWidget(pPressureUnitLabel,                r, 0);
     mpPlottingLayout->addWidget(mpPressureUnitComboBox,            r, 1);
@@ -357,6 +359,7 @@ void OptionsDialog::updateValues()
     gConfig.setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
     gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
     gConfig.setAutoLimitLogDataGenerations(mpAutoLimitGenerationsCheckBox->isChecked());
+    gConfig.setShowHiddenNodeDataVariables(mpShowHiddenNodeDataVarCheckBox->isChecked());
     gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
     gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
@@ -445,6 +448,7 @@ void OptionsDialog::show()
     mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
     mpGenerationLimitSpinBox->setValue(gConfig.getGenerationLimit());
     mpAutoLimitGenerationsCheckBox->setChecked(gConfig.getAutoLimitLogDataGenerations());
+    mpShowHiddenNodeDataVarCheckBox->setChecked(gConfig.getShowHiddenNodeDataVariables());
     mpCacheLogDataCeckBox->setChecked(gConfig.getCacheLogData());
     updateCustomUnits();
 

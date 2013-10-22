@@ -124,14 +124,13 @@ public:
     QString mType;
     QString mUnit;
     QString mDescription;
+    QString mNodeDataVariableType;
 };
 
 class CoreVariameterDescription
 {
 public:
     CoreVariameterDescription() {}
-//    CoreVariameterData(const QString name, const QString type, const QString unit="", const QString desc="")
-//        : mName(name), mDataType(type), mUnit(unit), mDescription(desc){}
     QString mName;
     QString mShortName;
     QString mPortName;

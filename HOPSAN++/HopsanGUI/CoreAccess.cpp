@@ -583,8 +583,7 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
             data.mAlias = pDescs->at(i).mAlias.c_str();
             data.mVariabelId = pDescs->at(i).mVariableId;
             data.mVariameterType = pDescs->at(i).mVariameterType;
-            //data.mVariabelType =
-            //! @todo type
+            data.mVariabelType = hopsan::nodeDataVariableTypeAsString(pDescs->at(i).mVarType).c_str();
             rVariameterDescriptions.push_back(data);
         }
     }
@@ -1098,6 +1097,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
                 data.mUnit = pDescs->at(i).unit.c_str();
                 data.mAlias = pPort->getVariableAlias(i).c_str();
                 data.mDescription = pDescs->at(i).description.c_str();
+                data.mNodeDataVariableType = nodeDataVariableTypeAsString(pDescs->at(i).varType).c_str();
                 rVarDescriptions.push_back(data);
             }
         }

@@ -55,7 +55,7 @@ public:
     bool getSnapping();
 
     bool getUseMulticore();
-    size_t getNumberOfThreads();
+    int getNumberOfThreads();
 
     int getLibraryStyle();
     bool getUseNativeStyleSheet();
@@ -83,6 +83,7 @@ public:
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     QStringList getPhysicalQuantitiesForUnit(const QString &rUnit);
     int getPLOExportVersion() const;
+    bool getShowHiddenNodeDataVariables() const;
 
     bool getGroupMessagesByTag();
     QStringList getTerminalHistory();
@@ -136,6 +137,7 @@ public:
     void setGenerationLimit(int value);
     void setCacheLogData(const bool value);
     void setAutoLimitLogDataGenerations(const bool value);
+    void setShowHiddenNodeDataVariables(const bool value);
     void setLoadModelDir(QString value);
     void setModelGfxDir(QString value);
     void setPlotDataDir(QString value);
@@ -168,7 +170,7 @@ private:
     bool mUseNativeStyleSheet;
     bool mInvertWheel;
     bool mUseMulticore;
-    size_t mNumberOfThreads;
+    int mNumberOfThreads;
     bool mToggleNamesButtonCheckedLastSession;
     bool mTogglePortsButtonCheckedLastSession;
     int mProgressBarStep;
@@ -208,6 +210,7 @@ private:
     QString mFmuExportDir;
     QString mLabViewExportDir;
     int mPLOExportVersion;
+    bool mShowHiddenNodeDataVariables;
 
     int mParallelAlgorighm;
 

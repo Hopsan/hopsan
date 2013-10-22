@@ -63,9 +63,9 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "invertwheel", mInvertWheel);
     appendDomBooleanNode(settings, "snapping", mSnapping);
     appendDomBooleanNode(settings, "progressbar", mEnableProgressBar);
-    appendDomValueNode(settings, "progressbar_step", mProgressBarStep);
+    appendDomIntegerNode(settings, "progressbar_step", mProgressBarStep);
     appendDomBooleanNode(settings, "multicore", mUseMulticore);
-    appendDomValueNode(settings, "numberofthreads", mNumberOfThreads);
+    appendDomIntegerNode(settings, "numberofthreads", mNumberOfThreads);
     appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->mpToggleNamesAction->isChecked());
     appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
     appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
@@ -86,7 +86,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "fmuexportdir", mFmuExportDir);
     appendDomTextNode(settings, "labviewexportdir", mLabViewExportDir);
     appendDomIntegerNode(settings, "ploexportversion", mPLOExportVersion);
-
+    appendDomBooleanNode(settings, "showhiddennodedatavariables", mShowHiddenNodeDataVariables);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -331,39 +331,27 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     mLibraryStyle = parseDomIntegerNode(rDomElement.firstChildElement("librarystyle"), mLibraryStyle);
     mPLOExportVersion = parseDomIntegerNode(rDomElement.firstChildElement("ploexportversion"), mPLOExportVersion);
 
-    if(!rDomElement.firstChildElement("alwaysloadlastsession").isNull())
-        mAlwaysLoadLastSession = parseDomBooleanNode(rDomElement.firstChildElement("showwelcomedialog"));
-    if(!rDomElement.firstChildElement("showpopuphelp").isNull())
-        mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement("showpopuphelp"));
-    if(!rDomElement.firstChildElement("nativestylesheet").isNull())
-        mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement("nativestylesheet"));
+    mShowHiddenNodeDataVariables = parseDomBooleanNode(rDomElement.firstChildElement("showhiddennodedatavariables"), mShowHiddenNodeDataVariables);
+    //! @todo something is strange with the variable name and the meening of this variable (showwelcomedialog != mAlwaysLoadLastSession)
+    mAlwaysLoadLastSession = parseDomBooleanNode(rDomElement.firstChildElement("showwelcomedialog"), mAlwaysLoadLastSession);
+    mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement("showpopuphelp"), mShowPopupHelp);
+    mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement("nativestylesheet"), mUseNativeStyleSheet);
+    mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement("antialiasing"), mAntiAliasing);
+    mInvertWheel = parseDomBooleanNode(rDomElement.firstChildElement("invertwheel"), mInvertWheel);
+    mSnapping = parseDomBooleanNode(rDomElement.firstChildElement("snapping"), mSnapping);
+    mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement("progressbar"), mEnableProgressBar);
+    mProgressBarStep = parseDomIntegerNode(rDomElement.firstChildElement("progressbar_step"), mProgressBarStep);
+    mUseMulticore = parseDomBooleanNode(rDomElement.firstChildElement("multicore"), mUseMulticore);
+    mNumberOfThreads = parseDomIntegerNode(rDomElement.firstChildElement("numberofthreads"), mNumberOfThreads);
+    mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("togglenamesbuttonchecked"), mToggleNamesButtonCheckedLastSession);
+    mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("toggleportsbuttonchecked"), mTogglePortsButtonCheckedLastSession);
+    mGroupMessagesByTag = parseDomBooleanNode(rDomElement.firstChildElement("groupmessagesbytag"), mGroupMessagesByTag);
+    mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"), mGenerationLimit);
+    mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement("cachelogdata"), mCacheLogData);
+    mAutoLimitLogDataGenerations = parseDomBooleanNode(rDomElement.firstChildElement("autolimitgenerations"), mAutoLimitLogDataGenerations);
+
     if(!rDomElement.firstChildElement("backgroundcolor").isNull())
         mBackgroundColor.setNamedColor(rDomElement.firstChildElement("backgroundcolor").text());
-    if(!rDomElement.firstChildElement("antialiasing").isNull())
-        mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement("antialiasing"));
-    if(!rDomElement.firstChildElement("invertwheel").isNull())
-        mInvertWheel = parseDomBooleanNode(rDomElement.firstChildElement("invertwheel"));
-    if(!rDomElement.firstChildElement("snapping").isNull())
-        mSnapping = parseDomBooleanNode(rDomElement.firstChildElement("snapping"));
-    if(!rDomElement.firstChildElement("progressbar").isNull())
-        mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement("progressbar"));
-    if(!rDomElement.firstChildElement("progressbar_step").isNull())
-        mProgressBarStep = parseDomValueNode(rDomElement.firstChildElement("progressbar_step"));
-    if(!rDomElement.firstChildElement("multicore").isNull())
-        mUseMulticore = parseDomBooleanNode(rDomElement.firstChildElement("multicore"));
-    if(!rDomElement.firstChildElement("numberofthreads").isNull())
-        mNumberOfThreads = parseDomValueNode(rDomElement.firstChildElement("numberofthreads"));
-    if(!rDomElement.firstChildElement("togglenamesbuttonchecked").isNull())
-        mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("togglenamesbuttonchecked"));
-    if(!rDomElement.firstChildElement("toggleportsbuttonchecked").isNull())
-        mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("toggleportsbuttonchecked"));
-    if(!rDomElement.firstChildElement("groupmessagesbytag").isNull())
-        mGroupMessagesByTag = parseDomBooleanNode(rDomElement.firstChildElement("groupmessagesbytag"));
-    mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"), mGenerationLimit);
-    if(!rDomElement.firstChildElement("cachelogdata").isNull())
-        mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement("cachelogdata"));
-    if(!rDomElement.firstChildElement("autolimitgenerations").isNull())
-        mAutoLimitLogDataGenerations = parseDomBooleanNode(rDomElement.firstChildElement("autolimitgenerations"));
     if(!rDomElement.firstChildElement("loadmodeldir").isNull())
         mLoadModelDir = rDomElement.firstChildElement("loadmodeldir").text();
     if(!rDomElement.firstChildElement("modelgfxdir").isNull())
@@ -617,7 +605,7 @@ bool Configuration::getUseMulticore()
 
 
 //! @brief Returns number of simulation threads that shall be used
-size_t Configuration::getNumberOfThreads()
+int Configuration::getNumberOfThreads()
 {
     return this->mNumberOfThreads;
 }
@@ -780,6 +768,11 @@ QStringList Configuration::getPhysicalQuantitiesForUnit(const QString &rUnit)
 int Configuration::getPLOExportVersion() const
 {
     return mPLOExportVersion;
+}
+
+bool Configuration::getShowHiddenNodeDataVariables() const
+{
+    return mShowHiddenNodeDataVariables;
 }
 
 
@@ -1289,6 +1282,11 @@ void Configuration::setCacheLogData(const bool value)
 void Configuration::setAutoLimitLogDataGenerations(const bool value)
 {
     mAutoLimitLogDataGenerations = value;
+}
+
+void Configuration::setShowHiddenNodeDataVariables(const bool value)
+{
+    mShowHiddenNodeDataVariables = value;
 }
 
 

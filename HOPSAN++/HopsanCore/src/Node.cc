@@ -327,3 +327,22 @@ ComponentSystem *Node::getOwnerSystem() const
 {
     return mpOwnerSystem;
 }
+
+HString hopsan::nodeDataVariableTypeAsString(const NodeDataVariableTypeEnumT type)
+{
+    switch(type)
+    {
+    case DefaultType:
+        return "Default";
+    case IntensityType:
+        return "Intensity";
+    case FlowType:
+        return "Flow";
+    case TLMType:
+        return "TLM";
+    case HiddenType:
+        return "Hidden";
+    default:
+        return "Incorrect Node Variable Type";
+    }
+}

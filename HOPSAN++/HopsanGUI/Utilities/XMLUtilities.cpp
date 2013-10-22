@@ -271,16 +271,26 @@ void parseDomValueNode2(QDomElement domElement, double &rA, double &rB)
 //! @brief Function that parses one DOM elements containing one text node (based on a double value)
 //! @param[in] domElement The DOM Element to parse
 //! @returns The extracted value
-qreal parseDomValueNode(QDomElement domElement)
+double parseDomValueNode(QDomElement domElement, const double defaultValue)
 {
-    return domElement.text().toDouble();
+    if ( !domElement.isNull() )
+    {
+        bool isOk;
+        double val = domElement.text().toDouble(&isOk);
+        if (isOk)
+        {
+            return val;
+        }
+    }
+    // If dom was null or if parsing failed we return the default value
+    return defaultValue;
 }
 
 //! @brief Function that parses one DOM elements containing one text node (based on an integer value)
 //! @param[in] domElement The DOM Element to parse
 //! @param[in] defaultVal The default value to use if DOM element is null or if parsing fails
 //! @returns The extracted value
-int parseDomIntegerNode(QDomElement domElement, const int defaultVal)
+int parseDomIntegerNode(QDomElement domElement, const int defaultValue)
 {
     if ( !domElement.isNull() )
     {
@@ -291,15 +301,23 @@ int parseDomIntegerNode(QDomElement domElement, const int defaultVal)
             return val;
         }
     }
-    return defaultVal;
+    // If dom was null or if parsing failed we return the default value
+    return defaultValue;
 }
 
 
 //! @brief Function that parses one DOM elements containing one text node (based on a boolean value)
 //! @param[in] domElement The DOM Element to parse
+//! @param[in] defaultVal The default value to use if DOM element is null
 //! @returns The extracted boolean value
-bool parseDomBooleanNode(QDomElement domElement)
+bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue)
 {
+    // If dom element is null then return default value
+    if ( domElement.isNull() )
+    {
+        return defaultValue;
+    }
+    // else check if it is true or not (something else = false)
     return (domElement.text() == HMF_TRUETAG);
 }
 

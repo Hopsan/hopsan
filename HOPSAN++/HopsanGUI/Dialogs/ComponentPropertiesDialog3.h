@@ -110,8 +110,9 @@ class ParameterValueSelectionWidget : public QWidget
 public:
     ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent);
     void setValueText(const QString &rText);
-    QString getValue() const;
+    QString getValueText() const;
     const QString &getDataType() const;
+    const QString &getName() const;
 public slots:
     void refreshValueTextStyle();
 private slots:

@@ -93,6 +93,7 @@ private:
     QSpinBox *mpGenerationLimitSpinBox;
     QCheckBox *mpAutoLimitGenerationsCheckBox;
     QCheckBox *mpCacheLogDataCeckBox;
+    QCheckBox *mpShowHiddenNodeDataVarCheckBox;
 
 
     QComboBox *mpPressureUnitComboBox;

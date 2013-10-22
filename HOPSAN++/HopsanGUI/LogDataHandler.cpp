@@ -667,53 +667,57 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
             // Iterate variables
             for(int i=0; i<varDescs.size(); ++i)
             {
-                // Fetch variable data
-                QVector<double> dataVec;
-                std::vector<double> *pTimeVector;
-                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getName(), varDescs[i].mName,
-                                                                               pTimeVector, dataVec);
-
-                // Prevent adding data if time or data vector was empty
-                if (!pTimeVector->empty() && !dataVec.isEmpty())
+                // Skip hidden variables
+                if ( gConfig.getShowHiddenNodeDataVariables() || (varDescs[i].mNodeDataVariableType != "Hidden") )
                 {
-                    //! @todo Should be possible to have multiple timevectors per generation
-                    // Store time data (only once)
-                    if(!timeVectorObtained)
+                    // Fetch variable data
+                    QVector<double> dataVec;
+                    std::vector<double> *pTimeVector;
+                    mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getName(), varDescs[i].mName,
+                                                                                   pTimeVector, dataVec);
+
+                    // Prevent adding data if time or data vector was empty
+                    if (!pTimeVector->empty() && !dataVec.isEmpty())
                     {
-                        // Make sure we use the same time vector
-                        QVector<double> timeVec = QVector<double>::fromStdVector(*pTimeVector);//!< @todo not copy here, should maybe rewrite makeSureUniqe to handled std::vector also
-                        //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(timeVec);
-
-                        timeVecPtr = insertTimeVariable(timeVec);
-
-                        // Set the custom unit scaling to the default
-                        QString defaultTimeUnit = gConfig.getDefaultUnit(TIMEVARIABLENAME);
-                        if (defaultTimeUnit != timeVecPtr->getDataUnit())
+                        //! @todo Should be possible to have multiple timevectors per generation
+                        // Store time data (only once)
+                        if(!timeVectorObtained)
                         {
-                            timeVecPtr->setCustomUnitScale(UnitScale(defaultTimeUnit, gConfig.getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                            // Make sure we use the same time vector
+                            QVector<double> timeVec = QVector<double>::fromStdVector(*pTimeVector);//!< @todo not copy here, should maybe rewrite makeSureUniqe to handled std::vector also
+                            //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(timeVec);
+
+                            timeVecPtr = insertTimeVariable(timeVec);
+
+                            // Set the custom unit scaling to the default
+                            QString defaultTimeUnit = gConfig.getDefaultUnit(TIMEVARIABLENAME);
+                            if (defaultTimeUnit != timeVecPtr->getDataUnit())
+                            {
+                                timeVecPtr->setCustomUnitScale(UnitScale(defaultTimeUnit, gConfig.getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                            }
+
+                            timeVectorObtained = true;
                         }
 
-                        timeVectorObtained = true;
-                    }
+                        foundData=true;
+                        VariableDescription varDesc;
+                        varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
+                        varDesc.mComponentName = pModelObject->getName();
+                        varDesc.mPortName = (*pit)->getName();
+                        varDesc.mDataName = varDescs[i].mName;
+                        varDesc.mDataUnit = varDescs[i].mUnit;
+                        varDesc.mDataDescription = varDescs[i].mDescription;
+                        varDesc.mAliasName  = varDescs[i].mAlias;
+                        varDesc.mVariableSourceType = VariableDescription::ModelVariableType;
 
-                    foundData=true;
-                    VariableDescription varDesc;
-                    varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
-                    varDesc.mComponentName = pModelObject->getName();
-                    varDesc.mPortName = (*pit)->getName();
-                    varDesc.mDataName = varDescs[i].mName;
-                    varDesc.mDataUnit = varDescs[i].mUnit;
-                    varDesc.mDataDescription = varDescs[i].mDescription;
-                    varDesc.mAliasName  = varDescs[i].mAlias;
-                    varDesc.mVariableSourceType = VariableDescription::ModelVariableType;
+                        SharedLogVariableDataPtrT pNewData = insertVariableBasedOnDescription(varDesc, timeVecPtr, dataVec);
 
-                    SharedLogVariableDataPtrT pNewData = insertVariableBasedOnDescription(varDesc, timeVecPtr, dataVec);
-
-                    UnitScale us;
-                    pModelObject->getCustomPlotUnitOrScale(varDesc.mPortName+"#"+varDesc.mDataName, us);
-                    if (!us.mScale.isEmpty())
-                    {
-                        pNewData->setCustomUnitScale(us);
+                        UnitScale us;
+                        pModelObject->getCustomPlotUnitOrScale(varDesc.mPortName+"#"+varDesc.mDataName, us);
+                        if (!us.mScale.isEmpty())
+                        {
+                            pNewData->setCustomUnitScale(us);
+                        }
                     }
                 }
             }

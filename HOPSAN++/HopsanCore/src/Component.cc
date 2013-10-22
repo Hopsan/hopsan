@@ -536,7 +536,6 @@ void Component::registerConditionalParameter(const HString &rName, const HString
 
     mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", "conditional", &rValue, false, rConditions);
 }
-
 ///@}
 
 

@@ -46,12 +46,11 @@ void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, c
 void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
 void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues);
 
-bool parseDomBooleanNode(QDomElement domElement);
-qreal parseDomValueNode(QDomElement domElement);
+int parseDomIntegerNode(QDomElement, const int defaultValue);
+bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue);
+double parseDomValueNode(QDomElement domElement, const double defaultValue);
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
-
-int parseDomIntegerNode(QDomElement, const int defaultVal);
 
 void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue, const int precision=6,  const char format='f');
 

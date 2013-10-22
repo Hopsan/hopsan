@@ -329,23 +329,14 @@ void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
     {
         mOptSettings.mNiter = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("niter"), mOptSettings.mNiter);
         mOptSettings.mNsearchp = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("nsearchp"), mOptSettings.mNsearchp);
-        if(!rDomElement.firstChildElement("settings").firstChildElement("refcoeff").isNull())
-            mOptSettings.mRefcoeff = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("refcoeff"));
-        if(!rDomElement.firstChildElement("settings").firstChildElement("randfac").isNull())
-            mOptSettings.mRandfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("randfac"));
-        if(!rDomElement.firstChildElement("settings").firstChildElement("forgfac").isNull())
-            mOptSettings.mForgfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("forgfac"));
-        if(!rDomElement.firstChildElement("settings").firstChildElement("functol").isNull())
-            mOptSettings.mFunctol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("functol"));
-        if(!rDomElement.firstChildElement("settings").firstChildElement("partol").isNull())
-            mOptSettings.mPartol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("partol"));
-        if(!rDomElement.firstChildElement("settings").firstChildElement("plot").isNull())
-            mOptSettings.mPlot = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("plot"));
-        if(!rDomElement.firstChildElement("settings").firstChildElement("savecsv").isNull())
-            mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"));
-
-        if(!rDomElement.firstChildElement("settings").firstChildElement("logpar").isNull())
-            mOptSettings.mlogPar = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("logpar"));
+        mOptSettings.mRefcoeff = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("refcoeff"), mOptSettings.mRefcoeff);
+        mOptSettings.mRandfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("randfac"), mOptSettings.mRandfac);
+        mOptSettings.mForgfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("forgfac"), mOptSettings.mForgfac);
+        mOptSettings.mFunctol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("functol"), mOptSettings.mFunctol);
+        mOptSettings.mPartol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("partol"), mOptSettings.mPartol);
+        mOptSettings.mPlot = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("plot"), mOptSettings.mPlot);
+        mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"), mOptSettings.mSavecsv);
+        mOptSettings.mlogPar = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("logpar"), mOptSettings.mlogPar);
     }
     if(!rDomElement.firstChildElement("parameters").isNull())
     {
@@ -361,8 +352,7 @@ void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
             XMLpar = XMLpar.nextSiblingElement("parameter");
         }
 
-        if(!rDomElement.firstChildElement("parameters").firstChildElement("savecsv").isNull())
-            mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"));
+        mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"), mOptSettings.mSavecsv);
     }
     if(!rDomElement.firstChildElement("objectives").isNull())
     {
