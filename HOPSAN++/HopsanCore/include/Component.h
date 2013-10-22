@@ -275,6 +275,7 @@ private:
     HString mSubTypeName;
     ParameterEvaluatorHandler *mpParameters;
     PortPtrMapT mPortPtrMap;
+    std::vector<Port*> mPortPtrVector;
     double mMeasuredTime;
     HopsanEssentials *mpHopsanEssentials;
     HopsanCoreMessageHandler *mpMessageHandler;

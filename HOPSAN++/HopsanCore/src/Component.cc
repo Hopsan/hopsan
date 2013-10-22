@@ -146,10 +146,10 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     //! @todo dont rebuild this every time, question is should this be in the nodes and or ports maybe, or should it only be in the components
     mVariameters.clear();
 
-    PortPtrMapT::iterator pit;
-    for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
+    std::vector<Port*>::iterator pit;
+    for (pit=mPortPtrVector.begin(); pit!=mPortPtrVector.end(); ++pit)
     {
-        Port *pPort = pit->second;
+        Port *pPort = *pit;
         for (size_t id=0; id<pPort->getNumDataVariables(); ++id)
         {
             const NodeDataDescription *pDesc = pPort->getNodeDataDescription(id);
@@ -629,23 +629,26 @@ Port* Component::addPort(const HString &rPortName, const PortTypesEnumT portType
     HString newname = this->determineUniquePortName(rPortName);
     //! @todo for ordinary components give an error message, users rarely check debug messages
 
-    Port* new_port = createPort(portType, rNodeType, newname, this);
+    Port* pNewPort = createPort(portType, rNodeType, newname, this);
 
     //Set wheter the port must be connected before simulation
     if (reqConnection == Port::NotRequired)
     {
         //! @todo maybe use a string for OPTIONAL instead, to reduce the number of compiletime dependencies, will need to think about that a bit more
-        new_port->mConnectionRequired = false;
+        pNewPort->mConnectionRequired = false;
     }
 
-    mPortPtrMap.insert(PortPtrPairT(newname, new_port));
+    // Store the port in the port map, for faster port by name lookup
+    mPortPtrMap.insert(PortPtrPairT(newname, pNewPort));
+    // Store the port in the vector, to remeber the order of added ports (usefull when retreiving variameters)
+    mPortPtrVector.push_back(pNewPort);
 
     //Signal autmatic name change
     if (newname != rPortName)
     {
         addDebugMessage("Automatically changed name of added port from: {" + rPortName + "} to {" + newname + "}");
     }
-    return new_port;
+    return pNewPort;
 }
 
 //! @brief Adds a port to the component, do not call this function directly unless you have to
@@ -789,15 +792,15 @@ HString Component::renamePort(const HString &rOldname, const HString &rNewname)
 {
     if (mPortPtrMap.count(rOldname) != 0)
     {
-        Port* temp_port_ptr;
+        Port *pTempPort;
         PortPtrMapT::iterator it;
 
-        it = mPortPtrMap.find(rOldname); //Find iterator to port
-        temp_port_ptr = it->second;     //Backup copy of port ptr
-        mPortPtrMap.erase(it);          //Erase old value
-        HString modnewname = determineUniquePortName(rNewname); //Make sure new name is unique
-        temp_port_ptr->mPortName = modnewname;  //Set new name in port
-        mPortPtrMap.insert(PortPtrPairT(modnewname, temp_port_ptr)); //Re add to map
+        it = mPortPtrMap.find(rOldname);                            // Find iterator to port
+        pTempPort = it->second;                                     // Backup copy of port ptr
+        mPortPtrMap.erase(it);                                      // Erase old value
+        HString modnewname = determineUniquePortName(rNewname);     // Make sure new name is unique
+        pTempPort->mPortName = modnewname;                          // Set new name in port
+        mPortPtrMap.insert(PortPtrPairT(modnewname, pTempPort));    // Re add to map
         return modnewname;
     }
     else
@@ -816,8 +819,24 @@ void Component::deletePort(const HString &rName)
     it = mPortPtrMap.find(rName);
     if (it != mPortPtrMap.end())
     {
-        delete it->second;
+        Port *pPort = it->second;
+
+        // Remove in port vector first
+        std::vector<Port*>::iterator pvit;
+        for (pvit=mPortPtrVector.begin(); pvit!=mPortPtrVector.end(); ++pvit)
+        {
+            if ( *pvit == pPort )
+            {
+                mPortPtrVector.erase(pvit);
+                break;
+            }
+        }
+
+        // Erase from map
         mPortPtrMap.erase(it);
+
+        // delete the port
+        delete pPort;
     }
     else
     {
