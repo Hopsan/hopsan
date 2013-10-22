@@ -46,6 +46,7 @@
 - Enhancement: It is now possible to begin logging before time 0
 - Enhancement: Made sure that almost all default component xmls have working sourcecode link
 - Enhancement: Alias name is now shown on the plot axis instead of data name
+- Enhancement: Parameter values in the parameter table in component properties are now shown in the order that they were registered (this makes more sense then ascii ordered)
 - Enhancement: Hidden node data variables are now ignored by the GUI (since they are not used). A configuration option can be set to show them.
 - Enhancement: Improved the look and feel of the component properties dialogue
                In the "Value" field: Black normal font = Default Value
@@ -53,6 +54,7 @@
                                      Gray Italic on light-gray background = Value will have no effect (Input variables that are connected)
 
 - Fixed: Pneumatic QmSensor was measuring pressure.
+- Fixed: Signal SRlatch component is now working
 - Fixed: Some components had GUI/CORE port name mismatch. Implemented test case to prevent this from happening again!
 - Fixed: Some special components have been update
 - Fixed: Some HCOM commands stop working after successful optimization
