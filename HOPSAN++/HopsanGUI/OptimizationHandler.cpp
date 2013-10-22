@@ -38,6 +38,7 @@
 #include "PlotCurve.h"
 
 
+//! @brief Constructor for optimization  handler class
 OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
 {
     mpHcomHandler = pHandler;
@@ -46,8 +47,11 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
     mOptAlgorithm = Uninitialized;
     mOptPlotPoints = false;
     mOptPlotBestWorst = false;
+    mOptPrintLogOutput = true;  //! @todo Should be changeable by user
 }
 
+
+//! @brief Returns objective value with specified index
 double OptimizationHandler::getOptimizationObjectiveValue(int idx)
 {
     if(idx<0 || idx > mOptObjectives.size()-1)
@@ -57,6 +61,8 @@ double OptimizationHandler::getOptimizationObjectiveValue(int idx)
     return mOptObjectives[idx];
 }
 
+
+//! @brief Initializes a Complex-RF optimization
 void OptimizationHandler::optComplexInit()
 {
     gpModelHandler->setCurrentModel(mpOptModel);
@@ -122,14 +128,16 @@ void OptimizationHandler::optComplexInit()
 }
 
 
+//! @brief Executes a Complex-RF optimization. optComplexInit() must be called before this one.
 void OptimizationHandler::optComplexRun()
 {
+    //Plot optimization points
     optPlotPoints();
 
-    optComplexCalculatebestandworstid();
-
+    //Reset convergence reason variable (0 = failed to converge)
     mOptConvergenceReason=0;
 
+    //Verify that everything is ok
     if(mOptAlgorithm == Uninitialized)
     {
         mpConsole->printErrorMessage("Optimization not initialized.", "", false);
@@ -147,6 +155,8 @@ void OptimizationHandler::optComplexRun()
     }
 
     mpConsole->print("Running optimization...");
+
+    //Turn of terminal output during optimization
     mpHcomHandler->executeCommand("echo off");
 
     //Evaluate initial objevtive values
@@ -159,22 +169,27 @@ void OptimizationHandler::optComplexRun()
     //Store parameters for undo
     mOptOldParameters = mOptParameters;
 
+    //Run optimization loop
     int i=0;
     int percent=-1;
     for(; i<mOptMaxEvals && !mpHcomHandler->isAborted(); ++i)
     {
+        //Plot optimization points
         optPlotPoints();
 
+        //Process UI events (required so that we don't lock up the program)
         qApp->processEvents();
+
+        //Stop if user pressed abort button
         if(mpHcomHandler->isAborted())
         {
             mpConsole->print("Optimization aborted.");
             return;
         }
 
-        //Print progress %
+        //Print progress as percentage of maximum number of evaluations
         int dummy=int(100.0*double(i)/mOptMaxEvals);
-        if(dummy != percent)
+        if(dummy != percent)    //Only update at whole numbers
         {
             mpConsole->setDontPrint(false);
             mpConsole->print(QString::number(dummy)+"%");
@@ -183,16 +198,16 @@ void OptimizationHandler::optComplexRun()
         }
 
         //Check convergence
-        if(optComlexCheckconvergence()) break;
+        if(optCheckForConvergence()) break;
 
         //Increase all objective values (forgetting principle)
         optComplexForget();
 
         //Calculate best and worst point
         optComplexCalculatebestandworstid();
-        mpConsole->print("WORST: "+QString::number(mOptWorstId));
         int wid = mOptWorstId;
 
+        //Plot best and worst objective values
         optPlotBestWorstObj();
 
         //Find geometrical center
@@ -214,7 +229,7 @@ void OptimizationHandler::optComplexRun()
             mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
             mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
         }
-        newPoint = mOptParameters[wid];
+        newPoint = mOptParameters[wid]; //Remember the new point, in case we need to iterate below
 
         //Evaluate new point
         mpHcomHandler->executeCommand("call evalworst");
@@ -316,6 +331,7 @@ void OptimizationHandler::optComplexRun()
 }
 
 
+//! @brief Applies the forgetting principle in complex algorithm
 void OptimizationHandler::optComplexForget()
 {
     double maxObj = mOptObjectives[0];
@@ -332,6 +348,8 @@ void OptimizationHandler::optComplexForget()
     }
 }
 
+
+//! @brief Calculates indexes of best and worst point
 void OptimizationHandler::optComplexCalculatebestandworstid()
 {
     double maxObj = mOptObjectives[0];
@@ -354,6 +372,8 @@ void OptimizationHandler::optComplexCalculatebestandworstid()
     }
 }
 
+
+//! @brief Calculates center point for complex algorithm
 void OptimizationHandler::optComplexFindcenter()
 {
     mOptCenter.resize(mOptNumParameters);
@@ -374,7 +394,9 @@ void OptimizationHandler::optComplexFindcenter()
     }
 }
 
-bool OptimizationHandler::optComlexCheckconvergence()
+
+//! @brief Checkes for convergence (in either of the algorithms)
+bool OptimizationHandler::optCheckForConvergence()
 {
     //Check objective function convergence
     double maxObj = mOptObjectives[0];
@@ -407,6 +429,7 @@ bool OptimizationHandler::optComlexCheckconvergence()
 }
 
 
+//! @brief Returns the maximum difference between smallest and largest parameter
 double OptimizationHandler::optComplexMaxpardiff()
 {
     double maxDiff = -1e100;
@@ -428,6 +451,7 @@ double OptimizationHandler::optComplexMaxpardiff()
 }
 
 
+//! @brief Initializes a particle swarm optimization
 void OptimizationHandler::optParticleInit()
 {
     if(gConfig.getUseMulticore())
@@ -496,11 +520,10 @@ void OptimizationHandler::optParticleInit()
 }
 
 
+//! @brief Executes a particle swarm algorithm. optParticleInit() must be called before this one.
 void OptimizationHandler::optParticleRun()
 {
     optPlotPoints();
-
-    //connect(gpModelHandler->getCurrentModel()->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SLOT(optPlotPoints(bool)));
 
     mOptConvergenceReason=0;
 
@@ -516,6 +539,8 @@ void OptimizationHandler::optParticleRun()
     }
 
     mpConsole->print("Running optimization...");
+
+    //Disable terminal output during optimization
     mpHcomHandler->executeCommand("echo off");
 
     //Evaluate initial objevtive values
@@ -539,61 +564,24 @@ void OptimizationHandler::optParticleRun()
     mOptBestObj = mOptObjectives[mOptBestId];
     mOptBestPoint = mOptParameters[mOptBestId];
 
-    QStringList output;
-    for(int p=0; p<mOptNumPoints; ++p)
-    {
-        output.append("Particle    "+QString::number(p)+":\n");
-        output[p].append("Position: \t\t\tVelocity: \t\t\tLocal best: \t\t\tGlobal best:\n");
-
-    }
-    bool printOutput = true;
-
     int i=0;
     int percent=-1;
     for(; i<mOptMaxEvals && !mpHcomHandler->isAborted(); ++i)
     {
+        //Process events, to make sure GUI is updated
         qApp->processEvents();
+
+        //Abort if abort key was pressed
         if(mpHcomHandler->isAborted())
         {
-            qDebug() << output;
             mpConsole->print("Optimization aborted.");
             return;
         }
 
-        if(printOutput)
-        {
-            for(int p=0; p<mOptNumPoints; ++p)
-            {
-                QString pointInfo;
-                for(int i=0; i<mOptParameters[p].size(); ++i)
-                {
-                    pointInfo.append(QString::number(mOptParameters[p][i])+",");
-                }
-                pointInfo.chop(1);
-                pointInfo.append("\t\t");
-                for(int i=0; i<mOptVelocities[p].size(); ++i)
-                {
-                    pointInfo.append(QString::number(mOptVelocities[p][i])+",");
-                }
-                pointInfo.chop(1);
-                pointInfo.append("\t\t");
-                for(int i=0; i<mOptBestKnowns[p].size(); ++i)
-                {
-                    pointInfo.append(QString::number(mOptBestKnowns[p][i])+",");
-                }
-                pointInfo.chop(1);
-                pointInfo.append("\t\t");
-                for(int i=0; i<mOptBestPoint.size(); ++i)
-                {
-                    pointInfo.append(QString::number(mOptBestPoint[i])+",");
-                }
-                pointInfo.chop(1);
-                pointInfo.append("\n");
-                output[p].append(pointInfo);
-            }
-        }
+        //Print log output
+        optPrintLogOutput();
 
-        //Print progress %
+        //Print progress in percent of max evals
         int dummy=int(100.0*double(i)/mOptMaxEvals);
         if(dummy != percent)
         {
@@ -604,30 +592,12 @@ void OptimizationHandler::optParticleRun()
         }
 
         //Move particles
-        for (int p=0; p<mOptNumPoints; ++p)
-        {
-          double r1 = double(rand())/double(RAND_MAX);
-          double r2 = double(rand())/double(RAND_MAX);
-          for(int j=0; j<mOptNumParameters; ++j)
-          {
-              mOptVelocities[p][j] = mOptOmega*mOptVelocities[p][j] + mOptC1*r1*(mOptBestKnowns[p][j]-mOptParameters[p][j]) + mOptC2*r2*(mOptBestPoint[j]-mOptParameters[p][j]);
-              mOptParameters[p][j] = mOptParameters[p][j]+mOptVelocities[p][j];
-              if(mOptParameters[p][j] <= mOptParMin[j])
-              {
-                  mOptParameters[p][j] = mOptParMin[j];
-                  mOptVelocities[p][j] = 0.0;
-              }
-              if(mOptParameters[p][j] >= mOptParMax[j])
-              {
-                  mOptParameters[p][j] = mOptParMax[j];
-                  mOptVelocities[p][j] = 0.0;
-              }
-          }
-        }
+        optMoveParticles();
 
         //Evaluate objevtive values
         if(gConfig.getUseMulticore())
         {
+            //Multi-threading, we cannot use the "evalall" function
             for(int i=0; i<mOptNumPoints; ++i)
             {
                 gpModelHandler->setCurrentModel(mOptModelPtrs[i]);
@@ -676,12 +646,8 @@ void OptimizationHandler::optParticleRun()
         optPlotBestWorstObj();
 
         //Check convergence
-        if(optComlexCheckconvergence()) break;      //Use complex method, it's the same principle
-
-        //optPlotPoints();
+        if(optCheckForConvergence()) break;      //Use complex method, it's the same principle
     }
-
-    qDebug() << output;
 
     mpHcomHandler->executeCommand("echo on");
 
@@ -726,6 +692,56 @@ void OptimizationHandler::optParticleRun()
     gpModelHandler->setCurrentModel(pOrgModel);
 }
 
+
+//! @brief Prints logging output about particles (for use with particle swarm algorithm)
+//! @todo Extent so it can also be used with complex algorithm
+void OptimizationHandler::optPrintLogOutput()
+{
+    if(mOptPrintLogOutput)
+    {
+        if(mOptLogOutput.isEmpty())
+        {
+            //Prepare logging output list
+            for(int p=0; p<mOptNumPoints; ++p)
+            {
+                mOptLogOutput.append("Particle    "+QString::number(p)+":\n");
+                mOptLogOutput[p].append("Position: \t\t\tVelocity: \t\t\tLocal best: \t\t\tGlobal best:\n");
+
+            }
+        }
+
+        for(int p=0; p<mOptNumPoints; ++p)
+        {
+            for(int i=0; i<mOptParameters[p].size(); ++i)
+            {
+                mOptLogOutput[p].append(QString::number(mOptParameters[p][i])+",");
+            }
+            mOptLogOutput[p].chop(1);
+            mOptLogOutput[p].append("\t\t");
+            for(int i=0; i<mOptVelocities[p].size(); ++i)
+            {
+                mOptLogOutput[p].append(QString::number(mOptVelocities[p][i])+",");
+            }
+            mOptLogOutput[p].chop(1);
+            mOptLogOutput[p].append("\t\t");
+            for(int i=0; i<mOptBestKnowns[p].size(); ++i)
+            {
+                mOptLogOutput[p].append(QString::number(mOptBestKnowns[p][i])+",");
+            }
+            mOptLogOutput[p].chop(1);
+            mOptLogOutput[p].append("\t\t");
+            for(int i=0; i<mOptBestPoint.size(); ++i)
+            {
+                mOptLogOutput[p].append(QString::number(mOptBestPoint[i])+",");
+            }
+            mOptLogOutput[p].chop(1);
+            mOptLogOutput[p].append("\n");
+        }
+    }
+}
+
+
+//! @brief Plots the optimization points (if there are at least two parameters and the option is selected)
 void OptimizationHandler::optPlotPoints()
 {
     if(!mOptPlotPoints) { return; }
@@ -786,6 +802,7 @@ void OptimizationHandler::optPlotPoints()
 }
 
 
+//! @brief Plots best and worst objective values (if option is selected)
 void OptimizationHandler::optPlotBestWorstObj()
 {
     if(!mOptPlotBestWorst) { return; }
@@ -824,6 +841,32 @@ void OptimizationHandler::optPlotBestWorstObj()
         PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("ObjectiveFunction");
         gpPlotHandler->plotDataToWindow(pPW, bestVar, 0, QColor("Green"));
         gpPlotHandler->plotDataToWindow(pPW, worstVar, 0, QColor("Red"));
+    }
+}
+
+
+//! @brief Moves the particles (for particle swarm optimization)
+void OptimizationHandler::optMoveParticles()
+{
+    for (int p=0; p<mOptNumPoints; ++p)
+    {
+        double r1 = double(rand())/double(RAND_MAX);
+        double r2 = double(rand())/double(RAND_MAX);
+        for(int j=0; j<mOptNumParameters; ++j)
+        {
+            mOptVelocities[p][j] = mOptOmega*mOptVelocities[p][j] + mOptC1*r1*(mOptBestKnowns[p][j]-mOptParameters[p][j]) + mOptC2*r2*(mOptBestPoint[j]-mOptParameters[p][j]);
+            mOptParameters[p][j] = mOptParameters[p][j]+mOptVelocities[p][j];
+            if(mOptParameters[p][j] <= mOptParMin[j])
+            {
+                mOptParameters[p][j] = mOptParMin[j];
+                mOptVelocities[p][j] = 0.0;
+            }
+            if(mOptParameters[p][j] >= mOptParMax[j])
+            {
+                mOptParameters[p][j] = mOptParMax[j];
+                mOptVelocities[p][j] = 0.0;
+            }
+        }
     }
 }
 

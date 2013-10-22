@@ -28,6 +28,7 @@
 
 //Qt includes
 #include <QVector>
+#include <QStringList>
 
 //Forward declarations
 class ModelWidget;
@@ -62,10 +63,13 @@ private:
     void optComplexForget();
     void optComplexCalculatebestandworstid();
     void optComplexFindcenter();
-    bool optComlexCheckconvergence();
+    void optComplexReflectWorst();
+    bool optCheckForConvergence();
     double optComplexMaxpardiff();
     void optParticleInit();
     void optParticleRun();
+    void optPrintLogOutput();
+    void optMoveParticles();
 
     //Optimization
     int mOptNumPoints;
@@ -92,6 +96,8 @@ private:
     bool mOptPlotVariables;
     ModelWidget *mpOptModel;
     QVector<ModelWidget *> mOptModelPtrs;
+    bool mOptPrintLogOutput;
+    QStringList mOptLogOutput;
 };
 
 #endif // OPTIMIZATIONHANDLER_H

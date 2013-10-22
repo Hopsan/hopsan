@@ -1268,6 +1268,12 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
 bool OptimizationDialog::loadObjectiveFunctions()
 {
+    mObjectiveFunctionDescriptions.clear();
+    mObjectiveFunctionCalls.clear();
+    mObjectiveFunctionDataLists.clear();
+    mObjectiveFunctionNumberOfVariables.clear();
+    mObjectiveFunctionUsesTimeVector.clear();
+
     // Look in both local and global scripts directory in case they are different
 
     //QDir scriptsDir(gDesktopHandler.getExecPath()+"../Scripts/HCOM/objFuncTemplates");
