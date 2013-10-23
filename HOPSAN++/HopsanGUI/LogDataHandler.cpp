@@ -354,27 +354,42 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
     QTextStream t(&file);
 
     // Read header data
+    bool parseOK=true;
     for (unsigned int lineNum=1; lineNum<7; ++lineNum)
     {
         QString line = t.readLine().trimmed();
         if(!line.isNull())
         {
             // Check PLO format version
-            if(lineNum == 2)
+            if (lineNum == 1)
             {
-                ploVersion = line.toUInt();
+                // Check if this seems to be a plo file
+                if (line != "'VERSION'")
+                {
+                    gpTerminalWidget->mpConsole->printErrorMessage(fileInfo.fileName()+" Does not seem to be a plo file, Aborting import!");
+                    return;
+                }
+            }
+            else if(lineNum == 2)
+            {
+                ploVersion = line.toUInt(&parseOK);
             }
             // Else check for num data info
             else if(lineNum == 4)
             {
+                bool colOK, rowOK;
                 QStringList colsandrows = line.simplified().split(" ");
-                nDataColumns = colsandrows[0].toUInt();
-                nDataRows = colsandrows[1].toUInt();
-                // Reserve memory for reading data
-                importedPLODataVector.resize(nDataColumns);
-                for(int c=0; c<nDataColumns; ++c)
+                nDataColumns = colsandrows[0].toUInt(&colOK);
+                nDataRows = colsandrows[1].toUInt(&rowOK);
+                parseOK = (colOK && rowOK);
+                if (parseOK)
                 {
-                    importedPLODataVector[c].mDataValues.reserve(nDataRows);
+                    // Reserve memory for reading data
+                    importedPLODataVector.resize(nDataColumns);
+                    for(int c=0; c<nDataColumns; ++c)
+                    {
+                        importedPLODataVector[c].mDataValues.reserve(nDataRows);
+                    }
                 }
             }
             // Else check for data header info
@@ -409,7 +424,11 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
                     linestream >> importedPLODataVector[c].mPlotScale;
                 }
             }
-
+        }
+        if (!parseOK)
+        {
+            gpTerminalWidget->mpConsole->printErrorMessage(QString("A parse error occured while parsing the header of: ")+fileInfo.fileName()+" Aborting import!");
+            return;
         }
     }
 

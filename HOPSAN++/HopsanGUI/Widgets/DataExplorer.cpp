@@ -166,10 +166,22 @@ void DataExplorer::openExportDataDialog()
     {
         QVector<int> gens = gensFromSelected();
         QStringList fNames;
+        QString suffixFilter;
 
+        // Select suffix filter for file format
+        if ( (pFormatButtons->checkedButton() == pPLOv1Button) || (pFormatButtons->checkedButton() == pPLOv2Button) )
+        {
+            suffixFilter = "*.plo *.PLO";
+        }
+        else
+        {
+            suffixFilter = "*.csv *.CSV";
+        }
+
+        // Get save file name
         if ((pFilenameButtons->checkedButton() == pAppendGenButton) && (gens.size() > 1))
         {
-            QString fileName = QFileDialog::getSaveFileName(this,tr("Choose Hopsan Data File Name"), gConfig.getPlotDataDir(), tr("Data Files (*.plo *.PLO *.csv *.CSV)"));
+            QString fileName = QFileDialog::getSaveFileName(this,tr("Choose Hopsan Data File Name"), gConfig.getPlotDataDir(), tr("Data Files")+QString(" (%1)").arg(suffixFilter));
             QFileInfo file(fileName);
             for (int i=0; i<gens.size(); ++i)
             {
@@ -180,7 +192,7 @@ void DataExplorer::openExportDataDialog()
         {
             for (int i=0; i<gens.size(); ++i)
             {
-                fNames.append(QFileDialog::getSaveFileName(this,QString("Choose File Name for Gen: %1").arg(gens[i]), gConfig.getPlotDataDir(), tr("Data Files (*.plo *.PLO *.csv *.CSV)")));
+                fNames.append(QFileDialog::getSaveFileName(this,QString("Choose File Name for Gen: %1").arg(gens[i]), gConfig.getPlotDataDir(),  tr("Data Files")+QString(" (%1)").arg(suffixFilter)));
             }
         }
 
@@ -191,7 +203,6 @@ void DataExplorer::openExportDataDialog()
             gConfig.setPlotDataDir(exportPath.absolutePath());
         }
 
-        //! @todo maybe open progress bar for large exports
         QProgressDialog progress("Exporting Data", "Cancel", 0, fNames.size(), this);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
