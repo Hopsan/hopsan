@@ -55,6 +55,10 @@
 
 - Fixed: Pneumatic QmSensor was measuring pressure.
 - Fixed: Signal SRlatch component is now working
+- Fixed: Accumulator port description was wrong, Oil volume -> Gas volume
+- Fixed: The SignalPID controller was implementing a differential PID (and required non-zero Ki), I has been replaced with an "ordinary" PID controller.
+         A SignalPID2 controller has also been added using a manual "text book" implementation with "standard form" parameters K, Ti, Tt, Td.
+- Fixed: SignalPIlead limitations
 - Fixed: Some components had GUI/CORE port name mismatch. Implemented test case to prevent this from happening again!
 - Fixed: Some special components have been update
 - Fixed: Some HCOM commands stop working after successful optimization

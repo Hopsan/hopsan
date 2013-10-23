@@ -7,9 +7,7 @@
 #include "math.h"
 
 //!
-//! @file \
-C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Signal\Control\Sign\
-alPID.hpp
+//! @file C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Signal\Control\SignalPID.hpp
 //! @author Petter Krus <petter.krus@liu.se>
 //! @date Wed 23 Oct 2013 11:03:10
 //! @brief PID controller

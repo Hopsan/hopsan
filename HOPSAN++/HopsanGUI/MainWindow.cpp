@@ -313,8 +313,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpCentralTabs->addTab(mpWelcomeWidget, "Welcome");
     mpCentralTabs->setTabNotClosable(0);
 
-    initializeWorkspace();
-
     this->updateRecentList();
 
     mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);    //Needs configuration
@@ -396,23 +394,6 @@ void MainWindow::initializeWorkspace()
             mpModelHandler->closeAllModels();
             mpModelHandler->loadModel(qApp->arguments().at(i));
             return;
-        }
-    }
-
-    if(gConfig.getAlwaysLoadLastSession())
-    {
-        gpSplash->showMessage("Loading last session...");
-
-        if(!gConfig.getLastSessionModels().empty())
-        {
-            for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
-            {
-                mpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
-            }
-        }
-        else
-        {
-            updateToolBarsToNewTab();       //This will disable the buttons if last session did not contain any models
         }
     }
 

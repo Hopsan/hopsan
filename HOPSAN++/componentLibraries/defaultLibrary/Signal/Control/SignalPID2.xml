@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalPID2.hpp" typename="SignalPID2" displayname="SignalPID2">
+        <icons>
+            <icon scale="1" path="SignalPID.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalPID.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.5" enabled="true" a="0" name="u"/>
+            <port x="0" y="0.5" enabled="true" a="180" name="e"/>
+            <port x="0" y="0.9" enabled="true" a="180" name="de" enabled="false"/>
+        </ports>
+        <help>
+	  <text>Manual implementation of a PID controller using standard form parameters. If you are familiar with other parameters convert according to: K=Kp, Ti=K/Ki, Td=Kd/K. Optional port "de" can be activated and if connected, the derivative signal from that port will be used instead of the actual control error signal.</text> 
+        </help>
+    </modelobject>
+</hopsanobjectappearance>

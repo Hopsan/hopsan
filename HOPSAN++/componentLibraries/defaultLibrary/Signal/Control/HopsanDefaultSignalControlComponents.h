@@ -3,5 +3,6 @@
 
 #include "SignalPIlead.hpp"
 #include "SignalPID.hpp"
+#include "SignalPID2.hpp"
 
 #endif // HOPSANDEFAULTSIGNALCONTROLCOMPONENTS_H

@@ -301,7 +301,8 @@ HEADERS += \
     Special/AeroComponents/AeroAircraft6DOFSS.hpp \
     Special/AeroComponents/AeroCombustionChamberMono.hpp \
     Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp \
-    Special/CombustionEngine.hpp
+    Special/CombustionEngine.hpp \
+    Signal/Control/SignalPID2.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
@@ -310,6 +311,5 @@ SOURCES += \
 OTHER_FILES += \
     Special/SignalFFB/HopsanDefaultFBBComponents.cci \
     Electric/HopsanDefaultElectricComponents.cci \
-    Signal/Filters/hp1filter.svg \
     Signal/HopsanDefaultSignalComponents.cci \
     Special/AeroComponents/HopsanDefaultAerocomponents.cci
