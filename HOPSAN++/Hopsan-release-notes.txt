@@ -65,7 +65,8 @@
 - Fixed: If recompilation of c++ component fails, model "dies", then when trying to reopen it hopsan crash
 - Fixed: Units in signal ports are always SI, even if custom default units are chosen in options dialogue
 - Fixed: Change unit does not seem to work in scopes
-- Fixed: Always load last session setting was ignored when loading configuration file (Now enabled, can be changed in options)
+
+- Other: Removed option to automatically load last session at startup
 
 
 0.6.2

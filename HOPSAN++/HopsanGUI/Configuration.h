@@ -72,7 +72,6 @@ public:
     QStringList getRecentModels();
     QStringList getRecentGeneratorModels();
     QStringList getLastSessionModels();
-    bool getAlwaysLoadLastSession() const;
 
     QString getLastScriptFile();
     QString getInitScript();
@@ -110,7 +109,6 @@ public:
     int getParallelAlgorithm();
 
     void setLibraryStyle(int value);
-    void setAlwaysLoadLastSession(bool value);
     void setShowPopupHelp(bool value);
     void setUseNativeStyleSheet(bool value);
     void setInvertWheel(bool value);
@@ -165,7 +163,6 @@ private:
     void loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement);
 
     int mLibraryStyle;
-    bool mAlwaysLoadLastSession;
     bool mShowPopupHelp;
     bool mUseNativeStyleSheet;
     bool mInvertWheel;

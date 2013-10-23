@@ -161,7 +161,6 @@ SOURCES += main.cpp \
     Widgets/QuickNavigationWidget.cpp \
     GUIObjects/GUIContainerPort.cpp \
     Dialogs/ContainerPortPropertiesDialog.cpp \
-    Dialogs/WelcomeDialog.cpp \
     Dialogs/HelpDialog.cpp \
     Dependencies/BarChartPlotter/plotterbase.cpp \
     Dependencies/BarChartPlotter/barchartplotter.cpp \
@@ -242,7 +241,6 @@ HEADERS += MainWindow.h \
     Widgets/QuickNavigationWidget.h \
     GUIObjects/GUIContainerPort.h \
     Dialogs/ContainerPortPropertiesDialog.h \
-    Dialogs/WelcomeDialog.h \
     Dialogs/HelpDialog.h \
     Dependencies/BarChartPlotter/plotterbase.h \
     Dependencies/BarChartPlotter/barchartplotter.h \

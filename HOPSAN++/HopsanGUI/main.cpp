@@ -31,7 +31,6 @@
 #include "MainWindow.h"
 #include "Configuration.h"
 #include "CopyStack.h"
-#include "Dialogs/WelcomeDialog.h"
 #include "Utilities/GUIUtilities.h"
 #include "DesktopHandler.h"
 
@@ -81,7 +80,7 @@ int main(int argc, char *argv[])
 
     //Show main window and initialize workspace
     QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
-    //mainwindow.initializeWorkspace();
+    mainwindow.initializeWorkspace();
 
     return a.exec();
 }

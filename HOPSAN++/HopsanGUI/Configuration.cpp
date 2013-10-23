@@ -55,7 +55,6 @@ void Configuration::saveToXml()
 
     QDomElement settings = appendDomElement(configRoot,"settings");
     appendDomIntegerNode(settings, "librarystyle", mLibraryStyle);
-    appendDomBooleanNode(settings, "alwaysloadlastsession", mAlwaysLoadLastSession);
     appendDomBooleanNode(settings, "showpopuphelp", mShowPopupHelp);
     appendDomBooleanNode(settings, "nativestylesheet", mUseNativeStyleSheet);
     appendDomTextNode(settings, "backgroundcolor", mBackgroundColor.name());
@@ -332,7 +331,6 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     mPLOExportVersion = parseDomIntegerNode(rDomElement.firstChildElement("ploexportversion"), mPLOExportVersion);
 
     mShowHiddenNodeDataVariables = parseDomBooleanNode(rDomElement.firstChildElement("showhiddennodedatavariables"), mShowHiddenNodeDataVariables);
-    mAlwaysLoadLastSession = parseDomBooleanNode(rDomElement.firstChildElement("alwaysloadlastsession"), mAlwaysLoadLastSession);
     mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement("showpopuphelp"), mShowPopupHelp);
     mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement("nativestylesheet"), mUseNativeStyleSheet);
     mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement("antialiasing"), mAntiAliasing);
@@ -565,13 +563,6 @@ void Configuration::loadScriptSettings(QDomElement &rPythonElement, QDomElement 
 int Configuration::getLibraryStyle()
 {
     return this->mLibraryStyle;
-}
-
-
-//! @brief Returns whether or not to load the last session
-bool Configuration::getAlwaysLoadLastSession() const
-{
-    return this->mAlwaysLoadLastSession;
 }
 
 
@@ -1032,15 +1023,6 @@ int Configuration::getParallelAlgorithm()
 void Configuration::setLibraryStyle(int value)
 {
     this->mLibraryStyle = value;
-    saveToXml();
-}
-
-
-//! @brief Set function for invert wheel option
-//! @param value Desired setting
-void Configuration::setAlwaysLoadLastSession(bool value)
-{
-    this->mAlwaysLoadLastSession = value;
     saveToXml();
 }
 

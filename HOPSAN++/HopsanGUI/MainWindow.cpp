@@ -61,7 +61,6 @@
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
 #include "Dialogs/HelpDialog.h"
-#include "Dialogs/WelcomeDialog.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
 #include "Dialogs/ComponentGeneratorDialog.h"

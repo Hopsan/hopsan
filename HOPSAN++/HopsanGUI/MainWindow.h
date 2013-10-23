@@ -43,7 +43,6 @@ class WelcomeWidget;
 class Configuration;
 class CopyStack;
 class AboutDialog;
-class WelcomeDialog;
 class HelpDialog;
 class OptimizationDialog;
 class SensitivityAnalysisDialog;
@@ -219,7 +218,6 @@ private:
 
     //Dialogs
     OptionsDialog *mpOptionsDialog;
-    WelcomeDialog *mpWelcomeDialog; //! @todo This is never used, should probably be removed (including the class)
     AboutDialog *mpAboutDialog;
     OptimizationDialog *mpOptimizationDialog;
     SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;
