@@ -28,10 +28,15 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 #--------------------------------------------------------
 # Set the PythonQt paths and dll/so post linking copy command
 d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
-isEmpty(d):error('Failed to find PythonQt libs, have you compiled them and put them in the expected location')
-LIBS *= $$magic_hopsan_libpath
-INCLUDEPATH *= $$magic_hopsan_includepath
-QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+!isEmpty(d){
+    DEFINES *= USEPYTHONQT       #If PythonQt was found then lets build GUI with PythonQt and Python support
+    message(Compiling HopsanGUI with PythonQt support)
+    LIBS *= $$magic_hopsan_libpath
+    INCLUDEPATH *= $$magic_hopsan_includepath
+    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+} else {
+    message(Compiling HopsanGUI WITHOUT PythonQt and Python support)
+}
 #--------------------------------------------------------
 
 #--------------------------------------------------------

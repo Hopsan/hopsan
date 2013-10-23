@@ -96,7 +96,6 @@ public:
     MessageWidget *mpMessageWidget;
     TerminalWidget *mpTerminalWidget;
     PlotTreeWidget *mpPlotWidget;
-    PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
     QGridLayout *mpCentralGridLayout;
@@ -237,6 +236,9 @@ private:
 
     QWidget *mpCentralWidget;
     QGridLayout *mpTabgrid;
+
+    // Widgets
+    PyDockWidget *mpPyDockWidget;
 
     //Menubar items
     QMenuBar *mpMenuBar;

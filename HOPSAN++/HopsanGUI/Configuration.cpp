@@ -170,8 +170,10 @@ void Configuration::saveToXml()
     }
 
     //Save python session
+#ifdef USEPYTHONQT
     QDomElement python = appendDomElement(configRoot, "python");
     gpMainWindow->getPythonDock()->saveSettingsToDomElement(python);
+#endif
 
     QDomElement hcom = appendDomElement(configRoot, "hcom");
     appendDomTextNode(hcom, "pwd", mHcomWorkingDirectory);

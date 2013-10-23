@@ -163,9 +163,14 @@ MainWindow::MainWindow(QWidget *parent)
     mpHelpDialog = new HelpDialog(0);
 
     //Create the Python widget
+#ifdef USEPYTHONQT
     mpPyDockWidget = new PyDockWidget(this, this);
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
+#else
+    mpPyDockWidget = 0;
+#endif
+
 
     QTime time;
     time.start();
@@ -220,8 +225,10 @@ MainWindow::MainWindow(QWidget *parent)
     pHideTerminalButton->setChecked(false);
     mpCentralGridLayout->addWidget(pHideTerminalButton,5,0,1,4, Qt::AlignCenter);
     connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpTerminalDock, SLOT(setVisible(bool)));
-    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpPyDockWidget, SLOT(setVisible(bool)));
     connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpMessageDock, SLOT(setVisible(bool)));
+#ifdef USEPYTHONQT
+    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpPyDockWidget, SLOT(setVisible(bool)));
+#endif
 
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
@@ -255,9 +262,13 @@ MainWindow::MainWindow(QWidget *parent)
     tabifyDockWidget(mpSystemParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
 
+#ifdef USEPYTHONQT
     tabifyDockWidget(mpTerminalDock, mpPyDockWidget);
     tabifyDockWidget(mpPyDockWidget, mpMessageDock);
     tabifyDockWidget(mpMessageDock, mpTerminalDock);
+#else
+    tabifyDockWidget(mpTerminalDock, mpMessageDock);
+#endif
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
@@ -350,7 +361,9 @@ MainWindow::~MainWindow()
 //! All startup events that does not involve creating the main window and its widgets/dialogs belongs here.
 void MainWindow::initializeWorkspace()
 {
+#ifdef USEPYTHONQT
     mpPyDockWidget->runCommand(gConfig.getInitScript());
+#endif
 
     gpSplash->showMessage("Loading component libraries...");
 
@@ -940,7 +953,9 @@ void MainWindow::createMenus()
     mpViewMenu->addAction(mpTerminalDock->toggleViewAction());
     mpViewMenu->addAction(mpConnectivityToolBar->toggleViewAction());
     mpViewMenu->addAction(mpMessageDock->toggleViewAction());
+#ifdef USEPYTHONQT
     mpViewMenu->addAction(mpPyDockWidget->toggleViewAction());
+#endif
     mpViewMenu->addAction(mpSimToolBar->toggleViewAction());
 
     mpToolsMenu->addAction(mpOptionsAction);

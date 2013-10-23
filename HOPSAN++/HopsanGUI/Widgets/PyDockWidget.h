@@ -28,10 +28,11 @@
 #include <QtGui>
 #include <QtXml>
 
+// Forward declarations
 class MainWindow;
 class PythonQtScriptingConsole;
 
-
+#ifdef USEPYTHONQT
 class PyDockWidget : public QDockWidget
 {
     Q_OBJECT
@@ -73,5 +74,6 @@ public:
     PyWidget(QWidget * parent = 0);
     QSize sizeHint() const;
 };
+#endif
 
 #endif // PYDOCKWIDGET_H

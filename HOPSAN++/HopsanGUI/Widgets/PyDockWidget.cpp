@@ -24,6 +24,8 @@
 
 #include "PyDockWidget.h"
 
+#ifdef USEPYTHONQT
+
 #include "PythonQt.h"
 #include "PythonQt_QtAll.h"
 #include "gui/PythonQtScriptingConsole.h"
@@ -247,3 +249,5 @@ QSize PyWidget::sizeHint() const
     size.rheight() = 1; //pixels
     return size;
 }
+
+#endif
