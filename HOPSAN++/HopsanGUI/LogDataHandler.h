@@ -48,11 +48,11 @@ public:
 
     typedef QMap< QString, QPointer<LogVariableContainer> > LogDataMapT;
     typedef QList<QVector<double> > TimeListT;
-    typedef QList<VariableDescription> FavoriteListT;
+    typedef QList<VariableCommonDescription> FavoriteListT;
 
     void setParentContainerObject(ContainerObject *pParent);
 
-    void collectPlotDataFromModel(bool overWriteLastGeneration=false);
+    void collectLogDataFromModel(bool overWriteLastGeneration=false);
     void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables, int version=-1) const;
@@ -74,16 +74,18 @@ public:
     void clear();
 
     const SharedLogVariableDataPtrT getTimeVectorPtr(int generation) const;
-    QVector<double> getTimeVectorCopy(int generation) const;
-    QVector<double> getPlotDataValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
-    QVector<double> getPlotDataValues(const QString &rName, int generation);
-    SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
-    SharedLogVariableDataPtrT getPlotData(const QString &rName, const int generation) const;
-    QVector<SharedLogVariableDataPtrT> getMultipleLogData(const QRegExp &rNameExp, const int generation=-1) const;
-    bool hasPlotData(const QString &rFullName, const int generation=-1);
+    QVector<double> copyTimeVector(const int generation) const;
+    QVector<double> copyLogDataVariableValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
+    QVector<double> copyLogDataVariableValues(const QString &rName, const int generation);
+    SharedLogVariableDataPtrT getLogVariableDataPtr(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
+    SharedLogVariableDataPtrT getLogVariableDataPtr(const QString &rName, const int generation) const;
+    QVector<SharedLogVariableDataPtrT> getMultipleLogVariableDataPtrs(const QRegExp &rNameExp, const int generation=-1) const;
+    bool hasLogVariableData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtGeneration(const int generation) const;
-    QStringList getLogDataVariableNames(QString separator, int generation=-1);
+    QStringList getLogDataVariableNames(const QString &rSeparator, const int generation=-1) const;
+    QList<QString> getImportedVariablesFileNames() const;
+    QList<SharedLogVariableDataPtrT> getImportedVariablesForFile(const QString &rFileName);
 
     void definePlotAlias(QString fullName);
     bool definePlotAlias(const QString alias, const QString fullName);
@@ -170,16 +172,23 @@ public slots:
 
 signals:
     void newDataAvailable();
+    void dataRemoved();
     void closePlotsWithOwnedData();
 
+private slots:
+    void forgetImportedLogDataVariable(SharedLogVariableDataPtrT pData);
+
 private:
-    SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector);
-    SharedLogVariableDataPtrT insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
+    typedef QMap< QString, QMap<QString,SharedLogVariableDataPtrT> > ImportedLogDataMapT;
+    SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector, VariableUniqueDescription *pVarUniqDesc);
+    SharedLogVariableDataPtrT insertVariableBasedOnDescription(VariableCommonDescription &rVarComDesc, VariableUniqueDescription *pVarUniqDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
     QString getNewCacheName();
+    void rememberIfImported(SharedLogVariableDataPtrT pData);
 
     ContainerObject *mpParentContainerObject;
 
     LogDataMapT mLogDataMap;
+    ImportedLogDataMapT mImportedLogDataMap;
 
     FavoriteListT mFavoriteVariables;
     QMap<int, SharedMultiDataVectorCacheT> mGenerationCacheMap;

@@ -901,7 +901,7 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
 //! @param portName Name of port form which new data origins
 //! @param dataName Data name (physical quantity) of new data
 //! @param dataUnit Unit of new data
-void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID)
+void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableCommonDescription &rVarDesc, HopsanPlotIDEnumT plotID)
 {
     LogVariableContainer *cont = new LogVariableContainer(rVarDesc,0);
     cont->addDataGeneration(0, SharedLogVariableDataPtrT(), xArray);
@@ -2939,23 +2939,31 @@ void PlotTab::dropEvent(QDropEvent *event)
         if(mimeText.startsWith("HOPSANPLOTDATA:"))
         {
             qDebug() << mimeText;
-            mimeText.remove("HOPSANPLOTDATA:");
+            QStringList fields = mimeText.split(":");
+            if (fields.size() > 2)
+            {
+                QString &name = fields[1];
+                bool parseOk = false;
+                int gen = fields[2].toInt(&parseOk);
+                if (!parseOk)
+                {
+                    gen = -1;
+                }
 
-            QCursor cursor;
-            if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FirstPlot) >= 1)
-            {
-//                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
-//                setCustomXVector(gpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
-                setCustomXVectorForAll(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1));
-                //! @todo do we need to reset to default unit too ?
-            }
-            else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
-            {
-                mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
-            }
-            else
-            {
-                mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
+                QCursor cursor;
+                if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FirstPlot) >= 1)
+                {
+                    setCustomXVectorForAll(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen));
+                    //! @todo do we need to reset to default unit too ?
+                }
+                else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
+                {
+                    mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yLeft);
+                }
+                else
+                {
+                    mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yRight);
+                }
             }
         }
     }

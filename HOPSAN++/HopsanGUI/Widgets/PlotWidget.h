@@ -46,6 +46,7 @@ public:
     QString getDataName();
     QString getDataUnit();
     QString getAliasName();
+    int getGeneration() const;
 
 private:
     SharedLogVariableDataPtrT mpData;
@@ -75,7 +76,7 @@ protected:
     QPointF dragStartPosition;
 
 private:
-    QList<VariableDescription> mAvailableVariables;
+    QList<VariableCommonDescription> mAvailableVariables;
     QPointer<LogDataHandler> mpLogDataHandler;
 };
 

@@ -458,7 +458,7 @@ PlotWindow::~PlotWindow()
 }
 
 
-void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
+void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableCommonDescription &rVarDesc)
 {
     getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, FirstPlot);
 }
@@ -995,12 +995,12 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
 
     addPlotTab("Nyquist Plot");
-    PlotCurve *pNyquistCurve1 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
+    PlotCurve *pNyquistCurve1 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
                                               vRe, vIm, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FirstPlot, NyquistType);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
 
-    PlotCurve *pNyquistCurve2 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
+    PlotCurve *pNyquistCurve2 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
                                               vRe, vImNeg, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FirstPlot, NyquistType);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
@@ -1009,12 +1009,12 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     getCurrentPlotTab()->updateGeometry();
 
     addPlotTab("Bode Diagram");
-    PlotCurve *pGainCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
+    PlotCurve *pGainCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
                                           F, vBodeGain, pOutputCurve->getAxisY(),
                                           getCurrentPlotTab(), FirstPlot, BodeGainType);
     getCurrentPlotTab()->addCurve(pGainCurve);
 
-    PlotCurve *pPhaseCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
+    PlotCurve *pPhaseCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
                                            F, vBodePhase, pOutputCurve->getAxisY(),
                                            getCurrentPlotTab(), SecondPlot, BodePhaseType);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SecondPlot);
@@ -1056,14 +1056,14 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     SharedLogVariableDataPtrT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
     if(gainVar.isNull())
     {
-        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData("bodegain",-1);
+        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
     }
     gainVar.data()->assignFrom(F, vBodeGain);
 
     SharedLogVariableDataPtrT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
     if(phaseVar.isNull())
     {
-        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData("bodegain",-1);
+        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
     }
     phaseVar.data()->assignFrom(F, vBodePhase);
 }

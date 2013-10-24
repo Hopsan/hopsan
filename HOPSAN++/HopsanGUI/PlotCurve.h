@@ -118,7 +118,7 @@ public:
               HopsanPlotIDEnumT plotID=FirstPlot,
               HopsanPlotCurveTypeEnumT curveType=PortVariableType);
 
-    PlotCurve(const VariableDescription &rVarDesc,
+    PlotCurve(const VariableCommonDescription &rVarDesc,
               const QVector<double> &rXVector,
               const QVector<double> &rYVector,
               int axisY=QwtPlot::yLeft,
@@ -153,8 +153,8 @@ public:
     void setLocalCurvePlotScaleAndOffset(const double scale, const double offset);
     void setDataPlotOffset(const double offset);
 
-    void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
-    void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
+    void setCustomData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
+    void setCustomXData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvXdata);
     void setCustomXData(SharedLogVariableDataPtrT pData);
     void setCustomXData(const QString fullName);
 

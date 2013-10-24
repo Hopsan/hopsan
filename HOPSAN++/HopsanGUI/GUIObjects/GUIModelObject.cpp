@@ -408,7 +408,7 @@ void ModelObject::showLosses()
     if(mpParentContainerObject->mpAvgPwrRadioButton->isChecked())
     {
         unit = " W";
-        div = mpParentContainerObject->getLogDataHandler()->getTimeVectorCopy(-1).last();
+        div = mpParentContainerObject->getLogDataHandler()->copyTimeVector(-1).last();
     }
 
     if(getTypeCQS() == "S")
@@ -444,9 +444,9 @@ void ModelObject::showLosses()
                         QString componentName = vConnectedPorts.at(i)->getParentModelObjectName();
                         QString portName = vConnectedPorts.at(i)->getName();
                         //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).intensity);
-                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).flow);
-                        QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->getTimeVectorCopy(generation);
+                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, componentName, portName, NodeInfo(type).intensity);
+                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, componentName, portName, NodeInfo(type).flow);
+                        QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
                         for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                         {
                             //! @todo here and bellow there is a risk for slowdown when timevector is cached to disk, should copy the vector first (at is the same as peek)
@@ -458,9 +458,9 @@ void ModelObject::showLosses()
                 else    //Normal port!
                 {
                     //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity);
-                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow);
-                    QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->getTimeVectorCopy(generation);
+                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity);
+                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow);
+                    QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
                     for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {
                         mTotalLosses += vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1) - vTime.at(s));

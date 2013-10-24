@@ -66,7 +66,7 @@ PlotVariableTreeItem::PlotVariableTreeItem(SharedLogVariableDataPtrT pData, QTre
     {
         this->setText(0, alias + ", [" + dataUnit + "]");
     }
-    else if (parent->text(0) == "__Imported__")
+    else if ( (parent->parent()!=0) && (parent->parent()->text(0) == "__Imported__"))
     {
         this->setText(0, pData->getFullVariableName() + ", [" + dataUnit + "]");
     }
@@ -133,6 +133,11 @@ QString PlotVariableTreeItem::getAliasName()
     return mpData->getAliasName();
 }
 
+int PlotVariableTreeItem::getGeneration() const
+{
+    return mpData->getGeneration();
+}
+
 
 //! @brief Constructor for the variable tree widget
 //! @param parent Pointer to the main window
@@ -160,6 +165,7 @@ void PlotVariableTree::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandle
 
     mpLogDataHandler = pLogDataHandler;
     connect(mpLogDataHandler, SIGNAL(newDataAvailable()), this, SLOT(updateList()));
+    connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(updateList()));
     updateList();
 }
 
@@ -201,19 +207,62 @@ void PlotVariableTree::updateList()
     }
 
 
-    QTreeWidgetItem *pComponentLevelItem;             //Tree item for components
-    QTreeWidgetItem *pAliasLevelItem=0;               //Tree item for aliases
-    QTreeWidgetItem *pImportedLevelItem=0;               //Tree item for imports
-    PlotVariableTreeItem *plotVariableLevelItem;      //Tree item for variables - reimplemented so they can store information about the variable
+    QTreeWidgetItem *pComponentLevelItem;             // Tree item for components
+    QTreeWidgetItem *pAliasLevelItem=0;               // Tree item for aliases
+    QTreeWidgetItem *pImportedLevelItem=0;            // Tree item for imports
+    PlotVariableTreeItem *plotVariableLevelItem;      // Tree item for variables - reimplemented so they can store information about the variable
 
-    QStringList aliasLevelItemList, importLevelItemList;
+    // List imported files and variables
     QMap<QString, QTreeWidgetItem*> importedLevelItemMap;
+    QList<QString> importedFileNames = mpLogDataHandler->getImportedVariablesFileNames();
+    for (int f=0; f<importedFileNames.size(); ++f)
+    {
+        QList<SharedLogVariableDataPtrT> vars = mpLogDataHandler->getImportedVariablesForFile(importedFileNames[f]);
+        if (!vars.isEmpty())
+        {
+            if (!pImportedLevelItem)
+            {
+                pImportedLevelItem = new QTreeWidgetItem();
+                pImportedLevelItem->setText(0, "__Imported__");
+                QFont tempFont = pImportedLevelItem->font(0);
+                tempFont.setBold(true);
+                pImportedLevelItem->setFont(0, tempFont);
+                addTopLevelItem(pImportedLevelItem);
+            }
+
+            for (int v=0; v<vars.size(); ++v)
+            {
+                QString fName = vars[v]->getImportedFromFileName();
+                QTreeWidgetItem *pImportFileLevelItem = importedLevelItemMap.value(fName, 0);
+                // If this file is not alrady added then create it
+                if (!pImportFileLevelItem)
+                {
+                    pImportFileLevelItem = new QTreeWidgetItem();
+                    pImportFileLevelItem->setText(0, fName);
+                    QFont tempFont = pImportFileLevelItem->font(0);
+                    tempFont.setBold(true);
+                    pImportFileLevelItem->setFont(0, tempFont);
+                    pImportFileLevelItem->setExpanded(expandedItems.contains(pImportedLevelItem->text(0)));
+
+                    //Also remember that we created it
+                    importedLevelItemMap.insert(fName, pImportFileLevelItem);
+                    pImportedLevelItem->addChild(pImportFileLevelItem);
+                }
+
+                // Add a sub item with data name name
+                new PlotVariableTreeItem(vars[v], pImportFileLevelItem);
+            }
+        }
+    }
+
+
+    QStringList aliasLevelItemList;
     QMap<QString, QTreeWidgetItem*> componentLevelItemMap;
     QMap<QString, QTreeWidgetItem*>::iterator cilIt;
     QVector<SharedLogVariableDataPtrT> variables = mpLogDataHandler->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
-        if (variables[i]->getVariableDescription()->mVariableSourceType == VariableDescription::TempVariableType)
+        if (variables[i]->getVariableSource() == TempVariableType)
         {
             continue;
         }
@@ -238,39 +287,9 @@ void PlotVariableTree::updateList()
             aliasLevelItemList.append(variables[i]->getAliasName());
         }
         // Handle if variable is imported
-        else if (variables[i]->getVariableDescription()->mVariableSourceType == VariableDescription::ImportedVariableType)
+        else if (variables[i]->getVariableSource() == ImportedVariableType)
         {
-            if (!pImportedLevelItem)
-            {
-                pImportedLevelItem = new QTreeWidgetItem();
-                pImportedLevelItem->setText(0, "__Imported__");
-                QFont tempFont = pImportedLevelItem->font(0);
-                tempFont.setBold(true);
-                pImportedLevelItem->setFont(0, tempFont);
-                addTopLevelItem(pImportedLevelItem);
-            }
-
-            QString fName = variables[i]->getVariableDescription()->mImportFileName;
-            QTreeWidgetItem *pImportFileLevelItem = importedLevelItemMap.value(variables[i]->getVariableDescription()->mImportFileName, 0);
-            // If this file is not alrady added then create it
-            if (!pImportFileLevelItem)
-            {
-                pImportFileLevelItem = new QTreeWidgetItem();
-                pImportFileLevelItem->setText(0, fName);
-                QFont tempFont = pImportFileLevelItem->font(0);
-                tempFont.setBold(true);
-                pImportFileLevelItem->setFont(0, tempFont);
-//                this->addTopLevelItem(pImportFileLevelItem);
-                pImportFileLevelItem->setExpanded(expandedItems.contains(pImportedLevelItem->text(0)));
-
-                //Also remember that we created it
-                importedLevelItemMap.insert(fName, pImportFileLevelItem);
-                pImportedLevelItem->addChild(pImportFileLevelItem);
-            }
-
-            // Add a sub item with data name name
-            new PlotVariableTreeItem(variables[i], pImportFileLevelItem);
-            //importLevelItemList.append(variables[i]->getFullVariableName());
+            // Ignore, handled above
         }
         else
         // Ok, we do not need to add this item as an alias
@@ -456,7 +475,7 @@ void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
     if(item != 0)
     {
         QString mimeText;
-        mimeText = QString("HOPSANPLOTDATA:"+item->getFullName());
+        mimeText = QString("HOPSANPLOTDATA:"+item->getFullName()+QString(":%1").arg(item->getGeneration()));
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
         mimeData->setText(mimeText);

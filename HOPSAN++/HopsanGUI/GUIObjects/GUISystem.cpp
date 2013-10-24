@@ -456,8 +456,8 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 
         //Save favorite variables
         QDomElement xmlFavVars = appendDomElement(guiStuff, HMF_FAVORITEVARIABLES);
-        QList<VariableDescription> favVars = this->getLogDataHandler()->getFavoriteVariableList();
-        QList<VariableDescription>::iterator itf;
+        QList<VariableCommonDescription> favVars = this->getLogDataHandler()->getFavoriteVariableList();
+        QList<VariableCommonDescription>::iterator itf;
         for(itf = favVars.begin(); itf != favVars.end(); ++itf)
         {
             QDomElement favoriteElement = appendDomElement(xmlFavVars, HMF_FAVORITEVARIABLETAG);

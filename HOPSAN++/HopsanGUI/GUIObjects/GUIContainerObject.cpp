@@ -2642,7 +2642,7 @@ void ContainerObject::flipSubObjectsVertical()
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
 void ContainerObject::collectPlotData(bool overWriteLastGeneration)
 {
-    mpLogDataHandler->collectPlotDataFromModel(overWriteLastGeneration);
+    mpLogDataHandler->collectLogDataFromModel(overWriteLastGeneration);
 
     // Now collect plotdata from all subsystems
     ModelObjectMapT::iterator it;
@@ -2743,7 +2743,7 @@ void ContainerObject::showLossesFromDialog()
     mLossesVisible=true;
 
     bool usePower = mpAvgPwrRadioButton->isChecked();
-    double time = this->mpLogDataHandler->getTimeVectorCopy(-1).last();
+    double time = this->mpLogDataHandler->copyTimeVector(-1).last();
 
     double limit=0;
     if(mpMinLossesSlider->isEnabled())

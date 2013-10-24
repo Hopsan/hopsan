@@ -3609,7 +3609,7 @@ void HcomHandler::getVariables(QString str, QStringList &variables) const
         {
             QString shortName = names[n];
             toShortDataNames(shortName);
-            if(!pSystem->getLogDataHandler()->getPlotData(names[n],i).isNull())
+            if(!pSystem->getLogDataHandler()->getLogVariableDataPtr(names[n],i).isNull())
             {
                 namesWithGeneration.append(shortName+"."+QString::number(i+1));
             }
@@ -3769,7 +3769,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(pValueData != 0) { value = pValueData->getFullVariableName(); }
 
             gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
-            gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(left,-1).data()->preventAutoRemoval();
+            gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(left,-1).data()->preventAutoRemoval();
             //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
             return true;
         }
@@ -3885,7 +3885,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 //    SharedLogVariableDataPtrT pRetVal = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
 //    if(!pRetVal)
 //    {
-        SharedLogVariableDataPtrT pRetVal = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(fullName,generation);
+        SharedLogVariableDataPtrT pRetVal = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(fullName,generation);
 //    }
     return pRetVal;
 }

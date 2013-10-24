@@ -173,8 +173,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
         //Check if dropped item is a plot data string, and attempt to open a plot window if so
         else if(text.startsWith("HOPSANPLOTDATA:"))
         {
-            text.remove("HOPSANPLOTDATA:");
-            getContainerPtr()->getLogDataHandler()->plotVariable("", text, -1, 0);
+            QStringList fields = text.split(":");
+            if (fields.size() > 2)
+            {
+                getContainerPtr()->getLogDataHandler()->plotVariable("", fields[1], fields[2].toInt(), 0);
+            }
             return;
         }
 

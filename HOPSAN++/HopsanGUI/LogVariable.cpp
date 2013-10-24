@@ -34,7 +34,7 @@
 //! @brief Creates a free unhandled time vector logvariable, it can not have generations or be cached
 SharedLogVariableDataPtrT createFreeTimeVariabel(const QVector<double> &rTime)
 {
-    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
+    SharedVariableCommonDescriptionT pVarDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription());
     pVarDesc->mDataName = TIMEVARIABLENAME;
     pVarDesc->mDataUnit = "s";
     // Since there is no parent we can nog cahe this to disk or give it a generation, it is a free floating time vector (logvariable)
@@ -81,12 +81,12 @@ void splitConcatName(const QString fullName, QString &rCompName, QString &rPortN
     }
 }
 
-QString VariableDescription::getFullName() const
+QString VariableCommonDescription::getFullName() const
 {
     return makeConcatName(mComponentName,mPortName,mDataName);
 }
 
-QString VariableDescription::getFullNameWithSeparator(const QString sep) const
+QString VariableCommonDescription::getFullNameWithSeparator(const QString sep) const
 {
     if (mComponentName.isEmpty())
     {
@@ -98,14 +98,14 @@ QString VariableDescription::getFullNameWithSeparator(const QString sep) const
     }
 }
 
-void VariableDescription::setFullName(const QString compName, const QString portName, const QString dataName)
+void VariableCommonDescription::setFullName(const QString compName, const QString portName, const QString dataName)
 {
     mComponentName = compName;
     mPortName = portName;
     mDataName = dataName;
 }
 
-bool VariableDescription::operator==(const VariableDescription &other) const
+bool VariableCommonDescription::operator==(const VariableCommonDescription &other) const
 {
     return (mComponentName == other.mComponentName && mPortName == other.mPortName && mDataName == other.mDataName && mDataUnit == other.mDataUnit);
 }
@@ -155,10 +155,10 @@ void LogVariableData::setPlotScale(double scale)
     emit dataChanged();
 }
 
-LogVariableData::LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
+LogVariableData::LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableCommonDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
 {
     mpParentVariableContainer = pParent;
-    mpVariableDescription = varDesc;
+    mpVariableCommonDescription = varDesc;
     mDataPlotOffset = 0.0;
     mDataPlotScale = 1.0;
     mGeneration = generation;
@@ -175,9 +175,21 @@ LogVariableData::~LogVariableData()
     }
 }
 
-const SharedVariableDescriptionT LogVariableData::getVariableDescription() const
+const SharedVariableCommonDescriptionT LogVariableData::getVariableCommonDescription() const
 {
-    return mpVariableDescription;
+    return mpVariableCommonDescription;
+}
+
+const SharedVariableUniqueDescriptionT LogVariableData::getVariableUniqueDescription() const
+{
+    return mpVariableUniqueDescription;
+}
+
+void LogVariableData::setVariableUniqueDescription(const VariableUniqueDescription &rDesc)
+{
+    // We need to make a copy here so that it is truly unique
+    mpVariableUniqueDescription.clear();
+    mpVariableUniqueDescription = SharedVariableUniqueDescriptionT(new VariableUniqueDescription(rDesc));
 }
 
 const SharedLogVariableDataPtrT LogVariableData::getTimeVector() const
@@ -185,56 +197,69 @@ const SharedLogVariableDataPtrT LogVariableData::getTimeVector() const
     return mSharedTimeVectorPtr;
 }
 
+VariableSourceTypeT LogVariableData::getVariableSource() const
+{
+    // First check if we have unique override
+    if (mpVariableUniqueDescription)
+    {
+        return mpVariableUniqueDescription->mVariableSourceType;
+    }
+    else
+    {
+        return mpVariableCommonDescription->mVariableSourceType;
+    }
+}
+
 const QString &LogVariableData::getAliasName() const
 {
-    return mpVariableDescription->mAliasName;
+    return mpVariableCommonDescription->mAliasName;
 }
 
 QString LogVariableData::getFullVariableName() const
 {
-    return mpVariableDescription->getFullName();
+    return mpVariableCommonDescription->getFullName();
 }
 
 QString LogVariableData::getFullVariableNameWithSeparator(const QString sep) const
 {
-    return mpVariableDescription->getFullNameWithSeparator(sep);
+    return mpVariableCommonDescription->getFullNameWithSeparator(sep);
 }
 
 QString LogVariableData::getSmartName() const
 {
-    if (mpVariableDescription->mAliasName.isEmpty())
+    if (mpVariableCommonDescription->mAliasName.isEmpty())
     {
-        return mpVariableDescription->getFullName();
+        return mpVariableCommonDescription->getFullName();
     }
     else
     {
-        return mpVariableDescription->mAliasName;
+        return mpVariableCommonDescription->mAliasName;
     }
 }
 
 const QString &LogVariableData::getModelPath() const
 {
-    return mpVariableDescription->mModelPath;
+    return mpVariableCommonDescription->mModelPath;
 }
 
 const QString &LogVariableData::getComponentName() const
 {
-    return mpVariableDescription->mComponentName;
+    return mpVariableCommonDescription->mComponentName;
 }
 
 const QString &LogVariableData::getPortName() const
 {
-    return mpVariableDescription->mPortName;
+    return mpVariableCommonDescription->mPortName;
 }
 
 const QString &LogVariableData::getDataName() const
 {
-    return mpVariableDescription->mDataName;
+    return mpVariableCommonDescription->mDataName;
 }
 
 const QString &LogVariableData::getDataUnit() const
 {
-    return mpVariableDescription->mDataUnit;
+    return mpVariableCommonDescription->mDataUnit;
 }
 
 const QString &LogVariableData::getPlotScaleDataUnit() const
@@ -256,7 +281,7 @@ const QString &LogVariableData::getActualPlotDataUnit() const
 
 bool LogVariableData::hasAliasName() const
 {
-    return !mpVariableDescription->mAliasName.isEmpty();
+    return !mpVariableCommonDescription->mAliasName.isEmpty();
 }
 
 int LogVariableData::getGeneration() const
@@ -292,6 +317,33 @@ int LogVariableData::getNumGenerations() const
         return 1;
     }
     return mpParentVariableContainer->getNumGenerations();
+}
+
+bool LogVariableData::isImported() const
+{
+    // first check unique override
+    if (mpVariableUniqueDescription)
+    {
+        return (mpVariableUniqueDescription->mVariableSourceType == ImportedVariableType);
+    }
+    else
+    {
+        return (mpVariableCommonDescription->mVariableSourceType == ImportedVariableType);
+    }
+}
+
+QString LogVariableData::getImportedFromFileName() const
+{
+    // Check unique override
+    if (mpVariableUniqueDescription)
+    {
+        return mpVariableUniqueDescription->mImportFileName;
+    }
+    else
+    {
+        // This should never happen
+        return QString();
+    }
 }
 
 const SharedLogVariableDataPtrT LogVariableData::getSharedTimePointer() const
@@ -539,7 +591,7 @@ void LogVariableData::frequencySpectrum(const SharedLogVariableDataPtrT pTime, c
 
     //! @todo need an easier way to create individual free data variables, hmm dont I already have one in Logdatahandler ?
     //! @todo maybe need a special function to create a free time vector log data variable
-    VariableDescription varDesc;
+    VariableCommonDescription varDesc;
     varDesc.mDataName = TIMEVARIABLENAME;
     varDesc.mDataUnit = "s";
     LogVariableContainer dummyTimeContainer(varDesc, 0);
@@ -843,9 +895,9 @@ void LogVariableContainer::setAliasName(const QString alias)
     emit nameChanged();
 }
 
-QString VariableDescription::getVariableSourceTypeString() const
+QString getVariableSourceTypeString(const VariableSourceTypeT type)
 {
-    switch (mVariableSourceType)
+    switch (type)
     {
     case ScriptVariableType :
         return "ScriptVariableType";
@@ -898,7 +950,7 @@ QList<int> LogVariableContainer::getGenerations() const
     return mDataGenerations.keys();
 }
 
-SharedVariableDescriptionT LogVariableContainer::getVariableDescription() const
+SharedVariableCommonDescriptionT LogVariableContainer::getVariableCommonDescription() const
 {
     return mVariableDescription;
 }
@@ -978,6 +1030,7 @@ void LogVariableContainer::removeDataGeneration(const int generation, const bool
     {
         if (force)
         {
+            emit logVariableBeingRemoved(mDataGenerations.value(generation));
             mDataGenerations.remove(generation);
             mKeepGenerations.removeOne(generation);
         }
@@ -985,6 +1038,7 @@ void LogVariableContainer::removeDataGeneration(const int generation, const bool
     else
     {
         //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
+        emit logVariableBeingRemoved(mDataGenerations.value(generation));
         mDataGenerations.remove(generation);
     }
 
@@ -1025,9 +1079,9 @@ void LogVariableContainer::removeAllGenerations()
     //mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
 }
 
-LogVariableContainer::LogVariableContainer(const VariableDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()
+LogVariableContainer::LogVariableContainer(const VariableCommonDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()
 {
-    mVariableDescription = SharedVariableDescriptionT(new VariableDescription(rVarDesc)); //Copy original data and create a new shared variable description
+    mVariableDescription = SharedVariableCommonDescriptionT(new VariableCommonDescription(rVarDesc)); //Copy original data and create a new shared variable description
     mpParentLogDataHandler = pParentLogDataHandler;
 }
 

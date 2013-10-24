@@ -64,9 +64,17 @@ void CustomXDataDropEdit::dropEvent(QDropEvent *e)
     QString mimeText = e->mimeData()->text();
     if(mimeText.startsWith("HOPSANPLOTDATA:"))
     {
-        mimeText.remove("HOPSANPLOTDATA:");
+        QStringList fields = mimeText.split(":");
+        if (fields.size() > 2)
+        {
+            // We do not want to include gen here, as the curve should decide for it self what gen to use
+            emit newXData(fields[1]);
+        }
     }
-    emit newXData(mimeText);
+    else
+    {
+        emit newXData(mimeText);
+    }
 }
 
 
@@ -346,7 +354,7 @@ PlotCurve::PlotCurve(SharedLogVariableDataPtrT pData,
 }
 
 //! @brief Consturctor for custom data
-PlotCurve::PlotCurve(const VariableDescription &rVarDesc,
+PlotCurve::PlotCurve(const VariableCommonDescription &rVarDesc,
                      const QVector<double> &rXVector,
                      const QVector<double> &rYVector,
                      int axisY,
@@ -576,7 +584,7 @@ bool PlotCurve::setGeneration(int generation)
          //! @todo maybe not set generation if same as current but what aboput custom x-axis
 
         // Make sure we have the data requested
-        SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
+        SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getLogVariableDataPtr(mpData->getFullVariableName(), generation);
         if (pNewData)
         {
             this->disconnect(mpData.data());
@@ -594,7 +602,7 @@ bool PlotCurve::setGeneration(int generation)
             //! @todo why not be able to ask parent data container for other generations
             if (mpCustomXdata->getLogDataHandler())
             {
-                SharedLogVariableDataPtrT pNewXData = mpCustomXdata->getLogDataHandler()->getPlotData(mpCustomXdata->getFullVariableName(), generation);
+                SharedLogVariableDataPtrT pNewXData = mpCustomXdata->getLogDataHandler()->getLogVariableDataPtr(mpCustomXdata->getFullVariableName(), generation);
                 if (pNewXData)
                 {
                     setCustomXData(pNewXData);
@@ -690,7 +698,7 @@ void PlotCurve::setDataPlotOffset(const double offset)
 }
 
 
-void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData)
+void PlotCurve::setCustomData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData)
 {
     //First disconnect all signals from the old data
     this->disconnect(mpData.data());
@@ -710,7 +718,7 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
     updateCurve();
 }
 
-void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata)
+void PlotCurve::setCustomXData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvXdata)
 {
     //! @todo need a nicer way to easily create a new shared logdatavariables
     LogVariableContainer *pData = new LogVariableContainer(rVarDesc,0);
@@ -751,7 +759,7 @@ void PlotCurve::setCustomXData(const QString fullName)
         LogDataHandler *pHandler = mpData->getLogDataHandler();
         if (pHandler)
         {
-            SharedLogVariableDataPtrT pData = pHandler->getPlotData(fullName, mpData->getGeneration());
+            SharedLogVariableDataPtrT pData = pHandler->getLogVariableDataPtr(fullName, mpData->getGeneration());
             if (pData)
             {
                 setCustomXData(pData);
@@ -810,7 +818,7 @@ void PlotCurve::toFrequencySpectrum(const bool doPowerSpectrum)
         timeVec.append(double(i)/max);
     }
 
-    VariableDescription varDesc;
+    VariableCommonDescription varDesc;
     varDesc.mDataName = "Value";
     varDesc.mDataUnit = "-";
     this->setCustomData(varDesc, timeVec, dataVec);

@@ -77,7 +77,7 @@ signals:
     void windowClosed(PlotWindow *pWindow);
 
 public slots:
-    void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc);
+    void setCustomXVector(QVector<double> xarray, const VariableCommonDescription &rVarDesc);
     void setCustomXVector(SharedLogVariableDataPtrT pData);
     void addPlotTab(QString requestedName=QString());
     void updatePalette();

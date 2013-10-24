@@ -85,7 +85,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
 
                     if(!mpAnimationWidget->getPlotDataPtr()->isEmpty())
                     {
-                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->getPlotDataValues(generations, componentName, portName, dataName));
+                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyLogDataVariableValues(generations, componentName, portName, dataName));
                     }
                     mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
                     //qDebug() << "mpData = " << *mpData;

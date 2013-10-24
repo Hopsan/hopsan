@@ -113,11 +113,11 @@ void OptimizationHandler::optComplexInit()
 
     LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
-    if (pHandler->hasPlotData("WorstObjective"))
+    if (pHandler->hasLogVariableData("WorstObjective"))
     {
         pHandler->deleteVariable("WorstObjective");
     }
-    if (pHandler->hasPlotData("BestObjective"))
+    if (pHandler->hasLogVariableData("BestObjective"))
     {
         pHandler->deleteVariable("BestObjective");
     }
@@ -505,11 +505,11 @@ void OptimizationHandler::optParticleInit()
 
     LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
-    if (pHandler->hasPlotData("WorstObjective"))
+    if (pHandler->hasLogVariableData("WorstObjective"))
     {
         pHandler->deleteVariable("WorstObjective");
     }
-    if (pHandler->hasPlotData("BestObjective"))
+    if (pHandler->hasLogVariableData("BestObjective"))
     {
         pHandler->deleteVariable("BestObjective");
     }
@@ -759,8 +759,8 @@ void OptimizationHandler::optPlotPoints()
         QString namey = "par"+QString::number(p)+"y";
         double x = mOptParameters[p][0];
         double y = mOptParameters[p][1];
-        SharedLogVariableDataPtrT parVar_x = pHandler->getPlotData(namex, -1);
-        SharedLogVariableDataPtrT parVar_y = pHandler->getPlotData(namey, -1);
+        SharedLogVariableDataPtrT parVar_x = pHandler->getLogVariableDataPtr(namex, -1);
+        SharedLogVariableDataPtrT parVar_y = pHandler->getLogVariableDataPtr(namey, -1);
         if(!parVar_x)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
@@ -808,7 +808,7 @@ void OptimizationHandler::optPlotBestWorstObj()
     if(!mOptPlotBestWorst) { return; }
 
     LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
-    SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("BestObjective", -1);
+    SharedLogVariableDataPtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
     if(bestVar.isNull())
     {
         //! @todo unit and description
@@ -821,7 +821,7 @@ void OptimizationHandler::optPlotBestWorstObj()
     {
         bestVar->append(mOptObjectives[mOptBestId]);
     }
-    SharedLogVariableDataPtrT worstVar = pHandler->getPlotData("WorstObjective", -1);
+    SharedLogVariableDataPtrT worstVar = pHandler->getLogVariableDataPtr("WorstObjective", -1);
     if(worstVar.isNull())
     {
         worstVar = pHandler->defineNewVariable("WorstObjective");

@@ -241,8 +241,8 @@ void HVCWidget::runHvcTest()
 
         QString windowName = QString("Validation Plot %1").arg(t);
         gpPlotHandler->createPlotWindow(windowName);
-        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getPlotData(mDataConfigs[t].mFullVarName,-1), 0);
-        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getPlotData(mDataConfigs[t].mFullVarName+"_valid",-1), 0);
+        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getLogVariableDataPtr(mDataConfigs[t].mFullVarName,-1), 0);
+        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getLogVariableDataPtr(mDataConfigs[t].mFullVarName+"_valid",-1), 0);
     }
 }
 

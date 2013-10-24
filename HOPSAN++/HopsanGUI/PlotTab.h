@@ -122,7 +122,7 @@ public:
     void setTabName(QString name);
 
     void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor(), HopsanPlotIDEnumT plotID=FirstPlot);
-    void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID=FirstPlot);
+    void setCustomXVectorForAll(QVector<double> xarray, const VariableCommonDescription &rVarDesc, HopsanPlotIDEnumT plotID=FirstPlot);
     void setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
