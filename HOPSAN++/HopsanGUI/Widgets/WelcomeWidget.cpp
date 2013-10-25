@@ -228,10 +228,9 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadingWebWidget->setLayout(mpLoadingWebLayout);
 
 
-    mpWeb = new QWebView(this);     //! @todo This could be a QNetworkAccessManager as well, since it is never shown
-    mpWeb->hide();
-    connect(mpWeb, SIGNAL(loadFinished(bool)), this, SLOT(checkVersion(bool)));
-    mpWeb->load(QUrl(QString(VERSIONLINK)));
+    mpVersioncheckNAM = new QNetworkAccessManager(this);
+    connect(mpVersioncheckNAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkVersion(QNetworkReply*)));
+    mpVersioncheckNAM->get(QNetworkRequest(QUrl(VERSIONLINK)));
 
     mpFeed = new QNetworkAccessManager(this);
     connect(mpFeed, SIGNAL(finished(QNetworkReply*)), this, SLOT(showNews(QNetworkReply*)));
@@ -538,23 +537,36 @@ void WelcomeWidget::showNews(QNetworkReply *pReply)
 }
 
 
-void WelcomeWidget::checkVersion(bool)
+void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 {
-    //Verify that the loaded page is the correct one, otherwise do not show it
-    if(mpWeb->page()->currentFrame()->metaData().contains("type", "hopsanngnews"))
+    QVariant redirection = pReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if(!redirection.toUrl().isEmpty())
     {
-#ifndef DEVELOPMENT
-        QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
-        webVersionString.remove('.');
-        double webVersion = webVersionString.toDouble();
-        QString thisVersionString = QString(HOPSANGUIVERSION);
-        thisVersionString.remove('.');
-        double thisVersion = thisVersionString.toDouble();
-        webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
-        mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
-        mpNewVersionButton->setVisible(webVersion>thisVersion);
-        mpUpdateLink = mpWeb->page()->currentFrame()->metaData().find("hopsanupdatelink").value();
+        mpVersioncheckNAM->get(QNetworkRequest(redirection.toUrl()));
+        return;
+    }
+
+    if (pReply->error() == QNetworkReply::NoError)
+    {
+        qDebug() << pReply->url();
+        QByteArray all = pReply->readAll();
+        QWebPage page;
+        page.mainFrame()->setHtml(QString(all));
+        QMultiMap<QString,QString> metadata = page.mainFrame()->metaData();
+
+        //Verify that the loaded page is the correct one, otherwise do not show it
+        if(metadata.contains("type", "hopsanngnews"))
+        {
+            QString webVersionString = metadata.find("hopsanversionfull").value();
+            QString thisVersionString = QString(HOPSANGUIVERSION);
+            mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
+#ifdef DEVELOPMENT
+            mpNewVersionButton->setVisible(true);
+#else
+            mpNewVersionButton->setVisible(webVersion>thisVersion);
 #endif
+            mpUpdateLink = metadata.value("hopsanupdatelink");
+        }
     }
 }
 

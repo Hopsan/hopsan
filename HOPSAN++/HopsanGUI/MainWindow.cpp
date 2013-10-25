@@ -1378,6 +1378,7 @@ void MainWindow::openContextHelp(QString file)
 //! @param bytesTotal Total number of bytes to download
 void MainWindow::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal)
 {
+    //! @todo this download / ipdate stuff should be in a class by itself
     qDebug() << "Dewnlewding!";
     int progress = 100*bytesReceived/bytesTotal;
     mpDownloadDialog->setValue(progress);

@@ -89,7 +89,7 @@ private:
     QTimer *mpLoadingWebProgressBarTimer;
     QVBoxLayout *mpLoadingWebLayout;
     QWidget *mpLoadingWebWidget;
-    QWebView *mpWeb;
+    QNetworkAccessManager *mpVersioncheckNAM;
     QVBoxLayout *mpNewsScrollLayout;
     QScrollArea *mpNewsScrollArea;
     QWidget *mpNewsScrollWidget;
@@ -126,7 +126,7 @@ private slots:
     void openRecentModel();
     void openExampleModel();
     void showNews(QNetworkReply *pReply);
-    void checkVersion(bool dummy);
+    void checkVersion(QNetworkReply *pReply);
     void updateLoadingWebProgressBar();
     void urlClicked(const QUrl &link);
     void openDownloadPage();
