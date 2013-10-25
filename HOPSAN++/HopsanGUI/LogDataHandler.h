@@ -102,7 +102,7 @@ public:
     void limitPlotGenerations();
     void preventGenerationAutoRemoval(const int gen);
     void allowGenerationAutoRemoval(const int gen);
-    void removeGeneration(const int gen);
+    void removeGeneration(const int gen, const bool force);
 
     ContainerObject *getParentContainerObject();
     const QList<QDir> &getCacheDirs() const;

@@ -284,7 +284,8 @@ void DataExplorer::removeGeneration(int gen)
 {
     if (mpLogDataHandler)
     {
-        mpLogDataHandler->removeGeneration(gen);
+        // Force removal of data generation
+        mpLogDataHandler->removeGeneration(gen, true);
         // We assume that the generation was removed, now delete it from the view (quicker than reloading the view)
         GenerationItem *pItem = mGenerationItemMap.value(gen);
         if (pItem)

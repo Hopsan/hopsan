@@ -1085,13 +1085,11 @@ int LogDataHandler::getNumberOfGenerations() const
         }
         if(genExists)
         {
-            qDebug() << "Generation " << i << " exists!";
+            //qDebug() << "Generation " << i << " exists!";
             ++nGens;
         }
     }
-
-    qDebug() << "nGens = " << nGens;
-
+    //qDebug() << "nGens = " << nGens;
     return nGens;
 }
 
@@ -1133,14 +1131,11 @@ void LogDataHandler::limitPlotGenerations()
         int idx=getLowestGenerationNumber();
         while(getNumberOfGenerations() > gConfig.getGenerationLimit() && idx <= getHighestGenerationNumber())
         {
-            // Remove old generation in each data variable container
-            LogDataMapT::iterator dit = mLogDataMap.begin();
-            for ( ; dit!=mLogDataMap.end(); ++dit)
-            {
-                dit.value()->removeDataGeneration(idx);
-            }
+            // Remove old generation in each data variable container, but do not force removal
+            removeGeneration(idx, false);
 
             // Clear from generations cache object map
+            //! @todo should we realy clear this, what if there were some variables that hade autoremove disabled
             mGenerationCacheMap.remove(idx);
             ++idx;
         }
@@ -1197,8 +1192,8 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
     //    mKeepGenerationsList.removeOne(gen);
 }
 
-//! @brief Removes a generation (forced removal)
-void LogDataHandler::removeGeneration(const int gen)
+//! @brief Removes a generation
+void LogDataHandler::removeGeneration(const int gen, const bool force)
 {
     // Note! Here we must iterate through a copy of the values from the map
     // if we use an iterator in the map we will crash if the removed generation is the final one
@@ -1207,9 +1202,11 @@ void LogDataHandler::removeGeneration(const int gen)
     QList<QPointer<LogVariableContainer> >::iterator it;
     for ( it=vars.begin(); it!=vars.end(); ++it)
     {
-        (*it)->removeDataGeneration(gen,true);
+        (*it)->removeDataGeneration(gen,force);
     }
+    //! @todo this should not be emmited if no data was actaully removed (if force=false)
     emit dataRemoved();
+    //! @todo what about generation cache map it is not cleared, and should we realy clear it always, what if there were some variables that hade autoremove disabled
 }
 
 ContainerObject *LogDataHandler::getParentContainerObject()
@@ -1986,7 +1983,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
 
         // Take the data, and only increment this->mGeneration if data was taken
         LogDataMapT::iterator odit; //odit = OtherDataIterator
-        for (odit = pOtherHandler->mLogDataMap.begin(); odit!=pOtherHandler->mLogDataMap.end(); ++odit)
+        for (odit=pOtherHandler->mLogDataMap.begin(); odit!=pOtherHandler->mLogDataMap.end(); ++odit)
         {
             QString fullName = odit.key();
             LogDataMapT::iterator tdit = mLogDataMap.find(fullName); //tdit = ThisDataIterator

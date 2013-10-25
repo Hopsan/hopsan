@@ -289,7 +289,7 @@ void PlotVariableTree::updateList()
         // Handle if variable is imported
         else if (variables[i]->getVariableSource() == ImportedVariableType)
         {
-            // Ignore, handled above
+            continue;
         }
         else
         // Ok, we do not need to add this item as an alias
