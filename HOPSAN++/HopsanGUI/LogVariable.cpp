@@ -1023,6 +1023,9 @@ void LogVariableContainer::addDataGeneration(const int generation, SharedLogVari
     }
 }
 
+//! @brief Removes a generation of the variable
+//! @note If last generation the container itself will be deletet from parent log data handler, so DO NOT CALL this while itterating through the log data map
+//! @todo this functions should not call delete in parent if empty, it causes difficult to debugg problems while calling it during itteration, need to come up with a smarter solution
 void LogVariableContainer::removeDataGeneration(const int generation, const bool force)
 {
     // Skip removal of generations that should be kept

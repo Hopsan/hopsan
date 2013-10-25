@@ -1982,28 +1982,29 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
 //        }
 
         // Take the data, and only increment this->mGeneration if data was taken
-        LogDataMapT::iterator odit; //odit = OtherDataIterator
-        for (odit=pOtherHandler->mLogDataMap.begin(); odit!=pOtherHandler->mLogDataMap.end(); ++odit)
+        QList< QPointer<LogVariableContainer> > otherVariables = pOtherHandler->mLogDataMap.values(); // Need to take values and itterate through, else the iterator will become invalid when removing from other
+        QList< QPointer<LogVariableContainer> >::iterator odit; //odit = OtherDataIterator
+        for (odit=otherVariables.begin(); odit!=otherVariables.end(); ++odit)
         {
-            QString fullName = odit.key();
+            QString fullName = (*odit)->getFullVariableName();
             LogDataMapT::iterator tdit = mLogDataMap.find(fullName); //tdit = ThisDataIterator
             if (tdit != mLogDataMap.end())
             {
-                if (odit.value()->hasDataGeneration(generation))
+                if ((*odit)->hasDataGeneration(generation))
                 {
-                    tdit.value()->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
-                    odit.value()->removeDataGeneration(generation, true);
+                    tdit.value()->addDataGeneration(mGenerationNumber, (*odit)->getDataGeneration(generation));
+                    (*odit)->removeDataGeneration(generation, true);
                     tookOwnershipOfSomeData=true;
                 }
             }
             else
             {
-                if (odit.value()->hasDataGeneration(generation))
+                if ((*odit)->hasDataGeneration(generation))
                 {
-                    LogVariableContainer *pNewContainer = new LogVariableContainer(*(odit.value()->getVariableCommonDescription().data()), this);
-                    pNewContainer->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
+                    LogVariableContainer *pNewContainer = new LogVariableContainer(*((*odit)->getVariableCommonDescription().data()), this);
+                    pNewContainer->addDataGeneration(mGenerationNumber, (*odit)->getDataGeneration(generation));
                     mLogDataMap.insert(fullName, pNewContainer);
-                    odit.value()->removeDataGeneration(generation, true);
+                    (*odit)->removeDataGeneration(generation, true);
                     tookOwnershipOfSomeData=true;
                 }
             }
