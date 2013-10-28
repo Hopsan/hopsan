@@ -2122,6 +2122,13 @@ SharedLogVariableDataPtrT LogDataHandler::insertVariableBasedOnDescription(Varia
     // If it exist insert into it
     if (it != mLogDataMap.end())
     {
+        // Replace common data if the new variable have a lower source value
+        //! @todo this is needed to replace common descriptiuon in imported data if a model variable with same name shows up. but cuirrently some data may be lost (lime special unit)
+        if (rVarComDesc.mVariableSourceType < it.value()->getVariableCommonDescription()->mVariableSourceType)
+        {
+            it.value()->setVariableCommonDescription(rVarComDesc);
+        }
+
         // Insert it into the generations map
         pNewData = it.value()->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
 

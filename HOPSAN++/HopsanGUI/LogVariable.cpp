@@ -818,54 +818,54 @@ LogDataHandler *LogVariableData::getLogDataHandler()
 
 const QString &LogVariableContainer::getAliasName() const
 {
-    return mVariableDescription->mAliasName;
+    return mVariableCommonDescription->mAliasName;
 }
 
 QString LogVariableContainer::getFullVariableName() const
 {
-    return mVariableDescription->getFullName();
+    return mVariableCommonDescription->getFullName();
 }
 
 QString LogVariableContainer::getFullVariableNameWithSeparator(const QString sep) const
 {
-    return mVariableDescription->getFullNameWithSeparator(sep);
+    return mVariableCommonDescription->getFullNameWithSeparator(sep);
 }
 
 QString LogVariableContainer::getSmartName() const
 {
-    if (mVariableDescription->mAliasName.isEmpty())
+    if (mVariableCommonDescription->mAliasName.isEmpty())
     {
-        return mVariableDescription->getFullName();
+        return mVariableCommonDescription->getFullName();
     }
     else
     {
-        return mVariableDescription->mAliasName;
+        return mVariableCommonDescription->mAliasName;
     }
 }
 
 const QString &LogVariableContainer::getModelPath() const
 {
-    return mVariableDescription->mModelPath;
+    return mVariableCommonDescription->mModelPath;
 }
 
 const QString &LogVariableContainer::getComponentName() const
 {
-    return mVariableDescription->mComponentName;
+    return mVariableCommonDescription->mComponentName;
 }
 
 const QString &LogVariableContainer::getPortName() const
 {
-    return mVariableDescription->mPortName;
+    return mVariableCommonDescription->mPortName;
 }
 
 const QString &LogVariableContainer::getDataName() const
 {
-    return mVariableDescription->mDataName;
+    return mVariableCommonDescription->mDataName;
 }
 
 const QString &LogVariableContainer::getDataUnit() const
 {
-    return mVariableDescription->mDataUnit;
+    return mVariableCommonDescription->mDataUnit;
 }
 
 void LogVariableContainer::preventAutoRemove(const int gen)
@@ -891,7 +891,7 @@ LogDataHandler *LogVariableContainer::getLogDataHandler()
 
 void LogVariableContainer::setAliasName(const QString alias)
 {
-    mVariableDescription->mAliasName = alias;
+    mVariableCommonDescription->mAliasName = alias;
     emit nameChanged();
 }
 
@@ -950,9 +950,15 @@ QList<int> LogVariableContainer::getGenerations() const
     return mDataGenerations.keys();
 }
 
+void LogVariableContainer::setVariableCommonDescription(const VariableCommonDescription &rNewDescription)
+{
+    // Copy new data
+    *(mVariableCommonDescription.data()) = rNewDescription;
+}
+
 SharedVariableCommonDescriptionT LogVariableContainer::getVariableCommonDescription() const
 {
-    return mVariableDescription;
+    return mVariableCommonDescription;
 }
 
 SharedLogVariableDataPtrT LogVariableContainer::getDataGeneration(const int gen) const
@@ -991,11 +997,11 @@ SharedLogVariableDataPtrT LogVariableContainer::addDataGeneration(const int gene
 
         if (mpParentLogDataHandler)
         {
-            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getOrCreateGenerationMultiCache(generation), this));
+            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableCommonDescription, mpParentLogDataHandler->getOrCreateGenerationMultiCache(generation), this));
         }
         else
         {
-            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, SharedMultiDataVectorCacheT(), this));
+            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableCommonDescription, SharedMultiDataVectorCacheT(), this));
         }
 
         connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
@@ -1084,7 +1090,7 @@ void LogVariableContainer::removeAllGenerations()
 
 LogVariableContainer::LogVariableContainer(const VariableCommonDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()
 {
-    mVariableDescription = SharedVariableCommonDescriptionT(new VariableCommonDescription(rVarDesc)); //Copy original data and create a new shared variable description
+    mVariableCommonDescription = SharedVariableCommonDescriptionT(new VariableCommonDescription(rVarDesc)); //Copy original data and create a new shared variable description
     mpParentLogDataHandler = pParentLogDataHandler;
 }
 

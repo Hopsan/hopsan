@@ -45,8 +45,8 @@ class LogDataHandler;
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
 
-//! @brief This enum describes where a variable come from
-enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType};
+//! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)
+enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType, UndefinedVariableType};
 //! @brief This function converts a VariableSourceTypeT enum into a string
 QString getVariableSourceTypeString(const VariableSourceTypeT type);
 
@@ -55,7 +55,7 @@ QString getVariableSourceTypeString(const VariableSourceTypeT type);
 class VariableCommonDescription
 {
 public:
-    VariableCommonDescription() : mVariableSourceType(ModelVariableType) {}
+    VariableCommonDescription() : mVariableSourceType(UndefinedVariableType) {}
     QString mModelPath;
     QString mComponentName;
     QString mPortName;
@@ -110,6 +110,7 @@ public:
     int getNumGenerations() const;
     QList<int> getGenerations() const;
 
+    void setVariableCommonDescription(const VariableCommonDescription &rNewDescription);
     SharedVariableCommonDescriptionT getVariableCommonDescription() const;
     const QString &getAliasName() const;
     QString getFullVariableName() const;
@@ -134,7 +135,7 @@ signals:
 
 private:
     LogDataHandler *mpParentLogDataHandler;
-    SharedVariableCommonDescriptionT mVariableDescription;
+    SharedVariableCommonDescriptionT mVariableCommonDescription;
     GenerationMapT mDataGenerations;
     QList<int> mKeepGenerations;
 };
