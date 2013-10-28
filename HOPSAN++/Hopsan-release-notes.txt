@@ -25,6 +25,12 @@
 ******************************
     Version History
 ******************************
+0.6.3a
+- Fixed: Update notification and auto updater was not working (since 0.6.0)
+- Enhancement: If you import variables and then run a simulation resulting in variables with same name, the model variables will be shown in the PlotWidget.
+               Imported variables are still shown under the __Imported__ category.
+
+
 0.6.3
 - Feature: HCOM: Command for removing components
 - Feature: HCOM: min and max functions for scalars
