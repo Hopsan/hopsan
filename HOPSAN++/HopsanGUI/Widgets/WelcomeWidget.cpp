@@ -29,8 +29,10 @@
 #include <QStringList>
 #include <QWebFrame>
 #include <QtXml>
+#include <QWebPage>
 
 //Hopsan includes
+#include "Widgets/WelcomeWidget.h"
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -41,7 +43,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h" //!< @todo why is this needed in here
 #include "Widgets/ProjectTabWidget.h"
-#include "Widgets/WelcomeWidget.h"
+#include "Widgets/HcomWidget.h"
 
 
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
@@ -54,7 +56,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     this->setMouseTracking(true);
     this->setAttribute(Qt::WA_NoMousePropagation, false);
 
-    mpHeading = new QLabel(this);
+    QLabel *pHeading = new QLabel(this);
     QPixmap image;
     QDate today = QDate::currentDate();
     if(today.month() == 12 && today.day() > 20 && today.day() < 31)
@@ -63,14 +65,14 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
         image.load(QString(GRAPHICSPATH) + "welcome_newyear.png");
     else
         image.load(QString(GRAPHICSPATH) + "welcome.png");
-    mpHeading->setPixmap(image);
+    pHeading->setPixmap(image);
 //    mpHeading->setText("Welcome to Hopsan!");
 //    QFont tempFont = mpHeading->font();
 //    tempFont.setPointSize(25);
 //    tempFont.setBold(true);
 //    mpHeading->setFont(tempFont);
     //mpHeading->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mpHeading->setAlignment(Qt::AlignCenter);
+    pHeading->setAlignment(Qt::AlignCenter);
 
     mpNewIcon = new QLabel(this);
     mpNewIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "new.png"));
@@ -78,15 +80,15 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewText = new QLabel("New Model", this);
     mpNewText->setAlignment(Qt::AlignCenter);
     mpNewText->setMouseTracking(true);
-    mpNewLayout = new QVBoxLayout(this);
-    mpNewLayout->addWidget(mpNewIcon,1,Qt::AlignCenter);
-    mpNewLayout->addWidget(mpNewText,0,Qt::AlignBottom);
+    QVBoxLayout *pNewLayout = new QVBoxLayout(this);
+    pNewLayout->addWidget(mpNewIcon,1,Qt::AlignCenter);
+    pNewLayout->addWidget(mpNewText,0,Qt::AlignBottom);
 
     mpNewFrame = new QFrame(this);
     mpNewFrame->setFrameShape(QFrame::StyledPanel);
     mpNewFrame->setMouseTracking(true);
     mpNewFrame->setFixedSize(mFrameW,mFrameH);
-    mpNewFrame->setLayout(mpNewLayout);
+    mpNewFrame->setLayout(pNewLayout);
 
     mpLoadIcon = new QLabel(this);
     mpLoadIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "open.png"));
@@ -94,15 +96,15 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadText = new QLabel("Load Model", this);
     mpLoadText->setAlignment(Qt::AlignCenter);
     mpLoadText->setMouseTracking(true);
-    mpLoadLayout = new QVBoxLayout(this);
-    mpLoadLayout->addWidget(mpLoadIcon,1,Qt::AlignCenter);
-    mpLoadLayout->addWidget(mpLoadText,0,Qt::AlignBottom);
+    QVBoxLayout *pLoadLayout = new QVBoxLayout(this);
+    pLoadLayout->addWidget(mpLoadIcon,1,Qt::AlignCenter);
+    pLoadLayout->addWidget(mpLoadText,0,Qt::AlignBottom);
 
     mpLoadFrame = new QFrame(this);
     mpLoadFrame->setFrameShape(QFrame::StyledPanel);
     mpLoadFrame->setMouseTracking(true);
     mpLoadFrame->setFixedSize(mFrameW,mFrameH);
-    mpLoadFrame->setLayout(mpLoadLayout);
+    mpLoadFrame->setLayout(pLoadLayout);
 
     mpLastSessionIcon = new QLabel(this);
     mpLastSessionIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
@@ -112,15 +114,15 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLastSessionText->setAlignment(Qt::AlignCenter);
     mpLastSessionText->setMouseTracking(true);
     mpLastSessionText->setEnabled(!gConfig.getLastSessionModels().empty());
-    mpLastSessionLayout = new QVBoxLayout(this);
-    mpLastSessionLayout->addWidget(mpLastSessionIcon,1,Qt::AlignCenter);
-    mpLastSessionLayout->addWidget(mpLastSessionText,0,Qt::AlignBottom);
+    QVBoxLayout *pLastSessionLayout = new QVBoxLayout(this);
+    pLastSessionLayout->addWidget(mpLastSessionIcon,1,Qt::AlignCenter);
+    pLastSessionLayout->addWidget(mpLastSessionText,0,Qt::AlignBottom);
 
     mpLastSessionFrame = new QFrame(this);
     mpLastSessionFrame->setFrameShape(QFrame::StyledPanel);
     mpLastSessionFrame->setMouseTracking(true);
     mpLastSessionFrame->setFixedSize(mFrameW,mFrameH);
-    mpLastSessionFrame->setLayout(mpLastSessionLayout);
+    mpLastSessionFrame->setLayout(pLastSessionLayout);
 
     mpRecentList = new QListWidget(this);
     //mpRecentList->setMinimumSize(mFrameW*2+mSpacing-20,mFrameH-50);
@@ -132,16 +134,16 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpRecentText = new QLabel("Recent Models", this);
     mpRecentText->setAlignment(Qt::AlignCenter);
     mpRecentText->setMouseTracking(true);
-    mpRecentLayout = new QVBoxLayout(this);
-    mpRecentLayout->addWidget(mpRecentList,1);
-    mpRecentLayout->addWidget(mpRecentText,0,Qt::AlignBottom);
+    QVBoxLayout *pRecentLayout = new QVBoxLayout(this);
+    pRecentLayout->addWidget(mpRecentList,1);
+    pRecentLayout->addWidget(mpRecentText,0,Qt::AlignBottom);
     //mpRecentLayout->setStretch(0,1);
     mpRecentFrame = new QFrame(this);
     mpRecentFrame->setFrameShape(QFrame::StyledPanel);
     mpRecentFrame->setMouseTracking(true);
     //mpRecentFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
     mpRecentFrame->setMinimumWidth(mFrameW+mSpacing);
-    mpRecentFrame->setLayout(mpRecentLayout);
+    mpRecentFrame->setLayout(pRecentLayout);
     mpRecentFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     updateRecentList();
@@ -156,16 +158,16 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleText = new QLabel("Example Models", this);
     mpExampleText->setAlignment(Qt::AlignCenter);
     mpExampleText->setMouseTracking(true);
-    mpExampleLayout = new QVBoxLayout(this);
-    mpExampleLayout->addWidget(mpExampleList,1);
-    mpExampleLayout->addWidget(mpExampleText,0,Qt::AlignBottom);
-    mpExampleLayout->setStretch(0,1);
+    QVBoxLayout *pExampleLayout = new QVBoxLayout(this);
+    pExampleLayout->addWidget(mpExampleList,1);
+    pExampleLayout->addWidget(mpExampleText,0,Qt::AlignBottom);
+    pExampleLayout->setStretch(0,1);
     mpExampleFrame = new QFrame(this);
     mpExampleFrame->setFrameShape(QFrame::StyledPanel);
     mpExampleFrame->setMouseTracking(true);
     //mpExampleFrame->setMinimumSize(mFrameW*2+mSpacing,mFrameH);
     mpExampleFrame->setMinimumWidth(mFrameW+mSpacing);
-    mpExampleFrame->setLayout(mpExampleLayout);
+    mpExampleFrame->setLayout(pExampleLayout);
     mpExampleFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
     QStringList filters;
@@ -197,15 +199,15 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpOptionsText = new QLabel("Options", this);
     mpOptionsText->setAlignment(Qt::AlignCenter);
     mpOptionsText->setMouseTracking(true);
-    mpOptionsLayout = new QVBoxLayout(this);
-    mpOptionsLayout->addWidget(mpOptionsIcon,1,Qt::AlignCenter);
-    mpOptionsLayout->addWidget(mpOptionsText,0,Qt::AlignBottom);
+    QVBoxLayout *pOptionsLayout = new QVBoxLayout(this);
+    pOptionsLayout->addWidget(mpOptionsIcon,1,Qt::AlignCenter);
+    pOptionsLayout->addWidget(mpOptionsText,0,Qt::AlignBottom);
 
     mpOptionsFrame = new QFrame(this);
     mpOptionsFrame->setFrameShape(QFrame::StyledPanel);
     mpOptionsFrame->setMouseTracking(true);
     mpOptionsFrame->setFixedSize(mFrameW,mFrameH);
-    mpOptionsFrame->setLayout(mpOptionsLayout);
+    mpOptionsFrame->setLayout(pOptionsLayout);
 
     mpLoadingWebProgressBar = new QProgressBar(this);
     mpLoadingWebProgressBar->setRange(0, 0);
@@ -216,25 +218,25 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadingWebProgressBarTimer->setInterval(1);
     mpLoadingWebProgressBarTimer->start();
 
-    mpLoadingWebLayout = new QVBoxLayout(this);
-    mpLoadingWebLayout->addWidget(mpLoadingWebLabel);
-    mpLoadingWebLayout->addWidget(mpLoadingWebProgressBar);
-    mpLoadingWebLayout->setAlignment(mpLoadingWebLabel, Qt::AlignCenter);
-    mpLoadingWebLayout->setAlignment(mpLoadingWebProgressBar, Qt::AlignCenter);
+    QVBoxLayout *pLoadingWebLayout = new QVBoxLayout(this);
+    pLoadingWebLayout->addWidget(mpLoadingWebLabel);
+    pLoadingWebLayout->addWidget(mpLoadingWebProgressBar);
+    pLoadingWebLayout->setAlignment(mpLoadingWebLabel, Qt::AlignCenter);
+    pLoadingWebLayout->setAlignment(mpLoadingWebProgressBar, Qt::AlignCenter);
     mpLoadingWebWidget = new QWidget(this);
     //mpLoadingWebWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     //mpLoadingWebWidget->setFixedHeight(168);
     //mpLoadingWebWidget->setFixedWidth(mFrameW*1.9);
-    mpLoadingWebWidget->setLayout(mpLoadingWebLayout);
+    mpLoadingWebWidget->setLayout(pLoadingWebLayout);
 
 
     mpVersioncheckNAM = new QNetworkAccessManager(this);
     connect(mpVersioncheckNAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkVersion(QNetworkReply*)));
     mpVersioncheckNAM->get(QNetworkRequest(QUrl(VERSIONLINK)));
 
-    mpFeed = new QNetworkAccessManager(this);
-    connect(mpFeed, SIGNAL(finished(QNetworkReply*)), this, SLOT(showNews(QNetworkReply*)));
-    mpFeed->get(QNetworkRequest(QUrl(NEWSLINK)));
+    mpNewsFeedNAM = new QNetworkAccessManager(this);
+    connect(mpNewsFeedNAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(showNews(QNetworkReply*)));
+    mpNewsFeedNAM->get(QNetworkRequest(QUrl(NEWSLINK)));
 
     mpNewsScrollWidget = new QWidget(this);
     //mpNewsScrollWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
@@ -250,12 +252,12 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewsText->setAlignment(Qt::AlignCenter);
     mpNewsText->setMouseTracking(true);
     //mpNewsText->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    mpNewsLayout = new QVBoxLayout(this);
-    mpNewsLayout->addWidget(mpNewsText, 0, Qt::AlignTop);
-    mpNewsLayout->addWidget(mpLoadingWebWidget);
+    QVBoxLayout *pNewsLayout = new QVBoxLayout(this);
+    pNewsLayout->addWidget(mpNewsText, 0, Qt::AlignTop);
+    pNewsLayout->addWidget(mpLoadingWebWidget);
     //mpNewsLayout->setAlignment(mpLoadingWebWidget, Qt::AlignCenter);
     //mpNewsLayout->addWidget(mpWeb);
-    mpNewsLayout->addWidget(mpNewsScrollArea);
+    pNewsLayout->addWidget(mpNewsScrollArea);
     mpNewsFrame = new QFrame(this);
     //mpNewsFrame->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsFrame->setFrameShape(QFrame::StyledPanel);
@@ -263,15 +265,17 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     //mpNewsFrame->setMinimumSize(mFrameW*2,mFrameH*2+mSpacing);
     //mpNewsFrame->setMinimumWidth(mFrameW*2);
     mpNewsFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mpNewsFrame->setLayout(mpNewsLayout);
+    mpNewsFrame->setLayout(pNewsLayout);
 
-    mpAutoUpdateAction = new QAction("Launch Auto Updater", this);
-    mpGoToDownloadPageAction = new QAction("Open Download Page In Browser", this);
-    mpNewVersionMenu = new QMenu(this);
-    mpNewVersionMenu->addAction(mpAutoUpdateAction);
-    mpNewVersionMenu->addAction(mpGoToDownloadPageAction);
-    connect(mpAutoUpdateAction, SIGNAL(triggered()), gpMainWindow, SLOT(launchAutoUpdate()));
-    connect(mpGoToDownloadPageAction, SIGNAL(triggered()), this, SLOT(openDownloadPage()));
+    QMenu *pNewVersionMenu = new QMenu(this);
+#ifdef WIN32
+    QAction *pAutoUpdateAction = new QAction("Launch Auto Updater", this);
+    pNewVersionMenu->addAction(pAutoUpdateAction);
+    connect(pAutoUpdateAction, SIGNAL(triggered()), this, SLOT(launchAutoUpdate()));
+#endif
+    QAction *pGoToDownloadPageAction = new QAction("Open Download Page In Browser", this);
+    pNewVersionMenu->addAction(pGoToDownloadPageAction);
+    connect(pGoToDownloadPageAction, SIGNAL(triggered()), this, SLOT(openDownloadPage()));
 
     mpNewVersionButton = new QPushButton("New Version Available!");
     QPalette tempPalette = mpNewVersionButton->palette();
@@ -282,10 +286,10 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     tempFont.setBold(true);
     mpNewVersionButton->setFont(tempFont);
     mpNewVersionButton->hide();
-    mpNewVersionButton->setMenu(mpNewVersionMenu);
+    mpNewVersionButton->setMenu(pNewVersionMenu);
 
-    mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpHeading,                          0, 0, 1, 3);
+    QGridLayout *mpLayout = new QGridLayout(this);
+    mpLayout->addWidget(pHeading,                           0, 0, 1, 3);
     mpLayout->addWidget(mpNewFrame,                         1, 0, 1, 1);
     mpLayout->addWidget(mpLoadFrame,                        1, 1, 1, 1);
     mpLayout->addWidget(mpLastSessionFrame,                 1, 2, 1, 1);
@@ -294,8 +298,6 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLayout->addWidget(mpExampleFrame,                     2, 2, 1, 2);
     mpLayout->addWidget(mpNewsFrame,                        1, 4, 2, 1);
     mpLayout->addWidget(mpNewVersionButton,                 0, 4, 1, 1);
-    //mpLayout->addWidget(new QWidget(this),                  3, 0, 1, 4);
-    //mpLayout->addWidget(new QWidget(this),                  0, 5, 2, 1);
     mpLayout->setSpacing(mSpacing);
     mpLayout->setRowStretch(2,1);
     mpLayout->setColumnStretch(4, 1);
@@ -308,11 +310,6 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     connect(gpCentralTabWidget, SIGNAL(currentChanged(int)), this, SLOT(autoHide()));
 }
 
-
-QString WelcomeWidget::getUpdateLink()
-{
-    return mpUpdateLink;
-}
 
 void WelcomeWidget::updateRecentList()
 {
@@ -480,7 +477,7 @@ void WelcomeWidget::showNews(QNetworkReply *pReply)
     QVariant redirection = pReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
     if(!redirection.toUrl().isEmpty())
     {
-        mpFeed->get(QNetworkRequest(redirection.toUrl()));
+        mpNewsFeedNAM->get(QNetworkRequest(redirection.toUrl()));
         return;
     }
 
@@ -565,7 +562,7 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 #else
             mpNewVersionButton->setVisible(webVersion>thisVersion);
 #endif
-            mpUpdateLink = metadata.value("hopsanupdatelink");
+            mAUFileLink = metadata.value("hopsanupdatelink");
         }
     }
 }
@@ -603,4 +600,64 @@ void WelcomeWidget::autoHide()
         this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
         this->setMinimumSize(0,0);
     }
+}
+
+//! @brief Private slot that updates the progress bar during auto update downloads
+//! @param bytesReceived Number of bytes downloaded
+//! @param bytesTotal Total number of bytes to download
+void WelcomeWidget::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal)
+{
+    //! @todo this download / update stuff should be in a class by itself
+    int progress = 100*bytesReceived/bytesTotal;
+    mpAUDownloadDialog->setValue(progress);
+}
+
+
+//! @brief Private slot that saves the downloaded installer file, launches it and quit Hopsan
+//! @param reply Contains information about the downloaded installation executable
+void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
+{
+    QUrl url = reply->url();
+    if (reply->error())
+    {
+        gpTerminalWidget->mpConsole->printErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
+        return;
+    }
+    else
+    {
+        QFile file(gDesktopHandler.getDataPath()+"/update.exe");
+        if (!file.open(QIODevice::WriteOnly)) {
+            gpTerminalWidget->mpConsole->printErrorMessage("Could not open update.exe for writing.");
+            return;
+        }
+        file.write(reply->readAll());
+        file.close();
+    }
+    reply->deleteLater();
+
+    QProcess *pProcess = new QProcess();
+    QString dir = gDesktopHandler.getExecPath();
+    dir.chop(4);    //Remove "bin"
+    pProcess->start(gDesktopHandler.getDataPath()+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
+    pProcess->waitForStarted();
+    QApplication::quit();
+}
+
+//! @brief This will attempt to download the latest installer and (if successful) launch it in silent mode and close Hopsan
+//! @todo Disable this in Linux/Mac releases, or make it work for those platforms as well.
+void WelcomeWidget::launchAutoUpdate()
+{
+    QNetworkAccessManager *pNetworkManager = new QNetworkAccessManager();
+    connect(pNetworkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(commenceAutoUpdate(QNetworkReply*)));
+
+    QUrl url = QUrl(mAUFileLink);
+
+    mpAUDownloadDialog = new QProgressDialog("Downloading new version...", "Cancel",0, 100, this);
+    mpAUDownloadDialog->setWindowTitle("Hopsan Auto Updater");
+    mpAUDownloadDialog->setWindowModality(Qt::WindowModal);
+    mpAUDownloadDialog->setMinimumWidth(300);
+    mpAUDownloadDialog->setValue(0);
+
+    mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(url));
+    connect(mpAUDownloadStatus, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateDownloadProgressBar(qint64, qint64)));
 }

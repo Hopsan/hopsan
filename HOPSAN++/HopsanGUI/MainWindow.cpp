@@ -1292,33 +1292,6 @@ void MainWindow::openModelByAction()
 }
 
 
-//! @brief This will attempt to download the latest installer and (if successful) launch it in silent mode and close Hopsan
-//! @todo Disable this in Linux/Mac releases, or make it work for those platforms as well.
-void MainWindow::launchAutoUpdate()
-{
-    qDebug() << "HewrdPewrn";
-    QNetworkAccessManager *pNetworkManager = new QNetworkAccessManager();
-    connect(pNetworkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(commenceAutoUpdate(QNetworkReply*)));
-
-    qDebug() << "FewrSpeil";
-    //QString path = QString(AUTOUPDATELINK);
-    //QString path = "http://tiny.cc/hopsanupdate";
-    QUrl url = QUrl(mpWelcomeWidget->getUpdateLink());
-
-    qDebug() << "Downloading: " << mpWelcomeWidget->getUpdateLink();
-
-    mpDownloadDialog = new QProgressDialog("Downloading new version...", "Cancel",0, 100, this);
-    mpDownloadDialog->setWindowTitle("Hopsan Auto Updater");
-    mpDownloadDialog->setWindowModality(Qt::WindowModal);
-    mpDownloadDialog->setMinimumWidth(300);
-    mpDownloadDialog->setValue(0);
-
-    mpDownloadStatus = pNetworkManager->get(QNetworkRequest(url));
-    connect(mpDownloadStatus, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateDownloadProgressBar(qint64, qint64)));
-    qDebug() << "FewFighers";
-}
-
-
 //! @todo Does this function need to be in main window? (Will require more includes of mainwindow.h)
 void MainWindow::openContextHelp()
 {
@@ -1372,52 +1345,6 @@ void MainWindow::openContextHelp(QString file)
     mpHelpDialog->centerOnScreen();
 }
 
-
-//! @brief Private slot that updates the progress bar during auto update downloads
-//! @param bytesReceived Number of bytes downloaded
-//! @param bytesTotal Total number of bytes to download
-void MainWindow::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal)
-{
-    //! @todo this download / ipdate stuff should be in a class by itself
-    qDebug() << "Dewnlewding!";
-    int progress = 100*bytesReceived/bytesTotal;
-    mpDownloadDialog->setValue(progress);
-}
-
-
-//! @brief Private slot that saves the downloaded installer file, launches it and quit Hopsan
-//! @param reply Contains information about the downloaded installation executable
-void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
-{
-    qDebug() << "SkewHewrn";
-    QUrl url = reply->url();
-    if (reply->error())
-    {
-        mpTerminalWidget->mpConsole->printErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
-        qDebug() << "Dewnlewd Prewblem";
-        return;
-    }
-    else
-    {
-        QFile file(gDesktopHandler.getDataPath()+"/update.exe");
-        if (!file.open(QIODevice::WriteOnly)) {
-            mpTerminalWidget->mpConsole->printErrorMessage("Could not open update.exe for writing.");
-            qDebug() << "Feil Prewblem";
-            return;
-        }
-        file.write(reply->readAll());
-        file.close();
-    }
-    qDebug() << "KewHewrn";
-    reply->deleteLater();
-
-    QProcess *pProcess = new QProcess();
-    QString dir = gDesktopHandler.getExecPath();
-    dir.chop(4);    //Remove "bin"
-    pProcess->start(gDesktopHandler.getDataPath()+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
-    pProcess->waitForStarted();
-    this->close();
-}
 
 
 void MainWindow::showReleaseNotes()

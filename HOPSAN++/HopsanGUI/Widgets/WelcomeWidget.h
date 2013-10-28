@@ -26,22 +26,19 @@
 #define WELCOMEWIDGET_H
 
 #include <QWidget>
-#include <QGridLayout>
-#include <QGroupBox>
 #include <QLabel>
 #include <QListWidget>
-#include <QProgressBar>
-#include <QWebView>
+#include <QProgressDialog>
 #include <QPushButton>
-#include <QCheckBox>
 #include <QScrollArea>
+#include <QVBoxLayout>
+#include <QNetworkAccessManager>
 
 class WelcomeWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit WelcomeWidget(QWidget *parent = 0);
-    QString getUpdateLink();
     void updateRecentList();
 
 protected:
@@ -49,70 +46,55 @@ protected:
     virtual void mousePressEvent(QMouseEvent *);
 
 private:
-    QLabel *mpHeading;
-
     QFrame *mpNewFrame;
     QLabel *mpNewIcon;
     QLabel *mpNewText;
-    QVBoxLayout *mpNewLayout;
 
     QFrame *mpLoadFrame;
     QLabel *mpLoadIcon;
     QLabel *mpLoadText;
-    QVBoxLayout *mpLoadLayout;
 
     QFrame *mpLastSessionFrame;
     QLabel *mpLastSessionIcon;
     QLabel *mpLastSessionText;
-    QVBoxLayout *mpLastSessionLayout;
 
     QFrame *mpRecentFrame;
     QListWidget *mpRecentList;
     QLabel *mpRecentText;
-    QVBoxLayout *mpRecentLayout;
 
     QFrame *mpExampleFrame;
     QListWidget *mpExampleList;
     QLabel *mpExampleText;
-    QVBoxLayout *mpExampleLayout;
 
     QFrame *mpOptionsFrame;
     QLabel *mpOptionsIcon;
     QLabel *mpOptionsText;
-    QVBoxLayout *mpOptionsLayout;
 
     QFrame *mpNewsFrame;
-    QVBoxLayout *mpNewsLayout;
     QLabel *mpNewsText;
     QProgressBar *mpLoadingWebProgressBar;
     QLabel *mpLoadingWebLabel;
     QTimer *mpLoadingWebProgressBarTimer;
-    QVBoxLayout *mpLoadingWebLayout;
     QWidget *mpLoadingWebWidget;
-    QNetworkAccessManager *mpVersioncheckNAM;
     QVBoxLayout *mpNewsScrollLayout;
     QScrollArea *mpNewsScrollArea;
     QWidget *mpNewsScrollWidget;
-    QNetworkAccessManager *mpFeed;
+    QNetworkAccessManager *mpNewsFeedNAM;
+    QNetworkAccessManager *mpVersioncheckNAM;
 
     QStringList mRecentModelList;
     QStringList mExampleModelList;
-
-    QVBoxLayout *mpRightLayout;
-    QGridLayout *mpLayout;
-
-    QPushButton *mpNewVersionButton;
-    QMenu *mpNewVersionMenu;
-    QAction *mpAutoUpdateAction;
-    QAction *mpGoToDownloadPageAction;
-
-    QString mpUpdateLink;
-
-    QMap <QListWidgetItem *, QString> exampleModelsMap;
+    QMap <QListWidgetItem*, QString> exampleModelsMap;
 
     int mFrameH;
     int mFrameW;
     int mSpacing;
+
+    // New version and Auto update
+    QPushButton *mpNewVersionButton;
+    QNetworkReply *mpAUDownloadStatus;
+    QProgressDialog *mpAUDownloadDialog;
+    QString mAUFileLink;
 
 signals:
     void hovered();
@@ -130,6 +112,9 @@ private slots:
     void updateLoadingWebProgressBar();
     void urlClicked(const QUrl &link);
     void openDownloadPage();
+    void launchAutoUpdate();
+    void updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal);
+    void commenceAutoUpdate(QNetworkReply* reply);
 };
 
 #endif // WELCOMEWIDGET_H

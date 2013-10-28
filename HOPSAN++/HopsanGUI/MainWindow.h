@@ -177,7 +177,6 @@ public slots:
     void registerRecentModel(QFileInfo model);
     void unRegisterRecentModel(QFileInfo model);
     void updateRecentList();
-    void launchAutoUpdate();
     void openContextHelp();
     void openContextHelp(QString file);
 
@@ -203,8 +202,6 @@ private slots:
     void updateSystemParametersActionButton(bool);
     void showToolBarHelpPopup();
     void openModelByAction();
-    void updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal);
-    void commenceAutoUpdate(QNetworkReply* reply);
     void showReleaseNotes();
 
 private:
@@ -280,10 +277,6 @@ private:
     QHBoxLayout *mpHelpPopupGroupBoxLayout;
     QTimer *mpHelpPopupTimer;
     QMap<QAction*, QString> mHelpPopupTextMap;
-
-    //Auto update
-    QNetworkReply *mpDownloadStatus;
-    QProgressDialog *mpDownloadDialog;
 };
 
 
