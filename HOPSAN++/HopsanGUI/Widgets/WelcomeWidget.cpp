@@ -636,9 +636,13 @@ void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
     reply->deleteLater();
 
     QProcess *pProcess = new QProcess();
+    QStringList arguments;
     QString dir = gDesktopHandler.getExecPath();
     dir.chop(4);    //Remove "bin"
-    pProcess->start(gDesktopHandler.getDataPath()+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
+    // Note Do NOT add "dir" quotes to dir here, then QProcess or innosetup will somehow messup the dir argument and add C:\ twice.
+    // QProcess::start will add " " automatically if needed (on windows)
+    arguments << QString("/dir=%1").arg(dir);
+    pProcess->start(gDesktopHandler.getDataPath()+"/update.exe", arguments);
     pProcess->waitForStarted();
     QApplication::quit();
 }
