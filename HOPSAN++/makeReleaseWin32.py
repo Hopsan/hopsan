@@ -5,7 +5,7 @@ import os
 import ctypes
 import stat
 
-devversion="0.6."
+devversion="0.7."
 tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
 scriptFile="HopsanReleaseInnoSetupScript.iss"
