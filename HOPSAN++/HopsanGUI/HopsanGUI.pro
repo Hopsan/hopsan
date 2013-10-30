@@ -72,15 +72,18 @@ DEFINES *= DEVELOPMENT
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
-    QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
-    LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
-    INCLUDEPATH *= $$system(python$${PYTHON_VERSION}-config --includes)
-    #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
-    #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
-    # TODO: We need to add teh relative paths automatically from the path variables created above
-    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
-    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/Dependencies/qwt-6.0.0/lib\'
-    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/Dependencies/PythonQt2.0.1/lib\'
+    contains(DEFINES, USEPYTHONQT) {
+        message(Trying to find Python include and libi paths since USEPYTHONQT is defined)
+        QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
+        LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
+        INCLUDEPATH *= $$system(python$${PYTHON_VERSION}-config --includes)
+    } else {
+        message(Not looking for python since we are not using PYTHONQT)
+    }
+
+
+    # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
+    # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
     #Get the svn revision in here if script succeed, we dont care about the external file generated,

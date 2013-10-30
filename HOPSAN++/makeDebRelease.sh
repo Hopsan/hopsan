@@ -14,7 +14,7 @@ name=hopsan
 devversion=0.6.
 
 # Pbuilder dists and archs
-distArchArray=( raring:amd64 raring:i386 quantal:amd64 quantal:i386 precise:amd64 precise:i386 )
+distArchArray=( saucy:amd64 saucy:i386 raring:amd64 raring:i386 quantal:amd64 quantal:i386 precise:amd64 precise:i386 )
 
 #--------------------------------------------------------------------------------------------------
 # Code starts here
