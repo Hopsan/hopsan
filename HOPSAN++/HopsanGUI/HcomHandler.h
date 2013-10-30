@@ -55,7 +55,7 @@ public:
     void executeCommand(QString cmd);
 
     //Public access functions
-    QString runScriptCommands(QStringList &lines, bool *abort);
+    QString runScriptCommands(QStringList &lines, bool *pAbort);
     SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
     //SharedLogVariableDataPtrT getVariablePtr(QString fullName, const int generation) const;
     QStringList getCommands() const;
@@ -76,7 +76,7 @@ public:
     OptimizationHandler *mpOptHandler;
     TerminalConsole *mpConsole;
 
-    QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk);
+    QString evaluateExpression(QString expr, VariableType *pReturnType, bool *pEvalOk);
 
 public slots:
     void abortHCOM();
@@ -150,7 +150,7 @@ private:
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;
-    void getVariables(QString str, QStringList &variables) const;
+    void getVariables(QString str, QStringList &rVariables) const;
     void getVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);

@@ -109,7 +109,7 @@ protected:
     void removeCacheFile();
 
     QMap<QVector<double> *, CheckoutInfoT> mCheckoutMap;
-    quint64 mNumSubscribers;
+    qint64 mNumSubscribers;
     QFile mCacheFile;
     QString mError;
     bool mIsMultiAppending;

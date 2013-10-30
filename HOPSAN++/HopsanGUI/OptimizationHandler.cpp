@@ -36,6 +36,7 @@
 #include "PlotTab.h"
 #include "PlotWindow.h"
 #include "PlotCurve.h"
+#include "Utilities/GUIUtilities.h"
 
 
 //! @brief Constructor for optimization  handler class
@@ -131,8 +132,10 @@ void OptimizationHandler::optComplexInit()
 //! @brief Executes a Complex-RF optimization. optComplexInit() must be called before this one.
 void OptimizationHandler::optComplexRun()
 {
+    TicToc timer;
     //Plot optimization points
     optPlotPoints();
+    timer.tocDbg("PlotPoints");
 
     //Reset convergence reason variable (0 = failed to converge)
     mOptConvergenceReason=0;
@@ -160,20 +163,29 @@ void OptimizationHandler::optComplexRun()
     mpHcomHandler->executeCommand("echo off");
 
     //Evaluate initial objevtive values
+    timer.tic();
     mpHcomHandler->executeCommand("call evalall");
+    timer.tocDbg("call evalall");
 
     //Calculate best and worst id, and initialize last worst id
+    timer.tic();
     optComplexCalculatebestandworstid();
     mOptLastWorstId = mOptWorstId;
+    timer.tocDbg("optComplexCalculatebestandworstid");
 
     //Store parameters for undo
+    timer.tic();
     mOptOldParameters = mOptParameters;
+    timer.tocDbg("Copy opt parameters");
 
     //Run optimization loop
+    TicToc timer2;
     int i=0;
     int percent=-1;
     for(; i<mOptMaxEvals && !mpHcomHandler->isAborted(); ++i)
     {
+        timer2.tic();
+
         //Plot optimization points
         optPlotPoints();
 
@@ -232,6 +244,7 @@ void OptimizationHandler::optComplexRun()
         newPoint = mOptParameters[wid]; //Remember the new point, in case we need to iterate below
 
         //Evaluate new point
+        timer.tic();
         mpHcomHandler->executeCommand("call evalworst");
         if(mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
@@ -239,6 +252,7 @@ void OptimizationHandler::optComplexRun()
             mpConsole->print("Optimization aborted.");
             return;
         }
+        timer.tocDbg("Evaluate new point");
 
         //Calculate best and worst points
         mOptLastWorstId=wid;
@@ -246,6 +260,7 @@ void OptimizationHandler::optComplexRun()
         wid = mOptWorstId;
 
         //Iterate until worst point is no longer the same
+        timer.tic();
         mOptWorstCounter=0;
         while(mOptLastWorstId == wid)
         {
@@ -293,6 +308,9 @@ void OptimizationHandler::optComplexRun()
             ++mOptWorstCounter;
             ++i;
         }
+        timer.tocDbg("Iterate until worst point is no longer the same");
+        timer2.tocDbg("Full OptLoop");
+        qDebug() << "\n";
     }
 
     mpHcomHandler->executeCommand("echo on");

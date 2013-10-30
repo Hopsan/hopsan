@@ -34,6 +34,7 @@
 #include <QDebug>
 #include <complex>
 #include <QDomElement>
+#include <QTime>
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
@@ -66,7 +67,7 @@ void splitWithRespectToQuotations(const QString str, const QChar c, QStringList 
 void santizeName(QString &rString);
 bool isNameValid(const QString &rString);
 QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, const QChar &rLast);
-
+QVector<int> linspace(const int start, const int stop, const int step=1);
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);
@@ -84,6 +85,16 @@ public:
 
 private:
     QTextStream* mpQTextSream;
+};
+
+class TicToc : public QTime
+{
+public:
+    TicToc();
+    void tic();
+    void ticDbg(const QString &rWhat);
+    int toc();
+    int tocDbg(const QString &rWhat, const int minMs=0);
 };
 
 #endif // GUIUTILITIES_H

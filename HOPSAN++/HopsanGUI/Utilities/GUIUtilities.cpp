@@ -797,3 +797,51 @@ QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, c
     }
     return "";
 }
+
+
+TicToc::TicToc() : QTime()
+{
+    tic();
+}
+
+void TicToc::tic()
+{
+    this->restart();
+}
+
+void TicToc::ticDbg(const QString &rWhat)
+{
+    qDebug() << rWhat;
+    tic();
+}
+
+int TicToc::toc()
+{
+    return this->elapsed();
+}
+
+int TicToc::tocDbg(const QString &rWhat, const int minMs)
+{
+    const int ms = toc();
+    if (ms >= minMs)
+    {
+        qDebug() << rWhat << " took: " << ms << " ms";
+    }
+    return ms;
+}
+
+//! @brief Creates a linear space between start and stop with step size step
+//! @param [in] start The start value
+//! @param [in] stop The stop value, must be > start
+//! @param [in] step The step size, must be > 0
+//! @returns A linear space vector
+QVector<int> linspace(const int start, const int stop, const int step)
+{
+    QVector<int> vec;
+    vec.reserve((stop-start)/step+1);
+    for (int i=start; i<=stop; i=i+step)
+    {
+        vec.push_back(i);
+    }
+    return vec;
+}

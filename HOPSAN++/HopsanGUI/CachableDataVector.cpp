@@ -278,9 +278,15 @@ void MultiDataVectorCache::incrementSubscribers()
 void MultiDataVectorCache::decrementSubscribers()
 {
     // If mNumSubs are 0or1 before this subtraction (it will be the last subscriber), 0 case should not happen unless someone has forgotten to increment
-    if ( mNumSubscribers-- <=1)
+    --mNumSubscribers;
+    if ( mNumSubscribers == 0)
     {
         removeCacheFile();
+    }
+
+    if (mNumSubscribers < 0)
+    {
+        qDebug() << "-- MultiDataVectorCache::decrementSubscribers: mNumSubscribers < 0" << mNumSubscribers << " This should not happen!";
     }
 }
 

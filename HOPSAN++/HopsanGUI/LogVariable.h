@@ -99,8 +99,8 @@ public:
     SharedLogVariableDataPtrT addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
     SharedLogVariableDataPtrT addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData);
     void addDataGeneration(const int generation, SharedLogVariableDataPtrT pData);
-    void removeDataGeneration(const int generation, const bool force=false);
-    void removeGenerationsOlderThen(const int gen);
+    bool removeDataGeneration(const int generation, const bool force=false);
+    void purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
     void removeAllGenerations();
 
     SharedLogVariableDataPtrT getDataGeneration(const int gen=-1) const;
@@ -210,10 +210,12 @@ public:
     double peekData(const int index, QString &rErr) const;
     bool indexInRange(const int idx) const;
     double averageOfData() const;
+    double minOfData(int &rIdx) const;
     double minOfData() const;
+    double maxOfData(int &rIdx) const;
     double maxOfData() const;
-    double indexOfMinOfData() const;
-    double indexOfMaxOfData() const;
+    void elementWiseGt(QVector<double> &rResult, const double threshold) const;
+    void elementWiseLt(QVector<double> &rResult, const double threshold) const;
     void append(const double t, const double y);
     void append(const double y);
 

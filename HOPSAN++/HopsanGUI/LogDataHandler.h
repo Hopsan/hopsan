@@ -53,14 +53,15 @@ public:
     void setParentContainerObject(ContainerObject *pParent);
 
     void collectLogDataFromModel(bool overWriteLastGeneration=false);
+    void importFromPlo(QString rImportFilePath=QString());
+    void importFromCsv(QString rImportFilePath=QString());
+    void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
+
     void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables, int version=-1) const;
     void exportToCSV(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
-    void importFromPlo(QString rImportFilePath=QString());
-    void importFromCsv(QString rImportFilePath=QString());
-    void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
 
     SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
     SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, const QString &rUnit, const QString &rDescription);
@@ -70,6 +71,7 @@ public:
     bool deleteVariable(SharedLogVariableDataPtrT a);
     bool deleteVariable(const QString &a);
 
+    int getNumVariables() const;
     bool isEmpty();
     void clear();
 
@@ -97,6 +99,7 @@ public:
     QList<int> getGenerations() const;
     int getLowestGenerationNumber() const;
     int getHighestGenerationNumber() const;
+    void getLowestAndHighestGenerationNumber(int &rLowest, int &rHighest) const;
     int getLatestGeneration() const; //!< @todo Name is a bit unclear, espicially compared to getHighestGenerationNumber()
     int getNumberOfGenerations() const;
     void limitPlotGenerations();
@@ -157,6 +160,9 @@ public:
 
     double peekVariable(SharedLogVariableDataPtrT a, const int b);
     double peekVariable(const QString &a, const int index);
+
+    SharedLogVariableDataPtrT elementWiseGT(SharedLogVariableDataPtrT pData, const double thresh);
+    SharedLogVariableDataPtrT elementWiseLT(SharedLogVariableDataPtrT pData, const double thresh);
 
     SharedLogVariableDataPtrT saveVariable(SharedLogVariableDataPtrT a);
     QString saveVariable(const QString &currName, const QString &newName);

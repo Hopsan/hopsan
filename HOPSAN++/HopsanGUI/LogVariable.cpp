@@ -163,7 +163,10 @@ LogVariableData::LogVariableData(const int generation, SharedLogVariableDataPtrT
     mDataPlotScale = 1.0;
     mGeneration = generation;
     mSharedTimeVectorPtr = time;
-    connect(mSharedTimeVectorPtr.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
+    if (!mSharedTimeVectorPtr.isNull())
+    {
+        connect(mSharedTimeVectorPtr.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
+    }
     mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gConfig.getCacheLogData());
 }
 
@@ -670,6 +673,7 @@ double LogVariableData::peekData(const int index, QString &rErr) const
 
 double LogVariableData::averageOfData() const
 {
+    TicToc timer;
     double ret = 0;
     int i=0;
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
@@ -679,11 +683,13 @@ double LogVariableData::averageOfData() const
     }
     ret /= i;
     mpCachedDataVector->endFullVectorOperation(pVector);
+    //timer.tocDbg("Actual average calc");
     return ret;
 }
 
-double LogVariableData::minOfData() const
+double LogVariableData::minOfData(int &rIdx) const
 {
+    rIdx = -1;
     double ret = std::numeric_limits<double>::max();
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
     for(int i=0; i<pVector->size(); ++i)
@@ -691,44 +697,87 @@ double LogVariableData::minOfData() const
         if(pVector->at(i) < ret)
         {
             ret = pVector->at(i);
+            rIdx=i;
         }
     }
     mpCachedDataVector->endFullVectorOperation(pVector);
     return ret;
 }
 
-double LogVariableData::indexOfMinOfData() const
+double LogVariableData::minOfData() const
 {
-    double minVal = std::numeric_limits<double>::max();
-    double ret = 0;
-    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
-    for(int i=0; i<pVector->size(); ++i)
-    {
-        if(pVector->at(i) < minVal)
-        {
-            minVal = pVector->at(i);
-            ret=i;
-        }
-    }
-    mpCachedDataVector->endFullVectorOperation(pVector);
-    return ret;
+    int dummy;
+    return minOfData(dummy);
 }
 
-double LogVariableData::indexOfMaxOfData() const
+//double LogVariableData::indexOfMinOfData() const
+//{
+//    double minVal = std::numeric_limits<double>::max();
+//    double ret = 0;
+//    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+//    for(int i=0; i<pVector->size(); ++i)
+//    {
+//        if(pVector->at(i) < minVal)
+//        {
+//            minVal = pVector->at(i);
+//            ret=i;
+//        }
+//    }
+//    mpCachedDataVector->endFullVectorOperation(pVector);
+//    return ret;
+//}
+
+//double LogVariableData::indexOfMaxOfData() const
+//{
+//    double maxVal = std::numeric_limits<double>::min();
+//    double ret = 0;
+//    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+//    for(int i=0; i<pVector->size(); ++i)
+//    {
+//        if(pVector->at(i) > maxVal)
+//        {
+//            maxVal = pVector->at(i);
+//            ret=i;
+//        }
+//    }
+//    mpCachedDataVector->endFullVectorOperation(pVector);
+//    return ret;
+//}
+
+void LogVariableData::elementWiseGt(QVector<double> &rResult, const double threshold) const
 {
-    double maxVal = std::numeric_limits<double>::min();
-    double ret = 0;
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    rResult.resize(pVector->size());
     for(int i=0; i<pVector->size(); ++i)
     {
-        if(pVector->at(i) > maxVal)
+        if ((*pVector)[i] > threshold)
         {
-            maxVal = pVector->at(i);
-            ret=i;
+            rResult[i] = 1;
+        }
+        else
+        {
+            rResult[i] = 0;
         }
     }
     mpCachedDataVector->endFullVectorOperation(pVector);
-    return ret;
+}
+
+void LogVariableData::elementWiseLt(QVector<double> &rResult, const double threshold) const
+{
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    rResult.resize(pVector->size());
+    for(int i=0; i<pVector->size(); ++i)
+    {
+        if ((*pVector)[i] < threshold)
+        {
+            rResult[i] = 1;
+        }
+        else
+        {
+            rResult[i] = 0;
+        }
+    }
+    mpCachedDataVector->endFullVectorOperation(pVector);
 }
 
 
@@ -753,8 +802,10 @@ void LogVariableData::append(const double y)
 }
 
 
-double LogVariableData::maxOfData() const
+double LogVariableData::maxOfData(int &rIdx) const
 {
+    TicToc timer;
+    rIdx = -1;
     double ret = -std::numeric_limits<double>::max();
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
     for(int i=0; i<pVector->size(); ++i)
@@ -762,10 +813,18 @@ double LogVariableData::maxOfData() const
         if(pVector->at(i) > ret)
         {
             ret = pVector->at(i);
+            rIdx = i;
         }
     }
     mpCachedDataVector->endFullVectorOperation(pVector);
+    timer.tocDbg("Actual max of data");
     return ret;
+}
+
+double LogVariableData::maxOfData() const
+{
+    int dummy;
+    return maxOfData(dummy);
 }
 
 void LogVariableData::preventAutoRemoval()
@@ -1032,23 +1091,37 @@ void LogVariableContainer::addDataGeneration(const int generation, SharedLogVari
 //! @brief Removes a generation of the variable
 //! @note If last generation the container itself will be deletet from parent log data handler, so DO NOT CALL this while itterating through the log data map
 //! @todo this functions should not call delete in parent if empty, it causes difficult to debugg problems while calling it during itteration, need to come up with a smarter solution
-void LogVariableContainer::removeDataGeneration(const int generation, const bool force)
+//! @returns True if the generation was removed, otherwise false (if generation was not present or taged as keep (when not forcing)
+bool LogVariableContainer::removeDataGeneration(const int generation, const bool force)
 {
+    bool didRemove=false;
     // Skip removal of generations that should be kept
     if (mKeepGenerations.contains(generation))
     {
         if (force)
         {
-            emit logVariableBeingRemoved(mDataGenerations.value(generation));
-            mDataGenerations.remove(generation);
+            // We use find to search only once, (and reuse iterator)
+            GenerationMapT::iterator git = mDataGenerations.find(generation);
+            if (git != mDataGenerations.end())
+            {
+                emit logVariableBeingRemoved(git.value());
+                mDataGenerations.erase(git);
+                didRemove=true;
+            }
             mKeepGenerations.removeOne(generation);
         }
     }
     else
     {
         //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
-        emit logVariableBeingRemoved(mDataGenerations.value(generation));
-        mDataGenerations.remove(generation);
+        // We use find to search only once, (and reuse iterator)
+        GenerationMapT::iterator git = mDataGenerations.find(generation);
+        if (git != mDataGenerations.end())
+        {
+            emit logVariableBeingRemoved(git.value());
+            mDataGenerations.erase(git);
+            didRemove=true;
+        }
     }
 
     // If last data generation removed then ask my parent to delete me
@@ -1056,22 +1129,27 @@ void LogVariableContainer::removeDataGeneration(const int generation, const bool
     {
         mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
     }
+    return didRemove;
 }
 
-void LogVariableContainer::removeGenerationsOlderThen(const int gen)
+//! @brief Limit the number of generations within the given interval
+void LogVariableContainer::purgeOldGenerations(const int purgeEnd, const int nGensToKeep)
 {
-    // It is assumed that the generation map is sorted by key which it should be since adding will allways append
-    QList<int> gens = mDataGenerations.keys();
-    for (int it=0; it<gens.size(); ++it)
+    // Only do the purge if mingen is under upper limit
+    int minGen = getLowestGeneration();
+    if (minGen <= purgeEnd)
     {
-        if ( gens[it] < gen )
+        // loop through keys
+        QList<int> keys = mDataGenerations.keys();
+        for (int k=0; k<keys.size(); ++k)
         {
-            removeDataGeneration(gens[it]);
-        }
-        else
-        {
-            // There is no reason to continue the loop if we have found  gens[it] = gen
-            break;
+            // Try to remove each generation
+            removeDataGeneration(keys[k], false);
+            // Only break loop when we have deleted all below purge limit and num current generations is OK
+            if ((keys[k] >= purgeEnd) && mDataGenerations.size() <= nGensToKeep)
+            {
+                break;
+            }
         }
     }
 }
@@ -1084,8 +1162,6 @@ void LogVariableContainer::removeAllGenerations()
     {
         removeDataGeneration(gens[it]);
     }
-
-    //mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
 }
 
 LogVariableContainer::LogVariableContainer(const VariableCommonDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()

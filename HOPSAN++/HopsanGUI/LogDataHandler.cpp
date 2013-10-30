@@ -650,6 +650,7 @@ void LogDataHandler::clear()
 //! @brief Collects plot data from last simulation
 void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
 {
+    TicToc tictoc;
     if(!overWriteLastGeneration)
     {
         ++mGenerationNumber;
@@ -758,6 +759,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
         // Revert generation number if no data was found, and we were not overwriting this generation
         --mGenerationNumber;
     }
+    tictoc.tocDbg("Collect plot data");
 }
 
 void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int gen, const int version) const
@@ -850,7 +852,7 @@ QVector<SharedLogVariableDataPtrT> LogDataHandler::getMultipleLogVariableDataPtr
     for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
     {
         // For any non temp variable compare name with regexp
-        if ((it.value()->getVariableCommonDescription()->mVariableSourceType != TempVariableType) && it.key().contains(rNameExp))
+        if ((it.value()->getVariableCommonDescription()->mVariableSourceType != TempVariableType) && rNameExp.exactMatch(it.key()))
         {
             SharedLogVariableDataPtrT pData = it.value()->getDataGeneration(generation);
             if (pData)
@@ -1069,35 +1071,41 @@ int LogDataHandler::getHighestGenerationNumber() const
     return max;
 }
 
+//! @todo should ignore tempvariables, maybe they should not even be in the logdata map, should have a separate one for temp variables
+void LogDataHandler::getLowestAndHighestGenerationNumber(int &rLowest, int &rHighest) const
+{
+    rLowest=INT_MAX;
+    rHighest=INT_MIN;
+
+    // We must search through and ask all variables since they may have different sets of non-contious generations
+    LogDataMapT::const_iterator it;
+    for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
+    {
+        rLowest = qMin(rLowest,(it.value()->getLowestGeneration()));
+        rHighest = qMax(rHighest,(it.value()->getHighestGeneration()));
+    }
+}
+
+//! @brief Ask each variable how many generations it has, and returns the maximum (the total number of availiable generations)
+//! @note This function will become slower as the number of unique variable names grow
 int LogDataHandler::getNumberOfGenerations() const
 {
-    int nGens=0;
-    for(int i=getLowestGenerationNumber(); i<=getHighestGenerationNumber(); ++i)
+    int num = 0;
+    // Lets loop through everyone and ask how many gens they have, the one with the most will be the total availible number
+    LogDataMapT::const_iterator it;
+    for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
-        bool genExists=false;
-        LogDataMapT::const_iterator it;
-        for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
-        {
-            if(it.value()->hasDataGeneration(i))
-            {
-                genExists=true;
-            }
-        }
-        if(genExists)
-        {
-            //qDebug() << "Generation " << i << " exists!";
-            ++nGens;
-        }
+        num = qMax(it.value()->getNumGenerations(), num);
     }
-    //qDebug() << "nGens = " << nGens;
-    return nGens;
+    return num;
 }
 
 
 //! @brief Limits number of plot generations to value specified in configuration
 void LogDataHandler::limitPlotGenerations()
 {
-    if (getNumberOfGenerations() > gConfig.getGenerationLimit())
+    int numGens = getNumberOfGenerations() ;
+    if (numGens > gConfig.getGenerationLimit())
     {
         if(!gConfig.getAutoLimitLogDataGenerations())
         {
@@ -1128,38 +1136,42 @@ void LogDataHandler::limitPlotGenerations()
         }
 
         // Remove old generation in each data variable container
-        int idx=getLowestGenerationNumber();
-        while(getNumberOfGenerations() > gConfig.getGenerationLimit() && idx <= getHighestGenerationNumber())
+//        TicToc timer;
+//        int lowest, highest;
+//        getLowestAndHighestGenerationNumber(lowest,highest);
+//        qDebug() << "removeOldGenerations: " << lowest << " to " << highest;
+//        while( (numGens > gConfig.getGenerationLimit()) && (lowest <= highest))
+//        {
+//            // Remove old generation in each data variable container, but do not force removal
+//            removeGeneration(lowest, false);
+
+//            // Clear from generations cache object map
+//            //! @todo should we realy clear this, what if there were some variables that hade autoremove disabled
+//            mGenerationCacheMap.remove(lowest);
+//            ++lowest;
+//            //! @todo since getNumGens may be slow, maybe removeGen should return booltrue if something was actually removed, then we can calc numGens locally
+//            numGens = getNumberOfGenerations(); //Update num gens
+//        }
+//        timer.tocDbg("removeOldGenerations");
+
+//---------------------------------------------------------------------------------------
+// This is NEW code by Peter, but it is not working yet, do not remove it
+        TicToc timer;
+        int highest = getHighestGenerationNumber();
+        // Note! Here we must iterate through a copy of the values from the map
+        // if we use an iterator in the map we will crash if the removed generation is the final one
+        // Then the data variable itself will also be removed and the iterator will become invalid
+        QList<QPointer<LogVariableContainer> > vars = mLogDataMap.values();
+        QList<QPointer<LogVariableContainer> >::iterator it;
+        for ( it=vars.begin(); it!=vars.end(); ++it)
         {
-            // Remove old generation in each data variable container, but do not force removal
-            removeGeneration(idx, false);
-
-            // Clear from generations cache object map
-            //! @todo should we realy clear this, what if there were some variables that hade autoremove disabled
-            mGenerationCacheMap.remove(idx);
-            ++idx;
+            (*it)->purgeOldGenerations(highest-gConfig.getGenerationLimit(), gConfig.getGenerationLimit());
         }
-
-//        // Remove old generation in each data variable container
-//        LogDataMapT::iterator dit = mLogDataMap.begin();
-//        for ( ; dit!=mLogDataMap.end(); ++dit)
-//        {
-//            dit.value()->removeGenerationsOlderThen(mGenerationNumber - gConfig.getGenerationLimit());
-//        }
-
-//        // Clear from generations cache object map
-//        QList<int> gens = mGenerationCacheMap.keys();
-//        for (int i=0; i<gens.size(); ++i)
-//        {
-//            if (gens[i] < (mGenerationNumber - gConfig.getGenerationLimit()) )
-//            {
-//                mGenerationCacheMap.remove(gens[i]);
-//            }
-//            else
-//            {
-//                break;
-//            }
-//        }
+        emit dataRemoved();
+        //! @todo what about clearing mGenerationCacheMap
+        timer.tocDbg("removeOldGenerations");
+        qDebug() << "Number of logdata variables: " << getNumVariables();
+//---------------------------------------------------------------------------------------
     }
 }
 
@@ -1171,12 +1183,6 @@ void LogDataHandler::preventGenerationAutoRemoval(const int gen)
     {
         dit.value()->preventAutoRemove(gen);
     }
-
-//    // Remember generation to keep
-//    if (!mKeepGenerationsList.contains(gen))
-//    {
-//        mKeepGenerationsList.prepend(gen);
-//    }
 }
 
 void LogDataHandler::allowGenerationAutoRemoval(const int gen)
@@ -1187,9 +1193,6 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
     {
         dit.value()->allowAutoRemove(gen);
     }
-
-//    // Remove generation to keep
-    //    mKeepGenerationsList.removeOne(gen);
 }
 
 //! @brief Removes a generation
@@ -1433,7 +1436,7 @@ QString LogDataHandler::diffVariables(const QString &a, const QString &b)
     }
 
 
-    if( (pData1 == 0) || (pData2 == 0 && b != TIMEVARIABLENAME) )
+    if( (pData1 == 0) || ((pData2 == 0) && (b != TIMEVARIABLENAME)) )
     {
         return QString();
     }
@@ -1578,6 +1581,13 @@ bool LogDataHandler::deleteVariable(const QString &a)
     return false;
 }
 
+//! @brief Returns the number of log data variables registered in this log data handler
+//! @returns The number of registered log data variables
+int LogDataHandler::getNumVariables() const
+{
+    return mLogDataMap.size();
+}
+
 bool LogDataHandler::deleteVariable(SharedLogVariableDataPtrT a)
 {
     return deleteVariable(a->getFullVariableName());
@@ -1592,6 +1602,32 @@ double LogDataHandler::peekVariable(const QString &a, const int index)
     }
     gpTerminalWidget->mpConsole->printErrorMessage("In Peek, No such variable: " + a);
     return 0;
+}
+
+SharedLogVariableDataPtrT LogDataHandler::elementWiseGT(SharedLogVariableDataPtrT pData, const double thresh)
+{
+    if (pData)
+    {
+        SharedLogVariableDataPtrT pTempVar = defineTempVariable(pData->getFullVariableName()+"gt");
+        QVector<double> res;
+        pData->elementWiseGt(res,thresh);
+        pTempVar->assignFrom(res);
+        return pTempVar;
+    }
+    return SharedLogVariableDataPtrT();
+}
+
+SharedLogVariableDataPtrT LogDataHandler::elementWiseLT(SharedLogVariableDataPtrT pData, const double thresh)
+{
+    if (pData)
+    {
+        SharedLogVariableDataPtrT pTempVar = defineTempVariable(pData->getFullVariableName()+"gt");
+        QVector<double> res;
+        pData->elementWiseLt(res,thresh);
+        pTempVar->assignFrom(res);
+        return pTempVar;
+    }
+    return SharedLogVariableDataPtrT();
 }
 
 QString LogDataHandler::saveVariable(const QString &currName, const QString &newName)
