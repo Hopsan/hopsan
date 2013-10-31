@@ -1,32 +1,32 @@
 ----------------------------------------
  Package Info:
 ----------------------------------------
-This DEB package is meant for installation on *Ubuntu systems.
+This DEB package is meant for installation on *Ubuntu (GNU Linux based) operating systems.
 
 Hopsan will be installed to /opt/hopsan
 A "shortcut" to HopsanGUI should end up under the Development category in your menu.
 HopsanCLI and libHopsanCore.so can be found in /opt/hopsan/bin
 
 For questions about this .deb package, contact:
-peter.nordin_at_liu.se
+peter.nordin@liu.se
 
 ----------------------------------------
  What version to choose:
 ----------------------------------------
-The deb packages have been build as 32-bit and 64-bit for a few different distributions.
-If you do not know which Ubuntu version you have, run the following commands in a terminal:
+The deb packages have been build in 32-bit and 64-bit for a few different distributions.
+If you do not know which *Ubuntu version you have, run the following commands in a terminal:
 
 Ubuntu version: "lsb_release -a"
-Architecture: "uname -m", (x86_64 means 64-bit choose a amd64 deb)
+Architecture: "uname -m", (x86_64 means 64-bit, choose amd64)
 
 
 ----------------------------------------
  How to Install:
 ----------------------------------------
-There are various installation methods. Method 1 or 2 is recommended. Use method 4 if you do not have install permission.
+There are different installation methods. Method 1 or 2 is recommended. Use method 4 if you do not have install permission.
 
 Method 1:
-In Ubuntu, double click the package file to open it in Ubuntu Software Center, where you can choose to install it.
+In Ubuntu, double click the package file to open it in the "Ubuntu Software Center" where you can choose to install it.
 Dependencies will be automatically installed.
 
 Method 2:
@@ -64,4 +64,4 @@ Dependencies will only be removed if install method 1 or 2 was used, and if no o
 ----------------------------------------
 Hopsan will be installed to /opt/hopsan, this is not the standard Debian way.
 To avoid that /opt is removed when Hopsan is uninstalled a hopsan_dummy file will be create in the /opt directory.
-This dummy file will be automatically removed after Hopsan has been removed.
+This dummy file will be automatically removed after Hopsan has been uninstalled.

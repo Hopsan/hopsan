@@ -52,7 +52,7 @@ boolAskYNQuestion()
 
 # Ask user for version input
 echo
-echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
+echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release: "
 read version
 doDevRelease="false"
 if [ -z "$version" ]; then
@@ -64,6 +64,10 @@ fi
 echo
 boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" "n"
 doBuildInComponents="$boolYNQuestionAnswer"
+
+echo
+boolAskYNQuestion "Do you want to build with PythonQt and python support?" "n"
+doUsePythonQt="$boolYNQuestionAnswer"
 
 echo
 distArchArrayDo=()
@@ -81,9 +85,10 @@ echo ---------------------------------------
 echo "This is a DEV release: $doDevRelease"
 echo "Release version number: $version"
 echo "Built in components: $doBuildInComponents"
+echo "Using PythonQt: $doUsePythonQt"
 echo "Using pbuilder: $doPbuild"
 if [ "$doPbuild" = "true" ]; then
-  echo ${distArchArrayDo[@]}
+  printf "%s\n" "${distArchArrayDo[@]}"
 fi
 echo ---------------------------------------
 boolAskYNQuestion "Is this OK?" "n"
@@ -134,7 +139,11 @@ rm -rf $packagedir
 
 # Export template
 svn export hopsan-template $packagedir
-# Copy "unpack" prepared source  files to this dir
+# Check if we should remove PythonQt if it should not be used
+if [ "$doUsePythonQt" = "false" ]; then
+  sed 's|./unpackPatchAndBuildPythonQt.sh|d' -i "$packagedir/debian/rules"
+fi
+# Copy "unpack" prepared source files to this dir
 tar -xzf $packageorigsrcfile -C $packagedir
 
 # Generate NEW changelog file for this release version with no content in particular
@@ -230,7 +239,7 @@ if [ "$doPbuild" = "true" ]; then
   echo "Build Status:"
   echo "-------------"
   
-  echo ${buildStatusArray[@]}
+  printf "%s\n" "${buildStatusArray[@]}"
 
 else
   # Now lets create and test the package
