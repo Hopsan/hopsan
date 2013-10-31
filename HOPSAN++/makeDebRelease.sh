@@ -141,7 +141,7 @@ rm -rf $packagedir
 svn export hopsan-template $packagedir
 # Check if we should remove PythonQt if it should not be used
 if [ "$doUsePythonQt" = "false" ]; then
-  sed 's|./unpackPatchAndBuildPythonQt.sh|d' -i "$packagedir/debian/rules"
+  sed "/unpackPatchAndBuildPythonQt.sh/d" -i "$packagedir/debian/rules"
 fi
 # Copy "unpack" prepared source files to this dir
 tar -xzf $packageorigsrcfile -C $packagedir
