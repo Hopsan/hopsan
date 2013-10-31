@@ -644,13 +644,13 @@ void HcomHandler::executeCommand(QString cmd)
         {
             HCOMERR("Unrecognized command: " + majorCmd);
         }
-        timer.tocDbg("evaluateArithmeticExpression " + cmd);
+        timer.toc("evaluateArithmeticExpression " + cmd);
     }
     else
     {
         TicToc timer;
         mCmdList[idx].runCommand(subCmd, this);
-        timer.tocDbg("runCommand "+QString("(%1)  %2").arg(majorCmd).arg(subCmd));
+        timer.toc("runCommand "+QString("(%1)  %2").arg(majorCmd).arg(subCmd));
     }
 }
 
@@ -679,11 +679,14 @@ void HcomHandler::executeSimulateCommand(const QString cmd)
     }
     else if(cmd == "")
     {
+        TicToc timer;
+        timer.tic("!!!! Beginning blocking simulation");
         ModelWidget *pCurrentModel = gpModelHandler->getCurrentModel();
         if(pCurrentModel)
         {
             pCurrentModel->simulate_blocking();
         }
+        timer.toc("!!!! Blocking simulation");
     }
     else
     {
@@ -2521,11 +2524,11 @@ void HcomHandler::executeCallFunctionCommand(const QString cmd)
     }
 
     TicToc timer;
-    timer.ticDbg(">>>>>>>>>>>>> In executeCallFunctionCommand: Start "+cmd+" runScriptCommands");
+    timer.tic(" >>>>>>>>>>>>> In executeCallFunctionCommand: Starting runScriptCommands for: "+cmd+" func: "+funcName);
 
     bool abort = false;
     runScriptCommands(mFunctions.find(funcName).value(), &abort);
-    timer.tocDbg("<<<<<<<<<<<<< In executeCallFunctionCommand: "+cmd+" runScriptCommands");
+    timer.toc(" <<<<<<<<<<<<< In executeCallFunctionCommand: Finnished runScriptCommands for: "+cmd+" func: "+funcName);
     if(abort)
     {
         HCOMPRINT("Function aborted");
@@ -2855,7 +2858,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
     timer.tic();
     QStringList variables;
     getVariables(expr,variables);
-    timer.tocDbg("getVariables", 1);
+    timer.toc("getVariables", 1);
     if(!variables.isEmpty())
     {
         *pReturnType = DataVector;
@@ -3195,7 +3198,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
         }
         return "";
     }
-    timer.tocDbg("Vector functions", 1);
+    timer.toc("Vector functions", 1);
 
     //Evaluate expression using SymHop
     SymHop::Expression symHopExpr = SymHop::Expression(expr);
@@ -3253,7 +3256,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
                 return pLogData->subVariables(getVariablePtr(t0.toString()), getVariablePtr(t1.toString())).data()->getFullVariableName();
         }
     }
-    timer.tocDbg("Multiplication between data vector and scalar", 0);
+    timer.toc("Multiplication between data vector and scalar", 0);
 
     *pReturnType = Scalar;
 
@@ -3265,7 +3268,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
     {
         localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
     }
-    timer.tocDbg("local pars to local vars");
+    timer.toc("local pars to local vars");
 
     QString num = QString::number(symHopExpr.evaluate(localVars, mLocalFunctionPtrs));
     return num;
@@ -3395,7 +3398,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             {
                 localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
             }
-            timer.tocDbg("runScriptCommand: pars to local vars");
+            timer.toc("runScriptCommand: pars to local vars");
             timer.tic();
             while(symHopExpr.evaluate(localVars) > 0)
             {
@@ -3426,9 +3429,9 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 {
                     localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
                 }
-                timer2.tocDbg("runScriptCommand: pars to local vars 2");
+                timer2.toc("runScriptCommand: pars to local vars 2");
             }
-            timer.tocDbg("runScriptCommand: While loop");
+            timer.toc("runScriptCommand: While loop");
         }
         else if(lines[l].startsWith("if"))        //Handle if statements
         {
@@ -3510,7 +3513,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             QStringList vars;
             getVariables(filter, vars);
             QStringList loop;
-            timer.tocDbg("runScriptCommand: foreach getVariables");
+            timer.toc("runScriptCommand: foreach getVariables");
             while(!lines[l].startsWith("endforeach"))
             {
                 ++l;
@@ -3553,14 +3556,14 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     return gotoLabel;
                 }
             }
-            timer.tocDbg("runScriptCommand: foreach vars loop");
+            timer.toc("runScriptCommand: foreach vars loop");
         }
         else
         {
-            bigtimer.tocDbg("Now we have reached this->executeCommand(lines[l])",1);
+            bigtimer.toc("Now we have reached this->executeCommand(lines[l])",1);
             TicToc timer;
             this->executeCommand(lines[l]);
-            timer.tocDbg("runScriptCommand: this->executeCommand(lines[l])");
+            timer.toc("runScriptCommand: this->executeCommand(lines[l])");
         }
     }
     return QString();
@@ -4038,7 +4041,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         VariableType type;
         TicToc timer;
         QString value=evaluateExpression(cmd, &type, &evalOk);
-        timer.tocDbg("Evaluate expression "+cmd);
+        timer.toc("Evaluate expression "+cmd);
         if(evalOk && type==Scalar)
         {
             returnScalar(value.toDouble());
@@ -4397,7 +4400,7 @@ double _funcAver(QString str, bool &ok)
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
         pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
-        timer.tocDbg("Eval in aver");
+        timer.toc("Eval in aver");
     }
 
     if(pData)
@@ -4481,7 +4484,7 @@ double _funcMax(QString str, bool &ok)
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
         pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
-        timer2.tocDbg("Eval in max");
+        timer2.toc("Eval in max");
     }
 
     if(pData)

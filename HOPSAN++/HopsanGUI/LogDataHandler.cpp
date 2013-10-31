@@ -759,7 +759,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
         // Revert generation number if no data was found, and we were not overwriting this generation
         --mGenerationNumber;
     }
-    tictoc.tocDbg("Collect plot data");
+    tictoc.toc("Collect plot data");
 }
 
 void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int gen, const int version) const
@@ -1169,7 +1169,7 @@ void LogDataHandler::limitPlotGenerations()
         }
         emit dataRemoved();
         //! @todo what about clearing mGenerationCacheMap
-        timer.tocDbg("removeOldGenerations");
+        timer.toc("removeOldGenerations");
         qDebug() << "Number of logdata variables: " << getNumVariables();
 //---------------------------------------------------------------------------------------
     }

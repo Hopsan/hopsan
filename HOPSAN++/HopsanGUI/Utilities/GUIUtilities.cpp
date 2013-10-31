@@ -809,7 +809,7 @@ void TicToc::tic()
     this->restart();
 }
 
-void TicToc::ticDbg(const QString &rWhat)
+void TicToc::tic(const QString &rWhat)
 {
     qDebug() << rWhat;
     tic();
@@ -820,7 +820,7 @@ int TicToc::toc()
     return this->elapsed();
 }
 
-int TicToc::tocDbg(const QString &rWhat, const int minMs)
+int TicToc::toc(const QString &rWhat, const int minMs)
 {
     const int ms = toc();
     if (ms >= minMs)

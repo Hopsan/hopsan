@@ -92,9 +92,9 @@ class TicToc : public QTime
 public:
     TicToc();
     void tic();
-    void ticDbg(const QString &rWhat);
+    void tic(const QString &rWhat);
     int toc();
-    int tocDbg(const QString &rWhat, const int minMs=0);
+    int toc(const QString &rWhat, const int minMs=0);
 };
 
 #endif // GUIUTILITIES_H

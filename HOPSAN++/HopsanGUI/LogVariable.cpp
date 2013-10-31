@@ -817,7 +817,7 @@ double LogVariableData::maxOfData(int &rIdx) const
         }
     }
     mpCachedDataVector->endFullVectorOperation(pVector);
-    timer.tocDbg("Actual max of data");
+    timer.toc("Actual max of data");
     return ret;
 }
 
