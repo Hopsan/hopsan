@@ -1,8 +1,9 @@
-#Determine debug extension
+#Determine debug extension, and debug output on/off
 CONFIG(debug, debug|release) {
   DEBUG_EXT = _d
 } else {
   DEBUG_EXT =
+  DEFINES *= QT_NO_DEBUG_OUTPUT
 }
 
 #Determine the DLL file extension

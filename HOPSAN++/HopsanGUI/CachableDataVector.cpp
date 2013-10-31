@@ -286,7 +286,7 @@ void MultiDataVectorCache::decrementSubscribers()
 
     if (mNumSubscribers < 0)
     {
-        qDebug() << "-- MultiDataVectorCache::decrementSubscribers: mNumSubscribers < 0" << mNumSubscribers << " This should not happen!";
+        qWarning() << "-- MultiDataVectorCache::decrementSubscribers: mNumSubscribers < 0" << mNumSubscribers << " This should not happen!";
     }
 }
 

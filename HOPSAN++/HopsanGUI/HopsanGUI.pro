@@ -73,7 +73,7 @@ DEFINES *= DEVELOPMENT
 # -------------------------------------------------
 unix {
     contains(DEFINES, USEPYTHONQT) {
-        message(Trying to find Python include and libi paths since USEPYTHONQT is defined)
+        message(Trying to find Python include and lib paths since USEPYTHONQT is defined)
         QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
         LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
         INCLUDEPATH *= $$system(python$${PYTHON_VERSION}-config --includes)
@@ -96,11 +96,15 @@ win32 {
     #DEFINES += STATICCORE
 
     #Set Python paths
-    PYTHON_DEFAULT_PATHS *= c:/Python27
-    PYTHON_DEFAULT_PATHS *= c:/Python26
-    PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
-    INCLUDEPATH += $${PYTHON_PATH}/include
-    LIBS += -L$${PYTHON_PATH}/libs
+    contains(DEFINES, USEPYTHONQT) {
+        message(Trying to find Python include and lib paths since USEPYTHONQT is defined)
+        PYTHON_DEFAULT_PATHS *= c:/Python27
+        PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
+        INCLUDEPATH += $${PYTHON_PATH}/include
+        LIBS += -L$${PYTHON_PATH}/libs
+    } else {
+        message(Not looking for python since we are not using PYTHONQT)
+    }
 
     #Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
     #Also enable auto-import

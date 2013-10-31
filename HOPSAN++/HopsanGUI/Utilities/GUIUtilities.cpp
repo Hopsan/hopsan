@@ -825,7 +825,14 @@ int TicToc::tocDbg(const QString &rWhat, const int minMs)
     const int ms = toc();
     if (ms >= minMs)
     {
-        qDebug() << rWhat << " took: " << ms << " ms";
+        if (ms == 0)
+        {
+            qDebug() << rWhat << " took: less then 1 ms";
+        }
+        else
+        {
+            qDebug() << rWhat << " took: " << ms << " ms";
+        }
     }
     return ms;
 }
