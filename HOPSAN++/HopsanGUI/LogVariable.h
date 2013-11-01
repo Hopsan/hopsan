@@ -100,7 +100,7 @@ public:
     SharedLogVariableDataPtrT addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData);
     void addDataGeneration(const int generation, SharedLogVariableDataPtrT pData);
     bool removeDataGeneration(const int generation, const bool force=false);
-    void purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
+    bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
     void removeAllGenerations();
 
     SharedLogVariableDataPtrT getDataGeneration(const int gen=-1) const;

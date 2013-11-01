@@ -93,6 +93,7 @@ public:
 
     void incrementSubscribers();
     void decrementSubscribers();
+    qint64 getNumSubscribers() const;
 
 protected:
     typedef struct CheckoutInfo{
@@ -150,6 +151,7 @@ private:
     QVector<double> mDataVector;
     quint64 mCacheStartByte;
     quint64 mCacheNumBytes;
+    bool mIsCached;
 };
 
 #endif // CACHABLEDATAVECTOR_H

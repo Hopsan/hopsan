@@ -1226,7 +1226,7 @@ void HcomHandler::executePrintCommand(const QString cmd)
         }
         else if (ok && type == DataVector)
         {
-            SharedLogVariableDataPtrT pData = getVariablePtr(varName);
+            SharedLogVariableDataPtrT pData = getLogVariablePtr(varName);
             QString array;
             QTextStream ts(&array);
             pData->sendDataToStream(ts," ");
@@ -1288,11 +1288,11 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
         QStringList output;
         if(cmd.isEmpty())
         {
-            getVariables("*.H", output);
+            getLogVariables("*.H", output);
         }
         else
         {
-            getVariables(cmd, output);
+            getLogVariables(cmd, output);
         }
         output.removeDuplicates();
 
@@ -1328,7 +1328,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
         return;
     }
 
-    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
+    SharedLogVariableDataPtrT pData = getLogVariablePtr(variable);
     if(pData)
     {
         QString err;
@@ -1370,7 +1370,7 @@ void HcomHandler::executePokeCommand(const QString cmd)
         return;
     }
 
-    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
+    SharedLogVariableDataPtrT pData = getLogVariablePtr(variable);
     if(pData)
     {
         QString err;
@@ -1435,7 +1435,7 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 //        }
 
         QStringList variables;
-        getVariables(varNames[s], variables);
+        getLogVariables(varNames[s], variables);
         for(int v=0; v<variables.size(); ++v)
         {
             deletePlotCurve(variables[v]);
@@ -1456,7 +1456,7 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
     QString scale = getArgument(cmd,1);
 
     QStringList vars;
-    getVariables(getArgument(cmd,0),vars);
+    getLogVariables(getArgument(cmd,0),vars);
     if(vars.isEmpty())
     {
         HCOMERR("Unknown variable.");
@@ -1535,7 +1535,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     double scale = getArgument(cmd,1).toDouble();
 
     QStringList vars;
-    getVariables(varName,vars);
+    getLogVariables(varName,vars);
     if(vars.isEmpty())
     {
         HCOMERR("Unknown variable.");
@@ -1543,7 +1543,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     }
     Q_FOREACH(const QString var, vars)
     {
-        SharedLogVariableDataPtrT pVar = getVariablePtr(var);
+        SharedLogVariableDataPtrT pVar = getLogVariablePtr(var);
         pVar.data()->setPlotScale(scale);
     }
 }
@@ -1557,7 +1557,7 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
         return;
     }
 
-    SharedLogVariableDataPtrT pVar = getVariablePtr(cmd);
+    SharedLogVariableDataPtrT pVar = getLogVariablePtr(cmd);
     if(!pVar.isNull())
     {
         QString scale = pVar.data()->getCustomUnitScale().mScale;
@@ -1720,7 +1720,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     {
         splitCmdMajor[i].remove("\"");
         QStringList variables;
-        getVariables(splitCmdMajor[i], variables);
+        getLogVariables(splitCmdMajor[i], variables);
         for(int v=0; v<variables.size(); ++v)
         {
             toLongDataNames(variables[v]);
@@ -2211,8 +2211,8 @@ void HcomHandler::executeBodeCommand(const QString cmd)
 
     QString var1 = getArgument(cmd,0);
     QString var2 = getArgument(cmd,1);
-    SharedLogVariableDataPtrT pData1 = getVariablePtr(var1);
-    SharedLogVariableDataPtrT pData2 = getVariablePtr(var2);
+    SharedLogVariableDataPtrT pData1 = getLogVariablePtr(var1);
+    SharedLogVariableDataPtrT pData2 = getLogVariablePtr(var2);
     if(!pData1 || !pData2)
     {
         HCOMERR("Data variable not found.");
@@ -2240,7 +2240,7 @@ void HcomHandler::executeAbsCommand(const QString cmd)
     }
     QString varName = getArgument(cmd,0);
 
-    SharedLogVariableDataPtrT var = getVariablePtr(varName);
+    SharedLogVariableDataPtrT var = getLogVariablePtr(varName);
     if(var)
     {
         var.data()->absData();
@@ -2679,7 +2679,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             bool ok;
             QString vars = evaluateExpression(varNames[s], &type, &ok);
             toShortDataNames(vars);
-            getVariables(vars, variables);
+            getLogVariables(vars, variables);
             for(int v=0; v<variables.size(); ++v)
             {
                 addPlotCurve(variables[v], axisId);
@@ -2697,14 +2697,14 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
     SystemContainer *pCurrentSystem = gpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
 
-    SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
+    SharedLogVariableDataPtrT pData = getLogVariablePtr(cmd);
     if(!pData)
     {
         HCOMERR("Variable not found.");
         return;
     }
 
-    SharedLogVariableDataPtrT pGenData = getVariablePtr(cmd);
+    SharedLogVariableDataPtrT pGenData = getLogVariablePtr(cmd);
     if(pData)
     {
         gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pGenData, axis);
@@ -2737,13 +2737,13 @@ void HcomHandler::deletePlotCurve(QString cmd) const
     SystemContainer *pCurrentSystem = gpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
 
-    SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
+    SharedLogVariableDataPtrT pData = getLogVariablePtr(cmd);
     if(!pData)
     {
         if(cmd.endsWith(".*"))
         {
             cmd.chop(2);
-            pData = getVariablePtr(cmd);
+            pData = getLogVariablePtr(cmd);
         }
         if(!pData)
         {
@@ -2857,7 +2857,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
     //Data variable, return it
     timer.tic();
     QStringList variables;
-    getVariables(expr,variables);
+    getLogVariables(expr,variables);
     timer.toc("getVariables", 1);
     if(!variables.isEmpty())
     {
@@ -2878,7 +2878,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
         if(!args.contains(","))
         {
             *pReturnType = DataVector;
-            SharedLogVariableDataPtrT pVar = getVariablePtr(args.trimmed());
+            SharedLogVariableDataPtrT pVar = getLogVariablePtr(args.trimmed());
             if (pVar)
             {
                 return pLogData->diffVariables(pVar, pVar->getTimeVector())->getFullVariableName();
@@ -2893,11 +2893,11 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
         {
             *pReturnType = DataVector;
             const QString var1 = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar1 = getVariablePtr(var1);
+            SharedLogVariableDataPtrT pVar1 = getLogVariablePtr(var1);
             if (pVar1)
             {
                 const QString var2 = args.section(",",1,1).trimmed();
-                SharedLogVariableDataPtrT pVar2 = getVariablePtr(var2);
+                SharedLogVariableDataPtrT pVar2 = getLogVariablePtr(var2);
                 if (pVar2)
                 {
                     return pLogData->diffVariables(pVar1, pVar2)->getFullVariableName();
@@ -2927,7 +2927,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
             double freq = arg2.toDouble(&isok);
             if (isok)
             {
-                SharedLogVariableDataPtrT pVar = getVariablePtr(varName);
+                SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
                 if (pVar)
                 {
                     return pLogData->lowPassFilterVariable(pVar.data()->getFullVariableName(), TIMEVARIABLENAME, freq);
@@ -2952,11 +2952,11 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
             double freq = arg2.toDouble(&isok);
             if (isok)
             {
-                SharedLogVariableDataPtrT pVar = getVariablePtr(varName);
+                SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
                 if (pVar)
                 {
                     const QString timeVarName = args.section(",",1,1).trimmed();
-                    SharedLogVariableDataPtrT pTimeVar = getVariablePtr(timeVarName);
+                    SharedLogVariableDataPtrT pTimeVar = getLogVariablePtr(timeVarName);
                     if (pTimeVar)
                     {
                         return pLogData->lowPassFilterVariable(pVar, pTimeVar, freq)->getFullVariableName();
@@ -2985,7 +2985,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
         {
             *pReturnType = DataVector;
             const QString varName = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar = getVariablePtr(varName);
+            SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
             if (pVar)
             {
                 return pLogData->fftVariable(pVar, pVar->getTimeVector(), false)->getFullVariableName();
@@ -3001,7 +3001,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
             *pReturnType = DataVector;
 
             const QString varName = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar = getVariablePtr(varName);
+            SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
             if (pVar)
             {
                 bool power=false;
@@ -3014,7 +3014,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
                 }
                 else
                 {
-                    pTimeVar = getVariablePtr(arg2);
+                    pTimeVar = getLogVariablePtr(arg2);
                 }
 
                 if (pTimeVar)
@@ -3039,11 +3039,11 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
             *pReturnType = DataVector;
             bool power = (args.section(",",2,2).trimmed() == "true");
             const QString varName = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar = getVariablePtr(varName);
+            SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
             if (pVar)
             {
                 const QString timeVarName = args.section(",",1,1).trimmed();
-                SharedLogVariableDataPtrT pTimeVar = getVariablePtr(timeVarName);
+                SharedLogVariableDataPtrT pTimeVar = getLogVariablePtr(timeVarName);
                 if (pTimeVar)
                 {
                     return pLogData->fftVariable(pVar, pTimeVar, power)->getFullVariableName();
@@ -3074,7 +3074,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
             double limit = arg2.toDouble(&success);
             if (success)
             {
-                SharedLogVariableDataPtrT pVar = getVariablePtr(arg1);
+                SharedLogVariableDataPtrT pVar = getLogVariablePtr(arg1);
                 if (pVar)
                 {
                     SharedLogVariableDataPtrT pTemp = pLogData->elementWiseGT(pVar, limit);
@@ -3113,7 +3113,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
 
             if (success)
             {
-                SharedLogVariableDataPtrT pVar = getVariablePtr(arg1);
+                SharedLogVariableDataPtrT pVar = getLogVariablePtr(arg1);
                 if (pVar)
                 {
                     SharedLogVariableDataPtrT pTemp = pLogData->elementWiseLT(pVar, limit);
@@ -3138,7 +3138,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
         }
         return "";
     }
-    else if(expr.count("<")==1 && getVariablePtr(expr.section("<",0,0)))
+    else if(expr.count("<")==1 && getLogVariablePtr(expr.section("<",0,0)))
     {
         *pReturnType = DataVector;
         const QString arg1 = expr.section("<",0,0).trimmed();
@@ -3148,7 +3148,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
 
         if (success)
         {
-            SharedLogVariableDataPtrT pVar = getVariablePtr(arg1);
+            SharedLogVariableDataPtrT pVar = getLogVariablePtr(arg1);
             if (pVar)
             {
                 SharedLogVariableDataPtrT pTemp = pLogData->elementWiseLT(pVar, limit);
@@ -3168,7 +3168,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
         }
         return "";
     }
-    else if(expr.count(">")==1 && getVariablePtr(expr.section(">",0,0)))
+    else if(expr.count(">")==1 && getLogVariablePtr(expr.section(">",0,0)))
     {
         *pReturnType = DataVector;
         const QString arg1 = expr.section(">",0,0).trimmed();
@@ -3178,7 +3178,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
 
         if (success)
         {
-            SharedLogVariableDataPtrT pVar = getVariablePtr(arg1);
+            SharedLogVariableDataPtrT pVar = getLogVariablePtr(arg1);
             if (pVar)
             {
                 SharedLogVariableDataPtrT pTemp = pLogData->elementWiseGT(pVar, limit);
@@ -3211,49 +3211,49 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *pReturnType,
     {
         SymHop::Expression f0 = symHopExpr.getFactors()[0];
         SymHop::Expression f1 = symHopExpr.getFactors()[1];
-        if(!getVariablePtr(f0.toString()).isNull() && f1.isNumericalSymbol())
-            return pLogData->mulVariableWithScalar(getVariablePtr(f0.toString()), f1.toDouble()).data()->getFullVariableName();
-        else if(!getVariablePtr(f1.toString()).isNull() && f0.isNumericalSymbol())
-            return pLogData->mulVariableWithScalar(getVariablePtr(f1.toString()), f0.toDouble()).data()->getFullVariableName();
-        else if(!getVariablePtr(f0.toString()).isNull() && !getVariablePtr(f1.toString()).isNull())
-            return pLogData->multVariables(getVariablePtr(f0.toString()), getVariablePtr(f1.toString())).data()->getFullVariableName();
+        if(!getLogVariablePtr(f0.toString()).isNull() && f1.isNumericalSymbol())
+            return pLogData->mulVariableWithScalar(getLogVariablePtr(f0.toString()), f1.toDouble()).data()->getFullVariableName();
+        else if(!getLogVariablePtr(f1.toString()).isNull() && f0.isNumericalSymbol())
+            return pLogData->mulVariableWithScalar(getLogVariablePtr(f1.toString()), f0.toDouble()).data()->getFullVariableName();
+        else if(!getLogVariablePtr(f0.toString()).isNull() && !getLogVariablePtr(f1.toString()).isNull())
+            return pLogData->multVariables(getLogVariablePtr(f0.toString()), getLogVariablePtr(f1.toString())).data()->getFullVariableName();
     }
     if(symHopExpr.isPower() && pLogData)
     {
         SymHop::Expression b = *symHopExpr.getBase();
         SymHop::Expression p = *symHopExpr.getPower();
-        if(!getVariablePtr(b.toString()).isNull() && p.toDouble() == 2.0)
-            return pLogData->multVariables(getVariablePtr(b.toString()), getVariablePtr(b.toString())).data()->getFullVariableName();
+        if(!getLogVariablePtr(b.toString()).isNull() && p.toDouble() == 2.0)
+            return pLogData->multVariables(getLogVariablePtr(b.toString()), getLogVariablePtr(b.toString())).data()->getFullVariableName();
     }
     if(symHopExpr.getFactors().size() == 1 && symHopExpr.getDivisors().size() == 1 && pLogData)
     {
         SymHop::Expression f = symHopExpr.getFactors()[0];
         SymHop::Expression d = symHopExpr.getDivisors()[0];
-        if(!getVariablePtr(f.toString()).isNull() && d.isNumericalSymbol())
-            return pLogData->divVariableWithScalar(getVariablePtr(f.toString()), d.toDouble()).data()->getFullVariableName();
-        else if(!getVariablePtr(f.toString()).isNull() && !getVariablePtr(d.toString()).isNull())
-            return pLogData->divVariables(getVariablePtr(f.toString()), getVariablePtr(d.toString())).data()->getFullVariableName();
+        if(!getLogVariablePtr(f.toString()).isNull() && d.isNumericalSymbol())
+            return pLogData->divVariableWithScalar(getLogVariablePtr(f.toString()), d.toDouble()).data()->getFullVariableName();
+        else if(!getLogVariablePtr(f.toString()).isNull() && !getLogVariablePtr(d.toString()).isNull())
+            return pLogData->divVariables(getLogVariablePtr(f.toString()), getLogVariablePtr(d.toString())).data()->getFullVariableName();
     }
     if(symHopExpr.getTerms().size() == 2 && pLogData)
     {
         SymHop::Expression t0 = symHopExpr.getTerms()[0];
         SymHop::Expression t1 = symHopExpr.getTerms()[1];
-        if(!getVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
-            return pLogData->addVariableWithScalar(getVariablePtr(t0.toString()), t1.toDouble()).data()->getFullVariableName();
-        else if(!getVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
-            return pLogData->addVariableWithScalar(getVariablePtr(t1.toString()), t0.toDouble()).data()->getFullVariableName();
-        else if(!getVariablePtr(t0.toString()).isNull() && !getVariablePtr(t1.toString()).isNull())
-            return pLogData->addVariables(getVariablePtr(t0.toString()), getVariablePtr(t1.toString())).data()->getFullVariableName();
+        if(!getLogVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
+            return pLogData->addVariableWithScalar(getLogVariablePtr(t0.toString()), t1.toDouble()).data()->getFullVariableName();
+        else if(!getLogVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
+            return pLogData->addVariableWithScalar(getLogVariablePtr(t1.toString()), t0.toDouble()).data()->getFullVariableName();
+        else if(!getLogVariablePtr(t0.toString()).isNull() && !getLogVariablePtr(t1.toString()).isNull())
+            return pLogData->addVariables(getLogVariablePtr(t0.toString()), getLogVariablePtr(t1.toString())).data()->getFullVariableName();
 
         if(t1.isNegative())
         {
             t1.changeSign();
-            if(!getVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
-                return pLogData->subVariableWithScalar(getVariablePtr(t0.toString()), t1.toDouble()).data()->getFullVariableName();
-            else if(!getVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
-                return pLogData->subVariableWithScalar(getVariablePtr(t1.toString()), t0.toDouble()).data()->getFullVariableName();
-            else if(!getVariablePtr(t0.toString()).isNull() && !getVariablePtr(t1.toString()).isNull())
-                return pLogData->subVariables(getVariablePtr(t0.toString()), getVariablePtr(t1.toString())).data()->getFullVariableName();
+            if(!getLogVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
+                return pLogData->subVariableWithScalar(getLogVariablePtr(t0.toString()), t1.toDouble()).data()->getFullVariableName();
+            else if(!getLogVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
+                return pLogData->subVariableWithScalar(getLogVariablePtr(t1.toString()), t0.toDouble()).data()->getFullVariableName();
+            else if(!getLogVariablePtr(t0.toString()).isNull() && !getLogVariablePtr(t1.toString()).isNull())
+                return pLogData->subVariables(getLogVariablePtr(t0.toString()), getLogVariablePtr(t1.toString())).data()->getFullVariableName();
         }
     }
     timer.toc("Multiplication between data vector and scalar", 0);
@@ -3511,7 +3511,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             QString var = lines[l].section(" ",1,1);
             QString filter = lines[l].section(" ",2,2);
             QStringList vars;
-            getVariables(filter, vars);
+            getLogVariables(filter, vars);
             QStringList loop;
             timer.toc("runScriptCommand: foreach getVariables");
             while(!lines[l].startsWith("endforeach"))
@@ -3771,7 +3771,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
 //! @param str String to look for
 //! @param variables Reference to list of found variables
-void HcomHandler::getVariables(QString str, QStringList &rVariables) const
+void HcomHandler::getLogVariables(QString str, QStringList &rVariables) const
 {
     rVariables.clear();
 
@@ -3893,7 +3893,7 @@ void HcomHandler::getVariables(QString str, QStringList &rVariables) const
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
 //! @param str String to look for
 //! @param variables Reference to list of found variables
-void HcomHandler::getVariablesThatStartsWithString(const QString str, QStringList &variables) const
+void HcomHandler::getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const
 {
     if(gpModelHandler->count() == 0) { return; }
 
@@ -3978,7 +3978,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         if (type==Scalar)
         {
             QStringList vars;
-            getVariables(left, vars);
+            getLogVariables(left, vars);
             if(!vars.isEmpty())
             {
                 HCOMERR("Not very clever to assign a data vector with a scalar.");
@@ -3996,7 +3996,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             }
         }
 
-        if(!leftIsOk && (gpModelHandler->count() == 0 || !getVariablePtr(left)))
+        if(!leftIsOk && (gpModelHandler->count() == 0 || !getLogVariablePtr(left)))
         {
             HCOMERR("Illegal variable name.");
             return false;
@@ -4019,14 +4019,31 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         }
         else if(evalOk && type==DataVector)
         {
-            SharedLogVariableDataPtrT pLeftData = getVariablePtr(left);
-            SharedLogVariableDataPtrT pValueData = getVariablePtr(value);
-            if(pLeftData != 0) { left = pLeftData->getFullVariableName(); }
-            if(pValueData != 0) { value = pValueData->getFullVariableName(); }
+            SharedLogVariableDataPtrT pLeftData = getLogVariablePtr(left);
+            SharedLogVariableDataPtrT pValueData = getLogVariablePtr(value);
+            if (pLeftData && pValueData)
+            {
+                pLeftData->assignFrom(pValueData);
+                pLeftData->preventAutoRemoval();
+                //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
+            }
+            else
+            {
+                //! @todo are these checks even necessary, (maybe if generation support is added), they are pointless right now
+                if(pLeftData)
+                {
+                    left = pLeftData->getFullVariableName();
+                }
+                if(pValueData)
+                {
+                    value = pValueData->getFullVariableName();
+                }
 
-            gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
-            gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(left,-1).data()->preventAutoRemoval();
-            //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
+                //! @todo this could use the wrong logdatahndler, (it will be the one from the displayed model rather then the one beeing processed
+                gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
+                gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(left,-1).data()->preventAutoRemoval();
+                //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
+            }
             return true;
         }
         else
@@ -4067,7 +4084,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @brief Returns a pointer to a data variable for given full data name
 //! @param fullName Full concatinated name of the variable
 //! @returns Pointer to the data variable
-SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
+SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullName) const
 {
     if(gpModelHandler->count() == 0)
     {
@@ -4077,13 +4094,15 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
     fullName.replace(".","#");
 
     int generation=-1;
-
+    // Separate generation from name if generation number was given, else use default generation -1
     if(fullName.count("#") == 1 || fullName.count("#") == 3)
     {
-        generation = fullName.split("#").last().toInt()-1;      //Subtract 1 due to zero indexing
-        fullName.chop(fullName.split("#").last().size()+1);
+        const QString genText = fullName.split("#").last();
+        generation = genText.toInt()-1;      //Subtract 1 due to zero indexing
+        fullName.chop(genText.size()+1);
     }
 
+    //! @todo isnt there a help function for this ???
     if(fullName.endsWith("#x"))
     {
         fullName.chop(2);
@@ -4140,12 +4159,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
         fullName.append("#Temperature");
     }
 
-//    SharedLogVariableDataPtrT pRetVal = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
-//    if(!pRetVal)
-//    {
-        SharedLogVariableDataPtrT pRetVal = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(fullName,generation);
-//    }
-    return pRetVal;
+    return gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(fullName,generation);
 }
 
 
@@ -4390,7 +4404,7 @@ void HcomHandler::registerFunction(const QString func, const QString description
 double _funcAver(QString str, bool &ok)
 {
     TicToc timer;
-    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(str);
+    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(str);
     //timer.tocDbg("Lookup in aver");
 
     if(!pData)
@@ -4399,7 +4413,7 @@ double _funcAver(QString str, bool &ok)
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+        pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(evalStr);
         timer.toc("Eval in aver");
     }
 
@@ -4414,14 +4428,14 @@ double _funcAver(QString str, bool &ok)
 
 double _funcSize(QString str, bool &ok)
 {
-    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(str);
+    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(str);
 
     if(!pData)
     {
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+        pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(evalStr);
     }
 
     if(pData)
@@ -4454,14 +4468,14 @@ double _funcObj(QString str, bool &ok)
 
 double _funcMin(QString str, bool &ok)
 {
-    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(str);
+    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(str);
 
     if(!pData)
     {
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+        pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(evalStr);
     }
 
     if(pData)
@@ -4475,7 +4489,7 @@ double _funcMin(QString str, bool &ok)
 
 double _funcMax(QString str, bool &ok)
 {
-    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(str);
+    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(str);
 
     if(!pData)
     {
@@ -4483,7 +4497,7 @@ double _funcMax(QString str, bool &ok)
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+        pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(evalStr);
         timer2.toc("Eval in max");
     }
 
@@ -4498,14 +4512,14 @@ double _funcMax(QString str, bool &ok)
 
 double _funcIMin(QString str, bool &ok)
 {
-    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(str);
+    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(str);
 
     if(!pData)
     {
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+        pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(evalStr);
     }
 
     if(pData)
@@ -4521,14 +4535,14 @@ double _funcIMin(QString str, bool &ok)
 
 double _funcIMax(QString str, bool &ok)
 {
-    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(str);
+    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(str);
 
     if(!pData)
     {
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+        pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(evalStr);
     }
 
     if(pData)
@@ -4545,14 +4559,14 @@ double _funcIMax(QString str, bool &ok)
 double _funcPeek(QString str, bool &ok)
 {
     QString var = str.section(",",0,0);
-    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(var);
+    SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(var);
 
     if(!pData)
     {
         bool success;
         HcomHandler::VariableType type;
         QString evalStr = gpTerminalWidget->mpHandler->evaluateExpression(str, &type, &success);
-        pData = HcomHandler(gpTerminalWidget->mpConsole).getVariablePtr(evalStr);
+        pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(evalStr);
     }
 
     QString idxStr = str.section(",",1,1);

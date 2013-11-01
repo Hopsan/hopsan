@@ -272,11 +272,18 @@ void DataExplorer::refreshDataList()
 void DataExplorer::removeSelectedGenerations()
 {
     QVector<int> gens = gensFromSelected();
-
+    QProgressDialog progress("Removing generations", "Cancel", 0, gens.size(), this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.show();
     // Since removeGeneration will also remove from mGenerationItemMap, we cant remove directly in for loop above
     for (int i=0; i<gens.size(); ++i)
     {
+        // Abort if canceld
+        if (progress.wasCanceled())
+            break;
+
         removeGeneration(gens[i]);
+        progress.setValue(i+1);
     }
 }
 

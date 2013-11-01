@@ -1948,7 +1948,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     // First check if prots not null
     if (pPort1 && pPort2)
     {
-        cout << "disconnecting " << pPort1->getComponentName().c_str() << " " << pPort1->getName().c_str() << "  and  " << pPort2->getComponentName().c_str() << " " << pPort2->getName().c_str() << endl;
+        //cout << "disconnecting " << pPort1->getComponentName().c_str() << " " << pPort1->getName().c_str() << "  and  " << pPort2->getComponentName().c_str() << " " << pPort2->getName().c_str() << endl;
 
         ConnectionAssistant disconnAssistant(this);
         //! @todo some more advanced error handling

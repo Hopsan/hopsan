@@ -151,7 +151,7 @@ public:
     SharedLogVariableDataPtrT fftVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const bool doPowerSpectrum);
     QString fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum);
 
-    SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src);
+    //SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src);
     QString assignVariable(const QString &dst, const QString &src);
     QString assignVariable(const QString &dst, const QVector<double> &src);
 
@@ -169,7 +169,7 @@ public:
 
     void appendVariable(const QString &a, const double x, const double y);
 
-    void takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation=-2);
+    void takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration=-2);
 
 public slots:
     void registerAlias(const QString &rFullName, const QString &rAlias);
@@ -186,10 +186,12 @@ private slots:
 
 private:
     typedef QMap< QString, QMap<QString,SharedLogVariableDataPtrT> > ImportedLogDataMapT;
+    typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
     SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector, VariableUniqueDescription *pVarUniqDesc);
     SharedLogVariableDataPtrT insertVariableBasedOnDescription(VariableCommonDescription &rVarComDesc, VariableUniqueDescription *pVarUniqDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
     QString getNewCacheName();
     void rememberIfImported(SharedLogVariableDataPtrT pData);
+    void removeGenerationCacheIfEmpty(const int gen);
 
     ContainerObject *mpParentContainerObject;
 
@@ -197,7 +199,7 @@ private:
     ImportedLogDataMapT mImportedLogDataMap;
 
     FavoriteListT mFavoriteVariables;
-    QMap<int, SharedMultiDataVectorCacheT> mGenerationCacheMap;
+    GenerationCacheMapT mGenerationCacheMap;
 
     int mnPlotCurves;
     int mGenerationNumber;

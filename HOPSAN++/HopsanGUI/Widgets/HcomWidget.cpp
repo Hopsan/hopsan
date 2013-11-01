@@ -666,11 +666,11 @@ void TerminalConsole::handleTabKeyPress()
                 QStringList variables;
                 if(args.size() > 1)
                 {
-                    getHandler()->getVariablesThatStartsWithString(args.last()/*mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size())*/,variables);
+                    getHandler()->getLogVariablesThatStartsWithString(args.last()/*mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size())*/,variables);
                 }
                 else
                 {
-                    getHandler()->getVariablesThatStartsWithString("",variables);
+                    getHandler()->getLogVariablesThatStartsWithString("",variables);
                 }
                 for(int v=0; v<variables.size(); ++v)
                 {

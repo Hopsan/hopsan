@@ -107,7 +107,7 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
 //! @brief Destructor for container object
 ContainerObject::~ContainerObject()
 {
-    qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
+    //qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
 //! @brief Notify the parent project tab that changes has occured
@@ -1105,7 +1105,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                      endPortIsGroupPort = true;
                  }
 
-                 qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
+                 //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
                  Port *pStartRealPort=0, *pEndRealPort=0;
                  // If no group ports, do normal disconnect
                  if ( !startPortIsGroupPort && !endPortIsGroupPort )

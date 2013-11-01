@@ -970,8 +970,9 @@ QString getVariableSourceTypeString(const VariableSourceTypeT type)
     case ImportedVariableType :
         return "ImportedVariableType";
         break;
+    default :
+        return "UndefinedVariableSourceType";
     }
-    return "UndefinedVariableSourceType";
 }
 
 
@@ -1113,7 +1114,6 @@ bool LogVariableContainer::removeDataGeneration(const int generation, const bool
     }
     else
     {
-        //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
         // We use find to search only once, (and reuse iterator)
         GenerationMapT::iterator git = mDataGenerations.find(generation);
         if (git != mDataGenerations.end())
@@ -1133,8 +1133,10 @@ bool LogVariableContainer::removeDataGeneration(const int generation, const bool
 }
 
 //! @brief Limit the number of generations within the given interval
-void LogVariableContainer::purgeOldGenerations(const int purgeEnd, const int nGensToKeep)
+//! @returns True if something was removed else false
+bool LogVariableContainer::purgeOldGenerations(const int purgeEnd, const int nGensToKeep)
 {
+    bool didRemove = false;
     // Only do the purge if mingen is under upper limit
     int minGen = getLowestGeneration();
     if (minGen <= purgeEnd)
@@ -1144,14 +1146,15 @@ void LogVariableContainer::purgeOldGenerations(const int purgeEnd, const int nGe
         for (int k=0; k<keys.size(); ++k)
         {
             // Try to remove each generation
-            removeDataGeneration(keys[k], false);
-            // Only break loop when we have deleted all below purge limit and num current generations is OK
-            if ((keys[k] >= purgeEnd) && mDataGenerations.size() <= nGensToKeep)
+            didRemove += removeDataGeneration(keys[k], false);
+            // Only break loop when we have deleted all below purge limit
+            if (keys[k] >= purgeEnd)
             {
                 break;
             }
         }
     }
+    return didRemove;
 }
 
 void LogVariableContainer::removeAllGenerations()

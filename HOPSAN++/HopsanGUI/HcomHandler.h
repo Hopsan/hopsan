@@ -45,24 +45,23 @@ class HcomHandler : public QObject
     friend class TerminalWidget;
     friend class TerminalConsole;
 public:
-    //Enums
+    // Enums
     enum VariableType{Scalar, DataVector};
 
-    //Constructor
+    // Constructor
     HcomHandler(TerminalConsole *pConsole);
 
-    //Command functions
+    // Command functions
     void executeCommand(QString cmd);
 
-    //Public access functions
-    QString runScriptCommands(QStringList &lines, bool *pAbort);
-    SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
-    //SharedLogVariableDataPtrT getVariablePtr(QString fullName, const int generation) const;
+    // Public access functions
     QStringList getCommands() const;
+    QString runScriptCommands(QStringList &lines, bool *pAbort);
+    SharedLogVariableDataPtrT getLogVariablePtr(QString fullName) const;
     QMap<QString, double> getLocalVariables() const;
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
 
-    //Public utilities
+    // Public utilities
     void toShortDataNames(QString &variable) const;
     void toLongDataNames(QString &var) const;
 
@@ -83,7 +82,7 @@ public slots:
 
 private:
 
-    //Private command functions (to be accessed by public executeCommand function)
+    // Private command functions (to be accessed by public executeCommand function)
     void executeExitCommand(const QString cmd);
     void executeSimulateCommand(const QString cmd);
     void executePlotCommand(const QString cmd);
@@ -139,7 +138,7 @@ private:
     void executeLp1Command(const QString cmd);
     void executeSetMultiThreadingCommand(const QString cmd);
 
-    //Help functions
+    // Help functions
     void createCommands();
     void generateCommandsHelpText();
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
@@ -150,8 +149,8 @@ private:
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;
-    void getVariables(QString str, QStringList &rVariables) const;
-    void getVariablesThatStartsWithString(const QString str, QStringList &variables) const;
+    void getLogVariables(QString str, QStringList &rVariables) const;
+    void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
@@ -163,26 +162,26 @@ private:
     void returnScalar(const double retval);
     void registerFunction(const QString func, const QString description, const SymHop::Function fptr);
 
-    //Used to abort HCOM evaluation
+    // Used to abort HCOM evaluation
     bool mAborted;
 
-    //Working directory
+    // Working directory
     QString mPwd;
 
-    //Commands
+    // Commands
     QList<HcomCommand> mCmdList;
 
-    //Plotting
+    // Plotting
     QString mCurrentPlotWindowName;
 
-    //Local variables
+    // Local variables
     QMap<QString, double> mLocalVars;
     QMap<QString, SymHop::Function> mLocalFunctionPtrs;
     QMap<QString, QString> mLocalFunctionDescriptions;
 
     VariableType mRetvalType;
 
-    //Functions
+    // Functions
     QMap<QString, QStringList> mFunctions;
 };
 

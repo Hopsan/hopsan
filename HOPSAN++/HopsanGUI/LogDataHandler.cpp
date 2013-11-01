@@ -67,27 +67,8 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
 
 LogDataHandler::~LogDataHandler()
 {
-    qDebug() << "in LogDataHandler destructor" << endl;
-
     // Clear all data
-    QList< QPointer<LogVariableContainer> > data = mLogDataMap.values();
-    for (int i=0; i<data.size(); ++i)
-    {
-        // Check if data container ptr != NULL, to prevent double deleting aliases (its a QPointer)
-        if (data[i])
-        {
-            delete data[i];
-        }
-    }
-    mLogDataMap.clear();
-    // Clear generation Cache files (Individual files will remain if until all instances dies)
-    mGenerationCacheMap.clear();
-
-    // Remove the cache directory if it is empty, if it is not then cleanup should happen on program exit
-    for (int i=0; i<mCacheDirs.size(); ++i)
-    {
-        mCacheDirs[i].rmdir(mCacheDirs[i].path());
-    }
+    clear();
 }
 
 void LogDataHandler::setParentContainerObject(ContainerObject *pParent)
@@ -636,13 +617,31 @@ bool LogDataHandler::isEmpty()
 
 void LogDataHandler::clear()
 {
-    // Remove old generation in each data variable container
+    // Clear all data containers
+    QList< QPointer<LogVariableContainer> > data = mLogDataMap.values();
+    for (int i=0; i<data.size(); ++i)
+    {
+        // Check if data container ptr != NULL, to prevent double deleting aliases (its a QPointer)
+        if (data[i])
+        {
+            delete data[i];
+        }
+    }
     mLogDataMap.clear();
 
-    // Clear from generations cache object map
+    // Remove imported variables
+    mImportedLogDataMap.clear();
+
+    // Clear generation Cache files (Individual files will remain if until all instances dies)
     mGenerationCacheMap.clear();
 
-    //Update generation number
+    // Remove the cache directory if it is empty, if it is not then cleanup should happen on program exit
+    for (int i=0; i<mCacheDirs.size(); ++i)
+    {
+        mCacheDirs[i].rmdir(mCacheDirs[i].path());
+    }
+
+    // Reset generation number
     mGenerationNumber = -1;
 }
 
@@ -1109,24 +1108,25 @@ void LogDataHandler::limitPlotGenerations()
     {
         if(!gConfig.getAutoLimitLogDataGenerations())
         {
-            QDialog *pDialog = new QDialog(gpMainWindowWidget);
-            pDialog->setWindowTitle("Hopsan");
-            QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
-            QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(gConfig.getGenerationLimit())+"<br>Number of data generations: "+QString::number(getNumberOfGenerations())+"<br><br><b>Discard "+QString::number(getNumberOfGenerations()-gConfig.getGenerationLimit())+" generations(s)?</b>");
-            QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard last generation", pDialog);
-            pAutoLimitCheckBox->setChecked(false);
-            QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+            QDialog dialog(gpMainWindowWidget);
+            dialog.setWindowTitle("Hopsan");
+            QVBoxLayout *pLayout = new QVBoxLayout(&dialog);
+            QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(gConfig.getGenerationLimit())+
+                                        "<br>Number of data generations: "+QString::number(numGens)+
+                                        "<br><br><b>Discard "+QString::number(numGens-gConfig.getGenerationLimit())+" generations(s)?</b>");
+            QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard old generations", &dialog);
+            pAutoLimitCheckBox->setChecked(gConfig.getAutoLimitLogDataGenerations());
+            QDialogButtonBox *pButtonBox = new QDialogButtonBox(&dialog);
             QPushButton *pDiscardButton = pButtonBox->addButton("Discard", QDialogButtonBox::AcceptRole);
             QPushButton *pKeepButton = pButtonBox->addButton("Keep", QDialogButtonBox::RejectRole);
-            connect(pDiscardButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
-            connect(pKeepButton, SIGNAL(clicked()), pDialog, SLOT(reject()));
+            connect(pDiscardButton, SIGNAL(clicked()), &dialog, SLOT(accept()));
+            connect(pKeepButton, SIGNAL(clicked()), &dialog, SLOT(reject()));
             connect(pAutoLimitCheckBox, SIGNAL(toggled(bool)), pKeepButton, SLOT(setDisabled(bool)));
             pLayout->addWidget(pLabel);
             pLayout->addWidget(pAutoLimitCheckBox);
             pLayout->addWidget(pButtonBox);
 
-            int retval = pDialog->exec();
-
+            int retval = dialog.exec();
             gConfig.setAutoLimitLogDataGenerations(pAutoLimitCheckBox->isChecked());
 
             if(retval == QDialog::Rejected)
@@ -1155,9 +1155,11 @@ void LogDataHandler::limitPlotGenerations()
 //        timer.tocDbg("removeOldGenerations");
 
 //---------------------------------------------------------------------------------------
-// This is NEW code by Peter, but it is not working yet, do not remove it
+// This is NEW code by Peter, but it is not working yet
         TicToc timer;
         int highest = getHighestGenerationNumber();
+        int highestToRemove = highest-gConfig.getGenerationLimit();
+        bool didRemoveSomething = false;
         // Note! Here we must iterate through a copy of the values from the map
         // if we use an iterator in the map we will crash if the removed generation is the final one
         // Then the data variable itself will also be removed and the iterator will become invalid
@@ -1165,12 +1167,28 @@ void LogDataHandler::limitPlotGenerations()
         QList<QPointer<LogVariableContainer> >::iterator it;
         for ( it=vars.begin(); it!=vars.end(); ++it)
         {
-            (*it)->purgeOldGenerations(highest-gConfig.getGenerationLimit(), gConfig.getGenerationLimit());
+            didRemoveSomething += (*it)->purgeOldGenerations(highestToRemove, gConfig.getGenerationLimit());
         }
-        emit dataRemoved();
-        //! @todo what about clearing mGenerationCacheMap
-        timer.toc("removeOldGenerations");
+
+        if (didRemoveSomething)
+        {
+            emit dataRemoved();
+
+            //! @todo this is not a good solution, signaling would be better but it would be nice not to make every thing into qobjects
+            // Loop until we have removed every empty generation cache object
+            QList<int> gens = mGenerationCacheMap.keys();
+            for (int i=0; i<gens.size(); ++i)
+            {
+                const int g = gens[i];
+                if (g>highestToRemove)
+                {
+                    break;
+                }
+                removeGenerationCacheIfEmpty(g);
+            }
+        }
         qDebug() << "Number of logdata variables: " << getNumVariables();
+        timer.toc("removeOldGenerations");
 //---------------------------------------------------------------------------------------
     }
 }
@@ -1198,6 +1216,7 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
 //! @brief Removes a generation
 void LogDataHandler::removeGeneration(const int gen, const bool force)
 {
+    bool didRemoveSomething=false;
     // Note! Here we must iterate through a copy of the values from the map
     // if we use an iterator in the map we will crash if the removed generation is the final one
     // Then the data variable itself will also be removed and the iterator will become invalid
@@ -1205,11 +1224,18 @@ void LogDataHandler::removeGeneration(const int gen, const bool force)
     QList<QPointer<LogVariableContainer> >::iterator it;
     for ( it=vars.begin(); it!=vars.end(); ++it)
     {
-        (*it)->removeDataGeneration(gen,force);
+        if ((*it)->removeDataGeneration(gen,force))
+        {
+            // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
+            removeGenerationCacheIfEmpty(gen);
+            didRemoveSomething = true;
+        }
     }
-    //! @todo this should not be emmited if no data was actaully removed (if force=false)
-    emit dataRemoved();
-    //! @todo what about generation cache map it is not cleared, and should we realy clear it always, what if there were some variables that hade autoremove disabled
+    // Only emit this signal if something was actually removed
+    if (didRemoveSomething)
+    {
+        emit dataRemoved();
+    }
 }
 
 ContainerObject *LogDataHandler::getParentContainerObject()
@@ -1520,7 +1546,8 @@ QString LogDataHandler::assignVariable(const QString &dst, const QString &src)
     {
         pDstData = defineNewVariable(dst);
     }
-    return assignVariable(pDstData,pSrcData)->getFullVariableName();
+    pDstData->assignFrom(pSrcData);
+    return pDstData->getFullVariableName();
 }
 
 QString LogDataHandler::assignVariable(const QString &dst, const QVector<double> &src)
@@ -1674,12 +1701,12 @@ SharedLogVariableDataPtrT LogDataHandler::divVariables(const SharedLogVariableDa
     return pTempVar;
 }
 
-//! @todo Should this function really return a value?
-SharedLogVariableDataPtrT LogDataHandler::assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src)
-{
-    dst->assignFrom(src);
-    return dst;
-}
+////! @todo Should this function really return a value?
+//SharedLogVariableDataPtrT LogDataHandler::assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src)
+//{
+//    dst->assignFrom(src);
+//    return dst;
+//}
 
 double LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value)
 {
@@ -1970,10 +1997,21 @@ void LogDataHandler::rememberIfImported(SharedLogVariableDataPtrT pData)
     }
 }
 
-void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation)
+//! @brief Removes a generation cache object from map if it has no subscribers
+void LogDataHandler::removeGenerationCacheIfEmpty(const int gen)
 {
-    // If generation < -1 then take everything
-    if (generation < -1)
+    // Removes a generation cache object from map if it has no subscribers
+    GenerationCacheMapT::iterator it = mGenerationCacheMap.find(gen);
+    if ( (it!=mGenerationCacheMap.end()) && (it.value()->getNumSubscribers()==0) )
+    {
+        mGenerationCacheMap.erase(it);
+    }
+}
+
+void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration)
+{
+    // If otherGeneration < -1 then take everything
+    if (otherGeneration < -1)
     {
         int minOGen = pOtherHandler->getLowestGenerationNumber();
         int maxOGen = pOtherHandler->getHighestGenerationNumber();
@@ -1993,10 +2031,10 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
         bool tookOwnershipOfSomeData=false;
 
         // Take the generation cache map
-        if (pOtherHandler->mGenerationCacheMap.contains(generation))
+        if (pOtherHandler->mGenerationCacheMap.contains(otherGeneration))
         {
-            mGenerationCacheMap.insert(mGenerationNumber, pOtherHandler->mGenerationCacheMap.value(generation));
-            pOtherHandler->mGenerationCacheMap.remove(generation);
+            mGenerationCacheMap.insert(mGenerationNumber, pOtherHandler->mGenerationCacheMap.value(otherGeneration));
+            pOtherHandler->mGenerationCacheMap.remove(otherGeneration);
 
             // Only take ownership of dir if we do not already own it
             QDir cacheDir = mGenerationCacheMap.value(mGenerationNumber)->getCacheFileInfo().absoluteDir();
@@ -2009,14 +2047,6 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
             tookOwnershipOfSomeData = true;
         }
 
-//        // Take ownership of keep generation list contents
-//        if (pOtherHandler->mKeepGenerationsList.contains(generation))
-//        {
-//            mKeepGenerationsList.append(mGenerationNumber);
-//            pOtherHandler->mKeepGenerationsList.removeOne(generation);
-//            tookOwnershipOfSomeData=true;
-//        }
-
         // Take the data, and only increment this->mGeneration if data was taken
         QList< QPointer<LogVariableContainer> > otherVariables = pOtherHandler->mLogDataMap.values(); // Need to take values and itterate through, else the iterator will become invalid when removing from other
         QList< QPointer<LogVariableContainer> >::iterator odit; //odit = OtherDataIterator
@@ -2026,21 +2056,21 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
             LogDataMapT::iterator tdit = mLogDataMap.find(fullName); //tdit = ThisDataIterator
             if (tdit != mLogDataMap.end())
             {
-                if ((*odit)->hasDataGeneration(generation))
+                if ((*odit)->hasDataGeneration(otherGeneration))
                 {
-                    tdit.value()->addDataGeneration(mGenerationNumber, (*odit)->getDataGeneration(generation));
-                    (*odit)->removeDataGeneration(generation, true);
+                    tdit.value()->addDataGeneration(mGenerationNumber, (*odit)->getDataGeneration(otherGeneration));
+                    (*odit)->removeDataGeneration(otherGeneration, true);
                     tookOwnershipOfSomeData=true;
                 }
             }
             else
             {
-                if ((*odit)->hasDataGeneration(generation))
+                if ((*odit)->hasDataGeneration(otherGeneration))
                 {
                     LogVariableContainer *pNewContainer = new LogVariableContainer(*((*odit)->getVariableCommonDescription().data()), this);
-                    pNewContainer->addDataGeneration(mGenerationNumber, (*odit)->getDataGeneration(generation));
+                    pNewContainer->addDataGeneration(mGenerationNumber, (*odit)->getDataGeneration(otherGeneration));
                     mLogDataMap.insert(fullName, pNewContainer);
-                    (*odit)->removeDataGeneration(generation, true);
+                    (*odit)->removeDataGeneration(otherGeneration, true);
                     tookOwnershipOfSomeData=true;
                 }
             }
@@ -2057,7 +2087,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
             --mGenerationNumber;
         }
     }
-    //! @todo favorite variables, plotwindows
+    //! @todo favorite variables, plotwindows, imported data
 }
 
 void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAlias)

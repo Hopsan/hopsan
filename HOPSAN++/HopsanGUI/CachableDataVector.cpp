@@ -290,34 +290,46 @@ void MultiDataVectorCache::decrementSubscribers()
     }
 }
 
+qint64 MultiDataVectorCache::getNumSubscribers() const
+{
+    return mNumSubscribers;
+}
+
 
 CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, SharedMultiDataVectorCacheT pMultiCache, const bool cached)
 {
-    //! @todo make it possible to add data with multicahce but default not cached, need some way of remembering whterer data has been cached, maybe change NumElements to ncachedBytes
     mCacheStartByte = 0;
     mCacheNumBytes = 0;
+    // This bool is needed so that we can handled non-cached but empty data.
+    // We can not rely on checking size of mDataVector (may be empty but non-cached) or the mCacheNumBytes (will still have a value after moving from cache to mem temporarly)
+    mIsCached = false;
 
-    if ( (pMultiCache == 0) || !cached )
-    {
-        mDataVector = rDataVector;
-    }
-    else
+    if (pMultiCache)
     {
         mpMultiCache = pMultiCache;
+        mpMultiCache->incrementSubscribers();
+    }
+
+    if (mpMultiCache && cached)
+    {
         if (mpMultiCache->addVector(rDataVector,mCacheStartByte, mCacheNumBytes))
         {
-            mpMultiCache->incrementSubscribers();
+            mIsCached = true;
         }
         else
         {
             mError = mpMultiCache->getError();
         }
     }
+    else
+    {
+        mDataVector = rDataVector;
+    }
 }
 
 CachableDataVector::~CachableDataVector()
 {
-    if ( mpMultiCache && mCacheNumBytes > 0  )
+    if (mpMultiCache)
     {
         mpMultiCache->decrementSubscribers();
     }
@@ -340,14 +352,8 @@ bool CachableDataVector::setCached(const bool cached)
 
 bool CachableDataVector::isCached() const
 {
-    // If we have a multicache then check if data vector is empty (data is in cache or should be in cache)
-    if (mpMultiCache)
-    {
-        //! @todo what if data in memory and empty, then we are not cahced but data stil empty
-        return mDataVector.isEmpty();
-    }
-    // If no cache file then data can not be cached
-    return false;
+    return mIsCached;
+
 }
 
 int CachableDataVector::size() const
@@ -364,7 +370,14 @@ int CachableDataVector::size() const
 
 bool CachableDataVector::isEmpty() const
 {
-    return (mCacheNumBytes == 0) && mDataVector.isEmpty();
+    if (isCached())
+    {
+        return (mCacheNumBytes == 0);
+    }
+    else
+    {
+        return mDataVector.isEmpty();
+    }
 }
 
 bool CachableDataVector::streamDataTo(QTextStream &rTextStream, const QString separator)
@@ -421,7 +434,8 @@ bool CachableDataVector::replaceData(const QVector<double> &rNewData)
         }
         else
         {
-            // This will leav the old data as junk in the file, but trying to deleat it or move it would be slow, ant we live with the waste instead
+            // Else append to the end of the file
+            // This will leave the old data as junk in the file, but trying to delete it or move it would be to slow, and we live with the wasted space instead
             return mpMultiCache->addVector(rNewData, mCacheStartByte, mCacheNumBytes);
         }
     }
@@ -523,7 +537,6 @@ bool CachableDataVector::moveToCache()
         {
             if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
             {
-                mpMultiCache->incrementSubscribers();
                 mDataVector.clear();
                 return true;
             }
