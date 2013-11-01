@@ -110,7 +110,7 @@ void DataExplorer::openImportDataDialog()
         }
         else if (fi.suffix().toLower() == "csv")
         {
-            mpLogDataHandler->importFromCsv(fileName);
+            mpLogDataHandler->importFromCSV_AutoFormat(fileName);
         }
     }
 }

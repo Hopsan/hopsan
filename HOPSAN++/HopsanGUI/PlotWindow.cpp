@@ -609,7 +609,7 @@ void PlotWindow::importPlo()
 
 void PlotWindow::importCsv()
 {
-    gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromCsv();
+    gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromCSV_AutoFormat();
 }
 
 

@@ -53,8 +53,10 @@ public:
     void setParentContainerObject(ContainerObject *pParent);
 
     void collectLogDataFromModel(bool overWriteLastGeneration=false);
-    void importFromPlo(QString rImportFilePath=QString());
-    void importFromCsv(QString rImportFilePath=QString());
+    void importFromPlo(QString importFilePath=QString());
+    void importFromCSV_AutoFormat(QString importFilePath=QString());
+    void importHopsanRowCSV(QString importFilePath=QString());
+    void importFromPlainColumnCsv(QString importFilePath=QString());
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
 
     void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;

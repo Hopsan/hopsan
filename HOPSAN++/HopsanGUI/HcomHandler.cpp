@@ -1766,7 +1766,7 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
 
     if(csv)
     {
-        gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->importFromCsv(filePath);
+        gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->importFromCSV_AutoFormat(filePath);
     }
     else
     {

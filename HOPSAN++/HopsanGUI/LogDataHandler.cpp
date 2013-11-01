@@ -296,21 +296,21 @@ public:
       QVector<double> mDataValues;
 };
 
-void LogDataHandler::importFromPlo(QString rImportFilePath)
+void LogDataHandler::importFromPlo(QString importFilePath)
 {
-    if(rImportFilePath.isEmpty())
+    if(importFilePath.isEmpty())
     {
 
-        rImportFilePath = QFileDialog::getOpenFileName(0,tr("Choose Hopsan .plo File"),
+        importFilePath = QFileDialog::getOpenFileName(0,tr("Choose Hopsan .plo File"),
                                                        gConfig.getPlotDataDir(),
                                                        tr("Hopsan File (*.plo)"));
     }
-    if(rImportFilePath.isEmpty())
+    if(importFilePath.isEmpty())
     {
         return;
     }
 
-    QFile file(rImportFilePath);
+    QFile file(importFilePath);
     QFileInfo fileInfo(file);
     gConfig.setPlotDataDir(fileInfo.absolutePath());
 
@@ -470,26 +470,169 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
     limitPlotGenerations();
 }
 
-
-void LogDataHandler::importFromCsv(QString rImportFilePath)
+void LogDataHandler::importFromCSV_AutoFormat(QString importFilePath)
 {
-    if(rImportFilePath.isEmpty())
+    if(importFilePath.isEmpty())
     {
 
-        rImportFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
+        importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
                                                        gConfig.getPlotDataDir(),
                                                        tr("Comma-separated values files (*.csv)"));
     }
-    if(rImportFilePath.isEmpty())
+    if(importFilePath.isEmpty())
     {
         return;
     }
 
-    QFile file(rImportFilePath);
+    QFile file(importFilePath);
+    if (file.open(QFile::ReadOnly))
+    {
+        QTextStream ts(&file);
+        QStringList fields = ts.readLine().split(',');
+        if (!fields.isEmpty())
+        {
+            bool ok;
+            fields.front().toDouble(&ok);
+            file.close();
+            if (ok)
+            {
+                // If Ok then a number in first spot, seems to be a plain value csv
+                importFromPlainColumnCsv(importFilePath);
+            }
+            else
+            {
+                // If NOT ok then likely text in first spot, seems to be a hopsan row csv file, or some other junk that will not work
+                importHopsanRowCSV(importFilePath);
+            }
+        }
+    }
+    else
+    {
+        gpTerminalWidget->mpConsole->printErrorMessage(QString("Could not open file: %1").arg(importFilePath));
+    }
+    file.close();
+}
+
+void LogDataHandler::importHopsanRowCSV(QString importFilePath)
+{
+    if(importFilePath.isEmpty())
+    {
+
+        importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
+                                                       gConfig.getPlotDataDir(),
+                                                       tr("Hopsan row based csv files (*.csv)"));
+    }
+    if(importFilePath.isEmpty())
+    {
+        return;
+    }
+
+    QFile file(importFilePath);
     QFileInfo fileInfo(file);
     gConfig.setPlotDataDir(fileInfo.absolutePath());
 
-    CoreCSVParserAccess *pParser = new CoreCSVParserAccess(rImportFilePath);
+    bool parseOk = true;
+
+    if (file.open(QFile::ReadOnly))
+    {
+        QStringList allNames, allAlias, allUnits;
+        QList< QVector<double> > allDatas;
+        int nDataValueElements = -1;
+        QTextStream contentStream(&file);
+        while (!contentStream.atEnd())
+        {
+            //! @todo this is not the most clever and speedy implementation
+            QStringList lineFields = contentStream.readLine().split(',');
+            if (lineFields.size() > 3)
+            {
+                // Read metadata
+                allNames.append(lineFields[0]);
+                allAlias.append(lineFields[1]);
+                allUnits.append(lineFields[2]);
+
+                allDatas.append(QVector<double>());
+                QVector<double> &data = allDatas.last();
+                if (nDataValueElements > -1)
+                {
+                    data.reserve(nDataValueElements);
+                }
+                for (int i=3; i<lineFields.size(); ++i)
+                {
+                    bool ok;
+                    data.append(lineFields[i].toDouble(&ok));
+                    if(!ok)
+                    {
+                        parseOk = false;
+                    }
+                }
+                nDataValueElements = data.size();
+            }
+        }
+
+        if (parseOk)
+        {
+            ++mGenerationNumber;
+
+            VariableUniqueDescription varUniqueDesc;
+            varUniqueDesc.mVariableSourceType = ImportedVariableType;
+            varUniqueDesc.mImportFileName = fileInfo.fileName();
+
+            // Figure out time
+            SharedLogVariableDataPtrT timeVecPtr;
+            //! @todo what if multiple subsystems with different time
+            int timeIdx = allNames.indexOf(TIMEVARIABLENAME);
+            if (timeIdx > -1)
+            {
+                timeVecPtr = insertTimeVariable(allDatas[timeIdx], &varUniqueDesc);
+            }
+
+            for (int i=1; i<allNames.size(); ++i)
+            {
+                // We already inserted time
+                if (i == timeIdx)
+                {
+                    continue;
+                }
+
+                VariableCommonDescription varDesc;
+                varDesc.mDataName = allNames[i];
+                varDesc.mAliasName = allAlias[i];
+                varDesc.mDataUnit = allUnits[i];
+                insertVariableBasedOnDescription(varDesc, &varUniqueDesc, timeVecPtr, allDatas[i]);
+            }
+
+            // We do not want imported data to be removed automatically
+            preventGenerationAutoRemoval(mGenerationNumber);
+
+            // Limit number of plot generations if there are too many
+            limitPlotGenerations();
+
+            emit newDataAvailable();
+        }
+    }
+    file.close();
+}
+
+
+void LogDataHandler::importFromPlainColumnCsv(QString importFilePath)
+{
+    if(importFilePath.isEmpty())
+    {
+
+        importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
+                                                       gConfig.getPlotDataDir(),
+                                                       tr("Comma-separated values files (*.csv)"));
+    }
+    if(importFilePath.isEmpty())
+    {
+        return;
+    }
+
+    QFile file(importFilePath);
+    QFileInfo fileInfo(file);
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
+
+    CoreCSVParserAccess *pParser = new CoreCSVParserAccess(importFilePath);
 
     if(!pParser->isOk())
     {
@@ -1532,17 +1675,16 @@ QString LogDataHandler::fftVariable(const QString &a, const QString &b, const bo
 }
 
 
-
 QString LogDataHandler::assignVariable(const QString &dst, const QString &src)
 {
-    SharedLogVariableDataPtrT pDstData = getLogVariableDataPtr(dst, -1);
     SharedLogVariableDataPtrT pSrcData = getLogVariableDataPtr(src, -1);
-
     if(pSrcData == 0)
     {
         return QString();
     }
-    else if(pDstData == 0)
+
+    SharedLogVariableDataPtrT pDstData = getLogVariableDataPtr(dst, -1);
+    if(pDstData == 0)
     {
         pDstData = defineNewVariable(dst);
     }
@@ -1569,12 +1711,12 @@ QString LogDataHandler::assignVariable(const QString &dst, const QVector<double>
 double LogDataHandler::pokeVariable(const QString &a, const int index, const double value)
 {
     SharedLogVariableDataPtrT pData1 = getLogVariableDataPtr(a, -1);
-    if(pData1 != 0)
+    if(pData1)
     {
         return pokeVariable(pData1, index, value);
     }
     gpTerminalWidget->mpConsole->printErrorMessage("In Poke, No such variable: " + a);
-    return 0;
+    return -1;
 }
 
 bool LogDataHandler::deleteVariable(const QString &a)
