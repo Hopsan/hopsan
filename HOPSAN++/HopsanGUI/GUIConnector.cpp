@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
 
+#include "global.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
@@ -320,7 +321,7 @@ void Connector::finishCreation()
         this->updateEndPoint(mpEndPort->mapToScene(mpEndPort->boundingRect().center()));
 
         // Snap if close to a snapping position
-        if(gConfig.getSnapping())
+        if(gpConfig->getSnapping())
         {
             if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
                     ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )

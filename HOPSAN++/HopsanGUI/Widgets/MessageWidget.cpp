@@ -22,6 +22,7 @@
 //! @brief Contains the MessageWidget that dissplays messages to the user
 //!
 
+#include "global.h"
 #include "MessageWidget.h"
 #include "CoreAccess.h"
 #include "Configuration.h"
@@ -51,7 +52,7 @@ MessageWidget::MessageWidget(QWidget *pParent, TerminalWidget *pTerminalWidget)
     mpTextEdit->setMouseTracking(true);
     mpTextEdit->installEventFilter(this);
 
-    mGroupByTag = gConfig.getGroupMessagesByTag();
+    mGroupByTag = gpConfig->getGroupMessagesByTag();
 
     mShowErrorMessages = true;
     mShowWarningMessages = true;
@@ -91,7 +92,7 @@ MessageWidget::MessageWidget(QWidget *pParent, TerminalWidget *pTerminalWidget)
     mpShowDebugMessagesButton->setToolTip("Show Debug Messages");
 
     mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
-    mpGroupByTagCheckBox->setChecked(gConfig.getGroupMessagesByTag());
+    mpGroupByTagCheckBox->setChecked(gpConfig->getGroupMessagesByTag());
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpTextEdit,0,0,1,7);
@@ -130,7 +131,7 @@ QSize MessageWidget::sizeHint() const
 //! load the config directly in the constructor.
 void MessageWidget::loadConfig()
 {
-    mpGroupByTagCheckBox->setChecked(gConfig.getGroupMessagesByTag());
+    mpGroupByTagCheckBox->setChecked(gpConfig->getGroupMessagesByTag());
 }
 
 
@@ -313,7 +314,7 @@ void MessageWidget::checkMessages()
 void MessageWidget::setGroupByTag(bool value)
 {
     mGroupByTag = value;
-    gConfig.setGroupMessagesByTag(value);
+    gpConfig->setGroupMessagesByTag(value);
     updateEverything();
 }
 

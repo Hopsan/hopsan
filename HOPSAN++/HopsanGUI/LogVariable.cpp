@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "global.h"
 #include "Configuration.h"
 #include "LogVariable.h"
 #include "LogDataHandler.h"
@@ -167,7 +168,7 @@ LogVariableData::LogVariableData(const int generation, SharedLogVariableDataPtrT
     {
         connect(mSharedTimeVectorPtr.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
     }
-    mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gConfig.getCacheLogData());
+    mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gpConfig->getCacheLogData());
 }
 
 LogVariableData::~LogVariableData()

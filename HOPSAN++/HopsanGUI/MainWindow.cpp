@@ -35,6 +35,7 @@
 #include <QPixmap>
 
 #include "common.h"
+#include "global.h"
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "DesktopHandler.h"
@@ -68,43 +69,79 @@
 #include "Utilities/GUIUtilities.h"
 
 
-
 //! @todo maybe we can make sure that we dont need to include these here
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 
-// Global
-PlotHandler* gpPlotHandler = 0;
-TerminalWidget *gpTerminalWidget = 0;
-ModelHandler *gpModelHandler = 0;
-LibraryWidget *gpLibraryWidget = 0;
-PlotTreeWidget *gpPlotWidget = 0;
-SystemParametersWidget *gpSystemParametersWidget = 0;
-CentralTabWidget *gpCentralTabWidget = 0;
-UndoWidget *gpUndoWidget = 0;
-
+// Declare (create) global pointers that will point to MainWindow children
+PlotHandler *gpPlotHandler;
+LibraryWidget *gpLibraryWidget;
+TerminalWidget *gpTerminalWidget;
+ModelHandler *gpModelHandler;
+PlotTreeWidget *gpPlotWidget;
+CentralTabWidget *gpCentralTabWidget;
+SystemParametersWidget *gpSystemParametersWidget;
+UndoWidget *gpUndoWidget;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     this->hide();
-    gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
-                                //! @note This is however not possible, because the gpMainWindow pointer is needed by the MainWindow constructor code.
-                                //! @todo needs some code rewrite to fix this, it is madness
-    gpMainWindowWidget = this;
-
-    gDesktopHandler.setupPaths();
-
-
-    // Create plothandler as child to mainwindo but assign to global ptr
-    gpPlotHandler = new PlotHandler(this);
 
     //Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
     this->setMouseTracking(true);
 
-    mpConfig = &gConfig;
+    //Update style sheet setting
+    if(!gpConfig->getUseNativeStyleSheet())
+    {
+        setStyleSheet(gpConfig->getStyleSheet());
+        setPalette(gpConfig->getPalette());
+    }
+    qApp->setFont(gpConfig->getFont());
+
+    //Set name and icon of main window
+#ifdef DEVELOPMENT
+    this->setWindowTitle(tr("Hopsan (development version)"));
+#else
+    this->setWindowTitle(tr("Hopsan"));
+#endif
+    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + tr("hopsan.png"))));
+
+    //Set dock widget corner owner
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+
+    //Set the size and position of the main window
+    int sh = qApp->desktop()->screenGeometry().height();
+    int sw = qApp->desktop()->screenGeometry().width();
+    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
+//    int w = this->size().width();
+//    int h = this->size().height();
+//    int x = (sw - w)/2;
+//    int y = (sh - h)/2;
+//    this->move(x, y);       //Move window to center of screen
+}
+
+
+//! @brief Destructor
+//! @todo Shouldn't all member pointers be deleted here?
+MainWindow::~MainWindow()
+{
+    delete gpPlotHandler;
+    delete mpCentralTabs;
+    delete mpModelHandler;
+    delete mpMenuBar;
+    delete mpStatusBar;
+}
+
+//! @brief Creates the contents of the MainWindow, call this only once
+void MainWindow::createContents()
+{
+    // Create plothandler as child to mainwindo but assign to global ptr
+    gpPlotHandler = new PlotHandler(this);
+
+    mpConfig = gpConfig;
 
     //Create the terminal widget
     mpTerminalDock = new QDockWidget(tr("Terminal"), this);
@@ -133,26 +170,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Load configuration from settings file
     gpSplash->showMessage("Loading configuration...");
-    gConfig.loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
-
-    //Update style sheet setting
-    if(!gConfig.getUseNativeStyleSheet())
-    {
-        setStyleSheet(gConfig.getStyleSheet());
-        setPalette(gConfig.getPalette());
-    }
-    qApp->setFont(gConfig.getFont());
-
-    //Set name and icon of main window
-#ifdef DEVELOPMENT
-    this->setWindowTitle(tr("Hopsan (development version)"));
-#else
-    this->setWindowTitle(tr("Hopsan"));
-#endif
-    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + tr("hopsan.png"))));
-
-    //Set dock widget corner owner
-    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    gpConfig->loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
 
     gpSplash->showMessage("Initializing GUI...");
 
@@ -328,32 +346,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);    //Needs configuration
 
-    //Set the size and position of the main window
-    int sh = qApp->desktop()->screenGeometry().height();
-    int sw = qApp->desktop()->screenGeometry().width();
-    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
-//    int w = this->size().width();
-//    int h = this->size().height();
-//    int x = (sw - w)/2;
-//    int y = (sh - h)/2;
-//    this->move(x, y);       //Move window to center of screen
-
     updateToolBarsToNewTab();
-
-
-
-}
-
-
-//! @brief Destructor
-//! @todo Shouldn't all member pointers be deleted here?
-MainWindow::~MainWindow()
-{
-    delete gpPlotHandler;
-    delete mpCentralTabs;
-    delete mpModelHandler;
-    delete mpMenuBar;
-    delete mpStatusBar;
 }
 
 
@@ -371,7 +364,7 @@ void MainWindow::initializeWorkspace()
     mpLibrary->loadHiddenSecretDir(QString(BUILTINCAFPATH) + "hidden/");
 
     // Load default and user specified libraries
-    QString componentPath = gDesktopHandler.getComponentsPath();
+    QString componentPath = gpDesktopHandler->getComponentsPath();
 
     // Load built in default Library
     mpLibrary->loadLibrary(componentPath, Internal);
@@ -379,10 +372,10 @@ void MainWindow::initializeWorkspace()
     // Load builtIn library (Container special components)
     mpLibrary->loadLibrary(QString(BUILTINCAFPATH) + "visible/", Internal);
 
-    for(int i=0; i<gConfig.getUserLibs().size(); ++i)
+    for(int i=0; i<gpConfig->getUserLibs().size(); ++i)
     {
-        gpSplash->showMessage("Loading library: "+gConfig.getUserLibs()[i]+"...");
-        mpLibrary->loadAndRememberExternalLibrary(gConfig.getUserLibs().at(i), gConfig.getUserLibFolders().at(i));
+        gpSplash->showMessage("Loading library: "+gpConfig->getUserLibs()[i]+"...");
+        mpLibrary->loadAndRememberExternalLibrary(gpConfig->getUserLibs().at(i), gpConfig->getUserLibFolders().at(i));
     }
 
     mpLibrary->checkForFailedComponents();
@@ -460,7 +453,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     mpTerminalWidget->saveConfig();
 
     //this->saveSettings();
-    gConfig.saveToXml();
+    gpConfig->saveToXml();
 }
 
 
@@ -469,7 +462,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //! @param message String with text so show in message
 void MainWindow::showHelpPopupMessage(QString message)
 {
-    if(gConfig.getShowPopupHelp())
+    if(gpConfig->getShowPopupHelp())
     {
         mpHelpPopupLabel->setText(message);
         mpHelpPopup->show();
@@ -725,7 +718,7 @@ void MainWindow::createActions()
     mpToggleNamesAction = new QAction(toggleNamesIcon, tr("&Show Component Names (Ctrl+N)"), this);
     mpToggleNamesAction->setText("Show Component Names (Ctrl+N)");
     mpToggleNamesAction->setCheckable(true);
-    mpToggleNamesAction->setChecked(gConfig.getToggleNamesButtonCheckedLastSession());
+    mpToggleNamesAction->setChecked(gpConfig->getToggleNamesButtonCheckedLastSession());
     mpToggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
     connect(mpToggleNamesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpToggleNamesAction, "Toggle  visibility of component names for all components.");
@@ -803,7 +796,7 @@ void MainWindow::createActions()
     mpTogglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
     mpTogglePortsAction->setText("Show Unconnected Ports (Ctrl+T)");
     mpTogglePortsAction->setCheckable(true);
-    mpTogglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
+    mpTogglePortsAction->setChecked(gpConfig->getTogglePortsButtonCheckedLastSession());
     mpTogglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
     connect(mpTogglePortsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpTogglePortsAction, "Toggle visibility of unconnected ports.");
@@ -1113,11 +1106,11 @@ void MainWindow::createToolbars()
 
     //! @todo whay are these two in teh createToolbars function
     mpExamplesMenu = new QMenu("Example Models");
-    QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
+    QDir exampleModelsDir(gpDesktopHandler->getMainPath()+"Models/Example Models/");
     buildModelActionsMenu(mpExamplesMenu, exampleModelsDir);
 
     mpTestModelsMenu = new QMenu("Test Models");
-    QDir testModelsDir(gDesktopHandler.getMainPath()+"Models/Component Test/");
+    QDir testModelsDir(gpDesktopHandler->getMainPath()+"Models/Component Test/");
     buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
 
 
@@ -1349,7 +1342,7 @@ void MainWindow::openContextHelp(QString file)
 
 void MainWindow::showReleaseNotes()
 {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(gDesktopHandler.getExecPath()+"../Hopsan-release-notes.txt"));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(gpDesktopHandler->getExecPath()+"../Hopsan-release-notes.txt"));
 }
 
 
@@ -1427,7 +1420,7 @@ void MainWindow::registerRecentModel(QFileInfo model)
     if(model.fileName() == "")
         return;
 
-    gConfig.addRecentModel(model.filePath());
+    gpConfig->addRecentModel(model.filePath());
     updateRecentList();
 }
 
@@ -1437,7 +1430,7 @@ void MainWindow::unRegisterRecentModel(QFileInfo model)
     if(model.fileName() == "")
         return;
 
-    gConfig.removeRecentModel(model.filePath());
+    gpConfig->removeRecentModel(model.filePath());
     updateRecentList();
 }
 
@@ -1447,15 +1440,15 @@ void MainWindow::updateRecentList()
 {
     mpRecentMenu->clear();
 
-    mpRecentMenu->setEnabled(!gConfig.getRecentModels().empty());
-    if(!gConfig.getRecentModels().empty())
+    mpRecentMenu->setEnabled(!gpConfig->getRecentModels().empty());
+    if(!gpConfig->getRecentModels().empty())
     {
-        for(int i=0; i<gConfig.getRecentModels().size(); ++i)
+        for(int i=0; i<gpConfig->getRecentModels().size(); ++i)
         {
-            if(gConfig.getRecentModels().at(i) != "")
+            if(gpConfig->getRecentModels().at(i) != "")
             {
                 QAction *tempAction;
-                tempAction = mpRecentMenu->addAction(gConfig.getRecentModels().at(i));
+                tempAction = mpRecentMenu->addAction(gpConfig->getRecentModels().at(i));
                 tempAction->setIcon(QIcon(QString(ICONPATH) + "hmf.ico"));
                 disconnect(mpRecentMenu, SIGNAL(triggered(QAction *)), mpModelHandler, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
                 connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));

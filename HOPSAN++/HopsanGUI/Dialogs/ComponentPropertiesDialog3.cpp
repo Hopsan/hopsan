@@ -28,6 +28,7 @@
 
 //Hopsan includes
 #include "common.h"
+#include "global.h"
 #include "ComponentPropertiesDialog3.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -73,7 +74,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
         {
             CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
-            QString dummy = gDesktopHandler.getGeneratedComponentsPath();
+            QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
             int solver = pEditDialog->getSolver();
             coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName, solver);
@@ -96,7 +97,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
         {
             CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-            QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
+            QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+typeName+"/";
             coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
             gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
             mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
@@ -107,7 +108,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
         return;
     }
 
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
     setWindowTitle(tr("Component Properties"));
     createEditStuff();
 
@@ -204,7 +205,7 @@ void ComponentPropertiesDialog3::copyToNewComponent()
     {
         CoreGeneratorAccess coreAccess(gpLibraryWidget);
         QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-        QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
+        QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+typeName+"/";
         coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
         gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
     }
@@ -460,7 +461,7 @@ void ComponentPropertiesDialog3::createEditStuff()
 
     QWidget *pPropertiesWidget = new QWidget(this);
     pPropertiesWidget->setLayout(pPropertiesLayout);
-    pPropertiesWidget->setPalette(gConfig.getPalette());
+    pPropertiesWidget->setPalette(gpConfig->getPalette());
 
     // Add Code edit stuff, A new tab in a new widget will be created
     //------------------------------------------------------------------------------------------------------------------------------
@@ -578,7 +579,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     for (int i=0; i<variameters.size(); ++i)
     {
         if ( (variameters[i].mVariameterType == OtherVariable) &&
-             ( gConfig.getShowHiddenNodeDataVariables() || (variameters[i].mVariabelType != "Hidden") ) )
+             ( gpConfig->getShowHiddenNodeDataVariables() || (variameters[i].mVariabelType != "Hidden") ) )
         {
             // Extract current port name to see if we should make a separator
             QString portName = variameters[i].mPortName;
@@ -919,7 +920,7 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
 void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
 {
     QMenu menu;
-    QMap<QString, double> unitScales = gConfig.getCustomUnits(mVariableTypeName);
+    QMap<QString, double> unitScales = gpConfig->getCustomUnits(mVariableTypeName);
     if (!unitScales.isEmpty())
     {
         QList<QString> keys = unitScales.keys();

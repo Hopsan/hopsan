@@ -35,6 +35,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "UndoStack.h"
 #include "Configuration.h"
+#include "global.h"
 
 #include <cassert>
 
@@ -1237,7 +1238,7 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
         emit objectMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
-        if(mpParentContainerObject != 0 && gConfig.getSnapping() &&
+        if(mpParentContainerObject != 0 && gpConfig->getSnapping() &&
            !mpParentContainerObject->isCreatingConnector() && mpParentContainerObject->getSelectedModelObjectPtrs().size() == 1)
         {
                 //Vertical snap

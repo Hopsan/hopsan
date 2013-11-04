@@ -27,7 +27,6 @@
 
 #include <QMainWindow>
 #include <QtGui>
-#include <QtNetwork/QNetworkReply>
 
 class CentralTabWidget;
 class GraphicsView;
@@ -62,6 +61,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void createContents();
 
 
     OptionsDialog *getOptionsDialog();
@@ -278,7 +278,6 @@ private:
     QTimer *mpHelpPopupTimer;
     QMap<QAction*, QString> mHelpPopupTextMap;
 };
-
 
 class MainWindowLineEdit : public QLineEdit
 {

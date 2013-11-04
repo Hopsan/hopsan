@@ -27,6 +27,7 @@
 #include <float.h>
 
 #include "common.h"
+#include "global.h"
 #include "AnimatedComponent.h"
 #include "GraphicsView.h"
 #include "GUIModelObject.h"

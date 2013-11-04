@@ -30,6 +30,7 @@
 
 #include <cmath>
 
+#include "global.h"
 #include "Configuration.h"
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
@@ -79,7 +80,7 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
     mpShowDebugMessagesButton->setToolTip("Show Debug Messages");
 
     mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
-    mpGroupByTagCheckBox->setChecked(gConfig.getGroupMessagesByTag());
+    mpGroupByTagCheckBox->setChecked(gpConfig->getGroupMessagesByTag());
 
     mpConsole = new TerminalConsole(this);
     mpHandler = new HcomHandler(mpConsole);
@@ -128,23 +129,23 @@ QSize TerminalWidget::sizeHint() const
 //! load the config directly in the constructor.
 void TerminalWidget::loadConfig()
 {
-    mpGroupByTagCheckBox->setChecked(gConfig.getGroupMessagesByTag());
-    mpConsole->mHistory = gConfig.getTerminalHistory();
+    mpGroupByTagCheckBox->setChecked(gpConfig->getGroupMessagesByTag());
+    mpConsole->mHistory = gpConfig->getTerminalHistory();
 
-    if(!gConfig.getHcomWorkingDirectory().isEmpty())
-        mpHandler->setWorkingDirectory(gConfig.getHcomWorkingDirectory());
+    if(!gpConfig->getHcomWorkingDirectory().isEmpty())
+        mpHandler->setWorkingDirectory(gpConfig->getHcomWorkingDirectory());
 }
 
 
 
 void TerminalWidget::saveConfig()
 {
-    if(mpConsole->mHistory.size() > gConfig.getTerminalHistory().size())
+    if(mpConsole->mHistory.size() > gpConfig->getTerminalHistory().size())
     {
         mpConsole->mHistory.prepend("--- "+QDateTime::currentDateTime().toString()+" ---");
-        gConfig.storeTerminalHistory(mpConsole->mHistory);
+        gpConfig->storeTerminalHistory(mpConsole->mHistory);
     }
-    gConfig.setHcomWorkingDirectory(mpConsole->getHandler()->getWorkingDirectory());
+    gpConfig->setHcomWorkingDirectory(mpConsole->getHandler()->getWorkingDirectory());
 }
 
 
@@ -208,7 +209,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     //this->setTextColor(QColor("Black"));
     //this->setStyleSheet(QString::fromUtf8("QTextEdit {background-color: white; border: 1px solid gray;}"));
 
-    mGroupByTag = gConfig.getGroupMessagesByTag();
+    mGroupByTag = gpConfig->getGroupMessagesByTag();
 
     mDontPrint = false;
     mShowErrorMessages = true;
@@ -390,7 +391,7 @@ void TerminalConsole::abortHCOM()
 void TerminalConsole::setGroupByTag(bool value)
 {
     mGroupByTag = value;
-    gConfig.setGroupMessagesByTag(value);
+    gpConfig->setGroupMessagesByTag(value);
   //  updateEverything();
 }
 

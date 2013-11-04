@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "global.h"
 #include "GUIContainerPort.h"
 #include "GUIContainerObject.h"
 #include "GUIPort.h"

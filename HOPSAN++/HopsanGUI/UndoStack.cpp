@@ -23,8 +23,8 @@
 //$Id$
 
 #include <QtGui>
-#include <assert.h>
 
+#include "global.h"
 #include "UndoStack.h"
 #include "GUIConnector.h"
 #include "loadFunctions.h"

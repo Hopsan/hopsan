@@ -24,9 +24,9 @@
 
 #include <QtGui>
 #include <QSvgRenderer>
-#include <iostream>
 
 #include "common.h"
+#include "global.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
 
@@ -306,7 +306,7 @@ void Port::openRightClickMenu(QPoint screenPos)
     {
         if (variameterDescriptions[i].mPortName == this->getName())
         {
-            if (gConfig.getShowHiddenNodeDataVariables() || (variameterDescriptions[i].mVariabelType != "Hidden"))
+            if (gpConfig->getShowHiddenNodeDataVariables() || (variameterDescriptions[i].mVariabelType != "Hidden"))
             {
                 QAction *pAliasAction;
                 if (variameterDescriptions[i].mAlias.isEmpty())
@@ -337,7 +337,7 @@ void Port::openRightClickMenu(QPoint screenPos)
         const QString &dataUnit = logVars[i]->getDataUnit();
         if ( dataName == "Value" && dataUnit != "-")
         {
-            QStringList pqs = gConfig.getPhysicalQuantitiesForUnit(dataUnit);
+            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(dataUnit);
             //! @todo if same unit exist in multiple places we have a problem
             if (pqs.size() > 1)
             {
@@ -346,7 +346,7 @@ void Port::openRightClickMenu(QPoint screenPos)
             QString defaultUnit;
             if (pqs.size() == 1)
             {
-                defaultUnit = gConfig.getDefaultUnit(pqs.first());
+                defaultUnit = gpConfig->getDefaultUnit(pqs.first());
             }
 
             if (!defaultUnit.isEmpty())
@@ -365,7 +365,7 @@ void Port::openRightClickMenu(QPoint screenPos)
             mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+dataName, custUS);
             if (custUS.mScale.isEmpty())
             {
-                unit = gConfig.getDefaultUnit(dataName);
+                unit = gpConfig->getDefaultUnit(dataName);
             }
             else
             {

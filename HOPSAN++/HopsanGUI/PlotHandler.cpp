@@ -24,6 +24,7 @@
 
 #include "PlotHandler.h"
 
+#include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "PlotWindow.h"
 #include "LogDataHandler.h"

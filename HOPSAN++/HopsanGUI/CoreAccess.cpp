@@ -25,6 +25,7 @@
 #include "CoreAccess.h"
 #include <QDebug>
 #include <QDir>
+#include "global.h"
 #include "GUIObjects/GUISystem.h"
 #include "Configuration.h"
 
@@ -71,7 +72,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath,
 
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(code.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true, outputPath.toStdString().c_str(), target.toStdString().c_str(), solver);
+        pHandler->callModelicaGenerator(code.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true, outputPath.toStdString().c_str(), target.toStdString().c_str(), solver);
         return true;
     }
     delete(pHandler);
@@ -85,7 +86,7 @@ bool CoreGeneratorAccess::generateFromCpp(QString code, bool showOutputDialog, Q
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callCppGenerator(code.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), showOutputDialog, outputPath.toStdString().c_str());
+        pHandler->callCppGenerator(code.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), showOutputDialog, outputPath.toStdString().c_str());
         return true;
     }
     delete(pHandler);
@@ -102,7 +103,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
         fmuFileInfo.setFile(path);
         QString fmuName = fmuFileInfo.fileName();
         fmuName.chop(4);
-        if(QDir().exists(gDesktopHandler.getFMUPath() + fmuName))
+        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuName))
         {
             QMessageBox existWarningBox(QMessageBox::Warning, "Warning","Another FMU with same name exist. Do you want unload this library and then overwrite it?", 0, 0);
             existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
@@ -113,7 +114,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             if(doIt)
             {
                 mpLibrary->unloadExternalLibrary(fmuName, "FMU");
-                removeDir(QDir::cleanPath(gDesktopHandler.getFMUPath()+fmuName));
+                removeDir(QDir::cleanPath(gpDesktopHandler->getFMUPath()+fmuName));
             }
             else
             {
@@ -121,21 +122,21 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
-        pHandler->callFmuImportGenerator(path.toStdString().c_str(), gDesktopHandler.getFMUPath().toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
+        pHandler->callFmuImportGenerator(path.toStdString().c_str(), gpDesktopHandler->getFMUPath().toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
 
-        if(QDir().exists(gDesktopHandler.getFMUPath() + fmuName))
+        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuName))
         {
             //Copy component icon
             QFile fmuIcon;
             fmuIcon.setFileName(QString(GRAPHICSPATH)+"/objecticons/fmucomponent.svg");
-            fmuIcon.copy(gDesktopHandler.getFMUPath()+fmuName+"/fmucomponent.svg");
+            fmuIcon.copy(gpDesktopHandler->getFMUPath()+fmuName+"/fmucomponent.svg");
             fmuIcon.close();
-            fmuIcon.setFileName(gDesktopHandler.getFMUPath()+fmuName+"/fmucomponent.svg");
+            fmuIcon.setFileName(gpDesktopHandler->getFMUPath()+fmuName+"/fmucomponent.svg");
             fmuIcon.setPermissions(QFile::WriteUser | QFile::ReadUser);
             fmuIcon.close();
 
             //Load library
-            mpLibrary->loadAndRememberExternalLibrary(gDesktopHandler.getFMUPath() + fmuName, "FMU");
+            mpLibrary->loadAndRememberExternalLibrary(gpDesktopHandler->getFMUPath() + fmuName, "FMU");
             return true;
         }
     }
@@ -149,7 +150,7 @@ bool CoreGeneratorAccess::generateToFmu(QString path, SystemContainer *pSystem)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callFmuExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
+        pHandler->callFmuExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -162,7 +163,7 @@ bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSys
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callSimulinkExportGenerator(path.toStdString().c_str(), pSystem->getModelFileInfo().fileName().toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
+        pHandler->callSimulinkExportGenerator(path.toStdString().c_str(), pSystem->getModelFileInfo().fileName().toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -175,7 +176,7 @@ bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer 
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callSimulinkCoSimExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
+        pHandler->callSimulinkCoSimExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -188,7 +189,7 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callLabViewSITGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
+        pHandler->callLabViewSITGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -201,7 +202,7 @@ bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString name, QS
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), name.toStdString().c_str(), extraLibs.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
+        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), name.toStdString().c_str(), extraLibs.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -302,7 +303,7 @@ bool CoreSimulationHandler::initialize(const double startTime, const double stop
 
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
 {
-    hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gConfig.getParallelAlgorithm());
+    hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gpConfig->getParallelAlgorithm());
     return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged, algorithm);
 }
 
@@ -318,7 +319,7 @@ bool CoreSimulationHandler::simulate(const double startTime, const double stopTi
     {
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gConfig.getParallelAlgorithm());
+    hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gpConfig->getParallelAlgorithm());
     return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged, algorithm);
 }
 
@@ -683,7 +684,7 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, int nThre
     if(nThreads >= 0)
     {
         qDebug() << "Starting multicore simulation";
-        hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gConfig.getParallelAlgorithm());
+        hopsan::ParallelAlgorithmT algorithm = hopsan::ParallelAlgorithmT(gpConfig->getParallelAlgorithm());
         mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads, modelHasNotChanged, algorithm);
         qDebug() << "Finished multicore simulation";
         //mpCoreComponentSystem->simulateMultiThreadedOld(mStartTime, mFinishTime);

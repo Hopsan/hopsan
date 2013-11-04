@@ -26,6 +26,7 @@
 #include "qdebug.h"
 #include "Configuration.h"
 #include "common.h"
+#include "global.h"
 
 ConnectorAppearance::ConnectorAppearance(QString type, GraphicsTypeEnumT gfxType)
 {
@@ -87,9 +88,9 @@ QPen ConnectorAppearance::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gf
 {
     if(rSituation == "Primary" && mCustomColor != QColor())
     {
-        QPen retval = gConfig.getPen(style, gfxType, rSituation);
+        QPen retval = gpConfig->getPen(style, gfxType, rSituation);
         retval.setColor(mCustomColor);
         return retval;
     }
-    return gConfig.getPen(style, gfxType, rSituation);
+    return gpConfig->getPen(style, gfxType, rSituation);
 }

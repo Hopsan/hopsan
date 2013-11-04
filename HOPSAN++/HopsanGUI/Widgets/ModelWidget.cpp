@@ -28,6 +28,7 @@
 #include <QHash>
 
 //Hopsan includes
+#include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
@@ -70,7 +71,7 @@ ModelWidget::ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent)
     mpAnimationWidget = 0;
 
     mEditingEnabled = true;
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
     this->setMouseTracking(true);
 
     mpParentModelHandler = modelHandler;
@@ -297,7 +298,7 @@ bool ModelWidget::simulate_nonblocking()
     //Save backup copy
     QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
     fileNameWithoutHmf.chop(4);
-    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
 
     if(!mSimulateMutex.tryLock()) return false;
 
@@ -318,7 +319,7 @@ bool ModelWidget::simulate_blocking()
     //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
     QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
     fileNameWithoutHmf.chop(4);
-    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
 
     if(!mSimulateMutex.tryLock()) return false;
 
@@ -611,7 +612,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         QFile backupFile(mpToplevelSystem->getModelFileInfo().filePath());
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
-        QString backupFilePath = gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_save_backup.hmf";
+        QString backupFilePath = gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_save_backup.hmf";
         if(QFile::exists(backupFilePath))
         {
             QFile::remove(backupFilePath);
@@ -635,7 +636,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
 
 
         modelFilePathToSave = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                     gConfig.getLoadModelDir(),
+                                                     gpConfig->getLoadModelDir(),
                                                      filter);
 
         if(modelFilePathToSave.isEmpty())     //Don't save anything if user presses cancel
@@ -647,7 +648,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             mpToplevelSystem->setModelFile(modelFilePathToSave);
         }
         QFileInfo fileInfo = QFileInfo(modelFilePathToSave);
-        gConfig.setLoadModelDir(fileInfo.absolutePath());
+        gpConfig->setLoadModelDir(fileInfo.absolutePath());
     }
 
     bool success = saveTo(modelFilePathToSave, contents);
@@ -661,7 +662,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
         if(contents == FullModel)
         {
-            gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
+            gpConfig->addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
             gpMainWindow->updateRecentList();
             this->setSaved(true);
         }

@@ -30,6 +30,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "common.h"
+#include "global.h"
 #include "ModelHandler.h"
 
 

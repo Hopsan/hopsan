@@ -33,6 +33,7 @@
 
 //Hopsan includes
 #include "common.h"
+#include "global.h"
 #include "GUIObjects/GUISystem.h"
 #include "HVCWidget.h"
 #include "LogDataHandler.h"

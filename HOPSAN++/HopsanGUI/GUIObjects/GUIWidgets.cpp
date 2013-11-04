@@ -34,6 +34,7 @@
 
 #include <cassert>
 
+#include "global.h"
 #include "GUIWidgets.h"
 #include "GUISystem.h"
 #include "Widgets/ModelWidget.h"

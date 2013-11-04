@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "global.h"
 #include "ParameterSettingsLayout.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIModelObject.h"

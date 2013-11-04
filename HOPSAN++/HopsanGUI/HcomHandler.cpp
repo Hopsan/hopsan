@@ -23,6 +23,7 @@
 //!
 //HopsanGUI includes
 #include "common.h"
+#include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GUIConnector.h"
@@ -70,7 +71,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 
     mCurrentPlotWindowName = "PlotWindow0";
 
-    mPwd = gDesktopHandler.getDocumentsPath();
+    mPwd = gpDesktopHandler->getDocumentsPath();
     mPwd.chop(1);
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
@@ -534,7 +535,7 @@ void HcomHandler::createCommands()
 
 void HcomHandler::generateCommandsHelpText()
 {
-    QFile htmlFile(gDesktopHandler.getHelpPath()+"userHcomScripting.html");
+    QFile htmlFile(gpDesktopHandler->getHelpPath()+"userHcomScripting.html");
     htmlFile.open(QFile::ReadOnly | QFile::Text);
     QString htmlString = htmlFile.readAll();
     htmlFile.close();
@@ -1616,7 +1617,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gConfig.setUseMultiCore(value=="on");
+        gpConfig->setUseMultiCore(value=="on");
     }
     else if(pref == "threads")
     {
@@ -1627,7 +1628,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gConfig.setNumberOfThreads(nThreads);
+        gpConfig->setNumberOfThreads(nThreads);
     }
     else if(pref == "algorithm")
     {
@@ -1638,7 +1639,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gConfig.setParallelAlgorithm(algorithm);
+        gpConfig->setParallelAlgorithm(algorithm);
     }
     else if(pref == "cachetodisk")
     {
@@ -1646,7 +1647,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         {
             HCOMERR("Unknown value.");
         }
-        gConfig.setCacheLogData(value=="on");
+        gpConfig->setCacheLogData(value=="on");
     }
     else if(pref == "generationlimit")
     {
@@ -1657,7 +1658,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gConfig.setGenerationLimit(limit);
+        gpConfig->setGenerationLimit(limit);
     }
     else if(pref == "samples")
     {
@@ -1794,7 +1795,7 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
 //! @brief Execute function for "loadr" command
 void HcomHandler::executeLoadRecentCommand(const QString /*cmd*/)
 {
-    gpModelHandler->loadModel(gConfig.getRecentModels().first());
+    gpModelHandler->loadModel(gpConfig->getRecentModels().first());
 }
 
 
@@ -2434,8 +2435,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         //Load hidden copy of model to run optimization against
         QString name = gpModelHandler->getCurrentTopLevelSystem()->getName();
         QString appearanceDataBasePath = gpModelHandler->getCurrentTopLevelSystem()->getAppearanceData()->getBasePath();
-        QDir().mkpath(gDesktopHandler.getDataPath()+"/optimization/");
-        QString savePath = gDesktopHandler.getDataPath()+"/optimization/"+name+".hmf";
+        QDir().mkpath(gpDesktopHandler->getDataPath()+"/optimization/");
+        QString savePath = gpDesktopHandler->getDataPath()+"/optimization/"+name+".hmf";
         gpModelHandler->getCurrentModel()->saveTo(savePath);
         gpModelHandler->getCurrentTopLevelSystem()->setAppearanceDataBasePath(appearanceDataBasePath);
 
@@ -2462,7 +2463,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         else if(mpOptHandler->mOptAlgorithm == OptimizationHandler::ParticleSwarm)
         {
             mpOptHandler->mOptNumPoints = getNumber("npoints", &ok);
-            if(gConfig.getUseMulticore())
+            if(gpConfig->getUseMulticore())
             {
                 for(int i=0; i<mpOptHandler->mOptNumPoints; ++i)
                 {
@@ -2638,9 +2639,9 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
         }
     }
 
-    gConfig.setUseMultiCore(useMultiThreading);
-    if(nArgs > 1) gConfig.setNumberOfThreads(nThreads);
-    if(nArgs > 2) gConfig.setParallelAlgorithm(algorithm);
+    gpConfig->setUseMultiCore(useMultiThreading);
+    if(nArgs > 1) gpConfig->setNumberOfThreads(nThreads);
+    if(nArgs > 2) gpConfig->setParallelAlgorithm(algorithm);
 }
 
 

@@ -23,6 +23,7 @@
 //$Id: ModelHandler.cpp 5551 2013-06-20 08:54:16Z petno25 $
 
 //Hopsan includes
+#include "global.h"
 #include "Configuration.h"
 #include "LogDataHandler.h"
 #include "ModelHandler.h"
@@ -289,7 +290,7 @@ void CurveInfoBox::refreshActive(bool active)
     if (active)
     {
         setAutoFillBackground(true);
-        setPalette(gConfig.getPalette());
+        setPalette(gpConfig->getPalette());
     }
     else
     {
@@ -399,7 +400,7 @@ void PlotCurve::commonConstructorCode(int axisY,
 
     //Create the plot info box
     mpPlotCurveInfoBox = new CurveInfoBox(this, mpParentPlotTab);
-    mpPlotCurveInfoBox->setPalette(gConfig.getPalette());
+    mpPlotCurveInfoBox->setPalette(gpConfig->getPalette());
     updatePlotInfoBox();
     mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mpPlotCurveInfoBox);
     mpPlotCurveInfoBox->show();
@@ -632,17 +633,17 @@ void PlotCurve::setCustomCurveDataUnit(const QString &rUnit)
 {
     if (getDataName() != "Value")
     {
-        if (gConfig.hasUnitScale(getDataName(),rUnit))
+        if (gpConfig->hasUnitScale(getDataName(),rUnit))
         {
-            setCustomCurveDataUnit(rUnit, gConfig.getUnitScale(getDataName(), rUnit));
+            setCustomCurveDataUnit(rUnit, gpConfig->getUnitScale(getDataName(), rUnit));
         }
     }
     else
     {
-        QStringList pqs = gConfig.getPhysicalQuantitiesForUnit(rUnit);
+        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(rUnit);
         if (!pqs.isEmpty())
         {
-            setCustomCurveDataUnit(rUnit, gConfig.getUnitScale(pqs.first(), rUnit));
+            setCustomCurveDataUnit(rUnit, gpConfig->getUnitScale(pqs.first(), rUnit));
         }
     }
 }

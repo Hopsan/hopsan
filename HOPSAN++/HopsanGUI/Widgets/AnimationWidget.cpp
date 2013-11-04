@@ -27,6 +27,7 @@
 #include <QVector>
 
 //Hopsan includes
+#include "global.h"
 #include "AnimatedConnector.h"
 #include "Configuration.h"
 #include "GraphicsView.h"
@@ -53,7 +54,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpAnimationData = mpContainer->getAppearanceData()->getAnimationDataPtr();
 
     //Set palette
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
     //Create graphics scene
     mpGraphicsScene = new QGraphicsScene();
@@ -71,7 +72,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpGraphicsView->setCacheMode(QGraphicsView::CacheBackground);
     mpGraphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
     mpGraphicsView->centerOn(mpGraphicsView->sceneRect().topLeft());
-    mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+    mpGraphicsView->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
     mpGraphicsView->centerOn(2500,2500);
 
     //Create control panel widgets

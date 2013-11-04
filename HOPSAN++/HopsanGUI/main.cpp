@@ -28,21 +28,21 @@
 #include <QLocale>
 
 #include "common.h"
+#include "global.h"
 #include "MainWindow.h"
 #include "Configuration.h"
 #include "CopyStack.h"
-#include "Utilities/GUIUtilities.h"
 #include "DesktopHandler.h"
 
-//Global stuff
-MainWindow* gpMainWindow = 0;
-QWidget *gpMainWindowWidget = 0;
-Configuration gConfig;
-DesktopHandler gDesktopHandler;
-CopyStack gCopyStack;
-QSplashScreen *gpSplash;
-
 void loadApplicationFonts();
+
+// Declare global pointers
+MainWindow* gpMainWindow;
+QWidget *gpMainWindowWidget;
+Configuration *gpConfig;
+DesktopHandler *gpDesktopHandler;
+CopyStack *gpCopyStack;
+QSplashScreen *gpSplash;
 
 int main(int argc, char *argv[])
 {
@@ -59,9 +59,10 @@ int main(int argc, char *argv[])
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
     // Create/set global objects
-    gConfig = Configuration();
-    gDesktopHandler = DesktopHandler();
-    gCopyStack = CopyStack();
+    gpConfig = new Configuration();
+    gpDesktopHandler = new DesktopHandler();
+    gpDesktopHandler->setupPaths();
+    gpCopyStack = new CopyStack();
 
     //Load settings
     loadApplicationFonts();
@@ -77,12 +78,23 @@ int main(int argc, char *argv[])
     // Create the mainwindow
     MainWindow mainwindow;
     gpMainWindow = &mainwindow;
+    gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
+    mainwindow.createContents();
 
     //Show main window and initialize workspace
     QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
     mainwindow.initializeWorkspace();
 
-    return a.exec();
+    // Execute application
+    int rc = a.exec();
+
+    // Deltete global objects
+    delete gpCopyStack;
+    delete gpDesktopHandler;
+    delete gpConfig;
+
+    // Return application return code
+    return rc;
 }
 
 

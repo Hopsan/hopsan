@@ -41,6 +41,7 @@
 #include "ModelHandler.h"
 #include "CoreAccess.h"
 #include "common.h"
+#include "global.h"
 #include "version_gui.h"
 #include "Dialogs/EditComponentDialog.h"
 #include "Utilities/HighlightingUtilities.h"
@@ -178,7 +179,7 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     setLayout(mpGrid);
     this->setMouseTracking(true);
 
-    mViewMode = gConfig.getLibraryStyle();
+    mViewMode = gpConfig->getLibraryStyle();
     this->setGfxType(UserGraphics);     //Also updates the widget
 }
 
@@ -785,7 +786,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
             LibraryComponent* pLibComp = mpContentsTree->findComponent(component, "");
             mpContentsTree->removeComponent(pLibComp->getFullTypeName());
 
-            gConfig.removeUserLib(libPath);
+            gpConfig->removeUserLib(libPath);
         }
 
         mpCoreAccess->unLoadComponentLib(libPath+libs[l]);
@@ -969,7 +970,7 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
     QDir libDirObject(libDir);
 
     // Determine where to store any backups of updated appearance xml files
-    mUpdateXmlBackupDir.setPath(gDesktopHandler.getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
+    mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
     if(int_ext == External)
     {
@@ -1026,7 +1027,7 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     if(libDir.isEmpty())    //Let user select a directory if no directory is specified
     {
         libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
-                                                   gConfig.getExternalLibDir(),
+                                                   gpConfig->getExternalLibDir(),
                                                    QFileDialog::ShowDirsOnly
                                                    | QFileDialog::DontResolveSymlinks);
     }
@@ -1039,9 +1040,9 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     }
     else
     {
-        gConfig.setExternalLibDir(libDir);
+        gpConfig->setExternalLibDir(libDir);
 
-        if(!gConfig.hasUserLib(libDir))     //Check so that path does not already exist
+        if(!gpConfig->hasUserLib(libDir))     //Check so that path does not already exist
         {
             loadAndRememberExternalLibrary(libDir);    //Load and register the library in configuration
         }
@@ -1059,7 +1060,7 @@ void LibraryWidget::importFmu()
 {
     //Load .fmu file and create paths
     QString filePath = QFileDialog::getOpenFileName(this, tr("Import Functional Mockup Unit (FMU)"),
-                                                    gConfig.getFmuImportDir(),
+                                                    gpConfig->getFmuImportDir(),
                                                     tr("Functional Mockup Unit (*.fmu)"));
     if(filePath.isEmpty())      //Cancelled by user
         return;
@@ -1070,7 +1071,7 @@ void LibraryWidget::importFmu()
         gpTerminalWidget->mpConsole->printErrorMessage("File not found: "+filePath);
         return;
     }
-    gConfig.setFmuImportDir(fmuFileInfo.absolutePath());
+    gpConfig->setFmuImportDir(fmuFileInfo.absolutePath());
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(this);
     pCoreAccess->generateFromFmu(filePath);
@@ -1083,7 +1084,7 @@ void LibraryWidget::importFmu()
 //! @param libDir Directory to the library
 void LibraryWidget::loadAndRememberExternalLibrary(const QString libDir, const QString libName)
 {
-    gConfig.addUserLib(libDir, libName);     //Register new library in configuration
+    gpConfig->addUserLib(libDir, libName);     //Register new library in configuration
     loadLibrary(libDir, External, libName);
 }
 
@@ -1229,9 +1230,9 @@ QStringList LibraryWidget::getReplacements(QString type)
 void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree)
 {
     QDir libDirObject(libDir);
-    if(!libDirObject.exists() && gConfig.hasUserLib(libDir))
+    if(!libDirObject.exists() && gpConfig->hasUserLib(libDir))
     {
-        gConfig.removeUserLib(libDir);      //Remove user lib if it does not exist
+        gpConfig->removeUserLib(libDir);      //Remove user lib if it does not exist
         return;
     }
 
@@ -1269,7 +1270,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         gpTerminalWidget->mpConsole->printErrorMessage(libDirObject.path() + ": Could not find any working Hopsan library in specified folder!");
         gpTerminalWidget->checkMessages();
         pParentTree->removeChild(libName);
-        gConfig.removeUserLib(libDirObject.path());
+        gpConfig->removeUserLib(libDirObject.path());
         //delete pTree;
         //return;     //No point in continuing since no library was found
     }
@@ -1455,9 +1456,9 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
     if(pTree->isEmpty())
     {
         pParentTree->removeChild(libName);
-        if(gConfig.hasUserLib(libDir))
+        if(gpConfig->hasUserLib(libDir))
         {
-            gConfig.removeUserLib(libDir);
+            gpConfig->removeUserLib(libDir);
         }
         delete pTree;
     }
@@ -1696,7 +1697,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
         pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByName(libName);
         if (!pLibContTree)
         {
-            pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByPath(QDir::cleanPath(gDesktopHandler.getExecPath()+libName));
+            pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByPath(QDir::cleanPath(gpDesktopHandler->getExecPath()+libName));
         }
         if (!pLibContTree)
         {
@@ -1739,7 +1740,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
 
 //        if (button == QMessageBox::Ok)
 //        {
-            gConfig.removeUserLib(pLibContTree->mLibDir);
+            gpConfig->removeUserLib(pLibContTree->mLibDir);
             unLoadLibrarySubTree(pLibContTree, parentLibName);
             update();
 //        }
@@ -1783,7 +1784,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree, const QStri
 //! @brief Slot that sets view mode to single tree and redraws the library
 void LibraryWidget::setListView()
 {
-    gConfig.setLibraryStyle(0);
+    gpConfig->setLibraryStyle(0);
     mViewMode=0;
     update();
 }
@@ -1792,7 +1793,7 @@ void LibraryWidget::setListView()
 //! @brief Slot that sets view mode to dual mode and redraws the library
 void LibraryWidget::setDualView()
 {
-    gConfig.setLibraryStyle(1);
+    gpConfig->setLibraryStyle(1);
     mViewMode=1;
     update();
 }
@@ -1824,7 +1825,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
     QAction *pUnloadLibraryFolder = new QAction(this);
     QString path = QDir::cleanPath(pTree->mLibDir);
-    QStringList userLibs = gConfig.getUserLibs();
+    QStringList userLibs = gpConfig->getUserLibs();
     if(userLibs.contains(path) /*pItem->parent()->text(0) == "External Libraries"*/)
     {
         pUnloadLibraryFolder = menu.addAction("Unload External Library");
@@ -1903,7 +1904,7 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
         {
             CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
-            QString dummy = gDesktopHandler.getGeneratedComponentsPath();
+            QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
             int solver = pEditDialog->getSolver();
             coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName, solver);
@@ -1922,7 +1923,7 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
         {
             CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-            QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
+            QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+typeName+"/";
             coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
             gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
         }

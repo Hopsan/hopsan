@@ -31,6 +31,7 @@
 #include "MainWindow.h"
 #include "ModelHandler.h"
 #include "ProjectTabWidget.h"
+#include "global.h"
 
 //! @class CentralTabWidget
 //! @brief The CentralTabWidget class is the central tab widget in the main window
@@ -40,7 +41,7 @@
 CentralTabWidget::CentralTabWidget(MainWindow *pParentMainWindow)
         :   QTabWidget(pParentMainWindow)
 {
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
     connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
     connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);

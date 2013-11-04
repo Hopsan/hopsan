@@ -36,8 +36,6 @@
 
 #include "common.h"
 
-class MainWindow;
-
 class Configuration
 {
 

@@ -23,6 +23,7 @@
 //$Id: AnimatedComponent.cpp 5734 2013-08-22 14:28:04Z robbr48 $
 
 #include "common.h"
+#include "global.h"
 #include "HcomHandler.h"
 #include "HighlightingUtilities.h"
 #include "Widgets/HcomWidget.h"

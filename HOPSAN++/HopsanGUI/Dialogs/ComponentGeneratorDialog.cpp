@@ -30,6 +30,7 @@
 
 //Hopsan includes
 #include "common.h"
+#include "global.h"
 #include "Configuration.h"
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
@@ -53,7 +54,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(QWidget *parent)
     //Set the name and size of the main window
     this->resize(1024,768);
     this->setWindowTitle("Component Generator (experimental)");
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
     //Set the size and position of the main window
     int sh = qApp->desktop()->screenGeometry().height();
@@ -80,7 +81,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(QWidget *parent)
     mpCentralLayout = new QVBoxLayout(this);
 
     mpEquationTabs = new QTabWidget(this);
-    mpEquationTabs->setPalette(gConfig.getPalette());
+    mpEquationTabs->setPalette(gpConfig->getPalette());
     mpEquationTabs->setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
    // mpEquationTabs->addTab(mpScrollArea, "Untitled");
@@ -175,11 +176,11 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(QWidget *parent)
 
     this->setCentralWidget(pCentralWidget);
 
-    if(!gConfig.getRecentGeneratorModels().isEmpty())
+    if(!gpConfig->getRecentGeneratorModels().isEmpty())
     {
-        QFile modelFile(gConfig.getRecentGeneratorModels().first());
+        QFile modelFile(gpConfig->getRecentGeneratorModels().first());
         if(modelFile.exists())
-            loadModel(gConfig.getRecentGeneratorModels().first());
+            loadModel(gpConfig->getRecentGeneratorModels().first());
         else
             addNewTab();
     }
@@ -219,7 +220,7 @@ void ComponentGeneratorDialog::addNewTab()
     mEquationsLayoutPtrs.last()->addWidget(mEquationTextFieldPtrs.last(), 0, 0);
 
     mScrollAreaPtrs.append(new QScrollArea(this));
-    mScrollAreaPtrs.last()->setPalette(gConfig.getPalette());
+    mScrollAreaPtrs.last()->setPalette(gpConfig->getPalette());
     mScrollAreaPtrs.last()->setLayout(mEquationsLayoutPtrs.last());
     mScrollAreaPtrs.last()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mScrollAreaPtrs.last()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -302,7 +303,7 @@ void ComponentGeneratorDialog::generateComponent()
         {
             //It is (probably) a Modelica model, try and compile it
             CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
-            QString libPath = gDesktopHandler.getGeneratedComponentsPath()+name+"/";
+            QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+name+"/";
             pCoreAccess->generateFromModelica(code, libPath);
             delete(pCoreAccess);
 
@@ -347,7 +348,7 @@ void ComponentGeneratorDialog::generateComponent()
 void ComponentGeneratorDialog::loadModel()
 {
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Modlica File"),
-                                                         gConfig.getModelicaModelsDir(),
+                                                         gpConfig->getModelicaModelsDir(),
                                                          tr("Modelica or C++ Models (*.mo *.hpp)"));
     if(modelFileName.isEmpty())
     {
@@ -362,7 +363,7 @@ void ComponentGeneratorDialog::loadModel(QString modelFileName)
 {
     QFile file(modelFileName);
     QFileInfo fileInfo(file);
-    gConfig.setModelicaModelsDir(fileInfo.absolutePath());
+    gpConfig->setModelicaModelsDir(fileInfo.absolutePath());
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -387,7 +388,7 @@ void ComponentGeneratorDialog::loadModel(QString modelFileName)
 
     qDebug() << "Tab name: " << mpEquationTabs->tabText(mpEquationTabs->count()-1);
 
-    gConfig.addRecentGeneratorModel(modelFileName);
+    gpConfig->addRecentGeneratorModel(modelFileName);
     updateRecentList();
 
     qDebug() << "Tab name: " << mpEquationTabs->tabText(mpEquationTabs->count()-1);
@@ -423,13 +424,13 @@ void ComponentGeneratorDialog::saveModel()
         if(modelica)
         {
             modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                         gConfig.getModelicaModelsDir(),
+                                                         gpConfig->getModelicaModelsDir(),
                                                          tr("Modelica models (*.mo)"));
         }
         else
         {
             modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                         gConfig.getModelicaModelsDir(),
+                                                         gpConfig->getModelicaModelsDir(),
                                                          tr("C++ header files (*.hpp)"));
         }
 
@@ -439,7 +440,7 @@ void ComponentGeneratorDialog::saveModel()
         }
 
         fileInfo = QFileInfo(modelFilePath);
-        gConfig.setModelicaModelsDir(fileInfo.absolutePath());
+        gpConfig->setModelicaModelsDir(fileInfo.absolutePath());
     }
     else
     {
@@ -467,7 +468,7 @@ void ComponentGeneratorDialog::saveModel()
         mpEquationTabs->setTabText(idx, tabName);
     }
 
-    gConfig.addRecentGeneratorModel(fileInfo.filePath());
+    gpConfig->addRecentGeneratorModel(fileInfo.filePath());
     updateRecentList();
 }
 
@@ -536,15 +537,15 @@ void ComponentGeneratorDialog::updateRecentList()
 {
     mpRecentMenu->clear();
 
-    mpRecentMenu->setEnabled(!gConfig.getRecentGeneratorModels().empty());
-    if(!gConfig.getRecentGeneratorModels().empty())
+    mpRecentMenu->setEnabled(!gpConfig->getRecentGeneratorModels().empty());
+    if(!gpConfig->getRecentGeneratorModels().empty())
     {
-        for(int i=0; i<gConfig.getRecentGeneratorModels().size(); ++i)
+        for(int i=0; i<gpConfig->getRecentGeneratorModels().size(); ++i)
         {
-            if(gConfig.getRecentGeneratorModels().at(i) != "")
+            if(gpConfig->getRecentGeneratorModels().at(i) != "")
             {
                 QAction *tempAction;
-                tempAction = mpRecentMenu->addAction(gConfig.getRecentGeneratorModels().at(i));
+                tempAction = mpRecentMenu->addAction(gpConfig->getRecentGeneratorModels().at(i));
                 connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));
             }
         }

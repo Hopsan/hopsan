@@ -24,6 +24,7 @@
 
 //Hopsan includes
 #include "common.h"
+#include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
@@ -178,13 +179,13 @@ void ModelHandler::loadModel()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(gpMainWindow, tr("Choose Model File"),
-                                                         gConfig.getLoadModelDir(),
+                                                         gpConfig->getLoadModelDir(),
                                                          tr("Hopsan Model Files (*.hmf *.xml)"));
     if(!modelFileName.isEmpty())
     {
         loadModel(modelFileName);
         QFileInfo fileInfo = QFileInfo(modelFileName);
-        gConfig.setLoadModelDir(fileInfo.absolutePath());
+        gpConfig->setLoadModelDir(fileInfo.absolutePath());
     }
 }
 
@@ -444,11 +445,11 @@ bool ModelHandler::closeModel(int idx, bool force)
 //! @see saveModel()
 bool ModelHandler::closeAllModels()
 {
-    gConfig.clearLastSessionModels();
+    gpConfig->clearLastSessionModels();
 
     while(mModelPtrs.size() > 0)
     {
-        gConfig.addLastSessionModel(mModelPtrs.last()->getViewContainerObject()->getModelFileInfo().filePath());
+        gpConfig->addLastSessionModel(mModelPtrs.last()->getViewContainerObject()->getModelFileInfo().filePath());
         if (!closeModel(mModelPtrs.size()-1))
         {
             return false;
@@ -556,8 +557,8 @@ void ModelHandler::saveState()
             pModel->getTopLevelSystemContainer()->saveToDomElement(hmfRoot);
             QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
             fileNameWithoutHmf.chop(4);
-            mStateInfoBackupList << gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
-            QFile xmlhmf(gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
+            mStateInfoBackupList << gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
+            QFile xmlhmf(gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
             if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
             {
                 return;

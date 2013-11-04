@@ -30,8 +30,10 @@
 #include <QWebFrame>
 #include <QtXml>
 #include <QWebPage>
+#include <QNetworkReply>
 
 //Hopsan includes
+#include "global.h"
 #include "Widgets/WelcomeWidget.h"
 #include "common.h"
 #include "Configuration.h"
@@ -109,11 +111,11 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLastSessionIcon = new QLabel(this);
     mpLastSessionIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
     mpLastSessionIcon->setMouseTracking(true);
-    mpLastSessionIcon->setEnabled(!gConfig.getLastSessionModels().empty());
+    mpLastSessionIcon->setEnabled(!gpConfig->getLastSessionModels().empty());
     mpLastSessionText = new QLabel("Last Session", this);
     mpLastSessionText->setAlignment(Qt::AlignCenter);
     mpLastSessionText->setMouseTracking(true);
-    mpLastSessionText->setEnabled(!gConfig.getLastSessionModels().empty());
+    mpLastSessionText->setEnabled(!gpConfig->getLastSessionModels().empty());
     QVBoxLayout *pLastSessionLayout = new QVBoxLayout(this);
     pLastSessionLayout->addWidget(mpLastSessionIcon,1,Qt::AlignCenter);
     pLastSessionLayout->addWidget(mpLastSessionText,0,Qt::AlignBottom);
@@ -169,7 +171,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleFrame->setMinimumWidth(mFrameW+mSpacing);
     mpExampleFrame->setLayout(pExampleLayout);
     mpExampleFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
+    QDir exampleModelsDir(gpDesktopHandler->getMainPath()+"Models/Example Models/");
     QStringList filters;
     filters << "*.hmf";
     exampleModelsDir.setNameFilters(filters);
@@ -315,7 +317,7 @@ void WelcomeWidget::updateRecentList()
 {
     mpRecentList->clear();
     mRecentModelList.clear();
-    QStringList recentModels = gConfig.getRecentModels();
+    QStringList recentModels = gpConfig->getRecentModels();
     for(int i=0; i<recentModels.size(); ++i)
     {
         if(!recentModels.at(i).isEmpty())
@@ -440,9 +442,9 @@ void WelcomeWidget::mousePressEvent(QMouseEvent *event)
     }
     else if(mpLastSessionFrame->underMouse())
     {
-        for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
+        for(int i=0; i<gpConfig->getLastSessionModels().size(); ++i)
         {
-            gpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
+            gpModelHandler->loadModel(gpConfig->getLastSessionModels().at(i));
         }
     }
     else if(mpOptionsFrame->underMouse())
@@ -465,7 +467,7 @@ void WelcomeWidget::openRecentModel()
 //! @brief Slot that loads an example model, based on the name of the calling action
 void WelcomeWidget::openExampleModel()
 {
-    gpModelHandler->loadModel(gDesktopHandler.getMainPath()+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
+    gpModelHandler->loadModel(gpDesktopHandler->getMainPath()+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
 }
 
 
@@ -625,7 +627,7 @@ void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
     }
     else
     {
-        QFile file(gDesktopHandler.getDataPath()+"/update.exe");
+        QFile file(gpDesktopHandler->getDataPath()+"/update.exe");
         if (!file.open(QIODevice::WriteOnly)) {
             gpTerminalWidget->mpConsole->printErrorMessage("Could not open update.exe for writing.");
             return;
@@ -637,12 +639,12 @@ void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
 
     QProcess *pProcess = new QProcess();
     QStringList arguments;
-    QString dir = gDesktopHandler.getExecPath();
+    QString dir = gpDesktopHandler->getExecPath();
     dir.chop(4);    //Remove "bin"
     // Note Do NOT add "dir" quotes to dir here, then QProcess or innosetup will somehow messup the dir argument and add C:\ twice.
     // QProcess::start will add " " automatically if needed (on windows)
     arguments << QString("/dir=%1").arg(dir);
-    pProcess->start(gDesktopHandler.getDataPath()+"/update.exe", arguments);
+    pProcess->start(gpDesktopHandler->getDataPath()+"/update.exe", arguments);
     pProcess->waitForStarted();
     QApplication::quit();
 }

@@ -29,6 +29,7 @@
 #include <QtGui> //!< @todo maybe only need qtfile dialog
 
 #include "common.h"
+#include "global.h"
 
 #include "GUISystem.h"
 #include "GUIContainerObject.h"

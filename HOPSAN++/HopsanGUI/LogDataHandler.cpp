@@ -30,6 +30,7 @@
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "common.h"
+#include "global.h"
 #include "version_gui.h"
 #include "Configuration.h"
 #include "GUIPort.h"
@@ -57,7 +58,7 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
     QDir tmp;
     do
     {
-        tmp = QDir(gDesktopHandler.getLogDataPath() + QString("/handler%1").arg(ctr));
+        tmp = QDir(gpDesktopHandler->getLogDataPath() + QString("/handler%1").arg(ctr));
         ++ctr;
     }while(tmp.exists());
     tmp.mkpath(tmp.absolutePath());
@@ -105,7 +106,7 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedL
 {
     if ( (version < 1) || (version > 2) )
     {
-        version = gConfig.getPLOExportVersion();
+        version = gpConfig->getPLOExportVersion();
     }
 
     if(rFilePath.isEmpty()) return;    //Don't save anything if user presses cancel
@@ -302,7 +303,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
     {
 
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose Hopsan .plo File"),
-                                                       gConfig.getPlotDataDir(),
+                                                       gpConfig->getPlotDataDir(),
                                                        tr("Hopsan File (*.plo)"));
     }
     if(importFilePath.isEmpty())
@@ -312,7 +313,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
 
     QFile file(importFilePath);
     QFileInfo fileInfo(file);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -476,7 +477,7 @@ void LogDataHandler::importFromCSV_AutoFormat(QString importFilePath)
     {
 
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gConfig.getPlotDataDir(),
+                                                       gpConfig->getPlotDataDir(),
                                                        tr("Comma-separated values files (*.csv)"));
     }
     if(importFilePath.isEmpty())
@@ -519,7 +520,7 @@ void LogDataHandler::importHopsanRowCSV(QString importFilePath)
     {
 
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gConfig.getPlotDataDir(),
+                                                       gpConfig->getPlotDataDir(),
                                                        tr("Hopsan row based csv files (*.csv)"));
     }
     if(importFilePath.isEmpty())
@@ -529,7 +530,7 @@ void LogDataHandler::importHopsanRowCSV(QString importFilePath)
 
     QFile file(importFilePath);
     QFileInfo fileInfo(file);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
 
     bool parseOk = true;
 
@@ -620,7 +621,7 @@ void LogDataHandler::importFromPlainColumnCsv(QString importFilePath)
     {
 
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gConfig.getPlotDataDir(),
+                                                       gpConfig->getPlotDataDir(),
                                                        tr("Comma-separated values files (*.csv)"));
     }
     if(importFilePath.isEmpty())
@@ -630,7 +631,7 @@ void LogDataHandler::importFromPlainColumnCsv(QString importFilePath)
 
     QFile file(importFilePath);
     QFileInfo fileInfo(file);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
 
     CoreCSVParserAccess *pParser = new CoreCSVParserAccess(importFilePath);
 
@@ -828,7 +829,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
             for(int i=0; i<varDescs.size(); ++i)
             {
                 // Skip hidden variables
-                if ( gConfig.getShowHiddenNodeDataVariables() || (varDescs[i].mNodeDataVariableType != "Hidden") )
+                if ( gpConfig->getShowHiddenNodeDataVariables() || (varDescs[i].mNodeDataVariableType != "Hidden") )
                 {
                     // Fetch variable data
                     QVector<double> dataVec;
@@ -850,10 +851,10 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                             timeVecPtr = insertTimeVariable(timeVec, 0);
 
                             // Set the custom unit scaling to the default
-                            QString defaultTimeUnit = gConfig.getDefaultUnit(TIMEVARIABLENAME);
+                            QString defaultTimeUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
                             if (defaultTimeUnit != timeVecPtr->getDataUnit())
                             {
-                                timeVecPtr->setCustomUnitScale(UnitScale(defaultTimeUnit, gConfig.getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                                timeVecPtr->setCustomUnitScale(UnitScale(defaultTimeUnit, gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
                             }
 
                             timeVectorObtained = true;
@@ -1247,18 +1248,18 @@ int LogDataHandler::getNumberOfGenerations() const
 void LogDataHandler::limitPlotGenerations()
 {
     int numGens = getNumberOfGenerations() ;
-    if (numGens > gConfig.getGenerationLimit())
+    if (numGens > gpConfig->getGenerationLimit())
     {
-        if(!gConfig.getAutoLimitLogDataGenerations())
+        if(!gpConfig->getAutoLimitLogDataGenerations())
         {
             QDialog dialog(gpMainWindowWidget);
             dialog.setWindowTitle("Hopsan");
             QVBoxLayout *pLayout = new QVBoxLayout(&dialog);
-            QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(gConfig.getGenerationLimit())+
+            QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(gpConfig->getGenerationLimit())+
                                         "<br>Number of data generations: "+QString::number(numGens)+
-                                        "<br><br><b>Discard "+QString::number(numGens-gConfig.getGenerationLimit())+" generations(s)?</b>");
+                                        "<br><br><b>Discard "+QString::number(numGens-gpConfig->getGenerationLimit())+" generations(s)?</b>");
             QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard old generations", &dialog);
-            pAutoLimitCheckBox->setChecked(gConfig.getAutoLimitLogDataGenerations());
+            pAutoLimitCheckBox->setChecked(gpConfig->getAutoLimitLogDataGenerations());
             QDialogButtonBox *pButtonBox = new QDialogButtonBox(&dialog);
             QPushButton *pDiscardButton = pButtonBox->addButton("Discard", QDialogButtonBox::AcceptRole);
             QPushButton *pKeepButton = pButtonBox->addButton("Keep", QDialogButtonBox::RejectRole);
@@ -1270,7 +1271,7 @@ void LogDataHandler::limitPlotGenerations()
             pLayout->addWidget(pButtonBox);
 
             int retval = dialog.exec();
-            gConfig.setAutoLimitLogDataGenerations(pAutoLimitCheckBox->isChecked());
+            gpConfig->setAutoLimitLogDataGenerations(pAutoLimitCheckBox->isChecked());
 
             if(retval == QDialog::Rejected)
             {
@@ -1301,7 +1302,7 @@ void LogDataHandler::limitPlotGenerations()
 // This is NEW code by Peter, but it is not working yet
         TicToc timer;
         int highest = getHighestGenerationNumber();
-        int highestToRemove = highest-gConfig.getGenerationLimit();
+        int highestToRemove = highest-gpConfig->getGenerationLimit();
         bool didRemoveSomething = false;
         // Note! Here we must iterate through a copy of the values from the map
         // if we use an iterator in the map we will crash if the removed generation is the final one
@@ -1310,7 +1311,7 @@ void LogDataHandler::limitPlotGenerations()
         QList<QPointer<LogVariableContainer> >::iterator it;
         for ( it=vars.begin(); it!=vars.end(); ++it)
         {
-            didRemoveSomething += (*it)->purgeOldGenerations(highestToRemove, gConfig.getGenerationLimit());
+            didRemoveSomething += (*it)->purgeOldGenerations(highestToRemove, gpConfig->getGenerationLimit());
         }
 
         if (didRemoveSomething)

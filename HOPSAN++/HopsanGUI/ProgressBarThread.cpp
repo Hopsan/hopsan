@@ -24,7 +24,7 @@
 
 #include "ProgressBarThread.h"
 #include "Configuration.h"
-//#include "Widgets/ProjectTabWidget.h"
+#include "global.h"
 
 //! Constructor.
 ProgressBarThread::ProgressBarThread(QObject *parent/*ModelWidget *parent*/)
@@ -37,5 +37,5 @@ ProgressBarThread::ProgressBarThread(QObject *parent/*ModelWidget *parent*/)
 //! Implements the task for the thread.
 void ProgressBarThread::run()
 {
-    this->msleep(gConfig.getProgressBarStep());
+    this->msleep(gpConfig->getProgressBarStep());
 }

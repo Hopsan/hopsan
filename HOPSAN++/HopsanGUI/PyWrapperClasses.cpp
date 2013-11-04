@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "global.h"
 #include "PyWrapperClasses.h"
 #include "Widgets/HcomWidget.h"
 #include "PlotWindow.h"

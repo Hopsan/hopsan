@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <limits>
 
+#include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GUIPort.h"
@@ -48,7 +49,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
         //Set the name and size of the main window
     this->resize(640,480);
     this->setWindowTitle("Optimization");
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
     //Settings tab
     mpSettingsLabel = new QLabel("Please choose general settings for optimization algorithm.");
@@ -603,7 +604,7 @@ void OptimizationDialog::generateScriptFile()
 
 void OptimizationDialog::generateComplexScript()
 {
-    QFile templateFile(gDesktopHandler.getExecPath()+"../Scripts/HCOM/optTemplateComplex.hcom");
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateComplex.hcom");
     templateFile.open(QFile::ReadOnly | QFile::Text);
     QString templateCode = templateFile.readAll();
     templateFile.close();
@@ -714,7 +715,7 @@ void OptimizationDialog::generateComplexScript()
 
 void OptimizationDialog::generateParticleSwarmScript()
 {
-    QFile templateFile(gDesktopHandler.getExecPath()+"../Scripts/HCOM/optTemplateParticle.hcom");
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateParticle.hcom");
     templateFile.open(QFile::ReadOnly | QFile::Text);
     QString templateCode = templateFile.readAll();
     templateFile.close();
@@ -1224,7 +1225,7 @@ void OptimizationDialog::run()
 void OptimizationDialog::saveScriptFile()
 {
     QString filePath = QFileDialog::getSaveFileName(this, tr("Save Script File"),
-                                                 gConfig.getScriptDir(),
+                                                 gpConfig->getScriptDir(),
                                                  this->tr("HCOM Script (*.hcom)"));
 
     if(filePath.isEmpty())     //Don't save anything if user presses cancel
@@ -1233,7 +1234,7 @@ void OptimizationDialog::saveScriptFile()
     }
 
     QFileInfo fileInfo = QFileInfo(filePath);
-    gConfig.setScriptDir(fileInfo.absolutePath());
+    gpConfig->setScriptDir(fileInfo.absolutePath());
 
     QFile file(filePath);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
@@ -1277,14 +1278,14 @@ bool OptimizationDialog::loadObjectiveFunctions()
     // Look in both local and global scripts directory in case they are different
 
     //QDir scriptsDir(gDesktopHandler.getExecPath()+"../Scripts/HCOM/objFuncTemplates");
-    QDir scriptsDir(gDesktopHandler.getScriptsPath()+"/HCOM/objFuncTemplates");
+    QDir scriptsDir(gpDesktopHandler->getScriptsPath()+"/HCOM/objFuncTemplates");
     QStringList files = scriptsDir.entryList(QStringList() << "*.hcom");
     int f=0;
     for(; f<files.size(); ++f)
     {
         files[f].prepend(scriptsDir.absolutePath()+"/");
     }
-    QDir localScriptsDir(gDesktopHandler.getExecPath()+"/../Scripts/HCOM/objFuncTemplates");
+    QDir localScriptsDir(gpDesktopHandler->getExecPath()+"/../Scripts/HCOM/objFuncTemplates");
     files.append(localScriptsDir.entryList(QStringList() << "*.hcom"));
     for(int g=f; g<files.size(); ++g)
     {

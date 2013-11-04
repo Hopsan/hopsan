@@ -32,6 +32,7 @@
 
 //Hopsan includes
 #include "common.h"
+#include "global.h"
 #include "DesktopHandler.h"
 #include "HelpDialog.h"
 
@@ -76,7 +77,7 @@ HelpDialog::HelpDialog(QWidget *parent)
 
 void HelpDialog::open()
 {
-    mpHelp->load(QUrl::fromLocalFile(gDesktopHandler.getHelpPath() + "index.html"));
+    mpHelp->load(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + "index.html"));
 
     //Using show instead of open for modaless window
     QDialog::show();
@@ -85,7 +86,7 @@ void HelpDialog::open()
 
 void HelpDialog::open(QString file)
 {
-    mpHelp->load(QUrl::fromLocalFile(gDesktopHandler.getHelpPath() + file));
+    mpHelp->load(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + file));
 
     //Using show instead of open for modaless window
     QDialog::show();

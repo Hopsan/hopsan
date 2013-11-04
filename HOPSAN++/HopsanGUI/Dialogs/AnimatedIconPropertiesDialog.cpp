@@ -26,6 +26,7 @@
 //#include <cassert>
 //#include <iostream>
 
+#include "global.h"
 #include "GUIObjects/AnimatedComponent.h"
 #include "AnimatedIconPropertiesDialog.h"
 #include "Configuration.h"
@@ -42,7 +43,7 @@
 AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pAnimatedComponent, int index, QWidget *parent)
     : QDialog(parent)
 {
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
     this->setWindowTitle("Movable Properties");
 
     mpAnimatedComponent = pAnimatedComponent;

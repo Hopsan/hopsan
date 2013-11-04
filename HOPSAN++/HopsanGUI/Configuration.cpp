@@ -23,6 +23,7 @@
 //$Id$
 
 #include "common.h"
+#include "global.h"
 #include "version_gui.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -185,14 +186,14 @@ void Configuration::saveToXml()
     appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
-    if(!QDir(gDesktopHandler.getDataPath()).exists())
+    if(!QDir(gpDesktopHandler->getDataPath()).exists())
     {
-        QDir().mkpath(gDesktopHandler.getDataPath());
+        QDir().mkpath(gpDesktopHandler->getDataPath());
     }
-    QFile xmlsettings(gDesktopHandler.getDataPath() + QString("hopsanconfig.xml"));
+    QFile xmlsettings(gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml"));
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " << gDesktopHandler.getDataPath() + QString("hopsanconfig.xml");
+        qDebug() << "Failed to open file for writing: " << gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml");
         return;
     }
     QTextStream out(&xmlsettings);
@@ -207,7 +208,7 @@ void Configuration::loadFromXml()
     loadDefaultsFromXml();
 
     //Read from hopsanconfig.xml
-    QFile file(gDesktopHandler.getDataPath() + QString("hopsanconfig.xml"));
+    QFile file(gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml"));
     qDebug() << "Reading config from " << file.fileName();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -273,11 +274,11 @@ void Configuration::loadFromXml()
 void Configuration::loadDefaultsFromXml()
 {
     //Read from hopsandefaults.xml
-    QFile file(gDesktopHandler.getMainPath() + "hopsandefaults");
+    QFile file(gpDesktopHandler->getMainPath() + "hopsandefaults");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-                                 "Unable to read default configuration file. Please reinstall program.\n" + gDesktopHandler.getMainPath());
+                                 "Unable to read default configuration file. Please reinstall program.\n" + gpDesktopHandler->getMainPath());
 
         qApp->quit();
     }
@@ -870,7 +871,7 @@ QString Configuration::getLoadModelDir()
 {
     if(mLoadModelDir.isEmpty())
     {
-        return gDesktopHandler.getModelsPath();
+        return gpDesktopHandler->getModelsPath();
     }
     return mLoadModelDir;
 }
@@ -881,7 +882,7 @@ QString Configuration::getModelGfxDir()
 {
     if(mModelGfxDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mModelGfxDir;
 }
@@ -892,7 +893,7 @@ QString Configuration::getPlotDataDir()
 {
     if(mPlotDataDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mPlotDataDir;
 }
@@ -903,7 +904,7 @@ QString Configuration::getPlotGfxDir()
 {
     if(mPlotGfxDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mPlotGfxDir;
 }
@@ -914,7 +915,7 @@ QString Configuration::getSimulinkExportDir()
 {
     if(mSimulinkExportDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mSimulinkExportDir;
 }
@@ -925,7 +926,7 @@ QString Configuration::getSubsystemDir()
 {
     if(mSubsystemDir.isEmpty())
     {
-        return gDesktopHandler.getModelsPath();
+        return gpDesktopHandler->getModelsPath();
     }
     return mSubsystemDir;
 }
@@ -936,7 +937,7 @@ QString Configuration::getModelicaModelsDir()
 {
     if(mModelicaModelsDir.isEmpty())
     {
-        return gDesktopHandler.getModelsPath();
+        return gpDesktopHandler->getModelsPath();
     }
     return mModelicaModelsDir;
 }
@@ -947,7 +948,7 @@ QString Configuration::getExternalLibDir()
 {
     if(mExternalLibDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mExternalLibDir;
 }
@@ -958,7 +959,7 @@ QString Configuration::getScriptDir()
 {
     if(mScriptDir.isEmpty())
     {
-        return gDesktopHandler.getScriptsPath();
+        return gpDesktopHandler->getScriptsPath();
     }
     return mScriptDir;
 }
@@ -969,7 +970,7 @@ QString Configuration::getPlotWindowDir()
 {
     if(mPlotWindowDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mPlotWindowDir;
 }
@@ -980,7 +981,7 @@ QString Configuration::getFmuImportDir()
 {
     if(mFmuImportDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mFmuImportDir;
 }
@@ -1000,7 +1001,7 @@ QString Configuration::getFmuExportDir()
 {
     if(mFmuExportDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mFmuExportDir;
 }
@@ -1009,7 +1010,7 @@ QString Configuration::getLabViewExportDir()
 {
     if(mLabViewExportDir.isEmpty())
     {
-        return gDesktopHandler.getDocumentsPath();
+        return gpDesktopHandler->getDocumentsPath();
     }
     return mLabViewExportDir;
 }

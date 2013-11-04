@@ -41,6 +41,7 @@
 #include <QtGui/QWidget>
 
 //Hopsan includes
+#include "global.h"
 #include "ComponentSystem.h"
 #include "CoreAccess.h"
 #include "DebuggerWidget.h"
@@ -189,7 +190,7 @@ void DebuggerWidget::setInitData()
     dateString.replace(" ", "_");
     dateString.replace("/", "_");
     dateString.replace("\\", "_");
-    mOutputFile.setFileName(gDesktopHandler.getDocumentsPath()+"HopsanDebuggerOutput_"+dateString+".csv");
+    mOutputFile.setFileName(gpDesktopHandler->getDocumentsPath()+"HopsanDebuggerOutput_"+dateString+".csv");
 }
 
 

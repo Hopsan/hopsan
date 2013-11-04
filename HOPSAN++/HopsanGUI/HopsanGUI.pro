@@ -288,7 +288,8 @@ HEADERS += MainWindow.h \
     Widgets/ModelWidget.h \
     OptimizationHandler.h \
     Utilities/HighlightingUtilities.h \
-    Widgets/DataExplorer.h
+    Widgets/DataExplorer.h \
+    global.h
 
 OTHER_FILES += \
     ../hopsandefaults \

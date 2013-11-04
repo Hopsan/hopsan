@@ -27,6 +27,7 @@
 #include <QDebug>
 
 //Hopsan includes
+#include "global.h"
 #include "ComponentPropertiesDialog.h"
 #include "Configuration.h"
 #include "CoreAccess.h"
@@ -59,7 +60,7 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, QWid
     : ModelObjectPropertiesDialog(pComponent, pParent)
 {
     mpComponent = pComponent;
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
     if(mpComponent->getTypeName().startsWith("CppComponent"))
     {
         createCppEditStuff();
@@ -264,7 +265,7 @@ void ComponentPropertiesDialog::createEditStuff()
 
     QWidget *pPrimaryWidget = new QWidget(this);
     pPrimaryWidget->setLayout(mainLayout);
-    pPrimaryWidget->setPalette(gConfig.getPalette());
+    pPrimaryWidget->setPalette(gpConfig->getPalette());
 
     QScrollArea *pScrollArea = new QScrollArea(this);
     pScrollArea->setWidget(pPrimaryWidget);
@@ -408,7 +409,7 @@ void ComponentPropertiesDialog::createCppEditStuff()
 
     QWidget *pPrimaryWidget = new QWidget(this);
     pPrimaryWidget->setLayout(mainLayout);
-    pPrimaryWidget->setPalette(gConfig.getPalette());
+    pPrimaryWidget->setPalette(gpConfig->getPalette());
 
     QScrollArea *pScrollArea = new QScrollArea(this);
     pScrollArea->setWidget(pPrimaryWidget);
@@ -492,7 +493,7 @@ void ComponentPropertiesDialog::createModelicaEditStuff()
 
     QWidget *pPrimaryWidget = new QWidget(this);
     pPrimaryWidget->setLayout(mainLayout);
-    pPrimaryWidget->setPalette(gConfig.getPalette());
+    pPrimaryWidget->setPalette(gpConfig->getPalette());
 
     QScrollArea *pScrollArea = new QScrollArea(this);
     pScrollArea->setWidget(pPrimaryWidget);

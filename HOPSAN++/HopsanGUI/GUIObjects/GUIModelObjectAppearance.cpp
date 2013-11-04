@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "global.h"
 #include "GUIModelObjectAppearance.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/LibraryWidget.h"

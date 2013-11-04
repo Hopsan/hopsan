@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "global.h"
 #include "common.h"
 #include "GraphicsView.h"
 
@@ -72,7 +73,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     mZoomFactor = 1.0;
 
     this->updateViewPort();
-    this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+    this->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
 
     connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
     connect(this, SIGNAL(hovered()), gpPlotWidget, SLOT(clearHoverEffects()));
@@ -198,9 +199,9 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Also changes to the correct background color if it is not the correct one.
 void GraphicsView::updateViewPort()
 {
-    if( (mpParentModelWidget->getTopLevelSystemContainer()->getGfxType() == UserGraphics) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
+    if( (mpParentModelWidget->getTopLevelSystemContainer()->getGfxType() == UserGraphics) && (this->backgroundBrush().color() != gpConfig->getBackgroundColor()) )
     {
-        this->setBackgroundBrush(gConfig.getBackgroundColor());
+        this->setBackgroundBrush(gpConfig->getBackgroundColor());
     }
     else if( (mpParentModelWidget->getTopLevelSystemContainer()->getGfxType() == ISOGraphics) && (this->backgroundBrush().color() != mIsoColor) )
     {
@@ -285,7 +286,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 {
         //Get value from scroll wheel change
     qreal wheelDelta;
-    if(gConfig.getInvertWheel())
+    if(gpConfig->getInvertWheel())
     {
         wheelDelta = event->delta();
     }
@@ -651,12 +652,12 @@ void GraphicsView::print()
 void GraphicsView::exportToPDF()
 {
     QString fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", gConfig.getModelGfxDir(),
+        this, "Export File Name", gpConfig->getModelGfxDir(),
         "Adobe PDF Documents (*.pdf)");
     if ( !fileName.isEmpty() )
     {
         QFileInfo file(fileName);
-        gConfig.setModelGfxDir(file.absolutePath());
+        gpConfig->setModelGfxDir(file.absolutePath());
 
         //Here we set A0, Landscape and Fullpage among other things to make sure that components get large enough to be treeted as vector graphics
         //Some bug or "feature" makes small objects be converted to bitmaps (ugly)
@@ -703,14 +704,14 @@ void GraphicsView::exportToPNG()
 
     //Open save dialog to get the file name
     QString fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", gConfig.getModelGfxDir(),
+        this, "Export File Name", gpConfig->getModelGfxDir(),
         "Portable Network Graphics (*.png)");
 
     //Attempt to save if user did select a filename
     if(!fileName.isEmpty())
     {
         QFileInfo file(fileName);
-        gConfig.setModelGfxDir(file.absolutePath());
+        gpConfig->setModelGfxDir(file.absolutePath());
 
         QGraphicsScene *pScene = this->getContainerPtr()->getContainedScenePtr();
         pScene->clearSelection();
@@ -770,7 +771,7 @@ AnimatedGraphicsView::AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pPar
     mZoomFactor = 1.0;
 
     this->updateViewPort();
-    this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+    this->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
 
     connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
     connect(this, SIGNAL(hovered()), gpPlotWidget, SLOT(clearHoverEffects()));
@@ -799,7 +800,7 @@ void AnimatedGraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! Also changes to the correct background color if it is not the correct one.
 void AnimatedGraphicsView::updateViewPort()
 {
-    this->setBackgroundBrush(gConfig.getBackgroundColor());
+    this->setBackgroundBrush(gpConfig->getBackgroundColor());
 }
 
 
@@ -862,7 +863,7 @@ void AnimatedGraphicsView::wheelEvent(QWheelEvent *event)
 {
         //Get value from scroll wheel change
     qreal wheelDelta;
-    if(gConfig.getInvertWheel())
+    if(gpConfig->getInvertWheel())
     {
         wheelDelta = event->delta();
     }

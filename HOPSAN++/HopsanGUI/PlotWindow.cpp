@@ -33,7 +33,7 @@
 #include <QtGlobal>
 #include <QtGui>
 
-
+#include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
@@ -139,7 +139,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     //setAcceptDrops(false);
     //setAttribute(Qt::WA_TransparentForMouseEvents, false);
-    setPalette(gConfig.getPalette());
+    setPalette(gpConfig->getPalette());
 
     // Set size of Window
     int sh = qApp->desktop()->screenGeometry().height();
@@ -369,7 +369,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     addDockWidget(Qt::BottomDockWidgetArea, mpCurveInfoDock);
     mpCurveInfoDock->setWidget(mpCurveInfoStack);
     mpCurveInfoDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-    mpCurveInfoDock->setPalette(gConfig.getPalette());
+    mpCurveInfoDock->setPalette(gpConfig->getPalette());
     mpCurveInfoDock->show();
 
     mpCurveInfoDock->toggleViewAction()->setToolTip("Toggle Curve Controls");
@@ -526,7 +526,7 @@ PlotTab *PlotWindow::getCurrentPlotTab()
 //! @param message String with text so show in message
 void PlotWindow::showHelpPopupMessage(QString message)
 {
-    if(gConfig.getShowPopupHelp())
+    if(gpConfig->getShowPopupHelp())
     {
         mpHelpPopupLabel->setText(message);
         mpHelpPopup->show();
@@ -620,7 +620,7 @@ void PlotWindow::saveToXml()
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
-                                                    gConfig.getPlotWindowDir(),
+                                                    gpConfig->getPlotWindowDir(),
                                                     tr("Plot Window Description File (*.xml)"));
     if(filePath.isEmpty())
     {
@@ -629,7 +629,7 @@ void PlotWindow::saveToXml()
     else
     {
         QFileInfo fileInfo = QFileInfo(filePath);
-        gConfig.setPlotWindowDir(fileInfo.absolutePath());
+        gpConfig->setPlotWindowDir(fileInfo.absolutePath());
     }
 
     //Write to xml file
@@ -751,7 +751,7 @@ void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
     pFrequencyAnalysisDialogLayout->setColumnStretch(1, 1);
 
     mpFrequencyAnalysisDialog->setLayout(pFrequencyAnalysisDialogLayout);
-    mpFrequencyAnalysisDialog->setPalette(gConfig.getPalette());
+    mpFrequencyAnalysisDialog->setPalette(gpConfig->getPalette());
     mpFrequencyAnalysisDialog->show();
 
     connect(pCancelButton, SIGNAL(clicked()), mpFrequencyAnalysisDialog, SLOT(close()));
@@ -858,7 +858,7 @@ void PlotWindow::createBodePlot()
     pBodeDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
 
     mpCreateBodeDialog->setLayout(pBodeDialogLayout);
-    mpCreateBodeDialog->setPalette(gConfig.getPalette());
+    mpCreateBodeDialog->setPalette(gpConfig->getPalette());
     mpCreateBodeDialog->show();
 
     connect(pCancelButton, SIGNAL(clicked()), mpCreateBodeDialog, SLOT(close()));

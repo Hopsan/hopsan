@@ -27,6 +27,7 @@
 #include <limits>
 
 //Hopsan includes
+#include "global.h"
 #include "Configuration.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "ModelHandler.h"
@@ -184,13 +185,13 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     pCurveInfoLayout->setMargin(1);
     QWidget *pCurveInfoWidget = new QWidget(this);
     pCurveInfoWidget->setAutoFillBackground(true);
-    pCurveInfoWidget->setPalette(gConfig.getPalette());
+    pCurveInfoWidget->setPalette(gpConfig->getPalette());
     pCurveInfoWidget->setLayout(pCurveInfoLayout);
     mpCurveInfoScrollArea = new QScrollArea(this);
     mpCurveInfoScrollArea->setWidget(pCurveInfoWidget);
     mpCurveInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mpCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    mpCurveInfoScrollArea->setPalette(gConfig.getPalette());
+    mpCurveInfoScrollArea->setPalette(gpConfig->getPalette());
     mpCurveInfoScrollArea->setMinimumHeight(110);
     mpParentPlotWindow->mpCurveInfoStack->addWidget(mpCurveInfoScrollArea);
 
@@ -198,7 +199,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     for(int plotID=0; plotID<2; ++plotID)
     {
         mpQwtPlots[plotID]->setAutoFillBackground(true);
-        mpQwtPlots[plotID]->setPalette(gConfig.getPalette());
+        mpQwtPlots[plotID]->setPalette(gpConfig->getPalette());
         mpTabLayout->addWidget(mpQwtPlots[plotID]);
     }
 
@@ -1156,11 +1157,11 @@ void PlotTab::exportToCsv()
     QString filePath;
     QFileInfo fileInfo;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
-                                            gConfig.getPlotDataDir(),
+                                            gpConfig->getPlotDataDir(),
                                             tr("Comma-separated values files (*.csv)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
 
     exportToCsv(filePath);
 }
@@ -1260,7 +1261,7 @@ void PlotTab::exportToHvc(QString fileName)
         //Open file dialog and initialize the file stream
 
         QString filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
-                                                        gConfig.getPlotDataDir(),
+                                                        gpConfig->getPlotDataDir(),
                                                         tr("HopsanValidationCfg (*.hvc)"));
         if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
         fileInfo.setFile(filePath);
@@ -1333,11 +1334,11 @@ void PlotTab::exportToMatlab()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To MATLAB File"),
-                                            gConfig.getPlotDataDir(),
+                                            gpConfig->getPlotDataDir(),
                                             tr("MATLAB script file (*.m)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -1480,11 +1481,11 @@ void PlotTab::exportToGnuplot()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To gnuplot File"),
-                                            gConfig.getPlotDataDir(),
+                                            gpConfig->getPlotDataDir(),
                                             tr("gnuplot file (*.dat)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -1619,11 +1620,11 @@ void PlotTab::exportToPLO()
     QString filePath;
     QFileInfo fileInfo;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To OldHopsan Format File"),
-                                            gConfig.getPlotDataDir(),
+                                            gpConfig->getPlotDataDir(),
                                             tr("Hopsan Classic file (*.PLO)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
 
     QVector<SharedLogVariableDataPtrT> variables;
     for(int c=0; c<mPlotCurvePtrs[FirstPlot].size(); ++c)
@@ -2128,11 +2129,11 @@ void PlotTab::saveToXml()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To XML File"),
-                                            gConfig.getPlotDataDir(),
+                                            gpConfig->getPlotDataDir(),
                                             tr("Extensible Markup Language (*.xml)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gConfig.setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setPlotDataDir(fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -2204,7 +2205,7 @@ void PlotTab::exportImage()
         fileFilter = "Joint Photographic Experts Group (*.jpg)";
     }
 
-    fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), fileFilter);
+    fileName = QFileDialog::getSaveFileName(this, "Export File Name", gpConfig->getPlotGfxDir(), fileFilter);
 
     QwtPlotRenderer renderer;
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground,true);
@@ -2599,11 +2600,11 @@ void PlotTab::determineAddedCurveUnitOrScale(PlotCurve *pCurve, int plotID)
         QString defaultUnit;
         if ( pCurve->getDataName() != "Value" )
         {
-            defaultUnit = gConfig.getDefaultUnit(pCurve->getDataName());
+            defaultUnit = gpConfig->getDefaultUnit(pCurve->getDataName());
         }
         else
         {
-            QStringList pqs = gConfig.getPhysicalQuantitiesForUnit(dataUnit);
+            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(dataUnit);
             //! @todo if same unit exist in multiple places we have a problem
             if (pqs.size() > 1)
             {
@@ -2611,7 +2612,7 @@ void PlotTab::determineAddedCurveUnitOrScale(PlotCurve *pCurve, int plotID)
             }
             if (pqs.size() == 1)
             {
-                defaultUnit = gConfig.getDefaultUnit(pqs.first());
+                defaultUnit = gpConfig->getDefaultUnit(pqs.first());
             }
         }
 
@@ -3012,15 +3013,15 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         QMenu *pTempMenu = changeUnitsMenu->addMenu(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
         if ((*itc)->getDataName() == "Value")
         {
-            QStringList pqs = gConfig.getPhysicalQuantitiesForUnit((*itc)->getDataOriginalUnit());
+            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit((*itc)->getDataOriginalUnit());
             if (pqs.size() > 0)
             {
-                unitMap = gConfig.getCustomUnits(pqs.first());
+                unitMap = gpConfig->getCustomUnits(pqs.first());
             }
         }
         else
         {
-            unitMap = gConfig.getCustomUnits((*itc)->getDataName());
+            unitMap = gpConfig->getCustomUnits((*itc)->getDataName());
         }
 
         for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
@@ -3222,11 +3223,11 @@ TimeScaleWidget::TimeScaleWidget(SharedLogVariableDataPtrT pTime, QWidget *pPare
         // Populate time scale box and try to figure out current time unit
         //! @todo what if time = 0
         //! @todo would be nice if we could sort on scale size
-        QMap<QString,double> units = gConfig.getCustomUnits(TIMEVARIABLENAME);
+        QMap<QString,double> units = gpConfig->getCustomUnits(TIMEVARIABLENAME);
         QString currUnit = mpTime->getPlotScaleDataUnit();
         if (currUnit.isEmpty())
         {
-            currUnit = gConfig.getDefaultUnit(TIMEVARIABLENAME);
+            currUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
         }
         QMap<QString,double>::iterator it;
         int ctr=0;

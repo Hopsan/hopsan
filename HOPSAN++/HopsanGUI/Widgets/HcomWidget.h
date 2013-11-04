@@ -149,7 +149,4 @@ private:
     QSound *mpErrorSound;
 };
 
-
-
-
 #endif // HCOMWIDGET_H

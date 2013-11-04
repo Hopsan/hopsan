@@ -26,6 +26,7 @@
 #include <QDrag>
 
 //Hopsan includes
+#include "global.h"
 #include "Configuration.h"
 #include "Dialogs/ComponentPropertiesDialog.h"
 #include "Dialogs/ComponentPropertiesDialog3.h"

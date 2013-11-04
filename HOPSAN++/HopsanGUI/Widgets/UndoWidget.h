@@ -54,5 +54,4 @@ private:
     QGridLayout *mpLayout;
 };
 
-
 #endif // UNDOWIDGET_H

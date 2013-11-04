@@ -30,6 +30,7 @@
 #include <QDialogButtonBox>
 #include <QGroupBox>
 
+#include "global.h"
 #include "GUIObjects/GUIContainerPort.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Configuration.h"
@@ -45,7 +46,7 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pCon
         //Set the name and size of the main window
     this->resize(10,10);        //Make very small initially, so it can expand when contents are added
     this->setWindowTitle("Container Port Properties");
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
         //This is the main Vertical layout of the dialog
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);

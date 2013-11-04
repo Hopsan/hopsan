@@ -25,16 +25,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <QString>
-#include <QDesktopServices>
-#include <QSplashScreen>
-
-//Numerical definitions
+// Numerical definitions
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
 #define XMLINDENTATION 2
 
-//Web link definitions
+// Web link definitions
 #define HOPSANLINK "http://tiny.cc/hopsan"
 #define VERSIONLINK "http://tiny.cc/hopsannews"
 #define NEWSLINK "http://tiny.cc/hopsannewsfeed"
@@ -81,50 +77,7 @@ enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue
 enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
 enum InternalExternalEnumT {Internal, External};
 
-//Global pointer to the main window
-class MainWindow;
-extern MainWindow* gpMainWindow;
-
-class QWidget;
-extern QWidget *gpMainWindowWidget;
-
-class Configuration;
-extern Configuration gConfig;
-
-class DesktopHandler;
-extern DesktopHandler gDesktopHandler;
-
-class CopyStack;
-extern CopyStack gCopyStack;
-
-class PlotHandler;
-extern PlotHandler *gpPlotHandler;
-
-class LibraryWidget;
-extern LibraryWidget *gpLibraryWidget;
-
-class TerminalWidget;
-extern TerminalWidget *gpTerminalWidget;
-
-class ModelHandler;
-extern ModelHandler *gpModelHandler;
-
-class PlotTreeWidget;
-extern PlotTreeWidget *gpPlotWidget;
-
-class CentralTabWidget;
-extern CentralTabWidget *gpCentralTabWidget;
-
-class SystemParametersWidget;
-extern SystemParametersWidget *gpSystemParametersWidget;
-
-class UndoWidget;
-extern UndoWidget *gpUndoWidget;
-
-extern QSplashScreen *gpSplash;
-
-extern QString gHopsanCoreVersion;
-
+#include <QString>
 //! @todo this should not be in common.h
 class UnitScale
 {

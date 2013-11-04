@@ -34,6 +34,7 @@
 #include <windows.h>
 #endif
 
+#include "global.h"
 #include "GUIUtilities.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
@@ -509,7 +510,7 @@ void copyIncludeFilesToDir(QString path)
     saveDir.mkpath("include");
     saveDir.cd("include");
 
-    copyDir( gDesktopHandler.getCoreIncludePath(), saveDir.path() );
+    copyDir( gpDesktopHandler->getCoreIncludePath(), saveDir.path() );
 }
 
 

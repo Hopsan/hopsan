@@ -23,6 +23,7 @@
 //!
 //HopsanGUI includes
 #include "common.h"
+#include "global.h"
 #include "Configuration.h"
 #include "OptimizationHandler.h"
 #include "HcomHandler.h"
@@ -71,10 +72,10 @@ void OptimizationHandler::optComplexInit()
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
-    mpHcomHandler->setWorkingDirectory(gDesktopHandler.getExecPath());
+    mpHcomHandler->setWorkingDirectory(gpDesktopHandler->getExecPath());
     //executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
-    QFile testFile1(gDesktopHandler.getScriptsPath()+"/HCOM/optDefaultFunctions.hcom");
-    QFile testFile2(gDesktopHandler.getExecPath()+"../Scripts/HCOM/optDefaultFunctions.hcom");
+    QFile testFile1(gpDesktopHandler->getScriptsPath()+"/HCOM/optDefaultFunctions.hcom");
+    QFile testFile2(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optDefaultFunctions.hcom");
     if(testFile1.exists())
     {
         mpHcomHandler->executeCommand("exec "+testFile1.fileName());
@@ -479,7 +480,7 @@ double OptimizationHandler::optComplexMaxpardiff()
 //! @brief Initializes a particle swarm optimization
 void OptimizationHandler::optParticleInit()
 {
-    if(gConfig.getUseMulticore())
+    if(gpConfig->getUseMulticore())
     {
         gpModelHandler->setCurrentModel(mOptModelPtrs.first());
     }
@@ -490,7 +491,7 @@ void OptimizationHandler::optParticleInit()
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
-    mpHcomHandler->setWorkingDirectory(gDesktopHandler.getExecPath());
+    mpHcomHandler->setWorkingDirectory(gpDesktopHandler->getExecPath());
     mpHcomHandler->executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
     mpHcomHandler->setWorkingDirectory(oldPath);
 
@@ -620,7 +621,7 @@ void OptimizationHandler::optParticleRun()
         optMoveParticles();
 
         //Evaluate objevtive values
-        if(gConfig.getUseMulticore())
+        if(gpConfig->getUseMulticore())
         {
             //Multi-threading, we cannot use the "evalall" function
             for(int i=0; i<mOptNumPoints; ++i)
@@ -701,7 +702,7 @@ void OptimizationHandler::optParticleRun()
     gpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
-    if(gConfig.getUseMulticore())
+    if(gpConfig->getUseMulticore())
     {
         for(int i=0; i<mOptNumPoints; ++i)
         {

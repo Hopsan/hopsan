@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "global.h"
 #include "Configuration.h"
 #include "GUIPort.h"
 #include "PlotWindow.h"
@@ -49,7 +50,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     //Set the name and size of the main window
     this->resize(640,640);
     this->setWindowTitle("Sensitivity Analysis");
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
     //Parameters list
     mpParametersLabel = new QLabel("Choose uncertain parameters, and specify their standard deviation.");
@@ -267,7 +268,7 @@ void SensitivityAnalysisDialog::updateChosenVariables(QTreeWidgetItem* item, int
 
 void SensitivityAnalysisDialog::run()
 {
-    int nThreads = gConfig.getNumberOfThreads();
+    int nThreads = gpConfig->getNumberOfThreads();
     if(nThreads == 0)
     {
 #ifdef WIN32
@@ -285,7 +286,7 @@ void SensitivityAnalysisDialog::run()
     int nSteps = mpStepsSpinBox->value();
     int nParameteres = mSelectedParameters.size();
 
-    if(gConfig.getUseMulticore())
+    if(gpConfig->getUseMulticore())
     {
         //Close all other containers
         for(int i=0; i<gpModelHandler->count(); ++i)
@@ -310,7 +311,7 @@ void SensitivityAnalysisDialog::run()
 
     int nTabs = gpModelHandler->count();
 
-    if(gConfig.getUseMulticore())
+    if(gpConfig->getUseMulticore())
     {
         bool noChange=false;
         for(int i=0; i<nSteps/nThreads; ++i)
@@ -340,7 +341,7 @@ void SensitivityAnalysisDialog::run()
         }
     }
 
-    if(gConfig.getUseMulticore())
+    if(gpConfig->getUseMulticore())
     {
         for(int v=0; v<mOutputVariables.size(); ++v)
         {

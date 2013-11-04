@@ -25,6 +25,7 @@
 #include <QtGui>
 #include <QDebug>
 
+#include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
@@ -53,7 +54,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     this->setObjectName("OptionsDialog");
     this->resize(640,480);
     this->setWindowTitle("Options");
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
     // Interface Options
     QLabel *mpBackgroundColorLabel = new QLabel(tr("Work Area Background Color:"));
@@ -61,9 +62,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QString redString;
     QString greenString;
     QString blueString;
-    redString.setNum(gConfig.getBackgroundColor().red());
-    greenString.setNum(gConfig.getBackgroundColor().green());
-    blueString.setNum(gConfig.getBackgroundColor().blue());
+    redString.setNum(gpConfig->getBackgroundColor().red());
+    greenString.setNum(gpConfig->getBackgroundColor().green());
+    blueString.setNum(gpConfig->getBackgroundColor().blue());
     QString buttonStyle;
     buttonStyle.append("QToolButton			{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
     buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
@@ -110,7 +111,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpEnableProgressBarCheckBox->setCheckable(true);
 
     mpProgressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
-    mpProgressBarLabel->setEnabled(gConfig.getEnableProgressBar());
+    mpProgressBarLabel->setEnabled(gpConfig->getEnableProgressBar());
     mpProgressBarSpinBox = new QSpinBox();
     mpProgressBarSpinBox->setMinimum(1);
     mpProgressBarSpinBox->setMaximum(5000);
@@ -301,8 +302,8 @@ void OptionsDialog::reset()
 
     if(doIt)
     {
-        gConfig.loadDefaultsFromXml();
-        gConfig.saveToXml();
+        gpConfig->loadDefaultsFromXml();
+        gpConfig->saveToXml();
         show();
     }
 }
@@ -311,18 +312,18 @@ void OptionsDialog::reset()
 //! @brief Opens settings XML file outside Hopsan with default application
 void OptionsDialog::openXml()
 {
-    qDebug() << "Opening: " << gDesktopHandler.getDataPath() + QString("hopsanconfig.xml");
-    QDesktopServices::openUrl(QUrl("file:///"+gDesktopHandler.getDataPath() + QString("hopsanconfig.xml")));
+    qDebug() << "Opening: " << gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml");
+    QDesktopServices::openUrl(QUrl("file:///"+gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml")));
 }
 
 
 //! Slot that updates and saves the settings based on the choices made in the dialog box
 void OptionsDialog::updateValues()
 {
-    gConfig.setShowPopupHelp(mpShowPopupHelpCheckBox->isChecked());
-    gConfig.setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
+    gpConfig->setShowPopupHelp(mpShowPopupHelpCheckBox->isChecked());
+    gpConfig->setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
 
-    if(gConfig.getUseNativeStyleSheet())
+    if(gpConfig->getUseNativeStyleSheet())
     {
         gpMainWindow->setStyleSheet((" "));
         QMainWindow dummy;
@@ -331,45 +332,45 @@ void OptionsDialog::updateValues()
     }
     else
     {
-        gpMainWindow->setStyleSheet(gConfig.getStyleSheet());
-        gpMainWindow->setPalette(gConfig.getPalette());
-        this->setPalette(gConfig.getPalette());
+        gpMainWindow->setStyleSheet(gpConfig->getStyleSheet());
+        gpMainWindow->setPalette(gpConfig->getPalette());
+        this->setPalette(gpConfig->getPalette());
     }
     emit paletteChanged();
-    gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
-    gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
-    gConfig.setSnapping(mpSnappingCheckBox->isChecked());
+    gpConfig->setInvertWheel(mpInvertWheelCheckBox->isChecked());
+    gpConfig->setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
+    gpConfig->setSnapping(mpSnappingCheckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
-        gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+        gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
     }
-    gConfig.setBackgroundColor(mPickedBackgroundColor);
+    gpConfig->setBackgroundColor(mPickedBackgroundColor);
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
         gpModelHandler->getModel(i)->getGraphicsView()->updateViewPort();
     }
-    gConfig.setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
-    gConfig.setProgressBarStep(mpProgressBarSpinBox->value());
-    gConfig.setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
-    gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
-    gConfig.setAutoLimitLogDataGenerations(mpAutoLimitGenerationsCheckBox->isChecked());
-    gConfig.setShowHiddenNodeDataVariables(mpShowHiddenNodeDataVarCheckBox->isChecked());
-    gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
-    gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
+    gpConfig->setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
+    gpConfig->setProgressBarStep(mpProgressBarSpinBox->value());
+    gpConfig->setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
+    gpConfig->setNumberOfThreads(mpThreadsSpinBox->value());
+    gpConfig->setAutoLimitLogDataGenerations(mpAutoLimitGenerationsCheckBox->isChecked());
+    gpConfig->setShowHiddenNodeDataVariables(mpShowHiddenNodeDataVarCheckBox->isChecked());
+    gpConfig->setGenerationLimit(mpGenerationLimitSpinBox->value());
+    gpConfig->setCacheLogData(mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
         gpModelHandler->getViewContainerObject(i)->getLogDataHandler()->limitPlotGenerations();
     }
-    gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Force", mpForceUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Position", mpPositionUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Velocity", mpVelocityUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Torque", mpTorqueUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Angle", mpAngleUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Angular Velocity", mpAngularVelocityUnitComboBox->currentText());
-    gConfig.setDefaultUnit("Time", mpTimeUnitComboBox->currentText());
-    gConfig.saveToXml();
+    gpConfig->setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Force", mpForceUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Position", mpPositionUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Velocity", mpVelocityUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Torque", mpTorqueUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Angle", mpAngleUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Angular Velocity", mpAngularVelocityUnitComboBox->currentText());
+    gpConfig->setDefaultUnit("Time", mpTimeUnitComboBox->currentText());
+    gpConfig->saveToXml();
 
     this->accept();
 }
@@ -378,7 +379,7 @@ void OptionsDialog::updateValues()
 //! Slot that opens a color dialog where user can select a background color
 void OptionsDialog::colorDialog()
 {
-    mPickedBackgroundColor = QColorDialog::getColor(gConfig.getBackgroundColor(), this);
+    mPickedBackgroundColor = QColorDialog::getColor(gpConfig->getBackgroundColor(), this);
     if (mPickedBackgroundColor.isValid())
     {
         QString redString;
@@ -401,7 +402,7 @@ void OptionsDialog::colorDialog()
     }
     else
     {
-        mPickedBackgroundColor = gConfig.getBackgroundColor();
+        mPickedBackgroundColor = gpConfig->getBackgroundColor();
     }
 }
 
@@ -412,9 +413,9 @@ void OptionsDialog::show()
     QString redString;
     QString greenString;
     QString blueString;
-    redString.setNum(gConfig.getBackgroundColor().red());
-    greenString.setNum(gConfig.getBackgroundColor().green());
-    blueString.setNum(gConfig.getBackgroundColor().blue());
+    redString.setNum(gpConfig->getBackgroundColor().red());
+    greenString.setNum(gpConfig->getBackgroundColor().green());
+    blueString.setNum(gpConfig->getBackgroundColor().blue());
     QString buttonStyle;
     buttonStyle.append("QToolButton			{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
     buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
@@ -425,24 +426,24 @@ void OptionsDialog::show()
     buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
     buttonStyle.append("QToolButton:hover:unchecked   	{ border: 1px solid gray;               border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
     mpBackgroundColorButton->setStyleSheet(buttonStyle);
-    mPickedBackgroundColor = gConfig.getBackgroundColor();
+    mPickedBackgroundColor = gpConfig->getBackgroundColor();
 
-    mpNativeStyleSheetCheckBox->setChecked(gConfig.getUseNativeStyleSheet());
-    mpShowPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
-    mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
-    mpInvertWheelCheckBox->setChecked(gConfig.getInvertWheel());
-    mpSnappingCheckBox->setChecked(gConfig.getSnapping());
-    mpEnableProgressBarCheckBox->setChecked(gConfig.getEnableProgressBar());
-    mpProgressBarSpinBox->setValue(gConfig.getProgressBarStep());
-    mpProgressBarSpinBox->setEnabled(gConfig.getEnableProgressBar());
-    mpThreadsSpinBox->setEnabled(gConfig.getUseMulticore());
-    mpUseMulticoreCheckBox->setChecked(gConfig.getUseMulticore());
-    mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
-    mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
-    mpGenerationLimitSpinBox->setValue(gConfig.getGenerationLimit());
-    mpAutoLimitGenerationsCheckBox->setChecked(gConfig.getAutoLimitLogDataGenerations());
-    mpShowHiddenNodeDataVarCheckBox->setChecked(gConfig.getShowHiddenNodeDataVariables());
-    mpCacheLogDataCeckBox->setChecked(gConfig.getCacheLogData());
+    mpNativeStyleSheetCheckBox->setChecked(gpConfig->getUseNativeStyleSheet());
+    mpShowPopupHelpCheckBox->setChecked(gpConfig->getShowPopupHelp());
+    mpAntiAliasingCheckBox->setChecked(gpConfig->getAntiAliasing());
+    mpInvertWheelCheckBox->setChecked(gpConfig->getInvertWheel());
+    mpSnappingCheckBox->setChecked(gpConfig->getSnapping());
+    mpEnableProgressBarCheckBox->setChecked(gpConfig->getEnableProgressBar());
+    mpProgressBarSpinBox->setValue(gpConfig->getProgressBarStep());
+    mpProgressBarSpinBox->setEnabled(gpConfig->getEnableProgressBar());
+    mpThreadsSpinBox->setEnabled(gpConfig->getUseMulticore());
+    mpUseMulticoreCheckBox->setChecked(gpConfig->getUseMulticore());
+    mpThreadsSpinBox->setValue(gpConfig->getNumberOfThreads());
+    mpThreadsLabel->setEnabled(gpConfig->getUseMulticore());
+    mpGenerationLimitSpinBox->setValue(gpConfig->getGenerationLimit());
+    mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getAutoLimitLogDataGenerations());
+    mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getShowHiddenNodeDataVariables());
+    mpCacheLogDataCeckBox->setChecked(gpConfig->getCacheLogData());
     updateCustomUnits();
 
     QDialog::show();
@@ -531,7 +532,7 @@ void OptionsDialog::addCustomUnitDialog(QString physicalQuantity)
 
 void OptionsDialog::addCustomUnit()
 {
-    gConfig.addCustomUnit(mPhysicalQuantityToModify, mpUnitNameBox->text(), mpScaleBox->text().toDouble());
+    gpConfig->addCustomUnit(mPhysicalQuantityToModify, mpUnitNameBox->text(), mpScaleBox->text().toDouble());
     this->updateCustomUnits();
     mpAddUnitDialog->close();
 }
@@ -543,126 +544,126 @@ void OptionsDialog::updateCustomUnits()
 {
     QMap<QString, double>::iterator it;
     mpPressureUnitComboBox->clear();
-    QMap<QString, double> customPressureUnits = gConfig.getCustomUnits("Pressure");
+    QMap<QString, double> customPressureUnits = gpConfig->getCustomUnits("Pressure");
     for(it = customPressureUnits.begin(); it != customPressureUnits.end(); ++it)
     {
         mpPressureUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpPressureUnitComboBox->count(); ++i)
     {
-        if(mpPressureUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Pressure"))
+        if(mpPressureUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Pressure"))
         {
             mpPressureUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpFlowUnitComboBox->clear();
-    QMap<QString, double> customFlowUnits = gConfig.getCustomUnits("Flow");
+    QMap<QString, double> customFlowUnits = gpConfig->getCustomUnits("Flow");
     for(it = customFlowUnits.begin(); it != customFlowUnits.end(); ++it)
     {
         mpFlowUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpFlowUnitComboBox->count(); ++i)
     {
-        if(mpFlowUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Flow"))
+        if(mpFlowUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Flow"))
         {
             mpFlowUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpForceUnitComboBox->clear();
-    QMap<QString, double> customForceUnits = gConfig.getCustomUnits("Force");
+    QMap<QString, double> customForceUnits = gpConfig->getCustomUnits("Force");
     for(it = customForceUnits.begin(); it != customForceUnits.end(); ++it)
     {
         mpForceUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpForceUnitComboBox->count(); ++i)
     {
-        if(mpForceUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Force"))
+        if(mpForceUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Force"))
         {
             mpForceUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpPositionUnitComboBox->clear();
-    QMap<QString, double> customPositionUnits = gConfig.getCustomUnits("Position");
+    QMap<QString, double> customPositionUnits = gpConfig->getCustomUnits("Position");
     for(it = customPositionUnits.begin(); it != customPositionUnits.end(); ++it)
     {
         mpPositionUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpPositionUnitComboBox->count(); ++i)
     {
-        if(mpPositionUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Position"))
+        if(mpPositionUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Position"))
         {
             mpPositionUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpVelocityUnitComboBox->clear();
-    QMap<QString, double> customVelocityUnits = gConfig.getCustomUnits("Velocity");
+    QMap<QString, double> customVelocityUnits = gpConfig->getCustomUnits("Velocity");
     for(it = customVelocityUnits.begin(); it != customVelocityUnits.end(); ++it)
     {
         mpVelocityUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpVelocityUnitComboBox->count(); ++i)
     {
-        if(mpVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Velocity"))
+        if(mpVelocityUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Velocity"))
         {
             mpVelocityUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpTorqueUnitComboBox->clear();
-    QMap<QString, double> customTorqueUnits = gConfig.getCustomUnits("Torque");
+    QMap<QString, double> customTorqueUnits = gpConfig->getCustomUnits("Torque");
     for(it = customTorqueUnits.begin(); it != customTorqueUnits.end(); ++it)
     {
         mpTorqueUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpTorqueUnitComboBox->count(); ++i)
     {
-        if(mpTorqueUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Torque"))
+        if(mpTorqueUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Torque"))
         {
             mpTorqueUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpAngleUnitComboBox->clear();
-    QMap<QString, double> customAngleUnits = gConfig.getCustomUnits("Angle");
+    QMap<QString, double> customAngleUnits = gpConfig->getCustomUnits("Angle");
     for(it = customAngleUnits.begin(); it != customAngleUnits.end(); ++it)
     {
         mpAngleUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpAngleUnitComboBox->count(); ++i)
     {
-        if(mpAngleUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Angle"))
+        if(mpAngleUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Angle"))
         {
             mpAngleUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpAngularVelocityUnitComboBox->clear();
-    QMap<QString, double> customAngularVelocityUnits = gConfig.getCustomUnits("AngularVelocity");
+    QMap<QString, double> customAngularVelocityUnits = gpConfig->getCustomUnits("AngularVelocity");
     for(it = customAngularVelocityUnits.begin(); it != customAngularVelocityUnits.end(); ++it)
     {
         mpAngularVelocityUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpAngularVelocityUnitComboBox->count(); ++i)
     {
-        if(mpAngularVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("AngularVelocity"))
+        if(mpAngularVelocityUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("AngularVelocity"))
         {
             mpAngularVelocityUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpTimeUnitComboBox->clear();
-    QMap<QString, double> customTimeUnits = gConfig.getCustomUnits("Time");
+    QMap<QString, double> customTimeUnits = gpConfig->getCustomUnits("Time");
     for(it = customTimeUnits.begin(); it != customTimeUnits.end(); ++it)
     {
         mpTimeUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpTimeUnitComboBox->count(); ++i)
     {
-        if(mpTimeUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Time"))
+        if(mpTimeUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Time"))
         {
             mpTimeUnitComboBox->setCurrentIndex(i);
         }

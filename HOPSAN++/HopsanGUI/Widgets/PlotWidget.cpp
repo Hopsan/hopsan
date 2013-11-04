@@ -32,6 +32,7 @@
 #include <QTextStream>
 
 //Hopsan includes
+#include "global.h"
 #include "Configuration.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUIContainerObject.h"

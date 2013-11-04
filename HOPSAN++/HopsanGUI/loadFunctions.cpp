@@ -24,6 +24,7 @@
 
 #include "loadFunctions.h"
 
+#include "global.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"

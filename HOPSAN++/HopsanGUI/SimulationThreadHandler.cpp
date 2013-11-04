@@ -27,6 +27,7 @@
 #include "Widgets/HcomWidget.h"
 #include "Configuration.h"
 #include "common.h"
+#include "global.h"
 #include "GUIObjects/GUISystem.h"
 
 void SimulationWorkerObject::initSimulateFinalize()
@@ -54,15 +55,15 @@ void SimulationWorkerObject::initSimulateFinalize()
         emit setProgressBarRange(0,100);
 
         // Check if we should simulate multiple systems at the same time using multicore
-        if ((coreSystemAccessVector.size() > 1) && (gConfig.getUseMulticore()))
+        if ((coreSystemAccessVector.size() > 1) && (gpConfig->getUseMulticore()))
         {
-            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
         }
-        else if (gConfig.getUseMulticore())
+        else if (gpConfig->getUseMulticore())
         {
             // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
             timer.start();
-            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
         }
         else
         {
@@ -179,7 +180,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)), Qt::UniqueConnection);
     connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)), Qt::UniqueConnection);
 
-    if (gConfig.getEnableProgressBar() && mProgressBarEnabled)
+    if (gpConfig->getEnableProgressBar() && mProgressBarEnabled)
     {
         mpProgressDialog = new QProgressDialog(gpMainWindowWidget);
         mpProgressDialog->setWindowTitle("Running Simulation");
@@ -205,11 +206,11 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
 
         // Start the progres bar worker thread and then signal the timer to start, so that it is started in the correct thread, will be problems otherwise
         mProgressBarWorkerThread.start(QThread::LowPriority);
-        emit startProgressBarRefreshTimer(gConfig.getProgressBarStep());
+        emit startProgressBarRefreshTimer(gpConfig->getProgressBarStep());
     }
 
     //Create a timer to make sure messages are displayed in terminal during simulation
-    if(!gConfig.getUseMulticore())
+    if(!gpConfig->getUseMulticore())
     {
         QTimer *pCheckMessagesTimer = new QTimer();
         connect(pCheckMessagesTimer, SIGNAL(timeout()), gpTerminalWidget, SLOT(checkMessages()));

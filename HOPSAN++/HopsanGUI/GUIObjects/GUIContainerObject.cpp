@@ -30,6 +30,7 @@
 #include "qfile.h"
 
 //Hopsan includes
+#include "global.h"
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "CoreAccess.h"
@@ -1432,8 +1433,8 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
     QDomElement *copyRoot;
     if(xmlStack == 0)
     {
-        gCopyStack.clear();
-        copyRoot = gCopyStack.getCopyRoot();
+        gpCopyStack->clear();
+        copyRoot = gpCopyStack->getCopyRoot();
     }
     else
     {
@@ -1503,7 +1504,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement *copyRoot;
     if(xmlStack == 0)
     {
-        copyRoot = gCopyStack.getCopyRoot();
+        copyRoot = gpCopyStack->getCopyRoot();
     }
     else
     {
@@ -2404,13 +2405,13 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         QDir fileDialog; QFile file;
         QString modelFilePath = QFileDialog::getOpenFileName(gpMainWindow, tr("Choose Subsystem File"),
-                                                             gConfig.getSubsystemDir(),
+                                                             gpConfig->getSubsystemDir(),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (!modelFilePath.isNull())
         {
             file.setFileName(modelFilePath);
             QFileInfo fileInfo(file);
-            gConfig.setSubsystemDir(fileInfo.absolutePath());
+            gpConfig->setSubsystemDir(fileInfo.absolutePath());
 
             bool doIt = true;
             if (mModelObjectMap.size() > 0)
@@ -2446,7 +2447,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         //Get file name
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
-                                                     gConfig.getLoadModelDir(),
+                                                     gpConfig->getLoadModelDir(),
                                                      gpMainWindow->tr("Hopsan Model Files (*.hmf)"));
 
         if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
@@ -2727,7 +2728,7 @@ void ContainerObject::showLosses(bool show)
 
     mpLossesDialog->setLayout(pLossesDialogLayout);
 
-    mpLossesDialog->setPalette(gConfig.getPalette());
+    mpLossesDialog->setPalette(gpConfig->getPalette());
 
     mpLossesDialog->show();
 

@@ -28,6 +28,7 @@
 #include <QGridLayout>
 
 #include "common.h"
+#include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "ModelHandler.h"
@@ -51,7 +52,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     this->setObjectName("SystemPropertiesDialog");
     this->resize(380,200);
     this->setWindowTitle("System Properties");
-    this->setPalette(gConfig.getPalette());
+    this->setPalette(gpConfig->getPalette());
 
     //Info
     QString author, email, affiliation, description;
@@ -472,7 +473,7 @@ void ContainerPropertiesDialog::setValues()
 void ContainerPropertiesDialog::browseUser()
 {
     QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
-                                                        gDesktopHandler.getModelsPath());
+                                                        gpDesktopHandler->getModelsPath());
     if (!iconFileName.isEmpty())
     {
         mpUserIconPath->setText(iconFileName);
@@ -485,7 +486,7 @@ void ContainerPropertiesDialog::browseIso()
 {
     QDir fileDialogOpenDir;
     QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
-                                                        gDesktopHandler.getModelsPath());
+                                                        gpDesktopHandler->getModelsPath());
     if (!iconFileName.isEmpty())
     {
         mpIsoIconPath->setText(iconFileName);
@@ -498,7 +499,7 @@ void ContainerPropertiesDialog::browseScript()
 {
     //QDir fileDialogOpenDir;
     QString scriptFileName = QFileDialog::getOpenFileName(this, tr("Choose script"),
-                                                         gDesktopHandler.getModelsPath());
+                                                         gpDesktopHandler->getModelsPath());
     if (!scriptFileName.isEmpty())
     {
         mpPyScriptPath->setText(scriptFileName);
