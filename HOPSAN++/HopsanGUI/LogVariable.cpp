@@ -1143,15 +1143,19 @@ bool LogVariableContainer::purgeOldGenerations(const int purgeEnd, const int nGe
     if (minGen <= purgeEnd)
     {
         // loop through keys
+        const int nTaggedKeep = mKeepGenerations.size();
         QList<int> keys = mDataGenerations.keys();
         for (int k=0; k<keys.size(); ++k)
         {
-            // Try to remove each generation
-            didRemove += removeDataGeneration(keys[k], false);
-            // Only break loop when we have deleted all below purge limit
-            if (keys[k] >= purgeEnd)
+            // Only break loop when we have deleted all below purge limit or when total number of generations is less then the desired (+ those we want to keep)
+            if ((keys[k] > purgeEnd) || (mDataGenerations.size() < (nGensToKeep+nTaggedKeep)) )
             {
                 break;
+            }
+            else
+            {
+                // Try to remove each generation
+                didRemove += removeDataGeneration(keys[k], false);
             }
         }
     }
