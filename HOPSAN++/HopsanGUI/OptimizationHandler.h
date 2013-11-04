@@ -50,9 +50,6 @@ public:
     //Public access functions
     double getOptimizationObjectiveValue(int idx);
 
-    void optPlotPoints();
-    void optPlotBestWorstObj();
-
 private:
     TerminalConsole *mpConsole;
     HcomHandler *mpHcomHandler;
@@ -70,6 +67,9 @@ private:
     void optParticleRun();
     void optPrintLogOutput();
     void optMoveParticles();
+    void optPlotPoints();
+    void optPlotObjectiveFunctionValues();
+    void optPlotParameters();
 
     //Optimization
     int mOptNumPoints;
@@ -91,13 +91,15 @@ private:
     int mOptConvergenceReason;
     double mOptParTol, mOptFuncTol;
     bool mOptMulticore;
-    bool mOptPlotPoints;
-    bool mOptPlotBestWorst;
-    bool mOptPlotVariables;
     ModelWidget *mpOptModel;
     QVector<ModelWidget *> mOptModelPtrs;
     bool mOptPrintLogOutput;
     QStringList mOptLogOutput;
+
+    bool mOptPlotPoints;
+    bool mOptPlotObjectiveFunctionValues;
+    bool mOptPlotParameters;
+    bool mOptPlotVariables;
 };
 
 #endif // OPTIMIZATIONHANDLER_H
