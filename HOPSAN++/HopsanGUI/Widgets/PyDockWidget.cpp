@@ -26,6 +26,7 @@
 
 #ifdef USEPYTHONQT
 
+#include "global.h"
 #include "PythonQt.h"
 #include "PythonQt_QtAll.h"
 #include "gui/PythonQtScriptingConsole.h"

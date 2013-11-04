@@ -264,7 +264,7 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         // If we dont have valid plotwindow then create one
         if (mpPlotWindow.isNull())
         {
-            mpPlotWindow = gpPlotHandler->createNewOrReplacePlotwindow(getName());
+            mpPlotWindow = gpPlotHandler->createNewUniquePlotWindow(getName());
 
             for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
             {

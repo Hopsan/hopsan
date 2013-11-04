@@ -40,7 +40,7 @@ PlotHandler::~PlotHandler()
 
 //! @brief Creates a new PlotWindow or nothing if window with desired name already exist
 //! @param [in] name PlotWindow name
-void PlotHandler::createPlotWindow(QString name)
+void PlotHandler::createNewPlotWindowIfItNotAlreadyExists(QString name)
 {
     createNewPlotWindowOrGetCurrentOne(name);
 }
@@ -71,6 +71,29 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
     return pPlotWindow;
 }
 
+//! @brief Returns ptr to a new PlotWindow, the supplied name will be used as display name but the actual window name is hidden
+//! @param [in] name PlotWindow name
+PlotWindow *PlotHandler::createNewUniquePlotWindow(const QString &rName)
+{
+    // Here we assume that no one will actually name a plotwindow like this
+    const QString actualName = "HopsanVeryUniquePlotWindow";
+
+    // Make sure we find a unique name
+    int ctr = 0;
+    QString keyName = actualName;
+    while(mOpenPlotWindows.contains(keyName))
+    {
+        keyName = actualName+QString("%1").arg(ctr++);
+    }
+
+    PlotWindow *pPlotWindow = new PlotWindow(rName, gpMainWindow);
+    pPlotWindow->show();
+    mOpenPlotWindows.insert(keyName, pPlotWindow);
+    connect(pPlotWindow, SIGNAL(windowClosed(PlotWindow*)), this, SLOT(forgetPlotWindow(PlotWindow*)));
+
+    return pPlotWindow;
+}
+
 PlotWindow *PlotHandler::createNewOrReplacePlotwindow(const QString &rName)
 {
     PlotWindow *pWindow = getPlotWindow(rName);
@@ -89,6 +112,7 @@ void PlotHandler::forgetPlotWindow(PlotWindow *pWindow)
 }
 
 //! @todo write equivalent function
+//!< @todo FIXA /Peter
 PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int /*axis*/, QString /*componentName*/, QString /*portName*/, QString /*dataName*/, QString /*dataUnit*/, QString name)
 {
     if((xVector.isEmpty()) || (yVector.isEmpty()))
@@ -112,11 +136,11 @@ PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<doubl
     return plotWindow;
 }
 
-PlotWindow *PlotHandler::getPlotWindow(const QString name)
+PlotWindow *PlotHandler::getPlotWindow(const QString &rName)
 {
-    if(mOpenPlotWindows.contains(name))
+    if(mOpenPlotWindows.contains(rName))
     {
-        return mOpenPlotWindows.find(name).value();
+        return mOpenPlotWindows.find(rName).value();
     }
     return 0;
 }

@@ -596,7 +596,7 @@ PlotTreeWidget::PlotTreeWidget(QWidget *pParent)
 
 void PlotTreeWidget::openNewPlotWindow()
 {
-    gpPlotHandler->createPlotWindow();
+    gpPlotHandler->createNewPlotWindowIfItNotAlreadyExists();
 }
 
 

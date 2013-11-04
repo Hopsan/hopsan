@@ -241,7 +241,7 @@ void HVCWidget::runHvcTest()
         pLogDataHandler->importTimeVariablesFromCSVColumns(mDataConfigs[t].mDataFile, columns, names, 0);
 
         QString windowName = QString("Validation Plot %1").arg(t);
-        gpPlotHandler->createPlotWindow(windowName);
+        gpPlotHandler->createNewPlotWindowIfItNotAlreadyExists(windowName);
         gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getLogVariableDataPtr(mDataConfigs[t].mFullVarName,-1), 0);
         gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getLogVariableDataPtr(mDataConfigs[t].mFullVarName+"_valid",-1), 0);
     }

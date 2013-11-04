@@ -45,11 +45,12 @@ public:
     explicit PlotHandler(QObject *pParent=0);
     ~PlotHandler();
 
+    void createNewPlotWindowIfItNotAlreadyExists(QString name="");
+    PlotWindow *createNewUniquePlotWindow(const QString &rName);
     PlotWindow *createNewPlotWindowOrGetCurrentOne(QString name="");
     PlotWindow *createNewOrReplacePlotwindow(const QString &rName="");
-    PlotWindow *getPlotWindow(const QString name);
+    PlotWindow *getPlotWindow(const QString &rName);
 
-    void createPlotWindow(QString name="");
     PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
     PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor=QColor());
     QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
