@@ -89,19 +89,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     this->hide();
 
-    //Set main window options
+    // Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
     this->setMouseTracking(true);
 
-    //Update style sheet setting
-    if(!gpConfig->getUseNativeStyleSheet())
-    {
-        setStyleSheet(gpConfig->getStyleSheet());
-        setPalette(gpConfig->getPalette());
-    }
-    qApp->setFont(gpConfig->getFont());
-
-    //Set name and icon of main window
+    // Set name and icon of main window
 #ifdef DEVELOPMENT
     this->setWindowTitle(tr("Hopsan (development version)"));
 #else
@@ -109,10 +101,10 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + tr("hopsan.png"))));
 
-    //Set dock widget corner owner
+    // Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
 
-    //Set the size and position of the main window
+    // Set the size and position of the main window
     int sh = qApp->desktop()->screenGeometry().height();
     int sw = qApp->desktop()->screenGeometry().width();
     this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
@@ -345,6 +337,14 @@ void MainWindow::createContents()
     this->updateRecentList();
 
     mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);    //Needs configuration
+
+    // Update style sheet setting after all children hasbeen created and added so that they too will be affected
+    if(!gpConfig->getUseNativeStyleSheet())
+    {
+        setStyleSheet(gpConfig->getStyleSheet());
+        setPalette(gpConfig->getPalette());
+    }
+    qApp->setFont(gpConfig->getFont());
 
     updateToolBarsToNewTab();
 }
