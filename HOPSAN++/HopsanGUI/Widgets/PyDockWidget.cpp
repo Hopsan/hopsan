@@ -94,15 +94,15 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     PyWidget *pPyWidget = new PyWidget();
     pPyWidget->setLayout(pPyLayout);
 
-    runCommand(gConfig.getInitScript());
+    runCommand(gpConfig->getInitScript());
 
-    mpScriptFileLineEdit->setText(gConfig.getLastScriptFile());
+    mpScriptFileLineEdit->setText(gpConfig->getLastScriptFile());
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     setWidget(pPyWidget);//->setWidget(mpPythonConsole);
 
     //Add script path to Python path
-    QString scriptPath = QString(gDesktopHandler.getScriptsPath());
+    QString scriptPath = QString(gpDesktopHandler->getScriptsPath());
     scriptPath.replace("\\", "/");
     scriptPath.replace("//", "/");
     runCommand("import sys");
@@ -148,13 +148,13 @@ void PyDockWidget::loadPyScript()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Script File"),
-                                                         gConfig.getScriptDir(),
+                                                         gpConfig->getScriptDir(),
                                                          tr("Python Scripts (*.py)"));
     if(!modelFileName.isEmpty())
     {
         mpScriptFileLineEdit->setText(modelFileName);
         QFileInfo fileInfo = QFileInfo(modelFileName);
-        gConfig.setScriptDir(fileInfo.absolutePath());
+        gpConfig->setScriptDir(fileInfo.absolutePath());
     }
 }
 
@@ -163,7 +163,7 @@ void PyDockWidget::openInitScriptDialog()
 {
     mpDialog = new QDialog(this);
     mpTextEdit = new QTextEdit(this);
-    mpTextEdit->setPlainText(gConfig.getInitScript());
+    mpTextEdit->setPlainText(gpConfig->getInitScript());
     QPushButton *pOkButton = new QPushButton("Done", mpDialog);
     QVBoxLayout *pLayout = new QVBoxLayout();
     pLayout->addWidget(mpTextEdit);

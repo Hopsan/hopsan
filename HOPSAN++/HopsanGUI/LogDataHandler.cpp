@@ -1679,18 +1679,29 @@ QString LogDataHandler::fftVariable(const QString &a, const QString &b, const bo
 QString LogDataHandler::assignVariable(const QString &dst, const QString &src)
 {
     SharedLogVariableDataPtrT pSrcData = getLogVariableDataPtr(src, -1);
-    if(pSrcData == 0)
+    // If source does not exist then return unsuccessfully
+    if(!pSrcData)
     {
         return QString();
     }
 
+    // If dst does not exist, then try to create it
     SharedLogVariableDataPtrT pDstData = getLogVariableDataPtr(dst, -1);
-    if(pDstData == 0)
+    if(!pDstData)
     {
         pDstData = defineNewVariable(dst);
     }
-    pDstData->assignFrom(pSrcData);
-    return pDstData->getFullVariableName();
+
+    // If we were successfull in creating dst then use it else return unsuccessfully
+    if (pDstData)
+    {
+        pDstData->assignFrom(pSrcData);
+        return pDstData->getFullVariableName();
+    }
+    else
+    {
+        return QString();
+    }
 }
 
 QString LogDataHandler::assignVariable(const QString &dst, const QVector<double> &src)
@@ -1701,12 +1712,17 @@ QString LogDataHandler::assignVariable(const QString &dst, const QVector<double>
         pDstData = defineNewVariable(dst);
     }
 
-    // Check again if new def was succesfull
+    // Check again if new def was succesfull, else return empty
     if (pDstData)
     {
         pDstData->assignFrom(src);
+        return pDstData->getFullVariableName();
     }
-    return pDstData->getFullVariableName();
+    else
+    {
+        return QString();
+    }
+
 }
 
 double LogDataHandler::pokeVariable(const QString &a, const int index, const double value)
@@ -1844,13 +1860,6 @@ SharedLogVariableDataPtrT LogDataHandler::divVariables(const SharedLogVariableDa
     return pTempVar;
 }
 
-////! @todo Should this function really return a value?
-//SharedLogVariableDataPtrT LogDataHandler::assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src)
-//{
-//    dst->assignFrom(src);
-//    return dst;
-//}
-
 double LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value)
 {
     QString err;
@@ -1882,16 +1891,22 @@ double LogDataHandler::peekVariable(SharedLogVariableDataPtrT a, const int index
 
 SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(QString desiredname)
 {
-    QString numStr;
-    numStr.setNum(mTempVarCtr);
-    desiredname.append(numStr);
+    desiredname.append(QString("%1").arg(mTempVarCtr));
     SharedLogVariableDataPtrT pData = defineNewVariable(desiredname);
-    pData->mpVariableCommonDescription->mVariableSourceType = TempVariableType;
     if (pData)
     {
-       ++mTempVarCtr;
+        pData->mpVariableCommonDescription->mVariableSourceType = TempVariableType;
+        ++mTempVarCtr;
     }
     return pData;
+}
+
+SharedLogVariableDataPtrT LogDataHandler::createOrphanTempVariable()
+{
+    SharedVariableCommonDescriptionT varDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription());
+    varDesc->mDataName = "Orphan"; // Name is pointless for orphans
+    varDesc->mVariableSourceType = ScriptVariableType;
+    return SharedLogVariableDataPtrT(new LogVariableData(0,SharedLogVariableDataPtrT(),QVector<double>(), varDesc, SharedMultiDataVectorCacheT(), 0));
 }
 
 
@@ -1907,12 +1922,17 @@ void LogDataHandler::appendVariable(const QString &a, const double x, const doub
     return;
 }
 
-SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname)
+SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString &rDesiredname)
 {
-    if(mLogDataMap.find(desiredname) == mLogDataMap.end())
+    bool ok = isNameValid(rDesiredname);
+    if (!ok)
+    {
+        gpTerminalWidget->mpConsole->printErrorMessage(QString("Invalid variable name: %1").arg(rDesiredname));
+    }
+    if( ok && (mLogDataMap.find(rDesiredname) == mLogDataMap.end()) )
     {
         VariableCommonDescription varDesc;
-        varDesc.mDataName = desiredname;
+        varDesc.mDataName = rDesiredname;
         varDesc.mVariableSourceType = ScriptVariableType;
         LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
@@ -1922,11 +1942,14 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
     return SharedLogVariableDataPtrT();
 }
 
-SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname, const QString &rUnit, const QString &rDescription)
+SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription)
 {
-    SharedLogVariableDataPtrT pData = defineNewVariable(desiredname);
-    pData->mpVariableCommonDescription->mDataUnit = rUnit;
-    pData->mpVariableCommonDescription->mDataUnit = rDescription;
+    SharedLogVariableDataPtrT pData = defineNewVariable(rDesiredname);
+    if (pData)
+    {
+        pData->mpVariableCommonDescription->mDataUnit = rUnit;
+        pData->mpVariableCommonDescription->mDataUnit = rDescription;
+    }
     return pData;
 }
 

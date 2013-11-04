@@ -355,7 +355,7 @@ void MainWindow::createContents()
 void MainWindow::initializeWorkspace()
 {
 #ifdef USEPYTHONQT
-    mpPyDockWidget->runCommand(gConfig.getInitScript());
+    mpPyDockWidget->runCommand(gpConfig->getInitScript());
 #endif
 
     gpSplash->showMessage("Loading component libraries...");
@@ -806,7 +806,7 @@ void MainWindow::createActions()
     mpToggleSignalsAction = new QAction(toggleSignalsIcon, tr("&Show Signal Components"), this);
     mpToggleSignalsAction->setText("Show Signal Components");
     mpToggleSignalsAction->setCheckable(true);
-    mpToggleSignalsAction->setChecked(true);      //! @todo Shall depend on gConfig setting
+    mpToggleSignalsAction->setChecked(true);      //! @todo Shall depend on gpConfig setting
     connect(mpToggleSignalsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpToggleSignalsAction, "Toggle signal components visibility.");
 

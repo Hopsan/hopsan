@@ -65,10 +65,11 @@ public:
     void exportToCSV(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
 
-    SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
-    SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, const QString &rUnit, const QString &rDescription);
+    SharedLogVariableDataPtrT defineNewVariable(const QString &rDesiredname);
+    SharedLogVariableDataPtrT defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription);
     //SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
     SharedLogVariableDataPtrT defineTempVariable(QString desiredname);
+    SharedLogVariableDataPtrT createOrphanTempVariable();
 
     bool deleteVariable(SharedLogVariableDataPtrT a);
     bool deleteVariable(const QString &a);
@@ -153,7 +154,6 @@ public:
     SharedLogVariableDataPtrT fftVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const bool doPowerSpectrum);
     QString fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum);
 
-    //SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src);
     QString assignVariable(const QString &dst, const QString &src);
     QString assignVariable(const QString &dst, const QVector<double> &src);
 

@@ -4045,9 +4045,16 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
                 }
 
                 //! @todo this could use the wrong logdatahndler, (it will be the one from the displayed model rather then the one beeing processed
-                gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
-                gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(left,-1).data()->preventAutoRemoval();
-                //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
+                QString name = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
+                if (!name.isEmpty())
+                {
+                    gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(name,-1).data()->preventAutoRemoval();
+                    //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
+                }
+                else
+                {
+                    return false;
+                }
             }
             return true;
         }
@@ -4102,6 +4109,7 @@ SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullName) const
     // Separate generation from name if generation number was given, else use default generation -1
     if(fullName.count("#") == 1 || fullName.count("#") == 3)
     {
+        //! @todo handle .L .H
         const QString genText = fullName.split("#").last();
         generation = genText.toInt()-1;      //Subtract 1 due to zero indexing
         fullName.chop(genText.size()+1);
