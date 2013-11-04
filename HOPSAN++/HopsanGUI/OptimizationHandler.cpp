@@ -47,7 +47,8 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
 
     mOptAlgorithm = Uninitialized;
     mOptPlotPoints = false;
-    mOptPlotBestWorst = false;
+    mOptPlotObjectiveFunctionValues = false;
+    mOptPlotParameters = false;
     mOptPrintLogOutput = true;  //! @todo Should be changeable by user
 }
 
@@ -222,7 +223,7 @@ void OptimizationHandler::optComplexRun()
         int wid = mOptWorstId;
 
         //Plot best and worst objective values
-        optPlotBestWorstObj();
+        optPlotObjectiveFunctionValues();
 
         //Find geometrical center
         optComplexFindcenter();
@@ -311,6 +312,9 @@ void OptimizationHandler::optComplexRun()
             ++mOptWorstCounter;
             ++i;
         }
+
+        optPlotParameters();
+
         timer.toc("-Iterate until worst point is no longer the same");
         timer2.toc(QString("****************OptLoop %1").arg(i));
         qDebug() << "\n";
@@ -664,7 +668,7 @@ void OptimizationHandler::optParticleRun()
         }
 
         optPlotPoints();
-        optPlotBestWorstObj();
+        optPlotObjectiveFunctionValues();
 
         //Check convergence
         if(optCheckForConvergence()) break;      //Use complex method, it's the same principle
@@ -824,9 +828,9 @@ void OptimizationHandler::optPlotPoints()
 
 
 //! @brief Plots best and worst objective values (if option is selected)
-void OptimizationHandler::optPlotBestWorstObj()
+void OptimizationHandler::optPlotObjectiveFunctionValues()
 {
-    if(!mOptPlotBestWorst) { return; }
+    if(!mOptPlotObjectiveFunctionValues) { return; }
 
     LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     SharedLogVariableDataPtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
@@ -864,6 +868,39 @@ void OptimizationHandler::optPlotBestWorstObj()
         gpPlotHandler->plotDataToWindow(pPW, worstVar, 0, QColor("Red"));
     }
 }
+
+
+//! @brief Plots best and worst objective values (if option is selected)
+void OptimizationHandler::optPlotParameters()
+{
+    if(!mOptPlotParameters) { return; }
+
+    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    for(int p=0; p<mOptNumParameters; ++p)
+    {
+        SharedLogVariableDataPtrT par = pHandler->getLogVariableDataPtr("NewPar"+QString::number(p), -1);
+        if(par.isNull())
+        {
+            par = pHandler->defineNewVariable("NewPar"+QString::number(p));
+            par->preventAutoRemoval();
+            par->assignFrom(mOptParameters[mOptLastWorstId][p]);
+            par->setCacheDataToDisk(false);
+        }
+        else
+        {
+            par->append(mOptParameters[mOptLastWorstId][p]);
+        }
+
+        // If this is the first time, then recreate the plotwindows
+        // Note! plots will autoupdate when new data is appended, so there is no need to call plotab->update()
+        if(par.data()->getDataSize() == 1)
+        {
+            PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");
+            gpPlotHandler->plotDataToWindow(pPW, par, 0);
+        }
+    }
+}
+
 
 
 //! @brief Moves the particles (for particle swarm optimization)

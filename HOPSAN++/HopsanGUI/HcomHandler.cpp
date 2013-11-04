@@ -2383,11 +2383,15 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(split.size() == 3 && split[1] == "plotbestworst")
         {
-            mpOptHandler->mOptPlotBestWorst = (split[2] == "on");
+            mpOptHandler->mOptPlotObjectiveFunctionValues = (split[2] == "on");
         }
         else if(split.size() == 3 && split[1] == "plotvariables")
         {
             mpOptHandler->mOptPlotVariables = (split[2] == "on");
+        }
+        else if(split.size() == 3 && split[1] == "plotparameters")
+        {
+            mpOptHandler->mOptPlotParameters = (split[2] == "on");
         }
         else
         {
