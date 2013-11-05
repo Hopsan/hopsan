@@ -6,22 +6,32 @@ import ctypes
 import stat
 
 devversion="0.7."
-tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
 scriptFile="HopsanReleaseInnoSetupScript.iss"
-hopsanDir=os.getcwd()
 dependecyBinFiles=".\\hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z"
+dependecyBinFiles64=".\\hopsan_bincontents64_Qt485_MinGW481_OpenSSL101e.7z"
 
+# External programs
 inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
 innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
+
+# Libs
 qtlibDirList = ["C:\Qt\4.8.5"]
-qtcreatorDirList = ["C:\Qt\qtcreator-2.7.1", "C:\Qt\qtcreator-2.8.1"]
+qtlib64DirList = ["C:\Qt\Qt64-4.8.5"]
+tbblibDirList = [".\\HopsanCore\\Dependencies\\tbb30_20110704oss", ".\\HopsanCore\\Dependencies\\tbb41_20130613oss"]
+tbblib64DirList = [".\\HopsanCore\\Dependencies\\tbb30_20110704oss_64", ".\\HopsanCore\\Dependencies\\tbb41_20130613oss_64"]
+
+# Compilers and build tools
+qtcreatorDirList = ["C:\Qt\qtcreator-2.8.1"]
 mingwDirList = ["C:\Qt\MinGW-gcc440_1\mingw\bin", "C:\Qt\mingw\bin", "C:\mingw\bin"]
+mingw64DirList = ["C:\Qt\mingw64\bin"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 
-STD_OUTPUT_HANDLE= -11
+# Remember current working dir
+hopsanDir=os.getcwd()
 
+STD_OUTPUT_HANDLE= -11
 
 escape_dict={'\a':r'\a',
            '\b':r'\b',
@@ -179,13 +189,27 @@ def verifyPaths():
     global jomDir
     global qmakeDir
     global mingwDir
+    global tbbDir
 
     isOk = True
    
+    
+    if do64BitRelease:
+        qtlibsdirs=qtlib64DirList
+        tbbdirs=tbblib64DirList
+        mingwdirs=mingw64DirList
+        dependecyfile=dependecyBinFiles64
+    else:
+        qtlibsdirs=qtlibDirList
+        tbbdirs=tbblibDirList
+        mingwdirs=mingwDirList
+        dependecyfile=dependecyBinFiles
+
     #Check if Qt path exists
-    qtDir=selectPathFromList(qtlibDirList, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
+    qtDir=selectPathFromList(qtlibsdirs, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
     if qtDir == "":
-        isOk = False    
+        isOk = False
+        
 
     #Check if qtcreator path exist  
     creatorDir=selectPathFromList(qtcreatorDirList, "Qt Creator could not be found in one of the expected locations.", "Found Qt Creator!")
@@ -220,11 +244,12 @@ def verifyPaths():
         isOk = False
     
     #Make sure the 3d party dependency file exists
-    if not pathExists(dependecyBinFiles+"\\", "The "+ dependecyBinFiles + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
+    if not pathExists(dependecyfile+"\\", "The "+ dependecyBinFiles + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
         isOk = False
         
     #Make sure TBB is installed in correct location
-    if not pathExists("HopsanCore\\Dependencies\\"+tbbversion+"\\", "Cannot find correct TBB version, you must use "+ tbbversion+"\\", "Found correct TBB version!"):
+    tbbDir=selectPathFromList(tbbdirs, "Cannot find correct TBB version", "Found correct TBB version!")
+    if tbbDir == "":
         isOk = False
 
     if isOk:
@@ -311,7 +336,7 @@ def buildRelease():
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|#DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
 
     #Rename TBB so it is not found when compiling with Visual Studio
-    os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= USETBB|#DEFINES *= USETBB|\" -i HopsanCore\\HopsanCore.pro")
     
     #Build HOPSANCORE with MSVC, else remove those folders
     if buildVCpp:
@@ -334,7 +359,7 @@ def buildRelease():
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
      
     #Rename TBB back again (to activate it)
-    os.rename(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope", hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion)
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= USETBB|DEFINES *= USETBB|\" -i HopsanCore\\HopsanCore.pro")
 
     #BUILD WITH MINGW32
 
@@ -471,21 +496,28 @@ def copyFiles():
     
     
 def createInstallFiles():
+
+    if do64BitRelease:
+        win3264="win64"
+    else:
+        win3264="win32"
     
     #Create zip package
+    #ToDo: filename should be a variable, and cleanup r'' or "" string usage
     print "Creating zip package..."
-    callEXE(hopsanDir+"\\ThirdParty\\7z\\7z.exe", "a -tzip Hopsan-"+version+"-win32-zip.zip "+rawPath(tempDir+"\\*"))
-    os.system(r'move Hopsan-'+version+r'-win32-zip.zip output/')
-    if not fileExists("output/Hopsan-"+version+"-win32-zip.zip"):
+    callEXE(hopsanDir+"\\ThirdParty\\7z\\7z.exe", "a -tzip Hopsan-"+version+"-"+win3264+"-zip.zip "+rawPath(tempDir+"\\*"))
+    os.system(r'move Hopsan-'+version+r'-'+win3264+r'-zip.zip output/')
+    if not fileExists("output/Hopsan-"+version+"-"+win3264+"-zip.zip"):
         printError("Failed to create zip package.")
         return False
     printSuccess("Created zip package!")
         
     #Execute Inno compile script
+    #ToDo: filename should be a variable, and cleanup r'' or "" string usage
     print "Generating install executable..."
-    print r'"'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-win32-installer" /dMyAppVersion="'+version+'r" "'+scriptFile+r'"'
-    os.system(r'""'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-win32-installer" /dMyAppVersion="'+version+r'" "'+scriptFile+r'""')
-    if not fileExists("output/Hopsan-"+version+"-win32-installer.exe"):
+    print r'"'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-'+win3264+r'-installer" /dMyAppVersion="'+version+'r" "'+scriptFile+r'"'
+    os.system(r'""'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-'+win3264+r'-installer" /dMyAppVersion="'+version+r'" "'+scriptFile+r'""')
+    if not fileExists("output/Hopsan-"+version+"-"+win3264+"-installer.exe"):
         printError("Failed to create installer executable.")
         return False
     printSuccess("Generated install executable!")
@@ -501,10 +533,7 @@ def cleanUp():
     
     #Remove temporary output directory
     os.system("rd /s/q "+tempDir)
-     
-    #Rename TBB back again (if not done already)
-    if pathExists(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope\\"):
-        os.rename(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope", hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion)
+
     
     
 #################################
@@ -522,6 +551,8 @@ print "\\------------------------------------------------------------/"
 print "\n"
 
 success=True
+global do64BitRelease
+do64BitRelease = askYesNoQuestion("Do you want to build a 64Bit release? (y/n): ")
 
 if not verifyPaths():
     success = False
@@ -534,14 +565,15 @@ if success:
     global buildVCpp
     (version, dodevrelease) = askForVersion()
 
-    abortOnFailValidation = False;
+    pauseOnFailValidation = False;
     buildVCpp = askYesNoQuestion("Do you want to build VC++ HopsanCore? (y/n): ")
 
     print "---------------------------------------"
     print "This is a DEV release: " + str(dodevrelease)
+    print "This is a 64-bit release: " + str(do64BitRelease)
     print "Release version number: " + str(version)
     print "Build VC++ HopsanCore: " + str(buildVCpp)
-    print "Abort on faild validation: " + str(abortOnFailValidation)
+    print "Pause on faild validation: " + str(pauseOnFailValidation)
     print "---------------------------------------"
     if not askYesNoQuestion("Is this OK? (y/n): "):
         printError("Aborted by user.")
@@ -555,10 +587,9 @@ if success:
         printError("Compilation script failed in compilation error.")
 
 if success:
-    if (not runValidation()) and abortOnFailValidation:
-        success = False
-        cleanUp()
-        printError("Compilation script failed in model validation.")
+    if (not runValidation()) and pauseOnFailValidation:
+        printWarning("Compilation script failed in model validation.")
+        askYesNoQuestion("Press enter to continue!")
     
 if success:
     if not copyFiles():

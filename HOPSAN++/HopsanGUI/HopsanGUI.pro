@@ -108,7 +108,12 @@ win32 {
 
     #Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
     #Also enable auto-import
-    QMAKE_LFLAGS += -Wl,--large-address-aware,--enable-auto-import
+    #QMAKE_LFLAGS += -Wl,--large-address-aware,--enable-auto-import
+    QMAKE_LFLAGS += -Wl,--enable-auto-import
+    # Make large-adress-aware for 32-bit build
+    !contains($$QMAKE_HOST.arch, x86_64){
+        QMAKE_LFLAGS += -Wl,--large-address-aware
+    }
 
     CONFIG(debug, debug|release) {
         CONFIG += console #Use this for consol app support (cout output, you aslo need to run in consol but hopsan seems slow)
