@@ -59,8 +59,7 @@ private:
 class CoreGeneratorAccess
 {
 public:
-    CoreGeneratorAccess(LibraryWidget *pLibrary);
-    bool generateFromModelica(QString path, int solver=0);
+    bool generateFromModelica(QString path, bool showDialog=true, int solver=0);
     bool generateFromCpp(QString hppFile);
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);
@@ -68,10 +67,7 @@ public:
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
     void generateLibrary(QString path, QStringList hppFiles);
-    bool compileComponentLibrary(QString path, QString extraLibs="");
-
-private:
-    LibraryWidget *mpLibrary;
+    bool compileComponentLibrary(QString path, QString extraLibs="", bool showDialog=true);
 };
 
 class CoreLibraryAccess

@@ -355,7 +355,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
 
         gpMainWindow->hideHelpPopupMessage();
     }
-    else if(mFolderToContentsMap.contains(item) && qApp->mouseButtons() == Qt::LeftButton)
+    else if(mFolderToContentsMap.contains(item))
     {
         QStringList typeNames = mFolderToContentsMap.find(item).value();
 
@@ -413,7 +413,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
         pEditDialog->exec();
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpLibraryWidget);
+            CoreGeneratorAccess coreAccess;
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
@@ -440,7 +440,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
         pEditDialog->exec();
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpLibraryWidget);
+            CoreGeneratorAccess coreAccess;
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
 
             QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
@@ -461,7 +461,8 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
         delete(pEditDialog);
         return;
     }
-    else if(qApp->mouseButtons() == Qt::RightButton)
+
+    if(qApp->mouseButtons() == Qt::RightButton)
     {
         if(item == mpLoadLibraryItem || item == mpLoadLibraryItemDual || item == mpAddCppComponentItem ||
            item == mpAddCppComponentItemDual || item == mpAddModelicaComponentItem || item == mpAddModelicaComponentItemDual)
@@ -471,8 +472,42 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
 
         if(mpList->isVisible())     //Dual view mode
         {
-            //! @todo Implement right-clicking for dual view mode
-            return;
+            QMenu contextMenu;
+            QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
+            QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
+            pUnloadAction->setEnabled(false);
+            pOpenFolderAction->setEnabled(false);
+
+            QListWidgetItem *pFirstSubComponentItem = mpList->item(0);
+            QString typeName;
+            if(pFirstSubComponentItem)
+            {
+                typeName = mListItemToTypeNameMap.find(pFirstSubComponentItem).value();
+            }
+
+            if(item->text(0) != EXTLIBSTR && gpLibraryHandler->getEntry(typeName).path.startsWith(EXTLIBSTR))
+            {
+                pUnloadAction->setEnabled(true);
+            }
+
+            if(item != 0 && !typeName.isEmpty())
+            {
+                pOpenFolderAction->setEnabled(true);
+            }
+
+            if(contextMenu.actions().isEmpty())
+                return;
+
+            QAction *pReply = contextMenu.exec(QCursor::pos());
+
+            if(pReply == pUnloadAction)
+            {
+                gpLibraryHandler->unloadLibrary(typeName);
+            }
+            else if(pReply == pOpenFolderAction)
+            {
+                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getEntry(typeName).pAppearance->getBasePath()));
+            }
         }
         else        //Tree view mode
         {
@@ -520,6 +555,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
         }
     }
 }
+
 
 void LibraryWidget::handleItemClick(QListWidgetItem *item)
 {

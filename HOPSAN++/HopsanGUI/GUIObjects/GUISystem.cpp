@@ -672,7 +672,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             verifyHmfComponentCompatibility(xmlSubObject, hmfFormatVersion, coreHmfVersion);
-            ModelObject* pObj = loadModelObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
+            ModelObject* pObj = loadModelObject(xmlSubObject, this, NoUndo);
             if(pObj == NULL)
             {
                 gpTerminalWidget->mpConsole->printErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
@@ -680,7 +680,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 
                 // Insert missing component dummy instead
                 xmlSubObject.setAttribute(HMF_TYPENAME, "MissingComponent");
-                pObj = loadModelObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
+                pObj = loadModelObject(xmlSubObject, this, NoUndo);
             }
             else
             {
@@ -718,7 +718,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
-            loadModelObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
+            loadModelObject(xmlSubObject, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
@@ -726,7 +726,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
-            loadContainerPortObject(xmlSubObject, gpLibraryWidget, this, NoUndo);
+            loadContainerPortObject(xmlSubObject, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
@@ -854,7 +854,7 @@ void SystemContainer::exportToLabView()
     QFileInfo file(filePath);
     gpConfig->setLabViewExportDir(file.absolutePath());
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToLabViewSIT(filePath, this);
     delete(pCoreAccess);
 }
@@ -907,7 +907,7 @@ void SystemContainer::exportToFMU(QString savePath)
     //Save model to hmf in export directory
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToFmu(savePath, this);
     delete(pCoreAccess);
 
@@ -1449,7 +1449,7 @@ void SystemContainer::exportToSimulink()
     }
 
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked(), compiler);
     delete(pCoreAccess);
 
@@ -1560,7 +1560,7 @@ void SystemContainer::exportToSimulinkCoSim()
     }
 
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToSimulinkCoSim(savePath, this, pDisablePortLabels->isChecked(), compiler);
     delete(pCoreAccess);
 

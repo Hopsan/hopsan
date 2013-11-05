@@ -36,9 +36,9 @@ class ContainerObject;
 class TextBoxWidget;
 
 
-ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
+ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
 bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 

@@ -232,7 +232,7 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEn
 //! @param[in] pLibrary a pointer to the library widget which holds appearance data
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Wheter or not to register undo for the operation
-ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
+ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //Read core specific data
     QString type = rDomElement.attribute(HMF_TYPENAME);
@@ -398,11 +398,11 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
 
 
 //! @brief Loads a containerport object from a xml dom element
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
     rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
-    return loadModelObject(rDomElement, pLibrary, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
+    return loadModelObject(rDomElement, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
 }
 
 //! @brief Loads a SystemParameter from the supplied load data

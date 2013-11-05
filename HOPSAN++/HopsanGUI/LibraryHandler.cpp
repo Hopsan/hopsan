@@ -180,10 +180,11 @@ void LibraryHandler::loadLibrary(QString xmlPath, InternalExternalEnumT type, Hi
             if(!newLib.sourceFiles.isEmpty())
             {
                 gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile...");
-                recompileLibrary(newLib);
+                recompileLibrary(newLib,false);
                 if(!coreAccess.loadComponentLib(newLib.libFilePath))
                 {
                     gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");
+                    gpConfig->removeUserLib(newLib.xmlFilePath);
                     gpTerminalWidget->checkMessages();
                     return;
                 }
@@ -330,7 +331,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, InternalExternalEnumT type, Hi
                 gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName());
                 gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile library: "+newLib.name+"...");
 
-                recompileLibrary(newLib);
+                recompileLibrary(newLib,false);
                 --i;
                 continue;
             }
@@ -465,10 +466,10 @@ QStringList LibraryHandler::getReplacements(QString type)
 //! @brief Recompiles specified component library (safe to use with opened models)
 //! @param lib Component library to recompile
 //! @param solver Solver to use (for Modelica code only)
-void LibraryHandler::recompileLibrary(ComponentLibrary lib, int solver)
+void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int solver)
 {
     CoreLibraryAccess coreLibrary;
-    CoreGeneratorAccess coreGenerator(0);
+    CoreGeneratorAccess coreGenerator;
 
     //Save GUI state
     gpModelHandler->saveState();
@@ -487,12 +488,12 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, int solver)
         QString sourceFile = code.section("sourcecode=\"",1,1).section("\"",0,0);
         if(sourceFile.endsWith(".mo"))
         {
-            coreGenerator.generateFromModelica(path+"/"+sourceFile, solver);
+            coreGenerator.generateFromModelica(path+"/"+sourceFile, showDialog, solver);
         }
     }
 
     //Call compile utility
-    coreGenerator.compileComponentLibrary(QFileInfo(lib.xmlFilePath).absolutePath());
+    coreGenerator.compileComponentLibrary(QFileInfo(lib.xmlFilePath).absolutePath(), "", showDialog);
 
     //Load library again
     coreLibrary.loadComponentLib(lib.libFilePath);

@@ -135,7 +135,7 @@ void UndoStack::undoOneStep()
         if(stuffElement.attribute("what") == "deletedobject")
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
-            ModelObject* pObj = loadModelObject(componentElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
+            ModelObject* pObj = loadModelObject(componentElement, mpParentContainerObject, NoUndo);
 
             //Load parameter values
             QDomElement xmlParameters = componentElement.firstChildElement(HMF_PARAMETERS);
@@ -149,12 +149,12 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "deletedcontainerport")
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            loadContainerPortObject(systemPortElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
+            loadContainerPortObject(systemPortElement, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "deletedsubsystem")
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            loadModelObject(systemPortElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
+            loadModelObject(systemPortElement, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "addedobject")
         {
@@ -558,17 +558,17 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == "addedobject")
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
-            loadModelObject(componentElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
+            loadModelObject(componentElement, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "addedcontainerport")
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            loadContainerPortObject(systemPortElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
+            loadContainerPortObject(systemPortElement, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "addedsubsystem")
         {
             QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            loadModelObject(systemElement, gpLibraryWidget, mpParentContainerObject, NoUndo);
+            loadModelObject(systemElement, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "deletedconnector")
         {

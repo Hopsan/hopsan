@@ -25,7 +25,7 @@ public:
 
     void loadLibrary(QString xmlPath, InternalExternalEnumT type=External, HiddenVisibleEnumT visibility=Visible);
     void unloadLibrary(QString typeName);
-    void recompileLibrary(ComponentLibrary lib, int solver=0);
+    void recompileLibrary(ComponentLibrary lib, bool showDialog=true, int solver=0);
 
     QStringList getLoadedTypeNames();
     LibraryEntry getEntry(const QString &typeName, const QString &subTypeName="");

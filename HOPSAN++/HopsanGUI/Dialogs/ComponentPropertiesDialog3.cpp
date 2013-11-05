@@ -73,7 +73,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpLibraryWidget);
+            CoreGeneratorAccess coreAccess;
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
@@ -106,7 +106,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
 
         if(pEditDialog->result() == QDialog::Accepted)
         {
-            CoreGeneratorAccess coreAccess(gpLibraryWidget);
+            CoreGeneratorAccess coreAccess;
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
 
             QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
@@ -226,7 +226,7 @@ void ComponentPropertiesDialog3::copyToNewComponent()
 
     if(pEditDialog->result() == QDialog::Accepted)
     {
-        CoreGeneratorAccess coreAccess(gpLibraryWidget);
+        CoreGeneratorAccess coreAccess;
         QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
         QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
         QString libPath = dummy+typeName+"/";

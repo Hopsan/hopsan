@@ -302,7 +302,7 @@ void ComponentGeneratorDialog::generateComponent()
         if(code.endsWith("end "+name+";"))
         {
             //It is (probably) a Modelica model, try and compile it
-            CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
+            CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
             QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+name+"/";
 
             QFile moFile(libPath+name+".mo");
@@ -337,7 +337,7 @@ void ComponentGeneratorDialog::generateComponent()
 
         qDebug() << "C++";
 
-        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
+        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
         //pCoreAccess->generateFromCpp(code);
         delete(pCoreAccess);
 

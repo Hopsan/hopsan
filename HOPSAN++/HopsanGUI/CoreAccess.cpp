@@ -61,12 +61,7 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
 }
 
 
-CoreGeneratorAccess::CoreGeneratorAccess(LibraryWidget *pLibrary)
-{
-    mpLibrary = pLibrary;
-}
-
-bool CoreGeneratorAccess::generateFromModelica(QString path, int solver)
+bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, int solver)
 {
     qDebug() << "SOLVER: " << solver;
 
@@ -74,7 +69,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, int solver)
 
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(path.toStdString().c_str(), true, solver);
+        pHandler->callModelicaGenerator(path.toStdString().c_str(), showDialog, solver);
         return true;
     }
     delete(pHandler);
@@ -214,12 +209,12 @@ void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 }
 
 
-bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString extraLibs)
+bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString extraLibs, bool showDialog)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), extraLibs.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
+        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), extraLibs.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), showDialog);
         return true;
     }
     delete(pHandler);

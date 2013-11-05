@@ -1535,7 +1535,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement objectElement = copyRoot->firstChildElement(HMF_COMPONENTTAG);
     while(!objectElement.isNull())
     {
-        ModelObject *pObj = loadModelObject(objectElement, gpLibraryWidget, this);
+        ModelObject *pObj = loadModelObject(objectElement, this);
 
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();
@@ -1552,7 +1552,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
     while (!systemElement.isNull())
     {
-        ModelObject* pObj = loadModelObject(systemElement, gpLibraryWidget, this, Undo);
+        ModelObject* pObj = loadModelObject(systemElement, this, Undo);
         renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
 
@@ -1566,7 +1566,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
     while (!systemPortElement.isNull())
     {
-        ModelObject* pObj = loadContainerPortObject(systemPortElement, gpLibraryWidget, this, Undo);
+        ModelObject* pObj = loadContainerPortObject(systemPortElement, this, Undo);
         renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
 
