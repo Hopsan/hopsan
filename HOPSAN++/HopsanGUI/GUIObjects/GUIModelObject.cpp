@@ -32,7 +32,7 @@
 #include "GUIPort.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "UndoStack.h"
 #include "Configuration.h"
 #include "global.h"
@@ -1108,7 +1108,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
 
     //QStringList replacements = this->getAppearanceData()->getReplacementObjects();
-    QStringList replacements = gpLibraryWidget->getReplacements(this->getTypeName());
+    QStringList replacements = gpLibraryHandler->getReplacements(this->getTypeName());
     qDebug() << "Replacements = " << replacements;
     QList<QAction *> replaceActionList;
     if(!replacements.isEmpty())
@@ -1116,9 +1116,9 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         QMenu *replaceMenu = rMenu.addMenu(tr("Replace component"));
         for(int i=0; i<replacements.size(); ++i)
         {
-            if(gpLibraryWidget->getAppearanceData(replacements.at(i)))
+            if(gpLibraryHandler->getEntry(replacements.at(i)).pAppearance)
             {
-                QAction *replaceAction = replaceMenu->addAction(gpLibraryWidget->getAppearanceData(replacements.at(i))->getDisplayName());
+                QAction *replaceAction = replaceMenu->addAction(gpLibraryHandler->getEntry(replacements.at(i)).pAppearance->getDisplayName());
                 replaceActionList.append(replaceAction);
             }
         }
@@ -1504,7 +1504,7 @@ ModelObjectAppearance* ModelObject::getAppearanceData()
 
 const ModelObjectAppearance *ModelObject::getLibraryAppearanceData() const
 {
-    return gpLibraryWidget->getAppearanceData(getTypeName());
+    return gpLibraryHandler->getEntry(getTypeName()).pAppearance;
 }
 
 //! @brief Refreshes the appearance and position of ports on the model object

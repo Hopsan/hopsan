@@ -153,5 +153,7 @@
         <file>graphics/uiicons/Hopsan-ImportPlot.png</file>
         <file>graphics/uiicons/Hopsan-Lock.png</file>
         <file>graphics/uiicons/Hopsan-AxisTimeScale.png</file>
+        <file>graphics/builtinCAF/hidden/builtin_hidden.xml</file>
+        <file>graphics/builtinCAF/visible/builtin_visible.xml</file>
     </qresource>
 </RCC>

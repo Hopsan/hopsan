@@ -121,11 +121,7 @@ void Configuration::saveToXml()
     QDomElement libs = appendDomElement(configRoot, "libs");
     for(int i=0; i<mUserLibs.size(); ++i)
     {
-        appendDomTextNode(libs, "userlib", mUserLibs.at(i));
-        if(!mUserLibFolders.at(i).isEmpty())
-        {
-            libs.lastChildElement("userlib").setAttribute("lib", mUserLibFolders.at(i));
-        }
+        appendDomTextNode(libs, "userlib", mUserLibs.at(i).absoluteFilePath());
     }
 
     QDomElement models = appendDomElement(configRoot, "models");
@@ -495,15 +491,7 @@ void Configuration::loadLibrarySettings(QDomElement &rDomElement)
     QDomElement userLibElement = rDomElement.firstChildElement("userlib");
     while (!userLibElement.isNull())
     {
-        mUserLibs.append(userLibElement.text());
-        if(userLibElement.hasAttribute("lib"))
-        {
-            mUserLibFolders.append(userLibElement.attribute("lib"));
-        }
-        else
-        {
-            mUserLibFolders.append("");
-        }
+        mUserLibs.append(QFileInfo(userLibElement.text()));
         userLibElement = userLibElement.nextSiblingElement(("userlib"));
     }
 }
@@ -649,13 +637,13 @@ bool Configuration::getAntiAliasing()
 //! @brief Returns a list of paths to the user libraries that shall be loaded
 QStringList Configuration::getUserLibs()
 {
-    return this->mUserLibs;
-}
+    QStringList ret;
+    Q_FOREACH(const QFileInfo &file, mUserLibs)
+    {
+        ret << file.absoluteFilePath();
+    }
 
-
-QStringList Configuration::getUserLibFolders()
-{
-    return this->mUserLibFolders;
+    return ret;
 }
 
 
@@ -1108,13 +1096,12 @@ void Configuration::setAntiAliasing(bool value)
 
 //! @brief Adds a user library to the library list
 //! @param value Path to the new library
-void Configuration::addUserLib(QString value, QString libName)
+void Configuration::addUserLib(QString value)
 {
-    value = QDir::cleanPath(value);
-    if(!mUserLibs.contains(value))
+    QFileInfo file(value);
+    if(!mUserLibs.contains(file))
     {
-        this->mUserLibs.append(value);
-        this->mUserLibFolders.append(libName);
+        this->mUserLibs.append(file);
     }
     saveToXml();
 }
@@ -1124,16 +1111,8 @@ void Configuration::addUserLib(QString value, QString libName)
 //! @param value Path to the library that is to be removed
 void Configuration::removeUserLib(QString value)
 {
-    value.replace("\\","/");
-    for(int l=0; l<mUserLibs.size(); ++l)
-    {
-        if(mUserLibs.at(l) == value)
-        {
-            mUserLibs.removeAt(l);
-            mUserLibFolders.removeAt(l);
-            --l;
-        }
-    }
+    QFileInfo file(value);
+    mUserLibs.removeAll(file);
     saveToXml();
 }
 
@@ -1142,8 +1121,8 @@ void Configuration::removeUserLib(QString value)
 //! @param value Path to the library
 bool Configuration::hasUserLib(QString value) const
 {
-    value = QDir::cleanPath(value);
-    return mUserLibs.contains(value);
+    QFileInfo file(value);
+    return mUserLibs.contains(file);
 }
 
 

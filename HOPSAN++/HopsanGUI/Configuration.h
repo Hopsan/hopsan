@@ -65,7 +65,6 @@ public:
     bool getAntiAliasing();
 
     QStringList getUserLibs();
-    QStringList getUserLibFolders();
 
     QStringList getRecentModels();
     QStringList getRecentGeneratorModels();
@@ -116,7 +115,7 @@ public:
     void setEnableProgressBar(bool value);
     void setBackgroundColor(QColor value);
     void setAntiAliasing(bool value);
-    void addUserLib(QString value, QString libName="");
+    void addUserLib(QString value);
     void removeUserLib(QString value);
     bool hasUserLib(QString value) const;
     void setSnapping(bool value);
@@ -172,8 +171,7 @@ private:
     bool mEnableProgressBar;
     QColor mBackgroundColor;
     bool mAntiAliasing;
-    QStringList mUserLibs;
-    QStringList mUserLibFolders;
+    QList<QFileInfo> mUserLibs;
     bool mSnapping;
     QStringList mRecentModels;
     QStringList mLastSessionModels;

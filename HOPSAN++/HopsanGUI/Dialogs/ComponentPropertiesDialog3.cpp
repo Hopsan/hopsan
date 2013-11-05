@@ -42,10 +42,11 @@
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/SystemParametersWidget.h"
+#include "LibraryHandler.h"
 
 
 //! @class ComponentPropertiesDialog3
@@ -76,9 +77,19 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
             QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
             QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
             QString libPath = dummy+typeName+"/";
+            QDir().mkpath(libPath);
             int solver = pEditDialog->getSolver();
-            coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName, solver);
-            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
+
+            QFile moFile(libPath+typeName+".mo");
+            moFile.open(QFile::WriteOnly | QFile::Truncate);
+            moFile.write(pEditDialog->getCode().toUtf8());
+            moFile.close();
+
+            coreAccess.generateFromModelica(libPath+typeName+".mo", solver);
+            coreAccess.generateLibrary(libPath, QStringList() << typeName+".hpp");
+            coreAccess.compileComponentLibrary(libPath+typeName+"_lib.xml");
+            gpLibraryHandler->loadLibrary(libPath);
+
             mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
         }
         delete(pEditDialog);
@@ -97,9 +108,21 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
         {
             CoreGeneratorAccess coreAccess(gpLibraryWidget);
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-            QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+typeName+"/";
-            coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
-            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
+
+            QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
+            QString libPath = dummy+typeName+"/";
+            QDir().mkpath(libPath);
+
+            QFile hppFile(libPath+typeName+".hpp");
+            hppFile.open(QFile::WriteOnly | QFile::Truncate);
+            hppFile.write(pEditDialog->getCode().toUtf8());
+            hppFile.close();
+
+            coreAccess.generateFromCpp(libPath+typeName+".hpp");
+            coreAccess.generateLibrary(libPath, QStringList() << typeName+".hpp");
+            coreAccess.compileComponentLibrary(libPath+typeName+"_lib.xml");
+            gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
+
             mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
         }
         delete(pEditDialog);
@@ -205,9 +228,20 @@ void ComponentPropertiesDialog3::copyToNewComponent()
     {
         CoreGeneratorAccess coreAccess(gpLibraryWidget);
         QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-        QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+typeName+"/";
-        coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
-        gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
+        QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
+        QString libPath = dummy+typeName+"/";
+        QDir().mkpath(libPath);
+
+        QFile hppFile(libPath+typeName+".hpp");
+        hppFile.open(QFile::WriteOnly | QFile::Truncate);
+        hppFile.write(pEditDialog->getCode().toUtf8());
+        hppFile.close();
+
+        coreAccess.generateFromCpp(libPath+typeName+".hpp");
+        coreAccess.generateLibrary(libPath, QStringList() << typeName+".hpp");
+        coreAccess.compileComponentLibrary(libPath+typeName+"_lib.xml");
+        gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
+        mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
     }
     delete(pEditDialog);
 }
@@ -215,10 +249,8 @@ void ComponentPropertiesDialog3::copyToNewComponent()
 void ComponentPropertiesDialog3::recompile()
 {
     QString basePath = this->mpModelObject->getAppearanceData()->getBasePath();
-    QString libPath = this->mpModelObject->getAppearanceData()->getLibPath();
     QString fileName = this->mpModelObject->getAppearanceData()->getSourceCodeFile();
 
-    bool modelica = mpModelObject->getAppearanceData()->getSourceCodeFile().endsWith(".mo");
     QString sourceCode = mpSourceCodeTextEdit->toPlainText();
     int solver = mpSolverComboBox->currentIndex();
 
@@ -239,15 +271,8 @@ void ComponentPropertiesDialog3::recompile()
     sourceFile.write(sourceCode.toStdString().c_str());
     sourceFile.close();
 
-    if(!gpLibraryWidget->recompileComponent(basePath+libPath, modelica, sourceCode, solver))
-    {
-        qDebug() << "Failure!";
-        QFile sourceFile(basePath+fileName);
-        if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
-            return;
-        sourceFile.write(oldSourceCode.toStdString().c_str());
-        sourceFile.close();
-    }
+    //Recompile with new code
+    gpLibraryHandler->recompileLibrary(*gpLibraryHandler->getEntry(mpModelObject->getTypeName()).pLibrary, solver);
 
     this->close();
 }
@@ -330,7 +355,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         QGroupBox *pHelpWidget = new QGroupBox();
         QVBoxLayout *pHelpLayout = new QVBoxLayout(pHelpWidget);
 
-        QLabel *pHelpHeading = new QLabel(gpLibraryWidget->getAppearanceData(mpModelObject->getTypeName())->getDisplayName());
+        QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getEntry(mpModelObject->getTypeName()).pAppearance->getDisplayName());
         pHelpHeading->setAlignment(Qt::AlignCenter);
         QFont tempFont = pHelpHeading->font();
         tempFont.setPixelSize(16);
@@ -398,8 +423,8 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
 
     QLabel *pSolverLabel = new QLabel("Solver: ", this);
     mpSolverComboBox = new QComboBox(this);
-    mpSolverComboBox->addItem("Bilinear Transform");
     mpSolverComboBox->addItem("Numerical Integration");
+    mpSolverComboBox->addItem("Bilinear Transform");
     mpNewComponentButton = new QPushButton(tr("&Copy to new component"), this);
     connect(mpNewComponentButton, SIGNAL(clicked()), this, SLOT(copyToNewComponent()));
     mpRecompileButton = new QPushButton(tr("&Recompile"), this);

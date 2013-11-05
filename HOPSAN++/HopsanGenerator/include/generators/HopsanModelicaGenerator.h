@@ -12,7 +12,7 @@ class HopsanModelicaGenerator : public HopsanGenerator
 {
 public:
     HopsanModelicaGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
-    void generateFromModelica(QString code, SolverT solver=BilinearTransform);
+    void generateFromModelica(QString code, SolverT solver=NumericalIntegration);
 
 private:
     void parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList);

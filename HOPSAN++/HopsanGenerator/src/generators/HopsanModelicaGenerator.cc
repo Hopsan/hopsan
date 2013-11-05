@@ -16,8 +16,15 @@ HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QStrin
 }
 
 
-void HopsanModelicaGenerator::generateFromModelica(QString code, SolverT solver)
+void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
 {
+    qDebug() << "SOLVER: " << solver;
+
+    QFile moFile(path);
+    moFile.open(QFile::ReadOnly);
+    QString code = moFile.readAll();
+    moFile.close();
+
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
@@ -48,19 +55,18 @@ void HopsanModelicaGenerator::generateFromModelica(QString code, SolverT solver)
     //qDebug() << "Compiling!";
     printMessage("Generating component...");
 
-    QString target;
-    if(mTarget.isEmpty())
-        target = typeName;
-    else
-        target = mTarget;
-
     //Compile component
-    compileFromComponentObject(target, comp, false, typeName+".mo");
+    QString cppCode = generateSourceCodefromComponentObject(comp, false);
 
-    QFile moFile(mOutputPath+typeName+".mo");
-    moFile.open(QFile::WriteOnly | QFile::Text);
-    moFile.write(code.toUtf8());
-    moFile.close();
+    //Write output file
+    QString moPath = path;
+    QFile hppFile(path.replace(".mo", ".hpp"));
+    hppFile.open(QFile::WriteOnly | QFile::Truncate);
+    hppFile.write(cppCode.toUtf8());
+    hppFile.close();
+
+    //Generate or update appearance file
+    generateOrUpdateComponentAppearanceFile(path.replace(".hpp",".xml"), comp, QFileInfo(moPath).fileName());
 
     //qDebug() << "Finished!";
     printMessage("HopsanGenerator finished!");

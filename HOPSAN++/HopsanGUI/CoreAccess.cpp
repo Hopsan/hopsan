@@ -35,7 +35,7 @@
 #include "ComponentSystem.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include "DesktopHandler.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
 #include "Utilities/GUIUtilities.h"
@@ -54,7 +54,7 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
     rGUIParam.mUnit = QString(pCoreParam->getUnit().c_str());
     rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription().c_str());
     rGUIParam.mIsEnabled = pCoreParam->isEnabled();
-    for(int c=0; c<pCoreParam->getConditions().size(); ++c)
+    for(size_t c=0; c<pCoreParam->getConditions().size(); ++c)
     {
         rGUIParam.mConditions.append(QString(pCoreParam->getConditions()[c].c_str()));
     }
@@ -66,13 +66,15 @@ CoreGeneratorAccess::CoreGeneratorAccess(LibraryWidget *pLibrary)
     mpLibrary = pLibrary;
 }
 
-bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath, QString target, int solver)
+bool CoreGeneratorAccess::generateFromModelica(QString path, int solver)
 {
+    qDebug() << "SOLVER: " << solver;
+
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
 
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(code.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true, outputPath.toStdString().c_str(), target.toStdString().c_str(), solver);
+        pHandler->callModelicaGenerator(path.toStdString().c_str(), true, solver);
         return true;
     }
     delete(pHandler);
@@ -81,12 +83,12 @@ bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath,
 
 
 //! @todo Return false if compilation fails!
-bool CoreGeneratorAccess::generateFromCpp(QString code, bool showOutputDialog, QString outputPath)
+bool CoreGeneratorAccess::generateFromCpp(QString hppFile)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callCppGenerator(code.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), showOutputDialog, outputPath.toStdString().c_str());
+        pHandler->callCppGenerator(hppFile.toStdString().c_str());
         return true;
     }
     delete(pHandler);
@@ -113,7 +115,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 
             if(doIt)
             {
-                mpLibrary->unloadExternalLibrary(fmuName, "FMU");
+                gpLibraryHandler->unloadLibrary(fmuName);
                 removeDir(QDir::cleanPath(gpDesktopHandler->getFMUPath()+fmuName));
             }
             else
@@ -136,7 +138,8 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             fmuIcon.close();
 
             //Load library
-            mpLibrary->loadAndRememberExternalLibrary(gpDesktopHandler->getFMUPath() + fmuName, "FMU");
+            //! @todo Make this work again (needs XML file)
+            //gpLibraryHandler->loadLibrary(gDesktopHandler.getFMUPath() + fmuName, "FMU");
             return true;
         }
     }
@@ -196,13 +199,27 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
     return false;
 }
 
-
-bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString name, QString extraLibs)
+void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), name.toStdString().c_str(), extraLibs.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
+        std::vector<hopsan::HString> hppList;
+        for(int i=0; i<hppFiles.size(); ++i)
+        {
+            hppList.push_back(hppFiles[i].toStdString().c_str());
+        }
+        pHandler->callLibraryGenerator(path.toStdString().c_str(), hppList, true);
+    }
+}
+
+
+bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString extraLibs)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), extraLibs.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);

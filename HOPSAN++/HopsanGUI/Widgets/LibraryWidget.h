@@ -15,8 +15,8 @@
 
 //!
 //! @file   LibraryWidget.h
-//! @author Björn Eriksson <bjorn.eriksson@liu.se>
-//! @date   2010-02-05
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2013-10-23
 //!
 //! @brief Contains classes for Library Widgets
 //!
@@ -25,182 +25,68 @@
 #ifndef LIBRARYWIDGET_H
 #define LIBRARYWIDGET_H
 
-#include "common.h"
-
-#include <QListWidget>
-#include <QStringList>
+//Qt includes
+#include <QObject>
+#include <QWidget>
+#include <QSize>
 #include <QTreeWidget>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QListWidgetItem>
-#include <QStringList>
-#include <QVector>
+#include <QListWidget>
 #include <QToolButton>
-#include <QDir>
-#include <QToolBar>
-#include <QTextEdit>
+#include <QLabel>
 
-// Forward Declaration
-class ModelObjectAppearance;
-class CoreLibraryAccess;
-class LibraryComponent;
-class LibraryContentsTree;
-class LibraryTreeWidget;
-class LibraryListWidget;
+//Hopsan includes
+#include "GUIObjects/GUIModelObjectAppearance.h"
 
+//Forward declarations
+class LibraryHandler;
+
+
+//! @brief Library widget class
 class LibraryWidget : public QWidget
 {
     Q_OBJECT
 
-    friend class LibraryListWidget;
-    friend class LibraryTreeWidget;
-    friend class QTreeWidgetItem;
-
 public:
     // Public Member functions
     LibraryWidget(QWidget *parent=0);
-    void update();
-    void loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
-    void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
-    void loadLibrary(QString libDir, const InternalExternalEnumT int_ext = Internal, QString libName="");
-    void loadAndRememberExternalLibrary(const QString libDir, const QString libName="");
-    void unloadExternalLibrary(const QString libName, const QString parentLibName);
-    void loadHiddenSecretDir(QString dir);
-
-    void addReplacement(QString type1, QString type2);
-    QStringList getReplacements(QString type);
-
-    ModelObjectAppearance *getAppearanceData(const QString fullCompType);
-    ModelObjectAppearance *getAppearanceData(const QString compType, const QString compSubType);
     QSize sizeHint() const;
+    void setGfxType(GraphicsTypeEnumT gfxType);
 
     GraphicsTypeEnumT mGfxType;
-    QLabel *mpComponentNameField;
-    QStringList mLoadedComponents;
 
-    void checkForFailedComponents();
-
-    bool recompileComponent(QString libPath, const bool modelica=false, const QString modelicaCode=QString(), int solver=0);
 public slots:
-    void generateComponent();
-    void addExternalLibrary(QString libDir = QString());
-    void importFmu();
-    void setGfxType(GraphicsTypeEnumT gfxType);
-    void setListView();
-    void setDualView();
-    void clearHoverEffects();
-
-protected:
-    virtual void contextMenuEvent(QContextMenuEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
+    void update();
 
 private slots:
-    void showLib(QTreeWidgetItem * item, int column);
-    void initializeDrag(QListWidgetItem* item);
-    void initializeDrag(QTreeWidgetItem* item, int dummy);
-    void editComponent(QListWidgetItem *item);
-    void editComponent(QTreeWidgetItem *item, int /*dummy*/);
-    void editComponent();
-    void recompileComponent();
+    void handleItemClick(QTreeWidgetItem* item, int);
+    void handleItemClick(QListWidgetItem* item);
+    void handleItemEntered(QListWidgetItem* item);
+
+protected:
+    void mouseMoveEvent(QMouseEvent *event);
+
 
 private:
-    void initializeDragCommon();
-    void loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree=0);
-    void updateLibraryFolder(LibraryContentsTree /**pTree*/);
-    void unLoadLibrarySubTree(LibraryContentsTree *pTree, const QString parentLibDir);
-    void getSubTreeComponentsAndNodes(const LibraryContentsTree *pTree, QStringList &rComponents, QStringList &rNodes);
-
-    YesNoToAllEnumT mUpConvertAllCAF;
-
-    LibraryContentsTree *mpContentsTree;
-    LibraryContentsTree *mpSecretHiddenContentsTree;
-
-    LibraryTreeWidget *mpTree;
-
-    LibraryListWidget *mpList;
+    //GUI Stuff
+    QTreeWidget *mpTree;
+    QTreeWidget *mpDualTree;
+    QListWidget *mpList;
+    QTreeWidgetItem *mpLoadLibraryItem;
+    QTreeWidgetItem *mpAddModelicaComponentItem;
+    QTreeWidgetItem *mpAddCppComponentItem;
+    QTreeWidgetItem *mpLoadLibraryItemDual;
+    QTreeWidgetItem *mpAddModelicaComponentItemDual;
+    QTreeWidgetItem *mpAddCppComponentItemDual;
+    QLabel *mpComponentNameLabel;
     QToolButton *mpTreeViewButton;
     QToolButton *mpDualViewButton;
     QToolButton *mpHelpButton;
-    QToolButton *mpGenerateComponentButton;
-    QToolButton *mpLoadExternalButton;
-    QAction *mpHelpAction;
-    QToolBar *mpHelpToolBar;
-    QGridLayout *mpGrid;
-    int mViewMode;
-    CoreLibraryAccess *mpCoreAccess;
-    QMap<QListWidgetItem *, LibraryComponent *> mListItemToContentsMap;
-    QMap<QTreeWidgetItem *, LibraryComponent *> mTreeItemToContentsMap;
-    QMap<QTreeWidgetItem *, LibraryContentsTree *> mTreeItemToContentsTreeMap;
 
-    QTreeWidgetItem *mpAddModelicaComponentItem;
-    QTreeWidgetItem *mpAddCppComponentItem;
-    QTreeWidgetItem *mpLoadLibraryItem;
-
-    QDir mUpdateXmlBackupDir;
-
-    QMap<QString, QStringList> mReplacementsMap;
-
-    QString mEditComponentTypeName;
-    QString mEditComponentSourceCode;
-    int mEditComponentSolver;
-    QTextEdit *mpEditComponentTextEdit;
-
-    QStringList mFailedRecompilableComponents;
-    QList<bool> mFailedComponentsHaveCode;
-    QList<bool> mFailedComponentsAreRecompilable;
-    QStringList mFailedComponentsLibPaths;
-    QList<bool> mFailedComponentsIsModelica;
-    QStringList mFailedComponentsCode;
-
-    QStringList mExpandedTreeItems;
-};
-
-
-class LibraryTreeWidget : public QTreeWidget
-{
-    Q_OBJECT
-public:
-    LibraryTreeWidget(LibraryWidget *parent);
-protected:
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
- //   virtual void contextMenuEvent(QContextMenuEvent *);
-};
-
-
-class LibraryListWidget : public QListWidget
-{
-    Q_OBJECT
-public:
-    LibraryListWidget(LibraryWidget *parent);
-protected:
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void contextMenuEvent(QContextMenuEvent *event);
-private:
-    LibraryWidget *mpLibraryWidget;
-};
-
-
-class LibraryContentsTree
-{
-public:
-    LibraryContentsTree(QString name = QString(), LibraryContentsTree* pParent=0);
-    bool isEmpty();
-    LibraryContentsTree *addChild(QString name);
-    bool removeChild(QString name);
-    LibraryContentsTree *findChildByName(QString name);
-    LibraryContentsTree *findChildByPath(QString path);
-    LibraryComponent *addComponent(ModelObjectAppearance *pAppearanceData);
-    bool removeComponent(QString name);
-    LibraryComponent *findComponent(const QString type, const QString subType);
-
-    QString mName;
-    QString mLibDir;
-    QVector<QString> mLoadedLibraryDLLs;
-    QVector<LibraryContentsTree *> mChildNodesPtrs;
-    QVector<LibraryComponent *> mComponentPtrs;
-    LibraryContentsTree* mpParent;
+    //Maps between GUI objects and library contents
+    QMap<QTreeWidgetItem *, QString> mItemToTypeNameMap;        //Map between component items and typenames
+    QMap<QListWidgetItem *, QString> mListItemToTypeNameMap;    //Map between component items in dual view list and typenames
+    QMap<QTreeWidgetItem *, QStringList> mItemToLibFilesMap;    //Map between component items and libraries it might origin from
+    QMap<QTreeWidgetItem *, QStringList> mFolderToContentsMap;  //Map between folders and typenames of sub-components, for updating list in dual view
 };
 
 #endif // LIBRARYWIDGET_H

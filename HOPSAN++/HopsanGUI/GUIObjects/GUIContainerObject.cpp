@@ -53,7 +53,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "version_gui.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/PlotWidget.h"
@@ -498,7 +498,7 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
 ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, qreal rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
-    ModelObjectAppearance *pAppearanceData = gpLibraryWidget->getAppearanceData(fullTypeName);
+    ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getEntry(fullTypeName).pAppearance;
     if(!pAppearanceData)    //Not an existing component
         return 0;       //No error message here, it depends on from where this function is called
     else

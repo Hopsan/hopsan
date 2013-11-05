@@ -31,7 +31,7 @@
 #include "GUIObjects/GUIWidgets.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "UndoStack.h"
 #include "Widgets/HcomWidget.h"
 #include "Utilities/GUIUtilities.h"
@@ -250,7 +250,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     int nameTextVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
 
-    ModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type, subtype);
+    ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getEntry(type, subtype).pAppearance;
     if (pAppearanceData != 0)
     {
         QDomElement animationElement = guiData.firstChildElement("animation");

@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -39,6 +39,7 @@
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "DesktopHandler.h"
+#include "LibraryHandler.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
 #include "PlotHandler.h"
@@ -82,6 +83,7 @@ PlotTreeWidget *gpPlotWidget;
 CentralTabWidget *gpCentralTabWidget;
 SystemParametersWidget *gpSystemParametersWidget;
 UndoWidget *gpUndoWidget;
+LibraryHandler *gpLibraryHandler;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -181,20 +183,16 @@ void MainWindow::createContents()
     mpPyDockWidget = 0;
 #endif
 
-
-    QTime time;
-    time.start();
+    //Create the library handler
+    gpLibraryHandler = new LibraryHandler();
 
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    mpLibrary = new LibraryWidget(this);
-    gpLibraryWidget = mpLibrary;
-    mpLibDock->setWidget(mpLibrary);
-
+    mpLibraryWidget = new LibraryWidget(this);
+    gpLibraryWidget = mpLibraryWidget;
+    mpLibDock->setWidget(mpLibraryWidget);
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
-
-    qDebug() << "Time for creating library: " << time.elapsed();
 
     //Create the statusbar widget
     mpStatusBar = new QStatusBar();
@@ -361,26 +359,25 @@ void MainWindow::initializeWorkspace()
     gpSplash->showMessage("Loading component libraries...");
 
     // Load HopsanGui built in secret components
-    mpLibrary->loadHiddenSecretDir(QString(BUILTINCAFPATH) + "hidden/");
+    gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "hidden/builtin_hidden.xml", Internal, Hidden);
 
     // Load default and user specified libraries
     QString componentPath = gpDesktopHandler->getComponentsPath();
 
     // Load built in default Library
-    mpLibrary->loadLibrary(componentPath, Internal);
+    //mpLibrary->loadLibrary(componentPath, Internal);
+    gpLibraryHandler->loadLibrary(componentPath+"defaultComponentLibrary.xml", Internal);
 
     // Load builtIn library (Container special components)
-    mpLibrary->loadLibrary(QString(BUILTINCAFPATH) + "visible/", Internal);
+    gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "visible/builtin_visible.xml", Internal);
 
     for(int i=0; i<gpConfig->getUserLibs().size(); ++i)
     {
         gpSplash->showMessage("Loading library: "+gpConfig->getUserLibs()[i]+"...");
-        mpLibrary->loadAndRememberExternalLibrary(gpConfig->getUserLibs().at(i), gpConfig->getUserLibFolders().at(i));
+        gpLibraryHandler->loadLibrary(gpConfig->getUserLibs().at(i));
     }
 
-    mpLibrary->checkForFailedComponents();
-
-
+    //mpLibrary->checkForFailedComponents();
 
     // Create the plot widget, only once! :)
     mpPlotWidget = new PlotTreeWidget(this);
@@ -403,7 +400,7 @@ void MainWindow::initializeWorkspace()
         }
     }
 
-    mpLibrary->adjustSize();
+    mpLibraryWidget->adjustSize();
 }
 
 
@@ -634,7 +631,7 @@ void MainWindow::createActions()
 
     mpLoadLibsAction = new QAction(this);
     mpLoadLibsAction->setText("Load Libraries");
-    connect(mpLoadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addExternalLibrary()));
+    connect(mpLoadLibsAction,SIGNAL(triggered()),mpLibraryWidget,SLOT(addExternalLibrary()));
 
     mpPropertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
     mpPropertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");
@@ -1114,7 +1111,7 @@ void MainWindow::createToolbars()
     buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
 
 
-    connect(mpImportFMUAction,              SIGNAL(triggered()), mpLibrary,     SLOT(importFmu()));
+    connect(mpImportFMUAction,              SIGNAL(triggered()), mpLibraryWidget,     SLOT(importFmu()));
     connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulink()));
     connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulinkCoSim()));
     connect(mpExportToFMUAction,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU()));
@@ -1303,7 +1300,7 @@ void MainWindow::openContextHelp()
         {
             mpHelpDialog->open("userEnergyLosses.html");
         }
-        else if(action->parent() == mpLibrary)
+        else if(action->parent() == mpLibraryWidget)
         {
             mpHelpDialog->open("userCustomComponents.html");
         }
@@ -1315,7 +1312,7 @@ void MainWindow::openContextHelp()
     QToolButton *button = qobject_cast<QToolButton *>(sender());
     if(button != 0)
     {
-        if(button->parent() == mpLibrary)
+        if(button->parent() == mpLibraryWidget)
         {
             mpHelpDialog->open("userCustomComponents.html");
         }
@@ -1464,10 +1461,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     hideHelpPopupMessage();
 
-    if(!mpLibrary->underMouse())
-    {
-        mpLibrary->mpComponentNameField->setText(QString());
-    }
+//    if(!mpLibrary->underMouse())
+//    {
+//        mpLibrary->mpComponentNameField->setText(QString());
+//    }
 
     QMainWindow::mouseMoveEvent(event);
 }

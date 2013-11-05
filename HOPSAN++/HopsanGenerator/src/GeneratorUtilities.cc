@@ -238,13 +238,41 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
 
 
 
-bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks)
+bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLinks)
 {
     pGenerator->printMessage("Writing compilation script...");
 
     QStringList ccFiles;
-    QDir targetDir = QDir(path);
-    ccFiles = targetDir.entryList(QStringList() << "*.cc" << "*.cpp");
+    QString name;
+    if(QFileInfo(path).isFile())
+    {
+        QFile xmlFile(path);
+        xmlFile.open(QFile::ReadOnly);
+        QString xmlCode = xmlFile.readAll();
+        xmlFile.close();
+        QStringList xmlLines = xmlCode.split("\n");
+
+        QFileInfo xmlFileInfo(xmlFile);
+        path = xmlFileInfo.path();
+
+        for(int l=0; l<xmlLines.size(); ++l)
+        {
+            if(xmlLines[l].trimmed().startsWith("<source>"))
+            {
+                ccFiles.append(xmlLines[l].section("<source>",1,1).section("</source>",0,0));
+            }
+            else if(xmlLines[l].trimmed().startsWith("<lib>"))
+            {
+                name = xmlLines[l].section("<lib>",1,1).section("</lib>",0,0).section(".",0,0);
+            }
+        }
+    }
+    else
+    {
+        name = QDir(path).dirName();
+        ccFiles = QDir(path).entryList(QStringList() << "*.cc");
+    }
+
     QString c;
     Q_FOREACH(const QString &file, ccFiles)
         c.append(file+" ");

@@ -76,6 +76,7 @@ enum ModelObjectZValuesEnumT {PortZValue, SelectionboxZValue, HoveredPortZValue,
 enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue};
 enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
 enum InternalExternalEnumT {Internal, External};
+enum HiddenVisibleEnumT {Hidden, Visible};
 
 #include <QString>
 //! @todo this should not be in common.h

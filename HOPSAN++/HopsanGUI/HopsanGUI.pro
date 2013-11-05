@@ -142,7 +142,6 @@ RC_FILE = HOPSANGUI.rc
 SOURCES += main.cpp \
     MainWindow.cpp \
     Widgets/ProjectTabWidget.cpp \
-    Widgets/LibraryWidget.cpp \
     GUIConnector.cpp \
     GUIPort.cpp \
     Widgets/PlotWidget.cpp \
@@ -213,13 +212,14 @@ SOURCES += main.cpp \
     Widgets/ModelWidget.cpp \
     OptimizationHandler.cpp \
     Utilities/HighlightingUtilities.cpp \
-    Widgets/DataExplorer.cpp
+    Widgets/DataExplorer.cpp \
+    Widgets/LibraryWidget.cpp \
+    LibraryHandler.cpp
 
 
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
-    Widgets/LibraryWidget.h \
     GUIConnector.h \
     GUIPort.h \
     Widgets/PlotWidget.h \
@@ -293,6 +293,9 @@ HEADERS += MainWindow.h \
     Widgets/ModelWidget.h \
     OptimizationHandler.h \
     Utilities/HighlightingUtilities.h \
+    Widgets/DataExplorer.h \
+    Widgets/LibraryWidget.h \
+    LibraryHandler.h \
     Widgets/DataExplorer.h \
     global.h
 

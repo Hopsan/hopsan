@@ -108,6 +108,14 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
+    //Load library generator function
+    callLibraryGenerator = (call_library_generator_t)GetProcAddress(lib_ptr, "callLibraryGenerator");
+    if(!callLibraryGenerator)
+    {
+        //! @todo Error message
+        return;
+    }
+
 #else
     void *lib_ptr;
 #ifdef QT_NO_DEBUG
@@ -189,6 +197,14 @@ GeneratorHandler::GeneratorHandler()
     //Load compile component library function
     callComponentLibraryCompiler = (call_complib_compiler_t)dlsym(lib_ptr, "callComponentLibraryCompiler");
     dlsym_error = dlerror();
+    if(dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //Load library generator function
+    callLibraryGenerator = (call_library_generator_t)dlsym(lib_ptr, "callLibraryGenerator");
     if(dlsym_error)
     {
         //! @todo Error message

@@ -25,7 +25,7 @@
 #include "global.h"
 #include "GUIModelObjectAppearance.h"
 #include "Utilities/GUIUtilities.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "Utilities/XMLUtilities.h"
 #include "version_gui.h"
 
@@ -715,7 +715,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         while (!xmlReplacable.isNull())
         {
             QString typeName = xmlReplacable.attribute(CAF_TYPENAME);
-            gpLibraryWidget->addReplacement(mTypeName, typeName); //!< @todo mainwindow and library should not be called in this file it is suposed to be a leaf class
+            gpLibraryHandler->addReplacement(mTypeName, typeName); //!< @todo mainwindow and library should not be called in this file it is suposed to be a leaf class
             xmlReplacable = xmlReplacable.nextSiblingElement(CAF_REPLACABLE);
         }
 

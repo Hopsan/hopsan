@@ -43,7 +43,7 @@
 #include "Utilities/HighlightingUtilities.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "Widgets/PyDockWidget.h"
 
 
@@ -304,10 +304,16 @@ void ComponentGeneratorDialog::generateComponent()
             //It is (probably) a Modelica model, try and compile it
             CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
             QString libPath = gpDesktopHandler->getGeneratedComponentsPath()+name+"/";
-            pCoreAccess->generateFromModelica(code, libPath);
+
+            QFile moFile(libPath+name+".mo");
+            moFile.open(QFile::WriteOnly | QFile::Truncate);
+            moFile.write(code.toUtf8());
+            moFile.close();
+
+            pCoreAccess->generateFromModelica(libPath+name+".mo");
             delete(pCoreAccess);
 
-            gpLibraryWidget->loadAndRememberExternalLibrary(libPath, "");
+            gpLibraryHandler->loadLibrary(libPath);
 
 //            QString typeName, displayName, cqsType;
 //            QStringList initAlgorithms, equations, finalAlgorithms;
@@ -332,7 +338,7 @@ void ComponentGeneratorDialog::generateComponent()
         qDebug() << "C++";
 
         CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess(gpLibraryWidget);
-        pCoreAccess->generateFromCpp(code);
+        //pCoreAccess->generateFromCpp(code);
         delete(pCoreAccess);
 
 //        comp.plainCode = code;

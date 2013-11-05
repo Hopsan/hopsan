@@ -27,6 +27,7 @@
 #include "generators/HopsanSimulinkGenerator.h"
 #include "generators/HopsanLabViewGenerator.h"
 #include "generators/HopsanFMIGenerator.h"
+#include "HopsanTypes.h"
 #include "win32dll.h"
 
 #include <QMessageBox>
@@ -39,14 +40,28 @@ using namespace std;
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, string coreIncludePath, string binPath, bool showDialog=false, string outputPath="", string target="", int solver=0)
+extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string path, bool showDialog=false, int solver=0)
 {
-    //qDebug() << "Called Modelica generator (in dll)!";
+    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator("", "", showDialog);
+    pGenerator->generateFromModelica(QString(path.c_str()), HopsanGenerator::SolverT(solver));
+    delete(pGenerator);
+}
 
-    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
-    pGenerator->setOutputPath(QString(outputPath.c_str()));
-    pGenerator->setTarget(QString(target.c_str()));
-    pGenerator->generateFromModelica(QString(modelicaCode.c_str()), HopsanGenerator::SolverT(solver));
+
+//! @brief Calls the Modelica generator
+//! @param modelicaCode Modelica code
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binPath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
+extern "C" DLLIMPORTEXPORT void callLibraryGenerator(hopsan::HString path, vector<hopsan::HString> hppFiles, bool showDialog=false)
+{
+    HopsanGenerator *pGenerator = new HopsanGenerator("", "", showDialog);
+    QStringList tempList;
+    for(int i=0; i<hppFiles.size(); ++i)
+    {
+        tempList.append(QString(hppFiles[i].c_str()));
+    }
+    pGenerator->generateNewLibrary(QString(path.c_str()), tempList);
     delete(pGenerator);
 }
 
@@ -56,80 +71,57 @@ extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, strin
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncludePath, string binPath, bool showDialog=false, string outputPath="")
+extern "C" DLLIMPORTEXPORT void callCppGenerator(string hppPath)
 {
     qDebug() << "Called C++ generator (in dll)!";
 
-    QString code = QString(cppCode.c_str());
+    QFile hppFile(QString(hppPath.c_str()));
+    hppFile.open(QFile::ReadOnly);
+    QString code = hppFile.readAll();
+    hppFile.close();
 
     //Needed: typeName, displayName, cqsType
     QString typeName = code.section("class ", 1, 1).section(" ",0,0);
     QString displayName = typeName;
-    QString cqsType = code.section("public ",1,1).section("\n",0,0);
-    cqsType.remove("Component");
-    cqsType = cqsType[0];
 
-    qDebug() << "Type name: " << typeName;
-    qDebug() << "CQS Type: " << cqsType;
-
-    ComponentSpecification comp = ComponentSpecification(typeName, displayName, cqsType);
-
-    QList<PortSpecification> ports;
+    QStringList portNames;
     QStringList lines = code.split("\n");
     for(int l=0; l<lines.size(); ++l)
     {
-        if(lines.at(l).contains("addPowerPort"))
+        if(lines.at(l).contains("addPowerPort") || lines.at(l).contains("addReadPort") || lines.at(l).contains("addWritePort") ||
+           lines.at(l).contains("addPowerMultiPort") || lines.at(l).contains("addReadMultiPort"))
         {
-            QString portType = "PowerPortType";
-            QString portName = lines.at(l).section("\"",1,1);
-            QString nodeType = lines.at(l).section("\"",3,3);
-            ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-            comp.portNames.append(portName);
-        }
-        else if(lines.at(l).contains("addReadPort"))
-        {
-            QString portType = "ReadPortType";
-            QString portName = lines.at(l).section("\"",1,1);
-            QString nodeType = lines.at(l).section("\"",3,3);
-            ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-            comp.portNames.append(portName);
-        }
-        else if(lines.at(l).contains("addWritePort"))
-        {
-            QString portType = "WritePortType";
-            QString portName = lines.at(l).section("\"",1,1);
-            QString nodeType = lines.at(l).section("\"",3,3);
-            ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-            comp.portNames.append(portName);
-        }
-        else if(lines.at(l).contains("addPowerMultiPort"))
-        {
-            QString portType = "PowerMultiportType";
-            QString portName = lines.at(l).section("\"",1,1);
-            QString nodeType = lines.at(l).section("\"",3,3);
-            ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-            comp.portNames.append(portName);
-        }
-        else if(lines.at(l).contains("addReadMultiPort"))
-        {
-            QString portType = "ReadMultiportType";
-            QString portName = lines.at(l).section("\"",1,1);
-            QString nodeType = lines.at(l).section("\"",3,3);
-            ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-            comp.portNames.append(portName);
+            portNames.append(lines.at(l).section("\"",1,1));
         }
     }
 
-    //Add header guard
-    code.prepend("#ifndef "+typeName.toUpper()+"_HPP_INCLUDED\n#define "+typeName.toUpper()+"_HPP_INCLUDED\n\n");
-    code.append("\n#endif // "+typeName.toUpper()+"_HPP_INCLUDED\n");
-
-    comp.plainCode = code;
-
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
-    pGenerator->setOutputPath(QString(outputPath.c_str()));
-    pGenerator->compileFromComponentObject(typeName, comp, false);
-    delete(pGenerator);
+    QFile xmlFile;
+    xmlFile.setFileName(QFileInfo(hppFile).filePath()+typeName+".xml");
+    if(!xmlFile.exists())
+    {
+        if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            return;
+        }
+        QTextStream xmlStream(&xmlFile);
+        xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
+        xmlStream << "  <modelobject typename=\"" << typeName << "\" displayname=\"" << displayName << "\">\n";
+        xmlStream << "    <icons/>\n";
+        xmlStream << "    <ports>\n";
+        double xDelay = 1.0/(portNames.size()+1.0);
+        double xPos = xDelay;
+        double yPos = 0;
+        for(int i=0; i<portNames.size(); ++i)
+        {
+            xmlStream << "      <port name=\"" << portNames[i] << "\" x=\"" << xPos << "\" y=\"" << yPos << "\" a=\"" << 270 << "\"/>\n";
+            xPos += xDelay;
+        }
+        xmlStream << "    </ports>\n";
+        xmlStream << "  </modelobject>\n";
+        xmlStream << "</hopsanobjectappearance>\n";
+        xmlFile.close();
+    }
 }
 
 
@@ -214,10 +206,10 @@ extern "C" DLLIMPORTEXPORT void callLabViewSITGenerator(string path, hopsan::Com
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binpath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callComponentLibraryCompiler(string path, string name, string extraLinks, string coreIncludePath, string binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callComponentLibraryCompiler(hopsan::HString path, hopsan::HString extraLinks, hopsan::HString coreIncludePath, hopsan::HString binPath, bool showDialog=false)
 {
     HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
-    compileComponentLibrary(QString(path.c_str()), QString(name.c_str()), pGenerator, QString(extraLinks.c_str()));
+    compileComponentLibrary(QString(path.c_str()), pGenerator, QString(extraLinks.c_str()));
     delete(pGenerator);
 }
 

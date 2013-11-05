@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -92,7 +92,7 @@ public:
     CentralTabWidget *mpCentralTabs;
     ModelHandler *mpModelHandler;
     WelcomeWidget *mpWelcomeWidget;
-    LibraryWidget *mpLibrary;
+    LibraryWidget *mpLibraryWidget;
     MessageWidget *mpMessageWidget;
     TerminalWidget *mpTerminalWidget;
     PlotTreeWidget *mpPlotWidget;
@@ -227,6 +227,7 @@ private:
     //Dock area widgets
     QDockWidget *mpMessageDock;
     QDockWidget *mpLibDock;
+    QDockWidget *mpLibDock2;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
     QDockWidget *mpSystemParametersDock;

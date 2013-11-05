@@ -52,7 +52,7 @@ class ComponentSystem;
 class DLLIMPORTEXPORT HopsanGenerator
 {
 public:
-    enum SolverT {BilinearTransform, NumericalIntegration};
+    enum SolverT {NumericalIntegration, BilinearTransform};
 
     HopsanGenerator(const QString coreIncludePath, const QString binPath, const bool showDialog=false);
     void setOutputPath(const QString path);
@@ -62,10 +62,12 @@ public:
     void printMessage(const QString &msg) const;
     void printErrorMessage(const QString &msg) const;
     void compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
+    void generateNewLibrary(QString path, QStringList hppFiles);
 
 protected:
 
     QString generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues=false) const;
+    void generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile=QString());
     bool assertFilesExist(const QString &path, const QStringList &files) const;
     void callProcess(const QString &name, const QStringList &args, const QString workingDirectory=QString()) const;
     bool runUnixCommand(QString cmd) const;

@@ -31,7 +31,7 @@
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "version_gui.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Dialogs/ContainerPropertiesDialog.h"
@@ -52,7 +52,7 @@ SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelOb
 SystemContainer::SystemContainer(ModelWidget *parentModelWidget, QGraphicsItem *pParent)
     : ContainerObject(QPointF(0,0), 0, 0, Deselected, UserGraphics, 0, pParent)
 {
-    this->mModelObjectAppearance = *(gpLibraryWidget->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
+    this->mModelObjectAppearance = *(gpLibraryHandler->getEntry(HOPSANGUISYSTEMTYPENAME).pAppearance); //This will crash if Subsystem not already loaded
     this->mpModelWidget = parentModelWidget;
     this->commonConstructorCode();
     this->mpUndoStack->newPost();

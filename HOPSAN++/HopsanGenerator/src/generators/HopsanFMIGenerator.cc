@@ -672,23 +672,24 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
 #endif
 
 
+    //! @todo Make compilation work again!
 #ifdef WIN32
-    if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this, "-L./ -llibexpat"))
+    //if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this, "-L./ -llibexpat"))
 #else
-    if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this))
+    //if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this))
 #endif
-    {
-        printErrorMessage("Failed to import fmu.");
-        return;
-    }
-    else
-    {
+//    {
+//        printErrorMessage("Failed to import fmu.");
+//        return;
+//    }
+//    else
+//    {
         //cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
         //        "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
         //        QStringList() << "component_code" << "binaries");
 
         printMessage("Finished.");
-    }
+//    }
 }
 
 

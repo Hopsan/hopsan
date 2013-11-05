@@ -60,14 +60,15 @@ class CoreGeneratorAccess
 {
 public:
     CoreGeneratorAccess(LibraryWidget *pLibrary);
-    bool generateFromModelica(QString code, QString outputPath="", QString target="", int solver=0);
-    bool generateFromCpp(QString code, bool showOutputDialog=true, QString outputPath="");
+    bool generateFromModelica(QString path, int solver=0);
+    bool generateFromCpp(QString hppFile);
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
-    bool compileComponentLibrary(QString path, QString name, QString extraLibs="");
+    void generateLibrary(QString path, QStringList hppFiles);
+    bool compileComponentLibrary(QString path, QString extraLibs="");
 
 private:
     LibraryWidget *mpLibrary;

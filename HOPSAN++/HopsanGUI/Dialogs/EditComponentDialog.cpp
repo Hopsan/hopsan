@@ -62,8 +62,8 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
     QHBoxLayout *pSolverLayout = new QHBoxLayout();
     QLabel *pSolverLabel = new QLabel("Solver method: ", this);
     mpSolverComboBox = new QComboBox(this);
-    mpSolverComboBox->addItem("Bilinear transform");
     mpSolverComboBox->addItem("Numerical integration");
+    mpSolverComboBox->addItem("Bilinear transform");
     pSolverLayout->addWidget(pSolverLabel);
     pSolverLayout->addWidget(mpSolverComboBox);
     pSolverLayout->addWidget(new QWidget(this));

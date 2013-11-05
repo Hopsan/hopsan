@@ -43,6 +43,7 @@ class PlotTreeWidget;
 class CentralTabWidget;
 class SystemParametersWidget;
 class UndoWidget;
+class LibraryHandler;
 
 // Global pointer to the main window and QWidget cast version
 extern MainWindow* gpMainWindow;
@@ -63,6 +64,7 @@ extern PlotTreeWidget *gpPlotWidget;
 extern CentralTabWidget *gpCentralTabWidget;
 extern SystemParametersWidget *gpSystemParametersWidget;
 extern UndoWidget *gpUndoWidget;
+extern LibraryHandler *gpLibraryHandler;
 
 // Global variables
 extern QString gHopsanCoreVersion;

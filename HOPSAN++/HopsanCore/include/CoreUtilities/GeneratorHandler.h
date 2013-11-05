@@ -22,6 +22,7 @@
 #else
 #include "dlfcn.h"
 #endif
+#include <vector>
 #include "win32dll.h"
 #include "HopsanTypes.h"
 
@@ -37,14 +38,15 @@ public:
 
     bool isLoadedSuccessfully();
 
-    typedef void (*call_modelica_generator_t)(HString code, HString codeIncludeDir, HString binDir, bool showDialog, HString outputPath, HString target, int solver);
-    typedef void (*call_cpp_generator_t)(HString cppCode, HString coreIncludePath, HString binPath, bool showDialog, HString outputPath);
+    typedef void (*call_modelica_generator_t)(HString path, bool showDialog, int solver);
+    typedef void (*call_cpp_generator_t)(HString hppPath);
     typedef void (*call_fmu_import_generator_t)(HString path, HString targetPath, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_fmu_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_simulink_export_generator_t)(HString path, HString modelName, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_simulink_cosim_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_lvsit_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, HString coreIncludePath, HString binPath, bool showDialog);
-    typedef void (*call_complib_compiler_t)(HString path, HString name, HString extraLinks, HString coreIncludePath, HString binPath, bool showDialog);
+    typedef void (*call_complib_compiler_t)(HString path, HString extraLinks, HString coreIncludePath, HString binPath, bool showDialog);
+    typedef void (*call_library_generator_t)(HString path, std::vector<HString> hppFiles, bool showDialog);
 
     call_modelica_generator_t callModelicaGenerator;
     call_cpp_generator_t callCppGenerator;
@@ -54,6 +56,7 @@ public:
     call_simulink_cosim_export_generator_t callSimulinkCoSimExportGenerator;
     call_lvsit_export_generator_t callLabViewSITGenerator;
     call_complib_compiler_t callComponentLibraryCompiler;
+    call_library_generator_t callLibraryGenerator;
 
 private:
     bool mLoadedSuccessfully;

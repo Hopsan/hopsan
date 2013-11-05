@@ -40,7 +40,7 @@
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
-#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/SystemParametersWidget.h"
@@ -116,7 +116,7 @@ void ComponentPropertiesDialog::createEditStuff()
     helpPixMap.load(mpComponent->getAppearanceData()->getBasePath() + mpComponent->getHelpPicture());
     pHelpPicture->setPixmap(helpPixMap);
 
-    QLabel *pHelpHeading = new QLabel(gpLibraryWidget->getAppearanceData(mpComponent->getTypeName())->getDisplayName(), this);
+    QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getEntry(mpComponent->getTypeName()).pAppearance->getDisplayName(), this);
     pHelpHeading->setAlignment(Qt::AlignCenter);
     QFont tempFont = pHelpHeading->font();
     tempFont.setPixelSize(16);

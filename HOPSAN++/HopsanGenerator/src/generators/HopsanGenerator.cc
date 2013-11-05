@@ -495,6 +495,105 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
 }
 
 
+//! @brief Generates appearance file from a component specification object
+//! @param path Path to generated (or existing) .xml file
+//! @param comp Component specification object
+void HopsanGenerator::generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile)
+{
+    QFile file(path);
+    QString code;
+    if(file.exists())   //An xml file already exists
+    {
+        file.open(QFile::ReadOnly);
+        code = file.readAll();
+        file.close();
+
+        QStringList lines = code.split("\n");
+
+        //! @todo Update typename and displayname if they have changed
+
+        //Remove non-existing ports
+        for(int l=0; l<lines.size(); ++l)
+        {
+            if(lines[l].trimmed().startsWith("<port "))
+            {
+                QString portName = lines[l].section("name=\"",1,1).section("\"",0,0);
+                if(!comp.portNames.contains(portName))
+                {
+                    lines.removeAt(l);
+                    --l;
+                }
+            }
+        }
+
+        //Add existing ports missing in XML
+        for(int p=0; p<comp.portNames.size(); ++p)
+        {
+            bool found=false;
+            for(int l=0; l<lines.size(); ++l)
+            {
+                if(lines[l].trimmed().startsWith("<port "))
+                {
+                    QString portName = lines[l].section("name=\"",1,1).section("\"",0,0);
+                    if(portName == comp.portNames[p])
+                    {
+                        found=true;
+                    }
+                }
+            }
+
+            if(!found)
+            {
+                for(int l=0; l<lines.size(); ++l)
+                {
+                    if(lines[l].trimmed().startsWith("</ports>"))
+                    {
+                        lines.insert(l, "      <port name=\""+comp.portNames[p]+"\" x=\"0.0\" y=\"0.0\" a=\"0.0\"/>");
+                    }
+                }
+            }
+        }
+
+        code = lines.join("\n");
+
+        file.open(QFile::ReadOnly | QFile::Text | QFile::Truncate);
+        file.write(code.toUtf8());
+        file.close();
+    }
+    else    //No existing XML file
+    {
+        if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            printErrorMessage("Failed to open " + comp.typeName + ".xml  for writing.");
+            return;
+        }
+        QTextStream xmlStream(&file);
+        xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
+        QString sourceString;
+        if(!sourceFile.isEmpty())
+        {
+            sourceString = " sourcecode=\""+sourceFile+"\"";
+        }
+        xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\" libpath=\"\""+sourceString+">\n";
+        xmlStream << "    <icons/>\n";
+        xmlStream << "    <ports>\n";
+        double xDelay = 1.0/(comp.portNames.size()+1.0);
+        double xPos = xDelay;
+        double yPos = 0;
+        for(int i=0; i<comp.portNames.size(); ++i)
+        {
+            xmlStream << "      <port name=\"" << comp.portNames[i] << "\" x=\"" << xPos << "\" y=\"" << yPos << "\" a=\"" << 270 << "\"/>\n";
+            xPos += xDelay;
+        }
+        xmlStream << "    </ports>\n";
+        xmlStream << "  </modelobject>\n";
+        xmlStream << "</hopsanobjectappearance>\n";
+        file.close();
+    }
+}
+
+
 
 
 
@@ -612,7 +711,8 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     libFileName.append(".so");
 #endif
 
-    compileComponentLibrary(mTempPath, outputFile, this);
+    //! @todo Make this work again!
+    //compileComponentLibrary(mTempPath, outputFile, this);
 
     printMessage("Moving files to output directory...");
 
@@ -639,6 +739,78 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     if(!ccLibFile.copy(mOutputPath+ccLibFileInfo.fileName()))
     {
         printMessage("Unable to copy library source file to output directory: "+ccLibFile.errorString() + " (not required)");
+    }
+}
+
+
+//! @brief Generates library .cc and .xml files for a folder with .hpp files
+//! @param path Path to library
+//! @param hppFiles Relative path to hpp files
+void HopsanGenerator::generateNewLibrary(QString path, QStringList hppFiles)
+{
+    QString libName = QDir(path).dirName();
+
+    QStringList typeNames;
+    Q_FOREACH(const QString &file, hppFiles)
+    {
+        QFile hppFile(path+file);
+        hppFile.open(QFile::ReadOnly);
+        QString code = hppFile.readAll();
+        hppFile.close();
+
+        typeNames.append(code.section("class ",1,1).section(" : public",0,0).trimmed());
+    }
+
+    printMessage("Writing "+libName+".cc...");
+
+    QFile ccLibFile;
+    ccLibFile.setFileName(path+libName+".cc");
+    if(!ccLibFile.open(QFile::WriteOnly | QFile::Text))
+    {
+        printErrorMessage("Failed to open "+libName+".cc for writing.");
+        return;
+    }
+    QTextStream ccLibStream(&ccLibFile);
+    Q_FOREACH(const QString &file, hppFiles)
+    {
+        ccLibStream << "#include \"" << file << "\"\n";
+    }
+    ccLibStream << "#include \"ComponentEssentials.h\"\n\n";
+    ccLibStream << "using namespace hopsan;\n\n";
+    ccLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* /*nfact_ptr*/)\n";
+    ccLibStream << "{\n";
+    Q_FOREACH(const QString &type, typeNames)
+    {
+        ccLibStream << "    cfact_ptr->registerCreatorFunction(\"" << type << "\", " << type << "::Creator);\n";
+    }
+    ccLibStream << "}\n\n";
+    ccLibStream << "extern \"C\" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)\n";
+    ccLibStream << "{\n";
+    ccLibStream << "    pHopsanExternalLibInfo->libName = (char*)\"" << libName << "\";\n";
+    ccLibStream << "    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n";
+    ccLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n";
+    ccLibStream << "}\n";
+    ccLibFile.close();
+
+    printMessage("Writing " + libName + "_lib.xml...");
+
+    QFile xmlFile;
+    xmlFile.setFileName(path+libName+"_lib.xml");
+    if(!xmlFile.exists())
+    {
+        if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            printErrorMessage("Failed to open " + libName + "_lib.xml  for writing.");
+            return;
+        }
+        QTextStream xmlStream(&xmlFile);
+        xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+
+        xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\" name=\""+libName+"\">\n";
+        xmlStream << "  <lib>" << libName << ".so</lib>\n";
+        xmlStream << "  <source>" << libName << ".cc</source>\n";
+        xmlStream << "</hopsancomponentlibrary>\n";
+        xmlFile.close();
     }
 }
 

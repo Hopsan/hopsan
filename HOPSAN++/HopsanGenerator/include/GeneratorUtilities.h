@@ -160,7 +160,7 @@ public:
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 bool removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
-bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks="");
+bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLinks="");
 bool compile(QString path, QString o, QString c, QString i, QString l, QString flags, QString &output);
 QString toVarName(const QString org);
 QString extractTaggedSection(QString str, QString tag);
