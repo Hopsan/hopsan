@@ -1889,10 +1889,9 @@ double LogDataHandler::peekVariable(SharedLogVariableDataPtrT a, const int index
     return r;
 }
 
-SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(QString desiredname)
+SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(const QString &rDesiredname)
 {
-    desiredname.append(QString("%1").arg(mTempVarCtr));
-    SharedLogVariableDataPtrT pData = defineNewVariable(desiredname);
+    SharedLogVariableDataPtrT pData = defineNewVariableNoNameCheck(rDesiredname+QString("%1").arg(mTempVarCtr));
     if (pData)
     {
         pData->mpVariableCommonDescription->mVariableSourceType = TempVariableType;
@@ -1931,13 +1930,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString &rDesi
     }
     if( ok && (mLogDataMap.find(rDesiredname) == mLogDataMap.end()) )
     {
-        VariableCommonDescription varDesc;
-        varDesc.mDataName = rDesiredname;
-        varDesc.mVariableSourceType = ScriptVariableType;
-        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-        pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
-        mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
-        return pDataContainer->getDataGeneration(mGenerationNumber);
+        return defineNewVariableNoNameCheck(rDesiredname);
     }
     return SharedLogVariableDataPtrT();
 }
@@ -2172,6 +2165,17 @@ void LogDataHandler::removeGenerationCacheIfEmpty(const int gen)
     {
         mGenerationCacheMap.erase(it);
     }
+}
+
+SharedLogVariableDataPtrT LogDataHandler::defineNewVariableNoNameCheck(const QString &rName)
+{
+    VariableCommonDescription varDesc;
+    varDesc.mDataName = rName;
+    varDesc.mVariableSourceType = ScriptVariableType;
+    LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
+    pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
+    mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
+    return pDataContainer->getDataGeneration(mGenerationNumber);
 }
 
 void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration)

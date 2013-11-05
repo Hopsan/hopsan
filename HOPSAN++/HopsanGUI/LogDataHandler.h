@@ -68,7 +68,7 @@ public:
     SharedLogVariableDataPtrT defineNewVariable(const QString &rDesiredname);
     SharedLogVariableDataPtrT defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription);
     //SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
-    SharedLogVariableDataPtrT defineTempVariable(QString desiredname);
+    SharedLogVariableDataPtrT defineTempVariable(const QString &rDesiredname);
     SharedLogVariableDataPtrT createOrphanTempVariable();
 
     bool deleteVariable(SharedLogVariableDataPtrT a);
@@ -194,6 +194,7 @@ private:
     QString getNewCacheName();
     void rememberIfImported(SharedLogVariableDataPtrT pData);
     void removeGenerationCacheIfEmpty(const int gen);
+    SharedLogVariableDataPtrT defineNewVariableNoNameCheck(const QString &rName);
 
     ContainerObject *mpParentContainerObject;
 
