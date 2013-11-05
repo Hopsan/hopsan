@@ -7,7 +7,7 @@ defineReplace(setQWTPathInfo){
     dstDir = $$2
 
     #Set QWT paths, Paths that are higher up in the list will have priority if found
-    contains($$QMAKE_HOST.arch, x86_64){
+    contains(QMAKE_HOST.arch, x86_64){
         # 64 bit release
         QWT_PATHS *= $${PWD}/Dependencies/qwt-svn_64
         QWT_PATHS *= $${PWD}/Dependencies/qwt-6.1.0_64
@@ -18,7 +18,7 @@ defineReplace(setQWTPathInfo){
     }
     QWT_PATH = $$selectPath($$externalSrc, $$QWT_PATHS, "qwt")
 
-    #message(QWT_PATH $${QWT_PATH})
+    #warning(QWT_PATH $${QWT_PATH})
 
     #Empty variables to fill in
     magic_hopsan_libpath =
@@ -78,7 +78,7 @@ defineReplace(setPythonQtPathInfo){
     dstDir = $$2
 
     #Set QWT paths, Paths that are earlier in the list will be used if found
-    contains($$QMAKE_HOST.arch, x86_64){
+    contains(QMAKE_HOST.arch, x86_64){
         # 64 bit version
         PYTHONQT_PATHS *= $${PWD}/Dependencies/PythonQt2.1_Qt4.8_64
     } else {

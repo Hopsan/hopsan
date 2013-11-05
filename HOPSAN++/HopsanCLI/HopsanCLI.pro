@@ -58,7 +58,7 @@ unix {
 win32 {
 
     #Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
-    !contains($$QMAKE_HOST.arch, x86_64){
+    !contains(QMAKE_HOST.arch, x86_64){
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 

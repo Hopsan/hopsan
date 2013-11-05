@@ -111,7 +111,7 @@ win32 {
     #QMAKE_LFLAGS += -Wl,--large-address-aware,--enable-auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
     # Make large-adress-aware for 32-bit build
-    !contains($$QMAKE_HOST.arch, x86_64){
+    !contains(QMAKE_HOST.arch, x86_64){
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 
