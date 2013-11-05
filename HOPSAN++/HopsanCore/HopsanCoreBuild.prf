@@ -11,10 +11,12 @@ defineReplace(setTBBWindowsPathInfo){
         #64 bit paths
         TBB_PATHS *= $${PWD}/Dependencies/tbb41_20130613oss_64
         TBB_PATHS *= $${PWD}/Dependencies/tbb40_20111003oss_64
+        TBB_PATHS *= $${PWD}/Dependencies/tbb30_20110704oss_64
     } else {
         #32 bit paths
         TBB_PATHS *= $${PWD}/Dependencies/tbb41_20130613oss
-        TBB_PATHS *= $${PWD}/Dependencies/tbb40_20111003oss
+        TBB_PATHS *= $${PWD}/Dependencies/tbb40_20111003os
+        TBB_PATHS *= $${PWD}/Dependencies/tbb30_20110704oss
     }
     #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
     TBB_PATH = $$selectPath($$externalSrc, $$TBB_PATHS, "tbb")
