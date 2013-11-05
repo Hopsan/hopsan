@@ -123,8 +123,9 @@ public:
     QString getSubTypeName() const;
     QString getDisplayName() const;
     QString getNonEmptyName() const;
-    QString getHelpPicture() const;
-    QString getHelpText() const;
+    const QString &getHelpPicture() const;
+    const QString &getHelpText() const;
+    const QString &getHelpLink() const;
     QString getBasePath() const;
     QString getFullAvailableIconPath(GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
@@ -159,8 +160,7 @@ private:
     QString mSourceCode;
     QString mLibPath;
     bool mIsRecompilable;
-    QString mHelpPicture;
-    QString mHelpText;
+    QString mHelpText,mHelpPicture,mHelpLink;
     ModelObjectIconAppearance mIsoIconAppearance;
     ModelObjectIconAppearance mUserIconAppearance;
     QString mDefaultMissingIconPath;

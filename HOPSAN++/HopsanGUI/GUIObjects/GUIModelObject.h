@@ -67,8 +67,9 @@ public:
     QGraphicsSvgItem *getIcon();
 
     // Help methods
-    QString getHelpPicture();
-    QString getHelpText();
+    const QString &getHelpPicture() const;
+    const QString &getHelpText() const;
+    const QString &getHelpLink() const;
 
     // Parameter methods
     virtual QStringList getParameterNames();

@@ -51,6 +51,7 @@
 #define CAF_HELP "help"
 #define CAF_HELPTEXT "text"
 #define CAF_HELPPICTURE "picture"
+#define CAF_HELPLINK "link"
 
 #define CAF_PORTS "ports"
 #define CAF_PORT "port"
@@ -373,15 +374,20 @@ QString ModelObjectAppearance::getNonEmptyName() const
 }
 
 
-QString ModelObjectAppearance::getHelpPicture() const
+const QString &ModelObjectAppearance::getHelpPicture() const
 {
     return mHelpPicture;
 }
 
 
-QString ModelObjectAppearance::getHelpText() const
+const QString &ModelObjectAppearance::getHelpText() const
 {
     return mHelpText;
+}
+
+const QString &ModelObjectAppearance::getHelpLink() const
+{
+    return mHelpLink;
 }
 
 //! @brief Get the full Icon path for specified graphics type
@@ -654,6 +660,12 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         {
             mHelpPicture = xmlHelpPicture.text();
         }
+
+        QDomElement xmlHelpLink = xmlHelp.firstChildElement(CAF_HELPLINK);
+        if (!xmlHelpLink.isNull())
+        {
+            mHelpLink = xmlHelpLink.text();
+        }
     }
 
     //We assume only one icons element
@@ -850,6 +862,11 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
         if( !mHelpText.isEmpty() )
         {
             appendDomTextNode(xmlHelp, CAF_HELPTEXT, mHelpText);
+        }
+
+        if( !mHelpPicture.isEmpty() )
+        {
+            appendDomTextNode(xmlHelp, CAF_HELPPICTURE, mHelpPicture);
         }
 
         if( !mHelpPicture.isEmpty() )

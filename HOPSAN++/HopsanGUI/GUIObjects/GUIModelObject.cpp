@@ -1538,7 +1538,7 @@ void ModelObject::refreshAppearance()
 }
 
 
-QString ModelObject::getHelpPicture()
+const QString &ModelObject::getHelpPicture() const
 {
     return mModelObjectAppearance.getHelpPicture();
 }
@@ -1557,9 +1557,14 @@ QGraphicsSvgItem *ModelObject::getIcon()
 }
 
 
-QString ModelObject::getHelpText()
+const QString &ModelObject::getHelpText() const
 {
     return mModelObjectAppearance.getHelpText();
+}
+
+const QString &ModelObject::getHelpLink() const
+{
+    return mModelObjectAppearance.getHelpLink();
 }
 
 

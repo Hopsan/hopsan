@@ -349,7 +349,7 @@ QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
 
 QWidget *ComponentPropertiesDialog3::createHelpWidget()
 {
-    if(!mpModelObject->getHelpText().isNull() || !mpModelObject->getHelpPicture().isNull())
+    if(!mpModelObject->getHelpText().isNull() || !mpModelObject->getHelpPicture().isNull() || !mpModelObject->getHelpLink().isNull())
     {
         QScrollArea *pHelpScrollArea = new QScrollArea();
         QGroupBox *pHelpWidget = new QGroupBox();
@@ -378,6 +378,15 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             pHelpText->setWordWrap(true);
             pHelpLayout->addWidget(pHelpText);
             pHelpText->setAlignment(Qt::AlignHCenter);
+        }
+
+        if (!mpModelObject->getHelpLink().isNull())
+        {
+            QString link = QString("<a href=\"%1\">%2</a>").arg(mpModelObject->getAppearanceData()->getBasePath()+mpModelObject->getHelpLink()).arg(mpModelObject->getHelpLink());
+            QLabel *pHelpLink = new QLabel(link,this);
+            pHelpLink->setOpenExternalLinks(true);
+            pHelpLayout->addWidget(pHelpLink);
+            pHelpLink->setAlignment(Qt::AlignHCenter);
         }
 
         pHelpWidget->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px;}"));

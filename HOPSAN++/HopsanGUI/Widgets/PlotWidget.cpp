@@ -191,14 +191,6 @@ void PlotVariableTree::updateList()
         ++it;
     }
 
-//    for(int i=0; i<this->item; ++i)
-//    {
-//        if(items[i]->isExpanded())
-//        {
-//            expandedItems << items[i]->text(0);
-//        }
-//    }
-
     mAvailableVariables.clear();
     this->clear();
 

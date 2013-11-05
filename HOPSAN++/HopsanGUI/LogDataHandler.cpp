@@ -2050,6 +2050,7 @@ PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString 
     return 0;
 }
 
+//! @brief Get a list of all available variables at their respective higest (newest) generation.
 QVector<SharedLogVariableDataPtrT> LogDataHandler::getAllVariablesAtNewestGeneration()
 {
     QVector<SharedLogVariableDataPtrT> dataPtrVector;
@@ -2068,6 +2069,7 @@ QVector<SharedLogVariableDataPtrT> LogDataHandler::getAllVariablesAtNewestGenera
     return dataPtrVector;
 }
 
+//! @brief Get a list of all available variables at a specific generation, variables that does not have this generation will not be included
 QVector<SharedLogVariableDataPtrT> LogDataHandler::getAllVariablesAtGeneration(const int generation) const
 {
     QVector<SharedLogVariableDataPtrT> dataPtrVector;
