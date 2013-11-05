@@ -219,19 +219,9 @@ def verifyPaths():
     jomDir=creatorDir+"\\bin"
     qmakeDir=qtDir+"\\bin"
 
-    mingwDir=selectPathFromList(mingwDirList, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
+    mingwDir=selectPathFromList(mingwdirs, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
     if mingwDir == "":
         isOk = False
-
-    #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
-    innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
-    if innoDir == "":
-        isOk = False  
-            
-    #Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
-    inkscapeDir=selectPathFromList(inkscapeDirList, "Inkscape is not installed in expected place.", "Found Inkscape!")
-    if inkscapeDir == "":
-        risOk = False
 
     #Make sure Visual Studio 2008 is installed in correct location
     msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
@@ -244,13 +234,23 @@ def verifyPaths():
         isOk = False
     
     #Make sure the 3d party dependency file exists
-    if not pathExists(dependecyfile+"\\", "The "+ dependecyBinFiles + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
+    if not pathExists(dependecyfile+"\\", "The "+ dependecyfile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
         isOk = False
         
     #Make sure TBB is installed in correct location
     tbbDir=selectPathFromList(tbbdirs, "Cannot find correct TBB version", "Found correct TBB version!")
     if tbbDir == "":
         isOk = False
+
+    #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
+    innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
+    if innoDir == "":
+        isOk = False  
+            
+    #Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
+    inkscapeDir=selectPathFromList(inkscapeDirList, "Inkscape is not installed in expected place.", "Found Inkscape!")
+    if inkscapeDir == "":
+        risOk = False
 
     if isOk:
         printSuccess("Verification of path variables.")
@@ -386,7 +386,7 @@ def buildRelease():
     f.close();
     
     os.chdir(hopsanDir+"\\HopsanNG_bd")    
-    os.system("..\\compileWithMinGW.bat \""+raw(mingwDir)+"\" \""+raw(qmakeDir)+"\" \""+raw(hopsanDir)+"\"")
+    os.system(r'..\compileWithMinGW.bat')
 
     if not fileExists(hopsanDir+"\\bin\\HopsanCore.dll") or not fileExists(hopsanDir+"\\bin\\HopsanGUI.exe") or not fileExists(hopsanDir+"\\bin\\HopsanCLI.exe"):
         printError("Failed to build Hopsan with MinGW.")
