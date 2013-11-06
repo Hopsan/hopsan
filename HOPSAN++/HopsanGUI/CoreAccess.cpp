@@ -61,7 +61,7 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
 }
 
 
-bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, int solver)
+bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, int solver, bool compile)
 {
     qDebug() << "SOLVER: " << solver;
 
@@ -69,7 +69,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
 
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(path.toStdString().c_str(), showDialog, solver);
+        pHandler->callModelicaGenerator(path.toStdString().c_str(), showDialog, solver, compile, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str());
         return true;
     }
     delete(pHandler);

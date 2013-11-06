@@ -518,7 +518,7 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
         QString sourceFile = code.section("sourcecode=\"",1,1).section("\"",0,0);
         if(sourceFile.endsWith(".mo"))
         {
-            coreGenerator.generateFromModelica(path+"/"+sourceFile, showDialog, solver);
+            coreGenerator.generateFromModelica(path+"/"+sourceFile, showDialog, solver, false);
         }
     }
 

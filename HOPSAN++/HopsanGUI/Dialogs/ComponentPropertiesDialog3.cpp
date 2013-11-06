@@ -85,9 +85,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
             moFile.write(pEditDialog->getCode().toUtf8());
             moFile.close();
 
-            coreAccess.generateFromModelica(libPath+typeName+".mo", solver);
-            coreAccess.generateLibrary(libPath, QStringList() << typeName+".hpp");
-            coreAccess.compileComponentLibrary(libPath+typeName+"_lib.xml");
+            coreAccess.generateFromModelica(libPath+typeName+".mo", solver, true);
             gpLibraryHandler->loadLibrary(libPath);
 
             mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);

@@ -59,7 +59,7 @@ private:
 class CoreGeneratorAccess
 {
 public:
-    bool generateFromModelica(QString path, bool showDialog=true, int solver=0);
+    bool generateFromModelica(QString path, bool showDialog=true, int solver=0, bool compile=false);
     bool generateFromCpp(QString hppFile);
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);

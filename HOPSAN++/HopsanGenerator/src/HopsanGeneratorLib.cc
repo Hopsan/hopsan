@@ -40,10 +40,17 @@ using namespace std;
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callModelicaGenerator(hopsan::HString path, bool showDialog=false, int solver=0)
+extern "C" DLLIMPORTEXPORT void callModelicaGenerator(hopsan::HString path, bool showDialog=false, int solver=0, bool compile=false, hopsan::HString coreIncludePath="", hopsan::HString binPath="")
 {
-    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator("", "", showDialog);
+    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateFromModelica(QString(path.c_str()), HopsanGenerator::SolverT(solver));
+    if(compile)
+    {
+        QString dir = QFileInfo(QString(path.c_str())).absolutePath()+"/";
+        QString typeName = QFileInfo(QString(path.c_str())).baseName();
+        pGenerator->generateNewLibrary(dir, QStringList() << typeName+".hpp");
+        compileComponentLibrary(dir+typeName+"_lib.xml", pGenerator);
+    }
     delete(pGenerator);
 }
 
