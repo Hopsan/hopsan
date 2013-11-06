@@ -45,7 +45,6 @@ class AboutDialog;
 class HelpDialog;
 class OptimizationDialog;
 class SensitivityAnalysisDialog;
-class ComponentGeneratorDialog;
 class TerminalWidget;
 class UndoWidget;
 class HVCWidget;
@@ -65,7 +64,6 @@ public:
 
 
     OptionsDialog *getOptionsDialog();
-    ComponentGeneratorDialog *getComponentGeneratorDialog();
     PyDockWidget *getPythonDock();
 
     //Set and get methods for simulation parameters in toolbar
@@ -217,7 +215,6 @@ private:
     AboutDialog *mpAboutDialog;
     OptimizationDialog *mpOptimizationDialog;
     SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;
-    ComponentGeneratorDialog *mpComponentGeneratorDialog;
 
     //Simulation setup line edits
     MainWindowLineEdit *mpStartTimeLineEdit;

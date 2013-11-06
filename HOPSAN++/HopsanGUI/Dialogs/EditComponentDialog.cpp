@@ -33,7 +33,6 @@
 #include "Configuration.h"
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
-#include "Dialogs/ComponentGeneratorDialog.h"
 #include "Dialogs/EditComponentDialog.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"

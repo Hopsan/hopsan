@@ -31,7 +31,6 @@
 #include "ComponentPropertiesDialog.h"
 #include "Configuration.h"
 #include "CoreAccess.h"
-#include "Dialogs/ComponentGeneratorDialog.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
 #include "GUIObjects/GUIComponent.h"

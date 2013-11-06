@@ -183,7 +183,6 @@ SOURCES += main.cpp \
     Dependencies/BarChartPlotter/axisbase.cpp \
     Dialogs/OptimizationDialog.cpp \
     Dialogs/SensitivityAnalysisDialog.cpp \
-    Dialogs/ComponentGeneratorDialog.cpp \
     Dialogs/MovePortsDialog.cpp \
     loadFunctions.cpp \
     Utilities/ComponentGeneratorUtilities.cpp \
@@ -264,7 +263,6 @@ HEADERS += MainWindow.h \
     Dependencies/BarChartPlotter/axisbase.h \
     Dialogs/OptimizationDialog.h \
     Dialogs/SensitivityAnalysisDialog.h \
-    Dialogs/ComponentGeneratorDialog.h \
     Dialogs/MovePortsDialog.h \
     loadFunctions.h \
     Utilities/ComponentGeneratorUtilities.h \

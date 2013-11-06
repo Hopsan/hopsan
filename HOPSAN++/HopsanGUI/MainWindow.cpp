@@ -65,7 +65,6 @@
 #include "Dialogs/HelpDialog.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
-#include "Dialogs/ComponentGeneratorDialog.h"
 
 #include "Utilities/GUIUtilities.h"
 
@@ -333,8 +332,6 @@ void MainWindow::createContents()
     mpCentralTabs->setTabNotClosable(0);
 
     this->updateRecentList();
-
-    mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);    //Needs configuration
 
     // Update style sheet setting after all children hasbeen created and added so that they too will be affected
     if(!gpConfig->getUseNativeStyleSheet())
@@ -1291,10 +1288,6 @@ void MainWindow::openContextHelp()
         {
             mpHelpDialog->open("userSensitivityAnalysis.html");
         }
-        else if(action->parent() == mpComponentGeneratorDialog)
-        {
-            mpHelpDialog->open("component-generator.html");
-        }
         else if(action->parent() == mpModelHandler->getCurrentViewContainerObject())
         {
             mpHelpDialog->open("userEnergyLosses.html");
@@ -1482,11 +1475,6 @@ OptionsDialog *MainWindow::getOptionsDialog()
     return mpOptionsDialog;
 }
 
-
-ComponentGeneratorDialog *MainWindow::getComponentGeneratorDialog()
-{
-    return mpComponentGeneratorDialog;
-}
 
 //! @brief Sets a new startvalue.
 //! @param startTime is the new value
