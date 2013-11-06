@@ -60,7 +60,7 @@ class CoreGeneratorAccess
 {
 public:
     bool generateFromModelica(QString path, bool showDialog=true, int solver=0, bool compile=false);
-    bool generateFromCpp(QString hppFile);
+    bool generateFromCpp(QString hppFile, bool compile=false);
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);

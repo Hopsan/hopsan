@@ -78,12 +78,12 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
 
 
 //! @todo Return false if compilation fails!
-bool CoreGeneratorAccess::generateFromCpp(QString hppFile)
+bool CoreGeneratorAccess::generateFromCpp(QString hppFile, bool compile)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callCppGenerator(hppFile.toStdString().c_str());
+        pHandler->callCppGenerator(hppFile.toStdString().c_str(), compile, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str());
         return true;
     }
     delete(pHandler);

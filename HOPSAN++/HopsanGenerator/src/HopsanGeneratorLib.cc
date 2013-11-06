@@ -78,7 +78,7 @@ extern "C" DLLIMPORTEXPORT void callLibraryGenerator(hopsan::HString path, vecto
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath)
+extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, bool compile=false, hopsan::HString coreIncludePath="", hopsan::HString binPath="")
 {
     qDebug() << "Called C++ generator (in dll)!";
 
@@ -128,6 +128,16 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath)
         xmlStream << "  </modelobject>\n";
         xmlStream << "</hopsanobjectappearance>\n";
         xmlFile.close();
+    }
+
+    if(compile)
+    {
+        HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), true);
+        QString dir = QFileInfo(QString(hppPath.c_str())).absolutePath()+"/";
+        QString typeName = QFileInfo(QString(hppPath.c_str())).baseName();
+        pGenerator->generateNewLibrary(dir, QStringList() << typeName+".hpp");
+        compileComponentLibrary(dir+typeName+"_lib.xml", pGenerator);
+        delete(pGenerator);
     }
 }
 

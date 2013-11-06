@@ -450,9 +450,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
             hppFile.write(pEditDialog->getCode().toUtf8());
             hppFile.close();
 
-            coreAccess.generateFromCpp(libPath+typeName+".hpp");
-            coreAccess.generateLibrary(libPath, QStringList() << typeName+".hpp");
-            coreAccess.compileComponentLibrary(libPath+typeName+"_lib.xml");
+            coreAccess.generateFromCpp(libPath+typeName+".hpp", true);
             gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
             update();
         }
