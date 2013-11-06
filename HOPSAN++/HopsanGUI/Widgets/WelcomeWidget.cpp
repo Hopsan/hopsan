@@ -562,7 +562,7 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 #ifdef DEVELOPMENT
             mpNewVersionButton->setVisible(true);
 #else
-            mpNewVersionButton->setVisible(webVersion>thisVersion);
+            mpNewVersionButton->setVisible(webVersionString>thisVersionString);
 #endif
             mAUFileLink = metadata.value("hopsanupdatelink");
         }
