@@ -772,8 +772,13 @@ private Q_SLOTS:
         QString pwd = QDir::currentPath();
 
         //Generate FMU
+        QFile moFile(pwd+"/modelica/motest.mo");
+        moFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
+        moFile.write(QString(code.c_str()).toUtf8());
+        moFile.close();
+
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callModelicaGenerator(code, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/", false, HString(pwd.toStdString().c_str())+"/modelica/", name, 0);
+        pHandler->callModelicaGenerator(HString(QFileInfo(moFile).absoluteFilePath().toStdString().c_str()), false, 0, true, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/");
 
         QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(LIBEXT)).c_str())), "Failure! Modelica generator failed to generate dll.");
     }
