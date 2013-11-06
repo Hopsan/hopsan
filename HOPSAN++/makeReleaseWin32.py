@@ -9,8 +9,8 @@ from time import sleep
 devversion="0.7."
 tempDir=r'C:\temp_release'
 scriptFile="HopsanReleaseInnoSetupScript.iss"
-dependecyBinFiles=r'.\hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z'
-dependecyBinFiles64=r'.\hopsan_bincontents64_Qt485_MinGW64_481_OpenSSL101e.7z'
+dependecyBinFile32=r'.\hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z'
+dependecyBinFile64=r'.\hopsan_bincontents64_Qt485_MinGW64_481_OpenSSL101e.7z'
 
 # External programs
 inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
@@ -218,6 +218,7 @@ def verifyPaths():
     global qmakeDir
     global mingwDir
     global tbbDir
+    global dependecyBinFile
 
     isOk = True
    
@@ -226,12 +227,12 @@ def verifyPaths():
         qtlibsdirs=qtlib64DirList
         tbbdirs=tbblib64DirList
         mingwdirs=mingw64DirList
-        dependecyfile=dependecyBinFiles64
+        dependecyBinFile=dependecyBinFile64
     else:
         qtlibsdirs=qtlibDirList
         tbbdirs=tbblibDirList
         mingwdirs=mingwDirList
-        dependecyfile=dependecyBinFiles
+        dependecyBinFile=dependecyBinFile32
 
     #Check if Qt path exists
     qtDir=selectPathFromList(qtlibsdirs, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
@@ -262,7 +263,7 @@ def verifyPaths():
         isOk = False
     
     #Make sure the 3d party dependency file exists
-    if not pathExists(dependecyfile, "The "+ dependecyfile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
+    if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
         isOk = False
         
     #Make sure TBB is installed in correct location
@@ -445,9 +446,9 @@ def buildRelease():
     if not fileExists(hopsanDir+r'\bin\HopsanCore.dll') or not fileExists(hopsanDir+r'\bin\HopsanGUI.exe') or not fileExists(hopsanDir+r'\bin\HopsanCLI.exe'):
         printError("Failed to build Hopsan with MinGW.")
         return False
-    
+  
     printSuccess("Compilation using MinGW")
-    
+
     return True
     
 
@@ -478,22 +479,19 @@ def copyFiles():
     tempDirBin=tempDir+r'\bin'
     tempDirScripts=tempDir+r'\Scripts'
     
-    #Unpack depedency bin files to bin folder without asking stupid questions
-    call7z(r'x '+dependecyBinFiles+r' -o'+quotePath(tempDirBin)+r' -y')
-
     #Copy "bin" folder to temporary directory
-    callXcopy(r'bin\*.exe', tempDirBin)
-    callXcopy(r'bin\*.dll', tempDirBin)
-    callXcopy(r'bin\*.a', tempDirBin)
-    callXcopy(r'bin\*.lib', tempDirBin)
-    callXcopy(r'bin\*.exp', tempDirBin)
+    callXcopy(r'bin\*.*', tempDirBin)
+##    callXcopy(r'bin\*.dll', tempDirBin)
+##    callXcopy(r'bin\*.a', tempDirBin)
+##    callXcopy(r'bin\*.lib', tempDirBin)
+##    callXcopy(r'bin\*.exp', tempDirBin)
         
-    #Delete unwanted (debug) files from temporary directory
-    callDel(tempDirBin+r'\*_d.exe')
-    callDel(tempDirBin+r'\*_d.a')
-    callDel(tempDirBin+r'\*_d.dll')
-    callDel(tempDirBin+r'\tbb_debug.dll')
-    callDel(tempDirBin+r'\qwtd.dll')
+##    #Delete unwanted (debug) files from temporary directory
+##    callDel(tempDirBin+r'\*_d.exe')
+##    callDel(tempDirBin+r'\*_d.a')
+##    callDel(tempDirBin+r'\*_d.dll')
+##    callDel(tempDirBin+r'\tbb_debug.dll')
+##    callDel(tempDirBin+r'\qwtd.dll')
 
     #Build user documentation
     os.system("buildUserDocumentation")
@@ -610,14 +608,13 @@ def renameBinFolder():
     # Move the bin folder to temp storage to avoid packagin dev junk into release
     if pathExists(hopsanDir+r'\bin'):
         callMove(hopsanDir+r'\bin', hopsanDir+r'\bin_build_backup')
+        sleep(1)
     if pathExists(hopsanDir+r'\bin'):
         printError("Could not move the bin folder to temporary backup before build.")
         return False
         
     # Create clean bin directory
-    sleep(0.5)
-    callMkdir(r'\bin')
-    raw_input("Press any key to continue...")
+    callMkdir(hopsanDir+r'\bin')
     return True
     
         
@@ -685,6 +682,10 @@ if success:
         success = False
         cleanUp()
         printError("Compilation script failed in compilation error.")
+
+if success:
+    #Unpack depedency bin files to bin folder without asking stupid questions, we do this in the build step to have a run-able compiled version before running tests
+    call7z(r'x '+quotePath(hopsanDir+dependecyBinFile)+r' -o'+quotePath(hopsanDir+r'\bin')+r' -y')
 
 if success:
     if (not runValidation()) and pauseOnFailValidation:
