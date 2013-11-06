@@ -55,8 +55,8 @@ win32 {
 
     #--------------------------------------------------------
     # Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
-    d = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
-    !isEmpty(d){
+    foundTBB = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
+    $$foundTBB {
         DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
         message(Compiling HopsanCore with TBB support)
         LIBS *= $$magic_hopsan_libpath

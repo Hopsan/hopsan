@@ -67,6 +67,7 @@ defineReplace(setTBBWindowsPathInfo){
         magic_hopsan_libpath =
         magic_hopsan_includepath =
         magic_hopsan_qmake_post_link =
+        return(false)
     }
 
     #Export lists to INCLUDEPATH, LIBS and QMAKE_POST_LINK variables
@@ -76,5 +77,5 @@ defineReplace(setTBBWindowsPathInfo){
 
     #message(----------------Includepath is $${magic_hopsan_includepath})
     #message(----------------magic_hopsan_libpath is $${magic_hopsan_libpath})
-    return($$magic_hopsan_libpath)
+    return(true)
 }
