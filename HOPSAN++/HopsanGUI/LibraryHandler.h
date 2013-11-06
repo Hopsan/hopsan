@@ -2,6 +2,7 @@
 #define LIBRARYHANDLER_H
 
 #define EXTLIBSTR "External Libraries"
+#define FMULIBSTR "FMU"
 
 //Qt includes
 #include <QObject>
@@ -23,7 +24,7 @@ class LibraryHandler : public QObject
 public:
     LibraryHandler(QObject *parent=0);
 
-    void loadLibrary(QString xmlPath, InternalExternalEnumT type=External, HiddenVisibleEnumT visibility=Visible);
+    void loadLibrary(QString xmlPath, LibraryTypeEnumT type=External, HiddenVisibleEnumT visibility=Visible);
     void unloadLibrary(QString typeName);
     void recompileLibrary(ComponentLibrary lib, bool showDialog=true, int solver=0);
 
@@ -32,6 +33,9 @@ public:
 
     void addReplacement(QString type1, QString type2);
     QStringList getReplacements(QString type);
+
+public slots:
+    void importFmu();
 
 signals:
     void contentsChanged();
@@ -43,11 +47,8 @@ private:
     QList<ComponentLibrary> mLoadedLibraries;
     QMap<QString, LibraryEntry> mLibraryEntries;
     QStringList mFailedComponents;
-
     QDir mUpdateXmlBackupDir;
-
     QStringList mLastLoadedLibFiles;
-
     QMap<QString, QStringList> mReplacementsMap;
 };
 
@@ -61,6 +62,7 @@ public:
     QString libFilePath;
     QStringList cafFiles;
     QStringList sourceFiles;
+    LibraryTypeEnumT type;
 };
 
 

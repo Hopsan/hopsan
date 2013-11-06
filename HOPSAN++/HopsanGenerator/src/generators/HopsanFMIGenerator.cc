@@ -671,25 +671,46 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     if(!copyFile(fmiSrcPath+"libexpatMT.lib", fmuDir.path()+"/libexpatMT.lib")) return;
 #endif
 
+    printMessage("Writing " + fmuName + "_lib.xml...");
 
-    //! @todo Make compilation work again!
+    QFile xmlFile;
+    xmlFile.setFileName(fmuDir.path()+"/"+fmuName+"_lib.xml");
+    if(!xmlFile.exists())
+    {
+        if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            printErrorMessage("Failed to open " + fmuName + "_lib.xml  for writing.");
+            return;
+        }
+        QTextStream xmlStream(&xmlFile);
+        xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+
+        xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\" name=\""+fmuName+"\">\n";
+        xmlStream << "  <lib>fmuLib</lib>\n";
+        xmlStream << "  <source>fmuLib.cc</source>\n";
+        xmlStream << "  <source>stack.cc</source>\n";
+        xmlStream << "  <source>xml_parser.cc</source>\n";
+        xmlStream << "</hopsancomponentlibrary>\n";
+        xmlFile.close();
+    }
+
 #ifdef WIN32
-    //if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this, "-L./ -llibexpat"))
+    if(!compileComponentLibrary(QFileInfo(xmlFile).absoluteFilePath(), this, "-L./ -llibexpat"))
 #else
-    //if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this))
+    if(!compileComponentLibrary(QFileInfo(xmlFile).absoluteFilePath(), this))
 #endif
-//    {
-//        printErrorMessage("Failed to import fmu.");
-//        return;
-//    }
-//    else
-//    {
-        //cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
-        //        "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
-        //        QStringList() << "component_code" << "binaries");
+    {
+        printErrorMessage("Failed to import fmu.");
+        return;
+    }
+    else
+    {
+        cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
+                "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
+                QStringList() << "component_code" << "binaries");
 
         printMessage("Finished.");
-//    }
+    }
 }
 
 

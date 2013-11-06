@@ -631,7 +631,7 @@ void MainWindow::createActions()
 
     mpLoadLibsAction = new QAction(this);
     mpLoadLibsAction->setText("Load Libraries");
-    connect(mpLoadLibsAction,SIGNAL(triggered()),mpLibraryWidget,SLOT(addExternalLibrary()));
+    connect(mpLoadLibsAction,SIGNAL(triggered()),gpLibraryHandler,SLOT(addExternalLibrary()));
 
     mpPropertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
     mpPropertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");
@@ -1110,8 +1110,7 @@ void MainWindow::createToolbars()
     QDir testModelsDir(gpDesktopHandler->getMainPath()+"Models/Component Test/");
     buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
 
-
-    connect(mpImportFMUAction,              SIGNAL(triggered()), mpLibraryWidget,     SLOT(importFmu()));
+    connect(mpImportFMUAction,              SIGNAL(triggered()), gpLibraryHandler,     SLOT(importFmu()));
     connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulink()));
     connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulinkCoSim()));
     connect(mpExportToFMUAction,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU()));

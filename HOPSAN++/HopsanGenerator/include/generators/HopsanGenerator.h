@@ -26,6 +26,14 @@
 #ifndef COMPONENTGENERATORUTILITIES_H
 #define COMPONENTGENERATORUTILITIES_H
 
+#ifdef WIN32
+#define LIBEXT ".dll"
+#define LIBPREFIX ""
+#else
+#define LIBEXT ".so"
+#define LIBPREFIX "lib"
+#endif
+
 #include <QPointF>
 #include <QString>
 #include <QDir>

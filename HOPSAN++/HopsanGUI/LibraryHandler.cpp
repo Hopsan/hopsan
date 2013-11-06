@@ -58,6 +58,7 @@ QString makeFullTypeString(const QString &rType, const QString &rSubType)
 
 //! @brief Constructor for library handler
 LibraryHandler::LibraryHandler(QObject *parent)
+    : QObject(parent)
 {
     mUpConvertAllCAF = UndecidedToAll;
 }
@@ -67,9 +68,10 @@ LibraryHandler::LibraryHandler(QObject *parent)
 //! @param xmlPath Path to .xml file (or folder)
 //! @param type Specifies whether library is internal or external
 //! @param visibility Specifies whether library is visible or invisible
-void LibraryHandler::loadLibrary(QString xmlPath, InternalExternalEnumT type, HiddenVisibleEnumT visibility)
+void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
 {
     ComponentLibrary newLib;
+    newLib.type = type;
 
     QFileInfo info(xmlPath);
     QString libPath = info.path()+"/";
@@ -94,7 +96,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, InternalExternalEnumT type, Hi
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             gpTerminalWidget->mpConsole->printErrorMessage("Unable to open file: "+QFile(xmlPath).fileName());
-            if(type == External)
+            if(type != Internal)
             {
                 gpConfig->removeUserLib(xmlPath);
             }
@@ -141,7 +143,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, InternalExternalEnumT type, Hi
         }
         else
         {
-            newLib.libFilePath = libPath+libRoot.firstChildElement(QString(XML_LIBRARY_LIB)).text();
+            newLib.libFilePath = libPath+QString(LIBPREFIX)+libRoot.firstChildElement(QString(XML_LIBRARY_LIB)).text()+QString(LIBEXT);
         }
 
         //Store source files
@@ -351,7 +353,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, InternalExternalEnumT type, Hi
 
         if (success)
         {
-            if(type==External)
+            if(type != Internal)
             {
                 gpConfig->addUserLib(xmlPath);
             }
@@ -363,6 +365,10 @@ void LibraryHandler::loadLibrary(QString xmlPath, InternalExternalEnumT type, Hi
             {
                 entry.path.prepend(newLib.name);
                 entry.path.prepend(QString(EXTLIBSTR));
+            }
+            else if(type == FMU)
+            {
+                entry.path.prepend(QString(FMULIBSTR));
             }
             entry.path.removeLast();
             entry.pAppearance = pAppearanceData;
@@ -463,6 +469,30 @@ QStringList LibraryHandler::getReplacements(QString type)
 }
 
 
+//! @brief Imports a functional mock-up unit from a file dialog
+void LibraryHandler::importFmu()
+{
+    //Load .fmu file and create paths
+    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Import Functional Mockup Unit (FMU)"),
+                                                    gpConfig->getFmuImportDir(),
+                                                    tr("Functional Mockup Unit (*.fmu)"));
+    if(filePath.isEmpty())      //Cancelled by user
+        return;
+
+    QFileInfo fmuFileInfo = QFileInfo(filePath);
+    if(!fmuFileInfo.exists())
+    {
+        gpTerminalWidget->mpConsole->printErrorMessage("File not found: "+filePath);
+        return;
+    }
+    gpConfig->setFmuImportDir(fmuFileInfo.absolutePath());
+
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    pCoreAccess->generateFromFmu(filePath);
+    delete(pCoreAccess);
+}
+
+
 //! @brief Recompiles specified component library (safe to use with opened models)
 //! @param lib Component library to recompile
 //! @param solver Solver to use (for Modelica code only)
@@ -492,8 +522,15 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
         }
     }
 
+    //Add extra libs for FMU libraries
+    QString extraLibs = "";
+    if(lib.type == FMU)
+    {
+        extraLibs = "-L./ -llibexpat";
+    }
+
     //Call compile utility
-    coreGenerator.compileComponentLibrary(QFileInfo(lib.xmlFilePath).absolutePath(), "", showDialog);
+    coreGenerator.compileComponentLibrary(QFileInfo(lib.xmlFilePath).absoluteFilePath(), extraLibs, showDialog);
 
     //Load library again
     coreLibrary.loadComponentLib(lib.libFilePath);

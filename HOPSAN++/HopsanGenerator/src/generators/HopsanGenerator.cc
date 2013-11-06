@@ -807,7 +807,7 @@ void HopsanGenerator::generateNewLibrary(QString path, QStringList hppFiles)
         xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
         xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\" name=\""+libName+"\">\n";
-        xmlStream << "  <lib>" << libName << ".so</lib>\n";
+        xmlStream << "  <lib>" << libName  << "</lib>\n";
         xmlStream << "  <source>" << libName << ".cc</source>\n";
         xmlStream << "</hopsancomponentlibrary>\n";
         xmlFile.close();

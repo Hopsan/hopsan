@@ -296,7 +296,6 @@ HEADERS += MainWindow.h \
     Widgets/DataExplorer.h \
     Widgets/LibraryWidget.h \
     LibraryHandler.h \
-    Widgets/DataExplorer.h \
     global.h
 
 OTHER_FILES += \

@@ -27,7 +27,6 @@
 #include "win32dll.h"
 #include "HopsanTypes.h"
 #include <vector>
-#include <string>
 
 namespace hopsan {
 

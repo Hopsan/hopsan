@@ -54,8 +54,10 @@
 
 #ifdef WIN32
 #define LIBEXT ".dll"
+#define LIBPREFIX ""
 #else
 #define LIBEXT ".so"
+#define LIBPREFIX "lib"
 #endif
 
 //! @todo all of these dont have to be common
@@ -75,7 +77,7 @@ enum ContainerChildrenZValuesEnumT {WidgetZValue, ConnectorZValue, ModelobjectZV
 enum ModelObjectZValuesEnumT {PortZValue, SelectionboxZValue, HoveredPortZValue, LossesDisplayZValue};
 enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue};
 enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
-enum InternalExternalEnumT {Internal, External};
+enum LibraryTypeEnumT {Internal, External, FMU};
 enum HiddenVisibleEnumT {Hidden, Visible};
 
 #include <QString>
