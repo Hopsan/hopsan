@@ -4,29 +4,30 @@ import subprocess
 import os
 import ctypes
 import stat
+from time import sleep
 
 devversion="0.7."
-tempDir="C:\\temp_release"
+tempDir=r'C:\temp_release'
 scriptFile="HopsanReleaseInnoSetupScript.iss"
-dependecyBinFiles=".\\hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z"
-dependecyBinFiles64=".\\hopsan_bincontents64_Qt485_MinGW64_481_OpenSSL101e.7z"
+dependecyBinFiles=r'.\hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z'
+dependecyBinFiles64=r'.\hopsan_bincontents64_Qt485_MinGW64_481_OpenSSL101e.7z'
 
 # External programs
-inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
-innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
+inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
+innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 
 # Libs
-qtlibDirList = ["C:\Qt\4.8.5"]
-qtlib64DirList = ["C:\Qt\Qt64-4.8.5"]
-tbblibDirList = [".\\HopsanCore\\Dependencies\\tbb30_20110704oss", ".\\HopsanCore\\Dependencies\\tbb41_20130613oss"]
-tbblib64DirList = [".\\HopsanCore\\Dependencies\\tbb30_20110704oss_64", ".\\HopsanCore\\Dependencies\\tbb41_20130613oss_64"]
+qtlibDirList = [r'C:\Qt\4.8.5']
+qtlib64DirList = [r'C:\Qt\Qt64-4.8.5']
+tbblibDirList = [r'.\HopsanCore\Dependencies\tbb30_20110704oss', r'.\HopsanCore\Dependencies\tbb41_20130613oss']
+tbblib64DirList = [r'.\HopsanCore\Dependencies\tbb30_20110704oss_64', r'.\HopsanCore\Dependencies\tbb41_20130613oss_64']
 
 # Compilers and build tools
-qtcreatorDirList = ["C:\Qt\qtcreator-2.8.1"]
-mingwDirList = ["C:\Qt\MinGW-gcc440_1\mingw\bin", "C:\Qt\mingw\bin", "C:\mingw\bin"]
-mingw64DirList = ["C:\Qt\mingw64\bin"]
-msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
-msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
+qtcreatorDirList = [r'C:\Qt\qtcreator-2.8.1']
+mingwDirList = [r'C:\Qt\MinGW-gcc440_1\mingw\bin', r'C:\Qt\mingw\bin', r'C:\mingw\bin']
+mingw64DirList = [r'C:\Qt\mingw64\bin']
+msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
+msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
 # Remember current working dir
 hopsanDir=os.getcwd()
@@ -54,7 +55,7 @@ escape_dict={'\a':r'\a',
            '\8':r'\8',
            '\9':r'\9'}
 
-def raw(text):
+def makeRaw(text):
     """Returns a raw string representation of text"""
     new_string=''
     for char in text:
@@ -62,8 +63,13 @@ def raw(text):
         except KeyError: new_string+=char
     return new_string
 
-def rawPath(text):
-    return r'"'+raw(text)+r'"'
+def quotePath(path):
+    """Appends quotes around string if quotes are not already present"""
+    if path[0] != r'"':
+        path = r'"'+path
+    if path[-1] != r'"':
+        path = path+r'"'
+    return path
 
 class bcolors:
   WHITE = 0x07
@@ -105,7 +111,11 @@ def printDebug(text):
     setColor(bcolors.WHITE)
 
 def pathExists(path, failMsg="", okMsg=""):
-    if os.path.exists(os.path.dirname(raw(path))):
+    # Add \ at end if not already present, else the dirname function below will take parent dir
+    if path[-1] != "\\":
+        path = path+"\\"
+        
+    if os.path.exists(os.path.dirname(path)):
         if okMsg!="":
             printSuccess(okMsg)
         return True
@@ -114,13 +124,13 @@ def pathExists(path, failMsg="", okMsg=""):
             printError(failMsg)
         return False
 
-def fileExists(file):
-    return os.path.isfile(raw(file))
+def fileExists(fileName):
+    return os.path.isfile(fileName)
     
 def selectPathFromList(list, failMsg, sucessMsg):
     selected=""
     for item in list:
-        if pathExists(item+"\\"):
+        if pathExists(item):
             selected = item
     if selected=="":
         printError(failMsg)
@@ -151,28 +161,46 @@ def writeDoNotSafeFileHereFileToAllDirectories(rootDir):
         open(dirpath+"\---DO_NOT_SAVE_FILES_IN_THIS_DIRECTORY---", 'a+').close()
 
 def svnExport(src, dst):
-    print "Exporting from "+rawPath(src)+ " to "+rawPath(dst)
-    os.system("svn export -q "+rawPath(src)+" "+rawPath(dst))
+    print "Exporting from "+quotePath(src)+" to "+quotePath(dst)
+    os.system("svn export -q "+quotePath(src)+" "+quotePath(dst))
 
 def callXcopy(src, dst):
-    print "xcopy "+rawPath(src)+" "+rawPath(dst)
-    os.system("xcopy "+rawPath(src)+" "+rawPath(dst)+" /s /y")
+    #print "xcopy "+quotePath(src)+" "+quotePath(dst)
+    os.system("xcopy "+quotePath(src)+" "+quotePath(dst)+" /s /y")
+
+def callCopyFile(src, dst):
+    #print "copy "+quotePath(src)+" "+quotePath(dst)
+    os.system("copy "+quotePath(src)+" "+quotePath(dst)+" /y")
 
 def callMkdir(dst):
-    print "mkdir "+rawPath(dst)
-    os.system("mkdir "+rawPath(dst))
+    #print "mkdir "+quotePath(dst)
+    os.system("mkdir "+quotePath(dst))
 
 def callRd(tgt):
-    print "rd "+rawPath(tgt)
-    os.system("rd "+rawPath(tgt)+" /s /q")
+    #print "rd "+quotePath(tgt)
+    os.system("rd "+quotePath(tgt)+" /s /q")
 
 def callEXE(cmd, args):
-    #print "callEXE: "+rawPath(cmd)+" "+args
-    os.system(r'"'+rawPath(cmd)+" "+args+r'"')
+    #print "callEXE: " + quotePath(cmd)+r' '+args
+    if fileExists(cmd):
+        os.system(r'"'+quotePath(cmd)+r' '+args+r'"')
+    else:
+        printError(cmd+r' Does not exist!')
 
 def callDel(tgt):
-    print "del "+rawPath(tgt)
-    os.system("del "+rawPath(tgt))
+    #print "del "+quotePath(tgt)
+    os.system("del "+quotePath(tgt))
+
+def callMove(src, dst):
+    print "move "+quotePath(src)+" "+quotePath(dst)
+    os.system("move "+quotePath(src)+" "+quotePath(dst))
+
+def call7z(args):
+    callEXE(hopsanDir+r'\ThirdParty\7z\7z.exe', args)
+
+def callSed(sedCommand):
+    callEXE(hopsanDir+r'\ThirdParty\sed-4.2.1\sed.exe', sedCommand);
+    
 
 def makeMSVCDirName(version, arch):
     return "MSVC"+version+"_"+arch
@@ -216,8 +244,8 @@ def verifyPaths():
     if creatorDir == "":
         isOk = False
         
-    jomDir=creatorDir+"\\bin"
-    qmakeDir=qtDir+"\\bin"
+    jomDir=creatorDir+r'\bin'
+    qmakeDir=qtDir+r'\bin'
 
     mingwDir=selectPathFromList(mingwdirs, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
     if mingwDir == "":
@@ -234,7 +262,7 @@ def verifyPaths():
         isOk = False
     
     #Make sure the 3d party dependency file exists
-    if not pathExists(dependecyfile+"\\", "The "+ dependecyfile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
+    if not pathExists(dependecyfile, "The "+ dependecyfile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
         isOk = False
         
     #Make sure TBB is installed in correct location
@@ -270,75 +298,95 @@ def askForVersion():
 
     return (version,dodevrelease)
 
-def msvcCompile(version, architecture):
-    print "Compiling HopsanCore with Microsoft Visual Studio "+version+" "+architecture+"..."
+def msvcCompile(msvcVersion, architecture):
+    print "Compiling HopsanCore with Microsoft Visual Studio "+msvcVersion+" "+architecture+"..."
     
     #Find correct path (perhaps we should test if it exists first, or this will crash)
-    exec "path = msvc"+version+"Dir"
+    exec "msvcPath = msvc"+msvcVersion+"Dir"
     
     #Remove previous files
-    callDel(hopsanDir+"\\bin\\HopsanCore*.*")
+    callDel(hopsanDir+r'\bin\HopsanCore*.*')
 
-    #Create build directory and enter it
-    callRd(hopsanDir+"\\HopsanCore_bd")
-    callMkdir(hopsanDir+"\\HopsanCore_bd")
-    
-    os.chdir(hopsanDir+"\\HopsanCore_bd")
+    #Create clean build directory
+    hopsanBuildDir=hopsanDir+r'\HopsanCore_bd'
+    callRd(hopsanBuildDir)
+    callMkdir(hopsanBuildDir)
       
-    #Setup compiler and compile (using auxiliary batch script)
+    #Create compilation script and compile
     os.chdir(hopsanDir)
-    os.system("compileMSVC.bat "+version+" "+architecture+" "+rawPath(path)+" "+rawPath(qmakeDir)+" "+rawPath(hopsanDir+"\\HopsanCore_bd")+" "+rawPath(jomDir)+" "+rawPath(hopsanDir))
+    # Generate compile script, setup compiler and compile
+    mkspec="win32-msvc"+msvcVersion
+    jom=quotePath(jomDir+r'\jom.exe')
+    qmake=quotePath(qmakeDir+r'\qmake.exe')
+    hopcorepro=quotePath(hopsanDir+r'\HopsanCore\HopsanCore.pro')
+    f = open('compileWithMSVC.bat', 'w')
+    f.write(r'echo off'+"\n")
+    f.write(r'REM This file has been automatically generated by the python build script. Do NOT commit it to svn!'+"\n")
+    f.write(r'setlocal enabledelayedexpansion'+"\n")
+    f.write(r'call '+quotePath(msvcPath+r'\SetEnv.cmd')+r' /Release /'+architecture+"\n")
+    f.write(r'COLOR 07'+"\n")
+    f.write(r'cd '+quotePath(hopsanBuildDir)+"\n")
+    f.write(r'call '+jom+r' clean'+"\n")
+    f.write(r'call '+qmake+r' '+hopcorepro+r' -r -spec '+mkspec+r' "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"'+"\n")
+    f.write(r'call '+jom+"\n")
+    f.write(r'cd ..'+"\n")
+    #f.write("pause\n")
+    f.close();
 
-    printDebug(os.environ["PATH"])
+    # Compile
+    os.system("compileWithMSVC.bat")
+
+    #printDebug(os.environ["PATH"])
     
     #Remove build directory
-    callRd(hopsanDir+"\\HopsanCore_bd")
+    callRd(hopsanBuildDir)
 
-    if not fileExists(hopsanDir+"\\bin\\HopsanCore.dll"):
-        printError("Failed to build HopsanCore with Visual Studio "+version+" "+architecture)
+    if not fileExists(hopsanDir+r'\bin\HopsanCore.dll'):
+        printError("Failed to build HopsanCore with Visual Studio "+msvcVersion+" "+architecture)
         return False
 
     #Move files to correct MSVC directory
-    targetDir = hopsanDir+"\\bin\\"+makeMSVCDirName(version,architecture)
+    targetDir = hopsanDir+"\\bin\\"+makeMSVCDirName(msvcVersion,architecture)
     callRd(targetDir)
     callMkdir(targetDir)
-    os.system("move "+hopsanDir+"\\bin\\HopsanCore.dll "+targetDir+"\\HopsanCore.dll")
-    os.system("move "+hopsanDir+"\\bin\\HopsanCore.lib "+targetDir+"\\HopsanCore.lib")
-    os.system("move "+hopsanDir+"\\bin\\HopsanCore.exp "+targetDir+"\\HopsanCore.exp")
+    callMove(hopsanDir+r'\bin\HopsanCore.dll', targetDir+r'\HopsanCore.dll')
+    callMove(hopsanDir+r'\bin\HopsanCore.lib', targetDir+r'\HopsanCore.lib')
+    callMove(hopsanDir+r'\bin\HopsanCore.exp', targetDir+r'\HopsanCore.exp')
     
     return True
    
 def buildRelease():
     if not dodevrelease:
         #Set version numbers (by changing .h files) BEFORE build
-        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION  \\\""+version+"\\\"|g\" -i HopsanCore\\include\\version.h")
-        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \\\""+version+"\\\"|g\" -i HopsanGUI\\version_gui.h")
+        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+version+r'\"|g" -i HopsanCore\include\version.h')
+        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+version+r'\"|g" -i HopsanGUI\version_gui.h')
 
         #Deactivate Groups icon as it is not working yet
-        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*Group.xml.*|""|g\" -i HopsanGUI\\Resources.qrc")
+        callSed(r'"/Group.xml/d" -i HopsanGUI\Resources.qrc')
 
         #Set splash screen version number
-        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|X\.X\.X|"+version+"|g\" -i HopsanGUI\\graphics\\splash2.svg")
-        runCmd("\""+inkscapeDir+"\\inkscape.exe\" HopsanGUI/graphics/splash2.svg --export-background=\"#ffffff\" --export-png HopsanGUI/graphics/splash.png")
-        
-        #Revert changes in svg
-        runCmd("svn revert HopsanGUI\\graphics\\splash2.svg")
+        callCopyFile(r'HopsanGUI\graphics\splash2.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
+        callSed(r'"s|X\.X\.X|'+version+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
+        callEXE(inkscapeDir+r'\inkscape.exe', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-png HopsanGUI/graphics/splash.png')
+        callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
 
         #Make sure development flag is not defined
-        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|\" -i HopsanGUI\\HopsanGUI.pro")
+        callSed(r'"s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro')
 
     #Make sure we compile defaultLibrary into core
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g\" -i Common.prf")
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\\\|\" -i HopsanCore\\HopsanCore.pro")
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|componentLibraries||\" -i HopsanNG.pro")
+    callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
+    callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
+    callSed(r'"s|componentLibraries||" -i HopsanNG.pro')
 
     #Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|#DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
+    callSed(r'"s|.*DEFINES \*= MAINCORE|#DEFINES *= MAINCORE|g" -i HopsanCore\HopsanCore.pro')
 
-    #Rename TBB so it is not found when compiling with Visual Studio
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= USETBB|#DEFINES *= USETBB|\" -i HopsanCore\\HopsanCore.pro")
-    
-    #Build HOPSANCORE with MSVC, else remove those folders
+    #Disable TBB so it is not found when compiling with Visual Studio
+    callSed(r'"s|.*equals(foundTBB|    equals(NOTBB|g" -i HopsanCore\HopsanCore.pro')
+
+    #========================================================
+    # Build HOPSANCORE with MSVC, else remove those folders
+    #========================================================
     if buildVCpp:
         if not msvcCompile("2008", "x86"):
             return False
@@ -356,21 +404,25 @@ def buildRelease():
         callRd(hopsanBinDir+makeMSVCDirName("2010", "x64"))
     
     #Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
+    callSed(r'"s|.*DEFINES \*= MAINCORE|DEFINES *= MAINCORE|" -i HopsanCore\HopsanCore.pro')
      
-    #Rename TBB back again (to activate it)
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= USETBB|DEFINES *= USETBB|\" -i HopsanCore\\HopsanCore.pro")
+    #Reactivate TBB
+    callSed(r'"s|.*equals(NOTBB|    equals(foundTBB|" -i HopsanCore\HopsanCore.pro')
 
-    #BUILD WITH MINGW32
+    #========================================================
+    # BUILD WITH MINGW32
+    #========================================================
+    print "Compiling with MinGW"
 
     #Remove previous files
-    os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
-    os.system("del "+hopsanDir+"\\bin\\HopsanGUI*.*")
-    os.system("del "+hopsanDir+"\\bin\\HopsanCLI*.*")
+    callDel(hopsanDir+r'\bin\HopsanCore*.*')
+    callDel(hopsanDir+r'\bin\HopsanGUI*.*')
+    callDel(hopsanDir+r'\bin\HopsanCLI*.*')
 
-    #Create build directory and enter it
-    callRd(hopsanDir+"\\HopsanNG_bd")
-    callMkdir(hopsanDir+"\\HopsanNG_bd")
+    #Create clean build directory
+    hopsanBuildDir = hopsanDir+r'\HopsanNG_bd'
+    callRd(hopsanBuildDir)
+    callMkdir(hopsanBuildDir)
     
     # Generate compile script, setup compiler and compile
     if do64BitRelease:
@@ -378,17 +430,19 @@ def buildRelease():
     else:
         mkspec="win32-g++"
     f = open('compileWithMinGW.bat', 'w')
+    f.write(r'echo off'+"\n")
     f.write(r'REM This file has been automatically generated by the python build script. Do NOT commit it to svn!'+"\n")
-    f.write(r'SET PATH='+raw(mingwDir)+r';'+raw(qmakeDir)+r';%PATH%'+"\n")
+    f.write(r'SET PATH='+mingwDir+r';'+qmakeDir+r';%PATH%'+"\n")
     f.write(r'mingw32-make.exe clean'+"\n")
-    f.write(r'qmake.exe '+raw(hopsanDir)+r'\HopsanNG.pro -r -spec '+mkspec+r' "CONFIG+=release"'+"\n")
+    f.write(r'qmake.exe '+quotePath(hopsanDir+r'\HopsanNG.pro')+r' -r -spec '+mkspec+r' "CONFIG+=release"'+"\n")
     f.write(r'mingw32-make.exe'+"\n")
+    #f.write("pause\n")
     f.close();
     
-    os.chdir(hopsanDir+"\\HopsanNG_bd")    
+    os.chdir(hopsanBuildDir)    
     os.system(r'..\compileWithMinGW.bat')
 
-    if not fileExists(hopsanDir+"\\bin\\HopsanCore.dll") or not fileExists(hopsanDir+"\\bin\\HopsanGUI.exe") or not fileExists(hopsanDir+"\\bin\\HopsanCLI.exe"):
+    if not fileExists(hopsanDir+r'\bin\HopsanCore.dll') or not fileExists(hopsanDir+r'\bin\HopsanGUI.exe') or not fileExists(hopsanDir+r'\bin\HopsanCLI.exe'):
         printError("Failed to build Hopsan with MinGW.")
         return False
     
@@ -410,93 +464,84 @@ def copyFiles():
     if not pathExists(tempDir):
         printError("Failed to create temporary directory")
         return False
-    
-    callMkdir(tempDir+"\\Models")
-    callMkdir(tempDir+"\\Scripts")
-    callMkdir(tempDir+"\\bin")
-    callMkdir(tempDir+"\\componentLibraries")
-    callMkdir(tempDir+"\\doc\\user\\html")
-    callMkdir(tempDir+"\\doc\\graphics")
-    callMkdir(tempDir+"\\ThirdParty")
+
+    # Create directories    
+    callMkdir(tempDir+r'\Models')
+    callMkdir(tempDir+r'\Scripts')
+    callMkdir(tempDir+r'\bin')
+    callMkdir(tempDir+r'\componentLibraries')
+    callMkdir(tempDir+r'\doc\user\html')
+    callMkdir(tempDir+r'\doc\graphics')
+    callMkdir(tempDir+r'\ThirdParty')
+
+    # Common export dirs
+    tempDirBin=tempDir+r'\bin'
+    tempDirScripts=tempDir+r'\Scripts'
     
     #Unpack depedency bin files to bin folder without asking stupid questions
-    #os.system("\""+raw(hopsanDir)+"\"\\ThirdParty\\7z\\7z.exe -y x "+dependecyBinFiles+" -o"+tempDir+"\\bin")
-    callEXE(hopsanDir+"\\ThirdParty\\7z\\7z.exe", "x "+dependecyBinFiles+" -o"+rawPath(tempDir+"\\bin")+" -y")
-
-    #Clear old output folder
-    callRd(hopsanDir+"\\output")
-    if pathExists("\""+raw(hopsanDir)+"\"\\output"):
-        printWarning("Unable to clear old output folder.")
-        if not askYesNoQuestion("Continue? (y/n): "):
-            return False
-        
-    #Create new output folder
-    callMkdir(hopsanDir+"\output")
-    if not pathExists(raw(hopsanDir)+"\\output"):
-        printError("Failed to create output folder.")
-        return False
+    call7z(r'x '+dependecyBinFiles+r' -o'+quotePath(tempDirBin)+r' -y')
 
     #Copy "bin" folder to temporary directory
-    callXcopy("bin\\*.exe", tempDir+"\\bin")
-    callXcopy("bin\\*.dll", tempDir+"\\bin")
-    callXcopy("bin\\*.a", tempDir+"\\bin")
-    callXcopy("bin\\*.lib", tempDir+"\\bin")
-    callXcopy("bin\\*.exp", tempDir+"\\bin")
+    callXcopy(r'bin\*.exe', tempDirBin)
+    callXcopy(r'bin\*.dll', tempDirBin)
+    callXcopy(r'bin\*.a', tempDirBin)
+    callXcopy(r'bin\*.lib', tempDirBin)
+    callXcopy(r'bin\*.exp', tempDirBin)
         
     #Delete unwanted (debug) files from temporary directory
-    callDel(tempDir+"\\bin\\*_d.exe")
-    callDel(tempDir+"\\bin\\*_d.a")
-    callDel(tempDir+"\\bin\\*_d.dll")
-    callDel(tempDir+"\\bin\\tbb_debug.dll")
-    callDel(tempDir+"\\bin\\qwtd.dll")
+    callDel(tempDirBin+r'\*_d.exe')
+    callDel(tempDirBin+r'\*_d.a')
+    callDel(tempDirBin+r'\*_d.dll')
+    callDel(tempDirBin+r'\tbb_debug.dll')
+    callDel(tempDirBin+r'\qwtd.dll')
 
     #Build user documentation
     os.system("buildUserDocumentation")
-    if not fileExists(hopsanDir+"\\doc\\user\\html\\index.html"):
+    if not fileExists(hopsanDir+r'\doc\user\html\index.html'):
         printError("Failed to build user documentation")
 
     #Export "HopsanCore" SVN directory to "include" in temporary directory
-    svnExport("HopsanCore", tempDir+"\\HopsanCore")
+    svnExport("HopsanCore", tempDir+r'\HopsanCore')
  
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
-    callXcopy("HopsanCore\\include\\svnrevnum.h", tempDir+"\\HopsanCore\\include")
+    callXcopy(r'HopsanCore\include\svnrevnum.h', tempDir+r'\HopsanCore\include')
 
     #Export "Example Models" SVN directory to temporary directory
-    svnExport("Models\\Example Models", tempDir+"\\Models\\Example Models")
+    svnExport(r'Models\Example Models', tempDir+r'\Models\Example Models')
     
     #Export "Test Models" SVN directory to temporary directory
-    svnExport("Models\\Component Test", tempDir+"\\Models\\Component Test")
+    svnExport(r'Models\Component Test', tempDir+r'\Models\Component Test')
 
     #Export "Benchmark Models" SVN directory to temporary directory
-    svnExport("Models\\Benchmark Models", tempDir+"\\Models\\Benchmark Models")
+    svnExport(r'Models\Benchmark Models', tempDir+r'\Models\Benchmark Models')
 
     #Export defaultLibrary" SVN directory to temporary directory
-    svnExport("componentLibraries\\defaultLibrary", tempDir+"\\componentLibraries\\defaultLibrary")
+    svnExport(r'componentLibraries\defaultLibrary', tempDir+r'\componentLibraries\defaultLibrary')
 
     #Export "exampleComponentLib" SVN directory to temporary directory
-    svnExport("componentLibraries\\exampleComponentLib", tempDir+"\\componentLibraries\\exampleComponentLib")
+    svnExport(r'componentLibraries\exampleComponentLib', tempDir+r'\componentLibraries\exampleComponentLib')
 
     #Export "Scripts" folder to temporary directory
-    svnExport("Scripts\\HopsanOptimization.py", tempDir+"\\Scripts")
-    svnExport("Scripts\\OptimizationObjectiveFunctions.py", tempDir+"\\Scripts")
-    svnExport("Scripts\\OptimizationObjectiveFunctions.xml", tempDir+"\\Scripts")
-    svnExport("Scripts\\HCOM", tempDir+"\\Scripts\\HCOM")
+    svnExport(r'Scripts\HopsanOptimization.py', tempDirScripts)
+    svnExport(r'Scripts\OptimizationObjectiveFunctions.py', tempDirScripts)
+    svnExport(r'Scripts\OptimizationObjectiveFunctions.xml', tempDirScripts)
+    svnExport(r'Scripts\HCOM', tempDirScripts+r'\HCOM')
 
     #Copy "hopsandefaults" file to temporary directory
-    svnExport("hopsandefaults", tempDir+"\\hopsandefaults")
+    svnExport("hopsandefaults", tempDir+r'\hopsandefaults')
     
     #Copy "release notes" file to temporary directory
-    svnExport("Hopsan-release-notes.txt", tempDir+"\\Hopsan-release-notes.txt")
+    svnExport("Hopsan-release-notes.txt", tempDir+r'\Hopsan-release-notes.txt')
     
     #Copy 7zip to temporary directory
-    svnExport("ThirdParty\\7z", tempDir+"\\ThirdParty\\7z")
+    svnExport("ThirdParty\\7z", tempDir+r'\ThirdParty\7z')
 
     #Copy fmi to temporary directory
-    svnExport("ThirdParty\\fmi", tempDir+"\\ThirdParty\\fmi")
+    svnExport("ThirdParty\\fmi", tempDir+r'\ThirdParty\fmi')
 
     #Copy documentation to temporary directory
-    callXcopy("doc\\user\\html\\*", tempDir+"\\doc\\user\\html")
-    callXcopy("doc\\graphics\\*", tempDir+"\\doc\\graphics")
+    callXcopy(r'doc\user\html\*', tempDir+r'\doc\user\html')
+    callXcopy(r'doc\graphics\*', tempDir+r'\doc\graphics')
 
     #Write the do not save files here file 
     writeDoNotSafeFileHereFileToAllDirectories(tempDir)
@@ -510,42 +555,81 @@ def copyFiles():
 def createInstallFiles():
 
     if do64BitRelease:
-        win3264="win64"
+        zipFile=r'Hopsan-'+version+r'-win64-zip.zip'
+        exeFileName=r'Hopsan-'+version+r'-win64-installer'
     else:
-        win3264="win32"
+        zipFile=r'Hopsan-'+version+r'-win32-zip.zip'
+        exeFileName=r'Hopsan-'+version+r'-win32-installer'
+
+    exeFile=exeFileName+r'.exe'
     
     #Create zip package
-    #ToDo: filename should be a variable, and cleanup r'' or "" string usage
     print "Creating zip package..."
-    callEXE(hopsanDir+"\\ThirdParty\\7z\\7z.exe", "a -tzip Hopsan-"+version+"-"+win3264+"-zip.zip "+rawPath(tempDir+"\\*"))
-    os.system(r'move Hopsan-'+version+r'-'+win3264+r'-zip.zip output/')
-    if not fileExists("output/Hopsan-"+version+"-"+win3264+"-zip.zip"):
+    call7z(r'a -tzip '+zipFile+r' '+tempDir+r'\*')
+    callMove(zipFile, "output")
+    if not fileExists(r'output/'+zipFile):
         printError("Failed to create zip package.")
         return False
     printSuccess("Created zip package!")
         
     #Execute Inno compile script
-    #ToDo: filename should be a variable, and cleanup r'' or "" string usage
     print "Generating install executable..."
-    print r'"'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-'+win3264+r'-installer" /dMyAppVersion="'+version+'r" "'+scriptFile+r'"'
-    os.system(r'""'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-'+win3264+r'-installer" /dMyAppVersion="'+version+r'" "'+scriptFile+r'""')
-    if not fileExists("output/Hopsan-"+version+"-"+win3264+"-installer.exe"):
+    innocmd=r' /o"output" /f"'+exeFileName+r'" /dMyAppVersion="'+version+r'" '+scriptFile  
+    #print innocmd
+    callEXE(innoDir+r'\iscc.exe', innocmd)
+    if not fileExists(r'output/'+exeFile):
         printError("Failed to create installer executable.")
         return False
     printSuccess("Generated install executable!")
 
-    #Move release notes to output directory
-    os.system("copy Hopsan-release-notes.txt \"output/\"")
+    #Copy release notes to output directory
+    callCopyFile('Hopsan-release-notes.txt', 'output')
     
     return True
+
+def createCleanOutputDirectory():
+    """Try to remove and recreate the output directory"""
+    hopsanDirOutput=hopsanDir+r'\output'
+
+    #Clear old output folder
+    callRd(hopsanDirOutput)
+    if pathExists(hopsanDirOutput):
+        printWarning("Unable to clear old output folder.")
+        if not askYesNoQuestion("Continue? (y/n): "):
+            return False
+
+    #Create new output folder
+    callMkdir(hopsanDirOutput)
+    if not pathExists(hopsanDirOutput):
+        printError("Failed to create output folder.")
+        return False
+
+    return True
+
+def renameBinFolder():
+    # Move the bin folder to temp storage to avoid packagin dev junk into release
+    if pathExists(hopsanDir+r'\bin'):
+        callMove(hopsanDir+r'\bin', hopsanDir+r'\bin_build_backup')
+    if pathExists(hopsanDir+r'\bin'):
+        printError("Could not move the bin folder to temporary backup before build.")
+        return False
+        
+    # Create clean bin directory
+    sleep(0.5)
+    callMkdir(r'\bin')
+    raw_input("Press any key to continue...")
+    return True
     
-    
+        
 def cleanUp():
     print "Cleaning up..."
-    
     #Remove temporary output directory
-    os.system("rd /s/q "+tempDir)
-
+    callRd(tempDir)
+    #Rename backup bin folder, remove build files
+    if pathExists(hopsanDir+r'\bin_build_backup'):
+        callRd(hopsanDir+r'\bin_last_build')
+        callMove(hopsanDir+r'\bin', hopsanDir+r'\bin_last_build')
+        callMove(hopsanDir+r'\bin_build_backup', hopsanDir+r'\bin')
     
     
 #################################
@@ -591,6 +675,10 @@ if success:
         printError("Aborted by user.")
         success = False
         cleanUp()
+
+    if not renameBinFolder():
+        success = False
+        cleanUp()
     
 if success:
     if not buildRelease():
@@ -602,7 +690,12 @@ if success:
     if (not runValidation()) and pauseOnFailValidation:
         printWarning("Compilation script failed in model validation.")
         askYesNoQuestion("Press enter to continue!")
-    
+
+if success:
+    if not createCleanOutputDirectory():
+        success = False
+        cleanUp()
+
 if success:
     if not copyFiles():
         success = False
