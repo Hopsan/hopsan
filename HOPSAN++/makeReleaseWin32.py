@@ -336,23 +336,23 @@ def msvcCompile(msvcVersion, architecture):
 
     # Compile
     os.system("compileWithMSVC.bat")
-
     #printDebug(os.environ["PATH"])
     
     #Remove build directory
     callRd(hopsanBuildDir)
 
-    if not fileExists(hopsanDir+r'\bin\HopsanCore.dll'):
+    hopsanDirBin = hopsanDir+r'\bin'
+    if not fileExists(hopsanDirBin+r'\HopsanCore.dll'):
         printError("Failed to build HopsanCore with Visual Studio "+msvcVersion+" "+architecture)
         return False
 
     #Move files to correct MSVC directory
-    targetDir = hopsanDir+"\\bin\\"+makeMSVCDirName(msvcVersion,architecture)
+    targetDir = hopsanDirBin+"\\"+makeMSVCDirName(msvcVersion,architecture)
     callRd(targetDir)
     callMkdir(targetDir)
-    callMove(hopsanDir+r'\bin\HopsanCore.dll', targetDir+r'\HopsanCore.dll')
-    callMove(hopsanDir+r'\bin\HopsanCore.lib', targetDir+r'\HopsanCore.lib')
-    callMove(hopsanDir+r'\bin\HopsanCore.exp', targetDir+r'\HopsanCore.exp')
+    callMove(hopsanDirBin+r'\HopsanCore.dll', targetDir+r'\HopsanCore.dll')
+    callMove(hopsanDirBin+r'\HopsanCore.lib', targetDir+r'\HopsanCore.lib')
+    callMove(hopsanDirBin+r'\HopsanCore.exp', targetDir+r'\HopsanCore.exp')
     
     return True
    
@@ -416,9 +416,9 @@ def buildRelease():
     print "Compiling with MinGW"
 
     #Remove previous files
-    callDel(hopsanDir+r'\bin\HopsanCore*.*')
-    callDel(hopsanDir+r'\bin\HopsanGUI*.*')
-    callDel(hopsanDir+r'\bin\HopsanCLI*.*')
+    #callDel(hopsanDir+r'\bin\HopsanCore*.*')
+    #callDel(hopsanDir+r'\bin\HopsanGUI*.*')
+    #callDel(hopsanDir+r'\bin\HopsanCLI*.*')
 
     #Create clean build directory
     hopsanBuildDir = hopsanDir+r'\HopsanNG_bd'
