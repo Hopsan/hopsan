@@ -165,8 +165,13 @@ void PlotVariableTree::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandle
     }
 
     mpLogDataHandler = pLogDataHandler;
-    connect(mpLogDataHandler, SIGNAL(newDataAvailable()), this, SLOT(updateList()));
-    connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(updateList()));
+
+    // Connect signals if the pLogdataHndler is not a null pointer
+    if (pLogDataHandler)
+    {
+        connect(mpLogDataHandler, SIGNAL(newDataAvailable()), this, SLOT(updateList()));
+        connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(updateList()));
+    }
     updateList();
 }
 
@@ -582,8 +587,6 @@ PlotTreeWidget::PlotTreeWidget(QWidget *pParent)
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
     mpLoadButton->setHidden(true);      //!< @todo Fix /Peter
     //mpLoadButton->setDisabled(true);
-
-    connect(gpLibraryWidget, SIGNAL(hovered()), this, SLOT(clearHoverEffects()));
 }
 
 void PlotTreeWidget::openNewPlotWindow()

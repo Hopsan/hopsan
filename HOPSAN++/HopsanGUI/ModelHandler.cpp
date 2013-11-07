@@ -395,7 +395,7 @@ bool ModelHandler::closeModel(int idx, bool force)
         disconnect(gpMainWindow->mpExportPNGAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(exportToPNG()));
         disconnect(gpMainWindow->mpCenterViewAction,    SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(centerView()));
 
-        disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModelToClose,  SLOT(simulate()));
+        disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModelToClose,  SLOT(simulate_nonblocking()));
         disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModelToClose,  SLOT(save()));
         disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModelToClose,  SLOT(exportModelParameters()));
 

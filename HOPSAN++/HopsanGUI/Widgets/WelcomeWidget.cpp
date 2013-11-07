@@ -308,7 +308,6 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
     this->setLayout(mpLayout);
 
-    connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
     connect(gpCentralTabWidget, SIGNAL(currentChanged(int)), this, SLOT(autoHide()));
 }
 

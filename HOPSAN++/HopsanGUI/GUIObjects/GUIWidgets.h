@@ -92,8 +92,8 @@ protected:
 
 public slots:
     void deleteMe(UndoStatusEnumT undoSettings=Undo);
-    virtual void flipVertical(UndoStatusEnumT /*undoSettings = UNDO*/){}
-    virtual void flipHorizontal(UndoStatusEnumT /*undoSettings = UNDO*/){}
+    virtual void flipVertical(UndoStatusEnumT undoSettings = Undo);
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
 
 private slots:
     void updateWidgetFromDialog();

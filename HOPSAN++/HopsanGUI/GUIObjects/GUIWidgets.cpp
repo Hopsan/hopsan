@@ -548,6 +548,18 @@ void TextBoxWidget::deleteMe(UndoStatusEnumT undoSettings)
     mpParentContainerObject->deleteWidget(this, undoSettings);
 }
 
+void TextBoxWidget::flipVertical(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings);
+    // Nothing for now
+}
+
+void TextBoxWidget::flipHorizontal(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings);
+    // Nothing for now
+}
+
 
 void TextBoxWidget::updateWidgetFromDialog()
 {

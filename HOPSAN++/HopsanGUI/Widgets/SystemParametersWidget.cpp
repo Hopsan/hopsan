@@ -377,9 +377,13 @@ void SystemParametersWidget::update(ContainerObject *pNewContainer)
             disconnect(mpContainerObject, 0, this, 0);
         }
 
-        // Assign new and Connect new signals
+        // Assign new and Connect new signals if new container is not null ptr
         mpContainerObject = pNewContainer;
-        connect(mpContainerObject, SIGNAL(systemParametersChanged()), this, SLOT(update()), Qt::UniqueConnection);
+
+        if (mpContainerObject)
+        {
+            connect(mpContainerObject, SIGNAL(systemParametersChanged()), this, SLOT(update()), Qt::UniqueConnection);
+        }
     }
     this->update();
 }

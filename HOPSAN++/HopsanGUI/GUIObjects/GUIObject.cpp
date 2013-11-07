@@ -85,6 +85,18 @@ int WorkspaceObject::type() const
     return Type;
 }
 
+void WorkspaceObject::flipVertical(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings);
+    // Nothing for now
+}
+
+void WorkspaceObject::flipHorizontal(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings);
+    // Nothing for now
+}
+
 //! @brief Returns the position of the  WorkspaceObject center in scene coordinates
 QPointF WorkspaceObject::getCenterPos()
 {
@@ -467,4 +479,11 @@ void WorkspaceObjectSelectionBox::setHovered()
     {
         mLines[i]->setPen(mHoverPen);
     }
+}
+
+
+void flipVertical(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings);
+    // Does nothing
 }

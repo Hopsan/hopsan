@@ -47,23 +47,23 @@ public:
     virtual void setParentContainerObject(ContainerObject *pParentContainer);
     virtual ContainerObject *getParentContainerObject();
 
-    //Position methods
+    // Position methods
     QPointF getCenterPos();
     void setCenterPos(const QPointF cpos);
 
-    //Load and save methods
+    // Load and save methods
     virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromHMF(QString modelFilePath=QString());
 
-    //Other methods
+    // Other methods
     bool isFlipped();
 
     enum { Type = WorkspaceObjectType };
     int type() const;
 
 public slots:
-    virtual void flipVertical(UndoStatusEnumT /*undoSettings = UNDO*/){} //!< @todo nothing for now
-    virtual void flipHorizontal(UndoStatusEnumT /*undoSettings = UNDO*/){}  //!< @todo nothing for now
+    virtual void flipVertical(UndoStatusEnumT undoSettings=Undo);
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings=Undo);
     virtual void rotate(qreal angle, UndoStatusEnumT undoSettings=Undo);
     void rotate90cw(UndoStatusEnumT undoSettings=Undo);
     void rotate90ccw(UndoStatusEnumT undoSettings=Undo);
@@ -85,14 +85,14 @@ signals:
     void objectSelected();
 
 protected:
-    //Reimplemented Qt methods
+    // Reimplemented Qt methods
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-    //Protected members
+    // Protected members
     ContainerObject *mpParentContainerObject;
     QString mHmfTagName;
     bool mIsFlipped;

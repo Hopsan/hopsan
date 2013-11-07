@@ -75,7 +75,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     this->updateViewPort();
     this->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
 
-    connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
+    //! @todo is this really needed, cant enter leav hover even hadnle this
     connect(this, SIGNAL(hovered()), gpPlotWidget, SLOT(clearHoverEffects()));
 }
 
