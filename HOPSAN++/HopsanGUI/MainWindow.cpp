@@ -628,7 +628,7 @@ void MainWindow::createActions()
 
     mpLoadLibsAction = new QAction(this);
     mpLoadLibsAction->setText("Load Libraries");
-    connect(mpLoadLibsAction,SIGNAL(triggered()),gpLibraryHandler,SLOT(addExternalLibrary()));
+    connect(mpLoadLibsAction,SIGNAL(triggered()),gpLibraryHandler,SLOT(loadLibrary()));
 
     mpPropertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
     mpPropertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");

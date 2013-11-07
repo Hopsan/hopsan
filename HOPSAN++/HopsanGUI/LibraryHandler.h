@@ -36,6 +36,9 @@ public:
 
 public slots:
     void importFmu();
+    void loadLibrary();
+    void createNewCppComponent();
+    void createNewModelicaComponent();
 
 signals:
     void contentsChanged();

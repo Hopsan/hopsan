@@ -378,85 +378,17 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
     }
     else if((item == mpLoadLibraryItem || item == mpLoadLibraryItemDual) && qApp->mouseButtons() == Qt::LeftButton)
     {
-#ifdef DEVELOPMENT
-        QString libDir = QFileDialog::getOpenFileName(this, tr("Choose file"), gpConfig->getExternalLibDir());
-        libDir.replace("\\","/");   //Enforce unix-style on path
-#else
-        QString libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
-                                                       gpConfig->getExternalLibDir(),
-                                                       QFileDialog::ShowDirsOnly
-                                                       | QFileDialog::DontResolveSymlinks);
-#endif
-
-
-        if(libDir.isEmpty())
-        {
-            return;
-        }
-        else
-        {
-            gpConfig->setExternalLibDir(libDir);
-
-            if(!gpConfig->hasUserLib(libDir))     //Check so that path does not already exist
-            {
-                gpLibraryHandler->loadLibrary(libDir/*, QStringList() << EXTLIBSTR << libDir.section("/",-1,-1)*/);    //Load and register the library in configuration
-            }
-            else
-            {
-                gpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
-            }
-
-            //checkForFailedComponents();
-        }
+        gpLibraryHandler->loadLibrary();
+        return;
     }
     else if((item == mpAddModelicaComponentItem || item == mpAddModelicaComponentItemDual) && qApp->mouseButtons() == Qt::LeftButton)
     {
-        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica);
-        pEditDialog->exec();
-        if(pEditDialog->result() == QDialog::Accepted)
-        {
-            CoreGeneratorAccess coreAccess;
-            QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
-            QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
-            QString libPath = dummy+typeName+"/";
-            QDir().mkpath(libPath);
-            int solver = pEditDialog->getSolver();
-
-            QFile moFile(libPath+typeName+".mo");
-            moFile.open(QFile::WriteOnly | QFile::Truncate);
-            moFile.write(pEditDialog->getCode().toUtf8());
-            moFile.close();
-
-            coreAccess.generateFromModelica(libPath+typeName+".mo", true, solver, true);
-            gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
-            update();
-        }
-        delete(pEditDialog);
+        gpLibraryHandler->createNewModelicaComponent();
         return;
     }
     else if((item == mpAddCppComponentItem || item == mpAddCppComponentItemDual) && qApp->mouseButtons() == Qt::LeftButton)
     {
-        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp);
-        pEditDialog->exec();
-        if(pEditDialog->result() == QDialog::Accepted)
-        {
-            CoreGeneratorAccess coreAccess;
-            QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-
-            QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
-            QString libPath = dummy+typeName+"/";
-            QDir().mkpath(libPath);
-
-            QFile hppFile(libPath+typeName+".hpp");
-            hppFile.open(QFile::WriteOnly | QFile::Truncate);
-            hppFile.write(pEditDialog->getCode().toUtf8());
-            hppFile.close();
-
-            coreAccess.generateFromCpp(libPath+typeName+".hpp", true);
-            gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
-            update();
-        }
-        delete(pEditDialog);
+        gpLibraryHandler->createNewCppComponent();
         return;
     }
 

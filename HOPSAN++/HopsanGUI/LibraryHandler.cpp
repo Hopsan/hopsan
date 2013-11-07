@@ -39,6 +39,7 @@
 #include "ModelHandler.h"
 #include "version_gui.h"
 #include "Widgets/HcomWidget.h"
+#include "Dialogs/EditComponentDialog.h"
 
 
 //! @brief Helpfunction to create full typename from type and subtype
@@ -62,6 +63,87 @@ LibraryHandler::LibraryHandler(QObject *parent)
 {
     mUpConvertAllCAF = UndecidedToAll;
 }
+
+void LibraryHandler::loadLibrary()
+{
+#ifdef DEVELOPMENT
+        QString libDir = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose file"), gpConfig->getExternalLibDir());
+        libDir.replace("\\","/");   //Enforce unix-style on path
+#else
+        QString libDir = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Choose Library Directory"),
+                                                       gpConfig->getExternalLibDir(),
+                                                       QFileDialog::ShowDirsOnly
+                                                       | QFileDialog::DontResolveSymlinks);
+#endif
+        if(libDir.isEmpty())
+        {
+            return;
+        }
+        else
+        {
+            gpConfig->setExternalLibDir(libDir);
+
+            if(!gpConfig->hasUserLib(libDir))     //Check so that path does not already exist
+            {
+                loadLibrary(libDir/*, QStringList() << EXTLIBSTR << libDir.section("/",-1,-1)*/);    //Load and register the library in configuration
+            }
+            else
+            {
+                gpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
+            }
+        }
+}
+
+void LibraryHandler::createNewCppComponent()
+{
+    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp);
+    pEditDialog->exec();
+    if(pEditDialog->result() == QDialog::Accepted)
+    {
+        CoreGeneratorAccess coreAccess;
+        QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
+
+        QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
+        QString libPath = dummy+typeName+"/";
+        QDir().mkpath(libPath);
+
+        QFile hppFile(libPath+typeName+".hpp");
+        hppFile.open(QFile::WriteOnly | QFile::Truncate);
+        hppFile.write(pEditDialog->getCode().toUtf8());
+        hppFile.close();
+
+        coreAccess.generateFromCpp(libPath+typeName+".hpp", true);
+        loadLibrary(libPath+typeName+"_lib.xml");
+    }
+    delete(pEditDialog);
+    return;
+}
+
+void LibraryHandler::createNewModelicaComponent()
+{
+    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica);
+    pEditDialog->exec();
+    if(pEditDialog->result() == QDialog::Accepted)
+    {
+        CoreGeneratorAccess coreAccess;
+        QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
+        QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
+        QString libPath = dummy+typeName+"/";
+        QDir().mkpath(libPath);
+        int solver = pEditDialog->getSolver();
+
+        QFile moFile(libPath+typeName+".mo");
+        moFile.open(QFile::WriteOnly | QFile::Truncate);
+        moFile.write(pEditDialog->getCode().toUtf8());
+        moFile.close();
+
+        coreAccess.generateFromModelica(libPath+typeName+".mo", true, solver, true);
+        loadLibrary(libPath+typeName+"_lib.xml");
+    }
+    delete(pEditDialog);
+    return;
+}
+
 
 
 //! @brief Loads a component library from either XML or folder (deprecated, for backwards compatibility)
