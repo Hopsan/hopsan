@@ -248,7 +248,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     target_rotation = normDeg360(target_rotation); //Make sure target rotation between 0 and 359.999
 
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
-    int nameTextVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
+    bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
 
     ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getEntry(type, subtype).pAppearance;
     if (pAppearanceData != 0)
@@ -263,7 +263,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
         appearanceData.setDisplayName(name);
 
         NameVisibilityEnumT nameStatus;
-        if(nameTextVisible)
+        if(pContainer->areSubComponentNamesShown())
         {
             nameStatus = NameVisible;
         }
@@ -274,6 +274,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
 
         ModelObject* pObj = pContainer->addModelObject(&appearanceData, QPointF(posX, posY), 0, Deselected, nameStatus, undoSettings);
         pObj->setNameTextPos(nameTextPos);
+        pObj->setNameTextAlwaysVisible(nameTextVisible);
         pObj->setSubTypeName(subtype); //!< @todo is this really needed
 
         //First set flip (before rotate, Important!)

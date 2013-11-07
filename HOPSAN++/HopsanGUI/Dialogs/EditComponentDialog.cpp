@@ -37,7 +37,6 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "GUIPort.h"
-#include "Utilities/ComponentGeneratorUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/HcomWidget.h"

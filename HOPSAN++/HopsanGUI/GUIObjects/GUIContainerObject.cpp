@@ -78,8 +78,8 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
 {
         //Initialize
     mIsCreatingConnector = false;
-    mSubComponentPortsHidden = !gpMainWindow->mpTogglePortsAction->isChecked();
-    mSubComponentNamesHidden = !gpMainWindow->mpToggleNamesAction->isChecked();
+    mShowSubComponentPorts = gpMainWindow->mpTogglePortsAction->isChecked();
+    mShowSubComponentNames = gpMainWindow->mpToggleNamesAction->isChecked();
     mLossesVisible = false;
     mUndoDisabled = false;
     mGfxType = UserGraphics;
@@ -143,8 +143,8 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
     connect(gpMainWindow->mpPropertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
     // Update the main window toolbar action buttons that are system specific
-    gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
-    gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
+    gpMainWindow->mpTogglePortsAction->setChecked(mShowSubComponentPorts);
+    gpMainWindow->mpToggleNamesAction->setChecked(mShowSubComponentNames);
     gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
 
     // Update main window widgets with data from this container
@@ -570,6 +570,17 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
     else if(nameStatus == NameNotVisible)
     {
         mpTempGUIModelObject->hideName(NoUndo);
+    }
+    else if (nameStatus == UseDefault)
+    {
+        if (areSubComponentNamesShown())
+        {
+            mpTempGUIModelObject->showName(NoUndo);
+        }
+        else
+        {
+            mpTempGUIModelObject->hideName(NoUndo);
+        }
     }
 
     return mpTempGUIModelObject;
@@ -1923,7 +1934,7 @@ void ContainerObject::toggleNames(bool value)
     {
         emit hideAllNameText();
     }
-    mSubComponentNamesHidden = !value;
+    mShowSubComponentNames = value;
 }
 
 
@@ -1936,7 +1947,7 @@ void ContainerObject::toggleSignals(bool value)
 //! @brief Slot that sets hide ports flag to true or false
 void ContainerObject::showSubcomponentPorts(bool doShowThem)
 {
-    mSubComponentPortsHidden = !doShowThem;
+    mShowSubComponentPorts = doShowThem;
     emit showOrHideAllSubComponentPorts(doShowThem);
 }
 
@@ -2183,7 +2194,7 @@ void ContainerObject::cancelCreatingConnector()
     if(mIsCreatingConnector)
     {
         mpTempConnector->getStartPort()->forgetConnection(mpTempConnector);
-        if(!mpTempConnector->getStartPort()->isConnected() && !mSubComponentPortsHidden)
+        if(!mpTempConnector->getStartPort()->isConnected() && mShowSubComponentPorts)
         {
             mpTempConnector->getStartPort()->show();
         }
@@ -2231,7 +2242,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
     if((mpTempConnector->getNumberOfLines() == 1 && mpTempConnector->isMakingDiagonal()) ||  (mpTempConnector->getNumberOfLines() == 2 && !mpTempConnector->isMakingDiagonal()))
     {
         mpTempConnector->getStartPort()->forgetConnection(mpTempConnector);
-        if(!mpTempConnector->getStartPort()->isConnected() && !mSubComponentPortsHidden)
+        if(!mpTempConnector->getStartPort()->isConnected() && mShowSubComponentPorts)
         {
             mpTempConnector->getStartPort()->show();
         }
@@ -2309,16 +2320,16 @@ void ContainerObject::setSaveUndo(bool save)
 
 
 //! @brief Tells whether or not unconnected ports in container are hidden
-bool ContainerObject::areSubComponentPortsHidden()
+bool ContainerObject::areSubComponentPortsShown()
 {
-    return mSubComponentPortsHidden;
+    return mShowSubComponentPorts;
 }
 
 
 //! @brief Tells whether or not object names in container are hidden
-bool ContainerObject::areSubComponentNamesHidden()
+bool ContainerObject::areSubComponentNamesShown()
 {
-    return mSubComponentNamesHidden;
+    return mShowSubComponentNames;
 }
 
 

@@ -65,6 +65,7 @@ public:
     virtual const ModelObjectAppearance *getLibraryAppearanceData() const;
     bool isVisible();
     QGraphicsSvgItem *getIcon();
+    void setNameTextAlwaysVisible(const bool isVisible);
 
     // Help methods
     const QString &getHelpPicture() const;
@@ -163,6 +164,7 @@ protected:
     double mTextOffset;
     int mNameTextPos;
 
+    bool mNameTextAlwaysVisible;
     bool mNameTextVisible;
 
     GraphicsTypeEnumT mIconType;

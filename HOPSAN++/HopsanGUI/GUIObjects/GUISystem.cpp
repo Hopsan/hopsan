@@ -432,9 +432,9 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
             appendViewPortTag(guiStuff, x, y, zoom);
         }
         QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
-        portsHiddenElement.setAttribute("hidden", mSubComponentPortsHidden);
+        portsHiddenElement.setAttribute("hidden", !mShowSubComponentPorts);
         QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
-        namesHiddenElement.setAttribute("hidden", mSubComponentNamesHidden);
+        namesHiddenElement.setAttribute("hidden", !mShowSubComponentNames);
 
         QString gfxType = "iso";
         if(mGfxType == UserGraphics)
@@ -608,13 +608,14 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         this->refreshDisplayName(); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
-        this->mSubComponentNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
-        this->mSubComponentPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
+        this->mShowSubComponentNames = !parseAttributeBool(guiStuff.firstChildElement(HMF_NAMESTAG),"hidden",true);
+        this->mShowSubComponentPorts = !parseAttributeBool(guiStuff.firstChildElement(HMF_PORTSTAG),"hidden",true);
         QString gfxType = guiStuff.firstChildElement(HMF_GFXTAG).attribute("type");
         if(gfxType == "user") { mGfxType = UserGraphics; }
         else if(gfxType == "iso") { mGfxType = ISOGraphics; }
-        gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
-        gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
+        //! @todo these two should not be set here
+        gpMainWindow->mpToggleNamesAction->setChecked(mShowSubComponentNames);
+        gpMainWindow->mpTogglePortsAction->setChecked(mShowSubComponentPorts);
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
         double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
         double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();

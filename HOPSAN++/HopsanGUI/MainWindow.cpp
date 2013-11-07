@@ -1340,7 +1340,7 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpModelHandler->count() > 0 && mpModelHandler->getCurrentModel())
     {
-        mpTogglePortsAction->setChecked(!mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->areSubComponentPortsHidden());
+        mpTogglePortsAction->setChecked(mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->areSubComponentPortsShown());
     }
 
     bool noTabs = !(mpModelHandler->count() > 0);

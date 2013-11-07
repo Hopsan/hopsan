@@ -525,8 +525,8 @@ void ModelHandler::refreshMainWindowConnections()
             gpLibraryWidget->setGfxType(getCurrentTopLevelSystem()->getGfxType());
         }
 
-        gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentViewContainerObject()->areSubComponentNamesHidden());
-        gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentViewContainerObject()->areSubComponentPortsHidden());
+        gpMainWindow->mpToggleNamesAction->setChecked(getCurrentViewContainerObject()->areSubComponentNamesShown());
+        gpMainWindow->mpTogglePortsAction->setChecked(getCurrentViewContainerObject()->areSubComponentPortsShown());
         gpMainWindow->mpShowLossesAction->setChecked(getCurrentViewContainerObject()->areLossesVisible());
     }
 }

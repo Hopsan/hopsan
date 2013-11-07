@@ -117,7 +117,7 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
     // Determine if the port should be shown or not
     if( this->getParentContainerObject() != 0 )
     {
-        this->showIfNotConnected( !this->getParentContainerObject()->areSubComponentPortsHidden() );
+        this->showIfNotConnected( this->getParentContainerObject()->areSubComponentPortsShown() );
     }
 
     // Create signal connection to the zoom change signal for port overlay scaling and port hide/show function
@@ -764,7 +764,7 @@ void Port::forgetConnection(Connector *pConnector)
 
     if(!isConnected())
     {
-        setVisible(!getParentContainerObject()->areSubComponentPortsHidden());
+        setVisible(getParentContainerObject()->areSubComponentPortsShown());
     }
 
     //qDebug() << "Removing connection, connections = " << mnConnections;
@@ -851,7 +851,7 @@ void Port::setEnable(bool enable)
     else
     {
         // Only show if not connected and not suposed to be hidden if unconnected
-        if (!isConnected() && !getParentContainerObject()->areSubComponentPortsHidden())
+        if (!isConnected() && getParentContainerObject()->areSubComponentPortsShown())
         {
             show();
         }

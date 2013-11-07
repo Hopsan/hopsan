@@ -205,8 +205,8 @@ public slots:
     //Appearance slots
     void setGfxType(GraphicsTypeEnumT gfxType);
     GraphicsTypeEnumT getGfxType();
-    bool areSubComponentPortsHidden();
-    bool areSubComponentNamesHidden();
+    bool areSubComponentPortsShown();
+    bool areSubComponentNamesShown();
     bool areSignalsHidden();
 
     //Properties slots
@@ -318,8 +318,8 @@ protected:
     size_t mHighestWidgetIndex;
 
     //Contained object appearance members
-    bool mSubComponentPortsHidden;
-    bool mSubComponentNamesHidden;
+    bool mShowSubComponentPorts;
+    bool mShowSubComponentNames;
     bool mSignalsHidden;
     GraphicsTypeEnumT mGfxType;
 

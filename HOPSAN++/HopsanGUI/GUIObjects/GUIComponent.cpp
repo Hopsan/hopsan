@@ -185,7 +185,7 @@ void Component::setVisible(bool visible)
     this->mpIcon->setVisible(visible);
     for(int i=0; i<mPortListPtrs.size(); ++i)
     {
-        mPortListPtrs.at(i)->showIfNotConnected(!mpParentContainerObject->areSubComponentPortsHidden());
+        mPortListPtrs.at(i)->showIfNotConnected(mpParentContainerObject->areSubComponentPortsShown());
     }
 }
 

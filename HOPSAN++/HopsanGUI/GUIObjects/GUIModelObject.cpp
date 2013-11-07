@@ -84,13 +84,13 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
         this->setNameTextScale(mpParentContainerObject->mpModelWidget->mpGraphicsView->getZoomFactor());
     }
     this->setNameTextPos(0); //Set initial name text position
-    if(pParentContainer != 0 && pParentContainer->areSubComponentNamesHidden())
+    if(pParentContainer && pParentContainer->areSubComponentNamesShown())
     {
-        this->hideName(NoUndo);
+        this->showName(NoUndo);
     }
     else
     {
-        this->showName(NoUndo);
+        this->hideName(NoUndo);
     }
 
         //Create connections
@@ -928,7 +928,7 @@ void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     WorkspaceObject::hoverLeaveEvent(event);
     this->setZValue(ModelobjectZValue);
     this->showPorts(false);
-    if (/*mpParentContainerObject->areSubComponentNamesHidden() && */!mNameTextVisible)
+    if (!mNameTextVisible && !mNameTextAlwaysVisible)
     {
         mpNameText->hide();
     }
@@ -1097,7 +1097,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
 
     QAction *pShowNameAction=0, *pExportComponentParam=0;
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
-    pShowNameAction = rMenu.addAction(tr("Show name"));
+    pShowNameAction = rMenu.addAction(tr("Always show name"));
     pExportComponentParam = rMenu.addAction(tr("Export Component Parameters"));
     if (type() != ScopeComponentType)
     {
@@ -1124,7 +1124,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         }
     }
     pShowNameAction->setCheckable(true);
-    pShowNameAction->setChecked(/*mpNameText->isVisible()*/mNameTextVisible);
+    pShowNameAction->setChecked(mNameTextAlwaysVisible);
     rMenu.addSeparator();
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
@@ -1175,14 +1175,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     else if (selectedAction == pShowNameAction)
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
-        if(mNameTextVisible)
-        {
-            this->hideName();
-        }
-        else
-        {
-            this->showName();
-        }
+        setNameTextAlwaysVisible(pShowNameAction->isChecked());
     }
     else if (selectedAction == groupAction)
     {
@@ -1298,7 +1291,7 @@ void ModelObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-            if ((*i)->isConnected() || mpParentContainerObject->areSubComponentPortsHidden())
+            if ((*i)->isConnected() || !mpParentContainerObject->areSubComponentPortsShown())
             {
                 (*i)->hide();
             }
@@ -1426,12 +1419,16 @@ void ModelObject::setNameTextPos(int textPos)
 //! @brief Slots that hides the name text of the object
 void ModelObject::hideName(UndoStatusEnumT undoSettings)
 {
-    bool previousStatus = mpNameText->isVisible();
-    mpNameText->setVisible(false);
-    mNameTextVisible=false;
-    if(undoSettings == Undo && previousStatus == true)
+    // Ignore if set to allways show
+    if (!mNameTextAlwaysVisible)
     {
-        mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), false);
+        bool previousStatus = mpNameText->isVisible();
+        mpNameText->setVisible(false);
+        mNameTextVisible = false;
+        if(undoSettings == Undo && previousStatus == true)
+        {
+            mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), false);
+        }
     }
 }
 
@@ -1441,10 +1438,15 @@ void ModelObject::showName(UndoStatusEnumT undoSettings)
 {
     bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(true);
-    mNameTextVisible=true;
-    if(undoSettings == Undo && previousStatus == false)
+    mNameTextVisible = true;
+    // Ignore setting undo if tagged as always visible
+    //! @todo saving undo info for this is not realy necessary
+    if (!mNameTextAlwaysVisible)
     {
-        mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), true);
+        if(undoSettings == Undo && previousStatus == false)
+        {
+            mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), true);
+        }
     }
 }
 
@@ -1554,6 +1556,20 @@ bool ModelObject::isVisible()
 QGraphicsSvgItem *ModelObject::getIcon()
 {
     return mpIcon;
+}
+
+void ModelObject::setNameTextAlwaysVisible(const bool isVisible)
+{
+    mNameTextAlwaysVisible = isVisible;
+    // Update actual visibility depending on current system setting
+    if (isVisible)
+    {
+        showName();
+    }
+    else if (!isVisible && !mpParentContainerObject->areSubComponentNamesShown())
+    {
+        hideName();
+    }
 }
 
 
