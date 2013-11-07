@@ -60,6 +60,90 @@
 #define HCOMERR(text) mpConsole->printErrorMessage(text,"",false)
 
 
+class LongShortNameConverter
+{
+public:
+    LongShortNameConverter()
+    {
+        //! @todo these should not be hardcoded
+        registerPair("x", "Position");
+        registerPair("v", "Velocity");
+        registerPair("f", "Force");
+        registerPair("p", "Pressure");
+        registerPair("q", "Flow");
+        registerPair("val", "Value");
+        registerPair("Zc", "CharImpedance");
+        registerPair("c", "WaveVariable");
+        registerPair("me", "EquivalentMass");
+        registerPair("Q", "HeatFlow");
+        registerPair("t", "Temperature");
+    }
+
+    void registerPair(const QString &rShort, const QString &rLong)
+    {
+        mShortToLong.insertMulti(rShort, rLong);
+        mLongToShort.insertMulti(rLong, rShort);
+    }
+
+    QList<QString> shortToLong(const QString &rShort) const
+    {
+        return mShortToLong.values(rShort);
+    }
+
+    QList<QString> shortToLong(const QRegExp &rShort) const
+    {
+        bool foundAtLeastOne=false;
+        QList<QString> results;
+        QMap<QString,QString>::const_iterator it;
+        for (it=mShortToLong.begin(); it!=mShortToLong.end(); ++it)
+        {
+            if (rShort.exactMatch(it.key()))
+            {
+                results.append(it.value());
+                foundAtLeastOne=true;
+            }
+            else if (foundAtLeastOne)
+            {
+                // We can brek loop since maps should be ordered by key
+                break;
+            }
+        }
+        return results;
+    }
+
+    QList<QString> longToShort(const QString &rLong) const
+    {
+        return mLongToShort.values(rLong);
+    }
+
+    QList<QString> longToShort(const QRegExp &rLong) const
+    {
+        bool foundAtLeastOne=false;
+        QList<QString> results;
+        QMap<QString,QString>::const_iterator it;
+        for (it=mLongToShort.begin(); it!=mLongToShort.end(); ++it)
+        {
+            if (rLong.exactMatch(it.key()))
+            {
+                results.append(it.value());
+                foundAtLeastOne=true;
+            }
+            else if (foundAtLeastOne)
+            {
+                // We can brek loop since maps should be ordered by key
+                break;
+            }
+        }
+        return results;
+    }
+
+private:
+    QMap<QString,QString> mShortToLong;
+    QMap<QString,QString> mLongToShort;
+};
+
+LongShortNameConverter gLongShortNameConverter;
+
 HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 {
     mAnsType = Undefined;
@@ -3919,13 +4003,20 @@ void HcomHandler::getLogVariables(QString str, QStringList &rVariables) const
         str.chop(2);
         //str.append(QString::number(highestGeneration+1));
     }
-    else if (str.endsWith(".*"))
+    else if (str.endsWith("*"))
     {
         int lowestGeneration, highestGeneration;
         // Fetch lowest and highest generation, Note! fetching lowest/highest generation is slow (has to search through all variables)
         pLogDataHandler->getLowestAndHighestGenerationNumber(lowestGeneration, highestGeneration);
         desiredGens = linspace(lowestGeneration, highestGeneration);
-        str.chop(2);
+        if (str.endsWith(".*"))
+        {
+            str.chop(2);
+            if (str.count(".")<2)
+            {
+                str.append("*");
+            }
+        }
     }
     else
     {
@@ -3949,26 +4040,36 @@ void HcomHandler::getLogVariables(QString str, QStringList &rVariables) const
         desiredGens.append(-1);
     }
 
+    // Convert to long name to be able to search
+    toLongDataNames(str);
+
+    const QVector<LogVariableContainer*> data_ptrs = pLogDataHandler->getMultipleLogVariableContainerPtrs(QRegExp(str,Qt::CaseSensitive,QRegExp::Wildcard));
     for (int i=0; i<desiredGens.size(); ++i)
     {
-        const int &desiredGen = desiredGens[i];
-        toLongDataNames(str);
-        QVector<SharedLogVariableDataPtrT> data_ptrs = pLogDataHandler->getMultipleLogVariableDataPtrs(QRegExp(str,Qt::CaseSensitive,QRegExp::Wildcard),desiredGen);
+        //! @todo maybe check generations in here, but then display order will be different, It should be more efficient to only loop over gens that actually exist for each var
+        int desiredGen = desiredGens[i];
         for (int j=0; j<data_ptrs.size(); ++j)
         {
-            QString shortName;
-            if (data_ptrs[j]->getAliasName().isEmpty())
+            if ( (desiredGen<0) || (data_ptrs[j]->hasDataGeneration(desiredGen)) )
             {
-                shortName = data_ptrs[j]->getFullVariableName();
-            }
-            else
-            {
-                shortName = data_ptrs[j]->getAliasName();
-            }
+                if (desiredGen<0)
+                {
+                    desiredGen = data_ptrs[j]->getHighestGeneration();
+                }
 
-            int g = data_ptrs[j]->getGeneration();
-            toShortDataNames(shortName);
-            rVariables.append(shortName+"."+QString::number(g+1));
+                QString shortName;
+                if (data_ptrs[j]->getAliasName().isEmpty())
+                {
+                    shortName = data_ptrs[j]->getFullVariableName();
+                }
+                else
+                {
+                    shortName = data_ptrs[j]->getAliasName();
+                }
+
+                toShortDataNames(shortName);
+                rVariables.append(shortName+"."+QString::number(desiredGen+1));
+            }
         }
         //! @todo check if alias names works
     }
@@ -4386,61 +4487,88 @@ void HcomHandler::toLongDataNames(QString &var) const
     var.replace(".", "#");
     var.remove("\"");
 
-    if(var.endsWith("#x"))
+    QList<QString> longNames;
+    int li = var.lastIndexOf("#");
+    if (li>=0)
     {
-        var.chop(2);
-        var.append("#Position");
+        QString shortName = var.right(var.size()-li-1);
+        if (shortName.endsWith("*"))
+        {
+            longNames = gLongShortNameConverter.shortToLong(QRegExp(shortName, Qt::CaseSensitive, QRegExp::Wildcard));
+        }
+        else
+        {
+            longNames = gLongShortNameConverter.shortToLong(shortName);
+        }
     }
-    else if(var.endsWith("#v"))
+
+    if (!longNames.isEmpty())
     {
-        var.chop(2);
-        var.append("#Velocity");
+        var.chop(var.size()-li-1);
+        var.append(longNames[0]);
+
+        //! @todo what if we get multiple matches
+        if (longNames.size()>1)
+        {
+            qWarning() << "longNames.size() > 1 in HcomHandler::toLongDataNames. Is currently not IMPLEMENTED";
+        }
     }
-    else if(var.endsWith("#f"))
-    {
-        var.chop(2);
-        var.append("#Force");
-    }
-    else if(var.endsWith("#p"))
-    {
-        var.chop(2);
-        var.append("#Pressure");
-    }
-    else if(var.endsWith("#q"))
-    {
-        var.chop(2);
-        var.append("#Flow");
-    }
-    else if(var.endsWith("#val"))
-    {
-        var.chop(4);
-        var.append("#Value");
-    }
-    else if(var.endsWith("#Zc"))
-    {
-        var.chop(3);
-        var.append("#CharImpedance");
-    }
-    else if(var.endsWith("#c"))
-    {
-        var.chop(2);
-        var.append("#WaveVariable");
-    }
-    else if(var.endsWith("#me"))
-    {
-        var.chop(3);
-        var.append("#EquivalentMass");
-    }
-    else if(var.endsWith("#Q"))
-    {
-        var.chop(2);
-        var.append("#HeatFlow");
-    }
-    else if(var.endsWith("#t"))
-    {
-        var.chop(2);
-        var.append("#Temperature");
-    }
+
+//    if(var.endsWith("#x"))
+//    {
+//        var.chop(2);
+//        var.append("#Position");
+//    }
+//    else if(var.endsWith("#v"))
+//    {
+//        var.chop(2);
+//        var.append("#Velocity");
+//    }
+//    else if(var.endsWith("#f"))
+//    {
+//        var.chop(2);
+//        var.append("#Force");
+//    }
+//    else if(var.endsWith("#p"))
+//    {
+//        var.chop(2);
+//        var.append("#Pressure");
+//    }
+//    else if(var.endsWith("#q"))
+//    {
+//        var.chop(2);
+//        var.append("#Flow");
+//    }
+//    else if(var.endsWith("#val"))
+//    {
+//        var.chop(4);
+//        var.append("#Value");
+//    }
+//    else if(var.endsWith("#Zc"))
+//    {
+//        var.chop(3);
+//        var.append("#CharImpedance");
+//    }
+//    else if(var.endsWith("#c"))
+//    {
+//        var.chop(2);
+//        var.append("#WaveVariable");
+//    }
+//    else if(var.endsWith("#me"))
+//    {
+//        var.chop(3);
+//        var.append("#EquivalentMass");
+//    }
+//    else if(var.endsWith("#Q"))
+//    {
+//        var.chop(2);
+//        var.append("#HeatFlow");
+//    }
+//    else if(var.endsWith("#t"))
+//    {
+//        var.chop(2);
+//        var.append("#Temperature");
+//    }
 }
 
 

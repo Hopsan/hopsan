@@ -1007,6 +1007,21 @@ QVector<SharedLogVariableDataPtrT> LogDataHandler::getMultipleLogVariableDataPtr
     return results;
 }
 
+const QVector<LogVariableContainer *> LogDataHandler::getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const
+{
+    QVector<LogVariableContainer*> results;
+    LogDataMapT::const_iterator it;
+    for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
+    {
+        // For any non temp variable compare name with regexp
+        if ((it.value()->getVariableCommonDescription()->mVariableSourceType != TempVariableType) && rNameExp.exactMatch(it.key()))
+        {
+            results.append(it.value());
+        }
+    }
+    return results;
+}
+
 ////! @todo maybe would be better if ONE getPlotData function could handle all cases
 //SharedLogVariableDataPtrT LogDataHandler::getPlotDataByAlias(const QString alias, const int generation)
 //{

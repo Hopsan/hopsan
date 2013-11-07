@@ -36,8 +36,6 @@ class HcomCommand;
 class ModelWidget;
 class OptimizationHandler;
 
-
-
 class HcomHandler : public QObject
 {
     Q_OBJECT
