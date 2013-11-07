@@ -14,17 +14,17 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ComponentGeneratorUtilities.h
+//! @file   HopsanGenerator.h
 //! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-01-08
 //!
-//! @brief Contains component generation utiluties
+//! @brief Contains the Hopsan generator class
 //!
 //$Id$
 
 
-#ifndef COMPONENTGENERATORUTILITIES_H
-#define COMPONENTGENERATORUTILITIES_H
+#ifndef HOPSANGENERAETOR_H
+#define HOPSANGENERAETOR_H
 
 #ifdef WIN32
 #define LIBEXT ".dll"
@@ -104,4 +104,4 @@ protected:
 };
 
 
-#endif // COMPONENTGENERATORUTILITIES_H
+#endif // HOPSANGENERAETOR_H

@@ -116,6 +116,8 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     pLayout->addWidget(mpHelpButton,            3,3);
     pLayout->setColumnStretch(2,1);
     this->setLayout(pLayout);
+
+    this->setGfxType(UserGraphics);
 }
 
 

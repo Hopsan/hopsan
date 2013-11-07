@@ -82,8 +82,9 @@ int main(int argc, char *argv[])
     mainwindow.createContents();
 
     //Show main window and initialize workspace
-    QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
+    //QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
     mainwindow.initializeWorkspace();
+    mainwindow.showMaximized();
 
     // Execute application
     int rc = a.exec();
