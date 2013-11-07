@@ -46,7 +46,7 @@ class HcomHandler : public QObject
     friend class TerminalConsole;
 public:
     // Enums
-    enum VariableType{Scalar, DataVector};
+    enum VariableType{Scalar, DataVector, Wildcard, Undefined};
 
     // Constructor
     HcomHandler(TerminalConsole *pConsole);
@@ -75,7 +75,13 @@ public:
     OptimizationHandler *mpOptHandler;
     TerminalConsole *mpConsole;
 
-    QString evaluateExpression(QString expr, VariableType *pReturnType, bool *pEvalOk);
+    void evaluateExpression(QString expr, VariableType desiredType=Undefined);
+
+    //Return values from evaluation
+    double mAnsScalar;
+    QString mAnsWildcard;
+    SharedLogVariableDataPtrT mAnsVector;
+    VariableType mAnsType;
 
 public slots:
     void abortHCOM();
@@ -159,7 +165,6 @@ private:
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
     QString getArgument(const QString &cmd, const int idx) const;
-    void returnScalar(const double retval);
     void registerFunction(const QString func, const QString description, const SymHop::Function fptr);
 
     // Used to abort HCOM evaluation
