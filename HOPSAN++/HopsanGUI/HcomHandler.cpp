@@ -4003,20 +4003,15 @@ void HcomHandler::getLogVariables(QString str, QStringList &rVariables) const
         str.chop(2);
         //str.append(QString::number(highestGeneration+1));
     }
-    else if (str.endsWith("*"))
+    else if (str.endsWith(".*"))
     {
         int lowestGeneration, highestGeneration;
         // Fetch lowest and highest generation, Note! fetching lowest/highest generation is slow (has to search through all variables)
         pLogDataHandler->getLowestAndHighestGenerationNumber(lowestGeneration, highestGeneration);
         desiredGens = linspace(lowestGeneration, highestGeneration);
-        if (str.endsWith(".*"))
-        {
-            str.chop(2);
-            if (str.count(".")<2)
-            {
-                str.append("*");
-            }
-        }
+
+        str.chop(2);
+        str.append("*");
     }
     else
     {
@@ -4487,30 +4482,33 @@ void HcomHandler::toLongDataNames(QString &var) const
     var.replace(".", "#");
     var.remove("\"");
 
-    QList<QString> longNames;
-    int li = var.lastIndexOf("#");
-    if (li>=0)
+    if (var.count("#") > 1)
     {
-        QString shortName = var.right(var.size()-li-1);
-        if (shortName.endsWith("*"))
+        QList<QString> longNames;
+        int li = var.lastIndexOf("#");
+        if (li>=0)
         {
-            longNames = gLongShortNameConverter.shortToLong(QRegExp(shortName, Qt::CaseSensitive, QRegExp::Wildcard));
+            QString shortName = var.right(var.size()-li-1);
+            if (shortName.endsWith("*"))
+            {
+                longNames = gLongShortNameConverter.shortToLong(QRegExp(shortName, Qt::CaseSensitive, QRegExp::Wildcard));
+            }
+            else
+            {
+                longNames = gLongShortNameConverter.shortToLong(shortName);
+            }
         }
-        else
-        {
-            longNames = gLongShortNameConverter.shortToLong(shortName);
-        }
-    }
 
-    if (!longNames.isEmpty())
-    {
-        var.chop(var.size()-li-1);
-        var.append(longNames[0]);
-
-        //! @todo what if we get multiple matches
-        if (longNames.size()>1)
+        if (!longNames.isEmpty())
         {
-            qWarning() << "longNames.size() > 1 in HcomHandler::toLongDataNames. Is currently not IMPLEMENTED";
+            var.chop(var.size()-li-1);
+            var.append(longNames[0]);
+
+            //! @todo what if we get multiple matches
+            if (longNames.size()>1)
+            {
+                qWarning() << "longNames.size() > 1 in HcomHandler::toLongDataNames. Is currently not IMPLEMENTED";
+            }
         }
     }
 
