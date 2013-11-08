@@ -4,9 +4,9 @@ HopsanGUI depends on some external libraries. Here is a description on how to bu
 
 \section qwt Build Qwt - Qt Widgets for Technical Applications
 \subsection qwt-ubuntu-auto Ubuntu (Automatically)
-This will build against your \b system-version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
--# Make sure that you have the libqt4-dev package installed. "apt-get install libqt4-dev"
--# Run the unpackPatchAndBuildQwt.sh script in HopsanGUI/Dependencies, it will build Qwt
+This will build against your **system-version** of the Qt libs, if you have a different version in the QtSDK see how to manually build below
+-# Make sure that you have the libqt4-dev package installed. `apt-get install libqt4-dev``
+-# Run the `unpackPatchAndBuildQwt.sh` script in HopsanGUI/Dependencies, it will build Qwt
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection qwt-ubuntu-manual Ubuntu (Manually)
@@ -19,15 +19,16 @@ This will build against your \b system-version of the Qt libs, if you have a dif
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
   -# \e Note! HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
 
-\subsection qwt-windows Windows (minGW and VC++)
--# First download a version >=trunk from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
--# Unpack into the HopsanGUI\\Dependencies directory
--# Build the qwt project with qtcreator (you can use shadowbuild)
--# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
+\subsection qwt-windows Windows (MinGW and VC++)
+-# Run the `unpackPatchAndBuildQwt.bat` script
+  -# Or download the desired version from [http://sourceforge.net/projects/qwt/files/](http://sourceforge.net/projects/qwt/files/) and unpack it into the HopsanGUI\\Dependencies directory
+-# If you are going to build a 64-bit version, then rename the qwt-version directory to qwt-version_64 where "version" is the qwt version number.
+-# Build the Qwt project with QtCreator, make sure that you select the correct compiler. It is **very important** that you compile with the same compiler as you will use to build Hopsan.
+  -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
-  -# \e Note! HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
+  -# **Note!** HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
 
-\section pythonqt Build PythonQt 
+\section pythonqt Build PythonQt (Optional)
 
 \subsection pythonqt-ubuntu-auto Ubuntu (Automatically)
 This will build against your \b system-version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
@@ -48,6 +49,14 @@ This will build against your \b system-version of the Qt libs, if you have a dif
   -# Build the PythonQt project, if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
+\subsection pythonqt-windows-mingw Windows (with MinGW)
+-# Download and install Python 2.7 that can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
+-# Run the `unpackPatchAndBuildPythonQt.bat` script in the HopsanGUI\\Dependencies directory
+  -# If you wish to make a 64 bit build, then append "_64" to the directory name. Example: `PythonQt2.1_Qt4.8_64` 
+-# Build PythonQt in release and debug mode with shadowbuild activated. (Both will be build at once, as the auto applied patch will have selected that in the common.prf file)
+  -# It is **very important** that you compile with the same compiler as you will use to build Hopsan.
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
+
 \subsection pythonqt-windows-vc Windows (with Visual C++) --OBSOLETE Needs update--
 -# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
 -# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
@@ -60,12 +69,6 @@ PYTHON_LIB  = c:\\Python26\\libs
 -# If you want to run the tests add the PythonQt*.*.*\\lib directory to your path (in build environment)
 -# Add the PYTHONQT_PATH = C:\\Users\\petno25\\Downloads\\PythonQt2.0.1 (or whatever your path is), to the HopsanGui build environment
 -# Add the  C:\\Users\\petno25\\Downloads\\PythonQt2.0.1\\lib (or whatever your path is) to the PATH variable in your HopsanGui build environment
-
-\subsection pythonqt-windows-mingw Windows (with MinGW)
--# Download and install Python 2.7 that can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
--# Run the unpackPatchAndBuildPythonQt.bat script in the HopsanGUI\\Dependencies directory
--# Build PythonQt in release and debug mode with shadowbuild ACTIVATED. (Both will be build at once, as patch will have selected that in the common.prf file)
--# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \section hopsancore Build The Hopsan Core
 This will be handled automatically when you build the entire Hopsan project.

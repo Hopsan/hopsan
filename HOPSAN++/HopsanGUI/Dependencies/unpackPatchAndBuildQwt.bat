@@ -5,8 +5,6 @@ REM Bat script building HopsaGUI dependency QWT automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Date:   2012-12-18
 
-REM TODO: Hardcoded to use python27 in the patch file
-
 set filename="qwt-6.1.0"
 
 REM Unpack or checkout

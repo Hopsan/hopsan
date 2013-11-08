@@ -1,24 +1,30 @@
 /*!
 \page devHopsanCoreRequirements HopsanCore Dependence Libraries
 HopsanCore depends on one external library for multi threaded simulations. Here is a description on how to build or install it.\n
-If TBB is not found by qmake, then the core will be compiled without multithreading support, this MAY, (but should not) crash HopsanGUI.
+If TBB is not found by qmake, then the core will be compiled without multi-threading support.
 
 \section tbb TBB Intel Thread Building Blocks
 \subsection tbb-ubuntu Build/Install TBB on Ubuntu
--# To make things easy, install from the package repository using, sudo apt-get install libtbb-dev
+-# To make things easy, install from the package repository using, `sudo apt-get install libtbb-dev`
 
 \subsection tbb-windows-mingw Build TBB on Windows using MinGW
--# Download the latest stable version 3 releses sorce code, for example: "tbb30_20101215oss_src.tgz" from "http://threadingbuildingblocks.org/download.php" stable release.
-  -# Unpack the contents to HopsanCore\\Dependencies\\tbb30_20101215oss (or whatever your version is)
--# Open a Qt Command Prompt (you can find it in the start menu). Navigate to the tbb directory.
--# Run "mingw32-make compiler=gcc" to build both release and debug libraries
--# After a successful compilation you are done. You do not need to install or copy any files. The HopsanCore.pro file will automatically copy the needed binary files.
-  -# \e Note! HopsanCore will have a set of default paths to search for, if you install a newer stable version of TBB you should add this version to the TOP of the defaults list in the HopsanCoreBuild.prf file.
+-# Download the latest stable version 3 release source code, for example: "tbb30_20101215oss_src.tgz" from [https://www.threadingbuildingblocks.org/download](https://www.threadingbuildingblocks.org/download) stable release.
+  -# For 32-bit builds unpack the contents to HopsanCore\\Dependencies\\tbb30_20101215oss (or whatever your version is)
+  -# For 64-bit builds unpack the contents to HopsanCore\\Dependencies\\tbb30_20101215oss_64 (or whatever your version is)
+-# Open a command prompt (Start->run->cmd). Navigate to the TBB directory that you just unpacked
+-# Make sure that your desired compiler version is found in the beginning of your PATH variable, make sure you use the correct version (32 or 64 bit). It is **very important** that this is the same compiler as you will use to build Hopsan.
+  -# Check your path variable with the command  `PATH`
+  -# Set you PATH with the command  `set PATH=C:\path\to\your\mingw\bin;``%``PATH%`
+  -# Check your path variable with the command  `PATH`
+-# Run  `mingw32-make compiler=gcc tbb_build_prefix=output info` to see information before build, make sure *arch* is correct (32 or 64 bit)
+  -# Run  `mingw32-make compiler=gcc tbb_build_prefix=output` to build both release and debug libraries
+-# After a successful compilation you are done! You do not need to install or copy any files. The HopsanCore.pro file will automatically copy the needed binary files.
+  -# **Note!** HopsanCore will have a set of default paths to search for, if you install a newer stable version of TBB you should add this version to the TOP of the defaults list in the HopsanCoreBuild.prf file.
 
 \subsection tbb-windows-vcpp Build TBB on Windows using VC++ --Needs update after new project file structure--
 These libs are already build with VC++ in the Windows specific download.
--# Download the latest stable releses for windows, for example: "tbb30_20100406oss_win.zip"
--# Unzip it into "HopsanCore\Dependencies". Check the lib and include path in the HopsanCore project file to make sure that the unpacked path is correct.
--# Add the apropriate tbb bin path (where the DLL is) to your build/run environment path, example: "C:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\bin\ia32\vc9" for 32-bit VC9.0 compiler compatability.
+-# Download the latest stable release for windows, for example: "tbb30_20100406oss_win.zip"
+-# Unzip it into "HopsanCore\\Dependencies". Check the lib and include path in the HopsanCore project file to make sure that the unpacked path is correct.
+-# Add the appropriate tbb bin path (where the DLL is) to your build/run environment path, example: "C:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\bin\ia32\vc9" for 32-bit VC9.0 compiler compatability.
 
 */
