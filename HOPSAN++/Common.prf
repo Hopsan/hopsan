@@ -6,14 +6,15 @@ CONFIG(debug, debug|release) {
   DEFINES *= QT_NO_DEBUG_OUTPUT
 }
 
-#Determine the DLL file extension
+#Determine the dynamic link library file extension, typically .dll for Windows, .so for UNIX and .dylib for OSX
 win32:DLL_EXT = .dll
 unix:DLL_EXT = .so
+macx:DLL_EXT = .dylib
 
 #Determine if default component lib should be build in
 #DEFINES *= BUILTINDEFAULTCOMPONENTLIB
 
-#Helpfunction to select one of multiple choice paths to includ
+#Helpfunction to select one of multiple choice paths to include
 defineReplace(selectPath){
     PATH = $$1
     DEFAULT_PATHS = $$2
