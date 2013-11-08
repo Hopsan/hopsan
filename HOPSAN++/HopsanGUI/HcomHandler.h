@@ -75,7 +75,7 @@ public:
 
     void evaluateExpression(QString expr, VariableType desiredType=Undefined);
 
-    //Return values from evaluation
+    // Return values from evaluation
     double mAnsScalar;
     QString mAnsWildcard;
     SharedLogVariableDataPtrT mAnsVector;
@@ -148,7 +148,7 @@ private:
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
-    void deletePlotCurve(QString cmd) const;
+    void removeLogVariable(QString fullShortVarName) const;
     void getComponents(QString str, QList<ModelObject*> &components);
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);

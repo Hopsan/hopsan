@@ -1508,21 +1508,17 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
 
 void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 {
-    //HCOMERR("Not implemented yet :(");
-    QStringList varNames = getArguments(cmd);
-
-    for(int s=0; s<varNames.size(); ++s)
+    QStringList args = getArguments(cmd);
+    for(int s=0; s<args.size(); ++s)
     {
-//        if(varNames[s].count(".") < 3 && varNames[s].endsWith("*"))     //Ugly hack because generation asterix is handled separately
-//        {
-//            varNames[s].append(".*");
-//        }
-
         QStringList variables;
-        getLogVariables(varNames[s], variables);
+        getLogVariables(args[s], variables);
         for(int v=0; v<variables.size(); ++v)
         {
-            deletePlotCurve(variables[v]);
+
+
+
+            removeLogVariable(variables[v]);
         }
     }
 
@@ -2821,52 +2817,55 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 
 
 //! @brief Adds a plot curve to specified axis in current plot
-//! @param cmd Name of variable
-//! @param axis Axis to add curve to
-void HcomHandler::deletePlotCurve(QString cmd) const
+//! @param [in] fullShortVarName Full short name of varaiable to remove (inlcuding .gen or .* for all, if omitted defaul all)
+void HcomHandler::removeLogVariable(QString fullShortVarName) const
 {
     bool allGens=false;
     int generation=-1;
-    if(cmd.contains("."))
+    if(fullShortVarName.contains("."))
     {
-        QString end = cmd.section(".",-1);
-        bool ok;
-        generation = end.toInt(&ok)-1;
-        if(ok)
+        if(fullShortVarName.endsWith(".*"))
         {
-            cmd.chop(end.size()+1);
+            allGens=true;
+            fullShortVarName.chop(2);
+        }
+        else
+        {
+            bool ok;
+            QString end = fullShortVarName.section(".",-1);
+            generation = end.toInt(&ok)-1;
+            if(ok)
+            {
+                fullShortVarName.chop(end.size()+1);
+            }
         }
     }
 
-
-
-    cmd.remove("\"");
+    fullShortVarName.remove("\"");
 
     SystemContainer *pCurrentSystem = gpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
 
-    SharedLogVariableDataPtrT pData = getLogVariablePtr(cmd);
+    SharedLogVariableDataPtrT pData = getLogVariablePtr(fullShortVarName);
     if(!pData)
     {
-        if(cmd.endsWith(".*"))
-        {
-            cmd.chop(2);
-            pData = getLogVariablePtr(cmd);
-        }
-        if(!pData)
-        {
-            HCOMERR("Variable not found: "+cmd);
-            return;
-        }
+        HCOMERR("Variable not found: "+fullShortVarName);
+        return;
     }
 
-    if(allGens || generation < 0)
+    if( allGens || (generation < 0) )
     {
-        pData->getLogVariableContainer()->getLogDataHandler()->deleteVariable(pData->getLogVariableContainer()->getFullVariableName());
+        if (pData->getLogDataHandler())
+        {
+            pData->getLogDataHandler()->deleteVariable(pData->getLogVariableContainer()->getFullVariableName());
+        }
     }
     else
     {
-        pData->getLogVariableContainer()->removeDataGeneration(generation);
+        if (pData->getLogVariableContainer())
+        {
+            pData->getLogVariableContainer()->removeDataGeneration(generation, true);
+        }
     }
 }
 
@@ -3364,7 +3363,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
     //Multiplication between data vector and scalar
     timer.tic();
-    //! @todo what aboud multiplication with more than two factors?, also the code below should be made easier to read
+    //! @todo what aboud multiplication with more than two factors?
+    //! @todo this code does pointer lookup, then does it again, and then get names to use string versions of logdatahandler functions, it could lookup once and then use the pointer versions instead
     if(desiredType != Scalar && symHopExpr.getFactors().size() == 2 && pLogData)
     {
         SymHop::Expression f0 = symHopExpr.getFactors()[0];
@@ -4242,34 +4242,21 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if (pLeftData && pValueData)
             {
                 pLeftData->assignFrom(pValueData);
-                pLeftData->preventAutoRemoval();
-                //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
+                return true;
             }
-            else
+            else if (pValueData)
             {
-                //! @todo are these checks even necessary, (maybe if generation support is added), they are pointless right now
-                if(pLeftData)
+                // Value given but left does not exist, create it
+                //! @todo this could use the wrong logdatahandler, (it will be the one from the displayed model rather then the one being processed
+                pLeftData = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->defineNewVariable(left);
+                if (pLeftData)
                 {
-                    left = pLeftData->getFullVariableName();
-                }
-                if(pValueData)
-                {
-                    value = pValueData->getFullVariableName().toDouble();
-                }
-
-                //! @todo this could use the wrong logdatahndler, (it will be the one from the displayed model rather then the one beeing processed
-                QString name = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, QString::number(value));
-                if (!name.isEmpty())
-                {
-                    gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(name,-1).data()->preventAutoRemoval();
-                    //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
-                }
-                else
-                {
-                    return false;
+                    pLeftData->assignFrom(pValueData);
+                    pLeftData->preventAutoRemoval();
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
         else
         {

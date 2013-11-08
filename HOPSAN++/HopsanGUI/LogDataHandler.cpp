@@ -1455,7 +1455,7 @@ QString LogDataHandler::addVariableWithScalar(const QString &a, const double x)
 
 SharedLogVariableDataPtrT LogDataHandler::addVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"AddedWith"+QString::number(x));
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"AddedWith"+QString::number(x));
     pTempVar->assignFrom(a);
     pTempVar->addToData(x);
     return pTempVar;
@@ -1478,7 +1478,7 @@ QString LogDataHandler::subVariableWithScalar(const QString &a, const double x)
 
 SharedLogVariableDataPtrT LogDataHandler::subVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"SubtractedWith"+QString::number(x));
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"SubtractedWith"+QString::number(x));
     pTempVar->assignFrom(a);
     pTempVar->subFromData(x);
     return pTempVar;
@@ -1501,7 +1501,7 @@ QString LogDataHandler::mulVariableWithScalar(const QString &a, const double x)
 
 SharedLogVariableDataPtrT LogDataHandler::mulVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"MultiplicatedWith"+QString::number(x));
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"MultiplicatedWith"+QString::number(x));
     pTempVar->assignFrom(a);
     pTempVar->multData(x);
     return pTempVar;
@@ -1524,7 +1524,7 @@ QString LogDataHandler::divVariableWithScalar(const QString &a, const double x)
 
 SharedLogVariableDataPtrT LogDataHandler::divVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"dividedWith"+QString::number(x));
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"dividedWith"+QString::number(x));
     pTempVar->assignFrom(a);
     pTempVar->divData(x);
     return pTempVar;
@@ -1549,7 +1549,7 @@ QString LogDataHandler::addVariables(const QString &a, const QString &b)
 
 SharedLogVariableDataPtrT LogDataHandler::addVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"plus"+b->getFullVariableName());
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"plus"+b->getFullVariableName());
     pTempVar->assignFrom(a);
     pTempVar->addToData(b);
     return pTempVar;
@@ -1605,7 +1605,7 @@ QString LogDataHandler::divVariables(const QString &a, const QString &b)
 
 SharedLogVariableDataPtrT LogDataHandler::diffVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"Diff");
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"Diff");
     pTempVar->assignFrom(a);
     pTempVar->diffBy(b);
     return pTempVar;
@@ -1634,7 +1634,7 @@ QString LogDataHandler::diffVariables(const QString &a, const QString &b)
 
 SharedLogVariableDataPtrT LogDataHandler::lowPassFilterVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const double freq)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"Lp1");
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"Lp1");
     pTempVar->assignFrom(a);
     pTempVar->lowPassFilter(b, freq);
     return pTempVar;
@@ -1663,7 +1663,7 @@ QString LogDataHandler::lowPassFilterVariable(const QString &a, const QString &b
 
 SharedLogVariableDataPtrT LogDataHandler::fftVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const bool doPowerSpectrum)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"Lp1");
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+"Lp1");
     pTempVar->assignFrom(a);
     pTempVar->frequencySpectrum(b, doPowerSpectrum);
     return pTempVar;
@@ -1809,7 +1809,7 @@ SharedLogVariableDataPtrT LogDataHandler::elementWiseGT(SharedLogVariableDataPtr
 {
     if (pData)
     {
-        SharedLogVariableDataPtrT pTempVar = defineTempVariable(pData->getFullVariableName()+"gt");
+        SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(pData->getFullVariableName()+"gt");
         QVector<double> res;
         pData->elementWiseGt(res,thresh);
         pTempVar->assignFrom(res);
@@ -1822,7 +1822,7 @@ SharedLogVariableDataPtrT LogDataHandler::elementWiseLT(SharedLogVariableDataPtr
 {
     if (pData)
     {
-        SharedLogVariableDataPtrT pTempVar = defineTempVariable(pData->getFullVariableName()+"gt");
+        SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(pData->getFullVariableName()+"gt");
         QVector<double> res;
         pData->elementWiseLt(res,thresh);
         pTempVar->assignFrom(res);
@@ -1853,7 +1853,7 @@ QString LogDataHandler::saveVariable(const QString &currName, const QString &new
 
 SharedLogVariableDataPtrT LogDataHandler::subVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
     pTempVar->assignFrom(a);
     pTempVar->subFromData(b);
     return pTempVar;
@@ -1861,7 +1861,7 @@ SharedLogVariableDataPtrT LogDataHandler::subVariables(const SharedLogVariableDa
 
 SharedLogVariableDataPtrT LogDataHandler::multVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
     pTempVar->assignFrom(a);
     pTempVar->multData(b);
     return pTempVar;
@@ -1869,7 +1869,7 @@ SharedLogVariableDataPtrT LogDataHandler::multVariables(const SharedLogVariableD
 
 SharedLogVariableDataPtrT LogDataHandler::divVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable();//defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
     pTempVar->assignFrom(a);
     pTempVar->divData(b);
     return pTempVar;
@@ -1904,6 +1904,7 @@ double LogDataHandler::peekVariable(SharedLogVariableDataPtrT a, const int index
     return r;
 }
 
+//! @brief Creates a new temp variable (appending tempctr to name) that will be added to and manageed by the logdatahandler, it will not be automatically deleted unless its generation is auto-removed
 SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(const QString &rDesiredname)
 {
     SharedLogVariableDataPtrT pData = defineNewVariableNoNameCheck(rDesiredname+QString("%1").arg(mTempVarCtr));
@@ -1915,6 +1916,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(const QString &rDes
     return pData;
 }
 
+//! @brief Creates an orphan temp variable that will be deleted when its shared pointer reference counter reaches zero (when no one is using it)
 SharedLogVariableDataPtrT LogDataHandler::createOrphanTempVariable()
 {
     SharedVariableCommonDescriptionT varDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription());
