@@ -79,6 +79,10 @@ unix {
     #Generate the svnrevnum.h file
     system($${PWD}/../getSvnRevision.sh include HOPSANCORESVNREVISION)
 }
+macx { 
+    INCLUDEPATH += /opt/local/include/tbb/
+    QMAKE_LIBDIR += /opt/local/lib/
+}
 
 #Debug output
 #message(CORE QMAKE_POST_LINK $${QMAKE_POST_LINK})
