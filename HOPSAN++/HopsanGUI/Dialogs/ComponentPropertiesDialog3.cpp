@@ -269,7 +269,7 @@ void ComponentPropertiesDialog3::recompile()
     sourceFile.close();
 
     //Recompile with new code
-    gpLibraryHandler->recompileLibrary(*gpLibraryHandler->getEntry(mpModelObject->getTypeName()).pLibrary, solver);
+    gpLibraryHandler->recompileLibrary(*gpLibraryHandler->getEntry(mpModelObject->getTypeName()).pLibrary, true, solver);
 
     this->close();
 }

@@ -747,29 +747,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         QList<Expression> result = QtConcurrent::blockingMapped(stateVars, concurrentDiff);
 
         jacobian.append(result);
-
-//        //Now differentiate all jacobian elements
-//        jacobian.append(QList<Expression>());
-//        for(int j=0; j<stateVars.size(); ++j)
-//        {
-//            bool ok = true;
-//            //Expression negExpr = stateVars[j];
-//            //negExpr.changeSign();
-//            //tempExpr.replace(negExpr, Expression::fromFactorsDivisors(QList<Expression>() << stateVars[j] << Expression("-1.0", Expression::NoSimplifications), QList<Expression>()));
-//            Expression derExpr = tempExpr.derivative(stateVars[j], ok);
-//            //qDebug() << "Derivating \""+tempExpr.toString()+"\" with respect to \""+stateVars[j].toString();
-//            //qDebug() << "Result: \""+derExpr.toString()+"\"";
-//            jacobian[e].append(derExpr);
-//            if(!ok)
-//            {
-//                printErrorMessage("Failed to differentiate expression: " + equations[e].toString() + " for variable " + stateVars[j].toString());
-//                return;
-//            }
-//            jacobian[e].last()._simplify(Expression::FullSimplification);
-//        }
     }
-
-
 
     //Sort equation system so that each equation contains its corresponding state variable
     if(!sortEquationSystem(equations, jacobian, stateVars, limitedVariableEquations, limitedDerivativeEquations, preferredOrder))
@@ -949,7 +927,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
 {
     Q_UNUSED(initAlgorithms);
-    Q_UNUSED(finalAlgorithms);
+    //Q_UNUSED(finalAlgorithms);
 
     //Create list of equqtions
     QList<Expression> equations;
@@ -1014,7 +992,8 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     }
 
     //Sort equations by dependencies
-    QList<Expression> trivialEquations;                     //Trivial equations, not required to resolve state variables
+    QList<Expression> systemEquations;                     //Trivial equations, not required to resolve state variables
+    QList<Expression> afterSolverEquations;                     //Trivial equations, not required to resolve state variables
     QList<Expression> stateEquations;                       //State equations, used to resolve state variables
     QList<Expression> stateEquationsDerivatives;            //Derivatives of state equations, used for root-finding if necessary
     QList<Expression> resolvedDependencies;                 //State variables that has been resolved
@@ -1045,7 +1024,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         //No dependencies, equation is trivial
         if(dependencies[e].isEmpty())
         {
-            trivialEquations.append(equations[e]);
+            systemEquations.append(equations[e]);
             equations.removeAt(e);
             dependencies.removeAt(e);
             e=0;
@@ -1065,15 +1044,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
         ++e;
     }
-
-
-    //! @todo Use sorting above in the code below, instead of this hard-coded hack
-
-    // for now: Assume first equation = x0, second equation = x1
-
-    //stateDerToEquationMap.insert(new Expression("der(STATEVAR0)"),&equations[0]);       //! @todo MEMORY LEAK!!!
-    //stateDerToEquationMap.insert(new Expression("der(STATEVAR1)"),&equations[1]);       //! @todo MEMORY LEAK!!!
-
 
     //Break out the derivative of the state variable in each corresponding equation
     QMapIterator<Expression*, Expression*> it(stateDerToEquationMap);
@@ -1130,37 +1100,72 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         stateEquationsDerivatives.append(equation);
     }
 
-//    //Break out the second derivative of the state variable in each corresponding derivative equation
-//    QMapIterator<Expression*, Expression*> itd(stateDerDerToEquationMap);
-//    while(itd.hasNext())
+
+    // DEBUG DEBUG DEBUG
+
+//    //Sort remaining equations so that they can be solved
+//    QList<Expression> trivialVariables;
+//    QList<Expression> knowns;
+//    knowns.append(resolvedDependencies);
+//    for(int v=0; v<varToStateVarMap.values().size(); ++v)
 //    {
-//        itd.next();
-
-//        Expression stateVar = Expression("d"+(*itd.key()).toString());
-//        Expression *equation = itd.value();
-
-//        equation->linearize();
-//        equation->toLeftSided();
-//        *equation = *equation->getLeft();
-//        equation->factor(stateVar);
-//        if(equation->getTerms().size() == 1)
+//        knowns.append(Expression(varToStateVarMap.values()[v]));
+//    }
+//    for(int p=0; p<parameters.size(); ++p)
+//    {
+//        knowns.append(Expression(parameters[p].name));
+//    }
+//    for(int i=0; i<ports.size(); ++i)
+//    {
+//        QString num = QString::number(i+1);
+//        if(ports[i].porttype == "ReadPort")
 //        {
-//            *equation = Expression(0);   //Only one term, derivative of statevar must equal zero
+//            knowns.append(Expression(ports[i].name));
 //        }
-//        else
+//        else if(ports[i].porttype == "PowerPort" && cqsType == "C")
 //        {
-//            Expression term = equation->getTerms()[0];
-//            equation->removeTerm(term);
-//            term.replace(stateVar, Expression(1));
-//            term._simplify(Expression::FullSimplification, Expression::Recursive);
-//            equation->divideBy(term);
-//            equation->changeSign();
-//            equation->_simplify(Expression::FullSimplification, Expression::Recursive);
+//            QStringList qVars;
+//            qVars << GeneratorNodeInfo(ports[i].nodetype).qVariables;
+//            for(int v=0; v<qVars.size(); ++v)
+//            {
+//                knowns.append(Expression(qVars[v]+num));
+//            }
+//        }
+//        else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
+//        {
+//            QStringList cVars;
+//            cVars << GeneratorNodeInfo(ports[i].nodetype).cVariables;
+//            for(int v=0; v<cVars.size(); ++v)
+//            {
+//                knowns.append(Expression(cVars[v]+num));
+//            }
 //        }
 //    }
+//    if(!sortEquationByVariables(trivialEquations, trivialVariables, knowns))
+//    {
+//        return;
+//    }
 
-    //Sort remaining equations so that they can be solved
-    QList<Expression> trivialVariables;
+//    //Break out the variable defined by each trivial equation
+//    for(int e=0; e<trivialEquations.size(); ++e)
+//    {
+//        trivialEquations[e].linearize();
+//        trivialEquations[e].toLeftSided();
+//        trivialEquations[e] = *trivialEquations[e].getLeft();
+//        trivialEquations[e].factor(trivialVariables[e]);
+//        Expression term = trivialEquations[e].getTerms()[0];
+//        trivialEquations[e].removeTerm(term);
+//        term.replace(trivialVariables[e], Expression(1));
+//        term._simplify(Expression::FullSimplification, Expression::Recursive);
+//        trivialEquations[e].divideBy(term);
+//        trivialEquations[e].changeSign();
+//        trivialEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
+//        trivialEquations[e] = Expression::fromEquation(trivialVariables[e], trivialEquations[e]);
+//    }
+
+    printMessage("DEBUG1");
+
+    //Generate list of known variables
     QList<Expression> knowns;
     knowns.append(resolvedDependencies);
     for(int v=0; v<varToStateVarMap.values().size(); ++v)
@@ -1197,41 +1202,96 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             }
         }
     }
-    if(!sortEquationByVariables(trivialEquations, trivialVariables, knowns))
+
+    printMessage("DEBUG2");
+
+    for(int e=0; e<systemEquations.size(); ++e)
     {
+        systemEquations[e].toLeftSided();
+        systemEquations[e] = *systemEquations[e].getLeft();
+    }
+
+    //Generate list of variables needed to be solved
+    QList<Expression> systemVariables;
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+        QList<Expression> newVars = systemEquations[e].getVariables();
+        for(int n=0; n<newVars.size(); ++n)
+        {
+            if(!systemVariables.contains(newVars[n]))
+            {
+                systemVariables.append(newVars[n]);
+            }
+        }
+    }
+    for(int k=0; k<knowns.size(); ++k)
+    {
+        systemVariables.removeAll(knowns[k]);
+    }
+
+    printMessage("DEBUG3");
+
+    //Differentiate each equation for each state variable to generate the Jacobian matrix
+    QList<QList<Expression> > jacobian;
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+         //Remove all delay operators, since they shall not be in the Jacobian anyway
+        gTempExpr = systemEquations[e];
+        gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+
+        QList<Expression> result = QtConcurrent::blockingMapped(systemVariables, concurrentDiff);
+
+        jacobian.append(result);
+    }
+
+    printMessage("DEBUG4");
+
+    QList< QList<int> > preferredPath;
+    for(int i=0; i<systemEquations.size(); ++i)
+    {
+        preferredPath.append(QList<int>());
+    }
+
+    QList<int> preferredOrder;
+    findPath(preferredOrder, preferredPath, 0);
+
+    qDebug() << "Equations: " << systemEquations.size();
+    for(int i=0; i<systemVariables.size(); ++i)
+    {
+        qDebug() << "Variable: " << systemVariables[i].toString();
+    }
+    qDebug() << "order: " << preferredOrder.size();
+
+    //Sort equation system so that each equation contains its corresponding state variable
+    QList<int> dummy1, dummy2;
+    if(!sortEquationSystem(systemEquations, jacobian, systemVariables, dummy1, dummy2, preferredOrder))
+    {
+        printErrorMessage("Could not sort equations. System is probably under-determined.");
+        qDebug() << "Could not sort equations. System is probably under-determined.";
         return;
     }
 
-    //Break out the variable defined by each trivial equation
-    for(int e=0; e<trivialEquations.size(); ++e)
-    {
-        trivialEquations[e].linearize();
-        trivialEquations[e].toLeftSided();
-        trivialEquations[e] = *trivialEquations[e].getLeft();
-        trivialEquations[e].factor(trivialVariables[e]);
-        Expression term = trivialEquations[e].getTerms()[0];
-        trivialEquations[e].removeTerm(term);
-        term.replace(trivialVariables[e], Expression(1));
-        term._simplify(Expression::FullSimplification, Expression::Recursive);
-        trivialEquations[e].divideBy(term);
-        trivialEquations[e].changeSign();
-        trivialEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        trivialEquations[e] = Expression::fromEquation(trivialVariables[e], trivialEquations[e]);
-    }
+    QList<Expression> systemVars = systemVariables;
+
+    printMessage("DEBUG5");
 
 
     //Add call to solver
-    trivialEquations.prepend(Expression("CALLSOLVER"));
+    QList<Expression> beforeSolverEquations;
+    beforeSolverEquations.prepend(Expression("CALLSOLVER"));
 
+    printMessage("DEBUG6");
 
     //Initialize state variables, and convert them back at end
     QMapIterator<QString, QString> itv(varToStateVarMap);
     while(itv.hasNext())
     {
         itv.next();
-        trivialEquations.prepend(itv.value()+"="+itv.key());
-        trivialEquations.append(itv.key()+"="+itv.value());
+        beforeSolverEquations.prepend(itv.value()+"="+itv.key());
+        afterSolverEquations.append(itv.key()+"="+itv.value());
     }
+
+    printMessage("DEBUG6");
 
     for(int e=0; e<stateEquations.size(); ++e)
     {
@@ -1255,12 +1315,12 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         qDebug() << "STATE EQUATION DERIVATIVE: " << equation.toString();
     }
 
-    Q_FOREACH(const Expression &var, trivialVariables)
+    Q_FOREACH(const Expression &var, systemVariables)
     {
         qDebug() << "TRIVIAL VARIABLE: " << var.toString();
     }
 
-    Q_FOREACH(const Expression &equation, trivialEquations)
+    Q_FOREACH(const Expression &equation, systemEquations)
     {
         qDebug() << "TRIVIAL EQUATION: " << equation.toString();
     }
@@ -1318,7 +1378,27 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.initEquations.append("STATEVARS.resize(2);");
     comp.initEquations.append("mpSolver = new NumericalIntegrationSolver(this, &STATEVARS);");
 
-    Q_FOREACH(const Expression &equation, trivialEquations)
+    if(!jacobian.isEmpty())
+    {
+        comp.varNames << "order["+QString::number(systemVars.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSystemSolver";
+        comp.varInits << "" << "" << "" << "" << "";
+        comp.varTypes << "double" << "Matrix" << "Vec" << "Vec" << "EquationSystemSolver*";
+
+        comp.initEquations << "jacobianMatrix.create("+QString::number(systemEquations.size())+","+QString::number(systemVars.size())+");";
+        comp.initEquations << "systemEquations.create("+QString::number(systemEquations.size())+");";
+        comp.initEquations << "stateVariables.create("+QString::number(systemEquations.size())+");";
+        comp.initEquations << "";
+    }
+
+    if(!jacobian.isEmpty())
+    {
+        comp.initEquations << "";
+        //comp.initEquations << "mpSystemSolver = new EquationSystemSolver(this, "+QString::number(sysEquations.size())+");";
+        comp.initEquations << "mpSystemSolver = new EquationSystemSolver(this, "+QString::number(systemEquations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
+        comp.finalEquations << "delete mpSystemSolver;";
+    }
+
+    Q_FOREACH(const Expression &equation, beforeSolverEquations)
     {
         QString equationStr = equation.toString();
         for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
@@ -1333,6 +1413,72 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         {
             comp.simEquations.append(equationStr+";");
         }
+    }
+
+    if(!jacobian.isEmpty())
+    {
+        for(int i=0; i<systemVars.size(); ++i)
+        {
+            comp.simEquations << "stateVariables["+QString::number(i)+"] = "+systemVars[i].toString()+";";
+        }
+
+        comp.simEquations << "";
+        comp.simEquations << "    //System Equations";
+        for(int i=0; i<systemEquations.size(); ++i)
+        {
+            QString equationStr = systemEquations[i].toString();
+            for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+            {
+                equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+            }
+            comp.simEquations << "    systemEquations["+QString::number(i)+"] = "+equationStr+";";
+   //         comp.simEquations << "    "+systemVars[i]+" = " + resEquations[i]+";";
+        }
+        comp.simEquations << "";
+        comp.simEquations << "    //Jacobian Matrix";
+        for(int i=0; i<systemEquations.size(); ++i)
+        {
+            for(int j=0; j<systemVars.size(); ++j)
+            {
+                QString elementStr = jacobian[i][j].toString();
+                for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+                {
+                    elementStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+                }
+                comp.simEquations << "    jacobianMatrix["+QString::number(i)+"]["+QString::number(j)+"] = "+elementStr+";";
+            }
+        }
+
+        comp.simEquations << "";
+        comp.simEquations << "    //Solving equation using LU-faktorisation";
+        comp.simEquations << "    mpSystemSolver->solve();";
+        comp.simEquations << "";
+        for(int i=0; i<systemVars.size(); ++i)
+        {
+            comp.simEquations << "    "+systemVars[i].toString()+"=stateVariables["+QString::number(i)+"];";
+        }
+    }
+
+    Q_FOREACH(const Expression &equation, afterSolverEquations)
+    {
+        QString equationStr = equation.toString();
+        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
+        if(equation.toString() == "CALLSOLVER")
+        {
+            comp.simEquations.append("mpSolver->solve(solverType);");
+        }
+        else
+        {
+            comp.simEquations.append(equationStr+";");
+        }
+    }
+
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        comp.simEquations.append(finalAlgorithms[i]);
     }
 
     comp.finalEquations.append("delete mpSolver;");
