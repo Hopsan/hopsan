@@ -549,6 +549,7 @@ void HopsanGenerator::generateOrUpdateComponentAppearanceFile(QString path, Comp
                     if(lines[l].trimmed().startsWith("</ports>"))
                     {
                         lines.insert(l, "      <port name=\""+comp.portNames[p]+"\" x=\"0.0\" y=\"0.0\" a=\"0.0\"/>");
+                        break;
                     }
                 }
             }

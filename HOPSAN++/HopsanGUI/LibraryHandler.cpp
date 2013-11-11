@@ -96,7 +96,7 @@ void LibraryHandler::loadLibrary()
 
 void LibraryHandler::createNewCppComponent()
 {
-    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp);
+    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp, gpMainWindowWidget);
     pEditDialog->exec();
     if(pEditDialog->result() == QDialog::Accepted)
     {
@@ -121,7 +121,7 @@ void LibraryHandler::createNewCppComponent()
 
 void LibraryHandler::createNewModelicaComponent()
 {
-    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica);
+    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica, gpMainWindowWidget);
     pEditDialog->exec();
     if(pEditDialog->result() == QDialog::Accepted)
     {
@@ -167,7 +167,10 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 
         dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
         dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
-        newLib.libFilePath = dir.absoluteFilePath(dir.entryList().first());
+        if(!dir.entryList().isEmpty())
+        {
+            newLib.libFilePath = dir.absoluteFilePath(dir.entryList().first());
+        }
     }
     else
     {
@@ -507,6 +510,20 @@ QStringList LibraryHandler::getLoadedTypeNames()
 LibraryEntry LibraryHandler::getEntry(const QString &typeName, const QString &subTypeName)
 {
     return mLibraryEntries.find(makeFullTypeString(typeName, subTypeName)).value();
+}
+
+
+ModelObjectAppearance *LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName)
+{
+    QMap<QString, LibraryEntry>::iterator it = mLibraryEntries.find((makeFullTypeString(typeName, subTypeName)));
+    if(it != mLibraryEntries.end())
+    {
+        return it.value().pAppearance;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void LibraryHandler::addReplacement(QString type1, QString type2)

@@ -56,6 +56,8 @@ double DLLIMPORTEXPORT lowLimit(const double x, const double xmin);
 double DLLIMPORTEXPORT dxLowLimit(const double x, const double xmin);
 double DLLIMPORTEXPORT dxLowLimit2(const double x, const double sx, const double xmin);
 double DLLIMPORTEXPORT div(const double x, const double y);
+double DLLIMPORTEXPORT greaterThan(const double x, const double y);
+double DLLIMPORTEXPORT greaterThanOrEqual(const double x, const double y);
 
 
 // ----------Inline Functions converted from auxhop in old Hopsan----------
@@ -219,6 +221,18 @@ inline double mod(const double x, const double y)
 inline double rem(const double x, const double y)
 {
     return x - div(x,y)*y;
+}
+
+inline double greaterThan(const double x, const double y)
+{
+    if(x>y) return 1;
+    else return 0;
+}
+
+inline double greaterThanOrEqual(const double x, const double y)
+{
+    if(x>=y) return 1;
+    else return 0;
 }
 
 }

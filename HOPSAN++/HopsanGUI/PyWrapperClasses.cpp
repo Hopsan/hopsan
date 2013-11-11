@@ -242,7 +242,7 @@ void PyMainWindowClassWrapper::setSystemParameter(MainWindow* o, const QString& 
 
 QString PyMainWindowClassWrapper::addComponent(MainWindow* o, const QString& name, const QString& typeName, const int& x, const int& y, const int& rot)
 {
-    ModelObjectAppearance *pAppearance = gpLibraryHandler->getEntry(typeName).pAppearance;
+    ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
     if(!pAppearance)
         return "Could not find component type.";
     pAppearance->setDisplayName(name);
@@ -254,7 +254,7 @@ QString PyMainWindowClassWrapper::addComponent(MainWindow* o, const QString& nam
 
 QString PyMainWindowClassWrapper::addComponent(MainWindow* o, const QString& name, const QString& typeName, const QString& subTypeName, const int& x, const int& y, const int& rot)
 {
-    ModelObjectAppearance *pAppearance = gpLibraryHandler->getEntry(typeName, subTypeName).pAppearance;
+    ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName, subTypeName);
     if(!pAppearance)
         return "Could not find component type.";
     pAppearance->setDisplayName(name);

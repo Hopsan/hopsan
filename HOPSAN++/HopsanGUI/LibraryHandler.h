@@ -30,6 +30,7 @@ public:
 
     QStringList getLoadedTypeNames();
     LibraryEntry getEntry(const QString &typeName, const QString &subTypeName="");
+    ModelObjectAppearance *getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="");
 
     void addReplacement(QString type1, QString type2);
     QStringList getReplacements(QString type);

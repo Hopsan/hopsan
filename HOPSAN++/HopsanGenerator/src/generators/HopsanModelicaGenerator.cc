@@ -1202,6 +1202,14 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             }
         }
     }
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        if(initAlgorithms[i].contains("="))
+        {
+            QString var = initAlgorithms[i].section("=",0,0).trimmed();
+            knowns.append(var);
+        }
+    }
 
     printMessage("DEBUG2");
 
@@ -1264,6 +1272,15 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         qDebug() << "Variable: " << systemVariables[i].toString();
     }
     qDebug() << "order: " << preferredOrder.size();
+
+    if(systemEquations.size() != systemVariables.size())
+    {
+        printErrorMessage("Number of system equations does not equal number of system variables.");
+        printErrorMessage("Number of system equations: " + QString::number(systemEquations.size()));
+        printErrorMessage("Number of system variables: " + QString::number(systemVariables.size()));
+        return;
+
+    }
 
     //Sort equation system so that each equation contains its corresponding state variable
     QList<int> dummy1, dummy2;
@@ -1407,6 +1424,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         //! @todo Convert everything to C++ syntax
         QString initEq = initAlgorithms[i];
         initEq.replace(":=", "=");
+        initEq.append(";");
         comp.simEquations.append(initEq);
     }
 

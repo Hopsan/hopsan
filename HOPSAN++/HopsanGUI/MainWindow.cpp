@@ -371,7 +371,7 @@ void MainWindow::initializeWorkspace()
     for(int i=0; i<gpConfig->getUserLibs().size(); ++i)
     {
         gpSplash->showMessage("Loading library: "+gpConfig->getUserLibs()[i]+"...");
-        gpLibraryHandler->loadLibrary(gpConfig->getUserLibs().at(i));
+        gpLibraryHandler->loadLibrary(gpConfig->getUserLibs()[i]);
     }
 
     //mpLibrary->checkForFailedComponents();

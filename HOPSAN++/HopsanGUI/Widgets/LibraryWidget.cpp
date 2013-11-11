@@ -339,7 +339,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
         qDebug() << "Clicked on: " << typeName;
-        ModelObjectAppearance *pAppearance = gpLibraryHandler->getEntry(typeName).pAppearance;
+        ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
         QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
         QIcon icon;
         icon.addFile(iconPath,QSize(55,55));
@@ -367,7 +367,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
         //Populate list widget with components
         for(int i=0; i<typeNames.size(); ++i)
         {
-            ModelObjectAppearance *pAppearance = gpLibraryHandler->getEntry(typeNames[i]).pAppearance;
+            ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeNames[i]);
             QListWidgetItem *tempItem = new QListWidgetItem();
             tempItem->setIcon(QIcon(pAppearance->getFullAvailableIconPath()));
             tempItem->setToolTip(pAppearance->getDisplayName());
@@ -436,7 +436,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
             }
             else if(pReply == pOpenFolderAction)
             {
-                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getEntry(typeName).pAppearance->getBasePath()));
+                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(typeName)->getBasePath()));
             }
         }
         else        //Tree view mode
@@ -480,7 +480,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
             }
             else if(pReply == pOpenFolderAction)
             {
-                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getBasePath()));
+                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(item).value())->getBasePath()));
             }
         }
     }
@@ -492,7 +492,7 @@ void LibraryWidget::handleItemClick(QListWidgetItem *item)
     if(mListItemToTypeNameMap.contains(item) && qApp->mouseButtons() == Qt::LeftButton)
     {
         QString typeName = mListItemToTypeNameMap.find(item).value();
-        ModelObjectAppearance *pAppearance = gpLibraryHandler->getEntry(typeName).pAppearance;
+        ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
         QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
         QIcon icon;
         icon.addFile(iconPath,QSize(55,55));

@@ -283,7 +283,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     }
 
     //Store reserved symbols in object
-    reservedSymbols << "mTime" << "Z";
+    reservedSymbols << "mTimestep" << "mTime" << "Z";
 
 
     //Find top level symbol, set correct string and type, generate children
@@ -1461,6 +1461,12 @@ Expression Expression::derivative(const Expression x, bool &ok) const
 
     Expression retExp = Expression(ret);
     retExp._simplify(FullSimplification, Recursive);
+
+    if(retExp.toString() == "")
+    {
+        double katt;
+        katt=3;
+    }
 
     assert(retExp.toString() != "");
 

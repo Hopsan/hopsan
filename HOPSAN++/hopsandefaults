@@ -115,6 +115,8 @@
                         QGroupBox::title            { subcontrol-origin: margin;    subcontrol-position: top center;    padding: 0 3px; }
 
                         QScrollArea                 { background-color: rgb(226,231,237);  border: 0px;}
+
+                        QDialog                 { background-color: rgb(226,231,237); }
             </stylesheet>
     </style>
     <units>

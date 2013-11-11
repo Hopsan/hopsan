@@ -42,8 +42,10 @@ public:
     QTextEdit *mpCodeTextEdit;
     QComboBox *mpSolverComboBox;
     QDialogButtonBox *mpButtonBox;
+    QToolButton *mpLoadButton;
+    QToolButton *mpSaveButton;
 
-    EditComponentDialog(QString code, SourceCodeEnumT language);
+    EditComponentDialog(QString code, SourceCodeEnumT language, QWidget *parent=0);
 
     void retranslateUi();
 
@@ -52,9 +54,16 @@ public:
 
     void openCreateComponentWizard(SourceCodeEnumT language);
 
+    void doLoad(QString path);
+    void doSave(QString path);
+
+    QString mLastLoadedOrSavedCode;
+
 private slots:
     //void openCreateComponentWizard(SourceCodeEnumT language);
     void setHighlighter(SourceCodeEnumT language);
+    void load();
+    void save();
 };
 
 

@@ -1116,9 +1116,9 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         QMenu *replaceMenu = rMenu.addMenu(tr("Replace component"));
         for(int i=0; i<replacements.size(); ++i)
         {
-            if(gpLibraryHandler->getEntry(replacements.at(i)).pAppearance)
+            if(gpLibraryHandler->getModelObjectAppearancePtr(replacements.at(i)))
             {
-                QAction *replaceAction = replaceMenu->addAction(gpLibraryHandler->getEntry(replacements.at(i)).pAppearance->getDisplayName());
+                QAction *replaceAction = replaceMenu->addAction(gpLibraryHandler->getModelObjectAppearancePtr(replacements.at(i))->getDisplayName());
                 replaceActionList.append(replaceAction);
             }
         }
@@ -1506,7 +1506,7 @@ ModelObjectAppearance* ModelObject::getAppearanceData()
 
 const ModelObjectAppearance *ModelObject::getLibraryAppearanceData() const
 {
-    return gpLibraryHandler->getEntry(getTypeName()).pAppearance;
+    return gpLibraryHandler->getModelObjectAppearancePtr(getTypeName());
 }
 
 //! @brief Refreshes the appearance and position of ports on the model object

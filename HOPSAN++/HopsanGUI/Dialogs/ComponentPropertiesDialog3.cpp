@@ -67,7 +67,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     {
         this->hide();
 
-        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica);
+        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica, gpMainWindowWidget);
         pEditDialog->exec();
 
         if(pEditDialog->result() == QDialog::Accepted)
@@ -98,7 +98,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     {
         this->hide();
 
-        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp);
+        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp, gpMainWindowWidget);
         pEditDialog->exec();
 
         if(pEditDialog->result() == QDialog::Accepted)
@@ -352,7 +352,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         QGroupBox *pHelpWidget = new QGroupBox();
         QVBoxLayout *pHelpLayout = new QVBoxLayout(pHelpWidget);
 
-        QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getEntry(mpModelObject->getTypeName()).pAppearance->getDisplayName());
+        QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getModelObjectAppearancePtr(mpModelObject->getTypeName())->getDisplayName());
         pHelpHeading->setAlignment(Qt::AlignCenter);
         QFont tempFont = pHelpHeading->font();
         tempFont.setPixelSize(16);

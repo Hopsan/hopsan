@@ -30,6 +30,7 @@
 
 //Hopsan includes
 #include "common.h"
+#include "global.h"
 #include "Configuration.h"
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
@@ -44,12 +45,16 @@
 #include "Widgets/PyDockWidget.h"
 
 
-EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
+EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language, QWidget *parent)
+    : QDialog(parent)
 {
     if (this->objectName().isEmpty())
     {
         this->setObjectName(QString::fromUtf8("EditComponentDialog"));
     }
+
+    this->setStyleSheet(parent->styleSheet());
+
     this->resize(640, 480);
     mpVerticalLayout = new QVBoxLayout(this);
     mpVerticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
@@ -67,16 +72,11 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
     pSolverLayout->addWidget(new QWidget(this));
     pSolverLayout->setStretch(2, 1);
 
-    mpVerticalLayout->addWidget(mpCodeTextEdit);
-    mpVerticalLayout->addLayout(pSolverLayout);
-
     mpButtonBox = new QDialogButtonBox(this);
     mpButtonBox->setObjectName(QString::fromUtf8("mpButtonBox"));
     mpButtonBox->setOrientation(Qt::Horizontal);
     mpButtonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
     mpButtonBox->setCenterButtons(false);
-
-    mpVerticalLayout->addWidget(mpButtonBox);
 
     retranslateUi();
     QObject::connect(mpButtonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -91,6 +91,34 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
     {
         openCreateComponentWizard(language);
     }
+
+    QSize iconSize = QSize(24,24);
+
+    mpLoadButton = new QToolButton(this);
+    mpLoadButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadButton->setText(tr("&Open"));
+    mpLoadButton->setToolTip(tr("&Open"));
+    mpLoadButton->setIconSize(iconSize);
+
+    mpSaveButton = new QToolButton(this);
+    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    mpSaveButton->setText(tr("&Save"));
+    mpSaveButton->setToolTip(tr("&Save"));
+    mpSaveButton->setIconSize(iconSize);
+
+    connect(mpLoadButton, SIGNAL(clicked()), this, SLOT(load()));
+    connect(mpSaveButton, SIGNAL(clicked()), this, SLOT(save()));
+
+    QHBoxLayout *pToolBarLayout = new QHBoxLayout(this);
+    pToolBarLayout->addWidget(mpLoadButton);
+    pToolBarLayout->addWidget(mpSaveButton);
+    pToolBarLayout->addWidget(new QWidget(this));
+    pToolBarLayout->setStretch(pToolBarLayout->count()-1, 1);
+
+    mpVerticalLayout->addLayout(pToolBarLayout);
+    mpVerticalLayout->addWidget(mpCodeTextEdit);
+    mpVerticalLayout->addLayout(pSolverLayout);
+    mpVerticalLayout->addWidget(mpButtonBox);
 }
 
 
@@ -127,13 +155,73 @@ void EditComponentDialog::setHighlighter(SourceCodeEnumT language)
     }
 }
 
+void EditComponentDialog::load()
+{
+    QString path = QFileDialog::getOpenFileName(this, "Load component source code", gpConfig->getModelicaModelsDir(), QString("C++ header (*.hpp);;Modelica (*.mo)"));
 
+    if(QFileInfo(path).exists())
+    {
+        doLoad(path);
+    }
+}
+
+void EditComponentDialog::save()
+{
+    QString path = QFileDialog::getSaveFileName(this, "Save component source code", gpConfig->getModelicaModelsDir(), QString("C++ header (*.hpp);;Modelica (*.mo)"));
+
+    if(!path.isEmpty())
+    {
+        doSave(path);
+    }
+}
 
 
 void EditComponentDialog::openCreateComponentWizard(SourceCodeEnumT language)
 {
     CreateComponentWizard *pWizard = new CreateComponentWizard(language, this);
     pWizard->show();
+}
+
+void EditComponentDialog::doLoad(QString path)
+{
+    qDebug() << "Loading from: " << path;
+
+    //Read file
+    QFile file(path);
+    file.open(QFile::ReadOnly | QFile::Text);
+    QString newCode = file.readAll();
+    file.close();
+
+    //Check if last model is saved
+    if(mpCodeTextEdit->toPlainText() != mLastLoadedOrSavedCode)
+    {
+        int ret = QMessageBox::warning(this, tr("Hopsan Code Editor"),
+                                       tr("Current code is not saved.\n"
+                                          "Load anyway?"),
+                                       QMessageBox::Ok,
+                                       QMessageBox::Cancel);
+        if(ret == QMessageBox::Cancel)
+        {
+            return;
+        }
+    }
+
+    //Load new code
+    mpCodeTextEdit->setPlainText(newCode);
+    mLastLoadedOrSavedCode = newCode;
+    mpCodeTextEdit->undo();
+}
+
+void EditComponentDialog::doSave(QString path)
+{
+    qDebug() << "Saving to: " << path;
+
+    QFile file(path);
+    file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
+    file.write(mpCodeTextEdit->toPlainText().toUtf8());
+    file.close();
+
+    mLastLoadedOrSavedCode = mpCodeTextEdit->toPlainText();
 }
 
 CreateComponentWizard::CreateComponentWizard(EditComponentDialog::SourceCodeEnumT language, EditComponentDialog *parent)

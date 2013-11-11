@@ -115,7 +115,7 @@ void ComponentPropertiesDialog::createEditStuff()
     helpPixMap.load(mpComponent->getAppearanceData()->getBasePath() + mpComponent->getHelpPicture());
     pHelpPicture->setPixmap(helpPixMap);
 
-    QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getEntry(mpComponent->getTypeName()).pAppearance->getDisplayName(), this);
+    QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getModelObjectAppearancePtr(mpComponent->getTypeName())->getDisplayName(), this);
     pHelpHeading->setAlignment(Qt::AlignCenter);
     QFont tempFont = pHelpHeading->font();
     tempFont.setPixelSize(16);
