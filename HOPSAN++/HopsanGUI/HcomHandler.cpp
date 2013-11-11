@@ -911,7 +911,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         getParameters(splitCmd[0], parameterNames);
 
         evaluateExpression(splitCmd[1], Scalar);
-        if(!mAnsType == Scalar)
+        if(mAnsType != Scalar)
         {
             HCOMERR("Could not evaluate new value for parameter.");
             return;
@@ -2987,7 +2987,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         //Data variable, return it
         timer.tic();
         QStringList variables;
-        getMatchingLogVariableNames(expr,variables);
+        getMatchingLogVariableNames(expr,variables, false); //!< @todo fasle here will break support for taking a specific generation of variable /Peter
         timer.toc("getVariables", 1);
         if(variables.size() == 1)
         {
@@ -4014,6 +4014,13 @@ void HcomHandler::getMatchingLogVariableNames(QString str, QStringList &rVariabl
 
     bool parsedGen=false;
     int desiredGen = -2; // -2 = all (in this case)
+    // If we are only interested in the variable name, then only look for "latest" in var, unless we actually overwrite with a generation ending part in str
+    //! @todo the name of this argument variable is bad
+    if (!doAppendGen)
+    {
+        desiredGen = -1;
+    }
+
     if(str.endsWith(".L"))
     {
         desiredGen = pLogDataHandler->getLowestGenerationNumber();
@@ -4251,7 +4258,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         QString right = expr.getRight()->toString();
         evaluateExpression(right);
 
-        if (mAnsType!=Scalar)
+        if (mAnsType==Scalar)
         {
             QStringList vars;
             getMatchingLogVariableNames(left, vars);
@@ -4543,7 +4550,7 @@ void HcomHandler::toLongDataNames(QString &rName) const
     rName.replace(".", "#");
     rName.remove("\"");
 
-    if ((rName.count("#") > 1) && !rName.endsWith("#*") )
+    if ( !rName.endsWith("#*") )
     {
         QList<QString> longNames;
         int li = rName.lastIndexOf("#");
