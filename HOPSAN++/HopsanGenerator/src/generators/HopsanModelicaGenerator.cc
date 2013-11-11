@@ -926,7 +926,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 
 void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
 {
-    Q_UNUSED(initAlgorithms);
+    //Q_UNUSED(initAlgorithms);
     //Q_UNUSED(finalAlgorithms);
 
     //Create list of equqtions
@@ -992,8 +992,8 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     }
 
     //Sort equations by dependencies
-    QList<Expression> systemEquations;                     //Trivial equations, not required to resolve state variables
-    QList<Expression> afterSolverEquations;                     //Trivial equations, not required to resolve state variables
+    QList<Expression> systemEquations;                     //System equations, not required to resolve state variables
+    QList<Expression> afterSolverEquations;                     //Equations calculated after system is solved
     QList<Expression> stateEquations;                       //State equations, used to resolve state variables
     QList<Expression> stateEquationsDerivatives;            //Derivatives of state equations, used for root-finding if necessary
     QList<Expression> resolvedDependencies;                 //State variables that has been resolved
@@ -1229,6 +1229,9 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         systemVariables.removeAll(knowns[k]);
     }
 
+    //! @todo Exclude trivial equations (only depending on known variables) from Jacobian and solve them before the Jacobian
+    //! @todo Exclude equations that contains unique variablse (existing only in one equation) and solve them after the Jacobian
+
     printMessage("DEBUG3");
 
     //Differentiate each equation for each state variable to generate the Jacobian matrix
@@ -1398,6 +1401,15 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         comp.finalEquations << "delete mpSystemSolver;";
     }
 
+    //Initial algorithm section
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        //! @todo Convert everything to C++ syntax
+        QString initEq = initAlgorithms[i];
+        initEq.replace(":=", "=");
+        comp.simEquations.append(initEq);
+    }
+
     Q_FOREACH(const Expression &equation, beforeSolverEquations)
     {
         QString equationStr = equation.toString();
@@ -1478,7 +1490,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
     for(int i=0; i<finalAlgorithms.size(); ++i)
     {
-        comp.simEquations.append(finalAlgorithms[i]);
+        //! @todo Convert everything to C++ syntax
+        QString finalEq = finalAlgorithms[i];
+        finalEq.replace(":=", "=");
+        comp.simEquations.append(finalEq);
     }
 
     comp.finalEquations.append("delete mpSolver;");
