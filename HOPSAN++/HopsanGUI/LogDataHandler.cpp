@@ -1007,9 +1007,9 @@ QVector<SharedLogVariableDataPtrT> LogDataHandler::getMultipleLogVariableDataPtr
     return results;
 }
 
-const QVector<LogVariableContainer *> LogDataHandler::getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const
+QList<LogVariableContainer *> LogDataHandler::getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const
 {
-    QVector<LogVariableContainer*> results;
+    QList<LogVariableContainer*> results;
     LogDataMapT::const_iterator it;
     for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
     {
@@ -1020,6 +1020,11 @@ const QVector<LogVariableContainer *> LogDataHandler::getMultipleLogVariableCont
         }
     }
     return results;
+}
+
+LogVariableContainer *LogDataHandler::getLogVariableContainer(const QString &rFullName) const
+{
+    return mLogDataMap.value(rFullName,0);
 }
 
 ////! @todo maybe would be better if ONE getPlotData function could handle all cases

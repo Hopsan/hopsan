@@ -85,7 +85,8 @@ public:
     SharedLogVariableDataPtrT getLogVariableDataPtr(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedLogVariableDataPtrT getLogVariableDataPtr(const QString &rName, const int generation) const;
     QVector<SharedLogVariableDataPtrT> getMultipleLogVariableDataPtrs(const QRegExp &rNameExp, const int generation=-1) const;
-    const QVector<LogVariableContainer*> getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const;
+    QList<LogVariableContainer*> getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const;
+    LogVariableContainer* getLogVariableContainer(const QString &rFullName) const;
     bool hasLogVariableData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtGeneration(const int generation) const;

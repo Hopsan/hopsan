@@ -104,6 +104,7 @@ public:
     void removeAllGenerations();
 
     SharedLogVariableDataPtrT getDataGeneration(const int gen=-1) const;
+    QList<SharedLogVariableDataPtrT> getAllDataGenerations() const;
     bool hasDataGeneration(const int gen);
     int getLowestGeneration() const;
     int getHighestGeneration() const;

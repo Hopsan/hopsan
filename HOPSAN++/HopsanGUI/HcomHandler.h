@@ -55,13 +55,13 @@ public:
     // Public access functions
     QStringList getCommands() const;
     QString runScriptCommands(QStringList &lines, bool *pAbort);
-    SharedLogVariableDataPtrT getLogVariablePtr(QString fullName) const;
+    SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName) const;
     QMap<QString, double> getLocalVariables() const;
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
 
     // Public utilities
-    void toShortDataNames(QString &variable) const;
-    void toLongDataNames(QString &var) const;
+    void toShortDataNames(QString &rName) const;
+    void toLongDataNames(QString &rName) const;
 
     void setWorkingDirectory(QString dir);
     QString getWorkingDirectory() const;
@@ -148,12 +148,12 @@ private:
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
-    void removeLogVariable(QString fullShortVarName) const;
+    void removeLogVariable(QString fullShortVarNameWithGen) const;
     void getComponents(QString str, QList<ModelObject*> &components);
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;
-    void getLogVariables(QString str, QStringList &rVariables) const;
+    void getMatchingLogVariableNames(QString str, QStringList &rVariables, const bool doAppendGen=true) const;
     void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);

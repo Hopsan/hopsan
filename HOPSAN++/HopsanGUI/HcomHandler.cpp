@@ -1366,16 +1366,42 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) < 2)
     {
-        QStringList output;
-        if(cmd.isEmpty())
+        bool genWasGiven=false;
+        QStringList fields = cmd.split(".");
+        if ( (fields.last() == "L") || (fields.last() == "H") )
         {
-            getLogVariables("*.H", output);
+            genWasGiven=true;
         }
         else
         {
-            getLogVariables(cmd, output);
+            bool parseOK;
+            fields.last().toInt(&parseOK);
+            if (parseOK)
+            {
+                genWasGiven=true;
+            }
         }
-        output.removeDuplicates();
+        if (fields.last() == "*")
+        {
+            //! @todo this is necessarily true
+            genWasGiven = true;
+        }
+
+
+        QStringList output;
+        if(cmd.isEmpty())
+        {
+            getMatchingLogVariableNames("*.H", output, genWasGiven);
+        }
+        else
+        {
+            getMatchingLogVariableNames(cmd, output, genWasGiven);
+        }
+
+        if (!genWasGiven)
+        {
+            output.removeDuplicates();
+        }
 
         for(int o=0; o<output.size(); ++o)
         {
@@ -1512,17 +1538,13 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
     for(int s=0; s<args.size(); ++s)
     {
         QStringList variables;
-        getLogVariables(args[s], variables);
+        getMatchingLogVariableNames(args[s], variables);
         for(int v=0; v<variables.size(); ++v)
         {
-
-
-
+            //! @todo it would be  nice if we could remove a variable directly if no generation information is specified
             removeLogVariable(variables[v]);
         }
     }
-
-
 }
 
 void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
@@ -1536,7 +1558,7 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
     QString scale = getArgument(cmd,1);
 
     QStringList vars;
-    getLogVariables(getArgument(cmd,0),vars);
+    getMatchingLogVariableNames(getArgument(cmd,0),vars);
     if(vars.isEmpty())
     {
         HCOMERR("Unknown variable.");
@@ -1619,7 +1641,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     double scale = getArgument(cmd,1).toDouble();
 
     QStringList vars;
-    getLogVariables(varName,vars);
+    getMatchingLogVariableNames(varName,vars);
     if(vars.isEmpty())
     {
         HCOMERR("Unknown variable.");
@@ -1809,7 +1831,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     {
         splitCmdMajor[i].remove("\"");
         QStringList variables;
-        getLogVariables(splitCmdMajor[i], variables);
+        getMatchingLogVariableNames(splitCmdMajor[i], variables);
         for(int v=0; v<variables.size(); ++v)
         {
             toLongDataNames(variables[v]);
@@ -2780,7 +2802,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             {
                 QString vars = mAnsWildcard;
                 toShortDataNames(vars);
-                getLogVariables(vars, variables);
+                getMatchingLogVariableNames(vars, variables);
                 for(int v=0; v<variables.size(); ++v)
                 {
                     addPlotCurve(variables[v], axisId);
@@ -2817,47 +2839,48 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 
 
 //! @brief Adds a plot curve to specified axis in current plot
-//! @param [in] fullShortVarName Full short name of varaiable to remove (inlcuding .gen or .* for all, if omitted defaul all)
-void HcomHandler::removeLogVariable(QString fullShortVarName) const
+//! @param [in] fullShortVarNameWithGen Full short name of varaiable to remove (inlcuding .gen or .* for all)
+void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
 {
-    bool allGens=false;
-    int generation=-1;
-    if(fullShortVarName.contains("."))
-    {
-        if(fullShortVarName.endsWith(".*"))
-        {
-            allGens=true;
-            fullShortVarName.chop(2);
-        }
-        else
-        {
-            bool ok;
-            QString end = fullShortVarName.section(".",-1);
-            generation = end.toInt(&ok)-1;
-            if(ok)
-            {
-                fullShortVarName.chop(end.size()+1);
-            }
-        }
-    }
-
-    fullShortVarName.remove("\"");
-
     SystemContainer *pCurrentSystem = gpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
 
-    SharedLogVariableDataPtrT pData = getLogVariablePtr(fullShortVarName);
+    bool allGens=false;
+    int generation=-2;
+
+    if(fullShortVarNameWithGen.endsWith(".*"))
+    {
+        allGens = true;
+        fullShortVarNameWithGen.chop(2);
+    }
+    else
+    {
+        bool ok;
+        QString end = fullShortVarNameWithGen.section(".",-1);
+        generation = end.toInt(&ok)-1;
+        if(ok)
+        {
+            fullShortVarNameWithGen.chop(end.size()+1);
+        }
+        else
+        {
+            HCOMERR(QString("Can not parse: %1 when removing variables").arg(fullShortVarNameWithGen));
+            return;
+        }
+    }
+
+    SharedLogVariableDataPtrT pData = getLogVariablePtr(fullShortVarNameWithGen);
     if(!pData)
     {
-        HCOMERR("Variable not found: "+fullShortVarName);
+        HCOMERR("Variable not found: "+fullShortVarNameWithGen);
         return;
     }
 
-    if( allGens || (generation < 0) )
+    if( allGens )
     {
         if (pData->getLogDataHandler())
         {
-            pData->getLogDataHandler()->deleteVariable(pData->getLogVariableContainer()->getFullVariableName());
+            pData->getLogDataHandler()->deleteVariable(pData->getFullVariableName());
         }
     }
     else
@@ -2964,7 +2987,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         //Data variable, return it
         timer.tic();
         QStringList variables;
-        getLogVariables(expr,variables);
+        getMatchingLogVariableNames(expr,variables);
         timer.toc("getVariables", 1);
         if(variables.size() == 1)
         {
@@ -3717,7 +3740,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             QString var = lines[l].section(" ",1,1);
             QString filter = lines[l].section(" ",2,2);
             QStringList vars;
-            getLogVariables(filter, vars);
+            getMatchingLogVariableNames(filter, vars);
             QStringList loop;
             timer.toc("runScriptCommand: foreach getVariables");
             while(!lines[l].startsWith("endforeach"))
@@ -3977,7 +4000,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
 //! @param str String to look for
 //! @param variables Reference to list of found variables
-void HcomHandler::getLogVariables(QString str, QStringList &rVariables) const
+void HcomHandler::getMatchingLogVariableNames(QString str, QStringList &rVariables, const bool doAppendGen) const
 {
     rVariables.clear();
 
@@ -3989,84 +4012,121 @@ void HcomHandler::getLogVariables(QString str, QStringList &rVariables) const
     LogDataHandler *pLogDataHandler = pSystem->getLogDataHandler();
 
 
-    QVector<int> desiredGens;
-
+    bool parsedGen=false;
+    int desiredGen = -2; // -2 = all (in this case)
     if(str.endsWith(".L"))
     {
-        desiredGens.append(pLogDataHandler->getLowestGenerationNumber());
+        desiredGen = pLogDataHandler->getLowestGenerationNumber();
         str.chop(2);
-        //str.append(QString::number(lowestGeneration+1));
+        parsedGen=true;
+
     }
     else if(str.endsWith(".H"))
     {
-        desiredGens.append(pLogDataHandler->getHighestGenerationNumber());
+        desiredGen = pLogDataHandler->getHighestGenerationNumber();
         str.chop(2);
-        //str.append(QString::number(highestGeneration+1));
+        parsedGen=true;
     }
     else if (str.endsWith(".*"))
     {
-        int lowestGeneration, highestGeneration;
-        // Fetch lowest and highest generation, Note! fetching lowest/highest generation is slow (has to search through all variables)
-        pLogDataHandler->getLowestAndHighestGenerationNumber(lowestGeneration, highestGeneration);
-        desiredGens = linspace(lowestGeneration, highestGeneration);
-
-        str.chop(2);
-        str.append("*");
+        if (str.count(".") > 2)
+        {
+            // Means all gens (the default behavior)
+            str.chop(2);
+            parsedGen=true;
+        }
     }
     else
     {
         QStringList fields = str.split('.');
         if (fields.size() > 0)
         {
-            bool isOK;
+            bool isOK=false;
             int g = fields.last().toInt(&isOK);
             if (isOK)
             {
                 //! @todo what about handling zero, maybe should disp nothing
-                desiredGens.append(qMax(g-1, -1));
+                desiredGen = qMax(g-1, -1);
                 str.truncate(str.lastIndexOf('.'));
+                parsedGen=true;
             }
         }
-    }
-
-    // Make sure we take latest if no gen specified
-    if (desiredGens.isEmpty())
-    {
-        desiredGens.append(-1);
     }
 
     // Convert to long name to be able to search
     toLongDataNames(str);
 
-    const QVector<LogVariableContainer*> data_ptrs = pLogDataHandler->getMultipleLogVariableContainerPtrs(QRegExp(str,Qt::CaseSensitive,QRegExp::Wildcard));
-    for (int i=0; i<desiredGens.size(); ++i)
+    // Search for variable names, use regexp search if * pressent, elese use direct name lookup
+    QList<LogVariableContainer*> container_ptrs;
+    if (str.contains("*"))
     {
-        //! @todo maybe check generations in here, but then display order will be different, It should be more efficient to only loop over gens that actually exist for each var
-        int desiredGen = desiredGens[i];
-        for (int j=0; j<data_ptrs.size(); ++j)
+        container_ptrs = pLogDataHandler->getMultipleLogVariableContainerPtrs(QRegExp(str,Qt::CaseSensitive,QRegExp::Wildcard));
+    }
+    else
+    {
+        LogVariableContainer *pContainer = pLogDataHandler->getLogVariableContainer(str);
+        if (pContainer)
         {
-            if ( (desiredGen<0) || (data_ptrs[j]->hasDataGeneration(desiredGen)) )
-            {
-                if (desiredGen<0)
-                {
-                    desiredGen = data_ptrs[j]->getHighestGeneration();
-                }
+            container_ptrs.append(pContainer);
+        }
+    }
 
+
+    // Search again for alias case
+    bool searchedAgain= false;
+    if ( !parsedGen && (str.count("#") == 1) && (str.endsWith("#*")))
+    {
+        str.chop(2);
+        container_ptrs.append(pLogDataHandler->getMultipleLogVariableContainerPtrs(QRegExp(str,Qt::CaseSensitive,QRegExp::Wildcard)));
+        searchedAgain = true;
+    }
+
+    for (int c=0; c<container_ptrs.size(); ++c)
+    {
+        QList<SharedLogVariableDataPtrT> pDatas;
+
+        if (desiredGen == -2)
+        {
+            pDatas.append(container_ptrs[c]->getAllDataGenerations());
+        }
+        else
+        {
+            // Handle gens -1 (latest), and all actual gens
+            pDatas.append(container_ptrs[c]->getDataGeneration(desiredGen));
+        }
+
+        for (int d=0; d<pDatas.size(); ++d)
+        {
+            // Prevent processing null returns from appends above
+            if (!pDatas[d].isNull())
+            {
                 QString shortName;
-                if (data_ptrs[j]->getAliasName().isEmpty())
+                if (pDatas[d]->getAliasName().isEmpty())
                 {
-                    shortName = data_ptrs[j]->getFullVariableName();
+                    shortName = pDatas[d]->getFullVariableName();
                 }
                 else
                 {
-                    shortName = data_ptrs[j]->getAliasName();
+                    shortName = pDatas[d]->getAliasName();
                 }
 
                 toShortDataNames(shortName);
-                rVariables.append(shortName+"."+QString::number(desiredGen+1));
+                if (doAppendGen)
+                {
+                    rVariables.append(shortName+"."+QString::number(pDatas[d]->getGeneration()+1));
+                }
+                else
+                {
+                    rVariables.append(shortName);
+                }
             }
         }
-        //! @todo check if alias names works
+    }
+
+    // If we searched twice we may have found duplicates, remove them
+    if (searchedAgain)
+    {
+        rVariables.removeDuplicates();
     }
 
 //    // Generate list over ALL variables at ALL generations
@@ -4194,7 +4254,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         if (mAnsType!=Scalar)
         {
             QStringList vars;
-            getLogVariables(left, vars);
+            getMatchingLogVariableNames(left, vars);
             if(!vars.isEmpty())
             {
                 HCOMERR("Not very clever to assign a data vector with a scalar.");
@@ -4292,83 +4352,86 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @brief Returns a pointer to a data variable for given full data name
 //! @param fullName Full concatinated name of the variable
 //! @returns Pointer to the data variable
-SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullName) const
+SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullShortName) const
 {
     if(gpModelHandler->count() == 0)
     {
         return SharedLogVariableDataPtrT(0);
     }
 
-    fullName.replace(".","#");
-
     int generation=-1;
     // Separate generation from name if generation number was given, else use default generation -1
-    if(fullName.count("#") == 1 || fullName.count("#") == 3)
+    if(fullShortName.count(".") == 1 || fullShortName.count(".") == 3)
     {
         //! @todo handle .L .H
-        const QString genText = fullName.split("#").last();
+        const QString genText = fullShortName.split("#").last();
         generation = genText.toInt()-1;      //Subtract 1 due to zero indexing
-        fullName.chop(genText.size()+1);
+        fullShortName.chop(genText.size()+1);
     }
 
-    //! @todo isnt there a help function for this ???
-    if(fullName.endsWith("#x"))
-    {
-        fullName.chop(2);
-        fullName.append("#Position");
-    }
-    else if(fullName.endsWith("#v"))
-    {
-        fullName.chop(2);
-        fullName.append("#Velocity");
-    }
-    else if(fullName.endsWith("#f"))
-    {
-        fullName.chop(2);
-        fullName.append("#Force");
-    }
-    else if(fullName.endsWith("#p"))
-    {
-        fullName.chop(2);
-        fullName.append("#Pressure");
-    }
-    else if(fullName.endsWith("#q"))
-    {
-        fullName.chop(2);
-        fullName.append("#Flow");
-    }
-    else if(fullName.endsWith("#val"))
-    {
-        fullName.chop(4);
-        fullName.append("#Value");
-    }
-    else if(fullName.endsWith("#Zc"))
-    {
-        fullName.chop(3);
-        fullName.append("#CharImpedance");
-    }
-    else if(fullName.endsWith("#c"))
-    {
-        fullName.chop(2);
-        fullName.append("#WaveVariable");
-    }
-    else if(fullName.endsWith("#me"))
-    {
-        fullName.chop(3);
-        fullName.append("#EquivalentMass");
-    }
-    else if(fullName.endsWith("#Q"))
-    {
-        fullName.chop(2);
-        fullName.append("#HeatFlow");
-    }
-    else if(fullName.endsWith("#t"))
-    {
-        fullName.chop(2);
-        fullName.append("#Temperature");
-    }
+    // Convert to long name
+    toLongDataNames(fullShortName);
 
-    return gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(fullName,generation);
+//    fullShortName.replace(".","#");
+
+//    //! @todo isnt there a help function for this ???
+//    if(fullShortName.endsWith("#x"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#Position");
+//    }
+//    else if(fullShortName.endsWith("#v"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#Velocity");
+//    }
+//    else if(fullShortName.endsWith("#f"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#Force");
+//    }
+//    else if(fullShortName.endsWith("#p"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#Pressure");
+//    }
+//    else if(fullShortName.endsWith("#q"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#Flow");
+//    }
+//    else if(fullShortName.endsWith("#val"))
+//    {
+//        fullShortName.chop(4);
+//        fullShortName.append("#Value");
+//    }
+//    else if(fullShortName.endsWith("#Zc"))
+//    {
+//        fullShortName.chop(3);
+//        fullShortName.append("#CharImpedance");
+//    }
+//    else if(fullShortName.endsWith("#c"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#WaveVariable");
+//    }
+//    else if(fullShortName.endsWith("#me"))
+//    {
+//        fullShortName.chop(3);
+//        fullShortName.append("#EquivalentMass");
+//    }
+//    else if(fullShortName.endsWith("#Q"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#HeatFlow");
+//    }
+//    else if(fullShortName.endsWith("#t"))
+//    {
+//        fullShortName.chop(2);
+//        fullShortName.append("#Temperature");
+//    }
+
+    return gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getLogVariableDataPtr(fullShortName,generation);
 }
 
 
@@ -4399,83 +4462,94 @@ double HcomHandler::getNumber(const QString str, bool *ok)
 }
 
 
-//! @brief Converts long data names to short data names (e.g. "Pressure" -> "p")
-//! @param variable Reference to variable string
-void HcomHandler::toShortDataNames(QString &variable) const
+//! @brief Converts long data names to short data names (e.g. "Component#Port#Pressure" -> "Component.Port.p")
+//! @param rName Reference to variable name string
+void HcomHandler::toShortDataNames(QString &rName) const
 {
-    variable.replace("#",".");
+    rName.replace("#",".");
 
-    if(variable.endsWith(".Position"))
+    int li = rName.lastIndexOf(".");
+    if (li>=0)
     {
-        variable.chop(9);
-        variable.append(".x");
+        QList<QString> shortVarName = gLongShortNameConverter.longToShort(rName.right(rName.size()-li-1));
+        if (!shortVarName.isEmpty())
+        {
+            rName.chop(rName.size()-li-1);
+            rName.append(shortVarName.first());
+        }
     }
-    else if(variable.endsWith(".Velocity"))
-    {
-        variable.chop(9);
-        variable.append(".v");
-    }
-    else if(variable.endsWith(".Force"))
-    {
-        variable.chop(6);
-        variable.append(".f");
-    }
-    else if(variable.endsWith(".Pressure"))
-    {
-        variable.chop(9);
-        variable.append(".p");
-    }
-    else if(variable.endsWith(".Flow"))
-    {
-        variable.chop(5);
-        variable.append(".q");
-    }
-    else if(variable.endsWith(".Value"))
-    {
-        variable.chop(6);
-        variable.append(".val");
-    }
-    else if(variable.endsWith(".CharImpedance"))
-    {
-        variable.chop(14);
-        variable.append(".Zc");
-    }
-    else if(variable.endsWith(".WaveVariable"))
-    {
-        variable.chop(13);
-        variable.append(".c");
-    }
-    else if(variable.endsWith(".EquivalentMass"))
-    {
-        variable.chop(15);
-        variable.append(".me");
-    }
-    else if(variable.endsWith(".HeatFlow"))
-    {
-        variable.chop(9);
-        variable.append(".Q");
-    }
-    else if(variable.endsWith(".Temperature"))
-    {
-        variable.chop(12);
-        variable.append(".t");
-    }
+
+//    if(variable.endsWith(".Position"))
+//    {
+//        variable.chop(9);
+//        variable.append(".x");
+//    }
+//    else if(variable.endsWith(".Velocity"))
+//    {
+//        variable.chop(9);
+//        variable.append(".v");
+//    }
+//    else if(variable.endsWith(".Force"))
+//    {
+//        variable.chop(6);
+//        variable.append(".f");
+//    }
+//    else if(variable.endsWith(".Pressure"))
+//    {
+//        variable.chop(9);
+//        variable.append(".p");
+//    }
+//    else if(variable.endsWith(".Flow"))
+//    {
+//        variable.chop(5);
+//        variable.append(".q");
+//    }
+//    else if(variable.endsWith(".Value"))
+//    {
+//        variable.chop(6);
+//        variable.append(".val");
+//    }
+//    else if(variable.endsWith(".CharImpedance"))
+//    {
+//        variable.chop(14);
+//        variable.append(".Zc");
+//    }
+//    else if(variable.endsWith(".WaveVariable"))
+//    {
+//        variable.chop(13);
+//        variable.append(".c");
+//    }
+//    else if(variable.endsWith(".EquivalentMass"))
+//    {
+//        variable.chop(15);
+//        variable.append(".me");
+//    }
+//    else if(variable.endsWith(".HeatFlow"))
+//    {
+//        variable.chop(9);
+//        variable.append(".Q");
+//    }
+//    else if(variable.endsWith(".Temperature"))
+//    {
+//        variable.chop(12);
+//        variable.append(".t");
+//    }
 }
 
 
-
-void HcomHandler::toLongDataNames(QString &var) const
+//! @brief Converts short data names to long data names (e.g. "Component.Port.p" -> "Component#Port#Pressure")
+void HcomHandler::toLongDataNames(QString &rName) const
 {
-    var.replace(".", "#");
-    var.remove("\"");
+    rName.replace(".", "#");
+    rName.remove("\"");
 
-    if (var.count("#") > 1)
+    if ((rName.count("#") > 1) && !rName.endsWith("#*") )
     {
         QList<QString> longNames;
-        int li = var.lastIndexOf("#");
+        int li = rName.lastIndexOf("#");
         if (li>=0)
         {
-            QString shortName = var.right(var.size()-li-1);
+            QString shortName = rName.right(rName.size()-li-1);
             if (shortName.endsWith("*"))
             {
                 longNames = gLongShortNameConverter.shortToLong(QRegExp(shortName, Qt::CaseSensitive, QRegExp::Wildcard));
@@ -4488,8 +4562,8 @@ void HcomHandler::toLongDataNames(QString &var) const
 
         if (!longNames.isEmpty())
         {
-            var.chop(var.size()-li-1);
-            var.append(longNames[0]);
+            rName.chop(rName.size()-li-1);
+            rName.append(longNames[0]);
 
             //! @todo what if we get multiple matches
             if (longNames.size()>1)

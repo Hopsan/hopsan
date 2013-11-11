@@ -1035,6 +1035,11 @@ SharedLogVariableDataPtrT LogVariableContainer::getDataGeneration(const int gen)
     return mDataGenerations.value(gen, SharedLogVariableDataPtrT(0));
 }
 
+QList<SharedLogVariableDataPtrT> LogVariableContainer::getAllDataGenerations() const
+{
+    return mDataGenerations.values();
+}
+
 bool LogVariableContainer::hasDataGeneration(const int gen)
 {
     return mDataGenerations.contains(gen);
