@@ -5,12 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#ifdef USETBB
-#include "mutex.h"
-#include "atomic.h"
-#include "tick_count.h"
-#include "task_group.h"
-#else
+#ifndef USETBB
 namespace tbb {
 class mutex;
 }

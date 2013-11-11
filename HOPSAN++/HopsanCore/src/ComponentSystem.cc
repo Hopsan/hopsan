@@ -39,11 +39,7 @@
 #include "ComponentUtilities/num2string.hpp"
 
 #ifdef USETBB
-#include "mutex.h"
-#include "atomic.h"
-#include "tick_count.h"
-#include "task_group.h"
-#include "parallel_for.h"
+#include "tbb/parallel_for.h"
 #endif
 
 using namespace std;

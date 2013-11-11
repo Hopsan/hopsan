@@ -40,7 +40,7 @@ defineReplace(setTBBWindowsPathInfo){
             magic_hopsan_libpath *= -L$${libDir} -ltbb
             files = tbb.dll
         }
-        magic_hopsan_includepath *= $${TBB_PATH}/include/tbb
+        magic_hopsan_includepath *= $${TBB_PATH}/include
         magic_hopsan_qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
     }
 
@@ -56,7 +56,7 @@ defineReplace(setTBBWindowsPathInfo){
             magic_hopsan_libpath *= -L$${libDir} -ltbb
             files = tbb.dll
         }
-        magic_hopsan_includepath *= $${TBB_PATH}/include/tbb
+        magic_hopsan_includepath *= $${TBB_PATH}/include
         magic_hopsan_qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
     }
 

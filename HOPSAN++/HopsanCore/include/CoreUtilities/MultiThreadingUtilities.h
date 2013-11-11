@@ -10,11 +10,11 @@
 #include <vector>
 
 #ifdef USETBB
-#include "atomic.h"
-#include "blocked_range.h"
-#include "mutex.h"
-#include "task_group.h"
-#include "tick_count.h"
+#include "tbb/atomic.h"
+#include "tbb/blocked_range.h"
+#include "tbb/mutex.h"
+#include "tbb/task_group.h"
+#include "tbb/tick_count.h"
 #endif
 
 #include "Component.h"

@@ -28,7 +28,7 @@
 #include <cstdlib>
 
 #ifdef USETBB
-#include "mutex.h"
+#include "tbb/mutex.h"
 #endif
 
 using namespace std;
