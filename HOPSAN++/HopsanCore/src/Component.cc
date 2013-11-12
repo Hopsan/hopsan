@@ -1446,6 +1446,22 @@ HString Component::findFilePath(const HString &rFileName)
     return fullPath;
 }
 
+void Component::reInitializeValuesFromNodes()
+{
+    addErrorMessage("reInitializeValuesFromNodes() is not implemented in component.");
+    stopSimulation();
+
+    return;
+}
+
+void Component::solveSystem()
+{
+    addErrorMessage("solveSystem() is not implemented in component.");
+    stopSimulation();
+
+    return;
+}
+
 double Component::getStateVariableDerivative(int)
 {
     addErrorMessage("getStateVariableDerivative() is not implemented in component.");

@@ -609,7 +609,16 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
     //Generate C++ code from Modelica if source files are Modelica code
     Q_FOREACH(const QString &caf, lib.cafFiles)
     {
-        QString path = QFileInfo(lib.xmlFilePath).path();
+        QString path;
+        if(QFileInfo(lib.xmlFilePath).isFile())
+        {
+            path = QFileInfo(lib.xmlFilePath).path();
+        }
+        else
+        {
+            QString path = QFileInfo(lib.xmlFilePath+"/").path();
+        }
+        qDebug() << "PATH: " << path;
         QFile cafFile(caf);
         cafFile.open(QFile::ReadOnly);
         QString code = cafFile.readAll();
@@ -617,6 +626,7 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
         QString sourceFile = code.section("sourcecode=\"",1,1).section("\"",0,0);
         if(sourceFile.endsWith(".mo"))
         {
+            qDebug() << "GENERATING: " << path+"/"+sourceFile;
             coreGenerator.generateFromModelica(path+"/"+sourceFile, showDialog, solver, false);
         }
     }

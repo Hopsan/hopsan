@@ -193,6 +193,8 @@ public:
     HString findFilePath(const HString &rFileName);
 
     //Numerical integration members
+    virtual void reInitializeValuesFromNodes();
+    virtual void solveSystem();
     virtual double getStateVariableDerivative(int /*i*/);
     virtual double getStateVariableSecondDerivative(int /*i*/);
 

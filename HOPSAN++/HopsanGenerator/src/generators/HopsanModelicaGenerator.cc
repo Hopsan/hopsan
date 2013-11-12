@@ -1445,50 +1445,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
     }
 
-    if(!jacobian.isEmpty())
-    {
-        for(int i=0; i<systemVars.size(); ++i)
-        {
-            comp.simEquations << "stateVariables["+QString::number(i)+"] = "+systemVars[i].toString()+";";
-        }
-
-        comp.simEquations << "";
-        comp.simEquations << "    //System Equations";
-        for(int i=0; i<systemEquations.size(); ++i)
-        {
-            QString equationStr = systemEquations[i].toString();
-            for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
-            {
-                equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
-            }
-            comp.simEquations << "    systemEquations["+QString::number(i)+"] = "+equationStr+";";
-   //         comp.simEquations << "    "+systemVars[i]+" = " + resEquations[i]+";";
-        }
-        comp.simEquations << "";
-        comp.simEquations << "    //Jacobian Matrix";
-        for(int i=0; i<systemEquations.size(); ++i)
-        {
-            for(int j=0; j<systemVars.size(); ++j)
-            {
-                QString elementStr = jacobian[i][j].toString();
-                for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
-                {
-                    elementStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
-                }
-                comp.simEquations << "    jacobianMatrix["+QString::number(i)+"]["+QString::number(j)+"] = "+elementStr+";";
-            }
-        }
-
-        comp.simEquations << "";
-        comp.simEquations << "    //Solving equation using LU-faktorisation";
-        comp.simEquations << "    mpSystemSolver->solve();";
-        comp.simEquations << "";
-        for(int i=0; i<systemVars.size(); ++i)
-        {
-            comp.simEquations << "    "+systemVars[i].toString()+"=stateVariables["+QString::number(i)+"];";
-        }
-    }
-
     Q_FOREACH(const Expression &equation, afterSolverEquations)
     {
         QString equationStr = equation.toString();
@@ -1515,6 +1471,85 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     }
 
     comp.finalEquations.append("delete mpSolver;");
+
+    comp.auxiliaryFunctions.append("");
+    comp.auxiliaryFunctions.append("void reInitializeValuesFromNodes()");
+    comp.auxiliaryFunctions.append("{");
+    QString readInputs;
+    int portId=1;
+    for(int i=0; i<comp.portNames.size(); ++i)
+    {
+        QStringList varNames;
+        if(comp.portNodeTypes[i] == "NodeSignal")
+        {
+            varNames << comp.portNames[i];
+        }
+        else
+        {
+            varNames << GeneratorNodeInfo(comp.portNodeTypes[i]).qVariables << GeneratorNodeInfo(comp.portNodeTypes[i]).cVariables;
+        }
+
+        for(int v=0; v<varNames.size(); ++v)
+        {
+            QString varName;
+            if(comp.portNodeTypes[i] == "NodeSignal")
+                varName = varNames[v];
+            else
+                varName = varNames[v] + QString::number(portId);
+            comp.auxiliaryFunctions.append("    "+varName+" = (*mpND_"+varName+");");
+        }
+        ++portId;
+    }
+    comp.auxiliaryFunctions.append("}");
+
+    comp.auxiliaryFunctions.append("");
+    comp.auxiliaryFunctions.append("void solveSystem()");
+    comp.auxiliaryFunctions.append("{");
+
+    if(!jacobian.isEmpty())
+    {
+        for(int i=0; i<systemVars.size(); ++i)
+        {
+            comp.auxiliaryFunctions << "    stateVariables["+QString::number(i)+"] = "+systemVars[i].toString()+";";
+        }
+
+        comp.auxiliaryFunctions << "";
+        comp.auxiliaryFunctions << "    //System Equations";
+        for(int i=0; i<systemEquations.size(); ++i)
+        {
+            QString equationStr = systemEquations[i].toString();
+            for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+            {
+                equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+            }
+            comp.auxiliaryFunctions << "    systemEquations["+QString::number(i)+"] = "+equationStr+";";
+   //         comp.auxiliaryFunctions << "    "+systemVars[i]+" = " + resEquations[i]+";";
+        }
+        comp.auxiliaryFunctions << "";
+        comp.auxiliaryFunctions << "    //Jacobian Matrix";
+        for(int i=0; i<systemEquations.size(); ++i)
+        {
+            for(int j=0; j<systemVars.size(); ++j)
+            {
+                QString elementStr = jacobian[i][j].toString();
+                for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+                {
+                    elementStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+                }
+                comp.auxiliaryFunctions << "    jacobianMatrix["+QString::number(i)+"]["+QString::number(j)+"] = "+elementStr+";";
+            }
+        }
+
+        comp.auxiliaryFunctions << "";
+        comp.auxiliaryFunctions << "    //Solving equation using LU-faktorisation";
+        comp.auxiliaryFunctions << "    mpSystemSolver->solve();";
+        comp.auxiliaryFunctions << "";
+        for(int i=0; i<systemVars.size(); ++i)
+        {
+            comp.auxiliaryFunctions << "    "+systemVars[i].toString()+"=stateVariables["+QString::number(i)+"];";
+        }
+    }
+    comp.auxiliaryFunctions.append("}");
 
     comp.auxiliaryFunctions.append("");
     comp.auxiliaryFunctions.append("double getStateVariableDerivative(int i)");
