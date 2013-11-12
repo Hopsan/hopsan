@@ -1142,7 +1142,7 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
     //! @todo maybe we should clear this allways and set up new, (this function is "loading" a new appearance)
     for(int i=0; i < mPoints.size()-1; ++i)
     {
-        if(rGeometries.empty())
+        if(rGeometries.empty() || rGeometries.size() < mPoints.size()-1)
         {
             if(mPoints[i].x() == mPoints[i+1].x())
                 mGeometries.push_back(Horizontal);
