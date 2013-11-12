@@ -263,13 +263,13 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
             }
             else if(xmlLines[l].trimmed().startsWith("<lib>"))
             {
-                name = xmlLines[l].section("<lib>",1,1).section("</lib>",0,0).section(".",0,0);
+                name = QString(LIBPREFIX)+xmlLines[l].section("<lib>",1,1).section("</lib>",0,0).section(".",0,0);
             }
         }
     }
     else
     {
-        name = QDir(path).dirName();
+        name = QString(LIBPREFIX)+QDir(path).dirName();
         ccFiles = QDir(path).entryList(QStringList() << "*.cc");
     }
 
@@ -288,6 +288,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     pGenerator->printMessage("\nCalling compiler utility:");
     pGenerator->printMessage("Path: "+path);
     pGenerator->printMessage("Objective: "+name);
+    qDebug() << "Objective: " << name;
     pGenerator->printMessage("Source files: "+c);
     pGenerator->printMessage("Includes: "+i);
     pGenerator->printMessage("Links: "+l+"\n");
@@ -345,6 +346,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     FILE *fp;
     char line[130];
     output.append("Compiler command: \""+gccCommand+"\"\n");
+    qDebug() << "Compiler command: \"" << gccCommand << "\"";
     fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
     if ( !fp )
     {
