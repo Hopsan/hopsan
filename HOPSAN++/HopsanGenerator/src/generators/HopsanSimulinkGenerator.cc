@@ -146,10 +146,10 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     }
 
     QFile portLabelsFile;
-    portLabelsFile.setFileName(savePath + "/HopsanSimulinkPortLabels.m");
+    portLabelsFile.setFileName(savePath + "/"+name+"PortLabels.m");
     if(!portLabelsFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open HopsanSimulinkPortLabels.m for writing.");
+        printErrorMessage("Failed to open "+name+"PortLabels.m for writing.");
         return;
     }
 
@@ -163,7 +163,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     }
 
 
-    printMessage("Writing HopsanSimulinkPortLabels.m...");
+    printMessage("Writing "+name+"PortLabels.m...");
 
 
     QTextStream portLabelsStream(&portLabelsFile);
@@ -360,7 +360,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QString wrapperReplace5;
     if(!disablePortLabels)
     {
-        wrapperReplace5 = "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script\n";
+        wrapperReplace5 = "    mexCallMATLAB(0, 0, 0, 0, \""+name+"PortLabels\");                              //Run the port label script\n";
     }
 
     QString wrapperReplace6;
@@ -633,7 +633,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
     if(!assertFilesExist(savePath, QStringList() << modelFile << "externalLibs.txt" <<
                      "HopsanCore.dll" << "HopsanCore.lib" << "HopsanCore.exp" << name+".cpp" <<
-                     "HopsanSimulinkCompile.m" << "HopsanSimulinkPortLabels.m"))
+                     "HopsanSimulinkCompile.m" << name+"PortLabels.m"))
     {
         return;
     }
@@ -648,6 +648,12 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     Q_UNUSED(compiler);
 
     printMessage("Initializing Simulink Co-Simulation Export");
+
+    QString name = pSystem->getName().c_str();
+    if(name.isEmpty())
+    {
+        name = "UnsavedHopsanModel";
+    }
 
     QDir saveDir;
     saveDir.setPath(savePath);
@@ -756,10 +762,10 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     }
 
     QFile portLabelsFile;
-    portLabelsFile.setFileName(savePath + "/HopsanSimulinkPortLabels.m");
+    portLabelsFile.setFileName(savePath + "/"+name+"PortLabels.m");
     if(!portLabelsFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open HopsanSimulinkPortLabels.m for writing.");
+        printErrorMessage("Failed to open "+name+"PortLabels.m for writing.");
         return;
     }
 
@@ -773,7 +779,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     }
 
 
-    printMessage("Writing HopsanSimulinkPortLabels.m");
+    printMessage("Writing "+name+"PortLabels.m");
 
 
     QTextStream portLabelsStream(&portLabelsFile);
@@ -980,7 +986,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     QString wrapperReplace6;
     if(!disablePortLabels)
     {
-        wrapperReplace6 = "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+        wrapperReplace6 = "    mexCallMATLAB(0, 0, 0, 0, \""+name+"PortLabels\");                              //Run the port label script";
     }
 
     QFile socketDeclarationTemplateFile(":templates/simulinkSocketDeclarationTemplate.cpp");
