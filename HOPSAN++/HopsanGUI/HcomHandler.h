@@ -50,14 +50,15 @@ public:
     HcomHandler(TerminalConsole *pConsole);
 
     // Command functions
-    void executeCommand(QString cmd);
-
-    // Public access functions
     QStringList getCommands() const;
+    void executeCommand(QString cmd);
     QString runScriptCommands(QStringList &lines, bool *pAbort);
-    SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName) const;
+
+    // Public variable access functions
     QMap<QString, double> getLocalVariables() const;
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
+    SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
+    SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName) const;
 
     // Public utilities
     void toShortDataNames(QString &rName) const;
@@ -153,7 +154,7 @@ private:
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;
-    void getMatchingLogVariableNames(QString str, QStringList &rVariables, const bool doAppendGen=true) const;
+    void getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const;
     void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);

@@ -38,6 +38,15 @@
 class PlotWindow;
 class ContainerObject;
 
+class LogDataStructT
+{
+public:
+    LogDataStructT() : mpDataContainer(0), mIsAlias(false) {}
+    LogDataStructT(LogVariableContainer* pDataContainer, bool isAlias);
+    QPointer<LogVariableContainer> mpDataContainer;
+    bool mIsAlias;
+};
+
 class LogDataHandler : public QObject
 {
     Q_OBJECT
@@ -46,7 +55,7 @@ public:
     LogDataHandler(ContainerObject *pParent);
     ~LogDataHandler();
 
-    typedef QMap< QString, QPointer<LogVariableContainer> > LogDataMapT;
+    typedef QMap< QString, LogDataStructT > LogDataMapT;
     typedef QList<QVector<double> > TimeListT;
     typedef QList<VariableCommonDescription> FavoriteListT;
 
@@ -78,19 +87,30 @@ public:
     bool isEmpty();
     void clear();
 
+    LogVariableContainer* getLogVariableContainer(const QString &rFullName) const;
+    QList<LogVariableContainer*> getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const;
+    const QList<QPointer<LogVariableContainer> > getAllLogVariableContainers() const;
+
+    const LogDataStructT getCompleteLogVariableData(const QString &rName) const;
+    const QList<LogDataStructT> getAllCompleteLogVariableData() const;
+
+    QStringList getLogDataVariableNames(const QString &rSeparator, const int generation=-1) const;
+    void getLogDataVariableNamesWithHighestGeneration(const QString &rSeparator, QStringList &rNames, QList<int> &rGens) const;
+    QStringList getLogDataVariableFullNames(const QString &rSeparator, const int generation=-1) const;
+    bool hasLogVariableData(const QString &rFullName, const int generation=-1);
+
     const SharedLogVariableDataPtrT getTimeVectorPtr(int generation) const;
     QVector<double> copyTimeVector(const int generation) const;
+
     QVector<double> copyLogDataVariableValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     QVector<double> copyLogDataVariableValues(const QString &rName, const int generation);
     SharedLogVariableDataPtrT getLogVariableDataPtr(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedLogVariableDataPtrT getLogVariableDataPtr(const QString &rName, const int generation) const;
+
     QVector<SharedLogVariableDataPtrT> getMultipleLogVariableDataPtrs(const QRegExp &rNameExp, const int generation=-1) const;
-    QList<LogVariableContainer*> getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const;
-    LogVariableContainer* getLogVariableContainer(const QString &rFullName) const;
-    bool hasLogVariableData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtGeneration(const int generation) const;
-    QStringList getLogDataVariableNames(const QString &rSeparator, const int generation=-1) const;
+
     QList<QString> getImportedVariablesFileNames() const;
     QList<SharedLogVariableDataPtrT> getImportedVariablesForFile(const QString &rFileName);
 
@@ -98,8 +118,8 @@ public:
     bool definePlotAlias(const QString alias, const QString fullName);
     void undefinePlotAlias(const QString &rAlias);
 
-    QString getFullNameFromAlias(QString alias);
-    QString getAliasFromFullName(QString fullName);
+    QString getFullNameFromAlias(const QString &rAlias);
+    QString getAliasFromFullName(const QString &rFullName);
 
     QList<int> getGenerations() const;
     int getLowestGenerationNumber() const;
