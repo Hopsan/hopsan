@@ -332,11 +332,18 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     gccProcess.start("cmd.exe", QStringList() << "/c" << "compile.bat");
     gccProcess.waitForFinished();
     QByteArray gccResult = gccProcess.readAllStandardOutput();
+    QByteArray gccError = gccProcess.readAllStandardError();
     QList<QByteArray> gccResultList = gccResult.split('\n');
     for(int i=0; i<gccResultList.size(); ++i)
     {
         output = gccResultList.at(i);
-        output = output.remove(output.size()-1, 1);
+        //output = output.remove(output.size()-1, 1);
+    }
+    QList<QByteArray> gccErrorList = gccError.split('\n');
+    for(int i=0; i<gccErrorList.size(); ++i)
+    {
+        output = output+ gccErrorList.at(i);
+        //output = output.remove(output.size()-1, 1);
     }
 #elif linux
     QString gccCommand = "cd \""+path+"\" && gcc "+flags+" ";
@@ -364,7 +371,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
 
     QDir targetDir(path);
 #ifdef WIN32
-    if(!targetDir.exists(o + ".dll"))
+    if(!targetDir.exists(o + ".dll") || !gccErrorList.isEmpty())
     {
         output.append("Compilation failed.");
         return false;
