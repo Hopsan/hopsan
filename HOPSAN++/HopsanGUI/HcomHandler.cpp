@@ -2827,7 +2827,7 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
     SharedLogVariableDataPtrT pData = getLogVariablePtr(cmd);
     if(!pData)
     {
-        HCOMERR("Variable not found.");
+        HCOMERR(QString("Variable not found: %1").arg(cmd));
         return;
     }
     else
@@ -2926,7 +2926,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     // Check if "ans"
     if (expr == "ans")
     {
-        if (desiredType == mAnsType)
+        if (desiredType == mAnsType ||
+            (desiredType == Undefined && mAnsType != Undefined) )
         {
             return;
         }
@@ -4423,20 +4424,18 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             return false;
         }
 
-        double value;
         if(mAnsType==Scalar)
         {
-            value = mAnsScalar;
             QStringList pars;
             getParameters(left, pars);
             if(!pars.isEmpty())
             {
-                executeCommand("chpa "+left+" "+QString::number(value));
-                HCOMPRINT("Assigning "+left+" with "+QString::number(value));
+                executeCommand("chpa "+left+" "+QString::number(mAnsScalar));
+                HCOMPRINT("Assigning "+left+" with "+QString::number(mAnsScalar));
                 return true;
             }
-            mLocalVars.insert(left, value);
-            HCOMPRINT("Assigning "+left+" with "+QString::number(value));
+            mLocalVars.insert(left, mAnsScalar);
+            HCOMPRINT("Assigning "+left+" with "+QString::number(mAnsScalar));
             return true;
         }
         else if(mAnsType==DataVector)
@@ -4508,7 +4507,7 @@ SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullShortName, 
     if(fullShortName.count(".") == 1 || fullShortName.count(".") == 3)
     {
         //! @todo handle .L .H
-        const QString genText = fullShortName.split("#").last();
+        const QString genText = fullShortName.split(".").last();
         generation = genText.toInt()-1;      //Subtract 1 due to zero indexing
         fullShortName.chop(genText.size()+1);
     }
