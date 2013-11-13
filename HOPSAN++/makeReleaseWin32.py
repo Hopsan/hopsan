@@ -9,8 +9,8 @@ from time import sleep
 devversion="0.7."
 tempDir=r'C:\temp_release'
 scriptFile="HopsanReleaseInnoSetupScript.iss"
-dependecyBinFile32=r'.\hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z'
-dependecyBinFile64=r'.\hopsan_bincontents64_Qt485_MinGW64_481_OpenSSL101e.7z'
+dependecyBinFile32=r'hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z'
+dependecyBinFile64=r'hopsan_bincontents64_Qt485_MinGW64_481_OpenSSL101e.7z'
 
 # External programs
 inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
@@ -453,12 +453,16 @@ def buildRelease():
     
 
 def runValidation():
+    print "Running validation tests"
     os.chdir(hopsanDir)
     return subprocess.call("runValidationTests.bat nopause") == 0
     
     
 def copyFiles():
     global dodevrelease
+
+    # Make sure we are in the hopsan root
+    os.chdir(hopsanDir)
     
     #Create a temporary release directory
     callMkdir(tempDir)
@@ -481,17 +485,6 @@ def copyFiles():
     
     #Copy "bin" folder to temporary directory
     callXcopy(r'bin\*.*', tempDirBin)
-##    callXcopy(r'bin\*.dll', tempDirBin)
-##    callXcopy(r'bin\*.a', tempDirBin)
-##    callXcopy(r'bin\*.lib', tempDirBin)
-##    callXcopy(r'bin\*.exp', tempDirBin)
-        
-##    #Delete unwanted (debug) files from temporary directory
-##    callDel(tempDirBin+r'\*_d.exe')
-##    callDel(tempDirBin+r'\*_d.a')
-##    callDel(tempDirBin+r'\*_d.dll')
-##    callDel(tempDirBin+r'\tbb_debug.dll')
-##    callDel(tempDirBin+r'\qwtd.dll')
 
     #Build user documentation
     os.system("buildUserDocumentation")
@@ -551,6 +544,9 @@ def copyFiles():
     
     
 def createInstallFiles():
+
+    # Make sure we are in the hopsan root
+    os.chdir(hopsanDir)
 
     if do64BitRelease:
         zipFile=r'Hopsan-'+version+r'-win64-zip.zip'
@@ -687,12 +683,7 @@ if success:
 
 if success:
     #Unpack depedency bin files to bin folder without asking stupid questions, we do this in the build step to have a run-able compiled version before running tests
-    call7z(r'x '+quotePath(hopsanDir+dependecyBinFile)+r' -o'+quotePath(hopsanDir+r'\bin')+r' -y')
-
-if success:
-    if (not runValidation()) and pauseOnFailValidation:
-        printWarning("Compilation script failed in model validation.")
-        askYesNoQuestion("Press enter to continue!")
+    call7z(r'x '+quotePath(hopsanDir+"\\"+dependecyBinFile)+r' -o'+quotePath(hopsanDir+r'\bin')+r' -y')
 
 if success:
     if not createCleanOutputDirectory():
@@ -710,6 +701,11 @@ if success:
         success = False
         cleanUp()
         printError("Compilation script failed while generating install files.")
+
+if success:
+    if (not runValidation()) and pauseOnFailValidation:
+        printWarning("Compilation script failed in model validation.")
+        askYesNoQuestion("Press enter to continue!")
         
 if success:
     cleanUp()
