@@ -2934,6 +2934,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         else
         {
             mAnsType = Undefined;
+            return;
         }
     }
 
@@ -2998,20 +2999,11 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     if(desiredType != Scalar)
     {
         //Data variable, return it
-        timer.tic();
-        QStringList variables;
-        getMatchingLogVariableNames(expr,variables);
-        timer.toc("getVariables", 1);
-        if(variables.size() == 1)
+        SharedLogVariableDataPtrT data = getLogVariablePtr(expr);
+        if(data)
         {
             mAnsType = DataVector;
-            mAnsVector = getLogVariablePtr(expr);
-            return;
-        }
-        else if(!variables.isEmpty())
-        {
-            mAnsType = Wildcard;
-            mAnsWildcard = expr;
+            mAnsVector = data;
             return;
         }
     }
@@ -4399,9 +4391,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
         if (mAnsType==Scalar)
         {
-            QStringList vars;
-            getMatchingLogVariableNames(left, vars);
-            if(!vars.isEmpty())
+            SharedLogVariableDataPtrT data = getLogVariablePtr(left);
+            if(data)
             {
                 HCOMERR("Not very clever to assign a data vector with a scalar.");
                 return true;
