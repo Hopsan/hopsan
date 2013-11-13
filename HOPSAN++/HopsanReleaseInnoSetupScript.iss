@@ -3,7 +3,7 @@
 
 #define MyAppName "Hopsan"
 #define MyAppPublisher "Linköping University"
-#define MyAppURL "http://www.iei.liu.se/flumes/hopsanng"
+#define MyAppURL "http://www.iei.liu.se/flumes/hopsan"
 #define MyAppExeName "HopsanGUI.exe"
 
 [Setup]
@@ -13,11 +13,11 @@
 AppId={{02E63B1C-D08C-4377-952C-A5E22EE620DC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+ArchitecturesInstallIn64BitMode={#MyArchitecture}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
@@ -36,7 +36,7 @@ DirExistsWarning=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[messages]
+[Messages]
 DirExists=The folder:%n%n%1%n%nalready exists. All previous contents will be removed! Would you like to install to that folder anyway?
 
 [CustomMessages]

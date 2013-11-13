@@ -555,9 +555,11 @@ def createInstallFiles():
     if do64BitRelease:
         zipFile=r'Hopsan-'+version+r'-win64-zip.zip'
         exeFileName=r'Hopsan-'+version+r'-win64-installer'
+        innoArch=r'x64'
     else:
         zipFile=r'Hopsan-'+version+r'-win32-zip.zip'
         exeFileName=r'Hopsan-'+version+r'-win32-installer'
+        innoArch=r'' #Should be empty for 32-bit
 
     exeFile=exeFileName+r'.exe'
     
@@ -572,7 +574,7 @@ def createInstallFiles():
         
     #Execute Inno compile script
     print "Generating install executable..."
-    innocmd=r' /o"output" /f"'+exeFileName+r'" /dMyAppVersion="'+version+r'" '+scriptFile  
+    innocmd=r' /o"output" /f"'+exeFileName+r'" /dMyAppVersion="'+version+r'" /dMyArchitecture="'+innoArch+r'" '+scriptFile  
     #print innocmd
     callEXE(innoDir+r'\iscc.exe', innocmd)
     if not fileExists(r'output/'+exeFile):
