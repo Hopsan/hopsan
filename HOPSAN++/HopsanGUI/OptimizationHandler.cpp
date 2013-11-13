@@ -269,6 +269,7 @@ void OptimizationHandler::optComplexRun()
         mOptWorstCounter=0;
         while(mOptLastWorstId == wid)
         {
+            //mpHcomHandler->executeCommand("echo on");
             optPlotPoints();
 
             qApp->processEvents();
@@ -312,6 +313,7 @@ void OptimizationHandler::optComplexRun()
 
             ++mOptWorstCounter;
             ++i;
+            //mpHcomHandler->executeCommand("echo off");
         }
 
         optPlotParameters();

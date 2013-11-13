@@ -43,6 +43,8 @@ class HcomHandler : public QObject
     friend class TerminalWidget;
     friend class TerminalConsole;
 public:
+    typedef QMap<QString, double> LocalVarsMapT;
+
     // Enums
     enum VariableType{Scalar, DataVector, Wildcard, Undefined};
 
@@ -55,7 +57,7 @@ public:
     QString runScriptCommands(QStringList &lines, bool *pAbort);
 
     // Public variable access functions
-    QMap<QString, double> getLocalVariables() const;
+    LocalVarsMapT getLocalVariables() const;
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
     SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
     SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName) const;
@@ -159,7 +161,7 @@ private:
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
-    double getNumber(const QString str, bool *ok);
+    double getNumber(const QString &rStr, bool *pOk);
     QString getDirectory(const QString &cmd) const;
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
@@ -179,7 +181,7 @@ private:
     QString mCurrentPlotWindowName;
 
     // Local variables
-    QMap<QString, double> mLocalVars;
+    LocalVarsMapT mLocalVars;
     QMap<QString, SymHop::Function> mLocalFunctionPtrs;
     QMap<QString, QString> mLocalFunctionDescriptions;
 

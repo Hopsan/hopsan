@@ -148,7 +148,6 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 {
     mAnsType = Undefined;
     mAborted = false;
-    mLocalVars.insert("ans", 0);
     mRetvalType = Scalar;
 
     mpConsole = pConsole;
@@ -677,7 +676,7 @@ QStringList HcomHandler::getCommands() const
 
 
 //! @brief Returns a map with all local variables and their values
-QMap<QString, double> HcomHandler::getLocalVariables() const
+HcomHandler::LocalVarsMapT HcomHandler::getLocalVariables() const
 {
     return mLocalVars;
 }
@@ -2439,13 +2438,13 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         if(split.size() == 4 && split[1] == "obj")
         {
             bool ok;
-            int nPoint = getNumber(split[2], &ok);
+            int idx = getNumber(split[2], &ok);
             if(!ok)
             {
                 HCOMERR("Argument number 2 must be a number.");
                 return;
             }
-            if(nPoint < 0 || nPoint > mpOptHandler->mOptNumPoints-1)
+            if(idx < 0 || idx > mpOptHandler->mOptNumPoints-1)
             {
                 HCOMERR("Index out of range.");
                 return;
@@ -2458,19 +2457,19 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 return;
             }
 
-            mpOptHandler->mOptObjectives[nPoint] = val;
+            mpOptHandler->mOptObjectives[idx] = val;
             return;
         }
         else if(split.size() == 5 && split[1] == "limits")
         {
             bool ok;
-            int nPoint = getNumber(split[2], &ok);
+            int optParIdx = getNumber(split[2], &ok);
             if(!ok)
             {
                 HCOMERR("Argument number 2 must be a number.");
                 return;
             }
-            if(nPoint < 0 || nPoint > mpOptHandler->mOptNumParameters-1)
+            if(optParIdx < 0 || optParIdx > mpOptHandler->mOptNumParameters-1)
             {
                 HCOMERR("Index out of range.");
                 return;
@@ -2491,8 +2490,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 return;
             }
 
-            mpOptHandler->mOptParMin[nPoint] = min;
-            mpOptHandler->mOptParMax[nPoint] = max;
+            mpOptHandler->mOptParMin[optParIdx] = min;
+            mpOptHandler->mOptParMax[optParIdx] = max;
             return;
         }
         else if(split.size() == 3 && split[1] == "plotpoints")
@@ -2924,6 +2923,19 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
     }
 
+    // Check if "ans"
+    if (expr == "ans")
+    {
+        if (desiredType == mAnsType)
+        {
+            return;
+        }
+        else
+        {
+            mAnsType = Undefined;
+        }
+    }
+
     if(desiredType != DataVector)
     {
         //Numerical value, return it
@@ -2937,7 +2949,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
 
         //Pre-defined variable, return its value
-        QMap<QString, double>::iterator it = mLocalVars.find(expr);
+        LocalVarsMapT::iterator it = mLocalVars.find(expr);
         if(it != mLocalVars.end())
         {
             mAnsType = Scalar;
@@ -4425,7 +4437,6 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             }
             mLocalVars.insert(left, value);
             HCOMPRINT("Assigning "+left+" with "+QString::number(value));
-            mLocalVars.insert("ans", value);
             return true;
         }
         else if(mAnsType==DataVector)
@@ -4582,29 +4593,32 @@ SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullShortName) 
 
 
 //! @brief Parses a string into a number
-//! @param str String to parse, should be a number of a variable name
-//! @param ok Pointer to boolean that tells if parsing was successful
-double HcomHandler::getNumber(const QString str, bool *ok)
+//! @param rStr String to parse, should be a number of a variable name
+//! @param pOk Pointer to boolean that tells if parsing was successful
+double HcomHandler::getNumber(const QString &rStr, bool *pOk)
 {
-    *ok = true;
-    if(str.toDouble())
+    const double val = rStr.toDouble(pOk);
+    if(*pOk)
     {
-        return str.toDouble();
+        return val;
     }
-    else if(mLocalVars.contains(str))
+
+    *pOk=true;
+    LocalVarsMapT::iterator it=mLocalVars.find(rStr);
+    if(it!=mLocalVars.end())
     {
-        return mLocalVars.find(str).value();
+        return it.value();
     }
     else
     {
-        evaluateExpression(str, Scalar);
+        evaluateExpression(rStr, Scalar);
         if(mAnsType==Scalar)
         {
             return mAnsScalar;
         }
     }
-    *ok = false;
-    return 0;
+    *pOk = false;
+    return -1;
 }
 
 
