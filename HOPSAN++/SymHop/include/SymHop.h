@@ -61,7 +61,8 @@ public:
     static Expression fromFunctionArguments(const QString function, const QList<Expression> arguments);
     static Expression fromEquation(const Expression left, const Expression right);
 
-    double evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHop::Function> &functions = QMap<QString, SymHop::Function>()) const;
+    double evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHop::Function> &functions /* = QMap<QString, SymHop::Function>() */) const;
+    // magse says: QMap is a derived type, you can't have reference this way.
 
     void replaceBy(Expression const expr);
     void divideBy(Expression const div);
