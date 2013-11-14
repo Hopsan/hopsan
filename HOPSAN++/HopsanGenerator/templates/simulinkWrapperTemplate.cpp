@@ -104,7 +104,7 @@ static void mdlInitializeSampleTimes(SimStruct *S)
     //Update tunable parameters
     const mxArray* in;
     const char* c_str;
-    std::string str;
+    HString str;
 <<<6>>>
 
 
