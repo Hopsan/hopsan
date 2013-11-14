@@ -1498,7 +1498,20 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.auxiliaryFunctions.append("");
     comp.auxiliaryFunctions.append("void solveSystem()");
     comp.auxiliaryFunctions.append("{");
-
+    if(!initAlgorithms.isEmpty())
+    {
+        comp.auxiliaryFunctions.append("");
+        comp.auxiliaryFunctions.append("    //Initial algorithm section");
+    }
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        //! @todo Convert everything to C++ syntax
+        QString initEq = initAlgorithms[i];
+        initEq.replace(":=", "=");
+        initEq.append(";");
+        comp.auxiliaryFunctions.append("    "+initEq);
+    }
+    comp.auxiliaryFunctions.append("");
     if(!jacobian.isEmpty())
     {
         for(int i=0; i<systemVars.size(); ++i)
@@ -1541,6 +1554,19 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         {
             comp.auxiliaryFunctions << "    "+systemVars[i].toString()+"=stateVariables["+QString::number(i)+"];";
         }
+    }
+    comp.auxiliaryFunctions.append("");
+    if(!finalAlgorithms.isEmpty())
+    {
+        comp.auxiliaryFunctions.append("");
+        comp.auxiliaryFunctions.append("    //Final algorithm section");
+    }
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        //! @todo Convert everything to C++ syntax
+        QString finalEq = finalAlgorithms[i];
+        finalEq.replace(":=", "=");
+        comp.auxiliaryFunctions.append("    "+finalEq+";");
     }
     comp.auxiliaryFunctions.append("}");
 
