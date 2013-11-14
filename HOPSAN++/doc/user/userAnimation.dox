@@ -1,5 +1,5 @@
 /*!
-\page userAnimation Animation
+\page userAnimationPage Animation
 
 Hopsan models can be animated, either in real-time or as replays. Animation is accessed through the Animate icon in the simulation toolbar, or from the menues.
 

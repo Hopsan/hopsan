@@ -1,5 +1,5 @@
 /*!
-\page devHopsanCoreRequirements HopsanCore Dependence Libraries
+\page devHopsanCoreRequirementsPage HopsanCore Dependence Libraries
 HopsanCore depends on one external library for multi threaded simulations. Here is a description on how to build or install it.\n
 If TBB is not found by qmake, then the core will be compiled without multi-threading support.
 

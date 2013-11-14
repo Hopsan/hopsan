@@ -1,5 +1,5 @@
 /*!
-\page userModelingInHopsan Component Modeling in Hopsan
+\page userModelingInHopsanPage Component Modeling in Hopsan
 
 \section userModelingInHopsan_CompPortsAndNodes Components, Ports and Nodes
 A Hopsan model consists of components. Each component have one or more ports, which can be connected to ports on other components. A connection is represented in the simulation core by a node object, where the simulation variables are stored. If one port is connected to several other ports, all these connections will share the same node object. This means that all ports that are connected also share the same data. A consequence of this is that if two ports are connected, it does not matter from which port a plot is created, it will show the same data.

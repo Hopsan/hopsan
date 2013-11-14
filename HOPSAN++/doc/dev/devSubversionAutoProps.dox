@@ -1,9 +1,9 @@
 /*!
-\page devSubversionAutoProps Activating Auto-Props in you Subversion client configuration
+\page devSubversionAutoPropsPage Activating Auto-Props in you Subversion client configuration
 If you are going to contribute code to the Hopsan subversion repository you should enable auto-props.
 This means that if you add new files some necessary file properties for those files will automatically be added. Without auto-props you would need to remember to add them manually on every new file (which you will likely forget most of the time). 
 
-\section devSubversionAutoProps-TortoiseSVN Activating auto-props in TortoiseSVN on Windows
+\section devAutoProps-TortoiseSVN Activating auto-props in TortoiseSVN on Windows
 -# Right-click on the to level folder of your working copy. Select TortoiseSVN->Settings
 -# Under General settings you will find "Subversion configuration file:" press the edit button.
 -# A text file (the config file) will open in a text editor. Find the line "# enable-auto-props = yes" and uncomment it, also remove the whitespace.
@@ -25,7 +25,7 @@ This means that if you add new files some necessary file properties for those fi
 \endverbatim 
 -# Save the file and you are Done!
 
-\section devSubversionAutoProps-Linux Activating auto-props under Linux
+\section devAutoProps-Linux Activating auto-props under Linux
 -# Locate your subversion client config file, its locations should be ~/.subversion/config
 -# Find the line "# enable-auto-props = yes" and uncomment it, also remove the whitespace. 
 -# Add the lines shown above under the "[auto-props]" section.

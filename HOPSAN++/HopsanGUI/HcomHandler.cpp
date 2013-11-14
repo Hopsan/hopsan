@@ -3576,7 +3576,6 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             lines[l] = lines[l].right(lines[l].size()-1);
         }
 
-        TicToc bigtimer;
         // Check how each line starts call appropriate commands
         if(lines[l].isEmpty() || lines[l].startsWith("#") || lines[l].startsWith("&"))
         {
@@ -3741,20 +3740,18 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
         }
         else if(lines[l].startsWith("foreach"))        //Handle foreach loops
         {
-            TicToc timer;
             QString var = lines[l].section(" ",1,1);
             QString filter = lines[l].section(" ",2,2);
             QStringList vars;
             getMatchingLogVariableNames(filter, vars);
             QStringList loop;
-            timer.toc("runScriptCommand: foreach getVariables");
             while(!lines[l].startsWith("endforeach"))
             {
                 ++l;
                 loop.append(lines[l]);
             }
             loop.removeLast();
-            timer.tic();
+            TicToc timer;
             for(int v=0; v<vars.size(); ++v)
             {
                 //Append quotations around spaces
@@ -3794,10 +3791,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
         }
         else
         {
-            bigtimer.toc("Now we have reached this->executeCommand(lines[l])",1);
-            TicToc timer;
             this->executeCommand(lines[l]);
-            timer.toc("runScriptCommand: this->executeCommand(lines[l])");
         }
     }
     return QString();
@@ -4186,6 +4180,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @param [out] rVariables Reference to list that will contain the found variable names with generation appended
 void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const
 {
+    TicToc timer;
     rVariables.clear();
 
     // Abort if no model found
@@ -4304,6 +4299,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             }
         }
     }
+    timer.toc("getMatchingLogVariableNames("+pattern+")");
 }
 
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)

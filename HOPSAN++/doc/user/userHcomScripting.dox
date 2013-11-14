@@ -1,5 +1,5 @@
 /*!
-\page userHcomScripting HCOM Scripting
+\page userHcomScriptingPage HCOM Scripting
 Most functions in Hopsan can be accessed through the command interpreter in the terminal widget. The command language is called HCOM and is lously based upon the commands used in the previous version of Hopsan. Apart from the commands and functions, there is a built-in calculator that can evaluate mathematical expressions using the SymHop library.
 
 \section simulationcommands Simulation Commands

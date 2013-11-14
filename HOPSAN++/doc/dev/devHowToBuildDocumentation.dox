@@ -1,5 +1,5 @@
 /*!
-\page devHowtoBuildDocumentation How to Build the Documentation
+\page devHowtoBuildDocumentationPage How to Build the Documentation
 The Hopsan Documentation is based on Doxygen. You are only required to install Doxygen, the other tools are optional.\n
 Graphviz and dvipng (with latex) are used to show pretty dependence graphs and latex equations in the documentation.\n
 If you want to build a pdf manual than latex must be installed (and pdf activated in the Doxyfile)

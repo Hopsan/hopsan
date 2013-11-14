@@ -1,5 +1,5 @@
 /*!
-\page userFrequencyAnalysis Frequency Analysis
+\page userFrequencyAnalysisPage Frequency Analysis
 
 Hopsan has built-in tools for Nyquist diagrams, Bode plots and frequency spectrums.
 

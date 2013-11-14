@@ -1,5 +1,5 @@
 /*!
-\page userEnergyLosses Energy Losses Estimation
+\page userEnergyLossesPage Energy Losses Estimation
 \todo write this
 
 Hopsan has a built-in tool for estimating energy efficiency and identifying power losses in a model. To use this, first simulate the model and then click the "Calculate Losses" icon:

@@ -186,10 +186,8 @@ void OptimizationHandler::optComplexRun()
     int percent=-1;
     for(; i<mOptMaxEvals && !mpHcomHandler->isAborted(); ++i)
     {
-        timer2.tic(QString("**************** Starting OptLoop %1").arg(i));
+        timer2.tic(QString("******************* Starting OptLoop %1").arg(i));
 
-        TicToc timer;
-        timer.tic("¤¤¤ optComplexRun Begin some stuff");
         //Plot optimization points
         optPlotPoints();
 
@@ -246,10 +244,10 @@ void OptimizationHandler::optComplexRun()
             mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
         }
         newPoint = mOptParameters[wid]; //Remember the new point, in case we need to iterate below
-        timer.toc("¤¤¤ optComplexRun End some stuff");
 
         //Evaluate new point
-        timer.tic("+++Begin Evaluate new point");
+        TicToc timer;
+        timer.tic("+++++++++ Begin Evaluate new point");
         mpHcomHandler->executeCommand("call evalworst");
         if(mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
@@ -257,7 +255,7 @@ void OptimizationHandler::optComplexRun()
             mpConsole->print("Optimization aborted.");
             return;
         }
-        timer.toc("+++Evaluate new point");
+        timer.toc("+++++++++ End Evaluate new point");
 
         //Calculate best and worst points
         mOptLastWorstId=wid;
@@ -265,7 +263,7 @@ void OptimizationHandler::optComplexRun()
         wid = mOptWorstId;
 
         //Iterate until worst point is no longer the same
-        timer.tic("-Begin Iterate until worst point is no longer the same");
+        timer.tic("--------- Begin Iterate until worst point is no longer the same");
         mOptWorstCounter=0;
         while(mOptLastWorstId == wid)
         {
@@ -318,8 +316,8 @@ void OptimizationHandler::optComplexRun()
 
         optPlotParameters();
 
-        timer.toc("-Iterate until worst point is no longer the same");
-        timer2.toc(QString("****************OptLoop %1").arg(i));
+        timer.toc("--------- End Iterate until worst point is no longer the same");
+        timer2.toc(QString("******************* OptLoop %1").arg(i));
         qDebug() << "\n";
     }
 

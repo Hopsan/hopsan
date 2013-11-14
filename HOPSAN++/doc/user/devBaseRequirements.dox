@@ -1,5 +1,5 @@
 /*!
-\page devBaseRequirements Basic Requirements: Qt Creator, Qt libs and Compilers
+\page devBaseRequirementsPage Basic Requirements: Qt Creator, Qt libs and Compilers
 HopsanGUI uses the Qt-libs for the GUI components and qmake to generate makefiles. We are also using Qt Creator and qmake for HopsanCore even though it is not using any Qt-libraries. You need to install the appropriate Qt-libs and the Qt Creator IDE from http://qt-project.org/downloads
 
 \section qt-linux gcc in Ubuntu

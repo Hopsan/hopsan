@@ -1,5 +1,5 @@
 /*!
-\page userMultiThreaded Multi-Threaded Simulations
+\page userMultiThreadedPage Multi-Threaded Simulations
 \section multi-threaded-simulations Multi-threaded simulations
 Hopsan NG uses multi-threaded simulations to take advantage of so called multi-core architecture in modern processors. This is activated from the Options dialog. It is also possible to select how many threads that are to be used. By choosing zero threads, the simulation engine will automatically ask the operating system how many cores (or "hyperthreads") the computer has, and use this amount of threads. Using more threads than available processors will lock up the program. There is however a built-in limitation to prevent this, so it should never happen.
 

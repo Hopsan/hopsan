@@ -805,7 +805,6 @@ void LogVariableData::append(const double y)
 
 double LogVariableData::maxOfData(int &rIdx) const
 {
-    TicToc timer;
     rIdx = -1;
     double ret = -std::numeric_limits<double>::max();
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
@@ -818,7 +817,6 @@ double LogVariableData::maxOfData(int &rIdx) const
         }
     }
     mpCachedDataVector->endFullVectorOperation(pVector);
-    timer.toc("Actual max of data");
     return ret;
 }
 

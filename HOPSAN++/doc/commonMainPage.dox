@@ -2,32 +2,37 @@
 
 \if DEVELOPERDOCUMENTATION
 \mainpage Hopsan Manual
-- \subpage userDocumentation
-- \subpage devDocumentation
+- \subpage userGuidePage
+- \subpage componentDevelopmentPage
+- \subpage hopsanDevelopmentPage
 \else
 \mainpage User Manual
+- \subpage userGuidePage
+- \subpage componentDevelopmentPage
 \endif
+
+\page componentDevelopmentPage Component Library Development
+-# \subpage userTransmissionLineModelingMethodPage \n
+-# \subpage userModelingInHopsanPage \n
+-# \subpage devBaseRequirementsPage \n
+-# \subpage userCustomComponentsPage \n
+
+\page userGuidePage User Manual
+-# \subpage userGettingStartedPage \n
+-# \subpage userAnalysisToolsPage \n
+-# \subpage userModelExportPage \n
+-# \subpage userHcomScriptingPage \n
+-# \subpage userPythonScriptingPage \n
+-# \subpage userMultiThreadedPage \n
+-# \subpage userAcknowledgementsPage \n
 
 \if DEVELOPERDOCUMENTATION
-
-\page devDocumentation Developer Manual
--# \subpage devHowtoBuildDocumentation \n
--# \subpage devBuildHopsan \n
--# \subpage devCodingConventions \n
--# \subpage devSubversionAutoProps \n
-
-\page userDocumentation User Manual
-
+\page hopsanDevelopmentPage Hopsan Developer Manual
+-# \subpage devBaseRequirementsPage \n
+-# \subpage devHowtoBuildDocumentationPage \n
+-# \subpage devBuildHopsanPage \n
+-# \subpage devCodingConventionsPage \n
+-# \subpage devSubversionAutoPropsPage \n
 \endif
--# \subpage userGettingStarted \n
--# \subpage userAnalysisTools \n
--# \subpage userModelExport \n
--# \subpage userHcomScripting \n
--# \subpage userPythonScripting \n
--# \subpage userMultiThreaded \n
--# \subpage userTransmissionLineElementMethod \n
--# \subpage userModelingInHopsan \n
--# \subpage userCustomComponents \n
--# \subpage userAcknowledgements \n
 
 */

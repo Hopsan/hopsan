@@ -1,5 +1,5 @@
 /*!
-\page devHopsanGuiRequirements HopsanGUI Dependence libraries
+\page devHopsanGuiRequirementsPage HopsanGUI Dependence libraries
 HopsanGUI depends on some external libraries. Here is a description on how to build them.
 
 \section qwt Build Qwt - Qt Widgets for Technical Applications

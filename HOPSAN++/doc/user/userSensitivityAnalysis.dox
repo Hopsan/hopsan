@@ -1,5 +1,5 @@
 /*!
-\page userSensitivityAnalysis Sensitivity Analysis
+\page userSensitivityAnalysisPage Sensitivity Analysis
 Hopsan can perform Monte Carlo-based sensitivity analysis. This means many simulations are run of the same model, while one or more parameter(s) are changed randomly according to a normal distribution. With this method it is possible to analyze how robust a model is for uncertainties in input data.
 
 \section sensitivity-example Step-By-Step Example

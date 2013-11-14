@@ -1,11 +1,11 @@
 /*!
-\page userAnalysisTools Analysis Tools
+\page userAnalysisToolsPage Analysis Tools
 Hopsan contains several tools that can be used to analyse models or visualize simulation results. 
 
--# \subpage userOptimization \n
--# \subpage userSensitivityAnalysis \n
--# \subpage userEnergyLosses \n
--# \subpage userFrequencyAnalysis \n
--# \subpage userAnimation \n
+-# \subpage userOptimizationPage \n
+-# \subpage userSensitivityAnalysisPage \n
+-# \subpage userEnergyLossesPage \n
+-# \subpage userFrequencyAnalysisPage \n
+-# \subpage userAnimationPage \n
 
 */

@@ -1,5 +1,5 @@
 /*!
-\page devHopsanCLIRequirements HopsanCLI Dependence Libraries
+\page devHopsanCLIRequirementsPage HopsanCLI Dependence Libraries
 HopsanCLI depends on the Templatized C++ Command Line Parser Library for convenient commandline argument parsing.
 
 \section tclap Templatized C++ Command Line Parser Library

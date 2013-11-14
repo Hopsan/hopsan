@@ -1,6 +1,6 @@
 namespace hopsan::Component {
 /*!
-\page userCustomComponents Custom Components & Libraries
+\page userCustomComponentsPage Custom Components & Libraries
 
 -# \subpage introduction-component-libraries \n
 -# \subpage creating-modifying-component-appearance \n
