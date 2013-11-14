@@ -96,7 +96,8 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, bool c
     for(int l=0; l<lines.size(); ++l)
     {
         if(lines.at(l).contains("addPowerPort") || lines.at(l).contains("addReadPort") || lines.at(l).contains("addWritePort") ||
-           lines.at(l).contains("addPowerMultiPort") || lines.at(l).contains("addReadMultiPort"))
+           lines.at(l).contains("addPowerMultiPort") || lines.at(l).contains("addReadMultiPort") ||
+           lines.at(l).contains("addInputVariable") || lines.at(l).contains("addOutputVariable"))
         {
             portNames.append(lines.at(l).section("\"",1,1));
         }

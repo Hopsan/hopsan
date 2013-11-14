@@ -262,12 +262,14 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     {
         if(!coreAccess.loadComponentLib(newLib.libFilePath))
         {
+            gpTerminalWidget->checkMessages();
             gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+QFile(newLib.libFilePath).fileName());
             gpTerminalWidget->checkMessages();
             if(!newLib.sourceFiles.isEmpty())
             {
                 gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile...");
                 recompileLibrary(newLib,false);
+                gpTerminalWidget->checkMessages();
                 if(!coreAccess.loadComponentLib(newLib.libFilePath))
                 {
                     gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");

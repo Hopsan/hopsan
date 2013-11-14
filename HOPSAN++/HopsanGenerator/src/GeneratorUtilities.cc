@@ -342,6 +342,12 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     QList<QByteArray> gccErrorList = gccError.split('\n');
     for(int i=0; i<gccErrorList.size(); ++i)
     {
+        if(gccErrorList.at(i).trimmed() == "")
+        {
+            gccErrorList.removeAt(i);
+            --i;
+            continue;
+        }
         output = output+ gccErrorList.at(i);
         //output = output.remove(output.size()-1, 1);
     }
@@ -371,6 +377,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
 
     QDir targetDir(path);
 #ifdef WIN32
+
     if(!targetDir.exists(o + ".dll") || !gccErrorList.isEmpty())
     {
         output.append("Compilation failed.");
