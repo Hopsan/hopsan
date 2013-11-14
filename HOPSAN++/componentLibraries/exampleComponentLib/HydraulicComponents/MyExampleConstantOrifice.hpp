@@ -15,8 +15,8 @@
 
 // Header guard to avoid inclusion of the same code twice
 // Every hpp file in your library need to have its own UNIQUE header guard
-#ifndef MYEXAMPLEORIFICE_H
-#define MYEXAMPLEORIFICE_H
+#ifndef MYEXAMPLECONSTANTORIFICE_H
+#define MYEXAMPLECONSTANTORIFICE_H
 
 // Include the necessary header files from Hopsan
 #include "ComponentEssentials.h"
@@ -26,11 +26,11 @@ namespace hopsan {
 
 // Define a new Class that inherits from ComponentC, ComponentQ or ComponentS
 // This depends on the type of component you want to create, a C, Q or signal component
-class MyExampleOrifice : public ComponentQ
+class MyExampleConstantOrifice : public ComponentQ
 {
 private:
     // Private member variables
-    double *mpKc;
+    double mKc;
     Port *mpP1, *mpP2;
 
 public:
@@ -38,7 +38,7 @@ public:
     // This static function is mandatory
     static Component *Creator()
     {
-        return new MyExampleOrifice();
+        return new MyExampleConstantOrifice();
     }
 
     // The Configure function that is run ONCE when a new object of the class is created
@@ -51,8 +51,8 @@ public:
         mpP1 = addPowerPort("P1", "NodeHydraulic", "Port 1");
         mpP2 = addPowerPort("P2", "NodeHydraulic", "Port 2");
 
-        // Add inputVariable, if the port is not connected the default value is used
-        addInputVariable("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", 1.0e-11, &mpKc);
+        // Add constant
+        addConstant("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", 1.0e-11, mKc);
     }
 
     // The initialize function is called before simulation begins.
@@ -74,10 +74,9 @@ public:
         const double Zc1 = mpP1->readNode(NodeHydraulic::CharImpedance);
         const double c2 = mpP2->readNode(NodeHydraulic::WaveVariable);
         const double Zc2 = mpP2->readNode(NodeHydraulic::CharImpedance);
-        const double Kc = (*mpKc); //Copy directly from data ptr
 
         //Orifice equations
-        double q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
+        double q2 = mKc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
         double q1 = -q2;
         double p1 = c1 + q1*Zc1;
         double p2 = c2 + q2*Zc2;
@@ -109,4 +108,4 @@ public:
 
 }
 
-#endif // MYEXAMPLEORIFICE_H
+#endif // MYEXAMPLECONSTANTORIFICE_H

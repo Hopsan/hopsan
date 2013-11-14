@@ -17,6 +17,7 @@
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
 #include "HydraulicComponents/MyExampleOrifice.hpp"
+#include "HydraulicComponents/MyExampleConstantOrifice.hpp"
 #include "HydraulicComponents/MyExampleVolume.hpp"
 #include "HydraulicComponents/MyExampleVolume2.hpp"
 #include "SignalComponents/SignalSum.hpp"
@@ -41,6 +42,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     // If that name is already in use, use something similar
 
     pComponentFactory->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
+    pComponentFactory->registerCreatorFunction("MyExampleConstantOrifice", MyExampleConstantOrifice::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleVolume2", MyExampleVolume2::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleSignalSum", SignalSum::Creator);
@@ -55,8 +57,8 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
 extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
 {
-    //Change the name of the lib to something unique
-    //You can include numbers in your name to indicate library version (if you want)
+    // Change the name of the lib to something unique
+    // You can include numbers in your name to indicate library version (if you want)
     pHopsanExternalLibInfo->libName = (char*)"HopsanExampleComponentLibrary";
 
     // Leave these two lines as they are

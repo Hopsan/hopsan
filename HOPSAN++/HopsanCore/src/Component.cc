@@ -415,7 +415,6 @@ void Component::addConditionalConstant(const HString &rName, const HString &rDes
     rData=0;    //Always initialize conditionals with first condition
     registerConditionalParameter(rName, rDescription, rConditions, rData);
 }
-
 ///@}
 
 ///@{

@@ -22,7 +22,7 @@ LIBS *= -L$${PWD}/../../bin
 
 # Special options for deug and release mode. This will link the correct HopsanCore .dll or .so
 # In debug mode HopsanCore has the debug extension _d
-include(hopsanDebugReleaseCompile.prf)
+include(hopsanDebugReleaseCompile.pri)
 
 # Reduce compile output clutter, but show warnings
 CONFIG += silent warn_on
@@ -40,8 +40,9 @@ HEADERS += \
     HydraulicComponents/MyExampleVolume.hpp \
     HydraulicComponents/MyExampleOrifice.hpp \
     SignalComponents/SignalSum.hpp \
-    HydraulicComponents/MyExampleVolume2.hpp
+    HydraulicComponents/MyExampleVolume2.hpp \
+    HydraulicComponents/MyExampleConstantOrifice.hpp
 
 OTHER_FILES += \
-    hopsanDebugReleaseCompile.prf
+    hopsanDebugReleaseCompile.pri
 

@@ -1,32 +1,74 @@
 /*!
-\page devBaseRequirementsPage Basic Requirements: Qt Creator, Qt libs and Compilers
-HopsanGUI uses the Qt-libs for the GUI components and qmake to generate makefiles. We are also using Qt Creator and qmake for HopsanCore even though it is not using any Qt-libraries. You need to install the appropriate Qt-libs and the Qt Creator IDE from http://qt-project.org/downloads
+\page devBaseRequirementsPage Basic Requirements: Compilers and Qt Libraries
+HopsanGUI uses the Qt libraries for the GUI components and qmake to generate makefiles. We are also using Qt Creator and qmake for HopsanCore even though it is not using the Qt-libraries. You need to install the appropriate Qt-libs and the Qt Creator IDE from http://qt-project.org/downloads
 
-\section qt-linux gcc in Ubuntu
-On Linux based operating systems you should use the gcc compiler. To install gcc (and some other tools) in Ubuntu run "apt-get install build-essential".
-You should use the Qt-libs in you distribution package repository and install Qt Creator separately from http://qt-project.org/downloads. Make sure that you install the Qt development packages, "apt-get install libqt4-dev qt4-dev-tools".
+\section devBaseRequirementsPage-Windows Development for Microsoft Windows
 
+\subsection devBaseRequirementsPage-Windows-mingw MinGW (gcc in Windows)
+This guide tells you how to install the Qt Development Environment and Compilers, used for:
+1. Development of the Hopsan program 
+2. Development of Hopsan component libraries
 
-\section qt-mingw MinGW (gcc in Windows)
-As of Hopsan version 0.6.0 you must use "Qt libraries for windows 4.8.4 (MinGW)".
-You will also need a special version, MinGW-gcc440_1, with Qt specific patches.
-Finally, with newer versions of Qt Creator you will also need a special version of gdb.
-You can find the necessary files here, https://www.dropbox.com/sh/3ve9b7oqsdnwta2/7XdjHUBkrp
+\subsubsection _mingwwindows32 32-bit MinGW
+This guide is relevant for Hopsan version 0.6.* 32-bit development.
+You do not need the Qt Development Environment if you only want to use the built in compilation feature in Hopsan, then you only need MinGW_4.4
 
-A short step by step description:
--# Unzip MinGW_4.4 (MinGW-gcc440_1.zip)
--# Download and install Qt libraries for windows 4.8.4 (MinGW) from http://qt-project.org/downloads
--# Download and install QtCreator version of your choice. (from http://qt-project.org/downloads)
--# In QtCreator, go to Tools->Options->Build&Run
-   -# Add your Qt version (if it not does not exist) by pointing to C:\Qt\4.8.4\bin\qmake.exe or similar
-   -# Make sure compilers are found under Compilers
-   -# Configure a kit (Combination of Qt version, compiler and Debugger), use GDB as debugger (you can find it in your MinGw folder). You should replace it with the (qtcreator-gdb-7.4-MINGW32_NT-6.1-i686.tar.gz) the old one does not work with newer Qt creator version.
--# Open HopsanNG.pro and configure your project by selecting Kit and shadow build directories for Release and Debug. (If you have an old HopsanNG.pro.user file *DO NOT LOAD IT*)
-   -# Before you can build Hopsan you need to setup the required dependencies.
+A specially patched MinGW version and a special debugger version is needed, for your convenience we have put the needed files here:
+https://www.dropbox.com/sh/3ve9b7oqsdnwta2/7XdjHUBkrp
 
+Installation:
+1. Unzip the Qt specific MinGW_4.4 (MinGW-gcc440_1.zip)
+   Recommended: Extract to `C:\Qt\MinGW-gcc440_1`
+2. Download and install Qt libraries for windows 4.8.5 (MinGW) from http://qt-project.org/downloads \n
+   The installer will ask for the location of your MinGW_4.4 installation
+3. Download and install QtCreator version of your choice from http://qt-project.org/downloads, (latest version is recommended)
 
-\section qt-msvcompiler MSVC++ (The Microsoft Visual C++ Compiler) 
-This guide descrubes what you need to install to be able to build MSVC2008 and MSVC2010 versions of the HopsanCore
+Configure QtCreator:
+1. In QtCreator, go to Tools->Options->Build&Run
+2. Add your "Qt Version" (if it does not exist) by pointing to `C:\Qt\4.8.5\bin\qmake.exe` or similar
+3. Make sure compilers are found under "Compilers", add it manually if not found, (point to `MinGW-gcc440_1\mingw32-make.exe`)
+4. Configure a "Kit" (Combination of Qt version, Compiler and Debugger), use GDB as debugger.
+5. \b Optional, (if you want to run debugger). Replace the debugger manually with the one in `qtcreator-gdb-7.4-MINGW32_NT-6.1-i686.tar.gz` the old one does not work with newer QtCreator versions.
+
+Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project (Select your Kit). 
+If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
+The project should now be configured automatically, but check the Projects tab on the left menu to be sure 
+
+\subsubsection _mingwwindows64 64-bit MinGW
+This guide is relevant for Hopsan version 0.6.* 64-bit development.
+If you want to compile 64-bit component libraries YOU MUST compile against a 64-bit version of Hopsan
+
+You do not need the Qt Development Environment if you only want to use the built in compilation feature in Hopsan, then you only need MinGW64
+
+Installation:
+1. Download "x64-Qt-4.8.5+qtcreator-2.8.0-RC-(gcc-4.8.1-seh-rev1).7z" from http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/
+2. Unzip the file (with 7-Zip), copy the directories mingw64 and Qt64-4.8.5 to your desired location. \n
+   Recommended: `c:\Qt\mingw64`  and  `c:\Qt\Qt64-4.8.5`
+3. Open a command prompt "Start->run->cmd" and navigate to your `C:\Qt\Qt64-4.8.5` directory (cd `c:\Qt\Qt64-4.8.5`) \n
+   Run the command "qtbinpatcher.exe --nobackup" to path the binaries
+4. Download and install a QtCreator version of your choice, (latest is recommended) (from http://qt-project.org/downloads) \n
+   \b Note! a 32-bit version will work fine, it is just the editor
+
+Configure QtCreator:
+1. In QtCreator, go to Tools->Options->Build&Run
+2. Add your "Qt Version" (if it does not exist) by pointing to `C:\Qt\Qt64-4.8.5\bin\qmake.exe` or similar \n
+   Select a clever name so that you know which Qt version is which (if you multiple versions installed)
+3. Make sure that the compiler is configured under "Compilers", add it manually if not found, (point to `C:\Qt\mingw64\bin\x86_64-w64-mingw32-g++.exe`) \n
+   Make sure to select a clever name (if you are using multiple compilers) so that you can easily identify which is which. \n
+   Switch to 64bit in the ABI field
+4. Configure a "Kit" (Combination of Qt version, Compiler and Debugger), use GDB (`C:\Qt\mingw64\bin\gdb.exe`) as debugger. \n
+   Again! Choose a clever name. \n
+   Set Qt mkspec: win32-g++-4.6 \n
+   YES! "win32-g++-4.6" is correct! \n
+   
+Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project (Select your Kit)
+If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
+The project should now be configured automatically, but check the Projects tab on the left menu to be sure
+
+\subsection _msvccompiler MSVC++ (The Microsoft Visual C++ Compiler) 
+This guide describes what you need to install to be able to build MSVC2008 and MSVC2010 versions of the HopsanCore
+If you do not need both of them, then read the guide first, then install the version that you want.
+The MSVC compiler is needed if you want to compile the HopsanCore or component libraries that works with certain other programs, such as Matlab/Simulink.
 
 <b>Do NOT!</b> install the Microsoft Visual Studio 2010 Express development environment, it will not work with the build scripts (at least on 64-bit Windows). You should use the Windows SDKs instead.
 
@@ -50,4 +92,11 @@ If you get an error about "cl.exe" not being found when building, then the "Visu
 To get a working MSVC debugger in Qt creator
 -# Go into Tools->Options->Debugger->Cdb and check the Cdb box. Now set the path to the Debugging tools for Windows 32-bit version. (Autodetect should work).
 -# If you want the debugger to automatically download debugger symbols for the Windows libraries, then create a folder, eg. "C:\websymbols" and add the following line to "Symbol Paths:" under the Cdb tab: "SRV*c:\websymbols*http://msdl.microsoft.com/download/symbols" (without quotes). You websymbols folder will act as a cache for symbol retreival.
+
+\section devBaseRequirementsPage-Ubuntu Development for *Ubuntu or any Debian based system
+
+\subsection qt-linux gcc in *Ubuntu / Debian
+On Linux based operating systems you should use the gcc compiler. To install gcc (and some other tools) in Ubuntu run `apt-get install build-essential`.
+You should use the Qt- libraries in you distribution package repository. Make sure that you install the Qt development packages, `apt-get install libqt4-dev qt4-dev-tools`. If you want a newer version of Qt Creator then what is available in your repository then you may install one from http://qt-project.org/downloads
+
 */
