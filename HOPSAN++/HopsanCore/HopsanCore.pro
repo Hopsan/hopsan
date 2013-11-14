@@ -80,7 +80,7 @@ unix {
     system($${PWD}/../getSvnRevision.sh include HOPSANCORESVNREVISION)
 }
 macx { 
-    INCLUDEPATH += /opt/local/include/tbb/
+    INCLUDEPATH += /opt/local/include/
     QMAKE_LIBDIR += /opt/local/lib/
 }
 
