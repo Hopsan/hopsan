@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5426" hopsancoreversion="0.6.x_r5425">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5442" hopsancoreversion="0.6.x_r5438">
   <requirements>
-    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     <componentlibrary>PettersComponentLibrary</componentlibrary>
   </requirements>
   <info/>
@@ -13,7 +12,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2426.03" y="2468.73" zoom="0.597271"/>
+      <viewport x="2404.27" y="2645.37" zoom="0.597271"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -147,6 +146,83 @@
           <parameter unit="-" value="0" type="double" name="wturbx::Value"/>
           <parameter unit="-" value="0" type="double" name="wturby::Value"/>
           <parameter unit="-" value="0" type="double" name="wturbz::Value"/>
+          <parameter unit="-" value="0.3" type="double" name="afin::Value"/>
+          <parameter unit="-" value="0.6" type="double" name="an1::Value"/>
+          <parameter unit="-" value="0.6" type="double" name="an2::Value"/>
+          <parameter unit="-" value="0.9" type="double" name="ap1::Value"/>
+          <parameter unit="-" value="0.7" type="double" name="ap2::Value"/>
+          <parameter unit="-" value="3.62" type="double" name="AR1::Value"/>
+          <parameter unit="-" value="3.62" type="double" name="AR2::Value"/>
+          <parameter unit="-" value="1.5" type="double" name="ARfin::Value"/>
+          <parameter unit="-" value="0.0045" type="double" name="Cd01::Value"/>
+          <parameter unit="-" value="0.0045" type="double" name="Cd02::Value"/>
+          <parameter unit="-" value="0.004" type="double" name="Cd0b::Value"/>
+          <parameter unit="-" value="0.0045" type="double" name="Cd0fin::Value"/>
+          <parameter unit="-" value="2.1" type="double" name="CLalpha1::Value"/>
+          <parameter unit="-" value="2.2" type="double" name="CLalpha2::Value"/>
+          <parameter unit="-" value="2" type="double" name="CLalphabh::Value"/>
+          <parameter unit="-" value="2" type="double" name="CLalphabv::Value"/>
+          <parameter unit="-" value="0.8" type="double" name="CLalphafin::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="CLde1::Value"/>
+          <parameter unit="-" value="0.2" type="double" name="CLde12::Value"/>
+          <parameter unit="-" value="0" type="double" name="Cdide1::Value"/>
+          <parameter unit="-" value="0" type="double" name="Cdide12::Value"/>
+          <parameter unit="-" value="0" type="double" name="Cdide112::Value"/>
+          <parameter unit="-" value="0.01" type="double" name="de10::Value"/>
+          <parameter unit="-" value="0.01" type="double" name="de120::Value"/>
+          <parameter unit="-" value="-0.1" type="double" name="Cm01::Value"/>
+          <parameter unit="-" value="-0.5" type="double" name="Cmfs1::Value"/>
+          <parameter unit="-" value="0.02" type="double" name="Cmde1::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="Cmde12::Value"/>
+          <parameter unit="-" value="0.0827084" type="double" name="CLdefin::Value"/>
+          <parameter unit="-" value="1" type="double" name="dah1::Value"/>
+          <parameter unit="-" value="0.6" type="double" name="dah2::Value"/>
+          <parameter unit="-" value="0.95" type="double" name="e1::Value"/>
+          <parameter unit="-" value="0.95" type="double" name="e2::Value"/>
+          <parameter unit="-" value="0.95" type="double" name="efin::Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awfin::Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awn1::Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awn2::Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awp1::Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awp2::Value"/>
+          <parameter unit="-" value="-0.0872665" type="double" name="gamma1::Value"/>
+          <parameter unit="-" value="-0.0872665" type="double" name="gamma2::Value"/>
+          <parameter unit="-" value="0" type="double" name="hthrust0::Value"/>
+          <parameter unit="-" value="0" type="double" name="ia1::Value"/>
+          <parameter unit="-" value="0.02" type="double" name="ia2::Value"/>
+          <parameter unit="-" value="0.0147" type="double" name="Ix0::Value"/>
+          <parameter unit="-" value="0.0055" type="double" name="Ixz0::Value"/>
+          <parameter unit="-" value="1.131" type="double" name="Iy0::Value"/>
+          <parameter unit="-" value="1.279" type="double" name="Iz0::Value"/>
+          <parameter unit="-" value="0.436332" type="double" name="lambda1::Value"/>
+          <parameter unit="-" value="0.436332" type="double" name="lambda2::Value"/>
+          <parameter unit="-" value="0.785398" type="double" name="lambdafin::Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lc10::Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lc20::Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lc120::Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lcfin0::Value"/>
+          <parameter unit="-" value="8700" type="double" name="Me::Value"/>
+          <parameter unit="-" value="0.25" type="double" name="rc10::Value"/>
+          <parameter unit="-" value="0.15" type="double" name="rc20::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="rcfin0::Value"/>
+          <parameter unit="-" value="27" type="double" name="S1::Value"/>
+          <parameter unit="-" value="0.36" type="double" name="S20::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="Sbh0::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="Sbv0::Value"/>
+          <parameter unit="-" value="0.17" type="double" name="Sfin0::Value"/>
+          <parameter unit="-" value="3" type="double" name="xbach0::Value"/>
+          <parameter unit="-" value="3" type="double" name="xbacv0::Value"/>
+          <parameter unit="-" value="3" type="double" name="xbcge0::Value"/>
+          <parameter unit="-" value="3" type="double" name="xcargo0::Value"/>
+          <parameter unit="-" value="3" type="double" name="xfuel0::Value"/>
+          <parameter unit="-" value="3" type="double" name="xw10::Value"/>
+          <parameter unit="-" value="4.8" type="double" name="xw20::Value"/>
+          <parameter unit="-" value="4.8" type="double" name="xwfin0::Value"/>
+          <parameter unit="-" value="4.8" type="double" name="xeng0::Value"/>
+          <parameter unit="-" value="0" type="double" name="yeng0::Value"/>
+          <parameter unit="-" value="9.81" type="double" name="g0::Value"/>
+          <parameter unit="-" value="10000" type="double" name="kground::Value"/>
+          <parameter unit="-" value="1000" type="double" name="cground::Value"/>
           <parameter unit="-" value="0" type="double" name="xcg::Value"/>
           <parameter unit="-" value="0" type="double" name="ycg::Value"/>
           <parameter unit="-" value="-500" type="double" name="zcg::Value"/>
@@ -176,83 +252,6 @@
           <parameter unit="-" value="0" type="double" name="Cd1::Value"/>
           <parameter unit="-" value="0" type="double" name="Fax::Value"/>
           <parameter unit="-" value="0" type="double" name="Faz::Value"/>
-          <parameter unit="rad" value="0.3" type="double" name="afin"/>
-          <parameter unit="rad" value="0.6" type="double" name="an1"/>
-          <parameter unit="rad" value="0.6" type="double" name="an2"/>
-          <parameter unit="rad" value="0.9" type="double" name="ap1"/>
-          <parameter unit="rad" value="0.7" type="double" name="ap2"/>
-          <parameter unit="" value="3.62" type="double" name="AR1"/>
-          <parameter unit="" value="3.62" type="double" name="AR2"/>
-          <parameter unit="" value="1.5" type="double" name="ARfin"/>
-          <parameter unit="" value="0.0045" type="double" name="Cd01"/>
-          <parameter unit="" value="0.0045" type="double" name="Cd02"/>
-          <parameter unit="" value="0.004" type="double" name="Cd0b"/>
-          <parameter unit="" value="0.0045" type="double" name="Cd0fin"/>
-          <parameter unit="" value="2.1" type="double" name="CLalpha1"/>
-          <parameter unit="" value="2.2" type="double" name="CLalpha2"/>
-          <parameter unit="" value="2" type="double" name="CLalphabh"/>
-          <parameter unit="" value="2" type="double" name="CLalphabv"/>
-          <parameter unit="" value="0.8" type="double" name="CLalphafin"/>
-          <parameter unit="" value="0.1" type="double" name="CLde1"/>
-          <parameter unit="" value="0.2" type="double" name="CLde12"/>
-          <parameter unit="" value="0" type="double" name="Cdide1"/>
-          <parameter unit="" value="0" type="double" name="Cdide12"/>
-          <parameter unit="" value="0" type="double" name="Cdide112"/>
-          <parameter unit="" value="0.01" type="double" name="de10"/>
-          <parameter unit="" value="0.01" type="double" name="de120"/>
-          <parameter unit="" value="-0.1" type="double" name="Cm01"/>
-          <parameter unit="" value="-0.5" type="double" name="Cmfs1"/>
-          <parameter unit="" value="0.02" type="double" name="Cmde1"/>
-          <parameter unit="" value="0.1" type="double" name="Cmde12"/>
-          <parameter unit="" value="0.0827084" type="double" name="CLdefin"/>
-          <parameter unit="" value="1" type="double" name="dah1"/>
-          <parameter unit="" value="0.6" type="double" name="dah2"/>
-          <parameter unit="" value="0.95" type="double" name="e1"/>
-          <parameter unit="" value="0.95" type="double" name="e2"/>
-          <parameter unit="" value="0.95" type="double" name="efin"/>
-          <parameter unit="" value="0.2" type="double" name="awfin"/>
-          <parameter unit="" value="0.2" type="double" name="awn1"/>
-          <parameter unit="" value="0.2" type="double" name="awn2"/>
-          <parameter unit="" value="0.2" type="double" name="awp1"/>
-          <parameter unit="" value="0.2" type="double" name="awp2"/>
-          <parameter unit="rad" value="-0.0872665" type="double" name="gamma1"/>
-          <parameter unit="rad" value="-0.0872665" type="double" name="gamma2"/>
-          <parameter unit="" value="0" type="double" name="hthrust0"/>
-          <parameter unit="rad" value="0" type="double" name="ia1"/>
-          <parameter unit=" rad" value="0.02" type="double" name="ia2"/>
-          <parameter unit=" " value="0.0022" type="double" name="Ix0"/>
-          <parameter unit=" " value="0.001" type="double" name="Ixz0"/>
-          <parameter unit=" " value="0.06" type="double" name="Iy0"/>
-          <parameter unit=" " value="0.08" type="double" name="Iz0"/>
-          <parameter unit="rad" value="0.436332" type="double" name="lambda1"/>
-          <parameter unit="rad" value="0.436332" type="double" name="lambda2"/>
-          <parameter unit="rad" value="0.785398" type="double" name="lambdafin"/>
-          <parameter unit="" value="0.005" type="double" name="lc10"/>
-          <parameter unit="" value="0.005" type="double" name="lc20"/>
-          <parameter unit="" value="0.005" type="double" name="lc120"/>
-          <parameter unit="" value="0.005" type="double" name="lcfin0"/>
-          <parameter unit="kg" value="8700" type="double" name="Me"/>
-          <parameter unit="" value="0.25" type="double" name="rc10"/>
-          <parameter unit="" value="0.15" type="double" name="rc20"/>
-          <parameter unit="" value="0.1" type="double" name="rcfin0"/>
-          <parameter unit="m2" value="27" type="double" name="S1"/>
-          <parameter unit="" value="0.36" type="double" name="S20"/>
-          <parameter unit="" value="0.1" type="double" name="Sbh0"/>
-          <parameter unit="" value="0.1" type="double" name="Sbv0"/>
-          <parameter unit="" value="0.17" type="double" name="Sfin0"/>
-          <parameter unit="" value="3" type="double" name="xbach0"/>
-          <parameter unit=" " value="3" type="double" name="xbacv0"/>
-          <parameter unit=" " value="3" type="double" name="xbcge0"/>
-          <parameter unit=" " value="3" type="double" name="xcargo0"/>
-          <parameter unit=" " value="3" type="double" name="xfuel0"/>
-          <parameter unit=" " value="3" type="double" name="xw10"/>
-          <parameter unit=" " value="4.8" type="double" name="xw20"/>
-          <parameter unit="" value="4.8" type="double" name="xwfin0"/>
-          <parameter unit="" value="4.8" type="double" name="xeng0"/>
-          <parameter unit="" value="0" type="double" name="yeng0"/>
-          <parameter unit="m/s^2" value="9.81" type="double" name="g0"/>
-          <parameter unit="N/m" value="10000" type="double" name="kground"/>
-          <parameter unit="Ns/m" value="1000" type="double" name="cground"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="vz"/>
@@ -329,7 +328,7 @@
           <port nodetype="NodeMechanicRotational" name="Pmr1"/>
         </ports>
         <hopsangui>
-          <pose x="2150.540002" y="2404.634503" flipped="false" a="0"/>
+          <pose x="2142.168593" y="2404.634503" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -356,16 +355,16 @@
           <parameter unit="-" value="0" type="double" name="uaerR::Value"/>
           <parameter unit="-" value="0" type="double" name="uelev::Value"/>
           <parameter unit="-" value="0" type="double" name="urud::Value"/>
-          <parameter unit="rad" value="2" type="double" name="Kphi"/>
-          <parameter unit="rad" value="5" type="double" name="Kphipsi"/>
-          <parameter unit="rad" value="1.5" type="double" name="Kelev"/>
-          <parameter unit="rad" value=".5" type="double" name="Kdelev"/>
-          <parameter unit="rad" value="5" type="double" name="Krud"/>
+          <parameter unit="rad" value="3" type="double" name="Kphi"/>
+          <parameter unit="rad" value="2" type="double" name="Kphipsi"/>
+          <parameter unit="rad" value="4" type="double" name="Kelev"/>
+          <parameter unit="rad" value="1" type="double" name="Kdelev"/>
+          <parameter unit="rad" value="1" type="double" name="Krud"/>
           <parameter unit="" value="1" type="double" name="Kdrud"/>
           <parameter unit="rad" value="-0.9" type="double" name="u1min"/>
           <parameter unit="rad" value="0.9" type="double" name="u1max"/>
           <parameter unit="rad" value="-0.7" type="double" name="u2min"/>
-          <parameter unit="rad" value="0.1" type="double" name="u2max"/>
+          <parameter unit="rad" value="0.7" type="double" name="u2max"/>
           <parameter unit="rad" value="-0.7" type="double" name="u3min"/>
           <parameter unit="rad" value="0.7" type="double" name="u3max"/>
           <parameter unit="m/s" value="100" type="double" name="U0"/>
@@ -476,7 +475,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2838.074415" y="2637.142953" flipped="false" a="0"/>
+          <pose x="2838.074415" y="2635.468671" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -524,6 +523,26 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component typename="SignalSink" name="Scope_5">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2772.610826" y="2599.229477" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_5">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <component typename="SignalSaturation" name="Saturation">
         <parameters>
           <parameter unit="-" value="0" type="double" name="in::Value"/>
@@ -540,26 +559,6 @@
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSaturation" displayname="Saturation">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component typename="SignalSink" name="Scope_5">
-        <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="in_right"/>
-          <port nodetype="NodeSignal" name="in"/>
-          <port nodetype="NodeSignal" name="in_bottom"/>
-        </ports>
-        <hopsangui>
-          <pose x="2772.610826" y="2599.229477" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalSink" displayname="Scope_5">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -596,7 +595,7 @@
           <port nodetype="NodeMechanicRotational" name="Pmr1"/>
         </ports>
         <hopsangui>
-          <pose x="2146" y="2430.759503" flipped="false" a="0"/>
+          <pose x="2144.325718" y="2430.759503" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -617,7 +616,7 @@
           <port nodetype="NodeMechanicRotational" name="Pmr1"/>
         </ports>
         <hopsangui>
-          <pose x="2142.310003" y="2456.884503" flipped="false" a="0"/>
+          <pose x="2143.984285" y="2456.884503" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -658,7 +657,7 @@
           <port nodetype="NodeMechanicRotational" name="Pmr1"/>
         </ports>
         <hopsangui>
-          <pose x="2142.490003" y="2483.009503" flipped="false" a="0"/>
+          <pose x="2144.164285" y="2483.009503" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -694,10 +693,10 @@
       <connect endport="thetain" endcomponent="Angle___Velocity_Source_4" startport="uelev" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2017.25856379883180125034" y="2516.99640949708009429742"/>
-            <coordinate x="2115.50000000000000000000" y="2516.99640949708009429742"/>
-            <coordinate x="2115.50000000000000000000" y="2502.98500112800002170843"/>
-            <coordinate x="2125.63000197399924218189" y="2502.98500112800002170843"/>
+            <coordinate x="2017.25856399999997847772" y="2516.99640900000031251693"/>
+            <coordinate x="2115.50000000000000000000" y="2516.99640900000031251693"/>
+            <coordinate x="2115.50000000000000000000" y="2502.98500100000001111766"/>
+            <coordinate x="2125.63000199999987671617" y="2502.98500100000001111766"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -710,10 +709,10 @@
       <connect endport="thetain" endcomponent="Angle___Velocity_Source_5" startport="uelev" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2017.25856379883180125034" y="2516.99640949708009429742"/>
-            <coordinate x="2037.45000000000050022209" y="2516.99640949708009429742"/>
-            <coordinate x="2037.45000000000050022209" y="2529.11000112799956696108"/>
-            <coordinate x="2117.31999943600021651946" y="2529.11000112799956696108"/>
+            <coordinate x="2017.25856399999997847772" y="2516.99640900000031251693"/>
+            <coordinate x="2069.26135531442241699551" y="2516.99640900000031251693"/>
+            <coordinate x="2069.26135531442241699551" y="2529.11000100000001111766"/>
+            <coordinate x="2117.31999899999982517329" y="2529.11000100000001111766"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -746,8 +745,8 @@
           <coordinates>
             <coordinate x="1865.92557800000008683128" y="2505.56999099999984537135"/>
             <coordinate x="1902.09000000000060026650" y="2505.56999099999984537135"/>
-            <coordinate x="1902.09000000000060026650" y="2504.19640949707991239848"/>
-            <coordinate x="1952.25856379883180125034" y="2504.19640949707991239848"/>
+            <coordinate x="1902.09000000000060026650" y="2504.19640900000013061799"/>
+            <coordinate x="1952.25856399999997847772" y="2504.19640900000013061799"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -776,12 +775,12 @@
       <connect endport="in_right" endcomponent="Scope_2" startport="uelev" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2017.25856379883180125034" y="2516.99640949708009429742"/>
-            <coordinate x="2082.56958348608350206632" y="2516.99640949708009429742"/>
+            <coordinate x="2017.25856399999997847772" y="2516.99640900000031251693"/>
+            <coordinate x="2082.56958348608350206632" y="2516.99640900000031251693"/>
             <coordinate x="2082.56958348608350206632" y="2751.08514318860579805914"/>
             <coordinate x="2920.72953765456077235285" y="2751.08514318860579805914"/>
-            <coordinate x="2920.72953765456077235285" y="2793.75853309474359775777"/>
-            <coordinate x="2895.64855650292020072811" y="2793.75853309474359775777"/>
+            <coordinate x="2920.72953765456077235285" y="2793.75853300000017043203"/>
+            <coordinate x="2895.64855699999998250860" y="2793.75853300000017043203"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -796,10 +795,10 @@
       <connect endport="Pal1" endcomponent="AeroAircraft6DOFSS" startport="Pmr1" startcomponent="Angle___Velocity_Source">
         <hopsangui>
           <coordinates>
-            <coordinate x="2174.04000169200025993632" y="2404.63450339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2404.63450339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2404.63450339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2404.63450339809924116707"/>
+            <coordinate x="2165.66859270673103310401" y="2404.63450300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2404.63450300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2404.63450300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2404.63450300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -812,10 +811,10 @@
       <connect endport="Par1" endcomponent="AeroAircraft6DOFSS" startport="Pmr1" startcomponent="Angle___Velocity_Source_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2169.50000000000000000000" y="2430.75950339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2430.75950339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2430.75950339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2430.75950339809924116707"/>
+            <coordinate x="2167.82571814134644228034" y="2430.75950300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2430.75950300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2430.75950300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2430.75950300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -828,10 +827,10 @@
       <connect endport="Pal12" endcomponent="AeroAircraft6DOFSS" startport="Pmr1" startcomponent="Angle___Velocity_Source_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2165.81000253799948040978" y="2456.88450339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2456.88450339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2456.88450339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2456.88450339809924116707"/>
+            <coordinate x="2167.48428485865406400990" y="2456.88450300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2456.88450300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2456.88450300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2456.88450300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -844,10 +843,10 @@
       <connect endport="Par12" endcomponent="AeroAircraft6DOFSS" startport="Pmr1" startcomponent="Angle___Velocity_Source_3">
         <hopsangui>
           <coordinates>
-            <coordinate x="2165.99000310199971863767" y="2483.00950339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2483.00950339809924116707"/>
-            <coordinate x="2246.34951073009824540350" y="2483.00950339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2483.00950339809924116707"/>
+            <coordinate x="2167.66428485865390030085" y="2483.00950300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2483.00950300000022252789"/>
+            <coordinate x="2246.34951073009824540350" y="2483.00950300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2483.00950300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -860,10 +859,10 @@
       <connect endport="Pal2" endcomponent="AeroAircraft6DOFSS" startport="Pmr1" startcomponent="Angle___Velocity_Source_4">
         <hopsangui>
           <coordinates>
-            <coordinate x="2172.63000197399924218189" y="2509.48500112800002170843"/>
-            <coordinate x="2246.34951073009824540350" y="2509.48500112800002170843"/>
-            <coordinate x="2246.34951073009824540350" y="2509.13450339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2509.13450339809924116707"/>
+            <coordinate x="2172.63000199999987671617" y="2509.48500100000001111766"/>
+            <coordinate x="2246.34951073009824540350" y="2509.48500100000001111766"/>
+            <coordinate x="2246.34951073009824540350" y="2509.13450300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2509.13450300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -876,10 +875,10 @@
       <connect endport="Par2" endcomponent="AeroAircraft6DOFSS" startport="Pmr1" startcomponent="Angle___Velocity_Source_5">
         <hopsangui>
           <coordinates>
-            <coordinate x="2164.31999943600021651946" y="2535.61000112799956696108"/>
-            <coordinate x="2246.34951073009824540350" y="2535.61000112799956696108"/>
-            <coordinate x="2246.34951073009824540350" y="2535.25950339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2535.25950339809924116707"/>
+            <coordinate x="2164.31999899999982517329" y="2535.61000100000001111766"/>
+            <coordinate x="2246.34951073009824540350" y="2535.61000100000001111766"/>
+            <coordinate x="2246.34951073009824540350" y="2535.25950300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2535.25950300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -892,9 +891,9 @@
       <connect endport="Pfin" endcomponent="AeroAircraft6DOFSS" startport="Pmr1" startcomponent="Angle___Velocity_Source_6">
         <hopsangui>
           <coordinates>
-            <coordinate x="2165.58000338399961037794" y="2561.38450339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2561.38450339809924116707"/>
-            <coordinate x="2266.34951073009824540350" y="2561.38450339809924116707"/>
+            <coordinate x="2165.58000300000003335299" y="2561.38450300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2561.38450300000022252789"/>
+            <coordinate x="2266.34951099999989310163" y="2561.38450300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -906,10 +905,10 @@
       <connect endport="Ub" endcomponent="AeroAircraft6DOFSS" startport="Ub" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2017.25856379883180125034" y="2542.59640949708000334795"/>
-            <coordinate x="2017.25856379883180125034" y="2626.82947463410528143868"/>
-            <coordinate x="2386.34939073009809362702" y="2626.82947463410528143868"/>
-            <coordinate x="2386.34939073009809362702" y="2587.50950339809924116707"/>
+            <coordinate x="2017.25856399999997847772" y="2542.59640900000022156746"/>
+            <coordinate x="2017.25856399999997847772" y="2626.82947463410528143868"/>
+            <coordinate x="2386.34939099999974132515" y="2626.82947463410528143868"/>
+            <coordinate x="2386.34939099999974132515" y="2587.50950300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -922,10 +921,10 @@
       <connect endport="Qb" endcomponent="AeroAircraft6DOFSS" startport="Qb" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2001.00856379883180125034" y="2542.59640949708000334795"/>
-            <coordinate x="2001.00856379883180125034" y="2638.10947237810569276917"/>
-            <coordinate x="2434.34963073009839717997" y="2638.10947237810569276917"/>
-            <coordinate x="2434.34963073009839717997" y="2587.50950339809924116707"/>
+            <coordinate x="2001.00856399999997847772" y="2542.59640900000022156746"/>
+            <coordinate x="2001.00856399999997847772" y="2638.10947237810569276917"/>
+            <coordinate x="2434.34963100000004487811" y="2638.10947237810569276917"/>
+            <coordinate x="2434.34963100000004487811" y="2587.50950300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -941,8 +940,8 @@
             <coordinate x="1811.57442199999991316872" y="2572.43001000000003841706"/>
             <coordinate x="1783.64964327007146493997" y="2572.43001000000003841706"/>
             <coordinate x="1783.64964327007146493997" y="2684.63946307210744635086"/>
-            <coordinate x="2386.34939073009809362702" y="2684.63946307210744635086"/>
-            <coordinate x="2386.34939073009809362702" y="2587.50950339809924116707"/>
+            <coordinate x="2386.34939099999974132515" y="2684.63946307210744635086"/>
+            <coordinate x="2386.34939099999974132515" y="2587.50950300000022252789"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -956,8 +955,8 @@
       <connect endport="y" endcomponent="SignalPIlead" startport="altitude" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2530.34939073009809362702" y="2587.50950339809924116707"/>
-            <coordinate x="2530.34939073009809362702" y="2697.32946053410796594108"/>
+            <coordinate x="2530.34939099999974132515" y="2587.50950300000022252789"/>
+            <coordinate x="2530.34939099999974132515" y="2697.32946053410796594108"/>
             <coordinate x="1746.98965060207001442905" y="2697.32946053410796594108"/>
             <coordinate x="1746.98965060207001442905" y="2514.81999099999984537135"/>
             <coordinate x="1788.92557800000008683128" y="2514.81999099999984537135"/>
@@ -974,10 +973,10 @@
       <connect endport="theta" endcomponent="SignalAttitudeControl" startport="Thetao" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2362.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2362.34963073009839717997" y="2652.20946955810632061912"/>
-            <coordinate x="1965.25856379883180125034" y="2652.20946955810632061912"/>
-            <coordinate x="1965.25856379883180125034" y="2542.59640949708000334795"/>
+            <coordinate x="2362.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2362.34963100000004487811" y="2652.20946955810632061912"/>
+            <coordinate x="1965.25856399999997847772" y="2652.20946955810632061912"/>
+            <coordinate x="1965.25856399999997847772" y="2542.59640900000022156746"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -990,10 +989,10 @@
       <connect endport="phi" endcomponent="SignalAttitudeControl" startport="Phi" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2374.34951073009824540350" y="2587.50950339809924116707"/>
-            <coordinate x="2374.34951073009824540350" y="2660.66946786610651543015"/>
-            <coordinate x="1952.25856379883180125034" y="2660.66946786610651543015"/>
-            <coordinate x="1952.25856379883180125034" y="2542.59640949708000334795"/>
+            <coordinate x="2374.34951099999989310163" y="2587.50950300000022252789"/>
+            <coordinate x="2374.34951099999989310163" y="2660.66946786610651543015"/>
+            <coordinate x="1952.25856399999997847772" y="2660.66946786610651543015"/>
+            <coordinate x="1952.25856399999997847772" y="2542.59640900000022156746"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1006,10 +1005,10 @@
       <connect endport="psi" endcomponent="SignalAttitudeControl" startport="Psi" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2350.34939073009809362702" y="2587.50950339809924116707"/>
-            <coordinate x="2350.34939073009809362702" y="2645.15947096810623406782"/>
-            <coordinate x="1978.25856379883180125034" y="2645.15947096810623406782"/>
-            <coordinate x="1978.25856379883180125034" y="2542.59640949708000334795"/>
+            <coordinate x="2350.34939099999974132515" y="2587.50950300000022252789"/>
+            <coordinate x="2350.34939099999974132515" y="2645.15947096810623406782"/>
+            <coordinate x="1978.25856399999997847772" y="2645.15947096810623406782"/>
+            <coordinate x="1978.25856399999997847772" y="2542.59640900000022156746"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1022,9 +1021,9 @@
       <connect endport="in" endcomponent="Scope" startport="Psi" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2350.34939073009809362702" y="2587.50950339809924116707"/>
-            <coordinate x="2350.34939073009809362702" y="2676.90273888189494755352"/>
-            <coordinate x="2438.53787531213492911775" y="2676.90273888189494755352"/>
+            <coordinate x="2350.34939099999974132515" y="2587.50950300000022252789"/>
+            <coordinate x="2350.34939099999974132515" y="2676.90273900000011053635"/>
+            <coordinate x="2438.53787499999998544808" y="2676.90273900000011053635"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1036,9 +1035,9 @@
       <connect endport="in" endcomponent="Scope" startport="Thetao" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2362.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2362.34963073009839717997" y="2676.90273888189494755352"/>
-            <coordinate x="2438.53787531213492911775" y="2676.90273888189494755352"/>
+            <coordinate x="2362.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2362.34963100000004487811" y="2676.90273900000011053635"/>
+            <coordinate x="2438.53787499999998544808" y="2676.90273900000011053635"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1050,9 +1049,9 @@
       <connect endport="in" endcomponent="Scope" startport="Phi" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2374.34951073009824540350" y="2587.50950339809924116707"/>
-            <coordinate x="2374.34951073009824540350" y="2676.90273888189494755352"/>
-            <coordinate x="2438.53787531213492911775" y="2676.90273888189494755352"/>
+            <coordinate x="2374.34951099999989310163" y="2587.50950300000022252789"/>
+            <coordinate x="2374.34951099999989310163" y="2676.90273900000011053635"/>
+            <coordinate x="2438.53787499999998544808" y="2676.90273900000011053635"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1064,9 +1063,9 @@
       <connect endport="in" endcomponent="Scope" startport="AlphaAttack" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2506.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2506.34963073009839717997" y="2676.90273888189494755352"/>
-            <coordinate x="2438.53787531213492911775" y="2676.90273888189494755352"/>
+            <coordinate x="2506.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2506.34963100000004487811" y="2676.90273900000011053635"/>
+            <coordinate x="2438.53787499999998544808" y="2676.90273900000011053635"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1078,9 +1077,9 @@
       <connect endport="in" endcomponent="Scope_1" startport="altitude" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2530.34939073009809362702" y="2587.50950339809924116707"/>
-            <coordinate x="2530.34939073009809362702" y="2726.07566469240737205837"/>
-            <coordinate x="2743.41430860350419607130" y="2726.07566469240737205837"/>
+            <coordinate x="2530.34939099999974132515" y="2587.50950300000022252789"/>
+            <coordinate x="2530.34939099999974132515" y="2726.07566499999984444003"/>
+            <coordinate x="2743.41430899999977555126" y="2726.07566499999984444003"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1092,10 +1091,10 @@
       <connect endport="in_bottom" endcomponent="Scope_1" startport="xcg" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2278.34949873009827570058" y="2587.50950339809924116707"/>
-            <coordinate x="2278.34949873009827570058" y="2777.63367113108915873454"/>
-            <coordinate x="2763.41430860350419607130" y="2777.63367113108915873454"/>
-            <coordinate x="2763.41430860350419607130" y="2741.07566469240737205837"/>
+            <coordinate x="2278.34949899999992339872" y="2587.50950300000022252789"/>
+            <coordinate x="2278.34949899999992339872" y="2777.63367113108915873454"/>
+            <coordinate x="2763.41430899999977555126" y="2777.63367113108915873454"/>
+            <coordinate x="2763.41430899999977555126" y="2741.07566499999984444003"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1108,9 +1107,9 @@
       <connect endport="in" endcomponent="Scope_3" startport="CL1" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2578.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2578.34963073009839717997" y="2637.14295251460089275497"/>
-            <coordinate x="2818.07441541985735966591" y="2637.14295251460089275497"/>
+            <coordinate x="2578.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2578.34963100000004487811" y="2635.46867114134602161357"/>
+            <coordinate x="2818.07441500000004452886" y="2635.46867114134602161357"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1122,9 +1121,9 @@
       <connect endport="in" endcomponent="Scope_3" startport="Cd1" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2590.34951073009824540350" y="2587.50950339809924116707"/>
-            <coordinate x="2590.34951073009824540350" y="2637.14295251460089275497"/>
-            <coordinate x="2818.07441541985735966591" y="2637.14295251460089275497"/>
+            <coordinate x="2590.34951099999989310163" y="2587.50950300000022252789"/>
+            <coordinate x="2590.34951099999989310163" y="2635.46867114134602161357"/>
+            <coordinate x="2818.07441500000004452886" y="2635.46867114134602161357"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1136,9 +1135,9 @@
       <connect endport="in" endcomponent="Scope_2" startport="AlphaAttack" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2506.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2506.34963073009839717997" y="2793.75853309474359775777"/>
-            <coordinate x="2855.64855650292020072811" y="2793.75853309474359775777"/>
+            <coordinate x="2506.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2506.34963100000004487811" y="2793.75853300000017043203"/>
+            <coordinate x="2855.64855699999998250860" y="2793.75853300000017043203"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1150,9 +1149,9 @@
       <connect endport="in" endcomponent="Scope_5" startport="CL1" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2578.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2578.34963073009839717997" y="2599.22947669401037273929"/>
-            <coordinate x="2752.61082592992170248181" y="2599.22947669401037273929"/>
+            <coordinate x="2578.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2578.34963100000004487811" y="2599.22947699999986070907"/>
+            <coordinate x="2752.61082600000008824281" y="2599.22947699999986070907"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1164,10 +1163,10 @@
       <connect endport="in_bottom" endcomponent="Scope_5" startport="Cd1" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2590.34951073009824540350" y="2587.50950339809924116707"/>
-            <coordinate x="2590.34951073009824540350" y="2628.62258208306820961297"/>
-            <coordinate x="2772.61082592992170248181" y="2628.62258208306820961297"/>
-            <coordinate x="2772.61082592992170248181" y="2614.22947669401037273929"/>
+            <coordinate x="2590.34951099999989310163" y="2587.50950300000022252789"/>
+            <coordinate x="2590.34951099999989310163" y="2628.62258208306820961297"/>
+            <coordinate x="2772.61082600000008824281" y="2628.62258208306820961297"/>
+            <coordinate x="2772.61082600000008824281" y="2614.22947699999986070907"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1180,9 +1179,9 @@
       <connect endport="in" endcomponent="Scope_6" startport="CL1" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2578.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2578.34963073009839717997" y="2660.43393847796141926665"/>
-            <coordinate x="2884.87909555678061224171" y="2660.43393847796141926665"/>
+            <coordinate x="2578.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2578.34963100000004487811" y="2660.43393800000012561213"/>
+            <coordinate x="2884.87909600000011778320" y="2660.43393800000012561213"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1194,15 +1193,63 @@
       <connect endport="in_bottom" endcomponent="Scope_6" startport="AlphaAttack" startcomponent="AeroAircraft6DOFSS">
         <hopsangui>
           <coordinates>
-            <coordinate x="2506.34963073009839717997" y="2587.50950339809924116707"/>
-            <coordinate x="2506.34963073009839717997" y="2688.89673046204279671656"/>
-            <coordinate x="2904.87909555678061224171" y="2688.89673046204279671656"/>
-            <coordinate x="2904.87909555678061224171" y="2675.43393847796141926665"/>
+            <coordinate x="2506.34963100000004487811" y="2587.50950300000022252789"/>
+            <coordinate x="2506.34963100000004487811" y="2688.89673046204279671656"/>
+            <coordinate x="2904.87909600000011778320" y="2688.89673046204279671656"/>
+            <coordinate x="2904.87909600000011778320" y="2675.43393800000012561213"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="thetain" endcomponent="Angle___Velocity_Source" startport="uaerL" startcomponent="SignalAttitudeControl">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2017.25856399999997847772" y="2491.39640900000040346640"/>
+            <coordinate x="2050.99527685087650752394" y="2491.39640900000040346640"/>
+            <coordinate x="2050.99527685087650752394" y="2398.13450300000022252789"/>
+            <coordinate x="2118.66859270673103310401" y="2398.13450300000022252789"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="thetain" endcomponent="Angle___Velocity_Source_1" startport="uaerR" startcomponent="SignalAttitudeControl">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2017.25856399999997847772" y="2504.19640900000013061799"/>
+            <coordinate x="2062.71524986145323055098" y="2504.19640900000013061799"/>
+            <coordinate x="2062.71524986145323055098" y="2424.25950300000022252789"/>
+            <coordinate x="2120.82571814134644228034" y="2424.25950300000022252789"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="thetain" endcomponent="Angle___Velocity_Source_6" startport="urud" startcomponent="SignalAttitudeControl">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2017.25856399999997847772" y="2529.79640900000003966852"/>
+            <coordinate x="2056.01812242683809017763" y="2529.79640900000003966852"/>
+            <coordinate x="2056.01812242683809017763" y="2554.88450300000022252789"/>
+            <coordinate x="2118.58000300000003335299" y="2554.88450300000022252789"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
