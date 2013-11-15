@@ -1210,38 +1210,151 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     }
 
     //Generate list of variables needed to be solved
-    QList<Expression> systemVariables;
+    QList<Expression> unknowns;
     for(int e=0; e<systemEquations.size(); ++e)
     {
         QList<Expression> newVars = systemEquations[e].getVariables();
         for(int n=0; n<newVars.size(); ++n)
         {
-            if(!systemVariables.contains(newVars[n]))
+            if(!unknowns.contains(newVars[n]))
             {
-                systemVariables.append(newVars[n]);
+                unknowns.append(newVars[n]);
             }
         }
     }
     for(int k=0; k<knowns.size(); ++k)
     {
-        systemVariables.removeAll(knowns[k]);
+        unknowns.removeAll(knowns[k]);
     }
 
     logStream << "\n--- Unknown Variables ---\n";
-    for(int e=0; e<systemVariables.size(); ++e)
+    for(int e=0; e<unknowns.size(); ++e)
     {
-        logStream << systemVariables[e].toString() << "\n";
+        logStream << unknowns[e].toString() << "\n";
     }
 
-    //! @todo Exclude trivial equations (only depending on known variables) from Jacobian and solve them before the Jacobian
+    //Identify system equations containing only one unknown (can be resolved before the rest of the system)
+    logStream << "\n--- Trivial System Equations (containing only one unknown, appended to initial algorithms) ---\n";
+    //QList<Expression> trivialSystemEquations;
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+        qDebug() << "Testing equation: " << systemEquations[e].toString();
+        QList<Expression> usedUnknowns;
+        for(int u=0; u<unknowns.size(); ++u)
+        {
+            qDebug() << "   Testing variable: " << unknowns[u].toString();
+            if(systemEquations[e].contains(unknowns[u]))
+            {
+                qDebug() << "Equation contains it!";
+                usedUnknowns.append(unknowns[u]);
+            }
+        }
+
+        if(usedUnknowns.size() == 1)
+        {
+            //Found only one unknown, try to break it out of the equation
+            Expression tempExpr = systemEquations[e];
+            tempExpr.factor(usedUnknowns[0]);
+            if(tempExpr.getTerms().size() == 1)
+            {
+                tempExpr = Expression(0);   //Only one term, state var must equal zero
+            }
+            else
+            {
+                Expression term = tempExpr.getTerms()[0];
+                tempExpr.removeTerm(term);
+                term.replace(usedUnknowns[0], Expression(1));
+                term._simplify(Expression::FullSimplification, Expression::Recursive);
+                tempExpr.divideBy(term);
+                tempExpr.changeSign();
+                tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+                initAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
+                systemEquations.removeAt(e);
+                --e;
+                logStream << initAlgorithms.last()+"\n";
+                unknowns.removeAll(usedUnknowns[0]);
+            }
+        }
+    }
+
+    //Identify system equations containing a unique variable (can be resolved after the rest of the system)
+    logStream << "\n--- System Equations Containing Unique Variables (prepended to final algorithms) ---\n";
+    for(int u=0; u<unknowns.size(); ++u)
+    {
+        size_t count=0;
+        size_t lastFound=-1;
+        for(int e=0; e<systemEquations.size(); ++e)
+        {
+            if(systemEquations[e].contains(unknowns[u]))
+            {
+                ++count;
+                lastFound=e;
+            }
+        }
+        if(count==1)
+        {
+            qDebug() << "Equation: " << systemEquations[lastFound].toString() << " contains unique variable " << unknowns[u].toString();
+            //Found the unknown if only one equation, try to break it out and prepend on final algorithms
+            Expression tempExpr = systemEquations[lastFound];
+            qDebug() << "1";
+            tempExpr.factor(unknowns[u]);
+            qDebug() << "2";
+            if(tempExpr.getTerms().size() == 1)
+            {
+                tempExpr = Expression(0);   //Only one term, state var must equal zero
+            }
+            else
+            {
+                qDebug() << "3";
+                Expression term = tempExpr.getTerms()[0];
+                qDebug() << "4";
+                tempExpr.removeTerm(term);
+                qDebug() << "5";
+                term.replace(unknowns[u], Expression(1));
+                qDebug() << "6";
+                term._simplify(Expression::FullSimplification, Expression::Recursive);
+                qDebug() << "7";
+                tempExpr.divideBy(term);
+                qDebug() << "8";
+                tempExpr.changeSign();
+                qDebug() << "9";
+                tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+                qDebug() << "10";
+                finalAlgorithms.prepend(Expression::fromEquation(unknowns[u], tempExpr).toString());
+                qDebug() << "11";
+                systemEquations.removeAt(lastFound);
+                qDebug() << "12";
+                qDebug() << "13";
+                logStream << finalAlgorithms.last()+"\n";
+                qDebug() << "14";
+                unknowns.removeAt(u);
+                --u;
+                qDebug() << "15";
+            }
+        }
+    }
+
+
+    logStream << "\n--- Known Variables ---\n";
+    for(int k=0; k<knowns.size(); ++k)
+    {
+        logStream << knowns[k].toString() << "\n";
+    }
+
+    logStream << "\n--- Unknown Variables ---\n";
+    for(int u=0; u<unknowns.size(); ++u)
+    {
+        logStream << unknowns[u].toString() << "\n";
+    }
+
     //! @todo Exclude equations that contains unique variablse (existing only in one equation) and solve them after the Jacobian
 
-    if(systemEquations.size() != systemVariables.size())
+    if(systemEquations.size() != unknowns.size())
     {
         logStream << "\nNumber of system equations does not equal number of unknown variables. Aborting.";
         printErrorMessage("Number of system equations does not equal number of system variables.");
         printErrorMessage("Number of system equations: " + QString::number(systemEquations.size()));
-        printErrorMessage("Number of system variables: " + QString::number(systemVariables.size()));
+        printErrorMessage("Number of system variables: " + QString::number(unknowns.size()));
         return;
     }
 
@@ -1253,7 +1366,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         gTempExpr = systemEquations[e];
         gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
 
-        QList<Expression> result = QtConcurrent::blockingMapped(systemVariables, concurrentDiff);
+        QList<Expression> result = QtConcurrent::blockingMapped(unknowns, concurrentDiff);
 
         jacobian.append(result);
     }
@@ -1269,7 +1382,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
     //Sort equation system so that each equation contains its corresponding state variable
     QList<int> dummy1, dummy2;
-    if(!sortEquationSystem(systemEquations, jacobian, systemVariables, dummy1, dummy2, preferredOrder))
+    if(!sortEquationSystem(systemEquations, jacobian, unknowns, dummy1, dummy2, preferredOrder))
     {
         logStream << "\nCould not sort system equations. System is probably under-determined. Aborting.";
         printErrorMessage("Could not sort equations. System is probably under-determined.");
@@ -1286,7 +1399,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
     }
 
-    QList<Expression> systemVars = systemVariables;
+    QList<Expression> systemVars = unknowns;
 
     //Add call to solver
     QList<Expression> beforeSolverEquations;
@@ -1317,7 +1430,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         qDebug() << "STATE EQUATION DERIVATIVE: " << equation.toString();
     }
 
-    Q_FOREACH(const Expression &var, systemVariables)
+    Q_FOREACH(const Expression &var, unknowns)
     {
         qDebug() << "TRIVIAL VARIABLE: " << var.toString();
     }
@@ -1401,21 +1514,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         comp.finalEquations << "delete mpSystemSolver;";
     }
 
-    //Initial algorithm section
-    if(!initAlgorithms.isEmpty())
-    {
-        comp.simEquations.append("");
-        comp.simEquations.append("//Initial algorithm section");
-    }
-    for(int i=0; i<initAlgorithms.size(); ++i)
-    {
-        //! @todo Convert everything to C++ syntax
-        QString initEq = initAlgorithms[i];
-        initEq.replace(":=", "=");
-        initEq.append(";");
-        comp.simEquations.append(initEq);
-    }
-
     Q_FOREACH(const Expression &equation, beforeSolverEquations)
     {
         QString equationStr = equation.toString();
@@ -1433,6 +1531,42 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
     }
 
+    //Initial algorithm section
+    if(!initAlgorithms.isEmpty())
+    {
+        comp.simEquations.append("");
+        comp.simEquations.append("//Initial algorithm section");
+    }
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        //! @todo Convert everything to C++ syntax
+        QString initEq = initAlgorithms[i];
+        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            initEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
+        initEq.replace(":=", "=");
+        initEq.append(";");
+        comp.simEquations.append(initEq);
+    }
+
+    if(!finalAlgorithms.isEmpty())
+    {
+        comp.simEquations.append("");
+        comp.simEquations.append("//Final algorithm section");
+    }
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        //! @todo Convert everything to C++ syntax
+        QString finalEq = finalAlgorithms[i];
+        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            finalEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
+        finalEq.replace(":=", "=");
+        comp.simEquations.append(finalEq+";");
+    }
+
     Q_FOREACH(const Expression &equation, afterSolverEquations)
     {
         QString equationStr = equation.toString();
@@ -1448,19 +1582,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         {
             comp.simEquations.append(equationStr+";");
         }
-    }
-
-    if(!finalAlgorithms.isEmpty())
-    {
-        comp.simEquations.append("");
-        comp.simEquations.append("//Final algorithm section");
-    }
-    for(int i=0; i<finalAlgorithms.size(); ++i)
-    {
-        //! @todo Convert everything to C++ syntax
-        QString finalEq = finalAlgorithms[i];
-        finalEq.replace(":=", "=");
-        comp.simEquations.append(finalEq+";");
     }
 
     comp.finalEquations.append("delete mpSolver;");
@@ -1507,6 +1628,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         //! @todo Convert everything to C++ syntax
         QString initEq = initAlgorithms[i];
+        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            initEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
         initEq.replace(":=", "=");
         initEq.append(";");
         comp.auxiliaryFunctions.append("    "+initEq);
@@ -1565,6 +1690,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         //! @todo Convert everything to C++ syntax
         QString finalEq = finalAlgorithms[i];
+        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        {
+            finalEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+        }
         finalEq.replace(":=", "=");
         comp.auxiliaryFunctions.append("    "+finalEq+";");
     }
