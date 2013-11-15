@@ -587,7 +587,7 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 //!
 //! @param variables Map with variable names and values
 //! @returns Evaluated value of expression
-double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHop::Function> &functions) const
+double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, FunctionPtr> *functions) const
 {
     double retval = 0;
 
@@ -616,7 +616,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
     }
     else if(isFunction())
     {
-        if(functions.contains(mFunction))
+        if(functions && functions->contains(mFunction))
         {
             QString argString;
             for(int a=0; a<mArguments.size(); ++a)
@@ -625,7 +625,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             }
             argString.chop(1);
             bool ok;
-            retval = (*functions.find(mFunction).value())(argString, ok);
+            retval = (*functions->find(mFunction).value())(argString, ok);
             if(ok)
                 return retval;
         }
@@ -1461,12 +1461,6 @@ Expression Expression::derivative(const Expression x, bool &ok) const
 
     Expression retExp = Expression(ret);
     retExp._simplify(FullSimplification, Recursive);
-
-    if(retExp.toString() == "")
-    {
-        double katt;
-        katt=3;
-    }
 
     assert(retExp.toString() != "");
 
