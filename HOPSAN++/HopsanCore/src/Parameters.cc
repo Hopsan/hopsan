@@ -280,7 +280,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     }
     else if(mType=="conditional")
     {
-        int tmpParameterValue;
+        size_t tmpParameterValue;
         istringstream is(evaluatedParameterValue.c_str());
         if(is >> tmpParameterValue && tmpParameterValue >= 0 && tmpParameterValue < this->mConditions.size())
         {
