@@ -683,7 +683,7 @@ HcomHandler::LocalVarsMapT HcomHandler::getLocalVariables() const
 
 
 //! @brief Returns a map with all local functions and pointers to them
-QMap<QString, SymHop::Function> HcomHandler::getLocalFunctionPointers() const
+QMap<QString, SymHop::FunctionPtr> HcomHandler::getLocalFunctionPointers() const
 {
     return mLocalFunctionPtrs;
 }
@@ -3505,7 +3505,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         timer.toc("local pars to local vars");
 
         mAnsType = Scalar;
-        mAnsScalar = symHopExpr.evaluate(localVars, mLocalFunctionPtrs);
+        mAnsScalar = symHopExpr.evaluate(localVars, &mLocalFunctionPtrs);
         return;
     }
 
@@ -4860,7 +4860,7 @@ void HcomHandler::abortHCOM()
     mAborted = true;
 }
 
-void HcomHandler::registerFunction(const QString func, const QString description, const SymHop::Function fptr)
+void HcomHandler::registerFunction(const QString func, const QString description, const SymHop::FunctionPtr fptr)
 {
     mLocalFunctionPtrs.insert(func, fptr);
     mLocalFunctionDescriptions.insert(func, description);
@@ -5074,8 +5074,8 @@ double _funcPeek(QString str, bool &ok)
 
     SymHop::Expression idxExpr = SymHop::Expression(idxStr);
     QMap<QString, double> localVars = gpTerminalWidget->mpHandler->getLocalVariables();
-    QMap<QString, SymHop::Function> localFuncs = gpTerminalWidget->mpHandler->getLocalFunctionPointers();
-    int idx = idxExpr.evaluate(localVars, localFuncs);
+    QMap<QString, SymHop::FunctionPtr> localFuncs = gpTerminalWidget->mpHandler->getLocalFunctionPointers();
+    int idx = idxExpr.evaluate(localVars, &localFuncs);
 
     if(pData)
     {

@@ -58,7 +58,7 @@ public:
 
     // Public variable access functions
     LocalVarsMapT getLocalVariables() const;
-    QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
+    QMap<QString, SymHop::FunctionPtr> getLocalFunctionPointers() const;
     SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
     SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName) const;
 
@@ -166,7 +166,7 @@ private:
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
     QString getArgument(const QString &cmd, const int idx) const;
-    void registerFunction(const QString func, const QString description, const SymHop::Function fptr);
+    void registerFunction(const QString func, const QString description, const SymHop::FunctionPtr fptr);
 
     // Used to abort HCOM evaluation
     bool mAborted;
@@ -182,7 +182,7 @@ private:
 
     // Local variables
     LocalVarsMapT mLocalVars;
-    QMap<QString, SymHop::Function> mLocalFunctionPtrs;
+    QMap<QString, SymHop::FunctionPtr> mLocalFunctionPtrs;
     QMap<QString, QString> mLocalFunctionDescriptions;
 
     VariableType mRetvalType;
