@@ -56,6 +56,8 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     mpNameText = 0;
     mTextOffset = 5.0;
     mDragCopying = false;
+    mNameTextAlwaysVisible = false;
+    mNameTextVisible = false;
     mpDialogParentWidget = new QWidget(gpMainWindowWidget);
 
         //Set the hmf save tag name
@@ -796,6 +798,7 @@ bool ModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, bool
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
+    return false;
 }
 
 

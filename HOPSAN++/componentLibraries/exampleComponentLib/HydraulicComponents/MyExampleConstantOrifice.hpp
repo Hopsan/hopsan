@@ -76,7 +76,7 @@ public:
         const double Zc2 = mpP2->readNode(NodeHydraulic::CharImpedance);
 
         //Orifice equations
-        double q2 = mKc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
+        double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
         double q1 = -q2;
         double p1 = c1 + q1*Zc1;
         double p2 = c2 + q2*Zc2;
