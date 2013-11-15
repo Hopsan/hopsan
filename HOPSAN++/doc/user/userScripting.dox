@@ -1,0 +1,475 @@
+/*!
+
+\page userScriptingPage Scripting
+Most functions in Hopsan can be accessed through the command interpreter in the terminal widget. The command language is called HCOM and is loosely based upon the commands used in the previous version of Hopsan (the one from 2001). Apart from the commands and functions, there is a built-in calculator that can evaluate mathematical expressions using the SymHop library.
+
+See \subpage userHcomScriptingPage for details.
+
+A Python interpreter is also included to run Python scripts. The idea is that these scripts also should be able to access some functions in the Hopsan GUI and that they will allow the user to run any python commands and external python based tools or custom code. \n
+\b Note! Currently the python support is not working very well, it is not even included in some builds of Hopsan. This may change in the future.
+
+See \subpage userPythonScriptingPage for details.
+
+
+\page userHcomScriptingPage HCOM Scripting
+You can write \b help in the HopsanGUI terminal window for a complete list of all HCOM commands. 
+You can also write <b>help commandName</b> for help regarding a particular command.\n
+
+The help list is included here for your convenience, but be sure to check the actual help since this documentation may not always be up-to-date.
+\verbatim
+ Simulation Commands:
+
+   sim       Simulates current model (or all open models)
+   chss      Change simulation settings
+   chts      Change time step of sub-component
+   ints      Inherit time step of sub-component from system time step
+
+ Plot Commands:
+
+   chpv      Change plot variables in current plot
+   adpv      Add plot variables in current plot
+   adpvl     Adds plot variables on left axis in current plot
+   adpvr     Adds plot variables on right axis in current plot
+   chpw      Changes current plot window
+   dipw      Displays current plot window
+   chpvl     Changes plot variables on left axis in current plot
+   chpvr     Changes plot variables on right axis in current plot
+   sapl      Saves plot file to .PLO
+   repl      Loads plot files from .CSV or .PLO
+   bode      Creates a bode plot from specified curves
+
+ Parameter Commands:
+
+   dipa      Display parameter value
+   adpa      Add (system) parameter
+   chpa      Change parameter value
+
+ File Commands:
+
+   exec      Executes a script file
+   wrhi      Writes history to file
+   pwd       Displays present working directory
+   mwd       Displays working directory of current model
+   cd        Changes present working directory
+   ls        List files in current directory
+   edit      Open file in external editor
+
+ Variable Commands:
+
+   disp      Shows a list of all variables matching specified name filter (using asterisks)
+   peek      Shows the value at a specified index in a specified data variable
+   poke      Changes the value at a specified index in a specified data variable
+   alias     Defines an alias for a variable
+   rmvar     Removes specified variable
+   chdfsc    Change default plot scale of specified variable
+   didfsc    Display default plot scale of specified variable
+   chsc      Change plot scale of specified variable
+   disc      Display plot scale of specified variable
+   abs       Calculates absolute value of scalar of variable
+   lp1       Applies low-pass filter of first degree to vector
+
+ Model Commands:
+
+   load      Loads a model file
+   loadr     Loads most recent model file
+   reco      Renames a component
+   rmco      Removes specified component(s)
+   chtab     Changes current model tab
+   adco      Adds a new component to current model
+   coco      Connect components in current model
+   crmo      Creates a new model
+
+ Other commands:
+
+   help      Shows help information
+   exit      Exits the program
+   print     Prints arguments on the screen
+   set       Sets Hopsan preferences
+   close     Closes current model
+   fmu       Exports current model to Functional Mockup Unit (FMU)
+   opt       Initialize an optimization
+   call      Calls a pre-defined function
+   echo      Sets terminal output on or off
+   semt      Applies low-pass filter of first degree to vector
+
+ Custom Functions:
+
+   aver()    Calculate average value of vector
+   imax()    Calculate index of maximum value of vector
+   imin()    Calculate index of minimum value of vector
+   max()     Calculate maximum value of vector
+   min()     Calculate minimum value of vector
+   obj()     Returns optimization objective function value with specified index
+   peek()    Returns vector value at specified index
+   rand()    Generates a random value between 0 and 1
+   size()    Calculate the size of a vector
+   time()    Returns last simulation time
+\endverbatim
+
+\section simulationcommands Simulation Commands
+
+\subsection sim sim
+Simulates current model\n
+Usage: sim [no arguments]
+
+\subsection chss chss
+Change simulation settings\n
+Usage: chss [starttime timestep stoptime [samples]]
+
+\subsection chts chts
+Change time step of sub-component\n
+Usage: chts [comp timestep]
+
+\subsection ints ints
+Inherit time step of sub-component from system time step\n
+Usage: ints [comp]
+
+\section parametercommands Parameter Commands\n
+
+\subsection dipa dipa
+Display parameter value\n
+Usage: dipa [parameter]
+
+\subsection chpa chpa
+Change parameter value\n
+Usage: chpa [parameter value]
+
+\section filecommands File Commands
+
+\subsection exec exec
+Executes a script file\n
+Usage: exec [filepath]
+
+\subsection wrhi wrhi
+Writes history to file\n
+Usage: wrhi [filepath]
+
+\subsection cd cd
+Changes present working directory\n
+Usage: cd [directory]
+
+\subsection ls ls
+List files in current directory\n
+Usage: ls [no arguments]
+
+\subsection edit edit
+Open file in external editor\n
+Usage: edit [filepath]
+
+\section plotcommands Plot Commands
+
+\subsection chpw chpw
+Changes current plot window
+Usage: chpw [number]
+
+\subsection dipw dipw
+Displays current plot window
+Usage: dipw [no arguments]
+
+\subsection chpvl chpvl
+Changes plot variables on left axis in current plot\n
+Usage: chpvl [var1 var2 ... ]
+
+\subsection chpvr chpvr
+Changes plot variables on right axis in current plot\n
+Usage: chpvr [var1 var2 ... ]
+
+\subsection sapl sapl
+Saves plot file to .PLO\n
+Usage: sapl [filepath variables]
+
+\subsection bode bode
+Creates a bode plot from specified curves\n
+Usage: bode [invar outvar maxfreq]
+
+\section variablecommands Variable Commands
+
+\subsection disp disp
+Shows a list of all variables matching specified name filter (using asterisks)\n
+Usage: disp [filter]
+
+\subsection peek peek
+Shows the value at a specified index in a specified data variable\n
+Usage: peek [variable index]
+
+\subsection poke poke
+Changes the value at a specified index in a specified data variable\n
+Usage: poke [variable index newvalue]
+
+\subsection alias alias
+Defines an alias for a variable\n
+Usage: alias [variable alias]
+
+\subsection abs abs
+Calculates absolute value of scalar of variable\n
+Usage: abs [var]
+
+\subsection lp1 lp1
+Applies low-pass filter of first degree to vector\n
+Usage: lp1 [var]
+
+\section modelcommands Model Commands
+
+\subsection load load
+Loads a model file\n
+Usage: load [filepath variables]
+
+\subsection loadr loadr
+Loads most recent model file\n
+Usage: loadr [no arguments]
+
+\subsection pwd pwd
+Displays present working directory\n
+Usage: pwd [no arguments]
+
+\subsection chtab chtab
+Changes current model tab\n
+Usage: chtab [index]
+
+\subsection adco adco
+Adds a new component to current model\n
+Usage: adco [typename name -flag value]
+
+\subsection coco coco
+Connect components in current model\n
+Usage: coco [comp1 port1 comp2 port2]
+
+\subsection crmo crmo
+Creates a new model\n
+Usage: crmo [no arguments]
+
+\section othercommands Other Commands
+
+\subsection help help
+Shows help information\n
+Usage: help [command]
+
+\subsection chpv chpv
+Change plot variables in current plot\n
+Usage: chpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]
+
+\subsection exit exit
+Exits the program\n
+Usage: exit [no arguments]
+
+\subsection print print
+Prints arguments on the screen\n
+Usage: print ["Text" (variable)]\n
+Note: Not implemented yet.
+
+\subsection set set
+Sets Hopsan preferences\n
+Usage: set [preference value]\n
+Available commands:\n
+multicore [on/off]\n
+threads [number]
+
+\subsection close close
+Closes current model\n
+Usage: close [no arguments]
+
+\subsection fmu fmu
+Exports current model to Functional Mockup Unit (FMU)\n
+Usage: fmu [path]
+
+\subsection time time
+Returns last simulation time in milliseconds\n
+Usage: simt [no arguments]
+
+\subsection opt opt
+Initialize an optimization\n
+Usage: opt [algorithm partype parnum parmin parmax -flags]\n
+Algorithms: Flags:\n
+complex alpha
+
+\subsection call call
+Calls a pre-defined function\n
+Usage: call [funcname]
+
+\subsection echo echo
+Sets terminal output on or off\n
+Usage: echo [on/off]
+
+\section customfunctions Custom Functions
+
+\subsection lp1func lp1()   
+Low-pass filter variable
+
+\subsection ddtfunc ddt()
+Differentiate variable
+
+\subsection averfunc aver()
+Calculate average value of vector
+
+\subsection minfunc min()
+Calculate minimum of vector
+
+\subsection maxfunc max()
+Calculate maximum of vector
+
+\subsection sizefunc size()
+Returns the size of a vector
+
+\subsection randfunc rand()
+Generate a random value between 0 and 1
+
+\subsection peekfunc peek()
+Return vector value at specified index
+
+\page userPythonScriptingPage Python Scripting
+The Python Console in Hopsan can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. All Python interaction with Hopsan is done trough an object called "hopsan". The commands as well as command examples are available and described below. 
+
+\b Note! Python script functions are not working very well! It is recommended that you use HCOM instead. Python script support may be improved in a future release.
+
+\section generalcommands General Commands
+
+\subsection newmodel newModel()
+Create a new model.
+
+\subsection loadmodel loadModel(modelFileName)
+Load the model "modelFileName". Example: hopsan.loadModel("c:\mymodel.hmf")
+
+\subsection closeallmodels closeAllModels()
+Closes all opened models.
+
+\subsection gototab gotoTab(tab)
+Changes active tab to specified tab number.
+
+\subsection printmessage printMessage(message)
+Prints a message in the Messages Console. Example: hopsan.printMessage("Goddag yxskaft.")
+
+\subsection printinfo printInfo(message)
+Prints a info message in the Messages Console. Example: hopsan.printInfo("Goddag yxskaft.")
+
+\subsection printwarning printWarning(message)
+Prints a warning message in the Messages Console. Example: hopsan.printWarning("Goddag yxskaft.")
+
+\subsection printerror printError(message)
+Prints a error message in the Messages Console. Example: hopsan.printError("Goddag yxskaft.")
+
+\subsection component component(compName)
+Returns a handle to a component. Example: A handle to a component called "myComponent" can be reaced and stored in "myHandle" with the command line: myHandle = hopsan.component("myComponent")
+
+\subsection setstarttime setStartTime(start)
+Sets the start time of a simulation. Example: hopsan.setStartTime(1.62)
+
+\subsection settimestep setTimeStep(timestep)
+Sets the time step of a simulation. Example: hopsan.setTimeStep(0.002)
+
+\subsection setfinishtime setFinishTime(stop)
+Sets the finish time of a simulation. Example: hopsan.setFinishTime(16.2)
+
+\subsection getstarttime getStartTime()
+Returns the start time of a simulation. Example: startTime = hopsan.getStartTime()
+
+\subsection gettimestep getTimeStep()
+Returns the time step time of a simulation. Example: timeStep = hopsan.getTimeStep()
+
+\subsection getfinishtime getFinishTime()
+Returns the finish time of a simulation. Example: finishTime = hopsan.getFinishTime()
+
+\subsection simulate simulate()
+Simulates the current model. Example hopsan.simulate()
+
+\subsection simulateallopenmodels simulateAllOpenModels()
+Simulates all open models. If multi-threaded simulations is enabled, models will be simulated in parallel.
+
+\subsection getparameter getParameter(compName, parName)
+Returns the value for the parameter "parName" in the component "compName", Example: value = hopsan.getParameter("myOrifice", "Kc")
+
+\subsection setparameter setParameter(compName, parName, value)
+Sets the value for the parameter "parName" in the component "compName" to "value", Example: value = hopsan.setParameter("myOrifice", "Kc", 1e-11)
+
+\subsection setsystemparameter setSystemParameter(parName, value)
+Sets the system parameter "parName" to "value" in current system.
+
+\subsection addcomponent addComponent(name, typename, x, y, rotation)
+Adds a new component with specified name and typename at position (x,y) with specified rotation. Example: hopsan.addComponent("My Orifice", "HydraulicLaminarOrifice", 2000, 2100, 90)
+
+\subsection connect connect(compName1, portName1, compName2, portName2)
+Connects specified ports with a straight connector. Example: connect("My Orifice", "P1", "My Volume", "P2")
+
+\subsection entersystem enterSystem(sysName)
+Enter subsystem with specified name. Example: hopsan.enterSystem("My Subsystem")
+
+\subsection exitsystem exitSystem()
+Leaves current subsystem and opens parent system.
+
+\subsection clear clear()
+Removes all components and connections in current container.
+
+\subsection plot plot(compName, portName, dataName)
+Plots the variable "dataName" in the port "portName" of the component "compName". Example: hopsan.plot("sink", "in", "Value")
+
+\subsection plot2 plot(alias)
+Plots the variable with alias name "alias".
+	
+\subsection plottowindow plotToWindow(generation, compName, portName, dataName, windowNumber)
+Plots the specified generation of variable "dataName" in the port "portName" of the component "compName" to specified plot window. Plot window numbers begin at 0 for first window. Example: hopsan.plot(3, "sink", "in", "Value", 0)
+
+\subsection saveplotdata savePlotData(fileName, plotWindowNumber)
+Saves all plot data in specified plot window to a comma-separated values (.CSV) file. Example: hopsan.savePlotData("c:/data.csv", 2) 	
+
+\subsection closelastplotwindow closeLastPlotWindow()
+Closes the last opened plot window.
+
+\subsection refreshlastplotwindow refreshLastPlotWindow()
+Forces curves in first plot tab in last opened plot window to update their values to the latest plot generation.
+	
+\subsection getsimulationtime getSimulationTime()
+Returns the actual simlation time from last simulation. Example: hopsan.getSimlationTime()
+	
+\subsection usemulticore useMultiCore()
+Activates multi-threaded simulations. Example: hopsan.useMultiCore()
+	
+\subsection usesinglecore useSingleCore()
+Deactivates multi-threaded simulations. Example: hopsan.useSingleCore()
+	
+\subsection setnumberofthreads setNumberOfThreads(value)
+Specifies how many simlation threads that will be used in multi-threaded simulations. Example: hopsan.setNumberOfThreads(2)
+	
+\subsection turnonprogressbar turnOnProgressBar()
+Enables the simulation progress bar. Example: hopsan.turnOnProgressBar()
+	
+\subsection turnoffprogressbar turnOffProgressBar()
+Disables the simulation progress bar. Example: hopsan.turnOffProgressBar()
+
+
+\section componentcommands Component Commands
+
+\subsection getparameter parameter(parName)
+Returns the value in parameter "parName".
+Example: Kc = hopsan.component("Orifice").parameter("Kc")
+
+\subsection setparameter setParameter(parName, value)
+Sets the parameter "parName" to "value".
+Example: hopsan.component("Orifice").setParameter("Kc", 1e-10)
+
+\subsection port port(portName)
+Returns a handle to the port "portName"
+Example: hopsan.component("Orifice").port("P2")
+
+\subsection portnames portNames()
+Returns an array of port names in the component
+Example hopsan.component("Orifice").portNames()
+
+
+\section portcommands Port Commands
+
+\subsection portplot plot(dataName)
+Opens a new plot window with the variable "dataName".
+Example: hopsan.component("Orifice").port("P2").plot("Pressure")
+
+\subsection getlastvalue lastData(dataName)
+Returns the last value of variabel "dataName".
+Example: lastP1 = hopsan.component("Orifice").port("P2").lastData("Pressure")
+
+\subsection getdatavector data(dataName)
+Returns the data vector from last simulation for variable "dataName".
+Example: pressuredata = hopsan.component("Orifice").port("P2").data("Pressure")
+
+\subsection gettimevector time()
+Returns the time vector from last simulation.
+Example: time = hopsan.component("Orifice").port("P2").time()
+*/
+

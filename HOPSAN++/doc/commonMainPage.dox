@@ -1,38 +1,37 @@
 /*!
 
-\if DEVELOPERDOCUMENTATION
 \mainpage Hopsan Manual
-- \subpage userGuidePage
+- \subpage userHopsanGUIPage
+- \subpage userHopsanCLIPage
 - \subpage componentDevelopmentPage
+\if DEVELOPERDOCUMENTATION
 - \subpage hopsanDevelopmentPage
-\else
-\mainpage User Manual
-- \subpage userGuidePage
-- \subpage componentDevelopmentPage
 \endif
+- \subpage userAcknowledgementsPage
+
 
 \page componentDevelopmentPage Component Library Development
--# \subpage userTransmissionLineModelingMethodPage \n
--# \subpage userModelingInHopsanPage \n
--# \subpage devBaseRequirementsPage \n
--# \subpage userCustomComponentsPage \n
+-# \subpage userTransmissionLineModelingMethodPage
+-# \subpage userModelingInHopsanPage
+-# \subpage devBaseRequirementsPage
+-# \subpage devWritingCustomComponentsPage
+-# \subpage userAutomaticCodeGenerationPage
+-# \subpage userUnitTestModelsAndComponentsPage
 
-\page userGuidePage User Manual
--# \subpage userGettingStartedPage \n
--# \subpage userAnalysisToolsPage \n
--# \subpage userModelExportPage \n
--# \subpage userHcomScriptingPage \n
--# \subpage userPythonScriptingPage \n
--# \subpage userMultiThreadedPage \n
--# \subpage userAcknowledgementsPage \n
+\page userHopsanGUIPage Using The Hopsan GUI Application
+-# \subpage userGettingStartedPage
+-# \subpage userAnalysisToolsPage
+-# \subpage userModelExportPage
+-# \subpage userScriptingPage
+-# \subpage userMultiThreadedPage
 
 \if DEVELOPERDOCUMENTATION
-\page hopsanDevelopmentPage Hopsan Developer Manual
--# \subpage devBaseRequirementsPage \n
--# \subpage devHowtoBuildDocumentationPage \n
--# \subpage devBuildHopsanPage \n
--# \subpage devCodingConventionsPage \n
--# \subpage devSubversionAutoPropsPage \n
+\page hopsanDevelopmentPage For Hopsan Developers
+-# \subpage devBaseRequirementsPage
+-# \subpage devHowtoBuildDocumentationPage
+-# \subpage devBuildHopsanPage
+-# \subpage devCodingConventionsPage
+-# \subpage devSubversionAutoPropsPage
 \endif
 
 */

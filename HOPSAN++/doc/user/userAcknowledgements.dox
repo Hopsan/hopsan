@@ -12,9 +12,9 @@ Different parts of Hopsan depend on various third-party projects for some functi
 - <a href="http://tclap.sourceforge.net/">TCLAP</a> For command-line argument parsing
 
 \subsection userAcknowledgements_externalDependecies_gui HopsanGUI
-- <a href="http://qt.nokia.com/">Qt Creator</a> For Qt - Cross-platform application and UI framework
-- <a href="http://pythonqt.sourceforge.net/">PythonQt</a> For giving python scripts access to GUI functions
-- <a href="http://python.org/">Python</a> For python scripting support
-- <a href="http://qwt.sourceforge.net/">Qwt</a> For technical plotting support in Qt
+- <a href="http://http://qt-project.org">Qt Project</a> For Qt - Cross-platform application and UI framework
+- <a href="http://pythonqt.sourceforge.net">PythonQt</a> For giving python scripts access to GUI functions
+- <a href="http://python.org">Python</a> For python scripting support
+- <a href="http://qwt.sourceforge.net">Qwt</a> For technical plotting support in Qt
 
 */

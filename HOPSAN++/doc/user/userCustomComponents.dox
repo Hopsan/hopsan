@@ -1,34 +1,6 @@
 /*!
-\page userCustomComponentsPage Custom Components & Libraries
-
--# \subpage introduction-component-libraries \n
--# \subpage devWritingCustomComponentsPage \n
--# \subpage component-generator \n
--# \subpage generating-components-mathematica \n
--# \subpage unittest-components \n
-
-\page introduction-component-libraries Introduction to Component Libraries
-
-Hopsan uses pre-compiled components. An external component library can be loaded in the program by clicking on the Load External Library icon, in the bottom of the library widget.
-
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/loadlibrary_icon.png" border=0>
-</td>
-<td><b>Load External Library</b></td>
-</tr>
-</table>
-\endhtmlonly
-\image latex "../../graphics/loadlibrary_icon.png" "Load External Library"
-
-
-
-
-
-
-
-\page component-generator Component Generator Dialog
+\page userAutomaticCodeGenerationPage Automatically generating Component Code
+\section component-generator Component Generator Dialog
 Hopsan has a built-in component generator dialog, from where new components can be written without deeper knowledge of the Hopsan simulation core interface. It accessed from the "Generate New Component" icon at the bottom of the library widget.
 
 \htmlonly
@@ -49,28 +21,28 @@ The other option is to use equations. This function is currently an experimental
 
 Generated components are loaded automatically into a "Generated Component" library.
 
-\page generating-components-mathematica Generating Components From Mathematica
+\section generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
 
-\page unittest-components Model and Component Unit-Testing
+\page userUnitTestModelsAndComponentsPage Model and Component Unit-Testing
 When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results
 as a test model. You can later run this model again and automatically compare the simulation results. This is very important if you want to make sure that 
 your component and models do not change their behaviour when new versions of Hopsan are released.
 
-\section unittest-components_howtocreate How to Create a Validation Model
+\section userUnitTestModelsAndComponentsPage-components_howtocreate How to Create a Validation Model
 -# Open your model in HopsanGUI and simulate it.
   -# Add the variables (from ports) that you want to use as validation data to a plot window.
   -# Export the data as HVC (Hopsan Validation Configuration) and CSV (Comma Separated Values) files. The column order in the csv file is determined by the order you added curves.
 -# The generated hvc file contains default entries. You may want to manually edit it, see format description below.
 -# Store the model, dataset and hvc file in  a safe place. Remember that you can not make any more changes (that affect simulation results) to the model file.
 
-\section unittest-components_howtotest How to Test a Validation Model
+\section userUnitTestModelsAndComponentsPage-components_howtotest How to Test a Validation Model
 -# Use the HopsanCLI (Hopsan CommandLineInterface) with the -t (for test) switch according to:
   -# Windows: HopsanCLI.exe -t "MyHVCFile.hvc"
   -# Ubuntu:  ./HopsanCLI -t "MyHVCFile.hvc"
 -# If you want to automatically test multiple models, then you should write a script that goes through all of your hvc files.
 
-\section unittest-components_hvc-format The HVC (Hopsan Validation Configuration) Format
+\section userUnitTestModelsAndComponentsPage-components_hvc-format The HVC (Hopsan Validation Configuration) Format
 This is an example HVC File. Note that you can have multiple <validation> <component> <port> <variable> tags to perform multiple tests from the same configuration file.
 
 \verbatim
