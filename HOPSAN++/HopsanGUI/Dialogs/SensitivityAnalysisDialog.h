@@ -33,6 +33,7 @@ class SensitivityAnalysisDialog : public QDialog
 
 public:
     SensitivityAnalysisDialog(QWidget *parent = 0);
+    enum DistributionEnumT {UniformDistribution, NormalDistribution};
 
 public slots:
     virtual void open();
@@ -45,37 +46,24 @@ private slots:
 private:
     //Parameters
     QTreeWidget *mpParametersList;
-    QLabel *mpParametersLabel;
-    QLabel *mpParameterNameLabel;
-    QLabel *mpParameterAverageLabel;
-    QLabel *mpParameterSigmaLabel;
+    //QLabel *mpParametersLabel;
+    //QLabel *mpParameterNameLabel;
+    //QLabel *mpParameterAverageLabel;
+    //QLabel *mpParameterSigmaLabel;
     QGridLayout *mpParametersLayout;
-    QGroupBox *mpParametersGroupBox;
+    //QGroupBox *mpParametersGroupBox;
 
     //Output
     QTreeWidget *mpOutputList;
-    QLabel *mpOutputLabel;
-    QLabel *mpOutputNameLabel;
+    //QLabel *mpOutputLabel;
+    //QLabel *mpOutputNameLabel;
     QGridLayout *mpOutputLayout;
-    QGroupBox *mpOutputGroupBox;
+    //QGroupBox *mpOutputGroupBox;
 
-    //Steps
-    QLabel *mpStepsLabel;
+    //Member widgets
     QSpinBox *mpStepsSpinBox;
-    QHBoxLayout *mpStepsLayout;
-    QWidget *mpStepsWidget;
-
-    //Buttons
-    QPushButton *mpCancelButton;
-    QPushButton *mpRunButton;
-    QDialogButtonBox *mpButtonBox;
-
-    //Toolbar
-    QAction *mpHelpAction;
-    QToolBar *mpToolBar;
-
-    //Main layout
-    QGridLayout *mpLayout;
+    QRadioButton *mpUniformDistributionRadioButton;
+    QRadioButton *mpNormalDistributionRadioButton;
 
     //Member variables
     QStringList mSelectedComponents;
@@ -83,6 +71,8 @@ private:
     QList<QLabel*> mpParameterLabels;
     QList<QLineEdit*> mpParameterAverageLineEdits;
     QList<QLineEdit*> mpParameterSigmaLineEdits;
+    QList<QLineEdit*> mpParameterMinLineEdits;
+    QList<QLineEdit*> mpParameterMaxLineEdits;
 
     QList<QStringList> mOutputVariables;
     QList<QLabel*> mpOutputLabels;

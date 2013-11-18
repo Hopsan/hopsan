@@ -34,7 +34,7 @@
 #include <windows.h>
 #endif
 
-#include "global.h"
+#include "../global.h"
 #include "GUIUtilities.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
@@ -567,7 +567,7 @@ double firstTimeAt(QVector<double> vData, QVector<double> vTime, double value)
 
 
 //! @brief Generates a normal distributed random value
-//! Using the BoxâMuller transform
+//! Using the Box-Muller transform
 //! @param average Average value of normal distribution
 //! @param sigma Standard deviation of normal distribution
 double normalDistribution(double average, double sigma)
@@ -575,6 +575,14 @@ double normalDistribution(double average, double sigma)
     double U1 = (double)rand() / (double)RAND_MAX;
     double U2 = (double)rand() / (double)RAND_MAX;
     return average + sigma*sqrt(-2*log(U1))*cos(2*3.1415926*U2);
+}
+
+//! @brief Generates random values evenly distributed between a minimum and a maximum value
+//! @param min Minimum value
+//! @param max Maximum value
+double uniformDistribution(double min, double max)
+{
+    return min + (double)rand()/(double)RAND_MAX*(max-min);
 }
 
 // Operators

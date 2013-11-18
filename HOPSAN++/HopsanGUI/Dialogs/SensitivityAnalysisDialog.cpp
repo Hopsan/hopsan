@@ -53,80 +53,109 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     this->setPalette(gpConfig->getPalette());
 
     //Parameters list
-    mpParametersLabel = new QLabel("Choose uncertain parameters, and specify their standard deviation.");
-    QFont boldFont = mpParametersLabel->font();
+    QLabel *pParametersLabel = new QLabel("Choose uncertain parameters, and specify their standard deviation.");
+    QFont boldFont = pParametersLabel->font();
     boldFont.setBold(true);
     //mpParametersLabel->setFont(boldFont);
     mpParametersList = new QTreeWidget(this);
-    mpParameterNameLabel = new QLabel("Parameter Name");
-    mpParameterAverageLabel = new QLabel("Mean Value");
-    mpParameterSigmaLabel = new QLabel("Standard Deviation");
-    mpParameterNameLabel->setFont(boldFont);
-    mpParameterAverageLabel->setFont(boldFont);
-    mpParameterSigmaLabel->setFont(boldFont);
+    QLabel *pParameterNameLabel = new QLabel("Parameter Name");
+    QLabel *pParameterAverageLabel = new QLabel("Mean Value");
+    QLabel *pParameterSigmaLabel = new QLabel("Standard Deviation");
+    QLabel *pParameterMinLabel = new QLabel("Minimum Value");
+    QLabel *pParameterMaxLabel = new QLabel("Maximum Value");
+    pParameterAverageLabel->setVisible(false);
+    pParameterSigmaLabel->setVisible(false);
+    pParameterNameLabel->setFont(boldFont);
+    pParameterAverageLabel->setFont(boldFont);
+    pParameterSigmaLabel->setFont(boldFont);
+    pParameterMinLabel->setFont(boldFont);
+    pParameterMaxLabel->setFont(boldFont);
     mpParametersLayout = new QGridLayout(this);
-    mpParametersLayout->addWidget(mpParametersLabel,        0, 0, 1, 3);
-    mpParametersLayout->addWidget(mpParametersList,         1, 0, 1, 3);
-    mpParametersLayout->addWidget(mpParameterNameLabel,     2, 0, 1, 1);
-    mpParametersLayout->addWidget(mpParameterAverageLabel,      2, 1, 1, 1);
-    mpParametersLayout->addWidget(mpParameterSigmaLabel,      2, 2, 1, 1);
-    mpParametersGroupBox = new QGroupBox(this);
-    mpParametersGroupBox->setLayout(mpParametersLayout);
+    mpParametersLayout->addWidget(pParametersLabel,        0, 0, 1, 3);
+    mpParametersLayout->addWidget(mpParametersList,        1, 0, 1, 3);
+    mpParametersLayout->addWidget(pParameterNameLabel,     2, 0, 1, 1);
+    mpParametersLayout->addWidget(pParameterAverageLabel,  2, 1, 1, 1);
+    mpParametersLayout->addWidget(pParameterSigmaLabel,    2, 2, 1, 1);
+    mpParametersLayout->addWidget(pParameterMinLabel,      2, 1, 1, 1);
+    mpParametersLayout->addWidget(pParameterMaxLabel,      2, 2, 1, 1);
+    QGroupBox *pParametersGroupBox = new QGroupBox(this);
+    pParametersGroupBox->setLayout(mpParametersLayout);
 
     //Output variables list
-    mpOutputLabel = new QLabel("Choose output variables:");
+    QLabel *pOutputLabel = new QLabel("Choose output variables:");
     mpOutputList = new QTreeWidget(this);
-    mpOutputNameLabel = new QLabel("Variable Name");
-    mpOutputNameLabel->setFont(boldFont);
+    QLabel *pOutputNameLabel = new QLabel("Variable Name");
+    pOutputNameLabel->setFont(boldFont);
     mpOutputLayout = new QGridLayout(this);
-    mpOutputLayout->addWidget(mpOutputLabel,        0, 0, 1, 3);
+    mpOutputLayout->addWidget(pOutputLabel,        0, 0, 1, 3);
     mpOutputLayout->addWidget(mpOutputList,         1, 0, 1, 3);
-    mpOutputLayout->addWidget(mpOutputNameLabel,     2, 0, 1, 1);
-    mpOutputGroupBox = new QGroupBox(this);
-    mpOutputGroupBox->setLayout(mpOutputLayout);
+    mpOutputLayout->addWidget(pOutputNameLabel,     2, 0, 1, 1);
+    QGroupBox *pOutputGroupBox = new QGroupBox(this);
+    pOutputGroupBox->setLayout(mpOutputLayout);
 
-    //Output variables
-    mpStepsLabel = new QLabel("Number of simulation steps: ");
+    //Settings
+    QLabel *pDistributionTypeLabel = new QLabel("Distribution type: ");
+    mpUniformDistributionRadioButton = new QRadioButton("Uniform distribution", this);
+    mpUniformDistributionRadioButton->setChecked(true);
+    mpNormalDistributionRadioButton = new QRadioButton("Normal distribution", this);
+    QVBoxLayout *pDistributionRadioButtonsLayout = new QVBoxLayout(this);
+    pDistributionRadioButtonsLayout->addWidget(mpUniformDistributionRadioButton);
+    pDistributionRadioButtonsLayout->addWidget(mpNormalDistributionRadioButton);
+    QWidget *pDistributionGroupBox = new QWidget(this);
+    pDistributionGroupBox->setLayout(pDistributionRadioButtonsLayout);
+    QHBoxLayout *pDistributionLayout = new QHBoxLayout();
+    pDistributionLayout->addWidget(pDistributionTypeLabel);
+    pDistributionLayout->addWidget(pDistributionGroupBox);
+
+    QLabel *pStepsLabel = new QLabel("Number of simulation steps: ");
     mpStepsSpinBox = new QSpinBox(this);
     mpStepsSpinBox->setValue(100);
     mpStepsSpinBox->setMinimum(1);
     mpStepsSpinBox->setMaximum(1000000);
     mpStepsSpinBox->setSingleStep(1);
-    mpStepsLayout = new QHBoxLayout(this);
-    mpStepsLayout->addWidget(mpStepsLabel);
-    mpStepsLayout->addWidget(mpStepsSpinBox);
-    mpStepsWidget = new QWidget(this);
-    mpStepsWidget->setLayout(mpStepsLayout);
+    QHBoxLayout *pStepsLayout = new QHBoxLayout();
+    pStepsLayout->addWidget(pStepsLabel);
+    pStepsLayout->addWidget(mpStepsSpinBox);
+
+    QGroupBox *pSettingsGroupBox = new QGroupBox();
+    QVBoxLayout *pSettingsLayout = new QVBoxLayout();
+    pSettingsLayout->addLayout(pDistributionLayout);
+    pSettingsLayout->addLayout(pStepsLayout);
+    pSettingsGroupBox->setLayout(pSettingsLayout);
 
     //Buttons
-    mpCancelButton = new QPushButton(tr("&Cancel"), this);
-    mpCancelButton->setAutoDefault(false);
-    mpRunButton = new QPushButton(tr("&Start Analysis"), this);
-    mpRunButton->setDefault(true);
-    mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
-    mpButtonBox->addButton(mpRunButton, QDialogButtonBox::ActionRole);
+    QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
+    pCancelButton->setAutoDefault(false);
+    QPushButton *pRunButton = new QPushButton(tr("&Start Analysis"), this);
+    pRunButton->setDefault(true);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pRunButton, QDialogButtonBox::ActionRole);
 
     //Toolbar
-    mpHelpAction = new QAction("Show Context Help", this);
-    mpHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
-    mpToolBar = new QToolBar(this);
-    mpToolBar->addAction(mpHelpAction);
+    QAction *pHelpAction = new QAction("Show Context Help", this);
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    QToolBar *pToolBar = new QToolBar(this);
+    pToolBar->addAction(pHelpAction);
 
 
     //Main layout
-    mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpParametersGroupBox,   0, 0, 1, 2);
-    mpLayout->addWidget(mpOutputGroupBox,       1, 0, 1, 2);
-    mpLayout->addWidget(mpStepsWidget,          2, 0, 1, 2);
-    mpLayout->addWidget(mpButtonBox,            3, 1, 1, 1);
-    mpLayout->addWidget(mpToolBar,              3, 0, 1, 1);
-    setLayout(mpLayout);
+    QGridLayout *pLayout = new QGridLayout(this);
+    pLayout->addWidget(pParametersGroupBox,   0, 0, 1, 2);
+    pLayout->addWidget(pOutputGroupBox,       1, 0, 1, 2);
+    pLayout->addWidget(pSettingsGroupBox,     2, 0, 1, 2);
+    pLayout->addWidget(pButtonBox,            4, 1, 1, 1);
+    pLayout->addWidget(pToolBar,              4, 0, 1, 1);
+    setLayout(pLayout);
 
     //Connections
-    connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
-    connect(mpRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
-    connect(mpHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(pCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
+    connect(pRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
+    connect(pHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), pParameterAverageLabel, SLOT(setVisible(bool)));
+    connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), pParameterSigmaLabel, SLOT(setVisible(bool)));
+    connect(mpUniformDistributionRadioButton, SIGNAL(toggled(bool)), pParameterMinLabel, SLOT(setVisible(bool)));
+    connect(mpUniformDistributionRadioButton, SIGNAL(toggled(bool)), pParameterMaxLabel, SLOT(setVisible(bool)));
 }
 
 void SensitivityAnalysisDialog::open()
@@ -149,6 +178,7 @@ void SensitivityAnalysisDialog::open()
             pComponentItem->insertChild(0, pParameterItem);
         }
     }
+    mpParametersList->sortItems(0, Qt::AscendingOrder);
     connect(mpParametersList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenParameters(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
     mpOutputList->clear();
@@ -174,11 +204,17 @@ void SensitivityAnalysisDialog::open()
             pComponentItem->insertChild(0, pPortItem);
         }
     }
+    mpOutputList->sortItems(0, Qt::AscendingOrder);
     connect(mpOutputList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenVariables(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
     mOutputVariables.clear();
     mSelectedParameters.clear();
     mSelectedComponents.clear();
+    mpParameterAverageLineEdits.clear();
+    mpParameterLabels.clear();
+    mpParameterMaxLineEdits.clear();
+    mpParameterMinLineEdits.clear();
+    mpParameterSigmaLineEdits.clear();
 
     QDialog::show();
 }
@@ -195,15 +231,31 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
         QString averageValue = gpModelHandler->getCurrentViewContainerObject()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
         QLineEdit *pAverageLineEdit = new QLineEdit(averageValue, this);
         QLineEdit *pSigmaLineEdit = new QLineEdit("0.0", this);
+        QLineEdit *pMinLineEdit = new QLineEdit("0.0", this);
+        QLineEdit *pMaxLineEdit = new QLineEdit("1.0", this);
         pSigmaLineEdit->setValidator(new QDoubleValidator());
+        pMinLineEdit->setValidator(new QDoubleValidator());
+        pMaxLineEdit->setValidator(new QDoubleValidator());
         mpParameterLabels.append(pLabel);
         mpParameterAverageLineEdits.append(pAverageLineEdit);
         mpParameterSigmaLineEdits.append(pSigmaLineEdit);
+        mpParameterMinLineEdits.append(pMinLineEdit);
+        mpParameterMaxLineEdits.append(pMaxLineEdit);
+        mpParameterAverageLineEdits.last()->setVisible(mpNormalDistributionRadioButton->isChecked());
+        mpParameterSigmaLineEdits.last()->setVisible(mpNormalDistributionRadioButton->isChecked());
+        mpParameterMinLineEdits.last()->setVisible(mpUniformDistributionRadioButton->isChecked());
+        mpParameterMaxLineEdits.last()->setVisible(mpUniformDistributionRadioButton->isChecked());
+        connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), mpParameterAverageLineEdits.last(), SLOT(setVisible(bool)));
+        connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), mpParameterSigmaLineEdits.last(), SLOT(setVisible(bool)));
+        connect(mpUniformDistributionRadioButton, SIGNAL(toggled(bool)), mpParameterMinLineEdits.last(), SLOT(setVisible(bool)));
+        connect(mpUniformDistributionRadioButton, SIGNAL(toggled(bool)), mpParameterMaxLineEdits.last(), SLOT(setVisible(bool)));
 
         int row = mpParametersLayout->rowCount();
         mpParametersLayout->addWidget(pLabel, row, 0);
         mpParametersLayout->addWidget(pAverageLineEdit, row, 1);
         mpParametersLayout->addWidget(pSigmaLineEdit, row, 2);
+        mpParametersLayout->addWidget(pMinLineEdit, row, 1);
+        mpParametersLayout->addWidget(pMaxLineEdit, row, 2);
     }
     else
     {
@@ -268,6 +320,17 @@ void SensitivityAnalysisDialog::updateChosenVariables(QTreeWidgetItem* item, int
 
 void SensitivityAnalysisDialog::run()
 {
+    DistributionEnumT type;
+    if(mpUniformDistributionRadioButton->isChecked())
+    {
+        type = UniformDistribution;
+    }
+    else
+    {
+        type = NormalDistribution;
+    }
+
+
     int nThreads = gpConfig->getNumberOfThreads();
     if(nThreads == 0)
     {
@@ -320,7 +383,17 @@ void SensitivityAnalysisDialog::run()
             {
                 for(int p=0; p<nParameteres; ++p)
                 {
-                    double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
+                    double randPar;
+                    if(type == UniformDistribution)
+                    {
+                        double min = mpParameterMinLineEdits.at(p)->text().toDouble();
+                        double max = mpParameterMaxLineEdits.at(p)->text().toDouble();
+                        randPar = uniformDistribution(min, max);
+                    }
+                    else
+                    {
+                        randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
+                    }
                     gpModelHandler->getViewContainerObject(t)->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
                 }
             }
@@ -334,7 +407,17 @@ void SensitivityAnalysisDialog::run()
         {
             for(int p=0; p<nParameteres; ++p)
             {
-                double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
+                double randPar;
+                if(type == UniformDistribution)
+                {
+                    double min = mpParameterMinLineEdits.at(p)->text().toDouble();
+                    double max = mpParameterMaxLineEdits.at(p)->text().toDouble();
+                    randPar = uniformDistribution(min, max);
+                }
+                else
+                {
+                    randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
+                }
                 gpModelHandler->getCurrentViewContainerObject()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
             }
             gpModelHandler->getCurrentModel()->simulate_blocking();
@@ -386,7 +469,7 @@ void SensitivityAnalysisDialog::run()
             pPlotWindow->setLegendsVisible(false);
 
             QString fullName = makeConcatName(component,port,variable);
-            int nGenerations = gpModelHandler->getViewContainerObject(0)->getLogDataHandler()->getLatestGeneration()+1;
+            int nGenerations = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLatestGeneration()+1;
             for(int g=nGenerations - nSteps; g<nGenerations; ++g)
             {
                 gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
