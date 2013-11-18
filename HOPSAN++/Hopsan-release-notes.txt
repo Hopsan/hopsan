@@ -25,6 +25,11 @@
 ******************************
     Version History
 ******************************
+0.6.4
+- Enhancement: The Hopsan help guide has been updated and reorganized, specifically the section about how to get starter writing your own component  libraries in C++. The users guide now contain step-by-step instructions on how to install a development environment.
+               A help section explaining the use of the Hopsan command line interface (CLI) has also been added.
+               Manny documentation bugs have also been fixed.
+
 0.6.3a
 - Fixed: Update notification and auto updater was not working (since 0.6.0)
 - Enhancement: If you import variables and then run a simulation resulting in variables with same name, the model variables will be shown in the PlotWidget.

@@ -24,6 +24,7 @@
 -# \subpage userModelExportPage
 -# \subpage userScriptingPage
 -# \subpage userMultiThreadedPage
+-# \subpage userShortkeysPage
 
 \if DEVELOPERDOCUMENTATION
 \page hopsanDevelopmentPage For Hopsan Developers
