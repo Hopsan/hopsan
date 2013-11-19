@@ -377,42 +377,21 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
 
 //! @brief Generates XML and compiles the new component
-void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &plainInitAlgorithms, QStringList &plainEquations, QStringList &plainFinalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
+void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
 {
-
-    //Create list of initial algorithms
-    QList<Expression> initAlgorithms;
-    for(int i=0; i<plainInitAlgorithms.size(); ++i)
-    {
-        initAlgorithms.append(Expression(plainInitAlgorithms.at(i)));
-        if(!initAlgorithms[i].isAssignment())
-        {
-            printErrorMessage("Initial algorithm is not an assignment.");
-            return;
-        }
-    }
-
     //Create list of equqtions
-    QList<Expression> equations;
+    QList<Expression> systemEquations;
     for(int e=0; e<plainEquations.size(); ++e)
     {
-        equations.append(Expression(plainEquations.at(e)));
+        if(plainEquations[e].trimmed().startsWith("//"))
+        {
+            continue;   //Ignore comments
+        }
+        systemEquations.append(Expression(plainEquations.at(e)));
         //qDebug() << "EQUATION: " << equations[e].toString();
-        if(!equations[e].isEquation())
+        if(!systemEquations[e].isEquation())
         {
             printErrorMessage("Equation is not an equation.");
-            return;
-        }
-    }
-
-    //Create list of final algorithms
-    QList<Expression> finalAlgorithms;
-    for(int i=0; i<plainFinalAlgorithms.size(); ++i)
-    {
-        finalAlgorithms.append(Expression(plainFinalAlgorithms.at(i)));
-        if(!initAlgorithms[i].isAssignment())
-        {
-            printErrorMessage("Final algorithm is not an assignment.");
             return;
         }
     }
@@ -424,9 +403,9 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     QList<Expression> limitMaxValues;
     QList<int> limitedVariableEquations;
     QList<int> limitedDerivativeEquations;
-    for(int i=0; i<equations.size(); ++i)
+    for(int i=0; i<systemEquations.size(); ++i)
     {
-        if(equations[i].getFunctionName() == "VariableLimits")
+        if(systemEquations[i].getFunctionName() == "VariableLimits")
         {
             if(i<1)
             {
@@ -435,17 +414,17 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
                 return;
             }
 
-            limitedVariables << equations[i].getArgument(0);
+            limitedVariables << systemEquations[i].getArgument(0);
             limitedDerivatives << Expression();
-            limitMinValues << equations[i].getArgument(1);
-            limitMaxValues << equations[i].getArgument(2);
+            limitMinValues << systemEquations[i].getArgument(1);
+            limitMaxValues << systemEquations[i].getArgument(2);
             limitedVariableEquations << i-1;
             limitedDerivativeEquations << -1;
 
-            equations.removeAt(i);
+            systemEquations.removeAt(i);
             --i;
         }
-        else if(equations[i].getFunctionName()== "Variable2Limits")
+        else if(systemEquations[i].getFunctionName()== "Variable2Limits")
         {
             if(i<2)
             {
@@ -453,91 +432,69 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
                 return;
             }
 
-            limitedVariables << equations[i].getArgument(0);
-            limitedDerivatives << equations[i].getArgument(1);
-            limitMinValues << equations[i].getArgument(2);
-            limitMaxValues << equations[i].getArgument(3);
+            limitedVariables << systemEquations[i].getArgument(0);
+            limitedDerivatives << systemEquations[i].getArgument(1);
+            limitMinValues << systemEquations[i].getArgument(2);
+            limitMaxValues << systemEquations[i].getArgument(3);
             limitedVariableEquations << i-2;
             limitedDerivativeEquations << i-1;
 
-            equations.removeAt(i);
+            systemEquations.removeAt(i);
             --i;
         }
     }
 
     //Verify each equation
-    for(int i=0; i<equations.size(); ++i)
+    for(int i=0; i<systemEquations.size(); ++i)
     {
-        if(!equations[i].verifyExpression())
+        if(!systemEquations[i].verifyExpression())
         {
             printErrorMessage("Component generation failed: Verification of variables failed.");
             return;
         }
     }
 
-    QList<QList<Expression> > leftSymbols2, rightSymbols2;
-    for(int i=0; i<equations.size(); ++i)
-    {
-        leftSymbols2.append(equations[i].getLeft()->getVariables());
-        rightSymbols2.append(equations[i].getRight()->getVariables());
-    }
-
     //Sum up all used variables to a single list
-    QList<Expression> allSymbols;
-    for(int i=0; i<equations.size(); ++i)
+    QList<Expression> unknowns;
+    for(int i=0; i<systemEquations.size(); ++i)
     {
-        allSymbols.append(leftSymbols2.at(i));
-        allSymbols.append(rightSymbols2.at(i));
+        unknowns.append(systemEquations[i].getVariables());
     }
 
-    QStringList allSymbolsList;
-    for(int a=0; a<allSymbols.size(); ++a)
-    {
-        allSymbolsList.append(allSymbols[a].toString());
-    }
-    //qDebug() << "All symbols: " << allSymbolsList;
-
-
-    QList<Expression> initSymbols2;
+    QList<Expression> knowns;
     for(int i=0; i<initAlgorithms.size(); ++i)
     {
-        if(!initAlgorithms[i].isAssignment())
+        if(initAlgorithms[i].contains("="))
         {
-            printErrorMessage("Component generation failed: Initial algorithms section contains non-algorithms.");
-            return;
+            QString var = initAlgorithms[i].section("=",0,0).trimmed();
+            knowns.append(var);
         }
-        initSymbols2.append((*initAlgorithms[i].getLeft()));
     }
 
-    QList<Expression> finalSymbols2;
     for(int i=0; i<finalAlgorithms.size(); ++i)
     {
-        //! @todo We must check that all algorithms are actually algorithms before doing this!
-        if(!finalAlgorithms[i].isAssignment())
+        if(finalAlgorithms[i].contains("="))
         {
-            printErrorMessage("Component generation failed: Final algorithms section contains non-algorithms.");
-            return;
+            QString var = finalAlgorithms[i].section("=",0,0).trimmed();
+            if(var.contains("(") || var.contains("{")) continue;
+            knowns.append(var);
         }
-        finalSymbols2.append((*finalAlgorithms[i].getLeft()));
     }
 
+    //Add parameterse to list of known variables
     for(int i=0; i<parameters.size(); ++i)
     {
-        allSymbols.append(Expression(parameters[i].name));
+        knowns.append(Expression(parameters[i].name));
     }
-    allSymbols.append(initSymbols2);
-    allSymbols.append(finalSymbols2);
-    removeDuplicates(allSymbols);
 
-    //Generate a list of state variables (= "output" variables & local variables)
-    QList<Expression> nonStateVars;
+
 
     for(int i=0; i<ports.size(); ++i)
     {
         QString num = QString::number(i+1);
         if(ports[i].porttype == "ReadPort")
         {
-            nonStateVars.append(Expression(ports[i].name));
+            knowns.append(Expression(ports[i].name));
         }
         else if(ports[i].porttype == "PowerPort" && cqsType == "C")
         {
@@ -545,7 +502,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             qVars << GeneratorNodeInfo(ports[i].nodetype).qVariables;
             for(int v=0; v<qVars.size(); ++v)
             {
-                nonStateVars.append(Expression(qVars[v]+num));
+                knowns.append(Expression(qVars[v]+num));
             }
         }
         else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
@@ -554,105 +511,44 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             cVars << GeneratorNodeInfo(ports[i].nodetype).cVariables;
             for(int v=0; v<cVars.size(); ++v)
             {
-                nonStateVars.append(Expression(cVars[v]+num));
+                knowns.append(Expression(cVars[v]+num));
             }
         }
     }
 
-    for(int i=0; i<parameters.size(); ++i)
+    //Remove known variables from list of uknowns
+    for(int i=0; i<knowns.size(); ++i)
     {
-        nonStateVars.append(Expression(parameters[i].name));
+        unknowns.removeAll(knowns[i]);
     }
-    for(int i=0; i<initSymbols2.size(); ++i)
-    {
-        nonStateVars.append(initSymbols2[i]);
-    }
-    for(int i=0; i<finalSymbols2.size(); ++i)
-    {
-        nonStateVars.append(finalSymbols2[i]);
-    }
-
-    QList<Expression> stateVars = allSymbols;
-    for(int i=0; i<nonStateVars.size(); ++i)
-    {
-        stateVars.removeAll(nonStateVars[i]);
-    }
+    removeDuplicates(unknowns);
 
     //Verify equation system
-    if(!verifyEquationSystem(equations, stateVars, this))
+    if(!verifyEquationSystem(systemEquations, unknowns, this))
     {
 //        printErrorMessage("Verification of equation system failed.");
         return;
     }
 
-
-    //Generate list of local variables (variables that are neither input nor output)
-    QList<Expression> nonLocals;
-
-    for(int i=0; i<ports.size(); ++i)
-    {
-        QString num = QString::number(i+1);
-        if(ports[i].porttype == "ReadPort" || ports[i].porttype == "WritePort")
-        {
-            nonLocals.append(Expression(ports[i].name));     //Remove all readport/writeport varibles
-        }
-        else if(ports[i].porttype == "PowerPort")
-        {
-            QStringList qVars;
-            QStringList cVars;
-            qVars << GeneratorNodeInfo(ports[i].nodetype).qVariables;
-            cVars << GeneratorNodeInfo(ports[i].nodetype).cVariables;
-            for(int v=0; v<qVars.size(); ++v)
-            {
-                nonLocals.append(Expression(qVars[v]+num));      //Remove all Q-type variables
-            }
-            for(int v=0; v<cVars.size(); ++v)
-            {
-                nonLocals.append(Expression(cVars[v]+num));      //Remove all C-type variables
-            }
-        }
-    }
-    for(int i=0; i<parameters.size(); ++i)
-    {
-        nonLocals.append(Expression(parameters[i].name));   //Remove all parameters
-    }
-
-    QList<Expression> localVars = allSymbols;
-    for(int i=0; i<nonLocals.size(); ++i)
-    {
-        localVars.removeAll(nonLocals[i]);
-    }
-    for(int i=0; i<localVars.size(); ++i)
-    {
-        allSymbols.removeAll(localVars[i]);
-    }
-    for(int i=0; i<variables.size(); ++i)
-    {
-        if(!localVars.contains(Expression(variables[i].name)))
-        {
-            localVars.append(Expression(variables[i].name));
-        }
-    }
-
     //Make all equations left-sided
-    for(int e=0; e<equations.size(); ++e)
+    for(int e=0; e<systemEquations.size(); ++e)
     {
-        equations[e].toLeftSided();
+        systemEquations[e].toLeftSided();
         //qDebug() << "LEFT SIDED: " << equations[e].toString();
     }
 
     //Generate a preferred path for sorting, based on the location of derivatives of state variables
     //This must be done before the bilinear transform, so that we can identify derivatives
     QList< QList<int> > preferredPath;
-    Q_FOREACH(const Expression &var, stateVars)
+    Q_FOREACH(const Expression &var, unknowns)
     {
         preferredPath.append(QList<int>());
-        Q_FOREACH(const Expression &equation, equations)
+        Q_FOREACH(const Expression &equation, systemEquations)
         {
             if(equation.contains(Expression::fromFunctionArguments("der", QList<Expression>() << var)) ||
                equation.getLeft()->getTerms().contains(var))
             {
-                preferredPath.last().append(equations.indexOf(equation));
+                preferredPath.last().append(systemEquations.indexOf(equation));
             }
         }
     }
@@ -664,47 +560,47 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 
 
     //Apply bilinear transform
-    for(int e=0; e<equations.size(); ++e)
+    for(int e=0; e<systemEquations.size(); ++e)
     {
-        equations[e] = equations[e].bilinearTransform();
-        equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
+        systemEquations[e] = systemEquations[e].bilinearTransform();
+        systemEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
         //qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
     }
 
 
     //Linearize equations
-    for(int e=0; e<equations.size(); ++e)
+    for(int e=0; e<systemEquations.size(); ++e)
     {
-        equations[e].linearize();
-        equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
+        systemEquations[e].linearize();
+        systemEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
         //qDebug() << "LINEARIZED: " << equations[e].toString();
-        equations[e].replaceBy((*equations[e].getLeft()));
+        systemEquations[e].replaceBy((*systemEquations[e].getLeft()));
     }
 
 
     //Transform delay operators to delay functions and store delay terms separately
     QList<Expression> delayTerms;
     QStringList delaySteps;
-    for(int e=0; e<equations.size(); ++e)
+    for(int e=0; e<systemEquations.size(); ++e)
     {
-        equations[e].expand();
-        equations[e].toDelayForm(delayTerms, delaySteps);
-        equations[e]._simplify(Expression::FullSimplification);
+        systemEquations[e].expand();
+        systemEquations[e].toDelayForm(delayTerms, delaySteps);
+        systemEquations[e]._simplify(Expression::FullSimplification);
         //qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
     }
 
 
     for(int i=0; i<limitedVariableEquations.size(); ++i)
     {
-        equations[limitedVariableEquations[i]].factor(limitedVariables[i]);
+        systemEquations[limitedVariableEquations[i]].factor(limitedVariables[i]);
 
-        Expression rem = equations[limitedVariableEquations[i]];
+        Expression rem = systemEquations[limitedVariableEquations[i]];
         rem.replace(limitedVariables[i], Expression(0));
         rem._simplify(Expression::FullSimplification, Expression::Recursive);
 
         //qDebug() << "REM: " << rem.toString();
 
-        Expression div = equations[limitedVariableEquations[i]];
+        Expression div = systemEquations[limitedVariableEquations[i]];
         div.subtractBy(rem);
         div.replace(limitedVariables[i], Expression(1));
         div.expand();
@@ -719,19 +615,19 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         //qDebug() << "REM AGAIN: " << rem.toString();
 
         //qDebug() << "Limit string: -limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")";
-        equations[limitedVariableEquations[i]] = Expression::fromTwoTerms(limitedVariables[i], Expression("-limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"));
+        systemEquations[limitedVariableEquations[i]] = Expression::fromTwoTerms(limitedVariables[i], Expression("-limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"));
 
         //qDebug() << "Limited: " << equations[limitedVariableEquations[i]].toString();
 
         if(!limitedDerivatives[i].toString().isEmpty())      //Variable2Limits (has a derivative)
         {
-            equations[limitedDerivativeEquations[i]].factor(limitedDerivatives[i]);
+            systemEquations[limitedDerivativeEquations[i]].factor(limitedDerivatives[i]);
 
-            Expression rem = equations[limitedDerivativeEquations[i]];
+            Expression rem = systemEquations[limitedDerivativeEquations[i]];
             rem.replace(limitedDerivatives[i], Expression(0));
             rem._simplify(Expression::FullSimplification, Expression::Recursive);
 
-            Expression div = equations[limitedDerivativeEquations[i]];
+            Expression div = systemEquations[limitedDerivativeEquations[i]];
             div.subtractBy(rem);
             div.replace(limitedDerivatives[i], Expression(1));
             div.expand();
@@ -740,34 +636,124 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             rem = Expression::fromFactorDivisor(rem, div);
             rem.changeSign();
 
-            equations[limitedDerivativeEquations[i]] = Expression::fromTwoTerms(limitedDerivatives[i], Expression::fromTwoFactors(Expression("-dxLimit("+limitedVariables[i].toString()+","+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"), rem));
+            systemEquations[limitedDerivativeEquations[i]] = Expression::fromTwoTerms(limitedDerivatives[i], Expression::fromTwoFactors(Expression("-dxLimit("+limitedVariables[i].toString()+","+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"), rem));
         }
     }
 
+
+
+    //Identify system equations containing only one unknown (can be resolved before the rest of the system)
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+        qDebug() << "Testing equation: " << systemEquations[e].toString();
+        QList<Expression> usedUnknowns;
+        for(int u=0; u<unknowns.size(); ++u)
+        {
+            qDebug() << "   Testing variable: " << unknowns[u].toString();
+            if(systemEquations[e].contains(unknowns[u]))
+            {
+                qDebug() << "Equation contains it!";
+                usedUnknowns.append(unknowns[u]);
+            }
+        }
+
+        if(usedUnknowns.size() == 1)
+        {
+            //Found only one unknown, try to break it out of the equation
+            Expression tempExpr = systemEquations[e];
+            tempExpr.factor(usedUnknowns[0]);
+            if(tempExpr.getTerms().size() == 1)
+            {
+                tempExpr = Expression(0.0);
+            }
+            else
+            {
+                Expression term = tempExpr.getTerms()[0];
+                tempExpr.removeTerm(term);
+                term.replace(usedUnknowns[0], Expression(1));
+                term._simplify(Expression::FullSimplification, Expression::Recursive);
+                tempExpr.divideBy(term);
+                tempExpr.changeSign();
+                tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+            }
+            if(!tempExpr.contains(usedUnknowns[0]))
+            {
+                initAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
+                systemEquations.removeAt(e);
+                --e;
+                unknowns.removeAll(usedUnknowns[0]);
+            }
+        }
+    }
+
+
+    //Identify system equations containing a unique variable (can be resolved after the rest of the system)
+    for(int u=0; u<unknowns.size(); ++u)
+    {
+        size_t count=0;
+        size_t lastFound=-1;
+        for(int e=0; e<systemEquations.size(); ++e)
+        {
+            if(systemEquations[e].contains(unknowns[u]))
+            {
+                ++count;
+                lastFound=e;
+            }
+        }
+        if(count==1)
+        {
+            //Found the unknown if only one equation, try to break it out and prepend on final algorithms
+            Expression tempExpr = systemEquations[lastFound];
+            tempExpr.factor(unknowns[u]);
+            if(tempExpr.getTerms().size() == 1)
+            {
+                tempExpr = Expression(0.0);
+            }
+            else
+            {
+                Expression term = tempExpr.getTerms()[0];
+                tempExpr.removeTerm(term);
+                term.replace(unknowns[u], Expression(1));
+                term._simplify(Expression::FullSimplification, Expression::Recursive);
+                tempExpr.divideBy(term);
+                tempExpr.changeSign();
+                tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+            }
+            if(!tempExpr.contains(unknowns[u]))
+            {
+                finalAlgorithms.prepend(Expression::fromEquation(unknowns[u], tempExpr).toString());
+                systemEquations.removeAt(lastFound);
+                unknowns.removeAt(u);
+                --u;
+            }
+        }
+    }
+
+
     //Differentiate each equation for each state variable to generate the Jacobian matrix
     QList<QList<Expression> > jacobian;
-    for(int e=0; e<equations.size(); ++e)
+    for(int e=0; e<systemEquations.size(); ++e)
     {
          //Remove all delay operators, since they shall not be in the Jacobian anyway
-        gTempExpr = equations[e];
+        gTempExpr = systemEquations[e];
         gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
 
-        QList<Expression> result = QtConcurrent::blockingMapped(stateVars, concurrentDiff);
+        QList<Expression> result = QtConcurrent::blockingMapped(unknowns, concurrentDiff);
 
         jacobian.append(result);
     }
 
     //Sort equation system so that each equation contains its corresponding state variable
-    if(!sortEquationSystem(equations, jacobian, stateVars, limitedVariableEquations, limitedDerivativeEquations, preferredOrder))
+    if(!sortEquationSystem(systemEquations, jacobian, unknowns, limitedVariableEquations, limitedDerivativeEquations, preferredOrder))
     {
         printErrorMessage("Could not sort equations. System is probably under-determined.");
         //qDebug() << "Could not sort equations. System is probably under-determined.";
         return;
     }
 
-    for(int e=0; e<equations.size(); ++e)
+    for(int e=0; e<systemEquations.size(); ++e)
     {
-        equations[e]._simplify(Expression::FullSimplification);
+        systemEquations[e]._simplify(Expression::FullSimplification);
     }
 
     //Generate appearance object
@@ -797,6 +783,12 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         comp.portDefaults << ports[i].defaultvalue;
     }
 
+    comp.parNames << "nIter";
+    comp.parDisplayNames << "nIter";
+    comp.parDescriptions << "Number of Newton-Rhapson iterations";
+    comp.parUnits << "-";
+    comp.parInits << "1";
+
     for(int i=0; i<parameters.size(); ++i)
     {
         comp.parNames << parameters[i].name;
@@ -806,15 +798,22 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         comp.parInits << parameters[i].init;
     }
 
+    for(int i=0; i<variables.size(); ++i)
+    {
+        comp.varNames.append(variables[i].name);
+        comp.varInits.append(variables[i].init);
+        comp.varTypes.append("double");
+    }
+
     if(!jacobian.isEmpty())
     {
-        comp.varNames << "order["+QString::number(stateVars.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSolver";
+        comp.varNames << "order["+QString::number(unknowns.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSolver";
         comp.varInits << "" << "" << "" << "" << "";
         comp.varTypes << "double" << "Matrix" << "Vec" << "Vec" << "EquationSystemSolver*";
 
-        comp.initEquations << "jacobianMatrix.create("+QString::number(equations.size())+","+QString::number(stateVars.size())+");";
-        comp.initEquations << "systemEquations.create("+QString::number(equations.size())+");";
-        comp.initEquations << "stateVariables.create("+QString::number(equations.size())+");";
+        comp.initEquations << "jacobianMatrix.create("+QString::number(systemEquations.size())+","+QString::number(unknowns.size())+");";
+        comp.initEquations << "systemEquations.create("+QString::number(systemEquations.size())+");";
+        comp.initEquations << "stateVariables.create("+QString::number(systemEquations.size())+");";
         comp.initEquations << "";
     }
 
@@ -827,14 +826,14 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         comp.initEquations << "";
         //comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString::number(sysEquations.size())+");";
-        comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString::number(equations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
+        comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString::number(systemEquations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
         comp.finalEquations << "delete mpSolver;";
     }
 
     comp.simEquations << "//Initial algorithm section";
     for(int i=0; i<initAlgorithms.size(); ++i)
     {
-        comp.simEquations << initAlgorithms[i].toString()+";";
+        comp.simEquations << initAlgorithms[i]+";";
     }
     comp.simEquations << "";
 
@@ -865,23 +864,25 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 
     if(!jacobian.isEmpty())
     {
-        for(int i=0; i<stateVars.size(); ++i)
+        for(int i=0; i<unknowns.size(); ++i)
         {
-            comp.simEquations << "stateVariables["+QString::number(i)+"] = "+stateVars[i].toString()+";";
+            comp.simEquations << "stateVariables["+QString::number(i)+"] = "+unknowns[i].toString()+";";
         }
 
         comp.simEquations << "";
+        comp.simEquations << "for(int i=0; i<nIter; ++i)";
+        comp.simEquations << "{";
         comp.simEquations << "    //System Equations";
-        for(int i=0; i<equations.size(); ++i)
+        for(int i=0; i<systemEquations.size(); ++i)
         {
-            comp.simEquations << "    systemEquations["+QString::number(i)+"] = "+equations[i].toString()+";";
-   //         comp.simEquations << "    "+stateVars[i]+" = " + resEquations[i]+";";
+            comp.simEquations << "    systemEquations["+QString::number(i)+"] = "+systemEquations[i].toString()+";";
+   //         comp.simEquations << "    "+unknowns[i]+" = " + resEquations[i]+";";
         }
         comp.simEquations << "";
         comp.simEquations << "    //Jacobian Matrix";
-        for(int i=0; i<equations.size(); ++i)
+        for(int i=0; i<systemEquations.size(); ++i)
         {
-            for(int j=0; j<stateVars.size(); ++j)
+            for(int j=0; j<unknowns.size(); ++j)
             {
                 comp.simEquations << "    jacobianMatrix["+QString::number(i)+"]["+QString::number(j)+"] = "+jacobian[i][j].toString()+";";
             }
@@ -891,10 +892,11 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         comp.simEquations << "    //Solving equation using LU-faktorisation";
         comp.simEquations << "    mpSolver->solve();";
         comp.simEquations << "";
-        for(int i=0; i<stateVars.size(); ++i)
+        for(int i=0; i<unknowns.size(); ++i)
         {
-            comp.simEquations << "    "+stateVars[i].toString()+"=stateVariables["+QString::number(i)+"];";
+            comp.simEquations << "    "+unknowns[i].toString()+"=stateVariables["+QString::number(i)+"];";
         }
+        comp.simEquations << "}";
     }
 
     //Update delays
@@ -908,26 +910,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     comp.simEquations << "//Final algorithm section";
     for(int i=0; i<finalAlgorithms.size(); ++i)
     {
-        comp.simEquations << finalAlgorithms[i].toString()+";";
-    }
-
-    for(int i=0; i<localVars.size(); ++i)
-    {
-        comp.varNames << localVars[i].toString();
-        comp.varTypes << "double";
-        bool foundInit=false;
-        for(int v=0; v<variables.size(); ++v)
-        {
-            if(variables[v].name == localVars[i].toString())
-            {
-                comp.varInits << variables[v].init;
-                foundInit=true;
-            }
-        }
-        if(!foundInit)
-        {
-            comp.varInits << "";
-        }
+        comp.simEquations << finalAlgorithms[i]+";";
     }
 }
 
@@ -1268,12 +1251,12 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
                 tempExpr.divideBy(term);
                 tempExpr.changeSign();
                 tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
-                initAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
-                systemEquations.removeAt(e);
-                --e;
-                logStream << initAlgorithms.last()+"\n";
-                unknowns.removeAll(usedUnknowns[0]);
             }
+            initAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
+            systemEquations.removeAt(e);
+            --e;
+            logStream << initAlgorithms.last()+"\n";
+            unknowns.removeAll(usedUnknowns[0]);
         }
     }
 
@@ -1293,44 +1276,28 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
         if(count==1)
         {
-            qDebug() << "Equation: " << systemEquations[lastFound].toString() << " contains unique variable " << unknowns[u].toString();
             //Found the unknown if only one equation, try to break it out and prepend on final algorithms
             Expression tempExpr = systemEquations[lastFound];
-            qDebug() << "1";
             tempExpr.factor(unknowns[u]);
-            qDebug() << "2";
             if(tempExpr.getTerms().size() == 1)
             {
                 tempExpr = Expression(0);   //Only one term, state var must equal zero
             }
             else
             {
-                qDebug() << "3";
                 Expression term = tempExpr.getTerms()[0];
-                qDebug() << "4";
                 tempExpr.removeTerm(term);
-                qDebug() << "5";
                 term.replace(unknowns[u], Expression(1));
-                qDebug() << "6";
                 term._simplify(Expression::FullSimplification, Expression::Recursive);
-                qDebug() << "7";
                 tempExpr.divideBy(term);
-                qDebug() << "8";
                 tempExpr.changeSign();
-                qDebug() << "9";
                 tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
-                qDebug() << "10";
-                finalAlgorithms.prepend(Expression::fromEquation(unknowns[u], tempExpr).toString());
-                qDebug() << "11";
-                systemEquations.removeAt(lastFound);
-                qDebug() << "12";
-                qDebug() << "13";
-                logStream << finalAlgorithms.last()+"\n";
-                qDebug() << "14";
-                unknowns.removeAt(u);
-                --u;
-                qDebug() << "15";
             }
+            finalAlgorithms.prepend(Expression::fromEquation(unknowns[u], tempExpr).toString());
+            systemEquations.removeAt(lastFound);
+            logStream << finalAlgorithms.last()+"\n";
+            unknowns.removeAt(u);
+            --u;
         }
     }
 
@@ -1346,8 +1313,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         logStream << unknowns[u].toString() << "\n";
     }
-
-    //! @todo Exclude equations that contains unique variablse (existing only in one equation) and solve them after the Jacobian
 
     if(systemEquations.size() != unknowns.size())
     {
@@ -1459,6 +1424,12 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         comp.portNotReq << ports[i].notrequired;
         comp.portDefaults << ports[i].defaultvalue;
     }
+
+    comp.parNames << "nIter";
+    comp.parDisplayNames << "nIter";
+    comp.parDescriptions << "Number of Newton-Rhapson iterations";
+    comp.parUnits << "-";
+    comp.parInits << "1";
 
     for(int i=0; i<parameters.size(); ++i)
     {
@@ -1589,7 +1560,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.auxiliaryFunctions.append("");
     comp.auxiliaryFunctions.append("void reInitializeValuesFromNodes()");
     comp.auxiliaryFunctions.append("{");
-    QString readInputs;
     int portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
@@ -1645,6 +1615,8 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
 
         comp.auxiliaryFunctions << "";
+        comp.auxiliaryFunctions << "for(int i=0; i<nIter; ++i)";
+        comp.auxiliaryFunctions << "{";
         comp.auxiliaryFunctions << "    //System Equations";
         for(int i=0; i<systemEquations.size(); ++i)
         {
@@ -1679,6 +1651,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         {
             comp.auxiliaryFunctions << "    "+systemVars[i].toString()+"=stateVariables["+QString::number(i)+"];";
         }
+        comp.auxiliaryFunctions << "}";
     }
     comp.auxiliaryFunctions.append("");
     if(!finalAlgorithms.isEmpty())

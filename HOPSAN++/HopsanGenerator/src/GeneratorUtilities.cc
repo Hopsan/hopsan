@@ -370,7 +370,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     {
         while ( fgets( line, sizeof line, fp))
         {
-            output.append(line);
+            output.append(QString::fromUtf8(line));
         }
     }
 #endif
