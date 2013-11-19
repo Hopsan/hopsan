@@ -132,6 +132,7 @@ namespace hopsan {
 
     public:
         enum UniqeNameEnumT {UniqueComponentNameType, UniqueSysportNameTyp, UniqueSysparamNameType, UniqueAliasNameType, UniqueReservedNameType};
+        typedef std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > > SetParametersMapT;
 
         //==========Public functions==========
         virtual ~ComponentSystem();
@@ -190,8 +191,8 @@ namespace hopsan {
         void loadStartValuesFromSimulation();
 
         // Parameter loading
-        void loadParameters(HString filePath);
-        void loadParameters(std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > > parameterMap);
+        void loadParameters(const HString &rFilePath);
+        void loadParameters(const SetParametersMapT &rParameterMap);
 
         // Initialize and simulate
         bool checkModelBeforeSimulation();

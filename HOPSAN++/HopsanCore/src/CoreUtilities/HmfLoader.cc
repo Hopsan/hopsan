@@ -641,7 +641,7 @@ void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials*
             rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
             if (pSysNode != 0)
             {
-                std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > > parMap;
+                ComponentSystem::SetParametersMapT parMap;
 
                 //Load contents
                 rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");

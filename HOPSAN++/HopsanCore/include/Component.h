@@ -122,7 +122,7 @@ public:
     // Variabels and Parameters
     const std::vector<VariameterDescription>* getVariameters();
 
-    //! @todo clean this up /Peter
+    //! @todo clean this mess up /Peter
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
     void registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rValue);

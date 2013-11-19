@@ -263,7 +263,7 @@ void HopsanEssentials::getExternalComponentLibNames(std::vector<HString> &rLibNa
 
 
 //! @brief Get the contents (components and nodes) registered by an external library
-//! @param [in] libpath Path to the external library
+//! @param [in] libPath Path to the external library
 //! @param [out] rComponents A reference to the vector that will contain the component names
 //! @param [out] rNodes A reference to the vector that will contain the node names
 void HopsanEssentials::getExternalLibraryContents(const char *libPath, std::vector<HString> &rComponents, std::vector<HString> &rNodes)

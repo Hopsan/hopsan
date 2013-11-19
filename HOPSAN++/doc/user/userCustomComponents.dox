@@ -13,7 +13,7 @@ Hopsan has a built-in component generator dialog, from where new components can 
 </table>
 \endhtmlonly
 
-In this dialog it is possible to specify component name (used by simulation core, must not contain spaces), display name (shown in graphical interface) and component type (C,Q or S - see the \ref userTransmissionLineElementMethod "transmission line element method"). It is also possible to add ports, parameters, utility functions and static variables. Finally, the code for the component can be written in two ways, either directly from C++ code, or from algebraic equations using a subset of the Modelica language.
+In this dialog it is possible to specify component name (used by simulation core, must not contain spaces), display name (shown in graphical interface) and component type (C,Q or S - see the \ref userTransmissionLineModelingMethodPage "transmission line element method"). It is also possible to add ports, parameters, utility functions and static variables. Finally, the code for the component can be written in two ways, either directly from C++ code, or from algebraic equations using a subset of the Modelica language.
 
 When writing C++ code, there are three functions available: Initialize, SimulateOneTimeStep and Finalize. Initialize are ran before the first time step of the simulation, SimulateOneTimeStep is ran every time step, and finalize are ran after the simulation is finished. Available and sought parameters are displayed above the code boxes. When clicking compile, the component will be converted to Hopsan interface syntax and compiled to an external library.
 
@@ -43,7 +43,7 @@ your component and models do not change their behaviour when new versions of Hop
 -# If you want to automatically test multiple models, then you should write a script that goes through all of your hvc files.
 
 \section userUnitTestModelsAndComponentsPage-components_hvc-format The HVC (Hopsan Validation Configuration) Format
-This is an example HVC File. Note that you can have multiple <validation> <component> <port> <variable> tags to perform multiple tests from the same configuration file.
+This is an example HVC File. Note that you can have multiple \<validation\> \<component\> \<port\> \<variable\> tags to perform multiple tests from the same configuration file.
 
 \verbatim
 <?xml version="1.0" encoding="UTF-8"?>

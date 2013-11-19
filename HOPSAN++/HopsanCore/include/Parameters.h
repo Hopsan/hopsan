@@ -41,7 +41,7 @@ public:
     ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit,
               const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* parentParameters=0);
 
-    bool setParameterValue(const HString &rValue, ParameterEvaluator **pNeedEvaluation=0);
+    bool setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation=0);
     bool setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit,
                       const HString &rType, ParameterEvaluator **pNeedEvaluation=0, bool force=false);
 

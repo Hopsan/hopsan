@@ -58,6 +58,6 @@
 
 #endif
 
-
+#define HOPSAN_UNUSED(x) (void)x;
 
 #endif // WIN32DLL_H_INCLUDED

@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   StringUtilities.cc
+//! @file   StringUtilities.cpp
 //! @author <peter.nordin@liu.se>
 //! @date   2013-03-12
 //!

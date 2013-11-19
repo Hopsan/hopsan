@@ -159,7 +159,7 @@ public:
 
     //! @brief Resize the array, initializing all values to defaultValue
     //! @param [in] s New size
-    //! @param [in] defaultValue initialize value for all elements
+    //! @param [in] rDefaultValue initialize value for all elements
     void resize(const size_t s, const T &rDefaultValue)
     {
         clear();

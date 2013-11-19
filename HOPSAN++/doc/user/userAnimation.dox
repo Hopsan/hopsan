@@ -46,52 +46,52 @@ The animation pattern for a component is described by a tag in the component's X
 </animation>
 \endverbatim
 
-<b><animation></b>\n
+<b>\<animation\></b>\n
 Main tag for animations
 
-<b><icon></b>\n 
-Used to define the icon, either base icon (that is not moving) or a moving icon, if placed inside a <movable> tag
+<b>\<icon\></b>\n 
+Used to define the icon, either base icon (that is not moving) or a moving icon, if placed inside a \<movable\> tag
 
-<b><movable></b>\n 
+<b>\<movable\></b>\n 
 Defines a movable, i.e. an icon that moves somehow. Index number can be specified if required (see relative movement below).
 
-<b><data></b>\n
+<b>\<data\></b>\n
 Defines the data variable that is used to calculate the positions for the movement
 
-<b><multiplier></b>\n
+<b>\<multiplier\></b>\n
 Adds a parameter multiplier. Data from the data variable will be multiplied with the value from this parameter.
 
-<b><divisor></b>\n
+<b>\<divisor\></b>\n
 Adds a parameter divisor. Data from the data variable will be divided with the value from this parameter.
 
-<b><start></b>\n
+<b>\<start\></b>\n
 Defines the start position for the movable in horizontal, vertical and rotational dimensions.
 
-<b><movement></b>\n
+<b>\<movement\></b>\n
 Defines the movement factors for horizontal, vertical and rotational direction. Position will be the start position added by the movement factor times the data variable.
 
-<b><transformorigin></b>\n
+<b>\<transformorigin\></b>\n
 Specifies transform origin for rotating movables.
 
-<b><initscale></b>\n
-Defines the initial scale of the movable. Only needed when the <resize> tag is used.
+<b>\<initscale\></b>\n
+Defines the initial scale of the movable. Only needed when the \<resize\> tag is used.
 
-<b><resize></b>\n
+<b>\<resize\></b>\n
 Defines the resize factors for horizontal and vertical directions. Movable size will be the initscale added by the resize factor times the data variable.
 
-<b><adjustable></b>\n
+<b>\<adjustable\></b>\n
 Defines that the movable will be adjustable by the user during real-time animation. Specified variable in specified port will get the value from the position of the movable multiplied by the gain value.
 
-<b><movingport></b>\n
+<b>\<movingport\></b>\n
 Specifies that a port shall follow with the movable, starting at specified coordinates.
 
-<b><relative></b>\n
+<b>\<relative\></b>\n
 Specifies that this movable moves relative to the movable with specified index. Position and rotation of this movable will be added with those of the other movable.
 
-<b><initcolor></b>\n
+<b>\<initcolor\></b>\n
 Specifies initial colors for the movable. The SVG icon should be black for this to work properly.
 
-<b><color></b>\n
+<b>\<color\></b>\n
 Specifies the color factors for the movable. Red, green, blue and alpha channel will change with the data variable multiplied by these factors. Be careful so that values will not become outside the 0:255 range. Colors outside are not defined.
 
 */

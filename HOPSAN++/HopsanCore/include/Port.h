@@ -61,9 +61,11 @@ namespace hopsan {
         //! @brief Reads a value from the connected node
         //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to read
+        //! @param [in] subPortIdx Ignored on non multi ports
         //! @return The data value
-        virtual inline double readNode(const size_t idx, const size_t /*subPortIdx*/=0) const
+        virtual inline double readNode(const size_t idx, const size_t subPortIdx=0) const
         {
+            HOPSAN_UNUSED(subPortIdx)
             return mpNode->mDataValues[idx];
         }
 
@@ -71,8 +73,10 @@ namespace hopsan {
         //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to write
         //! @param [in] value The value of the data to read
-        virtual inline void writeNode(const size_t idx, const double value, const size_t /*subPortIdx*/=0) const
+        //! @param [in] subPortIdx Ignored on non multi ports
+        virtual inline void writeNode(const size_t idx, const double value, const size_t subPortIdx=0) const
         {
+            HOPSAN_UNUSED(subPortIdx)
             mpNode->mDataValues[idx] = value;
         }
 
@@ -188,11 +192,23 @@ namespace hopsan {
         // Overloaded virtual functions
         double readNodeSafe(const size_t idx, const size_t subPortIdx);
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx);
+
+        //! @brief Reads a value from the connected node
+        //! @ingroup ComponentSimulationFunctions
+        //! @param [in] idx The data id of the data to read
+        //! @param [in] subPortIdx The subPort to read from (range is NOT checked)
+        //! @return The data value
         inline double readNode(const size_t idx, const size_t subPortIdx) const
         {
             //! @todo handle portIdx ot of range
             return mSubPortsVector[subPortIdx]->readNode(idx);
         }
+
+        //! @brief Writes a value to the connected node
+        //! @ingroup ComponentSimulationFunctions
+        //! @param [in] idx The data id of the data to write
+        //! @param [in] value The value of the data to read
+        //! @param [in] subPortIdx The subPort to write to (range is NOT checked)
         inline void writeNode(const size_t idx, const double value, const size_t subPortIdx) const
         {
             return mSubPortsVector[subPortIdx]->writeNode(idx,value);

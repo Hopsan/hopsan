@@ -283,7 +283,6 @@ void Component::finalize()
 
 //! @brief Set the desired component name
 //! @param [in] name The desired component name
-//! @param [in] doOnlyLocalRename Only use this if you know what you are doing, default: false
 //!
 //! Set the desired component name, if name is already taken in a subsystem the desired name will be modified with a suffix.
 //! If you set doOnlyLocalRename to true, the smart rename will not be atempted, avoid doing this as the component storage map will not be updated on anme change
@@ -409,13 +408,20 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 {
     registerParameter(rName, rDescription, rUnit, rData);
 }
+///@}
 
+//! @brief Add (register) a conditional constant parameter to the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rConditions The condition descriptions as a vector of text
+//! @param [in] rData A reference to the condition data constant (it will automatically get default value 0)
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rData)
 {
     rData=0;    //Always initialize conditionals with first condition
     registerConditionalParameter(rName, rDescription, rConditions, rData);
 }
-///@}
 
 ///@{
 //! @brief Add (register) a constant parameter with a default value to the component
@@ -521,7 +527,15 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     else
         mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", &rValue);
 }
+///@}
 
+//! @brief Register a conditional parameter value so that it can be accessed for read and write.
+//! @param [in] rName The name of the parameter
+//! @param [in] rDescription A description of the parameter
+//! @param [in] rConditions The condition descriptions as a vector of text
+//! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
+//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
+//! @todo Using a reference is not that clear, we should use a ptr instead
 void Component::registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rValue)
 {
     if (!isNameValid(rName))
@@ -535,7 +549,7 @@ void Component::registerConditionalParameter(const HString &rName, const HString
 
     mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", "conditional", &rValue, false, rConditions);
 }
-///@}
+
 
 
 //! @brief Removes a parameter from the component
@@ -939,6 +953,7 @@ double *Component::getSafeMultiPortNodeDataPtr(Port *pPort, const size_t portIdx
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] portIdx The index of the subport in a multiport
 //! @param[in] dataId The enum id for the node value to fetch pointer to
+//! @param[in] defaultValue The initial value to set for this node data
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
 double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue)
 {
@@ -1048,7 +1063,7 @@ vector<Port*> Component::getPortPtrVector()
 }
 
 //! @brief Returns a pointer to the port with the given name.
-//! @param[in] portname The name of the port
+//! @param[in] rPortname The name of the port
 //! @returns A pointer to the port, or 0 if port not found
 Port *Component::getPort(const HString &rPortname) const
 {
@@ -1269,6 +1284,7 @@ double Component::getStartValue(Port* pPort, const size_t idx, const size_t port
 //! @brief Get the an actual start value of a port
 //! @param[in] pPort is the port which should be read from
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
+//! @param[in] portIdx The index of a subport in a multiport. If pPort is not a multiport this value will be ignored
 //! @returns The default start value
 //! @ingroup ComponentSetupFunctions
 double Component::getDefaultStartValue(Port* pPort, const size_t idx, const size_t portIdx)
@@ -1402,7 +1418,7 @@ void Component::loadStartValuesFromSimulation()
 //! @brief Find and return the full file path name of fileName within the system search path, parent systems included (path to HMF file is always in here)
 //! @details With this function you can find external files based on a path relative to the model file path
 //! This makes it possible to avoid absolut paths for external file resources
-//! @param fileName the name of the file to search for
+//! @param rFileName the name of the file to search for
 //! @return full file name path, empty string if it does not exsits
 //! @ingroup ComponentSetupFunctions
 HString Component::findFilePath(const HString &rFileName)

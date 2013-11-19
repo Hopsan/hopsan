@@ -64,7 +64,7 @@ void hopsan::limitValue(double &rValue, double min, double max)
 //! @ingroup AuxiliarySimulationFunctions
 //! @param [in] x First value
 //! @param [in] y Second value
-//! @param [in] eps Allowed relative error
+//! @param [in] epsilon Allowed relative error
 //! @note Based on http://floating-point-gui.de/errors/comparison (20130429)
 bool hopsan::fuzzyEqual(const double x, const double y, const double epsilon)
 {
@@ -220,20 +220,20 @@ double hopsan::limit(const double x, const double xmin, const double xmax)
 }
 
 
-//! @brief Overloads void hopsan::limitValue() with a return value.
+//! @brief Limits a value to a lower limit
 //! @ingroup AuxiliarySimulationFunctions
-//! @see void hopsan::limitValue(&value, min, max)
 //! @param x Value to be limited
 //! @param xmin Minimum value of x
-//! @param xmax Maximum value of x
 double hopsan::lowLimit(const double x, const double xmin)
 {
-    double output = x;
     if(x < xmin)
     {
-        output = xmin;
+        return xmin;
     }
-    return output;
+    else
+    {
+        return x;
+    }
 }
 
 

@@ -10,8 +10,9 @@ TARGET = exampleComponentLib
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build
 DESTDIR = $${PWD}/
 
-# The location to search for the Hopsan include files, by specifying the path here, you dont need to do this everywhere in all of your component .hpp files
-# You can also add additional paths for eg. your own Utility functions, just add additional INCLUDEPATH *= ... lines.
+# The location to search for the Hopsan include files. By specifying the path here, you dont need to
+# do this in each of your component .hpp files. You can also add additional paths for any custom Utility functions,
+# just add additional INCLUDEPATH *= ... lines.
 # *= Means append unique
 INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 #INCLUDEPATH *= "C:/SomeDirectoryPath/Hopsan/HopsanCore/include/"
@@ -45,4 +46,3 @@ HEADERS += \
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.pri
-

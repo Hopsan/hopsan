@@ -353,7 +353,7 @@ bool ComponentSystem::wasSimulationAborted()
 
 
 //! @brief Adds a search path that can be used by its components to look for external files, e.g. area curves
-//! @param searchPath the search path to be added
+//! @param [in] rSearchPath The search path to be added
 void ComponentSystem::addSearchPath(const HString &rSearchPath)
 {
     HString fixedSearchString;
@@ -495,7 +495,7 @@ void ComponentSystem::renameSubComponent(const HString &rOld_name, const HString
 
 
 //! @brief Remove a dub component from a system, can also be used to actually delete the component
-//! @param[in] name The name of the component to remove from the system
+//! @param[in] rName The name of the component to remove from the system
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(const HString &rName, bool doDelete)
 {
@@ -556,7 +556,8 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 }
 
 //! @brief Reserves a unique name in the system
-//! @param [in] desiredName The desired name to reserve
+//! @param [in] rDesiredName The desired name to reserve
+//! @param [in] type The type of entity that the unique name represents
 //! @returns The actual name reserved
 HString ComponentSystem::reserveUniqueName(const HString &rDesiredName, const UniqeNameEnumT type)
 {
@@ -566,7 +567,7 @@ HString ComponentSystem::reserveUniqueName(const HString &rDesiredName, const Un
 }
 
 //! @brief unReserves a unique name in the system
-//! @param [in] name The name to unreserve
+//! @param [in] rName The name to unreserve
 void ComponentSystem::unReserveUniqueName(const HString &rName)
 {
     mTakenNames.erase(rName);
@@ -845,7 +846,7 @@ std::vector<HString> ComponentSystem::getSubComponentNames()
 }
 
 //! @brief Check if a system has a subcomponent with given name
-//! @param name The name to check for
+//! @param [in] rName The name to check for
 //! @returns true or false
 bool ComponentSystem::haveSubComponent(const HString &rName) const
 {
@@ -1026,7 +1027,7 @@ HString ComponentSystem::renameSystemPort(const HString &rOldname, const HString
 
 
 //! @brief Delete a System port from the component
-//! @param [in] name The name of the port to delete
+//! @param [in] rName The name of the port to delete
 void ComponentSystem::deleteSystemPort(const HString &rName)
 {
     deletePort(rName);
@@ -2449,25 +2450,30 @@ void ComponentSystem::loadStartValuesFromSimulation()
 }
 
 
-void ComponentSystem::loadParameters(HString filePath)
+//! @brief Loads parameters from a file
+//! @param[in] rFilePath The file to load from
+void ComponentSystem::loadParameters(const HString &rFilePath)
 {
-    loadHopsanParameterFile(filePath, getHopsanEssentials(), this);
+    loadHopsanParameterFile(rFilePath, getHopsanEssentials(), this);
 }
 
-
-void ComponentSystem::loadParameters(std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > > parameterMap)
+//! @brief Loads parameters from a map
+//! @param[in] rParameterMap The map to load from
+void ComponentSystem::loadParameters(const SetParametersMapT &rParameterMap)
 {
-    std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > >::iterator it;
-    for(it=parameterMap.begin(); it!=parameterMap.end(); ++it)
+    std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > >::const_iterator it;
+    for(it=rParameterMap.begin(); it!=rParameterMap.end(); ++it)
     {
-        HString name = it->first;
-        if(this->haveSubComponent(name))
+        // First try to get the component
+        Component *pComponent = this->getSubComponent(it->first);
+        if(pComponent)
         {
+            // Now set each parameter name,value pair
             std::vector<HString> parNames = it->second.first;
             std::vector<HString> parValues = it->second.second;
             for(size_t i=0; i<parNames.size(); ++i)
             {
-                this->getSubComponent(name)->setParameterValue(parNames[i], parValues[i]);
+                pComponent->setParameterValue(parNames[i], parValues[i]);
             }
         }
     }
@@ -2476,9 +2482,8 @@ void ComponentSystem::loadParameters(std::map<HString, std::pair<std::vector<HSt
 
 //! @brief Initializes a system and all its contained components before a simulation.
 //! Also allocates log data memory.
-//! @param startT Start time of simulation
-//! @param stopT Stop time of simulation
-//! @param nSamples Number of log samples
+//! @param[in] startT Start time of simulation
+//! @param[in] stopT Stop time of simulation
 bool ComponentSystem::initialize(const double startT, const double stopT)
 {
     addLogMess("ComponentSystem::initialize()");
@@ -3612,9 +3617,9 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &/*rSplitNo
 #endif
 
 
-//! @brief Simulate function for single-threaded simulations.
-//! @param startT Start time of simulation
-//! @param stopT Stop time of simulation
+////! @brief Simulate function for single-threaded simulations.
+////! @param startT Start time of simulation
+////! @param stopT Stop time of simulation
 //void ComponentSystem::simulate(const double startT, const double stopT)
 //{
 //    mTime = startT;
@@ -3649,6 +3654,8 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &/*rSplitNo
 //    }
 //}
 
+//! @brief Simulate function for single-threaded simulations.
+//! @param[in] stopT Simulate from current time until stop time
 void ComponentSystem::simulate(const double stopT)
 {
     // Round to nearest, we may not get exactly the stop time that we want

@@ -41,11 +41,11 @@ using namespace std;
 //! data pointer is 0.
 
 //! @brief Constructor
-//! @param [in] parameterName The desired parameter name, e.g. m
-//! @param [in] parameterValue The value of the parameter, always a string
-//! @param [in] description The description of the parameter e.g. Mass
-//! @param [in] unit The physical unit of the parameter e.g. kg
-//! @param [in] type The type of the parameter e.g. double
+//! @param [in] rName The desired parameter name, e.g. m
+//! @param [in] rValue The value of the parameter, always a string
+//! @param [in] rDescription The description of the parameter e.g. Mass
+//! @param [in] rUnit The physical unit of the parameter e.g. kg
+//! @param [in] rType The type of the parameter e.g. double
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
 ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParentParameters)
@@ -113,12 +113,12 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
 }
 
 //! @brief Set the parameter value for an exsisting parameter
-//! @param [in] value The new value for the parameter
-//! @param [out] pNeedEvaluation Tell is the parameter needs evaluation, e.g. is a system parameter or an expression
+//! @param [in] rValue The new value for the parameter
+//! @param [out] ppNeedEvaluation Tell if the parameter needs evaluation, e.g. is a system parameter or an expression
 //! @return true if success, otherwise false
 //!
 //! This function is used by Parameters
-bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvaluator **pNeedEvaluation)
+bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation)
 {
     bool success=false;
  //   if(!(mParameterName==value))
@@ -133,11 +133,11 @@ bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvalu
         }
         if(rValue != evalResult)
         {
-            *pNeedEvaluation = this;
+            *ppNeedEvaluation = this;
         }
         else
         {
-            *pNeedEvaluation = 0;
+            *ppNeedEvaluation = 0;
         }
     }
     return success;
@@ -215,7 +215,7 @@ bool ParameterEvaluator::refreshParameterValueText()
 //! @see evaluate()
 bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe)
 {
-    (void)ignoreMe;
+    HOPSAN_UNUSED(ignoreMe);
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="conditional")))
     {
@@ -445,9 +445,11 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 //! @param [in] rName The desired parameter name, e.g. m
 //! @param [in] rValue The value of the parameter, always a string
 //! @param [in] rDescription The description of the parameter e.g. Mass, default: ""
-//! @param [in] rUnit The physical unit of the parameter e.g. kg, default: "0""
+//! @param [in] rUnit The physical unit of the parameter e.g. kg, default: "0"
 //! @param [in] rType The type of the parameter e.g. double, default: ""
 //! @param [in] pData Only used by Components, system parameters don't use this, default: 0
+//! @param [in] force Should we force to add paramter even if it fails to evaluate
+//! @param [in] conditions Conditions for a conditional constant parameter
 //! @return true if success, otherwise false
 bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<HString> conditions)
 {
@@ -479,7 +481,7 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
 
 
 //! @brief Deletes a parameter
-//! @param parameterName The name of the paramter to delete
+//! @param[in] rName The name of the paramter to delete
 void ParameterEvaluatorHandler::deleteParameter(const HString &rName)
 {
     std::vector<ParameterEvaluator*>::iterator parIt;
@@ -556,7 +558,7 @@ void ParameterEvaluatorHandler::getParameterNames(std::vector<HString> &rParamet
 }
 
 //! @brief Get the value of specified parameter
-//! @param [in] name The parameter name to get value of
+//! @param [in] rName The parameter name to get value of
 //! @param [out] rValue Reference to the string variable that will contain the parameter value. The variable will be "" if parameter not found
 void ParameterEvaluatorHandler::getParameterValue(const HString &rName, HString &rValue)
 {
@@ -634,8 +636,9 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
 }
 
 //! @brief Set the parameter value for an exsisting parameter
-//! @param [in] name The name of the parameter to be set
-//! @param [in] value The new value for the parameter
+//! @param [in] rName The name of the parameter to be set
+//! @param [in] rValue The new value for the parameter
+//! @param [in] force Should we force the value to be set
 //! @return true if success, otherwise false
 bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HString &rValue, bool force)
 {
@@ -644,9 +647,9 @@ bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HS
 
 
 //! @brief Evaluate a specific parameter
-//! @param [in] parameterName The name of the parameter to be evaluated
+//! @param [in] rName The name of the parameter to be evaluated
 //! @param [out] rEvaluatedParameterValue The result of the evaluation
-//! @param [in] type The type of how the parameter should be interpreted
+//! @param [in] rType The type of how the parameter should be interpreted
 //! @return true if success, otherwise false
 bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, ParameterEvaluator *ignoreMe)
 {
@@ -701,7 +704,7 @@ bool ParameterEvaluatorHandler::refreshParameterValueText(const HString &rParame
 }
 
 //! @brief Check if a parameter with given name exist among the parameters
-//! @param [in] parameterName The name of the parameter to check for
+//! @param [in] rName The name of the parameter to check for
 //! @returns true if found else false
 bool ParameterEvaluatorHandler::hasParameter(const HString &rName) const
 {
@@ -717,7 +720,7 @@ bool ParameterEvaluatorHandler::hasParameter(const HString &rName) const
 
 
 //! @brief Check all parameters that need evaluation are able to be evaluated
-//! @param [out] errParName Tell which parameter that can't be evaluated is not successful
+//! @param [out] rErrParName The name of the parameter that could not be evaluated
 //! @return true if success, otherwise false
 //!
 //! Check all parameters that need evaluation are able to be evaluated. The function will

@@ -317,9 +317,9 @@ void LoadExternal::getLoadedLibNames(std::vector<HString> &rLibNames)
 }
 
 //! @brief Returns the components and nodes registered by specified library
-//! @param libpath Path to library
-//! @param rComponents Reference to vector with components
-//! @param rNodes Reference to vector with nodes
+//! @param[in] rLibpath Path to library
+//! @param[out] rComponents Reference to vector with the loaded component type names
+//! @param[out] rNodes Reference to vector with the loaded node type names
 void LoadExternal::getLibContents(const HString &rLibpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes)
 {
     LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(rLibpath);

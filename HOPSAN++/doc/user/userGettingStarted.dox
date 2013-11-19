@@ -11,28 +11,28 @@
 The first thing you will see when you open Hopsan is a welcome dialog. From here you can choose to create a new model, load an existing model or open the models from last session. You also have the option to always open the last session, without showing the welcome dialog. When you have made your selection, the main window will appear. It will look like the screenshot bellow (with some cosmetic differences depending on your operating system). It consists of a tool bar at the top, a workspace area in the middle, a component library to the left and a message widget at the bottom. More windows and widgets can be opened later.
 
 \htmllinkimage{../../graphics/mainwindow.png, 500}
-\image latex ../../graphics/mainwindow.png "The Hopsan main window" width=1.0\linewidth
+\image latex mainwindow.png "The Hopsan main window" width=1.0\linewidth
 
 \section toolbar Toolbar
 The buttons at the top of the main window is divided into five toolbars. The first one contains file operations such as creating, loading and saving models. It is also possible to export the current viewport to PDF format.
-\image html "../../graphics/File Toolbar.png"
-\image latex "../../graphics/File Toolbar.png" "File toolbar"
+\image html "File Toolbar.png"
+\image latex "File Toolbar.png" "File toolbar"
 
 The second toolbar has buttons for editing tools, such as copy, cut, paste, undo and redo. There is also an icon that opens the global program options. 
-\image html "../../graphics/Edit Toolbar.png"
-\image latex "../../graphics/Edit Toolbar.png" "Edit toolbar"
+\image html "Edit Toolbar.png"
+\image latex "Edit Toolbar.png" "Edit toolbar"
 
 The third toolbar consists of viewport operations such as centering the viewport and zooming. It is also possible to chooce whether or not component names and unconnected ports shall be displayed.
-\image html "../../graphics/View Toolbar.png"
-\image latex "../../graphics/View Toolbar.png" "View Toolbar"
+\image html "View Toolbar.png"
+\image latex "View Toolbar.png" "View Toolbar"
 
 The forth toolbar consists of tools for modifying the model. It is possible to align, rotate and flip components. Alignments are always relative to the last selected component.
-\image html "../../graphics/Tools Toolbar.png"
-\image latex "../../graphics/Tools Toolbar.png" "Tools Toolbar"
+\image html "Tools Toolbar.png"
+\image latex "Tools Toolbar.png" "Tools Toolbar"
     
 Finally, the last toolbar contains simulation controls selecting start time, time step and stop time, running a simlation, plotting and changing simulation parameters. This toolbar also has the icon for changing model specific properties. Note that after changing simulation parameters it is necessary to click outside the text field before clicking on Simulate; otherwise the changes will not apply for this simulation.
-\image "../../graphics/Simulation Toolbar.png"
-\image latex "../../graphics/Simulation Toolbar.png" "Simulation toolbar"
+\image html "Simulation Toolbar.png"
+\image latex "Simulation Toolbar.png" "Simulation toolbar"
 
 \section workspace Workspace
 Models are displayed in the workspace area. More than one model can be opened at the same time. In this case, each model appears in its own tab. It is possible to move around or zoom either by using the scroll wheel on the mouse, or by using toolbar buttons.
@@ -40,7 +40,7 @@ Models are displayed in the workspace area. More than one model can be opened at
 \section library Library
 Components are added to the workspace by dragging them from the library widget to the left. Standard libraries exist with hydraulic, mechanic and signal components. Each of these categories have a number of subcategories, which makes it easier to find a certain component. External libraries can be loaded either from the File menu, or by right clicking in the library and selecting "Add External Library". Unloading an external library is done in the same way. 
 \htmllinkimage{../../graphics/library.png, 180}
-\image latex "../../graphics/library.png"
+\image latex "library.png"
 
 
 \section message-widget Message Widget
@@ -64,8 +64,8 @@ The connection is created by clicking on one of the ports, drawing the connector
 \htmlonly
 <br><img src="../../graphics/ports.png" width=250 border=0><img src="../../graphics/node.png" width=250 border=0><br>
 \endhtmlonly
-\image latex "../../graphics/ports.png" "Ports" width=0.45\linewidth
-\image latex "../../graphics/node.png" "Nodes" width=0.45\linewidth
+\image latex "ports.png" "Ports" width=0.45\linewidth
+\image latex "node.png" "Nodes" width=0.45\linewidth
 
 \section changing-component-parameters Changing Component Parameters
 To change parameters of a component, you can double-click on it to open its parameter dialog box. Here it is possible to change the name of the component and its parameters. If the component is of C-type or signal type it is also possible to adjust the start values for its connected nodes. Erroneous start values can potentially cause unwanted behavior such as "jump steps" at the beginning of the plots.
@@ -83,7 +83,7 @@ Global system parameters can be used to quickly change a parameter value in seve
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/systemparameters_icon.png" "System Parameters"
+\image latex "systemparameters_icon.png" "System Parameters"
 
 From here new system parameters can be added or removed by clicking on the "Set" and "Unset" buttons. Values can be changed directly by double-clicking on their values in the list. They can then be used as parameters in components by clicking on the icon to the right of the parameter value box in the component's parameter dialog. When a system parameter is changed, it will changed for all components that use it. Should a system parameter be removed, the components that use it will change to simply using the last numerical value of the parameter instead.
 
@@ -125,7 +125,7 @@ Start value, time step and stop time can be changed directly in the toolbar at t
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/configuration_icon.png" "Model Properties"
+\image latex "configuration_icon.png" "Model Properties"
 
 When all setup is finished, the simulation is executed by clicking on the green "play" button in the simulation toolbar. If the progress bar is enabled (can be disabled from Options Dialog for performance reasons), it is possible to abort the simulation by clicking "Abort". 
 
@@ -138,7 +138,7 @@ When all setup is finished, the simulation is executed by clicking on the green 
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/simulate_icon.png" "Simulate"
+\image latex "simulate_icon.png" "Simulate"
 
 \page plotting Plotting
 Plot curves are shown in plot windows. There are two methods to open a new plot window. The easiest way is to right click on a port in the workspace and choose "Plot <variable>" from the menu. This will create a new plot window with the selected plot variable. The more advanced way is to open the plot widget, by clicking on the plot icon in the simulation toolbar or by pressing Ctrl+Shift+P. A list with all components in the current model will then appear. This list can be expanded so that it shows all ports in each component. From here a plot window can be created by double clicking on a port name or by dragging it to the workspace.
@@ -152,7 +152,7 @@ Plot curves are shown in plot windows. There are two methods to open a new plot 
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/plot_icon.png" "Open Plot Widget"
+\image latex "plot_icon.png" "Open Plot Widget"
 
 Because this list can be long and time consuming to search, it is possible to mark those variables that are especially interesting as \a favorite \a variables. This is done by right clicking on them and choosing this in the drop-down menu. Favorite parameters gets a yellow star in front of their names, and they always appear at the top in the widget to make them easily accessible. 
 
@@ -165,7 +165,7 @@ Because this list can be long and time consuming to search, it is possible to ma
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/favoritevariable_icon.png" "Favorite Variables"
+\image latex "favoritevariable_icon.png" "Favorite Variables"
 
 Once a plot window has been opened, it is possible to add more plot curves to it by dragging items from the variable list to the window. The variable list is also accessible from inside the plot window, on the right side of the plot. On small monitors the list will be automatically hidden, but can be opened with the Toggle Plot Variables icon.
 
@@ -178,7 +178,7 @@ Once a plot window has been opened, it is possible to add more plot curves to it
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/toggleplotvariables_icon.png" "Toggle Plot Variables"
+\image latex "toggleplotvariables_icon.png" "Toggle Plot Variables"
 
 New curves can be added either to the left y-axis, to the right y-axis or to the x-axis. The latter will replace the time vector and result in an XY-plot. The x-axis can be rest to the time vector by using the Rest Time Vector button.
 
@@ -191,7 +191,7 @@ New curves can be added either to the left y-axis, to the right y-axis or to the
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/plotresettimevector_icon.png" "Time Vector"
+\image latex "plotresettimevector_icon.png" "Time Vector"
 
 Adding curves with different physical units to the same y-axis is generally not recommended, because they will use the same scale. The plot window contains several useful tools. First of all it is possible to zoom or pan the graphs by using the two leftmost icons. To return to the original position, simply right click anywhere in the plot area. 
 
@@ -204,7 +204,7 @@ Adding curves with different physical units to the same y-axis is generally not 
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/zoomplot_icon.png" "Zoom"
+\image latex "zoomplot_icon.png" "Zoom"
 
 \htmlonly
 <table border="0">
@@ -215,7 +215,7 @@ Adding curves with different physical units to the same y-axis is generally not 
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/panplot_icon.png" "Pan"
+\image latex "panplot_icon.png" "Pan"
 
 The third button is used to save plot windows, so that they can be opened at a later time. Plot windows are saved in the XML-based .hmpf (Hopsan Model Plot File) format. These can be opened from the plot widget by using the "Load Plot Window From XML" button. 
 
@@ -228,7 +228,7 @@ The third button is used to save plot windows, so that they can be opened at a l
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/saveplot_icon.png" "Save To Plot Window Description File"
+\image latex "saveplot_icon.png" "Save To Plot Window Description File"
 
 \htmlonly
 <table border="0">
@@ -239,7 +239,7 @@ The third button is used to save plot windows, so that they can be opened at a l
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/loadplot_icon.png" "Load Plot Window Description File"
+\image latex "loadplot_icon.png" "Load Plot Window Description File"
 
 Plot data can be exported to .xml (Extensible Markup Language), .csv (Comma-Separated Values), .m (Matlab script file) or .dat (gnuplot data file) formats. It is also possible to export plots graphically to .pdf or .png format.
 \htmlonly
@@ -251,7 +251,7 @@ Plot data can be exported to .xml (Extensible Markup Language), .csv (Comma-Sepa
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/exportplot_icon.png" "Export Plot Data"
+\image latex "exportplot_icon.png" "Export Plot Data"
 
 \htmlonly
 <table border="0">
@@ -262,7 +262,7 @@ Plot data can be exported to .xml (Extensible Markup Language), .csv (Comma-Sepa
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/exportplotgfx_icon.png" "Export Plot To Graphics File"
+\image latex "exportplotgfx_icon.png" "Export Plot To Graphics File"
 
 The next two buttons are used to modify the plot window cosmetically. It is possible to show or hide the grid and to change the background color. 
 
@@ -277,7 +277,7 @@ Each curve has its own set of icons below the plot. On small monitors these are 
 </tr>
 </table>
 \endhtmlonly
-\image latex "../../graphics/toggleplotcurvecontrolpanel_icon.png" "Toggle Plot Curve Control Panel"
+\image latex "toggleplotcurvecontrolpanel_icon.png" "Toggle Plot Curve Control Panel"
 
 From here it is possible to control \a plot \a generations. If the same model are simulated several times, a new generation is added to the plot window as long as the "Auto Update" checkbox is checked. To move between different generations, press the left arrow or right arrow icons. It is also possible to modify the curve cosmetically, to perform frequency analysis, and to remove the curve from the plot.
 

@@ -1,11 +1,9 @@
 /*!
 \page userAnalysisToolsPage Analysis Tools
-Hopsan contains several tools that can be used to analyse models or visualize simulation results. 
+Hopsan contains several tools that can be used to analyze models or visualize simulation results. 
 
--# \subpage userOptimizationPage \n
--# \subpage userSensitivityAnalysisPage \n
--# \subpage userEnergyLossesPage \n
--# \subpage userFrequencyAnalysisPage \n
--# \subpage userAnimationPage \n
+-# \subpage userSensitivityAnalysisPage
+-# \subpage userEnergyLossesPage
+-# \subpage userFrequencyAnalysisPage
 
 */

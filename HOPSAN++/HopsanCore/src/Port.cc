@@ -112,8 +112,10 @@ Component* Port::getComponent() const
 
 
 //! @brief Returns a pointer to the connected node or 0 if no node exist
-Node* Port::getNodePtr(const size_t /*subPortIdx*/)
+//! @param[in] subPortIdx Ignored on non multi ports
+Node* Port::getNodePtr(const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     return mpNode;
 }
 
@@ -154,11 +156,14 @@ void Port::loadStartValuesFromSimulation()
 
 //! @brief Reads a value from the connected node
 //! @param [in] idx The data id of the data to read
+//! @param [in] subPortIdx The subPort index of a port in a multiport, (ignored if not a multiport)
 //! @details Safe but slow version, will not crash if idx out of bounds
 //! @return The data value
 //! @ingroup ComponentSimulationFunctions
-double Port::readNodeSafe(const size_t idx, const size_t /*subPortIdx*/)
+double Port::readNodeSafe(const size_t idx, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
+
     if (idx < mpNode->getNumDataVariables())
     {
         return mpNode->mDataValues[idx];
@@ -169,12 +174,14 @@ double Port::readNodeSafe(const size_t idx, const size_t /*subPortIdx*/)
 
 
 //! @brief Writes a value to the connected node
-//! @param [in] idx The data id of the data to write
+//! @param [in] idx The data id of the data to write  (Such as NodeHydraulic::Pressure)
 //! @param [in] value The value of the data to read
+//! @param [in] subPortIdx Ignored for non multi ports
 //! @details Safe but slow version, will not crash if idx out of bounds
 //! @ingroup ComponentSimulationFunctions
-void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*subPortIdx*/)
+void Port::writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     if (idx < mpNode->getNumDataVariables())
     {
         mpNode->mDataValues[idx] = value;
@@ -185,16 +192,22 @@ void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*su
     }
 }
 
-const Node *Port::getNodePtr(const size_t /*subPortIdx*/) const
+//! @brief Returns the node pointer in the port
+//! @param [in] subPortIdx Ignored for non multi ports
+//! @returns The node pointer in this port
+const Node *Port::getNodePtr(const size_t subPortIdx) const
 {
+    HOPSAN_UNUSED(subPortIdx)
     return mpNode;
 }
 
 //! @brief Get a ptr to the data variable in the node
 //! @param [in] idx The id of the data variable to return ptr to
+//! @param [in] subPortIdx Ignored for non multi ports
 //! @returns Pointer to data vaariable or 0 if idx was not found
-double *Port::getNodeDataPtr(const size_t idx, const size_t /*subPortIdx*/) const
+double *Port::getNodeDataPtr(const size_t idx, const size_t subPortIdx) const
 {
+    HOPSAN_UNUSED(subPortIdx)
     if (idx < mpNode->getNumDataVariables())
     {
         return mpNode->getDataPtr(idx);
@@ -226,16 +239,20 @@ void Port::setNode(Node* pNode)
 
 //! @brief Adds a pointer to an other connected port to a port
 //! @param [in] pPort A pointer to the other port
-void Port::addConnectedPort(Port* pPort, const size_t /*subPortIdx*/)
+//! @param [in] subPortIdx Ignored for non multi ports
+void Port::addConnectedPort(Port* pPort, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     mConnectedPorts.push_back(pPort);
 }
 
 
 //! @brief Removes a pointer to an other connected port from a port
 //! @param [in] pPort The pointer to the other port to be removed
-void Port::eraseConnectedPort(Port* pPort, const size_t /*subPortIdx*/)
+//! @param [in] subPortIdx Ignored for non multi ports
+void Port::eraseConnectedPort(Port* pPort, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     vector<Port*>::iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
@@ -253,19 +270,25 @@ void Port::eraseConnectedPort(Port* pPort, const size_t /*subPortIdx*/)
 
 
 //! @brief Get a vector of pointers to all other ports connected connected to this one
+//! @param [in] subPortIdx Ignored for non multi ports
 //! @returns A refernce to the internal vector of connected port pointers
 //! @todo maybe should return const vector so that contents my not be changed
-vector<Port*> &Port::getConnectedPorts(const int /*subPortIdx*/)
+vector<Port*> &Port::getConnectedPorts(const int subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     return mConnectedPorts;
 }
 
+//! @brief Returns the number of ports connected to this port
+//! @param[in] subPortIdx The index of the subPort to check. Ignored on non multi ports
+//! @returns The number of connected ports
 size_t Port::getNumConnectedPorts(const int subPortIdx)
 {
     return getConnectedPorts(subPortIdx).size();
 }
 
-
+//! @brief Creates a start node in the port
+//! @param[in] rNodeType The type of node to create (Such as NodeHydraulic)
 void Port::createStartNode(const HString &rNodeType)
 {
     mpStartNode = getComponent()->getHopsanEssentials()->createNode(rNodeType.c_str());
@@ -350,9 +373,11 @@ Node *Port::getStartNodePtr()
 }
 
 //! @brief Check if log data  exist in the ports node
+//! @param[in] subPortIdx Ignored on non multi ports
 //! @returns True or False
-bool Port::haveLogData(const size_t /*subPortIdx*/)
+bool Port::haveLogData(const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     if (mpNode)
     {
         // Here we assume that timevector DOES exist. If simulation code is correct it should exist
@@ -362,11 +387,12 @@ bool Port::haveLogData(const size_t /*subPortIdx*/)
 }
 
 
-//! @brief Get all data names and units from the connected node
-//! @param [in,out] rNames This vector will contain the names
-//! @param [in,out] rUnits This vector will contain the units
-const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t /*subPortIdx*/)
+//! @brief Get all node data descriptions
+//! @param [in] subPortIdx Ignored on non multi ports
+//! @returns A const pointer to the internal node vector with node data descriptions
+const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     // We prefere to use the startnode
     if (mpStartNode)
     {
@@ -380,11 +406,13 @@ const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size
 }
 
 
-//! @brief Get node data name and unit for specific node data
-//! @param [in] dataid The node data id
-//! @returns A pointer to teh node data description, or 0 if no node exist
-const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t /*subPortIdx*/)
+//! @brief Get a specific node data description
+//! @param [in] dataid The node data id (Such as NodeHydraulic::Pressure)
+//! @param [in] subPortIdx Ignored on non multi ports
+//! @returns A const pointer to the node data description, or 0 if no node exist
+const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     // We prefere to use the startnode
     if (mpStartNode)
     {
@@ -398,9 +426,14 @@ const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, con
 }
 
 
-//! @brief Wraper for the Node function
-int Port::getNodeDataIdFromName(const HString &rName, const size_t /*subPortIdx*/)
+//! @brief Ask the node for the dataId for a particular data name such as (Pressure)
+//! @details This is a wrapper function for the actual Node function,
+//! @param [in] rName The name of the variable (Such as Pressure)
+//! @param [in] subPortIdx Ignored on non multi ports
+//! @returns The node data id (positive integer) if the variable name is found else returns -1 to indicate failure
+int Port::getNodeDataIdFromName(const HString &rName, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     //! @todo since mpNode should always be set maybe we could remove (almost) all the checks (but not for multiports their mpNOde will be 0)
     if (mpNode != 0)
     {
@@ -424,9 +457,10 @@ void Port::setSignalNodeUnitAndDescription(const HString &rUnit, const HString &
     }
 }
 
-
-vector<double> *Port::getLogTimeVectorPtr(const size_t /*subPortIdx*/)
+//! @param [in] subPortIdx Ignored on non multi ports
+vector<double> *Port::getLogTimeVectorPtr(const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     if (mpNode != 0)
     {
         ComponentSystem *pOwnerSys = mpNode->getOwnerSystem();
@@ -438,9 +472,10 @@ vector<double> *Port::getLogTimeVectorPtr(const size_t /*subPortIdx*/)
     return 0; //Nothing found return 0
 }
 
-
-vector<vector<double> > *Port::getLogDataVectorPtr(const size_t /*subPortIdx*/)
+//! @param [in] subPortIdx Ignored on non multi ports
+vector<vector<double> > *Port::getLogDataVectorPtr(const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     if (mpNode != 0)
     {
         return &(mpNode->mDataStorage);
@@ -451,9 +486,10 @@ vector<vector<double> > *Port::getLogDataVectorPtr(const size_t /*subPortIdx*/)
     }
 }
 
-
-vector<double> *Port::getDataVectorPtr(const size_t /*subPortIdx*/)
+//! @param [in] subPortIdx Ignored on non multi ports
+vector<double> *Port::getDataVectorPtr(const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     if(mpNode != 0)
     {
         return &(mpNode->mDataValues);
@@ -474,9 +510,11 @@ size_t Port::getNumDataVariables() const
 
 //! @brief Get the actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
+//! @param[in] subPortIdx Ignored on non multi ports
 //! @returns the start value
-double Port::getStartValue(const size_t idx, const size_t /*subPortIdx*/)
+double Port::getStartValue(const size_t idx, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     if(mpStartNode && getComponent()->getSystemParent()->doesKeepStartValues())
     {
         return mpNode->getDataValue(idx);
@@ -493,8 +531,10 @@ double Port::getStartValue(const size_t idx, const size_t /*subPortIdx*/)
 //! @brief Set the an actual start value of the port
 //! @param [in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param [in] value is the start value that should be written
-void Port::setDefaultStartValue(const size_t idx, const double value, const size_t /*subPortIdx*/)
+//! @param[in] subPortIdx Ignored on non multi ports
+void Port::setDefaultStartValue(const size_t idx, const double value, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(subPortIdx)
     if(mpStartNode)
     {
         mpStartNode->setDataValue(idx, value);
@@ -751,9 +791,9 @@ WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Compone
     createStartNode(mNodeType);
 }
 
-
-double WritePort::readNode(const size_t /*idx*/) const
+double WritePort::readNode(const size_t idx) const
 {
+    HOPSAN_UNUSED(idx)
     mpComponent->addWarningMessage("WritePort::readNode(): Could not read to port, this is a WritePort");
     return -1;
 }
@@ -765,16 +805,21 @@ MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Compone
 
 MultiPort::~MultiPort()
 {
-    //Delete all subports thay may remain, if everything is working this shoudl be zero
+    // Delete all subports thay may remain, if everything is working this shoudl be zero
     //! @todo removed assert, BUT problem needs to be fixed /Peter
     if (mSubPortsVector.size() != 0)
     {
         getComponent()->addFatalMessage("~MultiPort(): mSubPortsVector.size() != 0 in multiport destructor (will fix later)");
     }
-    //assert(mSubPortsVector.size() == 0); //should be removed by other code, use this assert to check if that is working
 }
 
 
+//! @brief Reads a value from the connected node
+//! @param [in] idx The data id of the data to read
+//! @param [in] subPortIdx The subPort index in the multi port
+//! @details Safe but slow version, will not crash if idx out of bounds
+//! @return The data value or -1 if any of the idxes are out of range
+//! @ingroup ComponentSimulationFunctions
 double MultiPort::readNodeSafe(const size_t idx, const size_t subPortIdx)
 {
     if (subPortIdx < mSubPortsVector.size())
@@ -785,6 +830,12 @@ double MultiPort::readNodeSafe(const size_t idx, const size_t subPortIdx)
     return -1;
 }
 
+//! @brief Writes a value to the connected node
+//! @param [in] idx The data id of the data to write (Such as NodeHydraulic::Pressure)
+//! @param [in] value The value of the data to read
+//! @param [in] subPortIdx The subport to write to, (range check is performed)
+//! @details Safe but slow version, will not crash if idx out of bounds
+//! @ingroup ComponentSimulationFunctions
 void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx)
 {
     if (subPortIdx < mSubPortsVector.size())
@@ -797,7 +848,9 @@ void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t
     }
 }
 
-
+//! @brief Returns the node pointer from one of the subports in the port (const version)
+//! @param [in] subPortIdx The sub port to retreive from, (range check is NOT performed!)
+//! @returns The node pointer in the sub port
 const Node *MultiPort::getNodePtr(const size_t subPortIdx) const
 {
     return mSubPortsVector[subPortIdx]->getNodePtr();
@@ -817,7 +870,9 @@ double *MultiPort::getNodeDataPtr(const size_t idx, const size_t subPortIdx) con
     }
 }
 
-
+//! @brief Get all node data descriptions from a connected sub port node
+//! @param [in] subPortIdx The subport idx to fetch from (range is checked)
+//! @returns A const pointer to the internal node vector with node data descriptions or 0 if subPortIdx is out of range or if no node exist in port
 const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t subPortIdx)
 {
     if (subPortIdx < mSubPortsVector.size())
@@ -827,6 +882,10 @@ const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const
     return 0;
 }
 
+//! @brief Get a specific node data description from a connected sub port node
+//! @param [in] dataid The node data id (Such as NodeHydraulic::Pressure)
+//! @param [in] subPortIdx The subport idx to fetch from (range is NOT checked)
+//! @returns A const pointer to the node data description, or 0 if no node exist
 const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid, const size_t subPortIdx)
 {
     if (isConnected())
@@ -840,6 +899,11 @@ const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid
     return 0;
 }
 
+//! @brief Ask the node for the dataId for a particular data name such as (Pressure)
+//! @details This is a wrapper function for the actual Node function,
+//! @param [in] rName The name of the variable (Such as Pressure)
+//! @param [in] subPortIdx The subPort to ask, (range is NOT checked)
+//! @returns The node data id (positive integer) if the variable name is found else returns -1 to indicate failure
 int MultiPort::getNodeDataIdFromName(const HString &rName, const size_t subPortIdx)
 {
     if (isConnected())
@@ -887,6 +951,8 @@ std::vector<double> *MultiPort::getDataVectorPtr(const size_t subPortIdx)
 
 //! @brief Get the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
+//! @param[in] subPortIdx The sub port to get start value from
+//! @todo shouldnt this be called get default startvalue, to avoid confusion with initial value (I am not sure)
 //! @returns the start value
 double MultiPort::getStartValue(const size_t idx, const size_t subPortIdx)
 {
@@ -965,7 +1031,9 @@ void MultiPort::removeSubPort(Port* ptr)
     }
 }
 
-//! @brief Retreives Node Ptr from given subnode
+//! @brief Returns the node pointer from one of the subports in the port
+//! @param [in] subPortIdx The sub port to retreive from, (range check is performed)
+//! @returns The node pointer in the sub port, or 0 if index out of range
 Node *MultiPort::getNodePtr(const size_t subPortIdx)
 {
     if(mSubPortsVector.size() <= subPortIdx)
@@ -976,7 +1044,9 @@ Node *MultiPort::getNodePtr(const size_t subPortIdx)
     return mSubPortsVector[subPortIdx]->getNodePtr();
 }
 
-//! @note we use -1 as portindex to indicate that we want all subports
+//! @brief Get all the connected ports
+//! @param[in] subPortIdx The sub port to get connected ports from, Use -1 to indicate that all subports should be considered
+//! @returns A vector with port pointers to connected ports
 std::vector<Port*> &MultiPort::getConnectedPorts(const int subPortIdx)
 {
     if (subPortIdx<0)

@@ -21,6 +21,8 @@
 \page userHopsanGUIPage Using The Hopsan GUI Application
 -# \subpage userGettingStartedPage
 -# \subpage userAnalysisToolsPage
+-# \subpage userOptimizationPage
+-# \subpage userAnimationPage
 -# \subpage userModelExportPage
 -# \subpage userScriptingPage
 -# \subpage userMultiThreadedPage

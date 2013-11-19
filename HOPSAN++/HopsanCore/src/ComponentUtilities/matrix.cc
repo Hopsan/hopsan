@@ -194,8 +194,8 @@ Matrix diagonal(double *v, int size)
 	return out;
 }
 
-////! read Matrix from text file
-///*! @param mx destination Matrix
+//////! read Matrix from text file
+/////*! @param mx destination Matrix
 // *  @param title c-string comment (remainder of header line)
 // *  @param in input file
 // *  @todo Need to fix nrows and ncols uninitialized

@@ -102,8 +102,10 @@ const HString &Node::getNiceName() const
 
 //! @brief Set data name and unit for a specified data variable
 //! @param [in] id This is the ENUM data id
-//! @param [in] name The variable name
-//! @param [in] unit The variable unit
+//! @param [in] rName The variable name
+//! @param [in] rShortname The short variable name
+//! @param [in] rUnit The variable unit
+//! @param [in] vartype The type of the variable
 void Node::setDataCharacteristics(const size_t id, const HString &rName, const HString &rShortname, const HString &rUnit, const NodeDataVariableTypeEnumT vartype)
 {
     mDataDescriptions[id].id = id;
@@ -158,7 +160,7 @@ const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
 
 
 //! @brief Copy variable valus from this to pNode
-//! @param [in] pNode The node to copy into
+//! @param pOtherNode The destination node to copy into
 void Node::copyNodeDataValuesTo(Node *pOtherNode) const
 {
     // Copy variable valus from this to pNode
