@@ -41,6 +41,7 @@ namespace hopsan {
         double *mpND_in1;
         double *mpND_in2;
         double *mpND_out;
+        double limit;
 
     public:
         static Component *Creator()
@@ -54,6 +55,8 @@ namespace hopsan {
             addInputVariable("in2", "", "", 0, &mpND_in2);
             addInputVariable("route", "Input selection", "", 0, &mpND_route);
             addOutputVariable("out", "Selected input", "", &mpND_out);
+
+            addConstant("limit", "Limit value", "-", 0.5, limit);
         }
 
 
@@ -65,7 +68,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            if((*mpND_route) < 1.5 )
+            if((*mpND_route) < limit )
             {
                 (*mpND_out) = (*mpND_in1);
             }

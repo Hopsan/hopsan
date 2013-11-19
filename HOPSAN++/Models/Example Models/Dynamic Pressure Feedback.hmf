@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5565" hopsancoreversion="0.6.x_r5557">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6192" hopsancoreversion="0.6.x_r6194">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_HopsanBrake</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_HopsanEngine</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaGearBox</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaVehicle</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaWheel</componentlibrary>
+    <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
+    <componentlibrary>ModelicaLibrary</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
@@ -16,8 +13,9 @@
 &#xd;&#xd;&#xd;
 Try setting the pressure feedback gain to zero to see the difference! The filter is necessary to preserve stiffness, but it can be removed to remove oscillations further.</description>
   </info>
-  <system logsamples="2048" typename="Subsystem" name="Dynamic_Pressure_Feedback">
+  <system typename="Subsystem" name="Dynamic_Pressure_Feedback">
     <simulationtime stop="3" timestep="0.0001" start="0" inherit_timestep="true"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
     <parameters>
       <parameter unit="" value="3e-11" type="double" name="Kpf"/>
       <parameter unit="" value="9" type="double" name="w_cutoff"/>
@@ -25,9 +23,9 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
-      <nametext position="0" visible="1"/>
+      <nametext position="0" visible="0"/>
       <animation flowspeed="100"/>
-      <viewport x="2499.93" y="2500.63" zoom="0.70922"/>
+      <viewport x="2499.22" y="2477.37" zoom="0.70922"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -87,11 +85,11 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
     <objects>
       <component typename="HydraulicTankC" name="Tank_C">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -110,12 +108,12 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="MechanicPositionSensor" name="Position_Sensor">
         <parameters>
-          <parameter unit="m/s" value="0" type="double" name="P1::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P1::Force"/>
-          <parameter unit="m" value="0" type="double" name="P1::Position"/>
-          <parameter unit="N" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="kg" value="1" type="double" name="P1::EquivalentMass"/>
+          <parameter unit="m/s" value="0" type="double" name="P1#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P1#Force"/>
+          <parameter unit="m" value="0" type="double" name="P1#Position"/>
+          <parameter unit="N" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="kg" value="1" type="double" name="P1#EquivalentMass"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanic" name="P1"/>
@@ -126,8 +124,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="-120"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="-120.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -139,8 +137,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalGain" name="Gain_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="0.04" type="double" name="k::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0.04" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -159,8 +157,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSubtract" name="Subtract_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="in2::Value"/>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -180,8 +178,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSubtract" name="Subtract_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="in2::Value"/>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -201,12 +199,12 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="MechanicForceTransformer" name="Force_Transformer">
         <parameters>
-          <parameter unit="-" value="200" type="double" name="F::Value"/>
-          <parameter unit="m/s" value="0" type="double" name="P1::Velocity"/>
-          <parameter unit="m" value="0.5" type="double" name="P1::Position"/>
-          <parameter unit="N" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P1::EquivalentMass"/>
+          <parameter unit="-" value="2000" type="double" name="F#Value"/>
+          <parameter unit="m/s" value="0" type="double" name="P1#Velocity"/>
+          <parameter unit="m" value="0.5" type="double" name="P1#Position"/>
+          <parameter unit="N" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P1#EquivalentMass"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="F"/>
@@ -217,8 +215,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="77.5" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="77.500000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -230,11 +228,11 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="MechanicTranslationalMass" name="Translational_Mass">
         <parameters>
-          <parameter unit="[kg]" value="50" type="double" name="m"/>
-          <parameter unit="-" value="100" type="double" name="B::Value"/>
-          <parameter unit="-" value="100" type="double" name="k::Value"/>
-          <parameter unit="-" value="0" type="double" name="x_min::Value"/>
-          <parameter unit="-" value="1" type="double" name="x_max::Value"/>
+          <parameter unit="kg" value="50" type="double" name="m"/>
+          <parameter unit="-" value="100" type="double" name="B#Value"/>
+          <parameter unit="-" value="100" type="double" name="k#Value"/>
+          <parameter unit="-" value="0" type="double" name="x_min#Value"/>
+          <parameter unit="-" value="1" type="double" name="x_max#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanic" name="P1"/>
@@ -245,8 +243,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="77.5" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="77.500000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -258,8 +256,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalGain" name="Gain">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="Kpf" type="double" name="k::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="Kpf" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -276,37 +274,14 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalHP1Filter" name="First_order_high_pass_filter">
-        <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="0" type="double" name="out::Value"/>
-          <parameter unit="[rad/s]" value="0.501476" type="double" name="omega"/>
-          <parameter unit="[-]" value="-1.5e+300" type="double" name="y_min"/>
-          <parameter unit="[-]" value="1.5e+300" type="double" name="y_max"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="in"/>
-          <port nodetype="NodeSignal" name="out"/>
-        </ports>
-        <hopsangui>
-          <pose x="2552.310003" y="2400.749993" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalHP1Filter" displayname="First_order_high_pass_filter">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
       <component typename="HydraulicPressureSourceC" name="Prescribed_Pressure_C">
         <parameters>
-          <parameter unit="-" value="2e+007" type="double" name="p::Value"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="-" value="2e+007" type="double" name="p#Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -323,9 +298,32 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component typename="SignalHP1Filter" name="First_order_high_pass_filter">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0" type="double" name="out#Value"/>
+          <parameter unit="rad/s" value="0.501476" type="double" name="omega"/>
+          <parameter unit="-" value="-1.5e+300" type="double" name="y_min"/>
+          <parameter unit="-" value="1.5e+300" type="double" name="y_max"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2552.310003" y="2400.749993" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalHP1Filter" displayname="First_order_high_pass_filter">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <component typename="SignalConstant" name="Constant_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y::Value"/>
+          <parameter unit="-" value="0" type="double" name="y#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="y"/>
@@ -343,8 +341,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSubtract" name="Subtract">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="in2::Value"/>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -364,12 +362,12 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="HydraulicPressureSensor" name="Pressure_Sensor_1">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="293" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -380,8 +378,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="-6e-006"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="-0.000006"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -393,12 +391,12 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="HydraulicPressureSensor" name="Pressure_Sensor">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="293" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -409,8 +407,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="-6e-006"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="-0.000006"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -422,13 +420,13 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalConstant" name="Routing">
         <parameters>
-          <parameter unit="-" value="1" type="double" name="y::Value"/>
+          <parameter unit="-" value="0" type="double" name="y#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="y"/>
         </ports>
         <hopsangui>
-          <pose x="2757.310003" y="2449.249993" flipped="false" a="0"/>
+          <pose x="2755.900003" y="2449.249993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -440,10 +438,12 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalTripleRoute" name="Route_With_Three_Inputs">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="in2::Value"/>
-          <parameter unit="-" value="0" type="double" name="in3::Value"/>
-          <parameter unit="-" value="0" type="double" name="route::Value"/>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+          <parameter unit="-" value="0" type="double" name="in3#Value"/>
+          <parameter unit="-" value="0" type="double" name="route#Value"/>
+          <parameter unit="-" value="0.5" type="double" name="limit12"/>
+          <parameter unit="-" value="1.5" type="double" name="limit23"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="route"/>
@@ -465,22 +465,22 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="Hydraulic43Valve" name="4_3_Servo_Valve">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="xv::Value"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="0.67" type="double" name="C_q::Value"/>
-          <parameter unit="-" value="890" type="double" name="rho::Value"/>
-          <parameter unit="-" value="0.01" type="double" name="d::Value"/>
-          <parameter unit="-" value="1" type="double" name="f_pa::Value"/>
-          <parameter unit="-" value="1" type="double" name="f_pb::Value"/>
-          <parameter unit="-" value="1" type="double" name="f_at::Value"/>
-          <parameter unit="-" value="1" type="double" name="f_bt::Value"/>
-          <parameter unit="-" value="0" type="double" name="x_pa::Value"/>
-          <parameter unit="-" value="0" type="double" name="x_pb::Value"/>
-          <parameter unit="-" value="0" type="double" name="x_at::Value"/>
-          <parameter unit="-" value="0" type="double" name="x_bt::Value"/>
-          <parameter unit="-" value="0.01" type="double" name="x_vmax::Value"/>
-          <parameter unit="[rad/s]" value="300" type="double" name="omega_h"/>
-          <parameter unit="[-]" value="0.5" type="double" name="delta_h"/>
+          <parameter unit="-" value="0" type="double" name="xv#Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0.67" type="double" name="C_q#Value"/>
+          <parameter unit="-" value="890" type="double" name="rho#Value"/>
+          <parameter unit="-" value="0.01" type="double" name="d#Value"/>
+          <parameter unit="-" value="1" type="double" name="f_pa#Value"/>
+          <parameter unit="-" value="1" type="double" name="f_pb#Value"/>
+          <parameter unit="-" value="1" type="double" name="f_at#Value"/>
+          <parameter unit="-" value="1" type="double" name="f_bt#Value"/>
+          <parameter unit="-" value="0" type="double" name="x_pa#Value"/>
+          <parameter unit="-" value="0" type="double" name="x_pb#Value"/>
+          <parameter unit="-" value="0" type="double" name="x_at#Value"/>
+          <parameter unit="-" value="0" type="double" name="x_bt#Value"/>
+          <parameter unit="-" value="0.01" type="double" name="x_vmax#Value"/>
+          <parameter unit="rad/s" value="300" type="double" name="omega_h"/>
+          <parameter unit="-" value="0.5" type="double" name="delta_h"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="PP"/>
@@ -495,8 +495,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="-4000" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="-4000.000000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -508,7 +508,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSink" name="Scope">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -516,7 +516,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2962.490003" y="2561.659993" flipped="false" a="0"/>
+          <pose x="2963.900003" y="2563.069993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -528,32 +528,32 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="HydraulicCylinderC" name="Cylinder_C">
         <parameters>
-          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P2::Flow"/>
-          <parameter unit="Pa" value="0" type="double" name="P2::Pressure"/>
-          <parameter unit="K" value="0" type="double" name="P2::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2::CharImpedance"/>
-          <parameter unit="?" value="0" type="double" name="P2::HeatFlow"/>
-          <parameter unit="m/s" value="0" type="double" name="P3::Velocity"/>
-          <parameter unit="N" value="0" type="double" name="P3::Force"/>
-          <parameter unit="m" value="-0.5" type="double" name="P3::Position"/>
-          <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
-          <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="0.001" type="double" name="A_1::Value"/>
-          <parameter unit="-" value="0.001" type="double" name="A_2::Value"/>
-          <parameter unit="-" value="1" type="double" name="s_l::Value"/>
-          <parameter unit="-" value="0.0003" type="double" name="V_1::Value"/>
-          <parameter unit="-" value="0.0003" type="double" name="V_2::Value"/>
-          <parameter unit="-" value="1000" type="double" name="B_p::Value"/>
-          <parameter unit="-" value="1e+009" type="double" name="Beta_e::Value"/>
-          <parameter unit="-" value="1e-011" type="double" name="c_leak::Value"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
+          <parameter unit="Pa" value="0" type="double" name="P2#Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
+          <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
+          <parameter unit="N" value="0" type="double" name="P3#Force"/>
+          <parameter unit="m" value="-0.5" type="double" name="P3#Position"/>
+          <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
+          <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
+          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="-" value="0.001" type="double" name="A_1#Value"/>
+          <parameter unit="-" value="0.001" type="double" name="A_2#Value"/>
+          <parameter unit="-" value="1" type="double" name="s_l#Value"/>
+          <parameter unit="-" value="0.0003" type="double" name="V_1#Value"/>
+          <parameter unit="-" value="0.0003" type="double" name="V_2#Value"/>
+          <parameter unit="-" value="1000" type="double" name="B_p#Value"/>
+          <parameter unit="-" value="1e+009" type="double" name="Beta_e#Value"/>
+          <parameter unit="-" value="1e-011" type="double" name="c_leak#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -565,16 +565,16 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
-              <start x="1.5" y="1.5" a="0"/>
-              <movement x="0" y="0" a="0"/>
+              <start x="1.500000" y="1.500000" a="0.000000"/>
+              <movement x="0.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="11" y="1.5" a="0"/>
-              <movement x="77" y="0" a="0"/>
+              <start x="11.000000" y="1.500000" a="0.000000"/>
+              <movement x="77.000000" y="0.000000" a="0.000000"/>
             </movable>
             <movable>
-              <start x="0" y="0" a="0"/>
-              <movement x="77.5" y="0" a="0"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="77.500000" y="0.000000" a="0.000000"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -586,10 +586,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSquareWave" name="Square_Wave">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="1" type="double" name="f::Value"/>
-          <parameter unit="-" value="0.1" type="double" name="y_A::Value"/>
-          <parameter unit="-" value="0.5" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="0" type="double" name="t_start#Value"/>
+          <parameter unit="-" value="1" type="double" name="f#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="y_A#Value"/>
+          <parameter unit="-" value="0.5" type="double" name="y_0#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -607,7 +607,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="1969.310003" y="2417.249993"/>
+          <pose x="1969.000000" y="2417.000000"/>
           <textobject fontcolor="#005500" text="This example model shows the benefits of&#xa;reducing oscillations in a servo system&#xa;by using dynamic pressure feedback.&#xa;&#xa;Try setting the pressure feedback gain &#xa;to zero to see the difference! The filter &#xa;is necessary to preserve stiffness, but it&#xa;can be removed to remove oscillations &#xa;further." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
           <size width="282.000000" height="179.000000"/>
           <line width="2.000000" visible="1" style="solidline"/>
@@ -615,7 +615,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="2273.230027" y="2247.429994"/>
+          <pose x="2273.000000" y="2247.000000"/>
           <textobject fontcolor="#005500" text="Example: Dynamic Pressure Feedback" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
           <size width="421.000000" height="41.000000"/>
           <line width="2.000000" visible="0" style="solidline"/>
@@ -623,8 +623,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="2680.310003" y="2370.249993"/>
-          <textobject fontcolor="#005500" text="Feedback Switch:&#xa;1 = No Pressure Feedback&#xa;2 = Static Pressure Feedback&#xa;3 = Dynamic Pressure Feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
+          <pose x="2680.000000" y="2370.000000"/>
+          <textobject fontcolor="#005500" text="Feedback Switch:&#xa;0 = No Pressure Feedback&#xa;1 = Static Pressure Feedback&#xa;2 = Dynamic Pressure Feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
           <size width="155.000000" height="105.000000"/>
           <line width="2.000000" visible="1" style="solidline"/>
         </hopsangui>
@@ -634,8 +634,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="P2" endcomponent="Translational_Mass" startport="P1" startcomponent="Position_Sensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2404.31000253799948040978" y="2381.24999295000134225120"/>
-            <coordinate x="2362.31000253799948040978" y="2412.24999295000134225120"/>
+            <coordinate x="2404.31000300000005154288" y="2381.24999299999990398646"/>
+            <coordinate x="2362.31000300000005154288" y="2412.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -646,9 +646,9 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="PA" endcomponent="4_3_Servo_Valve" startport="P2" startcomponent="Cylinder_C">
         <hopsangui>
           <coordinates>
-            <coordinate x="2382.31000253799948040978" y="2539.18859295000129350228"/>
-            <coordinate x="2498.38840253799935453571" y="2539.18859295000129350228"/>
-            <coordinate x="2498.38840253799935453571" y="2655.24999295000134225120"/>
+            <coordinate x="2382.31000300000005154288" y="2539.18859299999985523755"/>
+            <coordinate x="2498.38840299999992566882" y="2539.18859299999985523755"/>
+            <coordinate x="2498.38840299999992566882" y="2655.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -660,9 +660,9 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="PB" endcomponent="4_3_Servo_Valve" startport="P1" startcomponent="Cylinder_C">
         <hopsangui>
           <coordinates>
-            <coordinate x="2382.31000253799948040978" y="2618.77579295000123238424"/>
-            <coordinate x="2478.33850253799937490840" y="2618.77579295000123238424"/>
-            <coordinate x="2478.33850253799937490840" y="2655.24999295000134225120"/>
+            <coordinate x="2382.31000300000005154288" y="2618.77579299999979411950"/>
+            <coordinate x="2478.33850299999994604150" y="2618.77579299999979411950"/>
+            <coordinate x="2478.33850299999994604150" y="2655.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -674,8 +674,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="PP" endcomponent="4_3_Servo_Valve" startport="P1" startcomponent="Tank_C">
         <hopsangui>
           <coordinates>
-            <coordinate x="2497.89974053799960529432" y="2726.85492995000140581396"/>
-            <coordinate x="2498.38840253799935453571" y="2705.24999295000134225120"/>
+            <coordinate x="2497.89974100000017642742" y="2726.85492999999996754923"/>
+            <coordinate x="2498.38840299999992566882" y="2705.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -686,8 +686,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="P1" endcomponent="Prescribed_Pressure_C" startport="PT" startcomponent="4_3_Servo_Valve">
         <hopsangui>
           <coordinates>
-            <coordinate x="2478.33850253799937490840" y="2705.24999295000134225120"/>
-            <coordinate x="2477.84984053799962566700" y="2718.72087795000152254943"/>
+            <coordinate x="2478.33850299999994604150" y="2705.24999299999990398646"/>
+            <coordinate x="2477.84984100000019680010" y="2718.72087800000008428469"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -698,8 +698,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Subtract_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2843.81000253799948040978" y="2689.24999295000134225120"/>
-            <coordinate x="2730.81000253799948040978" y="2689.24999295000134225120"/>
+            <coordinate x="2843.81000300000005154288" y="2689.24999299999990398646"/>
+            <coordinate x="2730.81000300000005154288" y="2689.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -710,8 +710,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="out" endcomponent="Gain_1" startport="in1" startcomponent="Subtract_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2642.81000253799948040978" y="2689.24999295000134225120"/>
-            <coordinate x="2705.81000253799948040978" y="2689.24999295000134225120"/>
+            <coordinate x="2642.81000300000005154288" y="2689.24999299999990398646"/>
+            <coordinate x="2705.81000300000005154288" y="2689.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -722,8 +722,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in" endcomponent="4_3_Servo_Valve" startport="out" startcomponent="Subtract_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2617.81000253799948040978" y="2689.24999295000134225120"/>
-            <coordinate x="2587.81000253799948040978" y="2690.24999295000134225120"/>
+            <coordinate x="2617.81000300000005154288" y="2689.24999299999990398646"/>
+            <coordinate x="2587.81000300000005154288" y="2690.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -734,8 +734,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in1" endcomponent="Subtract_1" startport="out" startcomponent="Square_Wave">
         <hopsangui>
           <coordinates>
-            <coordinate x="2918.81000253799948040978" y="2689.24999295000134225120"/>
-            <coordinate x="2868.81000253799948040978" y="2689.24999295000134225120"/>
+            <coordinate x="2918.81000300000005154288" y="2689.24999299999990398646"/>
+            <coordinate x="2868.81000300000005154288" y="2689.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -746,10 +746,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in2" endcomponent="Subtract_1" startport="out" startcomponent="Position_Sensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2404.31000253799948040978" y="2345.24999295000134225120"/>
-            <coordinate x="2404.31000253799948040978" y="2323.24999295000134225120"/>
-            <coordinate x="2856.31000253799948040978" y="2323.24999295000134225120"/>
-            <coordinate x="2856.31000253799948040978" y="2676.74999295000134225120"/>
+            <coordinate x="2404.31000300000005154288" y="2345.24999299999990398646"/>
+            <coordinate x="2404.31000300000005154288" y="2323.24999295000134225120"/>
+            <coordinate x="2856.31000300000005154288" y="2323.24999295000134225120"/>
+            <coordinate x="2856.31000300000005154288" y="2676.74999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -762,8 +762,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in2" endcomponent="Subtract_2" startport="out" startcomponent="Gain">
         <hopsangui>
           <coordinates>
-            <coordinate x="2631.31000253799948040978" y="2576.74999295000134225120"/>
-            <coordinate x="2630.31000253799948040978" y="2676.74999295000134225120"/>
+            <coordinate x="2631.31000300000005154288" y="2576.74999299999990398646"/>
+            <coordinate x="2630.31000300000005154288" y="2676.74999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -774,8 +774,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Route_With_Three_Inputs">
         <hopsangui>
           <coordinates>
-            <coordinate x="2631.31000253799948040978" y="2461.74999295000134225120"/>
-            <coordinate x="2631.31000253799948040978" y="2551.74999295000134225120"/>
+            <coordinate x="2631.31000300000005154288" y="2461.74999299999990398646"/>
+            <coordinate x="2631.31000300000005154288" y="2551.74999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -786,8 +786,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="route" endcomponent="Route_With_Three_Inputs" startport="y" startcomponent="Routing">
         <hopsangui>
           <coordinates>
-            <coordinate x="2769.81000253799948040978" y="2449.24999295000134225120"/>
-            <coordinate x="2647.81000253799948040978" y="2449.24999295000134225120"/>
+            <coordinate x="2768.40000328199948853580" y="2449.24999299999990398646"/>
+            <coordinate x="2647.81000300000005154288" y="2449.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -798,10 +798,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in2" endcomponent="Route_With_Three_Inputs" startport="out" startcomponent="Subtract">
         <hopsangui>
           <coordinates>
-            <coordinate x="2474.31000253799948040978" y="2419.74999295000134225120"/>
-            <coordinate x="2474.31000253799948040978" y="2367.24999295000134225120"/>
-            <coordinate x="2631.31000253799948040978" y="2367.24999295000134225120"/>
-            <coordinate x="2631.31000253799948040978" y="2436.74999295000134225120"/>
+            <coordinate x="2474.31000300000005154288" y="2419.74999299999990398646"/>
+            <coordinate x="2474.31000300000005154288" y="2367.24999295000134225120"/>
+            <coordinate x="2631.31000300000005154288" y="2367.24999295000134225120"/>
+            <coordinate x="2631.31000300000005154288" y="2436.74999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -814,9 +814,9 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in3" endcomponent="Route_With_Three_Inputs" startport="out" startcomponent="First_order_high_pass_filter">
         <hopsangui>
           <coordinates>
-            <coordinate x="2577.31000253799948040978" y="2400.74999295000134225120"/>
-            <coordinate x="2623.06000253799948040978" y="2400.74999295000134225120"/>
-            <coordinate x="2623.06000253799948040978" y="2436.74999295000134225120"/>
+            <coordinate x="2577.31000300000005154288" y="2400.74999299999990398646"/>
+            <coordinate x="2623.06000300000005154288" y="2400.74999299999990398646"/>
+            <coordinate x="2623.06000300000005154288" y="2436.74999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -828,9 +828,9 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="out" endcomponent="Subtract" startport="in" startcomponent="First_order_high_pass_filter">
         <hopsangui>
           <coordinates>
-            <coordinate x="2527.31000253799948040978" y="2400.74999295000134225120"/>
-            <coordinate x="2489.34336002662712417077" y="2400.74999295000134225120"/>
-            <coordinate x="2474.31000253799948040978" y="2419.74999295000134225120"/>
+            <coordinate x="2527.31000300000005154288" y="2400.74999299999990398646"/>
+            <coordinate x="2489.34336002662712417077" y="2400.74999299999990398646"/>
+            <coordinate x="2474.31000300000005154288" y="2419.74999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -842,8 +842,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="PB" endcomponent="4_3_Servo_Valve" startport="P1" startcomponent="Pressure_Sensor_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2447.31000253799948040978" y="2601.24999295000134225120"/>
-            <coordinate x="2478.33850253799937490840" y="2655.24999295000134225120"/>
+            <coordinate x="2447.31000300000005154288" y="2601.24999299999990398646"/>
+            <coordinate x="2478.33850299999994604150" y="2655.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -854,8 +854,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="PA" endcomponent="4_3_Servo_Valve" startport="P1" startcomponent="Pressure_Sensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2534.31000253799948040978" y="2601.24999295000134225120"/>
-            <coordinate x="2498.38840253799935453571" y="2655.24999295000134225120"/>
+            <coordinate x="2534.31000300000005154288" y="2601.24999299999990398646"/>
+            <coordinate x="2498.38840299999992566882" y="2655.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -866,9 +866,9 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="y" endcomponent="Constant_1" startport="in1" startcomponent="Route_With_Three_Inputs">
         <hopsangui>
           <coordinates>
-            <coordinate x="2639.56000253799948040978" y="2436.74999295000134225120"/>
-            <coordinate x="2639.56000253799948040978" y="2346.24999295000134225120"/>
-            <coordinate x="2619.06000253799948040978" y="2346.24999295000134225120"/>
+            <coordinate x="2639.56000300000005154288" y="2436.74999299999990398646"/>
+            <coordinate x="2639.56000300000005154288" y="2346.24999299999990398646"/>
+            <coordinate x="2619.06000300000005154288" y="2346.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -880,9 +880,9 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="out" endcomponent="Pressure_Sensor" startport="in2" startcomponent="Subtract">
         <hopsangui>
           <coordinates>
-            <coordinate x="2486.81000253799948040978" y="2432.24999295000134225120"/>
-            <coordinate x="2534.31000253799948040978" y="2432.24999295000134225120"/>
-            <coordinate x="2534.31000253799948040978" y="2565.24999295000134225120"/>
+            <coordinate x="2486.81000300000005154288" y="2432.24999299999990398646"/>
+            <coordinate x="2534.31000300000005154288" y="2432.24999299999990398646"/>
+            <coordinate x="2534.31000300000005154288" y="2565.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -894,10 +894,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="out" endcomponent="Pressure_Sensor_1" startport="in1" startcomponent="Subtract">
         <hopsangui>
           <coordinates>
-            <coordinate x="2474.31000253799948040978" y="2444.74999295000134225120"/>
-            <coordinate x="2474.31000253799948040978" y="2470.24999295000134225120"/>
-            <coordinate x="2447.31000253799948040978" y="2470.24999295000134225120"/>
-            <coordinate x="2447.31000253799948040978" y="2565.24999295000134225120"/>
+            <coordinate x="2474.31000300000005154288" y="2444.74999299999990398646"/>
+            <coordinate x="2474.31000300000005154288" y="2470.24999295000134225120"/>
+            <coordinate x="2447.31000300000005154288" y="2470.24999295000134225120"/>
+            <coordinate x="2447.31000300000005154288" y="2565.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -910,10 +910,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="P3" endcomponent="Cylinder_C" startport="P1" startcomponent="Translational_Mass">
         <hopsangui>
           <coordinates>
-            <coordinate x="2362.31000253799948040978" y="2476.24999295000134225120"/>
-            <coordinate x="2362.31000253799948040978" y="2591.27836174432786719990"/>
-            <coordinate x="2362.31000253799948040978" y="2591.27836174432786719990"/>
-            <coordinate x="2362.31000253799948040978" y="2504.74999295000134225120"/>
+            <coordinate x="2362.31000300000005154288" y="2476.24999299999990398646"/>
+            <coordinate x="2362.31000300000005154288" y="2591.27836174432786719990"/>
+            <coordinate x="2362.31000300000005154288" y="2591.27836174432786719990"/>
+            <coordinate x="2362.31000300000005154288" y="2504.74999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -926,10 +926,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="P2" endcomponent="Translational_Mass" startport="P1" startcomponent="Force_Transformer">
         <hopsangui>
           <coordinates>
-            <coordinate x="2362.31000253799948040978" y="2388.74999295000134225120"/>
-            <coordinate x="2362.31000253799948040978" y="2570.00176599964697743417"/>
-            <coordinate x="2362.31000253799948040978" y="2570.00176599964697743417"/>
-            <coordinate x="2362.31000253799948040978" y="2412.24999295000134225120"/>
+            <coordinate x="2362.31000300000005154288" y="2388.74999299999990398646"/>
+            <coordinate x="2362.31000300000005154288" y="2570.00176599964697743417"/>
+            <coordinate x="2362.31000300000005154288" y="2570.00176599964697743417"/>
+            <coordinate x="2362.31000300000005154288" y="2412.24999299999990398646"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -942,11 +942,11 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Position_Sensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2404.31000253799948040978" y="2345.24999295000134225120"/>
-            <coordinate x="2404.31000253799948040978" y="2323.67999295000163328950"/>
+            <coordinate x="2404.31000300000005154288" y="2345.24999299999990398646"/>
+            <coordinate x="2404.31000300000005154288" y="2323.67999295000163328950"/>
             <coordinate x="2903.19000253799958954914" y="2323.67999295000163328950"/>
-            <coordinate x="2903.19000253799958954914" y="2561.65999295000119673205"/>
-            <coordinate x="2942.49000253799931670073" y="2561.65999295000119673205"/>
+            <coordinate x="2903.19000253799958954914" y="2563.06999271799986672704"/>
+            <coordinate x="2943.90000271800045084092" y="2563.06999271799986672704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -960,10 +960,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Square_Wave">
         <hopsangui>
           <coordinates>
-            <coordinate x="2918.81000253799948040978" y="2689.24999295000134225120"/>
-            <coordinate x="2903.19000253799958954914" y="2689.24999295000134225120"/>
-            <coordinate x="2903.19000253799958954914" y="2561.65999295000119673205"/>
-            <coordinate x="2942.49000253799931670073" y="2561.65999295000119673205"/>
+            <coordinate x="2918.81000300000005154288" y="2689.24999299999990398646"/>
+            <coordinate x="2903.19000253799958954914" y="2689.24999299999990398646"/>
+            <coordinate x="2903.19000253799958954914" y="2563.06999271799986672704"/>
+            <coordinate x="2943.90000271800045084092" y="2563.06999271799986672704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -976,11 +976,11 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in_right" endcomponent="Scope" startport="out" startcomponent="Pressure_Sensor_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2447.31000253799948040978" y="2565.24999295000134225120"/>
-            <coordinate x="2447.31000253799948040978" y="2497.10999295000146958046"/>
+            <coordinate x="2447.31000300000005154288" y="2565.24999299999990398646"/>
+            <coordinate x="2447.31000300000005154288" y="2497.10999295000146958046"/>
             <coordinate x="3015.99000253799977144809" y="2497.10999295000146958046"/>
-            <coordinate x="3015.99000253799977144809" y="2561.65999295000119673205"/>
-            <coordinate x="2982.49000253799931670073" y="2561.65999295000119673205"/>
+            <coordinate x="3015.99000253799977144809" y="2563.06999271799986672704"/>
+            <coordinate x="2983.90000271800045084092" y="2563.06999271799986672704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -994,11 +994,11 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <connect endport="in_right" endcomponent="Scope" startport="out" startcomponent="Pressure_Sensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2534.31000253799948040978" y="2565.24999295000134225120"/>
-            <coordinate x="2534.31000253799948040978" y="2502.74999295000179699855"/>
+            <coordinate x="2534.31000300000005154288" y="2565.24999299999990398646"/>
+            <coordinate x="2534.31000300000005154288" y="2502.74999295000179699855"/>
             <coordinate x="3008.94000253799958954914" y="2502.74999295000179699855"/>
-            <coordinate x="3008.94000253799958954914" y="2561.65999295000119673205"/>
-            <coordinate x="2982.49000253799931670073" y="2561.65999295000119673205"/>
+            <coordinate x="3008.94000253799958954914" y="2563.06999271799986672704"/>
+            <coordinate x="2983.90000271800045084092" y="2563.06999271799986672704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
