@@ -238,6 +238,7 @@ void NumericalIntegrationSolver::solveMidpointMethod()
         k2[i] = mpParentComponent->getStateVariableDerivative(i);
     }
     *mpStateVars = orgStateVars;
+    mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
     for(int i=0; i<mnStateVars; ++i)
     {
