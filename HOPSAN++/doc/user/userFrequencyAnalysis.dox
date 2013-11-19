@@ -7,15 +7,9 @@ Hopsan has built-in tools for Nyquist diagrams, Bode plots and frequency spectru
 
 Transfer function analysis will generate Nyquist diagrams and bode plots. It is accessed from the toolbar in the plot window. To use this you need to define two curves, representing the input and the output signal. Add these curves to the same plot tab and then press the Transfer Function Analysis button.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/tfanalysis_icon.png" border=0>
-</td>
-<td><b>Transfer Function Analysis</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/tfanalysis_icon.png, Transfer Function Analysis}
+\image latex "tfanalysis_icon.png" "Transfer Function Analysis"
+
 
 A dialog will appear, where input signal and output signal can be selected. It is also possible to limit the frequency range. This is useful because numerical problems often occurs at high frequencies. When clicking "Go", two new plot tabs appear. The first shows the Nyquist diagram, and the second the Bode plot.
 
@@ -31,15 +25,8 @@ A dialog will appear, where input signal and output signal can be selected. It i
 
 It is possible to generate a frequency spectrum for a curve in the plot window. This is accessed by clicking the Frequency Spectrum buttom in the curve control panel (below the plot area).
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/fft_icon.png" border=0>
-</td>
-<td><b>Frequency Analysis</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/fft_icon.png, Frequency Analysis}
+\image latex "fft_icon.png" "Frequency Analysis"
 
 A dialog will appear, where it is possible to choose whether or not to use logarithmic scaling or power spectum The latter means that the square of the frequencies are used, to give a better picture of the energy contents. After clicking "Go" a new plot tab with the frequency spectrum will appear.
 

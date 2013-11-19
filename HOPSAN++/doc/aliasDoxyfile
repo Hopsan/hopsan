@@ -26,3 +26,4 @@
 
 ALIASES                += printtodo{1}="<b>ToDo:</b> <i>\1</i> \todo \1"
 ALIASES                += htmllinkimage{2}="\htmlonly <br><a href=\"\1\"><img src=\"\1\" width=\2 border=0></a><br> \endhtmlonly"
+ALIASES                += htmlimagerightcaption{2}="\htmlonly <table style=\"border-spacing: 20px 10px\" border=\"0\"> \n <tr><td><img src=\"\1\" border=0></td><td><b>\2</b></td></tr> \n </table> \endhtmlonly"

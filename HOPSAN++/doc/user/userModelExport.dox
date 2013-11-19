@@ -20,23 +20,15 @@ Hopsan models can be exported to Simulink as S-function libraries. This is done 
 
 First of all we must have a model to export. In this example we want to export the position servo model (found in Example Models directory) and create a closed-loop controller in Simulink. The only required modifications is that we must add interface components (found in Connectivity library) wherever we want interaction between Simulink and Hopsan. In this case we want a signal input to control the valve, and a signal output from the sensor. The controller is thus removed from the Hopsan model.
 
-\htmlonly
-<img src="../../graphics/simulink_model.png" border=0>
-\endhtmlonly
+\image html "simulink_model.png"
+\image latex "simulink_model.png" "Prepare model for use in Simulink"
 
 \subsection simulink-step2 2. Export source files
 
 Next step is to export the files. Click the "Export" button and select Simulink Source Files.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/export_simulink_icon.png" border=0>
-</td>
-<td><b>Export to S-function</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/export_simulink_icon.png, Export to S-function}
+\image latex "export_simulink_icon.png" "Export to S-function"
 
 A dialog appears, where you can choose version of Visual C++ and if you want 32-bit or 64-bit architecture. These settings should be choosen so that they match your version of Matlab. It is also possible to disable port graphics, for portability with older versions of Simulink. Use this setting only if Matlab gives an error message ending with "called mdlSetNumInputPorts more than once". 
 
@@ -64,15 +56,8 @@ The Functional Mock-up Interface is an open interface for communication between 
 \section export-fmu Exporting a Functional Mock-up Unit
 Hopsan models can be exported to FMUs by clicking on the Export to FMU button. Then choose an empty folder. All required files will be exported, compiled and compressed. Model inputs and outputs can be specified by using interface components.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/export_fmu_icon.png" border=0>
-</td>
-<td><b>Export to FMU</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/export_fmu_icon.png, Export to FMU}
+\image latex "export_fmu_icon.png" "Export to FMU"
 
 \subsection export-fmu-prerequisites Prerequisites
 - MinGW compiler (available in system path)
@@ -80,15 +65,8 @@ Hopsan models can be exported to FMUs by clicking on the Export to FMU button. T
 \section import-fmu Importing a Functional Mock-up Unit
 FMUs from other programs (or from Hopsan itself) can be imported by clicking on the import from FMU icon. If all goes well they will appear as components in the component library. 
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/import_fmu_icon.png" border=0>
-</td>
-<td><b>Import from FMU</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/import_fmu_icon.png, Import from FMU}
+\image latex "import_fmu_icon.png" "Import from FMU"
 
 \subsection export-fmu-prerequisites Prerequisites
 - MinGW compiler (available in system path)

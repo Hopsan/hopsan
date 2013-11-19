@@ -74,15 +74,7 @@ To change parameters of a component, you can double-click on it to open its para
 \section using-global-parameters Using Global Parameters
 Global system parameters can be used to quickly change a parameter value in several components at once. To do this, open the \a System \a Parameters widget by clicking on the little earth globe icon in the toolbar or by pressing Ctrl+Alt+Y. 
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/systemparameters_icon.png" border=0>
-</td>
-<td><b>System Parameters</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/systemparameters_icon.png,System Parameters}
 \image latex "systemparameters_icon.png" "System Parameters"
 
 From here new system parameters can be added or removed by clicking on the "Set" and "Unset" buttons. Values can be changed directly by double-clicking on their values in the list. They can then be used as parameters in components by clicking on the icon to the right of the parameter value box in the component's parameter dialog. When a system parameter is changed, it will changed for all components that use it. Should a system parameter be removed, the components that use it will change to simply using the last numerical value of the parameter instead.
@@ -116,169 +108,65 @@ After the simulation there is a finalize phase, where components has the opportu
 \section setting-up-simulation-parameters Setting up simulation parameters
 Start value, time step and stop time can be changed directly in the toolbar at the top of the main window. Choosing the time step is always a trade-off; smaller time steps will give more accurate results, but will also slow down the simulation. Apart from these settings, it is also possible to change how many data samples that will be logged for plotting. This is done in the Model Preferences dialog, which is accessed from the monkey wrench icon in the simulation toolbar. This is also a trade-off; too few data samples will result in less good looking plots, while too much logging will slow down the simulation. 
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/configuration_icon.png" border=0>
-</td>
-<td><b>Model Properties</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/configuration_icon.png, Model Properties}
 \image latex "configuration_icon.png" "Model Properties"
 
 When all setup is finished, the simulation is executed by clicking on the green "play" button in the simulation toolbar. If the progress bar is enabled (can be disabled from Options Dialog for performance reasons), it is possible to abort the simulation by clicking "Abort". 
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/simulate_icon.png" border=0>
-</td>
-<td><b>Simulate</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/simulate_icon.png, Simulate}
 \image latex "simulate_icon.png" "Simulate"
 
 \page plotting Plotting
 Plot curves are shown in plot windows. There are two methods to open a new plot window. The easiest way is to right click on a port in the workspace and choose "Plot <variable>" from the menu. This will create a new plot window with the selected plot variable. The more advanced way is to open the plot widget, by clicking on the plot icon in the simulation toolbar or by pressing Ctrl+Shift+P. A list with all components in the current model will then appear. This list can be expanded so that it shows all ports in each component. From here a plot window can be created by double clicking on a port name or by dragging it to the workspace.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/plot_icon.png" border=0>
-</td>
-<td><b>Open Plot Widget</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/plot_icon.png, Open Plot Widget}
 \image latex "plot_icon.png" "Open Plot Widget"
 
 Because this list can be long and time consuming to search, it is possible to mark those variables that are especially interesting as \a favorite \a variables. This is done by right clicking on them and choosing this in the drop-down menu. Favorite parameters gets a yellow star in front of their names, and they always appear at the top in the widget to make them easily accessible. 
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/favoritevariable_icon.png" border=0>
-</td>
-<td><b>Favorite Variable</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/favoritevariable_icon.png, Favorite Variable}
 \image latex "favoritevariable_icon.png" "Favorite Variables"
 
 Once a plot window has been opened, it is possible to add more plot curves to it by dragging items from the variable list to the window. The variable list is also accessible from inside the plot window, on the right side of the plot. On small monitors the list will be automatically hidden, but can be opened with the Toggle Plot Variables icon.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/toggleplotvariables_icon.png" border=0>
-</td>
-<td><b>Toggle Plot Variables</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/toggleplotvariables_icon.png, Toggle Plot Variables}
 \image latex "toggleplotvariables_icon.png" "Toggle Plot Variables"
 
 New curves can be added either to the left y-axis, to the right y-axis or to the x-axis. The latter will replace the time vector and result in an XY-plot. The x-axis can be rest to the time vector by using the Rest Time Vector button.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/plotresettimevector_icon.png" border=0>
-</td>
-<td><b>Reset Time Vector</b></td>
-</tr>
-</table>
-\endhtmlonly
-\image latex "plotresettimevector_icon.png" "Time Vector"
+\htmlimagerightcaption{../../graphics/plotresettimevector_icon.png, Reset Time Vector}
+\image latex "plotresettimevector_icon.png" "Reset Time Vector"
 
 Adding curves with different physical units to the same y-axis is generally not recommended, because they will use the same scale. The plot window contains several useful tools. First of all it is possible to zoom or pan the graphs by using the two leftmost icons. To return to the original position, simply right click anywhere in the plot area. 
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/zoomplot_icon.png" border=0>
-</td>
-<td><b>Zoom</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/zoomplot_icon.png, Zoom}
 \image latex "zoomplot_icon.png" "Zoom"
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/panplot_icon.png" border=0>
-</td>
-<td><b>Pan</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/panplot_icon.png, Pan}
 \image latex "panplot_icon.png" "Pan"
 
 The third button is used to save plot windows, so that they can be opened at a later time. Plot windows are saved in the XML-based .hmpf (Hopsan Model Plot File) format. These can be opened from the plot widget by using the "Load Plot Window From XML" button. 
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/saveplot_icon.png" border=0>
-</td>
-<td><b>Save To Plot Window Description File</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/saveplot_icon.png, Save To Plot Window Description File}
 \image latex "saveplot_icon.png" "Save To Plot Window Description File"
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/loadplot_icon.png" border=0>
-</td>
-<td><b>Load Plot Window Description File</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/loadplot_icon.png, Load Plot Window Description File}
 \image latex "loadplot_icon.png" "Load Plot Window Description File"
 
 Plot data can be exported to .xml (Extensible Markup Language), .csv (Comma-Separated Values), .m (Matlab script file) or .dat (gnuplot data file) formats. It is also possible to export plots graphically to .pdf or .png format.
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/exportplot_icon.png" border=0>
-</td>
-<td><b>Export Plot Data</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/exportplot_icon.png, Export Plot Data}
 \image latex "exportplot_icon.png" "Export Plot Data"
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/exportplotgfx_icon.png" border=0>
-</td>
-<td><b>Export Plot To Graphics File</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/exportplotgfx_icon.png, Export Plot To Graphics File}
 \image latex "exportplotgfx_icon.png" "Export Plot To Graphics File"
 
 The next two buttons are used to modify the plot window cosmetically. It is possible to show or hide the grid and to change the background color. 
 
 Each curve has its own set of icons below the plot. On small monitors these are hidden by default, they can be shown by clicking the Toggle Plot Curve Control Panel button.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/toggleplotcurvecontrolpanel_icon.png" border=0>
-</td>
-<td><b>Toggle Plot Curve Control Panel</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/toggleplotcurvecontrolpanel_icon.png, Toggle Plot Curve Control Panel}
 \image latex "toggleplotcurvecontrolpanel_icon.png" "Toggle Plot Curve Control Panel"
 
-From here it is possible to control \a plot \a generations. If the same model are simulated several times, a new generation is added to the plot window as long as the "Auto Update" checkbox is checked. To move between different generations, press the left arrow or right arrow icons. It is also possible to modify the curve cosmetically, to perform frequency analysis, and to remove the curve from the plot.
+From here it is possible to control \a plot \a generations. If the same model are simulated several times, a new generation is added to the plot window as long as the "Auto Update" check box is checked. To move between different generations, press the left arrow or right arrow icons. It is also possible to modify the curve cosmetically, to perform frequency analysis, and to remove the curve from the plot.
 
 */

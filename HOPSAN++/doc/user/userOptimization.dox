@@ -68,49 +68,38 @@ Sixth International Symposium on Micromachine and Human Science, Nagoya, Japan. 
 \page optimization-example Step-By-Step Example
 1.	Build the model. Obviously there must be a model to simulate. In this example a hydraulic position servo with a PI-controller is used. This model can be found among the example models in Hopsan.
 
-\htmlonly
-<br><img src="../../graphics/optimization_model.png" border=0>
-\endhtmlonly
+\image html "optimization_model.png"
+\image latex "optimization_model.png" "Optimization model"
 
 2.	Click the 'Optimization' icon. It is found in the simulation tool bar, next to the simulate button. It can also be reached from the menus.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/optimization_icon.png" border=0>
-</td>
-<td><b>Open Optimization Dialog</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/optimization_icon.png, Open Optimization Dialog}
+\image latex "optimization_icon.png" "Open Optimization Dialog"
 
 3.	Select general settings. Specify number of iterations, number of search points, reflection coefficient, randomization and forgetting factor and tolerances for convergence. Also choose whether or not to plot each iteration (will slow down optimization). In the example we choose 100 iterations, 4 search points, reflection coefficient of 1.3, randomization factor of 0.3, and a forgetting factor of 0. For tolerance values we use default settings.
 
-\htmlonly
-<br><img src="../../graphics/optimization_settings.png" border=0>
-\endhtmlonly
+\image html "optimization_settings.png"
+\image latex "optimization_settings.png" "Optimization settings"
 
 4.	Select parameters. A list of all components in the model is shown. Expanding a component will show its parameters. Check the parameters that shall be optimized, and they will appear below the list. Here the minimum and maximum values for each parameter can be chosen. There is also an option to use logarithmic parameter scaling. This is useful when values for the parameters can vary over several orders of magnitude. Keep in mind that all parameters must be strictly greater than zero to use this.
 
 In this example we want to optimize the PI-controller parameters. The parameters to optimize is therefore the gains called GainP and GainI. Considering the unit conversion from cylinder position [m] to spool position [m], reasonable maximum values are about 0.1.	
 
-\htmlonly
-<br><img src="../../graphics/optimization_parameters.png" border=0>
-\endhtmlonly
+\image html "optimization_parameters.png"
+\image latex "optimization_parameters.png" "Optimization parameters"
 
 5.	Select objective functions. The next tab also contains a list with the components. This time, however, expanding them will reveal a list of their ports. Expanding a port will show a list of variables in the port. Below the list are two drop down menus. Here it is possible to choose an objective function and whether or not to maximize or minimize it. Select a function and an appropriate number of variables, and then click "Add Function". For each function it is then possible to select weight factor, normalization factor,  exponential factor and provide other data if applicable.
 
 For the example we want to optimize a step response so that the cylinder position as closely as possible matches the step input signal. We therefore add a "Minimize average absolute difference" function between step output and position sensor output. We also want to penalize the overshot over the final value. This is done by adding a "Minimize overshot over value" function for position sensor output. This is given a weight factor of 2.0, because it is considered important.
 
-\htmlonly
-<br><img src="../../graphics/optimization_functions.png" border=0>
-\endhtmlonly
+\image html "optimization_functions.png"
+\image latex "optimization_functions.png" "Optimization functions"
 
 6.	Generate Python code. When all is finished, press the "Generate Script" button. This will produce Python code from the settings in the first three tabs, and display the output in the last tab.
 
-\htmlonly
-<br><img src="../../graphics/optimization_script.png" border=0>
-\endhtmlonly
+\image html "optimization_script.png"
+\image latex "optimization_script.png" "Optimization script"
+
 
 7.	Investigate the code. Before starting the optimization it is now possible to investigate and make changes to the script if desired. This is not needed in the example.
 

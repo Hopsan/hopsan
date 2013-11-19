@@ -1,17 +1,10 @@
 /*!
 \page userAnimationPage Animation
 
-Hopsan models can be animated, either in real-time or as replays. Animation is accessed through the Animate icon in the simulation toolbar, or from the menues.
+Hopsan models can be animated, either in real-time or as replays. Animation is accessed through the Animate icon in the simulation toolbar, or from the menus.
 
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/animation_icon.png" border=0>
-</td>
-<td><b>Animate</b></td>
-</tr>
-</table>
-\endhtmlonly
+\htmlimagerightcaption{../../graphics/animation_icon.png, Animate}
+\image latex "animation_icon.png" "Animate"
 
 This opens the model in animation mode. There is a toolbar where it is possible to replay, rewind, stop or play in real-time. Animation speed can also be adjusted. Some animation parameters can be adjusted by the parameters icon, or by double-clicking on movable icons in the workspace.
 
