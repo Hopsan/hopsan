@@ -1,19 +1,19 @@
 namespace hopsan::Component {
 /*!
-\page devWritingCustomComponentsPage Creating your own custom components manually
--# \subpage devWritingComponentInCppIntroPage
--# \subpage devWritingComponentInCppLibraryFilesPage
--# \subpage devWritingComponentInCppTheComponentPage 
--# \subpage devCreateModifyComponentAppearancePage 
--# \subpage devWritingComponentInCppCompilationPage
+\page devWritingCppComponentsPage Creating your own custom components manually
+-# \subpage devWritingCppComponentsPageIntroPage
+-# \subpage devWritingCppComponentsPageLibraryFilesPage
+-# \subpage devWritingCppComponentsPageTheComponentPage
+-# \subpage devWritingCppComponentsPageCompilationPage
+-# \subpage devWritingCppComponentsPageCreateModifyComponentAppearancePage
 
 
-\page devWritingComponentInCppIntroPage Introduction Writing Custom Components 
+\page devWritingCppComponentsPageIntroPage Introduction Writing Custom Components 
 The majority of the Hopsan component code is contained within the HopsanCore. When a new component is created, only the parts which make the new component unique needs to be specified. All other functionality is inherited from the base implementation in the HopsanCore. The code that is written for the new components must be compiled into a shared object file .dll (Windows), .so (UNIX) or .dynlib (MacOS) file. This file will contain the runtime executable code for the new components. While simulating, Hopsan will call functions in this file when the component is created, initialized, finalized and when it takes a simulation step.
 
-The compiled library file can include one or several new components. It must also include two mandatory functions used by the HopsanCore to get information about and to register the contents of the library once it is loaded. A description of the library files is given in \ref devWritingComponentInCppLibraryFilesPage
+The compiled library file can include one or several new components. It must also include two mandatory functions used by the HopsanCore to get information about and to register the contents of the library once it is loaded. A description of the library files is given in \ref devWritingCppComponentsPageLibraryFilesPage
 
-\section devWritingComponentInCppIntroPage-prerequisites Prerequisites
+\section devWritingCppComponentsPageIntroPage-prerequisites Prerequisites
   - Basic knowledge of C++
   - Basic knowledge of TLM modeling (unless you are writing a Signal components)
   - A set of development tools
@@ -25,14 +25,14 @@ The compiled library file can include one or several new components. It must als
       
 See the \ref devBaseRequirementsPage page for instructions on how to set up your development environment.
 
-\section devWritingComponentInCppIntroPage-exampleComponentLibrary The Example Component Library
+\section devWritingCppComponentsPageIntroPage-exampleComponentLibrary The Example Component Library
 The examples below are based on the exampleComponentLibrary that is included in each Hopsan release. You can find it in your Hopsan installation directory, under `componentLibraries/exampleComponentLib`. These examples contains subsets of the original files. Also look at the original files for their full content and additional comments. When creating a new component library, you can use the example files as a "getting started" template.
 
-\section devWritingComponentInCppIntroPage-basic-cpp Basic C++ 
+\section devWritingCppComponentsPageIntroPage-basic-cpp Basic C++ 
 
 \printtodo{This section should describe some very basic c++ things, but it will be assumed that the user have basic programming understanding}
 
-\page devWritingComponentInCppLibraryFilesPage The Component Library Files
+\page devWritingCppComponentsPageLibraryFilesPage The Component Library Files
 When you create a new component you are actually creating a new component library. The library may contain one single component or multiple components.
 If you are creating multiple components that belong together it is recommended to put them in the same library.
 
@@ -48,10 +48,10 @@ If you have access to the component library source code some additional importan
 -# One \e "libraryName".\b cc file. This is the source code file that is compiled into the .dll or.so.
 -# One or several \e "componentName".\b hpp files containing the source code of each individual component.
 
-The header-only .\b hpp files contains the source code for each components, see \ref devWritingComponentInCppTheComponentPage. \n
-The \b XML files contain the appearance description, and the \b SVG files are the icons, see \ref devCreateModifyComponentAppearancePage.
+The header-only .\b hpp files contains the source code for each components, see \ref devWritingCppComponentsPageTheComponentPage. \n
+The \b XML files contain the appearance description, and the \b SVG files are the icons, see \ref devWritingCppComponentsPageCreateModifyComponentAppearancePage.
 
-\section devWritingComponentInCppPage-qt_pro_file The Qt Project File
+\section devWritingCppComponentsPageLibraryFilesPage-qt_pro_file The Qt Project File
 This is the project file used by Qt Creator. It is used by qmake to generate a Makefile (compilation script). If you are using a different coding environment, you need to create a similar file for that environment. It is also possible to write a custom Makefile manually. It basically comes down to specifying the include path to the HopsanCore include files and the link path to the pre-compiled HopsanCore shared object (.dll, .do, .dynlib) file or link library (.lib, .a).
 
 A few modifications are required in this files. First of all the \b INCLUDEPATH must be changed so that it points to the \e "include" folder of the HopsanCore installation. Similarly, the \b LIBS path must point to the \e "bin" folder in the installation directory. You should also change the \b TARGET to the name you wish your compiled library (.dll/.so) to have. Finally, the relative path to all components source files in the library must be specified under \b HEADERS. (Assuming you have written each component in a header-only file).
@@ -73,7 +73,7 @@ The \e "KeyValue" argument must be a unique \e TypeName that identifies you comp
 \until }
 
 
-\page devWritingComponentInCppTheComponentPage Writing The Actual Component Code
+\page devWritingCppComponentsPageTheComponentPage Writing The Actual Component Code
 Components are written in header-only C++ files (.hpp). In this section we will look at "MyExampleConstantOrifice.hpp" from the exampleComponentLibrary.
 This is a very simple component that only includes a subset of functions. This is convenient when "getting started" but you should also see \ref ComponentAuthorFunctions for a list of all functions that can be useful when creating components.\n
 
@@ -179,7 +179,7 @@ This is usually only needed if you want to free memory that was additionally all
 The last member function \b deconfigure, is also optional. This code is run once the component is deleted. Here you can cleanup any custom memory allocation or similar that you have don in the configure function. \e Note! you do not need to remove ports, constants or variables. Hopsan will handle that automatically.
 Usually you never need to implement anything in this function.
 
-\page devWritingComponentInCppCompilationPage Compiling the Component Library
+\page devWritingCppComponentsPageCompilationPage Compiling the Component Library
 When your code is finished, the project must be compiled. It is necessary to use the same compiler that your version of Hopsan was compiled with. The project must also be compiled in \b release mode unless you are building against a \e HopsanCore_d in debug mode.
 
 The compilation goes through two phases, first the .cc file /files are compiled and then they are linked into a shared object .dll or .so file. \n
@@ -193,7 +193,7 @@ If compilation was successful, a .dll or.so file will appear in your library dir
 \printtodo{This section should list common compilation and linking errors and who to solve them}
 
 
-\page devCreateModifyComponentAppearancePage Create or Modify Component Appearance
+\page devWritingCppComponentsPageCreateModifyComponentAppearancePage Create or Modify Component Appearance
 
 \section component_svg Graphical Icons (.svg)
 Icons for the graphical interface are stored in the Scalable Vector Graphics format. A good tool, which is free and open-source, for creating and editing such files is Inkscape. If you want to use bitmaps graphics, .jpg, .png or similar formats, such graphics can be embedded in a .svg file.
@@ -252,5 +252,9 @@ The first line contains basic information about the XML code, and should always 
   - \b a Angle of port, 0 = right, 90 = down, 180 = left, 270 = up, ports shall normally point outwards from the component
   - \b visible Is the port is visible by default, \e true or \e false. A hidden port is never shown. (If omitted defaults to true)
   - \b description A description text (help text) for the port. (Optional)
-*/
+
+
+
+  
+  */
 }

@@ -3,15 +3,14 @@
 \page userScriptingPage Scripting
 Most functions in Hopsan can be accessed through the command interpreter in the terminal widget. The command language is called HCOM and is loosely based upon the commands used in the previous version of Hopsan (the one from 2001). Apart from the commands and functions, there is a built-in calculator that can evaluate mathematical expressions using the SymHop library.
 
-See \subpage userHcomScriptingPage for details.
+See \subpage userScriptingPageHcomPage for details.
 
 A Python interpreter is also included to run Python scripts. The idea is that these scripts also should be able to access some functions in the Hopsan GUI and that they will allow the user to run any python commands and external python based tools or custom code. \n
 \b Note! Currently the python support is not working very well, it is not even included in some builds of Hopsan. This may change in the future.
 
-See \subpage userPythonScriptingPage for details.
+See \subpage userScriptingPagePythonPage for details.
 
-
-\page userHcomScriptingPage HCOM Scripting
+\page userScriptingPageHcomPage HCOM Scripting
 You can write \b help in the HopsanGUI terminal window for a complete list of all HCOM commands. 
 You can also write <b>help commandName</b> for help regarding a particular command.\n
 
@@ -316,7 +315,7 @@ Generate a random value between 0 and 1
 \subsection peekfunc peek()
 Return vector value at specified index
 
-\page userPythonScriptingPage Python Scripting
+\page userScriptingPagePythonPage Python Scripting
 The Python Console in Hopsan can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. All Python interaction with Hopsan is done trough an object called "hopsan". The commands as well as command examples are available and described below. 
 
 \b Note! Python script functions are not working very well! It is recommended that you use HCOM instead. Python script support may be improved in a future release.
@@ -471,5 +470,8 @@ Example: pressuredata = hopsan.component("Orifice").port("P2").data("Pressure")
 \subsection gettimevector time()
 Returns the time vector from last simulation.
 Example: time = hopsan.component("Orifice").port("P2").time()
+
+
+
 */
 

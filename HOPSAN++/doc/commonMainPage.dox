@@ -14,7 +14,7 @@
 -# \subpage userTransmissionLineModelingMethodPage
 -# \subpage userModelingInHopsanPage
 -# \subpage devBaseRequirementsPage
--# \subpage devWritingCustomComponentsPage
+-# \subpage devWritingCppComponentsPage
 -# \subpage userAutomaticCodeGenerationPage
 -# \subpage userUnitTestModelsAndComponentsPage
 
