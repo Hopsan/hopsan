@@ -87,7 +87,7 @@ namespace hopsan {
             }
 
             // Initialize
-            mIntegrator.initialize(mTimestep, 0, (*mpJ), ts, tk, (*mpP1_T)-(*mpP2_T), (*mpP2_a), (*mpP2_w));
+            mIntegrator.initialize(mTimestep, 0, ts/(*mpJ), tk/(*mpJ), (*mpP1_T)-(*mpP2_T), (*mpP2_a), (*mpP2_w));
         }
 
 

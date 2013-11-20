@@ -33,7 +33,7 @@ namespace hopsan {
     class DLLIMPORTEXPORT DoubleIntegratorWithDampingAndCoulombFriction
     {
     public:
-        void initialize(double timestep, double w0, double mass, double Fs, double Fk, double u0, double y0, double sy0);
+        void initialize(double timestep, double w0, double Fs, double Fk, double u0, double y0, double sy0);
         void initializeValues(double u0, double y0, double sy0);
         void setDamping(double w0);
         void setFriction(double Fs, double Fk);
@@ -47,7 +47,8 @@ namespace hopsan {
         double mDelayU, mDelayY, mDelaySY;
         double mDelayUbackup, mDelayYbackup, mDelaySYbackup;
         double mTimeStep;
-        double mW0, mMass, mUs, mUk;
+        double mW0, mUs, mUk;
+        int movement;
     };
 }
 

@@ -19,7 +19,7 @@
 //! @date   2011-08-03
 //!
 //! @brief Contiains a second order integrator utility with provision for some damping and coulumb friction
-//! Revised by Robert Braun 2011-11-04
+//! Revised by Liselott Eriksson 2013
 //!
 //$Id$
 
@@ -29,16 +29,16 @@ using namespace hopsan;
 
 
 
-void DoubleIntegratorWithDampingAndCoulombFriction::initialize(double timestep, double w0, double mass, double Fs, double Fk, double u0, double y0, double sy0)
+void DoubleIntegratorWithDampingAndCoulombFriction::initialize(double timestep, double w0, double Fs, double Fk, double u0, double y0, double sy0)
 {
     mW0 = w0;
-    mMass = mass;
-    mUs = Fs/mMass;
-    mUk = Fk/mMass;
+    mUs = Fs;
+    mUk = Fk;
     mDelayU = u0;
     mDelayY = y0;
     mDelaySY = sy0;
     mTimeStep = timestep;
+    movement = 0;
 }
 
 
@@ -58,8 +58,8 @@ void DoubleIntegratorWithDampingAndCoulombFriction::setDamping(double w0)
 
 void DoubleIntegratorWithDampingAndCoulombFriction::setFriction(double Fs, double Fk)
 {
-    mUs = Fs/mMass;
-    mUk = Fk/mMass;
+    mUs = Fs;
+    mUk = Fk;
 }
 
 
@@ -69,26 +69,53 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
     double ue;    //Effective acceleration
     double ues = -(2.0-mW0)/mTimeStep*tempDelaySY-mDelayU;
 
-    ue = ues;           //First assume no movement
-    if(ues>(u-mUs) && ues<(u+mUs))
+    switch (movement)
     {
-      mDelaySY = 0;
-      mDelayY = mDelayY;
-    }
-    else
-    {
-        if(ues<=(u-mUs))   //Movement, so change ue
+    case 0:     // Standing still
+        if((u >= mUs))
+        {
+            movement = 1;
+        }
+        else if((u <= -mUs))
+        {
+            movement = -1;
+        }
+        break;
+    case 1:     // Moving with positive velocity
+        if (ues > (u-mUk))
+        {
+            mDelaySY = 0.0;
+            mDelayY = mDelayY; //Note: the movement is skipped for the partial timestep
+            movement = 0;
+        }
+        else
         {
             ue = u-mUk;
+            mDelaySY = (2.0-mW0)/(2.0+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(ue+mDelayU);
+            mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
         }
-        else if(ues>=(u+mUs))
+        break;
+    case -1:     // Moving with negative velocity
+        if (ues<(u+mUk))
+        {
+            mDelaySY = 0.0;
+            mDelayY = mDelayY;  //Note: the movement is skipped for the partial timestep
+            movement = 0;
+        }
+        else
         {
             ue = u+mUk;
+            mDelaySY = (2.0-mW0)/(2.0+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(ue+mDelayU);
+            mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
         }
-        mDelaySY = (2.0-mW0)/(2.0+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(ue+mDelayU);
-        mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
+        break;
+
+        //Note: the code will always stop at velocity zero
+
+    default:
+        movement = 0;
+        break;
     }
-    mDelayU = ue;
 }
 
 

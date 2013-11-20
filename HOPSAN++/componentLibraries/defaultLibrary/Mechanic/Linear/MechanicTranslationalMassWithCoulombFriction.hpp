@@ -103,7 +103,7 @@ namespace hopsan {
             mLength = x1+x2;
 
             //Initialize integrator
-            mIntegrator.initialize(mTimestep, 0, m, (*mpFs), (*mpFk), 0, 0, 0);
+            mIntegrator.initialize(mTimestep, 0, (*mpFs)/m, (*mpFk)/m, 0, 0, 0);
 
             (*mpND_me1) = m;
             (*mpND_me2) = m;
@@ -127,7 +127,7 @@ namespace hopsan {
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 
-            mIntegrator.setFriction((*mpFs), (*mpFk));
+            mIntegrator.setFriction((*mpFs)/m, (*mpFk)/m);
 
             mIntegrator.setDamping(((*mpB)+Zx1+Zx2) / m * mTimestep);
             mIntegrator.integrateWithUndo((c1-c2)/m);
