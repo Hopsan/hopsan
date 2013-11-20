@@ -9,7 +9,9 @@ A Python interpreter is also included to run Python scripts. The idea is that th
 \b Note! Currently the python support is not working very well, it is not even included in some builds of Hopsan. This may change in the future.
 
 See \subpage userScriptingPagePythonPage for details.
+*/
 
+/*!
 \page userScriptingPageHcomPage HCOM Scripting
 You can write \b help in the HopsanGUI terminal window for a complete list of all HCOM commands. 
 You can also write <b>help commandName</b> for help regarding a particular command.\n
@@ -314,7 +316,9 @@ Generate a random value between 0 and 1
 
 \subsection peekfunc peek()
 Return vector value at specified index
+*/
 
+/*!
 \page userScriptingPagePythonPage Python Scripting
 The Python Console in Hopsan can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. All Python interaction with Hopsan is done trough an object called "hopsan". The commands as well as command examples are available and described below. 
 
@@ -470,8 +474,6 @@ Example: pressuredata = hopsan.component("Orifice").port("P2").data("Pressure")
 \subsection gettimevector time()
 Returns the time vector from last simulation.
 Example: time = hopsan.component("Orifice").port("P2").time()
-
-
 
 */
 

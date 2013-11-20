@@ -4,9 +4,9 @@
 -# \subpage userHopsanGUIPage
 -# \subpage userHopsanCLIPage
 -# \subpage componentDevelopmentPage
-\if DEVELOPERDOCUMENTATION
+\cond DEVELOPERDOCUMENTATION
 -# \subpage hopsanDevelopmentPage
-\endif
+\endcond
 -# \subpage userAcknowledgementsPage
 
 
@@ -28,13 +28,13 @@
 -# \subpage userMultiThreadedPage
 -# \subpage userShortkeysPage
 
-\if DEVELOPERDOCUMENTATION
+\cond DEVELOPERDOCUMENTATION
 \page hopsanDevelopmentPage For Hopsan Developers
 -# \subpage devBaseRequirementsPage
 -# \subpage devHowtoBuildDocumentationPage
 -# \subpage devBuildHopsanPage
 -# \subpage devCodingConventionsPage
 -# \subpage devSubversionAutoPropsPage
-\endif
+\endcond
 
 */

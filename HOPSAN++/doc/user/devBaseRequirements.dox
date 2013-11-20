@@ -102,7 +102,9 @@ To get a working MSVC debugger in Qt creator
 \subsection qt-linux gcc in *Ubuntu / Debian
 On Linux based operating systems you should use the gcc compiler. To install gcc (and some other tools) in Ubuntu run `apt-get install build-essential`.
 You should use the Qt- libraries in you distribution package repository. Make sure that you install the Qt development packages, `apt-get install libqt4-dev qt4-dev-tools`. If you want a newer version of Qt Creator then what is available in your repository then you may install one from http://qt-project.org/downloads
+*/
 
+/*!
 \page devBaseRequirementsPageQtCreatorSettingsPage Qt Creator Settings Examples
 \printtodo{write this}
 */

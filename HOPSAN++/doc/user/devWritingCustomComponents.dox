@@ -6,8 +6,9 @@ namespace hopsan::Component {
 -# \subpage devWritingCppComponentsPageTheComponentPage
 -# \subpage devWritingCppComponentsPageCompilationPage
 -# \subpage devWritingCppComponentsPageCreateModifyComponentAppearancePage
+*/
 
-
+/*!
 \page devWritingCppComponentsPageIntroPage Introduction Writing Custom Components 
 The majority of the Hopsan component code is contained within the HopsanCore. When a new component is created, only the parts which make the new component unique needs to be specified. All other functionality is inherited from the base implementation in the HopsanCore. The code that is written for the new components must be compiled into a shared object file .dll (Windows), .so (UNIX) or .dynlib (MacOS) file. This file will contain the runtime executable code for the new components. While simulating, Hopsan will call functions in this file when the component is created, initialized, finalized and when it takes a simulation step.
 
@@ -31,7 +32,9 @@ The examples below are based on the exampleComponentLibrary that is included in 
 \section devWritingCppComponentsPageIntroPage-basic-cpp Basic C++ 
 
 \printtodo{This section should describe some very basic c++ things, but it will be assumed that the user have basic programming understanding}
+*/
 
+/*!
 \page devWritingCppComponentsPageLibraryFilesPage The Component Library Files
 When you create a new component you are actually creating a new component library. The library may contain one single component or multiple components.
 If you are creating multiple components that belong together it is recommended to put them in the same library.
@@ -71,8 +74,9 @@ The \e "KeyValue" argument must be a unique \e TypeName that identifies you comp
 \skipline //
 \until }
 \until }
+*/
 
-
+/*!
 \page devWritingCppComponentsPageTheComponentPage Writing The Actual Component Code
 Components are written in header-only C++ files (.hpp). In this section we will look at "MyExampleConstantOrifice.hpp" from the exampleComponentLibrary.
 This is a very simple component that only includes a subset of functions. This is convenient when "getting started" but you should also see \ref ComponentAuthorFunctions for a list of all functions that can be useful when creating components.\n
@@ -178,7 +182,9 @@ This is usually only needed if you want to free memory that was additionally all
 \until }
 The last member function \b deconfigure, is also optional. This code is run once the component is deleted. Here you can cleanup any custom memory allocation or similar that you have don in the configure function. \e Note! you do not need to remove ports, constants or variables. Hopsan will handle that automatically.
 Usually you never need to implement anything in this function.
+*/
 
+/*!
 \page devWritingCppComponentsPageCompilationPage Compiling the Component Library
 When your code is finished, the project must be compiled. It is necessary to use the same compiler that your version of Hopsan was compiled with. The project must also be compiled in \b release mode unless you are building against a \e HopsanCore_d in debug mode.
 
@@ -191,8 +197,9 @@ If you get something similar to the following error message: `"cannot find -lHop
 If compilation was successful, a .dll or.so file will appear in your library directory. It should now be possible to load the library from Hopsan, by pointing out the directory containing the library files.
 
 \printtodo{This section should list common compilation and linking errors and who to solve them}
+*/
 
-
+/*!
 \page devWritingCppComponentsPageCreateModifyComponentAppearancePage Create or Modify Component Appearance
 
 \section component_svg Graphical Icons (.svg)
@@ -252,9 +259,5 @@ The first line contains basic information about the XML code, and should always 
   - \b a Angle of port, 0 = right, 90 = down, 180 = left, 270 = up, ports shall normally point outwards from the component
   - \b visible Is the port is visible by default, \e true or \e false. A hidden port is never shown. (If omitted defaults to true)
   - \b description A description text (help text) for the port. (Optional)
-
-
-
-  
-  */
+*/
 }
