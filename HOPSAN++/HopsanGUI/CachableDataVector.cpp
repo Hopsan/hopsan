@@ -131,7 +131,7 @@ bool MultiDataVectorCache::readToMem(const quint64 startByte, const quint64 nByt
         {
             pDataVector->resize(nBytes/sizeof(double));
             qint64 n = mCacheFile.read((char*)pDataVector->data(), nBytes);
-            if (n == nBytes)
+            if (quint64(n) == nBytes)
             {
                 success = true;
             }

@@ -27,6 +27,7 @@
 
 #include "Node.h"
 #include "win32dll.h"
+#include "HopsanCoreMacros.h"
 #include "HopsanTypes.h"
 
 namespace hopsan {

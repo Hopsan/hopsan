@@ -170,7 +170,8 @@ HEADERS += \
     include/CoreUtilities/CoSimulationUtilities.h \
     include/CoreUtilities/StringUtilities.h \
     include/HopsanTypes.h \
-    include/ComponentUtilities/HopsanPowerUser.h
+    include/ComponentUtilities/HopsanPowerUser.h \
+    include/HopsanCoreMacros.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

@@ -22,6 +22,7 @@
 //$Id$
 
 #include "Parameters.h"
+#include "HopsanCoreMacros.h"
 #include "Component.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/StringUtilities.h"
