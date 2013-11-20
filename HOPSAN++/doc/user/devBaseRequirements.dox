@@ -34,6 +34,8 @@ Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project
 If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
 The project should now be configured automatically, but check the Projects tab on the left menu to be sure 
 
+See \subpage devQtCreatorSettingsScreenshotsPage examples of how the configuration \b could look
+
 \subsubsection _mingwwindows64 64-bit MinGW
 This guide is relevant for Hopsan version 0.6.* 64-bit development.
 If you want to compile 64-bit component libraries YOU MUST compile against a 64-bit version of Hopsan
@@ -63,7 +65,9 @@ Configure QtCreator:
    
 Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project (Select your Kit)
 If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
-The project should now be configured automatically, but check the Projects tab on the left menu to be sure
+The project should now be configured automatically, but check the Projects tab on the left menu to be sure.
+
+See \subpage devQtCreatorSettingsScreenshotsPage examples of how the configuration \b could look
 
 \subsection _msvccompiler MSVC++ (The Microsoft Visual C++ Compiler) 
 This guide describes what you need to install to be able to build MSVC2008 and MSVC2010 versions of the HopsanCore
@@ -98,5 +102,11 @@ To get a working MSVC debugger in Qt creator
 \subsection qt-linux gcc in *Ubuntu / Debian
 On Linux based operating systems you should use the gcc compiler. To install gcc (and some other tools) in Ubuntu run `apt-get install build-essential`.
 You should use the Qt- libraries in you distribution package repository. Make sure that you install the Qt development packages, `apt-get install libqt4-dev qt4-dev-tools`. If you want a newer version of Qt Creator then what is available in your repository then you may install one from http://qt-project.org/downloads
+
+\page devQtCreatorSettingsScreenshotsPage QtCreator settings examples
+
+\printtodo{Add contents here}
+
+
 
 */
