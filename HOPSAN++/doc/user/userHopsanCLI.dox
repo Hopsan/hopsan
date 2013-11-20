@@ -1,0 +1,113 @@
+/*!
+
+\page userHopsanCLIPage Using The Hopsan CLI Application
+
+The Hopsan CLI (Command Line Interface) is an application that you can use to simulate Hopsan models from the command line.
+The CLI has a number of options that let you load models, import/export parameter sets, export the simulation results and run tests.
+The CLI can be called from external programs or scripts. This is useful if you want to run bath tests or if you want to run Hopsan simulations from an external applications that do not have "co-simulation" or "export" support in Hopsan.
+
+The Hopsan CLI can be used to simulate existing models but you can not create models with the CLI. Use the HopsanGUI apoplication for that.
+
+The HopsanCLI is located in the `\bin` folder of your Hopsan installation.
+By calling `HopsanCLI --help` you will get help output showing you all the options.
+The help text is also given here for your convenience, but be sure to check the actual help since this manual page may not always be up-to-date.
+\verbatim
+USAGE: 
+   ./HopsanCLI  [-m <Path to file>] [-e <Path to file>] ... 
+                [--externalLibsFile <Path to file>] [-s <Comma separated
+                string>] [-l <integer>] [-t <Path to .hvc file>]
+                [--parameterImport <Path to file>] [--parameterExport
+                <Path to file>] [--resultsFullCSV <Path to file>]
+                [--resultsFinalCSV <Path to file>] [--resultsCSVSort
+                <string>] [-d] [--endPause] [--testInstanciateComponents]
+                [--] [--version] [-h]
+Where: 
+
+   -m <Path to file>,  --hmf <Path to file>
+     The Hopsan model file to load
+
+   -e <Path to file>,  --externalLib <Path to file>  (accepted multiple times)
+     Path to a .dll/.so externalComponentLib. Can be given multiple times
+
+   --externalLibsFile <Path to file>
+     A text file containing the external libs to load
+
+   -s <Comma separated string>,  --simulate <Comma separated string>
+     Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]
+
+   -l <integer>,  --numLogSamples <integer>
+     Set the number of log samples to store for the top-level system,
+     (default: Use number in .hmf)
+
+   -t <Path to .hvc file>,  --validate <Path to .hvc file>
+     Perform model validation based on HopsanValidationConfiguration
+
+   --parameterImport <Path to file>
+     CSV file with parameter values to import
+
+   --parameterExport <Path to file>
+     CSV file with exported parameter values
+
+   --resultsFullCSV <Path to file>
+     Export the results (all logged data)
+
+   --resultsFinalCSV <Path to file>
+     Export the results (only final values)
+
+   --resultsCSVSort <string>
+     Export results in columns or in rows: [rows, cols]
+
+   -d,  --printDebug
+     Show debug messages in the output
+
+   --endPause
+     Pauses the CLI at end to let you see its output
+
+   --testInstanciateComponents
+     Create an instace of each registered component to look for errors.
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+\endverbatim
+
+<b>Some run command examples:</b>\n
+These example use MS Windows filename syntax. (On Linux you should use forward / instead of backslash)
+
+\verbatim
+HopsanCLI -m "path_to\MyModel.hmf" -s hmf --resultsFullCSV myFullLogdata.csv
+\endverbatim
+This will simulate a model using the simulation time set in the model file and exports the entire logdata set to a CSV format file 
+
+\verbatim
+HopsanCLI -m "path_to\MyModel.hmf" -s -1,0.001,10 --resultsFinalCSV myFinalLogdata.csv
+\endverbatim
+This will simulate a model using specified simulation time startT,Ts,stopT and exports the final values from the logdata set to a CSV format file 
+
+\verbatim
+HopsanCLI -m "path_to\MyModel.hmf" --parameterExport myModelParameters.csv
+\endverbatim
+This will export the parameters from the model in a CSV file format. The model will not be simulated. 
+
+\verbatim
+HopsanCLI -m "path_to\MyModel.hmf" --parameterImport myModelNewParameters.csv -s 0,0.001,10 --resultsFinalCSV myFinalLogdata.csv
+\endverbatim
+This will import the parameters from a csv file (same format as exported in previous command example) and simulate the model using the specified parameter values. (This is useful when calling models from external programs if you want to change parameters. Usually when running external optimization.
+
+\verbatim
+HopsanCLI -m "path_to\MyModel.hmf" -e "somePathTo\myCompLib1.dll" -e "someOtherPathTo\myCompLib2.dll" -s hmf --resultsFullCSV myFullLogdata.csv
+\endverbatim
+This will load your model and two external component libraries, then simulate and export the results.
+
+\verbatim
+HopsanCLI -t "somePathTo\myModelValidation.hvc"
+\endverbatim
+This will load a model validation configuration file and run the validation tests. Text will be shown weather the tests pass or fail.
+The HopsanCLI return value will also reflect failure or success.
+
+*/
