@@ -673,7 +673,7 @@ void CoreSystemAccess::setLoadStartValues(bool load)
     mpCoreComponentSystem->setLoadStartValues(load);
 }
 
-//! @deprectaed maybe
+//! @deprecated maybe
 bool CoreSystemAccess::isSimulationOk()
 {
     return mpCoreComponentSystem->checkModelBeforeSimulation();

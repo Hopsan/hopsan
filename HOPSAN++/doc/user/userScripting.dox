@@ -124,7 +124,7 @@ Usage: chts [comp timestep]
 Inherit time step of sub-component from system time step\n
 Usage: ints [comp]
 
-\section parametercommands Parameter Commands\n
+\section parametercommands Parameter Commands
 
 \subsection dipa dipa
 Display parameter value\n

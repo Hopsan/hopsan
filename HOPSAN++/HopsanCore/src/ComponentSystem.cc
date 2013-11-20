@@ -223,8 +223,8 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
 }
 
 //! @brief Distributes component system pointers evenly over one vector per thread, depending on their simulation time
-//! @param systemVector Vector to distribute
-//! @param nThreads Number of threads to distribute for
+//! @param[in] rSystemVector Vector to distribute
+//! @param[in] nThreads Number of threads to distribute for
 vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(const std::vector<ComponentSystem *> &rSystemVector, size_t nThreads)
 {
     vector< vector<ComponentSystem *> > splitSystemVector;
@@ -3698,10 +3698,10 @@ void ComponentSystem::simulate(const double stopT)
 }
 
 
-//! @brief Simulates several systems sequentially
-//! @param startT Start time for all systems
-//! @param stopT Stop time for all systems
-//! @param systemVector Vector of pointers to component systems
+//! @brief Simulates several systems sequentially until given stop time
+//! @param[in] stopT Stop time for all systems
+//! @param[in] rSystemVector Vector of pointers to component systems to simulate
+//! @returns true if successfull else false if simulation was aborted for some reason
 bool SimulationHandler::simulateMultipleSystems(const double stopT, vector<ComponentSystem*> &rSystemVector)
 {
     bool aborted = false;
@@ -3812,12 +3812,12 @@ vector<double> *ComponentSystem::getLogTimeVector()
 //! @param startT Start time for all systems
 //! @param stopT Stop time for all systems
 //! @param nDesiredThreads Desired number of threads (may change due to hardware limitations)
-//! @param systemVector Vector of pointers to systems to simulate
+//! @param rSystemVector Vector of pointers to systems to simulate
 bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
-    (void)startT;
-    (void)nDesiredThreads;
-    (void)noChanges;
+    HOPSAN_UNUSED(startT)
+    HOPSAN_UNUSED(nDesiredThreads)
+    HOPSAN_UNUSED(noChanges)
 #ifdef USETBB
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 

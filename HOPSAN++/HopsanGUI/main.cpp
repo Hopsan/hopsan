@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   main.cpp
+//! @file   HopsanGUI/main.cpp
 //! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-01-01
 //!

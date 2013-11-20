@@ -1,13 +1,13 @@
 /*!
 
 \mainpage Hopsan Manual
-- \subpage userHopsanGUIPage
-- \subpage userHopsanCLIPage
-- \subpage componentDevelopmentPage
+-# \subpage userHopsanGUIPage
+-# \subpage userHopsanCLIPage
+-# \subpage componentDevelopmentPage
 \if DEVELOPERDOCUMENTATION
-- \subpage hopsanDevelopmentPage
+-# \subpage hopsanDevelopmentPage
 \endif
-- \subpage userAcknowledgementsPage
+-# \subpage userAcknowledgementsPage
 
 
 \page componentDevelopmentPage Component Library Development

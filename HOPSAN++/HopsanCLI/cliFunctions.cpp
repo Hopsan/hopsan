@@ -97,7 +97,7 @@ void splitStringOnDelimiter(const std::string &rString, const char delim, std::v
 
 // ===== Print functions =====
 //! @brief Prints all waiting messages
-//! @param [in] printDebug Should debug messages also be printed
+//! @param[in] printDebug Should debug messages also be printed
 void printWaitingMessages(const bool printDebug)
 {
     hopsan::HString msg, type, tag;
@@ -132,7 +132,7 @@ void printWaitingMessages(const bool printDebug)
 }
 
 //! @brief Prints a message with red color (resets color to defaul after)
-//! @param [in] rError The error message
+//! @param[in] rError The error message
 void printErrorMessage(const std::string &rError)
 {
     setTerminalColor(Red);
@@ -141,7 +141,7 @@ void printErrorMessage(const std::string &rError)
 }
 
 //! @brief Prints a message with yellow color (resets color to defaul after)
-//! @param [in] rWarning The warning message
+//! @param[in] rWarning The warning message
 void printWarningMessage(const std::string &rWarning)
 {
     setTerminalColor(Yellow);
@@ -150,7 +150,8 @@ void printWarningMessage(const std::string &rWarning)
 }
 
 //! @brief Prints a message with green color (resets color to defaul after)
-//! @param [in] rMessage The message
+//! @param[in] color The text color for the message
+//! @param[in] rMessage The message
 void printColorMessage(const ColorsEnumT color, const std::string &rMessage)
 {
     setTerminalColor(color);
@@ -159,14 +160,14 @@ void printColorMessage(const ColorsEnumT color, const std::string &rMessage)
 }
 
 //! @brief Helpfunction to print timestep info for a system
-//! @param [in] pSystem The system to print info for
+//! @param[in] pSystem The system to print info for
 void printTsInfo(const ComponentSystem* pSystem)
 {
     cout << "Ts: " << pSystem->getDesiredTimeStep() << " InheritTs: " << pSystem->doesInheritTimestep();
 }
 
 //! @brief Print system parameters in a system
-//! @param [in] pSystem The system to print info for
+//! @param[in] pSystem The system to print info for
 void printSystemParams(ComponentSystem* pSystem)
 {
     const vector<ParameterEvaluator*> *pParams = pSystem->getParametersVectorPtr();
@@ -177,10 +178,10 @@ void printSystemParams(ComponentSystem* pSystem)
 }
 
 //! @brief Print component hierarcy in a system
-//! @param [in] pSystem The system to print info for
-//! @param [in] prefix Text to add before printout
-//! @param [in] doPrintTsInfo Should timestep info be included
-//! @param [in] doPrintSystemParams Should system parameters be printed
+//! @param[in] pSystem The system to print info for
+//! @param[in] prefix Text to add before printout
+//! @param[in] doPrintTsInfo Should timestep info be included
+//! @param[in] doPrintSystemParams Should system parameters be printed
 void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
                              const bool doPrintTsInfo,
                              const bool doPrintSystemParams)
@@ -615,8 +616,8 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
 }
 
 //! @brief Read the paths of external liubs from a text file
-//! @param [in] filePath The file to read from
-//! @param [out] rExtLibFileNames A vector with paths to the external libs to load
+//! @param[in] filePath The file to read from
+//! @param[out] rExtLibFileNames A vector with paths to the external libs to load
 void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)
 {
     rExtLibFileNames.clear();
@@ -642,9 +643,9 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
 }
 
 //! @brief Read data on which nodes to save after simualtion from text file
-//! @param [in] fielPath The file to read from
-//! @param [out] rComps The component names
-//! @param [out] rPorts The port names
+//! @param[in] filePath The file to read from
+//! @param[out] rComps The component names
+//! @param[out] rPorts The port names
 void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::string> &rComps, std::vector<std::string> &rPorts)
 {
     rComps.clear();
@@ -681,9 +682,9 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
 
 // ===== Compare functions =====
 //! @brief Compares a vector with a reference vector
-//! @param vec Vector to compare
-//! @param ref Reference vector
-//! @param Tolereance (%) for acceptance
+//! @param rVec Vector to compare
+//! @param rRef Reference vector
+//! @param tol (%) for acceptance
 bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &rRef, const double tol)
 {
     if(rVec.size() != rRef.size())
@@ -705,7 +706,7 @@ bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &
 
 
 //! @brief Performs a unit test on a model
-//! @param modelName Name of test model
+//! @param hvcFilePath Name of test model
 bool performModelTest(const std::string hvcFilePath)
 {
     // Figure out basepath and basename

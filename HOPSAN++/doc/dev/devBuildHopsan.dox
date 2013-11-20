@@ -1,20 +1,20 @@
 /*!
 \page devBuildHopsanPage How to Build Hopsan and Requirements
 
--# \subpage devBaseRequirements
--# \subpage devHopsanCoreRequirements
--# \subpage devHopsanCLIRequirements
--# \subpage devHopsanGuiRequirements
--# \subpage devBuildHopsan-QtCreator
+-# \subpage devBaseRequirementsPage
+-# \subpage devHopsanCoreRequirementsPage
+-# \subpage devHopsanCLIRequirementsPage
+-# \subpage devHopsanGuiRequirementsPage
+-# \subpage devBuildHopsan-QtCreatorPage
 
-\page devBuildHopsan-QtCreator Build Hopsan in QtCreator (all OS)
+\page devBuildHopsan-QtCreatorPage Build Hopsan in QtCreator (all OS)
 -# Build the dependencies
--# Open the HopsanNG.pro project file. Make sure that you are using the same qmake version and build toolchain as you used to build the dependencies.
--# It is recomended to activate shadow build for both debug and release, (you will likely be able to use the default shadow build location)
--# qmake will automatically search for the dependencies in the ExternalDependecies directory according to default paths given in the .pro file
-  -# If you have a new version of a library that should be officially supported add the path to the TOP of the default list
+-# Open the HopsanNG.pro project file. Make sure that you are using the same qmake version and build tool chain as you used to build the dependencies.
+-# It is recommended to activate shadow build for both debug and release, (you will likely be able to use the default shadow build location)
+-# qmake will automatically search for the previously build dependencies in the Dependecies directory under each sub project according to default paths given in the .prf files.
+  -# If you have a new version of a library that should be officially supported add the path to the TOP of the default list in each prf
   -# If you want to use a completely custom path to your library then set the appropriate environment variable, eg. TBB_PATH, QWT_PATH or PYTHONQT_PATH.
--# Before you compile, run qmake on the HopsanNG project (right click), to see the qmake messages, (you will se if all dependencies were found correctly)
+-# Before you compile, <b>run qmake</b> on the HopsanNG project (right click), to see the qmake messages, (you will see if all dependencies were found correctly)
 -# Build the project in either debug or release mode
 
 */
