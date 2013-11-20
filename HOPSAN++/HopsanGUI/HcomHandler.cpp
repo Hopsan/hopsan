@@ -1430,7 +1430,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
     int id = getNumber(split.last(), &ok);
     if(!ok)
     {
-        HCOMERR("Illegal value.");
+        HCOMERR(QString("Illegal index value: %1").arg(split.last()));
         return;
     }
 
@@ -1453,7 +1453,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
             return;
         }
     }
-    HCOMERR("Data variable not found");
+    HCOMERR(QString("Data variable: %1 not found").arg(variable));
     mAnsType = Undefined;
     return;
 }
@@ -1471,6 +1471,8 @@ void HcomHandler::executePokeCommand(const QString cmd)
 
     QString variable = split.first();
     bool ok1, ok2;
+    //! @warning truncation, possibly approx 4 will become index 3, need a getNumber function for ints, or add some eps
+    //! @todo solve this warning
     int id = getNumber(split[1], &ok1);
     double value = getNumber(split.last(), &ok2);
     if(!ok1 || !ok2)
@@ -2809,7 +2811,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             }
             else if(mAnsType == DataVector)
             {
-                addPlotCurve(mAnsVector.data()->getFullVariableName(), axisId);
+                addPlotCurve(varNames[s], axisId);
             }
         }
     }
@@ -2863,8 +2865,7 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
         }
         else
         {
-            HCOMERR(QString("Can not parse: %1 when removing variables").arg(fullShortVarNameWithGen));
-            return;
+            allGens=true;
         }
     }
 
@@ -4193,7 +4194,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     // First try pattern directly
     bool foundAlias;
     SharedLogVariableDataPtrT pData = getLogVariablePtr(pattern, foundAlias);
-    if (pData)
+    if (pData && false)
     {
         QString name;
         if (foundAlias)
@@ -4210,92 +4211,116 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     }
     else
     {
+        //! @todo maybe the check above should be removed
         // Do more costly name lookup
-
-        // First see if we want highest or lowest, or a particular generation (will speedup search)
-        int desiredGen = -2;
-        if(pattern.endsWith(".L"))
+        // First we check if we have a name match
+        QList<LogDataStructT> data_containers = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern, Qt::CaseSensitive, QRegExp::Wildcard));
+        if (!data_containers.isEmpty())
         {
-            desiredGen = pLogDataHandler->getLowestGenerationNumber();
-            pattern.chop(2);
-
-        }
-        else if(pattern.endsWith(".H"))
-        {
-            desiredGen = pLogDataHandler->getHighestGenerationNumber();
-            pattern.chop(2);
-        }
-        else
-        {
-            QStringList fields = pattern.split('.');
-            if (fields.size() > 0)
-            {
-                bool isOK=false;
-                int g = fields.last().toInt(&isOK);
-                if (isOK)
-                {
-                    //! @todo what about handling zero, maybe should disp nothing
-                    desiredGen = qMax(g-1, -1);
-                    pattern.truncate(pattern.lastIndexOf('.'));
-                }
-            }
-        }
-
-        // Generate search list
-        QStringList namesWithGeneration;
-        if (desiredGen >= 0)
-        {
-            // Generate for a particular generation
-            namesWithGeneration = pLogDataHandler->getLogDataVariableNames("#", desiredGen);
-            for (int n=0; n<namesWithGeneration.size(); ++n)
-            {
-                toShortDataNames(namesWithGeneration[n]);
-                namesWithGeneration[n].append(QString(".%1").arg(desiredGen+1));
-            }
-        }
-        else if (desiredGen == -1)
-        {
-            // Generate for latest in each variable
-            QList<int> gens;
-            pLogDataHandler->getLogDataVariableNamesWithHighestGeneration("#",namesWithGeneration, gens);
-            for (int n=0; n<namesWithGeneration.size(); ++n)
-            {
-                toShortDataNames(namesWithGeneration[n]);
-                namesWithGeneration[n].append(QString(".%1").arg(gens[n]+1));
-            }
-        }
-        else
-        {
-            // Generate for all generations
-            QList< LogDataStructT> logdata = pLogDataHandler->getAllCompleteLogVariableData();
-            for (int d=0; d<logdata.size(); ++d)
+            for (int d=0; d<data_containers.size(); ++d)
             {
                 QString name;
-                if (logdata[d].mIsAlias)
+                if (data_containers[d].mIsAlias)
                 {
-                    name = logdata[d].mpDataContainer->getAliasName();
+                    name = data_containers[d].mpDataContainer->getAliasName();
                 }
                 else
                 {
-                    name = logdata[d].mpDataContainer->getFullVariableName();
+                    name = data_containers[d].mpDataContainer->getFullVariableName();
                     toShortDataNames(name);
                 }
-                QList<int> gens = logdata[d].mpDataContainer->getGenerations();
-                for (int g=0; g<gens.size(); ++g)
-                {
-                    QString name2 = QString("%1.%2").arg(name).arg(gens[g]+1);
-                    namesWithGeneration.append(name2);
-                }
+                rVariables.append(name);
             }
         }
-
-        // Filter the ALL list by what we actually want (discard the rest)
-        QRegExp re(pattern, Qt::CaseSensitive, QRegExp::Wildcard);
-        Q_FOREACH(const QString name, namesWithGeneration)
+        else
         {
-            if(re.exactMatch(name))
+            // Ok that did not result in any hits, lets comare for all generations
+
+            // First see if we want highest or lowest, or a particular generation (will speedup search)
+            int desiredGen = -2;
+            if(pattern.endsWith(".L"))
             {
-                rVariables.append(name);
+                desiredGen = pLogDataHandler->getLowestGenerationNumber();
+                pattern.chop(2);
+
+            }
+            else if(pattern.endsWith(".H"))
+            {
+                desiredGen = pLogDataHandler->getHighestGenerationNumber();
+                pattern.chop(2);
+            }
+            else
+            {
+                QStringList fields = pattern.split('.');
+                if (fields.size() > 0)
+                {
+                    bool isOK=false;
+                    int g = fields.last().toInt(&isOK);
+                    if (isOK)
+                    {
+                        //! @todo what about handling zero, maybe should disp nothing
+                        desiredGen = qMax(g-1, -1);
+                        //pattern.truncate(pattern.lastIndexOf('.'));
+                    }
+                }
+            }
+
+            // Generate search list
+            QStringList namesWithGeneration;
+            if (desiredGen >= 0)
+            {
+                // Generate for a particular generation
+                namesWithGeneration = pLogDataHandler->getLogDataVariableNames("#", desiredGen);
+                for (int n=0; n<namesWithGeneration.size(); ++n)
+                {
+                    toShortDataNames(namesWithGeneration[n]);
+                    namesWithGeneration[n].append(QString(".%1").arg(desiredGen+1));
+                }
+            }
+            else if (desiredGen == -1)
+            {
+                // Generate for latest in each variable
+                QList<int> gens;
+                pLogDataHandler->getLogDataVariableNamesWithHighestGeneration("#",namesWithGeneration, gens);
+                for (int n=0; n<namesWithGeneration.size(); ++n)
+                {
+                    toShortDataNames(namesWithGeneration[n]);
+                    namesWithGeneration[n].append(QString(".%1").arg(gens[n]+1));
+                }
+            }
+            else
+            {
+                // Generate for all generations
+                QList< LogDataStructT> logdata = pLogDataHandler->getAllCompleteLogVariableData();
+                for (int d=0; d<logdata.size(); ++d)
+                {
+                    QString name;
+                    if (logdata[d].mIsAlias)
+                    {
+                        name = logdata[d].mpDataContainer->getAliasName();
+                    }
+                    else
+                    {
+                        name = logdata[d].mpDataContainer->getFullVariableName();
+                        toShortDataNames(name);
+                    }
+                    QList<int> gens = logdata[d].mpDataContainer->getGenerations();
+                    for (int g=0; g<gens.size(); ++g)
+                    {
+                        QString name2 = QString("%1.%2").arg(name).arg(gens[g]+1);
+                        namesWithGeneration.append(name2);
+                    }
+                }
+            }
+
+            // Filter the ALL list by what we actually want (discard the rest)
+            QRegExp re(pattern, Qt::CaseSensitive, QRegExp::Wildcard);
+            Q_FOREACH(const QString name, namesWithGeneration)
+            {
+                if(re.exactMatch(name))
+                {
+                    rVariables.append(name);
+                }
             }
         }
     }
@@ -4495,7 +4520,12 @@ SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullShortName, 
     {
         //! @todo handle .L .H
         const QString genText = fullShortName.split(".").last();
-        generation = genText.toInt()-1;      //Subtract 1 due to zero indexing
+        bool isOK;
+        generation = genText.toInt(&isOK)-1;      //Subtract 1 due to zero indexing
+        if (!isOK)
+        {
+            return SharedLogVariableDataPtrT(0);
+        }
         fullShortName.chop(genText.size()+1);
     }
 
@@ -4579,8 +4609,8 @@ SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullShortName) 
 
 
 //! @brief Parses a string into a number
-//! @param rStr String to parse, should be a number of a variable name
-//! @param pOk Pointer to boolean that tells if parsing was successful
+//! @param[in] rStr String to parse, should be a number of a variable name
+//! @param[out] pOk Pointer to boolean that tells if parsing was successful
 double HcomHandler::getNumber(const QString &rStr, bool *pOk)
 {
     const double val = rStr.toDouble(pOk);

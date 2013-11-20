@@ -1007,36 +1007,6 @@ QVector<SharedLogVariableDataPtrT> LogDataHandler::getMultipleLogVariableDataPtr
     return results;
 }
 
-QList<LogVariableContainer *> LogDataHandler::getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const
-{
-    QList<LogVariableContainer*> results;
-    LogDataMapT::const_iterator it;
-    for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
-    {
-        // For any non temp variable compare name with regexp
-        if ((it.value().mpDataContainer->getVariableCommonDescription()->mVariableSourceType != TempVariableType) && rNameExp.exactMatch(it.key()))
-        {
-            results.append(it.value().mpDataContainer);
-        }
-    }
-    return results;
-}
-
-const QList< QPointer<LogVariableContainer> > LogDataHandler::getAllLogVariableContainers() const
-{
-    QList< QPointer<LogVariableContainer> > ret;
-    ret.reserve(mLogDataMap.size());
-    LogDataMapT::const_iterator it;
-    for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
-    {
-        if (!it->mIsAlias)
-        {
-            ret.append(it->mpDataContainer);
-        }
-    }
-    return ret;
-}
-
 const LogDataStructT LogDataHandler::getCompleteLogVariableData(const QString &rName) const
 {
     return mLogDataMap.value(rName,LogDataStructT());
@@ -1045,6 +1015,21 @@ const LogDataStructT LogDataHandler::getCompleteLogVariableData(const QString &r
 const QList<LogDataStructT> LogDataHandler::getAllCompleteLogVariableData() const
 {
     return mLogDataMap.values();
+}
+
+const QList<LogDataStructT> LogDataHandler::getMultipleCompleteLogVariableData(const QRegExp &rNameExp) const
+{
+    QList<LogDataStructT> results;
+    LogDataMapT::const_iterator it;
+    for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
+    {
+        // For any non temp variable compare name with regexp
+        if ((it.value().mpDataContainer->getVariableCommonDescription()->mVariableSourceType != TempVariableType) && rNameExp.exactMatch(it.key()))
+        {
+            results.append(it.value());
+        }
+    }
+    return results;
 }
 
 LogVariableContainer *LogDataHandler::getLogVariableContainer(const QString &rFullName) const

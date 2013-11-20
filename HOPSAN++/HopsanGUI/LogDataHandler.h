@@ -88,11 +88,10 @@ public:
     void clear();
 
     LogVariableContainer* getLogVariableContainer(const QString &rFullName) const;
-    QList<LogVariableContainer*> getMultipleLogVariableContainerPtrs(const QRegExp &rNameExp) const;
-    const QList<QPointer<LogVariableContainer> > getAllLogVariableContainers() const;
 
     const LogDataStructT getCompleteLogVariableData(const QString &rName) const;
     const QList<LogDataStructT> getAllCompleteLogVariableData() const;
+    const QList<LogDataStructT> getMultipleCompleteLogVariableData(const QRegExp &rNameExp) const;
 
     QStringList getLogDataVariableNames(const QString &rSeparator, const int generation=-1) const;
     void getLogDataVariableNamesWithHighestGeneration(const QString &rSeparator, QStringList &rNames, QList<int> &rGens) const;
