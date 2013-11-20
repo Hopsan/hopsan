@@ -1,0 +1,256 @@
+namespace hopsan::Component {
+/*!
+\page devWritingCustomComponentsPage Creating your own custom components manually
+-# \subpage devWritingComponentInCppIntroPage
+-# \subpage devWritingComponentInCppLibraryFilesPage
+-# \subpage devWritingComponentInCppTheComponentPage 
+-# \subpage devCreateModifyComponentAppearancePage 
+-# \subpage devWritingComponentInCppCompilationPage
+
+
+\page devWritingComponentInCppIntroPage Introduction Writing Custom Components 
+The majority of the Hopsan component code is contained within the HopsanCore. When a new component is created, only the parts which make the new component unique needs to be specified. All other functionality is inherited from the base implementation in the HopsanCore. The code that is written for the new components must be compiled into a shared object file .dll (Windows), .so (UNIX) or .dynlib (MacOS) file. This file will contain the runtime executable code for the new components. While simulating, Hopsan will call functions in this file when the component is created, initialized, finalized and when it takes a simulation step.
+
+The compiled library file can include one or several new components. It must also include two mandatory functions used by the HopsanCore to get information about and to register the contents of the library once it is loaded. A description of the library files is given in \ref devWritingComponentInCppLibraryFilesPage
+
+\section devWritingComponentInCppIntroPage-prerequisites Prerequisites
+  - Basic knowledge of C++
+  - Basic knowledge of TLM modeling (unless you are writing a Signal components)
+  - A set of development tools
+    - Qt Creator (IDE) and the Qt libraries.
+      (The examples use Qt project files that must be processed by qmake to generate make-files, but you may use any code editor that you like)
+      If you use an other IDE or development environment you must write the make files yourself (not very difficult, if you know what you are doing)
+    - Compiler, MinGW32 or MinGW64 (MS Windows), GNU GCC (Linux)
+      VisualC++ (Windows) is needed if you want to compile for export to Matlab/Simulink.
+      
+See the \ref devBaseRequirementsPage page for instructions on how to set up your development environment.
+
+\section devWritingComponentInCppIntroPage-exampleComponentLibrary The Example Component Library
+The examples below are based on the exampleComponentLibrary that is included in each Hopsan release. You can find it in your Hopsan installation directory, under `componentLibraries/exampleComponentLib`. These examples contains subsets of the original files. Also look at the original files for their full content and additional comments. When creating a new component library, you can use the example files as a "getting started" template.
+
+\section devWritingComponentInCppIntroPage-basic-cpp Basic C++ 
+
+\printtodo{This section should describe some very basic c++ things, but it will be assumed that the user have basic programming understanding}
+
+\page devWritingComponentInCppLibraryFilesPage The Component Library Files
+When you create a new component you are actually creating a new component library. The library may contain one single component or multiple components.
+If you are creating multiple components that belong together it is recommended to put them in the same library.
+
+A Hopsan component library consists of at least three types of files.
+-# The compiled component library code as a .\b dll Windows (Dynamic Link Library) file or as a .\b so (Shared Object) file (Linux/Mac).
+-# A set of .\b xml files that describes the graphical appearance of each component.
+-# A set of .\b svg (Scalable Vector Graphics) files containing component icon graphics.
+
+There needs to be one .xml file for every component in the library but .svg files can be shared if needed. All components should be compiled into one single .dll/.so file. Subdirectories containing the .xml and .svg files can be used to create sub categories in the library. The directory hierarchy will be shown in the HopsanGUI Component Library Widget.
+
+If you have access to the component library source code some additional important files should also be mentioned.
+-# A project file .\b pro, or a so called Makefile (build script) that is needed for building the code into the .dll/.so.
+-# One \e "libraryName".\b cc file. This is the source code file that is compiled into the .dll or.so.
+-# One or several \e "componentName".\b hpp files containing the source code of each individual component.
+
+The header-only .\b hpp files contains the source code for each components, see \ref devWritingComponentInCppTheComponentPage. \n
+The \b XML files contain the appearance description, and the \b SVG files are the icons, see \ref devCreateModifyComponentAppearancePage.
+
+\section devWritingComponentInCppPage-qt_pro_file The Qt Project File
+This is the project file used by Qt Creator. It is used by qmake to generate a Makefile (compilation script). If you are using a different coding environment, you need to create a similar file for that environment. It is also possible to write a custom Makefile manually. It basically comes down to specifying the include path to the HopsanCore include files and the link path to the pre-compiled HopsanCore shared object (.dll, .do, .dynlib) file or link library (.lib, .a).
+
+A few modifications are required in this files. First of all the \b INCLUDEPATH must be changed so that it points to the \e "include" folder of the HopsanCore installation. Similarly, the \b LIBS path must point to the \e "bin" folder in the installation directory. You should also change the \b TARGET to the name you wish your compiled library (.dll/.so) to have. Finally, the relative path to all components source files in the library must be specified under \b HEADERS. (Assuming you have written each component in a header-only file).
+
+\b exampleComponentLib.pro
+\verbinclude exampleComponentLib.pro
+
+\section devWritingComponentInCppPage-library_cc_file The Component Library Source File
+This file contains code that is used to register you library components in the HopsanCore. A few modifications are required. 
+-# First of all, all component header code files must be included. (The `#include` directive will actually in-place copy the included files into the cc file prior to compilation)
+-# Second, each component needs to be registered in the HopsanCore by the "`pComponentFactory->registerCreatorFunction("KeyValue", CreatorFunction)`" lines.\n
+The \e "KeyValue" argument must be a unique \e TypeName that identifies you component. The \e CreatorFunction argument is the \b Creator() function the must exist in each component.
+-# Third, Make sure that you write a unique libName (as a string) in the `get_hopsan_info` function. Leave the two last lines as they are.
+
+\b exampleComponentLib.cc
+\dontinclude exampleComponentLib.cc
+\skipline //
+\until }
+\until }
+
+
+\page devWritingComponentInCppTheComponentPage Writing The Actual Component Code
+Components are written in header-only C++ files (.hpp). In this section we will look at "MyExampleConstantOrifice.hpp" from the exampleComponentLibrary.
+This is a very simple component that only includes a subset of functions. This is convenient when "getting started" but you should also see \ref ComponentAuthorFunctions for a list of all functions that can be useful when creating components.\n
+
+\section _stepbystepexampleorifice Step by Step, MyExampleConstantOrifice.hpp
+This part goes through the basic structure of the component file. You should look in the actual file for the full code and more detailed comments.
+You should also have a look at the `MyExampleOrifice.hpp` file. The difference between the files illustrate the difference between having a constant parameter or a variable parameter. (Input Variable).\n
+
+\subsection _firstpart Include Directives and Header Guard
+\dontinclude MyExampleConstantOrifice.hpp
+\skipline //
+\until #include
+This first lines sets a header guard to avoid including the same code twice. Technically you do not need the header guards if you can guarantee that you do not include the same file twice (usually not a problem in component libraries). Then we includes the essential functions for the component from the HopsanCore. It may be necessary to include more files, for example "ComponentUtilities.h" for accessing built-in component utilities in Hopsan. You may also include other external header files if you wish to include function from other external libraries.
+
+\subsection _classdecl Class Declaration and Component CQS Type Selection
+\skipline class MyExampleConstantOrifice
+Next the component class is declared. We inherit from a \b ComponentQ as this is a Q-type component.
+This could also be \b ComponentC or \b ComponentSignal for C-type, Signal-type components.
+It is also possible to inherit \b ComponentSystem in order to write programmed subsystems. But this is \b VERY advanced and complicated and will not be covered in the documentation.
+
+\subsection _private Private Class Members
+\skip private:
+\until Port
+First the \b private part of the component is specified. Here we declare member variables, (variables that should be persistent in the component).
+In this case we have a restriction coefficient called \b mKc and two port pointers called \b mpP1 and \b mpP2 ("m" is an abbreviation of "member" and "mp" means "member and pointer"). The names does not actually matter, but using a naming convention makes the code easier to read.
+
+\subsection _public Public Class Members
+\skip public:
+\until }
+In the \b public part we first define a static creator function, which is used to create instances of the component in the simulation core. Nothing needs to be changed except the name of the class.
+
+\subsection _configure configure()
+\skip void configure()
+\until }
+The second member function you need to define is the \b configure function for the component. This function is run every time a new object of the class is created (added to the model).
+The function is used to to register ports, input variables, output variables and constants, and to configure default values for member variables.
+First we create the ports used for communication with the surrounding components, in this case two hydraulic PowerPorts.
+Finally we register the restrictor coefficient as constant parameter with a name, description and unit. This will make it available to the user in the graphical interface.
+
+<b>Adding Ports:</b>
+The following functions are available for port creation:
+You need to specify a unique (within the component) \e portname, which \e nodetype it should use, and whether it must be connected: \e Port::Required or \e Port::NotRequired. If the final argument is omitted it will default to Port::Required. \e Description is optional (but recommended)
+The currently available built-in node types can be found here: \ref Nodes "NodeTypes"\n
+New node types can be added through external libraries, but this should be avoided if possible.
+\code 
+Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+Port* addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+Port* addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+\endcode
+
+<b>Adding Input and Output Variables:</b>
+The following functions are available for input and output variable creation:
+If the last argument \e ppNodeData is given it will auto register and set the data pointer so that you can use it safely without having to worry about it dangling.
+In the output variable case, the \e defaultValue is optional. If a default vale is not given then the output value will not get a start value. This is usefully in cases where the component should calculate its own initial values. Example: In a Sum component you want the initial output value to be the sum of the initial input values. Being able to set a different start value on the output does not make sense.
+\code
+Port *addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData=0);
+Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData=0);
+Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData=0);
+\endcode
+
+<b>Adding Constants:</b>
+The following functions are available for creating constants
+The correct function will automatically be selected depending on the rData type.
+The function will register the given name, unit and description and connect this information to a pointer pointing at the variable you specify as the \b rData argument.
+The conditional Constant associates description strings to integer numbers and is shown as a drop-down selection box in the HopsanGUI.
+\code
+void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData);
+void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData);
+void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData);
+void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
+void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rData);
+\endcode
+
+\subsection _initialize initialize()
+\skip void initialize()
+\until }
+The next member function that must be defined is the \b initialize function.
+This function is run once before simulation starts. As this function is run after connections have been establish you can read or write to/from connected components. 
+If needed you can use this information to initialize your component properly. This is also the place to allocate additional memory if needed. 
+In this function you also typically initialize more advanced utilities such as (but not limited to) Delays, Integrators or Transfer-functions. 
+In this example case we have nothing that needs to be initialized.
+
+\subsection _simulateOneTimestep simulateOneTimestep()
+\skip void simulateOneTimestep()
+\until }
+The next function \b simulateOneTimestep, is the most important member function. It contains the model equations that are executed each time step.
+We begin by creating local variables with copies of the values from the connected ports, this is intended to make the actual equations more human readable.
+If you know that one of these local variables will not change then you should make it \e const. This will prevent you from accidentally assigning it and may allow the compiler to optimize the code better.
+The middle part consists of the actual equations. 
+In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighboring C-type components.
+We end by writing back the new values that were calculated.
+
+\subsection _finalize finalize()
+\skip void finalize()
+\until }
+The next member function \b finalize, is optional. It is only useful if you want some code to be run after simulation has finished.
+This is usually only needed if you want to free memory that was additionally allocated in the \e initialize function.
+
+\subsection _deconfigure deconfigure()
+\skip void deconfigure()
+\until }
+The last member function \b deconfigure, is also optional. This code is run once the component is deleted. Here you can cleanup any custom memory allocation or similar that you have don in the configure function. \e Note! you do not need to remove ports, constants or variables. Hopsan will handle that automatically.
+Usually you never need to implement anything in this function.
+
+\page devWritingComponentInCppCompilationPage Compiling the Component Library
+When your code is finished, the project must be compiled. It is necessary to use the same compiler that your version of Hopsan was compiled with. The project must also be compiled in \b release mode unless you are building against a \e HopsanCore_d in debug mode.
+
+The compilation goes through two phases, first the .cc file /files are compiled and then they are linked into a shared object .dll or .so file. \n
+If you have written something wrong in your code you may get a compilation error in the first phase, you will need to correct those. Also pay attention to warnings! Usually these error and warning messages are quite descriptive.
+
+You may also get linker errors which are usually a bit more difficult to understand if you are not used to compiling you own code.
+If you get something similar to the following error message: `"cannot find -lHopsanCore"` you have probably set the \e LIBS path incorrectly in your project file. It should point to where the Hopsancore .dll or .so file is located. \n
+
+If compilation was successful, a .dll or.so file will appear in your library directory. It should now be possible to load the library from Hopsan, by pointing out the directory containing the library files.
+
+\printtodo{This section should list common compilation and linking errors and who to solve them}
+
+
+\page devCreateModifyComponentAppearancePage Create or Modify Component Appearance
+
+\section component_svg Graphical Icons (.svg)
+Icons for the graphical interface are stored in the Scalable Vector Graphics format. A good tool, which is free and open-source, for creating and editing such files is Inkscape. If you want to use bitmaps graphics, .jpg, .png or similar formats, such graphics can be embedded in a .svg file.
+
+<a href="http://inkscape.org/">Inkscape Webpage</a>
+
+
+\section component_xml Appearance Description Files (.xml)
+Information about the component for the graphical interface, such as icon, port positions and component name, is stored in a .xml file. This file contains information about the component that is not part of the actual simulation code. This information can be changed without the need to recompile the actual component code. A typical appearance file looks like this:
+
+\verbatim
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="HydraulicLaminarOrifice" subtypename="Orifice1" displayname="Laminar Orifice">
+    <icons>
+      <icon type="iso" path="laminarorifice_iso.svg" iconrotation="ON" scale="1.0"/>
+      <icon type="user" path="laminarorifice_user.svg" iconrotation="ON" scale="1.0"/>
+    </icons>
+    <help>
+      <text>Help Text</text>
+      <picture>helpPicture.svg</picture>
+      <link>externalHelpDocumentation.pdf</link>
+    </help>
+    <ports>
+      <port name="P1" x="1.0" y="0.5" a="0" visible="true"/>
+      <port name="P2" x="0.0" y="0.5" a="180" visible="true"/>
+      <port name="Kc" x="0.5" y="0.0" a="270" visible="true">
+        <description>The orifice coefficient</description>
+      </port>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>
+\endverbatim
+
+The first line contains basic information about the XML code, and should always look the same. A description of the remaining tags follows:
+
+- \b hopsanobjectappearance Main tag for appearance file
+  - \b version Should always be 0.3 with this XML layout
+- \b modelobject Main tag for the component
+  - \b typename Name of the component as registered in the simulation core, see \ref devWritingComponentInCppPage-library_cc_file. (Required)
+  - \b subtypename Specific version of a typename component, if you have multiple appearance files for the same component code. (Optional)
+  - \b displayname Name for the component shown in the graphical interface. (If omitted typename will be used)
+- \b icons Contains information about icons. At least one type, user or iso is required.
+  - \b type The icon type, \e user or \e iso (ISO 1219)
+  - \b path Relative path from the .xml file to the .svg
+  - \b iconrotation Tells whether or not the icon rotates when the component is rotated in the workspace
+  - \b scale Lets you adjust the scale of the .svg graphics (without modifying the actual .svg file) (default=1.0 if omitted)
+- \b help Allows you to specify help information explaining the function of the component. (Optional)
+  - \b text The help text. (Optional)
+  - \b picture The path to the .svg help picture. (Optional)
+  - \b link Link to external document (relative this xml file) or URL
+- \b ports Defines the positions and orientations for each port (Required for each port)
+  - \b name Name of the port as defined in the code
+  - \b x X-position fraction of component icon width (0 = left, 1 = right)
+  - \b y Y-position fraction of component icon height (0 = top, 1 = bottom)
+  - \b a Angle of port, 0 = right, 90 = down, 180 = left, 270 = up, ports shall normally point outwards from the component
+  - \b visible Is the port is visible by default, \e true or \e false. A hidden port is never shown. (If omitted defaults to true)
+  - \b description A description text (help text) for the port. (Optional)
+*/
+}
