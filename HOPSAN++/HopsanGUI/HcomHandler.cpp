@@ -4229,7 +4229,9 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
         //! @todo maybe the check above should be removed
         // Do more costly name lookup
         // First we check if we have a name match
-        QList<LogDataStructT> data_containers = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern, Qt::CaseSensitive, QRegExp::Wildcard));
+        QString pattern_long = pattern;
+        toLongDataNames(pattern_long);
+        QList<LogDataStructT> data_containers = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
         if (!data_containers.isEmpty())
         {
             for (int d=0; d<data_containers.size(); ++d)
