@@ -1427,7 +1427,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
 
     QString variable = split.first();
     bool ok;
-    int id = getNumber(split.last(), &ok);
+    int id = int(getNumber(split.last(), &ok)+0.01);
     if(!ok)
     {
         HCOMERR(QString("Illegal index value: %1").arg(split.last()));
@@ -1471,13 +1471,11 @@ void HcomHandler::executePokeCommand(const QString cmd)
 
     QString variable = split.first();
     bool ok1, ok2;
-    //! @warning truncation, possibly approx 4 will become index 3, need a getNumber function for ints, or add some eps
-    //! @todo solve this warning
-    int id = getNumber(split[1], &ok1);
+    int id = int(getNumber(split[1], &ok1)+0.01);
     double value = getNumber(split.last(), &ok2);
     if(!ok1 || !ok2)
     {
-        HCOMERR("Illegal value.");
+        HCOMERR("Illegal value or index!");
         return;
     }
 
@@ -5129,13 +5127,14 @@ double _funcPeek(QString str, bool &ok)
     QMap<QString, double> localVars = gpTerminalWidget->mpHandler->getLocalVariables();
     QMap<QString, SymHop::FunctionPtr> localFuncs = gpTerminalWidget->mpHandler->getLocalFunctionPointers();
     bool evalOk;
-    int idx = idxExpr.evaluate(localVars, &localFuncs, &evalOk);
+    int idx = int(idxExpr.evaluate(localVars, &localFuncs, &evalOk)+0.1);
 
     if(pData && evalOk)
     {
-        ok=true;
         QString err;
-        return(pData->peekData(idx,err));
+        double val = pData->peekData(idx,err);
+        ok = err.isEmpty();
+        return val;
     }
     ok=false;
     return 0;
