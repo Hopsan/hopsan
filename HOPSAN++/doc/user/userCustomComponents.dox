@@ -23,7 +23,9 @@ Generated components are loaded automatically into a "Generated Component" libra
 
 \section generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
+*/
 
+/*!
 \page userUnitTestModelsAndComponentsPage Model and Component Unit-Testing
 When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results
 as a test model. You can later run this model again and automatically compare the simulation results. This is very important if you want to make sure that 

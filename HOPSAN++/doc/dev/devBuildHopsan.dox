@@ -6,7 +6,9 @@
 -# \subpage devHopsanCLIRequirementsPage
 -# \subpage devHopsanGuiRequirementsPage
 -# \subpage devBuildHopsan-QtCreatorPage
+*/
 
+/*!
 \page devBuildHopsan-QtCreatorPage Build Hopsan in QtCreator (all OS)
 -# Build the dependencies
 -# Open the HopsanNG.pro project file. Make sure that you are using the same qmake version and build tool chain as you used to build the dependencies.

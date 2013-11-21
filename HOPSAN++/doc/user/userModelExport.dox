@@ -4,7 +4,9 @@
 
 -# \subpage simulink \n
 -# \subpage fmi \n
+*/
 
+/*!
 \page simulink Exporting to Simulink
 
 Hopsan models can be exported to Simulink as S-function libraries. This is done by using an automatically generated C++ file, that can be compiled into an S-function from Matlab and linked against the HopsanCore library.
@@ -48,8 +50,9 @@ Now select the appropriate version of Visual C++. Then change Matlab working dir
 Open Simulink and create a new model. Add an S-function block. Open the properties and choose HopsanSimulink (without file extension) as the library file. Now a Simulink block appears. The ports corresponds to the interface components in Hopsan. The DEBUG output port will give zero if everything is ok, or an error number greater than zero if something goes wrong.
 
 Now let's add a PI-controller similar to the one we had originally in Hopsan. Also add scopes at the reference and output signals. Choose some reasonable values and check the results in the scopes.
+*/
 
-
+/*!
 \page fmi Functional Mock-up Interface
 The Functional Mock-up Interface is an open interface for communication between simulation environments. It is developed by the MODELISAR project, and is currently supported by more than 30 simulation tools. The concept is to exchange Functional Mock-up Units (FMUs) between different programs. An FMU is a zip-file with the file ending ".fmu", containing an XML description file and a binary file (DLL in Windows or SO in Linux) with a plain C interface which the host program can link against. It can also contain graphics, documentation and source code files.
 

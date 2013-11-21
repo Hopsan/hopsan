@@ -5,7 +5,9 @@
 -# \subpage constrained-simplex-algorithm\n
 -# \subpage particle-swarm-algorithm \n
 -# \subpage optimization-example \n
+*/
 
+/*!
 \page constrained-simplex-algorithm Constrained Simplex Algorithm
 The constrained simplex algorithm, also known as the complex algorithm, is based upon the simplex method developed by (Spendley et al, 1962) and (Nelder & Mead, 1965). It was first presented by (Box, 1965) and later improved by (Guin, 1968).
 
@@ -39,8 +41,9 @@ Computer Journal, vol. 8, pp. 42-52, 1965.
 
 Guin J. A., “Modification of the Complex method of constraint optimization,” Computer Journal,
    vol. 10, pp. 416-417, 1968.
+*/
 
-
+/*!
 \page particle-swarm-algorithm Particle Swarm Algorithm
 The particle swarm algorithm was first presented by (Eberhard and Kennedy, 1995). It is inspired by the social behaviour in a flock of individuals. It is generally slower than the complex algorithm, but may offer a higher chance for convergence. The method works as follows:
 
@@ -64,7 +67,9 @@ The particle swarm algorithm was first presented by (Eberhard and Kennedy, 1995)
 Eberhart, R. C. and Kennedy, J. A new optimizer using particle swarm theory. Proceedings of the
 Sixth International Symposium on Micromachine and Human Science, Nagoya, Japan. pp. 39-43,
 1995.
+*/
 
+/*!
 \page optimization-example Step-By-Step Example
 1.	Build the model. Obviously there must be a model to simulate. In this example a hydraulic position servo with a PI-controller is used. This model can be found among the example models in Hopsan.
 

@@ -6,7 +6,9 @@
 -# \subpage building-a-model \n
 -# \subpage running-a-simulation \n
 -# \subpage plotting \n
+*/
 
+/*!
 \page overview Overview
 The first thing you will see when you open Hopsan is a welcome dialog. From here you can choose to create a new model, load an existing model or open the models from last session. You also have the option to always open the last session, without showing the welcome dialog. When you have made your selection, the main window will appear. It will look like the screenshot bellow (with some cosmetic differences depending on your operating system). It consists of a tool bar at the top, a workspace area in the middle, a component library to the left and a message widget at the bottom. More windows and widgets can be opened later.
 
@@ -48,7 +50,9 @@ The message widget at the bottom is the program's way of communicating with the 
 
 \section python-widget Python Widget
 It is possible to control Hopsan with the Python scripting language. This can be used to facilitate complicated and time consuming operations, or to automate the execution in different ways. See separate section for more information on existing commands and limitations.
+*/
 
+/*!
 \page building-a-model Building a model
 Models must be built according to the transmission line element method. You are advised to read the section on this before you begin.
 
@@ -96,7 +100,9 @@ To make models more nice looking and understandable, it is possible to add text 
 
 A new widget will then appear at the menu position. It contains of two parts, a text and a box. The text is always located in the upper left corner. Its appearance can be modified by double clicking on it. The box can be resized by dragging the lines with the mouse. A pure text widget or a pure box widget can be created by removing the box or the text from a text box widget.
 
+*/
 
+/*!
 \page running-a-simulation Running a simulation
 \section how-simulations-work How simulations work
 Hopsan uses fixed time step simulations with distributed solvers. This means that the number of iterations is stop time minus start time divided by the time step. If the start time is negative, the negative time will be simulated but not logged for plotting. This can be used to avoid initial transients in the simulation, which are normally caused by incorrect start values. 
