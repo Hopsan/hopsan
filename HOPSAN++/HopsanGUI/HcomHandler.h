@@ -150,6 +150,7 @@ private:
     void generateCommandsHelpText();
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void addPlotCurve(QString cmd, const int axis) const;
+    void addPlotCurve(SharedLogVariableDataPtrT pData, const int axis) const;
     void removePlotCurves(const int axis) const;
     void removeLogVariable(QString fullShortVarNameWithGen) const;
     void getComponents(QString str, QList<ModelObject*> &components);

@@ -2797,21 +2797,31 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
         }
         else
         {
+            bool found=false;
             QStringList variables;
-            evaluateExpression(varNames[s], DataVector);
-            if(mAnsType == Wildcard)
+            getMatchingLogVariableNames(varNames[s], variables);
+            if (variables.isEmpty())
             {
-                QString vars = mAnsWildcard;
-                toShortDataNames(vars);
-                getMatchingLogVariableNames(vars, variables);
+                evaluateExpression(varNames[s], DataVector);
+                if(mAnsType == DataVector)
+                {
+                    addPlotCurve(mAnsVector, axisId);
+                    found = true;
+                }
+            }
+            else
+            {
+                found = true;
                 for(int v=0; v<variables.size(); ++v)
                 {
                     addPlotCurve(variables[v], axisId);
+
                 }
             }
-            else if(mAnsType == DataVector)
+
+            if (!found)
             {
-                addPlotCurve(varNames[s], axisId);
+                HCOMERR(QString("Could not find varible or evaluate expression: %1").arg(varNames[s]));
             }
         }
     }
@@ -2834,8 +2844,13 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
     }
     else
     {
-        gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pData, axis);
+        addPlotCurve(pData, axis);
     }
+}
+
+void HcomHandler::addPlotCurve(SharedLogVariableDataPtrT pData, const int axis) const
+{
+    gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pData, axis);
 }
 
 
