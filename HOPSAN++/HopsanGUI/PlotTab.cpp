@@ -2752,14 +2752,19 @@ void PlotTab::rescaleAxisLimitsToMakeRoomForLegend(const int plotId, const QwtPl
         // Remove legend and margin height from axis height, what remains is the height for the curves
         // Divid with the curves value range to get the scale
         double s = (ah-(lht+lhb))/cr; //[px/unit]
-        //qDebug() << "s: " << s;
-        s = qMax(s,Double100Min); // Limit to prevent div by 0
 
-        // Calculate new axis range for current axis height given the scale
-        const double ar = ah/s;
+        // Dont try to change axis limits if legend is higher then teh axis that will look strange and risk krashing Hopsan when axis limit -> inf
+        if (s > 0)
+        {
+            //qDebug() << "s: " << s;
+            s = qMax(s,1e-100); // Limit to prevent div by 0
 
-        rAxisLimits.setMaxValue(rAxisLimits.minValue() + ar - lhb/s);
-        rAxisLimits.setMinValue(rAxisLimits.minValue() - lhb/s);
+            // Calculate new axis range for current axis height given the scale
+            const double ar = ah/s;
+
+            rAxisLimits.setMaxValue(rAxisLimits.minValue() + ar - lhb/s);
+            rAxisLimits.setMinValue(rAxisLimits.minValue() - lhb/s);
+        }
     }
 }
 
