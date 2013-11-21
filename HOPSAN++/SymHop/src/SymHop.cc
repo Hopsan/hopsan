@@ -587,35 +587,57 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 //!
 //! @param variables Map with variable names and values
 //! @returns Evaluated value of expression
-double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, FunctionPtr> *functions) const
+double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, FunctionPtr> *functions, bool *ok) const
 {
-    double retval = 0;
+    *ok=true;
 
     if(isAdd())
     {
+        double retval = 0;
+        bool allOk = true;
         Q_FOREACH(const Expression &term, mTerms)
         {
-            retval += term.evaluate(variables, functions);
+            bool thisOk;
+            retval += term.evaluate(variables, functions, &thisOk);
+            allOk *= thisOk;
+        }
+        if(allOk)
+        {
+            return retval;
         }
     }
     else if(isMultiplyOrDivide())
     {
-        retval = 1;
+        double retval = 1;
+        bool allOk = true;
+        bool thisOk;
         Q_FOREACH(const Expression &factor, mFactors)
         {
-            retval *= factor.evaluate(variables, functions);
+            retval *= factor.evaluate(variables, functions, &thisOk);
+            allOk *= thisOk;
         }
         Q_FOREACH(const Expression &divisor, mDivisors)
         {
-            retval /= divisor.evaluate(variables, functions);
+            retval /= divisor.evaluate(variables, functions, &thisOk);
+            allOk *= thisOk;
+        }
+        if(allOk)
+        {
+            return retval;
         }
     }
     else if(isPower())
     {
-        retval = pow(mpBase->evaluate(variables, functions), mpPower->evaluate(variables, functions));
+        bool ok1, ok2;
+        double retval = pow(mpBase->evaluate(variables, functions, &ok1), mpPower->evaluate(variables, functions, &ok2));
+        if(ok1 && ok2)
+        {
+           return retval;
+        }
     }
     else if(isFunction())
     {
+        double retval;
         if(functions && functions->contains(mFunction))
         {
             QString argString;
@@ -627,110 +649,131 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             bool ok;
             retval = (*functions->find(mFunction).value())(argString, ok);
             if(ok)
+            {
                 return retval;
+            }
         }
-        if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "tan") { retval = tan(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "asin") { retval = asin(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "acos") { retval = acos(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "atan") { retval = atan(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "sinh") { retval = sinh(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "cosh") { retval = cosh(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "tanh") { retval = tanh(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "log") { retval = log(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "exp") { retval = exp(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "sqrt") { retval = sqrt(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "abs") { retval = fabs(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables, functions)); }
-        else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions)); }
+        bool ok1=true;
+        bool ok2=true;
+        bool ok3=true;
+        if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "tan") { retval = tan(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "asin") { retval = asin(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "acos") { retval = acos(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "atan") { retval = atan(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "sinh") { retval = sinh(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "cosh") { retval = cosh(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "tanh") { retval = tanh(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "log") { retval = log(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "exp") { retval = exp(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "sqrt") { retval = sqrt(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "abs") { retval = fabs(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables, functions, &ok1)); }
+        else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions, &ok1)); }
 
         else if(mFunction == "der") { retval = 0; }
-        else if(mFunction == "min") { retval = fmin(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
-        else if(mFunction == "max") { retval = fmax(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
-        else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
+        else if(mFunction == "min") { retval = fmin(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+        else if(mFunction == "max") { retval = fmax(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+        else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
 
-        else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
-        else if(mFunction == "div") { retval = mArguments[0].evaluate(variables, functions)/mArguments[1].evaluate(variables, functions); }
-        else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
-        else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
+        else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+        else if(mFunction == "div") { retval = mArguments[0].evaluate(variables, functions, &ok1)/mArguments[1].evaluate(variables, functions, &ok2); }
+        else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+        else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
 
         else if(mFunction == "equal")
         {
-            if(mArguments[0].evaluate(variables, functions) == mArguments[1].evaluate(variables, functions))
-                return 1.0;
+            if(mArguments[0].evaluate(variables, functions, &ok1) == mArguments[1].evaluate(variables, functions, &ok2))
+                retval=1;
             else
-                return 0.0;
+                retval=0;
         }
         else if(mFunction == "greaterThan")
         {
-            if(mArguments[0].evaluate(variables, functions) > mArguments[1].evaluate(variables, functions))
-                return 1.0;
+            if(mArguments[0].evaluate(variables, functions, &ok1) > mArguments[1].evaluate(variables, functions, &ok2))
+                retval=1;
             else
-                return 0.0;
+                retval=0;
         }
         else if(mFunction == "greaterThanOrEqual")
         {
-            if(mArguments[0].evaluate(variables, functions) >= mArguments[1].evaluate(variables, functions))
-                return 1.0;
+            if(mArguments[0].evaluate(variables, functions, &ok1) >= mArguments[1].evaluate(variables, functions, &ok2))
+                retval=1;
             else
-                return 0.0;
+                retval=0;
         }
         else if(mFunction == "smallerThan")
         {
-            if(mArguments[0].evaluate(variables, functions) < mArguments[1].evaluate(variables, functions))
-                return 1.0;
+            if(mArguments[0].evaluate(variables, functions, &ok1) < mArguments[1].evaluate(variables, functions, &ok2))
+                retval=1;
             else
-                return 0.0;
+                retval=0;
         }
         else if(mFunction == "smallerThanOrEqual")
         {
-            if(mArguments[0].evaluate(variables, functions) <= mArguments[1].evaluate(variables, functions))
-                return 1.0;
+            if(mArguments[0].evaluate(variables, functions, &ok1) <= mArguments[1].evaluate(variables, functions, &ok2))
+                retval=1;
             else
-                return 0.0;
+                retval=0;
         }
 
         else if(mFunction == "sign")
         {
-            if(mArguments[0].evaluate(variables, functions) >= 0.0) { retval = 1.0; }
-            else { retval = 0.0; }
+            if(mArguments[0].evaluate(variables, functions, &ok1) >= 0.0)
+                retval = 1.0;
+            else
+                retval = 0.0;
         }
         else if(mFunction == "limit")
         {
-            double val = mArguments[0].evaluate(variables, functions);
-            double min = mArguments[1].evaluate(variables, functions);
-            double max = mArguments[2].evaluate(variables, functions);
+            double val = mArguments[0].evaluate(variables, functions, &ok1);
+            double min = mArguments[1].evaluate(variables, functions, &ok2);
+            double max = mArguments[2].evaluate(variables, functions, &ok3);
             if(val > max) { retval = max; }
             else if(val < min) { retval = min; }
             else { retval = val; }
         }
         else if(variables.contains(this->toString()))
         {
-            return variables.find(this->toString()).value();
+            retval = variables.find(this->toString()).value();
+        }
+        else
+        {
+            ok1=false;
+        }
+
+        if(ok1 && ok2 && ok3)
+        {
+            return retval;
         }
     }
     else if(isNumericalSymbol())
     {
-        retval = this->toDouble();
+        return this->toDouble();
     }
     else if(isVariable())
     {
         if(variables.contains(mString))
-            retval = variables.find(mString).value();
-        else
-            retval = 0;
+            return variables.find(mString).value();
     }
     else if(isEquation())
     {
-        if(mpLeft->evaluate(variables, functions) == mpRight->evaluate(variables, functions))
-            return 1;
+        double retval;
+        bool ok1, ok2;
+        if(mpLeft->evaluate(variables, functions, &ok1) == mpRight->evaluate(variables, functions, &ok2))
+            retval = 1;
         else
-            return 0;
+            retval = 0;
+        if(ok1 && ok2)
+        {
+            return retval;
+        }
     }
 
-    return retval;
+    *ok=false;
+    return 0;
 }
 
 

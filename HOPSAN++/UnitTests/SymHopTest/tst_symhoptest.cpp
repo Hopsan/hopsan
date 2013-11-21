@@ -771,8 +771,11 @@ private Q_SLOTS:
         QFETCH(Expression, expr);
         QFETCH(stringDoubleMap, vars);
         QFETCH(double, value);
+        QFETCH(bool, success);
         QString failmsg("Failure! evaluate() did something wrong.");
-        QVERIFY2(fuzzyEqual(expr.evaluate(vars), value), failmsg.toStdString().c_str());
+        bool ok;
+        QVERIFY2(fuzzyEqual(expr.evaluate(vars,0,&ok), value) || (!ok && !success), failmsg.toStdString().c_str());
+        //QVERIFY2(ok==success, failmsg.toStdString().c_str());
     }
 
     void SymHop_Evaluate_data()
@@ -780,6 +783,7 @@ private Q_SLOTS:
         QTest::addColumn<Expression>("expr");
         QTest::addColumn<stringDoubleMap>("vars");
         QTest::addColumn<double>("value");
+        QTest::addColumn<bool>("success");
         stringDoubleMap variables;
         double x = 5.1;
         double y = 32.12;
@@ -787,19 +791,19 @@ private Q_SLOTS:
         variables.insert("x", x);
         variables.insert("y", y);
         variables.insert("z", z);
-        QTest::newRow("0") << Expression("sin(x)") << variables << sin(x);
-        QTest::newRow("1") << Expression("floor(x)") << variables << floor(x);
-        QTest::newRow("2") << Expression("limit(x,0,4)") << variables << 4.0;
-        QTest::newRow("3") << Expression("x*y/z") << variables << x*y/z;
-        QTest::newRow("4") << Expression("x^y") << variables << pow(x,y);
-        QTest::newRow("5") << Expression("x*y+z") << variables << x*y+z;
-        QTest::newRow("6") << Expression("x=y") << variables << 0.0;
-        QTest::newRow("7") << Expression("der(x)+y") << variables << y;
-        QTest::newRow("8") << Expression("undefinedfunction(x)+y") << variables << y;
-        QTest::newRow("9") << Expression("x+A") << variables << x;
-        QTest::newRow("10") << Expression("2e5+2") << variables << 2e5+2;
-        QTest::newRow("11") << Expression("2e-5+2") << variables << 2e-5+2;
-        QTest::newRow("12") << Expression("x-5e-3") << variables << x-5e-3;
+        QTest::newRow("0") << Expression("sin(x)") << variables << sin(x) << true;
+        QTest::newRow("1") << Expression("floor(x)") << variables << floor(x) << true;
+        QTest::newRow("2") << Expression("limit(x,0,4)") << variables << 4.0 << true;
+        QTest::newRow("3") << Expression("x*y/z") << variables << x*y/z << true;
+        QTest::newRow("4") << Expression("x^y") << variables << pow(x,y) << true;
+        QTest::newRow("5") << Expression("x*y+z") << variables << x*y+z << true;
+        QTest::newRow("6") << Expression("x=y") << variables << 0.0 << true;
+        QTest::newRow("7") << Expression("der(x)+y") << variables << y << true;
+        QTest::newRow("8") << Expression("undefinedfunction(x)+y") << variables << y << false;
+        QTest::newRow("9") << Expression("x+A") << variables << x << false;
+        QTest::newRow("10") << Expression("2e5+2") << variables << 2e5+2 << true;
+        QTest::newRow("11") << Expression("2e-5+2") << variables << 2e-5+2 << true;
+        QTest::newRow("12") << Expression("x-5e-3") << variables << x-5e-3 << true;
     }
 };
 

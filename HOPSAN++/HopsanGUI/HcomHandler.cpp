@@ -3520,9 +3520,14 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         timer.toc("local pars to local vars");
 
-        mAnsType = Scalar;
-        mAnsScalar = symHopExpr.evaluate(localVars, &mLocalFunctionPtrs);
-        return;
+        bool ok;
+        double scalar = symHopExpr.evaluate(localVars, &mLocalFunctionPtrs, &ok);
+        if(ok)
+        {
+            mAnsType = Scalar;
+            mAnsScalar = scalar;
+            return;
+        }
     }
 
     mAnsType = Wildcard;
@@ -3655,7 +3660,8 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             }
             timer.toc("runScriptCommand: pars to local vars");
             timer.tic();
-            while(symHopExpr.evaluate(localVars) > 0)
+            bool ok = true;
+            while(symHopExpr.evaluate(localVars, 0, &ok) > 0 && ok)
             {
                 qApp->processEvents();
                 if(mAborted)
@@ -5122,9 +5128,10 @@ double _funcPeek(QString str, bool &ok)
     SymHop::Expression idxExpr = SymHop::Expression(idxStr);
     QMap<QString, double> localVars = gpTerminalWidget->mpHandler->getLocalVariables();
     QMap<QString, SymHop::FunctionPtr> localFuncs = gpTerminalWidget->mpHandler->getLocalFunctionPointers();
-    int idx = idxExpr.evaluate(localVars, &localFuncs);
+    bool evalOk;
+    int idx = idxExpr.evaluate(localVars, &localFuncs, &evalOk);
 
-    if(pData)
+    if(pData && evalOk)
     {
         ok=true;
         QString err;
