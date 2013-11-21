@@ -571,6 +571,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     wrapperCode.replace("<<<15>>>", wrapperReplace15);
     wrapperCode.replace("<<<16>>>", wrapperReplace16);
     wrapperCode.replace("<<<name>>>", name);
+    wrapperCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
 
     QTextStream wrapperStream(&wrapperFile);
     wrapperStream << wrapperCode;

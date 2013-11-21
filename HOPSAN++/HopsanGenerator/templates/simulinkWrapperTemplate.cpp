@@ -92,13 +92,13 @@ static void mdlInitializeSizes(SimStruct *S)
     }
     startT = ssGetTStart(S);
     stopT = ssGetTFinal(S);
-    pComponentSystem->setDesiredTimestep(0.001);
+    pComponentSystem->setDesiredTimestep(<<<timestep>>>);
 <<<5>>>}
 
 
 static void mdlInitializeSampleTimes(SimStruct *S)
 {
-    ssSetSampleTime(S, 0, 0.001);
+    ssSetSampleTime(S, 0, <<<timestep>>>);
     ssSetOffsetTime(S, 0, 0.0);
 
     //Update tunable parameters
