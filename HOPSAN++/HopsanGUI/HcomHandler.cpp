@@ -1605,40 +1605,72 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
         return;
     }
 
-    QString var = cmd;
-
-    int size1  =var.section(".",-1).size()+1;
-    var.chop(size1);
-    int size2 = var.section(".",-1).size()+1;
-    var.chop(size2);
-    QList<ModelObject*> components;
-    getComponents(var, components);
-    if(components.size() != 1)
-        return;
-
-    UnitScale unitScale;
-    QString portAndVarName = cmd.right(size1+size2-1);
-    toLongDataNames(portAndVarName);
-    components[0]->getCustomPlotUnitOrScale(portAndVarName, unitScale);
-
-    QString scale = unitScale.mScale;
-    QString unit = unitScale.mUnit;
-    if(!unit.isEmpty())
+    QStringList vars;
+    getMatchingLogVariableNames(cmd,vars);
+    if(vars.isEmpty())
     {
-        HCOMPRINT(scale+" ["+unit+"]");
-        mAnsType = Scalar;
-        mAnsScalar = scale.toDouble();
+        HCOMERR(QString("Unknown variable: %1").arg(cmd));
         return;
     }
-    else
+    Q_FOREACH(const QString var, vars)
     {
-        HCOMPRINT(scale);
-        mAnsType = Scalar;
-        mAnsScalar = scale.toDouble();
-        return;
+        QString dispName;
+        QStringList fields = var.split(".");
+        // Handle alias
+        if (fields.size() == 1)
+        {
+            dispName = fields.first();
+            QString fullName = getfullNameFromAlias(fields.first());
+            fields = fullName.split("#");
+        }
+
+        // Handle comp.port.var variable
+        if (fields.size() == 3)
+        {
+            // Only set dispName if it was not an alias (set above)
+            if (dispName.isEmpty())
+            {
+                dispName = var;
+            }
+
+            QList<ModelObject*> components;
+            getComponents(fields.first(), components);
+            // This will only work for one hit, skip multiple hits
+            if(components.size() != 1)
+            {
+                HCOMWARN(QString("Ignoring %1 as it is matches more then one component").arg(fields.first()));
+                continue;
+            }
+
+            UnitScale unitScale;
+            QString portAndVarName = fields[1]+"."+fields[2];
+            toLongDataNames(portAndVarName);
+            components.first()->getCustomPlotUnitOrScale(portAndVarName, unitScale);
+
+            const QString &scale = unitScale.mScale;
+            const QString &unit = unitScale.mUnit;
+            if(!unit.isEmpty() && !scale.isEmpty())
+            {
+                HCOMPRINT(QString("%1: %2 [%3]").arg(dispName).arg(scale).arg(unit));
+                mAnsType = Scalar;
+                mAnsScalar = scale.toDouble();
+                continue;
+            }
+            else if (!scale.isEmpty())
+            {
+                HCOMPRINT(QString("%1: %2").arg(dispName).arg(scale));
+                mAnsType = Scalar;
+                mAnsScalar = scale.toDouble();
+                continue;
+            }
+            // Else we do not print anything
+            mAnsType = Undefined;
+        }
+        else
+        {
+            HCOMERR(QString("Unknown variable: %1").arg(var));
+        }
     }
-    mAnsType = Undefined;
-    return;
 }
 
 void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
@@ -1675,47 +1707,58 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
         return;
     }
 
-    SharedLogVariableDataPtrT pVar = getLogVariablePtr(cmd);
-    if(!pVar.isNull())
+    QStringList vars;
+    getMatchingLogVariableNames(cmd,vars);
+    if(vars.isEmpty())
     {
-        QString scale = pVar.data()->getCustomUnitScale().mScale;
-        QString unit = pVar.data()->getCustomUnitScale().mUnit;
-        if(!scale.isEmpty() && !unit.isEmpty())
+        HCOMERR("Unknown variable: "+cmd);
+        return;
+    }
+    Q_FOREACH(const QString var, vars)
+    {
+        SharedLogVariableDataPtrT pVar = getLogVariablePtr(var);
+        if(!pVar.isNull())
         {
-            HCOMPRINT(scale+" ["+unit+"]");
-            mAnsType = Scalar;
-            mAnsScalar = scale.toDouble();
-            return;
-        }
-        else if(!scale.isEmpty())
-        {
-            HCOMPRINT(scale);
-            mAnsType = Scalar;
-            mAnsScalar = scale.toDouble();
-            return;
-        }
-        else
-        {
-            scale = QString::number(pVar.data()->getPlotScale());
-            unit = pVar.data()->getPlotScaleDataUnit();
+            QString scale = pVar.data()->getCustomUnitScale().mScale;
+            QString unit = pVar.data()->getCustomUnitScale().mUnit;
             if(!scale.isEmpty() && !unit.isEmpty())
             {
-                HCOMPRINT(scale+" ["+unit+"]");
+                HCOMPRINT(QString("%1: %2 [%3]").arg(var).arg(scale).arg(unit));
                 mAnsType = Scalar;
                 mAnsScalar = scale.toDouble();
-                return;
+                continue;
             }
             else if(!scale.isEmpty())
             {
-                HCOMPRINT(scale);
+                HCOMPRINT(QString("%1: %2").arg(var).arg(scale));
                 mAnsType = Scalar;
                 mAnsScalar = scale.toDouble();
-                return;
+                continue;
             }
+            else
+            {
+                scale = QString::number(pVar.data()->getPlotScale());
+                unit = pVar.data()->getPlotScaleDataUnit();
+                if(!scale.isEmpty() && !unit.isEmpty())
+                {
+                    HCOMPRINT(QString("%1: %2 [%3]").arg(var).arg(scale).arg(unit));
+                    mAnsType = Scalar;
+                    mAnsScalar = scale.toDouble();
+                    continue;
+                }
+                else if(!scale.isEmpty())
+                {
+                    HCOMPRINT(QString("%1: %2").arg(var).arg(scale));
+                    mAnsType = Scalar;
+                    mAnsScalar = scale.toDouble();
+                    continue;
+                }
+            }
+            HCOMERR("Variable not found: "+var);
+            mAnsType = Undefined;
         }
     }
-    HCOMERR("Variable not found.");
-    mAnsType = Undefined;
+
     return;
 }
 
