@@ -217,7 +217,7 @@ void ComponentPropertiesDialog3::copyToNewComponent()
     sourceCode.replace("class "+mpModelObject->getTypeName()+" :", "class "+randomName+" :");
     sourceCode.replace("return new "+mpModelObject->getTypeName()+"()", "return new "+randomName+"()");
 
-    EditComponentDialog *pEditDialog = new EditComponentDialog(sourceCode, EditComponentDialog::Cpp);
+    EditComponentDialog *pEditDialog = new EditComponentDialog(sourceCode, EditComponentDialog::Cpp, gpMainWindowWidget);
 
     pEditDialog->exec();
 
