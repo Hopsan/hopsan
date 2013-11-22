@@ -64,7 +64,7 @@
 - Fixed: When you load an external lib containing the same components as an earlier lib, those components are "removed" from earlier libs
 - Fixed: When importing data containing Time, the Time variable will be moved to the __Imported__ category even though it should be shown in both categories.
 - Fixed: When hovering the library widget the size of the widget windows changes making components reorder them selves. (Kubuntu and Windows XP)
-
+- Fixed: Cavitation behaviour corrected in HydraulicPistonAckumulator, also changed icon to "gas charged accumulator"
 
 
 0.6.3a
