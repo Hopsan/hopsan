@@ -296,15 +296,15 @@ void HcomHandler::createCommands()
 
     HcomCommand chpwCmd;
     chpwCmd.cmd = "chpw";
-    chpwCmd.description.append("Changes current plot window");
-    chpwCmd.help.append(" Usage: chpw [number]");
+    chpwCmd.description.append("Changes current terminal plot window");
+    chpwCmd.help.append(" Usage: chpw [name]");
     chpwCmd.fnc = &HcomHandler::executeChangePlotWindowCommand;
     chpwCmd.group = "Plot Commands";
     mCmdList << chpwCmd;
 
     HcomCommand dipwCmd;
     dipwCmd.cmd = "dipw";
-    dipwCmd.description.append("Displays current plot window");
+    dipwCmd.description.append("Displays current terminal plot window");
     dipwCmd.help.append(" Usage: dipw [no arguments]");
     dipwCmd.fnc = &HcomHandler::executeDisplayPlotWindowCommand;
     dipwCmd.group = "Plot Commands";
