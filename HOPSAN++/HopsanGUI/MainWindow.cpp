@@ -362,8 +362,11 @@ void MainWindow::initializeWorkspace()
     QString componentPath = gpDesktopHandler->getComponentsPath();
 
     // Load built in default Library
-    //mpLibrary->loadLibrary(componentPath, Internal);
+#ifdef BUILTINDEFAULTCOMPONENTLIB
+    gpLibraryHandler->loadLibrary(componentPath, Internal);
+#else
     gpLibraryHandler->loadLibrary(componentPath+"defaultComponentLibrary.xml", Internal);
+#endif
 
     // Load builtIn library (Container special components)
     gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "visible/builtin_visible.xml", Internal);
