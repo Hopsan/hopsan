@@ -3420,26 +3420,62 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     timer.tic();
     //! @todo what aboud multiplication with more than two factors?
     //! @todo this code does pointer lookup, then does it again, and then get names to use string versions of logdatahandler functions, it could lookup once and then use the pointer versions instead
-    if(desiredType != Scalar && symHopExpr.getFactors().size() == 2 && pLogData)
+    if(desiredType != Scalar && symHopExpr.isMultiplyOrDivide() && (symHopExpr.getDivisors().isEmpty() || symHopExpr.getFactors().size() > 1) && pLogData)
     {
         SymHop::Expression f0 = symHopExpr.getFactors()[0];
-        SymHop::Expression f1 = symHopExpr.getFactors()[1];
-        if(!getLogVariablePtr(f0.toString()).isNull() && f1.isNumericalSymbol())
+        SymHop::Expression f1 = symHopExpr;
+        f1.removeFactor(f0);
+
+        VariableType varType0, varType1;
+        double scalar0, scalar1;
+        SharedLogVariableDataPtrT vec0, vec1;
+        evaluateExpression(f0.toString());
+        if(mAnsType != DataVector && mAnsType != Scalar)
         {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->mulVariableWithScalar(getLogVariablePtr(f0.toString()), f1.toDouble());
+            mAnsType = Undefined;
             return;
         }
-        else if(!getLogVariablePtr(f1.toString()).isNull() && f0.isNumericalSymbol())
+        varType0 = mAnsType;
+        if(varType0 == Scalar)
         {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->mulVariableWithScalar(getLogVariablePtr(f1.toString()), f0.toDouble());
+            scalar0 = mAnsScalar;
+        }
+        else
+        {
+            vec0 = mAnsVector;
+        }
+        evaluateExpression(f1.toString());
+        if(mAnsType != DataVector && mAnsType != Scalar)
+        {
+            mAnsType = Undefined;
             return;
         }
-        else if(!getLogVariablePtr(f0.toString()).isNull() && !getLogVariablePtr(f1.toString()).isNull())
+        varType1 = mAnsType;
+        if(varType1 == Scalar)
+        {
+            scalar1 = mAnsScalar;
+        }
+        else
+        {
+            vec1 = mAnsVector;
+        }
+
+        if(varType0 == Scalar && varType1 == DataVector)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->multVariables(getLogVariablePtr(f0.toString()), getLogVariablePtr(f1.toString()));
+            mAnsVector = pLogData->mulVariableWithScalar(vec1, scalar0);
+            return;
+        }
+        else if(varType0 == DataVector && varType1 == Scalar)
+        {
+            mAnsType = DataVector;
+            mAnsVector = pLogData->mulVariableWithScalar(vec0, scalar1);
+            return;
+        }
+        else if(varType0 == DataVector && varType1 == DataVector)
+        {
+            mAnsType = DataVector;
+            mAnsVector = pLogData->multVariables(vec0, vec1);
             return;
         }
     }
@@ -3447,10 +3483,13 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     {
         SymHop::Expression b = *symHopExpr.getBase();
         SymHop::Expression p = *symHopExpr.getPower();
-        if(!getLogVariablePtr(b.toString()).isNull() && p.toDouble() == 2.0)
+
+        evaluateExpression(b.toString());
+
+        if(mAnsType == DataVector && p.toDouble() == 2.0)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->multVariables(getLogVariablePtr(b.toString()), getLogVariablePtr(b.toString()));
+            mAnsVector = pLogData->multVariables(mAnsVector, getLogVariablePtr(b.toString()));
             return;
         }
     }
@@ -3458,63 +3497,105 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     {
         SymHop::Expression f = symHopExpr.getFactors()[0];
         SymHop::Expression d = symHopExpr.getDivisors()[0];
-        if(!getLogVariablePtr(f.toString()).isNull() && d.isNumericalSymbol())
+
+        VariableType varType0, varType1;
+        double scalar1;
+        SharedLogVariableDataPtrT vec0, vec1;
+        evaluateExpression(f.toString(), DataVector);
+        if(mAnsType != DataVector)
         {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->divVariableWithScalar(getLogVariablePtr(f.toString()), d.toDouble());
+            mAnsType = Undefined;
             return;
         }
-        else if(!getLogVariablePtr(f.toString()).isNull() && !getLogVariablePtr(d.toString()).isNull())
+        varType0 = mAnsType;
+        vec0 = mAnsVector;
+        evaluateExpression(d.toString());
+        if(mAnsType != DataVector && mAnsType != Scalar)
+        {
+            mAnsType = Undefined;
+            return;
+        }
+        varType1 = mAnsType;
+        if(varType1 == Scalar)
+        {
+            scalar1 = mAnsScalar;
+        }
+        else
+        {
+            vec1 = mAnsVector;
+        }
+
+
+        if(varType0 == DataVector && varType1 == Scalar)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->divVariables(getLogVariablePtr(f.toString()), getLogVariablePtr(d.toString()));
+            mAnsVector = pLogData->divVariableWithScalar(vec0, scalar1);
+            return;
+        }
+        else if(varType0 == DataVector && varType1 == DataVector)
+        {
+            mAnsType = DataVector;
+            mAnsVector = pLogData->divVariables(vec0, vec1);
             return;
         }
     }
-    if(desiredType != Scalar && pLogData && symHopExpr.getTerms().size() == 2)
+    if(desiredType != Scalar && pLogData && symHopExpr.isAdd())
     {
         SymHop::Expression t0 = symHopExpr.getTerms()[0];
-        SymHop::Expression t1 = symHopExpr.getTerms()[1];
-        if(!getLogVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
+        SymHop::Expression t1 = symHopExpr;
+        t1.subtractBy(t0);
+
+        VariableType varType0, varType1;
+        double scalar0, scalar1;
+        SharedLogVariableDataPtrT vec0, vec1;
+        evaluateExpression(t0.toString());
+        if(mAnsType != DataVector && mAnsType != Scalar)
         {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->addVariableWithScalar(getLogVariablePtr(t0.toString()), t1.toDouble());
+            mAnsType = Undefined;
             return;
         }
-        else if(!getLogVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
+        varType0 = mAnsType;
+        if(varType0 == Scalar)
         {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->addVariableWithScalar(getLogVariablePtr(t1.toString()), t0.toDouble());
+            scalar0 = mAnsScalar;
+        }
+        else
+        {
+            vec0 = mAnsVector;
+        }
+        evaluateExpression(t1.toString());
+        if(mAnsType != DataVector && mAnsType != Scalar)
+        {
+            mAnsType = Undefined;
             return;
         }
-        else if(!getLogVariablePtr(t0.toString()).isNull() && !getLogVariablePtr(t1.toString()).isNull())
+        varType1 = mAnsType;
+        if(varType1 == Scalar)
         {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->addVariables(getLogVariablePtr(t0.toString()), getLogVariablePtr(t1.toString()));
-            return;
+            scalar1 = mAnsScalar;
+        }
+        else
+        {
+            vec1 = mAnsVector;
         }
 
-        if(t1.isNegative())
+        if(varType0 == DataVector && varType1 == Scalar)
         {
-            t1.changeSign();
-            if(!getLogVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
-            {
-                mAnsType = DataVector;
-                mAnsVector = pLogData->subVariableWithScalar(getLogVariablePtr(t0.toString()), t1.toDouble());
-                return;
-            }
-            else if(!getLogVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
-            {
-                mAnsType = DataVector;
-                mAnsVector = pLogData->subVariableWithScalar(getLogVariablePtr(t1.toString()), t0.toDouble());
-                return;
-            }
-            else if(!getLogVariablePtr(t0.toString()).isNull() && !getLogVariablePtr(t1.toString()).isNull())
-            {
-                mAnsType = DataVector;
-                mAnsVector = pLogData->subVariables(getLogVariablePtr(t0.toString()), getLogVariablePtr(t1.toString()));
-                return;
-            }
+            mAnsType = DataVector;
+            mAnsVector = pLogData->addVariableWithScalar(vec0, scalar1);
+            return;
+        }
+        else if(varType0 == Scalar && varType1 == DataVector)
+        {
+            mAnsType = DataVector;
+            mAnsVector = pLogData->addVariableWithScalar(vec1, scalar0);
+            return;
+        }
+        else if(varType0 == DataVector && varType1 == DataVector)
+        {
+            mAnsType = DataVector;
+            mAnsVector = pLogData->addVariables(vec0, vec1);
+            return;
         }
     }
     timer.toc("Multiplication between data vector and scalar", 0);
