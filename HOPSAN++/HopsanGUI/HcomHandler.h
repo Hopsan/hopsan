@@ -153,7 +153,8 @@ private:
     void addPlotCurve(SharedLogVariableDataPtrT pData, const int axis) const;
     void removePlotCurves(const int axis) const;
     void removeLogVariable(QString fullShortVarNameWithGen) const;
-    void getComponents(QString str, QList<ModelObject*> &components);
+    void getComponents(const QString &rStr, QList<ModelObject*> &rComponents) const;
+    QString getfullNameFromAlias(const QString &rAlias) const;
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;

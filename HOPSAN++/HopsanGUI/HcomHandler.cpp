@@ -1560,27 +1560,40 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
     getMatchingLogVariableNames(getArgument(cmd,0),vars);
     if(vars.isEmpty())
     {
-        HCOMERR("Unknown variable.");
+        HCOMERR(QString("Unknown variable: %1").arg(getArgument(cmd,0)));
         return;
     }
     Q_FOREACH(const QString var, vars)
     {
-        QString varName = var;
-        int size1  = varName.section(".",-1).size()+1;
-        varName.chop(size1);
-        int size2 = varName.section(".",-1).size()+1;
-        varName.chop(size2);
-        QList<ModelObject*> components;
-        getComponents(varName, components);
-        if(components.size() != 1)
-            continue;
+        QStringList fields = var.split(".");
+        // Handle alias
+        if (fields.size() == 1)
+        {
+            QString fullName = getfullNameFromAlias(fields.first());
+            fields = fullName.split("#");
+        }
 
-        //SharedLogVariableDataPtrT pVar = getVariablePtr(var);
-        //pVar.data()->setPlotScale(scale);
-        QString description = "";
-        QString longVarName = var.right(size1+size2-1);
-        toLongDataNames(longVarName);
-        components[0]->registerCustomPlotUnitOrScale(longVarName, description, scale);
+        // Handle comp.port.var variable
+        if (fields.size() == 3)
+        {
+            QList<ModelObject*> components;
+            getComponents(fields.first(), components);
+            // This will only work for one hit, skip multiple hits
+            if(components.size() != 1)
+            {
+                HCOMWARN(QString("Ignoring %1 as it is matches more then one component").arg(fields.first()));
+                continue;
+            }
+
+            QString description = "";
+            QString longVarName = fields[1]+"."+fields[2];
+            toLongDataNames(longVarName);
+            components.first()->registerCustomPlotUnitOrScale(longVarName, description, scale);
+        }
+        else
+        {
+            HCOMERR(QString("Unknown variable: %1").arg(var));
+        }
     }
 }
 
@@ -3819,24 +3832,47 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
 
 
 //! @brief Help function that returns a list of components depending on input (with support for asterisks)
-//! @param str String to look for
-//! @param components Reference to list of found components
-void HcomHandler::getComponents(QString str, QList<ModelObject*> &components)
+//! @param[in] rStr Component name to look for
+//! @param[out] rComponents Reference to list of found components
+void HcomHandler::getComponents(const QString &rStr, QList<ModelObject*> &rComponents) const
 {
-    QString left = str.split("*").first();
-    QString right = str.split("*").last();
-
     ModelWidget *pCurrentTab = gpModelHandler->getCurrentModel();
     if(!pCurrentTab) { return; }
     SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
-    for(int n=0; n<pCurrentSystem->getModelObjectNames().size(); ++n)
+
+    if (rStr.contains("*"))
     {
-        if(pCurrentSystem->getModelObjectNames().at(n).startsWith(left) && pCurrentSystem->getModelObjectNames().at(n).endsWith(right))
+        QString left = rStr.split("*").first();
+        QString right = rStr.split("*").last();
+
+        QStringList mo_names = pCurrentSystem->getModelObjectNames();
+        for(int n=0; n<mo_names.size(); ++n)
         {
-            components.append(pCurrentSystem->getModelObject(pCurrentSystem->getModelObjectNames().at(n)));
+            if(mo_names[n].startsWith(left) && mo_names[n].endsWith(right))
+            {
+                rComponents.append(pCurrentSystem->getModelObject(mo_names[n]));
+            }
         }
     }
+    else
+    {
+        rComponents.append(pCurrentSystem->getModelObject(rStr));
+    }
+}
+
+QString HcomHandler::getfullNameFromAlias(const QString &rAlias) const
+{
+    ModelWidget *pCurrentTab = gpModelHandler->getCurrentModel();
+    if(pCurrentTab)
+    {
+        SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystemContainer();
+        if(pCurrentSystem)
+        {
+            return pCurrentSystem->getFullNameFromAlias(rAlias);
+        }
+    }
+    return "";
 }
 
 
