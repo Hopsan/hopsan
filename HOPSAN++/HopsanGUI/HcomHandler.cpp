@@ -1656,7 +1656,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     getMatchingLogVariableNames(varName,vars);
     if(vars.isEmpty())
     {
-        HCOMERR("Unknown variable.");
+        HCOMERR("Unknown variable: "+varName);
         return;
     }
     Q_FOREACH(const QString var, vars)
@@ -4315,6 +4315,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @brief Help function that returns a list of variables according to input (with support for * regexp search)
 //! @param [in] pattern Name to look for
 //! @param [out] rVariables Reference to list that will contain the found variable names with generation appended
+//! @warning If you make changes to this function you MUST MAKE SURE that all other Hcom functions using this is are still working for all cases. Many depend on the behavior of this function.
 void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const
 {
     TicToc timer;
@@ -4327,141 +4328,131 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
     LogDataHandler *pLogDataHandler = pSystem->getLogDataHandler();
 
-    // First try pattern directly
-    bool foundAlias;
-    SharedLogVariableDataPtrT pData = getLogVariablePtr(pattern, foundAlias);
-    if (pData && false)
+    // First try pattern directly, without trying to interpret generation numbers
+    // Do a regexp lookup on the name directly, using pattern (in long form)
+    QString pattern_long = pattern;
+    toLongDataNames(pattern_long);
+    QList<LogDataStructT> data_containers = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
+    if (!data_containers.isEmpty())
     {
-        QString name;
-        if (foundAlias)
+        for (int d=0; d<data_containers.size(); ++d)
         {
-            name = pData->getAliasName();
+            QString name;
+            if (data_containers[d].mIsAlias)
+            {
+                name = data_containers[d].mpDataContainer->getAliasName();
+            }
+            else
+            {
+                name = data_containers[d].mpDataContainer->getFullVariableName();
+                toShortDataNames(name);
+            }
+            rVariables.append(name);
         }
-        else
-        {
-            name = pData->getFullVariableName();
-            toShortDataNames(name);
-        }
-        name.append(QString(".%1").arg(pData->getGeneration()+1));
-        rVariables.append(name);
     }
     else
     {
-        //! @todo maybe the check above should be removed
-        // Do more costly name lookup
-        // First we check if we have a name match
-        QString pattern_long = pattern;
-        toLongDataNames(pattern_long);
-        QList<LogDataStructT> data_containers = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
-        if (!data_containers.isEmpty())
+        // Ok that did not result in any hits, lets compare with generation numbers
+        // First see if we want highest or lowest, or a particular generation (will speedup search)
+        int desiredGen = -2;
+        if(pattern.endsWith(".L"))
         {
-            for (int d=0; d<data_containers.size(); ++d)
-            {
-                QString name;
-                if (data_containers[d].mIsAlias)
-                {
-                    name = data_containers[d].mpDataContainer->getAliasName();
-                }
-                else
-                {
-                    name = data_containers[d].mpDataContainer->getFullVariableName();
-                    toShortDataNames(name);
-                }
-                rVariables.append(name);
-            }
+            desiredGen = pLogDataHandler->getLowestGenerationNumber();
+            pattern.chop(2);
+        }
+        else if(pattern.endsWith(".H"))
+        {
+            desiredGen = pLogDataHandler->getHighestGenerationNumber();
+            pattern.chop(2);
         }
         else
         {
-            // Ok that did not result in any hits, lets comare for all generations
-
-            // First see if we want highest or lowest, or a particular generation (will speedup search)
-            int desiredGen = -2;
-            if(pattern.endsWith(".L"))
+            QStringList fields = pattern.split('.');
+            if (fields.size() > 0)
             {
-                desiredGen = pLogDataHandler->getLowestGenerationNumber();
-                pattern.chop(2);
-
-            }
-            else if(pattern.endsWith(".H"))
-            {
-                desiredGen = pLogDataHandler->getHighestGenerationNumber();
-                pattern.chop(2);
-            }
-            else
-            {
-                QStringList fields = pattern.split('.');
-                if (fields.size() > 0)
+                bool isOK=false;
+                int g = fields.last().toInt(&isOK);
+                if (isOK)
                 {
-                    bool isOK=false;
-                    int g = fields.last().toInt(&isOK);
-                    if (isOK)
-                    {
-                        //! @todo what about handling zero, maybe should disp nothing
-                        desiredGen = qMax(g-1, -1);
-                        //pattern.truncate(pattern.lastIndexOf('.'));
-                    }
-                }
-            }
-
-            // Generate search list
-            QStringList namesWithGeneration;
-            if (desiredGen >= 0)
-            {
-                // Generate for a particular generation
-                namesWithGeneration = pLogDataHandler->getLogDataVariableNames("#", desiredGen);
-                for (int n=0; n<namesWithGeneration.size(); ++n)
-                {
-                    toShortDataNames(namesWithGeneration[n]);
-                    namesWithGeneration[n].append(QString(".%1").arg(desiredGen+1));
-                }
-            }
-            else if (desiredGen == -1)
-            {
-                // Generate for latest in each variable
-                QList<int> gens;
-                pLogDataHandler->getLogDataVariableNamesWithHighestGeneration("#",namesWithGeneration, gens);
-                for (int n=0; n<namesWithGeneration.size(); ++n)
-                {
-                    toShortDataNames(namesWithGeneration[n]);
-                    namesWithGeneration[n].append(QString(".%1").arg(gens[n]+1));
-                }
-            }
-            else
-            {
-                // Generate for all generations
-                QList< LogDataStructT> logdata = pLogDataHandler->getAllCompleteLogVariableData();
-                for (int d=0; d<logdata.size(); ++d)
-                {
-                    QString name;
-                    if (logdata[d].mIsAlias)
-                    {
-                        name = logdata[d].mpDataContainer->getAliasName();
-                    }
-                    else
-                    {
-                        name = logdata[d].mpDataContainer->getFullVariableName();
-                        toShortDataNames(name);
-                    }
-                    QList<int> gens = logdata[d].mpDataContainer->getGenerations();
-                    for (int g=0; g<gens.size(); ++g)
-                    {
-                        QString name2 = QString("%1.%2").arg(name).arg(gens[g]+1);
-                        namesWithGeneration.append(name2);
-                    }
-                }
-            }
-
-            // Filter the ALL list by what we actually want (discard the rest)
-            QRegExp re(pattern, Qt::CaseSensitive, QRegExp::Wildcard);
-            Q_FOREACH(const QString name, namesWithGeneration)
-            {
-                if(re.exactMatch(name))
-                {
-                    rVariables.append(name);
+                    //! @todo what about handling zero, maybe should disp nothing
+                    desiredGen = qMax(g-1, -1);
+                    pattern.truncate(pattern.lastIndexOf('.'));
                 }
             }
         }
+
+        QStringList namesWithGeneration;
+        // If we know generation then search for it directly
+        if (desiredGen >= 0)
+        {
+
+            QString pattern_long = pattern;
+            toLongDataNames(pattern_long);
+            QList<LogDataStructT> data_conts = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard), desiredGen);
+            for (int d=0; d<data_conts.size(); ++d)
+            {
+                QString name;
+                if (data_conts[d].mIsAlias)
+                {
+                    name = data_conts[d].mpDataContainer->getAliasName();
+                }
+                else
+                {
+                    name = data_conts[d].mpDataContainer->getFullVariableName();
+                    toShortDataNames(name);
+                }
+                rVariables.append(name+QString(".%1").arg(desiredGen+1));
+            }
+        }
+        // Generate for latest in each variable
+        else if (desiredGen == -1)
+        {
+            //! @todo in this case we might be able to search directly for name with regexp in logdatahandler
+            QList<int> gens;
+            pLogDataHandler->getLogDataVariableNamesWithHighestGeneration("#",namesWithGeneration, gens);
+            for (int n=0; n<namesWithGeneration.size(); ++n)
+            {
+                toShortDataNames(namesWithGeneration[n]);
+                namesWithGeneration[n].append(QString(".%1").arg(gens[n]+1));
+            }
+        }
+        // Do more costly name lookup, generate a list of all variables and all generations
+        else
+        {
+            // Generate for all generations
+            QList< LogDataStructT> logdata = pLogDataHandler->getAllCompleteLogVariableData();
+            for (int d=0; d<logdata.size(); ++d)
+            {
+                QString name;
+                if (logdata[d].mIsAlias)
+                {
+                    name = logdata[d].mpDataContainer->getAliasName();
+                }
+                else
+                {
+                    name = logdata[d].mpDataContainer->getFullVariableName();
+                    toShortDataNames(name);
+                }
+                QList<int> gens = logdata[d].mpDataContainer->getGenerations();
+                for (int g=0; g<gens.size(); ++g)
+                {
+                    QString name2 = QString("%1.%2").arg(name).arg(gens[g]+1);
+                    namesWithGeneration.append(name2);
+                }
+            }
+        }
+
+        // Filter the ALL list by what we actually want (discard the rest)
+        QRegExp re(pattern, Qt::CaseSensitive, QRegExp::Wildcard);
+        Q_FOREACH(const QString name, namesWithGeneration)
+        {
+            if(re.exactMatch(name))
+            {
+                rVariables.append(name);
+            }
+        }
     }
+
     timer.toc("getMatchingLogVariableNames("+pattern+")");
 }
 

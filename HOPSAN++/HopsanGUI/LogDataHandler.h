@@ -92,6 +92,7 @@ public:
     const LogDataStructT getCompleteLogVariableData(const QString &rName) const;
     const QList<LogDataStructT> getAllCompleteLogVariableData() const;
     const QList<LogDataStructT> getMultipleCompleteLogVariableData(const QRegExp &rNameExp) const;
+    const QList<LogDataStructT> getMultipleCompleteLogVariableData(const QRegExp &rNameExp, const int generation) const;
 
     QStringList getLogDataVariableNames(const QString &rSeparator, const int generation=-1) const;
     void getLogDataVariableNamesWithHighestGeneration(const QString &rSeparator, QStringList &rNames, QList<int> &rGens) const;

@@ -1032,6 +1032,24 @@ const QList<LogDataStructT> LogDataHandler::getMultipleCompleteLogVariableData(c
     return results;
 }
 
+const QList<LogDataStructT> LogDataHandler::getMultipleCompleteLogVariableData(const QRegExp &rNameExp, const int generation) const
+{
+    QList<LogDataStructT> results;
+    LogDataMapT::const_iterator it;
+    for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
+    {
+        // For any non temp variable compare name with regexp
+        if (it.value().mpDataContainer->getVariableCommonDescription()->mVariableSourceType != TempVariableType)
+        {
+            if ( rNameExp.exactMatch(it.key()) && it.value().mpDataContainer->hasDataGeneration(generation) )
+            {
+                results.append(it.value());
+            }
+        }
+    }
+    return results;
+}
+
 LogVariableContainer *LogDataHandler::getLogVariableContainer(const QString &rFullName) const
 {
     return mLogDataMap.value(rFullName,LogDataStructT()).mpDataContainer;
