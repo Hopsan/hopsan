@@ -653,100 +653,136 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
                 return retval;
             }
         }
-        bool ok1=true;
-        bool ok2=true;
-        bool ok3=true;
-        if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "tan") { retval = tan(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "asin") { retval = asin(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "acos") { retval = acos(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "atan") { retval = atan(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "sinh") { retval = sinh(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "cosh") { retval = cosh(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "tanh") { retval = tanh(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "log") { retval = log(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "exp") { retval = exp(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "sqrt") { retval = sqrt(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "abs") { retval = fabs(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables, functions, &ok1)); }
-        else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions, &ok1)); }
 
-        else if(mFunction == "der") { retval = 0; }
-        else if(mFunction == "min") { retval = fmin(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
-        else if(mFunction == "max") { retval = fmax(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
-        else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+        if(mFunction == "der") { return 0; }
 
-        else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
-        else if(mFunction == "div") { retval = mArguments[0].evaluate(variables, functions, &ok1)/mArguments[1].evaluate(variables, functions, &ok2); }
-        else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
-        else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+        if(mArguments.size() == 1)
+        {
+            bool ok1=true;
+            if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "tan") { retval = tan(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "asin") { retval = asin(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "acos") { retval = acos(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "atan") { retval = atan(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "sinh") { retval = sinh(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "cosh") { retval = cosh(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "tanh") { retval = tanh(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "log") { retval = log(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "exp") { retval = exp(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "sqrt") { retval = sqrt(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "abs") { retval = fabs(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "sign")
+            {
+                if(mArguments[0].evaluate(variables, functions, &ok1) >= 0.0)
+                    retval = 1.0;
+                else
+                    retval = 0.0;
+            }
+            else if(variables.contains(this->toString()))
+            {
+                retval = variables.find(this->toString()).value();
+            }
+            else
+            {
+                ok1=false;
+            }
 
-        else if(mFunction == "equal")
-        {
-            if(mArguments[0].evaluate(variables, functions, &ok1) == mArguments[1].evaluate(variables, functions, &ok2))
-                retval=1;
-            else
-                retval=0;
+            if(ok1)
+            {
+                return retval;
+            }
         }
-        else if(mFunction == "greaterThan")
+        else if(mArguments.size() == 2)
         {
-            if(mArguments[0].evaluate(variables, functions, &ok1) > mArguments[1].evaluate(variables, functions, &ok2))
-                retval=1;
+            bool ok1=true;
+            bool ok2=true;
+            if(mFunction == "min") { retval = fmin(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+            else if(mFunction == "max") { retval = fmax(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+            else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+            else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+            else if(mFunction == "div") { retval = mArguments[0].evaluate(variables, functions, &ok1)/mArguments[1].evaluate(variables, functions, &ok2); }
+            else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+            else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
+            else if(mFunction == "equal")
+            {
+                if(mArguments[0].evaluate(variables, functions, &ok1) == mArguments[1].evaluate(variables, functions, &ok2))
+                    retval=1;
+                else
+                    retval=0;
+            }
+            else if(mFunction == "greaterThan")
+            {
+                if(mArguments[0].evaluate(variables, functions, &ok1) > mArguments[1].evaluate(variables, functions, &ok2))
+                    retval=1;
+                else
+                    retval=0;
+            }
+            else if(mFunction == "greaterThanOrEqual")
+            {
+                if(mArguments[0].evaluate(variables, functions, &ok1) >= mArguments[1].evaluate(variables, functions, &ok2))
+                    retval=1;
+                else
+                    retval=0;
+            }
+            else if(mFunction == "smallerThan")
+            {
+                if(mArguments[0].evaluate(variables, functions, &ok1) < mArguments[1].evaluate(variables, functions, &ok2))
+                    retval=1;
+                else
+                    retval=0;
+            }
+            else if(mFunction == "smallerThanOrEqual")
+            {
+                if(mArguments[0].evaluate(variables, functions, &ok1) <= mArguments[1].evaluate(variables, functions, &ok2))
+                    retval=1;
+                else
+                    retval=0;
+            }
+            else if(variables.contains(this->toString()))
+            {
+                retval = variables.find(this->toString()).value();
+            }
             else
-                retval=0;
-        }
-        else if(mFunction == "greaterThanOrEqual")
-        {
-            if(mArguments[0].evaluate(variables, functions, &ok1) >= mArguments[1].evaluate(variables, functions, &ok2))
-                retval=1;
-            else
-                retval=0;
-        }
-        else if(mFunction == "smallerThan")
-        {
-            if(mArguments[0].evaluate(variables, functions, &ok1) < mArguments[1].evaluate(variables, functions, &ok2))
-                retval=1;
-            else
-                retval=0;
-        }
-        else if(mFunction == "smallerThanOrEqual")
-        {
-            if(mArguments[0].evaluate(variables, functions, &ok1) <= mArguments[1].evaluate(variables, functions, &ok2))
-                retval=1;
-            else
-                retval=0;
-        }
+            {
+                ok1=false;
+            }
 
-        else if(mFunction == "sign")
+            if(ok1 && ok2)
+            {
+                return retval;
+            }
+        }
+        else if(mArguments.size() == 3)
         {
-            if(mArguments[0].evaluate(variables, functions, &ok1) >= 0.0)
-                retval = 1.0;
+            bool ok1=true;
+            bool ok2=true;
+            bool ok3=true;
+            if(mFunction == "limit")
+            {
+                double val = mArguments[0].evaluate(variables, functions, &ok1);
+                double min = mArguments[1].evaluate(variables, functions, &ok2);
+                double max = mArguments[2].evaluate(variables, functions, &ok3);
+                if(val > max) { retval = max; }
+                else if(val < min) { retval = min; }
+                else { retval = val; }
+            }
+            else if(variables.contains(this->toString()))
+            {
+                retval = variables.find(this->toString()).value();
+            }
             else
-                retval = 0.0;
-        }
-        else if(mFunction == "limit")
-        {
-            double val = mArguments[0].evaluate(variables, functions, &ok1);
-            double min = mArguments[1].evaluate(variables, functions, &ok2);
-            double max = mArguments[2].evaluate(variables, functions, &ok3);
-            if(val > max) { retval = max; }
-            else if(val < min) { retval = min; }
-            else { retval = val; }
-        }
-        else if(variables.contains(this->toString()))
-        {
-            retval = variables.find(this->toString()).value();
-        }
-        else
-        {
-            ok1=false;
-        }
+            {
+                ok1=false;
+            }
 
-        if(ok1 && ok2 && ok3)
-        {
-            return retval;
+            if(ok1 && ok2 && ok3)
+            {
+                return retval;
+            }
         }
     }
     else if(isNumericalSymbol())
