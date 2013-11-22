@@ -198,6 +198,8 @@ void OptimizationHandler::optComplexRun()
         if(mpHcomHandler->isAborted())
         {
             mpConsole->print("Optimization aborted.");
+            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            mpOptModel->close();
             return;
         }
 
@@ -253,6 +255,8 @@ void OptimizationHandler::optComplexRun()
         {
             mpHcomHandler->executeCommand("echo on");
             mpConsole->print("Optimization aborted.");
+            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            mpOptModel->close();
             return;
         }
         timer.toc("+++++++++ End Evaluate new point");
@@ -275,6 +279,8 @@ void OptimizationHandler::optComplexRun()
             {
                 mpHcomHandler->executeCommand("echo on");
                 mpConsole->print("Optimization aborted.");
+                gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                mpOptModel->close();
                 mpHcomHandler->abortHCOM();
                 return;
             }
@@ -301,6 +307,8 @@ void OptimizationHandler::optComplexRun()
             {
                 mpHcomHandler->executeCommand("echo on");
                 mpConsole->print("Optimization aborted.");
+                gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                mpOptModel->close();
                 return;
             }
 
@@ -575,6 +583,18 @@ void OptimizationHandler::optParticleRun()
     {
         mpHcomHandler->executeCommand("echo on");
         mpConsole->print("Optimization aborted.");
+        gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+        if(gpConfig->getUseMulticore())
+        {
+            for(int m=0; m<mOptModelPtrs.size(); ++m)
+            {
+                mOptModelPtrs[m]->close();
+            }
+        }
+        else
+        {
+            mpOptModel->close();
+        }
         return;
     }
 
@@ -601,6 +621,18 @@ void OptimizationHandler::optParticleRun()
         if(mpHcomHandler->isAborted())
         {
             mpConsole->print("Optimization aborted.");
+            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            if(gpConfig->getUseMulticore())
+            {
+                for(int m=0; m<mOptModelPtrs.size(); ++m)
+                {
+                    mOptModelPtrs[m]->close();
+                }
+            }
+            else
+            {
+                mpOptModel->close();
+            }
             return;
         }
 
@@ -647,6 +679,18 @@ void OptimizationHandler::optParticleRun()
         {
             mpHcomHandler->executeCommand("echo on");
             mpConsole->print("Optimization aborted.");
+            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            if(gpConfig->getUseMulticore())
+            {
+                for(int m=0; m<mOptModelPtrs.size(); ++m)
+                {
+                    mOptModelPtrs[m]->close();
+                }
+            }
+            else
+            {
+                mpOptModel->close();
+            }
             return;
         }
 

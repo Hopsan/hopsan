@@ -95,7 +95,7 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
 
 void ModelHandler::setCurrentModel(int idx)
 {
-    if ( (idx>0) && (idx<mModelPtrs.size()) )
+    if ( (idx>=0) && (idx<mModelPtrs.size()) )
     {
         mCurrentIdx = idx;
         // Also switch tab if it is visible among the tabs
