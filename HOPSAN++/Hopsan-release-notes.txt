@@ -26,9 +26,46 @@
     Version History
 ******************************
 0.6.4
-- Enhancement: The Hopsan help guide has been updated and reorganized, specifically the section about how to get starter writing your own component  libraries in C++. The users guide now contain step-by-step instructions on how to install a development environment.
+
+- Feature: True 64-bit GUI and CLI application version (for Ms Windows) to make use of more then 4GB ram. (*Ubuntu releases were already 64-bit)
+
+- Enhancement: The Hopsan help guide has been updated and reorganized, specifically the section about how to get starter writing your own component libraries in C++. 
+               The users guide now contain step-by-step instructions on how to install a C++ development environment.
                A help section explaining the use of the Hopsan command line interface (CLI) has also been added.
-               Manny documentation bugs have also been fixed.
+               Manny documentation bugs and issues have also been fixed.
+- Enhancement: Right-click a component and checking the "Always show name" box will make sure that the component name is always shown even if you toggle the hide names switch.
+- Enhancement: Now component authors can add a link to external documentation in the component description file.
+               See built-in users guide (help) and the page that explain how to create or modify component appearance. 
+- Enhancement: Many under-the-hood changes in HCOM relating to "wildcard" (Gain*.out.*) name patterns.
+               Some commands may have changed behavior (hopefully for the better)
+- Enhancement: Port labels file in Simulink export now have a model specific name
+
+
+- Fixed: Hopsan should no longer crash if the plot legend area gets larger then the actual plot axis.
+         It will still look pretty strange though. (You should turn of legend if you have that many curves on a axis)
+- Fixed: Simulink export (s-function) would ignore the time step set in the model and always use 0.001
+- Fixed: Coulomb friction utility function does not reset required force when crossing zero velocity
+         This will affect (hopefully for the better) the behavior of the following default components: 
+         MechanicTranslationalMassWithCoulombFriction
+         MechanicRotationalInertiaWithCoulumbFriction
+- Fixed: C++ generator does not create ports for inputvariables and output variables in CAF file
+- Fixed: Simulink export cannot handle system parameters
+- Fixed: HCOM can not multiply more then 2 variables at the same time
+- Fixed: HCOM chpv does not plot a variable alias if that alias can also be used to access a parameter (startvalue)
+- Fixed: HCOM functions such ass ddt( fft( lt( gt( lp1( crash if arguments are not found or if they are otherwise incorrect.
+- Fixed: Optimization becomes slower and slower for each iteration. 
+         Note! this only happened as the number of logged generations increased, the actual simulations took the same amount of time. The auto-clearing of old generations and HCOM name lookup was changed to remove these growing slowdowns.
+- Fixed: Crash in HCOM if calling two-argument functions with only one argument
+- Fixed: HCOM points to wrong model after aborting optimization
+- Fixed: The show names and show ports setting is not remembered the next time you start Hopsan
+- Fixed: If you open a scope and then open an other scope with the same name in a different system/model, the first plotwindow will be stolen.
+         Note! The plotwindows can now have the same "display name" but "behind the scenes" the plotwindow name will be different.
+         This means that you may not be able to switch the active plotwindow from HCOM.
+- Fixed: When you load an external lib containing the same components as an earlier lib, those components are "removed" from earlier libs
+- Fixed: When importing data containing Time, the Time variable will be moved to the __Imported__ category even though it should be shown in both categories.
+- Fixed: When hovering the library widget the size of the widget windows changes making components reorder them selves. (Kubuntu and Windows XP)
+
+
 
 0.6.3a
 - Fixed: Update notification and auto updater was not working (since 0.6.0)
