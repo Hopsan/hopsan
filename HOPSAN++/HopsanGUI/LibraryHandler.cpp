@@ -461,8 +461,16 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             entry.pAppearance = pAppearanceData;
             entry.pLibrary = &mLoadedLibraries.last();
             entry.visibility = visibility;
-            mLibraryEntries.insert(makeFullTypeString(pAppearanceData->getTypeName(),pAppearanceData->getSubTypeName()), entry);
-            qDebug() << "Adding: " << pAppearanceData->getTypeName();
+            QString fullTypeName = makeFullTypeString(pAppearanceData->getTypeName(), pAppearanceData->getSubTypeName());
+            if(!mLibraryEntries.contains(fullTypeName))
+            {
+                mLibraryEntries.insert(fullTypeName, entry);
+                qDebug() << "Adding: " << pAppearanceData->getTypeName();
+            }
+            else
+            {
+                gpTerminalWidget->mpConsole->printWarningMessage("Component with full type name \""+fullTypeName+"\" is already registered in library handler. Ignored.");
+            }
             if(gpSplash)
             {
                 gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
