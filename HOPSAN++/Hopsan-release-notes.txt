@@ -52,7 +52,7 @@
 - Fixed: Simulink export cannot handle system parameters
 - Fixed: HCOM can not multiply more then 2 variables at the same time
 - Fixed: HCOM chpv does not plot a variable alias if that alias can also be used to access a parameter (startvalue)
-- Fixed: HCOM functions such ass ddt( fft( lt( gt( lp1( crash if arguments are not found or if they are otherwise incorrect.
+- Fixed: HCOM functions such as ddt( fft( lt( gt( lp1( crash if arguments are not found or if they are otherwise incorrect.
 - Fixed: Optimization becomes slower and slower for each iteration. 
          Note! this only happened as the number of logged generations increased, the actual simulations took the same amount of time. The auto-clearing of old generations and HCOM name lookup was changed to remove these growing slowdowns.
 - Fixed: Crash in HCOM if calling two-argument functions with only one argument
