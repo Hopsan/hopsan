@@ -258,28 +258,48 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 
     //Load the library file
     CoreLibraryAccess coreAccess;
-    if(!newLib.libFilePath.isEmpty())
+    if(info.isDir())
     {
-        if(!coreAccess.loadComponentLib(newLib.libFilePath))
+        //Recurse sub directories and find all dll files
+        dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+        dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
+        QDirIterator it(dir, QDirIterator::Subdirectories);
+        while(it.hasNext())
         {
-            gpTerminalWidget->checkMessages();
-            gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+QFile(newLib.libFilePath).fileName());
-            gpTerminalWidget->checkMessages();
-            if(!newLib.sourceFiles.isEmpty())
+            it.next();
+            if(!coreAccess.loadComponentLib(it.filePath()))
             {
-                gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile...");
-                recompileLibrary(newLib,false);
                 gpTerminalWidget->checkMessages();
-                if(!coreAccess.loadComponentLib(newLib.libFilePath))
+                gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+it.filePath());
+                gpTerminalWidget->checkMessages();
+            }
+        }
+    }
+    else
+    {
+        if(!newLib.libFilePath.isEmpty())
+        {
+            if(!coreAccess.loadComponentLib(newLib.libFilePath))
+            {
+                gpTerminalWidget->checkMessages();
+                gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+QFile(newLib.libFilePath).fileName());
+                gpTerminalWidget->checkMessages();
+                if(!newLib.sourceFiles.isEmpty())
                 {
-                    gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");
-                    gpConfig->removeUserLib(newLib.xmlFilePath);
+                    gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile...");
+                    recompileLibrary(newLib,false);
                     gpTerminalWidget->checkMessages();
-                    return;
-                }
-                else
-                {
-                    gpTerminalWidget->mpConsole->printInfoMessage("Recompilation successful!");
+                    if(!coreAccess.loadComponentLib(newLib.libFilePath))
+                    {
+                        gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");
+                        gpConfig->removeUserLib(newLib.xmlFilePath);
+                        gpTerminalWidget->checkMessages();
+                        return;
+                    }
+                    else
+                    {
+                        gpTerminalWidget->mpConsole->printInfoMessage("Recompilation successful!");
+                    }
                 }
             }
         }
