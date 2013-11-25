@@ -1445,6 +1445,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         comp.varNames.append(variables[i].name);
         comp.varInits.append(variables[i].init);
         comp.varTypes.append("double");
+
+        comp.varNames.append("_"+variables[i].name+"_ORIGINAL");
+        comp.varInits.append(variables[i].init);
+        comp.varTypes.append("double");
     }
 
     comp.varInits.append("");
@@ -1485,6 +1489,13 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         comp.finalEquations << "delete mpSystemSolver;";
     }
 
+
+    for(int v=0; v<variables.size(); ++v)
+    {
+        comp.simEquations.append("_"+variables[v].name+"_ORIGINAL = "+variables[v].name+";");
+    }
+
+
     Q_FOREACH(const Expression &equation, beforeSolverEquations)
     {
         QString equationStr = equation.toString();
@@ -1502,41 +1513,41 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
     }
 
-    //Initial algorithm section
-    if(!initAlgorithms.isEmpty())
-    {
-        comp.simEquations.append("");
-        comp.simEquations.append("//Initial algorithm section");
-    }
-    for(int i=0; i<initAlgorithms.size(); ++i)
-    {
-        //! @todo Convert everything to C++ syntax
-        QString initEq = initAlgorithms[i];
-        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
-        {
-            initEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
-        }
-        initEq.replace(":=", "=");
-        initEq.append(";");
-        comp.simEquations.append(initEq);
-    }
+//    //Initial algorithm section
+//    if(!initAlgorithms.isEmpty())
+//    {
+//        comp.simEquations.append("");
+//        comp.simEquations.append("//Initial algorithm section");
+//    }
+//    for(int i=0; i<initAlgorithms.size(); ++i)
+//    {
+//        //! @todo Convert everything to C++ syntax
+//        QString initEq = initAlgorithms[i];
+//        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+//        {
+//            initEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+//        }
+//        initEq.replace(":=", "=");
+//        initEq.append(";");
+//        comp.simEquations.append(initEq);
+//    }
 
-    if(!finalAlgorithms.isEmpty())
-    {
-        comp.simEquations.append("");
-        comp.simEquations.append("//Final algorithm section");
-    }
-    for(int i=0; i<finalAlgorithms.size(); ++i)
-    {
-        //! @todo Convert everything to C++ syntax
-        QString finalEq = finalAlgorithms[i];
-        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
-        {
-            finalEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
-        }
-        finalEq.replace(":=", "=");
-        comp.simEquations.append(finalEq+";");
-    }
+//    if(!finalAlgorithms.isEmpty())
+//    {
+//        comp.simEquations.append("");
+//        comp.simEquations.append("//Final algorithm section");
+//    }
+//    for(int i=0; i<finalAlgorithms.size(); ++i)
+//    {
+//        //! @todo Convert everything to C++ syntax
+//        QString finalEq = finalAlgorithms[i];
+//        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+//        {
+//            finalEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+//        }
+//        finalEq.replace(":=", "=");
+//        comp.simEquations.append(finalEq+";");
+//    }
 
     Q_FOREACH(const Expression &equation, afterSolverEquations)
     {
@@ -1583,6 +1594,11 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             comp.auxiliaryFunctions.append("    "+varName+" = (*mpND_"+varName+");");
         }
         ++portId;
+    }
+    comp.auxiliaryFunctions.append("");
+    for(int v=0; v<variables.size(); ++v)
+    {
+        comp.auxiliaryFunctions.append(variables[v].name+" = _"+variables[v].name+"_ORIGINAL;");
     }
     comp.auxiliaryFunctions.append("}");
 
