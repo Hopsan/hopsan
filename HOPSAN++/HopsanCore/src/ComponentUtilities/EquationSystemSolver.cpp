@@ -210,6 +210,7 @@ void NumericalIntegrationSolver::solveForwardEuler()
     {
         (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*mpParentComponent->getStateVariableDerivative(i);
     }
+    mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
 }
 
@@ -232,6 +233,7 @@ void NumericalIntegrationSolver::solveMidpointMethod()
     {
         (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/2.0*k1[i];
     }
+    mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
     for(int i=0; i<mnStateVars; ++i)
     {
@@ -239,7 +241,6 @@ void NumericalIntegrationSolver::solveMidpointMethod()
     }
     *mpStateVars = orgStateVars;
     mpParentComponent->reInitializeValuesFromNodes();
-    mpParentComponent->solveSystem();
     for(int i=0; i<mnStateVars; ++i)
     {
         (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*k2[i];
@@ -294,6 +295,7 @@ void NumericalIntegrationSolver::solveRungeKutta()
     {
         (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/2.0*k1[i];
     }
+    mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
     for(int i=0; i<mnStateVars; ++i)
     {
@@ -354,6 +356,7 @@ void NumericalIntegrationSolver::solveDormandPrince()
     {
         (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep/5.0*k1[i];
     }
+    mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
     for(int i=0; i<mnStateVars; ++i)
     {

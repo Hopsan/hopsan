@@ -281,9 +281,9 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     }
     else if(mType=="conditional")
     {
-        size_t tmpParameterValue;
+        int tmpParameterValue;
         istringstream is(evaluatedParameterValue.c_str());
-        if(is >> tmpParameterValue && tmpParameterValue >= 0 && tmpParameterValue < this->mConditions.size())
+        if((is >> tmpParameterValue) && (tmpParameterValue >= 0) && (tmpParameterValue < int(this->mConditions.size())))
         {
             // If a data pointer has been set, then write evaluated value to data variable
             if( (mpData!=0) && mEnabled )
