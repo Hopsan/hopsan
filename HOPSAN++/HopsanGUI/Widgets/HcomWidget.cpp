@@ -349,6 +349,7 @@ void TerminalConsole::appendOneMessage(GUIMessage msg, bool timeStamp)
         }
 
 
+        this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
         this->moveCursor( QTextCursor::StartOfLine, QTextCursor::MoveAnchor );
         setOutputColor(msg.type);
         this->insertPlainText(output+"\n");
