@@ -261,6 +261,13 @@ void HopsanEssentials::getExternalComponentLibNames(std::vector<HString> &rLibNa
     mpExternalLoader->getLoadedLibNames(rLibNames);
 }
 
+//! @brief Returns the path to the library file from where specified component is loaded
+//! @param rTypeName Type name of component
+//! @param rLibPath Reference string where path is stored
+void HopsanEssentials::getLibPathForComponentType(const HString &rTypeName, HString &rLibPath)
+{
+    mpExternalLoader->getLibPathByTypeName(rTypeName, rLibPath);
+}
 
 //! @brief Get the contents (components and nodes) registered by an external library
 //! @param [in] libPath Path to the external library

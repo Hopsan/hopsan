@@ -76,6 +76,7 @@ public:
     bool unLoadExternalComponentLib(const char* path);
     void getExternalComponentLibNames(std::vector<HString> &rLibNames);
     void getExternalLibraryContents(const char* libPath, std::vector<HString> &rComponents, std::vector<HString> &rNodes);
+    void getLibPathForComponentType(const HString &rTypeName, HString &rLibPath);
 
     // Loading HMF models
     ComponentSystem* loadHMFModel(const char* filePath, double &rStartTime, double &rStopTime);

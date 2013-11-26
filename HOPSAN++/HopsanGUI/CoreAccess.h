@@ -79,7 +79,7 @@ public:
     bool reserveComponentTypeName(const QString &rTypeName);
     void getLoadedLibNames(QVector<QString> &rLibNames);
     void getLibraryContents(QString libPath, QStringList &rComponents, QStringList &rNodes);
-
+    void getLibPathForComponent(QString typeName, QString &rLibPath);
 };
 
 class CoreMessagesAccess

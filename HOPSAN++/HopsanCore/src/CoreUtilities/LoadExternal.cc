@@ -316,6 +316,25 @@ void LoadExternal::getLoadedLibNames(std::vector<HString> &rLibNames)
     }
 }
 
+
+//! @brief Returns library path (to dll or so file) for a component type
+//! @param typeName Type name to look for
+//! @param libPath Reference to string where lib path is stored
+void LoadExternal::getLibPathByTypeName(const HString &rTypeName, HString &rLibPath)
+{
+    LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.begin();
+    for(; lelit!=mLoadedExtLibsMap.end(); ++lelit)
+    {
+        for(size_t i=0; i<lelit->second.mRegistredComponents.size(); ++i)
+        {
+            if(lelit->second.mRegistredComponents[i] == rTypeName)
+            {
+                rLibPath = lelit->first;
+            }
+        }
+    }
+}
+
 //! @brief Returns the components and nodes registered by specified library
 //! @param[in] rLibpath Path to library
 //! @param[out] rComponents Reference to vector with the loaded component type names

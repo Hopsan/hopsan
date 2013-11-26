@@ -60,6 +60,7 @@ public:
     void setFactory();
     void getLoadedLibNames(std::vector<HString> &rLibNames);
     void getLibContents(const HString &rLibpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes);
+    void getLibPathByTypeName(const HString &rTypeName, HString &rLibPath);
 };
 }
 

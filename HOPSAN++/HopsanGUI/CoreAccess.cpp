@@ -256,6 +256,14 @@ void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
     }
 }
 
+void CoreLibraryAccess::getLibPathForComponent(QString typeName, QString &rLibPath)
+{
+    hopsan::HString typeNameStr = typeName.toStdString().c_str();
+    hopsan::HString libStr;
+    gHopsanCore.getLibPathForComponentType(typeNameStr, libStr);
+    rLibPath = QString(libStr.c_str());
+}
+
 void CoreLibraryAccess::getLibraryContents(QString libPath, QStringList &rComponents, QStringList &rNodes)
 {
     std::vector<hopsan::HString> components, nodes;

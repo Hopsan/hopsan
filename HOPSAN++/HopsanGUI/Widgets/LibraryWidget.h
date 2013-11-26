@@ -67,6 +67,9 @@ protected:
 
 
 private:
+
+    void getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTreeWidgetItem *> &rSubItems);
+
     //GUI Stuff
     QTreeWidget *mpTree;
     QTreeWidget *mpDualTree;

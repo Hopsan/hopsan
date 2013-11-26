@@ -432,6 +432,23 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
 
             if(pReply == pUnloadAction)
             {
+                QStringList typeNames;
+                if(mItemToTypeNameMap.contains(item))
+                {
+                    typeNames.append(mItemToTypeNameMap.find(item).value());
+                }
+                if(!mItemToTypeNameMap.contains(item))
+                {
+                    QStringList typeNames;
+                    for(int c=0; c<mpList->count(); ++c)
+                    {
+                        typeNames.append(mListItemToTypeNameMap.find(mpList->item(c)).value());
+                    }
+                    for(int s=0; s<typeNames.size(); ++s)
+                    {
+                        gpLibraryHandler->unloadLibrary(typeNames[s]);
+                    }
+                }
                 gpLibraryHandler->unloadLibrary(typeName);
             }
             else if(pReply == pOpenFolderAction)
@@ -448,6 +465,9 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
             pOpenFolderAction->setEnabled(false);
 
             QTreeWidgetItem *pFirstSubComponentItem = item;
+
+            QStringList typeNames;
+
             while(!mItemToTypeNameMap.contains(pFirstSubComponentItem))
             {
                 pFirstSubComponentItem = pFirstSubComponentItem->child(0);
@@ -470,13 +490,27 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
 
             if(pReply == pUnloadAction)
             {
-                while(!mItemToTypeNameMap.contains(item))
+                if(mItemToTypeNameMap.contains(item))
                 {
-                    item = item->child(0);
+                    typeNames.append(mItemToTypeNameMap.find(item).value());
                 }
-
-                gpLibraryHandler->unloadLibrary(mItemToTypeNameMap.find(item).value());
-
+                if(!mItemToTypeNameMap.contains(item))
+                {
+                    QList<QTreeWidgetItem *> subItems;
+                    getAllSubTreeItems(item, subItems);
+                    QStringList typeNames;
+                    for(int s=0; s<subItems.size(); ++s)
+                    {
+                        if(mItemToTypeNameMap.contains(subItems[s]))
+                        {
+                            typeNames.append(mItemToTypeNameMap.find(subItems[s]).value());
+                        }
+                    }
+                    for(int s=0; s<typeNames.size(); ++s)
+                    {
+                        gpLibraryHandler->unloadLibrary(typeNames[s]);
+                    }
+                }
             }
             else if(pReply == pOpenFolderAction)
             {
@@ -527,4 +561,13 @@ void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
 {
     mpComponentNameLabel->clear();
     QWidget::mouseMoveEvent(event);
+}
+
+void LibraryWidget::getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTreeWidgetItem *> &rSubItems)
+{
+    rSubItems.append(pParentItem);
+    for(int c=0; c<pParentItem->childCount(); ++c)
+    {
+        getAllSubTreeItems(pParentItem->child(c), rSubItems);
+    }
 }

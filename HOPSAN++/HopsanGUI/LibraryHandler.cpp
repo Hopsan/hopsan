@@ -163,14 +163,14 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     {
         newLib.xmlFilePath = xmlPath;
         dir.setPath(xmlPath);
-        newLib.name = dir.dirName();
+//        newLib.name = dir.dirName();
 
-        dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-        dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
-        if(!dir.entryList().isEmpty())
-        {
-            newLib.libFilePath = dir.absoluteFilePath(dir.entryList().first());
-        }
+//        dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+//        dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
+//        if(!dir.entryList().isEmpty())
+//        {
+//            newLib.libFilePath = dir.absoluteFilePath(dir.entryList().first());
+//        }
     }
     else
     {
@@ -256,6 +256,8 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     // Determine where to store any backups of updated appearance xml files
     mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
+    bool loadedSomething=false;
+
     //Load the library file
     CoreLibraryAccess coreAccess;
     if(info.isDir())
@@ -272,6 +274,16 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 gpTerminalWidget->checkMessages();
                 gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+it.filePath());
                 gpTerminalWidget->checkMessages();
+            }
+            else
+            {
+                loadedSomething = true;
+                ComponentLibrary tempLib;
+                tempLib.name = it.filePath().section("/",-1,-1);
+                tempLib.libFilePath = it.filePath();
+                tempLib.type = type;
+                tempLib.xmlFilePath.append(xmlPath);
+                mLoadedLibraries.append(tempLib);
             }
         }
     }
@@ -305,7 +317,10 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         }
     }
 
-    mLoadedLibraries.append(newLib);
+    if(!info.isDir())
+    {
+        mLoadedLibraries.append(newLib);
+    }
 
     // Load Component XML (CAF Files)
     bool alreadyFailed=false;
@@ -460,17 +475,34 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 
         if (success)
         {
-            if(type != Internal)
-            {
-                gpConfig->addUserLib(xmlPath);
-            }
+            loadedSomething = true;
 
             LibraryEntry entry;
+            entry.pAppearance = pAppearanceData;
+            QString libPath;
+            coreAccess.getLibPathForComponent(pAppearanceData->getTypeName(), libPath);
+            entry.pLibrary = 0;
+            for(int l=0; l<mLoadedLibraries.size(); ++l)
+            {
+                if(mLoadedLibraries[l].libFilePath == libPath)
+                {
+                    entry.pLibrary = &mLoadedLibraries[l];
+                    break;
+                }
+            }
+
+            if(entry.pLibrary)
+            {
+                qDebug() << "Component: " << pAppearanceData->getTypeName() << " is loaded from: " << entry.pLibrary->libFilePath;
+            }
+
+            entry.pLibrary->cafFiles.append(newLib.cafFiles[i]);
+
             QString relDir = dir.relativeFilePath(newLib.cafFiles[i]);
             entry.path = relDir.split("/");
             if(type == External)
             {
-                entry.path.prepend(newLib.name);
+                entry.path.prepend(dir.dirName());
                 entry.path.prepend(QString(EXTLIBSTR));
             }
             else if(type == FMU)
@@ -478,8 +510,8 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 entry.path.prepend(QString(FMULIBSTR));
             }
             entry.path.removeLast();
-            entry.pAppearance = pAppearanceData;
-            entry.pLibrary = &mLoadedLibraries.last();
+
+            //entry.pLibrary = &mLoadedLibraries.last();
             entry.visibility = visibility;
             QString fullTypeName = makeFullTypeString(pAppearanceData->getTypeName(), pAppearanceData->getSubTypeName());
             if(!mLibraryEntries.contains(fullTypeName))
@@ -498,8 +530,24 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         }
     }
 
+    if(loadedSomething)
+    {
+        if(type != Internal)
+        {
+            gpConfig->addUserLib(xmlPath);
+        }
+        emit contentsChanged();
+    }
+    else
+    {
+        if(!info.isDir())
+        {
+            mLoadedLibraries.removeLast();
+        }
+        gpConfig->removeUserLib(xmlPath);
+    }
+
     gpTerminalWidget->checkMessages();
-    emit contentsChanged();
 }
 
 
@@ -507,13 +555,18 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 //! @param typeName Type name of any component in the library
 void LibraryHandler::unloadLibrary(QString typeName)
 {
-    ComponentLibrary lib = (*gpLibraryHandler->getEntry(typeName).pLibrary);
-    qDebug() << "Unloading: " << lib.name;
+    qDebug() << "Unloading from component: " << typeName;
+    ComponentLibrary *pLib = gpLibraryHandler->getEntry(typeName).pLibrary;
+    if(!pLib)
+    {
+        return;
+    }
+    qDebug() << "Unloading: " << pLib->name;
     CoreLibraryAccess core;
     QStringList components, nodes;
 
-    core.getLibraryContents(lib.libFilePath, components, nodes);
-    core.unLoadComponentLib(lib.libFilePath);
+    core.getLibraryContents(pLib->libFilePath, components, nodes);
+    core.unLoadComponentLib(pLib->libFilePath);
 
     qDebug() << "Unloading components: " << components;
     for(int c=0; c<components.size(); ++c)
@@ -521,8 +574,9 @@ void LibraryHandler::unloadLibrary(QString typeName)
         mLibraryEntries.remove(components[c]);
     }
 
-    gpConfig->removeUserLib(lib.xmlFilePath);
+    gpConfig->removeUserLib(pLib->xmlFilePath);
 
+    gpTerminalWidget->checkMessages();
     emit contentsChanged();
 }
 
@@ -539,7 +593,15 @@ QStringList LibraryHandler::getLoadedTypeNames()
 //! @param subTypeName of component (optional)
 LibraryEntry LibraryHandler::getEntry(const QString &typeName, const QString &subTypeName)
 {
-    return mLibraryEntries.find(makeFullTypeString(typeName, subTypeName)).value();
+    QString fullTypeString = makeFullTypeString(typeName, subTypeName);
+    if(mLibraryEntries.contains(fullTypeString))
+    {
+        return mLibraryEntries.find(fullTypeString).value();
+    }
+    else
+    {
+        return LibraryEntry();
+    }
 }
 
 
