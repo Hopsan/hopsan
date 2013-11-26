@@ -344,7 +344,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             QDomElement cafRoot = domDocument.documentElement();
             if (cafRoot.tagName() != CAF_ROOT)
             {
-                gpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                //gpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
                 continue;
             }
             else
@@ -424,15 +424,11 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         }
         else
         {
-            QMessageBox::warning(0, tr("Failed to read appearance data from %4"),
-                                     QString(file.fileName() + "\nParse error at line %1, column %2:\n%3")
-                                     .arg(errorLine)
-                                     .arg(errorColumn)
-                                     .arg(errorStr)
-                                     .arg(file.fileName()));
-
-            //! @todo give smart warning message, this is not an xml file
-
+            gpTerminalWidget->mpConsole->printWarningMessage(tr("Failed to read appearance data: from %4, Parse error at line %1, column %2: %3")
+                                                             .arg(errorLine)
+                                                             .arg(errorColumn)
+                                                             .arg(errorStr)
+                                                             .arg(file.fileName()));
             continue;
         }
 
