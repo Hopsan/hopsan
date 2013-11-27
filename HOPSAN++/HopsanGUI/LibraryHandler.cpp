@@ -66,15 +66,15 @@ LibraryHandler::LibraryHandler(QObject *parent)
 
 void LibraryHandler::loadLibrary()
 {
-#ifdef DEVELOPMENT
-        QString libDir = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose file"), gpConfig->getExternalLibDir());
-        libDir.replace("\\","/");   //Enforce unix-style on path
-#else
+//#ifdef DEVELOPMENT
+//        QString libDir = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose file"), gpConfig->getExternalLibDir());
+//        libDir.replace("\\","/");   //Enforce unix-style on path
+//#else
         QString libDir = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Choose Library Directory"),
                                                        gpConfig->getExternalLibDir(),
                                                        QFileDialog::ShowDirsOnly
                                                        | QFileDialog::DontResolveSymlinks);
-#endif
+//#endif
         if(libDir.isEmpty())
         {
             return;
