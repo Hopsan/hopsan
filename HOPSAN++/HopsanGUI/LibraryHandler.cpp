@@ -664,7 +664,7 @@ void LibraryHandler::importFmu()
 //! @brief Recompiles specified component library (safe to use with opened models)
 //! @param lib Component library to recompile
 //! @param solver Solver to use (for Modelica code only)
-void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int solver)
+void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int solver, bool dontUnloadAndLoad)
 {
     CoreLibraryAccess coreLibrary;
     CoreGeneratorAccess coreGenerator;
