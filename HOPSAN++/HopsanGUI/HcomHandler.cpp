@@ -171,6 +171,9 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunction("time", "Returns last simulation time", &(_funcTime));
 
     createCommands();
+
+    mLocalVars.insert("true",1);
+    mLocalVars.insert("false",0);
 }
 
 
@@ -924,11 +927,19 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         }
 
         int nChanged=0;
+        QString newValueStr = QString::number(newValue);
         for(int p=0; p<parameterNames.size(); ++p)
         {
             if(pSystem->getParameterNames().contains(parameterNames[p]))
             {
-                if(pSystem->setParameterValue(parameterNames[p], QString::number(newValue)))
+                CoreParameterData data;
+                pSystem->getParameter(parameterNames[p], data);     //Convert 1 to true and 0 to false in case of boolean parameters
+                if(data.mType == "bool")
+                {
+                    if(newValueStr == "0") newValueStr = "false";
+                    else if(newValueStr == "1") newValueStr = "true";
+                }
+                if(pSystem->setParameterValue(parameterNames[p], newValueStr))
                     ++nChanged;
             }
             else if(!pSystem->getFullNameFromAlias(parameterNames[p]).isEmpty())
@@ -939,6 +950,13 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                 ModelObject *pComponent = pSystem->getModelObject(compName);
                 if(pComponent)
                 {
+                    CoreParameterData data;
+                    pComponent->getParameter(parameterNames[p], data);     //Convert 1 to true and 0 to false in case of boolean parameters
+                    if(data.mType == "bool")
+                    {
+                        if(newValueStr == "0") newValueStr = "false";
+                        else if(newValueStr == "1") newValueStr = "true";
+                    }
                     if(pComponent->setParameterValue(parName, QString::number(newValue)))
                         ++nChanged;
                 }
@@ -4615,7 +4633,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(!pars.isEmpty())
             {
                 executeCommand("chpa "+left+" "+QString::number(mAnsScalar));
-                HCOMPRINT("Assigning "+left+" with "+QString::number(mAnsScalar));
+                //HCOMPRINT("Assigning "+left+" with "+QString::number(mAnsScalar));
                 return true;
             }
             mLocalVars.insert(left, mAnsScalar);
