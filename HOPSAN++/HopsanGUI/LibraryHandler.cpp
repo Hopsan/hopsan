@@ -66,32 +66,27 @@ LibraryHandler::LibraryHandler(QObject *parent)
 
 void LibraryHandler::loadLibrary()
 {
-//#ifdef DEVELOPMENT
-//        QString libDir = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose file"), gpConfig->getExternalLibDir());
-//        libDir.replace("\\","/");   //Enforce unix-style on path
-//#else
-        QString libDir = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Choose Library Directory"),
-                                                       gpConfig->getExternalLibDir(),
-                                                       QFileDialog::ShowDirsOnly
-                                                       | QFileDialog::DontResolveSymlinks);
-//#endif
-        if(libDir.isEmpty())
+    QString libDir = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Choose Library Directory"),
+                                                   gpConfig->getExternalLibDir(),
+                                                   QFileDialog::ShowDirsOnly
+                                                   | QFileDialog::DontResolveSymlinks);
+    if(libDir.isEmpty())
+    {
+        return;
+    }
+    else
+    {
+        gpConfig->setExternalLibDir(libDir);
+
+        if(!gpConfig->hasUserLib(libDir))     //Check so that path does not already exist
         {
-            return;
+            loadLibrary(libDir/*, QStringList() << EXTLIBSTR << libDir.section("/",-1,-1)*/);    //Load and register the library in configuration
         }
         else
         {
-            gpConfig->setExternalLibDir(libDir);
-
-            if(!gpConfig->hasUserLib(libDir))     //Check so that path does not already exist
-            {
-                loadLibrary(libDir/*, QStringList() << EXTLIBSTR << libDir.section("/",-1,-1)*/);    //Load and register the library in configuration
-            }
-            else
-            {
-                gpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
-            }
+            gpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
         }
+    }
 }
 
 void LibraryHandler::createNewCppComponent()
@@ -152,93 +147,17 @@ void LibraryHandler::createNewModelicaComponent()
 //! @param visibility Specifies whether library is visible or invisible
 void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
 {
-    ComponentLibrary newLib;
-    newLib.type = type;
-
     QFileInfo info(xmlPath);
-    QString libPath = info.path()+"/";
+    QStringList cafFiles;
+    QStringList loadedLibs;     //! @todo Used for fallback function, remove before 0.7
+    CoreLibraryAccess coreAccess;
+    bool loadedSomething=false;
     QDir dir;
-
-    if(info.isDir())        //Fallback function for backwards compatibility, allows user to load a directory instead of an xml file
-    {
-        newLib.xmlFilePath = xmlPath;
-        dir.setPath(xmlPath);
-//        newLib.name = dir.dirName();
-
-//        dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-//        dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
-//        if(!dir.entryList().isEmpty())
-//        {
-//            newLib.libFilePath = dir.absoluteFilePath(dir.entryList().first());
-//        }
-    }
+    if(info.isDir())
+        dir.setPath(info.absoluteFilePath());
     else
-    {
-        dir.setPath(libPath);
+        dir.setPath(info.absolutePath());
 
-        //Read from library description xml file
-        QFile file(xmlPath);
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            gpTerminalWidget->mpConsole->printErrorMessage("Unable to open file: "+QFile(xmlPath).fileName());
-            if(type != Internal)
-            {
-                gpConfig->removeUserLib(xmlPath);
-            }
-            return;
-        }
-
-        QDomDocument domDocument;
-        QString errorStr;
-        int errorLine, errorColumn;
-        if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-        {
-            gpTerminalWidget->mpConsole->printErrorMessage(QFile(xmlPath).fileName()+tr(": Parse error at line %1, column %2:\n%3")
-                                     .arg(errorLine)
-                                     .arg(errorColumn)
-                                     .arg(errorStr));
-            return;
-        }
-        QDomElement libRoot = domDocument.documentElement();
-        if (libRoot.tagName() != QString(XML_LIBRARY))
-        {
-           gpTerminalWidget->mpConsole->printErrorMessage(tr("The file is not a Hopsan component library file. Incorrect hmf root tag name: ")
-                                     + libRoot.tagName() + " != "+QString(XML_LIBRARY));
-            return;
-        }
-
-        //Store path to own xml file
-        newLib.xmlFilePath = xmlPath;
-
-        //Store name of library
-        if(libRoot.hasAttribute(QString(XML_LIBRARY_NAME)))
-        {
-            newLib.name = libRoot.attribute(QString(XML_LIBRARY_NAME));
-        }
-        else
-        {
-            newLib.name = QFileInfo(xmlPath).fileName().section(".", 0,0);  //Use filename in case no lib name is provided
-        }
-
-        //Store library file
-        if(libRoot.firstChildElement(QString(XML_LIBRARY_LIB)).isNull())
-        {
-            //gpTerminalWidget->mpConsole->printErrorMessage("No binary file specified in library description file.");
-            //return;
-        }
-        else
-        {
-            newLib.libFilePath = libPath+QString(LIBPREFIX)+libRoot.firstChildElement(QString(XML_LIBRARY_LIB)).text()+QString(LIBEXT);
-        }
-
-        //Store source files
-        QDomElement sourceElement = libRoot.firstChildElement(QString(XML_LIBRARY_SOURCE));
-        while(!sourceElement.isNull())
-        {
-            newLib.sourceFiles.append(libPath+sourceElement.text());
-            sourceElement = sourceElement.nextSiblingElement(QString(XML_LIBRARY_SOURCE));
-        }
-    }
 
     //Recurse sub directories and find all xml files
     dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
@@ -246,90 +165,148 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     QDirIterator it(dir, QDirIterator::Subdirectories);
     while(it.hasNext())
     {
-        newLib.cafFiles.append(it.next());
-        if(QDir::cleanPath(newLib.cafFiles.last()) == QDir::cleanPath(xmlPath))
-        {
-            newLib.cafFiles.removeLast();   //Don't store own xml file as a caf file
-        }
-    }
+        //Read from the xml file
+        QFile file(it.next());
+        QFileInfo fileInfo(file);
 
-    // Determine where to store any backups of updated appearance xml files
-    mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
-
-    bool loadedSomething=false;
-
-    //Load the library file
-    CoreLibraryAccess coreAccess;
-    if(info.isDir())
-    {
-        //Recurse sub directories and find all dll files
-        dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-        dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
-        QDirIterator it(dir, QDirIterator::Subdirectories);
-        while(it.hasNext())
+        //Iterate over all xml files in folder and subfolders
+        qDebug() << "Reading xml from " << fileInfo.filePath();
+        if(file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            it.next();
-            if(!coreAccess.loadComponentLib(it.filePath()))
+            QDomDocument domDocument;
+            QString errorStr;
+            int errorLine, errorColumn;
+            if(domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
             {
-                gpTerminalWidget->checkMessages();
-                gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+it.filePath());
-                gpTerminalWidget->checkMessages();
-            }
-            else
-            {
-                loadedSomething = true;
-                ComponentLibrary tempLib;
-                tempLib.name = it.filePath().section("/",-1,-1);
-                tempLib.libFilePath = it.filePath();
-                tempLib.type = type;
-                tempLib.xmlFilePath.append(xmlPath);
-                mLoadedLibraries.append(tempLib);
-            }
-        }
-    }
-    else
-    {
-        if(!newLib.libFilePath.isEmpty())
-        {
-            if(!coreAccess.loadComponentLib(newLib.libFilePath))
-            {
-                gpTerminalWidget->checkMessages();
-                gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+QFile(newLib.libFilePath).fileName());
-                gpTerminalWidget->checkMessages();
-                if(!newLib.sourceFiles.isEmpty())
+                QDomElement xmlRoot = domDocument.documentElement();
+                if(xmlRoot.tagName() == QString(CAF_ROOT))
                 {
-                    gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile...");
-                    recompileLibrary(newLib,false);
-                    gpTerminalWidget->checkMessages();
-                    if(!coreAccess.loadComponentLib(newLib.libFilePath))
+                    cafFiles.append(fileInfo.filePath());
+                }
+                else if(xmlRoot.tagName() == QString(XML_LIBRARY))
+                {
+                    ComponentLibrary tempLib;
+
+                    //Store path to own xml file
+                    tempLib.xmlFilePath = info.filePath();//QFileInfo(file).filePath();
+
+                    //Store name of library
+                    if(xmlRoot.hasAttribute(QString(XML_LIBRARY_NAME)))
                     {
-                        gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");
-                        gpConfig->removeUserLib(newLib.xmlFilePath);
-                        gpTerminalWidget->checkMessages();
-                        return;
+                        tempLib.name = xmlRoot.attribute(QString(XML_LIBRARY_NAME));
                     }
                     else
                     {
-                        gpTerminalWidget->mpConsole->printInfoMessage("Recompilation successful!");
+                        tempLib.name = QFileInfo(xmlPath).fileName().section(".", 0,0);  //Use filename in case no lib name is provided
+                    }
+
+                    //Store library file
+                    if(!xmlRoot.firstChildElement(QString(XML_LIBRARY_LIB)).isNull())
+                    {
+                        tempLib.libFilePath = QFileInfo(file).absolutePath()+"/"+QString(LIBPREFIX)+xmlRoot.firstChildElement(QString(XML_LIBRARY_LIB)).text()+QString(LIBEXT);
+                    }
+
+                    //Store source files
+                    QDomElement sourceElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_SOURCE));
+                    while(!sourceElement.isNull())
+                    {
+                        tempLib.sourceFiles.append(QFileInfo(file).absolutePath()+"/"+sourceElement.text());
+                        sourceElement = sourceElement.nextSiblingElement(QString(XML_LIBRARY_SOURCE));
+                    }
+
+                    //Store library entry
+                    mLoadedLibraries.append(tempLib);
+
+                    //Try to load specified library file
+                    if(!tempLib.libFilePath.isEmpty())
+                    {
+                        if(!coreAccess.loadComponentLib(tempLib.libFilePath))
+                        {
+                            //Failed to load, attempt recompilation
+                            gpTerminalWidget->checkMessages();
+                            gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+it.filePath());
+                            gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile library: "+tempLib.name+"...");
+                            recompileLibrary(tempLib,false,0,true);
+                            gpTerminalWidget->checkMessages();
+
+                            //Try to load again
+                            if(!coreAccess.loadComponentLib(tempLib.libFilePath))
+                            {
+                                //Still no success, recompilation failed. Ignore and go on.
+                                gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");
+                            }
+                            else
+                            {
+                                //Successful loading after recompilation
+                                gpTerminalWidget->mpConsole->printInfoMessage("Recompilation successful!");
+                                loadedLibs.append(tempLib.libFilePath);
+                                loadedSomething = true;
+                            }
+                        }
+                        else
+                        {
+                            //Successful loading
+                            loadedLibs.append(tempLib.libFilePath);
+                            loadedSomething = true;
+                        }
                     }
                 }
             }
         }
     }
 
-    if(!info.isDir())
+    // Determine where to store any backups of updated appearance xml files
+    mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
+
+    //Recurse sub directories, find all dll files and load them
+    //! @todo Fallback, remove this before 0.7
+    dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+    dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
+    QDirIterator itd(dir, QDirIterator::Subdirectories);
+    while(itd.hasNext())
     {
-        mLoadedLibraries.append(newLib);
+        itd.next();
+        if(loadedLibs.contains(itd.filePath()))      //Ignore libraries already loaded above
+        {
+            continue;
+        }
+        if(!coreAccess.loadComponentLib(itd.filePath()))
+        {
+
+            gpTerminalWidget->checkMessages();
+            gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+it.filePath());
+            gpTerminalWidget->checkMessages();
+        }
+        else
+        {
+            loadedSomething = true;
+            ComponentLibrary tempLib;
+            tempLib.name = itd.filePath().section("/",-1,-1);
+            tempLib.libFilePath = itd.filePath();
+            tempLib.type = type;
+            tempLib.xmlFilePath.append(info.filePath());
+            bool exists=false;
+            for(int l=0; l<mLoadedLibraries.size(); ++l)
+            {
+                if(mLoadedLibraries[l].libFilePath == tempLib.libFilePath)
+                {
+                    exists=true;
+                }
+            }
+            if(!exists)
+            {
+                mLoadedLibraries.append(tempLib);
+            }
+        }
     }
 
     // Load Component XML (CAF Files)
-    bool alreadyFailed=false;
-    for (int i = 0; i<newLib.cafFiles.size(); ++i)        //Iterate over the file names
+    for (int i = 0; i<cafFiles.size(); ++i)        //Iterate over the file names
     {
-        QFile file(newLib.cafFiles[i]);   //Create a QFile object
+        QFile file(cafFiles[i]);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + newLib.cafFiles[i]);
+            gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + cafFiles[i]);
             continue;
         }
 
@@ -351,7 +328,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             {
                 //Read appearance data from the caf xml file, begin with the first
                 QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
-                pAppearanceData->setBasePath(QFileInfo(newLib.cafFiles[i]).absolutePath()+"/");
+                pAppearanceData->setBasePath(QFileInfo(cafFiles[i]).absolutePath()+"/");
                 pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
 
                 // Check CAF version, and ask user if they want to update to latest version
@@ -445,11 +422,11 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
                 //Check that component is registered in core
             success = coreAccess.hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
-            if (!success && !alreadyFailed && !newLib.sourceFiles.isEmpty())
+            /*if (!success && !alreadyFailed && !newLib.sourceFiles.isEmpty())
             {
                 alreadyFailed=true;
-                gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName());
-                gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile library: "+newLib.name+"...");
+                gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName(), "failedtoloadcomp");
+                gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile library: "+newLib.name+"...", "attemptingtorecompile");
 
                 recompileLibrary(newLib,false);
                 --i;
@@ -461,10 +438,9 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 alreadyFailed=false;
                 continue;
             }
-            else if(!success)
+            else */if(!success)
             {
-                gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName());
-                gpTerminalWidget->mpConsole->printInfoMessage("(library is not recompilable)");
+                gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName()+", (library is not recompilable)", "failedtoloadcomp");
                 continue;
             }
         }
@@ -492,9 +468,9 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 qDebug() << "Component: " << pAppearanceData->getTypeName() << " is loaded from: " << entry.pLibrary->libFilePath;
             }
 
-            entry.pLibrary->cafFiles.append(newLib.cafFiles[i]);
+            entry.pLibrary->cafFiles.append(cafFiles[i]);
 
-            QString relDir = dir.relativeFilePath(newLib.cafFiles[i]);
+            QString relDir = dir.relativeFilePath(cafFiles[i]);
             entry.path = relDir.split("/");
             if(type == External)
             {
@@ -536,10 +512,6 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     }
     else
     {
-        if(!info.isDir())
-        {
-            mLoadedLibraries.removeLast();
-        }
         gpConfig->removeUserLib(xmlPath);
     }
 
@@ -552,7 +524,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 void LibraryHandler::unloadLibrary(QString typeName)
 {
     qDebug() << "Unloading from component: " << typeName;
-    ComponentLibrary *pLib = gpLibraryHandler->getEntry(typeName).pLibrary;
+    ComponentLibrary *pLib = getEntry(typeName).pLibrary;
     if(!pLib)
     {
         return;
@@ -571,6 +543,15 @@ void LibraryHandler::unloadLibrary(QString typeName)
     }
 
     gpConfig->removeUserLib(pLib->xmlFilePath);
+
+    for(int l=0; l<mLoadedLibraries.size(); ++l)
+    {
+        if(mLoadedLibraries[l].libFilePath == pLib->libFilePath)
+        {
+            mLoadedLibraries.removeAt(l);
+            --l;
+        }
+    }
 
     gpTerminalWidget->checkMessages();
     emit contentsChanged();
@@ -688,11 +669,14 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
     CoreLibraryAccess coreLibrary;
     CoreGeneratorAccess coreGenerator;
 
-    //Save GUI state
-    gpModelHandler->saveState();
+    if(!dontUnloadAndLoad)
+    {
+        //Save GUI state
+        gpModelHandler->saveState();
 
-    //Unload library from core
-    coreLibrary.unLoadComponentLib(lib.libFilePath);
+        //Unload library from core
+        coreLibrary.unLoadComponentLib(lib.libFilePath);
+    }
 
     //Generate C++ code from Modelica if source files are Modelica code
     Q_FOREACH(const QString &caf, lib.cafFiles)
@@ -722,11 +706,14 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
     //Call compile utility
     coreGenerator.compileComponentLibrary(QFileInfo(lib.xmlFilePath).absoluteFilePath(), extraLibs, showDialog);
 
-    //Load library again
-    coreLibrary.loadComponentLib(lib.libFilePath);
+    if(!dontUnloadAndLoad)
+    {
+        //Load library again
+        coreLibrary.loadComponentLib(lib.libFilePath);
 
-    //Restore GUI state
-    gpModelHandler->restoreState();
+        //Restore GUI state
+        gpModelHandler->restoreState();
+    }
 }
 
 
