@@ -40,7 +40,7 @@
 #include "version_gui.h"
 #include "Widgets/HcomWidget.h"
 #include "Dialogs/EditComponentDialog.h"
-
+#include "GUIObjects/GUISystem.h"
 
 //! @brief Helpfunction to create full typename from type and subtype
 //! @returns The full typename type|subtype, or type is subtype was empty
@@ -303,154 +303,112 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     // Load Component XML (CAF Files)
     for (int i = 0; i<cafFiles.size(); ++i)        //Iterate over the file names
     {
-        QFile file(cafFiles[i]);   //Create a QFile object
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
+        //Open caf XML file and load it to an XML document
+        QFile file(cafFiles[i]);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + cafFiles[i]);
             continue;
         }
-
-        ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
-
-        QDomDocument domDocument;        //Read appearance from file, First check if xml
-        QString errorStr;
-        int errorLine, errorColumn;
-        if (domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+        QDomDocument domDocument;
+        QDomElement cafRoot = loadXMLDomDocument(file, domDocument, CAF_ROOT);
+        file.close();
+        if(cafRoot.isNull())
         {
-            //! @todo check caf version
-            QDomElement cafRoot = domDocument.documentElement();
-            if (cafRoot.tagName() != CAF_ROOT)
-            {
-                //gpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
-                continue;
-            }
-            else
-            {
-                //Read appearance data from the caf xml file, begin with the first
-                QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
-                pAppearanceData->setBasePath(QFileInfo(cafFiles[i]).absolutePath()+"/");
-                pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
-
-                // Check CAF version, and ask user if they want to update to latest version
-                QString caf_version = cafRoot.attribute(CAF_VERSION);
-
-                if (caf_version < CAF_VERSIONNUM)
-                {
-                    bool doSave=false;
-                    if (mUpConvertAllCAF==UndecidedToAll)
-                    {
-                        QMessageBox questionBox(gpMainWindowWidget);
-                        QString text;
-                        QTextStream ts(&text);
-                        ts << file.fileName() << "\n"
-                           << "Your file format is older than the newest version! " << caf_version << "<" << CAF_VERSIONNUM << " Do you want to auto update to the latest format?\n\n"
-                           << "NOTE! Your old files will be copied to the hopsan Backup folder, but you should make sure that you have a backup in case something goes wrong.\n"
-                           << "NOTE! All non-standard Hopsan contents will be lost\n"
-                           << "NOTE! Attributes may change order within a tag (but the order is not important)\n\n"
-                           << "If you want to update manually, see the documantation about the latest format version.";
-                        questionBox.setWindowTitle("A NEW appearance data format is available!");
-                        questionBox.setText(text);
-                        QPushButton* pYes = questionBox.addButton(QMessageBox::Yes);
-                        questionBox.addButton(QMessageBox::No);
-                        QPushButton* pYesToAll = questionBox.addButton(QMessageBox::YesToAll);
-                        QPushButton* pNoToAll = questionBox.addButton(QMessageBox::NoToAll);
-                        questionBox.setDefaultButton(QMessageBox::No);
-                        if(gpSplash)
-                        {
-                            gpSplash->close();
-                        }
-                        questionBox.exec();
-                        QAbstractButton* pClickedButton = questionBox.clickedButton();
-
-                        if ( (pClickedButton == pYes) || (pClickedButton == pYesToAll) )
-                        {
-                            doSave = true;
-                        }
-
-                        if (pClickedButton == pYesToAll)
-                        {
-                            mUpConvertAllCAF = YesToAll;
-                        }
-                        else if (pClickedButton == pNoToAll)
-                        {
-                            mUpConvertAllCAF = NoToAll;
-                        }
-                    }
-                    else if (mUpConvertAllCAF==YesToAll)
-                    {
-                        doSave = true;
-                    }
-
-                    if (doSave)
-                    {
-                        //Close file
-                        file.close();
-
-                        // Make backup of original file
-                        QFileInfo newBakFile(mUpdateXmlBackupDir.absolutePath());
-                        QDir dir;
-                        dir.mkpath(newBakFile.absoluteDir().absolutePath());
-                        file.copy(newBakFile.absoluteFilePath());
-
-                        // Save (overwrite original file)
-                        pAppearanceData->saveToXMLFile(file.fileName());
-
-                    }
-                }
-            }
-        }
-        else
-        {
-            gpTerminalWidget->mpConsole->printWarningMessage(tr("Failed to read appearance data: from %4, Parse error at line %1, column %2: %3")
-                                                             .arg(errorLine)
-                                                             .arg(errorColumn)
-                                                             .arg(errorStr)
-                                                             .arg(file.fileName()));
             continue;
         }
 
-        //Close file
-        file.close();
+        //Read appearance data from the caf xml file, begin with the first
+        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+        ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
+        pAppearanceData->setBasePath(QFileInfo(cafFiles[i]).absolutePath()+"/");
+        pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
 
-        //! @todo maybe use the convenient helpfunction for the stuff above (open file and check xml and root tagname) now that we have one
+        // Check CAF version, and ask user if they want to update to latest version
+        QString caf_version = cafRoot.attribute(CAF_VERSION);
 
+        if (caf_version < CAF_VERSIONNUM)
+        {
+            bool doSave=false;
+            if (mUpConvertAllCAF==UndecidedToAll)
+            {
+                QMessageBox questionBox(gpMainWindowWidget);
+                QString text;
+                QTextStream ts(&text);
+                ts << file.fileName() << "\n"
+                   << "Your file format is older than the newest version! " << caf_version << "<" << CAF_VERSIONNUM << " Do you want to auto update to the latest format?\n\n"
+                   << "NOTE! Your old files will be copied to the hopsan Backup folder, but you should make sure that you have a backup in case something goes wrong.\n"
+                   << "NOTE! All non-standard Hopsan contents will be lost\n"
+                   << "NOTE! Attributes may change order within a tag (but the order is not important)\n\n"
+                   << "If you want to update manually, see the documantation about the latest format version.";
+                questionBox.setWindowTitle("New appearance data format available");
+                questionBox.setText(text);
+                QPushButton* pYes = questionBox.addButton(QMessageBox::Yes);
+                questionBox.addButton(QMessageBox::No);
+                QPushButton* pYesToAll = questionBox.addButton(QMessageBox::YesToAll);
+                QPushButton* pNoToAll = questionBox.addButton(QMessageBox::NoToAll);
+                questionBox.setDefaultButton(QMessageBox::No);
+                if(gpSplash)
+                {
+                    gpSplash->close();
+                }
+                questionBox.exec();
+                QAbstractButton* pClickedButton = questionBox.clickedButton();
+
+                if ( (pClickedButton == pYes) || (pClickedButton == pYesToAll) )
+                {
+                    doSave = true;
+                }
+
+                if (pClickedButton == pYesToAll)
+                {
+                    mUpConvertAllCAF = YesToAll;
+                }
+                else if (pClickedButton == pNoToAll)
+                {
+                    mUpConvertAllCAF = NoToAll;
+                }
+            }
+            else if (mUpConvertAllCAF==YesToAll)
+            {
+                doSave = true;
+            }
+
+            if (doSave)
+            {
+                // Make backup of original file
+                QFileInfo newBakFile(mUpdateXmlBackupDir.absolutePath());
+                QDir dir;
+                dir.mkpath(newBakFile.absoluteDir().absolutePath());
+                file.copy(newBakFile.absoluteFilePath());
+
+                // Save (overwrite original file)
+                pAppearanceData->saveToXMLFile(file.fileName());
+            }
+        }
+
+        //Verify appearance data loaded from caf file
         bool success = true;
-
-        //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
         if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
         {
             //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
-                //Check that component is registered in core
             success = coreAccess.hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
-            /*if (!success && !alreadyFailed && !newLib.sourceFiles.isEmpty())
-            {
-                alreadyFailed=true;
-                gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName(), "failedtoloadcomp");
-                gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile library: "+newLib.name+"...", "attemptingtorecompile");
-
-                recompileLibrary(newLib,false);
-                --i;
-                continue;
-            }
-            else if(!success && alreadyFailed)
-            {
-                gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");
-                alreadyFailed=false;
-                continue;
-            }
-            else */if(!success)
+            if(!success)
             {
                 gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName()+", (library is not recompilable)", "failedtoloadcomp");
                 continue;
             }
         }
 
+        //Success, add component to library
         if (success)
         {
-            loadedSomething = true;
-
             LibraryEntry entry;
+
+            //Store appearance data
             entry.pAppearance = pAppearanceData;
+
+            //Find and store library from where component belongs
             QString libPath;
             coreAccess.getLibPathForComponent(pAppearanceData->getTypeName(), libPath);
             entry.pLibrary = 0;
@@ -463,13 +421,10 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 }
             }
 
-            if(entry.pLibrary)
-            {
-                qDebug() << "Component: " << pAppearanceData->getTypeName() << " is loaded from: " << entry.pLibrary->libFilePath;
-            }
-
+            //Store caf file
             entry.pLibrary->cafFiles.append(cafFiles[i]);
 
+            //Calculate path to show in library
             QString relDir = dir.relativeFilePath(cafFiles[i]);
             entry.path = relDir.split("/");
             if(type == External)
@@ -483,21 +438,23 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             }
             entry.path.removeLast();
 
-            //entry.pLibrary = &mLoadedLibraries.last();
+            //Store visibility
             entry.visibility = visibility;
+
+            //Store new entry, but only if it does not already exist
             QString fullTypeName = makeFullTypeString(pAppearanceData->getTypeName(), pAppearanceData->getSubTypeName());
             if(!mLibraryEntries.contains(fullTypeName))
             {
                 mLibraryEntries.insert(fullTypeName, entry);
-                qDebug() << "Adding: " << pAppearanceData->getTypeName();
+                loadedSomething = true;
+                if(gpSplash)
+                {
+                    gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
+                }
             }
             else
             {
                 gpTerminalWidget->mpConsole->printWarningMessage("Component with full type name \""+fullTypeName+"\" is already registered in library handler. Ignored.");
-            }
-            if(gpSplash)
-            {
-                gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
             }
         }
     }
@@ -523,27 +480,32 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 //! @param typeName Type name of any component in the library
 void LibraryHandler::unloadLibrary(QString typeName)
 {
-    qDebug() << "Unloading from component: " << typeName;
+    //Find the library that the component belongs to
     ComponentLibrary *pLib = getEntry(typeName).pLibrary;
     if(!pLib)
     {
-        return;
+        return; //No library found, ignore (should normally never happen)
     }
-    qDebug() << "Unloading: " << pLib->name;
-    CoreLibraryAccess core;
-    QStringList components, nodes;
 
+    CoreLibraryAccess core;
+
+    //Generate list of all components and nodes in library
+    QStringList components, nodes;
     core.getLibraryContents(pLib->libFilePath, components, nodes);
+
+    //Unload the library from HopsanCore
     core.unLoadComponentLib(pLib->libFilePath);
 
-    qDebug() << "Unloading components: " << components;
+    //Remove all unloaded components from library
     for(int c=0; c<components.size(); ++c)
     {
         mLibraryEntries.remove(components[c]);
     }
 
+    //Remove user library from configuration (might remove other libraries as well if they were loaded together, they will not appear next time Hopsan restarts then)
     gpConfig->removeUserLib(pLib->xmlFilePath);
 
+    //Remove library from list of loaded libraries
     for(int l=0; l<mLoadedLibraries.size(); ++l)
     {
         if(mLoadedLibraries[l].libFilePath == pLib->libFilePath)
@@ -555,6 +517,41 @@ void LibraryHandler::unloadLibrary(QString typeName)
 
     gpTerminalWidget->checkMessages();
     emit contentsChanged();
+}
+
+bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)
+{
+    QStringList models;
+    for(int m=0; m<gpModelHandler->count(); ++m)
+    {
+        bool hasUnloadingComponent=false;
+        SystemContainer *pSystem = gpModelHandler->getTopLevelSystem(m);
+        Q_FOREACH(const QString &comp, pSystem->getModelObjectNames())
+        {
+            if(typeNames.contains(pSystem->getModelObject(comp)->getTypeName()))
+            {
+                hasUnloadingComponent = true;
+            }
+        }
+        if(hasUnloadingComponent)
+        {
+            models.append(pSystem->getName());
+        }
+    }
+
+    if(!models.isEmpty())
+    {
+        QString msg = "The following models are using components from the library:\n\n";
+        Q_FOREACH(const QString &model, models)
+        {
+            msg.append(model+"\n");
+        }
+        msg.append("\nThey must be closed before unloading.");
+        QMessageBox::critical(gpMainWindowWidget, "Unload failed", msg);
+        return false;
+    }
+
+    return true;
 }
 
 

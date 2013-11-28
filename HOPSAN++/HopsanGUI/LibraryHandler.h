@@ -26,6 +26,7 @@ public:
 
     void loadLibrary(QString xmlPath, LibraryTypeEnumT type=External, HiddenVisibleEnumT visibility=Visible);
     void unloadLibrary(QString typeName);
+    bool isTypeNamesOkToUnload(const QStringList &typeNames);
     void recompileLibrary(ComponentLibrary lib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames();

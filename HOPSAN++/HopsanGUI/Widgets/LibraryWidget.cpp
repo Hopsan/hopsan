@@ -444,6 +444,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                     {
                         typeNames.append(mListItemToTypeNameMap.find(mpList->item(c)).value());
                     }
+                    if(!gpLibraryHandler->isTypeNamesOkToUnload(typeNames))
+                    {
+                        return;
+                    }
                     for(int s=0; s<typeNames.size(); ++s)
                     {
                         gpLibraryHandler->unloadLibrary(typeNames[s]);
@@ -505,6 +509,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                         {
                             typeNames.append(mItemToTypeNameMap.find(subItems[s]).value());
                         }
+                    }
+                    if(!gpLibraryHandler->isTypeNamesOkToUnload(typeNames))
+                    {
+                        return;
                     }
                     for(int s=0; s<typeNames.size(); ++s)
                     {
