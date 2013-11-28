@@ -21,7 +21,8 @@ Installation:
    Recommended: Extract to `C:\Qt\MinGW-gcc440_1`
 2. Download and install Qt libraries for windows 4.8.5 (MinGW) from http://qt-project.org/downloads \n
    The installer will ask for the location of your MinGW_4.4 installation
-3. Download and install QtCreator version of your choice from http://qt-project.org/downloads, (latest version is recommended)
+3. Download and install \b Qt \b Creator version of your choice from http://qt-project.org/downloads, (latest version is recommended) \n
+   \b Note! Scroll down on the download page until you find Qt Creator only installers. (Do \b NOT install Qt 5.*)
 
 Configure QtCreator:
 1. In QtCreator, go to Tools->Options->Build&Run
@@ -48,8 +49,9 @@ Installation:
    Recommended: `c:\Qt\mingw64`  and  `c:\Qt\Qt64-4.8.5`
 3. Open a command prompt "Start->run->cmd" and navigate to your `C:\Qt\Qt64-4.8.5` directory (cd `c:\Qt\Qt64-4.8.5`) \n
    Run the command "qtbinpatcher.exe --nobackup" to path the binaries
-4. Download and install a QtCreator version of your choice, (latest is recommended) (from http://qt-project.org/downloads) \n
-   \b Note! a 32-bit version will work fine, it is just the editor
+4. Download and install \b Qt \b Creator version of your choice from http://qt-project.org/downloads, (latest version is recommended) \n
+   \b Note! Scroll down on the download page until you find Qt Creator only installers. (Do \b NOT install Qt 5.*) \n
+   \b Note! A 32-bit version of Qt Creator will work fine, it is just the code editor
 
 Configure QtCreator:
 1. In QtCreator, go to Tools->Options->Build&Run
