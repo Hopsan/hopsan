@@ -481,11 +481,19 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 void LibraryHandler::unloadLibrary(QString typeName)
 {
     //Find the library that the component belongs to
-    ComponentLibrary *pLib = getEntry(typeName).pLibrary;
+    LibraryEntry entry = getEntry(typeName);
+    if(!getLoadedTypeNames().contains(typeName))
+    {
+        qDebug() << "Component: " << typeName << " not found.";
+        return; //No component found, probably already unloaded
+    }
+    ComponentLibrary *pLib = entry.pLibrary;
     if(!pLib)
     {
+        qDebug() << "Library with component: " << typeName << " not found.";
         return; //No library found, ignore (should normally never happen)
     }
+    qDebug() << "Unloading component: " << typeName << ".";
 
     CoreLibraryAccess core;
 
