@@ -220,7 +220,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     mCurrentHistoryItem=-1;
     this->append(">> ");
 
-    mpErrorSound = new QSound(QString(SOUNDSPATH)+"error.wav");
+    //mpErrorSound = new QSound(QString(SOUNDSPATH)+"error.wav");
 }
 
 
@@ -259,10 +259,10 @@ void TerminalConsole::printCoreMessages()
         mNewMessageList.append(GUIMessage(message, type, tag));
         updateNewMessages();
     }
-    if(playErrorSound)
-    {
-        mpErrorSound->play();
-    }
+//    if(playErrorSound)
+//    {
+//        mpErrorSound->play();
+//    }
 }
 
 
@@ -275,7 +275,7 @@ void TerminalConsole::printFatalMessage(QString message)
 
 void TerminalConsole::printErrorMessage(QString message, QString tag, bool timeStamp)
 {
-    mpErrorSound->play();
+    //mpErrorSound->play();
     appendOneMessage(GUIMessage(message.prepend("Error: "), "error", tag), timeStamp);
 }
 

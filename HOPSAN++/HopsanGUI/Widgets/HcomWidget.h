@@ -146,7 +146,7 @@ private:
     bool mShowDebugMessages;
 
     //Audio
-    QSound *mpErrorSound;
+    //QSound *mpErrorSound;
 };
 
 #endif // HCOMWIDGET_H
