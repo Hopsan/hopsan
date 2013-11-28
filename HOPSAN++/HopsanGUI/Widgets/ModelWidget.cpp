@@ -209,7 +209,7 @@ void ModelWidget::hasChanged()
     //qDebug() << "hasChanged()";
     if (mIsSaved)
     {
-        QString tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()));
+        QString tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(this));
 
         if(!tabName.endsWith("*"))
         {
