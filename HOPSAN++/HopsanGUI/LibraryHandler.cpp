@@ -514,9 +514,10 @@ void LibraryHandler::unloadLibrary(QString typeName)
     gpConfig->removeUserLib(pLib->xmlFilePath);
 
     //Remove library from list of loaded libraries
+    QString libFilePath = pLib->libFilePath;
     for(int l=0; l<mLoadedLibraries.size(); ++l)
     {
-        if(mLoadedLibraries[l].libFilePath == pLib->libFilePath)
+        if(mLoadedLibraries[l].libFilePath == libFilePath)
         {
             mLoadedLibraries.removeAt(l);
             --l;
