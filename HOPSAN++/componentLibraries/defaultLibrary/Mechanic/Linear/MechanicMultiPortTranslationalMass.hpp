@@ -157,7 +157,7 @@ namespace hopsan {
                 }
             }
 
-            mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
+            mIntegrator.initialize(mTimestep, 0, 0, x2[0], v2);
 
             //Print debug message if velocities do not match
             if(v1 != -v2)
