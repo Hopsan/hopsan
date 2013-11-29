@@ -377,6 +377,7 @@ def buildRelease():
     #Make sure we compile defaultLibrary into core
     callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
     callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
+    callSed(r'"/.*<lib>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     callSed(r'"s|componentLibraries||" -i HopsanNG.pro')
 
     #Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
