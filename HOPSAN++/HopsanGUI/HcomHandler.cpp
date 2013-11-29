@@ -2031,7 +2031,7 @@ void HcomHandler::executePwdCommand(const QString /*cmd*/)
 
 void HcomHandler::executeMwdCommand(const QString /*cmd*/)
 {
-    if(gpModelHandler->count() > 0)
+    if(gpModelHandler->getCurrentModel())
     {
         HCOMPRINT(gpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path());
     }
@@ -3099,7 +3099,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     // Vector functions
     timer.tic();
     LogDataHandler *pLogData=0;
-    if(gpModelHandler->count() > 0)
+    if(gpModelHandler->getCurrentTopLevelSystem())
     {
         pLogData = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
     }
@@ -3563,41 +3563,39 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         double scalar1;
         SharedLogVariableDataPtrT vec0, vec1;
         evaluateExpression(f.toString(), DataVector);
-        if(mAnsType != DataVector)
+        if(mAnsType == DataVector)
         {
-            mAnsType = Undefined;
-            return;
-        }
-        varType0 = mAnsType;
-        vec0 = mAnsVector;
-        evaluateExpression(d.toString());
-        if(mAnsType != DataVector && mAnsType != Scalar)
-        {
-            mAnsType = Undefined;
-            return;
-        }
-        varType1 = mAnsType;
-        if(varType1 == Scalar)
-        {
-            scalar1 = mAnsScalar;
-        }
-        else
-        {
-            vec1 = mAnsVector;
-        }
+            varType0 = mAnsType;
+            vec0 = mAnsVector;
+            evaluateExpression(d.toString());
+            if(mAnsType != DataVector && mAnsType != Scalar)
+            {
+                mAnsType = Undefined;
+                return;
+            }
+            varType1 = mAnsType;
+            if(varType1 == Scalar)
+            {
+                scalar1 = mAnsScalar;
+            }
+            else
+            {
+                vec1 = mAnsVector;
+            }
 
 
-        if(varType0 == DataVector && varType1 == Scalar)
-        {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->divVariableWithScalar(vec0, scalar1);
-            return;
-        }
-        else if(varType0 == DataVector && varType1 == DataVector)
-        {
-            mAnsType = DataVector;
-            mAnsVector = pLogData->divVariables(vec0, vec1);
-            return;
+            if(varType0 == DataVector && varType1 == Scalar)
+            {
+                mAnsType = DataVector;
+                mAnsVector = pLogData->divVariableWithScalar(vec0, scalar1);
+                return;
+            }
+            else if(varType0 == DataVector && varType1 == DataVector)
+            {
+                mAnsType = DataVector;
+                mAnsVector = pLogData->divVariables(vec0, vec1);
+                return;
+            }
         }
     }
     if(desiredType != Scalar && pLogData && symHopExpr.isAdd())
@@ -4049,7 +4047,7 @@ void HcomHandler::getParameters(QString str, ModelObject* pComponent, QStringLis
 //! @param parameters Reference to list of parameters
 void HcomHandler::getParameters(const QString str, QStringList &parameters)
 {
-    if(gpModelHandler->count() == 0) { return; }
+    if(!gpModelHandler->getCurrentTopLevelSystem()) { return; }
 
     SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
 
@@ -4166,7 +4164,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
     toShortDataNames(shortParName);
     shortParName.remove(0,1);
 
-    if(gpModelHandler->count() == 0)
+    if(!gpModelHandler->getCurrentTopLevelSystem())
     {
         return "NaN";
     }
@@ -4383,7 +4381,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     rVariables.clear();
 
     // Abort if no model found
-    if(gpModelHandler->count() == 0) { return; }
+    if(!gpModelHandler->getCurrentTopLevelSystem()) { return; }
 
     // Get pointers to system and logdatahandler
     SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
@@ -4522,7 +4520,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
 //! @param variables Reference to list of found variables
 void HcomHandler::getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const
 {
-    if(gpModelHandler->count() == 0) { return; }
+    if(!gpModelHandler->getCurrentTopLevelSystem()) { return; }
 
     SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
     QStringList names = pSystem->getLogDataHandler()->getLogDataVariableFullNames(".");
@@ -4699,7 +4697,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @returns Pointer to the data variable
 SharedLogVariableDataPtrT HcomHandler::getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const
 {
-    if(gpModelHandler->count() == 0)
+    if(!gpModelHandler->getCurrentTopLevelSystem())
     {
         return SharedLogVariableDataPtrT(0);
     }
@@ -5145,7 +5143,7 @@ double _funcSize(QString str, bool &ok)
 
 double _funcTime(QString /*str*/, bool &ok)
 {
-    if(gpModelHandler->count() > 0)
+    if(gpModelHandler->getCurrentModel())
     {
         ok=true;
         return gpModelHandler->getCurrentModel()->getLastSimulationTime();
