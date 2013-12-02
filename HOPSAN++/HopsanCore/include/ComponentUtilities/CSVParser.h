@@ -50,10 +50,8 @@ public:
     void sortIncreasing(const size_t indexColumn);
 
     bool isInDataIncOrDec(const size_t inCol);
-    //double interpolate_old(const double x, const size_t outCol, const size_t inCol=0) const;
-    //double interpolate(const double x, const size_t outCol, const size_t inCol=0) const;
-    //double interpolateInc(const double x, const size_t outCol, const size_t inCol=0) const;
-    double interpolate(const double x, const size_t outCol, const size_t inCol=0) const;
+    double interpolate(const double x, const size_t outCol) const;
+    double interpolate(const double x, const size_t inCol, const size_t outCol) const;
 
 protected:
     size_t intervalHalfSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const;

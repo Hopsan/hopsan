@@ -400,115 +400,15 @@ bool CSVParser::isInDataIncOrDec(const size_t inCol)
     return false;
 }
 
-////! @deprecated Old slow interpolation method
-//double CSVParser::interpolate_old(const double x, const size_t outCol, const size_t inCol) const
-//{
-//    // Handle outside index range
-//    if( ((x<mFirstValues[inCol]) && (mIncDec[inCol]==1)) || ((x>mFirstValues[inCol]) && (mIncDec[inCol]==-1)) )
-//    {
-//        return mFirstValues[outCol];
-//    }
-//    else if( ((x>=mLastValues[inCol]) && (mIncDec[inCol]==1)) || ((x<=mLastValues[inCol]) && (mIncDec[inCol]==-1)) )
-//    {
-//        return mLastValues[outCol];
-//    }
-//    else
-//    {
-//        //! @todo remove this stupid loop and use direct indexing instead
-//        for (size_t row=0; row<mnDataRows-1; row++)
-//        {
-//            if( ((x <= mData[inCol][row]) && (x > mData[inCol][row+1])) || ((x >= mData[inCol][row]) && (x < mData[inCol][row+1])) )
-//            {
-//                //Value is between i and i+1
-//                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-//            }
-//        }
-//    }
-//    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
-//}
-
-////! @brief interpolate for increasing or decreasing index vector
-////! @note This one is SLOW
-//double CSVParser::interpolate(const double x, const size_t outCol, const size_t inCol) const
-//{
-//    if (mIncDec[inCol] == 1)
-//    {
-//        // Handle outside index range
-//        if( x<mFirstValues[inCol] )
-//        {
-//            return mFirstValues[outCol];
-//        }
-//        else if( x>=mLastValues[inCol] )
-//        {
-//            return mLastValues[outCol];
-//        }
-//        else
-//        {
-//            //! @todo remove this stupid loop and use direct indexing instead
-//            for (size_t row=0; row<mnDataRows-1; row++)
-//            {
-//                // Ceeck if value is between i and i+1
-//                if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
-//                {
-//                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-//                }
-//            }
-//        }
-//    }
-//    else //Handel decreasing
-//    {
-//        // Handle outside index range
-//        if( x>mFirstValues[inCol] )
-//        {
-//            return mFirstValues[outCol];
-//        }
-//        else if( x<=mLastValues[inCol] )
-//        {
-//            return mLastValues[outCol];
-//        }
-//        else
-//        {
-//            //! @todo remove this stupid loop and use direct indexing instead
-//            for (size_t row=0; row<mnDataRows-1; row++)
-//            {
-//                if( (x <= mData[inCol][row]) && (x > mData[inCol][row+1]) )
-//                {
-//                    //Value is between i and i+1
-//                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-//                }
-//            }
-//        }
-//    }
-//    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
-//}
-
-////! @brief Interpolate only increasing index vector
-////! @note This one is Slow
-//double CSVParser::interpolateInc(const double x, const size_t outCol, const size_t inCol) const
-//{
-//    // Handle outside index range
-//    if( x<mFirstValues[inCol] )
-//    {
-//        return mFirstValues[outCol];
-//    }
-//    else if( x>=mLastValues[inCol] )
-//    {
-//        return mLastValues[outCol];
-//    }
-//    else
-//    {
-//        //! @todo remove this stupid loop and use direct indexing instead
-//        for (size_t row=0; row<mnDataRows-1; row++)
-//        {
-//            // Ceeck if value is between i and i+1
-//            if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
-//            {
-//                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-//            }
-//        }
-//    }
-//    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
-//}
+//! @brief Interpolates, index vector lookup is using subdivision, assumes index column 0
+//! @note Requires that the index vector is strictly increasing
+//! @param [in] x The x value for interpolation
+//! @param [in] outCol The column index for the output data
+//! @returns The interpolated output value
+double CSVParser::interpolate(const double x, const size_t outCol) const
+{
+    return interpolate(x, 0, outCol);
+}
 
 //! @brief Interpolates, index vector lookup is using subdivision
 //! @note Requires that the index vector is strictly increasing
@@ -516,7 +416,7 @@ bool CSVParser::isInDataIncOrDec(const size_t inCol)
 //! @param [in] outCol The column index for the output data
 //! @param [in] inCol The column index for the input (index) data
 //! @returns The interpolated output value
-double CSVParser::interpolate(const double x, const size_t outCol, const size_t inCol) const
+double CSVParser::interpolate(const double x, const size_t inCol, const size_t outCol) const
 {
     // Handle outside index range
     if( x<mFirstValues[inCol] )

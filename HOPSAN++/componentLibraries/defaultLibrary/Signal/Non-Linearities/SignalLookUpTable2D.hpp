@@ -28,7 +28,6 @@
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 #include "HopsanTypes.h"
-#include <algorithm>
 
 namespace hopsan {
 
@@ -44,8 +43,18 @@ namespace hopsan {
         double *mpND_in, *mpND_out;
 
         int mOutDataId;
+        bool mReloadCSV;
         HString mDataCurveFileName;
         CSVParser *mpDataCurve;
+
+        void deleteDataCurve()
+        {
+            if (mpDataCurve!=0)
+            {
+                delete mpDataCurve;
+                mpDataCurve=0;
+            }
+        }
 
     public:
         static Component *Creator()
@@ -60,6 +69,7 @@ namespace hopsan {
 
             addConstant("filename", "Data file (absolute or relativ model path)", "", "FilePath", mDataCurveFileName);
             addConstant("outid", "csv file value column index", "", 1, mOutDataId);
+            addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
 
             mpDataCurve = 0;
         }
@@ -67,43 +77,42 @@ namespace hopsan {
 
         void initialize()
         {
-            bool success=false;
-            if (mpDataCurve!=0)
+            if ( (mpDataCurve==0) || mReloadCSV )
             {
-                delete mpDataCurve;
-                mpDataCurve=0;
-            }
+                bool success=false;
+                deleteDataCurve();
 
-            mpDataCurve = new CSVParser(success, findFilePath(mDataCurveFileName));
-            if(!success)
-            {
-                addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mpDataCurve->getErrorString());
-                stopSimulation();
-            }
-            else
-            {
-                // Make sure that selected data vector is in range
-                if (mOutDataId >= int(mpDataCurve->getNumDataCols()))
-                {
-                    HString ss;
-                    ss = "outid:" + to_hstring(mOutDataId) + " is out of range, limiting to: ";
-                    mOutDataId = int(mpDataCurve->getNumDataCols())-1;
-                    ss += to_hstring(mOutDataId);
-                    addWarningMessage(ss);
-                }
-
-
-                if (mpDataCurve->getIncreasingOrDecresing(0) != 1)
-                {
-                    mpDataCurve->sortIncreasing(0);
-                    mpDataCurve->calcIncreasingOrDecreasing();
-                }
-
-                success = (mpDataCurve->getIncreasingOrDecresing(0) == 1);
+                mpDataCurve = new CSVParser(success, findFilePath(mDataCurveFileName));
                 if(!success)
                 {
-                    addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+"Even after sorting, index column is still not strictly increasing");
+                    addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mpDataCurve->getErrorString());
                     stopSimulation();
+                }
+                else
+                {
+                    // Make sure that selected data vector is in range
+                    if (mOutDataId >= int(mpDataCurve->getNumDataCols()))
+                    {
+                        HString ss;
+                        ss = "outid:" + to_hstring(mOutDataId) + " is out of range, limiting to: ";
+                        mOutDataId = int(mpDataCurve->getNumDataCols())-1;
+                        ss += to_hstring(mOutDataId);
+                        addWarningMessage(ss);
+                    }
+
+
+                    if (mpDataCurve->getIncreasingOrDecresing(0) != 1)
+                    {
+                        mpDataCurve->sortIncreasing(0);
+                        mpDataCurve->calcIncreasingOrDecreasing();
+                    }
+
+                    success = (mpDataCurve->getIncreasingOrDecresing(0) == 1);
+                    if(!success)
+                    {
+                        addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+"Even after sorting, index column is still not strictly increasing");
+                        stopSimulation();
+                    }
                 }
             }
         }
@@ -111,20 +120,22 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-//            (*mpND_out) = myDataCurve->interpolate_old(*mpND_in, 1);
-//            (*mpND_out) = myDataCurve->interpolate(*mpND_in, 1);
-//            (*mpND_out) = myDataCurve->interpolateInc(*mpND_in, 1);
             (*mpND_out) = mpDataCurve->interpolate(*mpND_in, mOutDataId);
         }
 
         void finalize()
         {
-            //Cleanup data curve
-            if (mpDataCurve!=0)
+            // Cleanup data curve
+            if (mReloadCSV)
             {
-                delete mpDataCurve;
-                mpDataCurve=0;
+                deleteDataCurve();
             }
+        }
+
+        void deconfigure()
+        {
+            // If data still remains (due to not reloading) then delete it
+            deleteDataCurve();
         }
     };
 }
