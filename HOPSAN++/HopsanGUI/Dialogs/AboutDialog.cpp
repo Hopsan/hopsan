@@ -57,8 +57,20 @@ AboutDialog::AboutDialog(QWidget *parent)
     mpHopsanLogotype->setPixmap(image);
     mpHopsanLogotype->setAlignment(Qt::AlignCenter);
 
+#ifdef HOPSANCOMPILED64BIT
+    const QString arch = "64-bit";
+#else
+    const QString arch = "32-bit";
+#endif
     QLabel *pVersionText = new QLabel();
-    pVersionText->setText(tr("\nHopsan GUI version ") + QString(HOPSANGUIVERSION) + "\n");
+    pVersionText->setText(
+                QString("<table> \
+                         <tr><td>HopsanGUI</td></tr> \
+                         <tr><td align=right style=\"padding-right:10px\">Version:</td><td>%1</td></tr> \
+                         <tr><td align=right style=\"padding-right:10px\">Architecture:</td><td>%2</td></tr> \
+                         <tr><td align=right style=\"padding-right:10px\">Compiler:</td><td>%3</td></tr> \
+                         <tr><td align=right style=\"padding-right:10px\">Build Time:</td><td>%4</td></tr> \
+                         </table>").arg(HOPSANGUIVERSION).arg(arch).arg(HOPSANCOMPILEDWITH).arg(HOPSANCOMPILEDATEANDTIME));
     QFont tempFont = pVersionText->font();
     tempFont.setBold(true);
     pVersionText->setFont(tempFont);
