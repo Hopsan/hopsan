@@ -50,6 +50,10 @@ public:
 
     // Constructor
     HcomHandler(TerminalConsole *pConsole);
+    ~HcomHandler();
+
+    void setModelPtr(ModelWidget *pModel);
+    ModelWidget *getModelPtr();
 
     // Command functions
     QStringList getCommands() const;
@@ -58,7 +62,7 @@ public:
 
     // Public variable access functions
     LocalVarsMapT getLocalVariables() const;
-    QMap<QString, SymHop::FunctionPtr> getLocalFunctionPointers() const;
+    QMap<QString, SymHopFunctionoid *> getLocalFunctionoidPointers() const;
     SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
     SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName) const;
 
@@ -168,7 +172,10 @@ private:
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
     QString getArgument(const QString &cmd, const int idx) const;
-    void registerFunction(const QString func, const QString description, const SymHop::FunctionPtr fptr);
+    void registerFunctionoid(const QString func, const QString description, SymHopFunctionoid *pFunctinoid);
+
+    //Current model pointer
+    ModelWidget *mpModel;
 
     // Used to abort HCOM evaluation
     bool mAborted;
@@ -184,7 +191,7 @@ private:
 
     // Local variables
     LocalVarsMapT mLocalVars;
-    QMap<QString, SymHop::FunctionPtr> mLocalFunctionPtrs;
+    QMap<QString, SymHopFunctionoid*> mLocalFunctionoidPtrs;
     QMap<QString, QString> mLocalFunctionDescriptions;
 
     VariableType mRetvalType;
@@ -211,15 +218,89 @@ public:
 };
 
 
-double _funcAver(QString str, bool &ok);
-double _funcMin(QString str, bool &ok);
-double _funcMax(QString str, bool &ok);
-double _funcIMin(QString str, bool &ok);
-double _funcIMax(QString str, bool &ok);
-double _funcPeek(QString str, bool &ok);
-double _funcRand(QString str, bool &ok);
-double _funcSize(QString str, bool &ok);
-double _funcObj(QString str, bool &ok);
-double _funcTime(QString, bool &ok);
+
+
+class HcomFunctinoid : public SymHopFunctionoid
+{
+public:
+    HcomFunctinoid(HcomHandler *pHandler)
+    {
+        mpHandler = pHandler;
+    }
+protected:
+    HcomHandler *mpHandler;
+};
+
+class HcomFunctionoidAver : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidAver(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidSize : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidSize(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidTime : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidTime(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidObj : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidObj(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidMin : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidMin(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidMax : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidMax(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidIMin : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidIMin(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidIMax : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidIMax(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidPeek : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidPeek(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+class HcomFunctionoidRand : public HcomFunctinoid
+{
+public:
+    HcomFunctionoidRand(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
+
+
 
 #endif // HCOMHANDLER_H

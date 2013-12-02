@@ -587,7 +587,7 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 //!
 //! @param variables Map with variable names and values
 //! @returns Evaluated value of expression
-double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, FunctionPtr> *functions, bool *ok) const
+double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHopFunctionoid*> *functions, bool *ok) const
 {
     *ok=true;
 
@@ -645,13 +645,16 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             {
                 argString.append(mArguments[a].toString()+",");
             }
+            qDebug() << "Evaluating: " << mFunction << " with arguments " << argString;
             argString.chop(1);
             bool ok;
-            retval = (*functions->find(mFunction).value())(argString, ok);
+            retval = functions->find(mFunction).value()->evaluate(argString, ok);
             if(ok)
             {
+                qDebug() << "Ok!";
                 return retval;
             }
+            qDebug() << "Not ok!";
         }
 
         if(mFunction == "der") { return 0; }

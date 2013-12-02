@@ -29,6 +29,7 @@
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
+#include "HcomHandler.h"
 #include "LogDataHandler.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
@@ -529,6 +530,8 @@ void ModelHandler::refreshMainWindowConnections()
         gpMainWindow->mpTogglePortsAction->setChecked(getCurrentViewContainerObject()->areSubComponentPortsShown());
         gpMainWindow->mpShowLossesAction->setChecked(getCurrentViewContainerObject()->areLossesVisible());
     }
+
+    gpTerminalWidget->mpHandler->setModelPtr(getCurrentModel());
 }
 
 void ModelHandler::saveState()
