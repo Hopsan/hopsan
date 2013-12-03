@@ -18,5 +18,16 @@
             <port x="0.5878" y="0" a="270" name="PC2"/>
             <port x="1" y="0.5" a="0" name="xv"/>
         </ports>
+        <animation>
+            <icon userpath="ocvalve_user_base.svg"/>
+            <movable>
+                <icon userpath="ocvalve_user.svg"/>
+                <data port="xv" dataname="Value"/>
+                <movement x="-4000" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <adjustable xgain="0.00025" port="in" ygain="0" ymin="0" xmin="-60" ymax="0" xmax="60" dataname="Value"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
