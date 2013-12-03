@@ -25,6 +25,7 @@
 #include "AboutDialog.h"
 #include "common.h"
 #include "version_gui.h"
+#include "CoreAccess.h"
 
 #include <QtGui>
 
@@ -62,22 +63,28 @@ AboutDialog::AboutDialog(QWidget *parent)
 #else
     const QString arch = "32-bit";
 #endif
+    QLabel *pVersionHeading = new QLabel();
+    QFont boldHeadingFont = pVersionHeading->font();
+    boldHeadingFont.setBold(true);
+    pVersionHeading->setText(tr("Version and Build Info:"));
+    pVersionHeading->setAlignment(Qt::AlignCenter);
+    pVersionHeading->setFont(boldHeadingFont);
     QLabel *pVersionText = new QLabel();
+    //! @todo if we build tables and other richtext stuff like this often, a utility function would be nice
     pVersionText->setText(
-                QString("<table> \
-                         <tr><td>HopsanGUI</td></tr> \
-                         <tr><td align=right style=\"padding-right:10px\">Version:</td><td>%1</td></tr> \
-                         <tr><td align=right style=\"padding-right:10px\">Architecture:</td><td>%2</td></tr> \
-                         <tr><td align=right style=\"padding-right:10px\">Compiler:</td><td>%3</td></tr> \
-                         <tr><td align=right style=\"padding-right:10px\">Build Time:</td><td>%4</td></tr> \
-                         </table>").arg(HOPSANGUIVERSION).arg(arch).arg(HOPSANCOMPILEDWITH).arg(getHopsanGUIBuildTime()));
-    QFont tempFont = pVersionText->font();
-    tempFont.setBold(true);
-    pVersionText->setFont(tempFont);
+            QString("<table> \
+            <tr><th></th> <th align=left>HopsanCore</th>  <th align=left>HopsanGUI</th></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Version:</td>         <td style=\"padding-right:10px\">%1</td>    <td>%5</td></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Architecture:</td>    <td style=\"padding-right:10px\">%2</td>    <td>%6</td></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Compiler:</td>        <td style=\"padding-right:10px\">%3</td>    <td>%7</td></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Build Time:</td>      <td style=\"padding-right:10px\">%4</td>    <td>%8</td></tr> \
+            </table>").arg(getHopsanCoreVersion()).arg(getHopsanCoreArchitecture()).arg(getHopsanCoreCompiler()).arg(getHopsanCoreBuildTime())
+            .arg(HOPSANGUIVERSION).arg(arch).arg(HOPSANCOMPILEDWITH).arg(getHopsanGUIBuildTime()));
+            //! @todo include debug or relase info here as well
 
     QLabel *pAuthorsHeading = new QLabel();
     pAuthorsHeading->setText(tr("Main Authors:"));
-    pAuthorsHeading->setFont(tempFont);
+    pAuthorsHeading->setFont(boldHeadingFont);
     pAuthorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pAuthorsText = new QLabel();
@@ -87,7 +94,7 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     QLabel *pContributorsHeading = new QLabel();
     pContributorsHeading->setText(tr("Contributors:"));
-    pContributorsHeading->setFont(tempFont);
+    pContributorsHeading->setFont(boldHeadingFont);
     pContributorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContributorsText = new QLabel();
@@ -97,7 +104,7 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     QLabel *pSpecialThanksHeading = new QLabel();
     pSpecialThanksHeading->setText(tr("Special Thanks To:"));
-    pSpecialThanksHeading->setFont(tempFont);
+    pSpecialThanksHeading->setFont(boldHeadingFont);
     pSpecialThanksHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pSpecialThanksText = new QLabel();
@@ -117,7 +124,7 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     QLabel *pContactHeading = new QLabel();
     pContactHeading->setText(tr("Contact Information:"));
-    pContactHeading->setFont(tempFont);
+    pContactHeading->setFont(boldHeadingFont);
     pContactHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContactText = new QLabel();
@@ -140,22 +147,25 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(close()));
 
-    QGridLayout *pLayout = new QGridLayout;
+    QVBoxLayout *pLayout = new QVBoxLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
-    pLayout->addWidget(mpHopsanLogotype, 0, 0);
-    pLayout->addWidget(pVersionText, 1, 0);
-    pLayout->addWidget(pAuthorsHeading, 2, 0);
-    pLayout->addWidget(pAuthorsText, 3, 0);
-    pLayout->addWidget(pContributorsHeading, 4, 0);
-    pLayout->addWidget(pContributorsText, 5, 0);
-    pLayout->addWidget(pSpecialThanksHeading, 6, 0);
-    pLayout->addWidget(pSpecialThanksText, 7, 0);
-    //pLayout->addWidget(pLicenseHeading, 8, 0);
-    //pLayout->addWidget(pLicenseText, 9, 0);
-    pLayout->addWidget(pContactHeading, 10, 0);
-    pLayout->addWidget(pContactText, 11, 0);
-    pLayout->addWidget(pLithFlumesLogotype, 12, 0);
-    pLayout->addWidget(pButtonBox, 13, 0);
+    pLayout->addWidget(mpHopsanLogotype);
+    pLayout->addSpacing(10);
+    pLayout->addWidget(pAuthorsHeading);
+    pLayout->addWidget(pAuthorsText);
+    pLayout->addWidget(pContributorsHeading);
+    pLayout->addWidget(pContributorsText);
+    pLayout->addWidget(pSpecialThanksHeading);
+    pLayout->addWidget(pSpecialThanksText);
+    //pLayout->addWidget(pLicenseHeading);
+    //pLayout->addWidget(pLicenseText);
+    pLayout->addWidget(pContactHeading);
+    pLayout->addWidget(pContactText);
+    pLayout->addSpacing(10);
+    pLayout->addWidget(pVersionHeading);
+    pLayout->addWidget(pVersionText,0, Qt::AlignHCenter);
+    pLayout->addWidget(pLithFlumesLogotype);
+    pLayout->addWidget(pButtonBox);
     setLayout(pLayout);
 }
 
