@@ -38,6 +38,8 @@
 #include "PlotWindow.h"
 #include "PlotCurve.h"
 #include "Utilities/GUIUtilities.h"
+#include "MainWindow.h"
+#include "Dialogs/OptimizationDialog.h"
 
 
 //! @brief Constructor for optimization  handler class
@@ -45,6 +47,8 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
 {
     mpHcomHandler = pHandler;
     mpConsole = pHandler->mpConsole;
+    mpConfig = new Configuration();
+    mpConfig->loadFromXml();        //This should work, since changes are always saved to file immideately from gpConfig
 
     mOptAlgorithm = Uninitialized;
     mOptPlotPoints = false;
@@ -68,7 +72,7 @@ double OptimizationHandler::getOptimizationObjectiveValue(int idx)
 //! @brief Initializes a Complex-RF optimization
 void OptimizationHandler::optComplexInit()
 {
-    gpModelHandler->setCurrentModel(mpOptModel);
+    mpHcomHandler->setModelPtr(mOptModelPtrs[0]);
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
@@ -114,7 +118,7 @@ void OptimizationHandler::optComplexInit()
 //        return;
 //    }
 
-    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasLogVariableData("WorstObjective"))
     {
@@ -198,8 +202,8 @@ void OptimizationHandler::optComplexRun()
         if(mpHcomHandler->isAborted())
         {
             mpConsole->print("Optimization aborted.");
-            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            mpOptModel->close();
+            //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            cleanUp();
             return;
         }
 
@@ -207,10 +211,11 @@ void OptimizationHandler::optComplexRun()
         int dummy=int(100.0*double(i)/mOptMaxEvals);
         if(dummy != percent)    //Only update at whole numbers
         {
-            mpConsole->setDontPrint(false);
-            mpConsole->print(QString::number(dummy)+"%");
-            mpConsole->setDontPrint(true);
+//            mpConsole->setDontPrint(false);
+//            mpConsole->print(QString::number(dummy)+"%");
+//            mpConsole->setDontPrint(true);
             percent = dummy;
+            gpMainWindow->mpOptimizationDialog->mpTotalProgressBar->setValue(dummy);
         }
 
         //Check convergence
@@ -255,8 +260,8 @@ void OptimizationHandler::optComplexRun()
         {
             mpHcomHandler->executeCommand("echo on");
             mpConsole->print("Optimization aborted.");
-            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            mpOptModel->close();
+            //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            cleanUp();
             return;
         }
         timer.toc("+++++++++ End Evaluate new point");
@@ -279,8 +284,8 @@ void OptimizationHandler::optComplexRun()
             {
                 mpHcomHandler->executeCommand("echo on");
                 mpConsole->print("Optimization aborted.");
-                gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-                mpOptModel->close();
+                //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                cleanUp();
                 mpHcomHandler->abortHCOM();
                 return;
             }
@@ -290,9 +295,11 @@ void OptimizationHandler::optComplexRun()
             double a1 = 1.0-exp(-double(mOptWorstCounter)/5.0);
 
             //Reflect worst point
+            QString output = "Best point:\n";
             for(int j=0; j<mOptNumParameters; ++j)
             {
                 double best = mOptParameters[mOptBestId][j];
+                output.append("par("+QString::number(j)+") = "+QString::number(best)+"\n");
                 double maxDiff = optComplexMaxpardiff();
                 double r = (double)rand() / (double)RAND_MAX;
                 mOptParameters[wid][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mOptRfak*(mOptParMax[j]-mOptParMin[j])*maxDiff*(r-0.5);
@@ -300,6 +307,7 @@ void OptimizationHandler::optComplexRun()
                 mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
             }
             newPoint = mOptParameters[wid];
+            gpMainWindow->mpOptimizationDialog->mpParametersOutputTextEdit->setText(output);
 
             //Evaluate new point
             mpHcomHandler->executeCommand("call evalworst");
@@ -307,8 +315,8 @@ void OptimizationHandler::optComplexRun()
             {
                 mpHcomHandler->executeCommand("echo on");
                 mpConsole->print("Optimization aborted.");
-                gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-                mpOptModel->close();
+                //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                cleanUp();
                 return;
             }
 
@@ -350,16 +358,8 @@ void OptimizationHandler::optComplexRun()
         mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
     }
 
-    //! @todo currentWidget MAY hav changed, solve in better way
-    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget());
-    pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
-    gpModelHandler->setCurrentModel(pOrgModel);
-
-    // Close the obsolete optimisation model
-    gpModelHandler->closeModel(mpOptModel, true);
-
-    //Reset original model
-    gpModelHandler->setCurrentModel(pOrgModel);
+    // Clean up
+    cleanUp();
 
     return;
 }
@@ -488,14 +488,7 @@ double OptimizationHandler::optComplexMaxpardiff()
 //! @brief Initializes a particle swarm optimization
 void OptimizationHandler::optParticleInit()
 {
-    if(gpConfig->getUseMulticore())
-    {
-        gpModelHandler->setCurrentModel(mOptModelPtrs.first());
-    }
-    else
-    {
-        gpModelHandler->setCurrentModel(mpOptModel);
-    }
+    mpHcomHandler->setModelPtr(mOptModelPtrs.first());//gpModelHandler->setCurrentModel(mOptModelPtrs.first());
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
@@ -503,16 +496,16 @@ void OptimizationHandler::optParticleInit()
     mpHcomHandler->executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
     mpHcomHandler->setWorkingDirectory(oldPath);
 
-    if(mOptMulticore)
-    {
-        QString modelPath = gpModelHandler->getCurrentViewContainerObject()->getModelFileInfo().filePath();
-        gpModelHandler->getCurrentModel()->save();
-        gpModelHandler->closeAllModels();
-        for(int i=0; i<mOptNumPoints; ++i)
-        {
-            gpModelHandler->loadModel(modelPath, true);
-        }
-    }
+    //if(mOptMulticore)
+   // {
+        //QString modelPath = mpHcomHandler->getModelPtr()->getViewContainerObject()->getModelFileInfo().filePath();
+        //mpHcomHandler->getModelPtr()->save();
+        //gpModelHandler->closeAllModels();
+//        for(int i=0; i<mOptNumPoints; ++i)
+//        {
+//            mOptModelPtrs.append(gpModelHandler->loadModel(modelPath, true, true));
+//        }
+    //}
 
     for(int p=0; p<mOptNumPoints; ++p)
     {
@@ -537,7 +530,7 @@ void OptimizationHandler::optParticleInit()
     }
     mOptObjectives.resize(mOptNumPoints);
 
-    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasLogVariableData("WorstObjective"))
     {
@@ -583,18 +576,8 @@ void OptimizationHandler::optParticleRun()
     {
         mpHcomHandler->executeCommand("echo on");
         mpConsole->print("Optimization aborted.");
-        gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-        if(gpConfig->getUseMulticore())
-        {
-            for(int m=0; m<mOptModelPtrs.size(); ++m)
-            {
-                mOptModelPtrs[m]->close();
-            }
-        }
-        else
-        {
-            mpOptModel->close();
-        }
+        //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+        cleanUp();
         return;
     }
 
@@ -621,55 +604,46 @@ void OptimizationHandler::optParticleRun()
         if(mpHcomHandler->isAborted())
         {
             mpConsole->print("Optimization aborted.");
-            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            if(gpConfig->getUseMulticore())
-            {
-                for(int m=0; m<mOptModelPtrs.size(); ++m)
-                {
-                    mOptModelPtrs[m]->close();
-                }
-            }
-            else
-            {
-                mpOptModel->close();
-            }
+            //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            cleanUp();
             return;
         }
 
         //Print log output
         optPrintLogOutput();
 
-        //Print progress in percent of max evals
+        //Print progress as percentage of maximum number of evaluations
         int dummy=int(100.0*double(i)/mOptMaxEvals);
-        if(dummy != percent)
+        if(dummy != percent)    //Only update at whole numbers
         {
-            mpConsole->setDontPrint(false);
-            mpConsole->print(QString::number(dummy)+"%");
-            mpConsole->setDontPrint(true);
+//            mpConsole->setDontPrint(false);
+//            mpConsole->print(QString::number(dummy)+"%");
+//            mpConsole->setDontPrint(true);
             percent = dummy;
+            gpMainWindow->mpOptimizationDialog->mpTotalProgressBar->setValue(dummy);
         }
 
         //Move particles
         optMoveParticles();
 
         //Evaluate objevtive values
-        if(gpConfig->getUseMulticore())
+        if(mpConfig->getUseMulticore())
         {
             //Multi-threading, we cannot use the "evalall" function
             for(int i=0; i<mOptNumPoints; ++i)
             {
-                gpModelHandler->setCurrentModel(mOptModelPtrs[i]);
+                mpHcomHandler->setModelPtr(mOptModelPtrs[i]);
                 mpHcomHandler->executeCommand("evalId = "+QString::number(i));
                 mpHcomHandler->executeCommand("call setpars");
             }
-            gpModelHandler->simulateMultipleModels_blocking(mOptModelPtrs);
+            gpModelHandler->simulateMultipleModels_blocking(mOptModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
             for(int i=0; i<mOptNumPoints; ++i)
             {
-                gpModelHandler->setCurrentModel(mOptModelPtrs[i]);
+                mpHcomHandler->setModelPtr(mOptModelPtrs[i]);
                 mpHcomHandler->executeCommand("evalId = "+QString::number(i));
                 mpHcomHandler->executeCommand("call obj");
             }
-            gpModelHandler->setCurrentModel(mOptModelPtrs.first());
+            mpHcomHandler->setModelPtr(mOptModelPtrs.first());
         }
         else
         {
@@ -679,18 +653,8 @@ void OptimizationHandler::optParticleRun()
         {
             mpHcomHandler->executeCommand("echo on");
             mpConsole->print("Optimization aborted.");
-            gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            if(gpConfig->getUseMulticore())
-            {
-                for(int m=0; m<mOptModelPtrs.size(); ++m)
-                {
-                    mOptModelPtrs[m]->close();
-                }
-            }
-            else
-            {
-                mpOptModel->close();
-            }
+           //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+            cleanUp();
             return;
         }
 
@@ -706,11 +670,17 @@ void OptimizationHandler::optParticleRun()
 
         //Calculate best known global position
         optComplexCalculatebestandworstid();
+        QString output = "Best point:\n";
         if(mOptObjectives[mOptBestId] < mOptBestObj)
         {
             mOptBestObj = mOptObjectives[mOptBestId];
             mOptBestPoint = mOptParameters[mOptBestId];
         }
+        for(int i=0; i<mOptBestPoint.size(); ++i)
+        {
+            output.append("par("+QString::number(i)+") = "+QString::number(mOptBestPoint[i])+"\n");
+        }
+        gpMainWindow->mpOptimizationDialog->mpParametersOutputTextEdit->setText(output);
 
         optPlotPoints();
         optPlotObjectiveFunctionValues();
@@ -740,26 +710,8 @@ void OptimizationHandler::optParticleRun()
         mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
     }
 
-
-    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget());
-    //pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
-    gpModelHandler->setCurrentModel(pOrgModel);
-
-    // Close the obsolete optimisation model
-    if(gpConfig->getUseMulticore())
-    {
-        for(int i=0; i<mOptNumPoints; ++i)
-        {
-            gpModelHandler->closeModel(mOptModelPtrs[i]);
-        }
-    }
-    else
-    {
-        gpModelHandler->closeModel(mpOptModel);
-    }
-
-    //Reset original model
-    gpModelHandler->setCurrentModel(pOrgModel);
+    //Clean up
+    cleanUp();
 }
 
 
@@ -822,7 +774,7 @@ void OptimizationHandler::optPlotPoints()
         return;
     }
 
-    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mOptNumPoints; ++p)
     {
         QString namex = "par"+QString::number(p)+"x";
@@ -877,7 +829,7 @@ void OptimizationHandler::optPlotObjectiveFunctionValues()
 {
     if(!mOptPlotObjectiveFunctionValues) { return; }
 
-    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     SharedLogVariableDataPtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
     if(bestVar.isNull())
     {
@@ -920,7 +872,7 @@ void OptimizationHandler::optPlotParameters()
 {
     if(!mOptPlotParameters) { return; }
 
-    LogDataHandler *pHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mOptNumParameters; ++p)
     {
         SharedLogVariableDataPtrT par = pHandler->getLogVariableDataPtr("NewPar"+QString::number(p), -1);
@@ -943,6 +895,16 @@ void OptimizationHandler::optPlotParameters()
             PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");
             gpPlotHandler->plotDataToWindow(pPW, par, 0);
         }
+    }
+}
+
+void OptimizationHandler::cleanUp()
+{
+    while(!mOptModelPtrs.isEmpty())
+    {
+        mOptModelPtrs[0]->close();
+        delete mOptModelPtrs[0];
+        mOptModelPtrs.remove(0);
     }
 }
 

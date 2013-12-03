@@ -42,7 +42,7 @@ class ModelHandler : public QObject
 public:
     ModelHandler(QObject *parent=0);
 
-    void addModelWidget(ModelWidget *pModelWidget, const QString &name, bool hidden=false);
+    void addModelWidget(ModelWidget *pModelWidget, const QString &name, bool detatched=false);
 
     void setCurrentModel(int idx);
     void setCurrentModel(ModelWidget *pWidget);
@@ -56,7 +56,7 @@ public:
 
     int count() const;
 
-    ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool hidden=false);
+    ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool detatched=false);
 
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
 

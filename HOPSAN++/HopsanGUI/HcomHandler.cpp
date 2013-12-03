@@ -26,6 +26,7 @@
 #include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
+#include "Dialogs/OptimizationDialog.h"
 #include "GUIConnector.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUISystem.h"
@@ -147,13 +148,14 @@ LongShortNameConverter gLongShortNameConverter;
 HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 {
     mpModel = 0;
+    mpConfig = 0;
+    mpOptHandler = 0;
 
     mAnsType = Undefined;
     mAborted = false;
     mRetvalType = Scalar;
 
     mpConsole = pConsole;
-    mpOptHandler = new OptimizationHandler(this);
 
     mCurrentPlotWindowName = "PlotWindow0";
 
@@ -192,11 +194,29 @@ void HcomHandler::setModelPtr(ModelWidget *pModel)
     mpModel = pModel;
 }
 
-ModelWidget *HcomHandler::getModelPtr()
+ModelWidget *HcomHandler::getModelPtr() const
 {
     return mpModel;
 }
 
+void HcomHandler::setConfigPtr(Configuration *pConfig)
+{
+    mpConfig = pConfig;
+}
+
+Configuration *HcomHandler::getConfigPtr() const
+{
+    if(mpConfig)
+    {
+        return mpConfig;
+    }
+    return gpConfig;
+}
+
+void HcomHandler::setOptHandlerptr(OptimizationHandler *pOptHandler)
+{
+    mpOptHandler = pOptHandler;
+}
 
 //! @brief Creates all command objects that can be used in terminal
 void HcomHandler::createCommands()
@@ -1275,6 +1295,8 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
 //! @brief Execute function for "wrhi" command
 void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 {
+    if(!mpConsole) return;
+
     QStringList split;
     splitWithRespectToQuotations(cmd, ' ', split);
     if(split.size() != 1)
@@ -1818,7 +1840,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gpConfig->setUseMultiCore(value=="on");
+        getConfigPtr()->setUseMultiCore(value=="on");
     }
     else if(pref == "threads")
     {
@@ -1829,7 +1851,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gpConfig->setNumberOfThreads(nThreads);
+        getConfigPtr()->setNumberOfThreads(nThreads);
     }
     else if(pref == "algorithm")
     {
@@ -1840,7 +1862,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gpConfig->setParallelAlgorithm(algorithm);
+        getConfigPtr()->setParallelAlgorithm(algorithm);
     }
     else if(pref == "cachetodisk")
     {
@@ -1848,7 +1870,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         {
             HCOMERR("Unknown value.");
         }
-        gpConfig->setCacheLogData(value=="on");
+        getConfigPtr()->setCacheLogData(value=="on");
     }
     else if(pref == "generationlimit")
     {
@@ -1859,7 +1881,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        gpConfig->setGenerationLimit(limit);
+        getConfigPtr()->setGenerationLimit(limit);
     }
     else if(pref == "samples")
     {
@@ -1996,7 +2018,7 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
 //! @brief Execute function for "loadr" command
 void HcomHandler::executeLoadRecentCommand(const QString /*cmd*/)
 {
-    gpModelHandler->loadModel(gpConfig->getRecentModels().first());
+    gpModelHandler->loadModel(getConfigPtr()->getRecentModels().first());
 }
 
 
@@ -2505,7 +2527,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 //    }
     if(split.size() == 1 && split[0] == "worst")
     {
-        if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Uninitialized)
+        if(!mpOptHandler)
         {
             HCOMERR("Optimization not initialized.");
             mAnsType = Undefined;
@@ -2525,7 +2547,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
     }
     if(split.size() == 1 && split[0] == "best")
     {
-        if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Uninitialized)
+        if(!mpOptHandler)
         {
             HCOMERR("Optimization not initialized.");
             mAnsType = Undefined;
@@ -2545,6 +2567,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
     }
     if(split[0] == "set")
     {
+        if(!mpOptHandler)
+        {
+            HCOMERR("Optimization not initialized.");
+            mAnsType = Undefined;
+            return;
+        }
         if(split.size() == 4 && split[1] == "obj")
         {
             bool ok;
@@ -2572,6 +2600,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(split.size() == 5 && split[1] == "limits")
         {
+            if(!mpOptHandler)
+            {
+                HCOMERR("Optimization not initialized.");
+                mAnsType = Undefined;
+                return;
+            }
             bool ok;
             int optParIdx = getNumber(split[2], &ok);
             if(!ok)
@@ -2606,18 +2640,42 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(split.size() == 3 && split[1] == "plotpoints")
         {
+            if(!mpOptHandler)
+            {
+                HCOMERR("Optimization not initialized.");
+                mAnsType = Undefined;
+                return;
+            }
             mpOptHandler->mOptPlotPoints = (split[2] == "on");
         }
         else if(split.size() == 3 && split[1] == "plotbestworst")
         {
+            if(!mpOptHandler)
+            {
+                HCOMERR("Optimization not initialized.");
+                mAnsType = Undefined;
+                return;
+            }
             mpOptHandler->mOptPlotObjectiveFunctionValues = (split[2] == "on");
         }
         else if(split.size() == 3 && split[1] == "plotvariables")
         {
+            if(!mpOptHandler)
+            {
+                HCOMERR("Optimization not initialized.");
+                mAnsType = Undefined;
+                return;
+            }
             mpOptHandler->mOptPlotVariables = (split[2] == "on");
         }
         else if(split.size() == 3 && split[1] == "plotparameters")
         {
+            if(!mpOptHandler)
+            {
+                HCOMERR("Optimization not initialized.");
+                mAnsType = Undefined;
+                return;
+            }
             mpOptHandler->mOptPlotParameters = (split[2] == "on");
         }
         else
@@ -2628,6 +2686,35 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 
     if(split.size() == 3 && split[0] == "init")
     {
+        //Create detatched HcomHandler and copy local variables
+        //! @todo Delete these when finished!
+        //TerminalWidget *pOptTerminal = new TerminalWidget(gpMainWindowWidget);
+        TerminalConsole *pOptConsole = gpMainWindow->mpOptimizationDialog->mpTerminal->mpConsole;
+        HcomHandler *pOptHcomHandler = new HcomHandler(pOptConsole);
+        QMapIterator<QString, double> varIt(mLocalVars);
+        while(varIt.hasNext())
+        {
+            varIt.next();
+            bool abort; //Dummy variable
+            pOptHcomHandler->runScriptCommands(QStringList() << varIt.key()+"="+QString::number(varIt.value()), &abort);
+        }
+        QMapIterator<QString, QStringList> fncIt(mFunctions);
+        while(fncIt.hasNext())
+        {
+            fncIt.next();
+            QStringList definition;
+            definition << "define "+fncIt.key();
+            for(int i=0; i<fncIt.value().size(); ++i)
+            {
+                definition << fncIt.value().at(i);
+            }
+            definition << "enddefine";
+            bool abort; //Dummy variable
+            pOptHcomHandler->runScriptCommands(definition, &abort);
+        }
+        mpOptHandler = new OptimizationHandler(pOptHcomHandler);
+        pOptHcomHandler->setOptHandlerptr(mpOptHandler);
+
         if(split[1] == "complex")
         {
             mpOptHandler->mOptAlgorithm = OptimizationHandler::Complex;
@@ -2669,8 +2756,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         bool ok;
         if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Complex)
         {
-            mpOptHandler->mpOptModel = gpModelHandler->loadModel(savePath, true, true);
-            gpModelHandler->setCurrentModel(mpOptHandler->mpOptModel);
+            mpOptHandler->mOptModelPtrs.clear();
+            mpOptHandler->mOptModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
             mpOptHandler->mOptMulticore=false;
             mpOptHandler->mOptNumPoints = getNumber("npoints", &ok);
             mpOptHandler->mOptNumParameters = getNumber("nparams", &ok);
@@ -2689,18 +2776,19 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         else if(mpOptHandler->mOptAlgorithm == OptimizationHandler::ParticleSwarm)
         {
             mpOptHandler->mOptNumPoints = getNumber("npoints", &ok);
-            if(gpConfig->getUseMulticore())
+            mpOptHandler->mOptModelPtrs.clear();
+            if(getConfigPtr()->getUseMulticore())
             {
                 for(int i=0; i<mpOptHandler->mOptNumPoints; ++i)
                 {
                     mpOptHandler->mOptModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
                 }
-                gpModelHandler->setCurrentModel(mpOptHandler->mOptModelPtrs.first());
+                //gpModelHandler->setCurrentModel(mpOptHandler->mOptModelPtrs.first());
             }
             else
             {
-                mpOptHandler->mpOptModel = gpModelHandler->loadModel(savePath, true, true);
-                gpModelHandler->setCurrentModel(mpOptHandler->mpOptModel);
+                mpOptHandler->mOptModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+                //gpModelHandler->setCurrentModel(mpOptHandler->mpOptModel);
             }
             mpOptHandler->mOptMulticore=false;
             mpOptHandler->mOptNumParameters = getNumber("nparams", &ok);
@@ -2724,6 +2812,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 
     if(split.size() == 1 && split[0] == "run")
     {
+        if(!mpOptHandler)
+        {
+            HCOMERR("Optimization not initialized.");
+            mAnsType = Undefined;
+            return;
+        }
         if(mpOptHandler->mOptAlgorithm == OptimizationHandler::Complex)
         {
             mpOptHandler->optComplexInit();
@@ -2773,6 +2867,8 @@ void HcomHandler::executeCallFunctionCommand(const QString cmd)
 //! @brief Execute function for "echo" command
 void HcomHandler::executeEchoCommand(const QString cmd)
 {
+    if(!mpConsole) return;
+
     if(getNumberOfArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments.");
@@ -2865,9 +2961,9 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
         }
     }
 
-    gpConfig->setUseMultiCore(useMultiThreading);
-    if(nArgs > 1) gpConfig->setNumberOfThreads(nThreads);
-    if(nArgs > 2) gpConfig->setParallelAlgorithm(algorithm);
+    getConfigPtr()->setUseMultiCore(useMultiThreading);
+    if(nArgs > 1) getConfigPtr()->setNumberOfThreads(nThreads);
+    if(nArgs > 2) getConfigPtr()->setParallelAlgorithm(algorithm);
 }
 
 

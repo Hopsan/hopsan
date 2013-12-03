@@ -52,17 +52,17 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     this->setPalette(gpConfig->getPalette());
 
     //Settings tab
-    mpSettingsLabel = new QLabel("Please choose general settings for optimization algorithm.");
-    QFont boldFont = mpSettingsLabel->font();
+    QLabel *pSettingsLabel = new QLabel("Please choose general settings for optimization algorithm.");
+    QFont boldFont = pSettingsLabel->font();
     boldFont.setBold(true);
-    mpSettingsLabel->setFont(boldFont);
+    pSettingsLabel->setFont(boldFont);
 
-    mpAlgorithmLabel = new QLabel("Optimiation algorithm:");
+    QLabel *pAlgorithmLabel = new QLabel("Optimiation algorithm:");
     mpAlgorithmBox = new QComboBox(this);
     mpAlgorithmBox->addItems(QStringList() << "Complex" << "Particle Swarm");
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
 
-    mpIterationsLabel = new QLabel("Number of iterations:");
+    QLabel *pIterationsLabel = new QLabel("Number of iterations:");
     mpIterationsSpinBox = new QSpinBox(this);
     mpIterationsSpinBox->setRange(0, std::numeric_limits<int>::max());
     mpIterationsSpinBox->setValue(100);
@@ -101,11 +101,11 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpC2LineEdit = new QLineEdit("2", this);
     mpC2LineEdit->setValidator(new QDoubleValidator());
 
-    mpEpsilonFLabel = new QLabel("Tolerance for function convergence: ");
+    QLabel *pEpsilonFLabel = new QLabel("Tolerance for function convergence: ");
     mpEpsilonFLineEdit = new QLineEdit("0.00001", this);
     mpEpsilonFLineEdit->setValidator(new QDoubleValidator());
 
-    mpEpsilonXLabel = new QLabel("Tolerance for parameter convergence: ");
+    QLabel *pEpsilonXLabel = new QLabel("Tolerance for parameter convergence: ");
     mpEpsilonXLineEdit = new QLineEdit("0.0001", this);
     mpEpsilonXLineEdit->setValidator(new QDoubleValidator());
 
@@ -121,108 +121,108 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpExport2CSVBox= new QCheckBox("Export trace data to CSV file", this);
     mpExport2CSVBox->setChecked(false);
 
-    mpSettingsLayout = new QGridLayout(this);
-    mpSettingsLayout->addWidget(mpSettingsLabel,        0, 0);
-    mpSettingsLayout->addWidget(mpAlgorithmLabel,       1, 0);
-    mpSettingsLayout->addWidget(mpAlgorithmBox,         1, 1);
-    mpSettingsLayout->addWidget(mpIterationsLabel,      2, 0);
-    mpSettingsLayout->addWidget(mpIterationsSpinBox,    2, 1);
-    mpSettingsLayout->addWidget(mpSearchPointsLabel,    3, 0);
-    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,  3, 1);
-    mpSettingsLayout->addWidget(mpParticlesLabel,       3, 0);
-    mpSettingsLayout->addWidget(mpParticlesSpinBox,     3, 1);
-    mpSettingsLayout->addWidget(mpAlphaLabel,           4, 0);
-    mpSettingsLayout->addWidget(mpAlphaLineEdit,        4, 1);
-    mpSettingsLayout->addWidget(mpOmegaLabel,           4, 0);
-    mpSettingsLayout->addWidget(mpOmegaLineEdit,        4, 1);
-    mpSettingsLayout->addWidget(mpBetaLabel,            5, 0);
-    mpSettingsLayout->addWidget(mpBetaLineEdit,         5, 1);
-    mpSettingsLayout->addWidget(mpC1Label,              5, 0);
-    mpSettingsLayout->addWidget(mpC1LineEdit,           5, 1);
-    mpSettingsLayout->addWidget(mpGammaLabel,           6, 0);
-    mpSettingsLayout->addWidget(mpGammaLineEdit,        6, 1);
-    mpSettingsLayout->addWidget(mpC2Label,              6, 0);
-    mpSettingsLayout->addWidget(mpC2LineEdit,           6, 1);
-    mpSettingsLayout->addWidget(mpEpsilonFLabel,        7, 0);
-    mpSettingsLayout->addWidget(mpEpsilonFLineEdit,     7, 1);
-    mpSettingsLayout->addWidget(mpEpsilonXLabel,        8, 0);
-    mpSettingsLayout->addWidget(mpEpsilonXLineEdit,     8, 1);
-    mpSettingsLayout->addWidget(mpPlottingCheckBox,     9, 0, 1, 2);
-    mpSettingsLayout->addWidget(mpPlotBestWorstCheckBox,10, 0, 1, 2);
-    mpSettingsLayout->addWidget(mpPlotParticlesCheckBox,11, 0, 1, 2);
-    mpSettingsLayout->addWidget(mpExport2CSVBox,        12, 0, 1, 2);
-    mpSettingsLayout->addWidget(new QWidget(this),      13, 0, 1, 2);    //Dummy widget for stretching the layout
-    mpSettingsLayout->setRowStretch(0, 0);
-    mpSettingsLayout->setRowStretch(1, 0);
-    mpSettingsLayout->setRowStretch(2, 0);
-    mpSettingsLayout->setRowStretch(3, 0);
-    mpSettingsLayout->setRowStretch(4, 0);
-    mpSettingsLayout->setRowStretch(4, 0);
-    mpSettingsLayout->setRowStretch(6, 0);
-    mpSettingsLayout->setRowStretch(7, 0);
-    mpSettingsLayout->setRowStretch(8, 0);
-    mpSettingsLayout->setRowStretch(9, 1);
-    mpSettingsLayout->setRowStretch(10, 1);
-    mpSettingsWidget = new QWizardPage(this);
-    mpSettingsWidget->setLayout(mpSettingsLayout);
+    QGridLayout *pSettingsLayout = new QGridLayout(this);
+    pSettingsLayout->addWidget(pSettingsLabel,        0, 0);
+    pSettingsLayout->addWidget(pAlgorithmLabel,       1, 0);
+    pSettingsLayout->addWidget(mpAlgorithmBox,         1, 1);
+    pSettingsLayout->addWidget(pIterationsLabel,      2, 0);
+    pSettingsLayout->addWidget(mpIterationsSpinBox,    2, 1);
+    pSettingsLayout->addWidget(mpSearchPointsLabel,    3, 0);
+    pSettingsLayout->addWidget(mpSearchPointsSpinBox,  3, 1);
+    pSettingsLayout->addWidget(mpParticlesLabel,       3, 0);
+    pSettingsLayout->addWidget(mpParticlesSpinBox,     3, 1);
+    pSettingsLayout->addWidget(mpAlphaLabel,           4, 0);
+    pSettingsLayout->addWidget(mpAlphaLineEdit,        4, 1);
+    pSettingsLayout->addWidget(mpOmegaLabel,           4, 0);
+    pSettingsLayout->addWidget(mpOmegaLineEdit,        4, 1);
+    pSettingsLayout->addWidget(mpBetaLabel,            5, 0);
+    pSettingsLayout->addWidget(mpBetaLineEdit,         5, 1);
+    pSettingsLayout->addWidget(mpC1Label,              5, 0);
+    pSettingsLayout->addWidget(mpC1LineEdit,           5, 1);
+    pSettingsLayout->addWidget(mpGammaLabel,           6, 0);
+    pSettingsLayout->addWidget(mpGammaLineEdit,        6, 1);
+    pSettingsLayout->addWidget(mpC2Label,              6, 0);
+    pSettingsLayout->addWidget(mpC2LineEdit,           6, 1);
+    pSettingsLayout->addWidget(pEpsilonFLabel,        7, 0);
+    pSettingsLayout->addWidget(mpEpsilonFLineEdit,     7, 1);
+    pSettingsLayout->addWidget(pEpsilonXLabel,        8, 0);
+    pSettingsLayout->addWidget(mpEpsilonXLineEdit,     8, 1);
+    pSettingsLayout->addWidget(mpPlottingCheckBox,     9, 0, 1, 2);
+    pSettingsLayout->addWidget(mpPlotBestWorstCheckBox,10, 0, 1, 2);
+    pSettingsLayout->addWidget(mpPlotParticlesCheckBox,11, 0, 1, 2);
+    pSettingsLayout->addWidget(mpExport2CSVBox,        12, 0, 1, 2);
+    pSettingsLayout->addWidget(new QWidget(this),      13, 0, 1, 2);    //Dummy widget for stretching the layout
+    pSettingsLayout->setRowStretch(0, 0);
+    pSettingsLayout->setRowStretch(1, 0);
+    pSettingsLayout->setRowStretch(2, 0);
+    pSettingsLayout->setRowStretch(3, 0);
+    pSettingsLayout->setRowStretch(4, 0);
+    pSettingsLayout->setRowStretch(4, 0);
+    pSettingsLayout->setRowStretch(6, 0);
+    pSettingsLayout->setRowStretch(7, 0);
+    pSettingsLayout->setRowStretch(8, 0);
+    pSettingsLayout->setRowStretch(9, 1);
+    pSettingsLayout->setRowStretch(10, 1);
+    QWizardPage *pSettingsWidget = new QWizardPage(this);
+    pSettingsWidget->setLayout(pSettingsLayout);
     setAlgorithm(0);
 
     //Parameter tab
-    mpParametersLabel = new QLabel("Choose optimization parameters, and specify their minimum and maximum values.");
-    mpParametersLabel->setFont(boldFont);
+    QLabel *pParametersLabel = new QLabel("Choose optimization parameters, and specify their minimum and maximum values.");
+    pParametersLabel->setFont(boldFont);
     mpParametersLogCheckBox = new QCheckBox("Use logarithmic parameter scaling", this);
     mpParametersLogCheckBox->setChecked(false);
     mpParametersList = new QTreeWidget(this);
-    mpParameterMinLabel = new QLabel("Min Value");
-    mpParameterMinLabel->setAlignment(Qt::AlignCenter);
-    mpParameterNameLabel = new QLabel("Parameter Name");
-    mpParameterNameLabel->setAlignment(Qt::AlignCenter);
-    mpParameterMaxLabel = new QLabel("Max Value");
-    mpParameterMaxLabel->setAlignment(Qt::AlignCenter);
-    mpParameterMinLabel->setFont(boldFont);
-    mpParameterNameLabel->setFont(boldFont);
-    mpParameterMaxLabel->setFont(boldFont);
+    QLabel *pParameterMinLabel = new QLabel("Min Value");
+    pParameterMinLabel->setAlignment(Qt::AlignCenter);
+    QLabel *pParameterNameLabel = new QLabel("Parameter Name");
+    pParameterNameLabel->setAlignment(Qt::AlignCenter);
+    QLabel *pParameterMaxLabel = new QLabel("Max Value");
+    pParameterMaxLabel->setAlignment(Qt::AlignCenter);
+    pParameterMinLabel->setFont(boldFont);
+    pParameterNameLabel->setFont(boldFont);
+    pParameterMaxLabel->setFont(boldFont);
     mpParametersLayout = new QGridLayout(this);
-    mpParametersLayout->addWidget(mpParametersLabel,        0, 0, 1, 4);
+    mpParametersLayout->addWidget(pParametersLabel,        0, 0, 1, 4);
     mpParametersLayout->addWidget(mpParametersLogCheckBox,  1, 0, 1, 4);
     mpParametersLayout->addWidget(mpParametersList,         2, 0, 1, 4);
-    mpParametersLayout->addWidget(mpParameterMinLabel,      3, 0, 1, 1);
-    mpParametersLayout->addWidget(mpParameterNameLabel,     3, 1, 1, 1);
-    mpParametersLayout->addWidget(mpParameterMaxLabel,      3, 2, 1, 1);
-    mpParametersWidget = new QWizardPage(this);
-    mpParametersWidget->setLayout(mpParametersLayout);
+    mpParametersLayout->addWidget(pParameterMinLabel,      3, 0, 1, 1);
+    mpParametersLayout->addWidget(pParameterNameLabel,     3, 1, 1, 1);
+    mpParametersLayout->addWidget(pParameterMaxLabel,      3, 2, 1, 1);
+    QWizardPage *pParametersWidget = new QWizardPage(this);
+    pParametersWidget->setLayout(mpParametersLayout);
 
 
 
     //Objective function tab
-    mpObjectiveLabel = new QLabel("Create an objective function by first choosing variables in the list and then choosing a function below.");
-    mpObjectiveLabel->setFont(boldFont);
+    QLabel *pObjectiveLabel = new QLabel("Create an objective function by first choosing variables in the list and then choosing a function below.");
+    pObjectiveLabel->setFont(boldFont);
     mpVariablesList = new QTreeWidget(this);
     mpMinMaxComboBox = new QComboBox(this);
     mpMinMaxComboBox->addItems(QStringList() << "Minimize" << "Maximize");
     mpFunctionsComboBox = new QComboBox(this);
     mpAddFunctionButton = new QPushButton("Add Function");
-    mpWeightLabel = new QLabel("Weight");
-    mpNormLabel = new QLabel("Norm. Factor");
-    mpExpLabel = new QLabel("Exp. Factor");
-    mpDescriptionLabel = new QLabel("Description");
-    mpDataLabel = new QLabel("Data");
-    mpWeightLabel->setFont(boldFont);
-    mpNormLabel->setFont(boldFont);
-    mpExpLabel->setFont(boldFont);
-    mpDescriptionLabel->setFont(boldFont);
-    mpDataLabel->setFont(boldFont);
+    QLabel *pWeightLabel = new QLabel("Weight");
+    QLabel *pNormLabel = new QLabel("Norm. Factor");
+    QLabel *pExpLabel = new QLabel("Exp. Factor");
+    QLabel *pDescriptionLabel = new QLabel("Description");
+    QLabel *pDataLabel = new QLabel("Data");
+    pWeightLabel->setFont(boldFont);
+    pNormLabel->setFont(boldFont);
+    pExpLabel->setFont(boldFont);
+    pDescriptionLabel->setFont(boldFont);
+    pDataLabel->setFont(boldFont);
     mpObjectiveLayout = new QGridLayout(this);
-    mpObjectiveLayout->addWidget(mpObjectiveLabel,          0, 0, 1, 7);
+    mpObjectiveLayout->addWidget(pObjectiveLabel,          0, 0, 1, 7);
     mpObjectiveLayout->addWidget(mpVariablesList,           1, 0, 1, 7);
     mpObjectiveLayout->addWidget(mpMinMaxComboBox,          2, 0, 1, 1);
     mpObjectiveLayout->addWidget(mpFunctionsComboBox,       2, 1, 1, 4);
     mpObjectiveLayout->addWidget(mpAddFunctionButton,       2, 5, 1, 2);
-    mpObjectiveLayout->addWidget(mpWeightLabel,             3, 0, 1, 1);
-    mpObjectiveLayout->addWidget(mpNormLabel,               3, 1, 1, 1);
-    mpObjectiveLayout->addWidget(mpExpLabel,                3, 2, 1, 1);
-    mpObjectiveLayout->addWidget(mpDescriptionLabel,        3, 3, 1, 2);
-    mpObjectiveLayout->addWidget(mpDataLabel,               3, 5, 1, 2);
+    mpObjectiveLayout->addWidget(pWeightLabel,             3, 0, 1, 1);
+    mpObjectiveLayout->addWidget(pNormLabel,               3, 1, 1, 1);
+    mpObjectiveLayout->addWidget(pExpLabel,                3, 2, 1, 1);
+    mpObjectiveLayout->addWidget(pDescriptionLabel,        3, 3, 1, 2);
+    mpObjectiveLayout->addWidget(pDataLabel,               3, 5, 1, 2);
     mpObjectiveLayout->addWidget(new QWidget(this),         4, 0, 1, 7);
     mpObjectiveLayout->setRowStretch(0, 0);
     mpObjectiveLayout->setRowStretch(1, 0);
@@ -236,8 +236,8 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpObjectiveLayout->setColumnStretch(4, 1);
     mpObjectiveLayout->setColumnStretch(5, 0);
     mpObjectiveLayout->setColumnStretch(6, 0);
-    mpObjectiveWidget = new QWizardPage(this);
-    mpObjectiveWidget->setLayout(mpObjectiveLayout);
+    QWizardPage *pObjectiveWidget = new QWizardPage(this);
+    pObjectiveWidget->setLayout(mpObjectiveLayout);
 
     //Output box tab
     mpOutputBox = new QTextEdit(this);
@@ -248,10 +248,10 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     monoFont.setPointSize(11);
     mpOutputBox->setFont(monoFont);
     mpOutputBox->setMinimumWidth(450);
-    mpOutputLayout = new QGridLayout(this);
-    mpOutputLayout->addWidget(mpOutputBox);
-    mpOutputWidget = new QWizardPage(this);
-    mpOutputWidget->setLayout(mpOutputLayout);
+    QGridLayout *pOutputLayout = new QGridLayout(this);
+    pOutputLayout->addWidget(mpOutputBox);
+    QWizardPage *pOutputWidget = new QWizardPage(this);
+    pOutputWidget->setLayout(pOutputLayout);
 
     //Toolbar
     mpHelpButton = new QToolButton(this);
@@ -261,12 +261,25 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     this->setOption(QWizard::HaveHelpButton);
     mpHelpButton->setObjectName("optimizationHelpButton");
 
-    this->addPage(mpSettingsWidget);
-    this->addPage(mpParametersWidget);
-    this->addPage(mpObjectiveWidget);
-    this->addPage(mpOutputWidget);
+    mpStartButton = new QPushButton("Start Optimization", this);
+    mpParametersOutputTextEdit = new QTextEdit(this);
+    mpTotalProgressBar = new QProgressBar(this);
+    mpTerminal = new TerminalWidget(this);
+    QGridLayout *pRunLayout = new QGridLayout(this);
+    pRunLayout->addWidget(mpStartButton,0,0);
+    pRunLayout->addWidget(mpParametersOutputTextEdit,1,0);
+    pRunLayout->addWidget(mpTerminal,2,0);
+    pRunLayout->addWidget(mpTotalProgressBar,3,0);
+    QWizardPage *pRunWidget = new QWizardPage(this);
+    pRunWidget->setLayout(pRunLayout);
 
-    setButtonText(QWizard::FinishButton, tr("&Execute Script"));
+    this->addPage(pSettingsWidget);
+    this->addPage(pParametersWidget);
+    this->addPage(pObjectiveWidget);
+    this->addPage(pOutputWidget);
+    this->addPage(pRunWidget);
+
+    setButtonText(QWizard::FinishButton, tr("&Close Dialog"));
     setButtonText(QWizard::CustomButton1, tr("&Save To Script File"));
     setOption(QWizard::HaveCustomButton1, true);
     setOption(QWizard::CancelButtonOnLeft, true);
@@ -276,7 +289,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(update(int)));
     connect(mpAddFunctionButton,            SIGNAL(clicked()),      this,                   SLOT(addFunction()));
     connect(mpHelpButton,                   SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
-    connect(this, SIGNAL(accepted()), this, SLOT(run()));
+    connect(mpStartButton, SIGNAL(clicked()), this, SLOT(run()));
     connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
 }
 

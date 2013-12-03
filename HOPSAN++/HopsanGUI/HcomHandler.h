@@ -35,6 +35,7 @@ class ModelObject;
 class HcomCommand;
 class ModelWidget;
 class OptimizationHandler;
+class Configuration;
 
 class HcomHandler : public QObject
 {
@@ -52,8 +53,12 @@ public:
     HcomHandler(TerminalConsole *pConsole);
     ~HcomHandler();
 
+    //Set and get functions for pointers
     void setModelPtr(ModelWidget *pModel);
-    ModelWidget *getModelPtr();
+    ModelWidget *getModelPtr() const;
+    void setConfigPtr(Configuration *pConfig);
+    Configuration *getConfigPtr() const;
+    void setOptHandlerptr(OptimizationHandler *pOptHandler);
 
     // Command functions
     QStringList getCommands() const;
@@ -177,6 +182,9 @@ private:
     //Current model pointer
     ModelWidget *mpModel;
 
+    //Custom configuration pointer
+    Configuration *mpConfig;
+
     // Used to abort HCOM evaluation
     bool mAborted;
 
@@ -198,6 +206,8 @@ private:
 
     // Functions
     QMap<QString, QStringList> mFunctions;
+
+    //Private get functions
 };
 
 

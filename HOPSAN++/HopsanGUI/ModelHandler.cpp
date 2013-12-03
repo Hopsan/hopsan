@@ -53,22 +53,19 @@ ModelHandler::ModelHandler(QObject *parent)
     connect(this, SIGNAL(checkMessages()),      gpTerminalWidget,    SLOT(checkMessages()), Qt::UniqueConnection);
 }
 
-void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name, bool hidden)
+void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name, bool detatched)
 {
     pModelWidget->setParent(gpCentralTabWidget);    //! @todo Should probably use ModelHandler as parent
 
-    mModelPtrs.append(pModelWidget);
-    mCurrentIdx = mModelPtrs.size()-1;
-
     // If the Modelwidget should not be hidden then add it as a tab and switch to that tab
-    if(!hidden)
+    if(!detatched)
     {
+        mModelPtrs.append(pModelWidget);
+        mCurrentIdx = mModelPtrs.size()-1;
         gpCentralTabWidget->setCurrentIndex(gpCentralTabWidget->addTab(pModelWidget, name));
         pModelWidget->setToolBarSimulationTimeParametersFromTab();
+        emit newModelWidgetAdded();
     }
-
-    //! @todo Should we emit this also when hidden?
-    emit newModelWidgetAdded();
 }
 
 
@@ -209,7 +206,7 @@ void ModelHandler::loadModelParameters()
 //! @param modelFileName is the path to the loaded file
 //! @see loadModel()
 //! @see saveModel(saveTarget saveAsFlag)
-ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen, bool hidden)
+ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen, bool detatched)
 {
     //! @todo maybe  write utility function that opens filel checks existance and sets fileinfo
     QFile file(modelFileName);   //Create a QFile object
@@ -234,14 +231,17 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
         }
     }
 
-    gpMainWindow->registerRecentModel(fileInfo);
+    if(!detatched)
+    {
+        gpMainWindow->registerRecentModel(fileInfo);
+    }
 
     ModelWidget *pNewModel = new ModelWidget(this, gpCentralTabWidget);
-    this->addModelWidget(pNewModel, fileInfo.baseName(), hidden);
+    this->addModelWidget(pNewModel, fileInfo.baseName(), detatched);
     pNewModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
     pNewModel->getTopLevelSystemContainer()->setUndoEnabled(false, true);
 
-    if(!hidden)
+    if(!detatched)
         gpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
 
     //Check if this is an expected hmf xml file

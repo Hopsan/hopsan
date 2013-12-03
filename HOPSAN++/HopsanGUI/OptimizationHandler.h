@@ -35,6 +35,7 @@ class ModelWidget;
 class TerminalWidget;
 class TerminalConsole;
 class HcomHandler;
+class Configuration;
 
 class OptimizationHandler : public QObject
 {
@@ -53,6 +54,7 @@ public:
 private:
     TerminalConsole *mpConsole;
     HcomHandler *mpHcomHandler;
+    Configuration *mpConfig;
 
     //Help functions
     void optComplexInit();
@@ -70,6 +72,7 @@ private:
     void optPlotPoints();
     void optPlotObjectiveFunctionValues();
     void optPlotParameters();
+    void cleanUp();
 
     //Optimization
     int mOptNumPoints;
@@ -91,7 +94,6 @@ private:
     int mOptConvergenceReason;
     double mOptParTol, mOptFuncTol;
     bool mOptMulticore;
-    ModelWidget *mpOptModel;
     QVector<ModelWidget *> mOptModelPtrs;
     bool mOptPrintLogOutput;
     QStringList mOptLogOutput;

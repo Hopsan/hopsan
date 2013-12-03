@@ -37,14 +37,19 @@
 #include <QWizard>
 #include <QTreeWidgetItem>
 #include <QTextEdit>
+#include <QProgressBar>
+
+class TerminalWidget;
 
 class OptimizationDialog : public QWizard
 {
     Q_OBJECT
 
+    friend class OptimizationHandler;
+
 public:
     OptimizationDialog(QWidget *parent = 0);
-
+    TerminalWidget *mpTerminal;
 
 private:
     void generateScriptFile();
@@ -81,22 +86,17 @@ private slots:
 
 private:
     //Settings page
-    QWizardPage *mpSettingsWidget;
-    QLabel *mpSettingsLabel;
-    QGridLayout *mpSettingsLayout;
-    QLabel *mpAlgorithmLabel;
     QComboBox *mpAlgorithmBox;
-    QLabel *mpIterationsLabel;
     QSpinBox *mpIterationsSpinBox;
     QLabel *mpSearchPointsLabel;
     QSpinBox *mpSearchPointsSpinBox;
     QLabel *mpParticlesLabel;
     QSpinBox *mpParticlesSpinBox;
-    QLabel *mpAlphaLabel;
     QLineEdit *mpAlphaLineEdit;
+    QLabel *mpAlphaLabel;
     QLabel *mpBetaLabel;
-    QLineEdit *mpBetaLineEdit;
     QLabel *mpGammaLabel;
+    QLineEdit *mpBetaLineEdit;
     QLineEdit *mpGammaLineEdit;
     QLabel *mpOmegaLabel;
     QLineEdit *mpOmegaLineEdit;
@@ -104,9 +104,7 @@ private:
     QLineEdit *mpC1LineEdit;
     QLabel *mpC2Label;
     QLineEdit *mpC2LineEdit;
-    QLabel *mpEpsilonFLabel;
     QLineEdit *mpEpsilonFLineEdit;
-    QLabel *mpEpsilonXLabel;
     QLineEdit *mpEpsilonXLineEdit;
     QCheckBox *mpPlotParticlesCheckBox;
     QCheckBox *mpPlottingCheckBox;
@@ -114,27 +112,15 @@ private:
     QCheckBox *mpExport2CSVBox;
 
     //Parameters page
-    QWizardPage *mpParametersWidget;
-    QLabel *mpParametersLabel;
     QCheckBox *mpParametersLogCheckBox;
     QTreeWidget *mpParametersList;
     QGridLayout *mpParametersLayout;
-    QLabel *mpParameterMinLabel;
-    QLabel *mpParameterNameLabel;
-    QLabel *mpParameterMaxLabel;
 
     //Objective function page
-    QWizardPage *mpObjectiveWidget;
     QComboBox *mpMinMaxComboBox;
     QComboBox *mpFunctionsComboBox;
-    QLabel *mpObjectiveLabel;
     QTreeWidget *mpVariablesList;
     QPushButton *mpAddFunctionButton;
-    QLabel *mpWeightLabel;
-    QLabel *mpNormLabel;
-    QLabel *mpExpLabel;
-    QLabel *mpDescriptionLabel;
-    QLabel *mpDataLabel;
     QList<QLineEdit*> mWeightLineEditPtrs;
     QList<QLineEdit*> mNormLineEditPtrs;
     QList<QLineEdit*> mExpLineEditPtrs;
@@ -145,11 +131,6 @@ private:
     QList<QToolButton*> mRemoveFunctionButtonPtrs;
     QGridLayout *mpObjectiveLayout;
 
-    //Output page
-    QWizardPage *mpOutputWidget;
-    QGridLayout *mpOutputLayout;
-
-
     QStringList mObjectiveFunctionDescriptions;
     QStringList mObjectiveFunctionCalls;
     QList<int> mObjectiveFunctionNumberOfVariables;
@@ -158,6 +139,11 @@ private:
 
     //Output
     QTextEdit *mpOutputBox;
+
+    //Run page
+    QPushButton *mpStartButton;
+    QTextEdit *mpParametersOutputTextEdit;
+    QProgressBar *mpTotalProgressBar;
 
     //Toolbar
     QToolButton *mpHelpButton;

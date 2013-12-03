@@ -100,7 +100,7 @@ public:
     HelpDialog *mpHelpDialog;   //Should not be public but accessable from other widgets somehow
     HVCWidget *mpHVCWidget;
     DataExplorer *mpDataExplorer;
-
+    OptimizationDialog *mpOptimizationDialog;
 
     //Actions (public because other widgets connect to them)
     QAction *mpNewAction;
@@ -213,7 +213,6 @@ private:
     //Dialogs
     OptionsDialog *mpOptionsDialog;
     AboutDialog *mpAboutDialog;
-    OptimizationDialog *mpOptimizationDialog;
     SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;
 
     //Simulation setup line edits
