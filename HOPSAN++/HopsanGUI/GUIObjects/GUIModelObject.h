@@ -27,6 +27,7 @@
 
 #include "GUIObject.h"
 #include "GUIModelObjectAppearance.h"
+#include "UnitScale.h"
 #include "CoreAccess.h"
 #include <QGraphicsSvgItem>
 

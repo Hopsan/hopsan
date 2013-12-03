@@ -267,7 +267,11 @@ private:
     hopsan::ComponentSystem *mpCoreComponentSystem;
 };
 
+// Version functions
 QString getHopsanCoreVersion();
+QString getHopsanCoreCompiler();
+QString getHopsanCoreArchitecture();
+QString getHopsanCoreBuildTime();
 
 class CoreSimulationHandler
 {

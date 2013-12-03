@@ -68,7 +68,7 @@ win32 {
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
-    #Generate the svnrevnum.h file
+    # Generate the svnrevnum.h file
     system($${PWD}/../getSvnRevision.bat)
 }
 unix { 
@@ -76,7 +76,7 @@ unix {
     LIBS += -ltbb -ldl
     INCLUDEPATH += /usr/include/tbb/
 
-    #Generate the svnrevnum.h file
+    # Generate the svnrevnum.h file
     system($${PWD}/../getSvnRevision.sh include HOPSANCORESVNREVISION)
 }
 macx { 
@@ -94,7 +94,7 @@ macx {
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    #DO NOT remove the commented line bellow, it will be autoreplaced by script
+    #DO NOT remove the commented line below, it will be autoreplaced by script
     #INTERNALCOMPLIB.CC#
     src/Port.cc \
     src/Nodes.cc \
@@ -171,7 +171,8 @@ HEADERS += \
     include/CoreUtilities/StringUtilities.h \
     include/HopsanTypes.h \
     include/ComponentUtilities/HopsanPowerUser.h \
-    include/HopsanCoreMacros.h
+    include/HopsanCoreMacros.h \
+    include/compiler_info.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

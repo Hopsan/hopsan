@@ -33,13 +33,19 @@
 #include "HopsanEssentials.h"
 #include "TicToc.hpp"
 
+// Stringify Macro
+#ifndef TO_STR_2
+ #define TO_STR_2(s) #s
+ #define TO_STR(s) TO_STR_2(s)
+#endif
+
 // If we dont have the revision number then define UNKNOWN
 // On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANCLISVNREVISION
-#define HOPSANCLISVNREVISION "UNKNOWN"
+ #define HOPSANCLISVNREVISION UNKNOWN
 #endif
 
-#define HOPSANCLIVERSION "0.6.x_r" HOPSANCLISVNREVISION
+#define HOPSANCLIVERSION "0.6.x_r" TO_STR(HOPSANCLISVNREVISION)
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32

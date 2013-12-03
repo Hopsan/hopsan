@@ -35,6 +35,7 @@
 
 #include "CachableDataVector.h"
 #include "common.h"
+#include "UnitScale.h"
 
 #define TIMEVARIABLENAME "Time"
 

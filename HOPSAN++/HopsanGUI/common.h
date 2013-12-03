@@ -80,31 +80,6 @@ enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
 enum LibraryTypeEnumT {Internal, External, FMU};
 enum HiddenVisibleEnumT {Hidden, Visible};
 
-#include <QString>
-//! @todo this should not be in common.h
-class UnitScale
-{
-public:
-    UnitScale() {}
-    UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale) {}
-    UnitScale(const QString &rUnit, const double scale) : mUnit(rUnit)
-    {
-        setScale(scale);
-    }
-    void clear() {mUnit.clear(); mScale.clear();}
-    double toDouble() const {return mScale.toDouble();}
-    bool isEmpty() const {return mScale.isEmpty();}
-    void setScale(const double scale)
-    {
-        mScale = QString("%1").arg(scale);
-    }
-    void setOnlyScale(const double scale)
-    {
-        mUnit.clear();
-        mScale = QString("%1").arg(scale);
-    }
-    QString mUnit;
-    QString mScale;
-};
+extern const char* getHopsanGUIBuildTime();
 
 #endif // COMMON_H

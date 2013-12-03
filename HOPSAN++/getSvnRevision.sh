@@ -24,7 +24,7 @@ writeFile()
   if [ -z "$2" ]; then
     echo "//Revision information not found" >> $1
   else
-    echo "#define $2 \"$3\"" >> $1 
+    echo "#define $2 $3" >> $1 
   fi
   echo "#endif" >> $1
 }

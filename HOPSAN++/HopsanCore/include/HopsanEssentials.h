@@ -51,7 +51,10 @@ public:
     ~HopsanEssentials();
 
     // Version info
-    const char *getCoreVersion();
+    const char *getCoreVersion() const;
+    const char *getCoreBuildTime() const;
+    const char *getCoreCompiler() const;
+    bool isCore64Bit() const;
 
     // Component creation
     Component* createComponent(const HString &rTypeName);

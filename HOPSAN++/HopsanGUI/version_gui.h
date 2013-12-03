@@ -24,41 +24,24 @@
 #ifndef VERSION_GUI_H
 #define VERSION_GUI_H
 
-// If we dont have the revision number then define UNKNOWN
-// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
-#ifndef HOPSANGUISVNREVISION
-#define HOPSANGUISVNREVISION "UNKNOWN"
-#endif
-
-#ifndef TO_STR2
+// Stringify Macro
+#ifndef TO_STR_2
  #define TO_STR_2(s) #s
  #define TO_STR(s) TO_STR_2(s)
 #endif
 
-#define HOPSANGUIVERSION "0.6.x_r" HOPSANGUISVNREVISION
+// If we dont have the revision number then define UNKNOWN
+// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
+#ifndef HOPSANGUISVNREVISION
+ #define HOPSANGUISVNREVISION UNKNOWN
+#endif
+
+#define HOPSANGUIVERSION "0.6.x_r" TO_STR(HOPSANGUISVNREVISION)
 #define HMF_VERSIONNUM "0.4"
 #define HMF_REQUIREDVERSIONNUM "0.3"
 #define CAF_VERSIONNUM "0.3"
 
-// Decide compiler and architecture 32 or 64 bit version
-//! @todo this stuff should also be in core to determine core version
-#if defined(__GNUC__)
-#define HOPSANCOMPILEDWITH "GNU GCC " TO_STR(__GNUC__) "." TO_STR(__GNUC_MINOR__)
- #define HOPSANCOMPILEDWITHGCC
- #ifdef __x86_64__
-  #define HOPSANCOMPILED64BIT
- #endif
-#elif defined(_MSC_VER)
- #define HOPSANCOMPILEDWITH "MSVC " TO_STR(_MSC_VER)
- #define HOPSANCOMPILEDWITHMSVC
- #ifdef _M_X64
-  #define HOPSANCOMPILED64BIT
- #endif
-#else
- #define HOPSANCOMPILEDWITH "Unknown Compiler"
-#endif
-
-//! @todo this should be in a implemenentaion file and there should be a global ask function
-#define HOPSANCOMPILEDATEANDTIME __DATE__ " " __TIME__
+// Include compiler info macros
+#include "compiler_info.h"
 
 #endif // VERSION_GUI_H

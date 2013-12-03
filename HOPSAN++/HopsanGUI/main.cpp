@@ -127,3 +127,8 @@ void loadApplicationFonts()
     else
         qDebug() << "Successfully loaded fonts!";
 }
+
+const char* getHopsanGUIBuildTime()
+{
+    return __DATE__" "__TIME__;
+}

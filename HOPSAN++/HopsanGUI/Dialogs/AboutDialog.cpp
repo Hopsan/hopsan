@@ -70,7 +70,7 @@ AboutDialog::AboutDialog(QWidget *parent)
                          <tr><td align=right style=\"padding-right:10px\">Architecture:</td><td>%2</td></tr> \
                          <tr><td align=right style=\"padding-right:10px\">Compiler:</td><td>%3</td></tr> \
                          <tr><td align=right style=\"padding-right:10px\">Build Time:</td><td>%4</td></tr> \
-                         </table>").arg(HOPSANGUIVERSION).arg(arch).arg(HOPSANCOMPILEDWITH).arg(HOPSANCOMPILEDATEANDTIME));
+                         </table>").arg(HOPSANGUIVERSION).arg(arch).arg(HOPSANCOMPILEDWITH).arg(getHopsanGUIBuildTime()));
     QFont tempFont = pVersionText->font();
     tempFont.setBold(true);
     pVersionText->setFont(tempFont);

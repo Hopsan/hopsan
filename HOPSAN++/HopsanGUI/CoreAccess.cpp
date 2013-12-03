@@ -1247,3 +1247,28 @@ QVector<double> CoreCSVParserAccess::getColumn(int col)
         return QVector<double>();
 }
 
+
+
+QString getHopsanCoreCompiler()
+{
+    return QString::fromStdString(gHopsanCore.getCoreCompiler());
+}
+
+
+QString getHopsanCoreArchitecture()
+{
+    if (gHopsanCore.isCore64Bit())
+    {
+        return "64-bit";
+    }
+    else
+    {
+        return "32-bit";
+    }
+}
+
+
+QString getHopsanCoreBuildTime()
+{
+    return QString::fromStdString(gHopsanCore.getCoreBuildTime());
+}

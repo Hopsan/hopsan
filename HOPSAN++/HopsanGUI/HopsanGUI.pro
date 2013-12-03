@@ -72,6 +72,7 @@ DEFINES *= DEVELOPMENT
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
+    # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
         message(Trying to find Python include and lib paths since USEPYTHONQT is defined)
         QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
@@ -86,16 +87,16 @@ unix {
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
-    #Get the svn revision in here if script succeed, we dont care about the external file generated,
+    # Get the svn revision in here if script succeed, we dont care about the external file generated,
     system($${PWD}/../getSvnRevision.sh) {
-        DEFINES *= "HOPSANGUISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.sh)\\\"\""
+        DEFINES *= "HOPSANGUISVNREVISION=$$system($${PWD}/../getSvnRevision.sh)"
     }
 
 }
 win32 {
     #DEFINES += STATICCORE
 
-    #Set Python paths
+    # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
         message(Trying to find Python include and lib paths since USEPYTHONQT is defined)
         PYTHON_DEFAULT_PATHS *= c:/Python27
@@ -106,22 +107,22 @@ win32 {
         message(Not looking for python since we are not using PYTHONQT)
     }
 
-    #Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
-    #Also enable auto-import
-    #QMAKE_LFLAGS += -Wl,--large-address-aware,--enable-auto-import
+    # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
-    # Make large-adress-aware for 32-bit build
+
+    # Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
     !contains(QMAKE_HOST.arch, x86_64){
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 
+    # Activate consol output of cout for debug builds (you aslo need to run in consol but hopsan seems slow)
     CONFIG(debug, debug|release) {
-        CONFIG += console #Use this for consol app support (cout output, you aslo need to run in consol but hopsan seems slow)
+        CONFIG += console
     }
 
-    #Get the svn revision in here if script succeed, we dont care about the external file generated,
+    # Get the svn revision in here if script succeed, we dont care about the external file generated,
     system($${PWD}/../getSvnRevision.bat){
-        DEFINES *= "HOPSANGUISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
+        DEFINES *= "HOPSANGUISVNREVISION=$$system($${PWD}/../getSvnRevision.bat)"
     }
 }
 
@@ -212,7 +213,8 @@ SOURCES += main.cpp \
     Utilities/HighlightingUtilities.cpp \
     Widgets/DataExplorer.cpp \
     Widgets/LibraryWidget.cpp \
-    LibraryHandler.cpp
+    LibraryHandler.cpp \
+    UnitScale.cpp
 
 
 
@@ -292,7 +294,8 @@ HEADERS += MainWindow.h \
     Widgets/DataExplorer.h \
     Widgets/LibraryWidget.h \
     LibraryHandler.h \
-    global.h
+    global.h \
+    UnitScale.h
 
 OTHER_FILES += \
     ../hopsandefaults \

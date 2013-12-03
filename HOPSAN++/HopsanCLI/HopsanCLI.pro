@@ -44,27 +44,27 @@ CONFIG(debug, debug|release) {
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
-    #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
-    #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
+    # This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
+    # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
     LIBS *= -lrt
 
-    #Get the svn revision in here if script succeed, we dont care about the external file generated,
+    # Get the svn revision in here if script succeed, we dont care about the external file generated,
     system($${PWD}/../getSvnRevision.sh) {
-        DEFINES *= "HOPSANCLISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.sh)\\\"\""
+        DEFINES *= "HOPSANCLISVNREVISION=$$system($${PWD}/../getSvnRevision.sh)"
     }
 }
 win32 {
 
-    #Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
+    # Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
     !contains(QMAKE_HOST.arch, x86_64){
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 
-    #Get the svn revision in here if script succeed, we dont care about the external file generated,
+    # Get the svn revision in here if script succeed, we dont care about the external file generated,
     system($${PWD}/../getSvnRevision.bat) {
-        DEFINES *= "HOPSANCLISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
+        DEFINES *= "HOPSANCLISVNREVISION=$$system($${PWD}/../getSvnRevision.bat)"
     }
 
 

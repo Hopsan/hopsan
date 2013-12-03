@@ -45,14 +45,14 @@ rm -rf ./bin/*
 sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/version.h
 
 # Set the Core Gui and CLI svn rev numbers for this release
-sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION \"$coresvnrev\"|g" -i HopsanCore/include/version.h
-sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION \"$guisvnrev\"|g" -i HopsanGUI/version_gui.h
-sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION \"$clisvnrev\"|g" -i HopsanCLI/main.cpp
+sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION $coresvnrev|g" -i HopsanCore/include/version.h
+sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION $guisvnrev|g" -i HopsanGUI/version_gui.h
+sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION $clisvnrev|g" -i HopsanCLI/main.cpp
 
 if [ $doDevRelease = "false" ]; then
   # Set version numbers (by changing .h files) BEFORE build
-  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/version.h
-  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i HopsanGUI/version_gui.h
+  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION $version|g" -i HopsanCore/include/version.h
+  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION $version|g" -i HopsanGUI/version_gui.h
 
   # Set splash screen version number
   sed "s|X\.X\.X|$version|g" -i HopsanGUI/graphics/splash2.svg

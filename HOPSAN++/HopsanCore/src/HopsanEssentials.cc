@@ -75,7 +75,14 @@ HopsanEssentials::HopsanEssentials()
 
 
     // Do some other stuff
-    mpMessageHandler->addInfoMessage("HopsanCore, Version: " + HString(HOPSANCOREVERSION));
+    if (isCore64Bit())
+    {
+        mpMessageHandler->addInfoMessage("HopsanCore 64-bit, Version: " + HString(HOPSANCOREVERSION));
+    }
+    else
+    {
+        mpMessageHandler->addInfoMessage("HopsanCore 32-bit, Version: " + HString(HOPSANCOREVERSION));
+    }
 
     openLogFile();
     addLogMess("This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n");
@@ -97,10 +104,33 @@ HopsanEssentials::~HopsanEssentials()
     delete mpMessageHandler;
 }
 
-//! @brief Returns the hopsan core version as a string
-const char *HopsanEssentials::getCoreVersion()
+//! @brief Returns the HopsanCore version as a string
+const char *HopsanEssentials::getCoreVersion() const
 {
     return HOPSANCOREVERSION;
+}
+
+//! @brief Returns the HopsanCore build date and time
+const char *HopsanEssentials::getCoreBuildTime() const
+{
+    return __DATE__" "__TIME__;
+}
+
+//! @brief Get compiler info from core
+const char *HopsanEssentials::getCoreCompiler() const
+{
+    return HOPSANCOMPILEDWITH;
+}
+
+//! @brief Check if core is compiled 64-bit
+//! @returns Returns true if core is compiled as 64-bit else returns false
+bool HopsanEssentials::isCore64Bit() const
+{
+#ifdef HOPSANCOMPILED64BIT
+    return true;
+#else
+    return false;
+#endif
 }
 
 //! @brief Creates a component with the specified key-value and returns a pointer to this component.

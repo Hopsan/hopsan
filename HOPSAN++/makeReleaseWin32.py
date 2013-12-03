@@ -359,8 +359,9 @@ def msvcCompile(msvcVersion, architecture):
 def buildRelease():
     if not dodevrelease:
         #Set version numbers (by changing .h files) BEFORE build
-        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+version+r'\"|g" -i HopsanCore\include\version.h')
-        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+version+r'\"|g" -i HopsanGUI\version_gui.h')
+        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION '+version+r'|g" -i HopsanCore\include\version.h')
+        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION '+version+r'|g" -i HopsanGUI\version_gui.h')
+        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION '+version+r'|g" -i HopsanCLI\main.cpp')
 
         #Deactivate Groups icon as it is not working yet
         callSed(r'"/Group.xml/d" -i HopsanGUI\Resources.qrc')

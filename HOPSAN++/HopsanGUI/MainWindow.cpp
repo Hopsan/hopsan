@@ -159,7 +159,12 @@ void MainWindow::createContents()
     //mpMessageWidget->printGUIInfoMessage(tr("HopsanGUI, Version: ") + QString(HOPSANGUIVERSION));
 
     mpTerminalWidget->checkMessages();
-    mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
+#ifdef HOPSANCOMPILED64BIT
+    mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI 64-bit, Version: " + QString(HOPSANGUIVERSION));
+#else
+    mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI 32-bit, Version: " + QString(HOPSANGUIVERSION));
+#endif
+
 
     //Load configuration from settings file
     gpSplash->showMessage("Loading configuration...");
