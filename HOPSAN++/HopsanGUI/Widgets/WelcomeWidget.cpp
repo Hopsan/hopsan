@@ -556,14 +556,18 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
         if(metadata.contains("type", "hopsanngnews"))
         {
             QString webVersionString = metadata.find("hopsanversionfull").value();
-            QString thisVersionString = QString(HOPSANGUIVERSION);
             mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
 #ifdef DEVELOPMENT
             mpNewVersionButton->setVisible(true);
 #else
+            const QString thisVersionString = QString(HOPSANGUIVERSION);
             mpNewVersionButton->setVisible(webVersionString>thisVersionString);
 #endif
+#ifdef HOPSANCOMPILED64BIT
+            mAUFileLink = metadata.value("hopsanupdatelink64");
+#else
             mAUFileLink = metadata.value("hopsanupdatelink");
+#endif
         }
     }
 }
