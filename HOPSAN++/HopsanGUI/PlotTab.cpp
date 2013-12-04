@@ -2644,7 +2644,9 @@ void PlotTab::determineAddedCurveUnitOrScale(PlotCurve *pCurve, int plotID)
                 }
             }
         }
-        if(!customUnit.isEmpty())
+
+        // If we have found a custom unit and the original unit is not empty then try to set custom unit
+        if(!customUnit.isEmpty() && !pCurve->getDataOriginalUnit().isEmpty())
         {
             pCurve->setCustomCurveDataUnit(customUnit);
         }

@@ -77,7 +77,7 @@ public:
     QMap<QString, double> getCustomUnits(const QString &rPhysicalQuantity);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
-    QStringList getPhysicalQuantitiesForUnit(const QString &rUnit);
+    QStringList getPhysicalQuantitiesForUnit(const QString &rUnit) const;
     int getPLOExportVersion() const;
     bool getShowHiddenNodeDataVariables() const;
 

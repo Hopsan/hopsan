@@ -627,23 +627,32 @@ bool PlotCurve::setGeneration(int generation)
 
 
 //! @brief Sets the unit of a plot curve
-//! @param unit Name of new unit
+//! @details The physical quantity will be checked, if it does not match the current unit, the new unit will be ignored
+//! @param[in] rUnit Name of new unit
 //! @note If unit is not registered for data then nothing will happen
 void PlotCurve::setCustomCurveDataUnit(const QString &rUnit)
 {
+    // For non signal variables
     if (getDataName() != "Value")
     {
+        // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
         if (gpConfig->hasUnitScale(getDataName(),rUnit))
         {
             setCustomCurveDataUnit(rUnit, gpConfig->getUnitScale(getDataName(), rUnit));
         }
     }
+    // For signal variables
     else
     {
+        // Only set the new unit if it represents the same physical quantity as the current unit
         QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(rUnit);
-        if (!pqs.isEmpty())
+        QStringList pqsOrg = gpConfig->getPhysicalQuantitiesForUnit(getDataOriginalUnit());
+        if ( !(pqs.isEmpty() || pqsOrg.isEmpty()) )
         {
-            setCustomCurveDataUnit(rUnit, gpConfig->getUnitScale(pqs.first(), rUnit));
+            if (pqs.front() == pqsOrg.front())
+            {
+                setCustomCurveDataUnit(rUnit, gpConfig->getUnitScale(pqs.first(), rUnit));
+            }
         }
     }
 }
