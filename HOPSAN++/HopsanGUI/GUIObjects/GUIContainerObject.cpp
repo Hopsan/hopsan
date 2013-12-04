@@ -2752,6 +2752,14 @@ void ContainerObject::showLosses(bool show)
 void ContainerObject::showLossesFromDialog()
 {
     mpLossesDialog->close();
+
+    //We should not be here if there is no plot data, but let's check to be sure
+    if(mpLogDataHandler->isEmpty())
+    {
+        gpTerminalWidget->mpConsole->printErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
+        return;
+    }
+
     mLossesVisible=true;
 
     bool usePower = mpAvgPwrRadioButton->isChecked();
@@ -2762,14 +2770,6 @@ void ContainerObject::showLossesFromDialog()
     {
         limit=mpMinLossesSlider->value()/100.0;
     }
-
-    //We should not be here if there is no plot data, but let's check to be sure
-    if(mpLogDataHandler->isEmpty())
-    {
-        gpTerminalWidget->mpConsole->printErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
-        return;
-    }
-
     //Calculate total losses in model
     double totalLosses=0;
     ModelObjectMapT::iterator moit;
