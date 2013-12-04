@@ -337,8 +337,6 @@ void VariableTree::clear()
 
     resetAliasItemParent();
     resetImportedItemParent();
-
-    this->hide();
 }
 
 
