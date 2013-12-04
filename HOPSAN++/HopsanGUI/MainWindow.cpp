@@ -78,7 +78,7 @@ PlotHandler *gpPlotHandler;
 LibraryWidget *gpLibraryWidget;
 TerminalWidget *gpTerminalWidget;
 ModelHandler *gpModelHandler;
-PlotTreeWidget *gpPlotWidget;
+PlotWidget *gpPlotWidget;
 CentralTabWidget *gpCentralTabWidget;
 SystemParametersWidget *gpSystemParametersWidget;
 UndoWidget *gpUndoWidget;
@@ -256,6 +256,7 @@ void MainWindow::createContents()
     mpPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpPlotWidgetDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpPlotWidgetDock);
+    connect(mpPlotWidgetDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updatePlotActionButton(bool)));
 
     //Create the system parameters dock widget and hide it
     mpSystemParametersDock = new QDockWidget(tr("System Parameters"), this);
@@ -385,9 +386,8 @@ void MainWindow::initializeWorkspace()
     //mpLibrary->checkForFailedComponents();
 
     // Create the plot widget, only once! :)
-    mpPlotWidget = new PlotTreeWidget(this);
-    gpPlotWidget = mpPlotWidget;
-    mpPlotWidget->hide();
+    gpPlotWidget = new PlotWidget(this);
+    gpPlotWidget->hide();
 
     // Create the data explorer widget
     //! @todo does it need to exist in memory all the time?
@@ -409,26 +409,21 @@ void MainWindow::initializeWorkspace()
 }
 
 
-//! @brief Opens the plot widget.
-void MainWindow::openPlotWidget()
+//! @brief Toggles visibility of the plot widget and its dock
+void MainWindow::toggleVisiblePlotWidget()
 {
-//    if(mpModelHandler->count() != 0)
-//    {
-        if(!mpPlotWidgetDock->isVisible())
-        {
-            mpPlotWidgetDock->setWidget(mpPlotWidget);
-
-            mpPlotWidgetDock->show();
-            mpPlotWidgetDock->raise();
-            mpPlotAction->setChecked(true);
-            connect(mpPlotWidgetDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updatePlotActionButton(bool)));
-        }
-        else
-        {
-            mpPlotWidgetDock->hide();
-            mpPlotAction->setChecked(false);
-        }
-//    }
+    // Show it if it is currently not visible
+    if(mpPlotWidgetDock->isHidden())
+    {
+        mpPlotWidgetDock->setWidget(gpPlotWidget);
+        mpPlotWidgetDock->show();
+        mpPlotWidgetDock->raise();
+    }
+    // Else hide it
+    else
+    {
+        mpPlotWidgetDock->hide();
+    }
 }
 
 
@@ -630,7 +625,7 @@ void MainWindow::createActions()
     mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
     mpPlotAction->setCheckable(true);
     mpPlotAction->setShortcut(QKeySequence("Ctrl+Shift+p"));
-    connect(mpPlotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
+    connect(mpPlotAction, SIGNAL(triggered()),this,SLOT(toggleVisiblePlotWidget()));
     connect(mpPlotAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpPlotAction, "Opens the list with all available plot variables from current model.");
 

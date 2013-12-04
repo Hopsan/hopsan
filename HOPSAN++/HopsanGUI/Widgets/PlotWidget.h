@@ -18,52 +18,33 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-XX-XX
 //!
-//! @brief Contains the PlotWidget and otehr plot related classes
+//! @brief Contains the PlotWidget and related classes
 //!
 //$Id$
 
 #ifndef PlotWidget_H
 #define PlotWidget_H
 
-#include <QGridLayout>
-#include <QTreeWidgetItem>
 #include <QPushButton>
-#include <QString>
-
+#include <QTreeWidget>
 #include "LogDataHandler.h"
 
-class PlotWindow;
-class PlotTreeWidget;
-
-class PlotVariableTreeItem : public QTreeWidgetItem
-{
-public:
-    PlotVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *parent);
-    SharedLogVariableDataPtrT getDataPtr();
-    QString getFullName() const;
-    QString getComponentName();
-    QString getPortName();
-    QString getDataName();
-    QString getDataUnit();
-    QString getAliasName();
-    int getGeneration() const;
-
-private:
-    SharedLogVariableDataPtrT mpData;
-};
-
-
-class PlotVariableTree : public QTreeWidget
+class VariableTree : public QTreeWidget
 {
     Q_OBJECT
-    friend class PlotTreeWidget;
 public:
-    PlotVariableTree(QWidget *pParent=0);
+    VariableTree(QWidget *pParent=0);
+
     void setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler);
     LogDataHandler *getLogDataHandler();
 
-public slots:
+    void addFullVariable(SharedLogVariableDataPtrT pData);
+    void addAliasVariable(SharedLogVariableDataPtrT pData);
+    void addImportedVariable(SharedLogVariableDataPtrT pData);
+    void refreshImportedVariables();
+
     void updateList();
+    void clear();
 
 protected slots:
     PlotWindow *createPlotWindow(QTreeWidgetItem *item);
@@ -73,33 +54,49 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void contextMenuEvent(QContextMenuEvent *event);
 
-    QPointF dragStartPosition;
+    void resetImportedItemParent();
+    void resetAliasItemParent();
 
-private:
-    QList<VariableCommonDescription> mAvailableVariables;
+    void getExpandedFullVariables(QStringList &rList);
+    void getExpandedImportFiles(QStringList &rList);
+
+    void expandImportFileItems(const QStringList &rList);
+    void expandFullVariableItems(const QStringList &rList);
+
+    QPointF dragStartPosition;
+    QMap<QString, QTreeWidgetItem*> mFullVariableItemMap;
+    QMap<QString, QTreeWidgetItem*> mAliasVariableItemMap;
+    QMap<QString, QTreeWidgetItem*> mImportedFileItemMap;
+
+    QTreeWidgetItem* mpImportedItemParent;
+    QTreeWidgetItem* mpAliasItemParent;
+
+    //QList<VariableCommonDescription> mAvailableVariables;
     QPointer<LogDataHandler> mpLogDataHandler;
 };
 
-
-class PlotTreeWidget : public QWidget
+class PlotWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PlotTreeWidget(QWidget *pParent=0);
-    PlotVariableTree *mpPlotVariableTree;
+    PlotWidget(QWidget *pParent=0);
+    void setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler);
+    LogDataHandler *getLogDataHandler();
 
 public slots:
+    void updateList();
+    void clearList();
+
     void openNewPlotWindow();
     void loadFromXml();
-    void clearHoverEffects();
 
 protected:
-    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void showEvent(QShowEvent *event);
 
-private:
+    VariableTree *mpVariableTree;
     QPushButton *mpNewWindowButton;
     QPushButton *mpLoadButton;
-    QGridLayout *mpLayout;
+    bool mHasPendingUpdate;
 };
 
 #endif // PlotWidget_H

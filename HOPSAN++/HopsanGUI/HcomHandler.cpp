@@ -1584,7 +1584,7 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
         HCOMERR("Failed to assign variable alias.");
     }
 
-    gpPlotWidget->mpPlotVariableTree->updateList();
+    gpPlotWidget->updateList();
 
     return;
 }

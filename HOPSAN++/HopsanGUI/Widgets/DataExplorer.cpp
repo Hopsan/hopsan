@@ -17,12 +17,12 @@
 class GenerationItem : public QWidget
 {
 public:
-    GenerationItem(const int genNum, QWidget *pParent) : QWidget(pParent)
+    GenerationItem(const int genNum, const QString &rDescription, QWidget *pParent) : QWidget(pParent)
     {
         mGenerationNumber = genNum;
         QHBoxLayout *pHLayout = new QHBoxLayout(this);
         pHLayout->addWidget(&mChosenCheckBox);
-        pHLayout->addWidget(new QLabel(QString("Gen: %1").arg(genNum), this));
+        pHLayout->addWidget(new QLabel(QString("Gen: %1  %2").arg(genNum).arg(rDescription), this));
         pHLayout->setSizeConstraint(QLayout::SetFixedSize);
     }
 
@@ -251,10 +251,20 @@ void DataExplorer::refreshGenerationList()
         pGenerationListLayout->addWidget(new QLabel("Generations", mpGenerationsListWidget),0,Qt::AlignHCenter);
 
         QList<int> gens = mpLogDataHandler->getGenerations();
+        QMap<QString, int> importedGensFileMap = mpLogDataHandler->getImportFilesAndGenerations();
+        QList<int> importedGens = importedGensFileMap.values();
         QList<int>::iterator it;
         for (it=gens.begin(); it!=gens.end(); ++it)
         {
-            GenerationItem *pItem = new GenerationItem(*it, mpGenerationsListWidget);
+            GenerationItem *pItem;
+            if (importedGens.contains(*it))
+            {
+                pItem = new GenerationItem(*it, importedGensFileMap.key(*it), mpGenerationsListWidget);
+            }
+            else
+            {
+                pItem = new GenerationItem(*it, "", mpGenerationsListWidget);
+            }
             pGenerationListLayout->addWidget(pItem, 1, Qt::AlignTop);
             mGenerationItemMap.insert(*it,pItem);
         }

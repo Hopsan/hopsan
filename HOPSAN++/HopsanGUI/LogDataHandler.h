@@ -113,6 +113,8 @@ public:
 
     QList<QString> getImportedVariablesFileNames() const;
     QList<SharedLogVariableDataPtrT> getImportedVariablesForFile(const QString &rFileName);
+    QMap<QString, int> getImportFilesAndGenerations() const;
+    void removeImportedFileGeneration(const QString &rFileName);
 
     void definePlotAlias(QString fullName);
     bool definePlotAlias(const QString alias, const QString fullName);

@@ -347,14 +347,14 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
 
     // Setup PlotVariable List stuff
-    PlotTreeWidget *pLocalPlotWidget = new PlotTreeWidget(this);
+    PlotWidget *pLocalPlotWidget = new PlotWidget(this);
     QDockWidget *pLocalPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
     pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, pLocalPlotWidgetDock);
     pLocalPlotWidgetDock->setWidget(pLocalPlotWidget);
     if(gpModelHandler->count() != 0)
     {
-        pLocalPlotWidget->mpPlotVariableTree->setLogDataHandler(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
+        pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
     }
 
     pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");

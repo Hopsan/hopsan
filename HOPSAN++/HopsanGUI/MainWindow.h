@@ -35,7 +35,7 @@ class LibraryWidget;
 class OptionsDialog;
 class MessageWidget;
 class TerminalConsole;
-class PlotTreeWidget;
+class PlotWidget;
 class PyDockWidget;
 class SystemParametersWidget;
 class WelcomeWidget;
@@ -93,7 +93,6 @@ public:
     LibraryWidget *mpLibraryWidget;
     MessageWidget *mpMessageWidget;
     TerminalWidget *mpTerminalWidget;
-    PlotTreeWidget *mpPlotWidget;
     SystemParametersWidget *mpSystemParametersWidget;
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
     QGridLayout *mpCentralGridLayout;
@@ -189,7 +188,7 @@ private slots:
     void simulateKeyWasPressed();
     void openHVCWidget();
     void openDataExplorerWidget();
-    void openPlotWidget();
+    void toggleVisiblePlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();
     void openRecentModel();

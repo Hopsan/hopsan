@@ -2055,7 +2055,7 @@ void LogDataHandler::setFavoriteVariable(QString componentName, QString portName
     {
         mFavoriteVariables.append(tempVariable);
     }
-    gpPlotWidget->mpPlotVariableTree->updateList();
+    gpPlotWidget->updateList();
 
     mpParentContainerObject->mpModelWidget->hasChanged();
 }
@@ -2071,7 +2071,7 @@ void LogDataHandler::removeFavoriteVariableByComponentName(QString componentName
         if((*it).mComponentName == componentName)
         {
             mFavoriteVariables.removeAll((*it));
-            gpPlotWidget->mpPlotVariableTree->updateList();
+            gpPlotWidget->updateList();
             return;
         }
     }
@@ -2239,6 +2239,34 @@ QList<SharedLogVariableDataPtrT> LogDataHandler::getImportedVariablesForFile(con
     {
         // Return empty list if file not found
         return QList<SharedLogVariableDataPtrT>();
+    }
+}
+
+QMap<QString, int> LogDataHandler::getImportFilesAndGenerations() const
+{
+    QMap<QString, int> results;
+    ImportedLogDataMapT::const_iterator fit;
+    for (fit=mImportedLogDataMap.begin(); fit != mImportedLogDataMap.end(); ++fit)
+    {
+        const QMap<QString,SharedLogVariableDataPtrT>  &var_map = fit.value();
+        if (!var_map.isEmpty())
+        {
+            results.insert(fit.key() ,var_map.begin().value()->getGeneration());
+        }
+    }
+    return results;
+}
+
+void LogDataHandler::removeImportedFileGeneration(const QString &rFileName)
+{
+    ImportedLogDataMapT::iterator it = mImportedLogDataMap.find(rFileName);
+    if (it != mImportedLogDataMap.end())
+    {
+        if (!it.value().isEmpty())
+        {
+            const int gen = it.value().begin().value()->getGeneration();
+            removeGeneration(gen, true);
+        }
     }
 }
 

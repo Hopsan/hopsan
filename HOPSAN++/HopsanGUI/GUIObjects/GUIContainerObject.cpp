@@ -149,7 +149,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 
     // Update main window widgets with data from this container
     gpMainWindow->mpDataExplorer->setLogdataHandler(this->mpLogDataHandler);
-    gpPlotWidget->mpPlotVariableTree->setLogDataHandler(this->getLogDataHandler());
+    gpPlotWidget->setLogDataHandler(this->getLogDataHandler());
     gpMainWindow->mpSystemParametersWidget->update(this);
     gpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
@@ -162,7 +162,7 @@ void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 {
     // Update Systemparameter widget to have no contents
     gpMainWindow->mpSystemParametersWidget->update(0);
-    gpPlotWidget->mpPlotVariableTree->setLogDataHandler(0);
+    gpPlotWidget->setLogDataHandler(0);
 
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
