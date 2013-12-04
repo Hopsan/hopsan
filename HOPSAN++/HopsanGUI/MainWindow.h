@@ -159,6 +159,7 @@ public:
     QAction *mpNewVersionsAction;
     QAction *mpShowLossesAction;
     QAction *mpMeasureSimulationTimeAction;
+    QAction *mpToggleHideAllDockAreasAction;
 
     QAction *mpDebug1Action;
     QAction *mpDebug2Action;
@@ -200,6 +201,7 @@ private slots:
     void showToolBarHelpPopup();
     void openModelByAction();
     void showReleaseNotes();
+    void toggleHideShowDockAreas(bool show);
 
 private:
     void createActions();
@@ -222,7 +224,6 @@ private:
     //Dock area widgets
     QDockWidget *mpMessageDock;
     QDockWidget *mpLibDock;
-    QDockWidget *mpLibDock2;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
     QDockWidget *mpSystemParametersDock;

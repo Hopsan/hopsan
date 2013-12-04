@@ -155,5 +155,6 @@
         <file>graphics/uiicons/Hopsan-AxisTimeScale.png</file>
         <file>graphics/builtinCAF/hidden/builtin_hidden.xml</file>
         <file>graphics/builtinCAF/visible/builtin_visible.xml</file>
+        <file>graphics/uiicons/Hopsan-ShowHideDockAreas.png</file>
     </qresource>
 </RCC>

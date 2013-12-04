@@ -230,17 +230,17 @@ void MainWindow::createContents()
     mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
 
 
-    QToolButton *pHideTerminalButton = new QToolButton(this);
-    pHideTerminalButton->setText("Hide");
-    pHideTerminalButton->setFixedSize(300,12);
-    pHideTerminalButton->setCheckable(true);
-    pHideTerminalButton->setChecked(false);
-    mpCentralGridLayout->addWidget(pHideTerminalButton,5,0,1,4, Qt::AlignCenter);
-    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpTerminalDock, SLOT(setVisible(bool)));
-    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpMessageDock, SLOT(setVisible(bool)));
-#ifdef USEPYTHONQT
-    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpPyDockWidget, SLOT(setVisible(bool)));
-#endif
+//    QToolButton *pHideTerminalButton = new QToolButton(this);
+//    pHideTerminalButton->setText("Hide");
+//    pHideTerminalButton->setFixedSize(300,12);
+//    pHideTerminalButton->setCheckable(true);
+//    pHideTerminalButton->setChecked(false);
+//    mpCentralGridLayout->addWidget(pHideTerminalButton,5,0,1,4, Qt::AlignCenter);
+//    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpTerminalDock, SLOT(setVisible(bool)));
+//    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpMessageDock, SLOT(setVisible(bool)));
+//#ifdef USEPYTHONQT
+//    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpPyDockWidget, SLOT(setVisible(bool)));
+//#endif
 
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
@@ -449,7 +449,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     mpTerminalWidget->saveConfig();
 
-    //this->saveSettings();
     gpConfig->saveToXml();
 }
 
@@ -825,6 +824,10 @@ void MainWindow::createActions()
     connect(mpShowLossesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpShowLossesAction, "Show energy or power losses from last simulation.");
 
+    mpToggleHideAllDockAreasAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ShowHideDockAreas.png"), tr("Hide/Show dock areas"), this);
+    mpToggleHideAllDockAreasAction->setCheckable(true);
+    mpToggleHideAllDockAreasAction->setChecked(true);
+    connect(mpToggleHideAllDockAreasAction, SIGNAL(toggled(bool)), this, SLOT(toggleHideShowDockAreas(bool)));
 
     mpStartTimeLineEdit = new MainWindowLineEdit("0.0", this);
     mpStartTimeLineEdit->setMaximumWidth(70);
@@ -852,11 +855,11 @@ void MainWindow::createActions()
 //! @brief Creates the menus
 void MainWindow::createMenus()
 {
-    //Create the menubar
+    // Create the menubar
     mpMenuBar = new QMenuBar();
     mpMenuBar->setGeometry(QRect(0,0,800,25));
 
-    //Create the menues
+    // Create the main menues
     mpFileMenu = new QMenu(mpMenuBar);
     mpFileMenu->setTitle(tr("&File"));
 
@@ -889,7 +892,16 @@ void MainWindow::createMenus()
 
     this->setMenuBar(mpMenuBar);
 
-    //Add the actionbuttons to the menues
+    // Create sub menues for the help menue
+    mpExamplesMenu = new QMenu("Example Models");
+    QDir exampleModelsDir(gpDesktopHandler->getMainPath()+"Models/Example Models/");
+    buildModelActionsMenu(mpExamplesMenu, exampleModelsDir);
+
+    mpTestModelsMenu = new QMenu("Test Models");
+    QDir testModelsDir(gpDesktopHandler->getMainPath()+"Models/Component Test/");
+    buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
+
+    // Add the actionbuttons to the menues
     mpNewAction->setText("Project");
     mpNewMenu->addAction(mpNewAction);
 
@@ -1089,6 +1101,7 @@ void MainWindow::createToolbars()
     mpViewToolBar->addAction(mpToggleNamesAction);
     mpViewToolBar->addAction(mpTogglePortsAction);
     mpViewToolBar->addAction(mpToggleSignalsAction);
+    mpViewToolBar->addAction(mpToggleHideAllDockAreasAction);
 
     //Tools toolbar, contains all tools used to modify the model
     mpToolsToolBar = new QToolBar(tr("Tools Toolbar"));
@@ -1100,15 +1113,6 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(mpRotateLeftAction);
     mpToolsToolBar->addAction(mpFlipHorizontalAction);
     mpToolsToolBar->addAction(mpFlipVerticalAction);
-
-    //! @todo whay are these two in teh createToolbars function
-    mpExamplesMenu = new QMenu("Example Models");
-    QDir exampleModelsDir(gpDesktopHandler->getMainPath()+"Models/Example Models/");
-    buildModelActionsMenu(mpExamplesMenu, exampleModelsDir);
-
-    mpTestModelsMenu = new QMenu("Test Models");
-    QDir testModelsDir(gpDesktopHandler->getMainPath()+"Models/Component Test/");
-    buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
 
     connect(mpImportFMUAction,              SIGNAL(triggered()), gpLibraryHandler,     SLOT(importFmu()));
     connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulink()));
@@ -1335,6 +1339,34 @@ void MainWindow::openContextHelp(QString file)
 void MainWindow::showReleaseNotes()
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile(gpDesktopHandler->getExecPath()+"../Hopsan-release-notes.txt"));
+}
+
+void MainWindow::toggleHideShowDockAreas(bool show)
+{
+    // Show default set of docks
+    //! @todo would be nice if we would remember those opened and reshow them, but there will be odd behavior if uo hide and tehn oopen some manually and close tehm again, then triggering show will reshow them, but maybe not a big deal
+    if (show)
+    {
+        mpLibDock->show();
+        mpTerminalDock->show();
+        mpMessageDock->show();
+#ifdef USEPYTHONQT
+        mpPyDockWidget->show();
+#endif
+        //mpPlotWidgetDock->show();
+        //mpSystemParametersDock->hide();
+    }
+    else
+    {
+        mpLibDock->hide();
+        mpTerminalDock->hide();
+        mpMessageDock->hide();
+#ifdef USEPYTHONQT
+        mpPyDockWidget->hide();
+#endif
+        mpPlotWidgetDock->hide();
+        mpSystemParametersDock->hide();
+    }
 }
 
 
