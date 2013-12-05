@@ -39,7 +39,10 @@ class Configuration;
 
 class OptimizationHandler : public QObject
 {
+    Q_OBJECT
+
     friend class HcomHandler;
+    friend class OptimizationDialog;
 public:
     //Enums
     enum OptDataType{Int, Double};
@@ -51,57 +54,65 @@ public:
     //Public access functions
     double getOptimizationObjectiveValue(int idx);
 
-private:
+    Configuration *mpConfig;
     TerminalConsole *mpConsole;
     HcomHandler *mpHcomHandler;
-    Configuration *mpConfig;
 
-    //Help functions
-    void optComplexInit();
-    void optComplexRun();
-    void optComplexForget();
-    void optComplexCalculatebestandworstid();
-    void optComplexFindcenter();
-    void optComplexReflectWorst();
-    bool optCheckForConvergence();
-    double optComplexMaxpardiff();
-    void optParticleInit();
-    void optParticleRun();
-    void optPrintLogOutput();
-    void optMoveParticles();
-    void optPlotPoints();
-    void optPlotObjectiveFunctionValues();
-    void optPlotParameters();
-    void cleanUp();
+signals:
+    void optimizationFinished();
 
-    //Optimization
-    int mOptNumPoints;
-    int mOptNumParameters;
-    QVector<double> mOptParMin, mOptParMax;
-    QVector< QVector<double> > mOptParameters, mOptOldParameters;
-    QVector< QVector<double> > mOptVelocities, mOptBestKnowns;
-    QVector<double> mOptObjectives, mOptBestObjectives, mOptBestPoint;
-    OptAlgorithmType mOptAlgorithm;
-    OptDataType mOptParameterType;
-    int mOptWorstCounter;
-    double mOptBestObj;
-    double mOptMaxEvals;
-    double mOptAlpha, mOptRfak, mOptGamma, mOptKf;
-    double mOptOmega, mOptC1, mOptC2;
-    double mOptWorst;
-    int mOptWorstId, mOptBestId, mOptLastWorstId;
-    QVector<double> mOptCenter;
-    int mOptConvergenceReason;
-    double mOptParTol, mOptFuncTol;
-    bool mOptMulticore;
-    QVector<ModelWidget *> mOptModelPtrs;
-    bool mOptPrintLogOutput;
-    QStringList mOptLogOutput;
+private:
+    //Help functions (Complex-RF)
+    void crfInit();
+    void crfRun();
+    void crfForget();
+    void crfFindcenter();
+    void crfReflectWorst();
+    double crfMaxpardiff();
 
-    bool mOptPlotPoints;
-    bool mOptPlotObjectiveFunctionValues;
-    bool mOptPlotParameters;
-    bool mOptPlotVariables;
+    //Help functions (Particle Swarm)
+    void psInit();
+    void psRun();
+    void psMoveParticles();
+    void psPrintLogOutput();
+
+    //Help functions (all algorithms)
+    bool checkForConvergence();
+    void plotPoints();
+    void plotObjectiveFunctionValues();
+    void plotParameters();
+    void finalize();
+    void calculatebestandworstid();
+
+    //Complex-RF member variables
+    double mCrfAlpha, mCrfRfak, mCrfGamma, mCrfKf;
+    int mCrfWorstCounter;
+    QVector<double> mCrfCenter;
+
+    //Particle swarm member variables
+    double mPsOmega, mPsC1, mPsC2;
+    bool mPsPrintLogOutput;
+    QStringList mPsLogOutput;
+    QVector< QVector<double> > mPsVelocities, mPsBestKnowns;
+    QVector<double> mObjectives, mPsBestObjectives, mPsBestPoint;
+    double mPsBestObj;
+
+    //Member variables (both algorithms)
+    int mNumPoints;
+    int mNumParameters;
+    QVector<double> mParMin, mParMax;
+    QVector< QVector<double> > mParameters, mOldParameters;
+    OptAlgorithmType mAlgorithm;
+    OptDataType mParameterType;
+    double mMaxEvals;
+    int mWorstId, mBestId, mLastWorstId;
+    int mConvergenceReason;
+    double mParTol, mFuncTol;
+    QVector<ModelWidget *> mModelPtrs;
+    bool mPlotPoints;
+    bool mPlotObjectiveFunctionValues;
+    bool mPlotParameters;
+    bool mPlotVariables;
 };
 
 #endif // OPTIMIZATIONHANDLER_H

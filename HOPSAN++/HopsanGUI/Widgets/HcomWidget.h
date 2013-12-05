@@ -92,6 +92,8 @@ public:
     void updateNewMessages();
     void appendOneMessage(GUIMessage msg, bool timeStamp="");
 
+    TerminalWidget *mpTerminal;
+
 public slots:
     void checkMessages();
     void clear();
@@ -120,8 +122,6 @@ private:
     void handleEscapeKeyPress();
     void cancelAutoComplete();
     void cancelRecentHistory();
-
-    TerminalWidget *mpParent;
 
     CoreMessagesAccess *mpCoreAccess;
 

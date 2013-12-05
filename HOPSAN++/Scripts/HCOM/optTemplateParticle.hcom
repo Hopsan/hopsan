@@ -27,7 +27,7 @@ partol=<<<partol>>>
 opt init particleswarm double
 
 sim
-chpv <<<plotvars>>>
+<<<plotvars>>>
 <<<extraplots>>>
 
 #Set min and max values for parameters

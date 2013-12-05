@@ -24,6 +24,7 @@
 
 #include <QDebug>
 #include <limits>
+#include <unistd.h>
 
 #include "global.h"
 #include "Configuration.h"
@@ -38,6 +39,9 @@
 #include "ModelHandler.h"
 #include "Widgets/PyDockWidget.h"
 #include "MainWindow.h"
+#include "OptimizationHandler.h"
+#include "GUIObjects/GUISystem.h"
+#include "Widgets/ModelWidget.h"
 
 class CentralTabWidget;
 
@@ -125,12 +129,17 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(pSettingsLabel,        0, 0);
     pSettingsLayout->addWidget(pAlgorithmLabel,       1, 0);
     pSettingsLayout->addWidget(mpAlgorithmBox,         1, 1);
+    connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateCoreProgressBars()));
     pSettingsLayout->addWidget(pIterationsLabel,      2, 0);
     pSettingsLayout->addWidget(mpIterationsSpinBox,    2, 1);
     pSettingsLayout->addWidget(mpSearchPointsLabel,    3, 0);
     pSettingsLayout->addWidget(mpSearchPointsSpinBox,  3, 1);
+    connect(mpSearchPointsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateCoreProgressBars()));
+    connect(mpSearchPointsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateParameterOutputLineEdits()));
     pSettingsLayout->addWidget(mpParticlesLabel,       3, 0);
     pSettingsLayout->addWidget(mpParticlesSpinBox,     3, 1);
+    connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateCoreProgressBars()));
+    connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateParameterOutputLineEdits()));
     pSettingsLayout->addWidget(mpAlphaLabel,           4, 0);
     pSettingsLayout->addWidget(mpAlphaLineEdit,        4, 1);
     pSettingsLayout->addWidget(mpOmegaLabel,           4, 0);
@@ -254,22 +263,28 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pOutputWidget->setLayout(pOutputLayout);
 
     //Toolbar
-    mpHelpButton = new QToolButton(this);
-    mpHelpButton->setToolTip(tr("Show context help"));
-    mpHelpButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
-    this->setButton(QWizard::HelpButton, mpHelpButton);
+    QToolButton *pHelpButton = new QToolButton(this);
+    pHelpButton->setToolTip(tr("Show context help"));
+    pHelpButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    this->setButton(QWizard::HelpButton, pHelpButton);
     this->setOption(QWizard::HaveHelpButton);
-    mpHelpButton->setObjectName("optimizationHelpButton");
+    pHelpButton->setObjectName("optimizationHelpButton");
 
+    //Run tab
     mpStartButton = new QPushButton("Start Optimization", this);
-    mpParametersOutputTextEdit = new QTextEdit(this);
+    connect(mpStartButton, SIGNAL(clicked(bool)), mpStartButton, SLOT(setEnabled(bool)));
     mpTotalProgressBar = new QProgressBar(this);
+    mpTotalProgressBar->hide();
+    mpCoreProgressBarsLayout = new QGridLayout();
+    mpParametersOutputTextEditsLayout = new QGridLayout();
     mpTerminal = new TerminalWidget(this);
     QGridLayout *pRunLayout = new QGridLayout(this);
-    pRunLayout->addWidget(mpStartButton,0,0);
-    pRunLayout->addWidget(mpParametersOutputTextEdit,1,0);
-    pRunLayout->addWidget(mpTerminal,2,0);
-    pRunLayout->addWidget(mpTotalProgressBar,3,0);
+    pRunLayout->addWidget(mpStartButton,                         0,0,1,1);
+    pRunLayout->addLayout(mpParametersOutputTextEditsLayout,    1,0,1,1);
+    pRunLayout->addLayout(mpCoreProgressBarsLayout,             1,1,1,1);
+    pRunLayout->addWidget(mpTerminal,                           2,0,1,2);
+    pRunLayout->setRowStretch(2,1);
+   // pRunLayout->addWidget(mpTotalProgressBar,           3,0,1,2);
     QWizardPage *pRunWidget = new QWizardPage(this);
     pRunWidget->setLayout(pRunLayout);
 
@@ -285,12 +300,56 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     setOption(QWizard::CancelButtonOnLeft, true);
     button(QWizard::CustomButton1)->setDisabled(true);
 
+    mpTimer = new QTimer(this);
+    connect(mpTimer, SIGNAL(timeout()), this, SLOT(updateCoreProgressBars()));
+    mpTimer->setSingleShot(false);
+
     //Connections
     connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(update(int)));
     connect(mpAddFunctionButton,            SIGNAL(clicked()),      this,                   SLOT(addFunction()));
-    connect(mpHelpButton,                   SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(pHelpButton,                   SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
     connect(mpStartButton, SIGNAL(clicked()), this, SLOT(run()));
     connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
+}
+
+void OptimizationDialog::updateParameterOutputs(QVector< QVector<double> > &values, int bestId, int worstId)
+{
+    if(!this->isVisible()) return;
+
+    for(int i=0; i<values.size(); ++i)
+    {
+        QString output="[ ";
+        for(int j=0; j<values[i].size(); ++j)
+        {
+            output.append(QString::number(values[i][j])+" ");
+        }
+        output.append("]");
+        QPalette palette;
+        if(i == bestId)
+            palette.setColor(QPalette::Text,Qt::darkGreen);
+        else if(i == worstId)
+            palette.setColor(QPalette::Text,Qt::darkRed);
+        else
+            palette.setColor(QPalette::Text,Qt::black);
+        mParametersOutputLineEditPtrs[i]->setPalette(palette);
+        mParametersOutputLineEditPtrs[i]->setText(output);
+    }
+}
+
+void OptimizationDialog::updateTotalProgressBar(double progress)
+{
+    if(!this->isVisible()) return;
+
+    mpTotalProgressBar->setValue(progress);
+}
+
+void OptimizationDialog::setOptimizationFinished()
+{
+    mpStartButton->setEnabled(true);
+    for(int i=0; i<mParametersApplyButtonPtrs.size(); ++i)
+    {
+        mParametersApplyButtonPtrs[i]->setEnabled(true);
+    }
 }
 
 
@@ -559,6 +618,9 @@ void OptimizationDialog::open()
 
     loadConfiguration();
 
+    recreateCoreProgressBars();
+    recreateParameterOutputLineEdits();
+
     QDialog::show();
 }
 
@@ -626,7 +688,7 @@ void OptimizationDialog::generateComplexScript()
     QString totalObj;
     QString objPars;
     QStringList plotVarsList;
-    QString plotVars;
+    QString plotVars = "chpv ";
     QString setMinMax;
     QString setPars;
     for(int i=0; i<mFunctionName.size(); ++i)
@@ -709,7 +771,14 @@ void OptimizationDialog::generateComplexScript()
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<objpars>>>", objPars);
-    templateCode.replace("<<<plotvars>>>", plotVars);
+    if(mpPlottingCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotvars>>>", plotVars);
+    }
+    else
+    {
+        templateCode.replace("<<<plotvars>>>", "");
+    }
     templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
@@ -737,7 +806,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     QString totalObj;
     QString objPars;
     QStringList plotVarsList;
-    QString plotVars;
+    QString plotVars="chpv ";
     QString setMinMax;
     QString setPars;
     for(int i=0; i<mFunctionName.size(); ++i)
@@ -811,7 +880,14 @@ void OptimizationDialog::generateParticleSwarmScript()
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<objpars>>>", objPars);
-    templateCode.replace("<<<plotvars>>>", plotVars);
+    if(mpPlottingCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotvars>>>", plotVars);
+    }
+    else
+    {
+        templateCode.replace("<<<plotvars>>>", "");
+    }
     templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
@@ -1225,11 +1301,21 @@ void OptimizationDialog::run()
 {
     saveConfiguration();
 
+    recreateCoreProgressBars();
+    recreateParameterOutputLineEdits();
+
+    for(int i=0; i<mParametersApplyButtonPtrs.size(); ++i)
+    {
+        mParametersApplyButtonPtrs[i]->setEnabled(false);
+    }
+
     QStringList commands = mpOutputBox->toPlainText().split("\n");
     bool *abort = new bool;
     gpTerminalWidget->setEnabledAbortButton(true);
+    mpTimer->start(10);
     gpTerminalWidget->mpHandler->runScriptCommands(commands, abort);
     gpTerminalWidget->setEnabledAbortButton(false);
+    mpTimer->stop();
     delete(abort);
 }
 
@@ -1257,6 +1343,141 @@ void OptimizationDialog::saveScriptFile()
     QTextStream out(&file);
     out << mpOutputBox->toPlainText();
     file.close();
+}
+
+void OptimizationDialog::updateCoreProgressBars()
+{
+    for(int p=0; p<mCoreProgressBarPtrs.size(); ++p)
+    {
+        OptimizationHandler *pOptHandler = mpTerminal->mpHandler->mpOptHandler;
+        if(pOptHandler)
+        {
+            if(pOptHandler->mModelPtrs.size() > p)
+            {
+                ModelWidget *pOptModel = pOptHandler->mModelPtrs[p];
+                double stopT = pOptModel->getStopTime().toDouble();
+                if(pOptModel)
+                {
+                    CoreSystemAccess *pCoreSystem = pOptModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
+                    mCoreProgressBarPtrs[p]->setValue(pCoreSystem->getCurrentTime() / stopT *100);
+                }
+            }
+        }
+    }
+}
+
+void OptimizationDialog::recreateCoreProgressBars()
+{
+    //Clear all previous stuff
+    QLayoutItem *item;
+    while((item = mpCoreProgressBarsLayout->takeAt(0)))
+    {
+        if (item->widget())
+        {
+            delete item->widget();
+        }
+        delete item;
+    }
+    mCoreProgressBarPtrs.clear();
+
+    //Add new stuff depending on algorithm and number of threads
+    switch (mpAlgorithmBox->currentIndex())
+    {
+    case 0 :    //Complex
+        mCoreProgressBarPtrs.append(new QProgressBar(this));
+        mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
+        mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
+        break;
+    case 1 :    //Particle swarm
+        if(gpConfig->getUseMulticore())
+        {
+            for(int n=0; n<mpParticlesSpinBox->value(); ++n)
+            {
+                mCoreProgressBarPtrs.append(new QProgressBar(this));
+                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
+                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
+            }
+        }
+        else
+        {
+            mCoreProgressBarPtrs.append(new QProgressBar(this));
+            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
+            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
+        }
+        break;
+    default:
+        break;
+    }
+
+    mpTotalProgressBar = new QProgressBar(this);
+    mpCoreProgressBarsLayout->addWidget(new QLabel("Total: ", this),mCoreProgressBarPtrs.size(), 0);
+    mpCoreProgressBarsLayout->addWidget(mpTotalProgressBar, mCoreProgressBarPtrs.size(), 1);
+    mpCoreProgressBarsLayout->addWidget(new QWidget(this), mCoreProgressBarPtrs.size()+1, 0, 1, 2);
+    mpCoreProgressBarsLayout->setRowStretch(mCoreProgressBarPtrs.size()+1, 1);
+    return;
+}
+
+void OptimizationDialog::recreateParameterOutputLineEdits()
+{
+    int nPoints;
+    switch(mpAlgorithmBox->currentIndex())
+    {
+    case 0:     //Complex
+        nPoints=mpSearchPointsSpinBox->value();
+        break;
+    case 1:
+        nPoints=mpParticlesSpinBox->value();
+        break;
+    default:
+        nPoints=0;
+    }
+
+    while(mParametersOutputLineEditPtrs.size() < nPoints)
+    {
+        mParametersOutputLineEditPtrs.append(new QLineEdit(this));
+        mParametersApplyButtonPtrs.append(new QPushButton("Apply", this));
+        mpParametersOutputTextEditsLayout->addWidget(mParametersApplyButtonPtrs.last(), mParametersOutputLineEditPtrs.size(), 0);
+        mpParametersOutputTextEditsLayout->addWidget(mParametersOutputLineEditPtrs.last(), mParametersOutputLineEditPtrs.size(), 1);
+        mParametersApplyButtonPtrs.last()->setEnabled(false);
+        connect(mParametersApplyButtonPtrs.last(), SIGNAL(clicked()), this, SLOT(applyParameters()));
+    }
+    while(mParametersOutputLineEditPtrs.size() > nPoints)
+    {
+        mpParametersOutputTextEditsLayout->removeWidget(mParametersOutputLineEditPtrs.last());
+        mpParametersOutputTextEditsLayout->removeWidget(mParametersApplyButtonPtrs.last());
+        delete mParametersOutputLineEditPtrs.last();
+        delete mParametersApplyButtonPtrs.last();
+        mParametersOutputLineEditPtrs.removeLast();
+        mParametersApplyButtonPtrs.removeLast();
+    }
+}
+
+
+//! @brief Slot that applies the parameters in a point to the original model. Index of the point is determined by the sender of the signal.
+void OptimizationDialog::applyParameters()
+{
+    QPushButton *pSender = qobject_cast<QPushButton*>(QObject::sender());
+    if(!pSender) return;
+    int idx = mParametersApplyButtonPtrs.indexOf(pSender);
+
+    if(gpModelHandler->count() == 0 || !gpModelHandler->getCurrentModel())
+    {
+        QMessageBox::critical(this, "Error", "No model is open.");
+        return;
+    }
+
+     //Temporary switch optimization handler in global HCOM handler to this
+    OptimizationHandler *pOrgOptHandler = gpTerminalWidget->mpHandler->mpOptHandler;
+    gpTerminalWidget->mpHandler->mpOptHandler = mpTerminal->mpHandler->mpOptHandler;
+
+    QStringList code;
+    mpTerminal->mpHandler->getFunctionCode("setpars", code);
+    bool abort;
+    gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "evalId = "+QString::number(idx), &abort);
+    gpTerminalWidget->mpHandler->runScriptCommands(code, &abort);
+
+    //Switch back HCOM handler
+    gpTerminalWidget->mpHandler->mpOptHandler = pOrgOptHandler;
 }
 
 

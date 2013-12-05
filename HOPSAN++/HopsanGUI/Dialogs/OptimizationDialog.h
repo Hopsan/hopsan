@@ -51,20 +51,9 @@ public:
     OptimizationDialog(QWidget *parent = 0);
     TerminalWidget *mpTerminal;
 
-private:
-    void generateScriptFile();
-    void generateComplexScript();
-    void generateComplexScriptOld();
-    void generateParticleSwarmScript();
-    void generateParticleSwarmScriptOld();
-    bool verifyNumberOfVariables(int i, int nSelVar);
-    bool loadObjectiveFunctions();
-    QString generateFunctionCode(int i);
-
-    void loadConfiguration();
-    void saveConfiguration();
-
-    void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData);
+    void updateParameterOutputs(QVector<QVector<double> > &values, int bestId, int worstId);
+    void updateTotalProgressBar(double progress);
+    void setOptimizationFinished();
 
 protected:
     QTreeWidgetItem* findParameterTreeItem(QString componentName, QString parameterName);
@@ -83,8 +72,26 @@ private slots:
     void update(int idx);
     void run();
     void saveScriptFile();
+    void updateCoreProgressBars();
+    void recreateCoreProgressBars();
+    void recreateParameterOutputLineEdits();
+    void applyParameters();
 
 private:
+    void generateScriptFile();
+    void generateComplexScript();
+    void generateComplexScriptOld();
+    void generateParticleSwarmScript();
+    void generateParticleSwarmScriptOld();
+    bool verifyNumberOfVariables(int i, int nSelVar);
+    bool loadObjectiveFunctions();
+    QString generateFunctionCode(int i);
+
+    void loadConfiguration();
+    void saveConfiguration();
+
+    void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData);
+
     //Settings page
     QComboBox *mpAlgorithmBox;
     QSpinBox *mpIterationsSpinBox;
@@ -141,14 +148,16 @@ private:
     QTextEdit *mpOutputBox;
 
     //Run page
-    QPushButton *mpStartButton;
-    QTextEdit *mpParametersOutputTextEdit;
+    QGridLayout *mpParametersOutputTextEditsLayout;
+    QList<QLineEdit *> mParametersOutputLineEditPtrs;
+    QList<QPushButton *> mParametersApplyButtonPtrs;
+    QGridLayout *mpCoreProgressBarsLayout;
+    QList<QProgressBar*> mCoreProgressBarPtrs;
     QProgressBar *mpTotalProgressBar;
-
-    //Toolbar
-    QToolButton *mpHelpButton;
+    QPushButton *mpStartButton;
 
     //Member variables
+    QTimer *mpTimer;
     QString mScript;
     QStringList mFunctions;
     QStringList mSelectedFunctionsMinMax;

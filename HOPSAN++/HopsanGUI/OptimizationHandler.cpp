@@ -50,29 +50,29 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
     mpConfig = new Configuration();
     mpConfig->loadFromXml();        //This should work, since changes are always saved to file immideately from gpConfig
 
-    mOptAlgorithm = Uninitialized;
-    mOptPlotPoints = false;
-    mOptPlotObjectiveFunctionValues = false;
-    mOptPlotParameters = false;
-    mOptPrintLogOutput = true;  //! @todo Should be changeable by user
+    mAlgorithm = Uninitialized;
+    mPlotPoints = false;
+    mPlotObjectiveFunctionValues = false;
+    mPlotParameters = false;
+    mPsPrintLogOutput = true;  //! @todo Should be changeable by user
 }
 
 
 //! @brief Returns objective value with specified index
 double OptimizationHandler::getOptimizationObjectiveValue(int idx)
 {
-    if(idx<0 || idx > mOptObjectives.size()-1)
+    if(idx<0 || idx > mObjectives.size()-1)
     {
         return 0;
     }
-    return mOptObjectives[idx];
+    return mObjectives[idx];
 }
 
 
 //! @brief Initializes a Complex-RF optimization
-void OptimizationHandler::optComplexInit()
+void OptimizationHandler::crfInit()
 {
-    mpHcomHandler->setModelPtr(mOptModelPtrs[0]);
+    mpHcomHandler->setModelPtr(mModelPtrs[0]);
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
@@ -95,22 +95,22 @@ void OptimizationHandler::optComplexInit()
     }
     mpHcomHandler->setWorkingDirectory(oldPath);
 
-    for(int p=0; p<mOptNumPoints; ++p)
+    for(int p=0; p<mNumPoints; ++p)
     {
-        mOptParameters[p].resize(mOptNumParameters);
-        for(int i=0; i<mOptNumParameters; ++i)
+        mParameters[p].resize(mNumParameters);
+        for(int i=0; i<mNumParameters; ++i)
         {
             double r = (double)rand() / (double)RAND_MAX;
-            mOptParameters[p][i] = mOptParMin[i] + r*(mOptParMax[i]-mOptParMin[i]);
-            if(mOptParameterType == Int)
+            mParameters[p][i] = mParMin[i] + r*(mParMax[i]-mParMin[i]);
+            if(mParameterType == Int)
             {
-                mOptParameters[p][i] = round(mOptParameters[p][i]);
+                mParameters[p][i] = round(mParameters[p][i]);
             }
         }
     }
-    mOptObjectives.resize(mOptNumPoints);
+    mObjectives.resize(mNumPoints);
 
-    mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
+    mCrfKf = 1.0-pow(mCrfAlpha/2.0, mCrfGamma/mNumPoints);
 
 //    if(!gpModelHandler->getCurrentModel()->isSaved())
 //    {
@@ -131,23 +131,36 @@ void OptimizationHandler::optComplexInit()
 
     // Close these plotwindows before optimization to make sure old data is removed
     //! @todo should have define or const for this name "parplot"
-    gpPlotHandler->closeWindow("parplot");
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+    if(pPlotWindow)
+    {
+        PlotTab *pPlotTab = pPlotWindow->getCurrentPlotTab();
+        if(pPlotTab)
+        {
+            while(!pPlotTab->getCurves().isEmpty())
+            {
+                pPlotTab->removeCurve(pPlotTab->getCurves()[0]);
+            }
+        }
+    }
 }
 
 
 //! @brief Executes a Complex-RF optimization. optComplexInit() must be called before this one.
-void OptimizationHandler::optComplexRun()
+void OptimizationHandler::crfRun()
 {
     TicToc timer;
     //Plot optimization points
-    optPlotPoints();
+    plotPoints();
     timer.toc("PlotPoints");
 
+    mpConsole->mpTerminal->setEnabledAbortButton(true);
+
     //Reset convergence reason variable (0 = failed to converge)
-    mOptConvergenceReason=0;
+    mConvergenceReason=0;
 
     //Verify that everything is ok
-    if(mOptAlgorithm == Uninitialized)
+    if(mAlgorithm == Uninitialized)
     {
         mpConsole->printErrorMessage("Optimization not initialized.", "", false);
         return;
@@ -175,25 +188,25 @@ void OptimizationHandler::optComplexRun()
 
     //Calculate best and worst id, and initialize last worst id
     timer.tic();
-    optComplexCalculatebestandworstid();
-    mOptLastWorstId = mOptWorstId;
+    calculatebestandworstid();
+    mLastWorstId = mWorstId;
     timer.toc("optComplexCalculatebestandworstid");
 
     //Store parameters for undo
     timer.tic();
-    mOptOldParameters = mOptParameters;
+    mOldParameters = mParameters;
     timer.toc("Copy opt parameters");
 
     //Run optimization loop
     TicToc timer2;
     int i=0;
     int percent=-1;
-    for(; i<mOptMaxEvals && !mpHcomHandler->isAborted(); ++i)
+    for(; i<mMaxEvals && !mpHcomHandler->isAborted(); ++i)
     {
         timer2.tic(QString("******************* Starting OptLoop %1").arg(i));
 
         //Plot optimization points
-        optPlotPoints();
+        plotPoints();
 
         //Process UI events (required so that we don't lock up the program)
         qApp->processEvents();
@@ -203,54 +216,54 @@ void OptimizationHandler::optComplexRun()
         {
             mpConsole->print("Optimization aborted.");
             //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            cleanUp();
+            finalize();
             return;
         }
 
         //Print progress as percentage of maximum number of evaluations
-        int dummy=int(100.0*double(i)/mOptMaxEvals);
+        int dummy=int(100.0*double(i)/mMaxEvals);
         if(dummy != percent)    //Only update at whole numbers
         {
 //            mpConsole->setDontPrint(false);
 //            mpConsole->print(QString::number(dummy)+"%");
 //            mpConsole->setDontPrint(true);
             percent = dummy;
-            gpMainWindow->mpOptimizationDialog->mpTotalProgressBar->setValue(dummy);
+            gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
         }
 
         //Check convergence
-        if(optCheckForConvergence()) break;
+        if(checkForConvergence()) break;
 
         //Increase all objective values (forgetting principle)
-        optComplexForget();
+        crfForget();
 
         //Calculate best and worst point
-        optComplexCalculatebestandworstid();
-        int wid = mOptWorstId;
+        calculatebestandworstid();
+        int wid = mWorstId;
 
         //Plot best and worst objective values
-        optPlotObjectiveFunctionValues();
+        plotObjectiveFunctionValues();
 
         //Find geometrical center
-        optComplexFindcenter();
+        crfFindcenter();
 
         //Reflect worst point
         QVector<double> newPoint;
-        newPoint.resize(mOptNumParameters);
-        for(int j=0; j<mOptNumParameters; ++j)
+        newPoint.resize(mNumParameters);
+        for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mOptParameters[wid][j];
-            mOptParameters[wid][j] = mOptCenter[j] + (mOptCenter[j]-worst)*mOptAlpha;
+            double worst = mParameters[wid][j];
+            mParameters[wid][j] = mCrfCenter[j] + (mCrfCenter[j]-worst)*mCrfAlpha;
 
             //Add some random noise
-            double maxDiff = optComplexMaxpardiff();
+            double maxDiff = crfMaxpardiff();
             double r = (double)rand() / (double)RAND_MAX;
-            mOptParameters[wid][j] = mOptParameters[wid][j] + mOptRfak*(mOptParMax[j]-mOptParMin[j])*maxDiff*(r-0.5);
-            mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
-            mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
+            mParameters[wid][j] = mParameters[wid][j] + mCrfRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mParameters[wid][j] = min(mParameters[wid][j], mParMax[j]);
+            mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
         }
-        newPoint = mOptParameters[wid]; //Remember the new point, in case we need to iterate below
+        newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
 
         //Evaluate new point
         TicToc timer;
@@ -261,23 +274,23 @@ void OptimizationHandler::optComplexRun()
             mpHcomHandler->executeCommand("echo on");
             mpConsole->print("Optimization aborted.");
             //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            cleanUp();
+            finalize();
             return;
         }
         timer.toc("+++++++++ End Evaluate new point");
 
         //Calculate best and worst points
-        mOptLastWorstId=wid;
-        optComplexCalculatebestandworstid();
-        wid = mOptWorstId;
+        mLastWorstId=wid;
+        calculatebestandworstid();
+        wid = mWorstId;
 
         //Iterate until worst point is no longer the same
         timer.tic("--------- Begin Iterate until worst point is no longer the same");
-        mOptWorstCounter=0;
-        while(mOptLastWorstId == wid)
+        mCrfWorstCounter=0;
+        while(mLastWorstId == wid)
         {
             //mpHcomHandler->executeCommand("echo on");
-            optPlotPoints();
+            plotPoints();
 
             qApp->processEvents();
             if(mpHcomHandler->isAborted())
@@ -285,29 +298,27 @@ void OptimizationHandler::optComplexRun()
                 mpHcomHandler->executeCommand("echo on");
                 mpConsole->print("Optimization aborted.");
                 //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-                cleanUp();
+                finalize();
                 mpHcomHandler->abortHCOM();
                 return;
             }
 
-            if(i>mOptMaxEvals) break;
+            if(i>mMaxEvals) break;
 
-            double a1 = 1.0-exp(-double(mOptWorstCounter)/5.0);
+            double a1 = 1.0-exp(-double(mCrfWorstCounter)/5.0);
 
             //Reflect worst point
-            QString output = "Best point:\n";
-            for(int j=0; j<mOptNumParameters; ++j)
+            for(int j=0; j<mNumParameters; ++j)
             {
-                double best = mOptParameters[mOptBestId][j];
-                output.append("par("+QString::number(j)+") = "+QString::number(best)+"\n");
-                double maxDiff = optComplexMaxpardiff();
+                double best = mParameters[mBestId][j];
+                double maxDiff = crfMaxpardiff();
                 double r = (double)rand() / (double)RAND_MAX;
-                mOptParameters[wid][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mOptRfak*(mOptParMax[j]-mOptParMin[j])*maxDiff*(r-0.5);
-                mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
-                mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
+                mParameters[wid][j] = (mCrfCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mCrfRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                mParameters[wid][j] = min(mParameters[wid][j], mParMax[j]);
+                mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
             }
-            newPoint = mOptParameters[wid];
-            gpMainWindow->mpOptimizationDialog->mpParametersOutputTextEdit->setText(output);
+            newPoint = mParameters[wid];
+            gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mParameters, mBestId, mWorstId);
 
             //Evaluate new point
             mpHcomHandler->executeCommand("call evalworst");
@@ -316,21 +327,21 @@ void OptimizationHandler::optComplexRun()
                 mpHcomHandler->executeCommand("echo on");
                 mpConsole->print("Optimization aborted.");
                 //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-                cleanUp();
+                finalize();
                 return;
             }
 
             //Calculate best and worst points
-            mOptLastWorstId=wid;
-            optComplexCalculatebestandworstid();
-            wid = mOptWorstId;
+            mLastWorstId=wid;
+            calculatebestandworstid();
+            wid = mWorstId;
 
-            ++mOptWorstCounter;
+            ++mCrfWorstCounter;
             ++i;
             //mpHcomHandler->executeCommand("echo off");
         }
 
-        optPlotParameters();
+        plotParameters();
 
         timer.toc("--------- End Iterate until worst point is no longer the same");
         timer2.toc(QString("******************* OptLoop %1").arg(i));
@@ -339,7 +350,7 @@ void OptimizationHandler::optComplexRun()
 
     mpHcomHandler->executeCommand("echo on");
 
-    switch(mOptConvergenceReason)
+    switch(mConvergenceReason)
     {
     case 0:
         mpConsole->print("Optimization failed to converge after "+QString::number(i)+" iterations.");
@@ -353,110 +364,110 @@ void OptimizationHandler::optComplexRun()
     }
 
     mpConsole->print("\nBest point:");
-    for(int i=0; i<mOptNumParameters; ++i)
+    for(int i=0; i<mNumParameters; ++i)
     {
-        mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
+        mpConsole->print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
     }
 
     // Clean up
-    cleanUp();
+    finalize();
 
     return;
 }
 
 
 //! @brief Applies the forgetting principle in complex algorithm
-void OptimizationHandler::optComplexForget()
+void OptimizationHandler::crfForget()
 {
-    double maxObj = mOptObjectives[0];
-    double minObj = mOptObjectives[0];
-    for(int i=0; i<mOptNumPoints; ++i)
+    double maxObj = mObjectives[0];
+    double minObj = mObjectives[0];
+    for(int i=0; i<mNumPoints; ++i)
     {
-        double obj = mOptObjectives[i];
+        double obj = mObjectives[i];
         if(obj > maxObj) maxObj = obj;
         if(obj < minObj) minObj = obj;
     }
-    for(int i=0; i<mOptObjectives[0]; ++i)
+    for(int i=0; i<mObjectives[0]; ++i)
     {
-        mOptObjectives[0] = mOptObjectives[0]+(maxObj-minObj)*mOptKf;
+        mObjectives[0] = mObjectives[0]+(maxObj-minObj)*mCrfKf;
     }
 }
 
 
 //! @brief Calculates indexes of best and worst point
-void OptimizationHandler::optComplexCalculatebestandworstid()
+void OptimizationHandler::calculatebestandworstid()
 {
-    double maxObj = mOptObjectives[0];
-    double minObj = mOptObjectives[0];
-    mOptWorstId=0;
-    mOptBestId=0;
-    for(int i=1; i<mOptNumPoints; ++i)
+    double maxObj = mObjectives[0];
+    double minObj = mObjectives[0];
+    mWorstId=0;
+    mBestId=0;
+    for(int i=1; i<mNumPoints; ++i)
     {
-        double obj = mOptObjectives[i];
+        double obj = mObjectives[i];
         if(obj > maxObj)
         {
             maxObj = obj;
-            mOptWorstId = i;
+            mWorstId = i;
         }
         if(obj < minObj)
         {
             minObj = obj;
-            mOptBestId = i;
+            mBestId = i;
         }
     }
 }
 
 
 //! @brief Calculates center point for complex algorithm
-void OptimizationHandler::optComplexFindcenter()
+void OptimizationHandler::crfFindcenter()
 {
-    mOptCenter.resize(mOptNumParameters);
-    for(int i=0; i<mOptCenter.size(); ++i)
+    mCrfCenter.resize(mNumParameters);
+    for(int i=0; i<mCrfCenter.size(); ++i)
     {
-        mOptCenter[i] = 0;
+        mCrfCenter[i] = 0;
     }
-    for(int p=0; p<mOptNumPoints; ++p)
+    for(int p=0; p<mNumPoints; ++p)
     {
-        for(int i=0; i<mOptNumParameters; ++i)
+        for(int i=0; i<mNumParameters; ++i)
         {
-            mOptCenter[i] = mOptCenter[i]+mOptParameters[p][i];
+            mCrfCenter[i] = mCrfCenter[i]+mParameters[p][i];
         }
     }
-    for(int i=0; i<mOptCenter.size(); ++i)
+    for(int i=0; i<mCrfCenter.size(); ++i)
     {
-        mOptCenter[i] = mOptCenter[i]/double(mOptNumPoints);
+        mCrfCenter[i] = mCrfCenter[i]/double(mNumPoints);
     }
 }
 
 
 //! @brief Checkes for convergence (in either of the algorithms)
-bool OptimizationHandler::optCheckForConvergence()
+bool OptimizationHandler::checkForConvergence()
 {
     //Check objective function convergence
-    double maxObj = mOptObjectives[0];
-    double minObj = mOptObjectives[0];
-    for(int i=0; i<mOptNumPoints; ++i)
+    double maxObj = mObjectives[0];
+    double minObj = mObjectives[0];
+    for(int i=0; i<mNumPoints; ++i)
     {
-        double obj = mOptObjectives[i];
+        double obj = mObjectives[i];
         if(obj > maxObj) maxObj = obj;
         if(obj < minObj) minObj = obj;
     }
-    if(fabs(maxObj-minObj) <= mOptFuncTol)
+    if(fabs(maxObj-minObj) <= mFuncTol)
     {
-        mOptConvergenceReason=1;
+        mConvergenceReason=1;
         return true;
     }
-    else if(minObj != 0.0 && fabs(maxObj-minObj)/fabs(minObj) <= mOptFuncTol)
+    else if(minObj != 0.0 && fabs(maxObj-minObj)/fabs(minObj) <= mFuncTol)
     {
-        mOptConvergenceReason=1;
+        mConvergenceReason=1;
         return true;
     }
 
     //Check parameter value convergence
-    double maxDiff=optComplexMaxpardiff();
-    if(fabs(maxDiff) < mOptParTol)
+    double maxDiff=crfMaxpardiff();
+    if(fabs(maxDiff) < mParTol)
     {
-        mOptConvergenceReason=2;
+        mConvergenceReason=2;
         return true;
     }
     return false;
@@ -464,21 +475,21 @@ bool OptimizationHandler::optCheckForConvergence()
 
 
 //! @brief Returns the maximum difference between smallest and largest parameter
-double OptimizationHandler::optComplexMaxpardiff()
+double OptimizationHandler::crfMaxpardiff()
 {
     double maxDiff = -1e100;
-    for(int i=0; i<mOptNumParameters; ++i)
+    for(int i=0; i<mNumParameters; ++i)
     {
         double maxPar = -1e100;
         double minPar = 1e100;
-        for(int p=0; p<mOptNumPoints; ++p)
+        for(int p=0; p<mNumPoints; ++p)
         {
-            if(mOptParameters[p][i] > maxPar) maxPar = mOptParameters[p][i];
-            if(mOptParameters[p][i] < minPar) minPar = mOptParameters[p][i];
+            if(mParameters[p][i] > maxPar) maxPar = mParameters[p][i];
+            if(mParameters[p][i] < minPar) minPar = mParameters[p][i];
         }
-        if((maxPar-minPar)/(mOptParMax[i]-mOptParMin[i]) > maxDiff)
+        if((maxPar-minPar)/(mParMax[i]-mParMin[i]) > maxDiff)
         {
-            maxDiff = (maxPar-minPar)/(mOptParMax[i]-mOptParMin[i]);
+            maxDiff = (maxPar-minPar)/(mParMax[i]-mParMin[i]);
         }
     }
     return maxDiff;
@@ -486,9 +497,9 @@ double OptimizationHandler::optComplexMaxpardiff()
 
 
 //! @brief Initializes a particle swarm optimization
-void OptimizationHandler::optParticleInit()
+void OptimizationHandler::psInit()
 {
-    mpHcomHandler->setModelPtr(mOptModelPtrs.first());//gpModelHandler->setCurrentModel(mOptModelPtrs.first());
+    mpHcomHandler->setModelPtr(mModelPtrs.first());//gpModelHandler->setCurrentModel(mOptModelPtrs.first());
 
     //Load default optimization functions
     QString oldPath = mpHcomHandler->getWorkingDirectory();
@@ -507,28 +518,28 @@ void OptimizationHandler::optParticleInit()
 //        }
     //}
 
-    for(int p=0; p<mOptNumPoints; ++p)
+    for(int p=0; p<mNumPoints; ++p)
     {
-        mOptParameters[p].resize(mOptNumParameters);
-        mOptVelocities[p].resize(mOptNumParameters);
-        for(int i=0; i<mOptNumParameters; ++i)
+        mParameters[p].resize(mNumParameters);
+        mPsVelocities[p].resize(mNumParameters);
+        for(int i=0; i<mNumParameters; ++i)
         {
             //Initialize points
             double r = double(rand()) / double(RAND_MAX);
-            mOptParameters[p][i] = mOptParMin[i] + r*(mOptParMax[i]-mOptParMin[i]);
-            if(mOptParameterType == Int)
+            mParameters[p][i] = mParMin[i] + r*(mParMax[i]-mParMin[i]);
+            if(mParameterType == Int)
             {
-                mOptParameters[p][i] = round(mOptParameters[p][i]);
+                mParameters[p][i] = round(mParameters[p][i]);
             }
 
             //Initialize velocities
-            double minVel = -fabs(mOptParMax[i]-mOptParMin[i]);
-            double maxVel = fabs(mOptParMax[i]-mOptParMin[i]);
+            double minVel = -fabs(mParMax[i]-mParMin[i]);
+            double maxVel = fabs(mParMax[i]-mParMin[i]);
             r = double(rand()) / double(RAND_MAX);
-            mOptVelocities[p][i] = minVel + r*(maxVel-minVel);
+            mPsVelocities[p][i] = minVel + r*(maxVel-minVel);
         }
     }
-    mOptObjectives.resize(mOptNumPoints);
+    mObjectives.resize(mNumPoints);
 
     LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
@@ -543,18 +554,32 @@ void OptimizationHandler::optParticleInit()
 
     // Close these plotwindows before optimization to make sure old data is removed
     //! @todo should have define or const for this name "parplot"
-    gpPlotHandler->closeWindow("parplot");
+    //gpPlotHandler->closeWindow("parplot");
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+    if(pPlotWindow)
+    {
+        PlotTab *pPlotTab = pPlotWindow->getCurrentPlotTab();
+        if(pPlotTab)
+        {
+            while(!pPlotTab->getCurves().isEmpty())
+            {
+                pPlotTab->removeCurve(pPlotTab->getCurves()[0]);
+            }
+        }
+    }
 }
 
 
 //! @brief Executes a particle swarm algorithm. optParticleInit() must be called before this one.
-void OptimizationHandler::optParticleRun()
+void OptimizationHandler::psRun()
 {
-    optPlotPoints();
+    plotPoints();
 
-    mOptConvergenceReason=0;
+    mpConsole->mpTerminal->setEnabledAbortButton(true);
 
-    if(mOptAlgorithm == Uninitialized)
+    mConvergenceReason=0;
+
+    if(mAlgorithm == Uninitialized)
     {
         mpConsole->printErrorMessage("Optimization not initialized.", "", false);
         return;
@@ -577,25 +602,25 @@ void OptimizationHandler::optParticleRun()
         mpHcomHandler->executeCommand("echo on");
         mpConsole->print("Optimization aborted.");
         //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-        cleanUp();
+        finalize();
         return;
     }
 
     //Initialize best known point for each point
-    for(int i=0; i<mOptNumPoints; ++i)
+    for(int i=0; i<mNumPoints; ++i)
     {
-        mOptBestKnowns[i] = mOptParameters[i];
-        mOptBestObjectives[i] = mOptObjectives[i];
+        mPsBestKnowns[i] = mParameters[i];
+        mPsBestObjectives[i] = mObjectives[i];
     }
 
     //Calculate best known global position
-    optComplexCalculatebestandworstid();
-    mOptBestObj = mOptObjectives[mOptBestId];
-    mOptBestPoint = mOptParameters[mOptBestId];
+    calculatebestandworstid();
+    mPsBestObj = mObjectives[mBestId];
+    mPsBestPoint = mParameters[mBestId];
 
     int i=0;
     int percent=-1;
-    for(; i<mOptMaxEvals && !mpHcomHandler->isAborted(); ++i)
+    for(; i<mMaxEvals && !mpHcomHandler->isAborted(); ++i)
     {
         //Process events, to make sure GUI is updated
         qApp->processEvents();
@@ -605,93 +630,88 @@ void OptimizationHandler::optParticleRun()
         {
             mpConsole->print("Optimization aborted.");
             //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            cleanUp();
+            finalize();
             return;
         }
 
         //Print log output
-        optPrintLogOutput();
+        psPrintLogOutput();
 
         //Print progress as percentage of maximum number of evaluations
-        int dummy=int(100.0*double(i)/mOptMaxEvals);
+        int dummy=int(100.0*double(i)/mMaxEvals);
         if(dummy != percent)    //Only update at whole numbers
         {
 //            mpConsole->setDontPrint(false);
 //            mpConsole->print(QString::number(dummy)+"%");
 //            mpConsole->setDontPrint(true);
             percent = dummy;
-            gpMainWindow->mpOptimizationDialog->mpTotalProgressBar->setValue(dummy);
+            gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
         }
 
         //Move particles
-        optMoveParticles();
+        psMoveParticles();
 
         //Evaluate objevtive values
         if(mpConfig->getUseMulticore())
         {
             //Multi-threading, we cannot use the "evalall" function
-            for(int i=0; i<mOptNumPoints; ++i)
+            for(int i=0; i<mNumPoints && !mpHcomHandler->isAborted(); ++i)
             {
-                mpHcomHandler->setModelPtr(mOptModelPtrs[i]);
+                mpHcomHandler->setModelPtr(mModelPtrs[i]);
                 mpHcomHandler->executeCommand("evalId = "+QString::number(i));
                 mpHcomHandler->executeCommand("call setpars");
             }
-            gpModelHandler->simulateMultipleModels_blocking(mOptModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
-            for(int i=0; i<mOptNumPoints; ++i)
+            gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+            for(int i=0; i<mNumPoints && !mpHcomHandler->isAborted(); ++i)
             {
-                mpHcomHandler->setModelPtr(mOptModelPtrs[i]);
+                mpHcomHandler->setModelPtr(mModelPtrs[i]);
                 mpHcomHandler->executeCommand("evalId = "+QString::number(i));
                 mpHcomHandler->executeCommand("call obj");
             }
-            mpHcomHandler->setModelPtr(mOptModelPtrs.first());
+            mpHcomHandler->setModelPtr(mModelPtrs.first());
         }
         else
         {
             mpHcomHandler->executeCommand("call evalall");
         }
-        if(mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+        if(mpHcomHandler->getVar("ans") == -1 || mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
         {
             mpHcomHandler->executeCommand("echo on");
             mpConsole->print("Optimization aborted.");
            //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            cleanUp();
+            finalize();
             return;
         }
 
         //Calculate best known positions
-        for(int p=0; p<mOptNumPoints; ++p)
+        for(int p=0; p<mNumPoints; ++p)
         {
-            if(mOptObjectives[p] < mOptBestObjectives[p])
+            if(mObjectives[p] < mPsBestObjectives[p])
             {
-                mOptBestKnowns[p] = mOptParameters[p];
-                mOptBestObjectives[p] = mOptObjectives[p];
+                mPsBestKnowns[p] = mParameters[p];
+                mPsBestObjectives[p] = mObjectives[p];
             }
         }
 
         //Calculate best known global position
-        optComplexCalculatebestandworstid();
-        QString output = "Best point:\n";
-        if(mOptObjectives[mOptBestId] < mOptBestObj)
+        calculatebestandworstid();
+        if(mObjectives[mBestId] < mPsBestObj)
         {
-            mOptBestObj = mOptObjectives[mOptBestId];
-            mOptBestPoint = mOptParameters[mOptBestId];
+            mPsBestObj = mObjectives[mBestId];
+            mPsBestPoint = mParameters[mBestId];
         }
-        for(int i=0; i<mOptBestPoint.size(); ++i)
-        {
-            output.append("par("+QString::number(i)+") = "+QString::number(mOptBestPoint[i])+"\n");
-        }
-        gpMainWindow->mpOptimizationDialog->mpParametersOutputTextEdit->setText(output);
+        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mParameters, mBestId, mWorstId);
 
-        optPlotPoints();
-        optPlotObjectiveFunctionValues();
+        plotPoints();
+        plotObjectiveFunctionValues();
 
         //Check convergence
-        if(optCheckForConvergence()) break;      //Use complex method, it's the same principle
+        if(checkForConvergence()) break;      //Use complex method, it's the same principle
     }
 
     mpHcomHandler->executeCommand("echo on");
 
-    switch(mOptConvergenceReason)
+    switch(mConvergenceReason)
     {
     case 0:
         mpConsole->print("Optimization failed to converge after "+QString::number(i)+" iterations.");
@@ -705,82 +725,82 @@ void OptimizationHandler::optParticleRun()
     }
 
     mpConsole->print("\nBest point:");
-    for(int i=0; i<mOptNumParameters; ++i)
+    for(int i=0; i<mNumParameters; ++i)
     {
-        mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
+        mpConsole->print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
     }
 
     //Clean up
-    cleanUp();
+    finalize();
 }
 
 
 //! @brief Prints logging output about particles (for use with particle swarm algorithm)
 //! @todo Extent so it can also be used with complex algorithm
-void OptimizationHandler::optPrintLogOutput()
+void OptimizationHandler::psPrintLogOutput()
 {
-    if(mOptPrintLogOutput)
+    if(mPsPrintLogOutput)
     {
-        if(mOptLogOutput.isEmpty())
+        if(mPsLogOutput.isEmpty())
         {
             //Prepare logging output list
-            for(int p=0; p<mOptNumPoints; ++p)
+            for(int p=0; p<mNumPoints; ++p)
             {
-                mOptLogOutput.append("Particle    "+QString::number(p)+":\n");
-                mOptLogOutput[p].append("Position: \t\t\tVelocity: \t\t\tLocal best: \t\t\tGlobal best:\n");
+                mPsLogOutput.append("Particle    "+QString::number(p)+":\n");
+                mPsLogOutput[p].append("Position: \t\t\tVelocity: \t\t\tLocal best: \t\t\tGlobal best:\n");
 
             }
         }
 
-        for(int p=0; p<mOptNumPoints; ++p)
+        for(int p=0; p<mNumPoints; ++p)
         {
-            for(int i=0; i<mOptParameters[p].size(); ++i)
+            for(int i=0; i<mParameters[p].size(); ++i)
             {
-                mOptLogOutput[p].append(QString::number(mOptParameters[p][i])+",");
+                mPsLogOutput[p].append(QString::number(mParameters[p][i])+",");
             }
-            mOptLogOutput[p].chop(1);
-            mOptLogOutput[p].append("\t\t");
-            for(int i=0; i<mOptVelocities[p].size(); ++i)
+            mPsLogOutput[p].chop(1);
+            mPsLogOutput[p].append("\t\t");
+            for(int i=0; i<mPsVelocities[p].size(); ++i)
             {
-                mOptLogOutput[p].append(QString::number(mOptVelocities[p][i])+",");
+                mPsLogOutput[p].append(QString::number(mPsVelocities[p][i])+",");
             }
-            mOptLogOutput[p].chop(1);
-            mOptLogOutput[p].append("\t\t");
-            for(int i=0; i<mOptBestKnowns[p].size(); ++i)
+            mPsLogOutput[p].chop(1);
+            mPsLogOutput[p].append("\t\t");
+            for(int i=0; i<mPsBestKnowns[p].size(); ++i)
             {
-                mOptLogOutput[p].append(QString::number(mOptBestKnowns[p][i])+",");
+                mPsLogOutput[p].append(QString::number(mPsBestKnowns[p][i])+",");
             }
-            mOptLogOutput[p].chop(1);
-            mOptLogOutput[p].append("\t\t");
-            for(int i=0; i<mOptBestPoint.size(); ++i)
+            mPsLogOutput[p].chop(1);
+            mPsLogOutput[p].append("\t\t");
+            for(int i=0; i<mPsBestPoint.size(); ++i)
             {
-                mOptLogOutput[p].append(QString::number(mOptBestPoint[i])+",");
+                mPsLogOutput[p].append(QString::number(mPsBestPoint[i])+",");
             }
-            mOptLogOutput[p].chop(1);
-            mOptLogOutput[p].append("\n");
+            mPsLogOutput[p].chop(1);
+            mPsLogOutput[p].append("\n");
         }
     }
 }
 
 
 //! @brief Plots the optimization points (if there are at least two parameters and the option is selected)
-void OptimizationHandler::optPlotPoints()
+void OptimizationHandler::plotPoints()
 {
-    if(!mOptPlotPoints) { return; }
+    if(!mPlotPoints) { return; }
 
-    if(mOptNumParameters < 2)
+    if(mNumParameters < 2)
     {
         mpConsole->printErrorMessage("Plotting points requires at least two parameters.");
         return;
     }
 
     LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
-    for(int p=0; p<mOptNumPoints; ++p)
+    for(int p=0; p<mNumPoints; ++p)
     {
         QString namex = "par"+QString::number(p)+"x";
         QString namey = "par"+QString::number(p)+"y";
-        double x = mOptParameters[p][0];
-        double y = mOptParameters[p][1];
+        double x = mParameters[p][0];
+        double y = mParameters[p][1];
         SharedLogVariableDataPtrT parVar_x = pHandler->getLogVariableDataPtr(namex, -1);
         SharedLogVariableDataPtrT parVar_y = pHandler->getLogVariableDataPtr(namey, -1);
         if(!parVar_x)
@@ -810,7 +830,7 @@ void OptimizationHandler::optPlotPoints()
         PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
         for(int c=0; c<pTab->getCurves(FirstPlot).size(); ++c)
         {
-            if(c==mOptBestId)
+            if(c==mBestId)
             {
                 pTab->getCurves(FirstPlot).at(c)->setLineSymbol("Star 1");
             }
@@ -825,9 +845,9 @@ void OptimizationHandler::optPlotPoints()
 
 
 //! @brief Plots best and worst objective values (if option is selected)
-void OptimizationHandler::optPlotObjectiveFunctionValues()
+void OptimizationHandler::plotObjectiveFunctionValues()
 {
-    if(!mOptPlotObjectiveFunctionValues) { return; }
+    if(!mPlotObjectiveFunctionValues) { return; }
 
     LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     SharedLogVariableDataPtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
@@ -836,24 +856,24 @@ void OptimizationHandler::optPlotObjectiveFunctionValues()
         //! @todo unit and description
         bestVar = pHandler->defineNewVariable("BestObjective");
         bestVar->preventAutoRemoval();
-        bestVar->assignFrom(mOptObjectives[mOptBestId]);
+        bestVar->assignFrom(mObjectives[mBestId]);
         bestVar->setCacheDataToDisk(false);
     }
     else
     {
-        bestVar->append(mOptObjectives[mOptBestId]);
+        bestVar->append(mObjectives[mBestId]);
     }
     SharedLogVariableDataPtrT worstVar = pHandler->getLogVariableDataPtr("WorstObjective", -1);
     if(worstVar.isNull())
     {
         worstVar = pHandler->defineNewVariable("WorstObjective");
         worstVar->preventAutoRemoval();
-        worstVar->assignFrom(mOptObjectives[mOptWorstId]);
+        worstVar->assignFrom(mObjectives[mWorstId]);
         worstVar->setCacheDataToDisk(false);
     }
     else
     {
-        worstVar->append(mOptObjectives[mOptWorstId]);
+        worstVar->append(mObjectives[mWorstId]);
     }
 
     // If this is the first time, then recreate the plotwindows
@@ -868,24 +888,24 @@ void OptimizationHandler::optPlotObjectiveFunctionValues()
 
 
 //! @brief Plots best and worst objective values (if option is selected)
-void OptimizationHandler::optPlotParameters()
+void OptimizationHandler::plotParameters()
 {
-    if(!mOptPlotParameters) { return; }
+    if(!mPlotParameters) { return; }
 
     LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
-    for(int p=0; p<mOptNumParameters; ++p)
+    for(int p=0; p<mNumParameters; ++p)
     {
         SharedLogVariableDataPtrT par = pHandler->getLogVariableDataPtr("NewPar"+QString::number(p), -1);
         if(par.isNull())
         {
             par = pHandler->defineNewVariable("NewPar"+QString::number(p));
             par->preventAutoRemoval();
-            par->assignFrom(mOptParameters[mOptLastWorstId][p]);
+            par->assignFrom(mParameters[mLastWorstId][p]);
             par->setCacheDataToDisk(false);
         }
         else
         {
-            par->append(mOptParameters[mOptLastWorstId][p]);
+            par->append(mParameters[mLastWorstId][p]);
         }
 
         // If this is the first time, then recreate the plotwindows
@@ -898,38 +918,44 @@ void OptimizationHandler::optPlotParameters()
     }
 }
 
-void OptimizationHandler::cleanUp()
+void OptimizationHandler::finalize()
 {
-    while(!mOptModelPtrs.isEmpty())
+    while(!mModelPtrs.isEmpty())
     {
-        mOptModelPtrs[0]->close();
-        delete mOptModelPtrs[0];
-        mOptModelPtrs.remove(0);
+        mModelPtrs[0]->close();
+        delete mModelPtrs[0];
+        mModelPtrs.remove(0);
     }
+
+    mpConsole->mpTerminal->setEnabledAbortButton(false);
+
+    gpMainWindow->mpOptimizationDialog->setOptimizationFinished();
+
+    emit optimizationFinished();
 }
 
 
 
 //! @brief Moves the particles (for particle swarm optimization)
-void OptimizationHandler::optMoveParticles()
+void OptimizationHandler::psMoveParticles()
 {
-    for (int p=0; p<mOptNumPoints; ++p)
+    for (int p=0; p<mNumPoints; ++p)
     {
         double r1 = double(rand())/double(RAND_MAX);
         double r2 = double(rand())/double(RAND_MAX);
-        for(int j=0; j<mOptNumParameters; ++j)
+        for(int j=0; j<mNumParameters; ++j)
         {
-            mOptVelocities[p][j] = mOptOmega*mOptVelocities[p][j] + mOptC1*r1*(mOptBestKnowns[p][j]-mOptParameters[p][j]) + mOptC2*r2*(mOptBestPoint[j]-mOptParameters[p][j]);
-            mOptParameters[p][j] = mOptParameters[p][j]+mOptVelocities[p][j];
-            if(mOptParameters[p][j] <= mOptParMin[j])
+            mPsVelocities[p][j] = mPsOmega*mPsVelocities[p][j] + mPsC1*r1*(mPsBestKnowns[p][j]-mParameters[p][j]) + mPsC2*r2*(mPsBestPoint[j]-mParameters[p][j]);
+            mParameters[p][j] = mParameters[p][j]+mPsVelocities[p][j];
+            if(mParameters[p][j] <= mParMin[j])
             {
-                mOptParameters[p][j] = mOptParMin[j];
-                mOptVelocities[p][j] = 0.0;
+                mParameters[p][j] = mParMin[j];
+                mPsVelocities[p][j] = 0.0;
             }
-            if(mOptParameters[p][j] >= mOptParMax[j])
+            if(mParameters[p][j] >= mParMax[j])
             {
-                mOptParameters[p][j] = mOptParMax[j];
-                mOptVelocities[p][j] = 0.0;
+                mParameters[p][j] = mParMax[j];
+                mPsVelocities[p][j] = 0.0;
             }
         }
     }

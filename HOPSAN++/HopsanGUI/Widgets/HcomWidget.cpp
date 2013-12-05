@@ -194,7 +194,7 @@ void TerminalWidget::setEnabledAbortButton(bool enable)
 TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     : QTextEdit(pParent)
 {
-    mpParent = pParent;
+    mpTerminal = pParent;
     mpCoreAccess = new CoreMessagesAccess;
 
     this->setReadOnly(false);
@@ -235,7 +235,7 @@ void TerminalConsole::printFirstInfo()
 
 HcomHandler *TerminalConsole::getHandler()
 {
-    return mpParent->mpHandler;
+    return mpTerminal->mpHandler;
 }
 
 //! @brief Obtains messages from core and prints them in the message widget
@@ -569,13 +569,13 @@ void TerminalConsole::handleEnterKeyPress()
 
     if(!cmd.isEmpty())
     {
-        mpParent->setEnabledAbortButton(true);
+        mpTerminal->setEnabledAbortButton(true);
         //Execute command
         getHandler()->executeCommand(cmd);
 
         //Add command to history
         mHistory.prepend(cmd);
-        mpParent->setEnabledAbortButton(false);
+        mpTerminal->setEnabledAbortButton(false);
     }
 
     //Insert new command line

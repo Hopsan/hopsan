@@ -58,7 +58,7 @@ public:
     ModelWidget *getModelPtr() const;
     void setConfigPtr(Configuration *pConfig);
     Configuration *getConfigPtr() const;
-    void setOptHandlerptr(OptimizationHandler *pOptHandler);
+    void setOptHandlerPtr(OptimizationHandler *pOptHandler);
 
     // Command functions
     QStringList getCommands() const;
@@ -79,6 +79,7 @@ public:
     QString getWorkingDirectory() const;
 
     bool hasFunction(const QString &func) const;
+    void getFunctionCode(QString funcName, QStringList &funcCode);
     bool isAborted() const;
     double getVar(const QString &var) const;
 
