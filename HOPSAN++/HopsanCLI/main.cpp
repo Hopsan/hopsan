@@ -149,152 +149,141 @@ int main(int argc, char *argv[])
             cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
             double startTime=0, stopTime=2;
             ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue().c_str(), startTime, stopTime);
+            size_t nErrors = gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();
             printWaitingMessages(printDebugOption.getValue());
-
-            if (parameterImportOption.isSet())
+            if (nErrors < 1)
             {
-                cout << "Importing parameter values from file: " << parameterImportOption.getValue() << endl;
-                importParameterValuesFromCSV(parameterImportOption.getValue(), pRootSystem);
-            }
-
-            if (parameterExportOption.isSet())
-            {
-                cout << "Exporting parameter values to file: " << parameterExportOption.getValue() << endl;
-                exportParameterValuesToCSV(parameterExportOption.getValue(), pRootSystem);
-            }
-
-            cout << endl << "Model Hieararcy:" << endl;
-            printComponentHierarchy(pRootSystem, "", true, true);
-            cout << endl;
-
-            if (pRootSystem && simulateOption.isSet())
-            {
-                bool doSimulate=true;
-
-                // Abort if root model is empty (probably load hmf failed somehow)
-                if (pRootSystem->isEmpty())
+                if (parameterImportOption.isSet())
                 {
-                    printErrorMessage("The root system seems to be empty, aborting!");
-                    doSimulate = false;
+                    cout << "Importing parameter values from file: " << parameterImportOption.getValue() << endl;
+                    importParameterValuesFromCSV(parameterImportOption.getValue(), pRootSystem);
                 }
 
-                double stepTime = pRootSystem->getTimestep();
-                // Parse simulation options, anr replace hmf values if needed
-                vector<string> simTime;
-                if (simulateOption.getValue() != "hmf")
+                if (parameterExportOption.isSet())
                 {
-                    splitStringOnDelimiter(simulateOption.getValue(),',',simTime);
-                    if (simTime.size() == 3)
+                    cout << "Exporting parameter values to file: " << parameterExportOption.getValue() << endl;
+                    exportParameterValuesToCSV(parameterExportOption.getValue(), pRootSystem);
+                }
+
+                cout << endl << "Model Hieararcy:" << endl;
+                printComponentHierarchy(pRootSystem, "", true, true);
+                cout << endl;
+
+                if (pRootSystem && simulateOption.isSet())
+                {
+                    bool doSimulate=true;
+
+                    // Abort if root model is empty (probably load hmf failed somehow)
+                    if (pRootSystem->isEmpty())
                     {
-                        startTime = atof(simTime[0].c_str());
-                        stepTime = atof(simTime[1].c_str());
-                        stopTime = atof(simTime[2].c_str());
+                        printErrorMessage("The root system seems to be empty, aborting!");
+                        doSimulate = false;
                     }
-                    else if (simTime.size() == 2)
+
+                    double stepTime = pRootSystem->getTimestep();
+                    // Parse simulation options, and replace hmf values if needed
+                    vector<string> simTime;
+                    if (simulateOption.getValue() != "hmf")
                     {
-                        stepTime = atof(simTime[0].c_str());
-                        stopTime = atof(simTime[1].c_str());
+                        splitStringOnDelimiter(simulateOption.getValue(),',',simTime);
+                        if (simTime.size() == 3)
+                        {
+                            startTime = atof(simTime[0].c_str());
+                            stepTime = atof(simTime[1].c_str());
+                            stopTime = atof(simTime[2].c_str());
+                        }
+                        else if (simTime.size() == 2)
+                        {
+                            stepTime = atof(simTime[0].c_str());
+                            stopTime = atof(simTime[1].c_str());
+                        }
+                        else if (simTime.size() == 1)
+                        {
+                            stopTime = atof(simTime[0].c_str());
+                        }
                     }
-                    else if (simTime.size() == 1)
+                    pRootSystem->setDesiredTimestep(stepTime);
+
+                    if (nLogSamplesOption.isSet())
                     {
-                        stopTime = atof(simTime[0].c_str());
+                        size_t nSamp = atoi(nLogSamplesOption.getValue().c_str());
+                        cout << "Setting nLogSamples to: " << nSamp << endl;
+                        pRootSystem->setNumLogSamples(nSamp);
+                    }
+
+                    //! @todo maybe use simulation handler object instead
+                    TicToc isoktimer("IsOkTime");
+                    doSimulate = doSimulate && pRootSystem->checkModelBeforeSimulation();
+                    isoktimer.TocPrint();
+                    if (doSimulate)
+                    {
+                        TicToc initTimer("InitializeTime");
+                        doSimulate = doSimulate && pRootSystem->initialize(startTime, stopTime);
+                        initTimer.TocPrint();
+                    }
+                    else
+                    {
+                        printWaitingMessages(printDebugOption.getValue());
+                        printErrorMessage("Initialize failed, Simulation aborted!");
+                    }
+
+                    if (doSimulate)
+                    {
+                        cout << "Simulating: " << startTime << " to " << stopTime << " with Ts: " << stepTime << "     Please Wait!" << endl;
+                        TicToc simuTimer("SimulationTime");
+                        pRootSystem->simulate(stopTime);
+                        simuTimer.TocPrint();
+                    }
+                    if (pRootSystem->wasSimulationAborted())
+                    {
+                        printErrorMessage("Simulation was aborted!");
+                    }
+                    else
+                    {
+                        returnSuccess = true;
+                    }
+
+                    pRootSystem->finalize();
+                }
+
+                printWaitingMessages(printDebugOption.getValue());
+
+                // Check in what formats to export
+                if (resultsFinalCSVOption.isSet())
+                {
+                    cout << "Saving Final results to file: " << resultsFinalCSVOption.getValue() << endl;
+                    saveResults(pRootSystem, resultsFinalCSVOption.getValue(), Final);
+                    // Should we transpose the result
+                    if (resultsCSVSortOption.getValue() == "cols")
+                    {
+                        cout << "Transposing CSV file" << endl;
+                        transposeCSVresults(resultsFinalCSVOption.getValue());
+                    }
+                    else if (resultsCSVSortOption.getValue() != "rows")
+                    {
+                        printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
                     }
                 }
-                pRootSystem->setDesiredTimestep(stepTime);
 
-                if (nLogSamplesOption.isSet())
+                if (resultsFullCSVOption.isSet())
                 {
-                    size_t nSamp = atoi(nLogSamplesOption.getValue().c_str());
-                    cout << "Setting nLogSamples to: " << nSamp << endl;
-                    pRootSystem->setNumLogSamples(nSamp);
-                }
-
-                //! @todo maybe use simulation handler object instead
-                TicToc isoktimer("IsOkTime");
-                doSimulate = doSimulate && pRootSystem->checkModelBeforeSimulation();
-                isoktimer.TocPrint();
-                if (doSimulate)
-                {
-                    TicToc initTimer("InitializeTime");
-                    doSimulate = doSimulate && pRootSystem->initialize(startTime, stopTime);
-                    initTimer.TocPrint();
-                }
-                else
-                {
-                    printWaitingMessages(printDebugOption.getValue());
-                    printErrorMessage("Initialize failed, Simulation aborted!");
-                }
-
-                if (doSimulate)
-                {
-                    cout << "Simulating: " << startTime << " to " << stopTime << " with Ts: " << stepTime << "     Please Wait!" << endl;
-                    TicToc simuTimer("SimulationTime");
-                    pRootSystem->simulate(stopTime);
-                    simuTimer.TocPrint();
-                }
-                if (pRootSystem->wasSimulationAborted())
-                {
-                    printErrorMessage("Simulation was aborted!");
-                }
-                else
-                {
-                    returnSuccess = true;
-                }
-
-                pRootSystem->finalize();
-            }
-
-            printWaitingMessages(printDebugOption.getValue());
-
-            //cout << endl << "Component Hieararcy:" << endl << endl;
-            //printComponentHierarchy(pRootSystem, "", true);
-
-//            if (!saveNodeFilePath.empty())
-//            {
-//                cout << "Saving NodeData to file" << endl;
-//                vector<string> comps, ports;
-//                readNodesToSaveFromTxtFile(saveNodeFilePath, comps, ports);
-//                //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
-//                //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
-//                for (size_t i=0; i<comps.size(); ++i)
-//                {
-//                    string outfile = comps[i]+"_"+ports[i]+".txt";
-//                    saveNodeDataToFile(pRootSystem, comps[i], ports[i], outfile);
-//                }
-//            }
-
-
-            // Check in what formats to export
-            if (resultsFinalCSVOption.isSet())
-            {
-                cout << "Saving Final results to file: " << resultsFinalCSVOption.getValue() << endl;
-                saveResults(pRootSystem, resultsFinalCSVOption.getValue(), Final);
-                // Should we transpose the result
-                if (resultsCSVSortOption.getValue() == "cols")
-                {
-                    cout << "Transposing CSV file" << endl;
-                    transposeCSVresults(resultsFinalCSVOption.getValue());
-                }
-                else if (resultsCSVSortOption.getValue() != "rows")
-                {
-                    printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
+                    cout << "Saving Full results to file: " << resultsFullCSVOption.getValue() << endl;
+                    saveResults(pRootSystem, resultsFullCSVOption.getValue(), Full);
+                    // Should we transpose the result
+                    if (resultsCSVSortOption.getValue() == "cols")
+                    {
+                        cout << "Transposing CSV file" << endl;
+                        transposeCSVresults(resultsFullCSVOption.getValue());
+                    }
+                    else if (resultsCSVSortOption.getValue() != "rows")
+                    {
+                        printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
+                    }
                 }
             }
-
-            if (resultsFullCSVOption.isSet())
+            else
             {
-                cout << "Saving Full results to file: " << resultsFullCSVOption.getValue() << endl;
-                saveResults(pRootSystem, resultsFullCSVOption.getValue(), Full);
-                // Should we transpose the result
-                if (resultsCSVSortOption.getValue() == "cols")
-                {
-                    cout << "Transposing CSV file" << endl;
-                    transposeCSVresults(resultsFullCSVOption.getValue());
-                }
-                else if (resultsCSVSortOption.getValue() != "rows")
-                {
-                    printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
-                }
+                printErrorMessage("There were errors while loading the modell");
             }
         }
 

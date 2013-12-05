@@ -69,7 +69,7 @@ private:
     std::queue<HopsanCoreMessage*> mMessageQueue;
     void addMessage(const int type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel=0);
     void clear();
-    size_t mMaxQueueSize;
+    size_t mMaxQueueSize, mNumInfoMessages, mNumWarningMessages, mNumErrorMessages, mNumFatalMessages, mNumDebugMessages;
 
 #ifdef USETBB
     tbb::mutex *mpMutex;
@@ -87,6 +87,11 @@ public:
 
     void getMessage(HString &rMessage, HString &rType, HString &rTag);
     size_t getNumWaitingMessages() const;
+    size_t getNumInfoMessages() const;
+    size_t getNumWarningMessages() const;
+    size_t getNumErrorMessages() const;
+    size_t getNumDebugMessages() const;
+    size_t getNumFatalMessages() const;
 };
 
 }

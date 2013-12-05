@@ -40,6 +40,7 @@ HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 #ifdef USETBB
     mpMutex = new tbb::mutex;
 #endif
+    clear(); // Using clear here to init the message counters (init code in one place only)
 }
 
 HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
@@ -67,9 +68,50 @@ void HopsanCoreMessageHandler::addMessage(const int type, const HString &rPreFix
     pMsg->mMessage = rPreFix + rMessage;
     pMsg->mTag = rTag;
     mMessageQueue.push(pMsg);
+    switch (type)
+    {
+    case HopsanCoreMessage::Fatal:
+        ++mNumFatalMessages;
+        break;
+    case HopsanCoreMessage::Error:
+        ++mNumErrorMessages;
+        break;
+    case HopsanCoreMessage::Warning:
+        ++mNumWarningMessages;
+        break;
+    case HopsanCoreMessage::Info:
+        ++mNumInfoMessages;
+        break;
+    case HopsanCoreMessage::Debug:
+        ++mNumDebugMessages;
+        break;
+    }
+
+
+    // If the queue is to long delete old unhandled messages
     if (mMessageQueue.size() > mMaxQueueSize)
     {
-        //If the queue is to long delete old unhandled messages
+        // Decrease message counters
+        switch (mMessageQueue.front()->mType)
+        {
+        case HopsanCoreMessage::Fatal:
+            --mNumFatalMessages;
+            break;
+        case HopsanCoreMessage::Error:
+            --mNumErrorMessages;
+            break;
+        case HopsanCoreMessage::Warning:
+            --mNumWarningMessages;
+            break;
+        case HopsanCoreMessage::Info:
+            --mNumInfoMessages;
+            break;
+        case HopsanCoreMessage::Debug:
+            --mNumDebugMessages;
+            break;
+        }
+
+        // Delete the message and pop the message pointer
         delete mMessageQueue.front();
         mMessageQueue.pop();
     }
@@ -84,13 +126,18 @@ void HopsanCoreMessageHandler::clear()
 #ifdef USETBB
     mpMutex->lock();
 #endif
+    // Delete each message and pop each message pointer
     while(mMessageQueue.size() > 0)
     {
-        // First delete the message itself
         delete mMessageQueue.front();
-        // Now pop dangling pointer
         mMessageQueue.pop();
     }
+    // Reset counters
+    mNumInfoMessages = 0;
+    mNumWarningMessages = 0;
+    mNumErrorMessages = 0;
+    mNumFatalMessages = 0;
+    mNumDebugMessages = 0;
 #ifdef USETBB
     mpMutex->unlock();
 #endif
@@ -158,25 +205,32 @@ void HopsanCoreMessageHandler::getMessage(HString &rMessage, HString &rType, HSt
         rMessage = mMessageQueue.front()->mMessage;
         rTag = mMessageQueue.front()->mTag;
 
+        // Set type string and decrement message counters depending on message type
         switch (mMessageQueue.front()->mType)
         {
         case HopsanCoreMessage::Fatal:
             rType = "fatal";
+            --mNumFatalMessages;
             break;
         case HopsanCoreMessage::Error:
             rType = "error";
+            --mNumErrorMessages;
             break;
         case HopsanCoreMessage::Warning:
             rType = "warning";
+            --mNumWarningMessages;
             break;
         case HopsanCoreMessage::Info:
             rType = "info";
+            --mNumInfoMessages;
             break;
         case HopsanCoreMessage::Debug:
             rType = "debug";
+            --mNumDebugMessages;
             break;
         }
 
+        // Delete the message and pop the message pointer
         delete mMessageQueue.front();
         mMessageQueue.pop();
     }
@@ -197,10 +251,75 @@ size_t HopsanCoreMessageHandler::getNumWaitingMessages() const
 {
 #ifdef USETBB
     mpMutex->lock();
-    size_t num = mMessageQueue.size();
+    const size_t num = mMessageQueue.size();
     mpMutex->unlock();
     return num;
 #else
     return mMessageQueue.size();
+#endif
+}
+
+//! @brief Returns the number of waiting info messages on the message queue
+size_t HopsanCoreMessageHandler::getNumInfoMessages() const
+{
+#ifdef USETBB
+    mpMutex->lock();
+    const size_t num = mNumInfoMessages;
+    mpMutex->unlock();
+    return num;
+#else
+    return mNumInfoMessages;
+#endif
+}
+
+//! @brief Returns the number of waiting warning messages on the message queue
+size_t HopsanCoreMessageHandler::getNumWarningMessages() const
+{
+#ifdef USETBB
+    mpMutex->lock();
+    const size_t num = mNumWarningMessages;
+    mpMutex->unlock();
+    return num;
+#else
+    return mNumWarningMessages;
+#endif
+}
+
+//! @brief Returns the number of waiting error messages on the message queue
+size_t HopsanCoreMessageHandler::getNumErrorMessages() const
+{
+#ifdef USETBB
+    mpMutex->lock();
+    const size_t num = mNumErrorMessages;
+    mpMutex->unlock();
+    return num;
+#else
+    return mNumErrorMessages;
+#endif
+}
+
+//! @brief Returns the number of waiting debug messages on the message queue
+size_t HopsanCoreMessageHandler::getNumDebugMessages() const
+{
+#ifdef USETBB
+    mpMutex->lock();
+    const size_t num = mNumDebugMessages;
+    mpMutex->unlock();
+    return num;
+#else
+    return mNumDebugMessages;
+#endif
+}
+
+//! @brief Returns the number of waiting fatal messages on the message queue
+size_t HopsanCoreMessageHandler::getNumFatalMessages() const
+{
+#ifdef USETBB
+    mpMutex->lock();
+    const size_t num = mNumFatalMessages;
+    mpMutex->unlock();
+    return num;
+#else
+    return mNumFatalMessages;
 #endif
 }

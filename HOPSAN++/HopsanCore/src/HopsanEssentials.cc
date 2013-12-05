@@ -257,7 +257,6 @@ SimulationHandler *HopsanEssentials::getSimulationHandler()
 //! @param [out] rTag A reference to the message type Tag
 void HopsanEssentials::getMessage(HString &rMessage, HString &rType, HString &rTag)
 {
-    //! @todo Utility function
     mpMessageHandler->getMessage(rMessage, rType, rTag);
 }
 
@@ -266,6 +265,36 @@ void HopsanEssentials::getMessage(HString &rMessage, HString &rType, HString &rT
 size_t HopsanEssentials::checkMessage()
 {
     return mpMessageHandler->getNumWaitingMessages();
+}
+
+//! @brief Returns the number of waiting info messages on the message queue
+size_t HopsanEssentials::getNumInfoMessages() const
+{
+    return mpMessageHandler->getNumInfoMessages();
+}
+
+//! @brief Returns the number of waiting warning messages on the message queue
+size_t HopsanEssentials::getNumWarningMessages() const
+{
+    return mpMessageHandler->getNumWarningMessages();
+}
+
+//! @brief Returns the number of waiting error messages on the message queue
+size_t HopsanEssentials::getNumErrorMessages() const
+{
+    return mpMessageHandler->getNumErrorMessages();
+}
+
+//! @brief Returns the number of waiting fatal messages on the message queue
+size_t HopsanEssentials::getNumFatalMessages() const
+{
+    return mpMessageHandler->getNumFatalMessages();
+}
+
+//! @brief Returns the number of waiting debug messages on the message queue
+size_t HopsanEssentials::getNumDebugMessages() const
+{
+    return mpMessageHandler->getNumDebugMessages();
 }
 
 //! @brief Loads an external component library

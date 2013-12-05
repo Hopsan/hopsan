@@ -73,6 +73,11 @@ public:
     HopsanCoreMessageHandler* getCoreMessageHandler();
     void getMessage(HString &rMessage, HString &rType, HString &rTag);
     size_t checkMessage();
+    size_t getNumInfoMessages() const;
+    size_t getNumWarningMessages() const;
+    size_t getNumErrorMessages() const;
+    size_t getNumFatalMessages() const;
+    size_t getNumDebugMessages() const;
 
     // External libraries
     bool loadExternalComponentLib(const char* path);
