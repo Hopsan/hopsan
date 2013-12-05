@@ -37,6 +37,7 @@ public:
 
     void setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler);
     LogDataHandler *getLogDataHandler();
+    void setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow);
 
     void addFullVariable(SharedLogVariableDataPtrT pData);
     void addAliasVariable(SharedLogVariableDataPtrT pData);
@@ -47,7 +48,7 @@ public:
     void clear();
 
 protected slots:
-    PlotWindow *createPlotWindow(QTreeWidgetItem *item);
+    PlotWindow *plotToPreferedPlotWindow(QTreeWidgetItem *item);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -63,7 +64,7 @@ protected:
     void expandImportFileItems(const QStringList &rList);
     void expandFullVariableItems(const QStringList &rList);
 
-    QPointF dragStartPosition;
+    QPointF mDragStartPosition;
     QMap<QString, QTreeWidgetItem*> mFullVariableItemMap;
     QMap<QString, QTreeWidgetItem*> mAliasVariableItemMap;
     QMap<QString, QTreeWidgetItem*> mImportedFileItemMap;
@@ -73,6 +74,7 @@ protected:
 
     //QList<VariableCommonDescription> mAvailableVariables;
     QPointer<LogDataHandler> mpLogDataHandler;
+    QPointer<PlotWindow> mpPreferedPlotWindow;
 };
 
 class PlotWidget : public QWidget
@@ -82,6 +84,7 @@ public:
     PlotWidget(QWidget *pParent=0);
     void setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler);
     LogDataHandler *getLogDataHandler();
+    void setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow);
 
 public slots:
     void updateList();

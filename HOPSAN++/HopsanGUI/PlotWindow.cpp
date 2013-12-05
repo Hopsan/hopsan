@@ -348,6 +348,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     // Setup PlotVariable List stuff
     PlotWidget *pLocalPlotWidget = new PlotWidget(this);
+    pLocalPlotWidget->setPreferedPlotWindow(this);
     QDockWidget *pLocalPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
     pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, pLocalPlotWidgetDock);

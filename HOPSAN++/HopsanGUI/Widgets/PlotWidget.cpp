@@ -172,7 +172,7 @@ VariableTree::VariableTree(QWidget *pParent)
     resetAliasItemParent();
     resetImportedItemParent();
 
-    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(createPlotWindow(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(plotToPreferedPlotWindow(QTreeWidgetItem*)));
 }
 
 void VariableTree::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler)
@@ -183,6 +183,11 @@ void VariableTree::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler)
 LogDataHandler *VariableTree::getLogDataHandler()
 {
     return mpLogDataHandler;
+}
+
+void VariableTree::setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow)
+{
+    mpPreferedPlotWindow = pPreferedPlotWindow;
 }
 
 void VariableTree::addFullVariable(SharedLogVariableDataPtrT pData)
@@ -210,7 +215,6 @@ void VariableTree::addFullVariable(SharedLogVariableDataPtrT pData)
         tempFont.setBold(true);
         pComponentItem->setFont(0, tempFont);
         this->addTopLevelItem(pComponentItem);
-        //pComponentLevelItem->setExpanded(expandedItems.contains(pComponentLevelItem->text(0)));
 
         //Also remember that we created it
         mFullVariableItemMap.insert(pData->getComponentName(), pComponentItem);
@@ -243,7 +247,6 @@ void VariableTree::addImportedVariable(SharedLogVariableDataPtrT pData)
     if (!pFileItem)
     {
         pFileItem = new ImportedFileTreeItem(fName,0);
-        //pFileItem->setExpanded(expandedItems.contains(pImportedLevelItem->text(0)));
 
         // Also remember that we created it
         mImportedFileItemMap.insert(fName, pFileItem);
@@ -291,7 +294,7 @@ void VariableTree::updateList()
     // First refresh the import variable tree
     refreshImportedVariables();
 
-    // Now add vaariables to the Alis and Variable tree
+    // Now add variables to the Alis and Variable tree
     QVector<SharedLogVariableDataPtrT> variables = getLogDataHandler()->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
@@ -308,13 +311,6 @@ void VariableTree::updateList()
 
         // Handle all non-temp non-imported variables
         addFullVariable(variables[i]);
-
-        // prepend icon if favourite variable
-        //if(mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
-        {
-            //tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
-        }
-        //! @todo FIXA /Peter
     }
 
     // Sort the tree widget
@@ -354,95 +350,6 @@ void PlotWidget::updateList()
         // Remember that we want to update, until the next time we show
         mHasPendingUpdate = true;
     }
-
-//    QVector<double> time;
-//    bool timeVectorRetained = false;
-//    QStringList names = mpCurrentContainer->getModelObjectNames();
-//    for(int i=0; i<names.size(); ++i)
-//    {
-//        ModelObject *pComponent = mpCurrentContainer->getModelObject(names[i]);
-//        tempComponentItem = new QTreeWidgetItem();
-//        tempComponentItem->setText(0, pComponent->getName());
-//        QFont tempFont;
-//        tempFont = tempComponentItem->font(0);
-//        tempFont.setBold(true);
-//        tempComponentItem->setFont(0, tempFont);
-//        this->addTopLevelItem(tempComponentItem);
-
-//        QList<Port*> portListPtrs = pComponent->getPortListPtrs();
-//        QList<Port*>::iterator itp;
-//        for(itp = portListPtrs.begin(); itp !=portListPtrs.end(); ++itp)
-//        {
-//            //If the port is not connected it has nothing to plot
-//            if((*itp)->isConnected())
-//            {
-//                QVector<QString> variableNames;
-//                QVector<QString> variableUnits;
-//                gpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), variableNames, variableUnits);
-//                if(!timeVectorRetained)
-//                {
-//                    time = QVector<double>::fromStdVector(gpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
-//                    timeVectorRetained = true;
-//                }
-//                if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
-//                {
-//                    for(int i = 0; i!=variableNames.size(); ++i)
-//                    {
-//                        variableUnits[i] = gConfig.getDefaultUnit(variableNames[i]);
-//                        tempPlotVariableTreeItem = new PlotVariableTreeItem(pComponent->getName(), (*itp)->getName(), variableNames[i], variableUnits[i], tempComponentItem);
-//                        tempComponentItem->addChild(tempPlotVariableTreeItem);
-//                        VariableDescription variableDescription;
-//                        variableDescription.componentName = (*itp)->getGuiModelObjectName();
-//                        variableDescription.portName = (*itp)->getName();
-//                        variableDescription.dataName = variableNames[i];
-//                        variableDescription.dataUnit = variableUnits[i];
-//                        mAvailableVariables.append(variableDescription);
-//                        if(gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
-//                        {
-//                            tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-        //Append favorite plot variables to tree if they still exist
-//    for(int i=0; i<getLogDataHandler()->getFavoriteVariableList().size(); ++i)
-//    {
-//        QString componentName = mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().at(i).componentName;
-//        QString portName = mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().at(i).portName;
-//        QString dataName = mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().at(i).dataName;
-//        QString dataUnit = mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().at(i).dataUnit;
-//        QString alias = mpCurrentContainer->getPlotDataPtr()->getPlotAlias(componentName, portName, dataName);
-
-//        if(!componentName.isEmpty())
-//        {
-//            tempPlotVariableTreeItem = new PlotVariableTreeItem(componentName, portName, dataName, dataUnit);
-//            tempPlotVariableTreeItem->setText(0, " <"+alias+"> "+componentName+", "+portName+", "+dataName+", ["+dataUnit+"]");
-//            tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
-//            this->addTopLevelItem(tempPlotVariableTreeItem);
-//            tempPlotVariableTreeItem->setDisabled(!mAvailableVariables.contains(gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i)));
-//        }
-//    }
-
-    // Remove no longer existing favorite variables
-//    for(int i=0; i<getLogDataHandler()->getFavoriteVariableList().size(); ++i)
-//    {
-//        //if(!mAvailableVariables.contains(getLogDataHandler()->getFavoriteVariableList().at(i)))
-//        {
-//           // gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().removeAll(gpModelHandler->getCurrentTopLevelSystem()->getPlotDataPtr()->getFavoriteVariableList().at(i));
-//        }
-//    }
-
-
-
-    // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated.
-    // It must first be disconnected in case it was already connected, to avoid duplication of connection.
-//    disconnect(gpModelHandler->getCurrentModel(),    SIGNAL(simulationFinished()), this, SLOT(updateList()));
-//    disconnect(gpCentralTabWidget,                     SIGNAL(simulationFinished()), this, SLOT(updateList()));
-//    connect(gpModelHandler->getCurrentModel(),       SIGNAL(simulationFinished()), this, SLOT(updateList()));
-    //    connect(gpCentralTabWidget,                        SIGNAL(simulationFinished()), this, SLOT(updateList()));
 }
 
 void PlotWidget::clearList()
@@ -451,16 +358,24 @@ void PlotWidget::clearList()
 }
 
 
-//! @brief Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
-//! @param[in] *item Pointer to the tree widget item whos data will be plotted
-PlotWindow *VariableTree::createPlotWindow(QTreeWidgetItem *item)
+//! @brief Helper function that plots item to prefered plotwindow or creates a new one
+//! @param[in] *item Pointer to the tree widget item whos should be plotted
+//! @returns A pointer to the plotwindow or 0 pointer if item could not be plotted
+PlotWindow *VariableTree::plotToPreferedPlotWindow(QTreeWidgetItem *item)
 {
     // QTreeWidgetItem must be casted to a BaseVariableTreeItem. This is a necessary because double click event can not know which kind of tree item is clicked.
     // Top level items cannot be plotted (they represent the components)
     BaseVariableTreeItem *pVariableItem = dynamic_cast<BaseVariableTreeItem *>(item);
     if(pVariableItem)
     {
-        return gpPlotHandler->plotDataToWindow(0, pVariableItem->getDataPtr(), QwtPlot::yLeft);
+        if (mpPreferedPlotWindow)
+        {
+            return gpPlotHandler->plotDataToWindow(mpPreferedPlotWindow, pVariableItem->getDataPtr(), QwtPlot::yLeft);
+        }
+        else
+        {
+            return gpPlotHandler->plotDataToWindow(0, pVariableItem->getDataPtr(), QwtPlot::yLeft);
+        }
     }
     return 0;
 }
@@ -472,27 +387,25 @@ void VariableTree::mousePressEvent(QMouseEvent *event)
     QTreeWidget::mousePressEvent(event);
 
     if (event->button() == Qt::LeftButton)
-        dragStartPosition = event->pos();
+        mDragStartPosition = event->pos();
 }
 
 
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void VariableTree::mouseMoveEvent(QMouseEvent *event)
 {
-    //this->setFrameShape(QFrame::Box);
-
-    gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
+    gpMainWindow->showHelpPopupMessage("Double click on a variable to plot it, or drag it to an existing plot window.");
     if (!(event->buttons() & Qt::LeftButton))
     {
         return;
     }
-    if ((event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance())
+    if ((event->pos() - mDragStartPosition).manhattanLength() < QApplication::startDragDistance())
     {
         return;
     }
 
     BaseVariableTreeItem *item;
-    item = dynamic_cast<BaseVariableTreeItem *>(itemAt(dragStartPosition.toPoint()));
+    item = dynamic_cast<BaseVariableTreeItem *>(itemAt(mDragStartPosition.toPoint()));
 
     if(item != 0)
     {
@@ -514,16 +427,13 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
 {
     Q_UNUSED(event);
 
+    // Build context menue for variable items
     BaseVariableTreeItem *pItem = dynamic_cast<BaseVariableTreeItem *>(currentItem());
     if(pItem)
     {
-        qDebug() << "currentItem() is ok!";
-
         QMenu menu;
         QAction *pDefineAliasAction = 0;
         QAction *pRemoveAliasAction = 0;
-        QAction *pAddToFavoritesAction = 0;
-        QAction *pRemoveFromFavoritesAction = 0;
 
         if(pItem->getAliasName().isEmpty())
         {
@@ -534,16 +444,6 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             pDefineAliasAction = menu.addAction(QString("Change Variable Alias"));
             pRemoveAliasAction = menu.addAction(QString("Remove Variable Alias"));
         }
-
-//! @todo FIXA /Peter
-//        if(!gpModelHandler->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
-//        {
-//            addToFavoritesAction = menu.addAction(QString("Add Favorite Variable"));
-//        }
-//        else
-//        {
-//            removeFromFavoritesAction = menu.addAction(QString("Remove Favorite Variable"));
-//        }
 
         //-- Action --//
         QCursor *cursor;
@@ -559,21 +459,9 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         {
             mpLogDataHandler->definePlotAlias(pItem->getFullName());
         }
-
-        if(selectedAction == pAddToFavoritesAction)
-        {
-            //! @todo FIXA /Peter
-            //gpModelHandler->getCurrentContainer()->getPlotDataPtr()->setFavoriteVariable(variableDescription.componentName, variableDescription.portName, variableDescription.dataName, variableDescription.dataUnit);
-        }
-
-        if(selectedAction == pRemoveFromFavoritesAction)
-        {
-           //! @todo FIXA /Peter
-           //gpModelHandler->getCurrentContainer()->getPlotDataPtr()->removeFavoriteVariableByComponentName(pItem->getComponentName());
-           //this->updateList();
-        }
     }
 
+    // Build context menu for imported file items
     ImportedFileTreeItem *pFileItem = dynamic_cast<ImportedFileTreeItem *>(currentItem());
     if (pFileItem)
     {
@@ -719,7 +607,6 @@ PlotWidget::PlotWidget(QWidget *pParent)
     pLayout->addWidget(mpNewWindowButton);
     pLayout->addWidget(mpLoadButton);
     pLayout->setSpacing(1);
-    //pLayout->setContentsMargins(4,4,4,4);
 
     connect(mpNewWindowButton, SIGNAL(clicked()), this, SLOT(openNewPlotWindow()));
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
@@ -750,6 +637,11 @@ void PlotWidget::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler)
 LogDataHandler *PlotWidget::getLogDataHandler()
 {
     return mpVariableTree->getLogDataHandler();
+}
+
+void PlotWidget::setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow)
+{
+    mpVariableTree->setPreferedPlotWindow(pPreferedPlotWindow);
 }
 
 void PlotWidget::openNewPlotWindow()
@@ -863,21 +755,6 @@ void PlotWidget::loadFromXml()
 //    }
 //    file.close();
 }
-
-
-//void PlotWidget::clearHoverEffects()
-//{
-//    mpVariableTree->setFrameShape(QFrame::StyledPanel);
-//}
-
-
-//void PlotWidget::mouseMoveEvent(QMouseEvent *event)
-//{
-//    clearHoverEffects();
-
-//    QWidget::mouseMoveEvent(event);
-//}
-
 
 ImportedVariableTreeItem::ImportedVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(pData, pParent)
