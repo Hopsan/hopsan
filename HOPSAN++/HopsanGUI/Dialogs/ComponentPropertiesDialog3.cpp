@@ -1129,12 +1129,15 @@ void ParameterValueSelectionWidget::setValue()
 
 void ParameterValueSelectionWidget::setConditionalValue(const int idx)
 {
-    mpValueEdit->setText(QString("%1").arg(idx));
+    if (mpValueEdit)
+    {
+        mpValueEdit->setText(QString("%1").arg(idx));
+    }
 }
 
 void ParameterValueSelectionWidget::resetDefault()
 {
-    if(mpModelObject)
+    if(mpModelObject && mpValueEdit)
     {
         QString defaultText = mpModelObject->getDefaultParameterValue(mVariablePortDataName);
         if(!defaultText.isEmpty())
@@ -1189,7 +1192,7 @@ void ParameterValueSelectionWidget::createSysParameterSelectionMenu()
 
 void ParameterValueSelectionWidget::refreshValueTextStyle()
 {
-    if(mpModelObject)
+    if(mpModelObject && mpValueEdit)
     {
         if( mpValueEdit->text() == mpModelObject->getDefaultParameterValue(mVariablePortDataName) )
         {
