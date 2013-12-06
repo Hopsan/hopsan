@@ -10,23 +10,22 @@ enddefine
 define obj
 <<<objfuncs>>>
     totalObj = <<<totalobj>>>
-    opt set obj evalId totalObj
+    opt set obj optvar(evalid) totalObj
 enddefine
 
+opt set maxevals <<<maxevals>>>
+opt set algorithm complex
+opt set datatype double
+opt set npoints <<<npoints>>>
+opt set nparams <<<nparams>>>
+opt set functol <<<functol>>>
+opt set partol <<<partol>>>
+opt set alpha <<<alpha>>>
+opt set rfak <<<rfak>>>
+opt set gamma <<<gamma>>>
 
-npoints=<<<npoints>>>
-nparams=<<<nparams>>>
-maxevals=<<<maxevals>>>
-alpha=<<<alpha>>>
-rfak=<<<rfak>>>
-gamma=<<<gamma>>>
-functol=<<<functol>>>
-partol=<<<partol>>>
 <<<objpars>>>
 
-opt init complex double
-
-sim
 <<<plotvars>>>
 <<<extraplots>>>
 

@@ -46,6 +46,7 @@
 #include "ModelHandler.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/ModelWidget.h"
+#include "SymHop.h"
 
 //HopsanGenerator includes
 #include "SymHop.h"
@@ -159,6 +160,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 
     mCurrentPlotWindowName = "PlotWindow0";
 
+    mpOptHandler = new OptimizationHandler(this);
+
     mPwd = gpDesktopHandler->getDocumentsPath();
     mPwd.chop(1);
 
@@ -173,6 +176,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunctionoid("peek", "Returns vector value at specified index", new HcomFunctionoidPeek(this));
     registerFunctionoid("obj", "Returns optimization objective function value with specified index", new HcomFunctionoidObj(this));
     registerFunctionoid("time", "Returns last simulation time", new HcomFunctionoidTime(this));
+    registerFunctionoid("optvar", "Returns specified optimization variable", new HcomFunctionoidOptVar(this));
+    registerFunctionoid("optpar", "Returns specified optimization parameter", new HcomFunctionoidOptPar(this));
 
     createCommands();
 
@@ -213,10 +218,10 @@ Configuration *HcomHandler::getConfigPtr() const
     return gpConfig;
 }
 
-void HcomHandler::setOptHandlerPtr(OptimizationHandler *pOptHandler)
-{
-    mpOptHandler = pOptHandler;
-}
+//void HcomHandler::setOptHandlerPtr(OptimizationHandler *pOptHandler)
+//{
+//    mpOptHandler = pOptHandler;
+//}
 
 //! @brief Creates all command objects that can be used in terminal
 void HcomHandler::createCommands()
@@ -2509,79 +2514,19 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         return;
     }
     QStringList split = getArguments(cmd);
-//    if(split.size() == 1 && split[0] == "undo")
-//    {
-//        if(mOptAlgorithm == Uninitialized)
-//        {
-//            HCOMERR("Optimization not initialized.");
-//            return;
-//        }
-//        if(mOptAlgorithm != Complex)
-//        {
-//            HCOMERR("Only available for complex algorithm.");
-//            return;
-//        }
 
-//        mOptParameters = mOptOldParameters;
-//        return;
-//    }
-    if(split.size() == 1 && split[0] == "worst")
-    {
-        if(!mpOptHandler)
-        {
-            HCOMERR("Optimization not initialized.");
-            mAnsType = Undefined;
-            return;
-        }
-        if(mpOptHandler->mAlgorithm != OptimizationHandler::Complex)
-        {
-            HCOMERR("Only available for complex algorithm.");
-            mAnsType = Undefined;
-            return;
-        }
-
-        mAnsType = Scalar;
-        mAnsScalar = mpOptHandler->mLastWorstId;
-        HCOMPRINT(QString::number(mpOptHandler->mLastWorstId));
-        return;
-    }
-    if(split.size() == 1 && split[0] == "best")
-    {
-        if(!mpOptHandler)
-        {
-            HCOMERR("Optimization not initialized.");
-            mAnsType = Undefined;
-            return;
-        }
-        if(mpOptHandler->mAlgorithm != OptimizationHandler::Complex)
-        {
-            HCOMERR("Only available for complex algorithm.");
-            mAnsType = Undefined;
-            return;
-        }
-
-        mAnsType = Scalar;
-        mAnsScalar = mpOptHandler->mBestId;
-        HCOMPRINT(QString::number(mpOptHandler->mBestId));
-        return;
-    }
     if(split[0] == "set")
     {
-        if(!mpOptHandler)
-        {
-            HCOMERR("Optimization not initialized.");
-            mAnsType = Undefined;
-            return;
-        }
         if(split.size() == 4 && split[1] == "obj")
         {
             bool ok;
-            int idx = getNumber(split[2], &ok);
-            if(!ok)
+            evaluateExpression(split[2], Scalar);
+            if(mAnsType != Scalar)
             {
                 HCOMERR("Argument number 2 must be a number.");
                 return;
             }
+            int idx = mAnsScalar;
             if(idx < 0 || idx > mpOptHandler->mNumPoints-1)
             {
                 HCOMERR("Index out of range.");
@@ -2600,12 +2545,6 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(split.size() == 5 && split[1] == "limits")
         {
-            if(!mpOptHandler)
-            {
-                HCOMERR("Optimization not initialized.");
-                mAnsType = Undefined;
-                return;
-            }
             bool ok;
             int optParIdx = getNumber(split[2], &ok);
             if(!ok)
@@ -2638,111 +2577,44 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->mParMax[optParIdx] = max;
             return;
         }
-        else if(split.size() == 3 && split[1] == "plotpoints")
+        else if(split.size() == 3)
         {
-            if(!mpOptHandler)
+            bool ok=true;
+            evaluateExpression(split[2]);
+            if(mAnsType == Scalar)
             {
-                HCOMERR("Optimization not initialized.");
-                mAnsType = Undefined;
+                mpOptHandler->setOptVar(split[1], QString::number(mAnsScalar), ok);
+            }
+            else if(mAnsType == Wildcard)
+            {
+                mpOptHandler->setOptVar(split[1], mAnsWildcard, ok);
+            }
+            else
+            {
+                HCOMERR("Unknown parameter value: "+split[2]);
+            }
+            if(!ok)
+            {
+                HCOMERR("Unknown optimization setting: "+split[1]);
                 return;
             }
-            mpOptHandler->mPlotPoints = (split[2] == "on");
-        }
-        else if(split.size() == 3 && split[1] == "plotbestworst")
-        {
-            if(!mpOptHandler)
-            {
-                HCOMERR("Optimization not initialized.");
-                mAnsType = Undefined;
-                return;
-            }
-            mpOptHandler->mPlotObjectiveFunctionValues = (split[2] == "on");
-        }
-        else if(split.size() == 3 && split[1] == "plotvariables")
-        {
-            if(!mpOptHandler)
-            {
-                HCOMERR("Optimization not initialized.");
-                mAnsType = Undefined;
-                return;
-            }
-            mpOptHandler->mPlotVariables = (split[2] == "on");
-        }
-        else if(split.size() == 3 && split[1] == "plotparameters")
-        {
-            if(!mpOptHandler)
-            {
-                HCOMERR("Optimization not initialized.");
-                mAnsType = Undefined;
-                return;
-            }
-            mpOptHandler->mPlotParameters = (split[2] == "on");
         }
         else
         {
-            HCOMERR("Unknown optimization setting: "+split[1]);
+            HCOMERR("Wrong number of arguments.");
         }
     }
 
     if(split.size() == 3 && split[0] == "init")
     {
+        return;
+    }
+
+    if(split.size() == 1 && split[0] == "run")
+    {
         //Create detatched HcomHandler and copy local variables
         //! @todo Delete these when finished!
         //TerminalWidget *pOptTerminal = new TerminalWidget(gpMainWindowWidget);
-        TerminalConsole *pOptConsole = gpMainWindow->mpOptimizationDialog->mpTerminal->mpConsole;
-        HcomHandler *pOptHcomHandler = new HcomHandler(pOptConsole);
-        gpMainWindow->mpOptimizationDialog->mpTerminal->mpHandler = pOptHcomHandler;
-        QMapIterator<QString, double> varIt(mLocalVars);
-        while(varIt.hasNext())
-        {
-            varIt.next();
-            bool abort; //Dummy variable
-            pOptHcomHandler->runScriptCommands(QStringList() << varIt.key()+"="+QString::number(varIt.value()), &abort);
-        }
-        QMapIterator<QString, QStringList> fncIt(mFunctions);
-        while(fncIt.hasNext())
-        {
-            fncIt.next();
-            QStringList definition;
-            definition << "define "+fncIt.key();
-            for(int i=0; i<fncIt.value().size(); ++i)
-            {
-                definition << fncIt.value().at(i);
-            }
-            definition << "enddefine";
-            bool abort; //Dummy variable
-            pOptHcomHandler->runScriptCommands(definition, &abort);
-        }
-        mpOptHandler = new OptimizationHandler(pOptHcomHandler);
-        pOptHcomHandler->setOptHandlerPtr(mpOptHandler);
-
-        if(split[1] == "complex")
-        {
-            mpOptHandler->mAlgorithm = OptimizationHandler::Complex;
-        }
-        else if(split[1] == "particleswarm")
-        {
-            mpOptHandler->mAlgorithm = OptimizationHandler::ParticleSwarm;
-        }
-        else
-        {
-            HCOMERR("Unknown algorithm. Only complex is supported.");
-            return;
-        }
-
-        if(split[2] == "int")
-        {
-            mpOptHandler->mParameterType = OptimizationHandler::Int;
-        }
-        else if(split[2] == "double")
-        {
-            mpOptHandler->mParameterType = OptimizationHandler::Double;
-        }
-        else
-        {
-            HCOMERR("Unknown data type. Only int and double are supported.");
-            return;
-        }
 
         //Everything is fine, initialize and run optimization
 
@@ -2759,19 +2631,22 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         {
             mpOptHandler->mModelPtrs.clear();
             mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-            mpOptHandler->mNumPoints = getNumber("npoints", &ok);
-            mpOptHandler->mNumParameters = getNumber("nparams", &ok);
+            mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+            //mpOptHandler->mNumPoints = getNumber("npoints", &ok);
+            //mpOptHandler->mNumParameters = getNumber("nparams", &ok);
             mpOptHandler->mLastWorstId = -1;
             mpOptHandler->mCrfWorstCounter = 0;
-            mpOptHandler->mParameters.resize(mpOptHandler->mNumPoints);
-            mpOptHandler->mParMin.resize(mpOptHandler->mNumParameters);
-            mpOptHandler->mParMax.resize(mpOptHandler->mNumParameters);
-            mpOptHandler->mMaxEvals = getNumber("maxevals", &ok);
-            mpOptHandler->mCrfAlpha = getNumber("alpha", &ok);
-            mpOptHandler->mCrfRfak = getNumber("rfak", &ok);
-            mpOptHandler->mCrfGamma = getNumber("gamma", &ok);
-            mpOptHandler->mFuncTol = getNumber("functol", &ok);
-            mpOptHandler->mParTol = getNumber("partol", &ok);
+            //mpOptHandler->mParameters.resize(mpOptHandler->mNumPoints);
+            //mpOptHandler->mParMin.resize(mpOptHandler->mNumParameters);
+            //mpOptHandler->mParMax.resize(mpOptHandler->mNumParameters);
+            //mpOptHandler->mMaxEvals = getNumber("maxevals", &ok);
+            //mpOptHandler->mCrfAlpha = getNumber("alpha", &ok);
+            //mpOptHandler->mCrfRfak = getNumber("rfak", &ok);
+            //mpOptHandler->mCrfGamma = getNumber("gamma", &ok);
+            //mpOptHandler->mFuncTol = getNumber("functol", &ok);
+            //mpOptHandler->mParTol = getNumber("partol", &ok);
+            mpOptHandler->crfInit();
+            mpOptHandler->crfRun();
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
         {
@@ -2782,12 +2657,14 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 for(int i=0; i<mpOptHandler->mNumPoints; ++i)
                 {
                     mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+                    mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
                 }
                 //gpModelHandler->setCurrentModel(mpOptHandler->mOptModelPtrs.first());
             }
             else
             {
                 mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+                mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
                 //gpModelHandler->setCurrentModel(mpOptHandler->mpOptModel);
             }
             mpOptHandler->mNumParameters = getNumber("nparams", &ok);
@@ -2804,26 +2681,6 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->mPsC2 = getNumber("c2", &ok);
             mpOptHandler->mFuncTol = getNumber("functol", &ok);
             mpOptHandler->mParTol = getNumber("partol", &ok);
-        }
-
-        return;
-    }
-
-    if(split.size() == 1 && split[0] == "run")
-    {
-        if(!mpOptHandler)
-        {
-            HCOMERR("Optimization not initialized.");
-            mAnsType = Undefined;
-            return;
-        }
-        if(mpOptHandler->mAlgorithm == OptimizationHandler::Complex)
-        {
-            mpOptHandler->crfInit();
-            mpOptHandler->crfRun();
-        }
-        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
-        {
             mpOptHandler->psInit();
             mpOptHandler->psRun();
         }
@@ -3180,26 +3037,27 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
 
         //Optimization parameter
-        if(expr.startsWith("par(") && expr.endsWith(")"))
-        {
-            QString nPointsStr = expr.section("(",1,1).section(",",0,0);
-            QString nParStr = expr.section(",",1,1).section(")",0,0);
-            if(nPointsStr.isEmpty() || nParStr.isEmpty())
-            {
-                mAnsType = Scalar;
-                mAnsScalar =0;
-                return;
-            }
-            bool ok1, ok2;
-            int nPoint = getNumber(nPointsStr,&ok1);
-            int nPar = getNumber(nParStr, &ok2);
-            if(ok1 && ok2 && nPoint>=0 && nPoint < mpOptHandler->mParameters.size() && nPar>= 0 && nPar < mpOptHandler->mParameters[nPoint].size())
-            {
-                mAnsType = Scalar;
-                mAnsScalar = mpOptHandler->mParameters[nPoint][nPar];
-                return;
-            }
-        }
+//        if(expr.startsWith("par(") && expr.endsWith(")"))
+//        {
+//            QString argStr = expr.section("(",1,1).section(")",-2,-2);
+//            QString nPointsStr = expr.section(",",0,0);
+//            QString nParStr = expr.section(",",1,1).section(")",-1,-1);
+//            if(nPointsStr.isEmpty() || nParStr.isEmpty())
+//            {
+//                mAnsType = Scalar;
+//                mAnsScalar =0;
+//                return;
+//            }
+//            bool ok1, ok2;
+//            int nPoint = getNumber(nPointsStr,&ok1);
+//            int nPar = getNumber(nParStr, &ok2);
+//            if(ok1 && ok2 && nPoint>=0 && nPoint < mpOptHandler->mParameters.size() && nPar>= 0 && nPar < mpOptHandler->mParameters[nPoint].size())
+//            {
+//                mAnsType = Scalar;
+//                mAnsScalar = mpOptHandler->mParameters[nPoint][nPar];
+//                return;
+//            }
+        //}
     }
 
     if(desiredType != DataVector)
@@ -3911,7 +3769,8 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
         }
         else if(lines[l].startsWith("while"))        //Handle while loops
         {
-            QString argument = lines[l].section("(",1).remove(")");
+            QString argument = lines[l].section("(",1);
+            argument.chop(1);
             QStringList loop;
             int nLoops=1;
             while(nLoops > 0)
@@ -3944,7 +3803,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             timer.toc("runScriptCommand: pars to local vars");
             timer.tic();
             bool ok = true;
-            while(symHopExpr.evaluate(localVars, 0, &ok) > 0 && ok)
+            while(symHopExpr.evaluate(localVars, &mLocalFunctionoidPtrs, &ok) > 0 && ok)
             {
                 qApp->processEvents();
                 if(mAborted)
@@ -5449,4 +5308,44 @@ double HcomFunctionoidRand::evaluate(QString &str, bool &ok)
     Q_UNUSED(str);
     ok=true;
     return rand() / (double)RAND_MAX;          //Random value between  0 and 1
+}
+
+
+double HcomFunctionoidOptVar::evaluate(QString &str, bool &ok)
+{
+    return mpHandler->mpOptHandler->getOptVar(str, ok);
+}
+
+
+double HcomFunctionoidOptPar::evaluate(QString &str, bool &ok)
+{
+    ok=true;
+    QStringList args = SymHop::Expression::splitWithRespectToParentheses(str, ',');
+    double pointIdx, parIdx;
+    if(args.size() != 2)
+    {
+        ok = false;
+        return 0;
+    }
+    mpHandler->evaluateExpression(args[0]);
+    if(mpHandler->mAnsType != HcomHandler::Scalar)
+    {
+        ok = false;
+        return 0;
+    }
+    else
+    {
+        pointIdx = mpHandler->mAnsScalar;
+    }
+    mpHandler->evaluateExpression(args[1]);
+    if(mpHandler->mAnsType != HcomHandler::Scalar)
+    {
+        ok = false;
+        return 0;
+    }
+    else
+    {
+        parIdx = mpHandler->mAnsScalar;
+    }
+    return mpHandler->mpOptHandler->getParameter(pointIdx,parIdx);
 }

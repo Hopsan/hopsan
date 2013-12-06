@@ -95,7 +95,7 @@ ModelWidget::ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent)
     mpExternalSystemWidget->hide();
 
     mpToplevelSystem = new SystemContainer(this, 0);
-    mpSimulationThreadHandler = new SimulationThreadHandler();
+    mpSimulationThreadHandler = new SimulationThreadHandler(gpTerminalWidget);
 
     connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));

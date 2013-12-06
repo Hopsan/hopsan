@@ -46,7 +46,7 @@ ModelHandler::ModelHandler(QObject *parent)
 {
     mNumberOfUntitledModels=0;
 
-    mpSimulationThreadHandler = new SimulationThreadHandler();
+    mpSimulationThreadHandler = new SimulationThreadHandler(gpTerminalWidget);
 
     mCurrentIdx = -1;
 

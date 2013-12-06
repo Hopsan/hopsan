@@ -32,6 +32,7 @@
 // Forward Declaration
 class SystemContainer;
 class SimulationWorkerObject;
+class TerminalWidget;
 
 class SimulationWorkerObject : public QObject
 {
@@ -108,6 +109,7 @@ private:
     bool mInitSuccess, mSimuSucess, mFiniSucess, mAborted, mProgressBarEnabled, mProgressBarModal;
     int mInitTime, mSimuTime, mFiniTime;
 
+
 protected slots:
     void initDone(bool success, int ms);
     void simulateDone(bool success, int ms);
@@ -115,7 +117,10 @@ protected slots:
     void aborted();
 
 public:
-    SimulationThreadHandler() : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true){}
+    SimulationThreadHandler(TerminalWidget *pTerminal) : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true)
+    {
+        mpTerminal = pTerminal;
+    }
 
     void setSimulationTimeVariables(const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     void setProgressDilaogBehaviour(bool enabled, bool modal);
@@ -124,6 +129,8 @@ public:
     void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
     int getLastSimulationTime();
+
+    TerminalWidget *mpTerminal;
 
 signals:
     void startSimulation();

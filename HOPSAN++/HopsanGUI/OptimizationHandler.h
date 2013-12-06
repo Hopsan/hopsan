@@ -53,6 +53,9 @@ public:
 
     //Public access functions
     double getOptimizationObjectiveValue(int idx);
+    double getOptVar(QString &var, bool &ok) const;
+    void setOptVar(const QString &var, const QString &value, bool &ok);
+    double getParameter(const int pointIdx, const int parIdx) const;
 
     Configuration *mpConfig;
     TerminalConsole *mpConsole;
@@ -99,6 +102,7 @@ private:
 
     //Member variables (both algorithms)
     int mNumPoints;
+    int mEvalId;
     int mNumParameters;
     QVector<double> mParMin, mParMax;
     QVector< QVector<double> > mParameters, mOldParameters;

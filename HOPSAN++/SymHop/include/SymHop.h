@@ -140,6 +140,8 @@ public:
     Expression removeNumericalFactors() const;
     double getNumericalFactor() const;
 
+    static QStringList splitWithRespectToParentheses(const QString str, const QChar c);
+
     //! @todo Must be public for the object-less constructor functions, solve later (AND DON'T USE THEM ANYWHERE ELSE!!!)
     //ExpressionTypeT mType;
     QString mString;                //Used for symbols
@@ -159,7 +161,6 @@ private:
 
     bool splitAtSeparator(const QString sep, const QStringList subSymbols, const ExpressionSimplificationT simplifications);
     bool verifyParantheses(const QString str) const;
-    QStringList splitWithRespectToParentheses(const QString str, const QChar c);
 };
 
 QString DLLIMPORTEXPORT getFunctionDerivative(const QString &key);

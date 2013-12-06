@@ -68,6 +68,204 @@ double OptimizationHandler::getOptimizationObjectiveValue(int idx)
     return mObjectives[idx];
 }
 
+double OptimizationHandler::getOptVar(QString &var, bool &ok) const
+{
+    ok=true;
+    if(var == "plotpoints")
+    {
+        if(mPlotPoints)
+            return 1;
+        else
+            return 0;
+    }
+    else if(var == "plotbestworst")
+    {
+        if(mPlotObjectiveFunctionValues)
+            return 1;
+        else
+            return 0;
+    }
+    else if(var == "plotparameters")
+    {
+        if(mPlotParameters)
+            return 1;
+        else
+            return 0;
+    }
+    else if(var == "algorithm")
+    {
+        return mAlgorithm;
+    }
+    else if(var == "datatype")
+    {
+        return mParameterType;
+    }
+    else if(var == "npoints")
+    {
+        return mNumPoints;
+    }
+    else if(var == "nparams")
+    {
+        return mNumParameters;
+    }
+    else if(var == "functol")
+    {
+        return mFuncTol;
+    }
+    else if(var == "partol")
+    {
+        return mParTol;
+    }
+    else if(var == "maxevals")
+    {
+        return mMaxEvals;
+    }
+    else if(var == "alpha")
+    {
+        return mCrfAlpha;
+    }
+    else if(var == "rfak")
+    {
+        return mCrfRfak;
+    }
+    else if(var == "gamma")
+    {
+        return mCrfGamma;
+    }
+    else if(var == "evalid")
+    {
+        return mEvalId;
+    }
+    else if(var == "omega")
+    {
+        return mPsOmega;
+    }
+    else if(var == "c1")
+    {
+        return mPsC1;
+    }
+    else if(var == "c2")
+    {
+        return mPsC2;
+    }
+    else if(var == "bestid")
+    {
+        return mBestId;
+    }
+    else if(var == "worstid")
+    {
+        return mWorstId;
+    }
+    else
+    {
+        ok=false;
+        return 0;
+    }
+}
+
+void OptimizationHandler::setOptVar(const QString &var, const QString &value, bool &ok)
+{
+    ok=true;
+    if(var == "plotpoints")
+    {
+        mPlotPoints = (value == "on");
+    }
+    else if(var == "plotbestworst")
+    {
+        mPlotObjectiveFunctionValues = (value == "on");
+    }
+    else if(var == "plotvariables")
+    {
+        mPlotVariables = (value == "on");
+    }
+    else if(var == "plotparameters")
+    {
+        mPlotParameters = (value == "on");
+    }
+    else if(var == "algorithm")
+    {
+        if(value == "complex")
+            mAlgorithm = OptimizationHandler::Complex;
+        else if(value == "particleswarm")
+            mAlgorithm = OptimizationHandler::ParticleSwarm;
+    }
+    else if(var == "datatype")
+    {
+        if(value == "double")
+            mParameterType = OptimizationHandler::Double;
+        else if(value == "int")
+            mParameterType = OptimizationHandler::Int;
+    }
+    else if(var == "npoints")
+    {
+        mNumPoints = value.toInt();
+        mParameters.resize(mNumPoints);
+    }
+    else if(var == "nparams")
+    {
+        mNumParameters = value.toInt();
+        mParMin.resize(mNumParameters);
+        mParMax.resize(mNumParameters);
+    }
+    else if(var == "functol")
+    {
+        mFuncTol = value.toDouble();
+    }
+    else if(var == "partol")
+    {
+        mParTol = value.toDouble();
+    }
+    else if(var == "maxevals")
+    {
+        mMaxEvals = value.toInt();
+    }
+    else if(var == "alpha")
+    {
+        mCrfAlpha = value.toDouble();
+    }
+    else if(var == "rfak")
+    {
+        mCrfRfak = value.toDouble();
+    }
+    else if(var == "gamma")
+    {
+        mCrfGamma = value.toDouble();
+    }
+    else if(var == "evalid")
+    {
+        mEvalId = value.toDouble();
+    }
+    else if(var == "omega")
+    {
+        mPsOmega = value.toDouble();
+    }
+    else if(var == "c1")
+    {
+        mPsC1 = value.toDouble();
+    }
+    else if(var == "c2")
+    {
+        mPsC2 = value.toDouble();
+    }
+    else
+    {
+        ok=false;
+    }
+}
+
+double OptimizationHandler::getParameter(const int pointIdx, const int parIdx) const
+{
+    if(mParameters.size() < pointIdx+1)
+    {
+        return 0;
+    }
+    else if(mParameters[pointIdx].size() < parIdx)
+    {
+        return 0;
+    }
+    return mParameters[pointIdx][parIdx];
+}
+
 
 //! @brief Initializes a Complex-RF optimization
 void OptimizationHandler::crfInit()
@@ -179,7 +377,7 @@ void OptimizationHandler::crfRun()
     mpConsole->print("Running optimization...");
 
     //Turn of terminal output during optimization
-    mpHcomHandler->executeCommand("echo off");
+    mpHcomHandler->executeCommand("echo on");
 
     //Evaluate initial objevtive values
     timer.tic();
@@ -658,14 +856,14 @@ void OptimizationHandler::psRun()
             for(int i=0; i<mNumPoints && !mpHcomHandler->isAborted(); ++i)
             {
                 mpHcomHandler->setModelPtr(mModelPtrs[i]);
-                mpHcomHandler->executeCommand("evalId = "+QString::number(i));
+                mpHcomHandler->executeCommand("opt set evalid "+QString::number(i));
                 mpHcomHandler->executeCommand("call setpars");
             }
             gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
             for(int i=0; i<mNumPoints && !mpHcomHandler->isAborted(); ++i)
             {
                 mpHcomHandler->setModelPtr(mModelPtrs[i]);
-                mpHcomHandler->executeCommand("evalId = "+QString::number(i));
+                mpHcomHandler->executeCommand("opt set evalid "+QString::number(i));
                 mpHcomHandler->executeCommand("call obj");
             }
             mpHcomHandler->setModelPtr(mModelPtrs.first());
@@ -920,12 +1118,12 @@ void OptimizationHandler::plotParameters()
 
 void OptimizationHandler::finalize()
 {
-    while(!mModelPtrs.isEmpty())
-    {
-        mModelPtrs[0]->close();
-        delete mModelPtrs[0];
-        mModelPtrs.remove(0);
-    }
+//    while(!mModelPtrs.isEmpty())
+//    {
+//        mModelPtrs[0]->close();
+//        delete mModelPtrs[0];
+//        mModelPtrs.remove(0);
+//    }
 
     mpConsole->mpTerminal->setEnabledAbortButton(false);
 

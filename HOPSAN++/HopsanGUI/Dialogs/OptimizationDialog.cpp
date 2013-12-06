@@ -752,7 +752,7 @@ void OptimizationDialog::generateComplexScript()
             par = mSelectedComponents[p]+"."+mSelectedParameters[p];
         }
         gpTerminalWidget->mpHandler->toShortDataNames(par);
-        setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
+        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
@@ -862,7 +862,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     {
         QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
         gpTerminalWidget->mpHandler->toShortDataNames(par);
-        setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
+        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
@@ -1311,10 +1311,11 @@ void OptimizationDialog::run()
 
     QStringList commands = mpOutputBox->toPlainText().split("\n");
     bool *abort = new bool;
-    gpTerminalWidget->setEnabledAbortButton(true);
+    mpTerminal->setEnabledAbortButton(true);
     mpTimer->start(10);
-    gpTerminalWidget->mpHandler->runScriptCommands(commands, abort);
-    gpTerminalWidget->setEnabledAbortButton(false);
+    mpTerminal->mpHandler->setModelPtr(gpModelHandler->getCurrentModel());
+    mpTerminal->mpHandler->runScriptCommands(commands, abort);
+    mpTerminal->setEnabledAbortButton(false);
     mpTimer->stop();
     delete(abort);
 }
@@ -1473,7 +1474,7 @@ void OptimizationDialog::applyParameters()
     QStringList code;
     mpTerminal->mpHandler->getFunctionCode("setpars", code);
     bool abort;
-    gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "evalId = "+QString::number(idx), &abort);
+    gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "optvar(evalid) = "+QString::number(idx), &abort);
     gpTerminalWidget->mpHandler->runScriptCommands(code, &abort);
 
     //Switch back HCOM handler

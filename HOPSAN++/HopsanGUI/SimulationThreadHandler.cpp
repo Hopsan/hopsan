@@ -213,7 +213,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     if(!gpConfig->getUseMulticore())
     {
         QTimer *pCheckMessagesTimer = new QTimer();
-        connect(pCheckMessagesTimer, SIGNAL(timeout()), gpTerminalWidget, SLOT(checkMessages()));
+        connect(pCheckMessagesTimer, SIGNAL(timeout()), mpTerminal, SLOT(checkMessages()));
         connect(this, SIGNAL(done(bool)), pCheckMessagesTimer, SLOT(deleteLater()));
         pCheckMessagesTimer->setSingleShot(false);
         pCheckMessagesTimer->start(1000);
@@ -257,24 +257,24 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
     mProgressBarWorkerThread.quit();
 
     //! @todo maybe use signals and slots for messages instead
-    gpTerminalWidget->checkMessages();
+    mpTerminal->checkMessages();
 
     // Handle printing of all the error messages
     if (mAborted)
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was canceled by user"));
+        mpTerminal->mpConsole->printErrorMessage(tr("Simulation was canceled by user"));
     }
     else if (!mInitSuccess)
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(tr("Initialize was stopped or aborted for some reason"));
+        mpTerminal->mpConsole->printErrorMessage(tr("Initialize was stopped or aborted for some reason"));
     }
     else if (!mSimuSucess)
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was stopped or aborted for some reason"));
+        mpTerminal->mpConsole->printErrorMessage(tr("Simulation was stopped or aborted for some reason"));
     }
     else if (!mFiniSucess)
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(tr("Finalize was stopped or aborted for some reason"));
+        mpTerminal->mpConsole->printErrorMessage(tr("Finalize was stopped or aborted for some reason"));
     }
     else
     {
@@ -290,7 +290,7 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
         QString msg = tr("Simulated").append(" '").append(name).append("' ").append(tr("successfully!"));
         msg.append(" ").append(tr("Initialization time: ")).append(QString::number(mInitTime).append(" ms"));
         msg.append(", ").append(tr("Simulation time: ").append(QString::number(mSimuTime)).append(" ms"));
-        gpTerminalWidget->mpConsole->printInfoMessage(msg);
+        mpTerminal->mpConsole->printInfoMessage(msg);
     }
 
     // Wait until threads have been shut down before we delete objects

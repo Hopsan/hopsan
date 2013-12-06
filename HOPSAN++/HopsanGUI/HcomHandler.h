@@ -58,7 +58,7 @@ public:
     ModelWidget *getModelPtr() const;
     void setConfigPtr(Configuration *pConfig);
     Configuration *getConfigPtr() const;
-    void setOptHandlerPtr(OptimizationHandler *pOptHandler);
+    //void setOptHandlerPtr(OptimizationHandler *pOptHandler);
 
     // Command functions
     QStringList getCommands() const;
@@ -231,10 +231,10 @@ public:
 
 
 
-class HcomFunctinoid : public SymHopFunctionoid
+class HcomFunctionoid : public SymHopFunctionoid
 {
 public:
-    HcomFunctinoid(HcomHandler *pHandler)
+    HcomFunctionoid(HcomHandler *pHandler)
     {
         mpHandler = pHandler;
     }
@@ -242,76 +242,88 @@ protected:
     HcomHandler *mpHandler;
 };
 
-class HcomFunctionoidAver : public HcomFunctinoid
+class HcomFunctionoidAver : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidAver(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidAver(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidSize : public HcomFunctinoid
+class HcomFunctionoidSize : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidSize(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidSize(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidTime : public HcomFunctinoid
+class HcomFunctionoidTime : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidTime(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidTime(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidObj : public HcomFunctinoid
+class HcomFunctionoidObj : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidObj(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidObj(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidMin : public HcomFunctinoid
+class HcomFunctionoidMin : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidMin(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidMin(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidMax : public HcomFunctinoid
+class HcomFunctionoidMax : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidMax(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidMax(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidIMin : public HcomFunctinoid
+class HcomFunctionoidIMin : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidIMin(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidIMin(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidIMax : public HcomFunctinoid
+class HcomFunctionoidIMax : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidIMax(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidIMax(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidPeek : public HcomFunctinoid
+class HcomFunctionoidPeek : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidPeek(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidPeek(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
-class HcomFunctionoidRand : public HcomFunctinoid
+class HcomFunctionoidRand : public HcomFunctionoid
 {
 public:
-    HcomFunctionoidRand(HcomHandler *pHandler) : HcomFunctinoid(pHandler) {}
+    HcomFunctionoidRand(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double evaluate(QString &str, bool &ok);
 };
 
+class HcomFunctionoidOptVar : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidOptVar(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
 
+class HcomFunctionoidOptPar : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidOptPar(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double evaluate(QString &str, bool &ok);
+};
 
 #endif // HCOMHANDLER_H

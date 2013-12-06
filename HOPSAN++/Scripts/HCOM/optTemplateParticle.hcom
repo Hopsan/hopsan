@@ -10,23 +10,22 @@ enddefine
 define obj
 <<<objfuncs>>>
     totalObj = <<<totalobj>>>
-    opt set obj evalId totalObj
+    opt set obj optvar(evalid) totalObj
 enddefine
 
+opt set maxevals <<<maxevals>>>
+opt set algorithm particleswarm
+opt set datatype double
+opt set npoints <<<npoints>>>
+opt set nparams <<<nparams>>>
+opt set functol <<<functol>>>
+opt set partol <<<partol>>>
+opt set omega <<<omega>>>
+opt set c1 <<<c1>>>
+opt set c2 <<<c2>>>
 
-npoints=<<<npoints>>>
-nparams=<<<nparams>>>
-maxevals=<<<maxevals>>>
-omega=<<<omega>>>
-c1=<<<c1>>>
-c2=<<<c2>>>
-functol=<<<functol>>>
-partol=<<<partol>>>
 <<<objpars>>>
 
-opt init particleswarm double
-
-sim
 <<<plotvars>>>
 <<<extraplots>>>
 
