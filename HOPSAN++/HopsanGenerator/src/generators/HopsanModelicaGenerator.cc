@@ -50,7 +50,7 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     if(solver == BilinearTransform)
     {
         //Transform equation system using Bilinear Transform method
-        generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
+        generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
     else /*if(solver == NumericalIntegration)*/
     {
@@ -377,8 +377,18 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
 
 //! @brief Generates XML and compiles the new component
-void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
+void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
+    logStream << "Initializing Modelica generator for bilinear transform.\n";
+    logStream << "Date and time: " << QDateTime::currentDateTime().toString() << "\n";
+
+
+    logStream << "\n--- Initial Algorithms ---\n";
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        logStream << initAlgorithms[i] << "\n";
+    }
+
     //Create list of equqtions
     QList<Expression> systemEquations;
     for(int e=0; e<plainEquations.size(); ++e)
@@ -388,15 +398,25 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             continue;   //Ignore comments
         }
         systemEquations.append(Expression(plainEquations.at(e)));
+        logStream << systemEquations.last().toString() << "\n";
         //qDebug() << "EQUATION: " << equations[e].toString();
         if(!systemEquations[e].isEquation())
         {
             printErrorMessage("Equation is not an equation.");
+            logStream << "Last equation is not an equation. Aborting.";
             return;
         }
     }
 
+    logStream << "\n--- Final Algorithms ---\n";
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        logStream << finalAlgorithms[i] << "\n";
+    }
+
+
     //Identify variable limitations, and remove them from the equations list
+    logStream << "\n--- Variable Limitations ---\n";
     QList<Expression> limitedVariables;
     QList<Expression> limitedDerivatives;
     QList<Expression> limitMinValues;
