@@ -531,7 +531,7 @@ void ModelHandler::refreshMainWindowConnections()
         gpMainWindow->mpShowLossesAction->setChecked(getCurrentViewContainerObject()->areLossesVisible());
     }
 
-    gpTerminalWidget->mpHandler->setModelPtr(getCurrentModel());
+    emit modelChanged(getCurrentModel());
 }
 
 void ModelHandler::saveState()

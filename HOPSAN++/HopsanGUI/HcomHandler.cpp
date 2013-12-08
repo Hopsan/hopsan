@@ -2632,25 +2632,13 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->mModelPtrs.clear();
             mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
             mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
-            //mpOptHandler->mNumPoints = getNumber("npoints", &ok);
-            //mpOptHandler->mNumParameters = getNumber("nparams", &ok);
             mpOptHandler->mLastWorstId = -1;
             mpOptHandler->mCrfWorstCounter = 0;
-            //mpOptHandler->mParameters.resize(mpOptHandler->mNumPoints);
-            //mpOptHandler->mParMin.resize(mpOptHandler->mNumParameters);
-            //mpOptHandler->mParMax.resize(mpOptHandler->mNumParameters);
-            //mpOptHandler->mMaxEvals = getNumber("maxevals", &ok);
-            //mpOptHandler->mCrfAlpha = getNumber("alpha", &ok);
-            //mpOptHandler->mCrfRfak = getNumber("rfak", &ok);
-            //mpOptHandler->mCrfGamma = getNumber("gamma", &ok);
-            //mpOptHandler->mFuncTol = getNumber("functol", &ok);
-            //mpOptHandler->mParTol = getNumber("partol", &ok);
             mpOptHandler->crfInit();
             mpOptHandler->crfRun();
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
         {
-            mpOptHandler->mNumPoints = getNumber("npoints", &ok);
             mpOptHandler->mModelPtrs.clear();
             if(getConfigPtr()->getUseMulticore())
             {
@@ -2659,28 +2647,12 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                     mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
                     mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
                 }
-                //gpModelHandler->setCurrentModel(mpOptHandler->mOptModelPtrs.first());
             }
             else
             {
                 mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
                 mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
-                //gpModelHandler->setCurrentModel(mpOptHandler->mpOptModel);
             }
-            mpOptHandler->mNumParameters = getNumber("nparams", &ok);
-            mpOptHandler->mParameters.resize(mpOptHandler->mNumPoints);
-            mpOptHandler->mPsVelocities.resize(mpOptHandler->mNumPoints);
-            mpOptHandler->mPsBestKnowns.resize(mpOptHandler->mNumPoints);
-            mpOptHandler->mPsBestPoint.resize(mpOptHandler->mNumParameters);
-            mpOptHandler->mPsBestObjectives.resize(mpOptHandler->mNumPoints);
-            mpOptHandler->mParMin.resize(mpOptHandler->mNumParameters);
-            mpOptHandler->mParMax.resize(mpOptHandler->mNumParameters);
-            mpOptHandler->mMaxEvals = getNumber("maxevals", &ok);
-            mpOptHandler->mPsOmega = getNumber("omega", &ok);
-            mpOptHandler->mPsC1 = getNumber("c1", &ok);
-            mpOptHandler->mPsC2 = getNumber("c2", &ok);
-            mpOptHandler->mFuncTol = getNumber("functol", &ok);
-            mpOptHandler->mParTol = getNumber("partol", &ok);
             mpOptHandler->psInit();
             mpOptHandler->psRun();
         }
@@ -5072,14 +5044,19 @@ void HcomHandler::abortHCOM()
     mAborted = true;
 }
 
-void HcomHandler::registerFunctionoid(const QString func, const QString description, SymHopFunctionoid *pFunctinoid)
+//! @brief Registers a functionoid object with a function name in the functionoid map
+//! @param funcName Name of function call from terminal
+//! @param description Description shown in help text
+//! @param pFunctionoid Pointer to functionoid object
+void HcomHandler::registerFunctionoid(const QString funcName, const QString description, SymHopFunctionoid *pFunctinoid)
 {
-    mLocalFunctionoidPtrs.insert(func, pFunctinoid);
-    mLocalFunctionDescriptions.insert(func, description);
+    mLocalFunctionoidPtrs.insert(funcName, pFunctinoid);
+    mLocalFunctionDescriptions.insert(funcName, description);
 }
 
 
-double HcomFunctionoidAver::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "aver" functionoid
+double HcomFunctionoidAver::operator()(QString &str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = mpHandler->getLogVariablePtr(str);
 
@@ -5107,7 +5084,8 @@ double HcomFunctionoidAver::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidPeek::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "peek" functionoid
+double HcomFunctionoidPeek::operator()(QString &str, bool &ok)
 {
     QString var = str.section(",",0,0);
     SharedLogVariableDataPtrT pData = mpHandler->getLogVariablePtr(var);
@@ -5144,7 +5122,8 @@ double HcomFunctionoidPeek::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidSize::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "size" functionoid
+double HcomFunctionoidSize::operator()(QString &str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = mpHandler->getLogVariablePtr(str);
 
@@ -5171,8 +5150,10 @@ double HcomFunctionoidSize::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidTime::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "time" functionoid
+double HcomFunctionoidTime::operator()(QString &str, bool &ok)
 {
+    Q_UNUSED(str);
     if(mpHandler->getModelPtr())
     {
         ok=true;
@@ -5183,7 +5164,9 @@ double HcomFunctionoidTime::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidObj::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "obj" functionoid
+//! @todo Should be renamed to "optObj"
+double HcomFunctionoidObj::operator()(QString &str, bool &ok)
 {
     int idx = str.toDouble();
     ok=true;
@@ -5191,7 +5174,8 @@ double HcomFunctionoidObj::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidMin::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "min" functionoid
+double HcomFunctionoidMin::operator()(QString &str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = mpHandler->getLogVariablePtr(str);
 
@@ -5218,7 +5202,8 @@ double HcomFunctionoidMin::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidMax::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "max" functionoid
+double HcomFunctionoidMax::operator()(QString &str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = mpHandler->getLogVariablePtr(str);
 
@@ -5245,7 +5230,8 @@ double HcomFunctionoidMax::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidIMin::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "imin" functionoid
+double HcomFunctionoidIMin::operator()(QString &str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = mpHandler->getLogVariablePtr(str);
 
@@ -5274,7 +5260,8 @@ double HcomFunctionoidIMin::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidIMax::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "imax" functionoid
+double HcomFunctionoidIMax::operator()(QString &str, bool &ok)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpTerminalWidget->mpConsole).getLogVariablePtr(str);
 
@@ -5303,7 +5290,8 @@ double HcomFunctionoidIMax::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidRand::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "rand" functionoid
+double HcomFunctionoidRand::operator()(QString &str, bool &ok)
 {
     Q_UNUSED(str);
     ok=true;
@@ -5311,13 +5299,15 @@ double HcomFunctionoidRand::evaluate(QString &str, bool &ok)
 }
 
 
-double HcomFunctionoidOptVar::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "optvar" functionoid
+double HcomFunctionoidOptVar::operator()(QString &str, bool &ok)
 {
     return mpHandler->mpOptHandler->getOptVar(str, ok);
 }
 
 
-double HcomFunctionoidOptPar::evaluate(QString &str, bool &ok)
+//! @brief Function operator for the "optpar" functionoid
+double HcomFunctionoidOptPar::operator()(QString &str, bool &ok)
 {
     ok=true;
     QStringList args = SymHop::Expression::splitWithRespectToParentheses(str, ',');

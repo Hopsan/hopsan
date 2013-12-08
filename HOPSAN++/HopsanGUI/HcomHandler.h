@@ -54,7 +54,6 @@ public:
     ~HcomHandler();
 
     //Set and get functions for pointers
-    void setModelPtr(ModelWidget *pModel);
     ModelWidget *getModelPtr() const;
     void setConfigPtr(Configuration *pConfig);
     Configuration *getConfigPtr() const;
@@ -96,6 +95,7 @@ public:
 
 public slots:
     void abortHCOM();
+    void setModelPtr(ModelWidget *pModel);
 
 private:
 
@@ -178,7 +178,7 @@ private:
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
     QString getArgument(const QString &cmd, const int idx) const;
-    void registerFunctionoid(const QString func, const QString description, SymHopFunctionoid *pFunctinoid);
+    void registerFunctionoid(const QString funcName, const QString description, SymHopFunctionoid *pFunctinoid);
 
     //Current model pointer
     ModelWidget *mpModel;
@@ -230,7 +230,12 @@ public:
 
 
 
-
+//! @class HcomFunctionoid
+//! @brief Functionoid class used for sending member function pointers to SymHop
+//! @author Robert Braun <robert.braun@liu.se>
+//!
+//! Inherits the pure virtual base class defined by SymHop. Adds a constructor and a member pointer to the HcomHandler object.
+//!
 class HcomFunctionoid : public SymHopFunctionoid
 {
 public:
@@ -246,84 +251,84 @@ class HcomFunctionoidAver : public HcomFunctionoid
 {
 public:
     HcomFunctionoidAver(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidSize : public HcomFunctionoid
 {
 public:
     HcomFunctionoidSize(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidTime : public HcomFunctionoid
 {
 public:
     HcomFunctionoidTime(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidObj : public HcomFunctionoid
 {
 public:
     HcomFunctionoidObj(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidMin : public HcomFunctionoid
 {
 public:
     HcomFunctionoidMin(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidMax : public HcomFunctionoid
 {
 public:
     HcomFunctionoidMax(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidIMin : public HcomFunctionoid
 {
 public:
     HcomFunctionoidIMin(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidIMax : public HcomFunctionoid
 {
 public:
     HcomFunctionoidIMax(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidPeek : public HcomFunctionoid
 {
 public:
     HcomFunctionoidPeek(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidRand : public HcomFunctionoid
 {
 public:
     HcomFunctionoidRand(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidOptVar : public HcomFunctionoid
 {
 public:
     HcomFunctionoidOptVar(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 class HcomFunctionoidOptPar : public HcomFunctionoid
 {
 public:
     HcomFunctionoidOptPar(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
-    double evaluate(QString &str, bool &ok);
+    double operator()(QString &str, bool &ok);
 };
 
 #endif // HCOMHANDLER_H

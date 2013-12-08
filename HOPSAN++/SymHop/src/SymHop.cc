@@ -473,20 +473,24 @@ bool Expression::operator==(const Expression &other) const
 
 
 //! @brief Assignment operator for expressions
-//FIXED
+//! @param other Expression to assign from
 void Expression::operator=(const Expression &other)
 {
     this->replaceBy(other);
 }
 
 
-//FIXED
+//! @brief Combines to expressions to an addition expression
+//! @param term1 First term
+//! @param term2 Second term
 Expression Expression::fromTwoTerms(const Expression term1, const Expression term2)
 {
     return Expression::fromTerms(QList<Expression>() << term1 << term2);
 }
 
-//FIXED
+
+//! @brief Combines a list of expressions to an addition expression
+//! @param terms List with term expressions
 Expression Expression::fromTerms(const QList<Expression> terms)
 {
     Expression ret;
@@ -501,21 +505,28 @@ Expression Expression::fromTerms(const QList<Expression> terms)
     return ret;
 }
 
-//FIXED
+
+//! @brief Combines to expressions to a multiplication exprsesion
+//! @param factor1 First factor
+//! @param factor2 Second factor
 Expression Expression::fromTwoFactors(const Expression factor1, const Expression factor2)
 {
     return Expression::fromFactorsDivisors(QList<Expression>() << factor1 << factor2, QList<Expression>());
 }
 
 
-//FIXED
+//! @brief Combines to expressions to a division expression
+//! @param factor Factor exprsesion
+//! @param divisor Divisor expression
 Expression Expression::fromFactorDivisor(const Expression factor, const Expression divisor)
 {
     return Expression::fromFactorsDivisors(QList<Expression>() << factor, QList<Expression>() << divisor);
 }
 
 
-//FIXED
+//! @brief Combines two list of expression to a multiplication/division expression
+//! @param factors List with factors
+//! @param divisors List with divisors
 Expression Expression::fromFactorsDivisors(const QList<Expression> factors, const QList<Expression> divisors)
 {
     assert(factors.size()>0);
@@ -533,7 +544,10 @@ Expression Expression::fromFactorsDivisors(const QList<Expression> factors, cons
     return ret;
 }
 
-//FIXED
+
+//! @brief Combines to expressions to a power expression
+//! @param base Base expression
+//! @param power Power expression
 Expression Expression::fromBasePower(const Expression base, const Expression power)
 {
     Expression ret = Expression(QString());
@@ -648,7 +662,8 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             qDebug() << "Evaluating: " << mFunction << " with arguments " << argString;
             argString.chop(1);
             bool ok;
-            retval = functions->find(mFunction).value()->evaluate(argString, ok);
+            SymHopFunctionoid *pFunc = functions->find(mFunction).value();
+            retval = (*pFunc)(argString, ok);
             if(ok)
             {
                 qDebug() << "Ok!";

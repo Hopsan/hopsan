@@ -5,7 +5,6 @@ define setpars
 <<<setpars>>>
 enddefine
 
-
 #Objective function
 define obj
 <<<objfuncs>>>
@@ -23,15 +22,9 @@ opt set partol <<<partol>>>
 opt set alpha <<<alpha>>>
 opt set rfak <<<rfak>>>
 opt set gamma <<<gamma>>>
-
-<<<objpars>>>
-
-<<<plotvars>>>
 <<<extraplots>>>
-
-#Set min and max values for parameters
 <<<setminmax>>>
 
 opt run
 
-    
+<<<plotvars>>>

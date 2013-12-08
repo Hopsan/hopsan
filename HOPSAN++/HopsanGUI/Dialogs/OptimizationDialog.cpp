@@ -687,8 +687,9 @@ void OptimizationDialog::generateComplexScript()
     QString objFuncs;
     QString totalObj;
     QString objPars;
-    QStringList plotVarsList;
-    QString plotVars = "chpv ";
+    //QStringList plotVarsList;
+    //! @todo Reimplement plotting variables support
+    //QString plotVars = "chpv ";
     QString setMinMax;
     QString setPars;
     for(int i=0; i<mFunctionName.size(); ++i)
@@ -711,11 +712,11 @@ void OptimizationDialog::generateComplexScript()
             gpTerminalWidget->mpHandler->toShortDataNames(varName);
             objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
 
-            if(!plotVarsList.contains(varName))
-            {
-                plotVarsList.append(varName);
-                plotVars.append(varName+" ");
-            }
+//            if(!plotVarsList.contains(varName))
+//            {
+//                plotVarsList.append(varName);
+//                plotVars.append(varName+" ");
+//            }
         }
         for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
         {
@@ -732,13 +733,16 @@ void OptimizationDialog::generateComplexScript()
             totalObj.append("-");
         }
         QString idx = QString::number(i+1);
-        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
+        totalObj.append(mWeightLineEditPtrs[i]->text()+"*"+mNormLineEditPtrs[i]->text()+"*exp("+mExpLineEditPtrs[i]->text()+")*obj"+idx);
 
-        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
-        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
-        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
+//        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
 
+//        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
+//        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
+//        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
     }
+    objFuncs.chop(1);
+   // objPars.chop(1);
 
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
@@ -756,6 +760,8 @@ void OptimizationDialog::generateComplexScript()
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
+    setPars.chop(1);
+    setMinMax.chop(1);
 
     QString extraPlots;
     if(mpPlotParticlesCheckBox->isChecked())
@@ -766,19 +772,20 @@ void OptimizationDialog::generateComplexScript()
     {
         extraPlots.append("opt set plotbestworst on\n");
     }
+    extraPlots.chop(1);
 
 
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
-    templateCode.replace("<<<objpars>>>", objPars);
-    if(mpPlottingCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotvars>>>", plotVars);
-    }
-    else
-    {
+   // templateCode.replace("<<<objpars>>>", objPars);
+//    if(mpPlottingCheckBox->isChecked())
+//    {
+//        templateCode.replace("<<<plotvars>>>", plotVars);
+//    }
+//    else
+//    {
         templateCode.replace("<<<plotvars>>>", "");
-    }
+    //}
     templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
@@ -805,8 +812,9 @@ void OptimizationDialog::generateParticleSwarmScript()
     QString objFuncs;
     QString totalObj;
     QString objPars;
-    QStringList plotVarsList;
-    QString plotVars="chpv ";
+    //! @todo Reimplement plotting variables support
+    //QStringList plotVarsList;
+    //QString plotVars="chpv ";
     QString setMinMax;
     QString setPars;
     for(int i=0; i<mFunctionName.size(); ++i)
@@ -829,11 +837,11 @@ void OptimizationDialog::generateParticleSwarmScript()
             gpTerminalWidget->mpHandler->toShortDataNames(varName);
             objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
 
-            if(!plotVarsList.contains(varName))
-            {
-                plotVarsList.append(varName);
-                plotVars.append(varName+" ");
-            }
+//            if(!plotVarsList.contains(varName))
+//            {
+//                plotVarsList.append(varName);
+//                plotVars.append(varName+" ");
+//            }
         }
         for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
         {
@@ -880,14 +888,14 @@ void OptimizationDialog::generateParticleSwarmScript()
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<objpars>>>", objPars);
-    if(mpPlottingCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotvars>>>", plotVars);
-    }
-    else
-    {
+//    if(mpPlottingCheckBox->isChecked())
+//    {
+//        templateCode.replace("<<<plotvars>>>", plotVars);
+//    }
+//    else
+//    {
         templateCode.replace("<<<plotvars>>>", "");
-    }
+   // }
     templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);

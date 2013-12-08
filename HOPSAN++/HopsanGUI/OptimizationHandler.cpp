@@ -200,12 +200,16 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
     {
         mNumPoints = value.toInt();
         mParameters.resize(mNumPoints);
+        mPsVelocities.resize(mNumPoints);
+        mPsBestKnowns.resize(mNumPoints);
+        mPsBestObjectives.resize(mNumPoints);
     }
     else if(var == "nparams")
     {
         mNumParameters = value.toInt();
         mParMin.resize(mNumParameters);
         mParMax.resize(mNumParameters);
+        mPsBestPoint.resize(mNumParameters);
     }
     else if(var == "functol")
     {
@@ -270,6 +274,8 @@ double OptimizationHandler::getParameter(const int pointIdx, const int parIdx) c
 //! @brief Initializes a Complex-RF optimization
 void OptimizationHandler::crfInit()
 {
+    mDisconnectedFromModelHandler = disconnect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
+
     mpHcomHandler->setModelPtr(mModelPtrs[0]);
 
     //Load default optimization functions
@@ -377,7 +383,7 @@ void OptimizationHandler::crfRun()
     mpConsole->print("Running optimization...");
 
     //Turn of terminal output during optimization
-    mpHcomHandler->executeCommand("echo on");
+    mpHcomHandler->executeCommand("echo off");
 
     //Evaluate initial objevtive values
     timer.tic();
@@ -462,6 +468,7 @@ void OptimizationHandler::crfRun()
             mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
         }
         newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
+        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mParameters, mBestId, mWorstId);
 
         //Evaluate new point
         TicToc timer;
@@ -536,7 +543,7 @@ void OptimizationHandler::crfRun()
 
             ++mCrfWorstCounter;
             ++i;
-            //mpHcomHandler->executeCommand("echo off");
+            mpHcomHandler->executeCommand("echo off");
         }
 
         plotParameters();
@@ -1118,6 +1125,10 @@ void OptimizationHandler::plotParameters()
 
 void OptimizationHandler::finalize()
 {
+    if(mDisconnectedFromModelHandler)
+    {
+        connect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
+    }
 //    while(!mModelPtrs.isEmpty())
 //    {
 //        mModelPtrs[0]->close();

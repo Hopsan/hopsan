@@ -117,6 +117,9 @@ private:
     bool mPlotObjectiveFunctionValues;
     bool mPlotParameters;
     bool mPlotVariables;
+
+    //Used to remember if connections with model widget was disconnected before optimization and should be re-connected
+    bool mDisconnectedFromModelHandler;
 };
 
 #endif // OPTIMIZATIONHANDLER_H

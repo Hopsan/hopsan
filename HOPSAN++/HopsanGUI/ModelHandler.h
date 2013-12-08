@@ -93,6 +93,7 @@ public slots:
 signals:
     void newModelWidgetAdded();
     void checkMessages();
+    void modelChanged(ModelWidget *);
 
 private:
     void refreshMainWindowConnections();

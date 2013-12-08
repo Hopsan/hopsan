@@ -32,14 +32,18 @@
 #include "win32dll.h"
 
 
+//! @class SymHopFunctionoid
+//! @brief Pure virtual class used for calling member functions from objects of classes unknown to SymHop
+//! @author Robert Braun <robert.braun@liu.se>
+//!
+//! Function operator can be overloaded, and member variables can be added if necessary.
+//!
 class DLLIMPORTEXPORT SymHopFunctionoid
 {
 public:
-    virtual double evaluate(QString &str, bool &ok) = 0;
-    virtual ~SymHopFunctionoid() = 0;
+    virtual double operator()(QString&str, bool &ok) = 0;
 };
 
-inline SymHopFunctionoid::~SymHopFunctionoid() { }
 
 
 namespace SymHop {

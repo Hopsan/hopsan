@@ -45,6 +45,7 @@
 #include "PlotHandler.h"
 #include "UndoStack.h"
 #include "version_gui.h"
+#include "HcomHandler.h"
 
 #include "Widgets/DebuggerWidget.h"
 #include "Widgets/PlotWidget.h"
@@ -221,6 +222,7 @@ void MainWindow::createContents()
     //Create the model handler object
     mpModelHandler = new ModelHandler(this);
     gpModelHandler = mpModelHandler;
+    connect(mpModelHandler, SIGNAL(modelChanged(ModelWidget*)), gpTerminalWidget->mpHandler, SLOT(setModelPtr(ModelWidget*)));
 
     //Create the main tab container, need at least one tab
     mpCentralTabs = new CentralTabWidget(this);
