@@ -1103,63 +1103,29 @@ QVector<double> LogDataHandler::copyTimeVector(const int generation) const
 //}
 
 
-//! @brief Let's the user define a new alias for specified plot varaible
-//! @param[in] componentName Name of component
-//! @param[in] portName Name of port
-//! @param[in] dataName Name of data variable
-//! @param[in] dataUnit Unit of variable
-void LogDataHandler::definePlotAlias(QString fullName)
+//! @brief Defines a new alias for specified variable (popup box)
+//! @param[in] rFullName The Full name of the variable
+void LogDataHandler::defineAlias(const QString &rFullName)
 {
     bool ok;
     QString alias = QInputDialog::getText(gpMainWindowWidget, gpMainWindowWidget->tr("Define Variable Alias"),
-                                     "Alias:", QLineEdit::Normal, "", &ok);
+                                          QString("Alias for: %1").arg(rFullName), QLineEdit::Normal, "", &ok);
     if(ok)
     {
-       definePlotAlias(alias, fullName);
+        defineAlias(alias, rFullName);
     }
 }
 
 
-//! @brief Defines a new alias for specified plot varaible
-//! @param[in] alias Alias name for variable
-//! @param[in] componentName Name of component
-//! @param[in] portName Name of port
-//! @param[in] dataName Name of data variable
-//! @param[in] dataUnit Unit of variable
-//! @todo this code should no longer be in LogDataHandler it should be in system or similar
-bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName)
+//! @brief Defines a new alias for specified variable
+//! @param[in] rAlias Alias name for variable
+//! @param[in] rFullName The Full name of the variable
+bool LogDataHandler::defineAlias(const QString &rAlias, const QString &rFullName)
 {
     QString comp,port,var;
-    splitConcatName(fullName, comp,port,var);
+    splitConcatName(rFullName, comp,port,var);
     // Try to set the new alias, abort if it did not work
-    return mpParentContainerObject->setVariableAlias(comp,port,var,alias);
-
-//    if(!mpParentContainerObject->setVariableAlias(comp,port,var,alias))
-//    {
-//        return false;
-//    }
-
-//    LogVariableContainer *pData = mLogDataMap.value(fullName);
-//    if (pData)
-//    {
-//        // Undefine old alias first
-//        //! @todo this will remove alias from other if it alread exist mayb a question should be given to user
-//        if (mLogDataMap.contains(pData->getAliasName()))
-//        {
-//            undefinePlotAlias(pData->getAliasName());
-//        }
-//        //! @todo instead of bool return the uniqe changed alias should be returned
-//        mLogDataMap.insert(alias, pData);
-//        pData->setAliasName(alias);
-
-
-//        //! @todo This is madness, this code needs to be rewritten, maybe alias should not be changable from log data like this, or the code should be smarter
-//        //! @todo we also need a signal for when alias name is changed elsewhere
-//        // since the alias was undefined above, set it again
-//        mpParentContainerObject->setVariableAlias(comp,port,var,alias);
-//    }
-
-//    return true;
+    return mpParentContainerObject->setVariableAlias(comp,port,var,rAlias);
 }
 
 
@@ -1821,6 +1787,16 @@ bool LogDataHandler::deleteVariable(const QString &a)
     }
     gpTerminalWidget->mpConsole->printErrorMessage("In Delete, No such variable: " + a);
     return false;
+}
+
+//! @brief Remove a variable, but only imported generations
+bool LogDataHandler::deleteImportedVariable(const QString &rVarName)
+{
+    LogDataMapT::iterator it = mLogDataMap.find(rVarName);
+    if(it != mLogDataMap.end())
+    {
+        it->mpDataContainer->removeAllImportedGenerations();
+    }
 }
 
 //! @brief Returns the number of log data variables registered in this log data handler

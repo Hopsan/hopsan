@@ -431,33 +431,55 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
     BaseVariableTreeItem *pItem = dynamic_cast<BaseVariableTreeItem *>(currentItem());
     if(pItem)
     {
+        bool isImportVariabel = (dynamic_cast<ImportedVariableTreeItem*>(currentItem()) != 0);
+
         QMenu menu;
         QAction *pDefineAliasAction = 0;
         QAction *pRemoveAliasAction = 0;
+        QAction *pDeleteVariableAction = 0;
 
-        if(pItem->getAliasName().isEmpty())
+        // Add actions
+        if (!isImportVariabel)
         {
-            pDefineAliasAction = menu.addAction(QString("Define Variable Alias"));
+            // Only show alisa buttons for npn imported variables
+            if(pItem->getAliasName().isEmpty())
+            {
+                pDefineAliasAction = menu.addAction(QString("Define Variable Alias"));
+            }
+            else
+            {
+                pDefineAliasAction = menu.addAction(QString("Change Variable Alias"));
+                pRemoveAliasAction = menu.addAction(QString("Remove Variable Alias"));
+            }
         }
-        else
-        {
-            pDefineAliasAction = menu.addAction(QString("Change Variable Alias"));
-            pRemoveAliasAction = menu.addAction(QString("Remove Variable Alias"));
-        }
+        pDeleteVariableAction = menu.addAction(QString("Remove Variable"));
 
-        //-- Action --//
-        QCursor *cursor;
-        QAction *selectedAction = menu.exec(cursor->pos());
-        //------------//
-
-        if(selectedAction == pRemoveAliasAction)
+        // Exectue menu and wait for selected action
+        QAction *pSelectedAction = menu.exec(QCursor::pos());
+        if (pSelectedAction != 0)
         {
-           mpLogDataHandler->undefinePlotAlias(pItem->getAliasName());
-        }
-
-        if(selectedAction == pDefineAliasAction)
-        {
-            mpLogDataHandler->definePlotAlias(pItem->getFullName());
+            // Execute selected action
+            if(pSelectedAction == pRemoveAliasAction)
+            {
+                mpLogDataHandler->undefinePlotAlias(pItem->getAliasName());
+            }
+            else if(pSelectedAction == pDefineAliasAction)
+            {
+                mpLogDataHandler->defineAlias(pItem->getFullName());
+            }
+            else if (pSelectedAction == pDeleteVariableAction)
+            {
+                if (isImportVariabel)
+                {
+                    mpLogDataHandler->deleteImportedVariable(pItem->getFullName());
+                }
+                else
+                {
+                    //! @todo we should maybe not remove imported variables in this case
+                    //! @todo what should you remove if you trigger remove on an alias? that is connected to both imported and non-imported variables
+                    mpLogDataHandler->deleteVariable(pItem->getFullName());
+                }
+            }
         }
     }
 

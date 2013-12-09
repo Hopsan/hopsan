@@ -1175,6 +1175,19 @@ void LogVariableContainer::removeAllGenerations()
     }
 }
 
+void LogVariableContainer::removeAllImportedGenerations()
+{
+    // It is assumed that the generation map is sorted by key which it should be since adding will allways append
+    QList<int> gens = mDataGenerations.keys();
+    for (int it=0; it<gens.size(); ++it)
+    {
+        if (mDataGenerations[gens[it]]->isImported())
+        {
+            removeDataGeneration(gens[it], true);
+        }
+    }
+}
+
 LogVariableContainer::LogVariableContainer(const VariableCommonDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()
 {
     mVariableCommonDescription = SharedVariableCommonDescriptionT(new VariableCommonDescription(rVarDesc)); //Copy original data and create a new shared variable description

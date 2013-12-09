@@ -116,7 +116,7 @@ private:
     void refreshPortOverlayGraphics();
     void refreshPortLabelText();
 
-    void openDefineAliasDialog(QString var);
+    void openDefineAliasDialog(const QString &rVarName, const QString &rCurrentAlias="");
 
 //    QColor myLineColor;
 //    qreal myLineWidth;

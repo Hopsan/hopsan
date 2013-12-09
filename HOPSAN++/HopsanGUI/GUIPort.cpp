@@ -382,7 +382,7 @@ void Port::openRightClickMenu(QPoint screenPos)
     QMap<QAction*, int>::iterator it = aliasActions.find(selectedAction);
     if (it != aliasActions.end())
     {
-        openDefineAliasDialog(variameterDescriptions[it.value()].mName);
+        openDefineAliasDialog(variameterDescriptions[it.value()].mName, variameterDescriptions[it.value()].mAlias);
     }
     else
     {
@@ -396,20 +396,17 @@ void Port::openRightClickMenu(QPoint screenPos)
 }
 
 
-void Port::openDefineAliasDialog(QString var)
+void Port::openDefineAliasDialog(const QString &rVarName, const QString &rCurrentAlias)
 {
-    qDebug() << "Defining alias for: " << var;
-
     bool ok;
-    QString dummy="";
-    QString alias = QInputDialog::getText(gpMainWindowWidget, "Define alias for "+mpParentModelObject->getName()+"."+this->getName()+"."+var+".",
-                                          tr("Alias:"), QLineEdit::Normal,
-                                          dummy, &ok);
+    QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),rVarName);
+    QString alias = QInputDialog::getText(gpMainWindowWidget, "Define Alias",
+                                          tr("Alias for: ")+fullName, QLineEdit::Normal,
+                                          rCurrentAlias, &ok);
     if(ok)
     {
         //! @todo should not go through logdatahnadler for this, should access directly, and signal the alias change to logdata handler
-        QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),var);
-        getParentContainerObject()->getLogDataHandler()->definePlotAlias(alias, fullName);
+        getParentContainerObject()->getLogDataHandler()->defineAlias(alias, fullName);
     }
 }
 

@@ -82,6 +82,7 @@ public:
 
     bool deleteVariable(SharedLogVariableDataPtrT a);
     bool deleteVariable(const QString &a);
+    bool deleteImportedVariable(const QString &rVarName);
 
     int getNumVariables() const;
     bool isEmpty();
@@ -117,8 +118,8 @@ public:
     QMap<QString, QList<int> > getImportFilesAndGenerations() const;
     void removeImportedFileGenerations(const QString &rFileName);
 
-    void definePlotAlias(QString fullName);
-    bool definePlotAlias(const QString alias, const QString fullName);
+    void defineAlias(const QString &rFullName);
+    bool defineAlias(const QString &rAlias, const QString &rFullName);
     void undefinePlotAlias(const QString &rAlias);
 
     QString getFullNameFromAlias(const QString &rAlias);

@@ -103,6 +103,7 @@ public:
     bool removeDataGeneration(const int generation, const bool force=false);
     bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
     void removeAllGenerations();
+    void removeAllImportedGenerations();
 
     SharedLogVariableDataPtrT getDataGeneration(const int gen=-1) const;
     QList<SharedLogVariableDataPtrT> getAllDataGenerations() const;

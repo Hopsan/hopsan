@@ -1584,7 +1584,7 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
 
     QString longName = variable;
     toLongDataNames(longName);
-    if(/*!pVariable || */!mpModel->getTopLevelSystemContainer()->getLogDataHandler()->definePlotAlias(alias, longName/*pVariable->getFullVariableName()*/))
+    if(/*!pVariable || */!mpModel->getTopLevelSystemContainer()->getLogDataHandler()->defineAlias(alias, longName/*pVariable->getFullVariableName()*/))
     {
         HCOMERR("Failed to assign variable alias.");
     }
