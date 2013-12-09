@@ -2632,8 +2632,6 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->mModelPtrs.clear();
             mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
             mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
-            mpOptHandler->mLastWorstId = -1;
-            mpOptHandler->mCrfWorstCounter = 0;
             mpOptHandler->crfInit();
             mpOptHandler->crfRun();
         }

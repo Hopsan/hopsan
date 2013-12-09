@@ -276,6 +276,9 @@ void OptimizationHandler::crfInit()
 {
     mDisconnectedFromModelHandler = disconnect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
 
+    mLastWorstId = -1;
+    mCrfWorstCounter = 0;
+
     mpHcomHandler->setModelPtr(mModelPtrs[0]);
 
     //Load default optimization functions

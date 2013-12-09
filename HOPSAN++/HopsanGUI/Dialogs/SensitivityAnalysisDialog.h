@@ -27,6 +27,8 @@
 
 #include <QtGui>
 
+class ModelWidget;
+
 class SensitivityAnalysisDialog : public QDialog
 {
     Q_OBJECT
@@ -66,6 +68,7 @@ private:
     QRadioButton *mpNormalDistributionRadioButton;
 
     //Member variables
+    QVector<ModelWidget *> mModelPtrs;
     QStringList mSelectedComponents;
     QStringList mSelectedParameters;
     QList<QLabel*> mpParameterLabels;

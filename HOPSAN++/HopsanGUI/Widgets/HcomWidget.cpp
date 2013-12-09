@@ -244,13 +244,13 @@ void TerminalConsole::printCoreMessages()
     int nmsg = mpCoreAccess->getNumberOfMessages();
     //nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
 
-    bool playErrorSound = false;
+    //bool playErrorSound = false;
     for (int idx=0; idx < nmsg; ++idx)
     {
         QString message, type, tag;
         mpCoreAccess->getMessage(message, type, tag);
-        if(type == "error")
-            playErrorSound = true;
+        //if(type == "error")
+            //playErrorSound = true;
         if(type == "fatal")
         {
             QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");

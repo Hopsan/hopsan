@@ -42,9 +42,10 @@ class DLLIMPORTEXPORT SymHopFunctionoid
 {
 public:
     virtual double operator()(QString&str, bool &ok) = 0;
+    virtual ~SymHopFunctionoid() = 0;
 };
 
-
+inline SymHopFunctionoid::~SymHopFunctionoid() { }
 
 namespace SymHop {
 
