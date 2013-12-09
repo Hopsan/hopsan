@@ -474,7 +474,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
 
         if(selectedAction == pRemovefileAction)
         {
-           mpLogDataHandler->removeImportedFileGeneration(pFileItem->text(0));
+           mpLogDataHandler->removeImportedFileGenerations(pFileItem->text(0));
         }
     }
 }

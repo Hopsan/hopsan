@@ -2233,7 +2233,17 @@ QList<SharedLogVariableDataPtrT> LogDataHandler::getImportedVariablesForFile(con
     fit = mImportedLogDataMap.find(rFileName);
     if (fit != mImportedLogDataMap.end())
     {
-        return fit.value().values();
+        QList<SharedLogVariableDataPtrT> results;
+        // Iterate over all variables
+        QStringList keys = QStringList(fit.value().keys());
+        keys.removeDuplicates();
+        QString key;
+        Q_FOREACH(key, keys)
+        {
+            // value(key) Returns the most recently inserted value (latest generation)
+            results.append(fit.value().value(key));
+        }
+        return results;
     }
     else
     {
@@ -2242,31 +2252,45 @@ QList<SharedLogVariableDataPtrT> LogDataHandler::getImportedVariablesForFile(con
     }
 }
 
-QMap<QString, int> LogDataHandler::getImportFilesAndGenerations() const
+QList<int> LogDataHandler::getImportFileGenerations(const QString &rFilePath) const
 {
-    QMap<QString, int> results;
-    ImportedLogDataMapT::const_iterator fit;
-    for (fit=mImportedLogDataMap.begin(); fit != mImportedLogDataMap.end(); ++fit)
+    QList<int> results;
+    ImportedLogDataMapT::const_iterator fit = mImportedLogDataMap.find(rFilePath);
+    if (fit != mImportedLogDataMap.end())
     {
-        const QMap<QString,SharedLogVariableDataPtrT>  &var_map = fit.value();
-        if (!var_map.isEmpty())
+        // Add generation for each variable
+        QMultiMap<QString, SharedLogVariableDataPtrT>::const_iterator vit;
+        for (vit=fit.value().begin(); vit!=fit.value().end(); ++vit)
         {
-            results.insert(fit.key() ,var_map.begin().value()->getGeneration());
+            const int g = vit.value()->getGeneration();
+            if (!results.contains(g))
+            {
+                results.append(g);
+            }
         }
     }
     return results;
 }
 
-void LogDataHandler::removeImportedFileGeneration(const QString &rFileName)
+QMap<QString, QList<int> > LogDataHandler::getImportFilesAndGenerations() const
 {
-    ImportedLogDataMapT::iterator it = mImportedLogDataMap.find(rFileName);
-    if (it != mImportedLogDataMap.end())
+    QMap<QString, QList<int> > results;
+    QList<QString> keys = mImportedLogDataMap.keys();
+    QString file;
+    Q_FOREACH(file, keys)
     {
-        if (!it.value().isEmpty())
-        {
-            const int gen = it.value().begin().value()->getGeneration();
-            removeGeneration(gen, true);
-        }
+        results.insert(file, getImportFileGenerations(file));
+    }
+    return results;
+}
+
+void LogDataHandler::removeImportedFileGenerations(const QString &rFileName)
+{
+    QList<int> gens = getImportFileGenerations(rFileName);
+    int g;
+    Q_FOREACH(g,gens)
+    {
+        removeGeneration(g, true);
     }
 }
 
@@ -2286,11 +2310,11 @@ void LogDataHandler::rememberIfImported(SharedLogVariableDataPtrT pData)
         fit = mImportedLogDataMap.find(pData->getImportedFromFileName());
         if (fit != mImportedLogDataMap.end())
         {
-            fit.value().insert(pData->getFullVariableName(),pData);
+            fit.value().insertMulti(pData->getFullVariableName(),pData);
         }
         else
         {
-            QMap<QString,SharedLogVariableDataPtrT> newFileMap;
+            QMultiMap<QString,SharedLogVariableDataPtrT> newFileMap;
             newFileMap.insert(pData->getFullVariableName(),pData);
             mImportedLogDataMap.insert(pData->getImportedFromFileName(),newFileMap);
         }
@@ -2512,28 +2536,20 @@ void LogDataHandler::unregisterAlias(const QString &rAlias)
 //! @brief This slot should be signaled when a variable that might be registered as imported is removed
 void LogDataHandler::forgetImportedLogDataVariable(SharedLogVariableDataPtrT pData)
 {
-    // If a data ptr was found then unregister it
     if (pData)
     {
+        // First find the correct file sub map
         ImportedLogDataMapT::iterator fit;
         fit = mImportedLogDataMap.find(pData->getImportedFromFileName());
         if (fit != mImportedLogDataMap.end())
         {
-            // Now see if we find the correct variable
-            QMap<QString, SharedLogVariableDataPtrT>::iterator vit=fit.value().find(pData->getFullVariableName());
-            if (vit != fit.value().end())
+            // Now remove the sub map entery
+            // Only remove if same variable (same key,value) (compare pointers)
+            fit.value().remove(pData->getFullVariableName(),pData);
+            // Now erase the file level map if it has become empty
+            if (fit.value().isEmpty())
             {
-                // Only remove if same variable (compare pointers)
-                if (vit.value().data() == pData.data())
-                {
-                    // Erase the variable from file map
-                    fit.value().erase(vit);
-                    // Now erase the file level map if it has become empty
-                    if (fit.value().isEmpty())
-                    {
-                        mImportedLogDataMap.erase(fit);
-                    }
-                }
+                mImportedLogDataMap.erase(fit);
             }
         }
     }

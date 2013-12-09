@@ -251,22 +251,35 @@ void DataExplorer::refreshGenerationList()
         pGenerationListLayout->addWidget(new QLabel("Generations", mpGenerationsListWidget),0,Qt::AlignHCenter);
 
         QList<int> gens = mpLogDataHandler->getGenerations();
-        QMap<QString, int> importedGensFileMap = mpLogDataHandler->getImportFilesAndGenerations();
-        QList<int> importedGens = importedGensFileMap.values();
-        QList<int>::iterator it;
-        for (it=gens.begin(); it!=gens.end(); ++it)
+        QMap<QString, QList<int> > importedFilesGensMap = mpLogDataHandler->getImportFilesAndGenerations();
+        QMultiMap<int, QString> importedGensFileMap;
+
+        //Ok this is a bit of madness, we need to rebuild that map into a gen,file multimap
+        QMap<QString, QList<int> >::iterator igf_it;
+        for (igf_it=importedFilesGensMap.begin(); igf_it!=importedFilesGensMap.end(); ++igf_it)
+        {
+            int g;
+            Q_FOREACH(g,igf_it.value())
+            {
+                importedGensFileMap.insertMulti(g,igf_it.key());
+            }
+        }
+
+        int g;
+        Q_FOREACH(g,gens)
         {
             GenerationItem *pItem;
-            if (importedGens.contains(*it))
+            if (importedGensFileMap.contains(g))
             {
-                pItem = new GenerationItem(*it, importedGensFileMap.key(*it), mpGenerationsListWidget);
+                //! @todo maybe should check values in case of multiple files, but not sure that can even happen (it should not happen)
+                pItem = new GenerationItem(g, importedGensFileMap.value(g), mpGenerationsListWidget);
             }
             else
             {
-                pItem = new GenerationItem(*it, "", mpGenerationsListWidget);
+                pItem = new GenerationItem(g, "Simulated", mpGenerationsListWidget);
             }
             pGenerationListLayout->addWidget(pItem, 1, Qt::AlignTop);
-            mGenerationItemMap.insert(*it,pItem);
+            mGenerationItemMap.insert(g,pItem);
         }
         pGenerationListLayout->addStretch(2); // Pushes all items to top
 

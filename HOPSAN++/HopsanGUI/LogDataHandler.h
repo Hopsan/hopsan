@@ -113,8 +113,9 @@ public:
 
     QList<QString> getImportedVariablesFileNames() const;
     QList<SharedLogVariableDataPtrT> getImportedVariablesForFile(const QString &rFileName);
-    QMap<QString, int> getImportFilesAndGenerations() const;
-    void removeImportedFileGeneration(const QString &rFileName);
+    QList<int> getImportFileGenerations(const QString &rFilePath) const;
+    QMap<QString, QList<int> > getImportFilesAndGenerations() const;
+    void removeImportedFileGenerations(const QString &rFileName);
 
     void definePlotAlias(QString fullName);
     bool definePlotAlias(const QString alias, const QString fullName);
@@ -211,7 +212,7 @@ private slots:
     void forgetImportedLogDataVariable(SharedLogVariableDataPtrT pData);
 
 private:
-    typedef QMap< QString, QMap<QString,SharedLogVariableDataPtrT> > ImportedLogDataMapT;
+    typedef QMap< QString, QMultiMap<QString, SharedLogVariableDataPtrT> > ImportedLogDataMapT;
     typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
     SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector, VariableUniqueDescription *pVarUniqDesc);
     SharedLogVariableDataPtrT insertVariableBasedOnDescription(VariableCommonDescription &rVarComDesc, VariableUniqueDescription *pVarUniqDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
