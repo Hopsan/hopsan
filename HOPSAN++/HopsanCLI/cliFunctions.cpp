@@ -813,7 +813,7 @@ bool performModelTest(const std::string hvcFilePath)
                         double startTime=0, stopTime=1;
                         ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile.c_str(), startTime, stopTime);
 
-                        if (pRootSystem!=0)
+                        if ( pRootSystem && ((gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages()) < 1) )
                         {
                             //! @todo maybe use simulation handler object
                             //First simulation
@@ -881,11 +881,17 @@ bool performModelTest(const std::string hvcFilePath)
                             {
                                 vSim2.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
                             }
+
+                            // Print the messages if there were any errors or warnings
+                            if ( (gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages() + gHopsanCore.getNumWarningMessages()) != 0)
+                            {
+                                printWaitingMessages(false);
+                            }
                         }
                         else
                         {
                             printWaitingMessages(false);
-                            printErrorMessage("Could not load modelfile: " + modelfile);
+                            printErrorMessage("Could not load modelfile without errors: " + modelfile);
                             return false;
                         }
 
