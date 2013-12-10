@@ -261,141 +261,241 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
     }
 }
 
-
-void SystemContainer::saveOptSettingsToDomElement(QDomElement &rDomElement)
+void SystemContainer::saveSensitivityAnalysisSettingsToDomElement(QDomElement &rDomElement)
 {
-    QDomElement XMLopt = appendDomElement(rDomElement, "optimization");
-    QDomElement XMLsetting = appendDomElement(XMLopt, "settings");
-    appendDomIntegerNode(XMLsetting, "niter", mOptSettings.mNiter);
-    appendDomIntegerNode(XMLsetting, "nsearchp", mOptSettings.mNsearchp);
-    appendDomValueNode(XMLsetting, "refcoeff", mOptSettings.mRefcoeff);
-    appendDomValueNode(XMLsetting, "randfac", mOptSettings.mRandfac);
-    appendDomValueNode(XMLsetting, "forgfac", mOptSettings.mForgfac);
-    appendDomValueNode(XMLsetting, "functol", mOptSettings.mFunctol);
-    appendDomValueNode(XMLsetting, "partol", mOptSettings.mPartol);
-    appendDomBooleanNode(XMLsetting, "plot", mOptSettings.mPlot);
-    appendDomBooleanNode(XMLsetting, "savecsv", mOptSettings.mSavecsv);
+    QDomElement XMLsens = appendDomElement(rDomElement, HMF_SENSITIVITYANALYSIS);
+    QDomElement XMLsetting = appendDomElement(XMLsens, HMF_SETTINGS);
+    appendDomIntegerNode(XMLsetting, HMF_ITERATIONS, mSensSettings.nIter);
+    if(mSensSettings.distribution == SensitivityAnalysisSettings::UniformDistribution)
+    {
+        appendDomTextNode(XMLsetting, HMF_DISTRIBUTIONTYPE, HMF_UNIFORMDIST);
+    }
+    else if(mSensSettings.distribution == SensitivityAnalysisSettings::NormalDistribution)
+    {
+        appendDomTextNode(XMLsetting, HMF_DISTRIBUTIONTYPE, HMF_NORMALDIST);
+    }
 
     //Parameters
-    appendDomBooleanNode(XMLsetting, "logpar", mOptSettings.mlogPar);
-    QDomElement XMLparameters = appendDomElement(XMLopt, "parameters");
+    QDomElement XMLparameters = appendDomElement(XMLsens, HMF_PARAMETERS);
+    for(int i = 0; i < mSensSettings.parameters.size(); ++i)
+    {
+        QDomElement XMLparameter = appendDomElement(XMLparameters, HMF_PARAMETERTAG);
+        appendDomTextNode(XMLparameter, HMF_COMPONENTTAG, mSensSettings.parameters.at(i).compName);
+        appendDomTextNode(XMLparameter, HMF_PARAMETERTAG, mSensSettings.parameters.at(i).parName);
+        appendDomValueNode2(XMLparameter, HMF_MINMAX, mSensSettings.parameters.at(i).min, mSensSettings.parameters.at(i).max);
+        appendDomValueNode(XMLparameter, HMF_AVERAGE, mSensSettings.parameters.at(i).aver);
+        appendDomValueNode(XMLparameter, HMF_SIGMA, mSensSettings.parameters.at(i).sigma);
+    }
+
+    //Variables
+    QDomElement XMLobjectives = appendDomElement(XMLsens, HMF_PLOTVARIABLES);
+    for(int i = 0; i < mSensSettings.variables.size(); ++i)
+    {
+        QDomElement XMLobjective = appendDomElement(XMLobjectives, HMF_PLOTVARIABLE);
+        appendDomTextNode(XMLobjective, HMF_COMPONENTTAG, mSensSettings.variables.at(i).compName);
+        appendDomTextNode(XMLobjective, HMF_PORTTAG, mSensSettings.variables.at(i).portName);
+        appendDomTextNode(XMLobjective, HMF_PLOTVARIABLE, mSensSettings.variables.at(i).varName);
+    }
+}
+
+
+void SystemContainer::loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rDomElement)
+{
+    qDebug() << rDomElement.toDocument().toString();
+
+    QDomElement settingsElement = rDomElement.firstChildElement(HMF_SETTINGS);
+    if(!settingsElement.isNull())
+    {
+        mSensSettings.nIter = parseDomIntegerNode(settingsElement.firstChildElement(HMF_ITERATIONS), mSensSettings.nIter);
+        QDomElement distElement = settingsElement.firstChildElement(HMF_DISTRIBUTIONTYPE);
+        if(!distElement.isNull() && distElement.text() == HMF_UNIFORMDIST)
+        {
+            mSensSettings.distribution = SensitivityAnalysisSettings::UniformDistribution;
+        }
+        else if(!distElement.isNull() && distElement.text() == HMF_NORMALDIST)
+        {
+            mSensSettings.distribution = SensitivityAnalysisSettings::NormalDistribution;
+        }
+    }
+
+    QDomElement parametersElement = rDomElement.firstChildElement(HMF_PARAMETERS);
+    if(!parametersElement.isNull())
+    {
+        QDomElement parameterElement =parametersElement.firstChildElement(HMF_PARAMETERTAG);
+        while (!parameterElement.isNull())
+        {
+            SensitivityAnalysisParameter par;
+            par.compName = parameterElement.firstChildElement(HMF_COMPONENTTAG).text();
+            par.parName = parameterElement.firstChildElement(HMF_PARAMETERTAG).text();
+            parseDomValueNode2(parameterElement.firstChildElement(HMF_MINMAX), par.min, par.max);
+            par.aver = parseDomValueNode(parameterElement.firstChildElement(HMF_AVERAGE), 0);
+            par.sigma = parseDomValueNode(parameterElement.firstChildElement(HMF_SIGMA), 0);
+            mSensSettings.parameters.append(par);
+
+            parameterElement = parameterElement.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+    }
+
+    QDomElement variablesElement = rDomElement.firstChildElement(HMF_PLOTVARIABLES);
+    if(!variablesElement.isNull())
+    {
+        QDomElement variableElement = variablesElement.firstChildElement(HMF_PLOTVARIABLE);
+        while (!variableElement.isNull())
+        {
+            SensitivityAnalysisVariable var;
+
+            var.compName = variableElement.firstChildElement(HMF_COMPONENTTAG).text();
+            var.portName = variableElement.firstChildElement(HMF_PORTTAG).text();
+            var.varName = variableElement.firstChildElement(HMF_PLOTVARIABLE).text();
+            mSensSettings.variables.append(var);
+
+            variableElement = variableElement.nextSiblingElement((HMF_PLOTVARIABLE));
+        }
+    }
+}
+
+
+void SystemContainer::saveOptimizationSettingsToDomElement(QDomElement &rDomElement)
+{
+    QDomElement XMLopt = appendDomElement(rDomElement, HMF_OPTIMIZATION);
+    QDomElement XMLsetting = appendDomElement(XMLopt, HMF_SETTINGS);
+    appendDomIntegerNode(XMLsetting, HMF_ITERATIONS, mOptSettings.mNiter);
+    appendDomIntegerNode(XMLsetting, HMF_SEARCHPOINTS, mOptSettings.mNsearchp);
+    appendDomValueNode(XMLsetting, HMF_REFLCOEFF, mOptSettings.mRefcoeff);
+    appendDomValueNode(XMLsetting, HMF_RANDOMFACTOR, mOptSettings.mRandfac);
+    appendDomValueNode(XMLsetting, HMF_FORGETTINGFACTOR, mOptSettings.mForgfac);
+    appendDomValueNode(XMLsetting, HMF_FUNCTOL, mOptSettings.mFunctol);
+    appendDomValueNode(XMLsetting, HMF_PARTOL, mOptSettings.mPartol);
+    appendDomBooleanNode(XMLsetting, HMF_PLOT, mOptSettings.mPlot);
+    appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mSavecsv);
+
+    //Parameters
+    appendDomBooleanNode(XMLsetting, HMF_LOGPAR, mOptSettings.mlogPar);
+    QDomElement XMLparameters = appendDomElement(XMLopt, HMF_PARAMETERS);
     for(int i = 0; i < mOptSettings.mParamters.size(); ++i)
     {
-        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
-        appendDomTextNode(XMLparameter, "componentname", mOptSettings.mParamters.at(i).mComponentName);
-        appendDomTextNode(XMLparameter, "parametername", mOptSettings.mParamters.at(i).mParameterName);
-        appendDomValueNode2(XMLparameter, "minmax", mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
+        QDomElement XMLparameter = appendDomElement(XMLparameters, HMF_PARAMETERTAG);
+        appendDomTextNode(XMLparameter, HMF_COMPONENTTAG, mOptSettings.mParamters.at(i).mComponentName);
+        appendDomTextNode(XMLparameter, HMF_PARAMETERTAG, mOptSettings.mParamters.at(i).mParameterName);
+        appendDomValueNode2(XMLparameter, HMF_MINMAX, mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
     }
 
     //Objective Functions
-    QDomElement XMLobjectives = appendDomElement(XMLopt, "objectives");
+    QDomElement XMLobjectives = appendDomElement(XMLopt, HMF_OBJECTIVES);
     for(int i = 0; i < mOptSettings.mObjectives.size(); ++i)
     {
-        QDomElement XMLobjective = appendDomElement(XMLobjectives, "objective");
-        appendDomTextNode(XMLobjective, "functionname", mOptSettings.mObjectives.at(i).mFunctionName);
-        appendDomValueNode(XMLobjective, "weight", mOptSettings.mObjectives.at(i).mWeight);
-        appendDomValueNode(XMLobjective, "norm", mOptSettings.mObjectives.at(i).mNorm);
-        appendDomValueNode(XMLobjective, "exp", mOptSettings.mObjectives.at(i).mExp);
+        QDomElement XMLobjective = appendDomElement(XMLobjectives, HMF_OBJECTIVE);
+        appendDomTextNode(XMLobjective, HMF_FUNCNAME, mOptSettings.mObjectives.at(i).mFunctionName);
+        appendDomValueNode(XMLobjective, HMF_WEIGHT, mOptSettings.mObjectives.at(i).mWeight);
+        appendDomValueNode(XMLobjective, HMF_NORM, mOptSettings.mObjectives.at(i).mNorm);
+        appendDomValueNode(XMLobjective, HMF_EXP, mOptSettings.mObjectives.at(i).mExp);
 
-        QDomElement XMLObjectiveVariables = appendDomElement(XMLobjective, "variables");
+        QDomElement XMLObjectiveVariables = appendDomElement(XMLobjective, HMF_PLOTVARIABLES);
         if(!(mOptSettings.mObjectives.at(i).mVariableInfo.isEmpty()))
         {
             for(int j = 0; j < mOptSettings.mObjectives.at(i).mVariableInfo.size(); ++j)
             {
-                QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, "variable");
-                appendDomTextNode(XMLObjectiveVariable, "componentname", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(0));
-                appendDomTextNode(XMLObjectiveVariable, "portname", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(1));
-                appendDomTextNode(XMLObjectiveVariable, "variablename", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(2));
+                QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, HMF_PLOTVARIABLE);
+                appendDomTextNode(XMLObjectiveVariable, HMF_COMPONENTTAG, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(0));
+                appendDomTextNode(XMLObjectiveVariable, HMF_PORTTAG, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(1));
+                appendDomTextNode(XMLObjectiveVariable, HMF_PLOTVARIABLE, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(2));
             }
         }
 
 
         if(!(mOptSettings.mObjectives.at(i).mData.isEmpty()))
         {
-            QDomElement XMLdata = appendDomElement(XMLobjective, "data");
+            QDomElement XMLdata = appendDomElement(XMLobjective, HMF_DATA);
             for(int j = 0; j < mOptSettings.mObjectives.at(i).mData.size(); ++j)
             {
-                appendDomTextNode(XMLdata, "parameter", mOptSettings.mObjectives.at(i).mData.at(j));
+                appendDomTextNode(XMLdata, HMF_PARAMETERTAG, mOptSettings.mObjectives.at(i).mData.at(j));
             }
         }
     }
 }
 
 
-void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
+void SystemContainer::loadOptimizationSettingsFromDomElement(QDomElement &rDomElement)
 {
     qDebug() << rDomElement.toDocument().toString();
 
-    if(!rDomElement.firstChildElement("settings").isNull())
+    QDomElement settingsElement = rDomElement.firstChildElement(HMF_SETTINGS);
+    if(!settingsElement.isNull())
     {
-        mOptSettings.mNiter = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("niter"), mOptSettings.mNiter);
-        mOptSettings.mNsearchp = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("nsearchp"), mOptSettings.mNsearchp);
-        mOptSettings.mRefcoeff = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("refcoeff"), mOptSettings.mRefcoeff);
-        mOptSettings.mRandfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("randfac"), mOptSettings.mRandfac);
-        mOptSettings.mForgfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("forgfac"), mOptSettings.mForgfac);
-        mOptSettings.mFunctol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("functol"), mOptSettings.mFunctol);
-        mOptSettings.mPartol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("partol"), mOptSettings.mPartol);
-        mOptSettings.mPlot = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("plot"), mOptSettings.mPlot);
-        mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"), mOptSettings.mSavecsv);
-        mOptSettings.mlogPar = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("logpar"), mOptSettings.mlogPar);
+        mOptSettings.mNiter = parseDomIntegerNode(settingsElement.firstChildElement(HMF_ITERATIONS), mOptSettings.mNiter);
+        mOptSettings.mNsearchp = parseDomIntegerNode(settingsElement.firstChildElement(HMF_SEARCHPOINTS), mOptSettings.mNsearchp);
+        mOptSettings.mRefcoeff = parseDomValueNode(settingsElement.firstChildElement(HMF_REFLCOEFF), mOptSettings.mRefcoeff);
+        mOptSettings.mRandfac = parseDomValueNode(settingsElement.firstChildElement(HMF_RANDOMFACTOR), mOptSettings.mRandfac);
+        mOptSettings.mForgfac = parseDomValueNode(settingsElement.firstChildElement(HMF_FORGETTINGFACTOR), mOptSettings.mForgfac);
+        mOptSettings.mFunctol = parseDomValueNode(settingsElement.firstChildElement(HMF_FUNCTOL), mOptSettings.mFunctol);
+        mOptSettings.mPartol = parseDomValueNode(settingsElement.firstChildElement(HMF_PARTOL), mOptSettings.mPartol);
+        mOptSettings.mPlot = parseDomBooleanNode(settingsElement.firstChildElement(HMF_PLOT), mOptSettings.mPlot);
+        mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(HMF_SAVECSV), mOptSettings.mSavecsv);
+        mOptSettings.mlogPar = parseDomBooleanNode(settingsElement.firstChildElement(HMF_LOGPAR), mOptSettings.mlogPar);
     }
-    if(!rDomElement.firstChildElement("parameters").isNull())
+
+    QDomElement parametersElement = rDomElement.firstChildElement(HMF_PARAMETERS);
+    if(!parametersElement.isNull())
     {
-        QDomElement XMLpar = rDomElement.firstChildElement("parameters").firstChildElement("parameter");
-        while (!XMLpar.isNull())
+        QDomElement parameterElement = parametersElement.firstChildElement(HMF_PARAMETERTAG);
+        while (!parameterElement.isNull())
         {
             OptParameter parameter;
-            parameter.mComponentName = XMLpar.firstChildElement("componentname").text();
-            parameter.mParameterName = XMLpar.firstChildElement("parametername").text();
-            parseDomValueNode2(XMLpar.firstChildElement("minmax"), parameter.mMin, parameter.mMax);
+            parameter.mComponentName = parameterElement.firstChildElement(HMF_COMPONENTTAG).text();
+            parameter.mParameterName = parameterElement.firstChildElement(HMF_PARAMETERTAG).text();
+            parseDomValueNode2(parameterElement.firstChildElement(HMF_MINMAX), parameter.mMin, parameter.mMax);
             mOptSettings.mParamters.append(parameter);
 
-            XMLpar = XMLpar.nextSiblingElement("parameter");
+            parameterElement = parameterElement.nextSiblingElement(HMF_PARAMETERTAG);
         }
 
-        mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"), mOptSettings.mSavecsv);
+        mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(HMF_SAVECSV), mOptSettings.mSavecsv);
     }
-    if(!rDomElement.firstChildElement("objectives").isNull())
+
+    QDomElement objectivesElement = rDomElement.firstChildElement(HMF_OBJECTIVES);
+    if(!objectivesElement.isNull())
     {
-        QDomElement XMLobj = rDomElement.firstChildElement("objectives").firstChildElement("objective");
-        while (!XMLobj.isNull())
+        QDomElement objElement = objectivesElement.firstChildElement(HMF_OBJECTIVE);
+        while (!objElement.isNull())
         {
             Objectives objectives;
 
-            objectives.mFunctionName = XMLobj.firstChildElement("functionname").text();
-            objectives.mWeight = XMLobj.firstChildElement("weight").text().toDouble();
-            objectives.mNorm = XMLobj.firstChildElement("norm").text().toDouble();
-            objectives.mExp = XMLobj.firstChildElement("exp").text().toDouble();
+            objectives.mFunctionName = objElement.firstChildElement(HMF_FUNCNAME).text();
+            objectives.mWeight = objElement.firstChildElement(HMF_WEIGHT).text().toDouble();
+            objectives.mNorm = objElement.firstChildElement(HMF_NORM).text().toDouble();
+            objectives.mExp = objElement.firstChildElement(HMF_EXP).text().toDouble();
 
-            if(!XMLobj.firstChildElement("variables").isNull())
+            QDomElement variablesElement = objElement.firstChildElement(HMF_PLOTVARIABLES);
+            if(!variablesElement.isNull())
             {
-                QDomElement XMLVars = XMLobj.firstChildElement("variables").firstChildElement("variable");
-                while (!XMLVars.isNull())
+                QDomElement varElement = variablesElement.firstChildElement(HMF_PLOTVARIABLE);
+                while (!varElement.isNull())
                 {
                     QStringList variableInfo;
 
-                    variableInfo.append(XMLVars.firstChildElement("componentname").text());
-                    variableInfo.append(XMLVars.firstChildElement("portname").text());
-                    variableInfo.append(XMLVars.firstChildElement("variablename").text());
+                    variableInfo.append(varElement.firstChildElement(HMF_COMPONENTTAG).text());
+                    variableInfo.append(varElement.firstChildElement(HMF_PORTTAG).text());
+                    variableInfo.append(varElement.firstChildElement(HMF_PLOTVARIABLE).text());
 
                     objectives.mVariableInfo.append(variableInfo);
 
-                    XMLVars = XMLVars.nextSiblingElement("variable");
+                    varElement = varElement.nextSiblingElement(HMF_PLOTVARIABLE);
                 }
             }
 
-            if(!XMLobj.firstChildElement("data").isNull())
+            QDomElement dataElement = objElement.firstChildElement(HMF_DATA);
+            if(!dataElement.isNull())
             {
-                QDomElement XMLpar = XMLobj.firstChildElement("data").firstChildElement("parameter");
-                while (!XMLpar.isNull())
+                QDomElement parElement = dataElement.firstChildElement(HMF_PARAMETERTAG);
+                while (!parElement.isNull())
                 {
-                    objectives.mData.append(XMLpar.text());
+                    objectives.mData.append(parElement.text());
 
-                    XMLpar = XMLpar.nextSiblingElement("parameter");
+                    parElement = parElement.nextSiblingElement(HMF_PARAMETERTAG);
                 }
             }
 
-            XMLobj = XMLobj.nextSiblingElement("objective");
+            objElement = objElement.nextSiblingElement(HMF_OBJECTIVE);
 
             mOptSettings.mObjectives.append(objectives);
         }
@@ -403,13 +503,25 @@ void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
 }
 
 
-OptimizationSettings SystemContainer::getOptimizationSettings()
+void SystemContainer::getSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings)
 {
-    return mOptSettings;
+    sensSettings = mSensSettings;
 }
 
 
-void SystemContainer::setOptimizationSettings(OptimizationSettings optSettings)
+void SystemContainer::setSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings)
+{
+    mSensSettings = sensSettings;
+}
+
+
+void SystemContainer::getOptimizationSettings(OptimizationSettings &optSettings)
+{
+    optSettings = mOptSettings;
+}
+
+
+void SystemContainer::setOptimizationSettings(OptimizationSettings &optSettings)
 {
     mOptSettings = optSettings;
 }
@@ -469,7 +581,8 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
         }
     }
 
-    saveOptSettingsToDomElement(guiStuff);
+    saveOptimizationSettingsToDomElement(guiStuff);
+    saveSensitivityAnalysisSettingsToDomElement(guiStuff);
 
     //Save undo stack if setting is activated
     if(mSaveUndoStack)
@@ -788,16 +901,20 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 
         //9.1 Load plot variable aliases
         //! @deprecated Remove in teh future when hmf format stabilized and everyone has upgraded
-        xmlSubObject = xmlParameters.firstChildElement("alias");
+        xmlSubObject = xmlParameters.firstChildElement(HMF_ALIAS);
         while (!xmlSubObject.isNull())
         {
             loadPlotAlias(xmlSubObject, this);
-            xmlSubObject = xmlSubObject.nextSiblingElement("alias");
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_ALIAS);
         }
 
         //10. Load optimization settings
-        xmlSubObject = guiStuff.firstChildElement("optimization");
-        loadOptSettingsFromDomElement(xmlSubObject);
+        xmlSubObject = guiStuff.firstChildElement(HMF_OPTIMIZATION);
+        loadOptimizationSettingsFromDomElement(xmlSubObject);
+
+        //11. Load sensitivity analysis settings
+        xmlSubObject = guiStuff.firstChildElement(HMF_SENSITIVITYANALYSIS);
+        loadSensitivityAnalysisSettingsFromDomElement(xmlSubObject);
 
         //Refresh the appearance of the subsystemem and create the GUIPorts based on the loaded portappearance information
         //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
@@ -1668,4 +1785,11 @@ OptimizationSettings::OptimizationSettings()
     mPlot=true;
     mSavecsv=false;
     mlogPar = false;
+}
+
+
+SensitivityAnalysisSettings::SensitivityAnalysisSettings()
+{
+    nIter = 100;
+    distribution = UniformDistribution;
 }

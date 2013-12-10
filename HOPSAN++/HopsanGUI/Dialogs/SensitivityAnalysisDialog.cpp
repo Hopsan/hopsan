@@ -49,9 +49,12 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     : QDialog(parent)
 {
     //Set the name and size of the main window
-    this->resize(640,640);
+    this->resize(1024,768);
     this->setWindowTitle("Sensitivity Analysis");
     this->setPalette(gpConfig->getPalette());
+
+    //Settings
+    mpSettings = new SensitivityAnalysisSettings();
 
     //Parameters list
     QLabel *pParametersLabel = new QLabel("Choose uncertain parameters, and specify their standard deviation.");
@@ -139,14 +142,20 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pHelpAction);
 
+    //Progress bar
+    QLabel *pProgressLabel = new QLabel("Progress:", this);
+    mpProgressBar = new QProgressBar(this);
+
 
     //Main layout
     QGridLayout *pLayout = new QGridLayout(this);
-    pLayout->addWidget(pParametersGroupBox,   0, 0, 1, 2);
-    pLayout->addWidget(pOutputGroupBox,       1, 0, 1, 2);
-    pLayout->addWidget(pSettingsGroupBox,     2, 0, 1, 2);
-    pLayout->addWidget(pButtonBox,            4, 1, 1, 1);
-    pLayout->addWidget(pToolBar,              4, 0, 1, 1);
+    pLayout->addWidget(pParametersGroupBox,   0, 0, 1, 1);
+    pLayout->addWidget(pOutputGroupBox,       0, 1, 1, 2);
+    pLayout->addWidget(pSettingsGroupBox,     1, 0, 3, 1);
+    pLayout->addWidget(pProgressLabel,        1, 1, 1, 2);
+    pLayout->addWidget(mpProgressBar,          2, 1, 1, 2);
+    pLayout->addWidget(pButtonBox,            3, 2, 1, 1);
+    pLayout->addWidget(pToolBar,              3, 1, 1, 1);
     setLayout(pLayout);
 
     //Connections
@@ -157,9 +166,18 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), pParameterSigmaLabel, SLOT(setVisible(bool)));
     connect(mpUniformDistributionRadioButton, SIGNAL(toggled(bool)), pParameterMinLabel, SLOT(setVisible(bool)));
     connect(mpUniformDistributionRadioButton, SIGNAL(toggled(bool)), pParameterMaxLabel, SLOT(setVisible(bool)));
+    connect(this, SIGNAL(accepted()), SLOT(saveSettings()));
+    connect(this, SIGNAL(rejected()), SLOT(saveSettings()));
 }
 
 void SensitivityAnalysisDialog::open()
+{
+    loadSettings();
+    QDialog::open();
+}
+
+
+void SensitivityAnalysisDialog::loadSettings()
 {
     mpParametersList->clear();
     SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
@@ -211,13 +229,124 @@ void SensitivityAnalysisDialog::open()
     mOutputVariables.clear();
     mSelectedParameters.clear();
     mSelectedComponents.clear();
+
+    for(int i=0; i<mpOutputLabels.size(); ++i)
+    {
+        mpOutputLayout->removeWidget(mpOutputLabels[i]);
+        delete(mpOutputLabels[i]);
+    }
+
+    mpOutputLabels.clear();
+
+    for(int i=0; i<mpParameterAverageLineEdits.size(); ++i)
+    {
+        mpParametersLayout->removeWidget(mpParameterAverageLineEdits[i]);
+        mpParametersLayout->removeWidget(mpParameterLabels[i]);
+        mpParametersLayout->removeWidget(mpParameterMaxLineEdits[i]);
+        mpParametersLayout->removeWidget(mpParameterMinLineEdits[i]);
+        mpParametersLayout->removeWidget(mpParameterSigmaLineEdits[i]);
+        delete(mpParameterAverageLineEdits[i]);
+        delete(mpParameterLabels[i]);
+        delete(mpParameterMaxLineEdits[i]);
+        delete(mpParameterMinLineEdits[i]);
+        delete(mpParameterSigmaLineEdits[i]);
+    }
+
     mpParameterAverageLineEdits.clear();
     mpParameterLabels.clear();
     mpParameterMaxLineEdits.clear();
     mpParameterMinLineEdits.clear();
     mpParameterSigmaLineEdits.clear();
 
+    if(gpModelHandler->getCurrentTopLevelSystem())
+    {
+        gpModelHandler->getCurrentTopLevelSystem()->getSensitivityAnalysisSettings(*mpSettings);
+    }
+    else
+    {
+        delete mpSettings;
+        mpSettings = new SensitivityAnalysisSettings();
+    }
+
+    mpStepsSpinBox->setValue(mpSettings->nIter);
+    mpUniformDistributionRadioButton->setChecked(mpSettings->distribution == SensitivityAnalysisSettings::UniformDistribution);
+    mpNormalDistributionRadioButton->setChecked(mpSettings->distribution == SensitivityAnalysisSettings::NormalDistribution);
+
+    foreach(SensitivityAnalysisParameter par, mpSettings->parameters)
+    {
+        QTreeWidgetItemIterator it(mpParametersList);
+        while(*it)
+        {
+            QTreeWidgetItem *pItem = (*it);
+            if(pItem->parent() && pItem->parent()->text(0) == par.compName && pItem->text(0) == par.parName)
+            {
+                pItem->setCheckState(0, Qt::Checked);
+                //updateChosenParameters(pItem, 0);
+                mpParameterMinLineEdits.last()->setText(QString::number(par.min));
+                mpParameterMaxLineEdits.last()->setText(QString::number(par.max));
+                mpParameterAverageLineEdits.last()->setText(QString::number(par.aver));
+                mpParameterSigmaLineEdits.last()->setText(QString::number(par.sigma));
+            }
+            ++it;
+        }
+    }
+
+    foreach(SensitivityAnalysisVariable var, mpSettings->variables)
+    {
+        QTreeWidgetItemIterator it(mpOutputList);
+        while(*it)
+        {
+            QTreeWidgetItem *pItem = (*it);
+            if(pItem->parent() && pItem->parent()->parent() && pItem->parent()->text(0) == var.portName &&
+               pItem->parent()->parent()->text(0) == var.compName && pItem->text(0) == var.varName)
+            {
+                pItem->setCheckState(0, Qt::Checked);
+            }
+            ++it;
+        }
+    }
+
     QDialog::show();
+}
+
+void SensitivityAnalysisDialog::saveSettings()
+{
+    mpSettings->nIter = mpStepsSpinBox->value();
+    if(mpUniformDistributionRadioButton->isChecked())
+    {
+        mpSettings->distribution = SensitivityAnalysisSettings::UniformDistribution;
+    }
+    else if(mpNormalDistributionRadioButton->isChecked())
+    {
+        mpSettings->distribution = SensitivityAnalysisSettings::NormalDistribution;
+    }
+
+    mpSettings->parameters.clear();
+    for(int i=0; i<mSelectedComponents.size(); ++i)
+    {
+        SensitivityAnalysisParameter par;
+        par.compName = mSelectedComponents[i];
+        par.parName = mSelectedParameters[i];
+        par.min = mpParameterMinLineEdits[i]->text().toDouble();
+        par.max = mpParameterMaxLineEdits[i]->text().toDouble();
+        par.aver = mpParameterAverageLineEdits[i]->text().toDouble();
+        par.sigma = mpParameterSigmaLineEdits[i]->text().toDouble();
+        mpSettings->parameters.append(par);
+    }
+
+    mpSettings->variables.clear();
+    for(int i=0; i<mOutputVariables.size(); ++i)
+    {
+        SensitivityAnalysisVariable var;
+        var.compName = mOutputVariables[i][0];
+        var.portName = mOutputVariables[i][1];
+        var.varName = mOutputVariables[i][2];
+        mpSettings->variables.append(var);
+    }
+
+    gpModelHandler->getCurrentTopLevelSystem()->setSensitivityAnalysisSettings(*mpSettings);
+
+    QDialog::hide();
 }
 
 
@@ -272,6 +401,8 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
         mpParametersLayout->removeWidget(mpParameterLabels.at(i));
         mpParametersLayout->removeWidget(mpParameterAverageLineEdits.at(i));
         mpParametersLayout->removeWidget(mpParameterSigmaLineEdits.at(i));
+        mpParametersLayout->removeWidget(mpParameterMinLineEdits.at(i));
+        mpParametersLayout->removeWidget(mpParameterMaxLineEdits.at(i));
         QLabel *pParameterLabel = mpParameterLabels.at(i);
         QLineEdit *pParameterAverageLineEdit = mpParameterAverageLineEdits.at(i);
         QLineEdit *pParameterSigmaLineEdit = mpParameterSigmaLineEdits.at(i);
@@ -365,7 +496,7 @@ void SensitivityAnalysisDialog::run()
     mModelPtrs.clear();
     if(gpConfig->getUseMulticore())
     {
-        for(int i=0; i<gpConfig->getNumberOfThreads(); ++i)
+        for(int i=0; i<nThreads; ++i)
         {
             mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
             //! @todo Add a terminal for sensitivity analysis
@@ -378,34 +509,6 @@ void SensitivityAnalysisDialog::run()
         //mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
     }
 
-    /*if(gpConfig->getUseMulticore())
-    {
-        //Close all other containers
-        for(int i=0; i<gpModelHandler->count(); ++i)
-        {
-            if(gpModelHandler->getViewContainerObject(i) != gpModelHandler->getCurrentViewContainerObject())
-            {
-                gpModelHandler->closeModel(i);
-                --i;
-            }
-        }
-
-        //Load more tabs with same model
-        for(int i=1; i<nThreads; ++i)
-        {
-            gpModelHandler->loadModel(gpModelHandler->getCurrentViewContainerObject()->getModelFileInfo().absoluteFilePath(), true);
-        }
-    }
-    else
-    {
-        nThreads = 1;
-    }*/
-
-
-
-    //int nTabs = gpModelHandler->count();
-
-    //bool noChange=false;
     for(int i=0; i<nSteps/nThreads; ++i)
     {
         for(int m=0; m<mModelPtrs.size(); ++m)
@@ -434,9 +537,9 @@ void SensitivityAnalysisDialog::run()
         {
             mModelPtrs.first()->simulate_blocking();
         }
-        //noChange=true;
+        mpProgressBar->setValue(double(i)*double(nThreads)/double(nSteps)*100);
     }
-
+    mpProgressBar->setValue(100);   //Just to make it look better
 
     for(int v=0; v<mOutputVariables.size(); ++v)
     {

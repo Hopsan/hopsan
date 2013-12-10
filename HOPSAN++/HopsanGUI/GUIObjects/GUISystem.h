@@ -80,6 +80,36 @@ public:
 };
 
 
+class SensitivityAnalysisParameter
+{
+public:
+    QString compName, parName;
+    double min, max;      //Used for square distribution
+    double aver, sigma;   //Used for normal distribution
+};
+
+
+class SensitivityAnalysisVariable
+{
+public:
+    QString compName, portName, varName;
+};
+
+
+class SensitivityAnalysisSettings
+{
+public:
+    SensitivityAnalysisSettings();
+
+    enum DistributionEnumT { UniformDistribution, NormalDistribution };
+
+    int nIter;     //Number of iterations
+    QVector<SensitivityAnalysisParameter> parameters;
+    QVector<SensitivityAnalysisVariable> variables;
+    DistributionEnumT distribution;
+};
+
+
 class SystemContainer : public ContainerObject
 {
     Q_OBJECT
@@ -120,8 +150,11 @@ public:
     CoreSystemAccess* getCoreSystemAccessPtr();
     ContainerObject *getParentContainerObject();
 
-    OptimizationSettings getOptimizationSettings();
-    void setOptimizationSettings(OptimizationSettings optSettings);
+
+    void getSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings);
+    void setSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings);
+    void getOptimizationSettings(OptimizationSettings &optSettings);
+    void setOptimizationSettings(OptimizationSettings &optSettings);
 
     enum { Type = SystemContainerType };
     int type() const;
@@ -140,8 +173,10 @@ protected:
 
     void openPropertiesDialog();
 
-    void loadOptSettingsFromDomElement(QDomElement &rDomElement);
-    void saveOptSettingsToDomElement(QDomElement &rDomElement);
+    void loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rDomElement);
+    void saveSensitivityAnalysisSettingsToDomElement(QDomElement &rDomElement);
+    void loadOptimizationSettingsFromDomElement(QDomElement &rDomElement);
+    void saveOptimizationSettingsToDomElement(QDomElement &rDomElement);
 
 private:
     void commonConstructorCode();
@@ -156,6 +191,7 @@ private:
     QRadioButton *mpExportFmuMsvcRadioButton;
 
     OptimizationSettings mOptSettings;
+    SensitivityAnalysisSettings mSensSettings;
 };
 
 

@@ -28,6 +28,8 @@
 #include <QtGui>
 
 class ModelWidget;
+class SensitivityAnalysisSettings;
+class SystemContainer;
 
 class SensitivityAnalysisDialog : public QDialog
 {
@@ -38,7 +40,9 @@ public:
     enum DistributionEnumT {UniformDistribution, NormalDistribution};
 
 public slots:
-    virtual void open();
+    void open();
+    void loadSettings();
+    void saveSettings();
 
 private slots:
     void updateChosenParameters(QTreeWidgetItem* item, int i);
@@ -66,8 +70,10 @@ private:
     QSpinBox *mpStepsSpinBox;
     QRadioButton *mpUniformDistributionRadioButton;
     QRadioButton *mpNormalDistributionRadioButton;
+    QProgressBar *mpProgressBar;
 
     //Member variables
+    SensitivityAnalysisSettings *mpSettings;
     QVector<ModelWidget *> mModelPtrs;
     QStringList mSelectedComponents;
     QStringList mSelectedParameters;

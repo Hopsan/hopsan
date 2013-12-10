@@ -357,7 +357,8 @@ void OptimizationDialog::loadConfiguration()
 {
     SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
 
-    OptimizationSettings optSettings = pSystem->getOptimizationSettings();
+    OptimizationSettings optSettings;
+    pSystem->getOptimizationSettings(optSettings);
 
     mpIterationsSpinBox->setValue(optSettings.mNiter);
     mpSearchPointsSpinBox->setValue(optSettings.mNsearchp);
@@ -958,7 +959,8 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
         QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + " (" + currentValue + trUtf8(")  < "));
         pLabel->setAlignment(Qt::AlignCenter);
 
-        OptimizationSettings optSettings = pSystem->getOptimizationSettings();
+        OptimizationSettings optSettings;
+        pSystem->getOptimizationSettings(optSettings);
         QString min, max;
         for(int i=0; i<optSettings.mParamters.size(); ++i)
         {
