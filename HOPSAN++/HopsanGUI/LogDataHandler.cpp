@@ -1315,7 +1315,7 @@ void LogDataHandler::limitPlotGenerations()
 //        timer.tocDbg("removeOldGenerations");
 
 //---------------------------------------------------------------------------------------
-// This is NEW code by Peter, but it is not working yet
+// Note this code is not as smart as the old one but much faster
         TicToc timer;
         int highest = getHighestGenerationNumber();
         int highestToRemove = highest-gpConfig->getGenerationLimit();
@@ -1792,11 +1792,17 @@ bool LogDataHandler::deleteVariable(const QString &a)
 //! @brief Remove a variable, but only imported generations
 bool LogDataHandler::deleteImportedVariable(const QString &rVarName)
 {
+    bool didRemove=false;
     LogDataMapT::iterator it = mLogDataMap.find(rVarName);
     if(it != mLogDataMap.end())
     {
-        it->mpDataContainer->removeAllImportedGenerations();
+        didRemove = it->mpDataContainer->removeAllImportedGenerations();
+        if (didRemove)
+        {
+            emit dataRemoved();
+        }
     }
+    return didRemove;
 }
 
 //! @brief Returns the number of log data variables registered in this log data handler

@@ -448,9 +448,10 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             }
             else
             {
-                pDefineAliasAction = menu.addAction(QString("Change Variable Alias"));
-                pRemoveAliasAction = menu.addAction(QString("Remove Variable Alias"));
+                pDefineAliasAction = menu.addAction(QString("Change Alias"));
+                pRemoveAliasAction = menu.addAction(QString("Remove Alias"));
             }
+            menu.addSeparator();
         }
         pDeleteVariableAction = menu.addAction(QString("Remove Variable"));
 
