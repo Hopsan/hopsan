@@ -176,7 +176,6 @@ void MainWindow::createContents()
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
     mpOptimizationDialog = new OptimizationDialog(this);
-    mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
     mpHelpDialog = new HelpDialog(0);
 
     //Create the Python widget
@@ -223,6 +222,9 @@ void MainWindow::createContents()
     mpModelHandler = new ModelHandler(this);
     gpModelHandler = mpModelHandler;
     connect(mpModelHandler, SIGNAL(modelChanged(ModelWidget*)), gpTerminalWidget->mpHandler, SLOT(setModelPtr(ModelWidget*)));
+
+    //Create the sensitivity analysis dialog
+    mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
 
     //Create the main tab container, need at least one tab
     mpCentralTabs = new CentralTabWidget(this);

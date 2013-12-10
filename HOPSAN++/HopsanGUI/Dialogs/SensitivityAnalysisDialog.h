@@ -73,6 +73,7 @@ private:
     QProgressBar *mpProgressBar;
 
     //Member variables
+    ModelWidget *mpModel;
     SensitivityAnalysisSettings *mpSettings;
     QVector<ModelWidget *> mModelPtrs;
     QStringList mSelectedComponents;

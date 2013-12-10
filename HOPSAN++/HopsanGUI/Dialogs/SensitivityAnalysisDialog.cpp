@@ -175,6 +175,13 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
 
 void SensitivityAnalysisDialog::open()
 {
+    if(gpModelHandler->count() == 0)
+    {
+        return;
+    }
+    mpModel = gpModelHandler->getCurrentModel();
+    connect(mpModel, SIGNAL(destroyed()), this, SLOT(close()));
+
     loadSettings();
     QDialog::open();
 }
@@ -183,7 +190,7 @@ void SensitivityAnalysisDialog::open()
 void SensitivityAnalysisDialog::loadSettings()
 {
     mpParametersList->clear();
-    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = mpModel->getTopLevelSystemContainer();
     QStringList componentNames = pSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {
@@ -261,9 +268,9 @@ void SensitivityAnalysisDialog::loadSettings()
     mpParameterMinLineEdits.clear();
     mpParameterSigmaLineEdits.clear();
 
-    if(gpModelHandler->getCurrentTopLevelSystem())
+    if(mpModel->getTopLevelSystemContainer())
     {
-        gpModelHandler->getCurrentTopLevelSystem()->getSensitivityAnalysisSettings(*mpSettings);
+        mpModel->getTopLevelSystemContainer()->getSensitivityAnalysisSettings(*mpSettings);
     }
     else
     {
@@ -347,7 +354,7 @@ void SensitivityAnalysisDialog::saveSettings()
         mpSettings->variables.append(var);
     }
 
-    gpModelHandler->getCurrentTopLevelSystem()->setSensitivityAnalysisSettings(*mpSettings);
+    mpModel->getTopLevelSystemContainer()->setSensitivityAnalysisSettings(*mpSettings);
 
     QDialog::hide();
 }
@@ -361,7 +368,7 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
         mSelectedParameters.append(item->text(0));
         QLabel *pLabel = new QLabel(item->parent()->text(0) + ", " + item->text(0) + ": ");
         //pLabel->setAlignment(Qt::AlignCenter);
-        QString averageValue = gpModelHandler->getCurrentViewContainerObject()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+        QString averageValue = mpModel->getTopLevelSystemContainer()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
         QLineEdit *pAverageLineEdit = new QLineEdit(averageValue, this);
         QLineEdit *pSigmaLineEdit = new QLineEdit("0.0", this);
         QLineEdit *pMinLineEdit = new QLineEdit("0.0", this);
@@ -489,12 +496,12 @@ void SensitivityAnalysisDialog::run()
     int nParameteres = mSelectedParameters.size();
 
     //Save hidden copy of model to load multiple copies of and run sensitivity analysis against
-    QString name = gpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getName();
-    QString appearanceDataBasePath = gpModelHandler->getCurrentTopLevelSystem()->getAppearanceData()->getBasePath();
+    QString name = mpModel->getTopLevelSystemContainer()->getName();
+    QString appearanceDataBasePath = mpModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
     QDir().mkpath(gpDesktopHandler->getDataPath()+"/sensitivity/");
     QString savePath = gpDesktopHandler->getDataPath()+"/sensitivity/"+name+".hmf";
-    gpModelHandler->getCurrentModel()->saveTo(savePath);
-    gpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
+    mpModel->saveTo(savePath);
+    mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
 
     mModelPtrs.clear();
     if(gpConfig->getUseMulticore())
@@ -502,14 +509,11 @@ void SensitivityAnalysisDialog::run()
         for(int i=0; i<nThreads; ++i)
         {
             mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-            //! @todo Add a terminal for sensitivity analysis
-            //mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
         }
     }
     else
     {
         mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-        //mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
     }
 
     for(int i=0; i<nSteps/nThreads; ++i)
@@ -529,7 +533,7 @@ void SensitivityAnalysisDialog::run()
                 {
                     randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
                 }
-                mModelPtrs[m]->getViewContainerObject()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                mModelPtrs[m]->getTopLevelSystemContainer()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
             }
         }
         if(gpConfig->getUseMulticore())
@@ -546,8 +550,8 @@ void SensitivityAnalysisDialog::run()
 
     for(int v=0; v<mOutputVariables.size(); ++v)
     {
-        int nGenerations = mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getLatestGeneration()+1;
-        int nSamples = mModelPtrs.first()->getViewContainerObject()->getNumberOfLogSamples();
+        int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getLatestGeneration()+1;
+        int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
 
         QVector<double> vMin(nSamples, 10000000000);
         QVector<double> vMax(nSamples, -10000000000);
@@ -569,7 +573,7 @@ void SensitivityAnalysisDialog::run()
         {
             for(int g=nGenerations-nSteps/nThreads; g<nGenerations; ++g)
             {
-                QVector<double> temp = mModelPtrs[m]->getViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(fullName, g)->getDataVectorCopy();
+                QVector<double> temp = mModelPtrs[m]->getTopLevelSystemContainer()->getLogDataHandler()->getLogVariableDataPtr(fullName, g)->getDataVectorCopy();
                 for(int i=0; i<temp.size(); ++i)
                 {
                     if(temp[i] > vMax[i]) vMax[i] = temp[i];
@@ -581,13 +585,13 @@ void SensitivityAnalysisDialog::run()
         }
 
         //Commented out code = add curve for max and min
-        SharedLogVariableDataPtrT pTime = mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getTimeVectorPtr(nGenerations-1);
+        SharedLogVariableDataPtrT pTime = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorPtr(nGenerations-1);
         SharedVariableCommonDescriptionT minDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription);
         minDesc.data()->mAliasName = "Min";
-        SharedLogVariableDataPtrT pMinData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMin, minDesc, mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
+        SharedLogVariableDataPtrT pMinData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMin, minDesc, mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
         SharedVariableCommonDescriptionT maxDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription);
         maxDesc.data()->mAliasName = "Max";
-        SharedLogVariableDataPtrT pMaxData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMax, maxDesc, mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
+        SharedLogVariableDataPtrT pMaxData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMax, maxDesc, mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
 
         PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
         gpPlotHandler->plotDataToWindow(pPlotWindow, pMaxData, QwtPlot::yLeft);
