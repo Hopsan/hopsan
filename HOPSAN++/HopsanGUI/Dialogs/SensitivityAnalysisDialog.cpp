@@ -34,6 +34,9 @@
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
 #include "MainWindow.h"
+#include "PlotHandler.h"
+#include "PlotTab.h"
+#include "PlotCurve.h"
 
 #ifndef WIN32
 #include <unistd.h> //Needed for sysctl
@@ -543,24 +546,73 @@ void SensitivityAnalysisDialog::run()
 
     for(int v=0; v<mOutputVariables.size(); ++v)
     {
+        int nGenerations = mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getLatestGeneration()+1;
+        int nSamples = mModelPtrs.first()->getViewContainerObject()->getNumberOfLogSamples();
+
+        QVector<double> vMin(nSamples, 10000000000);
+        QVector<double> vMax(nSamples, -10000000000);
+        double totalMin=100000000000;
+        double totalMax=-100000000000;
+
         QString component = mOutputVariables.at(v).at(0);
         QString port = mOutputVariables.at(v).at(1);
         QString variable = mOutputVariables.at(v).at(2);
 
         QString fullName = makeConcatName(component,port,variable);
 
-        PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
-        pPlotWindow->hidePlotCurveInfo();
-        pPlotWindow->setLegendsVisible(false);
+        //PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
 
-        int nGenerations = mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getLatestGeneration()+1;
+
+
 
         for(int m=0; m<mModelPtrs.size(); ++m)
         {
             for(int g=nGenerations-nSteps/nThreads; g<nGenerations; ++g)
             {
-                mModelPtrs[m]->getViewContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
+                QVector<double> temp = mModelPtrs[m]->getViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(fullName, g)->getDataVectorCopy();
+                for(int i=0; i<temp.size(); ++i)
+                {
+                    if(temp[i] > vMax[i]) vMax[i] = temp[i];
+                    if(temp[i] < vMin[i]) vMin[i] = temp[i];
+                    if(temp[i] > totalMax) totalMax = temp[i];
+                    if(temp[i] < totalMin) totalMin = temp[i];
+                }
             }
         }
+
+        //Commented out code = add curve for max and min
+        SharedLogVariableDataPtrT pTime = mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getTimeVectorPtr(nGenerations-1);
+        SharedVariableCommonDescriptionT minDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription);
+        minDesc.data()->mAliasName = "Min";
+        SharedLogVariableDataPtrT pMinData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMin, minDesc, mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
+        SharedVariableCommonDescriptionT maxDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription);
+        maxDesc.data()->mAliasName = "Max";
+        SharedLogVariableDataPtrT pMaxData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMax, maxDesc, mModelPtrs.first()->getViewContainerObject()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
+
+        PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
+        gpPlotHandler->plotDataToWindow(pPlotWindow, pMaxData, QwtPlot::yLeft);
+        pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
+        gpPlotHandler->plotDataToWindow(pPlotWindow, pMinData, QwtPlot::yLeft);
+        pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
+        pPlotWindow->hidePlotCurveInfo();
+        pPlotWindow->setLegendsVisible(false);
+
+        //! @todo Implement interval curve type support in plot window instead!
+        //! @node This is not compatible with most plot functions
+        QwtPlotIntervalCurve *pCurve = new QwtPlotIntervalCurve();
+        QVector<QwtIntervalSample> data;
+        QVector<double> time = pTime->getDataVectorCopy();
+        for(int i=0; i<vMin.size(); ++i)
+        {
+            data.append(QwtIntervalSample(time[i], vMin[i], vMax[i]));
+        }
+        pCurve->setSamples(data);
+        pCurve->setPen(QColor(0,0,255,150), 1.0);
+        pCurve->setBrush(QColor(0,0,255,150));
+
+        pCurve->attach(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getPlot());
+//        pPlotWindow->getCurrentPlotTab()->toggleAxisLock();
+//        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::yLeft, totalMin, totalMax);
+//        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::xBottom, time.first(), time.last());
     }
 }

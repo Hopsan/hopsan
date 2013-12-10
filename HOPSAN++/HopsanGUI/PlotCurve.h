@@ -30,6 +30,7 @@
 #include "qwt_plot.h"
 #include "qwt_plot_curve.h"
 #include "qwt_plot_marker.h"
+#include "qwt_plot_intervalcurve.h"
 
 #include <QLabel>
 #include <QToolButton>
