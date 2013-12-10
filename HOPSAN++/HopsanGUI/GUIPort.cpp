@@ -184,13 +184,14 @@ void Port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if (mpPortAppearance->mEnabled)
     {
-        //qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
         QGraphicsWidget::hoverEnterEvent(event);
 
         this->setCursor(Qt::CrossCursor);
 
         magnify(true);
         this->setZValue(HoveredPortZValue);
+
+        refreshPortLabelText();
         mpPortLabel->show();
     }
 }
@@ -651,22 +652,41 @@ void Port::refreshPortLabelText()
 
     //! @todo should get portdescription once and store it instead of getting it every time (search in core)
     QString desc = getPortDescription();
-    if (!desc.isEmpty())
-    {
-        //Append description
-        label.append("<br>\"" + desc + "\"");
-    }
-    else
+    if (desc.isEmpty())
     {
         // backwards compatible
         if (!mpPortAppearance->mDescription.isEmpty())
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("You seem to have enterned a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
+            gpTerminalWidget->mpConsole->printWarningMessage("You seem to have entered a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
             //Append description
-            label.append("<br>\"" + mpPortAppearance->mDescription + "\"");
+           desc = mpPortAppearance->mDescription;
+           label.append("<br>\"" + desc + "\"");
         }
     }
+    else
+    {
+        label.append("<br>\"" + desc + "\"");;
+    }
     label.append("</span></p>");
+
+    // Build the variable / alias sub menue
+    QMap<QString, QString> var_alias = getParentModelObject()->getVariableAliases(this->getName());
+    if (!var_alias.isEmpty())
+    {
+        label.append("<table style=\"background-color:lightyellow;font-size:12px\">");
+        label.append("<tr><th>Name</th><th>Alias</th></tr>");
+        QMap<QString, QString>::iterator it;
+        for (it=var_alias.begin(); it!=var_alias.end(); ++it)
+        {
+            label.append("<tr><td align=center>");
+            label.append(it.key());
+            label.append("</td><td align=center>");
+            label.append(it.value());
+            label.append("</td></tr>");
+        }
+        label.append("</table>");
+    }
+
 
     mpPortLabel->setHtml(label);
     mpPortLabel->adjustSize();

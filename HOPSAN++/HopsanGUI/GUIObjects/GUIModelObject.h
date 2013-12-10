@@ -87,9 +87,9 @@ public:
 
     // VariableAlias method
     //! @todo parameters and portvaraibles should be more similar in the future, so that we do not need handle them separately
-    virtual QVector< QPair<QString,QString> > getVariableAliasList();
+    virtual QMap<QString, QString> getVariableAliases(const QString &rPortName="") const;
     virtual void getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions);
-    virtual void getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions);
+    virtual void getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions) const;
 
     // Custom variable plot unit methods
     void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);

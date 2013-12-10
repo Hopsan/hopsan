@@ -693,23 +693,26 @@ QString ModelObject::getDefaultParameterValue(const QString &rParamName) const
     }
 }
 
-QVector<QPair<QString, QString> > ModelObject::getVariableAliasList()
+//! @brief Returns a map with the variable names (key) and alias (value)
+//! @param[in] rPortName The portname to filter on, if left blank all ports are considered
+//! @returns A map with key = VarName if rPortName was specified, else a combo PortName#VarName and value = alias
+QMap<QString, QString> ModelObject::getVariableAliases(const QString &rPortName) const
 {
-    //! @todo this fetching multiple times is madness
-    QVector<QPair<QString, QString> > output;
-    QStringList aliasNames = getParentContainerObject()->getCoreSystemAccessPtr()->getAliasNames();
-    for (int i=0; i<aliasNames.size(); ++i)
+    QMap<QString, QString> results;
+    QVector<CoreVariameterDescription> vds;
+    getVariameterDescriptions(vds);
+    for (int i=0; i<vds.size(); ++i)
     {
-        QString comp,port,var;
-        getParentContainerObject()->getCoreSystemAccessPtr()->getFullVariableNameByAlias(aliasNames[i],comp,port,var);
-
-        QString fullname=makeConcatName(comp,port,var);
-        QString alias = aliasNames[i];
-
-        QPair<QString, QString> aliasVarPair(alias, fullname );
-        output.push_back(aliasVarPair);
+        if ( !vds[i].mAlias.isEmpty() && rPortName.isEmpty() && (gpConfig->getShowHiddenNodeDataVariables() || (vds[i].mVariabelType != "Hidden")) )
+        {
+            results.insert(vds[i].mPortName+"#"+vds[i].mName, vds[i].mAlias);
+        }
+        else if ( !vds[i].mAlias.isEmpty() && (rPortName == vds[i].mPortName)  && (gpConfig->getShowHiddenNodeDataVariables() || (vds[i].mVariabelType != "Hidden")) )
+        {
+            results.insert(vds[i].mName, vds[i].mAlias);
+        }
     }
-    return output;
+    return results;
 }
 
 void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions)
@@ -727,7 +730,7 @@ void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDat
     }
 }
 
-void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions)
+void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions) const
 {
     rVariameterDescriptions.clear();
     mpParentContainerObject->getCoreSystemAccessPtr()->getVariameters(this->getName(), rVariameterDescriptions);
