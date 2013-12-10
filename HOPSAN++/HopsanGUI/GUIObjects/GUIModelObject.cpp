@@ -934,7 +934,9 @@ void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     WorkspaceObject::hoverLeaveEvent(event);
     this->setZValue(ModelobjectZValue);
     this->showPorts(false);
-    if (!mNameTextVisible && !mNameTextAlwaysVisible)
+    // Ok now lets hide the name text if text should be hidden or if icon is hidden
+    // (if icon is hidden we are likely a hidden signal component)
+    if ((!mNameTextVisible && !mNameTextAlwaysVisible) || !mpIcon->isVisible() )
     {
         mpNameText->hide();
     }
@@ -1283,25 +1285,29 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
 
 
 //! @brief Shows or hides the port, depending on the input boolean and whether or not they are connected
+//! @details Ports will allways be shown if visible is true, but they will not allways be hidden when false, this depends on other factors as well
 //! @param visible Tells whether the ports shall be shown or hidden
 void ModelObject::showPorts(bool visible)
 {
-    QList<Port*>::iterator i;
+    QList<Port*>::iterator it;
     if(visible)
     {
-        for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
+        for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
         {
-            (*i)->show();
+            (*it)->show();
         }
     }
     else
-        for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
+    {
+        for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
         {
-            if ((*i)->isConnected() || !mpParentContainerObject->areSubComponentPortsShown())
+            // Only hide ports if they are connected, are not suposted to be shown or if the MO icon is already hidden (such as for hidden signal components)
+            if ((*it)->isConnected() || !mpParentContainerObject->areSubComponentPortsShown() || !mpIcon->isVisible())
             {
-                (*i)->hide();
+                (*it)->hide();
             }
         }
+    }
 }
 
 

@@ -179,10 +179,25 @@ int Component::type() const
 }
 
 
-
+//! @brief Decide if component should be visible or not
+//! @details We do not want to run the Qt setVisble function because the item should not be hidden, only the visual parts should be hidden, mouse evns should still be processed
+//! @param[in] visible True or False
 void Component::setVisible(bool visible)
 {
-    this->mpIcon->setVisible(visible);
+    // Hide show icon
+    mpIcon->setVisible(visible);
+
+    // The name text should always be hidden with the component
+    if (visible == false)
+    {
+        mpNameText->setVisible(false);
+    }
+    // But when we turn it back on, it should only become visible if it is supposed to be vissible
+    else if (mNameTextVisible)
+    {
+        mpNameText->setVisible(true);
+    }
+
     for(int i=0; i<mPortListPtrs.size(); ++i)
     {
         mPortListPtrs.at(i)->showIfNotConnected(mpParentContainerObject->areSubComponentPortsShown());
