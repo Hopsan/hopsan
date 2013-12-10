@@ -422,7 +422,7 @@ void AnimationWidget::updateAnimationSpeed(double speed)
 //! @brief Slot that updates the animation, called by animation timer object
 void AnimationWidget::updateAnimation()
 {
-    if(!mRealTime)      //Not real-time simulation
+    if(!mRealTime && !mTimeValues.isEmpty())      //Not real-time simulation
     {
         //Calculate animation time (with limitations)
         mCurrentAnimationTime = mLastAnimationTime+double(mSimulationSpeed)/mSpeedSliderSensitivity/mFps;
