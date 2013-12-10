@@ -218,14 +218,6 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
 void CurveInfoBox::setLineColor(const QColor color)
 {
     QString buttonStyle;
-//    buttonStyle.append(QString("QToolButton                 { border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 2px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append(QString("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append(QString("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append(QString("QToolButton:hover           { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append(QString("QToolButton:checked         { border: 1px solid gray;               border-style: inset;    border-radius: 0px;    	padding: 1px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append(QString("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append(QString("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append(QString("QToolButton:hover:unchecked { border: 1px solid gray;               border-style: outset;   border-radius: 0px;     padding: 2px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
 
     // Update color blob in plot info box
     buttonStyle.append(QString("QToolButton                 { border: 1px solid gray;           border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
@@ -382,6 +374,7 @@ void PlotCurve::commonConstructorCode(int axisY,
     mpCurveSymbol = 0;
     mCurveSymbolSize = 8;
     mIsActive = false;
+    mIncludeGenInTitle = true;
     mCurveType = curveType;
     mpParentPlotTab = parent;
 
@@ -390,7 +383,7 @@ void PlotCurve::commonConstructorCode(int axisY,
 
     // Set QwtPlotCurve stuff
     //! @todo maybe this code should be run when we are adding a curve to a plottab
-    this->setTitle(getCurveName());
+    refreshCurveTitle();
     updateCurve();
     this->setRenderHint(QwtPlotItem::RenderAntialiased);
     this->setYAxis(axisY);
@@ -423,6 +416,18 @@ void PlotCurve::commonConstructorCode(int axisY,
     }
 }
 
+void PlotCurve::refreshCurveTitle()
+{
+    if (mIncludeGenInTitle)
+    {
+        setTitle(getCurveNameWithGeneration());
+    }
+    else
+    {
+        setTitle(getCurveName());
+    }
+}
+
 //! @brief Destructor for plot curves
 PlotCurve::~PlotCurve()
 {
@@ -438,6 +443,11 @@ PlotCurve::~PlotCurve()
 
     // Delete custom data if any
     deleteCustomData();
+}
+
+void PlotCurve::setIncludeGenerationInTitle(bool doit)
+{
+    mIncludeGenInTitle=doit;
 }
 
 
@@ -472,6 +482,18 @@ QString PlotCurve::getCurveName() const
         return "Unnamed Curve";
 }
 
+QString PlotCurve::getCurveNameWithGeneration() const
+{
+    if(mCurveType == PortVariableType)
+    {
+        return getCurveName()+QString("  (%1)").arg(mpData->getGeneration()+1);
+    }
+    else
+    {
+        return getCurveName();
+    }
+}
+
 
 //! @brief Returns the type of the curve
 HopsanPlotCurveTypeEnumT PlotCurve::getCurveType()
@@ -481,21 +503,21 @@ HopsanPlotCurveTypeEnumT PlotCurve::getCurveType()
 
 
 //! @brief Returns the name of the component a plot curve is created from
-QString PlotCurve::getComponentName()
+const QString &PlotCurve::getComponentName() const
 {
     return mpData->getComponentName();
 }
 
 
 //! @brief Returns the name of the port a plot curve is created from
-QString PlotCurve::getPortName()
+const QString &PlotCurve::getPortName() const
 {
     return mpData->getPortName();
 }
 
 
 //! @brief Returns the data name (physical quantity) of a plot curve
-QString PlotCurve::getDataName()
+const QString &PlotCurve::getDataName() const
 {
     return mpData->getDataName();
 }
@@ -612,6 +634,7 @@ bool PlotCurve::setGeneration(int generation)
         }
 
         updateCurve();
+        refreshCurveTitle();
         updatePlotInfoBox();
         mpParentPlotTab->update();
 
@@ -1275,14 +1298,7 @@ void PlotCurve::updateCurve()
 
 void PlotCurve::updateCurveName()
 {
-    if (mpData->getAliasName().isEmpty())
-    {
-        setTitle(mpData->getFullVariableNameWithSeparator(", "));
-    }
-    else
-    {
-        setTitle(mpData->getAliasName());
-    }
+    refreshCurveTitle();
     updatePlotInfoBox();
     mpParentPlotTab->updateAxisLabels();
 }

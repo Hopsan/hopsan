@@ -128,7 +128,9 @@ public:
               HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
+    void setIncludeGenerationInTitle(bool doit);
     QString getCurveName() const;
+    QString getCurveNameWithGeneration() const;
     HopsanPlotCurveTypeEnumT getCurveType();
     int getAxisY();
 
@@ -140,9 +142,9 @@ public:
     const SharedLogVariableDataPtrT getCustomXData() const;
 
     int getGeneration() const;
-    QString getComponentName();
-    QString getPortName();
-    QString getDataName();
+    const QString &getComponentName() const;
+    const QString &getPortName() const;
+    const QString &getDataName() const;
     const QString &getDataOriginalUnit() const;
     const QString &getDataCustomPlotUnit() const;
     const QString &getCurrentUnit() const;
@@ -186,6 +188,7 @@ public slots:
     void updatePlotInfoBox();
     void removeMe();
 
+    void refreshCurveTitle();
     void setAutoUpdate(bool value);
     void performFrequencyAnalysis();
     void markActive(bool value);
@@ -213,8 +216,7 @@ private:
 
     // Curve properties settings
     CurveInfoBox *mpPlotCurveInfoBox;
-    bool mAutoUpdate;
-    bool mIsActive;
+    bool mAutoUpdate, mIsActive, mIncludeGenInTitle;
     int mAxisY;
     QComboBox *mpTimeScaleComboBox;
     QDoubleSpinBox *mpTimeOffsetSpinBox;

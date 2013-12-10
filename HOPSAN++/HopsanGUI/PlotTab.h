@@ -261,6 +261,7 @@ private:
     // Legend related member variables
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
     QCheckBox *mpLegendsInternalEnabledCheckBox;
+    QCheckBox *mpIncludeGenInCurveTitle;
     QCheckBox *mpLegendsAutoOffsetCheckBox;
     QDialog *mpLegendSettingsDialog;
     QComboBox *mpLegendLPosition;

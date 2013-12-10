@@ -295,6 +295,14 @@ void PlotTab::applyLegendSettings()
         mpLeftPlotLegend->hide();
     }
 
+    // Set generation in title option
+    //! @todo maybe this should be in a slot of its own
+    for (int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
+    {
+        mPlotCurvePtrs[FirstPlot][i]->setIncludeGenerationInTitle(mpIncludeGenInCurveTitle->isChecked());
+        mPlotCurvePtrs[FirstPlot][i]->refreshCurveTitle();
+    }
+
     mpQwtPlots[FirstPlot]->insertLegend(NULL, QwtPlot::TopLegend);
 
     rescaleAxesToCurves();
@@ -2305,6 +2313,10 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendsInternalEnabledCheckBox->setCheckable(true);
     mpLegendsInternalEnabledCheckBox->setChecked(true); //Internal on by default
 
+    mpIncludeGenInCurveTitle = new QCheckBox(this);
+    mpIncludeGenInCurveTitle->setCheckable(true);
+    mpIncludeGenInCurveTitle->setChecked(true);
+
     mpLegendLPosition = new QComboBox(this);
     mpLegendLPosition->addItem("Top");
     mpLegendLPosition->addItem("Bottom");
@@ -2359,6 +2371,10 @@ void PlotTab::constructLegendSettingsDialog()
     row++;
     legendBoxLayout->addWidget( new QLabel( "Symbol Type: " ), row, 0, 1, 1, Qt::AlignRight );
     legendBoxLayout->addWidget( mpLegendSymbolType, row, 1 );
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Include generation in curve name: " ), row, 0, 1, 2, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpIncludeGenInCurveTitle, row, 2 );
+
 
     row++;
     legendBoxLayout->setRowMinimumHeight(row, blankline);
@@ -2404,6 +2420,7 @@ void PlotTab::constructLegendSettingsDialog()
     connect(mpLegendFontSize, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendCols, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendsInternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+    connect(mpIncludeGenInCurveTitle, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(mpLegendBgType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendSymbolType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendLPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
