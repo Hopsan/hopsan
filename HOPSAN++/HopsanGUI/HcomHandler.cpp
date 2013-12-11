@@ -168,6 +168,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     //Register internal function descriptions
     registerInternalFunction("lp1", "Applies low-pass filter of first degree to vector");
     registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)");
+    registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)");
     registerInternalFunction("fft", "Generates frequency spectrum plot from vector");
     registerInternalFunction("gt", "Index-wise greater than check between vector and scalar (equivalent to \">\" operator)");
     registerInternalFunction("lt", "Index-wise less than check between vector and scalar  (equivalent to \"<\" operator)");
@@ -3185,6 +3186,57 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         else
         {
             HCOMERR("Wrong number of arguments provided for lp1 function.\nUse syntax: lp1(vector, frequency) or lp1(vector, timevector, frequency)");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else if(desiredType != Scalar && expr.startsWith("int(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(4, expr.size()-5);
+        if(!args.contains(","))
+        {
+            SharedLogVariableDataPtrT pVar = getLogVariablePtr(args.trimmed());
+            if (pVar)
+            {
+                mAnsType = DataVector;
+                mAnsVector = pLogData->integrateVariables(pVar, pVar->getTimeVector());
+                return;
+            }
+            else
+            {
+                HCOMERR(QString("Variable: %1 was not found!").arg(args.trimmed()));
+                mAnsType = Undefined;
+                return;
+            }
+        }
+        else if(args.count(",")==1)
+        {
+            const QString var1 = args.section(",",0,0).trimmed();
+            const QString var2 = args.section(",",1,1).trimmed();
+            SharedLogVariableDataPtrT pVar1 = getLogVariablePtr(var1);
+            SharedLogVariableDataPtrT pVar2 = getLogVariablePtr(var2);
+            if(!pVar1)
+            {
+                HCOMERR(QString("Variable: %1 was not found!").arg(var1));
+                mAnsType = Undefined;
+                return;
+            }
+            else if(!pVar2)
+            {
+                HCOMERR(QString("Variable: %1 was not found!").arg(var2));
+                mAnsType = Undefined;
+                return;
+            }
+            else
+            {
+                mAnsType = DataVector;
+                mAnsVector = pLogData->integrateVariables(pVar1, pVar2);
+                return;
+            }
+        }
+        else
+        {
+            HCOMERR("Wrong number of arguments provided for int function.\nUse syntax: int(vector) or int(vector, timevector)");
             mAnsType = Undefined;
             return;
         }

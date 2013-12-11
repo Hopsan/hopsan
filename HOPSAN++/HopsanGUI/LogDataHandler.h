@@ -174,6 +174,9 @@ public:
     SharedLogVariableDataPtrT diffVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
     QString diffVariables(const QString &a, const QString &b);
 
+    SharedLogVariableDataPtrT integrateVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
+    QString integrateVariables(const QString &a, const QString &b);
+
     SharedLogVariableDataPtrT lowPassFilterVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const double freq);
     QString lowPassFilterVariable(const QString &a, const QString &b, const double freq);
 
