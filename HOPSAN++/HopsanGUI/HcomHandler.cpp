@@ -165,6 +165,13 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mPwd = gpDesktopHandler->getDocumentsPath();
     mPwd.chop(1);
 
+    //Register internal function descriptions
+    registerInternalFunction("lp1", "Applies low-pass filter of first degree to vector");
+    registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)");
+    registerInternalFunction("fft", "Generates frequency spectrum plot from vector");
+    registerInternalFunction("gt", "Index-wise greater than check between vector and scalar (equivalent to \">\" operator)");
+    registerInternalFunction("lt", "Index-wise less than check between vector and scalar  (equivalent to \"<\" operator)");
+
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", "Calculate average value of vector", new HcomFunctionoidAver(this));
     registerFunctionoid("min", "Calculate minimum value of vector", new HcomFunctionoidMin(this));
@@ -649,14 +656,6 @@ void HcomHandler::createCommands()
     editCmd.fnc = &HcomHandler::executeEditCommand;
     editCmd.group = "File Commands";
     mCmdList << editCmd;
-
-    HcomCommand lp1Cmd;
-    lp1Cmd.cmd = "lp1";
-    lp1Cmd.description.append("Applies low-pass filter of first degree to vector");
-    lp1Cmd.help.append(" Usage: lp1 [var]");
-    lp1Cmd.fnc = &HcomHandler::executeLp1Command;
-    lp1Cmd.group = "Variable Commands";
-    mCmdList << lp1Cmd;
 
     HcomCommand semtCmd;
     semtCmd.cmd = "semt";
@@ -2733,12 +2732,6 @@ void HcomHandler::executeEditCommand(const QString cmd)
 }
 
 
-void HcomHandler::executeLp1Command(const QString /*cmd*/)
-{
-
-}
-
-
 void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
 {
     QStringList args = getArguments(cmd);
@@ -3082,7 +3075,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
         }
-        else
+        else if(args.count(",") == 1)
         {
             const QString var1 = args.section(",",0,0).trimmed();
             SharedLogVariableDataPtrT pVar1 = getLogVariablePtr(var1);
@@ -3109,6 +3102,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 mAnsType = Undefined;
                 return;
             }
+        }
+        else
+        {
+            HCOMERR("Wrong number of arguments for ddt function.\nUse syntax: ddt(vector) or ddt(vector, timevector)");
+            mAnsType = Undefined;
+            return;
         }
     }
     else if(desiredType != Scalar && expr.startsWith("lp1(") && expr.endsWith(")"))
@@ -3182,6 +3181,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 mAnsType = Undefined;
                 return;
             }
+        }
+        else
+        {
+            HCOMERR("Wrong number of arguments provided for lp1 function.\nUse syntax: lp1(vector, frequency) or lp1(vector, timevector, frequency)");
+            mAnsType = Undefined;
+            return;
         }
     }
     else if(desiredType != Scalar && expr.startsWith("fft(") && expr.endsWith(")"))
@@ -3274,6 +3279,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
         }
+        else
+        {
+            HCOMERR("Wrong number of arguments provided for fft function.\nUse syntax: fft(vector), fft(vector, power[true/false]), fft(vector, timevector) or fft(vector, timevector, power[true/false])");
+            mAnsType = Undefined;
+            return;
+        }
     }
     else if(desiredType != Scalar && (expr.startsWith("greaterThan(") || expr.startsWith("gt(")) && expr.endsWith(")"))
     {
@@ -3314,7 +3325,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR(QString("Wrong number of arguments, should be (varName, threshold)"));
+            HCOMERR(QString("Wrong number of arguments provided to gt function.\nUse syntax: gt(varName, threshold)"));
             mAnsType = Undefined;
             return;
         }
@@ -3359,7 +3370,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR(QString("Wrong number of arguments, should be (varName, threshold)"));
+            HCOMERR(QString("Wrong number of arguments provided for lt function.\nUse syntax: lt(varName, threshold)"));
             mAnsType = Undefined;
             return;
         }
@@ -5042,11 +5053,18 @@ void HcomHandler::abortHCOM()
     mAborted = true;
 }
 
+
+void HcomHandler::registerInternalFunction(const QString &funcName, const QString &description)
+{
+    mLocalFunctionDescriptions.insert(funcName, description);
+}
+
+
 //! @brief Registers a functionoid object with a function name in the functionoid map
 //! @param funcName Name of function call from terminal
 //! @param description Description shown in help text
 //! @param pFunctionoid Pointer to functionoid object
-void HcomHandler::registerFunctionoid(const QString funcName, const QString description, SymHopFunctionoid *pFunctinoid)
+void HcomHandler::registerFunctionoid(const QString &funcName, const QString &description, SymHopFunctionoid *pFunctinoid)
 {
     mLocalFunctionoidPtrs.insert(funcName, pFunctinoid);
     mLocalFunctionDescriptions.insert(funcName, description);

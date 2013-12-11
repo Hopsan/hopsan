@@ -152,7 +152,6 @@ private:
     void executeCallFunctionCommand(const QString cmd);
     void executeEchoCommand(const QString cmd);
     void executeEditCommand(const QString cmd);
-    void executeLp1Command(const QString cmd);
     void executeSetMultiThreadingCommand(const QString cmd);
 
     // Help functions
@@ -178,7 +177,8 @@ private:
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
     QString getArgument(const QString &cmd, const int idx) const;
-    void registerFunctionoid(const QString funcName, const QString description, SymHopFunctionoid *pFunctinoid);
+    void registerInternalFunction(const QString &funcName, const QString &description);
+    void registerFunctionoid(const QString &funcName, const QString &description, SymHopFunctionoid *pFunctinoid);
 
     //Current model pointer
     ModelWidget *mpModel;
