@@ -1054,6 +1054,8 @@ void PlotCurve::setLineColor(QColor color)
 
     // Set blob color
     mpPlotCurveInfoBox->setLineColor(color);
+
+    emit colorChanged(color);
 }
 
 
@@ -1357,9 +1359,14 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab)
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
     mpMarkerSymbol->setSize(mMarkerSize,mMarkerSize);
-    mpMarkerSymbol->setPen(pCurve->pen().color(),3);
+    this->setRenderHint(QwtPlotItem::RenderAntialiased);
+
     setSymbol(mpMarkerSymbol); //!< @todo is this symbol auto removed with PlotMarker ?
     this->setZ(CurveMarkerZOrderType);
+
+    this->setColor(pCurve->pen().color());
+
+    connect(mpCurve, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
 }
 
 
@@ -1381,19 +1388,31 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - QCursor::pos()).manhattanLength() < 35)
         {
             QMenu *pContextMenu = new QMenu();
+
+            //Line style selection menu
+            QMenu *pLineStyleMenu = new QMenu("Line Style");
+            pContextMenu->addMenu(pLineStyleMenu);
+            QAction *pNoLinesAction = new QAction("No Lines", pContextMenu);
+            QAction *pVerticalLineAction = new QAction("Vertical Line", pContextMenu);
+            QAction *pHorizontalLineAction = new QAction("Horizontal Line", pContextMenu);
+            QAction *pCrossAction = new QAction("Cross", pContextMenu);
+            pLineStyleMenu->addAction(pNoLinesAction);
+            pLineStyleMenu->addAction(pVerticalLineAction);
+            pLineStyleMenu->addAction(pHorizontalLineAction);
+            pLineStyleMenu->addAction(pCrossAction);
+
+            //Label alignment selection menu
             QMenu *pAlignmentMenu = new QMenu("Label Alignment");
             pContextMenu->addMenu(pAlignmentMenu);
-
             QList<AlignmentSelectionStruct> alignments;
-            alignments.append(AlignmentSelectionStruct(Qt::AlignTop|Qt::AlignLeft, "TopLeft"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignTop|Qt::AlignLeft, "Top Left"));
             alignments.append(AlignmentSelectionStruct(Qt::AlignTop, "Top"));
-            alignments.append(AlignmentSelectionStruct(Qt::AlignTop|Qt::AlignRight, "TopRight"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignTop|Qt::AlignRight, "Top Right"));
             alignments.append(AlignmentSelectionStruct(Qt::AlignRight, "Right"));
-            alignments.append(AlignmentSelectionStruct(Qt::AlignBottom|Qt::AlignRight, "BottomRight"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignBottom|Qt::AlignRight, "Bottom Right"));
             alignments.append(AlignmentSelectionStruct(Qt::AlignBottom, "Bottom"));
-            alignments.append(AlignmentSelectionStruct(Qt::AlignBottom|Qt::AlignLeft, "BottomLeft"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignBottom|Qt::AlignLeft, "Bottom Left"));
             alignments.append(AlignmentSelectionStruct(Qt::AlignLeft, "Left"));
-
             QAction *pAction;
             QMap<QAction*, AlignmentSelectionStruct*> alignSelectionMap;
             for (int i=0; i<alignments.size(); ++i)
@@ -1404,7 +1423,23 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             }
 
             pAction = pContextMenu->exec(QCursor::pos());
-            if (alignSelectionMap.contains(pAction))
+            if(pAction == pNoLinesAction)
+            {
+                this->setLineStyle(NoLine);
+            }
+            else if(pAction == pVerticalLineAction)
+            {
+                this->setLineStyle(VLine);
+            }
+            else if(pAction == pHorizontalLineAction)
+            {
+                this->setLineStyle(HLine);
+            }
+            else if(pAction == pCrossAction)
+            {
+                this->setLineStyle(Cross);
+            }
+            else if(alignSelectionMap.contains(pAction))
             {
                 mLabelAlignment = alignSelectionMap.value(pAction)->mAlignment;
                 this->setLabelAlignment(mLabelAlignment);
@@ -1446,7 +1481,9 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
         if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
-            mpMarkerSymbol->setPen(mpCurve->pen().color().lighter(165), 3);
+            QColor tempColor = mpCurve->pen().color();
+            tempColor.setAlpha(150);
+            mpMarkerSymbol->setPen(tempColor.lighter(165), 3);
             this->plot()->replot();
             this->plot()->updateGeometry();
             retval=true;
@@ -1455,7 +1492,9 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         {
             if(!mIsBeingMoved)
             {
-                mpMarkerSymbol->setPen(mpCurve->pen().color(), 3);
+                QColor tempColor = mpCurve->pen().color();
+                tempColor.setAlpha(150);
+                mpMarkerSymbol->setPen(tempColor, 3);
                 this->plot()->replot();
                 this->plot()->updateGeometry();
             }
@@ -1530,6 +1569,14 @@ void PlotMarker::refreshLabel(const QString &label)
 }
 
 
+void PlotMarker::setColor(QColor color)
+{
+    color.setAlpha(150);    //Markers should be semi-transparent
+    mpMarkerSymbol->setPen(color,3);
+    this->setLinePen(color,2, Qt::DotLine);
+}
+
+
 
 //! @brief Returns a pointer to the curve a plot marker belongs to
 PlotCurve *PlotMarker::getCurve()
@@ -1552,7 +1599,7 @@ PlotLegend::PlotLegend(QwtPlot::Axis axisId) :
     QwtPlotLegendItem()
 {
     setMaxColumns(1);
-    setRenderHint( QwtPlotItem::RenderAntialiased );
+    setRenderHint(QwtPlotItem::RenderAntialiased);
     setBackgroundMode(LegendBackground);
     setBackgroundBrush(QColor(Qt::white));
     setBorderRadius(8);

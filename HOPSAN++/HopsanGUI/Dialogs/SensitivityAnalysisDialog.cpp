@@ -604,6 +604,7 @@ void SensitivityAnalysisDialog::run()
         //! @todo Implement interval curve type support in plot window instead!
         //! @node This is not compatible with most plot functions
         QwtPlotIntervalCurve *pCurve = new QwtPlotIntervalCurve();
+        pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
         QVector<QwtIntervalSample> data;
         QVector<double> time = pTime->getDataVectorCopy();
         for(int i=0; i<vMin.size(); ++i)

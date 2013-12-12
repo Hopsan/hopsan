@@ -169,6 +169,7 @@ public:
 
 signals:
     void curveDataUpdated();
+    void colorChanged(QColor);
 
 public slots:
     bool setGeneration(int generation);
@@ -248,6 +249,7 @@ public:
 public slots:
     void refreshLabel(const double x, const double y);
     void refreshLabel(const QString &label);
+    void setColor(QColor color);
 
 private:
     PlotCurve *mpCurve;
