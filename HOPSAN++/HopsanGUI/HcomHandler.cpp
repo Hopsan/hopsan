@@ -668,12 +668,8 @@ void HcomHandler::createCommands()
 
 void HcomHandler::generateCommandsHelpText()
 {
-    QFile htmlFile(gpDesktopHandler->getHelpPath()+"userHcomScripting.html");
-    htmlFile.open(QFile::ReadOnly | QFile::Text);
-    QString htmlString = htmlFile.readAll();
-    htmlFile.close();
+    QString output;
 
-    QString commands="</p>";
     QStringList groups;
     for(int c=0; c<mCmdList.size(); ++c)
     {
@@ -688,27 +684,33 @@ void HcomHandler::generateCommandsHelpText()
     {
         if(groups[g].isEmpty())
         {
-
-            commands.append("\n<h2><a class=\"anchor\" id=\"othercommands\"></a>Other Commands</h2>");
+            output.append("\\section othercommands Other Commands\n\n");
         }
         else
         {
-            commands.append("\n<h2><a class=\"anchor\" id=\""+groups[g].toLower().replace(" ","")+"\"></a>"+groups[g]+"</h2>");
+            output.append("\\section "+groups[g].toLower().replace(" ","")+" "+groups[g]+"\n\n");
         }
         for(int c=0; c<mCmdList.size(); ++c)
         {
             if(mCmdList[c].group == groups[g])
             {
-                commands.append("\n<h3><a class=\"anchor\" id=\""+mCmdList[c].cmd+"\"></a>"+mCmdList[c].cmd+"</h3>");
-                commands.append("\n<p>"+mCmdList[c].description.replace("\n", "<br>")+"<br>"+mCmdList[c].help.replace("\n", "<br>")+"</p>");
+                output.append("\\subsection "+mCmdList[c].cmd+" "+mCmdList[c].cmd+"\n");
+                output.append(mCmdList[c].description.replace(">>", "\\>\\>")+"<br>\n");
+                output.append(mCmdList[c].help.replace(">>", "\\>\\>").replace("\n","\n<br>")+"\n\n");
             }
         }
     }
 
-    htmlFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
-    htmlString.replace("<<<commands>>>", commands);
-    htmlFile.write(htmlString.toUtf8());
-    htmlFile.close();
+    output.append("\\section functions Local Functions\n\n");
+    QMapIterator<QString,QString> fit(mLocalFunctionDescriptions);
+    while(fit.hasNext())
+    {
+        fit.next();
+        output.append("\\subsection "+fit.key().toLower()+" "+fit.key()+"()\n");
+        output.append(fit.value()+"\n\n");
+    }
+
+    mpConsole->print(output);
 }
 
 
@@ -1168,6 +1170,11 @@ void HcomHandler::executeHelpCommand(const QString cmd)
         HCOMPRINT(commands);
         HCOMPRINT(" Type: \"help [command]\" for more information about a specific command.");
         HCOMPRINT("-------------------------------------------------------------------------");
+    }
+    else if(temp == "doxygen")
+    {
+        generateCommandsHelpText();
+        return;
     }
     else
     {
