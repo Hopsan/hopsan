@@ -764,11 +764,10 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
             mNumberOfLogSamples = rDomElement.attribute(HMF_LOGSAMPLES).toInt();
         }
 
-        //Only set start stop time for the top level system
+        // Only set start stop time for the top level system
         if (mpParentContainerObject == 0)
         {
             mpModelWidget->setTopLevelSimulationTime(startT,stepT,stopT);
-            mpModelWidget->setToolBarSimulationTimeParametersFromTab();
         }
 
         //1. Load global parameters

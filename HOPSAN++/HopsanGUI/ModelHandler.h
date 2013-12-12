@@ -57,9 +57,6 @@ public:
     int count() const;
 
     ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool detatched=false);
-
-    void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
-
     SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
@@ -97,6 +94,10 @@ signals:
 
 private:
     void refreshMainWindowConnections();
+    void disconnectMainWindowConnections(ModelWidget *pModel);
+    void connectMainWindowConnections(ModelWidget *pModel);
+    void setToolBarSimulationTimeFromTab(ModelWidget *pModel);
+
     QList<ModelWidget*> mModelPtrs;
     int mCurrentIdx;
     int mNumberOfUntitledModels;

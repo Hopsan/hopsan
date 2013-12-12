@@ -157,31 +157,25 @@ void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QStri
     // First fix Stop time
     if (mStopTime.toDouble() < mStartTime.toDouble())
     {
-        mStopTime = mStartTime; //This line must come before the mainWindowSet
-        gpMainWindow->setStopTimeInToolBar(mStartTime.toDouble());
+        mStopTime = mStartTime;
     }
 
     //Then fix timestep
     if ( timeStep.toDouble() > (mStopTime.toDouble() - mStartTime.toDouble()) )
     {
-        mpToplevelSystem->setTimeStep(mStopTime.toDouble() - mStartTime.toDouble()); //This line must come before the mainWindowSet
-        gpMainWindow->setTimeStepInToolBar( mStopTime.toDouble() - mStartTime.toDouble() );
+        mpToplevelSystem->setTimeStep(mStopTime.toDouble() - mStartTime.toDouble());
     }
     else
     {
         getTopLevelSystemContainer()->setTimeStep(timeStep.toDouble());
     }
 
+    // Notify about any changes made (this will go back up to the main window simtime edit
+    emit simulationTimeChanged(getStartTime(), getTimeStep(), getStopTime());
+
+    // Tag model as changed
     this->hasChanged();
     //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
-}
-
-//! @brief Help function to update the toolbar simulation time parameters from a tab
-void ModelWidget::setToolBarSimulationTimeParametersFromTab()
-{
-    QString ts;
-    ts.setNum(mpToplevelSystem->getTimeStep(),'g',10);
-    gpMainWindow->displaySimulationTimeParameters(mStartTime, ts, mStopTime);
 }
 
 QString ModelWidget::getStartTime()
@@ -192,7 +186,7 @@ QString ModelWidget::getStartTime()
 QString ModelWidget::getTimeStep()
 {
     QString num;
-    num.setNum(getTopLevelSystemContainer()->getTimeStep());
+    num.setNum(getTopLevelSystemContainer()->getTimeStep(), 'g', 10);
     return num;
 }
 
@@ -206,7 +200,6 @@ QString ModelWidget::getStopTime()
 //! e.g. a component added or a connection has changed.
 void ModelWidget::hasChanged()
 {
-    //qDebug() << "hasChanged()";
     if (mIsSaved)
     {
         QString tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(this));
@@ -260,7 +253,6 @@ void ModelWidget::setLastSimulationTime(int time)
 int ModelWidget::getLastSimulationTime()
 {
     return mpSimulationThreadHandler->getLastSimulationTime();
-   // return mLastSimulationTime;
 }
 
 

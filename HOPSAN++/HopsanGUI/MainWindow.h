@@ -52,25 +52,57 @@ class ModelHandler;
 class MainWindowLineEdit;
 class DataExplorer;
 
+
+class SimulationTimeEdit : public QWidget
+{
+    Q_OBJECT
+public:
+    SimulationTimeEdit(QWidget *pParent);
+
+    void getSimulationTime(QString &rStartTime, QString &rTimeStep, QString &rStopTime) const;
+    QString getStartTime() const;
+    QString getTimeStep() const;
+    QString getStopTime() const;
+
+    void displayStartTime(const QString startTime);
+    void displayTimeStep(const QString timeStep);
+    void dispalyStopTime(const QString stopTime);
+
+    void clearFocus();
+
+public slots:
+    void displaySimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
+
+signals:
+    void simulationTimeChanged(QString start, QString ts, QString stop);
+    void mouseEnterEvent();
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event);
+
+private slots:
+    void emitSimTime();
+
+private:
+    QLineEdit *mpStartTimeLineEdit;
+    QLineEdit *mpTimeStepLineEdit;
+    QLineEdit *mpStopTimeLineEdit;
+};
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-    friend class MainWindowLineEdit;
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void createContents();
 
-
     OptionsDialog *getOptionsDialog();
     PyDockWidget *getPythonDock();
 
-    //Set and get methods for simulation parameters in toolbar
-    void setStartTimeInToolBar(const double startTime);
-    void setTimeStepInToolBar(const double timeStep);
-    void setStopTimeInToolBar(const double finishTime);
-    void displaySimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
+    // Get methods for simulation parameters in toolbar
     double getStartTimeFromToolBar();
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
@@ -100,6 +132,7 @@ public:
     HVCWidget *mpHVCWidget;
     DataExplorer *mpDataExplorer;
     OptimizationDialog *mpOptimizationDialog;
+    SimulationTimeEdit *mpSimulationTimeEdit;
 
     //Actions (public because other widgets connect to them)
     QAction *mpNewAction;
@@ -124,7 +157,6 @@ public:
     QAction *mpCutAction;
     QAction *mpCopyAction;
     QAction *mpPasteAction;
-    QAction *mpSimulateAction;
     QAction *mpOpenDebuggerAction;
     QAction *mpCoSimulationAction;
     QAction *mpOptimizeAction;
@@ -171,7 +203,6 @@ public slots:
     void initializeWorkspace();
     void updateToolBarsToNewTab();
     void refreshUndoWidgetList();
-    void setProjectSimulationTimeParameterValues();
     void registerRecentModel(QFileInfo model);
     void unRegisterRecentModel(QFileInfo model);
     void updateRecentList();
@@ -210,18 +241,15 @@ private:
 
     void buildModelActionsMenu(QMenu *pParentMenu, QDir dir);
 
+    // Private Actions
+    QAction *mpSimulateAction;
 
-    //Dialogs
+    // Dialogs
     OptionsDialog *mpOptionsDialog;
     AboutDialog *mpAboutDialog;
     SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;
 
-    //Simulation setup line edits
-    MainWindowLineEdit *mpStartTimeLineEdit;
-    MainWindowLineEdit *mpTimeStepLineEdit;
-    MainWindowLineEdit *mpStopTimeLineEdit;
-
-    //Dock area widgets
+    // Dock area widgets
     QDockWidget *mpMessageDock;
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
@@ -234,7 +262,7 @@ private:
     // Widgets
     PyDockWidget *mpPyDockWidget;
 
-    //Menubar items
+    // Menubar items
     QMenuBar *mpMenuBar;
     QMenu *mpFileMenu;
     QMenu *mpNewMenu;
@@ -251,11 +279,11 @@ private:
     QMenu *mpExamplesMenu;
     QMenu *mpTestModelsMenu;
 
-    //Buttons
+    // Buttons
     QToolButton *mpImportButton;
     QToolButton *mpExportButton;
 
-    //Toolbar items
+    // Toolbar items
     QToolBar *mpFileToolBar;
     QToolBar *mpConnectivityToolBar;
     QToolBar *mpEditToolBar;
@@ -265,7 +293,7 @@ private:
     QLabel *mpTimeLabelDeliminator1;
     QLabel *mpTimeLabelDeliminator2;
 
-    //Help popup
+    // Help popup
     QWidget *mpHelpPopup;
     QLabel *mpHelpPopupIcon;
     QLabel *mpHelpPopupLabel;
@@ -274,20 +302,6 @@ private:
     QHBoxLayout *mpHelpPopupGroupBoxLayout;
     QTimer *mpHelpPopupTimer;
     QMap<QAction*, QString> mHelpPopupTextMap;
-};
-
-class MainWindowLineEdit : public QLineEdit
-{
-    Q_OBJECT
-
-public:
-    MainWindowLineEdit(const QString &text, MainWindow *parent);
-
-protected:
-    virtual void mouseMoveEvent(QMouseEvent *e);
-
-private:
-    MainWindow *mpParentMainWindow;
 };
 
 #endif // MAINWINDOW_H

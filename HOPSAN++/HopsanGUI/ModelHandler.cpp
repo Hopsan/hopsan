@@ -63,7 +63,6 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
         mModelPtrs.append(pModelWidget);
         mCurrentIdx = mModelPtrs.size()-1;
         gpCentralTabWidget->setCurrentIndex(gpCentralTabWidget->addTab(pModelWidget, name));
-        pModelWidget->setToolBarSimulationTimeParametersFromTab();
         emit newModelWidgetAdded();
     }
 }
@@ -80,10 +79,6 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
 
     addModelWidget(pNewModelWidget, modelName, hidden);
 
-//    if(!hidden)
-//    {
-//        pNewModelWidget->setToolBarSimulationTimeParametersFromTab();
-//    }
     pNewModelWidget->setSaved(true);
     mNumberOfUntitledModels += 1;
 
@@ -292,14 +287,6 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     return pNewModel;
 }
 
-void ModelHandler::setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
-{
-    if (count() > 0)
-    {
-        getCurrentModel()->setTopLevelSimulationTime(startTime, timeStep, stopTime);
-    }
-}
-
 
 bool ModelHandler::closeModelByTabIndex(int tabIdx)
 {
@@ -387,19 +374,7 @@ bool ModelHandler::closeModel(int idx, bool force)
 //        }
 
         // Disconnect signals
-        //! @todo these should be in some manage connections function
-        disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(resetZoom()));
-        disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(zoomIn()));
-        disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(zoomOut()));
-        disconnect(gpMainWindow->mpPrintAction,         SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(print()));
-        disconnect(gpMainWindow->mpExportPDFAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(exportToPDF()));
-        disconnect(gpMainWindow->mpExportPNGAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(exportToPNG()));
-        disconnect(gpMainWindow->mpCenterViewAction,    SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(centerView()));
-
-        disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModelToClose,  SLOT(simulate_nonblocking()));
-        disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModelToClose,  SLOT(save()));
-        disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModelToClose,  SLOT(exportModelParameters()));
-
+        disconnectMainWindowConnections(pModelToClose);
         pModelToClose->getViewContainerObject()->unmakeMainWindowConnectionsAndRefresh();
 
         // Deactivate Undo to prevent each component from registering it being deleted in the undo stack (waste of time)
@@ -479,59 +454,72 @@ void ModelHandler::refreshMainWindowConnections()
 {
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
-        //If you add a disconnect here, remember to also add it to the close tab function!
-        //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
-        disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(resetZoom()));
-        disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(zoomIn()));
-        disconnect(gpMainWindow->mpZoomOutAction,         SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(zoomOut()));
-        disconnect(gpMainWindow->mpPrintAction,           SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(print()));
-        disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(exportToPDF()));
-        disconnect(gpMainWindow->mpExportPNGAction,       SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(exportToPNG()));
-        disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(centerView()));
-
+        disconnectMainWindowConnections(getModel(i));
         getViewContainerObject(i)->unmakeMainWindowConnectionsAndRefresh();
-
-        //disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getModel(i),  SLOT(simulate()));
-        disconnect(gpMainWindow,                        SIGNAL(simulateKeyPressed()),   getModel(i),  SLOT(simulate_nonblocking()));
-        disconnect(gpMainWindow->mpCoSimulationAction,  SIGNAL(triggered()),            getModel(i),  SLOT(startCoSimulation()));
-        disconnect(gpMainWindow->mpSaveAction,          SIGNAL(triggered()),            getModel(i),  SLOT(save()));
-        disconnect(gpMainWindow->mpSaveAsAction,        SIGNAL(triggered()),            getModel(i),  SLOT(saveAs()));
-        disconnect(gpMainWindow->mpExportModelParametersAction,   SIGNAL(triggered()),            getModel(i),  SLOT(exportModelParameters()));
     }
     if(getCurrentModel())
     {
-        //connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentModel(),        SLOT(simulate()), Qt::UniqueConnection);
-        connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   getCurrentModel(),    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpCoSimulationAction,             SIGNAL(triggered()),            getCurrentModel(),    SLOT(startCoSimulation()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            getCurrentModel(),    SLOT(save()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            getCurrentModel(),    SLOT(saveAs()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            getCurrentModel(),    SLOT(exportModelParameters()), Qt::UniqueConnection);
-
-        connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpPrintAction,        SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(print()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportPDFAction,    SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportPNGAction,    SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(exportToPNG()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
-
+        connectMainWindowConnections(getCurrentModel());
         getCurrentViewContainerObject()->makeMainWindowConnectionsAndRefresh();
-
         getCurrentViewContainerObject()->updateMainWindowButtons();
-        getCurrentModel()->setToolBarSimulationTimeParametersFromTab();
 
+        setToolBarSimulationTimeFromTab(getCurrentModel());
 
         if(gpLibraryWidget->mGfxType != getCurrentTopLevelSystem()->getGfxType())
         {
             gpLibraryWidget->setGfxType(getCurrentTopLevelSystem()->getGfxType());
         }
-
-        gpMainWindow->mpToggleNamesAction->setChecked(getCurrentViewContainerObject()->areSubComponentNamesShown());
-        gpMainWindow->mpTogglePortsAction->setChecked(getCurrentViewContainerObject()->areSubComponentPortsShown());
-        gpMainWindow->mpShowLossesAction->setChecked(getCurrentViewContainerObject()->areLossesVisible());
     }
 
     emit modelChanged(getCurrentModel());
+}
+
+void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
+{
+    //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
+    disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(resetZoom()));
+    disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(zoomIn()));
+    disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(zoomOut()));
+    disconnect(gpMainWindow->mpPrintAction,         SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(print()));
+    disconnect(gpMainWindow->mpExportPDFAction,     SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(exportToPDF()));
+    disconnect(gpMainWindow->mpExportPNGAction,     SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(exportToPNG()));
+    disconnect(gpMainWindow->mpCenterViewAction,    SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(centerView()));
+
+    disconnect(gpMainWindow->mpSimulationTimeEdit,          SIGNAL(simulationTimeChanged(QString,QString,QString)), pModel, SLOT(setTopLevelSimulationTime(QString,QString,QString)));
+    disconnect(pModel, SIGNAL(simulationTimeChanged(QString,QString,QString)), gpMainWindow->mpSimulationTimeEdit, SLOT(displaySimulationTime(QString,QString,QString)));
+
+    disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModel,  SLOT(simulate_nonblocking()));
+    disconnect(gpMainWindow->mpCoSimulationAction,          SIGNAL(triggered()),            pModel,  SLOT(startCoSimulation()));
+    disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
+    disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
+    disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
+}
+
+void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
+{
+    //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
+    connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpPrintAction,        SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(print()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpExportPDFAction,    SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpExportPNGAction,    SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(exportToPNG()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
+
+    connect(gpMainWindow->mpSimulationTimeEdit, SIGNAL(simulationTimeChanged(QString,QString,QString)), pModel, SLOT(setTopLevelSimulationTime(QString,QString,QString)), Qt::UniqueConnection);
+    connect(pModel, SIGNAL(simulationTimeChanged(QString,QString,QString)), gpMainWindow->mpSimulationTimeEdit, SLOT(displaySimulationTime(QString,QString,QString)), Qt::UniqueConnection);
+
+    connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   pModel,    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpCoSimulationAction,             SIGNAL(triggered()),            pModel,    SLOT(startCoSimulation()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            pModel,    SLOT(exportModelParameters()), Qt::UniqueConnection);
+}
+
+//! @brief Help function to update the toolbar simulation time parameters from a tab
+void ModelHandler::setToolBarSimulationTimeFromTab(ModelWidget *pModel)
+{
+    gpMainWindow->mpSimulationTimeEdit->displaySimulationTime(pModel->getStartTime(), pModel->getTimeStep(), pModel->getStopTime());
 }
 
 void ModelHandler::saveState()
@@ -675,15 +663,12 @@ bool ModelHandler::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
     if(!mModelPtrs.isEmpty())
     {
         // All systems will use start time, stop time and time step from this system
-        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
-
-        // Setup simulation parameters
         double startTime = getCurrentModel()->getStartTime().toDouble();
         double stopTime = getCurrentModel()->getStopTime().toDouble();
-        size_t nSamples = pMainSystem->getNumberOfLogSamples();
-        double logStartT = pMainSystem->getLogStartTime();
+        size_t nSamples = getCurrentTopLevelSystem()->getNumberOfLogSamples();
+        double logStartT = getCurrentTopLevelSystem()->getLogStartTime();
 
-        // Ask core to initialize simulation
+        // Create a system vecetor
         QVector<SystemContainer*> systemsVector;
         for(int i=0; i<mModelPtrs.size(); ++i)
         {
@@ -693,8 +678,7 @@ bool ModelHandler::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
         mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
         mpSimulationThreadHandler->initSimulateFinalize(systemsVector, modelsHaveNotChanged);
 
-        //! @todo fix return code (maybe remove)
-        return true;
+        return mpSimulationThreadHandler->wasSuccessful();
     }
     return false;
 }
@@ -704,16 +688,13 @@ bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
 {
     if(!mModelPtrs.isEmpty())
     {
-        //All systems will use start time, stop time and time step from this system
-        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
-
-            //Setup simulation parameters
+        // All systems will use start time  stop time and time step from the current system
         double startTime = getCurrentModel()->getStartTime().toDouble();
         double stopTime = getCurrentModel()->getStopTime().toDouble();
-        size_t nSamples = pMainSystem->getNumberOfLogSamples();
-        double logStartT = pMainSystem->getLogStartTime();
+        size_t nSamples = getCurrentTopLevelSystem()->getNumberOfLogSamples();
+        double logStartT = getCurrentTopLevelSystem()->getLogStartTime();
 
-        // Ask core to initialize simulation
+        // Create a system vecetor
         QVector<SystemContainer*> systemsVector;
         for(int i=0; i<mModelPtrs.size(); ++i)
         {
@@ -724,8 +705,7 @@ bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
         mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, modelsHaveNotChanged);
 
-        //! @todo fix return code (maybe remove)
-        return true;
+        return mpSimulationThreadHandler->wasSuccessful();
     }
     return false;
 }
@@ -734,51 +714,51 @@ bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
 
 bool ModelHandler::simulateMultipleModels_nonblocking(QVector<ModelWidget*> models)
 {
-    //All systems will use start time, stop time and time step from this system
-    SystemContainer *pMainSystem = getCurrentTopLevelSystem();
-
-        //Setup simulation parameters
-    double startTime = getCurrentModel()->getStartTime().toDouble();
-    double stopTime = getCurrentModel()->getStopTime().toDouble();
-    size_t nSamples = pMainSystem->getNumberOfLogSamples();
-    double logStartT = pMainSystem->getLogStartTime();
-
-    QVector<SystemContainer*> systemsVector;
-    for(int i=0; i<models.size(); ++i)
+    if (!models.isEmpty())
     {
-        systemsVector.append(models[i]->getTopLevelSystemContainer());
+        // All systems will use start time, stop time and time step from the first model
+        double startTime = models.first()->getStartTime().toDouble();
+        double stopTime = models.first()->getStopTime().toDouble();
+        size_t nSamples = models.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
+        double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
+
+        QVector<SystemContainer*> systemsVector;
+        for(int i=0; i<models.size(); ++i)
+        {
+            systemsVector.append(models[i]->getTopLevelSystemContainer());
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
+        mpSimulationThreadHandler->initSimulateFinalize(systemsVector);
+
+        return mpSimulationThreadHandler->wasSuccessful();
     }
-
-    mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
-    mpSimulationThreadHandler->initSimulateFinalize(systemsVector);
-
-    //! @todo fix return code (maybe remove)
-    return true;
+    return false;
 }
 
 
 bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models)
 {
-    //All systems will use start time, stop time and time step from this system
-    SystemContainer *pMainSystem = getCurrentTopLevelSystem();
-
-        //Setup simulation parameters
-    double startTime = getCurrentModel()->getStartTime().toDouble();
-    double stopTime = getCurrentModel()->getStopTime().toDouble();
-    size_t nSamples = pMainSystem->getNumberOfLogSamples();
-    double logStartT = pMainSystem->getLogStartTime();
-
-    QVector<SystemContainer*> systemsVector;
-    for(int i=0; i<models.size(); ++i)
+    if (!models.isEmpty())
     {
-        systemsVector.append(models[i]->getTopLevelSystemContainer());
+        // All systems will use start time, stop time and time step from the first model
+        double startTime = models.first()->getStartTime().toDouble();
+        double stopTime = models.first()->getStopTime().toDouble();
+        size_t nSamples = models.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
+        double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
+
+        QVector<SystemContainer*> systemsVector;
+        for(int i=0; i<models.size(); ++i)
+        {
+            systemsVector.append(models[i]->getTopLevelSystemContainer());
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
+        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector);
+
+        return mpSimulationThreadHandler->wasSuccessful();
     }
-
-    mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
-    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-    mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector);
-
-    //! @todo fix return code (maybe remove)
-    return true;
+    return false;
 }
 

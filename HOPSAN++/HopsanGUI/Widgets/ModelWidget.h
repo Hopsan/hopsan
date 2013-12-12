@@ -52,8 +52,6 @@ public:
     ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent = 0);
     ~ModelWidget();
 
-    void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
-    void setToolBarSimulationTimeParametersFromTab();
     QString getStartTime();
     QString getTimeStep();
     QString getStopTime();
@@ -74,6 +72,7 @@ public:
     SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
+    void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
     bool simulate_nonblocking();
     bool simulate_blocking();
     void startCoSimulation();
@@ -92,6 +91,7 @@ private slots:
     void unlockSimulateMutex();
 
 signals:
+    void simulationTimeChanged(QString start, QString ts, QString stop);
     void checkMessages();
     void simulationFinished();
 

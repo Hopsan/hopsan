@@ -2363,6 +2363,10 @@ void ContainerObject::updateMainWindowButtons()
     //gpMainWindow->mpPlotAction->setDisabled(mpLogDataHandler->isEmpty());
     gpMainWindow->mpShowLossesAction->setDisabled(mpLogDataHandler->isEmpty());
     //gpMainWindow->mpAnimateAction->setDisabled(mpNewPlotData->isEmpty());
+
+    gpMainWindow->mpToggleNamesAction->setChecked(mShowSubComponentNames);
+    gpMainWindow->mpTogglePortsAction->setChecked(mShowSubComponentPorts);
+    gpMainWindow->mpShowLossesAction->setChecked(mLossesVisible);
 }
 
 

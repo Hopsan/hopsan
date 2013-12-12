@@ -459,7 +459,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 //! @brief Shows the help popup message for 5 seconds with specified message.
 //! Any message already being shown will be replaced. Messages can be hidden in advance by calling mpHelpPopup->hide().
-//! @param message String with text so show in message
+//! @param message String with text to show as message
 void MainWindow::showHelpPopupMessage(QString message)
 {
     if(gpConfig->getShowPopupHelp())
@@ -833,26 +833,8 @@ void MainWindow::createActions()
     mpToggleHideAllDockAreasAction->setChecked(true);
     connect(mpToggleHideAllDockAreasAction, SIGNAL(toggled(bool)), this, SLOT(toggleHideShowDockAreas(bool)));
 
-    mpStartTimeLineEdit = new MainWindowLineEdit("0.0", this);
-    mpStartTimeLineEdit->setMaximumWidth(70);
-    mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
-    //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-1e4, 1e6, 10, mpStartTimeLineEdit));
-    mpTimeStepLineEdit = new MainWindowLineEdit("0.001", this);
-    mpTimeStepLineEdit->setMaximumWidth(70);
-    mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
-    mpTimeStepLineEdit->setMouseTracking(true);
-    //mpTimeStepLineEdit->setToolTip("Set time step for simulation");
-    //mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 1e3, 10, mpTimeStepLineEdit));
-    mpStopTimeLineEdit = new MainWindowLineEdit("10.0", this);
-    //mpStopTimeLineEdit->setValidator(new QDoubleValidator(-10000, 1000000, 10, this));
-    mpStopTimeLineEdit->setMaximumWidth(70);
-    mpStopTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
-    mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
-    mpTimeLabelDeliminator2 = new QLabel(tr(" :: "));
-
-    connect(mpStartTimeLineEdit, SIGNAL(editingFinished()), SLOT(setProjectSimulationTimeParameterValues()), Qt::UniqueConnection);
-    connect(mpTimeStepLineEdit, SIGNAL(editingFinished()), SLOT(setProjectSimulationTimeParameterValues()), Qt::UniqueConnection);
-    connect(mpStopTimeLineEdit, SIGNAL(editingFinished()), SLOT(setProjectSimulationTimeParameterValues()), Qt::UniqueConnection);
+    mpSimulationTimeEdit = new SimulationTimeEdit(this);
+    connect(mpSimulationTimeEdit, SIGNAL(mouseEnterEvent()), this, SLOT(showToolBarHelpPopup()));
 }
 
 
@@ -1059,12 +1041,8 @@ void MainWindow::createToolbars()
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
     mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpSimToolBar->setAttribute(Qt::WA_MouseTracking);
-    mpSimToolBar->addWidget(mpStartTimeLineEdit);
-    mpSimToolBar->addWidget(mpTimeLabelDeliminator1);
 
-    mpSimToolBar->addWidget(mpTimeStepLineEdit);
-    mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
-    mpSimToolBar->addWidget(mpStopTimeLineEdit);
+    mpSimToolBar->addWidget(mpSimulationTimeEdit);
     mpSimToolBar->addAction(mpSimulateAction);
     mpSimToolBar->addAction(mpOpenDebuggerAction);
 #ifdef DEVELOPMENT
@@ -1242,7 +1220,7 @@ void MainWindow::updateSystemParametersActionButton(bool)
 //! @brief Shows help popup for the toolbar icon that is currently hovered by the mouse pointer
 void MainWindow::showToolBarHelpPopup()
 {
-    //Check all tool bars to see if an action is hovered by cursor
+    // Check all tool bars to see if an action is hovered by cursor
     QCursor cursor;
     QAction *pHoveredAction = mpSimToolBar->actionAt(mpSimToolBar->mapFromGlobal(cursor.pos()));
     if(!pHoveredAction)
@@ -1256,22 +1234,14 @@ void MainWindow::showToolBarHelpPopup()
     if(!pHoveredAction)
         pHoveredAction = mpViewToolBar->actionAt(mpViewToolBar->mapFromGlobal(cursor.pos()));
 
-    //See if action exists in map, or if a line edit is hovered
+    // See if action exists in map, or if a line edit is hovered
     if(mHelpPopupTextMap.contains(pHoveredAction))
     {
         showHelpPopupMessage(mHelpPopupTextMap.find(pHoveredAction).value());
     }
-    else if(mpStartTimeLineEdit->underMouse())
+    else if (mpSimulationTimeEdit->underMouse())
     {
-        showHelpPopupMessage("Set start time (in seconds) for simulation.");
-    }
-    else if(mpTimeStepLineEdit->underMouse())
-    {
-        showHelpPopupMessage("Set time step (in seconds) for simulation.");
-    }
-    if(mpStopTimeLineEdit->underMouse())
-    {
-        showHelpPopupMessage("Set stop time (in seconds) for simulation.");
+        showHelpPopupMessage("Set simulation time (in seconds).");
     }
 }
 
@@ -1408,9 +1378,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpRotateRightAction->setEnabled(!noTabs);
     mpFlipHorizontalAction->setEnabled(!noTabs);
     mpFlipVerticalAction->setEnabled(!noTabs);
-    mpStartTimeLineEdit->setEnabled(!noTabs);
-    mpTimeStepLineEdit->setEnabled(!noTabs);
-    mpStopTimeLineEdit->setEnabled(!noTabs);
+    mpSimulationTimeEdit->setEnabled(!noTabs);
     mpSimulateAction->setEnabled(!noTabs);
     mpOpenDebuggerAction->setEnabled(!noTabs);
     mpCoSimulationAction->setEnabled(!noTabs);
@@ -1427,11 +1395,6 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToSimulinkAction->setEnabled(!noTabs);
     mpExportToSimulinkCoSimAction->setEnabled(!noTabs);
     mpLoadModelParametersAction->setEnabled(!noTabs);
-
-//    if(mpWelcomeWidget)
-//    {
-//        mpWelcomeWidget->setVisible(noTabs);
-//    }
 }
 
 
@@ -1491,12 +1454,6 @@ void MainWindow::updateRecentList()
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     hideHelpPopupMessage();
-
-//    if(!mpLibrary->underMouse())
-//    {
-//        mpLibrary->mpComponentNameField->setText(QString());
-//    }
-
     QMainWindow::mouseMoveEvent(event);
 }
 
@@ -1504,7 +1461,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     qDebug() << "Mainwindow caught keypress: " << event->key();
-
     QMainWindow::keyPressEvent(event);
 }
 
@@ -1515,53 +1471,11 @@ OptionsDialog *MainWindow::getOptionsDialog()
 }
 
 
-//! @brief Sets a new startvalue.
-//! @param startTime is the new value
-void MainWindow::setStartTimeInToolBar(const double startTime)
-{
-    QString valueTxt;
-    valueTxt.setNum(startTime, 'g', 10 );
-    mpStartTimeLineEdit->setText(valueTxt);
-    setProjectSimulationTimeParameterValues();
-}
-
-
-//! @brief Sets a new timestep.
-//! @param timeStep is the new value
-void MainWindow::setTimeStepInToolBar(const double timeStep)
-{
-    QString valueTxt;
-    valueTxt.setNum(timeStep, 'g', 10 );
-    mpTimeStepLineEdit->setText(valueTxt);
-    setProjectSimulationTimeParameterValues();
-}
-
-
-//! @brief Sets a new finish value.
-//! @param finishTime is the new value
-void MainWindow::setStopTimeInToolBar(const double finishTime)
-{
-    QString valueTxt;
-    valueTxt.setNum(finishTime, 'g', 10 );
-    mpStopTimeLineEdit->setText(valueTxt);
-    setProjectSimulationTimeParameterValues();
-}
-
-//! @brief Special function to set start step and stop time as QStrings
-//! @note ONLY! call this function to write back changes to toolbar, it will not try to sent the changes back to teh project tab as that would risk endles loop in some cases
-void MainWindow::displaySimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
-{
-    mpStartTimeLineEdit->setText(startTime);
-    mpTimeStepLineEdit->setText(timeStep);
-    mpStopTimeLineEdit->setText(stopTime);
-}
-
-
 //! @brief Access function to the starttimelabel value.
 //! @returns the starttime value
 double MainWindow::getStartTimeFromToolBar()
 {
-    return mpStartTimeLineEdit->text().toDouble();
+    return mpSimulationTimeEdit->getStartTime().toDouble();
 }
 
 
@@ -1569,7 +1483,7 @@ double MainWindow::getStartTimeFromToolBar()
 //! @returns the timestep value
 double MainWindow::getTimeStepFromToolBar()
 {
-    return mpTimeStepLineEdit->text().toDouble();
+    return mpSimulationTimeEdit->getTimeStep().toDouble();
 }
 
 
@@ -1577,38 +1491,12 @@ double MainWindow::getTimeStepFromToolBar()
 //! @returns the finish value
 double MainWindow::getFinishTimeFromToolBar()
 {
-    return mpStopTimeLineEdit->text().toDouble();
-}
-
-
-void MainWindow::setProjectSimulationTimeParameterValues()
-{
-    if(mpStartTimeLineEdit->text().toDouble() < MINSTARTTIME) { mpStartTimeLineEdit->setText(QString::number(MINSTARTTIME)); }
-    if(mpStartTimeLineEdit->text().toDouble() > MAXSTARTTIME) { mpStartTimeLineEdit->setText(QString::number(MAXSTARTTIME)); }
-    if(mpTimeStepLineEdit->text().toDouble() < MINTIMESTEP) { mpTimeStepLineEdit->setText(QString::number(MINTIMESTEP)); }
-    if(mpTimeStepLineEdit->text().toDouble() > MAXTIMESTEP) { mpTimeStepLineEdit->setText(QString::number(MAXTIMESTEP)); }
-    if(mpStopTimeLineEdit->text().toDouble() < MINSTOPTIME) { mpStopTimeLineEdit->setText(QString::number(MINSTOPTIME)); }
-    if(mpStopTimeLineEdit->text().toDouble() > MAXSTOPTIME) { mpStopTimeLineEdit->setText(QString::number(MAXSTOPTIME)); }
-
-
-    mpModelHandler->setCurrentTopLevelSimulationTimeParameters(mpStartTimeLineEdit->text(), mpTimeStepLineEdit->text(), mpStopTimeLineEdit->text() );
-
+    return mpSimulationTimeEdit->getStopTime().toDouble();
 }
 
 void MainWindow::simulateKeyWasPressed()
 {
-    if (mpStartTimeLineEdit->hasFocus())
-    {
-        mpStartTimeLineEdit->clearFocus();
-    }
-    if (mpStopTimeLineEdit->hasFocus())
-    {
-        mpStopTimeLineEdit->clearFocus();
-    }
-    if (mpTimeStepLineEdit->hasFocus())
-    {
-        mpTimeStepLineEdit->clearFocus();
-    }
+    mpSimulationTimeEdit->clearFocus();
     emit simulateKeyPressed();
 }
 
@@ -1623,14 +1511,115 @@ void MainWindow::openDataExplorerWidget()
 }
 
 
-MainWindowLineEdit::MainWindowLineEdit(const QString &text, MainWindow *parent)
-    : QLineEdit(text, parent)
+SimulationTimeEdit::SimulationTimeEdit(QWidget *pParent) :
+    QWidget(pParent)
 {
-    mpParentMainWindow = parent;
+    mpStartTimeLineEdit = new QLineEdit("0.0", this);
+    mpStartTimeLineEdit->setValidator(new QDoubleValidator(MINSTARTTIME, MAXSTARTTIME, 1000));
+    mpStartTimeLineEdit->setToolTip("Set start time for simulation");
+    mpStartTimeLineEdit->setMaximumWidth(70);
+    mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+
+    mpTimeStepLineEdit = new QLineEdit("0.001", this);
+    mpTimeStepLineEdit->setValidator(new QDoubleValidator(MINTIMESTEP, MAXTIMESTEP, 1000));
+    mpTimeStepLineEdit->setToolTip("Set step time for simulation");
+    mpTimeStepLineEdit->setMaximumWidth(70);
+    mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+
+    mpStopTimeLineEdit = new QLineEdit("10.0", this);
+    mpStopTimeLineEdit->setValidator(new QDoubleValidator(MINSTOPTIME, MAXSTOPTIME, 1000));
+    mpStopTimeLineEdit->setToolTip("Set stop time for simulation");
+    mpStopTimeLineEdit->setMaximumWidth(70);
+    mpStopTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+
+    QHBoxLayout *pLayout = new QHBoxLayout(this);
+    pLayout->addWidget(mpStartTimeLineEdit);
+    pLayout->addWidget(new QLabel(" :: "));
+    pLayout->addWidget(mpTimeStepLineEdit);
+    pLayout->addWidget(new QLabel(" :: "));
+    pLayout->addWidget(mpStopTimeLineEdit);
+
+    setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
+
+    connect(mpStartTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(emitSimTime()));
+    connect(mpTimeStepLineEdit, SIGNAL(editingFinished()), this, SLOT(emitSimTime()));
+    connect(mpStopTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(emitSimTime()));
+
+    installEventFilter(this);
 }
 
-void MainWindowLineEdit::mouseMoveEvent(QMouseEvent *e)
+void SimulationTimeEdit::getSimulationTime(QString &rStartTime, QString &rTimeStep, QString &rStopTime) const
 {
-    mpParentMainWindow->showToolBarHelpPopup();
-    return QLineEdit::mouseMoveEvent(e);
+    rStartTime = mpStartTimeLineEdit->text();
+    rTimeStep = mpTimeStepLineEdit->text();
+    rStopTime = mpStopTimeLineEdit->text();
+}
+
+QString SimulationTimeEdit::getStartTime() const
+{
+    return mpStartTimeLineEdit->text();
+}
+
+QString SimulationTimeEdit::getTimeStep() const
+{
+    return mpTimeStepLineEdit->text();
+}
+
+QString SimulationTimeEdit::getStopTime() const
+{
+    return mpStopTimeLineEdit->text();
+}
+
+void SimulationTimeEdit::displaySimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
+{
+    displayStartTime(startTime);
+    displayTimeStep(timeStep);
+    dispalyStopTime(stopTime);
+}
+
+bool SimulationTimeEdit::eventFilter(QObject *object, QEvent *event)
+{
+    if( object==this && (event->type()==QEvent::Enter) )
+    {
+        emit mouseEnterEvent();
+    }
+    return QWidget::eventFilter(object, event);
+}
+
+void SimulationTimeEdit::displayStartTime(const QString startTime)
+{
+    mpStartTimeLineEdit->setText(startTime);
+}
+
+void SimulationTimeEdit::displayTimeStep(const QString timeStep)
+{
+    mpTimeStepLineEdit->setText(timeStep);
+}
+
+void SimulationTimeEdit::dispalyStopTime(const QString stopTime)
+{
+    mpStopTimeLineEdit->setText(stopTime);
+}
+
+void SimulationTimeEdit::clearFocus()
+{
+    if (mpStartTimeLineEdit->hasFocus())
+    {
+        mpStartTimeLineEdit->clearFocus();
+    }
+    if (mpStopTimeLineEdit->hasFocus())
+    {
+        mpStopTimeLineEdit->clearFocus();
+    }
+    if (mpTimeStepLineEdit->hasFocus())
+    {
+        mpTimeStepLineEdit->clearFocus();
+    }
+}
+
+
+
+void SimulationTimeEdit::emitSimTime()
+{
+    emit simulationTimeChanged(mpStartTimeLineEdit->text(), mpTimeStepLineEdit->text(), mpStopTimeLineEdit->text());
 }

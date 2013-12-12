@@ -1073,7 +1073,6 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
         if(!ok) { allOk=false; }
 
         int samples;
-        (void)samples;
         if(splitCmd.size() == 4)
         {
             samples = splitCmd[3].toInt(&ok);
@@ -1082,12 +1081,10 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
 
         if(allOk)
         {
-            gpMainWindow->setStartTimeInToolBar(startT);
-            gpMainWindow->setStopTimeInToolBar(stopT);
-            gpMainWindow->setTimeStepInToolBar(timeStep);
+            if(!mpModel) { return; }
+            mpModel->setTopLevelSimulationTime(QString::number(startT), QString::number(timeStep), QString::number(stopT));
             if(splitCmd.size() == 4)
             {
-                if(!mpModel) { return; }
                 SystemContainer *pCurrentSystem = mpModel->getTopLevelSystemContainer();
                 if(!pCurrentSystem) { return; }
                 pCurrentSystem->setNumberOfLogSamples(samples);
