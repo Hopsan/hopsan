@@ -166,26 +166,26 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mPwd.chop(1);
 
     //Register internal function descriptions
-    registerInternalFunction("lp1", "Applies low-pass filter of first degree to vector");
-    registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)");
-    registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)");
-    registerInternalFunction("fft", "Generates frequency spectrum plot from vector");
-    registerInternalFunction("gt", "Index-wise greater than check between vector and scalar (equivalent to \">\" operator)");
-    registerInternalFunction("lt", "Index-wise less than check between vector and scalar  (equivalent to \"<\" operator)");
+    registerInternalFunction("lp1", "Applies low-pass filter of first degree to vector","Usage: lp1(vector, frequency) or lp1(vector, timevector, frequency)");
+    registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)","Usage: ddt(vector) or ddt(vector, timevector)");
+    registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)", "Usage: int(vector) or int(vector, timevector)");
+    registerInternalFunction("fft", "Generates frequency spectrum plot from vector","Usage: fft(vector), fft(vector, power[true/false]), fft(vector, timevector) or fft(vector, timevector, power[true/false])");
+    registerInternalFunction("gt", "Index-wise greater than check between vector and scalar (equivalent to \">\" operator)","Usage: gt(varName, threshold)");
+    registerInternalFunction("lt", "Index-wise less than check between vector and scalar  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
-    registerFunctionoid("aver", "Calculate average value of vector", new HcomFunctionoidAver(this));
-    registerFunctionoid("min", "Calculate minimum value of vector", new HcomFunctionoidMin(this));
-    registerFunctionoid("max", "Calculate maximum value of vector", new HcomFunctionoidMax(this));
-    registerFunctionoid("imin", "Calculate index of minimum value of vector", new HcomFunctionoidIMin(this));
-    registerFunctionoid("imax", "Calculate index of maximum value of vector", new HcomFunctionoidIMax(this));
-    registerFunctionoid("size", "Calculate the size of a vector", new HcomFunctionoidSize(this));
-    registerFunctionoid("rand", "Generates a random value between 0 and 1", new HcomFunctionoidRand(this));
-    registerFunctionoid("peek", "Returns vector value at specified index", new HcomFunctionoidPeek(this));
-    registerFunctionoid("obj", "Returns optimization objective function value with specified index", new HcomFunctionoidObj(this));
-    registerFunctionoid("time", "Returns last simulation time", new HcomFunctionoidTime(this));
-    registerFunctionoid("optvar", "Returns specified optimization variable", new HcomFunctionoidOptVar(this));
-    registerFunctionoid("optpar", "Returns specified optimization parameter", new HcomFunctionoidOptPar(this));
+    registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
+    registerFunctionoid("min", new HcomFunctionoidMin(this), "Calculate minimum value of vector", "Usage: min(vector)");
+    registerFunctionoid("max", new HcomFunctionoidMax(this), "Calculate maximum value of vector","Usage:max(vector)");
+    registerFunctionoid("imin", new HcomFunctionoidIMin(this), "Calculate index of minimum value of vector","Usage: imin(vector)");
+    registerFunctionoid("imax", new HcomFunctionoidIMax(this), "Calculate index of maximum value of vector","Usage: imax(vector)");
+    registerFunctionoid("size", new HcomFunctionoidSize(this), "Calculate the size of a vector","Usage: size(vector)");
+    registerFunctionoid("rand", new HcomFunctionoidRand(this), "Generates a random value between 0 and 1", "Usage: rand()");
+    registerFunctionoid("peek", new HcomFunctionoidPeek(this), "Returns vector value at specified index", "Usage: peek(vector)");
+    registerFunctionoid("obj", new HcomFunctionoidObj(this), "Returns optimization objective function value with specified index","Usage: obj(idx)");
+    registerFunctionoid("time", new HcomFunctionoidTime(this), "Returns last simulation time", "Usage: time()");
+    registerFunctionoid("optvar", new HcomFunctionoidOptVar(this), "Returns specified optimization variable", "Usage: optvar(idx)");
+    registerFunctionoid("optpar", new HcomFunctionoidOptPar(this), "Returns specified optimization parameter", "Usage: optpar(idx)");
 
     createCommands();
 
@@ -702,12 +702,13 @@ void HcomHandler::generateCommandsHelpText()
     }
 
     output.append("\\section functions Local Functions\n\n");
-    QMapIterator<QString,QString> fit(mLocalFunctionDescriptions);
+    QMapIterator<QString,QPair<QString, QString> > fit(mLocalFunctionDescriptions);
     while(fit.hasNext())
     {
         fit.next();
         output.append("\\subsection "+fit.key().toLower()+" "+fit.key()+"()\n");
-        output.append(fit.value()+"\n\n");
+        output.append(fit.value().first+"\n");
+        output.append(fit.value().second+"\n\n");
     }
 
     mpConsole->print(output);
@@ -1155,7 +1156,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 
         //Print help descriptions for local functions
         commands.append("\n Custom Functions:\n\n");
-        QMapIterator<QString, QString> funcIt(mLocalFunctionDescriptions);
+        QMapIterator<QString, QPair<QString,QString> > funcIt(mLocalFunctionDescriptions);
         while(funcIt.hasNext())
         {
             funcIt.next();
@@ -1164,7 +1165,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
             {
                 commands.append(" ");
             }
-            commands.append(funcIt.value()+"\n");
+            commands.append(funcIt.value().first+"\n");
         }
 
         HCOMPRINT(commands);
@@ -1175,6 +1176,31 @@ void HcomHandler::executeHelpCommand(const QString cmd)
     {
         generateCommandsHelpText();
         return;
+    }
+    else if(temp.endsWith("()") && mLocalFunctionDescriptions.contains(temp.remove("()")))
+    {
+        QString description = mLocalFunctionDescriptions.find(temp).value().first;
+        QString help = mLocalFunctionDescriptions.find(temp).value().second;
+
+        QStringList helpLines = help.split("\n");
+        int helpLength=0;
+        Q_FOREACH(const QString &line, helpLines)
+        {
+            if(line.size() > helpLength)
+                helpLength = line.size();
+        }
+        int length=max(description.size(), helpLength)+2;
+        QString delimiterLine;
+        for(int i=0; i<length; ++i)
+        {
+            delimiterLine.append("-");
+        }
+        QString descLine = description;
+        descLine.prepend(" ");
+        QString helpLine = help;
+        helpLine.prepend(" ");
+        helpLine.replace("\n", "\n ");
+        HCOMPRINT(delimiterLine+"\n"+descLine+"\n"+helpLine+"\n"+delimiterLine);
     }
     else
     {
@@ -3110,7 +3136,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR("Wrong number of arguments for ddt function.\nUse syntax: ddt(vector) or ddt(vector, timevector)");
+            HCOMERR("Wrong number of arguments for ddt function.\n"+mLocalFunctionDescriptions.find("ddt").value().second);
             mAnsType = Undefined;
             return;
         }
@@ -3189,7 +3215,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR("Wrong number of arguments provided for lp1 function.\nUse syntax: lp1(vector, frequency) or lp1(vector, timevector, frequency)");
+            HCOMERR("Wrong number of arguments provided for lp1 function.\n"+mLocalFunctionDescriptions.find("lp1").value().second);
             mAnsType = Undefined;
             return;
         }
@@ -3240,7 +3266,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR("Wrong number of arguments provided for int function.\nUse syntax: int(vector) or int(vector, timevector)");
+            HCOMERR("Wrong number of arguments provided for int function.\n"+mLocalFunctionDescriptions.find("int").value().second);
             mAnsType = Undefined;
             return;
         }
@@ -3337,7 +3363,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR("Wrong number of arguments provided for fft function.\nUse syntax: fft(vector), fft(vector, power[true/false]), fft(vector, timevector) or fft(vector, timevector, power[true/false])");
+            HCOMERR("Wrong number of arguments provided for fft function.\n"+mLocalFunctionDescriptions.find("fft").value().second);
             mAnsType = Undefined;
             return;
         }
@@ -3381,7 +3407,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR(QString("Wrong number of arguments provided to gt function.\nUse syntax: gt(varName, threshold)"));
+            HCOMERR(QString("Wrong number of arguments provided to gt function.\n"+mLocalFunctionDescriptions.find("gt").value().second));
             mAnsType = Undefined;
             return;
         }
@@ -3426,7 +3452,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         else
         {
-            HCOMERR(QString("Wrong number of arguments provided for lt function.\nUse syntax: lt(varName, threshold)"));
+            HCOMERR(QString("Wrong number of arguments provided for lt function.\n"+mLocalFunctionDescriptions.find("lt").value().second));
             mAnsType = Undefined;
             return;
         }
@@ -5110,9 +5136,9 @@ void HcomHandler::abortHCOM()
 }
 
 
-void HcomHandler::registerInternalFunction(const QString &funcName, const QString &description)
+void HcomHandler::registerInternalFunction(const QString &funcName, const QString &description, const QString &help)
 {
-    mLocalFunctionDescriptions.insert(funcName, description);
+    mLocalFunctionDescriptions.insert(funcName, QPair<QString, QString>(description, help));
 }
 
 
@@ -5120,10 +5146,10 @@ void HcomHandler::registerInternalFunction(const QString &funcName, const QStrin
 //! @param funcName Name of function call from terminal
 //! @param description Description shown in help text
 //! @param pFunctionoid Pointer to functionoid object
-void HcomHandler::registerFunctionoid(const QString &funcName, const QString &description, SymHopFunctionoid *pFunctinoid)
+void HcomHandler::registerFunctionoid(const QString &funcName, SymHopFunctionoid *pFunctinoid, const QString &description, const QString &help="")
 {
     mLocalFunctionoidPtrs.insert(funcName, pFunctinoid);
-    mLocalFunctionDescriptions.insert(funcName, description);
+    mLocalFunctionDescriptions.insert(funcName, QPair<QString, QString>(description, help));
 }
 
 

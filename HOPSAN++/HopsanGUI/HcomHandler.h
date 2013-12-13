@@ -177,8 +177,8 @@ private:
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
     QString getArgument(const QString &cmd, const int idx) const;
-    void registerInternalFunction(const QString &funcName, const QString &description);
-    void registerFunctionoid(const QString &funcName, const QString &description, SymHopFunctionoid *pFunctinoid);
+    void registerInternalFunction(const QString &funcName, const QString &description, const QString &help="");
+    void registerFunctionoid(const QString &funcName, SymHopFunctionoid *pFunctinoid, const QString &description, const QString &help);
 
     //Current model pointer
     ModelWidget *mpModel;
@@ -201,7 +201,7 @@ private:
     // Local variables
     LocalVarsMapT mLocalVars;
     QMap<QString, SymHopFunctionoid*> mLocalFunctionoidPtrs;
-    QMap<QString, QString> mLocalFunctionDescriptions;
+    QMap<QString, QPair<QString, QString> > mLocalFunctionDescriptions;
 
     VariableType mRetvalType;
 
