@@ -487,6 +487,39 @@ void LogVariableData::diffBy(const SharedLogVariableDataPtrT pOther)
     emit dataChanged();
 }
 
+void LogVariableData::integrateBy(const SharedLogVariableDataPtrT pOther)
+{
+    DataVectorT* pData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> Y_res;
+    QVector<double> X;
+    if(pOther != 0)
+    {
+        X = pOther->getDataVectorCopy();
+    }
+    else
+    {
+        if(mSharedTimeVectorPtr)
+        {
+            X = mSharedTimeVectorPtr->getDataVectorCopy();
+        }
+        else
+        {
+            //! @todo Error message
+            // Abort
+            return;
+        }
+    }
+
+    Y_res.append(0);
+    for (int i=1; i<X.size(); ++i)
+    {
+        Y_res.append(Y_res[i-1]+0.5*(X[i] - X[i-1])*((*pData)[i-1] + (*pData)[i]));
+    }
+    *pData = Y_res;
+    mpCachedDataVector->endFullVectorOperation(pData);
+    emit dataChanged();
+}
+
 void LogVariableData::lowPassFilter(const SharedLogVariableDataPtrT pTime, const double w)
 {
     DataVectorT* pData = mpCachedDataVector->beginFullVectorOperation();

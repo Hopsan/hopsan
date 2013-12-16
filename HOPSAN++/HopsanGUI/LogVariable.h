@@ -202,6 +202,7 @@ public:
     void divData(const double other);
     void absData();
     void diffBy(const SharedLogVariableDataPtrT pOther);
+    void integrateBy(const SharedLogVariableDataPtrT pOther);
     void lowPassFilter(const SharedLogVariableDataPtrT pTime, const double w);
     void frequencySpectrum(const SharedLogVariableDataPtrT pTime, const bool doPowerSpectrum);
     void assignFrom(const SharedLogVariableDataPtrT pOther);

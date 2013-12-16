@@ -1641,19 +1641,9 @@ QString LogDataHandler::diffVariables(const QString &a, const QString &b)
 
 SharedLogVariableDataPtrT LogDataHandler::integrateVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable(a->getFullVariableName()+"_Diff");
-
-    QVector<double> Y = a->getDataVectorCopy();
-    QVector<double> X = b->getDataVectorCopy();
-    QVector<double> Y_res;
-
-    Y_res.append(0);
-    for (int i=1; i<X.size(); ++i)
-    {
-        Y_res.append(Y_res[i-1]+0.5*(X[i] - X[i-1])*(Y[i-1] + Y[i]));
-    }
-    pTempVar->assignFrom(X, Y_res);
-
+    SharedLogVariableDataPtrT pTempVar = createOrphanTempVariable(a->getFullVariableName()+"Int");
+    pTempVar->assignFrom(a);
+    pTempVar->integrateBy(b);
     return pTempVar;
 }
 
