@@ -51,7 +51,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     : QWizard(parent)
 {
         //Set the name and size of the main window
-    this->resize(640,480);
+    this->resize(1024,768);
     this->setWindowTitle("Optimization");
     this->setPalette(gpConfig->getPalette());
 
@@ -161,17 +161,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpPlotParticlesCheckBox,11, 0, 1, 2);
     pSettingsLayout->addWidget(mpExport2CSVBox,        12, 0, 1, 2);
     pSettingsLayout->addWidget(new QWidget(this),      13, 0, 1, 2);    //Dummy widget for stretching the layout
-    pSettingsLayout->setRowStretch(0, 0);
-    pSettingsLayout->setRowStretch(1, 0);
-    pSettingsLayout->setRowStretch(2, 0);
-    pSettingsLayout->setRowStretch(3, 0);
-    pSettingsLayout->setRowStretch(4, 0);
-    pSettingsLayout->setRowStretch(4, 0);
-    pSettingsLayout->setRowStretch(6, 0);
-    pSettingsLayout->setRowStretch(7, 0);
-    pSettingsLayout->setRowStretch(8, 0);
-    pSettingsLayout->setRowStretch(9, 1);
-    pSettingsLayout->setRowStretch(10, 1);
+    pSettingsLayout->setRowStretch(13, 1);
     QWizardPage *pSettingsWidget = new QWizardPage(this);
     pSettingsWidget->setLayout(pSettingsLayout);
     setAlgorithm(0);
@@ -210,6 +200,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpMinMaxComboBox = new QComboBox(this);
     mpMinMaxComboBox->addItems(QStringList() << "Minimize" << "Maximize");
     mpFunctionsComboBox = new QComboBox(this);
+    mpFunctionsComboBox->setStyleSheet("QComboBox { combobox-popup: 10; }");
     mpAddFunctionButton = new QPushButton("Add Function");
     QLabel *pWeightLabel = new QLabel("Weight");
     QLabel *pNormLabel = new QLabel("Norm. Factor");
@@ -1157,24 +1148,25 @@ void OptimizationDialog::addObjectiveFunction(int idx, double weight, double nor
     QString variablesText;
     if(mFunctionComponents.last().first().isEmpty())
     {
-        variablesText = mFunctionVariables.last().first();
+        variablesText = "<b>"+mFunctionVariables.last().first()+"</b>";
     }
     else
     {
-        variablesText = mFunctionComponents.last().first()+", "+mFunctionPorts.last().first()+", "+mFunctionVariables.last().first();
+        variablesText = "<b>"+mFunctionComponents.last().first()+", "+mFunctionPorts.last().first()+", "+mFunctionVariables.last().first()+"</b>";
     }
     for(int i=1; i<mFunctionVariables.last().size(); ++i)
     {
         if(mFunctionComponents.last().at(i).isEmpty())
         {
-            variablesText.append(" and "+mFunctionVariables.last().at(i));
+            variablesText.append(" and <b>"+mFunctionVariables.last().at(i)+"</b>");
         }
         else
         {
-            variablesText.append(" and " + mFunctionComponents.last().at(i)+", "+mFunctionPorts.last().at(i)+", "+mFunctionVariables.last().at(i));
+            variablesText.append(" and <b>" + mFunctionComponents.last().at(i)+", "+mFunctionPorts.last().at(i)+", "+mFunctionVariables.last().at(i)+"</b>");
         }
     }
     QLabel *pFunctionLabel = new QLabel(mpMinMaxComboBox->currentText() + " " + mObjectiveFunctionDescriptions.at(idx)+" for "+variablesText, this);
+    //QLabel::setTextFormat(Qt::AutoText);
     mFunctionName.append(mObjectiveFunctionDescriptions.at(idx));
     pFunctionLabel->setWordWrap(true);
     QWidget *pDataWidget = new QWidget(this);
@@ -1200,6 +1192,9 @@ void OptimizationDialog::addObjectiveFunction(int idx, double weight, double nor
     QToolButton *pRemoveButton = new QToolButton(this);
     pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
     pRemoveButton->setToolTip("Remove Function");
+    pWeightLineEdit->setMaximumWidth(60);
+    pNormLineEdit->setMaximumWidth(60);
+    pExpLineEdit->setMaximumWidth(60);
     mWeightLineEditPtrs.append(pWeightLineEdit);
     mNormLineEditPtrs.append(pNormLineEdit);
     mExpLineEditPtrs.append(pExpLineEdit);
