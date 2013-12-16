@@ -81,6 +81,7 @@ private:
     QTreeWidgetItem *mpAddModelicaComponentItemDual;
     QTreeWidgetItem *mpAddCppComponentItemDual;
     QLabel *mpComponentNameLabel;
+    QLineEdit *mpFilterEdit;
     QToolButton *mpTreeViewButton;
     QToolButton *mpDualViewButton;
     QToolButton *mpHelpButton;

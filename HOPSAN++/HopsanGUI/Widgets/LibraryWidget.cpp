@@ -71,6 +71,12 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpComponentNameLabel = new QLabel(this);
     mpComponentNameLabel->setHidden(treeView);
 
+    QLabel *pFilterLabel = new QLabel("Filter:",this);
+    mpFilterEdit = new QLineEdit(this);
+    QHBoxLayout *pFilterLayout = new QHBoxLayout(gpMainWindowWidget);
+    pFilterLayout->addWidget(pFilterLabel);
+    pFilterLayout->addWidget(mpFilterEdit);
+
     QSize iconSize = QSize(24,24);  //Size of library icons
 
     mpTreeViewButton = new QToolButton();
@@ -104,16 +110,18 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     connect(mpDualViewButton, SIGNAL(clicked()),    mpList,                 SLOT(show()));
     connect(mpDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(clear()));
     connect(mpHelpButton,     SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(mpFilterEdit,   SIGNAL(textEdited(QString)), this, SLOT(update()));
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpTree,                  0,0,3,4);
     pLayout->addWidget(mpDualTree,              0,0,1,4);
     pLayout->addWidget(mpComponentNameLabel,    1,0,1,4);
     pLayout->addWidget(mpList,                  2,0,1,4);
-    pLayout->addWidget(mpTreeViewButton,        3,0);
-    pLayout->addWidget(mpDualViewButton,        3,1);
-    pLayout->addWidget(new QWidget(this),       3,2);
-    pLayout->addWidget(mpHelpButton,            3,3);
+    pLayout->addLayout(pFilterLayout,           3,0,1,4);
+    pLayout->addWidget(mpTreeViewButton,        4,0);
+    pLayout->addWidget(mpDualViewButton,        4,1);
+    pLayout->addWidget(new QWidget(this),       4,2);
+    pLayout->addWidget(mpHelpButton,            4,3);
     pLayout->setColumnStretch(2,1);
     this->setLayout(pLayout);
 
@@ -141,6 +149,11 @@ void LibraryWidget::setGfxType(GraphicsTypeEnumT gfxType)
 
 void LibraryWidget::update()
 {
+    QString filter = mpFilterEdit->text();
+
+    mpList->clear();
+    mListItemToTypeNameMap.clear();
+
     mpTree->clear();
     mpDualTree->clear();
     mpList->clear();
@@ -150,16 +163,20 @@ void LibraryWidget::update()
     QFont boldFont = qApp->font();
     boldFont.setBold(true);
 
-
     Q_FOREACH(const QString typeName, gpLibraryHandler->getLoadedTypeNames())
     {
         LibraryEntry entry = gpLibraryHandler->getEntry(typeName);
-        if(entry.visibility == Hidden)
+        if(entry.visibility == Hidden || !entry.pAppearance->getDisplayName().toLower().contains(filter.toLower()))
         {
             continue;
         }
 
-        QStringList path = entry.path;
+        QStringList path;
+        if(filter.isEmpty())
+        {
+            path = entry.path;
+        }
+
         QTreeWidgetItem *pItem = 0;
         QTreeWidgetItem *pDualItem = 0;
         while(!path.isEmpty())
@@ -232,7 +249,14 @@ void LibraryWidget::update()
         pComponentItem->setIcon(0, icon);
         pComponentItem->setText(0, entry.pAppearance->getDisplayName());
         pComponentItem->setToolTip(0, entry.pAppearance->getDisplayName());
-        pItem->addChild(pComponentItem);
+        if(pItem)
+        {
+            pItem->addChild(pComponentItem);
+        }
+        else
+        {
+            mpTree->addTopLevelItem(pComponentItem);
+        }
         mItemToTypeNameMap.insert(pComponentItem, typeName);
 
         //Register component to dual view
@@ -260,6 +284,17 @@ void LibraryWidget::update()
                 list << typeName;
                 mFolderToContentsMap.insert(pDualItem, list);
             }
+        }
+
+        if(!filter.isEmpty())
+        {
+            ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+            QListWidgetItem *tempItem = new QListWidgetItem();
+            tempItem->setIcon(QIcon(pAppearance->getFullAvailableIconPath()));
+            tempItem->setToolTip(pAppearance->getDisplayName());
+            mListItemToTypeNameMap.insert(tempItem, typeName);
+            tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+            mpList->addItem(tempItem);
         }
     }
 
@@ -293,42 +328,57 @@ void LibraryWidget::update()
         mpDualTree->insertTopLevelItem(mpDualTree->topLevelItemCount(),pExternalItem);
     }
 
-    //Append load external library items
-    mpLoadLibraryItem = new QTreeWidgetItem();
-    mpLoadLibraryItem->setText(0, "Load external library");
-    mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-    mpLoadLibraryItem->setToolTip(0, "Load external library");
-    mpTree->addTopLevelItem(mpLoadLibraryItem);
+    if(filter.isEmpty())
+    {
+        //Append load external library items
+        mpLoadLibraryItem = new QTreeWidgetItem();
+        mpLoadLibraryItem->setText(0, "Load external library");
+        mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpLoadLibraryItem->setToolTip(0, "Load external library");
+        mpTree->addTopLevelItem(mpLoadLibraryItem);
 
-    mpAddModelicaComponentItem = new QTreeWidgetItem();
-    mpAddModelicaComponentItem->setText(0, "Add Modelica component");
-    mpAddModelicaComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-    mpAddModelicaComponentItem->setToolTip(0, "Add Modelica component");
-    mpTree->addTopLevelItem(mpAddModelicaComponentItem);
+        mpAddModelicaComponentItem = new QTreeWidgetItem();
+        mpAddModelicaComponentItem->setText(0, "Add Modelica component");
+        mpAddModelicaComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaComponentItem->setToolTip(0, "Add Modelica component");
+        mpTree->addTopLevelItem(mpAddModelicaComponentItem);
 
-    mpAddCppComponentItem = new QTreeWidgetItem();
-    mpAddCppComponentItem->setText(0, "Add C++ component");
-    mpAddCppComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-    mpAddCppComponentItem->setToolTip(0, "Add C++ component");
-    mpTree->addTopLevelItem(mpAddCppComponentItem);
+        mpAddCppComponentItem = new QTreeWidgetItem();
+        mpAddCppComponentItem->setText(0, "Add C++ component");
+        mpAddCppComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddCppComponentItem->setToolTip(0, "Add C++ component");
+        mpTree->addTopLevelItem(mpAddCppComponentItem);
 
-    mpLoadLibraryItemDual = new QTreeWidgetItem();
-    mpLoadLibraryItemDual->setText(0, "Load external library");
-    mpLoadLibraryItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-    mpLoadLibraryItemDual->setToolTip(0, "Load external library");
-    mpDualTree->addTopLevelItem(mpLoadLibraryItemDual);
+        mpLoadLibraryItemDual = new QTreeWidgetItem();
+        mpLoadLibraryItemDual->setText(0, "Load external library");
+        mpLoadLibraryItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpLoadLibraryItemDual->setToolTip(0, "Load external library");
+        mpDualTree->addTopLevelItem(mpLoadLibraryItemDual);
 
-    mpAddModelicaComponentItemDual = new QTreeWidgetItem();
-    mpAddModelicaComponentItemDual->setText(0, "Add Modelica component");
-    mpAddModelicaComponentItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-    mpAddModelicaComponentItemDual->setToolTip(0, "Add Modelica component");
-    mpDualTree->addTopLevelItem(mpAddModelicaComponentItemDual);
+        mpAddModelicaComponentItemDual = new QTreeWidgetItem();
+        mpAddModelicaComponentItemDual->setText(0, "Add Modelica component");
+        mpAddModelicaComponentItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaComponentItemDual->setToolTip(0, "Add Modelica component");
+        mpDualTree->addTopLevelItem(mpAddModelicaComponentItemDual);
 
-    mpAddCppComponentItemDual = new QTreeWidgetItem();
-    mpAddCppComponentItemDual->setText(0, "Add C++ component");
-    mpAddCppComponentItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-    mpAddCppComponentItemDual->setToolTip(0, "Add C++ component");
-    mpDualTree->addTopLevelItem(mpAddCppComponentItemDual);
+        mpAddCppComponentItemDual = new QTreeWidgetItem();
+        mpAddCppComponentItemDual->setText(0, "Add C++ component");
+        mpAddCppComponentItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddCppComponentItemDual->setToolTip(0, "Add C++ component");
+        mpDualTree->addTopLevelItem(mpAddCppComponentItemDual);
+    }
+
+    if(!filter.isEmpty())
+    {
+        mpDualTree->setFixedSize(0,0);
+        //mpDualTree->hide();
+    }
+    else
+    {
+        //mpDualTree->setFixedSize(100,100);
+        mpDualTree->setMaximumSize(5000,5000);
+        mpDualTree->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    }
 }
 
 
