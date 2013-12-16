@@ -334,11 +334,9 @@ void LibraryWidget::update()
 
 void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
 {
-    qDebug() << "Clicked on: " << item->text(0);
-    if(mItemToTypeNameMap.contains(item) && qApp->mouseButtons() == Qt::LeftButton)
+    if(mItemToTypeNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
-        qDebug() << "Clicked on: " << typeName;
         ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
         QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
         QIcon icon;
