@@ -3090,10 +3090,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     if(desiredType != Scalar && expr.startsWith("ddt(") && expr.endsWith(")"))
     {
         QString args = expr.mid(4, expr.size()-5);
-        if(!args.contains(","))
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
+        if(splitArgs.size() == 1)
         {
+            evaluateExpression(args.trimmed(),DataVector);
             SharedLogVariableDataPtrT pVar = getLogVariablePtr(args.trimmed());
-            if (pVar)
+            if (mAnsType == DataVector)
             {
                 mAnsType = DataVector;
                 mAnsVector = pLogData->diffVariables(pVar, pVar->getTimeVector());
@@ -3106,15 +3108,17 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
         }
-        else if(args.count(",") == 1)
+        else if(splitArgs.size() == 2)
         {
-            const QString var1 = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar1 = getLogVariablePtr(var1);
-            if (pVar1)
+            const QString var1 = splitArgs[0];
+            evaluateExpression(var1, DataVector);
+            SharedLogVariableDataPtrT pVar1 = mAnsVector;
+            if (mAnsType == DataVector)
             {
-                const QString var2 = args.section(",",1,1).trimmed();
-                SharedLogVariableDataPtrT pVar2 = getLogVariablePtr(var2);
-                if (pVar2)
+                const QString var2 = splitArgs[1];
+                evaluateExpression(var2, DataVector);
+                SharedLogVariableDataPtrT pVar2 = mAnsVector;
+                if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
                     mAnsVector = pLogData->diffVariables(pVar1, pVar2);
@@ -3144,16 +3148,18 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     else if(desiredType != Scalar && expr.startsWith("lp1(") && expr.endsWith(")"))
     {
         QString args = expr.mid(4, expr.size()-5);
-        if(args.count(",")==1)
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
+        if(splitArgs.size() == 2)
         {
-            const QString varName = args.section(",",0,0).trimmed();
-            const QString arg2 = args.section(",",1,1).trimmed();
+            const QString varName = splitArgs[0];
+            const QString arg2 = splitArgs[1];
             bool isok;
             double freq = arg2.toDouble(&isok);
             if (isok)
             {
-                SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
-                if (pVar)
+                evaluateExpression(varName, DataVector);
+                SharedLogVariableDataPtrT pVar = mAnsVector;
+                if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
                     mAnsVector = pLogData->lowPassFilterVariable(pVar, pVar->getTimeVector(), freq);
@@ -3173,20 +3179,22 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
         }
-        else if(args.count(",") == 2)
+        else if(splitArgs.size() == 3)
         {
-            const QString varName = args.section(",",0,0).trimmed();
-            const QString arg2 = args.section(",",2,2).trimmed();
+            const QString varName = splitArgs[0];
+            const QString arg2 = splitArgs[2];
             bool isok;
             double freq = arg2.toDouble(&isok);
             if (isok)
             {
-                SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
-                if (pVar)
+                evaluateExpression(varName, DataVector);
+                SharedLogVariableDataPtrT pVar = mAnsVector;
+                if (mAnsType == DataVector)
                 {
-                    const QString timeVarName = args.section(",",1,1).trimmed();
-                    SharedLogVariableDataPtrT pTimeVar = getLogVariablePtr(timeVarName);
-                    if (pTimeVar)
+                    const QString timeVarName = splitArgs[1];
+                    evaluateExpression(timeVarName);
+                    SharedLogVariableDataPtrT pTimeVar = mAnsVector;
+                    if (mAnsType == DataVector)
                     {
                         mAnsType = DataVector;
                         mAnsVector = pLogData->lowPassFilterVariable(pVar, pTimeVar, freq);
@@ -3223,35 +3231,39 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     else if(desiredType != Scalar && expr.startsWith("int(") && expr.endsWith(")"))
     {
         QString args = expr.mid(4, expr.size()-5);
-        if(!args.contains(","))
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
+        if(splitArgs.size() == 1)
         {
-            SharedLogVariableDataPtrT pVar = getLogVariablePtr(args.trimmed());
-            if (pVar)
+            evaluateExpression(args.trimmed(),DataVector);
+            if(mAnsType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->integrateVariables(pVar, pVar->getTimeVector());
+                mAnsVector = pLogData->integrateVariables(mAnsVector, mAnsVector->getTimeVector());
                 return;
             }
             else
             {
-                HCOMERR(QString("Variable: %1 was not found!").arg(args.trimmed()));
+                HCOMERR(QString("Argument 1 is not a vector."));
                 mAnsType = Undefined;
                 return;
             }
         }
-        else if(args.count(",")==1)
+        else if(splitArgs.size() == 2)
         {
-            const QString var1 = args.section(",",0,0).trimmed();
-            const QString var2 = args.section(",",1,1).trimmed();
-            SharedLogVariableDataPtrT pVar1 = getLogVariablePtr(var1);
-            SharedLogVariableDataPtrT pVar2 = getLogVariablePtr(var2);
-            if(!pVar1)
+
+            const QString var1 = splitArgs[0];
+            const QString var2 = splitArgs[1];
+            evaluateExpression(var1, DataVector);
+            SharedLogVariableDataPtrT pVar1 = mAnsVector;
+            if(mAnsType != DataVector)
             {
                 HCOMERR(QString("Variable: %1 was not found!").arg(var1));
                 mAnsType = Undefined;
                 return;
             }
-            else if(!pVar2)
+            evaluateExpression(var2, DataVector);
+            SharedLogVariableDataPtrT pVar2 = mAnsVector;
+            if(mAnsType != DataVector)
             {
                 HCOMERR(QString("Variable: %1 was not found!").arg(var2));
                 mAnsType = Undefined;
@@ -3274,12 +3286,14 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     else if(desiredType != Scalar && expr.startsWith("fft(") && expr.endsWith(")"))
     {
         QString args = expr.mid(4, expr.size()-5);
-        if(args.count(",")==0)
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
+        if(splitArgs.size() == 1)
         {
             mAnsType = DataVector;
             const QString varName = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
-            if (pVar)
+            evaluateExpression(varName, DataVector);
+            SharedLogVariableDataPtrT pVar = mAnsVector;
+            if (mAnsType == DataVector)
             {
                 mAnsType = DataVector;
                 mAnsVector = pLogData->fftVariable(pVar, pVar->getTimeVector(), false);
@@ -3292,26 +3306,29 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
         }
-        else if(args.count(",")==1)
+        else if(splitArgs.size() == 2)
         {
-            const QString varName = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
-            if (pVar)
+            const QString varName = splitArgs[0].trimmed();
+            evaluateExpression(varName, DataVector);
+            SharedLogVariableDataPtrT pVar = mAnsVector;
+            if (mAnsType == DataVector)
             {
                 bool power=false;
-                QString arg2 = args.section(",",1,1).trimmed();
+                QString arg2 = splitArgs[1].trimmed();
                 SharedLogVariableDataPtrT pTimeVar;
                 if( (arg2=="true") || (arg2=="false") )
                 {
                     power = (arg2 == "true");
                     pTimeVar = pVar->getTimeVector();
+                    mAnsType = DataVector;
                 }
                 else
                 {
-                    pTimeVar = getLogVariablePtr(arg2);
+                    evaluateExpression(arg2, DataVector);
+                    pTimeVar = mAnsVector;
                 }
 
-                if (pTimeVar)
+                if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
                     mAnsVector = pLogData->fftVariable(pVar, pTimeVar, power);
@@ -3332,16 +3349,18 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
 
         }
-        else if(args.count(",") == 2)
+        else if(splitArgs.size() == 3)
         {
-            bool power = (args.section(",",2,2).trimmed() == "true");
-            const QString varName = args.section(",",0,0).trimmed();
-            SharedLogVariableDataPtrT pVar = getLogVariablePtr(varName);
-            if (pVar)
+            bool power = (splitArgs[2].trimmed() == "true");
+            const QString varName = splitArgs[0].trimmed();
+            evaluateExpression(varName, DataVector);
+            SharedLogVariableDataPtrT pVar = mAnsVector;
+            if (mAnsType == DataVector)
             {
-                const QString timeVarName = args.section(",",1,1).trimmed();
-                SharedLogVariableDataPtrT pTimeVar = getLogVariablePtr(timeVarName);
-                if (pTimeVar)
+                const QString timeVarName = splitArgs[1].trimmed();
+                evaluateExpression(timeVarName, DataVector);
+                SharedLogVariableDataPtrT pTimeVar = mAnsVector;
+                if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
                     mAnsVector = pLogData->fftVariable(pVar, pTimeVar, power);
