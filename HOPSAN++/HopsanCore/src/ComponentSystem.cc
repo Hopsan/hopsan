@@ -28,6 +28,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <algorithm>
 
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -2304,6 +2305,10 @@ bool ComponentSystem::checkModelBeforeSimulation()
         }
     }
 
+
+    std::vector<HString> parNames;
+    mpParameters->getParameterNames(parNames);
+
     // Check all subcomponents to make sure that all requirements for simulation are met
     // scmit = The subcomponent map iterator
     SubComponentMapT::iterator scmit = mSubComponentMap.begin();
@@ -2338,6 +2343,20 @@ bool ComponentSystem::checkModelBeforeSimulation()
             }
         }
 
+        //Check if component uses a system parameter and remove it from the unused list (if not already removed)
+        std::vector<HString> compParNames;
+        pComp->getParameterNames(compParNames);
+        for(size_t p=0; p<compParNames.size(); ++p)
+        {
+            HString value;
+            pComp->getParameterValue(compParNames[p], value);
+            std::vector<HString>::iterator itp = std::find(parNames.begin(), parNames.end(), value);
+            if(itp != parNames.end())
+            {
+                parNames.erase(itp);
+            }
+        }
+
         // Check parameters in system
         HString errParName;
         if(!(checkParameters(errParName)))
@@ -2358,6 +2377,18 @@ bool ComponentSystem::checkModelBeforeSimulation()
         //! @todo check that all C-component required ports are connected to Q-component ports
 
         //! @todo check more stuff
+    }
+
+    //Add warning message if at least one system parameter is unused
+    if(parNames.size() > 0)
+    {
+        std::stringstream ss;
+        ss << "Following system parameters are not used:";
+        for(size_t p=0; p<parNames.size(); ++p)
+        {
+            ss << "\n" << parNames.at(p).c_str();
+        }
+        addWarningMessage(ss.str().c_str());
     }
 
     return true;
