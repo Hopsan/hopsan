@@ -40,6 +40,7 @@
 #include <QProgressBar>
 
 class TerminalWidget;
+class SystemContainer;
 
 class OptimizationDialog : public QWizard
 {
@@ -76,6 +77,7 @@ private slots:
     void recreateCoreProgressBars();
     void recreateParameterOutputLineEdits();
     void applyParameters();
+    void saveConfiguration();
 
 private:
     void generateScriptFile();
@@ -88,9 +90,11 @@ private:
     QString generateFunctionCode(int i);
 
     void loadConfiguration();
-    void saveConfiguration();
 
     void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData);
+
+    //Original system
+    SystemContainer *mpSystem;
 
     //Settings page
     QComboBox *mpAlgorithmBox;

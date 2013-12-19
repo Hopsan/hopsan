@@ -288,8 +288,10 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     setButtonText(QWizard::FinishButton, tr("&Close Dialog"));
     setButtonText(QWizard::CustomButton1, tr("&Save To Script File"));
     setOption(QWizard::HaveCustomButton1, true);
-    setOption(QWizard::CancelButtonOnLeft, true);
+    setOption(QWizard::CancelButtonOnLeft, false);
     button(QWizard::CustomButton1)->setDisabled(true);
+    button(QWizard::FinishButton)->setEnabled(true);
+    button(QWizard::FinishButton)->setHidden(true);
 
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), this, SLOT(updateCoreProgressBars()));
@@ -301,6 +303,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     connect(pHelpButton,                   SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
     connect(mpStartButton, SIGNAL(clicked()), this, SLOT(run()));
     connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
+    connect(this, SIGNAL(accepted()), this, SLOT(saveConfiguration()));
 }
 
 void OptimizationDialog::updateParameterOutputs(QVector< QVector<double> > &values, int bestId, int worstId)
@@ -346,10 +349,8 @@ void OptimizationDialog::setOptimizationFinished()
 
 void OptimizationDialog::loadConfiguration()
 {
-    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
-
     OptimizationSettings optSettings;
-    pSystem->getOptimizationSettings(optSettings);
+    mpSystem->getOptimizationSettings(optSettings);
 
     mpIterationsSpinBox->setValue(optSettings.mNiter);
     mpSearchPointsSpinBox->setValue(optSettings.mNsearchp);
@@ -369,7 +370,11 @@ void OptimizationDialog::loadConfiguration()
         if(gpModelHandler->getCurrentViewContainerObject()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
            gpModelHandler->getCurrentViewContainerObject()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
         {
-            findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
+            QTreeWidgetItem *pItem = findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName);
+            if(!pItem->isDisabled())
+            {
+                pItem->setCheckState(0, Qt::Checked);
+            }
         }
     }
     //Objectives
@@ -389,6 +394,11 @@ void OptimizationDialog::loadConfiguration()
 
 void OptimizationDialog::saveConfiguration()
 {
+    if(!mpSystem)
+    {
+        return;
+    }
+
     OptimizationSettings optSettings;
 
     //Settings
@@ -441,16 +451,16 @@ void OptimizationDialog::saveConfiguration()
         optSettings.mObjectives.append(objective);
     }
 
-
-
-    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
-    pSystem->setOptimizationSettings(optSettings);
+    mpSystem->setOptimizationSettings(optSettings);
 }
 
 
 //! @brief Reimplementation of open() slot, used to initialize the dialog
 void OptimizationDialog::open()
 {
+    mpSystem = gpModelHandler->getCurrentTopLevelSystem();
+    connect(mpSystem, SIGNAL(destroyed()), this, SLOT(close()));
+
     //Load the objective functions
     if(!loadObjectiveFunctions())
         return;
@@ -472,8 +482,7 @@ void OptimizationDialog::open()
     mpParametersList->clear();
 
     //Populate parameters list
-    SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
-    QStringList componentNames = pSystem->getModelObjectNames();
+    QStringList componentNames = mpSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {
         QTreeWidgetItem *pComponentItem = new QTreeWidgetItem(QStringList() << componentNames.at(c));
@@ -481,11 +490,20 @@ void OptimizationDialog::open()
         componentFont.setBold(true);
         pComponentItem->setFont(0, componentFont);
         mpParametersList->insertTopLevelItem(0, pComponentItem);
-        QStringList parameterNames = pSystem->getModelObject(componentNames.at(c))->getParameterNames();
+        QStringList parameterNames = mpSystem->getModelObject(componentNames.at(c))->getParameterNames();
         for(int p=0; p<parameterNames.size(); ++p)
         {
             QTreeWidgetItem *pParameterItem = new QTreeWidgetItem(QStringList() << parameterNames.at(p));
             pParameterItem->setCheckState(0, Qt::Unchecked);
+            Port *pPort = mpSystem->getModelObject(componentNames.at(c))->getPort(parameterNames[p].remove("#Value"));
+            if (pPort && pPort->isConnected())
+            {
+                pParameterItem->setTextColor(0, QColor("gray"));
+                pParameterItem->setDisabled(true);
+                QFont italicFont = pParameterItem->font(0);
+                italicFont.setItalic(true);
+                pParameterItem->setFont(0, italicFont);
+            }
             pComponentItem->insertChild(0, pParameterItem);
         }
     }
@@ -494,7 +512,7 @@ void OptimizationDialog::open()
     componentFont.setBold(true);
     pSystemParametersItem->setFont(0, componentFont);
     mpParametersList->insertTopLevelItem(0, pSystemParametersItem);
-    QStringList parameterNames = pSystem->getParameterNames();
+    QStringList parameterNames = mpSystem->getParameterNames();
     for(int p=0; p<parameterNames.size(); ++p)
     {
         QTreeWidgetItem *pParameterItem = new QTreeWidgetItem(QStringList() << parameterNames.at(p));
@@ -512,7 +530,7 @@ void OptimizationDialog::open()
     aliasFont.setBold(true);
     pAliasItem->setFont(0, aliasFont);
     mpVariablesList->insertTopLevelItem(0, pAliasItem);
-    QStringList aliasNames = pSystem->getAliasNames();
+    QStringList aliasNames = mpSystem->getAliasNames();
     for(int a=0; a<aliasNames.size(); ++a)
     {
         QTreeWidgetItem *pVariableItem = new QTreeWidgetItem(QStringList() << aliasNames.at(a));
@@ -527,12 +545,12 @@ void OptimizationDialog::open()
         componentFont.setBold(true);
         pComponentItem->setFont(0, componentFont);
         mpVariablesList->insertTopLevelItem(0, pComponentItem);
-        QList<Port*> ports = pSystem->getModelObject(componentNames.at(c))->getPortListPtrs();
+        QList<Port*> ports = mpSystem->getModelObject(componentNames.at(c))->getPortListPtrs();
         for(int p=0; p<ports.size(); ++p)
         {
             QTreeWidgetItem *pPortItem = new QTreeWidgetItem(QStringList() << ports.at(p)->getName());
             QVector<QString> varNames, portUnits;
-            pSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentNames.at(c), ports.at(p)->getName(), varNames, portUnits);
+            mpSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentNames.at(c), ports.at(p)->getName(), varNames, portUnits);
             for(int v=0; v<varNames.size(); ++v)
             {
                 QTreeWidgetItem *pVariableItem = new QTreeWidgetItem(QStringList() << varNames.at(v));
@@ -936,22 +954,21 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
     {
         mSelectedComponents.append(item->parent()->text(0));
         mSelectedParameters.append(item->text(0));
-        SystemContainer *pSystem = gpModelHandler->getCurrentTopLevelSystem();
         QString currentValue;
         if(item->parent()->text(0) == "_System Parameters")
         {
-            currentValue = pSystem->getParameterValue(item->text(0));
+            currentValue = mpSystem->getParameterValue(item->text(0));
         }
         else
         {
-            currentValue = pSystem->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+            currentValue = mpSystem->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
         }
 
         QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + " (" + currentValue + trUtf8(")  < "));
         pLabel->setAlignment(Qt::AlignCenter);
 
         OptimizationSettings optSettings;
-        pSystem->getOptimizationSettings(optSettings);
+        mpSystem->getOptimizationSettings(optSettings);
         QString min, max;
         for(int i=0; i<optSettings.mParamters.size(); ++i)
         {
