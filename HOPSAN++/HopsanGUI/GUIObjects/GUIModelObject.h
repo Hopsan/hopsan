@@ -135,6 +135,8 @@ public slots:
     void showLosses();
     void hideLosses();
     void redrawConnectors();
+    void highlight();
+    void unHighlight();
 
 signals:
     void nameChanged();

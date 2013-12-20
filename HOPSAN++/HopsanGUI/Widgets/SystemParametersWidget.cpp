@@ -34,6 +34,7 @@
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
+#include "ModelHandler.h"
 
 
 QWidget *ParamTypeComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -343,6 +344,8 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     mpSysParamTableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpSysParamTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
+    connect(mpSysParamTableView, SIGNAL(clicked(QModelIndex)), this, SLOT(highlightComponents(QModelIndex)));
+
     ParamTypeComboBoxDelegate *pComboBoxDelegate = new ParamTypeComboBoxDelegate();
     mpSysParamTableView->setItemDelegateForColumn(2, pComboBoxDelegate);
 
@@ -460,6 +463,46 @@ void SystemParametersWidget::openAddParameterDialog()
     connect(pCancelInDialogButton,      SIGNAL(clicked()), mpAddParameterDialog, SLOT(close()));
     connect(pAddAndCloseInDialogButton, SIGNAL(clicked()), this,                SLOT(addParameterAndCloseDialog()));
     connect(pAddInDialogButton,         SIGNAL(clicked()), this,                SLOT(addParameter()));
+}
+
+void SystemParametersWidget::highlightComponents(QModelIndex index)
+{
+    unHighlightComponents();
+
+    QString parName = index.model()->data(index, Qt::EditRole).toString();
+    qDebug() << "Clicked on: " << parName;
+
+    ContainerObject *pContainer = gpModelHandler->getCurrentViewContainerObject();
+    QStringList compNames = pContainer->getModelObjectNames();
+    foreach(QString comp, compNames)
+    {
+        bool hasPar = false;
+        QVector<CoreParameterData> pars;
+        pContainer->getModelObject(comp)->getParameters(pars);
+        foreach(CoreParameterData par, pars)
+        {
+            if(par.mValue == parName)
+            {
+                hasPar = true;
+            }
+        }
+
+        if(hasPar)
+        {
+            qDebug() << "Component: " << comp << " has the parameter!";
+            pContainer->getModelObject(comp)->highlight();
+        }
+    }
+}
+
+void SystemParametersWidget::unHighlightComponents()
+{
+    ContainerObject *pContainer = gpModelHandler->getCurrentViewContainerObject();
+    QStringList compNames = pContainer->getModelObjectNames();
+    foreach(QString comp, compNames)
+    {
+        pContainer->getModelObject(comp)->unHighlight();
+    }
 }
 
 

@@ -104,6 +104,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
         connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)), this, SLOT(setIcon(GraphicsTypeEnumT)));
+        connect(mpParentContainerObject->mpModelWidget->mpGraphicsView, SIGNAL(clicked()), this, SLOT(unHighlight()));
     }
     else
     {
@@ -547,6 +548,21 @@ void ModelObject::redrawConnectors()
     for(int i=0; i<mConnectorPtrs.size(); ++i)
     {
         mConnectorPtrs.at(i)->drawConnector();
+    }
+}
+
+void ModelObject::highlight()
+{
+    QGraphicsColorizeEffect *pEffect = new QGraphicsColorizeEffect(this);
+    pEffect->setColor(QColor("orangered"));
+    this->setGraphicsEffect(pEffect);
+}
+
+void ModelObject::unHighlight()
+{
+    if(this->graphicsEffect())
+    {
+        this->graphicsEffect()->setEnabled(false);
     }
 }
 

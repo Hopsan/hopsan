@@ -528,6 +528,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    emit clicked();
+
     if(!mpParentModelWidget->isEditingEnabled())
         return;
 

@@ -65,6 +65,7 @@ signals:
     void zoomChange(qreal zoomfactor);
     void systemPortSignal(QPointF position);
     void hovered();
+    void clicked();
 
 public slots:
     void resetZoom();
