@@ -44,6 +44,8 @@
 ModelHandler::ModelHandler(QObject *parent)
     : QObject(parent)
 {
+    mpDebugger = 0;
+
     mNumberOfUntitledModels=0;
 
     mpSimulationThreadHandler = new SimulationThreadHandler(gpTerminalWidget);
@@ -643,9 +645,12 @@ void ModelHandler::launchDebugger()
 {
     if(getCurrentTopLevelSystem() == 0) return;
 
-    DebuggerWidget *pDebugger = new DebuggerWidget(getCurrentTopLevelSystem(), gpMainWindow);
-    pDebugger->show();
-    pDebugger->exec();
+    if(!mpDebugger || !mpDebugger->isVisible())
+    {
+        mpDebugger = new DebuggerWidget(getCurrentTopLevelSystem(), gpMainWindow);
+        mpDebugger->show();
+        mpDebugger->exec();
+    }
 }
 
 

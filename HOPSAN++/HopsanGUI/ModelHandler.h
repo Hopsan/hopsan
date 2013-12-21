@@ -35,6 +35,7 @@ class SystemContainer;
 class ContainerObject;
 class LogDataHandler;
 class SimulationThreadHandler;
+class DebuggerWidget;
 
 class ModelHandler : public QObject
 {
@@ -108,6 +109,8 @@ private:
     QStringList mStateInfoTabNames;
     QList<LogDataHandler*> mStateInfoLogDataHandlersList;
     QList<QDomDocument> mStateInfoModels;
+
+    DebuggerWidget *mpDebugger;
 };
 
 #endif // MODELHANDLER_H

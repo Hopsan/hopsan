@@ -139,6 +139,10 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     connect(mpMultiForwardButton, SIGNAL(clicked()),                      this, SLOT(nStepsForward()));
     connect(mpGotoButton,         SIGNAL(clicked()),                      this, SLOT(simulateTo()));
 
+    //this->setAttribute(Qt::WA_DeleteOnClose);
+
+    connect(mpSystem, SIGNAL(destroyed()), this, SLOT(close()));
+
     retranslateUi();
     setInitData();
 }
@@ -146,7 +150,7 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
 
 void DebuggerWidget::retranslateUi()
 {
-    setWindowTitle(tr("Hopsan Debugger"));
+    setWindowTitle(tr("Hopsan Debugger") + " (" + mpSystem->getModelFileInfo().fileName().remove(".hmf").remove(".xml")+")");
     mpTabWidget->setTabText(mpTabWidget->indexOf(mpTraceTab), tr("Trace variables"));
     mpRemoveButton->setText(tr("Remove"));
     mpAddButton->setText(tr("Add"));
