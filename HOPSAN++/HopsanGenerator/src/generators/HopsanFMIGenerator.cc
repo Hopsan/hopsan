@@ -164,6 +164,8 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     printMessage("Defining variables...");
 
 
+    bool isModelExchangeFMU = fmuRoot.firstChildElement("Implementation").isNull();
+
     //Define lists with input and output variables
 
     QStringList inVarValueRefs, inVarPortNames;
@@ -177,19 +179,19 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     {
         if(varElement.attribute("variability") != "parameter" && varElement.attribute("variability") != "constant")
         {
-            if(!varElement.hasAttribute("causality"))
+            /*if(!varElement.hasAttribute("causality"))
             {
                 //inoutVarValueRefs << varElement.attribute("valueReference");
                 inoutVarValueRefs << QString::number(i);
                 inoutVarPortNames << varElement.attribute("name");
             }
-            else if(varElement.attribute("causality") == "input")
+            else */if(varElement.attribute("causality") == "input")
             {
                 //inVarValueRefs << varElement.attribute("valueReference");
                 inVarValueRefs << QString::number(i);
                 inVarPortNames << varElement.attribute("name");
             }
-            else if(varElement.attribute("causality") == "output")
+            else if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
             {
                 //outVarValueRefs << varElement.attribute("valueReference");
                 outVarValueRefs << QString::number(i);
@@ -407,7 +409,15 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
 
     printMessage("Writing " + fmuName + ".hpp...");
 
-    QFile fmuComponentTemplateFile(":templates/fmuComponentTemplate.hpp");
+    QFile fmuComponentTemplateFile;
+    if(isModelExchangeFMU)
+    {
+        fmuComponentTemplateFile.setFileName(":templates/fmuComponentTemplate.hpp");
+    }
+    else
+    {
+        fmuComponentTemplateFile.setFileName(":templates/fmuCoSimComponentTemplate.hpp");
+    }
     assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString fmuComponentCode;
     QTextStream t2(&fmuComponentTemplateFile);
@@ -661,6 +671,9 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     if(!copyFile(fmiSrcPath+"fmi_me.h", fmuDir.path()+"/fmi_me.h")) return;
     if(!copyFile(fmiSrcPath+"fmiModelFunctions.h", fmuDir.path()+"/fmiModelFunctions.h")) return;
     if(!copyFile(fmiSrcPath+"fmiModelTypes.h", fmuDir.path()+"/fmiModelTypes.h")) return;
+    if(!copyFile(fmiSrcPath+"fmi_cs.h", fmuDir.path()+"/fmi_cs.h")) return;
+    if(!copyFile(fmiSrcPath+"fmiFunctions.h", fmuDir.path()+"/fmiFunctions.h")) return;
+    if(!copyFile(fmiSrcPath+"fmiPlatformTypes.h", fmuDir.path()+"/fmiPlatformTypes.h")) return;
 
 #ifdef WIN32
     if(!copyFile(fmiSrcPath+"libexpat.a", fmuDir.path()+"/libexpat.a")) return;
@@ -705,9 +718,9 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     }
     else
     {
-        cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
+        /*cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
                 "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
-                QStringList() << "component_code" << "binaries");
+                QStringList() << "component_code" << "binaries");*/
 
         printMessage("Finished.");
     }
