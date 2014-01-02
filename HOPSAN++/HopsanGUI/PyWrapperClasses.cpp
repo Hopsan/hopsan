@@ -158,18 +158,21 @@ ModelObject* PyMainWindowClassWrapper::component(MainWindow* o, const QString& c
 }
 void PyMainWindowClassWrapper::setStartTime(MainWindow* o, const double& start)
 {
+    Q_UNUSED(start);
     o->mpTerminalWidget->mpConsole->printErrorMessage(QString("pyError: ").append("Not implemented"));
     //! @todo fix this
     //o->setStartTimeInToolBar(start);
 }
 void PyMainWindowClassWrapper::setTimeStep(MainWindow* o, const double& timestep)
 {
+    Q_UNUSED(timestep);
     o->mpTerminalWidget->mpConsole->printErrorMessage(QString("pyError: ").append("Not implemented"));
     //! @todo fix this
     //o->setTimeStepInToolBar(timestep);
 }
 void PyMainWindowClassWrapper::setFinishTime(MainWindow* o, const double& stop)
 {
+    Q_UNUSED(stop);
     o->mpTerminalWidget->mpConsole->printErrorMessage(QString("pyError: ").append("Not implemented"));
     //! @todo fix this
     //o->setStopTimeInToolBar(stop);

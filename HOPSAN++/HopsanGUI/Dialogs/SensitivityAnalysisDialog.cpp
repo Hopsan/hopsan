@@ -553,10 +553,10 @@ void SensitivityAnalysisDialog::run()
         int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getLatestGeneration()+1;
         int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
 
-        QVector<double> vMin(nSamples, 10000000000);
-        QVector<double> vMax(nSamples, -10000000000);
-        double totalMin=100000000000;
-        double totalMax=-100000000000;
+        QVector<double> vMin(nSamples, 100000000000.0);
+        QVector<double> vMax(nSamples, -100000000000.0);
+        double totalMin=100000000000.0;
+        double totalMax=-100000000000.0;
 
         QString component = mOutputVariables.at(v).at(0);
         QString port = mOutputVariables.at(v).at(1);

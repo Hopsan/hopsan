@@ -749,6 +749,8 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 //! @param hppFiles Relative path to hpp files
 void HopsanGenerator::generateNewLibrary(QString path, QStringList hppFiles)
 {
+    printMessage("Creating new component library...");
+
     QString libName = QDir(path).dirName();
 
     QStringList typeNames;
@@ -813,6 +815,8 @@ void HopsanGenerator::generateNewLibrary(QString path, QStringList hppFiles)
         xmlStream << "</hopsancomponentlibrary>\n";
         xmlFile.close();
     }
+
+    printMessage("Finished.");
 }
 
 
@@ -868,6 +872,8 @@ void HopsanGenerator::callProcess(const QString &name, const QStringList &args, 
     p.start(name, args);
     p.waitForFinished(60000);
     printMessage(p.readAll());
+    printMessage(p.readAllStandardError());
+    printMessage(p.readAllStandardOutput());
 }
 
 
@@ -962,7 +968,7 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
     Q_FOREACH(const QString &file, includeFiles)
     {
         if(!copyFile(mBinPath+file, path+file.right(file.size()-3))) return false;
-        QFile::setPermissions(path+file.right(file.size()-3), QFile::WriteOther);
+        QFile::setPermissions(path+file.right(file.size()-3), QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
     }
 
     return true;
@@ -993,7 +999,7 @@ bool HopsanGenerator::copySourceFilesToDir(QString path) const
     Q_FOREACH(const QString &file, srcFiles)
     {
         if(!copyFile(mBinPath+file, path+file.right(file.size()-3))) return false;
-        QFile::setPermissions(path+file.right(file.size()-3), QFile::WriteOther);
+        QFile::setPermissions(path+file.right(file.size()-3), QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
     }
 
     return true;
@@ -1024,7 +1030,7 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
 
     Q_FOREACH(const QString file, allFiles)
     {
-        QFile::setPermissions(file, QFile::WriteOther);
+        QFile::setPermissions(file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
     }
 
     return true;

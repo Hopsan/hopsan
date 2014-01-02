@@ -137,7 +137,8 @@ public:
 
     void exportToLabView();
     void exportToFMU();
-    void exportToFMU(QString savePath);
+    void exportToFMUCoSim();
+    void exportToFMU(QString savePath, bool me);
     void exportToSimulink();
     void exportToSimulinkCoSim();
 
@@ -158,7 +159,6 @@ public:
 
     enum { Type = SystemContainerType };
     int type() const;
-
 
 
 public slots:

@@ -8,7 +8,7 @@ class HopsanFMIGenerator : public HopsanGenerator
 public:
     HopsanFMIGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
     void generateFromFmu(QString code, QString targetPath);
-    void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem);
+    void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, bool me=false);
 
     bool readTLMSpecsFromFile(const QString &fileName, QStringList &tlmPortTypes, QList<QStringList> &tlmPortVarNames,
                               QList<QStringList> &tlmPortValueRefs, QStringList &inVarValueRefs, QStringList &inVarPortNames,

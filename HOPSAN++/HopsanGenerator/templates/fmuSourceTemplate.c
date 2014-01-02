@@ -56,6 +56,12 @@ void initializeHopsanWrapperFromBuiltInModel()
     <<<assignportpointers<<<
 }
 
+void simulate(double stopTime)
+{
+    spCoreComponentSystem->simulate(stopTime);
+    fmu_time = stopTime;
+}
+
 void simulateOneStep()
 {
     double timestep = getTimeStep();

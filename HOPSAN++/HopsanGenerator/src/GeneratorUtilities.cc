@@ -547,7 +547,9 @@ QStringList getHopsanCoreSourceFiles()
                 "../HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" <<
                 "../HopsanCore/src/CoreUtilities/StringUtilities.cpp" <<
                 "../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" <<
-                "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp";
+                "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
+                "../HopsanCore/src/HopsanTypes.cc" <<
+                "../HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc";
     return srcFiles;
 }
 
@@ -598,7 +600,12 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
                     "../HopsanCore/include/CoreUtilities/LoadExternal.h" <<
                     "../HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h" <<
-                    "../HopsanCore/include/CoreUtilities/StringUtilities.h";
+                    "../HopsanCore/include/CoreUtilities/StringUtilities.h" <<
+                    "../HopsanCore/include/CoreUtilities/StringUtilities.h" <<
+                    "../HopsanCore/include/HopsanTypes.h" <<
+                    "../HopsanCore/include/ComponentUtilities/HopsanPowerUser.h" <<
+                    "../HopsanCore/include/HopsanCoreMacros.h" <<
+                    "../HopsanCore/include/compiler_info.h";
 
     if (!skipDependencies)
     {

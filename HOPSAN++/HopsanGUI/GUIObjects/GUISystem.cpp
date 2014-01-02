@@ -1008,11 +1008,47 @@ void SystemContainer::exportToFMU()
         }
     }
 
-    exportToFMU(savePath);
+    exportToFMU(savePath, true);
 }
 
 
-void SystemContainer::exportToFMU(QString savePath)
+void SystemContainer::exportToFMUCoSim()
+{
+    //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString savePath;
+    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
+                                                    gpConfig->getFmuExportDir(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+    QDir saveDir;
+    saveDir.setPath(savePath);
+    gpConfig->setFmuExportDir(saveDir.absolutePath());
+    saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+    if(!saveDir.entryList().isEmpty())
+    {
+        qDebug() << saveDir.entryList();
+        QMessageBox msgBox;
+        msgBox.setWindowIcon(gpMainWindow->windowIcon());
+        msgBox.setText(QString("Folder is not empty!"));
+        msgBox.setInformativeText("Are you sure you want to export files here?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+
+        int answer = msgBox.exec();
+        if(answer == QMessageBox::No)
+        {
+            return;
+        }
+    }
+
+    exportToFMU(savePath, false);
+}
+
+
+void SystemContainer::exportToFMU(QString savePath, bool me)
 {
     QDir saveDir(savePath);
     if(!saveDir.exists())
@@ -1025,7 +1061,7 @@ void SystemContainer::exportToFMU(QString savePath)
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToFmu(savePath, this);
+    pCoreAccess->generateToFmu(savePath, me, this);
     delete(pCoreAccess);
 
 }

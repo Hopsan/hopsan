@@ -41,7 +41,7 @@ public:
     typedef void (*call_modelica_generator_t)(HString path, bool showDialog, int solver, bool compile, hopsan::HString coreIncludePath, hopsan::HString binPath);
     typedef void (*call_cpp_generator_t)(HString hppPath, bool compile, hopsan::HString coreIncludePath, hopsan::HString binPath);
     typedef void (*call_fmu_import_generator_t)(HString path, HString targetPath, HString coreIncludePath, HString binPath, bool showDialog);
-    typedef void (*call_fmu_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, HString coreIncludePath, HString binPath, bool showDialog);
+    typedef void (*call_fmu_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, HString coreIncludePath, HString binPath, bool me, bool showDialog);
     typedef void (*call_simulink_export_generator_t)(HString path, HString modelName, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_simulink_cosim_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_lvsit_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, HString coreIncludePath, HString binPath, bool showDialog);

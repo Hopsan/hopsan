@@ -750,9 +750,13 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpExportToSimulinkCoSimAction, "Export model Simulink S-function for co-simulation (under development).");
     connect(mpExportToSimulinkCoSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"), tr("Export to Functional Mock-up Unit (FMU)"), this);
-    mHelpPopupTextMap.insert(mpExportToFMUAction, "Export model to Functional Mock-up Unit (FMU).");
+    mpExportToFMUAction = new QAction(tr("FMU for Model Exchange"), this);
+    mHelpPopupTextMap.insert(mpExportToFMUAction, "FMU for Model Exchange");
     connect(mpExportToFMUAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    mpExportToFMUActionCoSim = new QAction(tr("FMU for Co-Simulation"), this);
+    mHelpPopupTextMap.insert(mpExportToFMUActionCoSim, "FMU for Co-Simulation");
+    connect(mpExportToFMUActionCoSim, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpExportToLabviewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSIT.png"), tr("Export to LabVIEW/SIT"), this);
     mHelpPopupTextMap.insert(mpExportToLabviewAction, "Export model to LabVIEW Veristand.");
@@ -957,7 +961,13 @@ void MainWindow::createMenus()
 
     mpExportMenu->addAction(mpExportModelParametersAction);
     mpExportMenu->addSeparator();
-    mpExportMenu->addAction(mpExportToFMUAction);
+    mpExportToFMUMenu = new QMenu("Export to Functional Mock-Up Interface (FMI)");
+    mpExportToFMUMenu->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
+    mpExportToFMUMenu->addAction(mpExportToFMUAction);
+    mpExportToFMUMenu->addAction(mpExportToFMUActionCoSim);
+    mpExportMenu->addMenu(mpExportToFMUMenu);
+    mpExportToFMUMenuButton->setMenu(mpExportToFMUMenu);
+    //mpExportMenu->addAction(mpExportToFMUAction);
     mpExportMenu->addAction(mpExportToSimulinkAction);
     mpExportMenu->addAction(mpExportToLabviewAction);
 #ifdef DEVELOPMENT
@@ -1013,7 +1023,12 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
 #endif
     mpConnectivityToolBar->addAction(mpExportToLabviewAction);
-    mpConnectivityToolBar->addAction(mpExportToFMUAction);
+    mpExportToFMUMenuButton = new QToolButton(this);
+    mpExportToFMUMenuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
+    mpExportToFMUMenuButton->setPopupMode(QToolButton::InstantPopup);
+    mpExportToFMUMenuButton->setMouseTracking(true);
+    mpConnectivityToolBar->addWidget(mpExportToFMUMenuButton);
+    //mpConnectivityToolBar->addAction(mpExportToFMUAction);
     mpConnectivityToolBar->addAction(mpImportFMUAction);
 
 
@@ -1100,6 +1115,7 @@ void MainWindow::createToolbars()
     connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulink()));
     connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulinkCoSim()));
     connect(mpExportToFMUAction,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU()));
+    connect(mpExportToFMUActionCoSim,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMUCoSim()));
     connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpModelHandler, SLOT(createLabviewWrapperFromCurrentModel()));
     connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpModelHandler, SLOT(loadModelParameters()));
 }
@@ -1354,6 +1370,7 @@ void MainWindow::updateToolBarsToNewTab()
 
     bool noTabs = !(mpModelHandler->count() > 0);
     mpSaveAction->setEnabled(!noTabs);
+    mpExportToFMUMenuButton->setEnabled(!noTabs);
     mpSaveAsAction->setEnabled(!noTabs);
     mpExportModelParametersAction->setEnabled(!noTabs);
     mpCutAction->setEnabled(!noTabs);
@@ -1391,6 +1408,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpPropertiesAction->setEnabled(!noTabs);
     mpOpenSystemParametersAction->setEnabled(!noTabs);
     mpExportToFMUAction->setEnabled(!noTabs);
+    mpExportToFMUActionCoSim->setEnabled(!noTabs);
     mpExportToLabviewAction->setEnabled(!noTabs);
     mpExportToSimulinkAction->setEnabled(!noTabs);
     mpExportToSimulinkCoSimAction->setEnabled(!noTabs);

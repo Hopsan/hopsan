@@ -2400,7 +2400,8 @@ void HcomHandler::executeExportToFMUCommand(const QString cmd)
         HCOMERR("Wrong number of arguments.");
     }
 
-    mpModel->getTopLevelSystemContainer()->exportToFMU(getArgument(cmd, 0));
+    //! @todo Add argument for me or cs
+    mpModel->getTopLevelSystemContainer()->exportToFMU(getArgument(cmd, 0), false);
 }
 
 
@@ -2656,7 +2657,6 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         mpModel->saveTo(savePath);
         mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
 
-        bool ok;
         if(mpOptHandler->mAlgorithm == OptimizationHandler::Complex)
         {
             mpOptHandler->mModelPtrs.clear();

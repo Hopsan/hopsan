@@ -8,6 +8,7 @@
 // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
 //*******************************************//
 
+#define FMI_COSIMULATION
 
 #define BUFSIZE 4096
 

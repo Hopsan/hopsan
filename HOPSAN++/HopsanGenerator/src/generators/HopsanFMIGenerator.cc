@@ -718,19 +718,20 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     }
     else
     {
-        /*cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
+        cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
                 "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
-                QStringList() << "component_code" << "binaries");*/
+                QStringList() << "component_code" << "binaries");
 
-        printMessage("Finished.");
+        printMessage("Finished.\n");
     }
 }
 
 
 //! @brief Generates an FMU for specified component system
 //! @param savePath Path where to export FMU
+//! @param me Boolean for using model exchange
 //! @param pSystme Pointer to system to export
-void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem)
+void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, bool me)
 {
     printMessage("Initializing FMU export...");
 
@@ -903,6 +904,15 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     replaceTaggedSection(xmlCode, "3", xmlReplace3);
     replaceTaggedSection(xmlCode, "4", xmlReplace4);
 
+    if(me)
+    {
+        xmlCode.replace("<<<5>>>","<Implementation>\n  <CoSimulation_StandAlone>\n    <Capabilities\n      canHandleVariableCommunicationStepSize=\"false\"\n      canHandleEvents=\"false\"/>\n  </CoSimulation_StandAlone>\n</Implementation>");
+    }
+    else
+    {
+        xmlCode.replace("<<<5>>>","");
+    }
+
     QTextStream modelDescriptionStream(&modelDescriptionFile);
     modelDescriptionStream << xmlCode;
     modelDescriptionFile.close();
@@ -934,7 +944,16 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     printMessage("Writing " + modelName + ".c...");
 
-    QFile sourceTemplateFile(":templates/fmuModelSourceTemplate.c");
+    QString sourceTemplateFileName;
+    if(me)
+    {
+        sourceTemplateFileName = ":templates/fmuCoSimSourceTemplate.c";
+    }
+    else
+    {
+        sourceTemplateFileName = ":templates/fmuModelSourceTemplate.c";
+    }
+    QFile sourceTemplateFile(sourceTemplateFileName);
     if(!sourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open "+modelName+".c for writing.");
@@ -1040,7 +1059,8 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     printMessage("Writing HopsanFMU.cpp...");
 
-    QFile fmuSourceTemplateFile(":templates/fmuSourceTemplate.c");
+    QString fmuSourceTemplateFileName(":templates/fmuSourceTemplate.c");
+    QFile fmuSourceTemplateFile(fmuSourceTemplateFileName);
     if(!fmuSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open HopsanFMU.cpp for writing.");
@@ -1085,6 +1105,10 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     QFile fmuModelFunctionsHFile(mBinPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
     fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
+    QFile fmuFunctionsHFile(mBinPath + "/../ThirdParty/fmi/fmiFunctions.h");
+    fmuFunctionsHFile.copy(savePath + "/fmiFunctions.h");
+    QFile fmuPlatformTypesHFile(mBinPath + "/../ThirdParty/fmi/fmiPlatformTypes.h");
+    fmuPlatformTypesHFile.copy(savePath + "/fmiPlatformTypes.h");
     QFile fmiModelTypesHFile(mBinPath + "/../ThirdParty/fmi/fmiModelTypes.h");
     fmiModelTypesHFile.copy(savePath + "/fmiModelTypes.h");
     QFile fmiTemplateCFile(mBinPath + "/../ThirdParty/fmi/fmuTemplate.c");
@@ -1092,7 +1116,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QFile fmiTemplateHFile(mBinPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
-    if(!assertFilesExist(savePath, QStringList() << "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h"))
+    if(!assertFilesExist(savePath, QStringList() << "fmiModelFunctions.h" << "fmiFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h"))
         return;
 
     printMessage("Generating model file...");
@@ -1172,13 +1196,13 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     printMessage("Compiling "+modelName+".so...");
 
     QString gccCommand1 = "cd "+savePath+" && gcc -c -w -shared -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c\n";
-    QString gccCommand2 = "cd "+savePath+" && g++ -w -shared -fPIC -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".so "+modelName+".o HopsanFMU.cpp HopsanCore/src/Component.cc HopsanCore/src/ComponentSystem.cc HopsanCore/src/HopsanEssentials.cc HopsanCore/src/Node.cc HopsanCore/src/Nodes.cc HopsanCore/src/Parameters.cc HopsanCore/src/Port.cc HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc HopsanCore/src/ComponentUtilities/CSVParser.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/Integrator.cc HopsanCore/src/ComponentUtilities/IntegratorLimited.cc HopsanCore/src/ComponentUtilities/ludcmp.cc HopsanCore/src/ComponentUtilities/matrix.cc HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/TurbulentFlowFunction.cc HopsanCore/src/ComponentUtilities/ValveHysteresis.cc HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp HopsanCore/src/CoreUtilities/GeneratorHandler.cpp HopsanCore/src/CoreUtilities/HmfLoader.cc HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc HopsanCore/src/CoreUtilities/LoadExternal.cc HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp -IHopsanCore/include -IcomponentLibraries/defaultLibrary/code -IHopsanCore/Dependencies/rapidxml-1.13 -IHopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser\n";
+    QString gccCommand2 = "cd "+savePath+" && g++ -w -shared -fPIC -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".so "+modelName+".o HopsanFMU.cpp HopsanCore/src/Component.cc HopsanCore/src/ComponentSystem.cc HopsanCore/src/HopsanEssentials.cc HopsanCore/src/Node.cc HopsanCore/src/Nodes.cc HopsanCore/src/Parameters.cc HopsanCore/src/Port.cc HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc HopsanCore/src/ComponentUtilities/CSVParser.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/Integrator.cc HopsanCore/src/ComponentUtilities/IntegratorLimited.cc HopsanCore/src/ComponentUtilities/ludcmp.cc HopsanCore/src/ComponentUtilities/matrix.cc HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/TurbulentFlowFunction.cc HopsanCore/src/ComponentUtilities/ValveHysteresis.cc HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp HopsanCore/src/CoreUtilities/GeneratorHandler.cpp HopsanCore/src/CoreUtilities/HmfLoader.cc HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc HopsanCore/src/CoreUtilities/LoadExternal.cc HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp -IHopsanCore/include -IcomponentLibraries/defaultLibrary -IHopsanCore/Dependencies/rapidxml-1.13 -IHopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser\n";
 
     //qDebug() << "Command 1: " << gccCommand1;
     //qDebug() << "Command 2: " << gccCommand2;
 
     callProcess("gcc", QStringList() << "-c" << "-w" << "-shared" << "-fPIC" << "-Wl,--rpath,'$ORIGIN/.'" << modelName+".c", savePath);
-    callProcess("g++", QStringList() << "-w" << "-shared" << "-fPIC" << "-DDOCOREDLLEXPORT" << "-DBUILTINDEFAULTCOMPONENTLIB" << "-o"+modelName+".so" << modelName+".o" << "HopsanFMU.cpp" << "HopsanCore/src/Component.cc" << "HopsanCore/src/ComponentSystem.cc" << "HopsanCore/src/HopsanEssentials.cc" << "HopsanCore/src/Node.cc" << "HopsanCore/src/Nodes.cc" << "HopsanCore/src/Parameters.cc" << "HopsanCore/src/Port.cc" << "HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc" << "HopsanCore/src/ComponentUtilities/CSVParser.cc" << "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc" << "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" << "HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp" << "HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc" << "HopsanCore/src/ComponentUtilities/Integrator.cc" << "HopsanCore/src/ComponentUtilities/IntegratorLimited.cc" << "HopsanCore/src/ComponentUtilities/ludcmp.cc" << "HopsanCore/src/ComponentUtilities/matrix.cc" << "HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc" << "HopsanCore/src/ComponentUtilities/TurbulentFlowFunction.cc" << "HopsanCore/src/ComponentUtilities/ValveHysteresis.cc" << "HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc" << "HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp" << "HopsanCore/src/CoreUtilities/GeneratorHandler.cpp" << "HopsanCore/src/CoreUtilities/HmfLoader.cc" << "HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc" << "HopsanCore/src/CoreUtilities/LoadExternal.cc" << "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" << "componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc" << "HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" << "-IHopsanCore/include" << "-IcomponentLibraries/defaultLibrary/code" << "-IHopsanCore/Dependencies/rapidxml-1.13" << "-IHopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser", savePath);
+    callProcess("g++", QStringList() << "-w" << "-shared" << "-fPIC" << "-DDOCOREDLLEXPORT" << "-DBUILTINDEFAULTCOMPONENTLIB" << "-o"+modelName+".so" << modelName+".o" << "HopsanFMU.cpp" << "HopsanCore/src/Component.cc" << "HopsanCore/src/ComponentSystem.cc" << "HopsanCore/src/HopsanEssentials.cc" << "HopsanCore/src/Node.cc" << "HopsanCore/src/Nodes.cc" << "HopsanCore/src/Parameters.cc" << "HopsanCore/src/Port.cc" << "HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc" << "HopsanCore/src/ComponentUtilities/CSVParser.cc" << "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc" << "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" << "HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp" << "HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc" << "HopsanCore/src/ComponentUtilities/Integrator.cc" << "HopsanCore/src/ComponentUtilities/IntegratorLimited.cc" << "HopsanCore/src/ComponentUtilities/ludcmp.cc" << "HopsanCore/src/ComponentUtilities/matrix.cc" << "HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc" << "HopsanCore/src/ComponentUtilities/TurbulentFlowFunction.cc" << "HopsanCore/src/ComponentUtilities/ValveHysteresis.cc" << "HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc" << "HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp" << "HopsanCore/src/CoreUtilities/GeneratorHandler.cpp" << "HopsanCore/src/CoreUtilities/HmfLoader.cc" << "HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc" << "HopsanCore/src/CoreUtilities/LoadExternal.cc" << "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" << "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" << "HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" << "-IHopsanCore/include" << "-IcomponentLibraries/defaultLibrary" << "-IHopsanCore/Dependencies/rapidxml-1.13" << "-IHopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser", savePath);
 
     if(!assertFilesExist(savePath, QStringList() << modelName+".so"))
         return;

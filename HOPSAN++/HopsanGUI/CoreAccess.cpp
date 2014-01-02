@@ -142,12 +142,12 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 }
 
 
-bool CoreGeneratorAccess::generateToFmu(QString path, SystemContainer *pSystem)
+bool CoreGeneratorAccess::generateToFmu(QString path, bool me, SystemContainer *pSystem)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callFmuExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
+        pHandler->callFmuExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), me, true);
         return true;
     }
     delete(pHandler);

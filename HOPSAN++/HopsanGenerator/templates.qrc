@@ -17,5 +17,6 @@
         <file>templates/labviewCodegenTemplate.c</file>
         <file>templates/labviewHowToTemplate.txt</file>
         <file>templates/fmuCoSimComponentTemplate.hpp</file>
+        <file>templates/fmuCoSimSourceTemplate.c</file>
     </qresource>
 </RCC>

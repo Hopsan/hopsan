@@ -616,6 +616,11 @@ void ModelHandler::exportCurrentModelToFMU()
     qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU();
 }
 
+void ModelHandler::exportCurrentModelToFMUCoSim()
+{
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMUCoSim();
+}
+
 
 void ModelHandler::exportCurrentModelToSimulink()
 {

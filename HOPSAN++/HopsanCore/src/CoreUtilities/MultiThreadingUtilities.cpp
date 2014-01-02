@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <unistd.h>
 
 #ifndef USETBB
 namespace tbb {

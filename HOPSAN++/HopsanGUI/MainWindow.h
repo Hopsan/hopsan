@@ -144,6 +144,7 @@ public:
     QAction *mpExportToSimulinkAction;
     QAction *mpExportToSimulinkCoSimAction;
     QAction *mpExportToFMUAction;
+    QAction *mpExportToFMUActionCoSim;
     QAction *mpExportToLabviewAction;
     QAction *mpLoadModelParametersAction;
     QAction *mpCloseAction;
@@ -243,6 +244,7 @@ private:
 
     // Private Actions
     QAction *mpSimulateAction;
+    QToolButton *mpExportToFMUMenuButton;
 
     // Dialogs
     OptionsDialog *mpOptionsDialog;
@@ -273,6 +275,7 @@ private:
     QMenu *mpToolsMenu;
     QMenu *mpImportMenu;
     QMenu *mpExportMenu;
+    QMenu *mpExportToFMUMenu;
     QMenu *mpPlotMenu;
     QMenu *mpRecentMenu;
     QMenu *mpHelpMenu;

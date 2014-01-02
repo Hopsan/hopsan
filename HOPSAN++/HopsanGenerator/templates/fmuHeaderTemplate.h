@@ -7,6 +7,7 @@
 
 void initializeHopsanWrapper(char* filename);
 void initializeHopsanWrapperFromBuiltInModel();
+void simulate(double stopTime);
 void simulateOneStep();
 double getVariable(size_t ref, size_t idx);
 double getTimeStep();
