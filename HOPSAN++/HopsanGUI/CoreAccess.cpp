@@ -133,7 +133,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             fmuIcon.close();
 
             //Load library
-            gpLibraryHandler->loadLibrary(gpDesktopHandler->getFMUPath()+fmuName+"/"+fmuName+"_lib.xml", FMU);
+            gpLibraryHandler->loadLibrary(gpDesktopHandler->getFMUPath()+fmuName+"/"+fmuName+"_lib.xml", FmuLib);
             return true;
         }
     }

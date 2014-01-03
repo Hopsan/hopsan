@@ -104,7 +104,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
         connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)), this, SLOT(setIcon(GraphicsTypeEnumT)));
-        connect(mpParentContainerObject->mpModelWidget->mpGraphicsView, SIGNAL(clicked()), this, SLOT(unHighlight()));
+        connect(mpParentContainerObject->mpModelWidget->mpGraphicsView, SIGNAL(unHighlightAll()), this, SLOT(unHighlight()));
     }
     else
     {

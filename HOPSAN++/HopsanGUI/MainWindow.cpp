@@ -366,7 +366,7 @@ void MainWindow::initializeWorkspace()
     gpSplash->showMessage("Loading component libraries...");
 
     // Load HopsanGui built in secret components
-    gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "hidden/builtin_hidden.xml", Internal, Hidden);
+    gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "hidden/builtin_hidden.xml", InternalLib, Hidden);
 
     // Load default and user specified libraries
     QString componentPath = gpDesktopHandler->getComponentsPath();
@@ -375,16 +375,16 @@ void MainWindow::initializeWorkspace()
 #ifdef BUILTINDEFAULTCOMPONENTLIB
     gpLibraryHandler->loadLibrary(componentPath, Internal);
 #else
-    gpLibraryHandler->loadLibrary(componentPath+"defaultComponentLibrary.xml", Internal);
+    gpLibraryHandler->loadLibrary(componentPath+"defaultComponentLibrary.xml", InternalLib);
 #endif
 
     // Load builtIn library (Container special components)
-    gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "visible/builtin_visible.xml", Internal);
+    gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "visible/builtin_visible.xml", InternalLib);
 
     for(int i=0; i<gpConfig->getUserLibs().size(); ++i)
     {
         gpSplash->showMessage("Loading library: "+gpConfig->getUserLibs()[i]+"...");
-        gpLibraryHandler->loadLibrary(gpConfig->getUserLibs()[i]);
+        gpLibraryHandler->loadLibrary(gpConfig->getUserLibs()[i], gpConfig->getUserLibTypes()[i]);
     }
 
     //mpLibrary->checkForFailedComponents();
@@ -758,6 +758,11 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpExportToFMUActionCoSim, "FMU for Co-Simulation");
     connect(mpExportToFMUActionCoSim, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpExportToFMUMenu = new QMenu("Export to Functional Mock-Up Interface (FMI)");
+    mpExportToFMUMenu->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
+    mpExportToFMUMenu->addAction(mpExportToFMUAction);
+    mpExportToFMUMenu->addAction(mpExportToFMUActionCoSim);
+
     mpExportToLabviewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSIT.png"), tr("Export to LabVIEW/SIT"), this);
     mHelpPopupTextMap.insert(mpExportToLabviewAction, "Export model to LabVIEW Veristand.");
     connect(mpExportToLabviewAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
@@ -900,9 +905,6 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpSaveAction);
     mpFileMenu->addAction(mpSaveAsAction);
     mpFileMenu->addMenu(mpRecentMenu);
-    //mpFileMenu->addSeparator();
-    //mpFileMenu->addMenu(mpImportMenu);
-    //mpFileMenu->addMenu(mpExportMenu);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpPrintAction);
     mpFileMenu->addSeparator();
@@ -961,15 +963,9 @@ void MainWindow::createMenus()
 
     mpExportMenu->addAction(mpExportModelParametersAction);
     mpExportMenu->addSeparator();
-    mpExportToFMUMenu = new QMenu("Export to Functional Mock-Up Interface (FMI)");
-    mpExportToFMUMenu->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
-    mpExportToFMUMenu->addAction(mpExportToFMUAction);
-    mpExportToFMUMenu->addAction(mpExportToFMUActionCoSim);
-    mpExportMenu->addMenu(mpExportToFMUMenu);
-    mpExportToFMUMenuButton->setMenu(mpExportToFMUMenu);
-    //mpExportMenu->addAction(mpExportToFMUAction);
     mpExportMenu->addAction(mpExportToSimulinkAction);
     mpExportMenu->addAction(mpExportToLabviewAction);
+    mpExportMenu->addMenu(mpExportToFMUMenu);
 #ifdef DEVELOPMENT
     mpExportMenu->addAction(mpExportToSimulinkCoSimAction);
 #endif
@@ -1027,6 +1023,7 @@ void MainWindow::createToolbars()
     mpExportToFMUMenuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
     mpExportToFMUMenuButton->setPopupMode(QToolButton::InstantPopup);
     mpExportToFMUMenuButton->setMouseTracking(true);
+    mpExportToFMUMenuButton->setMenu(mpExportToFMUMenu);
     mpConnectivityToolBar->addWidget(mpExportToFMUMenuButton);
     //mpConnectivityToolBar->addAction(mpExportToFMUAction);
     mpConnectivityToolBar->addAction(mpImportFMUAction);

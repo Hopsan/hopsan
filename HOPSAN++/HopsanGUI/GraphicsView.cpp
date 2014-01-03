@@ -317,10 +317,12 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 //! @param event contains information about the key press event.
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
+    emit unHighlightAll();
+
     bool doNotForwardEvent = false;
     bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
     bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
-    //bool altPressed = event->modifiers().testFlag(Qt::AltModifier); //Commented because it is not used, to avoid compile warnings
+    bool altPressed = event->modifiers().testFlag(Qt::AltModifier);
 
     //qDebug() << "shiftPressed = " << shiftPressed;
     //qDebug() << "event->key() = " << event->key();
@@ -472,6 +474,36 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             this->setDragMode(RubberBandDrag);
         }
     }
+    else if(shiftPressed && altPressed && event->key() == Qt::Key_C)
+    {
+        foreach(QString comp, mpContainerObject->getModelObjectNames())
+        {
+            if(mpContainerObject->getModelObject(comp)->getTypeCQS() == "C")
+            {
+                mpContainerObject->getModelObject(comp)->highlight();
+            }
+        }
+    }
+    else if(shiftPressed && altPressed && event->key() == Qt::Key_Q)
+    {
+        foreach(QString comp, mpContainerObject->getModelObjectNames())
+        {
+            if(mpContainerObject->getModelObject(comp)->getTypeCQS() == "Q")
+            {
+                mpContainerObject->getModelObject(comp)->highlight();
+            }
+        }
+    }
+    else if(shiftPressed && altPressed && event->key() == Qt::Key_S)
+    {
+        foreach(QString comp, mpContainerObject->getModelObjectNames())
+        {
+            if(mpContainerObject->getModelObject(comp)->getTypeCQS() == "S")
+            {
+                mpContainerObject->getModelObject(comp)->highlight();
+            }
+        }
+    }
     else if (shiftPressed)
     {
         mShiftKeyPressed = true;
@@ -488,6 +520,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 //! @param event contains information about the keypress operation.
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
+    emit unHighlightAll();
+
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
     if(event->key() == Qt::Key_Control)
     {
@@ -528,7 +562,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    emit clicked();
+    emit unHighlightAll();
 
     if(!mpParentModelWidget->isEditingEnabled())
         return;

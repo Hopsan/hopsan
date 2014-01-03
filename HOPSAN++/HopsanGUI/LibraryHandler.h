@@ -24,7 +24,7 @@ class LibraryHandler : public QObject
 public:
     LibraryHandler(QObject *parent=0);
 
-    void loadLibrary(QString xmlPath, LibraryTypeEnumT type=External, HiddenVisibleEnumT visibility=Visible);
+    void loadLibrary(QString xmlPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
     void unloadLibrary(QString typeName);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
     void recompileLibrary(ComponentLibrary lib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);

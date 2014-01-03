@@ -427,12 +427,12 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             //Calculate path to show in library
             QString relDir = dir.relativeFilePath(cafFiles[i]);
             entry.path = relDir.split("/");
-            if(type == External)
+            if(type == ExternalLib)
             {
                 entry.path.prepend(dir.dirName());
                 entry.path.prepend(QString(EXTLIBSTR));
             }
-            else if(type == FMU)
+            else if(type == FmuLib)
             {
                 entry.path.prepend(QString(FMULIBSTR));
             }
@@ -461,9 +461,9 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 
     if(loadedSomething)
     {
-        if(type != Internal)
+        if(type != InternalLib)
         {
-            gpConfig->addUserLib(xmlPath);
+            gpConfig->addUserLib(xmlPath, type);
         }
         emit contentsChanged();
     }
@@ -704,7 +704,7 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
 
     //Add extra libs for FMU libraries
     QString extraLibs = "";
-    if(lib.type == FMU)
+    if(lib.type == FmuLib)
     {
         extraLibs = "-L./ -llibexpat";
     }

@@ -118,29 +118,39 @@ void Configuration::saveToXml()
         }
     }
 
-    QDomElement libs = appendDomElement(configRoot, "libs");
+    QDomElement libs = appendDomElement(configRoot, XML_LIBS);
     for(int i=0; i<mUserLibs.size(); ++i)
     {
-        appendDomTextNode(libs, "userlib", mUserLibs.at(i).absoluteFilePath());
+        appendDomTextNode(libs, XML_USERLIB, mUserLibs.at(i).absoluteFilePath());
+        QString typeStr = XML_LIBTYPE_INTERNAL;
+        if(mUserLibTypes.at(i) == ExternalLib)
+        {
+            typeStr = XML_LIBTYPE_EXTERNAL;
+        }
+        else if(mUserLibTypes.at(i) == FmuLib)
+        {
+            typeStr = XML_LIBTYPE_FMU;
+        }
+        libs.lastChildElement(XML_USERLIB).setAttribute(XML_LIBTYPE, typeStr);
     }
 
-    QDomElement models = appendDomElement(configRoot, "models");
+    QDomElement models = appendDomElement(configRoot, XML_MODELS);
     for(int i=0; i<mLastSessionModels.size(); ++i)
     {
         if(mLastSessionModels.at(i) != "")
         {
-            appendDomTextNode(models, "lastsessionmodel", mLastSessionModels.at(i));
+            appendDomTextNode(models, XML_LASTSESSIONMODEL, mLastSessionModels.at(i));
         }
     }
     for(int i = mRecentModels.size()-1; i>-1; --i)
     {
         if(mRecentModels.at(i) != "")
-            appendDomTextNode(models, "recentmodel", mRecentModels.at(i));
+            appendDomTextNode(models, XML_RECENTMODEL, mRecentModels.at(i));
     }
     for(int i = mRecentGeneratorModels.size()-1; i>-1; --i)
     {
         if(mRecentGeneratorModels.at(i) != "")
-            appendDomTextNode(models, "recentgeneratormodel", mRecentGeneratorModels.at(i));
+            appendDomTextNode(models, XML_RECENTGENERATORMODEL, mRecentGeneratorModels.at(i));
     }
 
 
@@ -237,7 +247,7 @@ void Configuration::loadFromXml()
             verifyConfigurationCompatibility(configRoot);     //Check version compatibility
 
             //Load user settings
-            QDomElement settingsElement = configRoot.firstChildElement("settings");
+            QDomElement settingsElement = configRoot.firstChildElement(HMF_SETTINGS);
             loadUserSettings(settingsElement);
 
             //Load style settings
@@ -245,11 +255,11 @@ void Configuration::loadFromXml()
             loadStyleSettings(styleElement);
 
             //Load library settings
-            QDomElement libsElement = configRoot.firstChildElement("libs");
+            QDomElement libsElement = configRoot.firstChildElement(XML_LIBS);
             loadLibrarySettings(libsElement);
 
             //Load model settings
-            QDomElement modelsElement = configRoot.firstChildElement("models");
+            QDomElement modelsElement = configRoot.firstChildElement(XML_MODELS);
             loadModelSettings(modelsElement);
 
             //Load unit settings
@@ -488,11 +498,24 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement)
 //! @brief Utility function that loads library settings
 void Configuration::loadLibrarySettings(QDomElement &rDomElement)
 {
-    QDomElement userLibElement = rDomElement.firstChildElement("userlib");
+    QDomElement userLibElement = rDomElement.firstChildElement(XML_USERLIB);
     while (!userLibElement.isNull())
     {
         mUserLibs.append(QFileInfo(userLibElement.text()));
-        userLibElement = userLibElement.nextSiblingElement(("userlib"));
+        QString typeStr = userLibElement.attribute(XML_LIBTYPE);
+        if(typeStr == XML_LIBTYPE_EXTERNAL)
+        {
+            mUserLibTypes.append(ExternalLib);
+        }
+        else if(typeStr == XML_LIBTYPE_FMU)
+        {
+            mUserLibTypes.append(FmuLib);
+        }
+        else
+        {
+            mUserLibTypes.append(InternalLib);
+        }
+        userLibElement = userLibElement.nextSiblingElement((XML_USERLIB));
     }
 }
 
@@ -500,23 +523,23 @@ void Configuration::loadLibrarySettings(QDomElement &rDomElement)
 //! @brief Utility function that loads model settings
 void Configuration::loadModelSettings(QDomElement &rDomElement)
 {
-    QDomElement lastSessionElement = rDomElement.firstChildElement("lastsessionmodel");
+    QDomElement lastSessionElement = rDomElement.firstChildElement(XML_LASTSESSIONMODEL);
     while (!lastSessionElement.isNull())
     {
         mLastSessionModels.prepend(lastSessionElement.text());
-        lastSessionElement = lastSessionElement.nextSiblingElement("lastsessionmodel");
+        lastSessionElement = lastSessionElement.nextSiblingElement(XML_LASTSESSIONMODEL);
     }
-    QDomElement recentModelElement = rDomElement.firstChildElement("recentmodel");
+    QDomElement recentModelElement = rDomElement.firstChildElement(XML_RECENTMODEL);
     while (!recentModelElement.isNull())
     {
         mRecentModels.prepend(recentModelElement.text());
-        recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
+        recentModelElement = recentModelElement.nextSiblingElement(XML_RECENTMODEL);
     }
-    QDomElement recentGeneratorModelElement = rDomElement.firstChildElement("recentgeneratormodel");
+    QDomElement recentGeneratorModelElement = rDomElement.firstChildElement(XML_RECENTGENERATORMODEL);
     while (!recentGeneratorModelElement.isNull())
     {
         mRecentGeneratorModels.prepend(recentGeneratorModelElement.text());
-        recentGeneratorModelElement = recentGeneratorModelElement.nextSiblingElement("recentgeneratormodel");
+        recentGeneratorModelElement = recentGeneratorModelElement.nextSiblingElement(XML_RECENTGENERATORMODEL);
     }
 }
 
@@ -644,6 +667,13 @@ QStringList Configuration::getUserLibs()
     }
 
     return ret;
+}
+
+
+//! @brief Returns a list of the library types for all loaded libraries
+QList<LibraryTypeEnumT> Configuration::getUserLibTypes()
+{
+    return mUserLibTypes;
 }
 
 
@@ -1096,12 +1126,14 @@ void Configuration::setAntiAliasing(bool value)
 
 //! @brief Adds a user library to the library list
 //! @param value Path to the new library
-void Configuration::addUserLib(QString value)
+//! @param type Type of library
+void Configuration::addUserLib(QString value, LibraryTypeEnumT type)
 {
     QFileInfo file(value);
     if(!mUserLibs.contains(file))
     {
         this->mUserLibs.append(file);
+        this->mUserLibTypes.append(type);
     }
     saveToXml();
 }
@@ -1112,7 +1144,15 @@ void Configuration::addUserLib(QString value)
 void Configuration::removeUserLib(QString value)
 {
     QFileInfo file(value);
-    mUserLibs.removeAll(file);
+    for(int i=0; i<mUserLibs.size(); ++i)
+    {
+        if(mUserLibs[i] == file)
+        {
+            mUserLibs.removeAt(i);
+            mUserLibTypes.removeAt(i);
+            --i;
+        }
+    }
     saveToXml();
 }
 

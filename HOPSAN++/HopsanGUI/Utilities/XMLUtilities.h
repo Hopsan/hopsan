@@ -202,4 +202,16 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_AVERAGE "average"
 #define HMF_SIGMA "sigma"
 
+#define XML_LIBS "libs"
+#define XML_USERLIB "userlib"
+#define XML_LIBTYPE "libtype"
+#define XML_LIBTYPE_INTERNAL "internal"
+#define XML_LIBTYPE_EXTERNAL "external"
+#define XML_LIBTYPE_FMU "fmu"
+
+#define XML_MODELS "models"
+#define XML_LASTSESSIONMODEL "lastsessionmodel"
+#define XML_RECENTMODEL "recentmodel"
+#define XML_RECENTGENERATORMODEL "recentgeneratormodel"
+
 #endif // XMLUTILITIES_H
