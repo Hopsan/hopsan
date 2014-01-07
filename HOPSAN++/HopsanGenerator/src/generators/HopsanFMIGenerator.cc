@@ -877,7 +877,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     }
 
     QString xmlReplace3;
-    QString scalarVarLines = extractTaggedSection(xmlCode, "3");
+    QString scalarVarLines = extractTaggedSection(xmlCode, "variables");
     int i, j;
     for(i=0; i<inputVariables.size(); ++i)
     {
@@ -891,27 +891,28 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     }
 
     QString xmlReplace4;
-    QString paramLines = extractTaggedSection(xmlCode, "4");
+    QString paramLines = extractTaggedSection(xmlCode, "parameters");
     for(int k=0; k<parameterNames.size(); ++k)
     {
         QString refString = QString::number(i+j+k);
         xmlReplace4.append(replaceTags(paramLines, QStringList() << "varname" << "varref" << "variability" << "start", QStringList() << parameterNames[k] << refString << "parameter" << parameterValues[k]));
     }
 
-    xmlCode.replace("<<<0>>>", modelName);
-    xmlCode.replace("<<<1>>>", ID);
-    xmlCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size() + parameterNames.size()));
-    replaceTaggedSection(xmlCode, "3", xmlReplace3);
-    replaceTaggedSection(xmlCode, "4", xmlReplace4);
+    xmlCode.replace("<<<modelname>>>", modelName);
+    xmlCode.replace("<<<guid>>>", ID);
+    replaceTaggedSection(xmlCode, "variables", xmlReplace3);
+    replaceTaggedSection(xmlCode, "parameters", xmlReplace4);
 
     if(me)
     {
-        xmlCode.replace("<<<5>>>","<Implementation>\n  <CoSimulation_StandAlone>\n    <Capabilities\n      canHandleVariableCommunicationStepSize=\"false\"\n      canHandleEvents=\"false\"/>\n  </CoSimulation_StandAlone>\n</Implementation>");
+        xmlCode.replace("<<<implementation>>>","");
     }
     else
     {
-        xmlCode.replace("<<<5>>>","");
+        xmlCode.replace("<<<implementation>>>","<Implementation>\n  <CoSimulation_StandAlone>\n    <Capabilities\n      canHandleVariableCommunicationStepSize=\"false\"\n      canHandleEvents=\"false\"/>\n  </CoSimulation_StandAlone>\n</Implementation>");
     }
+
+
 
     QTextStream modelDescriptionStream(&modelDescriptionFile);
     modelDescriptionStream << xmlCode;
@@ -947,12 +948,13 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QString sourceTemplateFileName;
     if(me)
     {
-        sourceTemplateFileName = ":templates/fmuCoSimSourceTemplate.c";
+        sourceTemplateFileName = ":templates/fmuModelSourceTemplate.c";
     }
     else
     {
-        sourceTemplateFileName = ":templates/fmuModelSourceTemplate.c";
+        sourceTemplateFileName = ":templates/fmuCoSimSourceTemplate.c";
     }
+
     QFile sourceTemplateFile(sourceTemplateFileName);
     if(!sourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
   <fmiModelDescription
   fmiVersion="1.0"
-  modelName="<<<0>>>"
-  modelIdentifier="<<<0>>>"
-  guid="<<<1>>>"
-  numberOfContinuousStates="<<<2>>>"
+  modelName="<<<modelname>>>"
+  modelIdentifier="<<<modelname>>>"
+  guid="<<<guid>>>"
+  numberOfContinuousStates="0"
   numberOfEventIndicators="0">
 <ModelVariables>
->>>3>>><ScalarVariable name="<<<varname>>>" valueReference="<<<varref>>>" description="input variable" causality="<<<causality>>>">
+>>>variables>>><ScalarVariable name="<<<varname>>>" valueReference="<<<varref>>>" description="input variable" causality="<<<causality>>>">
          <Real start="0" fixed="false"/>
        </ScalarVariable>
-<<<3<<<>>>4>>><ScalarVariable name="<<<varname>>>" valueReference="<<<varref>>>" description="input variable" variability="<<<variability>>>">
+<<<variables<<<>>>parameters>>><ScalarVariable name="<<<varname>>>" valueReference="<<<varref>>>" description="input variable" variability="<<<variability>>>">
          <Real start="<<<start>>>" fixed="true"/>
        </ScalarVariable>
-<<<4<<<</ModelVariables>
-<<<5>>>
+<<<parameters<<<</ModelVariables>
+<<<implementation>>>
 </fmiModelDescription>
