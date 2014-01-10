@@ -38,25 +38,28 @@
 #include "UnitScale.h"
 
 #define TIMEVARIABLENAME "Time"
+#define FREQUENCYVARIABLENAME "Frequency"
 
 // Forward declaration
-class LogVariableData;
+class VectorVariable;
 class LogDataHandler;
 
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
 
 //! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)
-enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType, UndefinedVariableType};
-//! @brief This function converts a VariableSourceTypeT enum into a string
-QString getVariableSourceTypeString(const VariableSourceTypeT type);
+enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType, UndefinedVariableSourceType};
+QString getVariableSourceTypeAsString(const VariableSourceTypeT type);
+
+//! @brief This enum describes the variable type
+enum VariableTypeT {VectorType, TimeDomainType, FrequencyDomainType, RealFrequencyDomainType, ImaginaryFrequencyDomainType, AmplitudeFrequencyDomainType, PhaseFrequencyDomainType, ComplexType, UndefinedVariableType};
 
 //! @class VariableCommonDescription
 //! @brief Container class for strings describing a log variable (common data for all generations)
-class VariableCommonDescription
+class VariableDescription
 {
 public:
-    VariableCommonDescription() : mVariableSourceType(UndefinedVariableType) {}
+    VariableDescription() : mVariableSourceType(UndefinedVariableSourceType) {}
     QString mModelPath;
     QString mComponentName;
     QString mPortName;
@@ -70,51 +73,45 @@ public:
     QString getFullNameWithSeparator(const QString sep) const;
     void setFullName(const QString compName, const QString portName, const QString dataName);
 
-    bool operator==(const VariableCommonDescription &other) const;
+    bool operator==(const VariableDescription &other) const;
 };
 
-//! @class VariableUniqueDescription
-//! @brief Container class for strings describing a log variable (unique for each data)
-class VariableUniqueDescription
-{
-public:
-    VariableSourceTypeT mVariableSourceType;
-    QString mImportFileName;
-};
 
-typedef QSharedPointer<VariableCommonDescription> SharedVariableCommonDescriptionT;
-typedef QSharedPointer<VariableUniqueDescription> SharedVariableUniqueDescriptionT;
-typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
+typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
+typedef QSharedPointer<VectorVariable> SharedVariablePtrT;
 
-SharedLogVariableDataPtrT createFreeTimeVariabel(const QVector<double> &rTime);
+SharedVariableDescriptionT createTimeVariableDescription();
+SharedVariableDescriptionT createFrequencyVariableDescription();
+SharedVariablePtrT createFreeVectorVariable(const QVector<double> &rData, SharedVariableDescriptionT pVarDesc);
+SharedVariablePtrT createFreeTimeVectorVariabel(const QVector<double> &rTime);
+SharedVariablePtrT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency);
 
 class LogVariableContainer : public QObject
 {
     Q_OBJECT
 public:
-    typedef QMap<int, SharedLogVariableDataPtrT> GenerationMapT;
+    typedef QMap<int, SharedVariablePtrT> GenerationMapT;
 
     //! @todo also need qucik constructor for creating a container with one generation directly
-    LogVariableContainer(const VariableCommonDescription &rVarDesc, LogDataHandler *pParentLogDataHandler);
+    LogVariableContainer(LogDataHandler *pParentLogDataHandler);
     ~LogVariableContainer();
-    SharedLogVariableDataPtrT addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
-    SharedLogVariableDataPtrT addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData);
-    void addDataGeneration(const int generation, SharedLogVariableDataPtrT pData);
+
+//    SharedVariablePtrT addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT pDescription);
+//    SharedVariablePtrT addDataGeneration(const int generation, const SharedVariablePtrT time, const QVector<double> &rData, SharedVariableDescriptionT pDescription);
+    void addDataGeneration(const int generation, SharedVariablePtrT pData);
     bool removeDataGeneration(const int generation, const bool force=false);
     bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
     void removeAllGenerations();
     bool removeAllImportedGenerations();
 
-    SharedLogVariableDataPtrT getDataGeneration(const int gen=-1) const;
-    QList<SharedLogVariableDataPtrT> getAllDataGenerations() const;
+    SharedVariablePtrT getDataGeneration(const int gen=-1) const;
+    QList<SharedVariablePtrT> getAllDataGenerations() const;
     bool hasDataGeneration(const int gen);
     int getLowestGeneration() const;
     int getHighestGeneration() const;
     int getNumGenerations() const;
     QList<int> getGenerations() const;
 
-    void setVariableCommonDescription(const VariableCommonDescription &rNewDescription);
-    SharedVariableCommonDescriptionT getVariableCommonDescription() const;
     const QString &getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
@@ -134,32 +131,33 @@ public:
 
 signals:
     void nameChanged();
-    void logVariableBeingRemoved(SharedLogVariableDataPtrT);
+    void logVariableBeingRemoved(SharedVariablePtrT);
 
 private:
     LogDataHandler *mpParentLogDataHandler;
-    SharedVariableCommonDescriptionT mVariableCommonDescription;
+    SharedVariableDescriptionT mVariableCommonDescription;
     GenerationMapT mDataGenerations;
     QList<int> mKeepGenerations;
 };
 
 
-class LogVariableData : public QObject
+class VectorVariable : public QObject
 {
     Q_OBJECT
     friend class LogVariableContainer;
     friend class LogDataHandler;
 
 public:
-    LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableCommonDescriptionT varDesc,
+    VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                     SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
-    ~LogVariableData();
+    ~VectorVariable();
 
-    const SharedVariableCommonDescriptionT getVariableCommonDescription() const;
-    const SharedVariableUniqueDescriptionT getVariableUniqueDescription() const;
-    void setVariableUniqueDescription(const VariableUniqueDescription &rDesc);
-    const SharedLogVariableDataPtrT getTimeVector() const;
-    VariableSourceTypeT getVariableSource() const;
+    // Access variable type enums
+    virtual VariableSourceTypeT getVariableSourceType() const;
+    virtual VariableTypeT getVariableType() const;
+
+    // Functions that read the data metadata
+    const SharedVariableDescriptionT getVariableDescription() const;
     const QString &getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
@@ -174,45 +172,25 @@ public:
     int getLowestGeneration() const;
     int getHighestGeneration() const;
     int getNumGenerations() const;
-    bool isImported() const;
-    QString getImportedFromFileName() const;
+    virtual bool isImported() const;
+    virtual QString getImportedFileName() const;
 
+    // Data plot scaling
     void setCustomUnitScale(const UnitScale &rUnitScale);
-    const UnitScale &getCustomUnitScale() const;
     void removeCustomUnitScale();
+    const UnitScale &getCustomUnitScale() const;
     const QString &getPlotScaleDataUnit() const;
     const QString &getActualPlotDataUnit() const;
     double getPlotScale() const;
     double getPlotOffset() const;
 
-    const SharedLogVariableDataPtrT getSharedTimePointer() const;
-    QVector<double> getDataVectorCopy();
-    void sendDataToStream(QTextStream &rStream, QString separator);
+    // Functions that only read data
     int getDataSize() const;
+    QVector<double> getDataVectorCopy() const;
     double first() const;
     double last() const;
-
-    void addToData(const SharedLogVariableDataPtrT pOther);
-    void addToData(const double other);
-    void subFromData(const SharedLogVariableDataPtrT pOther);
-    void subFromData(const double other);
-    void multData(const SharedLogVariableDataPtrT pOther);
-    void multData(const double other);
-    void divData(const SharedLogVariableDataPtrT pOther);
-    void divData(const double other);
-    void absData();
-    void diffBy(const SharedLogVariableDataPtrT pOther);
-    void integrateBy(const SharedLogVariableDataPtrT pOther);
-    void lowPassFilter(const SharedLogVariableDataPtrT pTime, const double w);
-    void frequencySpectrum(const SharedLogVariableDataPtrT pTime, const bool doPowerSpectrum);
-    void assignFrom(const SharedLogVariableDataPtrT pOther);
-    void assignFrom(const QVector<double> &rSrc);
-    void assignFrom(const double src);
-    void assignFrom(SharedLogVariableDataPtrT time, const QVector<double> &rData);
-    void assignFrom(QVector<double> &rTime, QVector<double> &rData);
-    double pokeData(const int index, const double value, QString &rErr);
-    double peekData(const int index, QString &rErr) const;
     bool indexInRange(const int idx) const;
+    double peekData(const int index, QString &rErr) const;
     double averageOfData() const;
     double minOfData(int &rIdx) const;
     double minOfData() const;
@@ -220,46 +198,160 @@ public:
     double maxOfData() const;
     void elementWiseGt(QVector<double> &rResult, const double threshold) const;
     void elementWiseLt(QVector<double> &rResult, const double threshold) const;
-    void append(const double t, const double y);
+
+    // Check out and return pointers to data (move to ram if necessary)
+    QVector<double> *beginFullVectorOperation();
+    bool endFullVectorOperation(QVector<double> *&rpData);
+
+    // Functions that only read data but that require reimplementation in derived classes
+    virtual const SharedVariablePtrT getSharedTimeVectorPointer() const;
+    virtual const SharedVariablePtrT getSharedFrequencyVectorPointer() const;
+    virtual SharedVariablePtrT frequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
+
+    // Functions that modify the data
+    void assignFrom(const QVector<double> &rSrc);
+    void assignFrom(const double src);
+    void addToData(const SharedVariablePtrT pOther);
+    void addToData(const double other);
+    void subFromData(const SharedVariablePtrT pOther);
+    void subFromData(const double other);
+    void multData(const SharedVariablePtrT pOther);
+    void multData(const double other);
+    void divData(const SharedVariablePtrT pOther);
+    void divData(const double other);
+    void absData();
+    double pokeData(const int index, const double value, QString &rErr);
     void append(const double y);
 
+    // Functions that modify data, but that may require reimplementation in derived classes
+    virtual void assignFrom(const SharedVariablePtrT pOther);
+    virtual void assignFrom(SharedVariablePtrT time, const QVector<double> &rData);
+    virtual void assignFrom(QVector<double> &rTime, QVector<double> &rData);
+    virtual void append(const double t, const double y);
+    virtual void diffBy(SharedVariablePtrT pOther);
+    virtual void integrateBy(SharedVariablePtrT pOther);
+    virtual void lowPassFilter(SharedVariablePtrT pTime, const double w);
+
+
+    // Functions to toggle "keep" generation
     void preventAutoRemoval();
     void allowAutoRemoval();
 
+    // Handle disk caching and data streaming
     void setCacheDataToDisk(const bool toDisk);
     bool isCachingDataToDisk() const;
+    void sendDataToStream(QTextStream &rStream, QString separator);
 
+    // Access to parent object pointers
     LogVariableContainer *getLogVariableContainer();
     LogDataHandler *getLogDataHandler();
 
 public slots:
-    void setTimePlotScaleAndOffset(const double scale, const double offset);
-    void setTimePlotScale(double scale);
-    void setTimePlotOffset(double offset);
     void setPlotScale(double scale);
     void setPlotOffset(double offset);
     void setPlotScaleAndOffset(const double scale, const double offset);
 
+    // Slots that require reimplementation in derived classes
+    virtual void setTimePlotScaleAndOffset(const double scale, const double offset);
+    virtual void setTimePlotScale(double scale);
+    virtual void setTimePlotOffset(double offset);
 
 signals:
     void dataChanged();
     void nameChanged();
 
 protected:
+    typedef QVector<double> DataVectorT;
     double peekData(const int idx) const;
 
-private:
-    typedef QVector<double> DataVectorT;
-    SharedLogVariableDataPtrT mSharedTimeVectorPtr;
     CachableDataVector *mpCachedDataVector;
     QPointer<LogVariableContainer> mpParentVariableContainer;
-    SharedVariableCommonDescriptionT mpVariableCommonDescription;
-    SharedVariableUniqueDescriptionT mpVariableUniqueDescription;
+    SharedVariableDescriptionT mpVariableDescription;
 
     UnitScale mCustomUnitScale;
     double mDataPlotScale;
     double mDataPlotOffset;
     int mGeneration;
+
+private:
+    QVector<double> *pTempCheckoutData;
+};
+
+class ImportedVariableBase
+{
+public:
+    virtual bool isImported() const;
+    virtual QString getImportedFileName() const;
+protected:
+    QString mImportFileName;
+
+};
+
+class ImportedVectorVariable : public VectorVariable, public ImportedVariableBase
+{
+    Q_OBJECT
+public:
+    ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile,
+                           SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+};
+
+class TimeDomainVariable : public VectorVariable
+{
+    Q_OBJECT
+public:
+    TimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
+                       SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+
+    virtual VariableTypeT getVariableType() const;
+
+    const SharedVariablePtrT getSharedTimeVectorPointer() const;
+
+    void diffBy(SharedVariablePtrT pOther);
+    void integrateBy(SharedVariablePtrT pOther);
+    void lowPassFilter(SharedVariablePtrT pTime, const double w);
+    SharedVariablePtrT frequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
+    void assignFrom(const SharedVariablePtrT pOther);
+    virtual void assignFrom(SharedVariablePtrT time, const QVector<double> &rData);
+    virtual void assignFrom(QVector<double> &rTime, QVector<double> &rData);
+    virtual void append(const double t, const double y);
+
+public slots:
+    void setTimePlotScaleAndOffset(const double scale, const double offset);
+    void setTimePlotScale(double scale);
+    void setTimePlotOffset(double offset);
+
+protected:
+    SharedVariablePtrT mpSharedTimeVector;
+
+};
+
+class ImportedTimeDomainVariable : public TimeDomainVariable, public ImportedVariableBase
+{
+    Q_OBJECT
+public:
+    ImportedTimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
+                               const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+};
+
+class FrequencyDomainVariable : public VectorVariable
+{
+    Q_OBJECT
+public:
+    FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
+                            SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+    //! @todo add a bunch of reimplemented functions
+protected:
+    SharedVariablePtrT mpSharedFrequencyVector;
+};
+
+
+class ComplexVectorVariable : public VectorVariable
+{
+    Q_OBJECT
+public:
+    ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc,
+                          SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+    //! @todo add a bunch of reimplemented functions
 };
 
 #endif // LOGVARIABLE_H

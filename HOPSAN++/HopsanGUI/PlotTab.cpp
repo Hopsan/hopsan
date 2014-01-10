@@ -399,7 +399,7 @@ void PlotTab::openTimeScalingDialog()
         int gen = mPlotCurvePtrs[FirstPlot][i]->getGeneration();
         if (!activeGenerations.contains(gen))
         {
-            SharedLogVariableDataPtrT pTime = mPlotCurvePtrs[FirstPlot][i]->getTimeVectorPtr();
+            SharedVariablePtrT pTime = mPlotCurvePtrs[FirstPlot][i]->getTimeVectorPtr();
             //if (pTime)
             {
                 TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, &scaleDialog);
@@ -910,14 +910,13 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
 //! @param portName Name of port form which new data origins
 //! @param dataName Data name (physical quantity) of new data
 //! @param dataUnit Unit of new data
-void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableCommonDescription &rVarDesc, HopsanPlotIDEnumT plotID)
+void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID)
 {
-    LogVariableContainer *cont = new LogVariableContainer(rVarDesc,0);
-    cont->addDataGeneration(0, SharedLogVariableDataPtrT(), xArray);
-    setCustomXVectorForAll(cont->getDataGeneration(-1),plotID);
+    SharedVariableDescriptionT pVarDesc(new VariableDescription(rVarDesc));
+    setCustomXVectorForAll(createFreeVectorVariable(xArray, pVarDesc),plotID);
 }
 
-void PlotTab::setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID)
+void PlotTab::setCustomXVectorForAll(SharedVariablePtrT pData, HopsanPlotIDEnumT plotID)
 {
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
@@ -993,11 +992,11 @@ void PlotTab::updateAxisLabels()
                 if (mHasCustomXData)
                 {
                     // Check all curves to make sure if it is the same custom x on all
-                    QList<SharedLogVariableDataPtrT> customXdatas;
+                    QList<SharedVariablePtrT> customXdatas;
                     //! @todo checking this stuff every time is stupid, this should be sorted out upon adding removin curves
                     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
                     {
-                        SharedLogVariableDataPtrT pX = mPlotCurvePtrs[plotID].at(i)->getCustomXData();
+                        SharedVariablePtrT pX = mPlotCurvePtrs[plotID].at(i)->getCustomXData();
                         if (!pX.isNull() && !customXdatas.contains(pX))
                         {
                             customXdatas.append(mPlotCurvePtrs[plotID].at(i)->getCustomXData());
@@ -1015,7 +1014,7 @@ void PlotTab::updateAxisLabels()
                 else
                 {
                     // Ok since there is not custom x-data lets assume that all curves have the same x variable (usually time), lets ask the first one
-                    SharedLogVariableDataPtrT pTime = mPlotCurvePtrs[plotID].first()->getTimeVectorPtr();
+                    SharedVariablePtrT pTime = mPlotCurvePtrs[plotID].first()->getTimeVectorPtr();
                     if (pTime)
                     {
                         mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, pTime->getDataName()+QString(" [%1] ").arg(pTime->getActualPlotDataUnit()));
@@ -1086,12 +1085,12 @@ bool PlotTab::isGridVisible()
 void PlotTab::resetXTimeVector()
 {
     mHasCustomXData = false;
-    mpCustomXData = SharedLogVariableDataPtrT(0);
+    mpCustomXData = SharedVariablePtrT(0);
 
     //! @todo what about second plot
     for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
-        mPlotCurvePtrs[FirstPlot].at(i)->setCustomXData(SharedLogVariableDataPtrT(0)); //Remove any custom x-data
+        mPlotCurvePtrs[FirstPlot].at(i)->setCustomXData(SharedVariablePtrT(0)); //Remove any custom x-data
     }
 
     rescaleAxesToCurves();
@@ -1634,7 +1633,7 @@ void PlotTab::exportToPLO()
     fileInfo.setFile(filePath);
     gpConfig->setPlotDataDir(fileInfo.absolutePath());
 
-    QVector<SharedLogVariableDataPtrT> variables;
+    QVector<SharedVariablePtrT> variables;
     for(int c=0; c<mPlotCurvePtrs[FirstPlot].size(); ++c)
     {
         variables.append(mPlotCurvePtrs[FirstPlot][c]->getLogDataVariablePtr());
@@ -2596,7 +2595,7 @@ void PlotTab::setLegendSymbol(const QString symStyle)
     }
 }
 
-void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT /*plotID*/)
+void PlotTab::setTabOnlyCustomXVector(SharedVariablePtrT pData, HopsanPlotIDEnumT /*plotID*/)
 {
     mHasCustomXData = true;
     mpCustomXData = pData;
@@ -3226,7 +3225,7 @@ void HopQwtPlot::replot()
 }
 
 
-TimeScaleWidget::TimeScaleWidget(SharedLogVariableDataPtrT pTime, QWidget *pParent) : QWidget(pParent)
+TimeScaleWidget::TimeScaleWidget(SharedVariablePtrT pTime, QWidget *pParent) : QWidget(pParent)
 {
     mpTime = pTime;
 

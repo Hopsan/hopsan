@@ -459,12 +459,12 @@ PlotWindow::~PlotWindow()
 }
 
 
-void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableCommonDescription &rVarDesc)
+void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
 {
     getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, FirstPlot);
 }
 
-void PlotWindow::setCustomXVector(SharedLogVariableDataPtrT pData)
+void PlotWindow::setCustomXVector(SharedVariablePtrT pData)
 {
     getCurrentPlotTab()->setCustomXVectorForAll(pData);
 }
@@ -555,7 +555,7 @@ QString PlotWindow::getName() const
 //! @param portName Name of port where variable is located
 //! @param dataName Name of variable
 //! @param dataUnit Unit of variable
-PlotCurve* PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor desiredColor)
+PlotCurve* PlotWindow::addPlotCurve(SharedVariablePtrT pData, int axisY, QColor desiredColor)
 {
     if (pData)
     {
@@ -582,7 +582,7 @@ PlotCurve* PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, 
     return 0;
 }
 
-PlotCurve *PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pXData, SharedLogVariableDataPtrT pYData, int axisY, QColor desiredColor)
+PlotCurve *PlotWindow::addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, int axisY, QColor desiredColor)
 {
     PlotCurve *pCurve = addPlotCurve(pYData, axisY, desiredColor);
     if (pCurve)
@@ -769,9 +769,9 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
     getCurrentPlotTab()->updateAxisLabels();
     LogDataHandler *pLogDataHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
-    SharedLogVariableDataPtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
+    SharedVariablePtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
     bool power = mpPowerSpectrumCheckBox->isChecked();
-    SharedLogVariableDataPtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedLogVariableDataPtrT(), power);
+    SharedVariablePtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedVariablePtrT(), power);
     PlotCurve *pNewCurve = new PlotCurve(pNewVar, QwtPlot::yLeft, getCurrentPlotTab(), FirstPlot, FrequencyAnalysisType);
     getCurrentPlotTab()->addCurve(pNewCurve);
 
@@ -900,7 +900,7 @@ void PlotWindow::createBodePlotFromDialog()
 }
 
 
-void PlotWindow::createBodePlot(SharedLogVariableDataPtrT var1, SharedLogVariableDataPtrT var2, int Fmax)
+void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax)
 {
     PlotCurve *pCurve1 = new PlotCurve(var1,QwtPlot::yLeft, getCurrentPlotTab());
     PlotCurve *pCurve2 = new PlotCurve(var2,QwtPlot::yLeft, getCurrentPlotTab());
@@ -996,31 +996,37 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
 
     addPlotTab("Nyquist Plot");
-    PlotCurve *pNyquistCurve1 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
-                                              vRe, vIm, pOutputCurve->getAxisY(),
-                                              getCurrentPlotTab(), FirstPlot, NyquistType);
-    getCurrentPlotTab()->addCurve(pNyquistCurve1);
+    SharedVariablePtrT pNyquistData1(new ComplexVectorVariable(vRe, vIm,pOutputCurve->getLogDataVariablePtr()->getGeneration(),
+                                                               SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
+                                                               SharedMultiDataVectorCacheT(), 0));
+    getCurrentPlotTab()->addCurve(new PlotCurve(pNyquistData1, pOutputCurve->getAxisY(), getCurrentPlotTab(), FirstPlot, NyquistType));
 
-    PlotCurve *pNyquistCurve2 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
-                                              vRe, vImNeg, pOutputCurve->getAxisY(),
-                                              getCurrentPlotTab(), FirstPlot, NyquistType);
-    getCurrentPlotTab()->addCurve(pNyquistCurve2);
+    SharedVariablePtrT pNyquistData2(new ComplexVectorVariable(vRe, vImNeg,pOutputCurve->getLogDataVariablePtr()->getGeneration(),
+                                                               SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
+                                                               SharedMultiDataVectorCacheT(), 0));
+    getCurrentPlotTab()->addCurve(new PlotCurve(pNyquistData2, pOutputCurve->getAxisY(), getCurrentPlotTab(), FirstPlot, NyquistType));
+
+    //! @todo these three should not be needded they should be called in the addCurve function
     getCurrentPlotTab()->getPlot()->replot();
     getCurrentPlotTab()->rescaleAxesToCurves();
     getCurrentPlotTab()->updateGeometry();
 
     addPlotTab("Bode Diagram");
-    PlotCurve *pGainCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
-                                          F, vBodeGain, pOutputCurve->getAxisY(),
-                                          getCurrentPlotTab(), FirstPlot, BodeGainType);
+    SharedVariablePtrT pFrequencyVar = createFreeFrequencyVectorVariabel(F);
+    SharedVariablePtrT pGainData(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutputCurve->getLogDataVariablePtr()->getGeneration(),
+                                                             SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
+                                                             SharedMultiDataVectorCacheT(), 0));
+    PlotCurve *pGainCurve = new PlotCurve(pGainData, pOutputCurve->getAxisY(), getCurrentPlotTab(), FirstPlot, BodeGainType);
     getCurrentPlotTab()->addCurve(pGainCurve);
 
-    PlotCurve *pPhaseCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableCommonDescription().data(),
-                                           F, vBodePhase, pOutputCurve->getAxisY(),
-                                           getCurrentPlotTab(), SecondPlot, BodePhaseType);
+    SharedVariablePtrT pPhaseData(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutputCurve->getLogDataVariablePtr()->getGeneration(),
+                                                             SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
+                                                             SharedMultiDataVectorCacheT(), 0));
+    PlotCurve *pPhaseCurve = new PlotCurve(pPhaseData, pOutputCurve->getAxisY(), getCurrentPlotTab(), SecondPlot, BodePhaseType);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SecondPlot);
 
     getCurrentPlotTab()->showPlot(SecondPlot, true);
+    //! @todo are these really needed they should be called in the addCurve function (but something special here for first and second plot)
     getCurrentPlotTab()->getPlot(FirstPlot)->replot();
     getCurrentPlotTab()->getPlot(SecondPlot)->replot();
     getCurrentPlotTab()->updateGeometry();
@@ -1030,7 +1036,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     getCurrentPlotTab()->rescaleAxesToCurves();
 
 
-    //Add a curve marker at the amplitude margin
+    // Add a curve marker at the amplitude margin
     for(int i=1; i<vBodePhase.size(); ++i)
     {
         if(vBodePhase.at(i) < -180 && vBodePhase.at(i-1) > -180)
@@ -1042,7 +1048,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         }
     }
 
-    //Add a curve marker at the phase margin
+    // Add a curve marker at the phase margin
     for(int i=1; i<vBodeGain.size(); ++i)
     {
         if(vBodeGain.at(i) < -0 && vBodeGain.at(i-1) > -0)
@@ -1054,14 +1060,14 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         }
     }
 
-    SharedLogVariableDataPtrT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
+    SharedVariablePtrT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
     if(gainVar.isNull())
     {
         gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
     }
     gainVar.data()->assignFrom(F, vBodeGain);
 
-    SharedLogVariableDataPtrT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
+    SharedVariablePtrT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
     if(phaseVar.isNull())
     {
         phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);

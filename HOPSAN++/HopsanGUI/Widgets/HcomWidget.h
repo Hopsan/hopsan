@@ -32,13 +32,13 @@
 class MainWindow;
 class Port;
 class ModelObject;
-class LogVariableData;
+class VectorVariable;
 class TerminalConsole;
 class HcomHandler;
 class HcomCommand;
 class CoreMessagesAccess;
 
-typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
+typedef QSharedPointer<VectorVariable> SharedVariablePtrT;
 
 class TerminalWidget : public QWidget
 {

@@ -60,8 +60,8 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(const QString name, QWidget *parent);
     ~PlotWindow();
-    PlotCurve* addPlotCurve(SharedLogVariableDataPtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
-    PlotCurve* addPlotCurve(SharedLogVariableDataPtrT pXData, SharedLogVariableDataPtrT pYData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(SharedVariablePtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
 
     PlotTabWidget *getPlotTabWidget();
@@ -77,8 +77,8 @@ signals:
     void windowClosed(PlotWindow *pWindow);
 
 public slots:
-    void setCustomXVector(QVector<double> xarray, const VariableCommonDescription &rVarDesc);
-    void setCustomXVector(SharedLogVariableDataPtrT pData);
+    void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc);
+    void setCustomXVector(SharedVariablePtrT pData);
     void addPlotTab(QString requestedName=QString());
     void updatePalette();
     void createPlotWindowFromTab();
@@ -94,7 +94,7 @@ public slots:
     void showFrequencyAnalysisHelp();
     void createBodePlot();
     void createBodePlotFromDialog();
-    void createBodePlot(SharedLogVariableDataPtrT var1, SharedLogVariableDataPtrT var2, int Fmax);
+    void createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax);
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
     void closeIfEmpty();

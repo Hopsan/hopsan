@@ -585,13 +585,13 @@ void SensitivityAnalysisDialog::run()
         }
 
         //Commented out code = add curve for max and min
-        SharedLogVariableDataPtrT pTime = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorPtr(nGenerations-1);
-        SharedVariableCommonDescriptionT minDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription);
+        SharedVariablePtrT pTime = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorPtr(nGenerations-1);
+        SharedVariableDescriptionT minDesc(new VariableDescription);
         minDesc.data()->mAliasName = "Min";
-        SharedLogVariableDataPtrT pMinData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMin, minDesc, mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
-        SharedVariableCommonDescriptionT maxDesc = SharedVariableCommonDescriptionT(new VariableCommonDescription);
+        SharedVariablePtrT pMinData(new TimeDomainVariable(pTime, vMin, -1, minDesc, SharedMultiDataVectorCacheT(0), 0));
+        SharedVariableDescriptionT maxDesc = SharedVariableDescriptionT(new VariableDescription);
         maxDesc.data()->mAliasName = "Max";
-        SharedLogVariableDataPtrT pMaxData = SharedLogVariableDataPtrT(new LogVariableData(0, pTime, vMax, maxDesc, mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getOrCreateGenerationMultiCache(0), 0));
+        SharedVariablePtrT pMaxData(new TimeDomainVariable(pTime, vMax, -1, maxDesc, SharedMultiDataVectorCacheT(0), 0));
 
         PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
         gpPlotHandler->plotDataToWindow(pPlotWindow, pMaxData, QwtPlot::yLeft);

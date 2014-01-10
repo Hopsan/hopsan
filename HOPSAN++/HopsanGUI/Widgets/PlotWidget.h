@@ -39,9 +39,9 @@ public:
     LogDataHandler *getLogDataHandler();
     void setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow);
 
-    void addFullVariable(SharedLogVariableDataPtrT pData);
-    void addAliasVariable(SharedLogVariableDataPtrT pData);
-    void addImportedVariable(SharedLogVariableDataPtrT pData);
+    void addFullVariable(SharedVariablePtrT pData);
+    void addAliasVariable(SharedVariablePtrT pData);
+    void addImportedVariable(SharedVariablePtrT pData);
     void refreshImportedVariables();
 
     void updateList();

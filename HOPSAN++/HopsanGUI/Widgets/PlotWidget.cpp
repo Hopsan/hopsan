@@ -55,8 +55,8 @@
 class BaseVariableTreeItem : public QTreeWidgetItem
 {
 public:
-    BaseVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent);
-    SharedLogVariableDataPtrT getDataPtr();
+    BaseVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
+    SharedVariablePtrT getDataPtr();
     QString getFullName() const;
     QString getComponentName();
     QString getPortName();
@@ -66,25 +66,25 @@ public:
     int getGeneration() const;
 
 protected:
-    SharedLogVariableDataPtrT mpData;
+    SharedVariablePtrT mpData;
 };
 
 class FullVariableTreeItem : public BaseVariableTreeItem
 {
 public:
-    FullVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent);
+    FullVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
 };
 
 class ImportedVariableTreeItem : public BaseVariableTreeItem
 {
 public:
-    ImportedVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent);
+    ImportedVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
 };
 
 class AliasVariableTreeItem : public BaseVariableTreeItem
 {
 public:
-    AliasVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent);
+    AliasVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
 };
 
 class ImportedFileTreeItem : public QTreeWidgetItem
@@ -100,13 +100,13 @@ public:
 //! @brief Constructor for the variable items in the variable tree
 //! @param pData Shared pointer to variable to represent
 //! @param pParent Pointer to the parent tree widget item
-BaseVariableTreeItem::BaseVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent)
+BaseVariableTreeItem::BaseVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
         : QTreeWidgetItem(pParent)
 {
     mpData = pData;
 }
 
-SharedLogVariableDataPtrT BaseVariableTreeItem::getDataPtr()
+SharedVariablePtrT BaseVariableTreeItem::getDataPtr()
 {
     return mpData;
 }
@@ -190,7 +190,7 @@ void VariableTree::setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindo
     mpPreferedPlotWindow = pPreferedPlotWindow;
 }
 
-void VariableTree::addFullVariable(SharedLogVariableDataPtrT pData)
+void VariableTree::addFullVariable(SharedVariablePtrT pData)
 {
     QTreeWidgetItem *pComponentItem=0;
     // Did we have the top-level component item (in that case use it)
@@ -225,7 +225,7 @@ void VariableTree::addFullVariable(SharedLogVariableDataPtrT pData)
     this->show();
 }
 
-void VariableTree::addAliasVariable(SharedLogVariableDataPtrT pData)
+void VariableTree::addAliasVariable(SharedVariablePtrT pData)
 {
     // Check if this is an alias variable, if alias is set and not already in the aliasLevelItemMap map
     if ( !mAliasVariableItemMap.contains(pData->getAliasName()) )
@@ -239,9 +239,9 @@ void VariableTree::addAliasVariable(SharedLogVariableDataPtrT pData)
     }
 }
 
-void VariableTree::addImportedVariable(SharedLogVariableDataPtrT pData)
+void VariableTree::addImportedVariable(SharedVariablePtrT pData)
 {
-    QString fName = pData->getImportedFromFileName();
+    QString fName = pData->getImportedFileName();
     QTreeWidgetItem *pFileItem = mImportedFileItemMap.value(fName, 0);
     // If this file was not alrady added then create it
     if (!pFileItem)
@@ -265,7 +265,7 @@ void VariableTree::refreshImportedVariables()
     QList<QString> importedFileNames = mpLogDataHandler->getImportedVariablesFileNames();
     for (int f=0; f<importedFileNames.size(); ++f)
     {
-        QList<SharedLogVariableDataPtrT> vars = mpLogDataHandler->getImportedVariablesForFile(importedFileNames[f]);
+        QList<SharedVariablePtrT> vars = mpLogDataHandler->getImportedVariablesForFile(importedFileNames[f]);
         if (!vars.isEmpty())
         {
             for (int v=0; v<vars.size(); ++v)
@@ -295,10 +295,10 @@ void VariableTree::updateList()
     refreshImportedVariables();
 
     // Now add variables to the Alis and Variable tree
-    QVector<SharedLogVariableDataPtrT> variables = getLogDataHandler()->getAllVariablesAtNewestGeneration();
+    QVector<SharedVariablePtrT> variables = getLogDataHandler()->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
-        if ( (variables[i]->getVariableSource() == TempVariableType) || (variables[i]->getVariableSource() == ImportedVariableType) )
+        if ( (variables[i]->getVariableSourceType() == TempVariableType) || (variables[i]->getVariableSourceType() == ImportedVariableType) )
         {
             continue;
         }
@@ -779,20 +779,20 @@ void PlotWidget::loadFromXml()
 //    file.close();
 }
 
-ImportedVariableTreeItem::ImportedVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent)
+ImportedVariableTreeItem::ImportedVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(pData, pParent)
 {
     setText(0, mpData->getFullVariableName() + ", [" + mpData->getDataUnit() + "]");
 }
 
 
-AliasVariableTreeItem::AliasVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent)
+AliasVariableTreeItem::AliasVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(pData, pParent)
 {
     setText(0, mpData->getAliasName() + ", [" + mpData->getDataUnit() + "]");
 }
 
-FullVariableTreeItem::FullVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *pParent)
+FullVariableTreeItem::FullVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(pData, pParent)
 {
     QString alias = mpData->getAliasName();

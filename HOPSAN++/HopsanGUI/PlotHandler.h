@@ -35,8 +35,8 @@
 // Forward Declarations
 class ContainerObject;
 class PlotWindow;
-class LogVariableData;
-typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
+class VectorVariable;
+typedef QSharedPointer<VectorVariable> SharedVariablePtrT;
 
 class PlotHandler : public QObject
 {
@@ -51,10 +51,10 @@ public:
     PlotWindow *createNewOrReplacePlotwindow(const QString &rName="");
     PlotWindow *getPlotWindow(const QString &rName);
 
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor=QColor());
-    QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
-    QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedVariablePtrT pData, int axis, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedVariablePtrT pDataX, SharedVariablePtrT pDataY, int axis, QColor curveColor=QColor());
+    QString plotDataToWindow(QString windowName, SharedVariablePtrT pData, int axis, QColor curveColor=QColor());
+    QString plotDataToWindow(QString windowName, SharedVariablePtrT pDataX, SharedVariablePtrT pDataY, int axis, QColor curveColor=QColor());
 
     void closeWindow(const QString &rWindowName);
     void closeAllOpenWindows();

@@ -1009,8 +1009,8 @@ void OptimizationHandler::plotPoints()
         QString namey = "par"+QString::number(p)+"y";
         double x = mParameters[p][0];
         double y = mParameters[p][1];
-        SharedLogVariableDataPtrT parVar_x = pHandler->getLogVariableDataPtr(namex, -1);
-        SharedLogVariableDataPtrT parVar_y = pHandler->getLogVariableDataPtr(namey, -1);
+        SharedVariablePtrT parVar_x = pHandler->getLogVariableDataPtr(namex, -1);
+        SharedVariablePtrT parVar_y = pHandler->getLogVariableDataPtr(namey, -1);
         if(!parVar_x)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
@@ -1058,7 +1058,7 @@ void OptimizationHandler::plotObjectiveFunctionValues()
     if(!mPlotObjectiveFunctionValues) { return; }
 
     LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
-    SharedLogVariableDataPtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
+    SharedVariablePtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
     if(bestVar.isNull())
     {
         //! @todo unit and description
@@ -1071,7 +1071,7 @@ void OptimizationHandler::plotObjectiveFunctionValues()
     {
         bestVar->append(mObjectives[mBestId]);
     }
-    SharedLogVariableDataPtrT worstVar = pHandler->getLogVariableDataPtr("WorstObjective", -1);
+    SharedVariablePtrT worstVar = pHandler->getLogVariableDataPtr("WorstObjective", -1);
     if(worstVar.isNull())
     {
         worstVar = pHandler->defineNewVariable("WorstObjective");
@@ -1103,7 +1103,7 @@ void OptimizationHandler::plotParameters()
     LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumParameters; ++p)
     {
-        SharedLogVariableDataPtrT par = pHandler->getLogVariableDataPtr("NewPar"+QString::number(p), -1);
+        SharedVariablePtrT par = pHandler->getLogVariableDataPtr("NewPar"+QString::number(p), -1);
         if(par.isNull())
         {
             par = pHandler->defineNewVariable("NewPar"+QString::number(p));

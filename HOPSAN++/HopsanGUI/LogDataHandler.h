@@ -57,7 +57,7 @@ public:
 
     typedef QMap< QString, LogDataStructT > LogDataMapT;
     typedef QList<QVector<double> > TimeListT;
-    typedef QList<VariableCommonDescription> FavoriteListT;
+    typedef QList<VariableDescription> FavoriteListT;
 
     void setParentContainerObject(ContainerObject *pParent);
 
@@ -70,17 +70,17 @@ public:
 
     void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version=-1) const;
-    void exportToPlo(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables, int version=-1) const;
-    void exportToCSV(const QString &rFilePath, const QVector<SharedLogVariableDataPtrT> &rVariables) const;
+    void exportToPlo(const QString &rFilePath, const QVector<SharedVariablePtrT> &rVariables, int version=-1) const;
+    void exportToCSV(const QString &rFilePath, const QVector<SharedVariablePtrT> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
 
-    SharedLogVariableDataPtrT defineNewVariable(const QString &rDesiredname);
-    SharedLogVariableDataPtrT defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription);
+    SharedVariablePtrT defineNewVariable(const QString &rDesiredname);
+    SharedVariablePtrT defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription);
     //SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
-    SharedLogVariableDataPtrT defineTempVariable(const QString &rDesiredname);
-    SharedLogVariableDataPtrT createOrphanTempVariable(const QString &rName);
+    SharedVariablePtrT defineTempVariable(const QString &rDesiredname);
+    SharedVariablePtrT createOrphanTempVariable(const QString &rName);
 
-    bool deleteVariable(SharedLogVariableDataPtrT a);
+    bool deleteVariable(SharedVariablePtrT a);
     bool deleteVariable(const QString &a);
     bool deleteImportedVariable(const QString &rVarName);
 
@@ -100,20 +100,20 @@ public:
     QStringList getLogDataVariableFullNames(const QString &rSeparator, const int generation=-1) const;
     bool hasLogVariableData(const QString &rFullName, const int generation=-1);
 
-    const SharedLogVariableDataPtrT getTimeVectorPtr(int generation) const;
+    const SharedVariablePtrT getTimeVectorPtr(int generation) const;
     QVector<double> copyTimeVector(const int generation) const;
 
     QVector<double> copyLogDataVariableValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     QVector<double> copyLogDataVariableValues(const QString &rName, const int generation);
-    SharedLogVariableDataPtrT getLogVariableDataPtr(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
-    SharedLogVariableDataPtrT getLogVariableDataPtr(const QString &rName, const int generation) const;
+    SharedVariablePtrT getLogVariableDataPtr(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
+    SharedVariablePtrT getLogVariableDataPtr(const QString &rName, const int generation) const;
 
-    QVector<SharedLogVariableDataPtrT> getMultipleLogVariableDataPtrs(const QRegExp &rNameExp, const int generation=-1) const;
-    QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
-    QVector<SharedLogVariableDataPtrT> getAllVariablesAtGeneration(const int generation) const;
+    QVector<SharedVariablePtrT> getMultipleLogVariableDataPtrs(const QRegExp &rNameExp, const int generation=-1) const;
+    QVector<SharedVariablePtrT> getAllVariablesAtNewestGeneration();
+    QVector<SharedVariablePtrT> getAllVariablesAtGeneration(const int generation) const;
 
     QList<QString> getImportedVariablesFileNames() const;
-    QList<SharedLogVariableDataPtrT> getImportedVariablesForFile(const QString &rFileName);
+    QList<SharedVariablePtrT> getImportedVariablesForFile(const QString &rFileName);
     QList<int> getImportFileGenerations(const QString &rFilePath) const;
     QMap<QString, QList<int> > getImportFilesAndGenerations() const;
     void removeImportedFileGenerations(const QString &rFileName);
@@ -138,7 +138,7 @@ public:
 
     ContainerObject *getParentContainerObject();
     const QList<QDir> &getCacheDirs() const;
-    SharedMultiDataVectorCacheT getOrCreateGenerationMultiCache(const int gen);
+    SharedMultiDataVectorCacheT getGenerationMultiCache(const int gen);
 
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
@@ -153,52 +153,52 @@ public:
     QString plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color=QColor());
     PlotWindow *plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
 
-    SharedLogVariableDataPtrT addVariableWithScalar(const SharedLogVariableDataPtrT a, const double x);
-    SharedLogVariableDataPtrT subVariableWithScalar(const SharedLogVariableDataPtrT a, const double x);
-    SharedLogVariableDataPtrT mulVariableWithScalar(const SharedLogVariableDataPtrT a, const double x);
-    SharedLogVariableDataPtrT divVariableWithScalar(const SharedLogVariableDataPtrT a, const double x);
-    QString addVariableWithScalar(const QString &a, const double x);
-    QString subVariableWithScalar(const QString &a, const double x);
-    QString mulVariableWithScalar(const QString &a, const double x);
-    QString divVariableWithScalar(const QString &a, const double x);
+    SharedVariablePtrT addVariableWithScalar(const SharedVariablePtrT a, const double x);
+    SharedVariablePtrT subVariableWithScalar(const SharedVariablePtrT a, const double x);
+    SharedVariablePtrT mulVariableWithScalar(const SharedVariablePtrT a, const double x);
+    SharedVariablePtrT divVariableWithScalar(const SharedVariablePtrT a, const double x);
+    QString addVariableWithScalar(const QString &a, const double x); //!< @deprecated
+    QString subVariableWithScalar(const QString &a, const double x); //!< @deprecated
+    QString mulVariableWithScalar(const QString &a, const double x); //!< @deprecated
+    QString divVariableWithScalar(const QString &a, const double x); //!< @deprecated
 
-    SharedLogVariableDataPtrT addVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    SharedLogVariableDataPtrT subVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    SharedLogVariableDataPtrT multVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    SharedLogVariableDataPtrT divVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    QString addVariables(const QString &a, const QString &b);
-    QString subVariables(const QString &a, const QString &b);
-    QString multVariables(const QString &a, const QString &b);
-    QString divVariables(const QString &a, const QString &b);
+    SharedVariablePtrT addVariables(const SharedVariablePtrT a, const SharedVariablePtrT b);
+    SharedVariablePtrT subVariables(const SharedVariablePtrT a, const SharedVariablePtrT b);
+    SharedVariablePtrT multVariables(const SharedVariablePtrT a, const SharedVariablePtrT b);
+    SharedVariablePtrT divVariables(const SharedVariablePtrT a, const SharedVariablePtrT b);
+    QString addVariables(const QString &a, const QString &b); //!< @deprecated
+    QString subVariables(const QString &a, const QString &b); //!< @deprecated
+    QString multVariables(const QString &a, const QString &b); //!< @deprecated
+    QString divVariables(const QString &a, const QString &b); //!< @deprecated
 
-    SharedLogVariableDataPtrT diffVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    QString diffVariables(const QString &a, const QString &b);
+    SharedVariablePtrT diffVariables(const SharedVariablePtrT a, const SharedVariablePtrT b);
+    QString diffVariables(const QString &a, const QString &b); //!< @deprecated
 
-    SharedLogVariableDataPtrT integrateVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    QString integrateVariables(const QString &a, const QString &b);
+    SharedVariablePtrT integrateVariables(const SharedVariablePtrT a, const SharedVariablePtrT b);
+    QString integrateVariables(const QString &a, const QString &b); //!< @deprecated
 
-    SharedLogVariableDataPtrT lowPassFilterVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const double freq);
-    QString lowPassFilterVariable(const QString &a, const QString &b, const double freq);
+    SharedVariablePtrT lowPassFilterVariable(const SharedVariablePtrT a, const SharedVariablePtrT b, const double freq);
+    QString lowPassFilterVariable(const QString &a, const QString &b, const double freq); //!< @deprecated
 
-    SharedLogVariableDataPtrT fftVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const bool doPowerSpectrum);
-    QString fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum);
+    SharedVariablePtrT fftVariable(const SharedVariablePtrT a, const SharedVariablePtrT b, const bool doPowerSpectrum);
+    QString fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum); //!< @deprecated
 
-    QString assignVariable(const QString &dst, const QString &src);
-    QString assignVariable(const QString &dst, const QVector<double> &src);
+    QString assignVariable(const QString &dst, const QString &src); //!< @deprecated
+    QString assignVariable(const QString &dst, const QVector<double> &src); //!< @deprecated
 
-    double pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value);
-    double pokeVariable(const QString &a, const int index, const double value);
+    double pokeVariable(SharedVariablePtrT a, const int index, const double value);
+    double pokeVariable(const QString &a, const int index, const double value); //!< @deprecated
 
-    double peekVariable(SharedLogVariableDataPtrT a, const int b);
-    double peekVariable(const QString &a, const int index);
+    double peekVariable(SharedVariablePtrT a, const int b);
+    double peekVariable(const QString &a, const int index); //!< @deprecated
 
-    SharedLogVariableDataPtrT elementWiseGT(SharedLogVariableDataPtrT pData, const double thresh);
-    SharedLogVariableDataPtrT elementWiseLT(SharedLogVariableDataPtrT pData, const double thresh);
+    SharedVariablePtrT elementWiseGT(SharedVariablePtrT pData, const double thresh);
+    SharedVariablePtrT elementWiseLT(SharedVariablePtrT pData, const double thresh);
 
-    SharedLogVariableDataPtrT saveVariable(SharedLogVariableDataPtrT a);
-    QString saveVariable(const QString &currName, const QString &newName);
+    SharedVariablePtrT saveVariable(SharedVariablePtrT a);
+    QString saveVariable(const QString &currName, const QString &newName); //!< @deprecated
 
-    void appendVariable(const QString &a, const double x, const double y);
+    void appendVariable(const QString &a, const double x, const double y); //!< @deprecated
 
     void takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration=-2);
 
@@ -213,17 +213,21 @@ signals:
     void closePlotsWithOwnedData();
 
 private slots:
-    void forgetImportedLogDataVariable(SharedLogVariableDataPtrT pData);
+    void forgetImportedLogDataVariable(SharedVariablePtrT pData);
 
 private:
-    typedef QMap< QString, QMultiMap<QString, SharedLogVariableDataPtrT> > ImportedLogDataMapT;
+    typedef QMap< QString, QMultiMap<QString, SharedVariablePtrT> > ImportedLogDataMapT;
     typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
-    SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector, VariableUniqueDescription *pVarUniqDesc);
-    SharedLogVariableDataPtrT insertVariableBasedOnDescription(VariableCommonDescription &rVarComDesc, VariableUniqueDescription *pVarUniqDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
+    SharedVariablePtrT insertTimeVariable(const QVector<double> &rTimeVector);
+    SharedVariablePtrT insertTimeVariable(const QVector<double> &rTimeVector, const QString &rImportFileName);
+    SharedVariablePtrT insertTimeDomainVariable(SharedVariablePtrT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc);
+    SharedVariablePtrT insertTimeDomainVariable(SharedVariablePtrT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
+    void insertVariable(SharedVariablePtrT pVariable);
+
     QString getNewCacheName();
-    void rememberIfImported(SharedLogVariableDataPtrT pData);
+    void rememberIfImported(SharedVariablePtrT pData);
     void removeGenerationCacheIfEmpty(const int gen);
-    SharedLogVariableDataPtrT defineNewVariableNoNameCheck(const QString &rName);
+    SharedVariablePtrT defineNewVectorVariable_NoNameCheck(const QString &rName);
 
     ContainerObject *mpParentContainerObject;
 

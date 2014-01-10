@@ -335,7 +335,7 @@ void CurveInfoBox::setGeneration(const int gen)
 //! @param dataUnit Name of unit to show data in
 //! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
 //! @param parent Pointer to plot tab which curve shall be created it
-PlotCurve::PlotCurve(SharedLogVariableDataPtrT pData,
+PlotCurve::PlotCurve(SharedVariablePtrT pData,
                      int axisY,
                      PlotTab *parent,
                      HopsanPlotIDEnumT plotID,
@@ -346,22 +346,24 @@ PlotCurve::PlotCurve(SharedLogVariableDataPtrT pData,
     commonConstructorCode(axisY, parent, plotID, curveType);
 }
 
-//! @brief Consturctor for custom data
-PlotCurve::PlotCurve(const VariableCommonDescription &rVarDesc,
-                     const QVector<double> &rXVector,
-                     const QVector<double> &rYVector,
-                     int axisY,
-                     PlotTab *parent,
-                     HopsanPlotIDEnumT plotID,
-                     HopsanPlotCurveTypeEnumT curveType)
-{
-    //! @todo see if it is possible to reuse the setCustomData member function
-    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc,0);
-    pDataContainer->addDataGeneration(0, rXVector, rYVector);
-    mHaveCustomData = true;
-    mpData = pDataContainer->getDataGeneration(0);
-    commonConstructorCode(axisY, parent, plotID, curveType);
-}
+////! @brief Constructor for custom data
+////! @deprecated
+//PlotCurve::PlotCurve(const VariableDescription &rVarDesc,
+//                     const QVector<double> &rXVector,
+//                     const QVector<double> &rYVector,
+//                     int axisY,
+//                     PlotTab *parent,
+//                     HopsanPlotIDEnumT plotID,
+//                     HopsanPlotCurveTypeEnumT curveType)
+//{
+//    //! @todo see if it is possible to reuse the setCustomData member function
+
+//    //! @note Whis is all wrong /Peter
+//    mpData = SharedVariablePtrT(new TimeDomainVariable(createFreeTimeVectorVariabel(rXVector), rYVector, 0, SharedVariableDescriptionT(new VariableDescription(rVarDesc)),
+//                                                       SharedMultiDataVectorCacheT(), 0));
+//    mHaveCustomData = true;
+//    commonConstructorCode(axisY, parent, plotID, curveType);
+//}
 
 void PlotCurve::commonConstructorCode(int axisY,
                                       PlotTab* parent,
@@ -557,7 +559,7 @@ const QString &PlotCurve::getCurrentUnit() const
 }
 
 
-const SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr() const
+const SharedVariablePtrT PlotCurve::getLogDataVariablePtr() const
 {
     return mpData;
 }
@@ -580,9 +582,9 @@ QVector<double> PlotCurve::getDataVectorCopy() const
 
 //! @brief Returns the time vector of a plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
-const SharedLogVariableDataPtrT PlotCurve::getTimeVectorPtr() const
+const SharedVariablePtrT PlotCurve::getTimeVectorPtr() const
 {
-    return mpData->getSharedTimePointer();
+    return mpData->getSharedTimeVectorPointer();
 }
 
 bool PlotCurve::hasCustomXData() const
@@ -590,7 +592,7 @@ bool PlotCurve::hasCustomXData() const
     return !mpCustomXdata.isNull();
 }
 
-const SharedLogVariableDataPtrT PlotCurve::getCustomXData() const
+const SharedVariablePtrT PlotCurve::getCustomXData() const
 {
     return mpCustomXdata;
 }
@@ -607,7 +609,7 @@ bool PlotCurve::setGeneration(int generation)
          //! @todo maybe not set generation if same as current but what aboput custom x-axis
 
         // Make sure we have the data requested
-        SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getLogVariableDataPtr(mpData->getFullVariableName(), generation);
+        SharedVariablePtrT pNewData = mpData->getLogDataHandler()->getLogVariableDataPtr(mpData->getFullVariableName(), generation);
         if (pNewData)
         {
             this->disconnect(mpData.data());
@@ -625,7 +627,7 @@ bool PlotCurve::setGeneration(int generation)
             //! @todo why not be able to ask parent data container for other generations
             if (mpCustomXdata->getLogDataHandler())
             {
-                SharedLogVariableDataPtrT pNewXData = mpCustomXdata->getLogDataHandler()->getLogVariableDataPtr(mpCustomXdata->getFullVariableName(), generation);
+                SharedVariablePtrT pNewXData = mpCustomXdata->getLogDataHandler()->getLogVariableDataPtr(mpCustomXdata->getFullVariableName(), generation);
                 if (pNewXData)
                 {
                     setCustomXData(pNewXData);
@@ -731,35 +733,32 @@ void PlotCurve::setDataPlotOffset(const double offset)
 }
 
 
-void PlotCurve::setCustomData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData)
+void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData)
 {
-    //First disconnect all signals from the old data
+    // First disconnect all signals from the old data
     this->disconnect(mpData.data());
 
-    //If we already have custom data, then delete it from memory as it is being replaced
+    // If we already have custom data, then delete it from memory as it is being replaced
     deleteCustomData();
 
-    //Create new custom data
-    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc, 0);
-    pDataContainer->addDataGeneration(0, rvTime, rvData);
+    // Create new custom data
+    //! @todo we are abusing tiedomain variable here
+    mpData = SharedVariablePtrT(new TimeDomainVariable(createFreeTimeVectorVariabel(rvTime), rvData, 0, SharedVariableDescriptionT(new VariableDescription(rVarDesc)),
+                                                       SharedMultiDataVectorCacheT(), 0));
     mHaveCustomData = true;
-    mpData = pDataContainer->getDataGeneration(0);
 
-    //Connect signals
+    // Connect signals
     connectDataSignals();
 
     updateCurve();
 }
 
-void PlotCurve::setCustomXData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvXdata)
+void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata)
 {
-    //! @todo need a nicer way to easily create a new shared logdatavariables
-    LogVariableContainer *pData = new LogVariableContainer(rVarDesc,0);
-    pData->addDataGeneration(0, SharedLogVariableDataPtrT(), rvXdata);
-    setCustomXData(pData->getDataGeneration(0));
+    setCustomXData(createFreeVectorVariable(rvXdata, SharedVariableDescriptionT(new VariableDescription(rVarDesc))));
 }
 
-void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
+void PlotCurve::setCustomXData(SharedVariablePtrT pData)
 {
     //! @todo maybe prevent reset if timevector is null, but then it will (currently) be impossible to reset x vector in curve.
 //    if ( pData || mpData->getSharedTimePointer() )
@@ -785,14 +784,14 @@ void PlotCurve::setCustomXData(const QString fullName)
     // If empty then reset time vector
     if (fullName.isEmpty())
     {
-        setCustomXData(SharedLogVariableDataPtrT());
+        setCustomXData(SharedVariablePtrT());
     }
     else
     {
         LogDataHandler *pHandler = mpData->getLogDataHandler();
         if (pHandler)
         {
-            SharedLogVariableDataPtrT pData = pHandler->getLogVariableDataPtr(fullName, mpData->getGeneration());
+            SharedVariablePtrT pData = pHandler->getLogVariableDataPtr(fullName, mpData->getGeneration());
             if (pData)
             {
                 setCustomXData(pData);
@@ -806,7 +805,7 @@ void PlotCurve::setCustomXData(const QString fullName)
 void PlotCurve::toFrequencySpectrum(const bool doPowerSpectrum)
 {
     QVector<double> timeVec, dataVec;
-    timeVec = mpData->getSharedTimePointer()->getDataVectorCopy();
+    timeVec = mpData->getSharedTimeVectorPointer()->getDataVectorCopy();
     dataVec = mpData->getDataVectorCopy();
 
     //Vector size has to be an even potential of 2.
@@ -851,7 +850,8 @@ void PlotCurve::toFrequencySpectrum(const bool doPowerSpectrum)
         timeVec.append(double(i)/max);
     }
 
-    VariableCommonDescription varDesc;
+    //! @todo this is al wrong, this function should use the other oone in logdatahandler
+    VariableDescription varDesc;
     varDesc.mDataName = "Value";
     varDesc.mDataUnit = "-";
     this->setCustomData(varDesc, timeVec, dataVec);
@@ -871,7 +871,7 @@ void PlotCurve::resetLegendSize()
     setLegendIconSize(QSize(40,12));
 }
 
-SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr()
+SharedVariablePtrT PlotCurve::getLogDataVariablePtr()
 {
     return mpData;
 }
@@ -1160,7 +1160,7 @@ void PlotCurve::openScaleDialog()
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
     double newScale = mpTimeScaleComboBox->currentText().split(" ")[0].toDouble();
-    double oldScale = mpData->getTimeVector()->getPlotScale();
+    double oldScale = mpData->getSharedTimeVectorPointer()->getPlotScale();
 
     setTimePlotScalingAndOffset(newScale, mpTimeOffsetSpinBox->value());
 
@@ -1254,11 +1254,11 @@ void PlotCurve::updateCurve()
         const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
-        if (mpData->getSharedTimePointer())
+        if (mpData->getSharedTimeVectorPointer())
         {
-            tempX = mpData->getSharedTimePointer()->getDataVectorCopy();
-            const double timeScale = mpData->getSharedTimePointer()->getPlotScale();
-            const double timeOffset = mpData->getSharedTimePointer()->getPlotOffset();
+            tempX = mpData->getSharedTimeVectorPointer()->getDataVectorCopy();
+            const double timeScale = mpData->getSharedTimeVectorPointer()->getPlotScale();
+            const double timeOffset = mpData->getSharedTimeVectorPointer()->getPlotOffset();
 
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {

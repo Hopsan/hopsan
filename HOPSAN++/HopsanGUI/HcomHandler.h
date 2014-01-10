@@ -67,8 +67,8 @@ public:
     // Public variable access functions
     LocalVarsMapT getLocalVariables() const;
     QMap<QString, SymHopFunctionoid *> getLocalFunctionoidPointers() const;
-    SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
-    SharedLogVariableDataPtrT getLogVariablePtr(QString fullShortName) const;
+    SharedVariablePtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
+    SharedVariablePtrT getLogVariablePtr(QString fullShortName) const;
 
     // Public utilities
     void toShortDataNames(QString &rName) const;
@@ -90,7 +90,7 @@ public:
     // Return values from evaluation
     double mAnsScalar;
     QString mAnsWildcard;
-    SharedLogVariableDataPtrT mAnsVector;
+    SharedVariablePtrT mAnsVector;
     VariableType mAnsType;
 
 public slots:
@@ -159,7 +159,7 @@ private:
     void generateCommandsHelpText();
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void addPlotCurve(QString cmd, const int axis) const;
-    void addPlotCurve(SharedLogVariableDataPtrT pData, const int axis) const;
+    void addPlotCurve(SharedVariablePtrT pData, const int axis) const;
     void removePlotCurves(const int axis) const;
     void removeLogVariable(QString fullShortVarNameWithGen) const;
     void getComponents(const QString &rStr, QList<ModelObject*> &rComponents) const;

@@ -113,19 +113,19 @@ class PlotCurve : public QObject, public QwtPlotCurve
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
-    PlotCurve(SharedLogVariableDataPtrT pData,
+    PlotCurve(SharedVariablePtrT pData,
               int axisY=QwtPlot::yLeft,
               PlotTab *parent=0,
               HopsanPlotIDEnumT plotID=FirstPlot,
               HopsanPlotCurveTypeEnumT curveType=PortVariableType);
 
-    PlotCurve(const VariableCommonDescription &rVarDesc,
-              const QVector<double> &rXVector,
-              const QVector<double> &rYVector,
-              int axisY=QwtPlot::yLeft,
-              PlotTab *parent=0,
-              HopsanPlotIDEnumT plotID=FirstPlot,
-              HopsanPlotCurveTypeEnumT curveType=PortVariableType);
+//    PlotCurve(const VariableDescription &rVarDesc,
+//              const QVector<double> &rXVector,
+//              const QVector<double> &rYVector,
+//              int axisY=QwtPlot::yLeft,
+//              PlotTab *parent=0,
+//              HopsanPlotIDEnumT plotID=FirstPlot,
+//              HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     void setIncludeGenerationInTitle(bool doit);
@@ -134,12 +134,12 @@ public:
     HopsanPlotCurveTypeEnumT getCurveType();
     int getAxisY();
 
-    SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
-    const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
+    SharedVariablePtrT getLogDataVariablePtr(); //! @todo is this needed
+    const SharedVariablePtrT getLogDataVariablePtr() const;
     QVector<double> getDataVectorCopy() const;
-    const SharedLogVariableDataPtrT getTimeVectorPtr() const;
+    const SharedVariablePtrT getTimeVectorPtr() const;
     bool hasCustomXData() const;
-    const SharedLogVariableDataPtrT getCustomXData() const;
+    const SharedVariablePtrT getCustomXData() const;
 
     int getGeneration() const;
     const QString &getComponentName() const;
@@ -156,9 +156,9 @@ public:
     void setLocalCurvePlotScaleAndOffset(const double scale, const double offset);
     void setDataPlotOffset(const double offset);
 
-    void setCustomData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
-    void setCustomXData(const VariableCommonDescription &rVarDesc, const QVector<double> &rvXdata);
-    void setCustomXData(SharedLogVariableDataPtrT pData);
+    void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
+    void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
+    void setCustomXData(SharedVariablePtrT pData);
     void setCustomXData(const QString fullName);
 
     void toFrequencySpectrum(const bool doPowerSpectrum=false);
@@ -206,8 +206,8 @@ private:
 
     // Curve data
     HopsanPlotCurveTypeEnumT mCurveType;
-    SharedLogVariableDataPtrT mpData;
-    SharedLogVariableDataPtrT mpCustomXdata;
+    SharedVariablePtrT mpData;
+    SharedVariablePtrT mpCustomXdata;
     bool mHaveCustomData;
 
     QString mCustomCurveDataUnit;
