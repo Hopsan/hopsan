@@ -588,10 +588,10 @@ void SensitivityAnalysisDialog::run()
         SharedVariablePtrT pTime = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorPtr(nGenerations-1);
         SharedVariableDescriptionT minDesc(new VariableDescription);
         minDesc.data()->mAliasName = "Min";
-        SharedVariablePtrT pMinData(new TimeDomainVariable(pTime, vMin, -1, minDesc, SharedMultiDataVectorCacheT(0), 0));
+        SharedVariablePtrT pMinData(new TimeDomainVariable(pTime, vMin, -1, minDesc, SharedMultiDataVectorCacheT(0)));
         SharedVariableDescriptionT maxDesc = SharedVariableDescriptionT(new VariableDescription);
         maxDesc.data()->mAliasName = "Max";
-        SharedVariablePtrT pMaxData(new TimeDomainVariable(pTime, vMax, -1, maxDesc, SharedMultiDataVectorCacheT(0), 0));
+        SharedVariablePtrT pMaxData(new TimeDomainVariable(pTime, vMax, -1, maxDesc, SharedMultiDataVectorCacheT(0)));
 
         PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
         gpPlotHandler->plotDataToWindow(pPlotWindow, pMaxData, QwtPlot::yLeft);
@@ -615,7 +615,7 @@ void SensitivityAnalysisDialog::run()
         pCurve->setPen(QColor(0,0,255,150), 1.0);
         pCurve->setBrush(QColor(0,0,255,150));
 
-        pCurve->attach(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getPlot());
+        pCurve->attach(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getQwtPlot());
 //        pPlotWindow->getCurrentPlotTab()->toggleAxisLock();
 //        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::yLeft, totalMin, totalMax);
 //        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::xBottom, time.first(), time.last());

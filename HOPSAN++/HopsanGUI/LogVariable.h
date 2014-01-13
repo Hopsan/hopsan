@@ -85,6 +85,7 @@ SharedVariableDescriptionT createFrequencyVariableDescription();
 SharedVariablePtrT createFreeVectorVariable(const QVector<double> &rData, SharedVariableDescriptionT pVarDesc);
 SharedVariablePtrT createFreeTimeVectorVariabel(const QVector<double> &rTime);
 SharedVariablePtrT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency);
+SharedVariablePtrT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc);
 
 class LogVariableContainer : public QObject
 {
@@ -149,7 +150,7 @@ class VectorVariable : public QObject
 
 public:
     VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
-                    SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+                    SharedMultiDataVectorCacheT pGenerationMultiCache);
     ~VectorVariable();
 
     // Access variable type enums
@@ -206,7 +207,7 @@ public:
     // Functions that only read data but that require reimplementation in derived classes
     virtual const SharedVariablePtrT getSharedTimeVectorPointer() const;
     virtual const SharedVariablePtrT getSharedFrequencyVectorPointer() const;
-    virtual SharedVariablePtrT frequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
+    virtual SharedVariablePtrT toFrequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
 
     // Functions that modify the data
     void assignFrom(const QVector<double> &rSrc);
@@ -292,7 +293,7 @@ class ImportedVectorVariable : public VectorVariable, public ImportedVariableBas
     Q_OBJECT
 public:
     ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile,
-                           SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+                           SharedMultiDataVectorCacheT pGenerationMultiCache);
 };
 
 class TimeDomainVariable : public VectorVariable
@@ -300,7 +301,7 @@ class TimeDomainVariable : public VectorVariable
     Q_OBJECT
 public:
     TimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
-                       SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+                       SharedMultiDataVectorCacheT pGenerationMultiCache);
 
     virtual VariableTypeT getVariableType() const;
 
@@ -309,7 +310,7 @@ public:
     void diffBy(SharedVariablePtrT pOther);
     void integrateBy(SharedVariablePtrT pOther);
     void lowPassFilter(SharedVariablePtrT pTime, const double w);
-    SharedVariablePtrT frequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
+    SharedVariablePtrT toFrequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
     void assignFrom(const SharedVariablePtrT pOther);
     virtual void assignFrom(SharedVariablePtrT time, const QVector<double> &rData);
     virtual void assignFrom(QVector<double> &rTime, QVector<double> &rData);
@@ -330,7 +331,7 @@ class ImportedTimeDomainVariable : public TimeDomainVariable, public ImportedVar
     Q_OBJECT
 public:
     ImportedTimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
-                               const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+                               const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache);
 };
 
 class FrequencyDomainVariable : public VectorVariable
@@ -338,7 +339,7 @@ class FrequencyDomainVariable : public VectorVariable
     Q_OBJECT
 public:
     FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
-                            SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+                            SharedMultiDataVectorCacheT pGenerationMultiCache);
     //! @todo add a bunch of reimplemented functions
 protected:
     SharedVariablePtrT mpSharedFrequencyVector;
@@ -350,7 +351,7 @@ class ComplexVectorVariable : public VectorVariable
     Q_OBJECT
 public:
     ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc,
-                          SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
+                          SharedMultiDataVectorCacheT pGenerationMultiCache);
     //! @todo add a bunch of reimplemented functions
 };
 

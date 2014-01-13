@@ -52,18 +52,18 @@
 #include "ModelHandler.h"
 
 #include "qwt_scale_engine.h"
-#include "qwt_symbol.h"
-#include "qwt_text_label.h"
-#include "qwt_plot_renderer.h"
-#include "qwt_scale_map.h"
+//#include "qwt_symbol.h"
+//#include "qwt_text_label.h"
+//#include "qwt_plot_renderer.h"
+//#include "qwt_scale_map.h"
 #include "qwt_plot.h"
-//#include "qwt_legend_item.h"
-#include "qwt_legend.h"
-//#include "q_layout.h"
-#include "qwt_scale_draw.h"
-#include "qwt_scale_widget.h"
-#include <qwt_dyngrid_layout.h>
-#include <qwt_plot_legenditem.h>
+////#include "qwt_legend_item.h"
+//#include "qwt_legend.h"
+////#include "q_layout.h"
+//#include "qwt_scale_draw.h"
+//#include "qwt_scale_widget.h"
+//#include <qwt_dyngrid_layout.h>
+//#include <qwt_plot_legenditem.h>
 
 
 #include "PlotHandler.h"
@@ -75,6 +75,7 @@
 
 //=============================================================
 #include "PlotTab.h"
+#include "PlotArea.h"
 #include "PlotCurve.h"
 
 
@@ -458,26 +459,24 @@ PlotWindow::~PlotWindow()
     mpPlotTabWidget->closeAllTabs();
 }
 
-
-void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
+PlotTab *PlotWindow::addPlotTab(const QString &rName, PlotTabTypeT type)
 {
-    getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, FirstPlot);
-}
-
-void PlotWindow::setCustomXVector(SharedVariablePtrT pData)
-{
-    getCurrentPlotTab()->setCustomXVectorForAll(pData);
-}
-
-
-void PlotWindow::addPlotTab(QString requestedName)
-{
-    PlotTab *mpNewTab = new PlotTab(mpPlotTabWidget, this);
+    PlotTab *pNewTab;
+    switch(type)
+    {
+    case BodePlotType:
+        pNewTab = new BodePlotTab(mpPlotTabWidget, this);
+    case BarchartPlotType:
+        pNewTab = new BarchartPlotTab(mpPlotTabWidget, this);
+    default:
+        // Else use an ordinary XYPlot tab type
+        pNewTab = new PlotTab(mpPlotTabWidget, this);
+    }
 
     QString tabName;
-    QString numString;
-    if(requestedName.isEmpty())
+    if(rName.isEmpty())
     {
+        QString numString;
         for(int tabID=0; true; ++tabID)
         {
             numString.setNum(tabID);
@@ -497,14 +496,29 @@ void PlotWindow::addPlotTab(QString requestedName)
     }
     else
     {
-        tabName = requestedName;
+        tabName = rName;
     }
 
-    mpPlotTabWidget->addTab(mpNewTab, tabName);
-
+    mpPlotTabWidget->addTab(pNewTab, tabName);
     mpPlotTabWidget->setCurrentIndex(mpPlotTabWidget->count()-1);
+    return pNewTab;
+}
 
 
+void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
+{
+    getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, 0);
+}
+
+void PlotWindow::setCustomXVector(SharedVariablePtrT pData)
+{
+    getCurrentPlotTab()->setCustomXVectorForAll(pData);
+}
+
+
+PlotTab *PlotWindow::addPlotTab()
+{
+    return addPlotTab(QString());
 }
 
 
@@ -574,8 +588,8 @@ PlotCurve* PlotWindow::addPlotCurve(SharedVariablePtrT pData, int axisY, QColor 
             addPlotTab();
             changedTab();
         }
-        PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
-        getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
+        PlotCurve *pTempCurve = new PlotCurve(pData, axisY);
+        getCurrentPlotTab()->getPlotArea()->addCurve(pTempCurve, desiredColor);
         refreshWindowTitle();
         return pTempCurve;
     }
@@ -618,93 +632,94 @@ void PlotWindow::importCsv()
 //! All generations of all open curves will be saved, together with all cosmetic information about the plot window.
 void PlotWindow::saveToXml()
 {
-    //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
-    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
-                                                    gpConfig->getPlotWindowDir(),
-                                                    tr("Plot Window Description File (*.xml)"));
-    if(filePath.isEmpty())
-    {
-        return;    //Don't save anything if user presses cancel
-    }
-    else
-    {
-        QFileInfo fileInfo = QFileInfo(filePath);
-        gpConfig->setPlotWindowDir(fileInfo.absolutePath());
-    }
+    //! @todo fixa
+//    //Open file dialog and initialize the file stream
+//    QDir fileDialogSaveDir;
+//    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
+//                                                    gpConfig->getPlotWindowDir(),
+//                                                    tr("Plot Window Description File (*.xml)"));
+//    if(filePath.isEmpty())
+//    {
+//        return;    //Don't save anything if user presses cancel
+//    }
+//    else
+//    {
+//        QFileInfo fileInfo = QFileInfo(filePath);
+//        gpConfig->setPlotWindowDir(fileInfo.absolutePath());
+//    }
 
-    //Write to xml file
-    QDomDocument domDocument;
-    QDomElement xmlRootElement = domDocument.createElement("hopsanplot");
-    domDocument.appendChild(xmlRootElement);
+//    //Write to xml file
+//    QDomDocument domDocument;
+//    QDomElement xmlRootElement = domDocument.createElement("hopsanplot");
+//    domDocument.appendChild(xmlRootElement);
 
-    QDomElement dateElement = appendDomElement(xmlRootElement,"date");      //Append date tag
-    QDate date = QDate::currentDate();
-    dateElement.setAttribute("year", date.year());
-    dateElement.setAttribute("month", date.month());
-    dateElement.setAttribute("day", date.day());
+//    QDomElement dateElement = appendDomElement(xmlRootElement,"date");      //Append date tag
+//    QDate date = QDate::currentDate();
+//    dateElement.setAttribute("year", date.year());
+//    dateElement.setAttribute("month", date.month());
+//    dateElement.setAttribute("day", date.day());
 
-    QDomElement timeElement = appendDomElement(xmlRootElement,"time");      //Append time tag
-    QTime time = QTime::currentTime();
-    timeElement.setAttribute("hour", time.hour());
-    timeElement.setAttribute("minute", time.minute());
-    timeElement.setAttribute("second", time.second());
+//    QDomElement timeElement = appendDomElement(xmlRootElement,"time");      //Append time tag
+//    QTime time = QTime::currentTime();
+//    timeElement.setAttribute("hour", time.hour());
+//    timeElement.setAttribute("minute", time.minute());
+//    timeElement.setAttribute("second", time.second());
 
-    //Add tab elements
-    for(int i=0; i<mpPlotTabWidget->count(); ++i)
-    {
-        QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
-        if(mpPlotTabWidget->getTab(i)->isGridVisible())
-        {
-            tabElement.setAttribute("grid", "true");
-        }
-        else
-        {
-            tabElement.setAttribute("grid", "false");
-        }
-        tabElement.setAttribute("color", makeRgbString(mpPlotTabWidget->getTab(i)->getPlot()->canvasBackground().color()));
+//    //Add tab elements
+//    for(int i=0; i<mpPlotTabWidget->count(); ++i)
+//    {
+//        QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
+//        if(mpPlotTabWidget->getTab(i)->isGridVisible())
+//        {
+//            tabElement.setAttribute("grid", "true");
+//        }
+//        else
+//        {
+//            tabElement.setAttribute("grid", "false");
+//        }
+//        tabElement.setAttribute("color", makeRgbString(mpPlotTabWidget->getTab(i)->getQwtPlot()->canvasBackground().color()));
 
-        if(mpPlotTabWidget->getTab(i)->mHasCustomXData)
-        {
-            QDomElement specialXElement = appendDomElement(tabElement,"specialx");
-            //! @todo FIXA /Peter
-            //specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
-//            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mComponentName);
-//            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mPortName);
-//            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataName);
-//            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataUnit);
-//            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mModelPath);
-        }
+//        if(mpPlotTabWidget->getTab(i)->mHasCustomXData)
+//        {
+//            QDomElement specialXElement = appendDomElement(tabElement,"specialx");
+//            //! @todo FIXA /Peter
+//            //specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
+////            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mComponentName);
+////            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mPortName);
+////            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataName);
+////            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataUnit);
+////            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mModelPath);
+//        }
 
-        //Add curve elements
-        for(int j=0; j<mpPlotTabWidget->getTab(i)->getCurves().size(); ++j)
-        {
-            QDomElement curveElement = appendDomElement(tabElement,"curve");
-            //! @todo FIXA /Peter
-            //curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
-            curveElement.setAttribute("component",  mpPlotTabWidget->getTab(i)->getCurves().at(j)->getComponentName());
-            curveElement.setAttribute("port",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getPortName());
-            curveElement.setAttribute("data",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataName());
-            //curveElement.setAttribute("unit",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataUnit());
-            curveElement.setAttribute("axis",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getAxisY());
-            curveElement.setAttribute("width",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().width());
-            curveElement.setAttribute("color",      makeRgbString(mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().color()));
-            //curveElement.setAttribute("model",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
-            //! @todo FIXA /Peter
-        }
-    }
+//        //Add curve elements
+//        for(int j=0; j<mpPlotTabWidget->getTab(i)->getCurves().size(); ++j)
+//        {
+//            QDomElement curveElement = appendDomElement(tabElement,"curve");
+//            //! @todo FIXA /Peter
+//            //curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
+//            curveElement.setAttribute("component",  mpPlotTabWidget->getTab(i)->getCurves().at(j)->getComponentName());
+//            curveElement.setAttribute("port",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getPortName());
+//            curveElement.setAttribute("data",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataName());
+//            //curveElement.setAttribute("unit",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataUnit());
+//            curveElement.setAttribute("axis",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getAxisY());
+//            curveElement.setAttribute("width",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().width());
+//            curveElement.setAttribute("color",      makeRgbString(mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().color()));
+//            //curveElement.setAttribute("model",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
+//            //! @todo FIXA /Peter
+//        }
+//    }
 
-    appendRootXMLProcessingInstruction(domDocument);
+//    appendRootXMLProcessingInstruction(domDocument);
 
-    //Save to file
-    QFile xmlsettings(filePath);
-    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file for writing: " << filePath;
-        return;
-    }
-    QTextStream out(&xmlsettings);
-    domDocument.save(out, XMLINDENTATION);
+//    //Save to file
+//    QFile xmlsettings(filePath);
+//    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+//    {
+//        qDebug() << "Failed to open file for writing: " << filePath;
+//        return;
+//    }
+//    QTextStream out(&xmlsettings);
+//    domDocument.save(out, XMLINDENTATION);
 }
 
 
@@ -763,22 +778,24 @@ void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
 
 void PlotWindow::performFrequencyAnalysisFromDialog()
 {
+    //! @todo dialog is not deleted ?
     mpFrequencyAnalysisDialog->close();
 
-    addPlotTab();
-    getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-    getCurrentPlotTab()->updateAxisLabels();
     LogDataHandler *pLogDataHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     SharedVariablePtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
-    bool power = mpPowerSpectrumCheckBox->isChecked();
-    SharedVariablePtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedVariablePtrT(), power);
-    PlotCurve *pNewCurve = new PlotCurve(pNewVar, QwtPlot::yLeft, getCurrentPlotTab(), FirstPlot, FrequencyAnalysisType);
+    SharedVariablePtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedVariablePtrT(), mpPowerSpectrumCheckBox->isChecked());
+
+    addPlotTab();
+    //getCurrentPlotTab()->getQwtPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+    //getCurrentPlotTab()->updateAxisLabels();
+    PlotCurve *pNewCurve = new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType);
     getCurrentPlotTab()->addCurve(pNewCurve);
 
     if(mpLogScaleCheckBox->isChecked())
     {
-        getCurrentPlotTab()->getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
-        getCurrentPlotTab()->getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
+        //! @todo should call some wraper function
+        getCurrentPlotTab()->getQwtPlot(0)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
+        getCurrentPlotTab()->getQwtPlot(0)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
     }
     getCurrentPlotTab()->rescaleAxesToCurves();
 }
@@ -792,13 +809,14 @@ void PlotWindow::showFrequencyAnalysisHelp()
 
 void PlotWindow::createBodePlot()
 {
+    //! @todo dialog is not deleted ?
     mpCreateBodeDialog = new QDialog(this);
     mpCreateBodeDialog->setWindowTitle("Transfer Function Analysis");
 
     QGroupBox *pInputGroupBox = new QGroupBox(tr("Input Variable"));
     QVBoxLayout *pInputGroupBoxLayout = new QVBoxLayout;
     pInputGroupBoxLayout->addStretch(1);
-    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(FirstPlot); ++i)
+    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(0); ++i)
     {
         QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
                                                getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
@@ -811,7 +829,7 @@ void PlotWindow::createBodePlot()
     QGroupBox *pOutputGroupBox = new QGroupBox(tr("Output Variable"));
     QVBoxLayout *pOutputGroupBoxLayout = new QVBoxLayout;
     pOutputGroupBoxLayout->addStretch(1);
-    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(FirstPlot); ++i)
+    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(0); ++i)
     {
         QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
                                                getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
@@ -821,8 +839,8 @@ void PlotWindow::createBodePlot()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    double dataSize = getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->getDataSize()+1;
-    double stopTime = getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->last();
+    double dataSize = getCurrentPlotTab()->getCurves(0).first()->getTimeVectorPtr()->getDataSize()+1;
+    double stopTime = getCurrentPlotTab()->getCurves(0).first()->getTimeVectorPtr()->last();
     double maxFreq = dataSize/stopTime/2;
     QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
     QLabel *pMaxFrequencyValue = new QLabel();
@@ -902,8 +920,9 @@ void PlotWindow::createBodePlotFromDialog()
 
 void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax)
 {
-    PlotCurve *pCurve1 = new PlotCurve(var1,QwtPlot::yLeft, getCurrentPlotTab());
-    PlotCurve *pCurve2 = new PlotCurve(var2,QwtPlot::yLeft, getCurrentPlotTab());
+    //! @todo whene are these deleted, and why are they even created here
+    PlotCurve *pCurve1 = new PlotCurve(var1, QwtPlot::yLeft);
+    PlotCurve *pCurve2 = new PlotCurve(var2, QwtPlot::yLeft);
     createBodePlot(pCurve1, pCurve2, Fmax);
 }
 
@@ -995,45 +1014,45 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     vBodePhase.resize(F.size());
 
 
-    addPlotTab("Nyquist Plot");
+    PlotTab *pNyquistTab = addPlotTab("Nyquist Plot");
     SharedVariablePtrT pNyquistData1(new ComplexVectorVariable(vRe, vIm,pOutputCurve->getLogDataVariablePtr()->getGeneration(),
                                                                SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                               SharedMultiDataVectorCacheT(), 0));
-    getCurrentPlotTab()->addCurve(new PlotCurve(pNyquistData1, pOutputCurve->getAxisY(), getCurrentPlotTab(), FirstPlot, NyquistType));
+                                                               SharedMultiDataVectorCacheT()));
+    pNyquistTab->addCurve(new PlotCurve(pNyquistData1, pOutputCurve->getAxisY(), NyquistType));
 
     SharedVariablePtrT pNyquistData2(new ComplexVectorVariable(vRe, vImNeg,pOutputCurve->getLogDataVariablePtr()->getGeneration(),
                                                                SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                               SharedMultiDataVectorCacheT(), 0));
-    getCurrentPlotTab()->addCurve(new PlotCurve(pNyquistData2, pOutputCurve->getAxisY(), getCurrentPlotTab(), FirstPlot, NyquistType));
+                                                               SharedMultiDataVectorCacheT()));
+    pNyquistTab->addCurve(new PlotCurve(pNyquistData2, pOutputCurve->getAxisY(), NyquistType));
 
     //! @todo these three should not be needded they should be called in the addCurve function
-    getCurrentPlotTab()->getPlot()->replot();
-    getCurrentPlotTab()->rescaleAxesToCurves();
-    getCurrentPlotTab()->updateGeometry();
+    pNyquistTab->getQwtPlot()->replot();
+    pNyquistTab->rescaleAxesToCurves();
+    pNyquistTab->updateGeometry();
 
-    addPlotTab("Bode Diagram");
+    PlotTab *pBodeTab = addPlotTab("Bode Diagram");
     SharedVariablePtrT pFrequencyVar = createFreeFrequencyVectorVariabel(F);
     SharedVariablePtrT pGainData(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutputCurve->getLogDataVariablePtr()->getGeneration(),
                                                              SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                             SharedMultiDataVectorCacheT(), 0));
-    PlotCurve *pGainCurve = new PlotCurve(pGainData, pOutputCurve->getAxisY(), getCurrentPlotTab(), FirstPlot, BodeGainType);
-    getCurrentPlotTab()->addCurve(pGainCurve);
+                                                             SharedMultiDataVectorCacheT()));
+    PlotCurve *pGainCurve = new PlotCurve(pGainData, pOutputCurve->getAxisY(), BodeGainType);
+    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->addCurve(pGainCurve);
 
     SharedVariablePtrT pPhaseData(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutputCurve->getLogDataVariablePtr()->getGeneration(),
                                                              SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                             SharedMultiDataVectorCacheT(), 0));
-    PlotCurve *pPhaseCurve = new PlotCurve(pPhaseData, pOutputCurve->getAxisY(), getCurrentPlotTab(), SecondPlot, BodePhaseType);
-    getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SecondPlot);
+                                                             SharedMultiDataVectorCacheT()));
+    PlotCurve *pPhaseCurve = new PlotCurve(pPhaseData, pOutputCurve->getAxisY(), BodePhaseType);
+    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve, QColor());
 
-    getCurrentPlotTab()->showPlot(SecondPlot, true);
     //! @todo are these really needed they should be called in the addCurve function (but something special here for first and second plot)
-    getCurrentPlotTab()->getPlot(FirstPlot)->replot();
-    getCurrentPlotTab()->getPlot(SecondPlot)->replot();
-    getCurrentPlotTab()->updateGeometry();
+    pBodeTab->getQwtPlot(BodePlotTab::MagnitudePlot)->replot();
+    pBodeTab->getQwtPlot(BodePlotTab::PhasePlot)->replot();
 
-    getCurrentPlotTab()->setBottomAxisLogarithmic(true);
+    //getCurrentPlotTab()->updateGeometry();
+    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
+    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->setBottomAxisLogarithmic(true);
 
-    getCurrentPlotTab()->rescaleAxesToCurves();
+    pBodeTab->rescaleAxesToCurves();
 
 
     // Add a curve marker at the amplitude margin
@@ -1043,7 +1062,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         {
             QString valueString;
             valueString.setNum(-vBodeGain.at(i));
-            getCurrentPlotTab()->insertMarker(pGainCurve, F.at(i), vBodeGain.at(i), "Gain Margin = " + valueString + " dB", false);
+            pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve, F.at(i), vBodeGain.at(i), "Gain Margin = " + valueString + " dB", false);
             break;
         }
     }
@@ -1055,7 +1074,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         {
             QString valueString;
             valueString.setNum(180.0+vBodePhase.at(i));
-            getCurrentPlotTab()->insertMarker(pPhaseCurve, F.at(i), vBodePhase.at(i), "Phase Margin = " + valueString + trUtf8("°"), false);
+            pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve, F.at(i), vBodePhase.at(i), "Phase Margin = " + valueString + trUtf8("°"), false);
             break;
         }
     }
@@ -1161,7 +1180,7 @@ void PlotWindow::closeIfEmpty()
         int nCurvesInTab = 0;
         for(int plotId=0; plotId<2; ++plotId)
         {
-            nCurvesInTab += mpPlotTabWidget->getTab(i)->getNumberOfCurves(HopsanPlotIDEnumT(plotId));
+            nCurvesInTab += mpPlotTabWidget->getTab(i)->getNumberOfCurves(int(plotId));
         }
 
         if(nCurvesInTab == 0)
@@ -1243,7 +1262,7 @@ void PlotWindow::changedTab()
         mpPlotTabWidget->show();
         PlotTab* pCurrentTab = mpPlotTabWidget->getCurrentTab();
 
-        if(pCurrentTab->isSpecialPlot())
+        if(pCurrentTab->isBarPlot())
         {
             mpArrowButton->setDisabled(true);
             mpZoomButton->setDisabled(true);
@@ -1287,11 +1306,11 @@ void PlotWindow::changedTab()
             mpExportToGraphicsAction->setDisabled(false);
             mpAllGenerationsDown->setDisabled(false);
             mpAllGenerationsUp->setDisabled(false);
-            mpZoomButton->setChecked(pCurrentTab->mpZoomerLeft[FirstPlot]->isEnabled());
-            mpPanButton->setChecked(pCurrentTab->mpPanner[FirstPlot]->isEnabled());
-            mpGridButton->setChecked(pCurrentTab->mpGrid[FirstPlot]->isVisible());
-            mpResetXVectorButton->setEnabled(pCurrentTab->mHasCustomXData);
-            mpBodePlotButton->setEnabled(pCurrentTab->getCurves(FirstPlot).size() > 1);
+            mpZoomButton->setChecked(pCurrentTab->isZoomEnabled());
+            mpPanButton->setChecked(pCurrentTab->isPanEnabled());
+            mpGridButton->setChecked(pCurrentTab->isGridVisible());
+            mpResetXVectorButton->setEnabled(pCurrentTab->hasCustomXData());
+            mpBodePlotButton->setEnabled(pCurrentTab->getCurves(0).size() > 1); //!< @todo check this in some better way
         }
 
         connect(mpZoomButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableZoom(bool)));

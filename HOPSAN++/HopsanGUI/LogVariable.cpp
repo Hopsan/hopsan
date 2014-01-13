@@ -51,21 +51,38 @@ SharedVariableDescriptionT createFrequencyVariableDescription()
 
 SharedVariablePtrT createFreeVectorVariable(const QVector<double> &rData, SharedVariableDescriptionT pVarDesc)
 {
-    return SharedVariablePtrT(new VectorVariable(rData, 0, pVarDesc, SharedMultiDataVectorCacheT(), 0));
+    return SharedVariablePtrT(new VectorVariable(rData, 0, pVarDesc, SharedMultiDataVectorCacheT()));
 }
 
 //! @brief Creates a free unhandled time vector logvariable, it can not have generations or be cached
 SharedVariablePtrT createFreeTimeVectorVariabel(const QVector<double> &rTime)
 {
     // Since there is no parent we can not cache this to disk or give it a generation, it is a free floating time vector (logvariable)
-    return SharedVariablePtrT(new VectorVariable(rTime, 0, createTimeVariableDescription(), SharedMultiDataVectorCacheT(0), 0));
+    return SharedVariablePtrT(new VectorVariable(rTime, 0, createTimeVariableDescription(), SharedMultiDataVectorCacheT(0)));
 }
 
 //! @brief Creates a free unhandled frequency vector logvariable, it can not have generations or be cached
 SharedVariablePtrT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency)
 {
     // Since there is no parent we can not cache this to disk or give it a generation, it is a free floating time vector (logvariable)
-    return SharedVariablePtrT(new VectorVariable(rFrequency, 0, createFrequencyVariableDescription(), SharedMultiDataVectorCacheT(0), 0));
+    return SharedVariablePtrT(new VectorVariable(rFrequency, 0, createFrequencyVariableDescription(), SharedMultiDataVectorCacheT(0)));
+}
+
+//! @brief This is a variable factory, variables will be free and wont be connected to a data chace
+SharedVariablePtrT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc)
+{
+    switch(type)
+    {
+    case VectorType:
+        return SharedVariablePtrT(new VectorVariable(QVector<double>(), 0, pVarDesc, SharedMultiDataVectorCacheT()));
+    case TimeDomainType:
+        return SharedVariablePtrT(new TimeDomainVariable(createFreeTimeVectorVariabel(QVector<double>()), QVector<double>(), 0, pVarDesc, SharedMultiDataVectorCacheT()));
+    case FrequencyDomainType:
+        return SharedVariablePtrT(new FrequencyDomainVariable(createFreeFrequencyVectorVariabel(QVector<double>()), QVector<double>(), 0, pVarDesc, SharedMultiDataVectorCacheT()));
+    default:
+        // Not yet supported by factory
+        return SharedVariablePtrT();
+    }
 }
 
 //! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
@@ -172,9 +189,9 @@ void VectorVariable::setPlotScale(double scale)
     emit dataChanged();
 }
 
-VectorVariable::VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
+VectorVariable::VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache)
 {
-    mpParentVariableContainer = pParent;
+    mpParentVariableContainer = 0;
     mpVariableDescription = varDesc;
     mDataPlotOffset = 0.0;
     mDataPlotScale = 1.0;
@@ -561,7 +578,7 @@ void VectorVariable::lowPassFilter(SharedVariablePtrT pTime, const double w)
     }
 }
 
-SharedVariablePtrT VectorVariable::frequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum)
+SharedVariablePtrT VectorVariable::toFrequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum)
 {
     if(pTime)
     {
@@ -621,7 +638,7 @@ SharedVariablePtrT VectorVariable::frequencySpectrum(const SharedVariablePtrT pT
 
         SharedVariableDescriptionT pDesc(new VariableDescription(*mpVariableDescription.data()));
         //! @todo we may need to change description information for this variable to avoid trouble
-        return SharedVariablePtrT(new FrequencyDomainVariable(createFreeFrequencyVectorVariabel(freq), mag, this->getGeneration(), pDesc, SharedMultiDataVectorCacheT(), 0));
+        return SharedVariablePtrT(new FrequencyDomainVariable(createFreeFrequencyVectorVariabel(freq), mag, this->getGeneration(), pDesc, SharedMultiDataVectorCacheT()));
     }
     else
     {
@@ -1291,8 +1308,8 @@ void VectorVariable::removeCustomUnitScale()
 }
 
 
-TimeDomainVariable::TimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent) :
-    VectorVariable(rData, generation, varDesc, pGenerationMultiCache, pParent)
+TimeDomainVariable::TimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
+    VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
     mpSharedTimeVector = time;
     if (!mpSharedTimeVector.isNull())
@@ -1381,7 +1398,7 @@ void TimeDomainVariable::lowPassFilter(SharedVariablePtrT pTime, const double w)
     }
 }
 
-SharedVariablePtrT TimeDomainVariable::frequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum)
+SharedVariablePtrT TimeDomainVariable::toFrequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum)
 {
     // Choose other data or own time vector
     if(pTime.isNull())
@@ -1389,7 +1406,7 @@ SharedVariablePtrT TimeDomainVariable::frequencySpectrum(const SharedVariablePtr
         // If no diff vector supplied, use own time
         if (mpSharedTimeVector)
         {
-            return VectorVariable::frequencySpectrum(mpSharedTimeVector, doPowerSpectrum);
+            return VectorVariable::toFrequencySpectrum(mpSharedTimeVector, doPowerSpectrum);
         }
         else
         {
@@ -1400,7 +1417,7 @@ SharedVariablePtrT TimeDomainVariable::frequencySpectrum(const SharedVariablePtr
     }
     else
     {
-        return VectorVariable::frequencySpectrum(pTime, doPowerSpectrum);
+        return VectorVariable::toFrequencySpectrum(pTime, doPowerSpectrum);
     }
 }
 
@@ -1459,8 +1476,8 @@ void TimeDomainVariable::setTimePlotOffset(double offset)
 }
 
 
-ImportedTimeDomainVariable::ImportedTimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent) :
-    TimeDomainVariable(time, rData, generation, varDesc, pGenerationMultiCache, pParent)
+ImportedTimeDomainVariable::ImportedTimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache) :
+    TimeDomainVariable(time, rData, generation, varDesc, pGenerationMultiCache)
 {
     mImportFileName = rImportFile;
 }
@@ -1477,22 +1494,22 @@ QString ImportedVariableBase::getImportedFileName() const
 
 
 
-ComplexVectorVariable::ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent) :
-    VectorVariable(QVector<double>(0), generation, varDesc, pGenerationMultiCache, pParent)
+ComplexVectorVariable::ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
+    VectorVariable(QVector<double>(0), generation, varDesc, pGenerationMultiCache)
 {
     //! @todo do this /Peter
 }
 
 
-FrequencyDomainVariable::FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent) :
-    VectorVariable(rData, generation, varDesc, pGenerationMultiCache, pParent)
+FrequencyDomainVariable::FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
+    VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
     mpSharedFrequencyVector = frequency;
 }
 
 
-ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent) :
-    VectorVariable(rData, generation, varDesc, pGenerationMultiCache, 0)
+ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache) :
+    VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
     mImportFileName = rImportFile;
 }

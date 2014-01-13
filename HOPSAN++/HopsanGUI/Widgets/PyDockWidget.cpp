@@ -203,7 +203,7 @@ void PyDockWidget::runMultipleCommands(QString command, int n)
     {
         mainContext.evalScript(command);
         mpPyConsole->appendCommandPrompt();
-        //gpPlotWidget->mpPlotVariableTree->getPlotWindow(0)->getCurrentPlotTab()->getCurves(FIRSTPLOT).last()->updateToNewGeneration();
+        //gpPlotWidget->mpPlotVariableTree->getPlotWindow(0)->getCurrentPlotTab()->getCurves(0).last()->updateToNewGeneration();
         qApp->processEvents();
     }
 }

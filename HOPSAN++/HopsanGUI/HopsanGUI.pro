@@ -214,7 +214,8 @@ SOURCES += main.cpp \
     Widgets/DataExplorer.cpp \
     Widgets/LibraryWidget.cpp \
     LibraryHandler.cpp \
-    UnitScale.cpp
+    UnitScale.cpp \
+    PlotArea.cpp
 
 
 
@@ -295,7 +296,8 @@ HEADERS += MainWindow.h \
     Widgets/LibraryWidget.h \
     LibraryHandler.h \
     global.h \
-    UnitScale.h
+    UnitScale.h \
+    PlotArea.h
 
 OTHER_FILES += \
     ../hopsandefaults \

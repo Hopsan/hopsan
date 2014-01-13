@@ -30,19 +30,8 @@
 #include <QStandardItemModel>
 #include <QtXml>
 
-#include "qwt_plot.h"
-#include "qwt_plot_curve.h"
-#include "qwt_plot_grid.h"
-#include "qwt_plot_marker.h"
-#include "qwt_plot_zoomer.h"
-#include "qwt_plot_magnifier.h"
-#include "qwt_plot_panner.h"
-#include "qwt_plot_marker.h"
-#include "qwt_symbol.h"
-#include "qwt_legend.h"
-#include "qwt_plot_legenditem.h"
+
 #include "Dependencies/BarChartPlotter/barchartplotter.h"
-#include "Dependencies/BarChartPlotter/axisbase.h"
 #include "common.h"
 
 #include "LogVariable.h"
@@ -53,65 +42,18 @@ class PlotTabWidget;
 class PlotCurve;
 class PlotMarker;
 class PlotLegend;
-class PainterWidget;
-
-enum PlotTabZOrderT {GridLinesZOrderType, LegendBelowCurveZOrderType, CurveZOrderType, ActiveCurveZOrderType, LegendAboveCurveZOrderType, CurveMarkerZOrderType};
-
-class HopQwtInterval : public QwtInterval
-{
-public:
-    HopQwtInterval( double minValue, double maxValue ) : QwtInterval(minValue, maxValue) {}
-    void extendMin(const double value);
-    void extendMax(const double value);
-
-    HopQwtInterval&operator=( const QwtInterval& rhs )
-    {
-        setInterval(rhs.minValue(), rhs.maxValue(), rhs.borderFlags());
-        return *this;
-    }
-};
-
-class HopQwtPlot : public QwtPlot
-{
-    Q_OBJECT
-public:
-    explicit HopQwtPlot(QWidget *pParent=0) : QwtPlot(pParent) {}
-public slots:
-    void replot();
-signals:
-    void afterReplot();
-};
-
-class TimeScaleWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    TimeScaleWidget(SharedVariablePtrT pTime, QWidget *pParent=0);
-    void setScale(const QString &rUnitScale);
-    void setOffset(const QString &rOffset);
-
-signals:
-    void valuesChanged();
-
-public slots:
-    void setVaules();
-
-private:
-    SharedVariablePtrT mpTime;
-    QComboBox *mpTimeScaleComboBox;
-    QLineEdit *mpTimeOffsetLineEdit;
-
-
-};
+class PlotArea;
+class QwtPlot;
 
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
 {
     Q_OBJECT
     friend class PlotWindow;
-    friend class PlotCurve;
     friend class PlotTabWidget;
-    friend class PlotMarker;
+    //friend class PlotMarker;
+    friend class PlotCurve;
+    friend class PlotArea;
 
 public:
     PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWindow);
@@ -120,43 +62,42 @@ public:
     PlotWindow *mpParentPlotWindow;         //!< @todo should not be public
 
     void setTabName(QString name);
+    virtual PlotTabTypeT getPlotTabType() const;
 
-    void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor(), HopsanPlotIDEnumT plotID=FirstPlot);
-    void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID=FirstPlot);
-    void setCustomXVectorForAll(SharedVariablePtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
+    PlotArea *getPlotArea(const int subPlotId=0);
+    QwtPlot *getQwtPlot(const int subPlotId=0);
+
+    void addCurve(PlotCurve *pCurve, int subPlotId=0);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
+    void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, int plotID=0);
+    void setCustomXVectorForAll(SharedVariablePtrT pData, int plotID=0);
 
-    QList<PlotCurve *> getCurves(HopsanPlotIDEnumT plotID=FirstPlot);
+    QList<PlotCurve*> &getCurves(int plotID=0);
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
-    QwtPlot *getPlot(HopsanPlotIDEnumT plotID=FirstPlot);
+    int getNumberOfCurves(const int subPlotId=0) const;
 
-    int getNumberOfCurves(HopsanPlotIDEnumT plotID);
-    bool isGridVisible();
-    bool isSpecialPlot();
-    bool hasLogarithmicBottomAxis();
+    virtual void addBarChart(QStandardItemModel *pItemModel);
+
+    bool isArrowEnabled() const;
+    bool isZoomEnabled() const;
+    bool isPanEnabled() const;
+    bool isGridVisible() const;
     bool isZoomed(const int plotId) const;
 
-    void showPlot(HopsanPlotIDEnumT plotID, bool visible);
-    void setBottomAxisLogarithmic(bool value);
+    bool hasCustomXData() const;
+
     void setLegendsVisible(bool value);
 
     void update();
 
+    // PlotTab only
+    int getNumPlotAreas() const;
+    virtual bool isBarPlot() const;
 
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     void exportToCsv(QString fileName);
-
-protected:
-    void addBarChart(QStandardItemModel *pItemModel);
-
-    virtual void resizeEvent(QResizeEvent *event);
-    virtual void dragEnterEvent(QDragEnterEvent *event);
-    virtual void dragLeaveEvent(QDragLeaveEvent *event);
-    virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dropEvent(QDropEvent *event);
-    virtual void contextMenuEvent(QContextMenuEvent *);
 
 public slots:
     void rescaleAxesToCurves();
@@ -171,70 +112,46 @@ public slots:
     void applyAxisLabelSettings();
     void applyLegendSettings();
     void applyTimeScalingSettings();
-    void enableZoom(bool value);
-    void resetZoom();
+
     void enableArrow(bool value);
     void enablePan(bool value);
+    void enableZoom(bool value);
+    void resetZoom();
+
     void enableGrid(bool value);
+
     void setBackgroundColor();
     void resetXTimeVector();
+
     void exportToXml();
     void exportToCsv();
     void exportToHvc(QString fileName="");
     void exportToMatlab();
     void exportToGnuplot();
-    void exportToGraphics();
     void exportToPLO();
+    void exportToGraphics();
 
     void shiftAllGenerationsDown();
     void shiftAllGenerationsUp();
 
-    void insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel=QString(), bool movable=true);
-    void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
-
-private slots:
+protected slots:
     QString updateXmlOutputTextInDialog();
-    void saveToXml();
-    void refreshLockCheckBoxPositions();
-    void axisLockHandler();
 
+    // PlotTab only
+    void saveToXml();
     void exportImage();
     void changedGraphicsExportSettings();
 
-private:
-    int getPlotIDFromCurve(PlotCurve *pCurve);
-    void constructLegendSettingsDialog();
-    void constructAxisSettingsDialog();
-    void constructAxisLabelDialog();
-    void setLegendSymbol(const QString symStyle);
-    void setTabOnlyCustomXVector(SharedVariablePtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
-    void determineAddedCurveUnitOrScale(PlotCurve *pCurve, int plotID);
+protected:
+    PlotArea *addPlotArea();
+    void removePlotArea(const int id);
+    int getPlotIDForCurve(PlotCurve *pCurve);
+
+    void setTabOnlyCustomXVector(SharedVariablePtrT pData, int plotID=0);
 
     QGridLayout *mpTabLayout;
-    QSint::BarChartPlotter *mpBarPlot;
-
+    QList<PlotArea*> mPlotAreas;
     QScrollArea *mpCurveInfoScrollArea;
-
-    HopQwtPlot *mpQwtPlots[2];
-    QList<PlotCurve *> mPlotCurvePtrs[2];
-    quint32 mNumYlCurves[2];
-    quint32 mNumYrCurves[2];
-    QwtPlotGrid *mpGrid[2];
-    QwtPlotZoomer *mpZoomerLeft[2];
-    QwtPlotZoomer *mpZoomerRight[2];
-    QwtPlotMagnifier *mpMagnifier[2];
-    QwtPlotPanner *mpPanner[2];
-    QList<PlotMarker *> mMarkerPtrs[2];
-    PlotCurve *mpActivePlotCurve;
-    QStringList mCurveColors;
-    QList<int> mUsedColorsCounter;
-    PainterWidget *mpPainterWidget;
-
-    bool mIsSpecialPlot;
-
-    // Custom X data axis variables
-    bool mHasCustomXData;
-    SharedVariablePtrT mpCustomXData;
 
     //Stuff used in export to xml dialog
     QDialog *mpExportXmlDialog;
@@ -256,68 +173,29 @@ private:
     QSizeF calcMMSize() const;
     QSizeF calcPXSize(QString unit=QString()) const;
     void updateGraphicsExportSizeEdits();
-
-
-    // Legend related member variables
-    PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
-    QCheckBox *mpLegendsInternalEnabledCheckBox;
-    QCheckBox *mpIncludeGenInCurveTitle;
-    QCheckBox *mpLegendsAutoOffsetCheckBox;
-    QDialog *mpLegendSettingsDialog;
-    QComboBox *mpLegendLPosition;
-    QComboBox *mpLegendRPosition;
-    QComboBox *mpLegendBgType;
-    QComboBox *mpLegendBgColor;
-    QComboBox *mpLegendSymbolType;
-    QSpinBox *mpLegendCols;
-    QDoubleSpinBox *mpLegendLeftOffset;
-    QDoubleSpinBox *mpLegendRightOffset;
-    QSpinBox *mpLegendFontSize;
-
-    // Axis properties
-    bool mRightAxisLogarithmic;
-    bool mLeftAxisLogarithmic;
-    bool mBottomAxisLogarithmic;
-    QCheckBox *mpXLockCheckBox;
-    QCheckBox *mpYLLockCheckBox;
-    QCheckBox *mpYRLockCheckBox;
-
-    // Axis settings related member variables
-    QDialog *mpSetAxisDialog;
-    QCheckBox *mpXLockDialogCheckBox;
-    QCheckBox *mpYLLockDialogCheckBox;
-    QCheckBox *mpYRLockDialogCheckBox;
-    QLineEdit *mpXminLineEdit;
-    QLineEdit *mpXmaxLineEdit;
-    QLineEdit *mpYLminLineEdit;
-    QLineEdit *mpYLmaxLineEdit;
-    QLineEdit *mpYRminLineEdit;
-    QLineEdit *mpYRmaxLineEdit;
-    QDialog *mpUserDefinedLabelsDialog;
-    QLineEdit *mpUserDefinedXLabel;
-    QLineEdit *mpUserDefinedYlLabel;
-    QLineEdit *mpUserDefinedYrLabel;
-    QCheckBox *mpUserDefinedLabelsCheckBox;
-
-    void rescaleAxisLimitsToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
-    void calculateLegendBufferOffsets(const int plotId, const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
 };
 
-
-class PainterWidget : public QWidget
+class BodePlotTab : public PlotTab
 {
+    Q_OBJECT
 public:
-    PainterWidget(QWidget *parent=0);
-    void createRect(int x, int y, int w, int h);
-    void clearRect();
+    enum {MagnitudePlot, PhasePlot};
+    BodePlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWindow);
+    virtual PlotTabTypeT getPlotTabType() const;
+};
 
-protected:
-    virtual void paintEvent(QPaintEvent *);
+class BarchartPlotTab : public PlotTab
+{
+    Q_OBJECT
+public:
+    BarchartPlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWindow);
+    virtual PlotTabTypeT getPlotTabType() const;
+    virtual bool isBarPlot() const;
+    virtual void addBarChart(QStandardItemModel *pItemModel);
 
 private:
-    int mX, mY, mWidth, mHeight;
-    bool mErase;
-};
+    QSint::BarChartPlotter *mpBarPlot;
 
+};
 
 #endif // PLOTTAB_H

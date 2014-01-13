@@ -78,7 +78,7 @@ public:
     SharedVariablePtrT defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription);
     //SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
     SharedVariablePtrT defineTempVariable(const QString &rDesiredname);
-    SharedVariablePtrT createOrphanTempVariable(const QString &rName);
+    SharedVariablePtrT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
     bool deleteVariable(SharedVariablePtrT a);
     bool deleteVariable(const QString &a);

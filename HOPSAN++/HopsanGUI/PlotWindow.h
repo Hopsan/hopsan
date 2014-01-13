@@ -60,6 +60,9 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(const QString name, QWidget *parent);
     ~PlotWindow();
+
+    PlotTab *addPlotTab(const QString &rName, PlotTabTypeT type=XYPlotType);
+
     PlotCurve* addPlotCurve(SharedVariablePtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     PlotCurve* addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
@@ -77,9 +80,9 @@ signals:
     void windowClosed(PlotWindow *pWindow);
 
 public slots:
+    PlotTab *addPlotTab();
     void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc);
     void setCustomXVector(SharedVariablePtrT pData);
-    void addPlotTab(QString requestedName=QString());
     void updatePalette();
     void createPlotWindowFromTab();
     void saveToXml();

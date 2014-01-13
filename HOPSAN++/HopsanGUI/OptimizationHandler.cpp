@@ -346,7 +346,7 @@ void OptimizationHandler::crfInit()
         {
             while(!pPlotTab->getCurves().isEmpty())
             {
-                pPlotTab->removeCurve(pPlotTab->getCurves()[0]);
+                pPlotTab->removeCurve(pPlotTab->getCurves().first());
             }
         }
     }
@@ -771,7 +771,7 @@ void OptimizationHandler::psInit()
         {
             while(!pPlotTab->getCurves().isEmpty())
             {
-                pPlotTab->removeCurve(pPlotTab->getCurves()[0]);
+                pPlotTab->removeCurve(pPlotTab->getCurves().first());
             }
         }
     }
@@ -1036,15 +1036,15 @@ void OptimizationHandler::plotPoints()
     if(pPlotWindow)
     {
         PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
-        for(int c=0; c<pTab->getCurves(FirstPlot).size(); ++c)
+        for(int c=0; c<pTab->getCurves(0).size(); ++c)
         {
             if(c==mBestId)
             {
-                pTab->getCurves(FirstPlot).at(c)->setLineSymbol("Star 1");
+                pTab->getCurves(0).at(c)->setLineSymbol("Star 1");
             }
             else
             {
-                pTab->getCurves(FirstPlot).at(c)->setLineSymbol("XCross");
+                pTab->getCurves(0).at(c)->setLineSymbol("XCross");
             }
         }
         pTab->update();

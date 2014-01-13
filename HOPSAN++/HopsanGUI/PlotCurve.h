@@ -44,7 +44,7 @@
 #include "common.h"
 
 // Forward Declaration
-class PlotTab;
+class PlotArea;
 class PlotCurve;
 
 enum {AxisIdRole=QwtLegendData::UserRole+1};
@@ -61,48 +61,7 @@ public:
 };
 
 
-class CustomXDataDropEdit : public QLineEdit
-{
-    Q_OBJECT
-public:
-    CustomXDataDropEdit(QWidget *pParent=0);
-
-signals:
-    void newXData(QString fullName);
-
-protected:
-    void dropEvent(QDropEvent *e);
-
-};
-
-class CurveInfoBox : public QWidget
-{
-    Q_OBJECT
-    friend class PlotCurve;
-public:
-    CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent);
-    void setLineColor(const QColor color);
-    void updateInfo();
-
-private:
-    void refreshTitle();
-    void refreshActive(bool active);
-    PlotCurve *mpParentPlotCurve;
-    QLabel *mpTitle;
-    QToolButton *mpColorBlob;
-    QSpinBox *mpGenerationSpinBox;
-    QLabel *mpGenerationLabel;
-    CustomXDataDropEdit *mpCustomXDataDrop;
-    QToolButton *mpResetTimeButton;
-
-private slots:
-    void actiavateCurve(bool active);
-    void setXData(QString fullName);
-    void resetTimeVector();
-    void setGeneration(const int gen);
-};
-
-
+enum HopsanPlotCurveTypeEnumT {PortVariableType, FrequencyAnalysisType, NyquistType, BodeGainType, BodePhaseType, GeneralType};
 
 //! @brief Class describing a plot curve in plot window
 class PlotCurve : public QObject, public QwtPlotCurve
@@ -110,22 +69,13 @@ class PlotCurve : public QObject, public QwtPlotCurve
     Q_OBJECT
     friend class CurveInfoBox;
     friend class PlotWindow;
+    friend class PlotArea;
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
     PlotCurve(SharedVariablePtrT pData,
               int axisY=QwtPlot::yLeft,
-              PlotTab *parent=0,
-              HopsanPlotIDEnumT plotID=FirstPlot,
               HopsanPlotCurveTypeEnumT curveType=PortVariableType);
-
-//    PlotCurve(const VariableDescription &rVarDesc,
-//              const QVector<double> &rXVector,
-//              const QVector<double> &rYVector,
-//              int axisY=QwtPlot::yLeft,
-//              PlotTab *parent=0,
-//              HopsanPlotIDEnumT plotID=FirstPlot,
-//              HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     void setIncludeGenerationInTitle(bool doit);
@@ -161,7 +111,7 @@ public:
     void setCustomXData(SharedVariablePtrT pData);
     void setCustomXData(const QString fullName);
 
-    void toFrequencySpectrum(const bool doPowerSpectrum=false);
+    //void toFrequencySpectrum(const bool doPowerSpectrum=false);
     void resetLegendSize();
 
     // Qwt overloaded function
@@ -170,6 +120,7 @@ public:
 signals:
     void curveDataUpdated();
     void colorChanged(QColor);
+    void updateCurveInfo();
 
 public slots:
     bool setGeneration(int generation);
@@ -186,7 +137,6 @@ public slots:
     void updateLocalPlotScaleAndOffsetFromDialog();
     void updateDataPlotOffsetFromDialog();
     void updateToNewGeneration();
-    void updatePlotInfoBox();
     void removeMe();
 
     void refreshCurveTitle();
@@ -202,7 +152,7 @@ private:
     // Private member functions
     void deleteCustomData();
     void connectDataSignals();
-    void commonConstructorCode(int axisY, PlotTab *parent, HopsanPlotIDEnumT plotID, HopsanPlotCurveTypeEnumT curveType);
+    void setParentPlotArea(PlotArea* pParentPlotArea);
 
     // Curve data
     HopsanPlotCurveTypeEnumT mCurveType;
@@ -216,7 +166,6 @@ private:
     double mLocalAdditionalCurveOffset;
 
     // Curve properties settings
-    CurveInfoBox *mpPlotCurveInfoBox;
     bool mAutoUpdate, mIsActive, mIncludeGenInTitle;
     int mAxisY;
     QComboBox *mpTimeScaleComboBox;
@@ -224,7 +173,7 @@ private:
     QLineEdit *mpLocalCurveScaleLineEdit;
     QLineEdit *mpLocalCurveOffsetLineEdit;
     QLineEdit *mpDataPlotOffsetLineEdit;
-    PlotTab *mpParentPlotTab;
+    PlotArea *mpParentPlotArea;
 
     // Line properties
     QColor mLineColor;
@@ -241,7 +190,7 @@ class PlotMarker : public QObject, public QwtPlotMarker
 {
     Q_OBJECT
 public:
-    PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab);
+    PlotMarker(PlotCurve *pCurve, PlotArea *pPlotTab);
     PlotCurve *getCurve();
     virtual bool eventFilter (QObject *, QEvent *);
     void setMovable(bool movable);
@@ -253,7 +202,7 @@ public slots:
 
 private:
     PlotCurve *mpCurve;
-    PlotTab *mpPlotTab;
+    PlotArea *mpPlotArea;
     QwtSymbol *mpMarkerSymbol;
     Qt::Alignment mLabelAlignment;
     int mMarkerSize;
