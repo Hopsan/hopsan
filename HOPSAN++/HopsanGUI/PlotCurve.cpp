@@ -1034,10 +1034,9 @@ void PlotCurve::setAutoUpdate(bool value)
 }
 
 
-void PlotCurve::performFrequencyAnalysis()
+void PlotCurve::openFrequencyAnalysisDialog()
 {
-    //! @todo madeness
-    mpParentPlotArea->mpParentPlotTab->mpParentPlotWindow->performFrequencyAnalysis(this);
+    mpParentPlotArea->mpParentPlotTab->openFrequencyAnalysisDialog(this);
 }
 
 

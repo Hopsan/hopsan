@@ -215,7 +215,8 @@ SOURCES += main.cpp \
     Widgets/LibraryWidget.cpp \
     LibraryHandler.cpp \
     UnitScale.cpp \
-    PlotArea.cpp
+    PlotArea.cpp \
+    Utilities/HelpPopUpWidget.cpp
 
 
 
@@ -297,7 +298,8 @@ HEADERS += MainWindow.h \
     LibraryHandler.h \
     global.h \
     UnitScale.h \
-    PlotArea.h
+    PlotArea.h \
+    Utilities/HelpPopUpWidget.h
 
 OTHER_FILES += \
     ../hopsandefaults \

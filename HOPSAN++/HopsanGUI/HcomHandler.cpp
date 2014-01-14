@@ -2494,9 +2494,9 @@ void HcomHandler::executeBodeCommand(const QString cmd)
         fMax = getArgument(cmd,2).toInt();
     }
 
-    gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->closeAllTabs();
-    gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->addPlotTab();
-    gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->createBodePlot(pData1, pData2, fMax);
+    PlotWindow *pWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot");
+    pWindow->closeAllTabs();
+    pWindow->createBodePlot(pData1, pData2, fMax);
 }
 
 

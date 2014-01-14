@@ -192,6 +192,7 @@ public:
     double last() const;
     bool indexInRange(const int idx) const;
     double peekData(const int index, QString &rErr) const;
+    double peekData(const int idx) const;
     double averageOfData() const;
     double minOfData(int &rIdx) const;
     double minOfData() const;
@@ -263,7 +264,6 @@ signals:
 
 protected:
     typedef QVector<double> DataVectorT;
-    double peekData(const int idx) const;
 
     CachableDataVector *mpCachedDataVector;
     QPointer<LogVariableContainer> mpParentVariableContainer;
@@ -340,6 +340,7 @@ class FrequencyDomainVariable : public VectorVariable
 public:
     FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                             SharedMultiDataVectorCacheT pGenerationMultiCache);
+    const SharedVariablePtrT getSharedFrequencyVectorPointer() const;
     //! @todo add a bunch of reimplemented functions
 protected:
     SharedVariablePtrT mpSharedFrequencyVector;
@@ -354,5 +355,9 @@ public:
                           SharedMultiDataVectorCacheT pGenerationMultiCache);
     //! @todo add a bunch of reimplemented functions
 };
+
+void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax,
+                SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv,
+                SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData);
 
 #endif // LOGVARIABLE_H

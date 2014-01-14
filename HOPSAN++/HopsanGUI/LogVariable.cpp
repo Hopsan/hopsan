@@ -28,6 +28,7 @@
 #include "LogDataHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
+#include <QMessageBox>
 
 #include <limits>
 #include <QMessageBox>
@@ -1507,9 +1508,120 @@ FrequencyDomainVariable::FrequencyDomainVariable(SharedVariablePtrT frequency, c
     mpSharedFrequencyVector = frequency;
 }
 
+const SharedVariablePtrT FrequencyDomainVariable::getSharedFrequencyVectorPointer() const
+{
+    return mpSharedFrequencyVector;
+}
+
 
 ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
     mImportFileName = rImportFile;
+}
+
+
+void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax, SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv, SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData)
+{
+    // Create temporary real vectors
+    //! @todo is X Y input output naming correct ?
+    QVector<double> realYvector = pInput->getDataVectorCopy();
+    QVector<double> realXvector = pOutput->getDataVectorCopy();
+
+    // Abort and inform user if vectors are not of same size
+    if(realXvector.size() != realYvector.size())
+    {
+        QMessageBox::warning(gpMainWindowWidget, QWidget::tr("Wrong Vector Size"), QWidget::tr("Input and output vector must be of same size."));
+        return;
+    }
+
+    // Reduce vector size if they are not equal to an even potential of 2, and inform user
+    int n = pow(2, int(log2(realXvector.size())));
+    if(n != realXvector.size())     //Vector is not an exact potential, so reduce it
+    {
+        QString oldString, newString;
+        oldString.setNum(realXvector.size());
+        newString.setNum(n);
+        QMessageBox::information(gpMainWindowWidget, QWidget::tr("Wrong Vector Size"), "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
+        reduceVectorSize(realXvector, n);
+        reduceVectorSize(realYvector, n);
+    }
+
+    //Create complex vectors
+    QVector< std::complex<double> > Y = realToComplex(realYvector);
+    QVector< std::complex<double> > X = realToComplex(realXvector);
+
+    //Apply the fourier transforms
+    FFT(X);
+    FFT(Y);
+
+    //Divide the fourier transform elementwise and take their absolute value
+    QVector< std::complex<double> > G;
+    QVector<double> vRe;
+    QVector<double> vIm;
+    QVector<double> vImNeg;
+    QVector<double> vBodeGain;
+    QVector<double> vBodePhase;
+
+    double phaseCorrection=0;
+    QVector<double> vBodePhaseUncorrected;
+    for(int i=0; i<Y.size()/2; ++i)
+    {
+        if(Y.at(i) == std::complex<double>(0,0))        //Check for division by zero
+        {
+            G.append(G[i-1]);    //! @todo This is not a good solution, and what if i=0?
+        }
+        else
+        {
+            G.append(X.at(i)/Y.at(i));                  //G(iw) = FFT(Y(iw))/FFT(X(iw))
+        }
+        if(i!=0)
+        {
+            vRe.append(G[i].real());
+            vIm.append(G[i].imag());
+            vImNeg.append(-G[i].imag());
+            vBodeGain.append(20*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
+            vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180./3.14159265);          //Phase: arg(G) = arctan(X/R)
+
+            // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
+            if(vBodePhaseUncorrected.size() > 1)
+            {
+                if(vBodePhaseUncorrected.last() > 170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] < -170)
+                    phaseCorrection -= 360;
+                else if(vBodePhaseUncorrected.last() < -170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] > 170)
+                    phaseCorrection += 360;
+            }
+            vBodePhase.append(vBodePhaseUncorrected.last() + phaseCorrection);
+        }
+    }
+
+
+    QVector<double> F;
+    const double stoptime = pInput->getSharedTimeVectorPointer()->last();
+    F.reserve(G.size());
+    for(int i=1; i<G.size(); ++i)
+    {
+        F.append((i+1)/stoptime);
+        if(F.last() >= Fmax) break;
+    }
+    vBodeGain.resize(F.size());
+    vBodePhase.resize(F.size());
+
+    // Create the output variables
+    rNyquistData = SharedVariablePtrT(new ComplexVectorVariable(vRe, vIm,pOutput->getGeneration(),
+                                                                SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
+                                                                SharedMultiDataVectorCacheT()));
+
+    rNyquistDataInv = SharedVariablePtrT(new ComplexVectorVariable(vRe, vImNeg,pOutput->getGeneration(),
+                                                                   SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
+                                                                   SharedMultiDataVectorCacheT()));
+
+    SharedVariablePtrT pFrequencyVar = createFreeFrequencyVectorVariabel(F);
+    rGainData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutput->getGeneration(),
+                                                               SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
+                                                               SharedMultiDataVectorCacheT()));
+
+    rPhaseData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutput->getGeneration(),
+                                                                SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
+                                                                SharedMultiDataVectorCacheT()));
 }

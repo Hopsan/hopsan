@@ -72,7 +72,6 @@ enum SaveTargetEnumT {ExistingFile, NewFile};
 enum SaveContentsEnumT {FullModel, ParametersOnly, CurrentContainerOnly};
 enum ConnectorStyleEnumT {PowerConnectorStyle, SignalConnectorStyle, BrokenConnectorStyle, UndefinedConnectorStyle};
 enum ContainerChildrenZValuesEnumT {WidgetZValue, ConnectorZValue, ModelobjectZValue, HoveredConnectorZValue, HoveredModelobjectZValue};
-enum PlotTabTypeT {XYPlotType, BodePlotType, BarchartPlotType};
 enum ModelObjectZValuesEnumT {PortZValue, SelectionboxZValue, HoveredPortZValue, LossesDisplayZValue};
 enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue};
 enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};

@@ -50,21 +50,9 @@
 #include "loadFunctions.h"
 #include "version_gui.h"
 #include "ModelHandler.h"
+#include "Utilities/HelpPopUpWidget.h"
 
-#include "qwt_scale_engine.h"
-//#include "qwt_symbol.h"
-//#include "qwt_text_label.h"
-//#include "qwt_plot_renderer.h"
-//#include "qwt_scale_map.h"
 #include "qwt_plot.h"
-////#include "qwt_legend_item.h"
-//#include "qwt_legend.h"
-////#include "q_layout.h"
-//#include "qwt_scale_draw.h"
-//#include "qwt_scale_widget.h"
-//#include <qwt_dyngrid_layout.h>
-//#include <qwt_plot_legenditem.h>
-
 
 #include "PlotHandler.h"
 
@@ -243,25 +231,9 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
     mpExportButton->setMouseTracking(true);
 
-//    mpExportPdfAction = new QAction("Export to PDF", mpToolBar);
-//    mpExportPngAction = new QAction("Export to PNG", mpToolBar);
-
     mpExportToGraphicsAction = new QAction("Export as Graphics", mpToolBar);
     mpExportToGraphicsAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
     mpExportToGraphicsAction->setToolTip("Export to Graphics File");
-
-
-//    mpExportGfxMenu = new QMenu(mpToolBar);
-//    mpExportGfxMenu->addAction(mpExportPdfAction);
-//    mpExportGfxMenu->addAction(mpExportPngAction);
-//    mpExportGfxMenu->addAction(mpExportToGraphicsAction);
-
-//    mpExportGfxButton = new QToolButton(mpToolBar);
-//    mpExportGfxButton->setToolTip("Export to Graphics File");
-//    mpExportGfxButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
-//    mpExportGfxButton->setMenu(mpExportGfxMenu);
-//    mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
-//    mpExportGfxButton->setMouseTracking(true);
 
     mpLoadFromXmlButton = new QAction(this);
     mpLoadFromXmlButton->setToolTip("Import Plot");
@@ -305,7 +277,6 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpResetXVectorButton = new QAction(this);
     mpResetXVectorButton->setToolTip("Reset Time Vector");
     mpResetXVectorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
-    mpResetXVectorButton->setEnabled(false);
     connect(mpResetXVectorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpBodePlotButton = new QAction(this);
@@ -321,31 +292,8 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpAllGenerationsUp->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
     mpAllGenerationsUp->setToolTip("Shift all curve generations up");
 
-    //Initialize the help message popup
-    mpHelpPopup = new QWidget(this);
-    mpHelpPopup->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-    mpHelpPopupIcon = new QLabel();
-    mpHelpPopupIcon->setMouseTracking(true);
-    mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
-    mpHelpPopupLabel = new QLabel();
-    mpHelpPopupLabel->setMouseTracking(true);
-    mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
-    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
-    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
-    mpHelpPopupGroupBoxLayout->setContentsMargins(3,3,3,3);
-    mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
-    mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
-    mpHelpPopupGroupBox->setMouseTracking(true);
-    mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
-    mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
-    mpHelpPopup->setLayout(mpHelpPopupLayout);
-    mpHelpPopup->setMouseTracking(true);
-    mpHelpPopup->setBaseSize(50,30);
-    mpHelpPopup->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
-    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,224,255); } QLabel { margin : 0px; } ");
-    mpHelpPopup->hide();
-    mpHelpPopupTimer = new QTimer(this);
-    connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
+    // Initialize the help message popup
+    mpHelpPopup = new HelpPopUpWidget(this);
 
     // Setup PlotVariable List stuff
     PlotWidget *pLocalPlotWidget = new PlotWidget(this);
@@ -364,19 +312,19 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     connect(pLocalPlotWidgetDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     // Setup CurveInfoBox stuff
-    mpCurveInfoStack = new QStackedWidget(this);
+    mpPlotCurveControlsStack = new QStackedWidget(this);
 
-    mpCurveInfoDock = new QDockWidget(tr("PlotCurve Settings"), this);
-    mpCurveInfoDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-    addDockWidget(Qt::BottomDockWidgetArea, mpCurveInfoDock);
-    mpCurveInfoDock->setWidget(mpCurveInfoStack);
-    mpCurveInfoDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-    mpCurveInfoDock->setPalette(gpConfig->getPalette());
-    mpCurveInfoDock->show();
+    mpPlotCurveControlsDock = new QDockWidget(tr("PlotCurve Settings"), this);
+    mpPlotCurveControlsDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+    addDockWidget(Qt::BottomDockWidgetArea, mpPlotCurveControlsDock);
+    mpPlotCurveControlsDock->setWidget(mpPlotCurveControlsStack);
+    mpPlotCurveControlsDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+    mpPlotCurveControlsDock->setPalette(gpConfig->getPalette());
+    mpPlotCurveControlsDock->show();
 
-    mpCurveInfoDock->toggleViewAction()->setToolTip("Toggle Curve Controls");
-    mpCurveInfoDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurveSettings.png"));
-    connect(mpCurveInfoDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpPlotCurveControlsDock->toggleViewAction()->setToolTip("Toggle Curve Controls");
+    mpPlotCurveControlsDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurveSettings.png"));
+    connect(mpPlotCurveControlsDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     // Populate toolbar with actions
     mpToolBar->addAction(mpNewPlotButton);
@@ -403,7 +351,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addAction(mpLegendButton);
     mpToolBar->addAction(mpLocktheAxis);
     mpToolBar->addAction(mpToggleAxisLockButton);
-    mpToolBar->addAction(mpCurveInfoDock->toggleViewAction());
+    mpToolBar->addAction(mpPlotCurveControlsDock->toggleViewAction());
     mpToolBar->addAction(pLocalPlotWidgetDock->toggleViewAction());
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpNewWindowFromTabButton);
@@ -416,21 +364,21 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     this->addPlotTab();
     this->changedTab();
 
-    mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpPlotTabWidget,0,0,2,4);
-    mpLayout->addWidget(mpHelpPopup, 0,0,1,4);
+    QGridLayout *pLayout = new QGridLayout(this);
+    pLayout->addWidget(mpPlotTabWidget,0,0,2,4);
+    pLayout->addWidget(mpHelpPopup, 0,0,1,4);
 
     //Set the correct position of the help popup message in the central widget
-    mpLayout->setColumnMinimumWidth(0,2);
-    mpLayout->setColumnStretch(0,0);
-    mpLayout->setColumnStretch(1,1);
-    mpLayout->setRowMinimumHeight(0,2);
-    mpLayout->setRowStretch(0,0);
-    mpLayout->setRowStretch(1,1);
-    mpLayout->setRowStretch(2,0);
+    pLayout->setColumnMinimumWidth(0,2);
+    pLayout->setColumnStretch(0,0);
+    pLayout->setColumnStretch(1,1);
+    pLayout->setRowMinimumHeight(0,2);
+    pLayout->setRowStretch(0,0);
+    pLayout->setRowStretch(1,1);
+    pLayout->setRowStretch(2,0);
 
     QWidget *pCentralWidget = new QWidget(this);
-    pCentralWidget->setLayout(mpLayout);
+    pCentralWidget->setLayout(pLayout);
     this->setCentralWidget(pCentralWidget);
 
     // Establish toolbar button signal and slots connections
@@ -439,7 +387,6 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     connect(mpImportPloAction,                  SIGNAL(triggered()),            this,               SLOT(importPlo()));
     connect(mpImportCsvAction,                  SIGNAL(triggered()),            this,               SLOT(importCsv()));
     connect(mpSaveButton,                       SIGNAL(triggered()),            this,               SLOT(saveToXml()));
-    connect(mpBodePlotButton,                   SIGNAL(triggered()),            this,               SLOT(createBodePlot()));
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
     connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(changedTab()));
@@ -447,7 +394,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     // Hide curve settings area by default if screen size is to small
     if(sh*sw < 800*1280)
     {
-        mpCurveInfoDock->toggleViewAction()->toggle();
+        mpPlotCurveControlsDock->toggleViewAction()->toggle();
     }
 
     this->setMouseTracking(true);
@@ -466,8 +413,10 @@ PlotTab *PlotWindow::addPlotTab(const QString &rName, PlotTabTypeT type)
     {
     case BodePlotType:
         pNewTab = new BodePlotTab(mpPlotTabWidget, this);
+        break;
     case BarchartPlotType:
         pNewTab = new BarchartPlotTab(mpPlotTabWidget, this);
+        break;
     default:
         // Else use an ordinary XYPlot tab type
         pNewTab = new PlotTab(mpPlotTabWidget, this);
@@ -534,29 +483,6 @@ PlotTab *PlotWindow::getCurrentPlotTab()
 }
 
 
-
-
-//! @brief Shows the help popup message for 5 seconds with specified message.
-//! Any message already being shown will be replaced. Messages can be hidden in advance by calling mpHelpPopup->hide().
-//! @param message String with text so show in message
-void PlotWindow::showHelpPopupMessage(QString message)
-{
-    if(gpConfig->getShowPopupHelp())
-    {
-        mpHelpPopupLabel->setText(message);
-        mpHelpPopup->show();
-        mpHelpPopupTimer->stop();
-        mpHelpPopupTimer->start(5000);
-    }
-}
-
-
-//! @brief Hides the help popup message
-void PlotWindow::hideHelpPopupMessage()
-{
-    mpHelpPopup->hide();
-}
-
 QString PlotWindow::getName() const
 {
     return mName;
@@ -615,7 +541,6 @@ void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 
 //! @brief Imports .Plo files from Old Hopsan
 //! Imports Plot Data Only
-
 void PlotWindow::importPlo()
 {
     gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->importFromPlo();
@@ -730,371 +655,6 @@ void PlotWindow::loadFromXml()
 }
 
 
-void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
-{
-    mpFrequencyAnalysisCurve = curve;
-
-    QLabel *pInfoLabel = new QLabel(tr("This will generate a frequency spectrum. Using more log samples will increase accuracy of the results."));
-    pInfoLabel->setWordWrap(true);
-    pInfoLabel->setFixedWidth(300);
-
-    mpFrequencyAnalysisDialog = new QDialog(this);
-    mpFrequencyAnalysisDialog->setWindowTitle("Generate Frequency Spectrum");
-
-    mpLogScaleCheckBox = new QCheckBox("Use log scale");
-    mpLogScaleCheckBox->setChecked(true);
-
-    mpPowerSpectrumCheckBox = new QCheckBox("Power spectrum");
-    mpPowerSpectrumCheckBox->setChecked(false);
-
-    QPushButton *pCancelButton = new QPushButton("Cancel");
-    QPushButton *pNextButton = new QPushButton("Go!");
-
-    //Toolbar
-    QAction *pHelpAction = new QAction("Show Context Help", this);
-    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
-    QToolBar *pToolBar = new QToolBar(this);
-    pToolBar->addAction(pHelpAction);
-
-    QGridLayout *pFrequencyAnalysisDialogLayout = new QGridLayout(mpFrequencyAnalysisDialog);
-    pFrequencyAnalysisDialogLayout->addWidget(pInfoLabel,               0, 0, 1, 4);
-    pFrequencyAnalysisDialogLayout->addWidget(mpLogScaleCheckBox,       1, 0, 1, 4);
-    pFrequencyAnalysisDialogLayout->addWidget(mpPowerSpectrumCheckBox,  2, 0, 1, 4);
-    pFrequencyAnalysisDialogLayout->addWidget(pToolBar,                 3, 0, 1, 1);
-    pFrequencyAnalysisDialogLayout->addWidget(new QWidget(this),        3, 1, 1, 1);
-    pFrequencyAnalysisDialogLayout->addWidget(pCancelButton,            3, 2, 1, 1);
-    pFrequencyAnalysisDialogLayout->addWidget(pNextButton,              3, 3, 1, 1);
-    pFrequencyAnalysisDialogLayout->setColumnStretch(1, 1);
-
-    mpFrequencyAnalysisDialog->setLayout(pFrequencyAnalysisDialogLayout);
-    mpFrequencyAnalysisDialog->setPalette(gpConfig->getPalette());
-    mpFrequencyAnalysisDialog->show();
-
-    connect(pCancelButton, SIGNAL(clicked()), mpFrequencyAnalysisDialog, SLOT(close()));
-    connect(pNextButton, SIGNAL(clicked()), this, SLOT(performFrequencyAnalysisFromDialog()));
-    connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
-}
-
-
-void PlotWindow::performFrequencyAnalysisFromDialog()
-{
-    //! @todo dialog is not deleted ?
-    mpFrequencyAnalysisDialog->close();
-
-    LogDataHandler *pLogDataHandler = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
-    SharedVariablePtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
-    SharedVariablePtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedVariablePtrT(), mpPowerSpectrumCheckBox->isChecked());
-
-    addPlotTab();
-    //getCurrentPlotTab()->getQwtPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-    //getCurrentPlotTab()->updateAxisLabels();
-    PlotCurve *pNewCurve = new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType);
-    getCurrentPlotTab()->addCurve(pNewCurve);
-
-    if(mpLogScaleCheckBox->isChecked())
-    {
-        //! @todo should call some wraper function
-        getCurrentPlotTab()->getQwtPlot(0)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
-        getCurrentPlotTab()->getQwtPlot(0)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
-    }
-    getCurrentPlotTab()->rescaleAxesToCurves();
-}
-
-
-void PlotWindow::showFrequencyAnalysisHelp()
-{
-    gpMainWindow->openContextHelp("userFrequencyAnalysis.html");
-}
-
-
-void PlotWindow::createBodePlot()
-{
-    //! @todo dialog is not deleted ?
-    mpCreateBodeDialog = new QDialog(this);
-    mpCreateBodeDialog->setWindowTitle("Transfer Function Analysis");
-
-    QGroupBox *pInputGroupBox = new QGroupBox(tr("Input Variable"));
-    QVBoxLayout *pInputGroupBoxLayout = new QVBoxLayout;
-    pInputGroupBoxLayout->addStretch(1);
-    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(0); ++i)
-    {
-        QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
-                                               getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
-                                               getCurrentPlotTab()->getCurves().at(i)->getDataName());
-        mBodeInputButtonToCurveMap.insert(radio, getCurrentPlotTab()->getCurves().at(i));
-        pInputGroupBoxLayout->addWidget(radio);
-    }
-    pInputGroupBox->setLayout(pInputGroupBoxLayout);
-
-    QGroupBox *pOutputGroupBox = new QGroupBox(tr("Output Variable"));
-    QVBoxLayout *pOutputGroupBoxLayout = new QVBoxLayout;
-    pOutputGroupBoxLayout->addStretch(1);
-    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(0); ++i)
-    {
-        QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
-                                               getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
-                                               getCurrentPlotTab()->getCurves().at(i)->getDataName());
-        mBodeOutputButtonToCurveMap.insert(radio, getCurrentPlotTab()->getCurves().at(i));
-        pOutputGroupBoxLayout->addWidget(radio);
-    }
-    pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
-
-    double dataSize = getCurrentPlotTab()->getCurves(0).first()->getTimeVectorPtr()->getDataSize()+1;
-    double stopTime = getCurrentPlotTab()->getCurves(0).first()->getTimeVectorPtr()->last();
-    double maxFreq = dataSize/stopTime/2;
-    QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
-    QLabel *pMaxFrequencyValue = new QLabel();
-    QLabel *pMaxFrequencyUnit = new QLabel("Hz");
-    pMaxFrequencyValue->setNum(maxFreq);
-    mpMaxFrequencySlider = new QSlider(this);
-    mpMaxFrequencySlider->setOrientation(Qt::Horizontal);
-    mpMaxFrequencySlider->setMinimum(0);
-    mpMaxFrequencySlider->setMaximum(maxFreq);
-    mpMaxFrequencySlider->setValue(maxFreq);
-    connect(mpMaxFrequencySlider, SIGNAL(valueChanged(int)), pMaxFrequencyValue, SLOT(setNum(int)));
-
-    QHBoxLayout *pSliderLayout = new QHBoxLayout();
-    pSliderLayout->addWidget(mpMaxFrequencySlider);
-    pSliderLayout->addWidget(pMaxFrequencyValue);
-    pSliderLayout->addWidget(pMaxFrequencyUnit);
-
-    QPushButton *pCancelButton = new QPushButton("Cancel");
-    QPushButton *pNextButton = new QPushButton("Go!");
-
-    //Toolbar
-    QAction *pHelpAction = new QAction("Show Context Help", this);
-    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
-    QToolBar *pToolBar = new QToolBar(this);
-    pToolBar->addAction(pHelpAction);
-
-    QGridLayout *pBodeDialogLayout = new QGridLayout;
-    pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 3);
-    pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 3);
-    pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 3);
-    pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 3);
-    pBodeDialogLayout->addWidget(pToolBar, 4, 0, 1, 1);
-    pBodeDialogLayout->addWidget(pCancelButton, 4, 1, 1, 1);
-    pBodeDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
-
-    mpCreateBodeDialog->setLayout(pBodeDialogLayout);
-    mpCreateBodeDialog->setPalette(gpConfig->getPalette());
-    mpCreateBodeDialog->show();
-
-    connect(pCancelButton, SIGNAL(clicked()), mpCreateBodeDialog, SLOT(close()));
-    connect(pNextButton, SIGNAL(clicked()), this, SLOT(createBodePlotFromDialog()));
-    connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
-    //connect(pNextButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
-}
-
-
-void PlotWindow::createBodePlotFromDialog()
-{
-    PlotCurve *inputCurve = 0;
-    PlotCurve *outputCurve = 0;
-    QMap<QRadioButton *, PlotCurve *>::iterator it;
-    for(it=mBodeInputButtonToCurveMap.begin(); it!=mBodeInputButtonToCurveMap.end(); ++it)
-    {
-        if(it.key()->isChecked())
-            inputCurve = it.value();
-    }
-    for(it=mBodeOutputButtonToCurveMap.begin(); it!=mBodeOutputButtonToCurveMap.end(); ++it)
-    {
-        if(it.key()->isChecked())
-            outputCurve = it.value();
-    }
-    if(inputCurve == 0 || outputCurve == 0)
-    {
-        QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Both input and output vectors must be selected."));
-    }
-    else if(inputCurve == outputCurve)
-    {
-        QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Input and output vectors must be different."));
-    }
-    else
-    {
-        mpCreateBodeDialog->close();
-        createBodePlot(inputCurve, outputCurve, mpMaxFrequencySlider->value());
-    }
-}
-
-
-void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax)
-{
-    //! @todo whene are these deleted, and why are they even created here
-    PlotCurve *pCurve1 = new PlotCurve(var1, QwtPlot::yLeft);
-    PlotCurve *pCurve2 = new PlotCurve(var2, QwtPlot::yLeft);
-    createBodePlot(pCurve1, pCurve2, Fmax);
-}
-
-
-void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax)
-{
-    //Create temporary real vectors
-    QVector<double> realYvector = pInputCurve->getDataVectorCopy();
-    QVector<double> realXvector = pOutputCurve->getDataVectorCopy();
-
-    //Abort and inform user if vectors are not of same size
-    if(realXvector.size() != realYvector.size())
-    {
-        QMessageBox::warning(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
-                             "Input and output vector must be of same size.");
-        return;
-    }
-
-    //Reduce vector size if they are not equal to an even potential of 2, and inform user
-    int n = pow(2, int(log2(realXvector.size())));
-    if(n != realXvector.size())     //Vector is not an exact potential, so reduce it
-    {
-        QString oldString, newString;
-        oldString.setNum(realXvector.size());
-        newString.setNum(n);
-        QMessageBox::information(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
-                                 "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
-        reduceVectorSize(realXvector, n);
-        reduceVectorSize(realYvector, n);
-    }
-
-    //Create complex vectors
-    QVector< std::complex<double> > Y = realToComplex(realYvector);
-    QVector< std::complex<double> > X = realToComplex(realXvector);
-
-    //Apply the fourier transforms
-    FFT(X);
-    FFT(Y);
-
-    //Divide the fourier transform elementwise and take their absolute value
-    QVector< std::complex<double> > G;
-    QVector<double> vRe;
-    QVector<double> vIm;
-    QVector<double> vImNeg;
-    QVector<double> vBodeGain;
-    QVector<double> vBodePhase;
-
-    double phaseCorrection=0;
-    QVector<double> vBodePhaseUncorrected;
-    for(int i=0; i<Y.size()/2; ++i)
-    {
-        if(Y.at(i) == std::complex<double>(0,0))        //Check for division by zero
-        {
-            G.append(G[i-1]);    //! @todo This is not a good solution, and what if i=0?
-        }
-        else
-        {
-            G.append(X.at(i)/Y.at(i));                  //G(iw) = FFT(Y(iw))/FFT(X(iw))
-        }
-        if(i!=0)
-        {
-            vRe.append(G[i].real());
-            vIm.append(G[i].imag());
-            vImNeg.append(-G[i].imag());
-            vBodeGain.append(20*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
-            vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180./3.14159265);          //Phase: arg(G) = arctan(X/R)
-
-            // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
-            if(vBodePhaseUncorrected.size() > 1)
-            {
-                if(vBodePhaseUncorrected.last() > 170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] < -170)
-                    phaseCorrection -= 360;
-                else if(vBodePhaseUncorrected.last() < -170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] > 170)
-                    phaseCorrection += 360;
-            }
-            vBodePhase.append(vBodePhaseUncorrected.last() + phaseCorrection);
-        }
-    }
-
-
-    QVector<double> F;
-    double stoptime = pInputCurve->getTimeVectorPtr()->last();
-    for(int i=1; i<G.size(); ++i)
-    {
-        F.append((i+1)/stoptime);
-        if(F.last() >= Fmax) break;
-    }
-    vBodeGain.resize(F.size());
-    vBodePhase.resize(F.size());
-
-
-    PlotTab *pNyquistTab = addPlotTab("Nyquist Plot");
-    SharedVariablePtrT pNyquistData1(new ComplexVectorVariable(vRe, vIm,pOutputCurve->getLogDataVariablePtr()->getGeneration(),
-                                                               SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                               SharedMultiDataVectorCacheT()));
-    pNyquistTab->addCurve(new PlotCurve(pNyquistData1, pOutputCurve->getAxisY(), NyquistType));
-
-    SharedVariablePtrT pNyquistData2(new ComplexVectorVariable(vRe, vImNeg,pOutputCurve->getLogDataVariablePtr()->getGeneration(),
-                                                               SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                               SharedMultiDataVectorCacheT()));
-    pNyquistTab->addCurve(new PlotCurve(pNyquistData2, pOutputCurve->getAxisY(), NyquistType));
-
-    //! @todo these three should not be needded they should be called in the addCurve function
-    pNyquistTab->getQwtPlot()->replot();
-    pNyquistTab->rescaleAxesToCurves();
-    pNyquistTab->updateGeometry();
-
-    PlotTab *pBodeTab = addPlotTab("Bode Diagram");
-    SharedVariablePtrT pFrequencyVar = createFreeFrequencyVectorVariabel(F);
-    SharedVariablePtrT pGainData(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutputCurve->getLogDataVariablePtr()->getGeneration(),
-                                                             SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                             SharedMultiDataVectorCacheT()));
-    PlotCurve *pGainCurve = new PlotCurve(pGainData, pOutputCurve->getAxisY(), BodeGainType);
-    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->addCurve(pGainCurve);
-
-    SharedVariablePtrT pPhaseData(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutputCurve->getLogDataVariablePtr()->getGeneration(),
-                                                             SharedVariableDescriptionT(new VariableDescription(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data())),
-                                                             SharedMultiDataVectorCacheT()));
-    PlotCurve *pPhaseCurve = new PlotCurve(pPhaseData, pOutputCurve->getAxisY(), BodePhaseType);
-    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve, QColor());
-
-    //! @todo are these really needed they should be called in the addCurve function (but something special here for first and second plot)
-    pBodeTab->getQwtPlot(BodePlotTab::MagnitudePlot)->replot();
-    pBodeTab->getQwtPlot(BodePlotTab::PhasePlot)->replot();
-
-    //getCurrentPlotTab()->updateGeometry();
-    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
-    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->setBottomAxisLogarithmic(true);
-
-    pBodeTab->rescaleAxesToCurves();
-
-
-    // Add a curve marker at the amplitude margin
-    for(int i=1; i<vBodePhase.size(); ++i)
-    {
-        if(vBodePhase.at(i) < -180 && vBodePhase.at(i-1) > -180)
-        {
-            QString valueString;
-            valueString.setNum(-vBodeGain.at(i));
-            pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve, F.at(i), vBodeGain.at(i), "Gain Margin = " + valueString + " dB", false);
-            break;
-        }
-    }
-
-    // Add a curve marker at the phase margin
-    for(int i=1; i<vBodeGain.size(); ++i)
-    {
-        if(vBodeGain.at(i) < -0 && vBodeGain.at(i-1) > -0)
-        {
-            QString valueString;
-            valueString.setNum(180.0+vBodePhase.at(i));
-            pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve, F.at(i), vBodePhase.at(i), "Phase Margin = " + valueString + trUtf8("°"), false);
-            break;
-        }
-    }
-
-    SharedVariablePtrT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
-    if(gainVar.isNull())
-    {
-        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
-    }
-    gainVar.data()->assignFrom(F, vBodeGain);
-
-    SharedVariablePtrT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
-    if(phaseVar.isNull())
-    {
-        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
-    }
-    phaseVar.data()->assignFrom(F, vBodePhase);
-}
-
-
 //! @brief Shows the help popup with a message for the currently hovered toolbar item
 void PlotWindow::showToolBarHelpPopup()
 {
@@ -1102,47 +662,47 @@ void PlotWindow::showToolBarHelpPopup()
     QAction *pHoveredAction = mpToolBar->actionAt(mpToolBar->mapFromGlobal(cursor.pos()));
     if(pHoveredAction == mpNewPlotButton)
     {
-        showHelpPopupMessage("Create a new empty plot tab.");
+        mpHelpPopup->showHelpPopupMessage("Create a new empty plot tab.");
     }
     else if(pHoveredAction == mpBodePlotButton)
     {
-        showHelpPopupMessage("Performs transfer function analysis to generate nyquist plot and bode diagram.");
+        mpHelpPopup->showHelpPopupMessage("Performs transfer function analysis to generate nyquist plot and bode diagram.");
     }
     else if(pHoveredAction == mpArrowButton)
     {
-        showHelpPopupMessage("Enables to select/revert-back-to the Arrow Pointer.");
+        mpHelpPopup->showHelpPopupMessage("Enables to select/revert-back-to the Arrow Pointer.");
     }
     else if(pHoveredAction == mpZoomButton)
     {
-        showHelpPopupMessage("Enable zooming tool.");
+        mpHelpPopup->showHelpPopupMessage("Enable zooming tool.");
     }
     else if(pHoveredAction == mpPanButton)
     {
-        showHelpPopupMessage("Enable panning tool.");
+        mpHelpPopup->showHelpPopupMessage("Enable panning tool.");
     }
     else if(pHoveredAction == mpSaveButton)
     {
-        showHelpPopupMessage("Save plot window to XML.");
+        mpHelpPopup->showHelpPopupMessage("Save plot window to XML.");
     }
     else if(pHoveredAction == mpLoadFromXmlButton)
     {
-        showHelpPopupMessage("Load plot window from XML.");
+        mpHelpPopup->showHelpPopupMessage("Load plot window from XML.");
     }
     else if(pHoveredAction == mpGridButton)
     {
-        showHelpPopupMessage("Toggle background grid.");
+        mpHelpPopup->showHelpPopupMessage("Toggle background grid.");
     }
     else if(pHoveredAction == mpBackgroundColorButton)
     {
-        showHelpPopupMessage("Change background color.");
+        mpHelpPopup->showHelpPopupMessage("Change background color.");
     }
     else if(pHoveredAction == mpNewWindowFromTabButton)
     {
-        showHelpPopupMessage("Create new plot window from current tab.");
+        mpHelpPopup->showHelpPopupMessage("Create new plot window from current tab.");
     }
     else if(pHoveredAction == mpResetXVectorButton)
     {
-        showHelpPopupMessage("Reset X-vector to simulation time.");
+        mpHelpPopup->showHelpPopupMessage("Reset X-vector to simulation time.");
     }
 //    else if(pHoveredAction == mpShowCurveInfoButton)
 //    {
@@ -1158,15 +718,15 @@ void PlotWindow::showToolBarHelpPopup()
 //    }
     else if(pHoveredAction == mpLegendButton)
     {
-        showHelpPopupMessage("Open the legend settings dialog.");
+        mpHelpPopup->showHelpPopupMessage("Open the legend settings dialog.");
     }
     else if(pHoveredAction == mpLocktheAxis)
     {
-        showHelpPopupMessage("Open the lock axis dialog.");
+        mpHelpPopup->showHelpPopupMessage("Open the lock axis dialog.");
     }
     else if(pHoveredAction == mpToggleAxisLockButton)
     {
-        showHelpPopupMessage("Lock all axes to current limits.");
+        mpHelpPopup->showHelpPopupMessage("Lock all axes to current limits.");
     }
 }
 
@@ -1174,26 +734,25 @@ void PlotWindow::showToolBarHelpPopup()
 //! @brief Slot that closes all tabs with no curves, and then closes the entire plot window if it has no curves.
 void PlotWindow::closeIfEmpty()
 {
-    int curves=0;
-    for(int i=0; i<mpPlotTabWidget->count(); ++i)
+    // Cloase each plottab that is empty (no curves)
+    int i=0;
+    while (i<mpPlotTabWidget->count())
     {
-        int nCurvesInTab = 0;
-        for(int plotId=0; plotId<2; ++plotId)
-        {
-            nCurvesInTab += mpPlotTabWidget->getTab(i)->getNumberOfCurves(int(plotId));
-        }
-
-        if(nCurvesInTab == 0)
+        if(mpPlotTabWidget->getTab(i)->isEmpty())
         {
             mpPlotTabWidget->closePlotTab(i);
-            --i;
         }
-
-        curves += nCurvesInTab;
+        else
+        {
+            ++i;
+        }
     }
 
-    if(curves == 0)
+    // Close the entire plot window if all tabs have been closed
+    if(mpPlotTabWidget->count() == 0)
+    {
         close();
+    }
 }
 
 void PlotWindow::closeAllTabs()
@@ -1202,9 +761,9 @@ void PlotWindow::closeAllTabs()
 }
 
 
-void PlotWindow::hidePlotCurveInfo()
+void PlotWindow::hidePlotCurveControls()
 {
-    mpCurveInfoDock->toggleViewAction()->setChecked(false);
+    mpPlotCurveControlsDock->toggleViewAction()->setChecked(false);
 }
 
 
@@ -1219,17 +778,16 @@ void PlotWindow::setLegendsVisible(bool value)
 
 void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    hideHelpPopupMessage();
-
+    mpHelpPopup->hide();
     QMainWindow::mouseMoveEvent(event);
 }
 
 
-//! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
+//! @brief Reimplementation of close function for plot window. Notifies others that window no longer exists.
 void PlotWindow::closeEvent(QCloseEvent *event)
 {
     emit windowClosed(this);
-    event->accept();
+    QMainWindow::closeEvent(event);
 }
 
 void PlotWindow::changedTab()
@@ -1255,6 +813,7 @@ void PlotWindow::changedTab()
     disconnect(mpAllGenerationsUp,          SIGNAL(triggered()),    0,  0);
     disconnect(mpOpentimeScaleDialog,       SIGNAL(triggered()),    0,  0);
     disconnect(mpToggleAxisLockButton,      SIGNAL(triggered()),    0,  0);
+    disconnect(mpBodePlotButton,            SIGNAL(triggered()),    0,  0);
 
     // If there are any tabs then show the widget and reestablish connections to the current tab
     if(mpPlotTabWidget->count() > 0)
@@ -1309,13 +868,13 @@ void PlotWindow::changedTab()
             mpZoomButton->setChecked(pCurrentTab->isZoomEnabled());
             mpPanButton->setChecked(pCurrentTab->isPanEnabled());
             mpGridButton->setChecked(pCurrentTab->isGridVisible());
-            mpResetXVectorButton->setEnabled(pCurrentTab->hasCustomXData());
-            mpBodePlotButton->setEnabled(pCurrentTab->getCurves(0).size() > 1); //!< @todo check this in some better way
+            //mpResetXVectorButton->setEnabled(pCurrentTab->hasCustomXData());
+            //mpBodePlotButton->setEnabled(pCurrentTab->getCurves(0).size() > 1); //!< @todo check this in some better way
         }
 
         connect(mpZoomButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableZoom(bool)));
         connect(mpOriginalZoomButton,       SIGNAL(triggered()),    pCurrentTab,    SLOT(resetZoom()));
-        connect(mpArrowButton,              SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableArrow(bool))); // Arrow
+        connect(mpArrowButton,              SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableArrow(bool)));
         connect(mpPanButton,                SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enablePan(bool)));
         connect(mpBackgroundColorButton,    SIGNAL(triggered()),    pCurrentTab,    SLOT(setBackgroundColor()));
         connect(mpGridButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableGrid(bool)));
@@ -1329,13 +888,14 @@ void PlotWindow::changedTab()
         connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
         connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));
+        connect(mpOpentimeScaleDialog,      SIGNAL(triggered()),    pCurrentTab,    SLOT(openTimeScalingDialog()));
         connect(mpAllGenerationsDown,       SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsDown()));
         connect(mpAllGenerationsUp,         SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsUp()));
-        connect(mpOpentimeScaleDialog,      SIGNAL(triggered()),    pCurrentTab,    SLOT(openTimeScalingDialog()));
         connect(mpToggleAxisLockButton,     SIGNAL(triggered()),    pCurrentTab,    SLOT(toggleAxisLock()));
+        connect(mpBodePlotButton,           SIGNAL(triggered()),    pCurrentTab,    SLOT(openCreateBodePlotDialog()));
 
         // Set the plottab specific info layout
-        mpCurveInfoStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);
+        mpPlotCurveControlsStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);
     }
     else
     {
@@ -1376,3 +936,81 @@ void PlotWindow::createPlotWindowFromTab()
 }
 
 
+//! @todo should not run code on non bodeplot tabs
+void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax)
+{
+    SharedVariablePtrT pNyquist, pNyquistInv, pGain, pPhase;
+    createBode(var1, var2, Fmax, pNyquist, pNyquistInv, pGain, pPhase);
+
+    // Nyquist plot
+    PlotTab *pNyquistTab = addPlotTab("Nyquist Plot");
+    pNyquistTab->addCurve(new PlotCurve(pNyquist, QwtPlot::yLeft, NyquistType));
+    pNyquistTab->addCurve(new PlotCurve(pNyquistInv, QwtPlot::yLeft, NyquistType));
+
+    //! @todo these three should not be needded they should be called in the addCurve function
+    pNyquistTab->getQwtPlot()->replot();
+    pNyquistTab->rescaleAxesToCurves();
+    pNyquistTab->updateGeometry();
+
+    // Bode plot
+    PlotTab *pBodeTab = addPlotTab("Bode Diagram", BodePlotType);
+    PlotCurve *pGainCurve = new PlotCurve(pGain, QwtPlot::yLeft, BodeGainType);
+    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->addCurve(pGainCurve);
+
+    PlotCurve *pPhaseCurve = new PlotCurve(pPhase, QwtPlot::yLeft, BodePhaseType);
+    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve, QColor());
+
+    //! @todo are these really needed they should be called in the addCurve function (but something special here for first and second plot)
+    pBodeTab->getQwtPlot(BodePlotTab::MagnitudePlot)->replot();
+    pBodeTab->getQwtPlot(BodePlotTab::PhasePlot)->replot();
+
+    //getCurrentPlotTab()->updateGeometry();
+    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
+    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->setBottomAxisLogarithmic(true);
+
+    pBodeTab->rescaleAxesToCurves();
+
+
+    // Add a curve marker at the amplitude margin
+    for(int i=1; i<pPhase->getDataSize(); ++i)
+    {
+        //! @todo a find crossing(s) function in variable should be nice
+        if( (pPhase->peekData(i)<-180) && (pPhase->peekData(i-1)>-180) )
+        {
+            pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve,
+                                                                            pGain->getSharedFrequencyVectorPointer()->peekData(i), pGain->peekData(i),
+                                                                            QString("Gain Margin = %1 dB").arg(-pGain->peekData(i)),
+                                                                            false);
+            break;
+        }
+    }
+
+    // Add a curve marker at the phase margin
+    for(int i=1; i<pGain->getDataSize(); ++i)
+    {
+        //! @todo a find crossing(s) function in variable should be nice
+        if( (pGain->peekData(i)<-0) && (pGain->peekData(i-1)>-0) )
+        {
+            pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve,
+                                                                        pPhase->getSharedFrequencyVectorPointer()->peekData(i), pPhase->peekData(i),
+                                                                        QString("Phase Margin = %1").arg(180.0+pPhase->peekData(i))+trUtf8("°"),
+                                                                        false);
+            break;
+        }
+    }
+
+    //! @todo this should not happen here
+    SharedVariablePtrT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
+    if(gainVar.isNull())
+    {
+        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
+    }
+    gainVar.data()->assignFrom(pGain);
+
+    SharedVariablePtrT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
+    if(phaseVar.isNull())
+    {
+        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
+    }
+    phaseVar.data()->assignFrom(pPhase);
+}

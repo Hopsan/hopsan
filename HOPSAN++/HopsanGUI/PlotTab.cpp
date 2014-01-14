@@ -39,8 +39,10 @@
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "PlotArea.h"
+#include "MainWindow.h"
 
 #include "qwt_plot_renderer.h"
+#include "Dependencies/BarChartPlotter/barchartplotter.h"
 #include "Dependencies/BarChartPlotter/axisbase.h"
 
 
@@ -182,7 +184,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mpCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mpCurveInfoScrollArea->setPalette(gpConfig->getPalette());
     mpCurveInfoScrollArea->setMinimumHeight(110);
-    mpParentPlotWindow->mpCurveInfoStack->addWidget(mpCurveInfoScrollArea);
+    mpParentPlotWindow->mpPlotCurveControlsStack->addWidget(mpCurveInfoScrollArea);
 
 //    for(int plotID=0; plotID<2; ++plotID)
 //    {
@@ -216,42 +218,31 @@ PlotTab::~PlotTab()
     }
 }
 
-void PlotTab::applyLegendSettings()
-{
-
-}
-
-void PlotTab::applyTimeScalingSettings()
-{
-
-}
-
-
 //! @todo currently only supports settings axis for top plot
 void PlotTab::openAxisSettingsDialog()
 {
-
-}
-
-void PlotTab::openAxisLabelDialog()
-{
-
-}
-
-void PlotTab::openTimeScalingDialog()
-{
-
+    if (!mPlotAreas.empty())
+    {
+        mPlotAreas[0]->openAxisSettingsDialog();
+    }
 }
 
 //! @todo currently only supports settings axis for top plot
-void PlotTab::applyAxisSettings()
+void PlotTab::openAxisLabelDialog()
 {
-
+    if (!mPlotAreas.empty())
+    {
+        mPlotAreas[0]->openAxisLabelDialog();
+    }
 }
 
-void PlotTab::applyAxisLabelSettings()
+//! @todo currently only supports settings axis for top plot
+void PlotTab::openTimeScalingDialog()
 {
-
+    if (!mPlotAreas.empty())
+    {
+        mPlotAreas[0]->openTimeScalingDialog();
+    }
 }
 
 //! @brief Toggles the axis lock on/off for the enabled axis
@@ -386,7 +377,7 @@ void PlotTab::resetXTimeVector()
             pArea->resetXTimeVector();
         }
     }
-    mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
+//    mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
 
@@ -927,9 +918,6 @@ void PlotTab::enableZoom(bool value)
             pArea->enableZoom();
         }
     }
-
-    //! @todo FIXA / Peter
-    mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
 void PlotTab::resetZoom()
@@ -1025,6 +1013,18 @@ int PlotTab::getNumberOfCurves(const int subPlotId) const
         return mPlotAreas[subPlotId]->getNumberOfCurves();
     }
     return 0;
+}
+
+bool PlotTab::isEmpty() const
+{
+    //! @todo this needs to be overloaded for other types of plots that have no curves
+    int sum=0;
+    PlotArea *pArea;
+    Q_FOREACH(pArea, mPlotAreas)
+    {
+        sum+=pArea->getNumberOfCurves();
+    }
+    return sum==0;
 }
 
 bool PlotTab::isArrowEnabled() const
@@ -1374,18 +1374,6 @@ int PlotTab::getPlotIDForCurve(PlotCurve *pCurve)
     return -1;
 }
 
-
-
-void PlotTab::setTabOnlyCustomXVector(SharedVariablePtrT pData, int /*plotID*/)
-{
-
-
-    mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
-}
-
-
-
-
 QSizeF PlotTab::calcMMSize() const
 {
     QSizeF pxSize = calcPXSize();
@@ -1551,3 +1539,195 @@ void BarchartPlotTab::addBarChart(QStandardItemModel *pItemModel)
 
     mpTabLayout->addWidget(mpBarPlot,0,0);
 }
+
+//! @todo maybe this function belongs in the plot area
+void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
+{
+    QLabel *pInfoLabel = new QLabel(tr("This will generate a frequency spectrum. Using more log samples will increase accuracy of the results."));
+    pInfoLabel->setWordWrap(true);
+    pInfoLabel->setFixedWidth(300);
+
+    QDialog *pDialog = new QDialog(this);
+    pDialog->setWindowTitle("Generate Frequency Spectrum");
+
+    QCheckBox *pLogScaleCheckBox = new QCheckBox("Use log scale");
+    pLogScaleCheckBox->setChecked(true);
+
+    QCheckBox *pPowerSpectrumCheckBox = new QCheckBox("Power spectrum");
+    pPowerSpectrumCheckBox->setChecked(false);
+
+    QPushButton *pCancelButton = new QPushButton("Cancel");
+    QPushButton *pNextButton = new QPushButton("Go!");
+
+    // Toolbar
+    QAction *pHelpAction = new QAction("Show Context Help", this);
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    QToolBar *pToolBar = new QToolBar(this);
+    pToolBar->addAction(pHelpAction);
+
+    QGridLayout *pLayout = new QGridLayout(pDialog);
+    pLayout->addWidget(pInfoLabel,               0, 0, 1, 4);
+    pLayout->addWidget(pLogScaleCheckBox,        1, 0, 1, 4);
+    pLayout->addWidget(pPowerSpectrumCheckBox,   2, 0, 1, 4);
+    pLayout->addWidget(pToolBar,                 3, 0, 1, 1);
+    pLayout->addWidget(new QWidget(pDialog),     3, 1, 1, 1);
+    pLayout->addWidget(pCancelButton,            3, 2, 1, 1);
+    pLayout->addWidget(pNextButton,              3, 3, 1, 1);
+    pLayout->setColumnStretch(1, 1);
+
+    pDialog->setLayout(pLayout);
+    pDialog->setPalette(gpConfig->getPalette());
+
+    connect(pCancelButton, SIGNAL(clicked()), pDialog, SLOT(close()));
+    connect(pNextButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
+    connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
+
+    int rc = pDialog->exec();
+    if (rc == QDialog::Accepted)
+    {
+        SharedVariablePtrT pNewVar = pCurve->getLogDataVariablePtr()->toFrequencySpectrum(SharedVariablePtrT(), pPowerSpectrumCheckBox->isChecked());
+
+        PlotTab *pTab = mpParentPlotWindow->addPlotTab();
+        pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));
+        //getCurrentPlotTab()->getQwtPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+        //getCurrentPlotTab()->updateAxisLabels();
+
+        if(pLogScaleCheckBox->isChecked())
+        {
+            pTab->getPlotArea(0)->setBottomAxisLogarithmic(true); //!< @todo maybe need a set all logarithmic function
+            pTab->getPlotArea(0)->setLeftAxisLogarithmic(true);
+            pTab->rescaleAxesToCurves(); //!< @todo maybe we should not need to call this here
+        }
+    }
+    pDialog->deleteLater();
+}
+
+void PlotTab::showFrequencyAnalysisHelp()
+{
+    //! @todo solve in some smarter way then gpMainWindow (we do not want to include it everywhere
+    gpMainWindow->openContextHelp("userFrequencyAnalysis.html");
+}
+
+void PlotTab::openCreateBodePlotDialog()
+{
+    // Abort for empty tabs
+    if (isEmpty())
+    {
+        return;
+    }
+
+    QDialog *pBodeDialog = new QDialog(this);
+    pBodeDialog->setWindowTitle("Transfer Function Analysis");
+
+    QMap<QRadioButton*, PlotCurve*> bodeInputButtonToCurveMap;
+    QMap<QRadioButton*, PlotCurve*> bodeOutputButtonToCurveMap;
+
+    QGroupBox *pInputGroupBox = new QGroupBox(tr("Input Variable"));
+    QVBoxLayout *pInputGroupBoxLayout = new QVBoxLayout;
+    pInputGroupBoxLayout->addStretch(1);
+    for(int i=0; i<getNumberOfCurves(0); ++i)
+    {
+        QRadioButton *radio = new QRadioButton(getCurves(0).at(i)->getComponentName() + ", " +
+                                               getCurves(0).at(i)->getPortName() + ", " +
+                                               getCurves(0).at(i)->getDataName());
+        bodeInputButtonToCurveMap.insert(radio, getCurves(0).at(i));
+        pInputGroupBoxLayout->addWidget(radio);
+    }
+    pInputGroupBox->setLayout(pInputGroupBoxLayout);
+
+    QGroupBox *pOutputGroupBox = new QGroupBox(tr("Output Variable"));
+    QVBoxLayout *pOutputGroupBoxLayout = new QVBoxLayout;
+    pOutputGroupBoxLayout->addStretch(1);
+    for(int i=0; i<getNumberOfCurves(0); ++i)
+    {
+        QRadioButton *radio = new QRadioButton(getCurves(0).at(i)->getComponentName() + ", " +
+                                               getCurves(0).at(i)->getPortName() + ", " +
+                                               getCurves(0).at(i)->getDataName());
+        bodeOutputButtonToCurveMap.insert(radio, getCurves(0).at(i));
+        pOutputGroupBoxLayout->addWidget(radio);
+    }
+    pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
+
+    double dataSize = getCurves(0).first()->getTimeVectorPtr()->getDataSize()+1;
+    double stopTime = getCurves(0).first()->getTimeVectorPtr()->last();
+    double maxFreq = dataSize/stopTime/2;
+    QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
+    QLabel *pMaxFrequencyValue = new QLabel();
+    QLabel *pMaxFrequencyUnit = new QLabel("Hz");
+    QSlider *pMaxFrequencySlider;
+    pMaxFrequencyValue->setNum(maxFreq);
+    pMaxFrequencySlider = new QSlider(this);
+    pMaxFrequencySlider->setOrientation(Qt::Horizontal);
+    pMaxFrequencySlider->setMinimum(0);
+    pMaxFrequencySlider->setMaximum(maxFreq);
+    pMaxFrequencySlider->setValue(maxFreq);
+    connect(pMaxFrequencySlider, SIGNAL(valueChanged(int)), pMaxFrequencyValue, SLOT(setNum(int)));
+
+    QHBoxLayout *pSliderLayout = new QHBoxLayout();
+    pSliderLayout->addWidget(pMaxFrequencySlider);
+    pSliderLayout->addWidget(pMaxFrequencyValue);
+    pSliderLayout->addWidget(pMaxFrequencyUnit);
+
+    QPushButton *pCancelButton = new QPushButton("Cancel");
+    QPushButton *pNextButton = new QPushButton("Go!");
+
+    // Toolbar
+    QAction *pHelpAction = new QAction("Show Context Help", this);
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    QToolBar *pToolBar = new QToolBar(this);
+    pToolBar->addAction(pHelpAction);
+
+    QGridLayout *pBodeDialogLayout = new QGridLayout;
+    pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 3);
+    pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 3);
+    pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 3);
+    pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 3);
+    pBodeDialogLayout->addWidget(pToolBar, 4, 0, 1, 1);
+    pBodeDialogLayout->addWidget(pCancelButton, 4, 1, 1, 1);
+    pBodeDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
+
+    pBodeDialog->setLayout(pBodeDialogLayout);
+    pBodeDialog->setPalette(gpConfig->getPalette());
+
+    connect(pCancelButton, SIGNAL(clicked()), pBodeDialog, SLOT(close()));
+    connect(pNextButton, SIGNAL(clicked()), pBodeDialog, SLOT(accept()));
+    connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
+
+    int rc = pBodeDialog->exec();
+    if (rc == QDialog::Accepted)
+    {
+        PlotCurve *pInputCurve=0, *pOutputCurve=0;
+        QMap<QRadioButton *, PlotCurve *>::iterator it;
+        for(it=bodeInputButtonToCurveMap.begin(); it!=bodeInputButtonToCurveMap.end(); ++it)
+        {
+            if(it.key()->isChecked())
+            {
+                pInputCurve = it.value();
+                break;
+            }
+        }
+        for(it=bodeOutputButtonToCurveMap.begin(); it!=bodeOutputButtonToCurveMap.end(); ++it)
+        {
+            if(it.key()->isChecked())
+            {
+                pOutputCurve = it.value();
+                break;
+            }
+        }
+        if(pInputCurve == 0 || pOutputCurve == 0)
+        {
+            QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Both input and output vectors must be selected."));
+        }
+        else if(pInputCurve == pOutputCurve)
+        {
+            QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Input and output vectors must be different."));
+        }
+        else
+        {
+            mpParentPlotWindow->createBodePlot(pInputCurve->getLogDataVariablePtr(), pOutputCurve->getLogDataVariablePtr(), pMaxFrequencySlider->value());
+        }
+    }
+    pBodeDialog->deleteLater();
+}
+
+

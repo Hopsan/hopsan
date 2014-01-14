@@ -73,9 +73,7 @@ class PlotCurve : public QObject, public QwtPlotCurve
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
-    PlotCurve(SharedVariablePtrT pData,
-              int axisY=QwtPlot::yLeft,
-              HopsanPlotCurveTypeEnumT curveType=PortVariableType);
+    PlotCurve(SharedVariablePtrT pData, int axisY=QwtPlot::yLeft, HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     void setIncludeGenerationInTitle(bool doit);
@@ -144,7 +142,7 @@ public slots:
 
     void refreshCurveTitle();
     void setAutoUpdate(bool value);
-    void performFrequencyAnalysis();
+    void openFrequencyAnalysisDialog();
     void markActive(bool value);
 
 private slots:

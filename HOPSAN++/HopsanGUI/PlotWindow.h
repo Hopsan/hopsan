@@ -29,13 +29,17 @@
 #include <QObject>
 #include <QString>
 
+#include "PlotTab.h"
 #include <qwt_plot.h>
 #include "LogVariable.h"
 
 // Forward Declaration
-class PlotTab;
 class PlotCurve;
 class PlotWindow;
+class HelpPopUpWidget;
+
+//! @todo this should be more general
+
 
 
 //! @brief Tab widget for plots in plot window
@@ -61,49 +65,43 @@ public:
     PlotWindow(const QString name, QWidget *parent);
     ~PlotWindow();
 
-    PlotTab *addPlotTab(const QString &rName, PlotTabTypeT type=XYPlotType);
+    QString getName() const;
 
+    PlotTab *addPlotTab(const QString &rName, PlotTabTypeT type=XYPlotType);
+    PlotTab *getCurrentPlotTab();
+    PlotTabWidget *getPlotTabWidget(); //!< @todo should this realy be needed
+
+    void createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax);
+
+    //! @todo these three should not be used
     PlotCurve* addPlotCurve(SharedVariablePtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     PlotCurve* addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
 
-    PlotTabWidget *getPlotTabWidget();
-    PlotTab *getCurrentPlotTab();
-
-    void showHelpPopupMessage(QString message);
-    void hideHelpPopupMessage();
-
-    QString getName() const;
-
 signals:
-    void curveAdded();
     void windowClosed(PlotWindow *pWindow);
 
 public slots:
     PlotTab *addPlotTab();
+    void createPlotWindowFromTab();
+
+    //! @todo these two should not be used
     void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc);
     void setCustomXVector(SharedVariablePtrT pData);
-    void updatePalette();
-    void createPlotWindowFromTab();
+
     void saveToXml();
+    void loadFromXml();
+
     void importPlo();
     void importCsv();
 
-    void loadFromXml();
-    void performFrequencyAnalysis(PlotCurve *curve);
-    void performFrequencyAnalysisFromDialog();
-
-
-    void showFrequencyAnalysisHelp();
-    void createBodePlot();
-    void createBodePlotFromDialog();
-    void createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax);
-    void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
+    void updatePalette();
+    void hidePlotCurveControls();
+    void setLegendsVisible(bool value);
+
     void closeIfEmpty();
     void closeAllTabs();
-    void hidePlotCurveInfo();
-    void setLegendsVisible(bool value);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -117,13 +115,14 @@ private:
 
     QString mName;
     QString mModelName;
-
-    QGridLayout *mpLayout;
-    QGridLayout *mpInfoBoxLayout;
     QPointF dragStartPosition;
 
-    QToolBar *mpToolBar;
+    PlotTabWidget *mpPlotTabWidget;
+    QDockWidget *mpPlotCurveControlsDock;
+    QStackedWidget *mpPlotCurveControlsStack;
+    HelpPopUpWidget *mpHelpPopup;
 
+    QToolBar *mpToolBar;
     QAction *mpNewPlotButton;
     QAction *mpArrowButton;
     QAction *mpLegendButton;
@@ -133,7 +132,6 @@ private:
     QAction *mpSaveButton;
     QToolButton *mpExportButton;
     QToolButton *mpImportButton;
-    //QToolButton *mpExportGfxButton;
     QAction *mpLoadFromXmlButton;
     QAction *mpGridButton;
     QAction *mpBackgroundColorButton;
@@ -141,7 +139,6 @@ private:
     QAction *mpResetXVectorButton;
     QAction *mpAllGenerationsDown;
     QAction *mpAllGenerationsUp;
-
     QAction *mpBodePlotButton;
     QMenu *mpImportMenu;
     QMenu *mpExportMenu;
@@ -153,44 +150,10 @@ private:
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
     QAction *mpExportToOldHopAction;
-    //QMenu *mpExportGfxMenu;
-    //QAction *mpExportPdfAction;
-    //QAction *mpExportPngAction;
     QAction *mpExportToGraphicsAction;
     QAction *mpLocktheAxis;
     QAction *mpToggleAxisLockButton;
     QAction *mpOpentimeScaleDialog;
-
-    QDockWidget *mpCurveInfoDock;
-    QStackedWidget *mpCurveInfoStack;
-
-    PlotTabWidget *mpPlotTabWidget;
-
-    QMap<QRadioButton*, PlotCurve*> mBodeInputButtonToCurveMap;
-    QMap<QRadioButton*, PlotCurve*> mBodeOutputButtonToCurveMap;
-
-    //Help popup
-    QWidget *mpHelpPopup;
-    QLabel *mpHelpPopupIcon;
-    QLabel *mpHelpPopupLabel;
-    QHBoxLayout *mpHelpPopupLayout;
-    QGroupBox *mpHelpPopupGroupBox;
-    QHBoxLayout *mpHelpPopupGroupBoxLayout;
-    QTimer *mpHelpPopupTimer;
-
-    QDialog *mpCreateBodeDialog;
-    QSlider *mpMaxFrequencySlider;
-
-
-
-    QDialog *mpFrequencyAnalysisDialog;
-    QCheckBox *mpLogScaleCheckBox;
-    QCheckBox *mpPowerSpectrumCheckBox;
-    PlotCurve *mpFrequencyAnalysisCurve;
-
-    QAbstractItemModel *model;
 };
-
-
 
 #endif // PLOTWINDOW_H

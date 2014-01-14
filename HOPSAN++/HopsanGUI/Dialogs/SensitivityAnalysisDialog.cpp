@@ -598,7 +598,7 @@ void SensitivityAnalysisDialog::run()
         pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
         gpPlotHandler->plotDataToWindow(pPlotWindow, pMinData, QwtPlot::yLeft);
         pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
-        pPlotWindow->hidePlotCurveInfo();
+        pPlotWindow->hidePlotCurveControls();
         pPlotWindow->setLegendsVisible(false);
 
         //! @todo Implement interval curve type support in plot window instead!

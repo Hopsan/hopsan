@@ -51,6 +51,7 @@ class HVCWidget;
 class ModelHandler;
 class MainWindowLineEdit;
 class DataExplorer;
+class HelpPopUpWidget;
 
 
 class SimulationTimeEdit : public QWidget
@@ -109,7 +110,7 @@ public:
 
     void closeEvent(QCloseEvent *event);
 
-    void showHelpPopupMessage(QString message);
+    void showHelpPopupMessage(const QString &rMessage);
     void hideHelpPopupMessage();
 
     //Configuration object
@@ -297,13 +298,7 @@ private:
     QLabel *mpTimeLabelDeliminator2;
 
     // Help popup
-    QWidget *mpHelpPopup;
-    QLabel *mpHelpPopupIcon;
-    QLabel *mpHelpPopupLabel;
-    QHBoxLayout *mpHelpPopupLayout;
-    QGroupBox *mpHelpPopupGroupBox;
-    QHBoxLayout *mpHelpPopupGroupBoxLayout;
-    QTimer *mpHelpPopupTimer;
+    HelpPopUpWidget *mpHelpPopup;
     QMap<QAction*, QString> mHelpPopupTextMap;
 };
 

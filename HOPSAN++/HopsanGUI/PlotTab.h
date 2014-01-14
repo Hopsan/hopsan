@@ -29,14 +29,19 @@
 #include <QObject>
 #include <QStandardItemModel>
 #include <QtXml>
+#include <QGridLayout>
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QScrollArea>
+#include <QTextEdit>
+#include <QLabel>
 
-
-#include "Dependencies/BarChartPlotter/barchartplotter.h"
 #include "common.h"
 
 #include "LogVariable.h"
 
-//Forward Declarations
+// Forward Declarations
 class PlotWindow;
 class PlotTabWidget;
 class PlotCurve;
@@ -44,6 +49,12 @@ class PlotMarker;
 class PlotLegend;
 class PlotArea;
 class QwtPlot;
+namespace QSint{
+class BarChartPlotter;
+}
+
+//! @brief Plot tab types
+enum PlotTabTypeT {XYPlotType, BodePlotType, BarchartPlotType};
 
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
@@ -51,20 +62,19 @@ class PlotTab : public QWidget
     Q_OBJECT
     friend class PlotWindow;
     friend class PlotTabWidget;
-    //friend class PlotMarker;
     friend class PlotCurve;
     friend class PlotArea;
 
 public:
     PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWindow);
     ~PlotTab();
-    PlotTabWidget *mpParentPlotTabWidget;   //!< @todo should not be public
-    PlotWindow *mpParentPlotWindow;         //!< @todo should not be public
 
     void setTabName(QString name);
     virtual PlotTabTypeT getPlotTabType() const;
+    virtual bool isBarPlot() const;
 
     PlotArea *getPlotArea(const int subPlotId=0);
+    int getNumPlotAreas() const;
     QwtPlot *getQwtPlot(const int subPlotId=0);
 
     void addCurve(PlotCurve *pCurve, int subPlotId=0);
@@ -77,6 +87,7 @@ public:
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
     int getNumberOfCurves(const int subPlotId=0) const;
+    bool isEmpty() const;
 
     virtual void addBarChart(QStandardItemModel *pItemModel);
 
@@ -86,15 +97,10 @@ public:
     bool isGridVisible() const;
     bool isZoomed(const int plotId) const;
 
+    void setLegendsVisible(bool value);
     bool hasCustomXData() const;
 
-    void setLegendsVisible(bool value);
-
     void update();
-
-    // PlotTab only
-    int getNumPlotAreas() const;
-    virtual bool isBarPlot() const;
 
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     void exportToCsv(QString fileName);
@@ -108,10 +114,11 @@ public slots:
     void openAxisSettingsDialog();
     void openAxisLabelDialog();
     void openTimeScalingDialog();
-    void applyAxisSettings();
-    void applyAxisLabelSettings();
-    void applyLegendSettings();
-    void applyTimeScalingSettings();
+
+    void openCreateBodePlotDialog();
+
+    void openFrequencyAnalysisDialog(PlotCurve *pCurve);
+    void showFrequencyAnalysisHelp();
 
     void enableArrow(bool value);
     void enablePan(bool value);
@@ -147,7 +154,8 @@ protected:
     void removePlotArea(const int id);
     int getPlotIDForCurve(PlotCurve *pCurve);
 
-    void setTabOnlyCustomXVector(SharedVariablePtrT pData, int plotID=0);
+    PlotTabWidget *mpParentPlotTabWidget;
+    PlotWindow *mpParentPlotWindow;
 
     QGridLayout *mpTabLayout;
     QList<PlotArea*> mPlotAreas;

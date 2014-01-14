@@ -68,7 +68,7 @@
 #include "Dialogs/SensitivityAnalysisDialog.h"
 
 #include "Utilities/GUIUtilities.h"
-
+#include "Utilities/HelpPopUpWidget.h"
 
 //! @todo maybe we can make sure that we dont need to include these here
 #include "GraphicsView.h"
@@ -287,29 +287,10 @@ void MainWindow::createContents()
     tabifyDockWidget(mpTerminalDock, mpMessageDock);
 #endif
 
-    //Initialize the help message popup
-    mpHelpPopup = new QWidget(this);
-    mpHelpPopup->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-    mpHelpPopupIcon = new QLabel();
-    mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
-    mpHelpPopupLabel = new QLabel();
-    mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
-    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
-    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
-    mpHelpPopupGroupBoxLayout->setContentsMargins(3,3,3,3);
-    mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
-    mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
-    mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
-    mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
-    mpHelpPopup->setLayout(mpHelpPopupLayout);
-    mpHelpPopup->setBaseSize(100,30);
-    mpHelpPopup->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,224,255); } QLabel { margin : 0px; } ");
-    mpHelpPopup->hide();
-    mpHelpPopupTimer = new QTimer(this);
-    connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
+    // Initialize the help message popup
+    mpHelpPopup = new HelpPopUpWidget(this);
 
-    //Set the correct position of the help popup message in the central widget
+    // Set the correct position of the help popup message in the central widget
     mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
     mpCentralGridLayout->setColumnMinimumWidth(0,5);
     mpCentralGridLayout->setColumnStretch(0,0);
@@ -457,18 +438,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
-//! @brief Shows the help popup message for 5 seconds with specified message.
-//! Any message already being shown will be replaced. Messages can be hidden in advance by calling mpHelpPopup->hide().
-//! @param message String with text to show as message
-void MainWindow::showHelpPopupMessage(QString message)
+//! @brief Shows the help popup message
+//! @param[in] rMessage String with text message
+void MainWindow::showHelpPopupMessage(const QString &rMessage)
 {
-    if(gpConfig->getShowPopupHelp())
-    {
-        mpHelpPopupLabel->setText(message);
-        mpHelpPopup->show();
-        mpHelpPopupTimer->stop();
-        mpHelpPopupTimer->start(5000);
-    }
+    mpHelpPopup->showHelpPopupMessage(rMessage);
 }
 
 

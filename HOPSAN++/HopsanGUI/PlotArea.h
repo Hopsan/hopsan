@@ -33,6 +33,7 @@
 #include <QLabel>
 #include <QToolButton>
 
+//! @todo cleanup this mess (move to cpp if possible)
 #include "qwt_plot.h"
 #include "qwt_plot_curve.h"
 #include "qwt_plot_grid.h"

@@ -1312,7 +1312,7 @@ void PlotArea::updateAxisLabels()
 
 void PlotArea::openLegendSettingsDialog()
 {
-
+    mpLegendSettingsDialog->exec();
 }
 
 void PlotArea::openAxisSettingsDialog()
@@ -2394,7 +2394,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     connect(mpResetTimeButton,         SIGNAL(clicked()),           this,               SLOT(resetTimeVector()));
     connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
     connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
-    connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpPlotCurve,  SLOT(performFrequencyAnalysis()));
+    connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpPlotCurve,  SLOT(openFrequencyAnalysisDialog())); //!< @todo this should probably be in the plot area, and signaled directly with curve
     connect(pColorButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(setLineColor()));
     connect(pScaleButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(openScaleDialog()));
     connect(pCloseButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(removeMe()));
