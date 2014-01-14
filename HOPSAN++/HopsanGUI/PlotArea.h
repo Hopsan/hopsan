@@ -32,7 +32,6 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QToolButton>
-#include <QVBoxLayout>
 
 #include "qwt_plot.h"
 #include "qwt_plot_curve.h"
@@ -54,24 +53,10 @@ class PlotCurve;
 class PlotMarker;
 class PlotTab;
 class PlotLegend;
-class CurveInfoBox;
+class PlotCurveControlBox;
+class RectanglePainterWidget;
 
 enum PlotTabZOrderT {GridLinesZOrderType, LegendBelowCurveZOrderType, CurveZOrderType, ActiveCurveZOrderType, LegendAboveCurveZOrderType, CurveMarkerZOrderType};
-
-class PainterWidget : public QWidget
-{
-public:
-    PainterWidget(QWidget *parent=0);
-    void createRect(int x, int y, int w, int h);
-    void clearRect();
-
-protected:
-    virtual void paintEvent(QPaintEvent *);
-
-private:
-    int mX, mY, mWidth, mHeight;
-    bool mErase;
-};
 
 class HopQwtInterval : public QwtInterval
 {
@@ -162,14 +147,6 @@ public:
 
     void update();
 
-protected:
-    virtual void resizeEvent(QResizeEvent *event);
-    virtual void dragEnterEvent(QDragEnterEvent *event);
-    virtual void dragLeaveEvent(QDragLeaveEvent *event);
-    virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dropEvent(QDropEvent *event);
-    virtual void contextMenuEvent(QContextMenuEvent *event);
-
 public slots:
     void rescaleAxesToCurves();
     void toggleAxisLock();
@@ -207,12 +184,13 @@ public slots:
     void insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel=QString(), bool movable=true);
     void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
 
-
-private slots:
-    void refreshLockCheckBoxPositions();
-    void axisLockHandler();
-
-
+protected:
+    virtual void resizeEvent(QResizeEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent *event);
 
 private:
     void constructLegendSettingsDialog();
@@ -221,30 +199,30 @@ private:
     void setLegendSymbol(const QString symStyle);
     void setTabOnlyCustomXVector(SharedVariablePtrT pData);
     void determineAddedCurveUnitOrScale(PlotCurve *pCurve);
+    void rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
+    void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
 
     PlotTab *mpParentPlotTab;
+
     HopQwtPlot *mpQwtPlot;
     QwtPlotGrid *mpQwtPlotGrid;
     QwtPlotZoomer *mpQwtZoomerLeft, *mpQwtZoomerRight;
     QwtPlotMagnifier *mpQwtMagnifier;
     QwtPlotPanner *mpQwtPanner;
+
     QList<PlotMarker*> mPlotMarkers;
     QList<PlotCurve*> mPlotCurves;
     PlotCurve *mpActivePlotCurve;
     quint32 mNumYlCurves, mNumYrCurves;
-
-    QList<CurveInfoBox*> mPlotCurveInfoBoxes;
-
     QStringList mCurveColors;
     QList<int> mUsedColorsCounter;
 
-    PainterWidget *mpPainterWidget;
+    QList<PlotCurveControlBox*> mPlotCurveControlBoxes;
+    RectanglePainterWidget *mpPainterWidget;
 
     // Custom X data axis variables
     bool mHasCustomXData;
     SharedVariablePtrT mpCustomXData;
-
-
 
     // Legend related member variables
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
@@ -287,10 +265,9 @@ private:
     QLineEdit *mpUserDefinedYrLabel;
     QCheckBox *mpUserDefinedLabelsCheckBox;
 
-
-    void rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
-    void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
-
+private slots:
+    void refreshLockCheckBoxPositions();
+    void axisLockHandler();
 };
 
 class CustomXDataDropEdit : public QLineEdit
@@ -307,34 +284,34 @@ protected:
 
 };
 
-class CurveInfoBox : public QWidget
+class PlotCurveControlBox : public QWidget
 {
     Q_OBJECT
-    friend class PlotCurve;
 public:
-    CurveInfoBox(PlotCurve *pPlotCurve, QWidget *pParent);
+    PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParentArea);
     PlotCurve *getCurve();
-    void setLineColor(const QColor color);
 
 public slots:
     void updateInfo();
-
-private:
-    void refreshTitle();
-    void refreshActive(bool active);
-    PlotCurve *mpPlotCurve;
-    QLabel *mpTitle;
-    QToolButton *mpColorBlob;
-    QSpinBox *mpGenerationSpinBox;
-    QLabel *mpGenerationLabel;
-    CustomXDataDropEdit *mpCustomXDataDrop;
-    QToolButton *mpResetTimeButton;
+    void updateColor(const QColor color);
+    void markActive(bool active);
 
 private slots:
     void activateCurve(bool active);
     void setXData(QString fullName);
     void resetTimeVector();
     void setGeneration(const int gen);
+
+private:
+    void refreshTitle();
+    PlotCurve *mpPlotCurve;
+    PlotArea *mpPlotArea;
+    QLabel *mpTitle;
+    QToolButton *mpColorBlob;
+    QSpinBox *mpGenerationSpinBox;
+    QLabel *mpGenerationLabel;
+    CustomXDataDropEdit *mpCustomXDataDrop;
+    QToolButton *mpResetTimeButton;
 };
 
 #endif // PLOTAREA_H

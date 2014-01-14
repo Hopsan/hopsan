@@ -111,6 +111,8 @@ public:
     void setCustomXData(SharedVariablePtrT pData);
     void setCustomXData(const QString fullName);
 
+    QColor getLineColor() const;
+
     //void toFrequencySpectrum(const bool doPowerSpectrum=false);
     void resetLegendSize();
 
@@ -119,8 +121,9 @@ public:
 
 signals:
     void curveDataUpdated();
+    void curveInfoUpdated();
     void colorChanged(QColor);
-    void updateCurveInfo();
+    void markedActive(bool);
 
 public slots:
     bool setGeneration(int generation);

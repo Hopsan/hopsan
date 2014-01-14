@@ -98,8 +98,8 @@ PlotCurve::PlotCurve(SharedVariablePtrT pData,
     }
 
     // Create relay connections
-    connect(this, SIGNAL(curveDataUpdated()), this, SIGNAL(updateCurveInfo()));
-    connect(this, SIGNAL(colorChanged(QColor)), this, SIGNAL(updateCurveInfo()));
+    connect(this, SIGNAL(curveDataUpdated()), this, SIGNAL(curveInfoUpdated()));
+    connect(this, SIGNAL(colorChanged(QColor)), this, SIGNAL(curveInfoUpdated()));
 
     // Create other connections
     //! @todo we should not connect like this /Peter
@@ -335,7 +335,7 @@ bool PlotCurve::setGeneration(int generation)
 
         updateCurve();
         refreshCurveTitle();
-        emit updateCurveInfo();
+        emit curveInfoUpdated();
         mpParentPlotArea->update();
 
 //        if(!mpParentPlotTab->areAxesLocked())
@@ -496,6 +496,11 @@ void PlotCurve::setCustomXData(const QString fullName)
             }
         }
     }
+}
+
+QColor PlotCurve::getLineColor() const
+{
+    return mLineColor;
 }
 
 
@@ -750,9 +755,6 @@ void PlotCurve::setLineColor(QColor color)
         setLineSymbol(mLineSymbol);
     }
 
-    // Set blob color
-    //mpPlotCurveInfoBox->setLineColor(color);
-
     emit colorChanged(color);
 }
 
@@ -902,7 +904,7 @@ void PlotCurve::updateToNewGeneration()
     {
         setGeneration(-1);
     }
-    emit updateCurveInfo();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
+    emit curveInfoUpdated();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
 
     mpParentPlotArea->update();
 }
@@ -923,7 +925,7 @@ void PlotCurve::markActive(bool value)
     }
 
     setLineWidth(mLineWidth);
-    emit updateCurveInfo();
+    emit markedActive(mIsActive);
 }
 
 
@@ -993,7 +995,7 @@ void PlotCurve::updateCurve()
 void PlotCurve::updateCurveName()
 {
     refreshCurveTitle();
-    emit updateCurveInfo();
+    emit curveInfoUpdated();
     mpParentPlotArea->updateAxisLabels();
 }
 

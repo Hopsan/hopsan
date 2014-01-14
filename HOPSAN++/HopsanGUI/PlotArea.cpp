@@ -23,6 +23,7 @@
 //$Id: ModelHandler.cpp 5551 2013-06-20 08:54:16Z petno25 $
 
 #include <QLineEdit>
+#include <QGridLayout>
 
 #include "PlotArea.h"
 #include "PlotCurve.h"
@@ -53,9 +54,24 @@ const double DoubleMax = std::numeric_limits<double>::max();
 const double DoubleMin = std::numeric_limits<double>::min();
 const double Double100Min = 100*DoubleMin;
 
+//! @brief Rectangle painter widget, used for painting transparent rectangles when dragging things to plot tabs
+class RectanglePainterWidget : public QWidget
+{
+public:
+    RectanglePainterWidget(QWidget *parent=0);
+    void createRect(int x, int y, int w, int h);
+    void clearRect();
 
-//! @brief Constructor for painter widget, used for painting transparent rectangles when dragging things to plot tabs
-PainterWidget::PainterWidget(QWidget *parent)
+protected:
+    virtual void paintEvent(QPaintEvent *);
+
+private:
+    int mX, mY, mWidth, mHeight;
+    bool mErase;
+};
+
+
+RectanglePainterWidget::RectanglePainterWidget(QWidget *parent)
     : QWidget(parent)
 {
     setMouseTracking(true);
@@ -64,7 +80,7 @@ PainterWidget::PainterWidget(QWidget *parent)
 
 
 //! @brief Creates a rectangle with specified dimensions
-void PainterWidget::createRect(int x, int y, int w, int h)
+void RectanglePainterWidget::createRect(int x, int y, int w, int h)
 {
     mX = x;
     mY = y;
@@ -76,7 +92,7 @@ void PainterWidget::createRect(int x, int y, int w, int h)
 
 
 //! @brief Removes any previously drawn rectangles
-void PainterWidget::clearRect()
+void RectanglePainterWidget::clearRect()
 {
     mErase=true;
     update();
@@ -84,7 +100,7 @@ void PainterWidget::clearRect()
 
 
 //! @brief Paint event, does the actual drawing
-void PainterWidget::paintEvent(QPaintEvent *)
+void RectanglePainterWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     if(!mErase)
@@ -196,7 +212,7 @@ PlotArea::PlotArea(PlotTab *pParentPlotTab)
     : QWidget(pParentPlotTab)
 {
     mpParentPlotTab = pParentPlotTab;
-    QVBoxLayout *pLayout = new QVBoxLayout(this);
+    QGridLayout *pLayout = new QGridLayout(this);
 
     setAcceptDrops(true);
     setMouseTracking(true);
@@ -303,6 +319,10 @@ PlotArea::PlotArea(PlotTab *pParentPlotTab)
 
     constructLegendSettingsDialog();
 
+
+    mpPainterWidget = new RectanglePainterWidget(this);
+    mpPainterWidget->clearRect();
+    pLayout->addWidget(mpPainterWidget,0,0); //Add on top of plot
 }
 
 PlotArea::~PlotArea()
@@ -341,9 +361,9 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
 
     // Create a curve info box for this curve
-    mPlotCurveInfoBoxes.append(new CurveInfoBox(pCurve, this));
-    mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveInfoBoxes.last());
-    mPlotCurveInfoBoxes.last()->show();
+    mPlotCurveControlBoxes.append(new PlotCurveControlBox(pCurve, this));
+    mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveControlBoxes.last());
+    mPlotCurveControlBoxes.last()->show();
 
 
 
@@ -441,13 +461,13 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
     }
 
     // Remove the plot curve info box used by the curve
-    for(int i=0; i<mPlotCurveInfoBoxes.size(); ++i)
+    for(int i=0; i<mPlotCurveControlBoxes.size(); ++i)
     {
-        if(mPlotCurveInfoBoxes[i]->getCurve() == pCurve)
+        if(mPlotCurveControlBoxes[i]->getCurve() == pCurve)
         {
-            mPlotCurveInfoBoxes[i]->hide();
-            mPlotCurveInfoBoxes[i]->deleteLater();
-            mPlotCurveInfoBoxes.removeAt(i);
+            mPlotCurveControlBoxes[i]->hide();
+            mPlotCurveControlBoxes[i]->deleteLater();
+            mPlotCurveControlBoxes.removeAt(i);
             break;
         }
     }
@@ -2255,17 +2275,20 @@ void CustomXDataDropEdit::dropEvent(QDropEvent *e)
 //! @brief Constructor for plot info box
 //! @param pParentPlotCurve pointer to parent plot curve
 //! @param pParent Pointer to parent widget
-CurveInfoBox::CurveInfoBox(PlotCurve *pPlotCurve, QWidget *pParent)
-    : QWidget(pParent)
+PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParentArea)
+    : QWidget(pParentArea)
 {
+    mpPlotArea = pParentArea;
     mpPlotCurve = pPlotCurve;
-    connect(mpPlotCurve, SIGNAL(updateCurveInfo()), this, SLOT(updateInfo()));
+    connect(mpPlotCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateInfo()));
+    connect(mpPlotCurve, SIGNAL(colorChanged(QColor)), this, SLOT(updateColor(QColor)));
+    connect(mpPlotCurve, SIGNAL(markedActive(bool)), this, SLOT(markActive(bool)));
 
     mpColorBlob = new QToolButton(this);
-    setLineColor(mpPlotCurve->mLineColor);
     mpColorBlob->setFixedSize(20,20);
     mpColorBlob->setCheckable(true);
     mpColorBlob->setChecked(false);
+    updateColor(mpPlotCurve->getLineColor());
 
     mpTitle = new QLabel(this);
     mpTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -2391,12 +2414,12 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pPlotCurve, QWidget *pParent)
     setPalette(gpConfig->getPalette());
 }
 
-PlotCurve *CurveInfoBox::getCurve()
+PlotCurve *PlotCurveControlBox::getCurve()
 {
     return mpPlotCurve;
 }
 
-void CurveInfoBox::setLineColor(const QColor color)
+void PlotCurveControlBox::updateColor(const QColor color)
 {
     QString buttonStyle;
 
@@ -2416,7 +2439,7 @@ void CurveInfoBox::setLineColor(const QColor color)
 }
 
 //! @brief Updates buttons and text in plot info box to correct values
-void CurveInfoBox::updateInfo()
+void PlotCurveControlBox::updateInfo()
 {
     // Enable/diable generation buttons
     const int lowGen = mpPlotCurve->getLogDataVariablePtr()->getLowestGeneration();
@@ -2452,13 +2475,14 @@ void CurveInfoBox::updateInfo()
     }
 }
 
-void CurveInfoBox::refreshTitle()
+void PlotCurveControlBox::refreshTitle()
 {
     mpTitle->setText(mpPlotCurve->getCurveName() + " ["+mpPlotCurve->getCurrentUnit()+"]");
 }
 
-void CurveInfoBox::refreshActive(bool active)
+void PlotCurveControlBox::markActive(bool active)
 {
+    //! @todo this is not visible (marking doesnt show)
     mpColorBlob->setChecked(active);
     if (active)
     {
@@ -2471,29 +2495,29 @@ void CurveInfoBox::refreshActive(bool active)
     }
 }
 
-void CurveInfoBox::activateCurve(bool active)
+void PlotCurveControlBox::activateCurve(bool active)
 {
     if(active)
     {
-        mpPlotCurve->mpParentPlotArea->setActivePlotCurve(mpPlotCurve);
+        mpPlotArea->setActivePlotCurve(mpPlotCurve);
     }
     else
     {
-        mpPlotCurve->mpParentPlotArea->setActivePlotCurve(0);
+        mpPlotArea->setActivePlotCurve(0);
     }
 }
 
-void CurveInfoBox::setXData(QString fullName)
+void PlotCurveControlBox::setXData(QString fullName)
 {
     mpPlotCurve->setCustomXData(fullName);
 }
 
-void CurveInfoBox::resetTimeVector()
+void PlotCurveControlBox::resetTimeVector()
 {
     mpPlotCurve->setCustomXData(0);
 }
 
-void CurveInfoBox::setGeneration(const int gen)
+void PlotCurveControlBox::setGeneration(const int gen)
 {
     // Since info box begins counting at 1 we need to subtract one, but we do not want underflow as that would set latest generation (-1)
     if (!mpPlotCurve->setGeneration(qMax(gen-1,0)))
