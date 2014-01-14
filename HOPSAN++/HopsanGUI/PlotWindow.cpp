@@ -361,8 +361,6 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     this->setDockOptions(QMainWindow::AllowNestedDocks);
 
     mpPlotTabWidget = new PlotTabWidget(this);
-    this->addPlotTab();
-    this->changedTab();
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpPlotTabWidget,0,0,2,4);
@@ -532,12 +530,6 @@ PlotCurve *PlotWindow::addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtr
     return pCurve;
 }
 
-
-void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
-{
-    getCurrentPlotTab()->addBarChart(pItemModel);
-    changedTab(); //Refresh buttons on/off
-}
 
 //! @brief Imports .Plo files from Old Hopsan
 //! Imports Plot Data Only
@@ -1013,4 +1005,9 @@ void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2
         phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
     }
     phaseVar.data()->assignFrom(pPhase);
+}
+
+void PlotWindow::showHelpPopupMessage(const QString &rMessage)
+{
+    mpHelpPopup->showHelpPopupMessage(rMessage);
 }

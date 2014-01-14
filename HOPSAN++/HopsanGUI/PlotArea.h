@@ -171,14 +171,6 @@ public slots:
     void enableZoom();
     void resetZoom();
 
-//    void exportToXml();
-//    void exportToCsv();
-//    void exportToHvc(QString fileName="");
-//    void exportToMatlab();
-//    void exportToGnuplot();
-//    void exportToGraphics();
-//    void exportToPLO();
-
     void shiftAllGenerationsDown();
     void shiftAllGenerationsUp();
 

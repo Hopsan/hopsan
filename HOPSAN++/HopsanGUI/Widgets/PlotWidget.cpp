@@ -394,6 +394,7 @@ void VariableTree::mousePressEvent(QMouseEvent *event)
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void VariableTree::mouseMoveEvent(QMouseEvent *event)
 {
+    //! @todo maybe should try to be smart with a lcoal function that selcts plotwindow if one is set (for message)
     gpMainWindow->showHelpPopupMessage("Double click on a variable to plot it, or drag it to an existing plot window.");
     if (!(event->buttons() & Qt::LeftButton))
     {

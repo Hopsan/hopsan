@@ -105,6 +105,8 @@ public:
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     void exportToCsv(QString fileName);
 
+    void showHelpPopupMessage(const QString &rMessage);
+
 public slots:
     void rescaleAxesToCurves();
     void toggleAxisLock();

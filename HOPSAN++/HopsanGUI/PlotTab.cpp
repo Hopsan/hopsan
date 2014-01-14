@@ -513,6 +513,11 @@ void PlotTab::exportToCsv(QString fileName)
     file.close();
 }
 
+void PlotTab::showHelpPopupMessage(const QString &rMessage)
+{
+    mpParentPlotWindow->showHelpPopupMessage(rMessage);
+}
+
 void PlotTab::exportToHvc(QString fileName)
 {
     // Can not use other than xy plot for hvc data
@@ -1468,7 +1473,6 @@ BarchartPlotTab::BarchartPlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow
 {
     removePlotArea(0);
     mpBarPlot = new QSint::BarChartPlotter(this);
-    //mpBarPlot->setVisible(true);
 }
 
 PlotTabTypeT BarchartPlotTab::getPlotTabType() const

@@ -62,6 +62,7 @@
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
 #include "Widgets/DataExplorer.h"
+#include "PlotHandler.h"
 
 
 
@@ -2893,11 +2894,8 @@ void ContainerObject::showLossesFromDialog()
     pItemModel->setVerticalHeaderLabels(QStringList() << "Added" << "Losses");
     pItemModel->setHorizontalHeaderLabels(componentNames);
 
-    //! @todo meamory leak, should use PlotHandler instead
-    PlotWindow *pPlotWindow = new PlotWindow("Energy Losses", gpMainWindow);
-    pPlotWindow->getCurrentPlotTab()->setTabName("Energy Losses");
-    pPlotWindow->addBarChart(pItemModel);
-    pPlotWindow->show();
+    PlotWindow *pWindow = gpPlotHandler->createNewUniquePlotWindow("Energy Losses");
+    pWindow->addPlotTab("Energy Losses", BarchartPlotType)->addBarChart(pItemModel);
 }
 
 
@@ -3088,7 +3086,7 @@ void ContainerObject::plotMeasuredSimulationTime()
         }
     }
 
-    //Bar chart model for typenames
+    // Bar chart model for typenames
     QStandardItemModel *pBarChartModel = new QStandardItemModel(1,typeNames.size(),this);
     pBarChartModel->setHeaderData(0, Qt::Vertical, QColor("crimson"), Qt::BackgroundRole);
     for(int i=0; i<typeNames.size(); ++i)
@@ -3098,12 +3096,10 @@ void ContainerObject::plotMeasuredSimulationTime()
     pBarChartModel->setVerticalHeaderLabels(QStringList() << "Time");
     pBarChartModel->setHorizontalHeaderLabels(typeNames);
 
-    //Plot window for typename bar charts
-    PlotWindow *pPlotWindow = new PlotWindow("Time measurements", gpMainWindow);
-    pPlotWindow->getCurrentPlotTab()->setTabName("Time measurements");
-    pPlotWindow->addBarChart(pBarChartModel);
-    pPlotWindow->setAttribute(Qt::WA_DeleteOnClose, false);
-    pPlotWindow->show();
+    // Plot window for typename bar charts
+    PlotWindow *pWindow = gpPlotHandler->createNewUniquePlotWindow("Time measurements");
+    pWindow->addPlotTab("Time measurements",BarchartPlotType)->addBarChart(pBarChartModel);
+    //pPlotWindow->setAttribute(Qt::WA_DeleteOnClose, false);
 }
 
 

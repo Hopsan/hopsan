@@ -25,9 +25,13 @@
 #ifndef PlotWindow_H
 #define PlotWindow_H
 
-#include <QtGui>
 #include <QObject>
+#include <QDockWidget>
+#include <QStackedWidget>
+#include <QToolBar>
+#include <QToolButton>
 #include <QString>
+#include <QMainWindow>
 
 #include "PlotTab.h"
 #include <qwt_plot.h>
@@ -37,10 +41,6 @@
 class PlotCurve;
 class PlotWindow;
 class HelpPopUpWidget;
-
-//! @todo this should be more general
-
-
 
 //! @brief Tab widget for plots in plot window
 class PlotTabWidget : public QTabWidget
@@ -73,10 +73,12 @@ public:
 
     void createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax);
 
-    //! @todo these three should not be used
+    void showHelpPopupMessage(const QString &rMessage);
+
+    //! @todo these three should not be used, need to fix somehow, or maybe we should keep them? /Peter
+    //! @todo might actually be convenient to plott to primary tab directly (and create it)
     PlotCurve* addPlotCurve(SharedVariablePtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     PlotCurve* addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
-    void addBarChart(QStandardItemModel *pItemModel);
 
 signals:
     void windowClosed(PlotWindow *pWindow);
@@ -95,7 +97,6 @@ public slots:
     void importPlo();
     void importCsv();
 
-    void showToolBarHelpPopup();
     void updatePalette();
     void hidePlotCurveControls();
     void setLegendsVisible(bool value);
@@ -109,6 +110,7 @@ protected:
 
 protected slots:
     void changedTab();
+    void showToolBarHelpPopup();
 
 private:
     void refreshWindowTitle();

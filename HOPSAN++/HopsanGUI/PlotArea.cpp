@@ -421,10 +421,6 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     updateAxisLabels();
     mpQwtPlot->replot();
     mpQwtPlot->updateGeometry();
-
-
-    //! @todo FIXA /Peter
-    //mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[0].size() > 1);
 }
 
 void PlotArea::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc)
@@ -714,97 +710,108 @@ void PlotArea::resizeEvent(QResizeEvent *event)
 void PlotArea::dragEnterEvent(QDragEnterEvent *event)
 {
     // Don't accept drag events to FFT and Bode plots
-    //! @todo FIXA /Peter
-    //if(mPlotCurves[0].size() > 0 && mPlotCurves[0][0]->getCurveType() != PortVariableType) return;
-
-    if (event->mimeData()->hasText())
+    if( mpParentPlotTab->getPlotTabType() == XYPlotType )
     {
-        // Create the hover rectangle (size will be changed by dragMoveEvent)
-        mpPainterWidget->createRect(0,0,this->width(), this->height());
-        event->acceptProposedAction();
+        if (event->mimeData()->hasText())
+        {
+            // Create the hover rectangle (size will be changed by dragMoveEvent)
+            mpPainterWidget->createRect(0,0,this->width(), this->height());
+            event->acceptProposedAction();
+            return;
+        }
     }
+    event->ignore();
 }
 
 void PlotArea::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    mpPainterWidget->clearRect();
-
     // Don't accept drag events to FFT and Bode plots
-    //! @todo FIXA /Peter
-    //if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
-
-    QWidget::dragLeaveEvent(event);
+    if( mpParentPlotTab->getPlotTabType() == XYPlotType )
+    {
+        mpPainterWidget->clearRect();
+        QWidget::dragLeaveEvent(event);
+    }
+    else
+    {
+       event->ignore();
+    }
 }
 
 void PlotArea::dragMoveEvent(QDragMoveEvent *event)
 {
-    //Don't accept drag events to FFT and Bode plots
-    //! @todo FIXA /Peter
-    //if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
-
-    QCursor cursor;
-    if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
-    {
-        mpPainterWidget->createRect(getQwtPlot()->canvas()->x(), getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y(), getQwtPlot()->canvas()->width(), getQwtPlot()->canvas()->height()*1.0/3.0);
-        //mpParentPlotWindow->showHelpPopupMessage("Replace X-axis with selected variable.");
-    }
-    else if(this->mapFromGlobal(cursor.pos()).x() < getQwtPlot()->canvas()->x()+9 + getQwtPlot()->canvas()->width()/2)
-    {
-        mpPainterWidget->createRect(getQwtPlot()->canvas()->x(), getQwtPlot()->canvas()->y(), getQwtPlot()->canvas()->width()/2, getQwtPlot()->canvas()->height());
-        //mpParentPlotWindow->showHelpPopupMessage("Add selected variable to left Y-axis.");
-    }
-    else
-    {
-        mpPainterWidget->createRect(getQwtPlot()->canvas()->x() + getQwtPlot()->canvas()->width()/2, getQwtPlot()->canvas()->y(), getQwtPlot()->canvas()->width()/2, getQwtPlot()->canvas()->height());
-        //mpParentPlotWindow->showHelpPopupMessage("Add selected variable to right Y-axis.");
-        //! @todo FIXA help popups /Peter
-    }
-    QWidget::dragMoveEvent(event);
+    // Don't accept drag events to FFT and Bode plots
+     if( mpParentPlotTab->getPlotTabType() == XYPlotType )
+     {
+         QCursor cursor;
+         if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
+         {
+             mpPainterWidget->createRect(getQwtPlot()->canvas()->x(), getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y(), getQwtPlot()->canvas()->width(), getQwtPlot()->canvas()->height()*1.0/3.0);
+             mpParentPlotTab->showHelpPopupMessage("Replace X-axis with selected variable.");
+         }
+         else if(this->mapFromGlobal(cursor.pos()).x() < getQwtPlot()->canvas()->x()+9 + getQwtPlot()->canvas()->width()/2)
+         {
+             mpPainterWidget->createRect(getQwtPlot()->canvas()->x(), getQwtPlot()->canvas()->y(), getQwtPlot()->canvas()->width()/2, getQwtPlot()->canvas()->height());
+             mpParentPlotTab->showHelpPopupMessage("Add selected variable to left Y-axis.");
+         }
+         else
+         {
+             mpPainterWidget->createRect(getQwtPlot()->canvas()->x() + getQwtPlot()->canvas()->width()/2, getQwtPlot()->canvas()->y(), getQwtPlot()->canvas()->width()/2, getQwtPlot()->canvas()->height());
+             mpParentPlotTab->showHelpPopupMessage("Add selected variable to right Y-axis.");
+         }
+         QWidget::dragMoveEvent(event);
+     }
+     else
+     {
+         event->ignore();
+     }
 }
 
 void PlotArea::dropEvent(QDropEvent *event)
 {
-    QWidget::dropEvent(event);
-
-    mpPainterWidget->clearRect();
-
-    //Don't accept drag events to FFT and Bode plots
-    //! @todo FIXA /Peter
-    //if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
-
-    if (event->mimeData()->hasText())
+    // Don't accept drag events to FFT and Bode plots
+    if( mpParentPlotTab->getPlotTabType() == XYPlotType )
     {
-        QString mimeText = event->mimeData()->text();
-        if(mimeText.startsWith("HOPSANPLOTDATA:"))
-        {
-            qDebug() << mimeText;
-            QStringList fields = mimeText.split(":");
-            if (fields.size() > 2)
-            {
-                QString &name = fields[1];
-                bool parseOk = false;
-                int gen = fields[2].toInt(&parseOk);
-                if (!parseOk)
-                {
-                    gen = -1;
-                }
+        QWidget::dropEvent(event);
+        mpPainterWidget->clearRect();
 
-                QCursor cursor;
-                if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
+        if (event->mimeData()->hasText())
+        {
+            QString mimeText = event->mimeData()->text();
+            if(mimeText.startsWith("HOPSANPLOTDATA:"))
+            {
+                qDebug() << mimeText;
+                QStringList fields = mimeText.split(":");
+                if (fields.size() > 2)
                 {
-                    setCustomXVectorForAll(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen));
-                    //! @todo do we need to reset to default unit too ?
-                }
-                else if(this->mapFromGlobal(cursor.pos()).x() < getQwtPlot()->canvas()->x()+9 + getQwtPlot()->canvas()->width()/2)
-                {
-                    mpParentPlotTab->mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yLeft);
-                }
-                else
-                {
-                    mpParentPlotTab->mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yRight);
+                    QString &name = fields[1];
+                    bool parseOk = false;
+                    int gen = fields[2].toInt(&parseOk);
+                    if (!parseOk)
+                    {
+                        gen = -1;
+                    }
+
+                    QCursor cursor;
+                    if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
+                    {
+                        setCustomXVectorForAll(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen));
+                        //! @todo do we need to reset to default unit too ?
+                    }
+                    else if(this->mapFromGlobal(cursor.pos()).x() < getQwtPlot()->canvas()->x()+9 + getQwtPlot()->canvas()->width()/2)
+                    {
+                        mpParentPlotTab->mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yLeft);
+                    }
+                    else
+                    {
+                        mpParentPlotTab->mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yRight);
+                    }
                 }
             }
         }
+    }
+    else
+    {
+        event->ignore();
     }
 }
 
