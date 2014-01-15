@@ -73,7 +73,7 @@ public:
         registerPair("f", "Force");
         registerPair("p", "Pressure");
         registerPair("q", "Flow");
-        registerPair("val", "Value");
+        registerPair("y", "Value");
         registerPair("Zc", "CharImpedance");
         registerPair("c", "WaveVariable");
         registerPair("me", "EquivalentMass");
@@ -1653,9 +1653,9 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
     getMatchingLogVariableNames(getArgument(cmd,0),vars);
     if(vars.isEmpty())
     {
-        HCOMERR(QString("Unknown variable: %1").arg(getArgument(cmd,0)));
-        return;
+        getMatchingLogVariableNamesWithoutLogDataHandler(getArgument(cmd,0),vars);
     }
+    int nChanged=0;
     Q_FOREACH(const QString var, vars)
     {
         QStringList fields = var.split(".");
@@ -1663,30 +1663,40 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
         if (fields.size() == 1)
         {
             QString fullName = getfullNameFromAlias(fields.first());
-            fields = fullName.split("#");
+            toShortDataNames(fullName);
+            fields = fullName.split(".");
         }
 
-        // Handle comp.port.var variable
         if (fields.size() == 3)
         {
-            QList<ModelObject*> components;
-            getComponents(fields.first(), components);
-            // This will only work for one hit, skip multiple hits
-            if(components.size() != 1)
+            ModelObject *pComponent = mpModel->getTopLevelSystemContainer()->getModelObject(fields.first());
+            if(!pComponent)
             {
-                HCOMWARN(QString("Ignoring %1 as it is matches more then one component").arg(fields.first()));
-                continue;
+                HCOMERR(QString("Component not found: %1").arg(fields.first()));
             }
 
             QString description = "";
             QString longVarName = fields[1]+"."+fields[2];
             toLongDataNames(longVarName);
-            components.first()->registerCustomPlotUnitOrScale(longVarName, description, scale);
+            if(pComponent->getPort(fields[1]) && NodeInfo(pComponent->getPort(fields[1])->getNodeType()).shortNames.contains(fields[2]))
+            {
+                pComponent->registerCustomPlotUnitOrScale(longVarName, description, scale);
+                ++nChanged;
+            }
         }
         else
         {
             HCOMERR(QString("Unknown variable: %1").arg(var));
         }
+    }
+
+    if(nChanged > 0)
+    {
+        HCOMINFO(QString("Changed default scale for %1 variables.").arg(nChanged));
+    }
+    else
+    {
+        HCOMERR(QString("No matching variables found."));
     }
 }
 
@@ -1702,7 +1712,12 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
     getMatchingLogVariableNames(cmd,vars);
     if(vars.isEmpty())
     {
-        HCOMERR(QString("Unknown variable: %1").arg(cmd));
+        getMatchingLogVariableNamesWithoutLogDataHandler(cmd, vars);
+    }
+    if(vars.isEmpty())
+    {
+        HCOMERR(QString("Variable not found: %1").arg(cmd));
+        mAnsType = Undefined;
         return;
     }
     Q_FOREACH(const QString var, vars)
@@ -1726,19 +1741,18 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
                 dispName = var;
             }
 
-            QList<ModelObject*> components;
-            getComponents(fields.first(), components);
-            // This will only work for one hit, skip multiple hits
-            if(components.size() != 1)
+            ModelObject *pComponent = gpModelHandler->getCurrentTopLevelSystem()->getModelObject(fields.first());
+            if(!pComponent)
             {
-                HCOMWARN(QString("Ignoring %1 as it is matches more then one component").arg(fields.first()));
+                HCOMERR(QString("Component not found: %1").arg(fields.first()));
                 continue;
             }
 
             UnitScale unitScale;
             QString portAndVarName = fields[1]+"."+fields[2];
             toLongDataNames(portAndVarName);
-            components.first()->getCustomPlotUnitOrScale(portAndVarName, unitScale);
+
+            pComponent->getCustomPlotUnitOrScale(portAndVarName, unitScale);
 
             const QString &scale = unitScale.mScale;
             const QString &unit = unitScale.mUnit;
@@ -1756,15 +1770,18 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
                 mAnsScalar = scale.toDouble();
                 continue;
             }
-            // Else we do not print anything
-            mAnsType = Undefined;
+            HCOMPRINT(QString("%1: 1").arg(dispName));
+            mAnsType = Scalar;
+            mAnsScalar = 1;
         }
         else
         {
             HCOMERR(QString("Unknown variable: %1").arg(var));
+            mAnsType = Undefined;
         }
     }
 }
+
 
 void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
 {
@@ -2874,7 +2891,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
 
             if (!found)
             {
-                HCOMERR(QString("Could not find varible or evaluate expression: %1").arg(varNames[s]));
+                HCOMERR(QString("Could not find variable or evaluate expression: %1").arg(varNames[s]));
             }
         }
     }
@@ -3054,6 +3071,18 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         //}
     }
 
+    if(desiredType != Scalar)
+    {
+        //Data variable, return it
+        SharedVariablePtrT data = getLogVariablePtr(expr);
+        if(data)
+        {
+            mAnsType = DataVector;
+            mAnsVector = data;
+            return;
+        }
+    }
+
     if(desiredType != DataVector)
     {
         //Parameter name, return its value
@@ -3064,18 +3093,6 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         {
             mAnsType = Scalar;
             mAnsScalar = parVal.toDouble();
-            return;
-        }
-    }
-
-    if(desiredType != Scalar)
-    {
-        //Data variable, return it
-        SharedVariablePtrT data = getLogVariablePtr(expr);
-        if(data)
-        {
-            mAnsType = DataVector;
-            mAnsVector = data;
             return;
         }
     }
@@ -4442,6 +4459,43 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //}
 
 
+
+//! @brief Returns variable names matching a pattern by communicating directly with the model
+//! @param pattern Pattern using wildcards
+//! @param rVariables Reference list used for returning matching variables
+void HcomHandler::getMatchingLogVariableNamesWithoutLogDataHandler(QString pattern, QStringList &rVariables) const
+{
+    QStringList unFilteredVariables;
+
+    QStringList components = mpModel->getTopLevelSystemContainer()->getModelObjectNames();
+    Q_FOREACH(const QString &component, components)
+    {
+        ModelObject *pComponent = mpModel->getTopLevelSystemContainer()->getModelObject(component);
+        QList<Port*> portPtrs = pComponent->getPortListPtrs();
+        QStringList ports;
+        Q_FOREACH(const Port *pPort, portPtrs)
+        {
+            ports.append(pPort->getName());
+        }
+        Q_FOREACH(const QString &port, ports)
+        {
+            Port *pPort = pComponent->getPort(port);
+            NodeInfo nodeInfo(pPort->getNodeType());
+            QStringList vars = nodeInfo.shortNames;
+
+            Q_FOREACH(const QString &var, vars)
+            {
+                unFilteredVariables.append(component+"."+port+"."+var);
+            }
+        }
+    }
+
+    QRegExp rx(pattern);
+    rx.setPatternSyntax(QRegExp::Wildcard);
+    rVariables = unFilteredVariables.filter(rx);
+}
+
+
 //! @brief Help function that returns a list of variables according to input (with support for * regexp search)
 //! @param [in] pattern Name to look for
 //! @param [out] rVariables Reference to list that will contain the found variable names with generation appended
@@ -4674,11 +4728,15 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         QString right = expr.getRight()->toString();
         evaluateExpression(right);
 
+        QStringList pars;
         if (mAnsType==Scalar)
         {
+            getParameters(left, pars);
             SharedVariablePtrT data = getLogVariablePtr(left);
-            if(data)
+
+            if(pars.isEmpty() && data)
             {
+                //! @note Start values and data vectors may have same name, so we don't complain about this if it could also be a start value (parameter)
                 HCOMERR("Not very clever to assign a data vector with a scalar.");
                 return true;
             }
@@ -4702,8 +4760,6 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
         if(mAnsType==Scalar)
         {
-            QStringList pars;
-            getParameters(left, pars);
             if(!pars.isEmpty())
             {
                 executeCommand("chpa "+left+" "+QString::number(mAnsScalar));

@@ -368,8 +368,6 @@ void MainWindow::initializeWorkspace()
         gpLibraryHandler->loadLibrary(gpConfig->getUserLibs()[i], gpConfig->getUserLibTypes()[i]);
     }
 
-    //mpLibrary->checkForFailedComponents();
-
     // Create the plot widget, only once! :)
     gpPlotWidget = new PlotWidget(this);
     gpPlotWidget->hide();
@@ -391,6 +389,10 @@ void MainWindow::initializeWorkspace()
     }
 
     mpLibraryWidget->adjustSize();
+
+    gpSplash->showMessage("Finished!");
+
+    QTimer::singleShot(1000, gpSplash, SLOT(close()));
 }
 
 

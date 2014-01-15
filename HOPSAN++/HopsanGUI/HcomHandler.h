@@ -93,6 +93,7 @@ public:
     SharedVariablePtrT mAnsVector;
     VariableType mAnsType;
 
+
 public slots:
     void abortHCOM();
     void setModelPtr(ModelWidget *pModel);
@@ -167,6 +168,7 @@ private:
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;
+    void getMatchingLogVariableNamesWithoutLogDataHandler(QString pattern, QStringList &rVariables) const;
     void getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const;
     void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     bool evaluateArithmeticExpression(QString cmd);

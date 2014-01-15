@@ -1193,6 +1193,8 @@ NodeInfo::NodeInfo(QString nodeType)
         }
     }
 
+    shortNames << cVariables << qVariables;
+
     gHopsanCore.removeNode(pNode);
     //delete(pNode);
 }

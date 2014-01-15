@@ -184,7 +184,7 @@ private:
     {
         setNiceName("mechanic");
         setDataCharacteristics(Velocity, "Velocity", "v", "m/s", FlowType);
-        setDataCharacteristics(Force, "Force", "F", "N", IntensityType);
+        setDataCharacteristics(Force, "Force", "f", "N", IntensityType);
         setDataCharacteristics(Position, "Position", "x", "m");
         setDataCharacteristics(WaveVariable, "WaveVariable", "c", "N", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "N s/m", TLMType);

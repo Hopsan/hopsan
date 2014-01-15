@@ -323,6 +323,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
         pAppearanceData->setBasePath(QFileInfo(cafFiles[i]).absolutePath()+"/");
         pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
+        pAppearanceData->cacheIcons();
 
         // Check CAF version, and ask user if they want to update to latest version
         QString caf_version = cafRoot.attribute(CAF_VERSION);

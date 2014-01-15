@@ -27,6 +27,7 @@
 
 #include <QString>
 #include <QPointF>
+#include <QIcon>
 #include "common.h"
 
 #include "Utilities/XMLUtilities.h"
@@ -111,6 +112,8 @@ class ModelObjectAppearance
 {
 public:
     ModelObjectAppearance();
+    void cacheIcons();
+
     void setTypeName(const QString type);
     void setSubTypeName(const QString subtype);
     void setDisplayName(const QString name);
@@ -129,6 +132,7 @@ public:
     QString getBasePath() const;
     QString getFullAvailableIconPath(GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
+    QIcon &getIcon(const GraphicsTypeEnumT gfxType);
     QString getDefaultMissingIconPath() const;
     qreal   getIconScale(const GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconRotationBehaviour(const GraphicsTypeEnumT gfxType=UserGraphics);
@@ -163,6 +167,8 @@ private:
     QString mHelpText,mHelpPicture,mHelpLink;
     ModelObjectIconAppearance mIsoIconAppearance;
     ModelObjectIconAppearance mUserIconAppearance;
+    QIcon mIsoIcon;
+    QIcon mUserIcon;
     QString mDefaultMissingIconPath;
     QPointF mNameTextPos;
     QStringList mReplacementObjects;

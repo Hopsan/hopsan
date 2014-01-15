@@ -32,6 +32,8 @@
 //These are only used in temporary save to file
 #include <QFile>
 
+#include <QIcon>
+
 // ========== Defines for load/save common strings ==========
 #define CAF_TYPENAME "typename"
 #define CAF_SUBTYPENAME "subtypename"
@@ -339,6 +341,15 @@ ModelObjectAppearance::ModelObjectAppearance()
     mAnimationData.flowSpeed = 100;
 }
 
+void ModelObjectAppearance::cacheIcons()
+{
+    //Pre-cache icons for faster updating of library
+    QString iconPath = getFullAvailableIconPath(UserGraphics);
+    mUserIcon.addFile(iconPath,QSize(55,55));
+    iconPath = getFullAvailableIconPath(ISOGraphics);
+    mIsoIcon.addFile(iconPath,QSize(55,55));
+}
+
 //! @brief get the type-name
 //! @returns The type-name
 QString ModelObjectAppearance::getTypeName() const
@@ -445,6 +456,15 @@ QString ModelObjectAppearance::getIconPath(const GraphicsTypeEnumT gfxType, cons
     {
         return ""; //Invalid type
     }
+}
+
+QIcon &ModelObjectAppearance::getIcon(const GraphicsTypeEnumT gfxType)
+{
+    if(gfxType == UserGraphics)
+    {
+        return mUserIcon;
+    }
+    return mIsoIcon;
 }
 
 QString ModelObjectAppearance::getDefaultMissingIconPath() const

@@ -34,6 +34,7 @@
 #include "DesktopHandler.h"
 #include "Configuration.h"
 #include "Dialogs/EditComponentDialog.h"
+#include "Utilities/GUIUtilities.h"
 
 
 //! @todo Ok dont know where I should put this, putting it here for now /Peter
@@ -165,11 +166,16 @@ void LibraryWidget::update()
 
     Q_FOREACH(const QString typeName, gpLibraryHandler->getLoadedTypeNames())
     {
+        TicToc timer;
+
         LibraryEntry entry = gpLibraryHandler->getEntry(typeName);
         if(entry.visibility == Hidden || !entry.pAppearance->getDisplayName().toLower().contains(filter.toLower()))
         {
             continue;
         }
+
+        timer.toc("Did part 1.");
+        timer.tic();
 
         QStringList path;
         if(filter.isEmpty())
@@ -241,12 +247,15 @@ void LibraryWidget::update()
             }
         }
 
+        timer.toc("Did part 2.");
+        timer.tic();
+
         //Add component to tree view
         QTreeWidgetItem *pComponentItem = new QTreeWidgetItem();
         QIcon icon;
-        QString iconPath = entry.pAppearance->getFullAvailableIconPath(mGfxType);
-        icon.addFile(iconPath,QSize(55,55));
-        pComponentItem->setIcon(0, icon);
+//        QString iconPath = entry.pAppearance->getFullAvailableIconPath(mGfxType);
+//        icon.addFile(iconPath,QSize(55,55));
+        pComponentItem->setIcon(0, entry.pAppearance->getIcon(mGfxType));
         pComponentItem->setText(0, entry.pAppearance->getDisplayName());
         pComponentItem->setToolTip(0, entry.pAppearance->getDisplayName());
         if(pItem)
@@ -271,6 +280,9 @@ void LibraryWidget::update()
             mFolderToContentsMap.insert(pDualItem, list);
         }
 
+        timer.toc("Did part 3.");
+        timer.tic();
+
         while(pDualItem && pDualItem->parent())
         {
             pDualItem = pDualItem->parent();
@@ -286,16 +298,21 @@ void LibraryWidget::update()
             }
         }
 
+        timer.toc("Did part 4.");
+        timer.tic();
+
         if(!filter.isEmpty())
         {
             ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
             QListWidgetItem *tempItem = new QListWidgetItem();
-            tempItem->setIcon(QIcon(pAppearance->getFullAvailableIconPath()));
+            tempItem->setIcon(/*QIcon(pAppearance->getFullAvailableIconPath())*/pAppearance->getIcon(mGfxType));
             tempItem->setToolTip(pAppearance->getDisplayName());
             mListItemToTypeNameMap.insert(tempItem, typeName);
             tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
             mpList->addItem(tempItem);
         }
+
+        timer.toc("Did part 5.");
     }
 
     //Sort trees, and make sure external libraries are shown at the bottom
