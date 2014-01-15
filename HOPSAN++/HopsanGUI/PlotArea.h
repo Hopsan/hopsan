@@ -146,12 +146,10 @@ public:
 
     void setLegendsVisible(bool value);
 
-    void update();
-
 public slots:
     void rescaleAxesToCurves();
-    void toggleAxisLock();
     void updateAxisLabels();
+    void replot();
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
@@ -161,6 +159,7 @@ public slots:
     void applyAxisLabelSettings();
     void applyLegendSettings();
     void applyTimeScalingSettings();
+    void toggleAxisLock();
 
     void enableGrid(bool value);
     void setBackgroundColor(const QColor &rColor);
@@ -194,6 +193,7 @@ private:
     void determineAddedCurveUnitOrScale(PlotCurve *pCurve);
     void rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
+    void updatePlotMarkers();
 
     PlotTab *mpParentPlotTab;
 

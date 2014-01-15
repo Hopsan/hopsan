@@ -99,12 +99,10 @@ PlotCurve::PlotCurve(SharedVariablePtrT pData,
 
     // Create relay connections
     connect(this, SIGNAL(curveDataUpdated()), this, SIGNAL(curveInfoUpdated()));
-    connect(this, SIGNAL(colorChanged(QColor)), this, SIGNAL(curveInfoUpdated()));
 
     // Create other connections
     //! @todo we should not connect like this /Peter
     connect(gpModelHandler->getCurrentModel(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-    connect(gpCentralTabWidget,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
 
     connectDataSignals();
 
@@ -278,9 +276,9 @@ QVector<double> PlotCurve::getDataVectorCopy() const
 }
 
 
-//! @brief Returns the time vector of a plot curve
+//! @brief Returns the shared time or frequency vector of the plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
-const SharedVariablePtrT PlotCurve::getTimeVectorPtr() const
+const SharedVariablePtrT PlotCurve::getSharedTimeOrFrequencyVector() const
 {
     return mpData->getSharedTimeOrFrequencyVector();
 }
@@ -290,7 +288,7 @@ bool PlotCurve::hasCustomXData() const
     return !mpCustomXdata.isNull();
 }
 
-const SharedVariablePtrT PlotCurve::getCustomXData() const
+const SharedVariablePtrT PlotCurve::getSharedCustomXData() const
 {
     return mpCustomXdata;
 }
@@ -335,9 +333,14 @@ bool PlotCurve::setGeneration(int generation)
 
         updateCurve();
         refreshCurveTitle();
-        emit curveInfoUpdated();
-        mpParentPlotArea->update();
 
+        //! @todo manny signals that notify of basically the same thing, (clean up maybe)
+        emit curveInfoUpdated();
+
+        //! @todo maybe this one should be signaled instead of calling up
+        mpParentPlotArea->replot();
+
+        //! @todo should this be done here
 //        if(!mpParentPlotTab->areAxesLocked())
 //        {
             mpParentPlotArea->resetZoom();
@@ -391,8 +394,7 @@ void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
     updateCurve();
 
     //! @todo shouldnt these be triggered by signal in update curve?
-    mpParentPlotArea->updateAxisLabels();
-    mpParentPlotArea->update();
+    mpParentPlotArea->replot();
 }
 
 void PlotCurve::removeCustomCurveDataUnit()
@@ -400,9 +402,10 @@ void PlotCurve::removeCustomCurveDataUnit()
     mCustomCurveDataUnit.clear();
     mCustomCurveDataUnitScale = 1.0;
 
+    updateCurve();
+
     //! @todo shouldnt these be triggered by signal in update curve?
-    mpParentPlotArea->updateAxisLabels();
-    mpParentPlotArea->update();
+    mpParentPlotArea->replot();
 }
 
 
@@ -411,6 +414,7 @@ void PlotCurve::removeCustomCurveDataUnit()
 //! @param scaleY Scale factor for Y-axis
 //! @param offsetX Offset value for X-axis
 //! @param offsetY Offset value for Y-axis
+//! @todo FIXA /Peter
 void PlotCurve::setTimePlotScalingAndOffset(double scale, double offset)
 {
     mpData->setTimePlotScaleAndOffset(scale, offset);
@@ -458,8 +462,7 @@ void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVecto
 void PlotCurve::setCustomXData(SharedVariablePtrT pData)
 {
     //! @todo maybe prevent reset if timevector is null, but then it will (currently) be impossible to reset x vector in curve.
-//    if ( pData || mpData->getSharedTimePointer() )
-//    {
+
     // Disconnect any signals first, in case we are changing x-data
     if (mpCustomXdata)
     {
@@ -471,10 +474,6 @@ void PlotCurve::setCustomXData(SharedVariablePtrT pData)
 
     // Redraw curve
     updateCurve();
-
-    //mpPlotCurveInfoBox->updateInfo();
-    mpParentPlotArea->updateAxisLabels();
-//    }
 }
 
 void PlotCurve::setCustomXData(const QString fullName)
@@ -503,70 +502,6 @@ QColor PlotCurve::getLineColor() const
     return mLineColor;
 }
 
-
-////! @brief Converts the plot curve to its frequency spectrum by using FFT
-//void PlotCurve::toFrequencySpectrum(const bool doPowerSpectrum)
-//{
-//    QVector<double> timeVec, dataVec;
-//    timeVec = mpData->getSharedTimeVectorPointer()->getDataVectorCopy();
-//    dataVec = mpData->getDataVectorCopy();
-
-//    //Vector size has to be an even potential of 2.
-//    //Calculate largets potential that is smaller than or equal to the vector size.
-//    int n = pow(2, int(log2(dataVec.size())));
-//    if(n != dataVec.size())     //Vector is not an exact potential, so reduce it
-//    {
-//        QString oldString, newString;
-//        oldString.setNum(dataVec.size());
-//        newString.setNum(n);
-//        QMessageBox::information(mpParentPlotTab, this->tr("Wrong Vector Size"),
-//                                 "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
-//        reduceVectorSize(dataVec, n);
-//        reduceVectorSize(timeVec, n);
-//    }
-
-//    //Create a complex vector
-//    QVector< std::complex<double> > vComplex = realToComplex(dataVec);
-
-//    //Apply the fourier transform
-//    FFT(vComplex);
-
-//    //Scalar multiply complex vector with its conjugate, and divide it with its size
-//    dataVec.clear();
-//    for(int i=1; i<n/2; ++i)        //FFT is symmetric, so only use first half
-//    {
-//        if(doPowerSpectrum)
-//        {
-//            dataVec.append(real(vComplex[i]*conj(vComplex[i]))/n);
-//        }
-//        else
-//        {
-//            dataVec.append(sqrt(vComplex[i].real()*vComplex[i].real() + vComplex[i].imag()*vComplex[i].imag()));
-//        }
-//    }
-
-//    //Create the x vector (frequency)
-//    double max = timeVec.last();
-//    timeVec.clear();
-//    for(int i=1; i<n/2; ++i)
-//    {
-//        timeVec.append(double(i)/max);
-//    }
-
-//    //! @todo this is al wrong, this function should use the other oone in logdatahandler
-//    VariableDescription varDesc;
-//    varDesc.mDataName = "Value";
-//    varDesc.mDataUnit = "-";
-//    this->setCustomData(varDesc, timeVec, dataVec);
-
-//    varDesc.mDataName = "Frequency";
-//    varDesc.mDataUnit = "Hz";
-//    this->setCustomXData(varDesc,timeVec);
-
-//    updateCurve();
-//    updatePlotInfoBox();
-//    mpParentPlotTab->update();
-//}
 
 void PlotCurve::resetLegendSize()
 {
@@ -857,6 +792,7 @@ void PlotCurve::openScaleDialog()
 
 
 //! @brief Updates the scaling of a plot curve form values in scaling dialog
+//! @todo FIXA  /Peter
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
     double newScale = mpTimeScaleComboBox->currentText().split(" ")[0].toDouble();
@@ -873,7 +809,7 @@ void PlotCurve::updateTimePlotScaleFromDialog()
         mpParentPlotArea->resetZoom();
 
         mpParentPlotArea->mpQwtZoomerLeft->zoom(newZoomRect);
-        mpParentPlotArea->update();
+        mpParentPlotArea->replot();
     }
 
     mpParentPlotArea->mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Time ["+mpTimeScaleComboBox->currentText().split(" ")[1].remove("(").remove(")")+"] ");     //!< @todo Not so nice fix... /Robert
@@ -900,13 +836,13 @@ void PlotCurve::removeMe()
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
-    if(mAutoUpdate)     //Only change the generation if auto update is on
+    // Only change the generation if auto update is on
+    if(mAutoUpdate)
     {
         setGeneration(-1);
     }
-    emit curveInfoUpdated();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
-
-    mpParentPlotArea->update();
+    // Update the plot info box regardless of auto update setting, to show number of available generations correctly
+    emit curveInfoUpdated();
 }
 
 //! @brief Activates (highlights) the plot curve
@@ -996,7 +932,6 @@ void PlotCurve::updateCurveName()
 {
     refreshCurveTitle();
     emit curveInfoUpdated();
-    mpParentPlotArea->updateAxisLabels();
 }
 
 void PlotCurve::deleteCustomData()

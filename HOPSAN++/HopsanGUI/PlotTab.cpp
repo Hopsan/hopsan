@@ -498,7 +498,7 @@ void PlotTab::exportToCsv(QString fileName)
     }
     else
     {
-        QVector<double> time = curves.first()->getTimeVectorPtr()->getDataVectorCopy();
+        QVector<double> time = curves.first()->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
         for(int i=0; i<time.size(); ++i)
         {
             fileStream << time[i];
@@ -650,7 +650,7 @@ void PlotTab::exportToMatlab()
             else
             {
                 //! @todo what if not timevector then this will crash
-                QVector<double> time = curves[c]->getTimeVectorPtr()->getDataVectorCopy();
+                QVector<double> time = curves[c]->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
                 for(int j=0; j<time.size(); ++j)
                 {
                     if(j>0) fileStream << ",";
@@ -757,7 +757,7 @@ void PlotTab::exportToGnuplot()
 
     // Write time and data vectors
     QString dummy, err;
-    QVector<double> time = curves.first()->getTimeVectorPtr()->getDataVectorCopy();
+    QVector<double> time = curves.first()->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
     for(int i=0; i<time.size(); ++i)
     {
         dummy.setNum(time[i]);
@@ -1053,7 +1053,7 @@ void PlotTab::update()
     PlotArea *pArea;
     Q_FOREACH(pArea, mPlotAreas)
     {
-        pArea->update();
+        pArea->replot();
     }
 }
 
@@ -1652,8 +1652,8 @@ void PlotTab::openCreateBodePlotDialog()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    double dataSize = getCurves(0).first()->getTimeVectorPtr()->getDataSize()+1;
-    double stopTime = getCurves(0).first()->getTimeVectorPtr()->last();
+    double dataSize = getCurves(0).first()->getSharedTimeOrFrequencyVector()->getDataSize()+1;
+    double stopTime = getCurves(0).first()->getSharedTimeOrFrequencyVector()->last();
     double maxFreq = dataSize/stopTime/2;
     QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
     QLabel *pMaxFrequencyValue = new QLabel();

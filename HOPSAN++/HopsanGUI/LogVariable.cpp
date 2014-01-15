@@ -345,8 +345,7 @@ QString VectorVariable::getImportedFileName() const
 
 const SharedVariablePtrT VectorVariable::getSharedTimeOrFrequencyVector() const
 {
-    // Return NULL by default
-    return SharedVariablePtrT();
+    return mpSharedTimeOrFrequencyVector;
 }
 
 double VectorVariable::getPlotOffset() const

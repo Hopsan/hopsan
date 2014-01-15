@@ -85,9 +85,9 @@ public:
     SharedVariablePtrT getLogDataVariablePtr(); //! @todo is this needed
     const SharedVariablePtrT getLogDataVariablePtr() const;
     QVector<double> getDataVectorCopy() const;
-    const SharedVariablePtrT getTimeVectorPtr() const;
+    const SharedVariablePtrT getSharedTimeOrFrequencyVector() const;
     bool hasCustomXData() const;
-    const SharedVariablePtrT getCustomXData() const;
+    const SharedVariablePtrT getSharedCustomXData() const;
 
     int getGeneration() const;
     const QString &getComponentName() const;
@@ -110,8 +110,6 @@ public:
     void setCustomXData(const QString fullName);
 
     QColor getLineColor() const;
-
-    //void toFrequencySpectrum(const bool doPowerSpectrum=false);
     void resetLegendSize();
 
     // Qwt overloaded function

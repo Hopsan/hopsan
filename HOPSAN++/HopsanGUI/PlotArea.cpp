@@ -359,6 +359,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     pCurve->setParentPlotArea(this);
     mPlotCurves.append(pCurve);
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
+    connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
 
     // Create a curve info box for this curve
     mPlotCurveControlBoxes.append(new PlotCurveControlBox(pCurve, this));
@@ -366,7 +367,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     mPlotCurveControlBoxes.last()->show();
 
 
-
+    //! @todo this code is unclear, rewrite and add a comment, mayb also deal wit desired color
     for(int i=0; true; ++i)
     {
         bool stop=false;
@@ -419,8 +420,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     //! @todo maybe make it possible to rescale only selected axis, instead of always recscaling both of them
     rescaleAxesToCurves();
     updateAxisLabels();
-    mpQwtPlot->replot();
-    mpQwtPlot->updateGeometry();
+    replot();
 }
 
 void PlotArea::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc)
@@ -509,7 +509,7 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
 
     rescaleAxesToCurves();
     updateAxisLabels();
-    update();
+    replot();
 }
 
 void PlotArea::removeAllCurvesOnAxis(const int axis)
@@ -672,31 +672,16 @@ void PlotArea::setLegendsVisible(bool value)
     applyLegendSettings();
 }
 
-void PlotArea::update()
+void PlotArea::replot()
 {
-    mpQwtPlot->enableAxis(QwtPlot::yLeft, false);
-    mpQwtPlot->enableAxis(QwtPlot::yRight, false);
-    QList<PlotCurve *>::iterator cit;
-    for(cit=mPlotCurves.begin(); cit!=mPlotCurves.end(); ++cit)
-    {
-        if(!mpQwtPlot->axisEnabled((*cit)->getAxisY())) { mpQwtPlot->enableAxis((*cit)->getAxisY()); }
-        (*cit)->attach(mpQwtPlot);
-    }
+    // Enable axis depending on the number of curves
+    mpQwtPlot->enableAxis(QwtPlot::yLeft, (mNumYlCurves > 0));
+    mpQwtPlot->enableAxis(QwtPlot::yRight, (mNumYrCurves > 0));
 
     // Update plotmarkers
-    for(int i=0; i<mPlotMarkers.size(); ++i)
-    {
-        QPointF posF = mPlotMarkers[i]->value();
-        double x = mpQwtPlot->transform(QwtPlot::xBottom, posF.x());
-        double y = mpQwtPlot->transform(QwtPlot::yLeft, posF.y());
-        QPoint pos = QPoint(x,y);
-        PlotCurve *pCurve = mPlotMarkers[i]->getCurve();
-        mPlotMarkers[i]->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
-        mPlotMarkers[i]->setYValue(mpQwtPlot->invTransform(QwtPlot::yLeft, mpQwtPlot->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
-        mPlotMarkers[i]->refreshLabel(pCurve->sample(pCurve->closestPoint(pos)).x(), mpQwtPlot->invTransform(QwtPlot::yLeft, mpQwtPlot->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
-        //!< @todo label text will be wrong if curve data has changed
-        //!< @todo label text will be wrong if plot sclae or offset change
-    }
+    updatePlotMarkers();
+
+    // Replot the plot area
     mpQwtPlot->replot();
     mpQwtPlot->updateGeometry();
 }
@@ -1007,7 +992,7 @@ void PlotArea::rescaleAxesToCurves()
             if (!mHasCustomXData && someoneHasCustomXdata)
             {
                 //! @todo maybe should do this with signal slot instead, to avoid unesisarry checks all the time
-                setTabOnlyCustomXVector(mPlotCurves[i]->getCustomXData());
+                setTabOnlyCustomXVector(mPlotCurves[i]->getSharedCustomXData());
             }
 
             if(mPlotCurves[i]->getAxisY() == QwtPlot::yLeft)
@@ -1183,138 +1168,112 @@ void PlotArea::updateAxisLabels()
     mpQwtPlot->setAxisTitle(QwtPlot::yLeft, QwtText());
     mpQwtPlot->setAxisTitle(QwtPlot::yRight, QwtText());
 
-    if (mPlotCurves.size()>0)
+    if (!mPlotCurves.empty())
     {
-        if(mPlotCurves.first()->getCurveType() == PortVariableType)
+        QStringList leftLabels, rightLabels, bottomLabels;
+        QList<SharedVariablePtrT> sharedBottomVars;
+        for(int i=0; i<mPlotCurves.size(); ++i)
         {
-            QStringList leftUnits, rightUnits;
-            for(int i=0; i<mPlotCurves.size(); ++i)
+            // First decide new y-axis label
+            // If alias empty then use data name, else use the alias name
+            QString newLabel;
+            if (mPlotCurves[i]->getLogDataVariablePtr()->getAliasName().isEmpty())
             {
-                // First decide new label
-                QString newLabel;
-                // If alias empty then use data name
-                if (mPlotCurves[i]->getLogDataVariablePtr()->getAliasName().isEmpty())
-                {
-
-                    newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getDataName()).arg(mPlotCurves[i]->getCurrentUnit());
-                }
-                // Else use the alias name
-                else
-                {
-                    newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getLogDataVariablePtr()->getAliasName()).arg(mPlotCurves[i]->getCurrentUnit());
-                }
-
-                // If new label is not already on the axis then we may want to add it
-                if( ( (mPlotCurves[i]->getAxisY() == QwtPlot::yLeft)  && !leftUnits.contains(newLabel)) ||
-                        ( (mPlotCurves[i]->getAxisY() == QwtPlot::yRight) && !rightUnits.contains(newLabel)) )
-                {
-                    // If label on axis is empty then set new text label
-                    if(mpQwtPlot->axisTitle(mPlotCurves[i]->getAxisY()).isEmpty())
-                    {
-                        mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), QwtText(newLabel));
-                    }
-                    // else append new text to already existing text
-                    else
-                    {
-                        QString currText = mpQwtPlot->axisTitle(mPlotCurves[i]->getAxisY()).text();
-                        mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), QwtText(currText.append(", ").append(newLabel)));
-                    }
-
-                    // Remember the text we just added
-                    if(mPlotCurves[i]->getAxisY() == QwtPlot::yLeft)
-                    {
-                        leftUnits.append(newLabel);
-                    }
-                    if(mPlotCurves[i]->getAxisY() == QwtPlot::yRight)
-                    {
-                        rightUnits.append(newLabel);
-                    }
-                }
-            }
-            if (mHasCustomXData)
-            {
-                // Check all curves to make sure if it is the same custom x on all
-                QList<SharedVariablePtrT> customXdatas;
-                //! @todo checking this stuff every time is stupid, this should be sorted out upon adding removin curves
-                for(int i=0; i<mPlotCurves.size(); ++i)
-                {
-                    SharedVariablePtrT pX = mPlotCurves[i]->getCustomXData();
-                    if (!pX.isNull() && !customXdatas.contains(pX))
-                    {
-                        customXdatas.append(mPlotCurves[i]->getCustomXData());
-                    }
-                }
-
-                QString text;
-                for (int i=0; i<customXdatas.size(); ++i)
-                {
-                    text.append(customXdatas[i]->getDataName() + QString(" [%1], ").arg(customXdatas[i]->getPlotScaleDataUnit()));
-                }
-                text.chop(2);
-                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, text);
+                newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getDataName()).arg(mPlotCurves[i]->getCurrentUnit());
             }
             else
             {
-                // Ok since there is not custom x-data lets assume that all curves have the same x variable (usually time), lets ask the first one
-                SharedVariablePtrT pTime = mPlotCurves.first()->getTimeVectorPtr();
-                if (pTime)
+                newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getLogDataVariablePtr()->getAliasName()).arg(mPlotCurves[i]->getCurrentUnit());
+            }
+
+            // If new label is not already on the axis then we may want to add it
+            // Check left axis
+            if( (mPlotCurves[i]->getAxisY() == QwtPlot::yLeft) && !leftLabels.contains(newLabel) )
+            {
+                leftLabels.append(newLabel);
+            }
+
+            // Check right axis
+            if( (mPlotCurves[i]->getAxisY() == QwtPlot::yRight) && !rightLabels.contains(newLabel) )
+            {
+                rightLabels.append(newLabel);
+            }
+
+            // Now decide new bottom axis label
+            // Use custom x-axis if availible, else try to use the time or frequency vector (if set)
+            SharedVariablePtrT pSharedXVector = mPlotCurves[i]->getSharedCustomXData();
+            if (pSharedXVector.isNull())
+            {
+                pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVector();
+            }
+            if (!pSharedXVector.isNull() && !sharedBottomVars.contains(pSharedXVector))
+            {
+                //! @todo for custom x mayb check for alias name
+                sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
+                QString bottomLabel = QString("%1 [%2]").arg(pSharedXVector->getDataName()).arg(pSharedXVector->getActualPlotDataUnit());
+                if (!bottomLabels.contains(bottomLabel))
                 {
-                    mpQwtPlot->setAxisTitle(QwtPlot::xBottom, pTime->getDataName()+QString(" [%1] ").arg(pTime->getActualPlotDataUnit()));
+                    bottomLabels.append(bottomLabel);
                 }
-
-                // Else no automatic x-label
             }
-        }
-        else if(mPlotCurves[0]->getCurveType() == FrequencyAnalysisType)
-        {
-            for(int i=0; i<mPlotCurves.size(); ++i)
-            {
-                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Relative Magnitude [-]");
-                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-            }
-        }
-        else if(mPlotCurves[0]->getCurveType() == NyquistType)
-        {
-            for(int i=0; i<mPlotCurves.size(); ++i)
-            {
-                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Im");
-                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Re");
-            }
-        }
-        else if(mPlotCurves[0]->getCurveType() == BodeGainType)
-        {
-            for(int i=0; i<mPlotCurves.size(); ++i)
-            {
-                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Magnitude [dB]");
-                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot below with same label
-            }
-        }
-        else if(mPlotCurves[0]->getCurveType() == BodePhaseType)
-        {
-            for(int i=0; i<mPlotCurves.size(); ++i)
-            {
-                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Phase [deg]");
-                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-            }
+            //! @todo what should we show if no time or frequency vector present, espescially a problem if mixing vectors with tim or frequency domain variabels
         }
 
-        // If Usercustom labels exist overwrite automatic label
-        if (mpUserDefinedLabelsCheckBox->isChecked())
+        // Set the actual axis labels
+        mpQwtPlot->setAxisTitle(QwtPlot::xBottom, QwtText(bottomLabels.join(", ")));
+        mpQwtPlot->setAxisTitle(QwtPlot::yLeft, QwtText(leftLabels.join(", ")));
+        mpQwtPlot->setAxisTitle(QwtPlot::yRight, QwtText(rightLabels.join(", ")));
+    }
+    //        else if(mPlotCurves[0]->getCurveType() == FrequencyAnalysisType)
+    //        {
+    //            for(int i=0; i<mPlotCurves.size(); ++i)
+    //            {
+    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Relative Magnitude [-]");
+    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+    //            }
+    //        }
+    //        else if(mPlotCurves[0]->getCurveType() == NyquistType)
+    //        {
+    //            for(int i=0; i<mPlotCurves.size(); ++i)
+    //            {
+    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Im");
+    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Re");
+    //            }
+    //        }
+    //        else if(mPlotCurves[0]->getCurveType() == BodeGainType)
+    //        {
+    //            for(int i=0; i<mPlotCurves.size(); ++i)
+    //            {
+    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Magnitude [dB]");
+    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot below with same label
+    //            }
+    //        }
+    //        else if(mPlotCurves[0]->getCurveType() == BodePhaseType)
+    //        {
+    //            for(int i=0; i<mPlotCurves.size(); ++i)
+    //            {
+    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Phase [deg]");
+    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+    //            }
+    //        }
+
+    // If Usercustom labels exist overwrite automatic label
+    if (mpUserDefinedLabelsCheckBox->isChecked())
+    {
+        if (!mpUserDefinedXLabel->text().isEmpty())
         {
-            if (!mpUserDefinedXLabel->text().isEmpty())
-            {
-                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, QwtText(mpUserDefinedXLabel->text()));
-            }
-            if (!mpUserDefinedYlLabel->text().isEmpty())
-            {
-                mpQwtPlot->setAxisTitle(QwtPlot::yLeft, QwtText(mpUserDefinedYlLabel->text()));
-            }
-            if (!mpUserDefinedYrLabel->text().isEmpty())
-            {
-                mpQwtPlot->setAxisTitle(QwtPlot::yRight, QwtText(mpUserDefinedYrLabel->text()));
-            }
+            mpQwtPlot->setAxisTitle(QwtPlot::xBottom, QwtText(mpUserDefinedXLabel->text()));
+        }
+        if (!mpUserDefinedYlLabel->text().isEmpty())
+        {
+            mpQwtPlot->setAxisTitle(QwtPlot::yLeft, QwtText(mpUserDefinedYlLabel->text()));
+        }
+        if (!mpUserDefinedYrLabel->text().isEmpty())
+        {
+            mpQwtPlot->setAxisTitle(QwtPlot::yRight, QwtText(mpUserDefinedYrLabel->text()));
         }
     }
+
 }
 
 void PlotArea::openLegendSettingsDialog()
@@ -1381,7 +1340,7 @@ void PlotArea::openTimeScalingDialog()
         int gen = mPlotCurves[i]->getGeneration();
         if (!activeGenerations.contains(gen))
         {
-            SharedVariablePtrT pTime = mPlotCurves[i]->getTimeVectorPtr();
+            SharedVariablePtrT pTime = mPlotCurves[i]->getSharedTimeOrFrequencyVector();
             //if (pTime)
             {
                 TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, &scaleDialog);
@@ -1512,31 +1471,6 @@ void PlotArea::applyLegendSettings()
 
 void PlotArea::applyTimeScalingSettings()
 {
-    //    QString newUnit = extractBetweenFromQString(mpTimeScaleComboBox->currentText().split(" ").last(), '[', ']');
-    //    QString newScaleStr = mpTimeScaleComboBox->currentText().split(" ")[0];
-    //    double newScale = newScaleStr.toDouble();
-    //    //! @todo make sure we have at least one curve here, also this is not correct since different curves may have different generation, should be able to ask the zoomer about this instead, or have some refresh zoom slot that handles all of it
-    //    double oldScale = mPlotCurvePtrs[0][0]->getTimeVectorPtr()->getPlotScale();
-
-    //    //! @todo this will only affect the generation for the first curve
-    //    mPlotCurvePtrs[0][0]->getTimeVectorPtr()->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
-    //    mPlotCurvePtrs[0][0]->getTimeVectorPtr()->setPlotOffset(mpTimeOffsetLineEdit->text().toDouble());
-    //    //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
-
-    //    //! @todo offset step size should follow scale change to make more sense, (when you click the spinbox), also for ydata scaling
-
-    //    // Update zoom rectangle to new scale if zoomed
-    //    if(isZoomed(0))
-    //    {
-    //        QRectF oldZoomRect = mpZoomerLeft[0]->zoomRect();
-    //        QRectF newZoomRect = QRectF(oldZoomRect.x()*newScale/oldScale, oldZoomRect.y(), oldZoomRect.width()*newScale/oldScale, oldZoomRect.height());
-
-    //        resetZoom();
-
-    //        mpZoomerLeft[0]->zoom(newZoomRect);
-    //        update();
-    //    }
-
     updateAxisLabels();
 }
 
@@ -1988,7 +1922,7 @@ void PlotArea::setTabOnlyCustomXVector(SharedVariablePtrT pData)
     mpCustomXData = pData;
 
     updateAxisLabels();
-    update();
+    replot();
 
 }
 
@@ -2202,6 +2136,24 @@ void PlotArea::calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &
     }
 }
 
+void PlotArea::updatePlotMarkers()
+{
+    for(int i=0; i<mPlotMarkers.size(); ++i)
+    {
+        PlotCurve *pCurve = mPlotMarkers[i]->getCurve();
+        QPointF posF = mPlotMarkers[i]->value();
+        double x = mpQwtPlot->transform(QwtPlot::xBottom, posF.x());
+        double y = mpQwtPlot->transform(QwtPlot::yLeft, posF.y());
+        QPointF closestPoint = pCurve->sample(pCurve->closestPoint(QPoint(x,y)));
+
+        mPlotMarkers[i]->setXValue(closestPoint.x());
+        mPlotMarkers[i]->setYValue(mpQwtPlot->invTransform(QwtPlot::yLeft, mpQwtPlot->transform(pCurve->yAxis(), closestPoint.y())));
+        mPlotMarkers[i]->refreshLabel(closestPoint.x(), mpQwtPlot->invTransform(QwtPlot::yLeft, mpQwtPlot->transform(pCurve->yAxis(), closestPoint.y())));
+        //!< @todo label text will be wrong if curve data has changed
+        //!< @todo label text will be wrong if plot sclae or offset change
+    }
+}
+
 void PlotArea::enableArrow()
 {
     mpQwtZoomerLeft->setEnabled(false);
@@ -2235,7 +2187,7 @@ void PlotArea::setBackgroundColor(const QColor &rColor)
     }
 }
 
-//! @todo rename
+//! @todo renamethis function
 void PlotArea::resetXTimeVector()
 {
     mHasCustomXData = false;
@@ -2249,7 +2201,7 @@ void PlotArea::resetXTimeVector()
 
     rescaleAxesToCurves();
     updateAxisLabels();
-    update();
+    replot();
 }
 
 
@@ -2469,8 +2421,8 @@ void PlotCurveControlBox::updateInfo()
     // Update Xdata
     if (mpPlotCurve->hasCustomXData())
     {
-        mpCustomXDataDrop->setText(mpPlotCurve->getCustomXData()->getFullVariableName());
-        if (mpPlotCurve->getTimeVectorPtr())
+        mpCustomXDataDrop->setText(mpPlotCurve->getSharedCustomXData()->getFullVariableName());
+        if (mpPlotCurve->getSharedTimeOrFrequencyVector())
         {
             mpResetTimeButton->setEnabled(true);
         }
