@@ -3115,7 +3115,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             if (mAnsType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->diffVariables(pVar, pVar->getSharedTimeVectorPointer());
+                mAnsVector = pLogData->diffVariables(pVar, pVar->getSharedTimeOrFrequencyVector());
                 return;
             }
             else
@@ -3179,7 +3179,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = pLogData->lowPassFilterVariable(pVar, pVar->getSharedTimeVectorPointer(), freq);
+                    mAnsVector = pLogData->lowPassFilterVariable(pVar, pVar->getSharedTimeOrFrequencyVector(), freq);
                     return;
                 }
                 else
@@ -3255,7 +3255,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             if(mAnsType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->integrateVariables(mAnsVector, mAnsVector->getSharedTimeVectorPointer());
+                mAnsVector = pLogData->integrateVariables(mAnsVector, mAnsVector->getSharedTimeOrFrequencyVector());
                 return;
             }
             else
@@ -3313,7 +3313,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             if (mAnsType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->fftVariable(pVar, pVar->getSharedTimeVectorPointer(), false);
+                mAnsVector = pLogData->fftVariable(pVar, pVar->getSharedTimeOrFrequencyVector(), false);
                 return;
             }
             else
@@ -3336,7 +3336,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 if( (arg2=="true") || (arg2=="false") )
                 {
                     power = (arg2 == "true");
-                    pTimeVar = pVar->getSharedTimeVectorPointer();
+                    pTimeVar = pVar->getSharedTimeOrFrequencyVector();
                     mAnsType = DataVector;
                 }
                 else

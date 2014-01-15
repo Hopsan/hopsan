@@ -113,15 +113,15 @@ public:
     int getNumGenerations() const;
     QList<int> getGenerations() const;
 
-    const QString &getAliasName() const;
+    const QString getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
     QString getSmartName() const;
-    const QString &getModelPath() const;
-    const QString &getComponentName() const;
-    const QString &getPortName() const;
-    const QString &getDataName() const;
-    const QString &getDataUnit() const;
+    const QString getModelPath() const;
+    const QString getComponentName() const;
+    const QString getPortName() const;
+    const QString getDataName() const;
+    const QString getDataUnit() const;
 
     void preventAutoRemove(const int gen);
     void allowAutoRemove(const int gen);
@@ -136,7 +136,7 @@ signals:
 
 private:
     LogDataHandler *mpParentLogDataHandler;
-    SharedVariableDescriptionT mVariableCommonDescription;
+    //SharedVariableDescriptionT mVariableCommonDescription;
     GenerationMapT mDataGenerations;
     QList<int> mKeepGenerations;
 };
@@ -150,7 +150,7 @@ class VectorVariable : public QObject
 
 public:
     VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
-                    SharedMultiDataVectorCacheT pGenerationMultiCache);
+                   SharedMultiDataVectorCacheT pGenerationMultiCache);
     ~VectorVariable();
 
     // Access variable type enums
@@ -206,8 +206,7 @@ public:
     bool endFullVectorOperation(QVector<double> *&rpData);
 
     // Functions that only read data but that require reimplementation in derived classes
-    virtual const SharedVariablePtrT getSharedTimeVectorPointer() const;
-    virtual const SharedVariablePtrT getSharedFrequencyVectorPointer() const;
+    virtual const SharedVariablePtrT getSharedTimeOrFrequencyVector() const;
     virtual SharedVariablePtrT toFrequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
 
     // Functions that modify the data
@@ -264,10 +263,11 @@ signals:
 
 protected:
     typedef QVector<double> DataVectorT;
+    QPointer<LogVariableContainer> mpParentVariableContainer;
 
     CachableDataVector *mpCachedDataVector;
-    QPointer<LogVariableContainer> mpParentVariableContainer;
     SharedVariableDescriptionT mpVariableDescription;
+    SharedVariablePtrT mpSharedTimeOrFrequencyVector;
 
     UnitScale mCustomUnitScale;
     double mDataPlotScale;
@@ -305,8 +305,6 @@ public:
 
     virtual VariableTypeT getVariableType() const;
 
-    const SharedVariablePtrT getSharedTimeVectorPointer() const;
-
     void diffBy(SharedVariablePtrT pOther);
     void integrateBy(SharedVariablePtrT pOther);
     void lowPassFilter(SharedVariablePtrT pTime, const double w);
@@ -320,10 +318,6 @@ public slots:
     void setTimePlotScaleAndOffset(const double scale, const double offset);
     void setTimePlotScale(double scale);
     void setTimePlotOffset(double offset);
-
-protected:
-    SharedVariablePtrT mpSharedTimeVector;
-
 };
 
 class ImportedTimeDomainVariable : public TimeDomainVariable, public ImportedVariableBase
@@ -340,10 +334,7 @@ class FrequencyDomainVariable : public VectorVariable
 public:
     FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                             SharedMultiDataVectorCacheT pGenerationMultiCache);
-    const SharedVariablePtrT getSharedFrequencyVectorPointer() const;
     //! @todo add a bunch of reimplemented functions
-protected:
-    SharedVariablePtrT mpSharedFrequencyVector;
 };
 
 
@@ -353,7 +344,12 @@ class ComplexVectorVariable : public VectorVariable
 public:
     ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc,
                           SharedMultiDataVectorCacheT pGenerationMultiCache);
+    ComplexVectorVariable(SharedVariablePtrT pReal, SharedVariablePtrT pImaginary, const int generation, SharedVariableDescriptionT varDesc);
+    virtual VariableTypeT getVariableType() const;
     //! @todo add a bunch of reimplemented functions
+protected:
+    CachableDataVector *mpCachedRealVector, *mpCachedImagVector;
+    SharedVariablePtrT mpSharedReal, mpSharedImag;
 };
 
 void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax,

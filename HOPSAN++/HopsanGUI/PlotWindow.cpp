@@ -970,7 +970,7 @@ void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2
         if( (pPhase->peekData(i)<-180) && (pPhase->peekData(i-1)>-180) )
         {
             pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve,
-                                                                            pGain->getSharedFrequencyVectorPointer()->peekData(i), pGain->peekData(i),
+                                                                            pGain->getSharedTimeOrFrequencyVector()->peekData(i), pGain->peekData(i),
                                                                             QString("Gain Margin = %1 dB").arg(-pGain->peekData(i)),
                                                                             false);
             break;
@@ -984,7 +984,7 @@ void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2
         if( (pGain->peekData(i)<-0) && (pGain->peekData(i-1)>-0) )
         {
             pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve,
-                                                                        pPhase->getSharedFrequencyVectorPointer()->peekData(i), pPhase->peekData(i),
+                                                                        pPhase->getSharedTimeOrFrequencyVector()->peekData(i), pPhase->peekData(i),
                                                                         QString("Phase Margin = %1").arg(180.0+pPhase->peekData(i))+trUtf8("°"),
                                                                         false);
             break;

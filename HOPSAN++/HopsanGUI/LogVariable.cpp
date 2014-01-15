@@ -342,13 +342,8 @@ QString VectorVariable::getImportedFileName() const
     return QString();
 }
 
-const SharedVariablePtrT VectorVariable::getSharedTimeVectorPointer() const
-{
-    // Return NULL by default
-    return SharedVariablePtrT();
-}
 
-const SharedVariablePtrT VectorVariable::getSharedFrequencyVectorPointer() const
+const SharedVariablePtrT VectorVariable::getSharedTimeOrFrequencyVector() const
 {
     // Return NULL by default
     return SharedVariablePtrT();
@@ -924,56 +919,65 @@ LogDataHandler *VectorVariable::getLogDataHandler()
 }
 
 
-const QString &LogVariableContainer::getAliasName() const
+const QString LogVariableContainer::getAliasName() const
 {
-    return mVariableCommonDescription->mAliasName;
+    //return mVariableCommonDescription->mAliasName;
+    return "FIXA /Peter";
 }
 
 QString LogVariableContainer::getFullVariableName() const
 {
-    return mVariableCommonDescription->getFullName();
+    //return mVariableCommonDescription->getFullName();
+    return "FIXA /Peter";
 }
 
 QString LogVariableContainer::getFullVariableNameWithSeparator(const QString sep) const
 {
-    return mVariableCommonDescription->getFullNameWithSeparator(sep);
+    //return mVariableCommonDescription->getFullNameWithSeparator(sep);
+    return "FIXA /Peter";
 }
 
 QString LogVariableContainer::getSmartName() const
 {
-    if (mVariableCommonDescription->mAliasName.isEmpty())
-    {
-        return mVariableCommonDescription->getFullName();
-    }
-    else
-    {
-        return mVariableCommonDescription->mAliasName;
-    }
+//    if (mVariableCommonDescription->mAliasName.isEmpty())
+//    {
+//        return mVariableCommonDescription->getFullName();
+//    }
+//    else
+//    {
+//        return mVariableCommonDescription->mAliasName;
+//    }
+    return "FIXA /Peter";
 }
 
-const QString &LogVariableContainer::getModelPath() const
+const QString LogVariableContainer::getModelPath() const
 {
-    return mVariableCommonDescription->mModelPath;
+    //return mVariableCommonDescription->mModelPath;
+    return "FIXA /Peter";
 }
 
-const QString &LogVariableContainer::getComponentName() const
+const QString LogVariableContainer::getComponentName() const
 {
-    return mVariableCommonDescription->mComponentName;
+    //return mVariableCommonDescription->mComponentName;
+    return "FIXA /Peter";
 }
 
-const QString &LogVariableContainer::getPortName() const
+const QString LogVariableContainer::getPortName() const
 {
-    return mVariableCommonDescription->mPortName;
+    //return mVariableCommonDescription->mPortName;
+    return "FIXA /Peter";
 }
 
-const QString &LogVariableContainer::getDataName() const
+const QString LogVariableContainer::getDataName() const
 {
-    return mVariableCommonDescription->mDataName;
+    //return mVariableCommonDescription->mDataName;
+    return "FIXA /Peter";
 }
 
-const QString &LogVariableContainer::getDataUnit() const
+const QString LogVariableContainer::getDataUnit() const
 {
-    return mVariableCommonDescription->mDataUnit;
+    //return mVariableCommonDescription->mDataUnit;
+    return "FIXA /Peter";
 }
 
 void LogVariableContainer::preventAutoRemove(const int gen)
@@ -999,7 +1003,8 @@ LogDataHandler *LogVariableContainer::getLogDataHandler()
 
 void LogVariableContainer::setAliasName(const QString alias)
 {
-    mVariableCommonDescription->mAliasName = alias;
+    //mVariableCommonDescription->mAliasName = alias;
+    //! @todo FIXA /Peter
     emit nameChanged();
 }
 
@@ -1312,10 +1317,10 @@ void VectorVariable::removeCustomUnitScale()
 TimeDomainVariable::TimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
-    mpSharedTimeVector = time;
-    if (!mpSharedTimeVector.isNull())
+    mpSharedTimeOrFrequencyVector = time;
+    if (!mpSharedTimeOrFrequencyVector.isNull())
     {
-        connect(mpSharedTimeVector.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
+        connect(mpSharedTimeOrFrequencyVector.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
     }
 }
 
@@ -1324,20 +1329,15 @@ VariableTypeT TimeDomainVariable::getVariableType() const
     return TimeDomainType;
 }
 
-const SharedVariablePtrT TimeDomainVariable::getSharedTimeVectorPointer() const
-{
-    return mpSharedTimeVector;
-}
-
 void TimeDomainVariable::diffBy(SharedVariablePtrT pOther)
 {
     // Choose other data or own time vector
     if(pOther.isNull())
     {
         // If no diff vector supplied, use own time
-        if (mpSharedTimeVector)
+        if (mpSharedTimeOrFrequencyVector)
         {
-            VectorVariable::diffBy(mpSharedTimeVector);
+            VectorVariable::diffBy(mpSharedTimeOrFrequencyVector);
             //! @todo if successfull we need to make our time vector shorter by one
         }
         else
@@ -1359,9 +1359,9 @@ void TimeDomainVariable::integrateBy(SharedVariablePtrT pOther)
     if(pOther.isNull())
     {
         // If no diff vector supplied, use own time
-        if (mpSharedTimeVector)
+        if (mpSharedTimeOrFrequencyVector)
         {
-            VectorVariable::integrateBy(mpSharedTimeVector);
+            VectorVariable::integrateBy(mpSharedTimeOrFrequencyVector);
         }
         else
         {
@@ -1382,9 +1382,9 @@ void TimeDomainVariable::lowPassFilter(SharedVariablePtrT pTime, const double w)
     if(pTime.isNull())
     {
         // If no diff vector supplied, use own time
-        if (mpSharedTimeVector)
+        if (mpSharedTimeOrFrequencyVector)
         {
-            VectorVariable::lowPassFilter(mpSharedTimeVector, w);
+            VectorVariable::lowPassFilter(mpSharedTimeOrFrequencyVector, w);
         }
         else
         {
@@ -1405,9 +1405,9 @@ SharedVariablePtrT TimeDomainVariable::toFrequencySpectrum(const SharedVariableP
     if(pTime.isNull())
     {
         // If no diff vector supplied, use own time
-        if (mpSharedTimeVector)
+        if (mpSharedTimeOrFrequencyVector)
         {
-            return VectorVariable::toFrequencySpectrum(mpSharedTimeVector, doPowerSpectrum);
+            return VectorVariable::toFrequencySpectrum(mpSharedTimeOrFrequencyVector, doPowerSpectrum);
         }
         else
         {
@@ -1424,14 +1424,14 @@ SharedVariablePtrT TimeDomainVariable::toFrequencySpectrum(const SharedVariableP
 
 void TimeDomainVariable::assignFrom(const SharedVariablePtrT pOther)
 {
-    mpSharedTimeVector = pOther->getSharedTimeVectorPointer();
+    mpSharedTimeOrFrequencyVector = pOther->getSharedTimeOrFrequencyVector();
     VectorVariable::assignFrom(pOther);
 }
 
 void TimeDomainVariable::assignFrom(SharedVariablePtrT time, const QVector<double> &rData)
 {
     mpCachedDataVector->replaceData(rData);
-    mpSharedTimeVector = time;
+    mpSharedTimeOrFrequencyVector = time;
     emit dataChanged();
 }
 
@@ -1448,31 +1448,31 @@ void TimeDomainVariable::append(const double t, const double y)
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
     pData->append(y);
     mpCachedDataVector->endFullVectorOperation(pData);
-    mpSharedTimeVector->append(t);
+    mpSharedTimeOrFrequencyVector->append(t);
     //! @todo FIXA, it is bad to append x-data to shared time vector, there should be a custom private xvector Peter
 }
 
 void TimeDomainVariable::setTimePlotScaleAndOffset(const double scale, const double offset)
 {
-    if (mpSharedTimeVector)
+    if (mpSharedTimeOrFrequencyVector)
     {
-        mpSharedTimeVector->setPlotScaleAndOffset(scale, offset);
+        mpSharedTimeOrFrequencyVector->setPlotScaleAndOffset(scale, offset);
     }
 }
 
 void TimeDomainVariable::setTimePlotScale(double scale)
 {
-    if (mpSharedTimeVector)
+    if (mpSharedTimeOrFrequencyVector)
     {
-        mpSharedTimeVector->setPlotScale(scale);
+        mpSharedTimeOrFrequencyVector->setPlotScale(scale);
     }
 }
 
 void TimeDomainVariable::setTimePlotOffset(double offset)
 {
-    if (mpSharedTimeVector)
+    if (mpSharedTimeOrFrequencyVector)
     {
-        mpSharedTimeVector->setPlotOffset(offset);
+        mpSharedTimeOrFrequencyVector->setPlotOffset(offset);
     }
 }
 
@@ -1498,21 +1498,30 @@ QString ImportedVariableBase::getImportedFileName() const
 ComplexVectorVariable::ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(QVector<double>(0), generation, varDesc, pGenerationMultiCache)
 {
-    //! @todo do this /Peter
+    mpCachedRealVector = new CachableDataVector(rReal, pGenerationMultiCache, gpConfig->getCacheLogData());
+    mpCachedImagVector = new CachableDataVector(rImaginary, pGenerationMultiCache, gpConfig->getCacheLogData());
+}
+
+ComplexVectorVariable::ComplexVectorVariable(SharedVariablePtrT pReal, SharedVariablePtrT pImaginary, const int generation, SharedVariableDescriptionT varDesc)
+    : VectorVariable(QVector<double>(0), generation, varDesc, SharedMultiDataVectorCacheT())
+{
+    mpCachedRealVector = 0;
+    mpCachedImagVector = 0;
+    mpSharedReal = pReal;
+    mpSharedImag =pImaginary;
+}
+
+VariableTypeT ComplexVectorVariable::getVariableType() const
+{
+    return ComplexType;
 }
 
 
 FrequencyDomainVariable::FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
-    mpSharedFrequencyVector = frequency;
+    mpSharedTimeOrFrequencyVector = frequency;
 }
-
-const SharedVariablePtrT FrequencyDomainVariable::getSharedFrequencyVectorPointer() const
-{
-    return mpSharedFrequencyVector;
-}
-
 
 ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
@@ -1597,7 +1606,7 @@ void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutpu
 
 
     QVector<double> F;
-    const double stoptime = pInput->getSharedTimeVectorPointer()->last();
+    const double stoptime = pInput->getSharedTimeOrFrequencyVector()->last();
     F.reserve(G.size());
     for(int i=1; i<G.size(); ++i)
     {

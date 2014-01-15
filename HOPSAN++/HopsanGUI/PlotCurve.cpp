@@ -282,7 +282,7 @@ QVector<double> PlotCurve::getDataVectorCopy() const
 //! This returns the TIME vector, NOT any special X-axes if they are used.
 const SharedVariablePtrT PlotCurve::getTimeVectorPtr() const
 {
-    return mpData->getSharedTimeVectorPointer();
+    return mpData->getSharedTimeOrFrequencyVector();
 }
 
 bool PlotCurve::hasCustomXData() const
@@ -860,7 +860,7 @@ void PlotCurve::openScaleDialog()
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
     double newScale = mpTimeScaleComboBox->currentText().split(" ")[0].toDouble();
-    double oldScale = mpData->getSharedTimeVectorPointer()->getPlotScale();
+    double oldScale = mpData->getSharedTimeOrFrequencyVector()->getPlotScale();
 
     setTimePlotScalingAndOffset(newScale, mpTimeOffsetSpinBox->value());
 
@@ -948,11 +948,11 @@ void PlotCurve::updateCurve()
         const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
-        if (mpData->getSharedTimeVectorPointer())
+        if (mpData->getSharedTimeOrFrequencyVector())
         {
-            tempX = mpData->getSharedTimeVectorPointer()->getDataVectorCopy();
-            const double timeScale = mpData->getSharedTimeVectorPointer()->getPlotScale();
-            const double timeOffset = mpData->getSharedTimeVectorPointer()->getPlotOffset();
+            tempX = mpData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+            const double timeScale = mpData->getSharedTimeOrFrequencyVector()->getPlotScale();
+            const double timeOffset = mpData->getSharedTimeOrFrequencyVector()->getPlotOffset();
 
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
