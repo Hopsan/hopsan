@@ -192,6 +192,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicSwashPlate", MechanicSwashPlate::Creator);
     pComponentFactory->registerCreatorFunction("MechanicMotor", MechanicMotor::Creator);
     pComponentFactory->registerCreatorFunction("MechanicPulley", MechanicPulley::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicBallScrew", MechanicBallScrew::Creator);
 
     pComponentFactory->registerCreatorFunction("CombustionEngine", CombustionEngine::Creator);
 

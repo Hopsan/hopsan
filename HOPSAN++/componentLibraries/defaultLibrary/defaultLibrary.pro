@@ -301,7 +301,8 @@ HEADERS += \
     Special/AeroComponents/AeroCombustionChamberMono.hpp \
     Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp \
     Special/CombustionEngine.hpp \
-    Signal/Control/SignalPID2.hpp
+    Signal/Control/SignalPID2.hpp \
+    Mechanic/Rotational/MechanicBallScrew.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

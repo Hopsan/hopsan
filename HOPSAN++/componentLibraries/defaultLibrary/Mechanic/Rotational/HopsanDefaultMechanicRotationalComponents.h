@@ -18,5 +18,6 @@
 #include "MechanicRotShaft.hpp"
 #include "MechanicRotationalInertiaWithCoulumbFriction.hpp"
 #include "MechanicRackAndPinion.hpp"
+#include "MechanicBallScrew.hpp"
 
 #endif // HOPSANDEFAULTMECHANICROTATIONALCOMPONENTS_H
