@@ -1986,6 +1986,24 @@ bool ContainerObject::isSubObjectSelected()
     return (mSelectedModelObjectsList.size() > 0);
 }
 
+bool ContainerObject::setVariableAlias(const QString &rFullName, const QString &rAlias)
+{
+    QString compName, portName, varName;
+    splitConcatName(rFullName, compName, portName, varName);
+    bool isOk = getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, rAlias);
+    if (isOk)
+    {
+        emit aliasChanged(rFullName, rAlias);
+        mpModelWidget->hasChanged();
+    }
+    else
+    {
+        emit checkMessages();
+    }
+
+    return isOk;
+}
+
 bool ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
     bool isOk = getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);

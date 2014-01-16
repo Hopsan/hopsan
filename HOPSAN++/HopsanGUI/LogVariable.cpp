@@ -918,66 +918,11 @@ LogDataHandler *VectorVariable::getLogDataHandler()
 }
 
 
-const QString LogVariableContainer::getAliasName() const
+const QString &LogVariableContainer::getName() const
 {
-    //return mVariableCommonDescription->mAliasName;
-    return "FIXA /Peter";
+    return mName;
 }
 
-QString LogVariableContainer::getFullVariableName() const
-{
-    //return mVariableCommonDescription->getFullName();
-    return "FIXA /Peter";
-}
-
-QString LogVariableContainer::getFullVariableNameWithSeparator(const QString sep) const
-{
-    //return mVariableCommonDescription->getFullNameWithSeparator(sep);
-    return "FIXA /Peter";
-}
-
-QString LogVariableContainer::getSmartName() const
-{
-//    if (mVariableCommonDescription->mAliasName.isEmpty())
-//    {
-//        return mVariableCommonDescription->getFullName();
-//    }
-//    else
-//    {
-//        return mVariableCommonDescription->mAliasName;
-//    }
-    return "FIXA /Peter";
-}
-
-const QString LogVariableContainer::getModelPath() const
-{
-    //return mVariableCommonDescription->mModelPath;
-    return "FIXA /Peter";
-}
-
-const QString LogVariableContainer::getComponentName() const
-{
-    //return mVariableCommonDescription->mComponentName;
-    return "FIXA /Peter";
-}
-
-const QString LogVariableContainer::getPortName() const
-{
-    //return mVariableCommonDescription->mPortName;
-    return "FIXA /Peter";
-}
-
-const QString LogVariableContainer::getDataName() const
-{
-    //return mVariableCommonDescription->mDataName;
-    return "FIXA /Peter";
-}
-
-const QString LogVariableContainer::getDataUnit() const
-{
-    //return mVariableCommonDescription->mDataUnit;
-    return "FIXA /Peter";
-}
 
 void LogVariableContainer::preventAutoRemove(const int gen)
 {
@@ -1000,11 +945,20 @@ LogDataHandler *LogVariableContainer::getLogDataHandler()
     return mpParentLogDataHandler;
 }
 
-void LogVariableContainer::setAliasName(const QString alias)
+void LogVariableContainer::actuallyRemoveDataGen(GenerationMapT::iterator git)
 {
-    //mVariableCommonDescription->mAliasName = alias;
-    //! @todo FIXA /Peter
-    emit nameChanged();
+    // Remove from alias and imported registers if needed
+    if (mAliasGenIndexes.contains(git.key()))
+    {
+        mAliasGenIndexes.removeValue(git.key());
+    }
+    if (mImportedGenIndexes.contains(git.key()))
+    {
+        mImportedGenIndexes.removeValue(git.key());
+    }
+    //! @todo should we really emit this if we are removing an alias
+    emit logVariableBeingRemoved(git.value());
+    mDataGenerations.erase(git);
 }
 
 //! @brief This function converts a VariableSourceTypeT enum into a string
@@ -1064,7 +1018,25 @@ QList<int> LogVariableContainer::getGenerations() const
     return mDataGenerations.keys();
 }
 
+bool LogVariableContainer::isStoringAlias() const
+{
+    return !mAliasGenIndexes.isEmpty();
+}
 
+bool LogVariableContainer::isGenerationAlias(const int gen) const
+{
+    return mAliasGenIndexes.contains(gen);
+}
+
+bool LogVariableContainer::isStoringImported() const
+{
+    return !mImportedGenIndexes.isEmpty();
+}
+
+bool LogVariableContainer::isGenerationImported(const int gen) const
+{
+    return mImportedGenIndexes.contains(gen);
+}
 
 SharedVariablePtrT LogVariableContainer::getDataGeneration(const int gen) const
 {
@@ -1089,55 +1061,23 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
     return mDataGenerations.contains(gen);
 }
 
-////! @deprecated
-//SharedVariablePtrT LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT pDescription)
-//{
-//    return addDataGeneration(generation, createFreeTimeVectorVariabel(rTime), rData, pDescription);
-//}
-
-////! @deprecated
-//SharedVariablePtrT LogVariableContainer::addDataGeneration(const int generation, const SharedVariablePtrT time, const QVector<double> &rData, SharedVariableDescriptionT pDescription)
-//{
-//    SharedVariablePtrT pData;
-//    if(mDataGenerations.contains(generation))
-//    {
-//        pData = mDataGenerations.find(generation).value();
-//        pData->assignFrom(time, rData);
-//        //! @todo what about description
-//    }
-//    else
-//    {
-//        if (mpParentLogDataHandler)
-//        {
-//            pData = SharedVariablePtrT(new VectorVariable(generation, time, rData, mVariableCommonDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
-//        }
-//        else
-//        {
-//            pData = SharedVariablePtrT(new VectorVariable(generation, time, rData, mVariableCommonDescription, SharedMultiDataVectorCacheT(), this));
-//        }
-
-//        connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
-//        mDataGenerations.insert(generation, pData);
-//    }
-//    return pData;
-//}
-
+//! @brief Adds or replaces a data generation
 void LogVariableContainer::addDataGeneration(const int generation, SharedVariablePtrT pData)
 {
-    if(mDataGenerations.contains(generation))
+    // Set some data that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
+    pData->mpParentVariableContainer = this;
+    pData->mGeneration = generation;
+    // Insert into generation storage
+    mDataGenerations.insert(generation, pData);
+    // Remember if alias
+    if (pData->hasAliasName() && pData->getAliasName() == mName)
     {
-        mDataGenerations.find(generation).value().data()->assignFrom(pData);
-        //! @todo what about description, should this even be allowed in the addDataGeneration function, maybe should return error if gen already exist
+        mAliasGenIndexes.addValue(generation);
     }
-    else
+    // Remember if imported
+    if (pData->isImported())
     {
-        // Set some data that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
-        pData->mpParentVariableContainer = this;
-        pData->mGeneration = generation;
-        // Connect the nameChanged signal
-        connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
-        // Insert into generation storage
-        mDataGenerations.insert(generation, pData);
+        mImportedGenIndexes.addValue(generation);
     }
 }
 
@@ -1157,8 +1097,7 @@ bool LogVariableContainer::removeDataGeneration(const int generation, const bool
             GenerationMapT::iterator git = mDataGenerations.find(generation);
             if (git != mDataGenerations.end())
             {
-                emit logVariableBeingRemoved(git.value());
-                mDataGenerations.erase(git);
+                actuallyRemoveDataGen(git);
                 didRemove=true;
             }
             mKeepGenerations.removeOne(generation);
@@ -1170,16 +1109,16 @@ bool LogVariableContainer::removeDataGeneration(const int generation, const bool
         GenerationMapT::iterator git = mDataGenerations.find(generation);
         if (git != mDataGenerations.end())
         {
-            emit logVariableBeingRemoved(git.value());
-            mDataGenerations.erase(git);
+            actuallyRemoveDataGen(git);
             didRemove=true;
         }
     }
 
     // If last data generation removed then ask my parent to delete me
+    // NOTE! The parent must use deleteLater, else this will crash
     if (mDataGenerations.isEmpty())
     {
-        mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
+        mpParentLogDataHandler->deleteVariable(mName);
     }
     return didRemove;
 }
@@ -1237,8 +1176,9 @@ bool LogVariableContainer::removeAllImportedGenerations()
     return didRemove;
 }
 
-LogVariableContainer::LogVariableContainer(LogDataHandler *pParentLogDataHandler) : QObject()
+LogVariableContainer::LogVariableContainer(const QString &rName, LogDataHandler *pParentLogDataHandler) : QObject()
 {
+    mName = rName;
     mpParentLogDataHandler = pParentLogDataHandler;
 }
 
@@ -1632,4 +1572,150 @@ void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutpu
     rPhaseData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutput->getGeneration(),
                                                                 SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
                                                                 SharedMultiDataVectorCacheT()));
+}
+
+void IndexIntervalCollection::addValue(const int val)
+{
+    if (mIntervalList.isEmpty())
+    {
+        mIntervalList.append(MinMaxT(val,val));
+    }
+    else
+    {
+        for(int i=0; i<mIntervalList.size(); ++i)
+        {
+            // First check if we should insert before or extend downwards
+            if (val < mIntervalList[i].mMin)
+            {
+                // Extend
+                if (val ==  mIntervalList[i].mMin-1)
+                {
+                    mIntervalList[i].mMin = val;
+                }
+                else
+                // Add new
+                {
+                    mIntervalList.insert(i, MinMaxT(val,val));
+                }
+            }
+            // Now check if we should insert or extend upwards
+            else if (val > mIntervalList[i].mMax)
+            {
+                // Extend
+                if (val ==  mIntervalList[i].mMax+1)
+                {
+                    mIntervalList[i].mMax = val;
+                }
+                else
+                // Add new
+                {
+                    mIntervalList.insert(i+1, MinMaxT(val,val));
+                }
+            }
+
+            // If non of the above were triggered then the value was within an already existing interval
+        }
+    }
+}
+
+void IndexIntervalCollection::removeValue(const int val)
+{
+    for(int i=0; i<mIntervalList.size(); ++i)
+    {
+        if ((val >= mIntervalList[i].mMin) && (val <= mIntervalList[i].mMax))
+        {
+            // If interval is singular then remove it
+            if (mIntervalList[i].mMin == mIntervalList[i].mMax)
+            {
+                mIntervalList.removeAt(i);
+            }
+            // If val = min then shrink it
+            else if (mIntervalList[i].mMin == val)
+            {
+                mIntervalList[i].mMin += 1;
+            }
+            // If val = max than shrink it
+            else if (mIntervalList[i].mMax == val)
+            {
+                mIntervalList[i].mMax -= 1;
+            }
+            // Else split the interval
+            else
+            {
+                MinMaxT newInterv(val+1, mIntervalList[i].mMax);
+                mIntervalList[i].mMax -= 1;
+                mIntervalList.insert(i+1,newInterv);
+            }
+        }
+    }
+}
+
+int IndexIntervalCollection::min() const
+{
+    if (mIntervalList.isEmpty())
+    {
+        return 0;
+    }
+    return mIntervalList[0].mMin;
+}
+
+int IndexIntervalCollection::max() const
+{
+    if (mIntervalList.isEmpty())
+    {
+        return 0;
+    }
+    return mIntervalList[0].mMax;
+}
+
+QList<IndexIntervalCollection::MinMaxT> IndexIntervalCollection::getList() const
+{
+    return mIntervalList;
+}
+
+QList<int> IndexIntervalCollection::getCompleteList() const
+{
+    QList<int> complete;
+    for (int i=0; i<mIntervalList.size(); ++i)
+    {
+        for (int j=mIntervalList[i].mMin; j<=mIntervalList[i].mMax; ++j)
+        {
+            complete.append(j);
+        }
+    }
+    return complete;
+}
+
+bool IndexIntervalCollection::isContinuos() const
+{
+    return (mIntervalList.size() == 1);
+}
+
+bool IndexIntervalCollection::isEmpty() const
+{
+    return mIntervalList.isEmpty();
+}
+
+bool IndexIntervalCollection::contains(const int val) const
+{
+    for(int i=0; i<mIntervalList.size(); ++i)
+    {
+        if ((val >= mIntervalList[i].mMin) && (val <= mIntervalList[i].mMax))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void IndexIntervalCollection::clear()
+{
+    mIntervalList.clear();
+}
+
+
+IndexIntervalCollection::MinMaxT::MinMaxT(int min, int max)
+{
+    mMin = min;
+    mMax = max;
 }

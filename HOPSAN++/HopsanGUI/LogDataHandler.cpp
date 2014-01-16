@@ -745,14 +745,10 @@ bool LogDataHandler::isEmpty()
 void LogDataHandler::clear()
 {
     // Clear all data containers
-    QList< LogDataStructT > data = mLogDataMap.values();
+    QList< QPointer<LogVariableContainer> > data = mLogDataMap.values();
     for (int i=0; i<data.size(); ++i)
     {
-        // Check if data container ptr != NULL, to prevent double deleting aliases (its a QPointer)
-        if (data[i].mpDataContainer)
-        {
-            delete data[i].mpDataContainer;
-        }
+        data[i]->deleteLater();
     }
     mLogDataMap.clear();
 
@@ -958,7 +954,7 @@ SharedVariablePtrT LogDataHandler::getLogVariableDataPtr(const QString &rName, c
     LogDataMapT::const_iterator dit = mLogDataMap.find(rName);
     if (dit != mLogDataMap.end())
     {
-        return dit.value().mpDataContainer->getDataGeneration(generation);
+        return dit.value()->getDataGeneration(generation);
     }
 
     // If not found return 0
@@ -977,7 +973,7 @@ QVector<SharedVariablePtrT> LogDataHandler::getMultipleLogVariableDataPtrs(const
         // Compare name with regexp
         if ( rNameExp.exactMatch(it.key()) )
         {
-            SharedVariablePtrT pData = it.value().mpDataContainer->getDataGeneration(generation);
+            SharedVariablePtrT pData = it.value()->getDataGeneration(generation);
             if (pData)
             {
                 results.append(pData);
@@ -987,19 +983,14 @@ QVector<SharedVariablePtrT> LogDataHandler::getMultipleLogVariableDataPtrs(const
     return results;
 }
 
-const LogDataStructT LogDataHandler::getCompleteLogVariableData(const QString &rName) const
-{
-    return mLogDataMap.value(rName,LogDataStructT());
-}
-
-const QList<LogDataStructT> LogDataHandler::getAllCompleteLogVariableData() const
+const QList< QPointer<LogVariableContainer> > LogDataHandler::getAllLogVariableContainers() const
 {
     return mLogDataMap.values();
 }
 
-const QList<LogDataStructT> LogDataHandler::getMultipleCompleteLogVariableData(const QRegExp &rNameExp) const
+const QList< QPointer<LogVariableContainer> > LogDataHandler::getLogDataContainersMatching(const QRegExp &rNameExp) const
 {
-    QList<LogDataStructT> results;
+    QList< QPointer<LogVariableContainer> > results;
     LogDataMapT::const_iterator it;
     for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
     {
@@ -1012,14 +1003,14 @@ const QList<LogDataStructT> LogDataHandler::getMultipleCompleteLogVariableData(c
     return results;
 }
 
-const QList<LogDataStructT> LogDataHandler::getMultipleCompleteLogVariableData(const QRegExp &rNameExp, const int generation) const
+const QList< QPointer<LogVariableContainer> > LogDataHandler::getLogDataContainersMatching(const QRegExp &rNameExp, const int generation) const
 {
-    QList<LogDataStructT> results;
+    QList< QPointer<LogVariableContainer> > results;
     LogDataMapT::const_iterator it;
     for (it = mLogDataMap.begin(); it != mLogDataMap.end(); it++)
     {
         // Compare name with regexp an check generation
-        if ( rNameExp.exactMatch(it.key()) && it.value().mpDataContainer->hasDataGeneration(generation) )
+        if ( rNameExp.exactMatch(it.key()) && it.value()->hasDataGeneration(generation) )
         {
             results.append(it.value());
         }
@@ -1027,9 +1018,9 @@ const QList<LogDataStructT> LogDataHandler::getMultipleCompleteLogVariableData(c
     return results;
 }
 
-LogVariableContainer *LogDataHandler::getLogVariableContainer(const QString &rFullName) const
+QPointer<LogVariableContainer> LogDataHandler::getLogVariableContainer(const QString &rVarName) const
 {
-    return mLogDataMap.value(rFullName,LogDataStructT()).mpDataContainer;
+    return mLogDataMap.value(rVarName,0);
 }
 
 
@@ -1037,7 +1028,7 @@ LogVariableContainer *LogDataHandler::getLogVariableContainer(const QString &rFu
 //! @param[in] generation Generation
 const SharedVariablePtrT LogDataHandler::getTimeVectorPtr(int generation) const
 {
-    LogVariableContainer *pCont = mLogDataMap.value(TIMEVARIABLENAME,LogDataStructT()).mpDataContainer;
+    LogVariableContainer *pCont = mLogDataMap.value(TIMEVARIABLENAME);
     if (pCont)
     {
         if (generation < 0)
@@ -1099,10 +1090,8 @@ void LogDataHandler::defineAlias(const QString &rFullName)
 //! @param[in] rFullName The Full name of the variable
 bool LogDataHandler::defineAlias(const QString &rAlias, const QString &rFullName)
 {
-    QString comp,port,var;
-    splitConcatName(rFullName, comp,port,var);
     // Try to set the new alias, abort if it did not work
-    return mpParentContainerObject->setVariableAlias(comp,port,var,rAlias);
+    return mpParentContainerObject->setVariableAlias(rFullName,rAlias);
 }
 
 
@@ -1110,42 +1099,49 @@ bool LogDataHandler::defineAlias(const QString &rAlias, const QString &rFullName
 //! @param[in] alias Alias to remove
 void LogDataHandler::undefinePlotAlias(const QString &rAlias)
 {
-    LogVariableContainer *data = getLogVariableContainer(rAlias);
-    if (data)
+    QString fullName = getFullNameFromAlias(rAlias);
+    if (!fullName.isEmpty())
     {
-        QString comp,port,var;
-        splitConcatName(data->getFullVariableName(), comp,port,var);
-        mpParentContainerObject->setVariableAlias(comp,port,var,""); //!< @todo maybe a remove alias function would be nice
+        mpParentContainerObject->setVariableAlias(fullName,""); //!< @todo maybe a remove alias function would be nice
     }
 }
 
 
 //! @brief Returns plot variable for specified alias
-//! @param[in] alias Alias of variable
+//! @param[in] rAlias Alias of variable
 QString LogDataHandler::getFullNameFromAlias(const QString &rAlias)
 {
-    LogVariableContainer *data = getLogVariableContainer(rAlias);
-    if (data)
+    //! @todo should know what gens are aliases
+    //! @todo what about multiple different namesunder the same alias (is that even possible right now)
+    QPointer<LogVariableContainer> pAliasContainer = getLogVariableContainer(rAlias);
+    if (pAliasContainer)
     {
-        return data->getFullVariableName();
+        QList<int> gens = pAliasContainer->getGenerations();
+        foreach(int g, gens)
+        {
+            if (pAliasContainer->getDataGeneration(g)->getAliasName() == rAlias)
+            {
+                return pAliasContainer->getDataGeneration(g)->getFullVariableName();
+            }
+        }
     }
     return QString();
 }
 
 
-//! @brief Returns plot alias for specified variable
-//! @param[in] componentName Name of component
-//! @param[in] portName Name of port
-//! @param[in] dataName Name of data variable
-QString LogDataHandler::getAliasFromFullName(const QString &rFullName)
-{
-    LogVariableContainer *pDataContainer = getLogVariableContainer(rFullName);
-    if (pDataContainer)
-    {
-        return pDataContainer->getAliasName();
-    }
-    return QString();
-}
+////! @brief Returns plot alias for specified variable
+////! @param[in] componentName Name of component
+////! @param[in] portName Name of port
+////! @param[in] dataName Name of data variable
+//QString LogDataHandler::getAliasFromFullName(const QString &rFullName)
+//{
+//    LogVariableContainer *pDataContainer = getLogVariableContainer(rFullName);
+//    if (pDataContainer)
+//    {
+//        return pDataContainer->getAliasName();
+//    }
+//    return QString();
+//}
 
 //! @todo logdatahandler needs to keep track of the generations the it contains, we should not need to ask for each one every time, this could take a long time
 QList<int> LogDataHandler::getGenerations() const
@@ -1156,14 +1152,11 @@ QList<int> LogDataHandler::getGenerations() const
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
-        if (!it.value().mIsAlias)
+        QList<int> gens = it.value()->getGenerations();
+        QList<int>::iterator it;
+        for (it=gens.begin(); it!=gens.end(); ++it)
         {
-            QList<int> gens = it.value().mpDataContainer->getGenerations();
-            QList<int>::iterator it;
-            for (it=gens.begin(); it!=gens.end(); ++it)
-            {
-                allGens.insert(*it, 0);
-            }
+            allGens.insert(*it, 0);
         }
     }
 
@@ -1171,6 +1164,7 @@ QList<int> LogDataHandler::getGenerations() const
     return allGens.keys();
 }
 
+//! @todo maybe could speed this up by using the IndexIntervalCollection
 int LogDataHandler::getLowestGenerationNumber() const
 {
     int min=INT_MAX;
@@ -1178,14 +1172,12 @@ int LogDataHandler::getLowestGenerationNumber() const
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
-        if (!it.value().mIsAlias)
-        {
-            min = qMin(min,(it.value().mpDataContainer->getLowestGeneration()));
-        }
+        min = qMin(min,(it.value()->getLowestGeneration()));
     }
     return min;
 }
 
+//! @todo maybe could speed this up by using the IndexIntervalCollection
 int LogDataHandler::getHighestGenerationNumber() const
 {
     int max=INT_MIN;
@@ -1193,15 +1185,13 @@ int LogDataHandler::getHighestGenerationNumber() const
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
-        if (!it.value().mIsAlias)
-        {
-            max = qMax(max,(it.value().mpDataContainer->getHighestGeneration()));
-        }
+        max = qMax(max,(it.value()->getHighestGeneration()));
     }
     return max;
 }
 
 //! @todo should ignore tempvariables, maybe they should not even be in the logdata map, should have a separate one for temp variables
+//! @todo maybe could speed this up by using the IndexIntervalCollection
 void LogDataHandler::getLowestAndHighestGenerationNumber(int &rLowest, int &rHighest) const
 {
     rLowest=INT_MAX;
@@ -1211,11 +1201,8 @@ void LogDataHandler::getLowestAndHighestGenerationNumber(int &rLowest, int &rHig
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
-        if (!it.value().mIsAlias)
-        {
-            rLowest = qMin(rLowest,(it.value().mpDataContainer->getLowestGeneration()));
-            rHighest = qMax(rHighest,(it.value().mpDataContainer->getHighestGeneration()));
-        }
+        rLowest = qMin(rLowest,(it.value()->getLowestGeneration()));
+        rHighest = qMax(rHighest,(it.value()->getHighestGeneration()));
     }
 }
 
@@ -1228,10 +1215,7 @@ int LogDataHandler::getNumberOfGenerations() const
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
-        if (!it.value().mIsAlias)
-        {
-            num = qMax(it.value().mpDataContainer->getNumGenerations(), num);
-        }
+        num = qMax(it.value()->getNumGenerations(), num);
     }
     return num;
 }
@@ -1300,14 +1284,11 @@ void LogDataHandler::limitPlotGenerations()
         // Note! Here we must iterate through a copy of the values from the map
         // if we use an iterator in the map we will crash if the removed generation is the final one
         // Then the data variable itself will also be removed and the iterator will become invalid
-        QList<LogDataStructT> vars = mLogDataMap.values();
-        QList<LogDataStructT>::iterator it;
+        QList< QPointer<LogVariableContainer> > vars = mLogDataMap.values();
+        QList< QPointer<LogVariableContainer> >::iterator it;
         for ( it=vars.begin(); it!=vars.end(); ++it)
         {
-            if (!it->mIsAlias)
-            {
-                didRemoveSomething += it->mpDataContainer->purgeOldGenerations(highestToRemove, gpConfig->getGenerationLimit());
-            }
+            didRemoveSomething += (*it)->purgeOldGenerations(highestToRemove, gpConfig->getGenerationLimit());
         }
 
         if (didRemoveSomething)
@@ -1339,7 +1320,7 @@ void LogDataHandler::preventGenerationAutoRemoval(const int gen)
     LogDataMapT::iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        dit.value().mpDataContainer->preventAutoRemove(gen);
+        dit.value()->preventAutoRemove(gen);
     }
 }
 
@@ -1349,7 +1330,7 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
     LogDataMapT::iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        dit.value().mpDataContainer->allowAutoRemove(gen);
+        dit.value()->allowAutoRemove(gen);
     }
 }
 
@@ -1360,20 +1341,18 @@ void LogDataHandler::removeGeneration(const int gen, const bool force)
     // Note! Here we must iterate through a copy of the values from the map
     // if we use an iterator in the map we will crash if the removed generation is the final one
     // Then the data variable itself will also be removed and the iterator will become invalid
-    QList<LogDataStructT> vars = mLogDataMap.values();
-    QList<LogDataStructT>::iterator it;
+    QList< QPointer<LogVariableContainer> > vars = mLogDataMap.values();
+    QList< QPointer<LogVariableContainer> >::iterator it;
     for ( it=vars.begin(); it!=vars.end(); ++it)
     {
-        if (!it->mIsAlias)
+        if ((*it)->removeDataGeneration(gen,force))
         {
-            if (it->mpDataContainer->removeDataGeneration(gen,force))
-            {
-                // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
-                removeGenerationCacheIfEmpty(gen);
-                didRemoveSomething = true;
-            }
+            // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
+            removeGenerationCacheIfEmpty(gen);
+            didRemoveSomething = true;
         }
     }
+
     // Only emit this signal if something was actually removed
     if (didRemoveSomething)
     {
@@ -1764,34 +1743,25 @@ double LogDataHandler::pokeVariable(const QString &a, const int index, const dou
     return -1;
 }
 
-bool LogDataHandler::deleteVariable(const QString &a)
+bool LogDataHandler::deleteVariable(const QString &rVarName)
 {
-    LogDataMapT::iterator it = mLogDataMap.find(a);
+    LogDataMapT::iterator it = mLogDataMap.find(rVarName);
     if(it != mLogDataMap.end())
     {
-        // Figure out if we are deleting by alias name or full name
-        if (it.value().mpDataContainer->getAliasName() == a)
+        // Handle alias removal
+        if (it.value()->isStoringAlias())
         {
-            return deleteVariable(it.value().mpDataContainer->getFullVariableName());
+            unregisterAlias(rVarName);
+            //! @todo should we delete the actual variable also?
         }
-        else
-        {
-            // Remember alias if any
-            QString alias = it.value().mpDataContainer->getAliasName();
-            // Delete the date
-            it.value().mpDataContainer->deleteLater();
-            // Remove data ptr from map
-            mLogDataMap.erase(it);
-            // If an alias was present then also remove it from map
-            if (!alias.isEmpty())
-            {
-                mLogDataMap.remove(alias);
-            }
-            emit dataRemoved();
-            return true;
-        }
+        // Delete the data
+        it.value()->deleteLater();
+        // Remove data ptr from map
+        mLogDataMap.erase(it);
+        emit dataRemoved();
+        return true;
     }
-    gpTerminalWidget->mpConsole->printErrorMessage("In Delete, No such variable: " + a);
+    gpTerminalWidget->mpConsole->printErrorMessage("In Delete, No such variable: " + rVarName);
     return false;
 }
 
@@ -1802,7 +1772,7 @@ bool LogDataHandler::deleteImportedVariable(const QString &rVarName)
     LogDataMapT::iterator it = mLogDataMap.find(rVarName);
     if(it != mLogDataMap.end())
     {
-        didRemove = it->mpDataContainer->removeAllImportedGenerations();
+        didRemove = (*it)->removeAllImportedGenerations();
         if (didRemove)
         {
             emit dataRemoved();
@@ -1818,10 +1788,10 @@ int LogDataHandler::getNumVariables() const
     return mLogDataMap.size();
 }
 
-bool LogDataHandler::deleteVariable(SharedVariablePtrT a)
-{
-    return deleteVariable(a->getFullVariableName());
-}
+//bool LogDataHandler::deleteVariable(SharedVariablePtrT pVariable)
+//{
+//    return deleteVariable(pVariable->getFullVariableName());
+//}
 
 double LogDataHandler::peekVariable(const QString &a, const int index)
 {
@@ -2110,14 +2080,12 @@ QVector<SharedVariablePtrT> LogDataHandler::getAllVariablesAtNewestGeneration()
     LogDataMapT::iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        if (!dit.value().mIsAlias)
+        SharedVariablePtrT pData = dit.value()->getDataGeneration(-1);
+        if (pData)
         {
-            SharedVariablePtrT pData = dit.value().mpDataContainer->getDataGeneration(-1);
-            if (pData)
-            {
-                dataPtrVector.push_back(pData);
-            }
+            dataPtrVector.push_back(pData);
         }
+        //! @todo what about alias duplicates
     }
 
     return dataPtrVector;
@@ -2132,42 +2100,40 @@ QVector<SharedVariablePtrT> LogDataHandler::getAllVariablesAtGeneration(const in
     LogDataMapT::const_iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        if (!dit.value().mIsAlias)
+        // Now try to find given generation
+        SharedVariablePtrT pData = dit.value()->getDataGeneration(generation);
+        if (pData)
         {
-            // Now try to find given generation
-            SharedVariablePtrT pData = dit.value().mpDataContainer->getDataGeneration(generation);
-            if (pData)
-            {
-                dataPtrVector.push_back(pData);
-            }
+            dataPtrVector.push_back(pData);
         }
+        //! @todo what about alias duplicates
     }
 
     return dataPtrVector;
 }
 
-QStringList LogDataHandler::getLogDataVariableNames(const QString &rSeparator, const int generation) const
-{
-    QStringList retval;
-    LogDataMapT::const_iterator dit = mLogDataMap.begin();
-    for ( ; dit!=mLogDataMap.end(); ++dit)
-    {
-        if(generation < 0 || dit.value().mpDataContainer->hasDataGeneration(generation))
-        {
-            if (dit.value().mIsAlias)
-            {
-                retval.append(dit.value().mpDataContainer->getAliasName());
-            }
-            else
-            {
-                retval.append(dit.value().mpDataContainer->getFullVariableNameWithSeparator(rSeparator));
-            }
-        }
-    }
-    return retval;
-}
+//QStringList LogDataHandler::getLogDataVariableNames(const QString &rSeparator, const int generation) const
+//{
+//    QStringList retval;
+//    LogDataMapT::const_iterator dit = mLogDataMap.begin();
+//    for ( ; dit!=mLogDataMap.end(); ++dit)
+//    {
+//        if(generation < 0 || dit.value()->hasDataGeneration(generation))
+//        {
+//            if (dit.value().mIsAlias)
+//            {
+//                retval.append(dit.value().mpDataContainer->getAliasName());
+//            }
+//            else
+//            {
+//                retval.append(dit.value().mpDataContainer->getFullVariableNameWithSeparator(rSeparator));
+//            }
+//        }
+//    }
+//    return retval;
+//}
 
-void LogDataHandler::getLogDataVariableNamesWithHighestGeneration(const QString &rSeparator, QStringList &rNames, QList<int> &rGens) const
+void LogDataHandler::getLogDataVariableNamesWithHighestGeneration(QStringList &rNames, QList<int> &rGens) const
 {
     rNames.clear(); rGens.clear();
     rNames.reserve(mLogDataMap.size());
@@ -2176,17 +2142,18 @@ void LogDataHandler::getLogDataVariableNamesWithHighestGeneration(const QString 
     LogDataMapT::const_iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        SharedVariablePtrT pData = dit.value().mpDataContainer->getDataGeneration(-1);
+        SharedVariablePtrT pData = dit.value()->getDataGeneration(-1);
         if(pData)
         {
-            if (dit.value().mIsAlias)
-            {
-                rNames.append(dit.value().mpDataContainer->getAliasName());
-            }
-            else
-            {
-                rNames.append(dit.value().mpDataContainer->getFullVariableNameWithSeparator(rSeparator));
-            }
+//            if (dit.value().mIsAlias)
+//            {
+//                rNames.append(dit.value().mpDataContainer->getAliasName());
+//            }
+//            else
+//            {
+//                rNames.append(dit.value().mpDataContainer->getFullVariableNameWithSeparator(rSeparator));
+//            }
+            rNames.append(dit.key());
             rGens.append(pData->getGeneration());
         }
     }
@@ -2204,12 +2171,11 @@ QStringList LogDataHandler::getLogDataVariableFullNames(const QString &rSeparato
     LogDataMapT::const_iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        if (!dit.value().mIsAlias)
+        //! @todo How to avoid aliases here FIXA  /Peter
+        if(generation < 0 || dit.value()->hasDataGeneration(generation))
         {
-            if(generation < 0 || dit.value().mpDataContainer->hasDataGeneration(generation))
-            {
-                retval.append(dit.value().mpDataContainer->getFullVariableNameWithSeparator(rSeparator));
-            }
+            //retval.append(dit.value()->getFullVariableNameWithSeparator(rSeparator));
+            retval.append(dit.key());
         }
     }
     return retval;
@@ -2329,13 +2295,14 @@ void LogDataHandler::removeGenerationCacheIfEmpty(const int gen)
 
 SharedVariablePtrT LogDataHandler::defineNewVectorVariable_NoNameCheck(const QString &rName)
 {
+    //! @todo maybe this coude should not add without checking name, (may overwrite existing data) unless that is what we want here, insertVariable maybe should be used instead
     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
     pVarDesc->mDataName = rName;
     pVarDesc->mVariableSourceType = ScriptVariableType;
-    LogVariableContainer *pDataContainer = new LogVariableContainer(this);
+    LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc->getFullName(), this);
     SharedVariablePtrT pNewData = SharedVariablePtrT(new VectorVariable(QVector<double>(), mGenerationNumber, pVarDesc, SharedMultiDataVectorCacheT()));
     pDataContainer->addDataGeneration(mGenerationNumber, pNewData);
-    mLogDataMap.insert(pVarDesc->getFullName(), LogDataStructT(pDataContainer,false));
+    mLogDataMap.insert(pVarDesc->getFullName(), pDataContainer);
     return pDataContainer->getDataGeneration(mGenerationNumber);
 }
 
@@ -2379,81 +2346,88 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
         }
 
         // Take the data, and only increment this->mGeneration if data was taken
-        QList<LogDataStructT> otherVariables = pOtherHandler->mLogDataMap.values(); // Need to take values and iterate through, else the iterator will become invalid when removing from other
-        QList<LogDataStructT>::iterator other_it;
-        for (other_it=otherVariables.begin(); other_it!=otherVariables.end(); ++other_it)
+
+        // Need to copy the map and iterate through copy, else the iterator will become invalid when removing from other
+        LogDataMapT otherMap = pOtherHandler->mLogDataMap;
+        LogDataMapT::iterator other_it;
+        for (other_it=otherMap.begin(); other_it!=otherMap.end(); ++other_it)
         {
-            // Alias is processed when the actual data is copied
-            if (!other_it->mIsAlias)
+            if (other_it.value()->hasDataGeneration(otherGeneration))
             {
-                if (other_it->mpDataContainer->hasDataGeneration(otherGeneration))
-                {
-                    QString fullName = other_it->mpDataContainer->getFullVariableName();
-                    LogDataMapT::iterator this_it = mLogDataMap.find(fullName);
-                    if (this_it == mLogDataMap.end())
-                    {
-                        // If variable does not exist, then create it
-                        LogVariableContainer *pNewContainer = new LogVariableContainer(this);
-                        pNewContainer->addDataGeneration(mGenerationNumber, other_it->mpDataContainer->getDataGeneration(otherGeneration));
-                        mLogDataMap.insert(fullName, LogDataStructT(pNewContainer,false));
+                QString keyName = other_it.key();
+                insertVariable(other_it.value()->getDataGeneration(otherGeneration), keyName);
 
-                        // Take alias
-                        const QString &aliasName = other_it->mpDataContainer->getAliasName();
-                        if (!aliasName.isEmpty())
-                        {
-                            LogDataMapT::iterator this_a_it = mLogDataMap.find(aliasName);
-                            if (this_a_it == mLogDataMap.end())
-                            {
-                                // Insert new alias
-                                mLogDataMap.insert(aliasName, LogDataStructT(pNewContainer,true));
-                            }
-                            else
-                            {
-                                //! @todo maybe handle this
-                                // If alias points to wrong thing then igonre it
-                                if (this_a_it->mpDataContainer->getFullVariableName() != fullName)
-                                {
-                                    qWarning() << "In takeOwnership: Alias: "+aliasName+" LOST!!!";
-                                }
-                            }
-                        }
+                // Remove from other
+                other_it.value()->removeDataGeneration(otherGeneration, true);
+                tookOwnershipOfSomeData=true;
 
-                        // Remove from other, (note! Generation in alias in other will also be removed since they are pointing to the same thing)
-                        other_it->mpDataContainer->removeDataGeneration(otherGeneration, true);
-                        tookOwnershipOfSomeData=true;
-                    }
-                    else
-                    {
-                        // Varaiable exist, append to it
-                        this_it.value().mpDataContainer->addDataGeneration(mGenerationNumber, other_it->mpDataContainer->getDataGeneration(otherGeneration));
+                //! @todo how to detect if alias colision appear, how to notify user
 
-                        // check so that alias exist, if not add
-                        const QString &aliasName = other_it->mpDataContainer->getAliasName();
-                        if (!aliasName.isEmpty())
-                        {
-                            LogDataMapT::iterator this_a_it = mLogDataMap.find(aliasName);
-                            if (this_a_it == mLogDataMap.end())
-                            {
-                                // Insert new alias
-                                mLogDataMap.insert(aliasName, LogDataStructT(this_it.value().mpDataContainer,true));
-                            }
-                            else
-                            {
-                                //! @todo maybe handle this
-                                // If alias points to wrong thing then igonre it
-                                if (this_a_it->mpDataContainer->getFullVariableName() != fullName)
-                                {
-                                    qWarning() << "In takeOwnership: Alias: "+aliasName+" LOST!!!";
-                                }
-                            }
-                        }
+//                LogDataMapT::iterator this_it = mLogDataMap.find(keyName);
+//                if (this_it == mLogDataMap.end())
+//                {
+//                    // If variable does not exist, then create it
+//                    LogVariableContainer *pNewContainer = new LogVariableContainer(this);
+//                    pNewContainer->addDataGeneration(mGenerationNumber, other_it->mpDataContainer->getDataGeneration(otherGeneration));
+//                    mLogDataMap.insert(keyName, LogDataStructT(pNewContainer,false));
 
-                        // Remove from other, (note! Generation in alias in other will also be removed since they are pointing to the same thing)
-                        other_it->mpDataContainer->removeDataGeneration(otherGeneration, true);
-                        tookOwnershipOfSomeData=true;
-                    }
-                }
+//                    // Take alias
+//                    const QString &aliasName = other_it->mpDataContainer->getAliasName();
+//                    if (!aliasName.isEmpty())
+//                    {
+//                        LogDataMapT::iterator this_a_it = mLogDataMap.find(aliasName);
+//                        if (this_a_it == mLogDataMap.end())
+//                        {
+//                            // Insert new alias
+//                            mLogDataMap.insert(aliasName, LogDataStructT(pNewContainer,true));
+//                        }
+//                        else
+//                        {
+//                            //! @todo maybe handle this
+//                            // If alias points to wrong thing then igonre it
+//                            if (this_a_it->mpDataContainer->getFullVariableName() != keyName)
+//                            {
+//                                qWarning() << "In takeOwnership: Alias: "+aliasName+" LOST!!!";
+//                            }
+//                        }
+//                    }
+
+//                    // Remove from other, (note! Generation in alias in other will also be removed since they are pointing to the same thing)
+//                    other_it->mpDataContainer->removeDataGeneration(otherGeneration, true);
+//                    tookOwnershipOfSomeData=true;
+//                }
+//                else
+//                {
+//                    // Varaiable exist, append to it
+//                    this_it.value().mpDataContainer->addDataGeneration(mGenerationNumber, other_it->mpDataContainer->getDataGeneration(otherGeneration));
+
+//                    // check so that alias exist, if not add
+//                    const QString &aliasName = other_it->mpDataContainer->getAliasName();
+//                    if (!aliasName.isEmpty())
+//                    {
+//                        LogDataMapT::iterator this_a_it = mLogDataMap.find(aliasName);
+//                        if (this_a_it == mLogDataMap.end())
+//                        {
+//                            // Insert new alias
+//                            mLogDataMap.insert(aliasName, LogDataStructT(this_it.value().mpDataContainer,true));
+//                        }
+//                        else
+//                        {
+//                            //! @todo maybe handle this
+//                            // If alias points to wrong thing then igonre it
+//                            if (this_a_it->mpDataContainer->getFullVariableName() != keyName)
+//                            {
+//                                qWarning() << "In takeOwnership: Alias: "+aliasName+" LOST!!!";
+//                            }
+//                        }
+//                    }
+
+//                    // Remove from other, (note! Generation in alias in other will also be removed since they are pointing to the same thing)
+//                    other_it->mpDataContainer->removeDataGeneration(otherGeneration, true);
+//                    tookOwnershipOfSomeData=true;
+//                }
             }
+
         }
 
         if (tookOwnershipOfSomeData)
@@ -2470,60 +2444,105 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
     //! @todo favorite variables, plotwindows, imported data
 }
 
-void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAlias)
+bool LogDataHandler::registerAlias(const QString &rFullName, const QString &rAlias)
 {
-    QPointer<LogVariableContainer> pDataContainer;
-
-    // If alias is empty then we should unregister the alias
-    if (rAlias.isEmpty())
+    QPointer<LogVariableContainer> pFullContainer = getLogVariableContainer(rFullName);
+    if (pFullContainer)
     {
-        pDataContainer = getLogVariableContainer(rFullName);
-        if (pDataContainer)
+        // If alias is empty then we should unregister the alias
+        if (rAlias.isEmpty())
         {
-            QString oldAlias = pDataContainer->getAliasName();
-            if (!oldAlias.isEmpty())
+            const QList<int> fullGens = pFullContainer->getGenerations();
+            QPointer<LogVariableContainer> pAliasContainer;
+            QString currentAliasName;
+            for(int i=0; i<fullGens.size(); ++i)
             {
-                pDataContainer->setAliasName("");
-                mLogDataMap.remove(oldAlias);
-                emit newDataAvailable();
-            }
-        }
-    }
-    else
-    {
-        // Check if alias already exist, and if name is different
-        pDataContainer = getLogVariableContainer(rAlias);
+                SharedVariablePtrT pFullData = pFullContainer->getDataGeneration(fullGens[i]);
+                if (pFullData->hasAliasName())
+                {
+                    // Prevent alias name lookup every time if alias name has not changed
+                    if (currentAliasName != pFullData->getAliasName())
+                    {
+                        currentAliasName = pFullData->getAliasName();
+                        pAliasContainer = getLogVariableContainer(currentAliasName);
+                    }
 
-        // If alias not already present then register it, (if data exist)
-        if (!pDataContainer)
-        {
-            pDataContainer = getLogVariableContainer(rFullName);
-            if (pDataContainer)
-            {
-                mLogDataMap.insert(rAlias, LogDataStructT(pDataContainer,true));
-                pDataContainer->setAliasName(rAlias);
-                emit newDataAvailable();
+                    // Remove the alias, here we assume that the alias name at this generation is actually an alias for the fullName (the registration should have taken care of that)
+                    if (pAliasContainer)
+                    {
+                        //! @todo will this not trigger additional remove code for the actual variable also
+                        pAliasContainer->removeDataGeneration(fullGens[i]);
+                    }
+                    pFullData->mpVariableDescription->mAliasName = rAlias;
+                }
             }
-        }
-        else if (pDataContainer->getFullVariableName() != rFullName)
-        {
-            // Ok we should reregister this alias
-            mLogDataMap.remove(rAlias);
-            mLogDataMap.insert(rAlias, LogDataStructT(pDataContainer,true));
-            pDataContainer->setAliasName(rAlias);
+
+            //! @todo maybe use different signal for remove
             emit newDataAvailable();
         }
-        // Else we should do nothing as the alias is already registered for the same fullName
+        else
+        {
+            // Check if alias already exist
+            QList<int> fullGens = pFullContainer->getGenerations();
+            QPointer<LogVariableContainer> pAliasContainer = getLogVariableContainer(rAlias);
+            if (pAliasContainer)
+            {
+                // Check so that there will be no colision when merging alias
+                for(int i=0; i<fullGens.size(); ++i)
+                {
+                    SharedVariablePtrT pAliasData = pAliasContainer->getDataGeneration(fullGens[i]);
+                    if ( pAliasData && (pAliasData->getFullVariableName() != rFullName) )
+                    {
+                        // Abort
+                        //! @todo maybe a warning message
+                        return false;
+                    }
+                }
+            }
+            // If we get here then we can merge (any previous data with alis name will be overwritten if fullname was same)
+            for(int i=0; i<fullGens.size(); ++i)
+            {
+                SharedVariablePtrT pData = pFullContainer->getDataGeneration(fullGens[i]);
+                pData->mpVariableDescription->mAliasName = rAlias;
+                insertVariable(pData, rAlias, fullGens[i]);
+            }
+            emit newDataAvailable();
+        }
+        return true; //!< @todo not allways true
+
+
+
+        //        // If alias not already present then register it, (if data exist)
+        //        if (!pDataContainer)
+        //        {
+        //            pDataContainer = getLogVariableContainer(rFullName);
+        //            if (pDataContainer)
+        //            {
+        //                mLogDataMap.insert(rAlias, LogDataStructT(pDataContainer,true));
+        //                pDataContainer->setAliasName(rAlias);
+        //                emit newDataAvailable();
+        //            }
+        //        }
+        //        else if (pDataContainer->getFullVariableName() != rFullName)
+        //        {
+        //            // Ok we should reregister this alias
+        //            mLogDataMap.remove(rAlias);
+        //            mLogDataMap.insert(rAlias, LogDataStructT(pDataContainer,true));
+        //            pDataContainer->setAliasName(rAlias);
+        //            emit newDataAvailable();
+        //        }
+        //        // Else we should do nothing as the alias is already registered for the same fullName
     }
 }
 
+
 void LogDataHandler::unregisterAlias(const QString &rAlias)
 {
-    QPointer<LogVariableContainer> pDataContainer = getLogVariableContainer(rAlias);
-    if (pDataContainer)
+    //! @todo the container should know which generations are aliases for faster removal
+    QString fullName = getFullNameFromAlias(rAlias);
+    if (!fullName.isEmpty())
     {
-        pDataContainer->setAliasName("");
-        mLogDataMap.remove(rAlias);
+        registerAlias(fullName, "");
     }
 }
 
@@ -2546,6 +2565,7 @@ void LogDataHandler::forgetImportedLogDataVariable(SharedVariablePtrT pData)
                 mImportedLogDataMap.erase(fit);
             }
         }
+        //! @todo this code assumes that imported data can not have aliases (full name can be a short one like an alias but is technically not an alias)
     }
 }
 
@@ -2581,152 +2601,51 @@ SharedVariablePtrT LogDataHandler::insertTimeDomainVariable(SharedVariablePtrT p
     return pNewData;
 }
 
-
-
-//SharedVariablePtrT LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarComDesc, QString importFileName, SharedVariablePtrT pTimeVector, QVector<double> &rDataVector)
-//{
-//    SharedVariablePtrT pNewData;
-//    // First check if a data variable with this name alread exist
-//    QString fullName = rVarComDesc.getFullName();
-//    LogDataMapT::iterator it = mLogDataMap.find(fullName);
-//    // If it exist insert into it
-//    if (it != mLogDataMap.end())
-//    {
-//        // Replace common data if the new variable have a lower source value
-//        //! @todo this is needed to replace common descriptiuon in imported data if a model variable with same name shows up. but cuirrently some data may be lost (lime special unit)
-//        if (rVarComDesc.mVariableSourceType < it.value().mpDataContainer->getVariableCommonDescription()->mVariableSourceType)
-//        {
-//            it.value().mpDataContainer->setVariableCommonDescription(rVarComDesc);
-//        }
-
-//        // Insert it into the generations map
-//        pNewData = it.value().mpDataContainer->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
-
-//        // Update alias if needed
-//        if ( rVarComDesc.mAliasName != it.value().mpDataContainer->getAliasName() )
-//        {
-//            // Remove old mention of alias
-//            mLogDataMap.remove(it.value().mpDataContainer->getAliasName());
-
-//            // Update the local alias
-//            it.value().mpDataContainer->setAliasName(rVarComDesc.mAliasName);
-
-//            // Insert new alias kv pair
-//            mLogDataMap.insert(rVarComDesc.mAliasName, it.value());
-//        }
-//    }
-//    else
-//    {
-//        // Create a new toplevel map item and insert data into the generations map
-//        LogVariableContainer *pDataContainer = new LogVariableContainer(rVarComDesc, this);
-//        pNewData = pDataContainer->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
-//        mLogDataMap.insert(fullName, LogDataStructT(pDataContainer,false));
-
-//        // Also insert alias if it exist
-//        if ( !rVarComDesc.mAliasName.isEmpty() )
-//        {
-//            mLogDataMap.insert(rVarComDesc.mAliasName, LogDataStructT(pDataContainer,true));
-//        }
-//    }
-
-//    // Set the unique override description
-//    if (pVarUniqDesc)
-//    {
-//        pNewData->setVariableUniqueDescription(*pVarUniqDesc);
-//    }
-
-//    // Remember the imported file in the import map, so we know what generations belong to which file
-//    rememberIfImported(pNewData);
-
-//    return pNewData;
-//}
-
-void LogDataHandler::insertVariable(SharedVariablePtrT pVariable)
+//! @brief Inserts a variable into the map creating a container if needed
+//! @param[in] pVariable The variable to insert
+//! @param[in] keyName An alternative keyName to use (used recursivly to set an alias, do not abuse this argument)
+//! @param[in] gen An alternative generation number (-1 = current))
+void LogDataHandler::insertVariable(SharedVariablePtrT pVariable, QString keyName, int gen)
 {
+    // If keyName is empty then use fullName
+    if (keyName.isEmpty())
+    {
+        keyName = pVariable->getFullVariableName();
+    }
+
+    // If gen -1 then use current generation
+    if (gen<0)
+    {
+        gen = mGenerationNumber;
+    }
+
     // First check if a data variable with this name alread exist
-    LogDataMapT::iterator it = mLogDataMap.find(pVariable->getFullVariableName());
+    LogDataMapT::iterator it = mLogDataMap.find(keyName);
     // If it exist insert into it
     if (it != mLogDataMap.end())
     {
         // Insert it into the generations map
-        it.value().mpDataContainer->addDataGeneration(mGenerationNumber, pVariable);
-
-        //! @warning this MUST be fixed /Peter
-        //! @todo here we need to split or merge depending on supplied alias name
-//        // Update alias if needed
-//        if ( rVarComDesc.mAliasName != it.value().mpDataContainer->getAliasName() )
-//        {
-//            // Remove old mention of alias
-//            mLogDataMap.remove(it.value().mpDataContainer->getAliasName());
-
-//            // Update the local alias
-//            it.value().mpDataContainer->setAliasName(rVarComDesc.mAliasName);
-
-//            // Insert new alias kv pair
-//            mLogDataMap.insert(rVarComDesc.mAliasName, it.value());
-//        }
+        it.value()->addDataGeneration(gen, pVariable);
     }
     else
     {
         // Create a new toplevel map item and insert data into the generations map
-        LogVariableContainer *pDataContainer = new LogVariableContainer(this);
-        pDataContainer->addDataGeneration(mGenerationNumber, pVariable);
-        mLogDataMap.insert(pVariable->getFullVariableName(), LogDataStructT(pDataContainer,false));
+        LogVariableContainer *pDataContainer = new LogVariableContainer(keyName, this);
+        pDataContainer->addDataGeneration(gen, pVariable);
+        mLogDataMap.insert(keyName, pDataContainer);
+    }
 
-        // Also insert alias if it exist
-        if ( pVariable->hasAliasName() )
-        {
-            //! @warning this MUST be fixed /Peter
-            //! @todo here we may need to merge depending on supplied alias name, currently will overwrite
-            mLogDataMap.insert(pVariable->getAliasName(), LogDataStructT(pDataContainer,true));
-        }
+    // Also insert alias if it exist, but only if it is different from keyName (else we will have an endless loop in here)
+    if ( pVariable->hasAliasName() && (pVariable->getAliasName() != keyName) )
+    {
+        insertVariable(pVariable, pVariable->getAliasName(), gen);
     }
 
     // Remember imported files in the import map, so that we know what generations belong to which file
     rememberIfImported(pVariable);
 }
 
-
-//SharedVariablePtrT LogDataHandler::insertTimeVariable(QVector<double> &rTimeVector, QString importFileName)
-//{
-//    SharedVariablePtrT pNewData;
-//    //! @todo this should not be done/checked here every time should have been prepered someewhere else, but no point in doing it properly now since we must rewrite logdatahandler to be global anyway
-//    LogVariableContainer *pTime = getLogVariableContainer(TIMEVARIABLENAME);
-//    if (pTime)
-//    {
-//        pNewData = pTime->addDataGeneration(mGenerationNumber, SharedVariablePtrT(), rTimeVector); //Note! Time vector itself does not have a time vector it only has a data vector
-//    }
-//    else
-//    {
-//        VariableDescription varCommonDesc;
-//        //varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
-//        varCommonDesc.mDataName = TIMEVARIABLENAME; //!< @todo this name must be reserved
-//        varCommonDesc.mDataUnit = "s";
-//        varCommonDesc.mVariableSourceType = ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
-//        pNewData = insertVariableBasedOnDescription(varCommonDesc, importFileName, SharedVariablePtrT(), rTimeVector);
-//    }
-
-//    // Set the unique description if needed
-//    if (importFileName)
-//    {
-//        pNewData->setVariableUniqueDescription(*importFileName);
-//    }
-
-//    // Remember the imported file in the import map, so we know what generations belong to which file
-//    rememberIfImported(pNewData);
-
-//    return pNewData;
-//}
-
-
 bool LogDataHandler::hasLogVariableData(const QString &rFullName, const int generation)
 {
     return (getLogVariableDataPtr(rFullName, generation) != 0);
-}
-
-
-LogDataStructT::LogDataStructT(LogVariableContainer *pDataContainer, bool isAlias)
-{
-    mpDataContainer = pDataContainer;
-    mIsAlias = isAlias;
 }

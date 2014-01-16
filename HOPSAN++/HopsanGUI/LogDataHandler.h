@@ -38,15 +38,6 @@
 class PlotWindow;
 class ContainerObject;
 
-class LogDataStructT
-{
-public:
-    LogDataStructT() : mpDataContainer(0), mIsAlias(false) {}
-    LogDataStructT(LogVariableContainer* pDataContainer, bool isAlias);
-    QPointer<LogVariableContainer> mpDataContainer;
-    bool mIsAlias;
-};
-
 class LogDataHandler : public QObject
 {
     Q_OBJECT
@@ -55,8 +46,7 @@ public:
     LogDataHandler(ContainerObject *pParent);
     ~LogDataHandler();
 
-    typedef QMap< QString, LogDataStructT > LogDataMapT;
-    typedef QList<QVector<double> > TimeListT;
+    typedef QMap< QString, QPointer<LogVariableContainer> > LogDataMapT;
     typedef QList<VariableDescription> FavoriteListT;
 
     void setParentContainerObject(ContainerObject *pParent);
@@ -80,23 +70,22 @@ public:
     SharedVariablePtrT defineTempVariable(const QString &rDesiredname);
     SharedVariablePtrT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
-    bool deleteVariable(SharedVariablePtrT a);
-    bool deleteVariable(const QString &a);
+    //bool deleteVariable(SharedVariablePtrT pVariable);
+    bool deleteVariable(const QString &rVarName);
     bool deleteImportedVariable(const QString &rVarName);
 
     int getNumVariables() const;
     bool isEmpty();
     void clear();
 
-    LogVariableContainer* getLogVariableContainer(const QString &rFullName) const;
+    QPointer<LogVariableContainer> getLogVariableContainer(const QString &rVarName) const;
+    const QList< QPointer<LogVariableContainer> > getAllLogVariableContainers() const;
 
-    const LogDataStructT getCompleteLogVariableData(const QString &rName) const;
-    const QList<LogDataStructT> getAllCompleteLogVariableData() const;
-    const QList<LogDataStructT> getMultipleCompleteLogVariableData(const QRegExp &rNameExp) const;
-    const QList<LogDataStructT> getMultipleCompleteLogVariableData(const QRegExp &rNameExp, const int generation) const;
+    const QList< QPointer<LogVariableContainer> > getLogDataContainersMatching(const QRegExp &rNameExp) const;
+    const QList< QPointer<LogVariableContainer> > getLogDataContainersMatching(const QRegExp &rNameExp, const int generation) const;
 
-    QStringList getLogDataVariableNames(const QString &rSeparator, const int generation=-1) const;
-    void getLogDataVariableNamesWithHighestGeneration(const QString &rSeparator, QStringList &rNames, QList<int> &rGens) const;
+    //QStringList getLogDataVariableNames(const QString &rSeparator, const int generation=-1) const;
+    void getLogDataVariableNamesWithHighestGeneration(QStringList &rNames, QList<int> &rGens) const;
     QStringList getLogDataVariableFullNames(const QString &rSeparator, const int generation=-1) const;
     bool hasLogVariableData(const QString &rFullName, const int generation=-1);
 
@@ -123,7 +112,7 @@ public:
     void undefinePlotAlias(const QString &rAlias);
 
     QString getFullNameFromAlias(const QString &rAlias);
-    QString getAliasFromFullName(const QString &rFullName);
+    //QString getAliasFromFullName(const QString &rFullName);
 
     QList<int> getGenerations() const;
     int getLowestGenerationNumber() const;
@@ -203,7 +192,7 @@ public:
     void takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration=-2);
 
 public slots:
-    void registerAlias(const QString &rFullName, const QString &rAlias);
+    bool registerAlias(const QString &rFullName, const QString &rAlias);
     void unregisterAlias(const QString &rAlias);
 
 
@@ -222,7 +211,7 @@ private:
     SharedVariablePtrT insertTimeVariable(const QVector<double> &rTimeVector, const QString &rImportFileName);
     SharedVariablePtrT insertTimeDomainVariable(SharedVariablePtrT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc);
     SharedVariablePtrT insertTimeDomainVariable(SharedVariablePtrT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
-    void insertVariable(SharedVariablePtrT pVariable);
+    void insertVariable(SharedVariablePtrT pVariable, QString keyName=QString(), int gen=-1);
 
     QString getNewCacheName();
     void rememberIfImported(SharedVariablePtrT pData);

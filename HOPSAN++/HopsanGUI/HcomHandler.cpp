@@ -4516,21 +4516,25 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     // Do a regexp lookup on the name directly, using pattern (in long form)
     QString pattern_long = pattern;
     toLongDataNames(pattern_long);
-    QList<LogDataStructT> data_containers = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
+    QList< QPointer<LogVariableContainer> > data_containers = pLogDataHandler->getLogDataContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
     if (!data_containers.isEmpty())
     {
         for (int d=0; d<data_containers.size(); ++d)
         {
-            QString name;
-            if (data_containers[d].mIsAlias)
-            {
-                name = data_containers[d].mpDataContainer->getAliasName();
-            }
-            else
-            {
-                name = data_containers[d].mpDataContainer->getFullVariableName();
-                toShortDataNames(name);
-            }
+//            QString name;
+//            if (data_containers[d].mIsAlias)
+//            {
+//                name = data_containers[d].mpDataContainer->getAliasName();
+//            }
+//            else
+//            {
+//                name = data_containers[d].mpDataContainer->getName();
+//                toShortDataNames(name);
+//            }
+//            rVariables.append(name);
+            //! @todo what about alis here FIXA /Peter
+            QString name = data_containers[d]->getName();
+            toShortDataNames(name);
             rVariables.append(name);
         }
     }
@@ -4572,19 +4576,23 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
 
             QString pattern_long = pattern;
             toLongDataNames(pattern_long);
-            QList<LogDataStructT> data_conts = pLogDataHandler->getMultipleCompleteLogVariableData(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard), desiredGen);
+            QList< QPointer<LogVariableContainer> > data_conts = pLogDataHandler->getLogDataContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard), desiredGen);
             for (int d=0; d<data_conts.size(); ++d)
             {
-                QString name;
-                if (data_conts[d].mIsAlias)
-                {
-                    name = data_conts[d].mpDataContainer->getAliasName();
-                }
-                else
-                {
-                    name = data_conts[d].mpDataContainer->getFullVariableName();
-                    toShortDataNames(name);
-                }
+//                QString name;
+//                if (data_conts[d].mIsAlias)
+//                {
+//                    name = data_conts[d].mpDataContainer->getAliasName();
+//                }
+//                else
+//                {
+//                    name = data_conts[d].mpDataContainer->getName();
+//                    toShortDataNames(name);
+//                }
+//                rVariables.append(name+QString(".%1").arg(desiredGen+1));
+                //! @todo What about alias here FIXA /Peter
+                QString name = data_conts[d]->getName();
+                toShortDataNames(name);
                 rVariables.append(name+QString(".%1").arg(desiredGen+1));
             }
         }
@@ -4593,7 +4601,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
         {
             //! @todo in this case we might be able to search directly for name with regexp in logdatahandler
             QList<int> gens;
-            pLogDataHandler->getLogDataVariableNamesWithHighestGeneration("#",namesWithGeneration, gens);
+            pLogDataHandler->getLogDataVariableNamesWithHighestGeneration(namesWithGeneration, gens);
             for (int n=0; n<namesWithGeneration.size(); ++n)
             {
                 toShortDataNames(namesWithGeneration[n]);
@@ -4604,20 +4612,23 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
         else
         {
             // Generate for all generations
-            QList< LogDataStructT> logdata = pLogDataHandler->getAllCompleteLogVariableData();
+            QList< QPointer<LogVariableContainer> > logdata = pLogDataHandler->getAllLogVariableContainers();
             for (int d=0; d<logdata.size(); ++d)
             {
-                QString name;
-                if (logdata[d].mIsAlias)
-                {
-                    name = logdata[d].mpDataContainer->getAliasName();
-                }
-                else
-                {
-                    name = logdata[d].mpDataContainer->getFullVariableName();
-                    toShortDataNames(name);
-                }
-                QList<int> gens = logdata[d].mpDataContainer->getGenerations();
+//                QString name;
+//                if (logdata[d].mIsAlias)
+//                {
+//                    name = logdata[d].mpDataContainer->getAliasName();
+//                }
+//                else
+//                {
+//                    name = logdata[d].mpDataContainer->getName();
+//                    toShortDataNames(name);
+//                }
+                QString name = logdata[d]->getName();
+                toShortDataNames(name);
+                //! @todo What about alias here FIXA /Peter
+                QList<int> gens = logdata[d]->getGenerations();
                 for (int g=0; g<gens.size(); ++g)
                 {
                     QString name2 = QString("%1.%2").arg(name).arg(gens[g]+1);
@@ -4852,73 +4863,16 @@ SharedVariablePtrT HcomHandler::getLogVariablePtr(QString fullShortName, bool &r
     // Convert to long name
     toLongDataNames(fullShortName);
 
-    LogDataStructT data = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getCompleteLogVariableData(fullShortName);
-    if (data.mpDataContainer)
+    QPointer<LogVariableContainer> pDataContainer = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLogVariableContainer(fullShortName);
+    if (pDataContainer)
     {
-        rFoundAlias = data.mIsAlias;
-        return data.mpDataContainer->getDataGeneration(generation);
+        //rFoundAlias = data.mIsAlias;
+        //! @todo what about alias here FIXA /Peter
+        rFoundAlias=false;
+        return pDataContainer->getDataGeneration(generation);
     }
 
     return SharedVariablePtrT(0);
-
-//    fullShortName.replace(".","#");
-
-//    //! @todo isnt there a help function for this ???
-//    if(fullShortName.endsWith("#x"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#Position");
-//    }
-//    else if(fullShortName.endsWith("#v"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#Velocity");
-//    }
-//    else if(fullShortName.endsWith("#f"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#Force");
-//    }
-//    else if(fullShortName.endsWith("#p"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#Pressure");
-//    }
-//    else if(fullShortName.endsWith("#q"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#Flow");
-//    }
-//    else if(fullShortName.endsWith("#val"))
-//    {
-//        fullShortName.chop(4);
-//        fullShortName.append("#Value");
-//    }
-//    else if(fullShortName.endsWith("#Zc"))
-//    {
-//        fullShortName.chop(3);
-//        fullShortName.append("#CharImpedance");
-//    }
-//    else if(fullShortName.endsWith("#c"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#WaveVariable");
-//    }
-//    else if(fullShortName.endsWith("#me"))
-//    {
-//        fullShortName.chop(3);
-//        fullShortName.append("#EquivalentMass");
-//    }
-//    else if(fullShortName.endsWith("#Q"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#HeatFlow");
-//    }
-//    else if(fullShortName.endsWith("#t"))
-//    {
-//        fullShortName.chop(2);
-//        fullShortName.append("#Temperature");
-    //    }
 }
 
 SharedVariablePtrT HcomHandler::getLogVariablePtr(QString fullShortName) const

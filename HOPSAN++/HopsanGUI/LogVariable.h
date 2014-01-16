@@ -87,23 +87,49 @@ SharedVariablePtrT createFreeTimeVectorVariabel(const QVector<double> &rTime);
 SharedVariablePtrT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency);
 SharedVariablePtrT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc);
 
+class IndexIntervalCollection
+{
+public:
+    class MinMaxT
+    {
+    public:
+        MinMaxT(int min, int max);
+        int mMin, mMax;
+    };
+
+    void addValue(const int val);
+    void removeValue(const int val);
+    int min() const;
+    int max() const;
+    bool isContinuos() const;
+    bool isEmpty() const;
+    bool contains(const int val) const;
+    void clear();
+    int getNumAddedValues() const;
+
+    QList<MinMaxT> getList() const;
+    QList<int> getCompleteList() const;
+
+private:
+    QList<MinMaxT> mIntervalList;
+};
+
 class LogVariableContainer : public QObject
 {
     Q_OBJECT
 public:
     typedef QMap<int, SharedVariablePtrT> GenerationMapT;
 
-    //! @todo also need qucik constructor for creating a container with one generation directly
-    LogVariableContainer(LogDataHandler *pParentLogDataHandler);
+    LogVariableContainer(const QString &rName, LogDataHandler *pParentLogDataHandler);
     ~LogVariableContainer();
 
-//    SharedVariablePtrT addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT pDescription);
-//    SharedVariablePtrT addDataGeneration(const int generation, const SharedVariablePtrT time, const QVector<double> &rData, SharedVariableDescriptionT pDescription);
+    const QString &getName() const;
+
     void addDataGeneration(const int generation, SharedVariablePtrT pData);
     bool removeDataGeneration(const int generation, const bool force=false);
-    bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
     void removeAllGenerations();
     bool removeAllImportedGenerations();
+    bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
 
     SharedVariablePtrT getDataGeneration(const int gen=-1) const;
     QList<SharedVariablePtrT> getAllDataGenerations() const;
@@ -113,31 +139,26 @@ public:
     int getNumGenerations() const;
     QList<int> getGenerations() const;
 
-    const QString getAliasName() const;
-    QString getFullVariableName() const;
-    QString getFullVariableNameWithSeparator(const QString sep) const;
-    QString getSmartName() const;
-    const QString getModelPath() const;
-    const QString getComponentName() const;
-    const QString getPortName() const;
-    const QString getDataName() const;
-    const QString getDataUnit() const;
+    bool isStoringAlias() const;
+    bool isGenerationAlias(const int gen) const;
+    bool isStoringImported() const;
+    bool isGenerationImported(const int gen) const;
 
     void preventAutoRemove(const int gen);
     void allowAutoRemove(const int gen);
 
     LogDataHandler *getLogDataHandler();
 
-    void setAliasName(const QString alias);
-
 signals:
-    void nameChanged();
     void logVariableBeingRemoved(SharedVariablePtrT);
 
 private:
+    void actuallyRemoveDataGen(GenerationMapT::iterator git);
+    QString mName;
     LogDataHandler *mpParentLogDataHandler;
-    //SharedVariableDescriptionT mVariableCommonDescription;
     GenerationMapT mDataGenerations;
+    IndexIntervalCollection mAliasGenIndexes;
+    IndexIntervalCollection mImportedGenIndexes;
     QList<int> mKeepGenerations;
 };
 

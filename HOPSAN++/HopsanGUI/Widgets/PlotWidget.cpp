@@ -304,7 +304,7 @@ void VariableTree::updateList()
         }
 
         // Handle alias variables
-        if ( !variables[i]->getAliasName().isEmpty() )
+        if ( variables[i]->hasAliasName() )
         {
             addAliasVariable(variables[i]);
         }
