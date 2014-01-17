@@ -287,10 +287,13 @@ void ModelWidget::setSaved(bool value)
 //! @note this is experimental code to replace madness simulation code in the future
 bool ModelWidget::simulate_nonblocking()
 {
-    //Save backup copy
-    QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
-    fileNameWithoutHmf.chop(4);
-    saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    // Save backup copy (if needed)
+    if (!isSaved())
+    {
+        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    }
 
     if(!mSimulateMutex.tryLock()) return false;
 
@@ -307,11 +310,14 @@ bool ModelWidget::simulate_nonblocking()
 
 bool ModelWidget::simulate_blocking()
 {
-    //Save backup copy
-    //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
-    QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
-    fileNameWithoutHmf.chop(4);
-    saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    // Save backup copy
+    if (!isSaved())
+    {
+        //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
+        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    }
 
     if(!mSimulateMutex.tryLock()) return false;
 
