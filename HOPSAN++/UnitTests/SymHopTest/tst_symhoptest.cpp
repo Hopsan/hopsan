@@ -775,7 +775,6 @@ private Q_SLOTS:
         QString failmsg("Failure! evaluate() did something wrong.");
         bool ok;
         QVERIFY2(fuzzyEqual(expr.evaluate(vars,0,&ok), value) || (!ok && !success), failmsg.toStdString().c_str());
-        //QVERIFY2(ok==success, failmsg.toStdString().c_str());
     }
 
     void SymHop_Evaluate_data()
@@ -804,6 +803,7 @@ private Q_SLOTS:
         QTest::newRow("10") << Expression("2e5+2") << variables << 2e5+2 << true;
         QTest::newRow("11") << Expression("2e-5+2") << variables << 2e-5+2 << true;
         QTest::newRow("12") << Expression("x-5e-3") << variables << x-5e-3 << true;
+        QTest::newRow("13") << Expression("x*x-y*y") << variables << -1005.6844 << true;
     }
 };
 

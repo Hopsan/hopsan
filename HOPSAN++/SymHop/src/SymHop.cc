@@ -316,7 +316,9 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         else if(mFunction == "-pow" && args.size() == 2)
         {
             mFunction.clear();
+            mpBase = new Expression();
             (*mpBase) = args[0];
+            mpPower = new Expression();
             (*mpPower) = args[1];
             this->replaceBy(Expression::fromTwoFactors(Expression("-1"), *this));
         }
