@@ -464,9 +464,7 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
     }
 
     //! @todo maybe should only be in core
-    QString comp,port,var;
-    splitConcatName(fullName, comp,port,var);
-    pContainer->setVariableAlias(comp,port,var,aliasname);
+    pContainer->setVariableAlias(fullName,aliasname);
     //! @todo instead of bool return the uniqe changed alias should be returned
     //! @todo what about parameter alias or other types
 }

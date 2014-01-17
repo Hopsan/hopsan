@@ -340,6 +340,10 @@ PlotArea::~PlotArea()
 //! @param desiredColor Desired color for curve (will override default colors)
 void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
 {
+    pCurve->attach(mpQwtPlot);
+    pCurve->mpParentPlotArea = this;
+    mPlotCurves.append(pCurve);
+
     if(mHasCustomXData)
     {
         if (pCurve->hasCustomXData())
@@ -355,9 +359,6 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
 
     determineAddedCurveUnitOrScale(pCurve);
 
-    pCurve->attach(mpQwtPlot);
-    pCurve->setParentPlotArea(this);
-    mPlotCurves.append(pCurve);
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
     connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
 
@@ -2361,7 +2362,8 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineStyle(QString)));
     connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineSymbol(QString)));
 
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setPalette(gpConfig->getPalette());
 
     if(mpPlotCurve->getCurveType() != PortVariableType)
     {
@@ -2369,8 +2371,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
         mpGenerationSpinBox->setDisabled(true);
         pFrequencyAnalysisButton->setDisabled(true);
     }
-
-    setPalette(gpConfig->getPalette());
+    updateInfo();
 }
 
 PlotCurve *PlotCurveControlBox::getCurve()

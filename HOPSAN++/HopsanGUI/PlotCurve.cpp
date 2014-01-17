@@ -953,13 +953,6 @@ void PlotCurve::connectDataSignals()
     }
 }
 
-void PlotCurve::setParentPlotArea(PlotArea *pParentPlotArea)
-{
-    mpParentPlotArea = pParentPlotArea;
-}
-
-
-
 
 //! @brief Sets auto update flag for a plot curve
 //! If this is activated, plot will automatically change to latest plot generation after next simulation.

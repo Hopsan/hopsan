@@ -2494,7 +2494,7 @@ bool LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
                     if ( pAliasData && (pAliasData->getFullVariableName() != rFullName) )
                     {
                         // Abort
-                        //! @todo maybe a warning message
+                        gpTerminalWidget->mpConsole->printWarningMessage("Alias colission when trying to merge alias, Aborting!");
                         return false;
                     }
                 }
@@ -2509,8 +2509,6 @@ bool LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
             emit newDataAvailable();
         }
         return true; //!< @todo not allways true
-
-
 
         //        // If alias not already present then register it, (if data exist)
         //        if (!pDataContainer)
@@ -2533,6 +2531,7 @@ bool LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
         //        }
         //        // Else we should do nothing as the alias is already registered for the same fullName
     }
+    return false;
 }
 
 

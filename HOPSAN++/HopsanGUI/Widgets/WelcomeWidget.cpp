@@ -324,7 +324,10 @@ void WelcomeWidget::updateRecentList()
             mRecentModelList.append(recentModels.at(i));
             QString displayName = recentModels.at(i);
             displayName = displayName.section('/', -1);
-            displayName.chop(4);
+            if (displayName.endsWith(".hmf") || displayName.endsWith(".xml") )
+            {
+                displayName.chop(4);
+            }
             QString toolTipName = displayName;
             while(mpRecentList->fontMetrics().width(displayName) > mFrameW*2+mSpacing-35)
             {

@@ -630,53 +630,48 @@ void ContainerObject::deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings
 }
 
 
-//! @brief Delete GUIObject with specified name
-//! @param objectName is the name of the componenet to delete
-void ContainerObject::deleteModelObject(QString objectName, UndoStatusEnumT undoSettings)
+//! @brief Delete ModelObject with specified name
+//! @param rObjectName is the name of the componenet to delete
+void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings)
 {
-    //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
-    mpLogDataHandler->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
+    mpLogDataHandler->removeFavoriteVariableByComponentName(rObjectName);   //Does nothing unless this is a system
 
-    ModelObjectMapT::iterator it = mModelObjectMap.find(objectName);
-    ModelObject* obj_ptr = it.value();
-
-        //Remove connectors that are connected to the model object
-    QList<Connector *> pConnectorList = obj_ptr->getConnectorPtrs();
-    for(int i=0; i<pConnectorList.size(); ++i)
-    {
-        this->removeSubConnector(pConnectorList[i], undoSettings);
-    }
-
-    if (undoSettings == Undo && !mUndoDisabled)
-    {
-        //Register removal of model object in undo stack
-        this->mpUndoStack->registerDeletedObject(it.value());
-        //emit componentChanged(); //!< @todo Why do we need to emit this signal after regestering in undostack
-        //qDebug() << "Emitting!";
-    }
-
-
+    ModelObjectMapT::iterator it = mModelObjectMap.find(rObjectName);
     if (it != mModelObjectMap.end())
     {
-        //! @todo maybe this should be handled somwhere else (not sure maybe this is the best place)
-        if ((*it)->type() == ContainerPortType )
+        ModelObject* pModelObject = it.value();
+
+        // Remove connectors that are connected to the model object
+        QList<Connector *> connectorPtrList = pModelObject->getConnectorPtrs();
+        for(int i=0; i<connectorPtrList.size(); ++i)
         {
-            this->removeExternalPort((*it)->getName());
+            this->removeSubConnector(connectorPtrList[i], undoSettings);
+        }
+
+        if (undoSettings == Undo && !mUndoDisabled)
+        {
+            // Register removal of model object in undo stack
+            this->mpUndoStack->registerDeletedObject(pModelObject);
+        }
+
+        //! @todo maybe this should be handled somwhere else (not sure maybe this is the best place)
+        if (pModelObject->type() == ContainerPortType )
+        {
+            this->removeExternalPort(pModelObject->getName());
         }
 
         mModelObjectMap.erase(it);
-        mSelectedModelObjectsList.removeAll(obj_ptr);
-        mpScene->removeItem(obj_ptr);
-        obj_ptr->deleteInHopsanCore();
-        obj_ptr->deleteLater();
+        mSelectedModelObjectsList.removeAll(pModelObject);
+        mpScene->removeItem(pModelObject);
+        pModelObject->deleteInHopsanCore();
+        pModelObject->deleteLater();
     }
     else
     {
-        //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
-        gpTerminalWidget->mpConsole->printErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
+        gpTerminalWidget->mpConsole->printErrorMessage("Could not delete object with name " + rObjectName + ", object not found");
     }
     emit checkMessages();
-    mpModelWidget->getGraphicsView()->updateViewPort();
+    mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo maybe handle by signal, and maybe have a bool in view that tells it to hold redraw (usefull on multiple deletes like when closing a model)
 }
 
 
@@ -692,11 +687,11 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, UndoSt
         if (it != mModelObjectMap.end())
         {
             // Make a backup copy and erase old record
-            ModelObject* obj_ptr = it.value();
+            ModelObject* pModelObject = it.value();
             mModelObjectMap.erase(it);
 
             // Set new name, first in core then in gui object
-            switch (obj_ptr->type())
+            switch (pModelObject->type())
             {
             case ContainerPortType : //!< @todo What will happen when we try to rename a groupport
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
@@ -707,10 +702,10 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, UndoSt
             }
 
             // Override the GUI ModelObject name with the new name from the core
-            obj_ptr->refreshDisplayName(modNewName);
+            pModelObject->refreshDisplayName(modNewName);
 
             //Re-insert
-            mModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
+            mModelObjectMap.insert(pModelObject->getName(), pModelObject);
         }
         else
         {
@@ -729,9 +724,9 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, UndoSt
 
 
 //! @brief Tells whether or not a component with specified name exist in the GraphicsView
-bool ContainerObject::hasModelObject(QString name)
+bool ContainerObject::hasModelObject(const QString &rName) const
 {
-    return (mModelObjectMap.count(name) > 0);
+    return (mModelObjectMap.count(rName) > 0);
 }
 
 //! @brief Takes ownership of supplied objects, widgets and connectors
@@ -1994,22 +1989,6 @@ bool ContainerObject::setVariableAlias(const QString &rFullName, const QString &
     if (isOk)
     {
         emit aliasChanged(rFullName, rAlias);
-        mpModelWidget->hasChanged();
-    }
-    else
-    {
-        emit checkMessages();
-    }
-
-    return isOk;
-}
-
-bool ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
-{
-    bool isOk = getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
-    if (isOk)
-    {
-        emit aliasChanged(makeConcatName(compName,portName,varName), alias);
         mpModelWidget->hasChanged();
     }
     else

@@ -150,7 +150,7 @@ namespace hopsan {
         // Adding removing and renaming components
         void addComponents(std::vector<Component*> &rComponents);
         void addComponent(Component *pComponent);
-        void renameSubComponent(const HString &rOld_name, const HString &rNew_name);
+        void renameSubComponent(const HString &rOldName, const HString &rNewName);
         void removeSubComponent(const HString &rName, bool doDelete=false);
         void removeSubComponent(Component *pComponent, bool doDelete=false);
         HString reserveUniqueName(const HString &rDesiredName, const UniqeNameEnumT type=UniqueReservedNameType);

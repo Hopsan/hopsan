@@ -151,7 +151,6 @@ private:
     // Private member functions
     void deleteCustomData();
     void connectDataSignals();
-    void setParentPlotArea(PlotArea* pParentPlotArea);
 
     // Curve data
     HopsanPlotCurveTypeEnumT mCurveType;

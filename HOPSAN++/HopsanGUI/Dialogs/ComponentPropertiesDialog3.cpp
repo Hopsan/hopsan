@@ -175,7 +175,8 @@ bool VariableTableWidget::setAliasName(const int row)
     QStringList parts = name.split("#");
     if (parts.size() == 2)
     {
-        mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName(), parts[0], parts[1], alias);
+        //! @todo look over this name stuff
+        mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName()+"#"+parts[0]+"#"+parts[1], alias);
     }
     return true;
 }

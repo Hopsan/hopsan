@@ -469,28 +469,30 @@ void ComponentSystem::addComponent(Component *pComponent)
 
 
 //! @brief Rename a sub component and automatically fix unique names
-void ComponentSystem::renameSubComponent(const HString &rOld_name, const HString &rNew_name)
+void ComponentSystem::renameSubComponent(const HString &rOldName, const HString &rNewName)
 {
     // First find the post in the map where the old name resides, copy the data stored there
-    SubComponentMapT::iterator it = mSubComponentMap.find(rOld_name);
+    SubComponentMapT::iterator it = mSubComponentMap.find(rOldName);
     if (it != mSubComponentMap.end())
     {
         // If found, erase old record
-        Component* temp_comp_ptr = it->second;
+        Component* pTempComp = it->second;
         mSubComponentMap.erase(it);
 
         // Insert new (with new name)
-        HString mod_new_name = this->reserveUniqueName(rNew_name, UniqueComponentNameType);
-        this->unReserveUniqueName(rOld_name);
+        HString mod_new_name = this->reserveUniqueName(rNewName, UniqueComponentNameType);
+        this->unReserveUniqueName(rOldName);
+        mSubComponentMap.insert(pair<HString, Component*>(mod_new_name, pTempComp));
 
-        mSubComponentMap.insert(pair<HString, Component*>(mod_new_name, temp_comp_ptr));
+        // Rename aliases
+        mAliasHandler.componentRenamed(rOldName, mod_new_name);
 
         // Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
-        temp_comp_ptr->mName = mod_new_name;
+        pTempComp->mName = mod_new_name;
     }
     else
     {
-        addErrorMessage("No component with old_name: "+rOld_name+" found when renaming!");
+        addErrorMessage("No component with old_name: "+rOldName+" found when renaming!");
     }
 }
 
@@ -525,6 +527,9 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
             disconnect(ports_it->second, *conn_ports_it);
         }
     }
+
+    // Remove any component aliases
+    mAliasHandler.componentRemoved(pComponent->getName());
 
     // Remove from storage
     removeSubComponentPtrFromStorage(pComponent);
@@ -3987,8 +3992,8 @@ bool AliasHandler::setParameterAlias(const HString & /*alias*/, const HString & 
 
 void AliasHandler::componentRenamed(const HString &rOldCompName, const HString &rNewCompName)
 {
-    std::map<HString, ParamOrVariableT>::iterator it;
-    for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
+    std::map<HString, ParamOrVariableT>::iterator it=mAliasMap.begin();
+    while(it!=mAliasMap.end())
     {
         if (it->second.componentName == rOldCompName)
         {
@@ -4003,6 +4008,10 @@ void AliasHandler::componentRenamed(const HString &rOldCompName, const HString &
             // Restart search for more components
             it = mAliasMap.begin();
         }
+        else
+        {
+            ++it;
+        }
     }
 }
 
@@ -4013,13 +4022,17 @@ void AliasHandler::portRenamed(const HString & /*compName*/, const HString & /*o
 
 void AliasHandler::componentRemoved(const HString &rCompName)
 {
-    std::map<HString, ParamOrVariableT>::iterator it;
-    for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
+    std::map<HString, ParamOrVariableT>::iterator it=mAliasMap.begin();
+    while (it!=mAliasMap.end())
     {
         if (it->second.componentName == rCompName)
         {
-            mAliasMap.erase(it);
+            removeAlias(it->first);
             it = mAliasMap.begin(); //Restart search for more components
+        }
+        else
+        {
+            ++it;
         }
     }
 }
@@ -4056,8 +4069,8 @@ bool AliasHandler::removeAlias(const HString &rAlias)
                 }
             }
         }
+        mpSystem->unReserveUniqueName(rAlias); //We must unreserve before erasing the it, since rAlias may be a reference to data in it
         mAliasMap.erase(it);
-        mpSystem->unReserveUniqueName(rAlias);
         return true;
     }
     return false;
@@ -4127,7 +4140,11 @@ void AliasHandler::getVariableFromAlias(const HString &rAlias, HString &rCompNam
                 if (pPort)
                 {
                     int id = pPort->getVariableIdByAlias(rAlias);
-                    rVarName = pPort->getNodeDataDescription(id)->name;
+                    const NodeDataDescription *pDataDesc = pPort->getNodeDataDescription(id);
+                    if (pDataDesc)
+                    {
+                        rVarName = pDataDesc->name;
+                    }
                 }
             }
         }

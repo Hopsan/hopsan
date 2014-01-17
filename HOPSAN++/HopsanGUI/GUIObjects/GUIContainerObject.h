@@ -73,9 +73,9 @@ public:
     ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
     ModelObject *getModelObject(const QString modelObjectName);
     Port *getModelObjectPort(const QString modelObjectName, const QString portName);
-    void deleteModelObject(QString componentName, UndoStatusEnumT undoSettings=Undo);
+    void deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings=Undo);
     void renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings=Undo);
-    bool hasModelObject(QString name);
+    bool hasModelObject(const QString &rName) const;
     void rememberSelectedModelObject(ModelObject *object);
     void forgetSelectedModelObject(ModelObject *object);
     QList<ModelObject *> getSelectedModelObjectPtrs();
@@ -83,7 +83,6 @@ public:
 
     // Alias methods
     bool setVariableAlias(const QString &rFullName, const QString &rAlias);
-    bool setVariableAlias(QString compName, QString portName, QString varName, QString alias); //!< @deprecated
     QString getFullNameFromAlias(const QString alias);
     QStringList getAliasNames();
 
