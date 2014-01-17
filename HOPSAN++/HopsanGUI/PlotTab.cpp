@@ -1652,85 +1652,95 @@ void PlotTab::openCreateBodePlotDialog()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    double dataSize = getCurves(0).first()->getSharedTimeOrFrequencyVector()->getDataSize()+1;
-    double stopTime = getCurves(0).first()->getSharedTimeOrFrequencyVector()->last();
-    double maxFreq = dataSize/stopTime/2;
-    QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
-    QLabel *pMaxFrequencyValue = new QLabel();
-    QLabel *pMaxFrequencyUnit = new QLabel("Hz");
-    QSlider *pMaxFrequencySlider;
-    pMaxFrequencyValue->setNum(maxFreq);
-    pMaxFrequencySlider = new QSlider(this);
-    pMaxFrequencySlider->setOrientation(Qt::Horizontal);
-    pMaxFrequencySlider->setMinimum(0);
-    pMaxFrequencySlider->setMaximum(maxFreq);
-    pMaxFrequencySlider->setValue(maxFreq);
-    connect(pMaxFrequencySlider, SIGNAL(valueChanged(int)), pMaxFrequencyValue, SLOT(setNum(int)));
-
-    QHBoxLayout *pSliderLayout = new QHBoxLayout();
-    pSliderLayout->addWidget(pMaxFrequencySlider);
-    pSliderLayout->addWidget(pMaxFrequencyValue);
-    pSliderLayout->addWidget(pMaxFrequencyUnit);
-
-    QPushButton *pCancelButton = new QPushButton("Cancel");
-    QPushButton *pNextButton = new QPushButton("Go!");
-
-    // Toolbar
-    QAction *pHelpAction = new QAction("Show Context Help", this);
-    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
-    QToolBar *pToolBar = new QToolBar(this);
-    pToolBar->addAction(pHelpAction);
-
-    QGridLayout *pBodeDialogLayout = new QGridLayout;
-    pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 3);
-    pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 3);
-    pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 3);
-    pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 3);
-    pBodeDialogLayout->addWidget(pToolBar, 4, 0, 1, 1);
-    pBodeDialogLayout->addWidget(pCancelButton, 4, 1, 1, 1);
-    pBodeDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
-
-    pBodeDialog->setLayout(pBodeDialogLayout);
-    pBodeDialog->setPalette(gpConfig->getPalette());
-
-    connect(pCancelButton, SIGNAL(clicked()), pBodeDialog, SLOT(close()));
-    connect(pNextButton, SIGNAL(clicked()), pBodeDialog, SLOT(accept()));
-    connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
-
-    int rc = pBodeDialog->exec();
-    if (rc == QDialog::Accepted)
+    SharedVariablePtrT pTimeVector = getCurves(0).first()->getSharedTimeOrFrequencyVector();
+    if (pTimeVector)
     {
-        PlotCurve *pInputCurve=0, *pOutputCurve=0;
-        QMap<QRadioButton *, PlotCurve *>::iterator it;
-        for(it=bodeInputButtonToCurveMap.begin(); it!=bodeInputButtonToCurveMap.end(); ++it)
+        const double dataSize = pTimeVector->getDataSize()+1;
+        const double stopTime = pTimeVector->last();
+        const double maxFreq = dataSize/stopTime/2;
+        QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
+        QLabel *pMaxFrequencyValue = new QLabel();
+        QLabel *pMaxFrequencyUnit = new QLabel("Hz");
+        QSlider *pMaxFrequencySlider;
+        pMaxFrequencyValue->setNum(maxFreq);
+        pMaxFrequencySlider = new QSlider(this);
+        pMaxFrequencySlider->setOrientation(Qt::Horizontal);
+        pMaxFrequencySlider->setMinimum(0);
+        pMaxFrequencySlider->setMaximum(maxFreq);
+        pMaxFrequencySlider->setValue(maxFreq);
+        connect(pMaxFrequencySlider, SIGNAL(valueChanged(int)), pMaxFrequencyValue, SLOT(setNum(int)));
+
+        QHBoxLayout *pSliderLayout = new QHBoxLayout();
+        pSliderLayout->addWidget(pMaxFrequencySlider);
+        pSliderLayout->addWidget(pMaxFrequencyValue);
+        pSliderLayout->addWidget(pMaxFrequencyUnit);
+
+        QPushButton *pCancelButton = new QPushButton("Cancel");
+        QPushButton *pNextButton = new QPushButton("Go!");
+
+        // Toolbar
+        QAction *pHelpAction = new QAction("Show Context Help", this);
+        pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+        QToolBar *pToolBar = new QToolBar(this);
+        pToolBar->addAction(pHelpAction);
+
+        QGridLayout *pBodeDialogLayout = new QGridLayout;
+        pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 3);
+        pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pToolBar, 4, 0, 1, 1);
+        pBodeDialogLayout->addWidget(pCancelButton, 4, 1, 1, 1);
+        pBodeDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
+
+        pBodeDialog->setLayout(pBodeDialogLayout);
+        pBodeDialog->setPalette(gpConfig->getPalette());
+
+        connect(pCancelButton, SIGNAL(clicked()), pBodeDialog, SLOT(close()));
+        connect(pNextButton, SIGNAL(clicked()), pBodeDialog, SLOT(accept()));
+        connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
+
+        int rc = pBodeDialog->exec();
+        if (rc == QDialog::Accepted)
         {
-            if(it.key()->isChecked())
+            PlotCurve *pInputCurve=0, *pOutputCurve=0;
+            QMap<QRadioButton *, PlotCurve *>::iterator it;
+            for(it=bodeInputButtonToCurveMap.begin(); it!=bodeInputButtonToCurveMap.end(); ++it)
             {
-                pInputCurve = it.value();
-                break;
+                if(it.key()->isChecked())
+                {
+                    pInputCurve = it.value();
+                    break;
+                }
             }
-        }
-        for(it=bodeOutputButtonToCurveMap.begin(); it!=bodeOutputButtonToCurveMap.end(); ++it)
-        {
-            if(it.key()->isChecked())
+            for(it=bodeOutputButtonToCurveMap.begin(); it!=bodeOutputButtonToCurveMap.end(); ++it)
             {
-                pOutputCurve = it.value();
-                break;
+                if(it.key()->isChecked())
+                {
+                    pOutputCurve = it.value();
+                    break;
+                }
             }
-        }
-        if(pInputCurve == 0 || pOutputCurve == 0)
-        {
-            QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Both input and output vectors must be selected."));
-        }
-        else if(pInputCurve == pOutputCurve)
-        {
-            QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Input and output vectors must be different."));
-        }
-        else
-        {
-            mpParentPlotWindow->createBodePlot(pInputCurve->getLogDataVariablePtr(), pOutputCurve->getLogDataVariablePtr(), pMaxFrequencySlider->value());
+            //! @todo maybe check that both are time vectors and that both have same time
+            if(pInputCurve == 0 || pOutputCurve == 0)
+            {
+                QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Both input and output vectors must be selected."));
+            }
+            else if(pInputCurve == pOutputCurve)
+            {
+                QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Input and output vectors must be different."));
+            }
+            else
+            {
+                mpParentPlotWindow->createBodePlot(pInputCurve->getLogDataVariablePtr(), pOutputCurve->getLogDataVariablePtr(), pMaxFrequencySlider->value());
+            }
         }
     }
+    else
+    {
+        QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("No time vector available"));
+    }
+
     pBodeDialog->deleteLater();
 }
 
