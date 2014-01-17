@@ -3920,6 +3920,12 @@ bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompN
 
 bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const int varId)
 {
+    if (varId<0)
+    {
+        mpSystem->addErrorMessage("Can not set alias for dataId < 0 (incorrect variable name)");
+        return false;
+    }
+
     if (!isNameValid(rAlias))
     {
         mpSystem->addErrorMessage("Invalid characters in requested alias name: "+rAlias);

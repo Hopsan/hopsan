@@ -1606,22 +1606,17 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
     }
 
     QString variable = splitCmd[0];
-    toShortDataNames(variable);
-    variable.remove("\"");
     QString alias = splitCmd[1];
-
-    //SharedLogVariableDataPtrT pVariable = getVariablePtr(variable);
-
-    QString longName = variable;
-    toLongDataNames(longName);
-    if(/*!pVariable || */!mpModel->getTopLevelSystemContainer()->getLogDataHandler()->defineAlias(alias, longName/*pVariable->getFullVariableName()*/))
+    variable.remove("\"");
+    toLongDataNames(variable);
+    if(mpModel->getTopLevelSystemContainer()->setVariableAlias(variable, alias))
     {
-        HCOMERR("Failed to assign variable alias.");
+        HCOMINFO(QString("Sucessfully assigned variable alias %1").arg(alias));
     }
-
-    gpPlotWidget->updateList();
-
-    return;
+    else
+    {
+        HCOMERR(QString("Failed to assign variable alias %1").arg(alias));
+    }
 }
 
 void HcomHandler::executeRemoveVariableCommand(const QString cmd)
@@ -4521,18 +4516,6 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     {
         for (int d=0; d<data_containers.size(); ++d)
         {
-//            QString name;
-//            if (data_containers[d].mIsAlias)
-//            {
-//                name = data_containers[d].mpDataContainer->getAliasName();
-//            }
-//            else
-//            {
-//                name = data_containers[d].mpDataContainer->getName();
-//                toShortDataNames(name);
-//            }
-//            rVariables.append(name);
-            //! @todo what about alis here FIXA /Peter
             QString name = data_containers[d]->getName();
             toShortDataNames(name);
             rVariables.append(name);
@@ -4579,18 +4562,6 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             QList< QPointer<LogVariableContainer> > data_conts = pLogDataHandler->getLogDataContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard), desiredGen);
             for (int d=0; d<data_conts.size(); ++d)
             {
-//                QString name;
-//                if (data_conts[d].mIsAlias)
-//                {
-//                    name = data_conts[d].mpDataContainer->getAliasName();
-//                }
-//                else
-//                {
-//                    name = data_conts[d].mpDataContainer->getName();
-//                    toShortDataNames(name);
-//                }
-//                rVariables.append(name+QString(".%1").arg(desiredGen+1));
-                //! @todo What about alias here FIXA /Peter
                 QString name = data_conts[d]->getName();
                 toShortDataNames(name);
                 rVariables.append(name+QString(".%1").arg(desiredGen+1));
@@ -4615,19 +4586,8 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             QList< QPointer<LogVariableContainer> > logdata = pLogDataHandler->getAllLogVariableContainers();
             for (int d=0; d<logdata.size(); ++d)
             {
-//                QString name;
-//                if (logdata[d].mIsAlias)
-//                {
-//                    name = logdata[d].mpDataContainer->getAliasName();
-//                }
-//                else
-//                {
-//                    name = logdata[d].mpDataContainer->getName();
-//                    toShortDataNames(name);
-//                }
                 QString name = logdata[d]->getName();
                 toShortDataNames(name);
-                //! @todo What about alias here FIXA /Peter
                 QList<int> gens = logdata[d]->getGenerations();
                 for (int g=0; g<gens.size(); ++g)
                 {
