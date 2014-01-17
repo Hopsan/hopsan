@@ -1207,17 +1207,21 @@ void PlotArea::updateAxisLabels()
             {
                 pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVector();
             }
-            if (!pSharedXVector.isNull() && !sharedBottomVars.contains(pSharedXVector))
+            QString bottomLabel;
+            if (pSharedXVector.isNull())
+            {
+                bottomLabel = "Samples";
+            }
+            else if (!sharedBottomVars.contains(pSharedXVector))
             {
                 //! @todo for custom x mayb check for alias name
                 sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
-                QString bottomLabel = QString("%1 [%2]").arg(pSharedXVector->getDataName()).arg(pSharedXVector->getActualPlotDataUnit());
-                if (!bottomLabels.contains(bottomLabel))
-                {
-                    bottomLabels.append(bottomLabel);
-                }
+                bottomLabel = QString("%1 [%2]").arg(pSharedXVector->getDataName()).arg(pSharedXVector->getActualPlotDataUnit());
             }
-            //! @todo what should we show if no time or frequency vector present, espescially a problem if mixing vectors with tim or frequency domain variabels
+            if (!bottomLabel.isEmpty() && !bottomLabels.contains(bottomLabel))
+            {
+                bottomLabels.append(bottomLabel);
+            }
         }
 
         // Set the actual axis labels
