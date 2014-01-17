@@ -874,14 +874,12 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
 
     // Create menu for inserting curve markers
     pInsertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
-    for(int plotID=0; plotID<2; ++plotID)
+    for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
     {
-        for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
-        {
-            QAction *pTempAction = pInsertMarkerMenu->addAction((*itc)->getCurveName());
-            actionToCurveMap.insert(pTempAction, (*itc));
-        }
+        QAction *pTempAction = pInsertMarkerMenu->addAction((*itc)->getCurveName());
+        actionToCurveMap.insert(pTempAction, (*itc));
     }
+
 
     // Create option for changing axis labels
     pSetUserDefinedAxisLabels = menu.addAction("Set userdefined axis labels");
