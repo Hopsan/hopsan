@@ -192,7 +192,7 @@ public:
     void takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration=-2);
 
 public slots:
-    bool registerAlias(const QString &rFullName, const QString &rAlias);
+    void registerAlias(const QString &rFullName, const QString &rAlias);
     void unregisterAlias(const QString &rAlias);
 
 

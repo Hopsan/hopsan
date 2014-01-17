@@ -1103,6 +1103,9 @@ void LogDataHandler::undefinePlotAlias(const QString &rAlias)
     if (!fullName.isEmpty())
     {
         mpParentContainerObject->setVariableAlias(fullName,""); //!< @todo maybe a remove alias function would be nice
+        // Regardless of success or falure, lets remove the alias from log variables
+        // Set variable will fail if you try to remove alias from an old component that has already been deleted
+        unregisterAlias(rAlias);
     }
 }
 
@@ -2444,7 +2447,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
     //! @todo favorite variables, plotwindows, imported data
 }
 
-bool LogDataHandler::registerAlias(const QString &rFullName, const QString &rAlias)
+void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAlias)
 {
     QPointer<LogVariableContainer> pFullContainer = getLogVariableContainer(rFullName);
     if (pFullContainer)
@@ -2482,56 +2485,39 @@ bool LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
         }
         else
         {
-            // Check if alias already exist
             QList<int> fullGens = pFullContainer->getGenerations();
-            QPointer<LogVariableContainer> pAliasContainer = getLogVariableContainer(rAlias);
-            if (pAliasContainer)
+            QPointer<LogVariableContainer> pAliasContainer = getLogVariableContainer(rAlias);             // Check if alias already exist
+            for(int i=fullGens.size()-1; i>=0; --i)
             {
-                // Check so that there will be no colision when merging alias
-                for(int i=0; i<fullGens.size(); ++i)
+                SharedVariablePtrT pAliasData;
+                if (pAliasContainer)
                 {
-                    SharedVariablePtrT pAliasData = pAliasContainer->getDataGeneration(fullGens[i]);
-                    if ( pAliasData && (pAliasData->getFullVariableName() != rFullName) )
-                    {
-                        // Abort
-                        gpTerminalWidget->mpConsole->printWarningMessage("Alias colission when trying to merge alias, Aborting!");
-                        return false;
-                    }
+                    pAliasData = pAliasContainer->getDataGeneration(fullGens[i]);
                 }
-            }
-            // If we get here then we can merge (any previous data with alis name will be overwritten if fullname was same)
-            for(int i=0; i<fullGens.size(); ++i)
-            {
-                SharedVariablePtrT pData = pFullContainer->getDataGeneration(fullGens[i]);
-                pData->mpVariableDescription->mAliasName = rAlias;
-                insertVariable(pData, rAlias, fullGens[i]);
+                // Check so that there will be no colision when merging alias
+                if ( pAliasData && (pAliasData->getFullVariableName() != rFullName) )
+                {
+                    // Abort if we reach a generation that already exist and does not match
+                    //! @todo we could keep going and try every gen (but then we do not want to duplicate this warning message)
+                    gpTerminalWidget->mpConsole->printWarningMessage("Alias collision when trying to merge alias, Aborting alias merge!");
+                    break;
+                }
+                else
+                {
+                    // If we get here then we can merge (any previous data with alias name will be overwritten if fullname was same)
+                    SharedVariablePtrT pData = pFullContainer->getDataGeneration(fullGens[i]);
+                    // First unregister the old alias
+                    if (pData->hasAliasName())
+                    {
+                        unregisterAlias(pData->getAliasName());
+                    }
+                    pData->mpVariableDescription->mAliasName = rAlias;
+                    insertVariable(pData, rAlias, fullGens[i]);
+                }
             }
             emit newDataAvailable();
         }
-        return true; //!< @todo not allways true
-
-        //        // If alias not already present then register it, (if data exist)
-        //        if (!pDataContainer)
-        //        {
-        //            pDataContainer = getLogVariableContainer(rFullName);
-        //            if (pDataContainer)
-        //            {
-        //                mLogDataMap.insert(rAlias, LogDataStructT(pDataContainer,true));
-        //                pDataContainer->setAliasName(rAlias);
-        //                emit newDataAvailable();
-        //            }
-        //        }
-        //        else if (pDataContainer->getFullVariableName() != rFullName)
-        //        {
-        //            // Ok we should reregister this alias
-        //            mLogDataMap.remove(rAlias);
-        //            mLogDataMap.insert(rAlias, LogDataStructT(pDataContainer,true));
-        //            pDataContainer->setAliasName(rAlias);
-        //            emit newDataAvailable();
-        //        }
-        //        // Else we should do nothing as the alias is already registered for the same fullName
     }
-    return false;
 }
 
 
