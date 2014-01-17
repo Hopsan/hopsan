@@ -49,10 +49,11 @@ void splitConcatName(const QString fullName, QString &rCompName, QString &rPortN
 
 //! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)
 enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType, UndefinedVariableSourceType};
-QString getVariableSourceTypeAsString(const VariableSourceTypeT type);
+QString variableSourceTypeAsString(const VariableSourceTypeT type);
 
 //! @brief This enum describes the variable type
 enum VariableTypeT {VectorType, TimeDomainType, FrequencyDomainType, RealFrequencyDomainType, ImaginaryFrequencyDomainType, AmplitudeFrequencyDomainType, PhaseFrequencyDomainType, ComplexType, UndefinedVariableType};
+QString variableTypeAsString(const VariableTypeT type);
 
 //! @class VariableCommonDescription
 //! @brief Container class for strings describing a log variable (common data for all generations)

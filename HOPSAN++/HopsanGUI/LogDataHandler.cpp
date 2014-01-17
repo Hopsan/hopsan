@@ -1945,7 +1945,7 @@ void LogDataHandler::appendVariable(const QString &a, const double x, const doub
     return;
 }
 
-SharedVariablePtrT LogDataHandler::defineNewVariable(const QString &rDesiredname)
+SharedVariablePtrT LogDataHandler::defineNewVariable(const QString &rDesiredname, VariableTypeT type)
 {
     bool ok = isNameValid(rDesiredname);
     if (!ok)
@@ -1954,34 +1954,21 @@ SharedVariablePtrT LogDataHandler::defineNewVariable(const QString &rDesiredname
     }
     if( ok && (mLogDataMap.find(rDesiredname) == mLogDataMap.end()) )
     {
-        return defineNewVectorVariable_NoNameCheck(rDesiredname);
+        return defineNewVectorVariable_NoNameCheck(rDesiredname, type);
     }
     return SharedVariablePtrT();
 }
 
-SharedVariablePtrT LogDataHandler::defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription)
-{
-    SharedVariablePtrT pData = defineNewVariable(rDesiredname);
-    if (pData)
-    {
-        pData->mpVariableDescription->mDataUnit = rUnit;
-        pData->mpVariableDescription->mDataUnit = rDescription;
-    }
-    return pData;
-}
-
-//SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y)
+//SharedVariablePtrT LogDataHandler::defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription)
 //{
-//    VariableDescription varDesc;
-//    varDesc.mDataName = desiredname;
-//    varDesc.mVariableSourceType = VariableDescription::ScriptVariableType;
-//    LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-//    pDataContainer->addDataGeneration(mGenerationNumber, x, y);
-//    mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
-//    return pDataContainer->getDataGeneration(mGenerationNumber);
+//    SharedVariablePtrT pData = defineNewVariable(rDesiredname);
+//    if (pData)
+//    {
+//        pData->mpVariableDescription->mDataUnit = rUnit;
+//        pData->mpVariableDescription->mDataUnit = rDescription;
+//    }
+//    return pData;
 //}
-
-
 
 //! @brief Tells whether or not the model has open plot curves
 //! @note Used to decide if warning message shall be shown when closing model
@@ -2296,14 +2283,14 @@ void LogDataHandler::removeGenerationCacheIfEmpty(const int gen)
     }
 }
 
-SharedVariablePtrT LogDataHandler::defineNewVectorVariable_NoNameCheck(const QString &rName)
+SharedVariablePtrT LogDataHandler::defineNewVectorVariable_NoNameCheck(const QString &rName, VariableTypeT type)
 {
-    //! @todo maybe this coude should not add without checking name, (may overwrite existing data) unless that is what we want here, insertVariable maybe should be used instead
+    //! @todo insertVariable maybe should be used instead
     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
     pVarDesc->mDataName = rName;
     pVarDesc->mVariableSourceType = ScriptVariableType;
     LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc->getFullName(), this);
-    SharedVariablePtrT pNewData = SharedVariablePtrT(new VectorVariable(QVector<double>(), mGenerationNumber, pVarDesc, SharedMultiDataVectorCacheT()));
+    SharedVariablePtrT pNewData = createFreeVariable(type, pVarDesc);
     pDataContainer->addDataGeneration(mGenerationNumber, pNewData);
     mLogDataMap.insert(pVarDesc->getFullName(), pDataContainer);
     return pDataContainer->getDataGeneration(mGenerationNumber);

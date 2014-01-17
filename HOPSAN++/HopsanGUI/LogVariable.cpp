@@ -81,6 +81,7 @@ SharedVariablePtrT createFreeVariable(VariableTypeT type, SharedVariableDescript
     case FrequencyDomainType:
         return SharedVariablePtrT(new FrequencyDomainVariable(createFreeFrequencyVectorVariabel(QVector<double>()), QVector<double>(), 0, pVarDesc, SharedMultiDataVectorCacheT()));
     default:
+        //! @todo support all types
         // Not yet supported by factory
         return SharedVariablePtrT();
     }
@@ -962,7 +963,7 @@ void LogVariableContainer::actuallyRemoveDataGen(GenerationMapT::iterator git)
 }
 
 //! @brief This function converts a VariableSourceTypeT enum into a string
-QString getVariableSourceTypeAsString(const VariableSourceTypeT type)
+QString variableSourceTypeAsString(const VariableSourceTypeT type)
 {
     switch (type)
     {
@@ -980,6 +981,30 @@ QString getVariableSourceTypeAsString(const VariableSourceTypeT type)
         break;
     default :
         return "UndefinedVariableSourceType";
+    }
+}
+
+
+QString variableTypeAsString(const VariableTypeT type)
+{
+    //! @todo add all of them
+    //RealFrequencyDomainType, ImaginaryFrequencyDomainType, AmplitudeFrequencyDomainType, PhaseFrequencyDomainType,
+    switch (type)
+    {
+    case VectorType :
+        return "VectorType";
+        break;
+    case TimeDomainType :
+        return "TimeDomainType";
+        break;
+    case FrequencyDomainType :
+        return "FrequencyDomainType";
+        break;
+    case ComplexType :
+        return "ComplexType";
+        break;
+    default :
+        return "UndefinedVariableType";
     }
 }
 
@@ -1719,3 +1744,5 @@ IndexIntervalCollection::MinMaxT::MinMaxT(int min, int max)
     mMin = min;
     mMax = max;
 }
+
+

@@ -4774,30 +4774,32 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(!pars.isEmpty())
             {
                 executeCommand("chpa "+left+" "+QString::number(mAnsScalar));
-                //HCOMPRINT("Assigning "+left+" with "+QString::number(mAnsScalar));
                 return true;
             }
             mLocalVars.insert(left, mAnsScalar);
-            HCOMPRINT("Assigning "+left+" with "+QString::number(mAnsScalar));
+            HCOMPRINT("Assigning scalar "+left+" with "+QString::number(mAnsScalar));
             return true;
         }
         else if(mAnsType==DataVector)
         {
             SharedVariablePtrT pLeftData = getLogVariablePtr(left);
-            SharedVariablePtrT pValueData = mAnsVector;
-            if (pLeftData && pValueData)
+            if (pLeftData && mAnsVector)
             {
-                pLeftData->assignFrom(pValueData);
+                if (pLeftData->getVariableType() != mAnsVector->getVariableType())
+                {
+                    HCOMWARN(QString("Variable typ missmatch: %1 != %2, you may have lost information!").arg(variableTypeAsString(pLeftData->getVariableType())).arg(variableTypeAsString(mAnsVector->getVariableType())));
+                }
+                pLeftData->assignFrom(mAnsVector);
                 return true;
             }
-            else if (mpModel && pValueData)
+            else if (mpModel && mAnsVector)
             {
                 // Value given but left does not exist, create it
                 //! @todo this could use the wrong logdatahandler, (it will be the one from the displayed model rather then the one being processed
-                pLeftData = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->defineNewVariable(left);
+                pLeftData = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->defineNewVariable(left, mAnsVector->getVariableType());
                 if (pLeftData)
                 {
-                    pLeftData->assignFrom(pValueData);
+                    pLeftData->assignFrom(mAnsVector);
                     pLeftData->preventAutoRemoval();
                     return true;
                 }

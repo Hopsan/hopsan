@@ -64,9 +64,8 @@ public:
     void exportToCSV(const QString &rFilePath, const QVector<SharedVariablePtrT> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
 
-    SharedVariablePtrT defineNewVariable(const QString &rDesiredname);
-    SharedVariablePtrT defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription);
-    //SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
+    SharedVariablePtrT defineNewVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
+    //SharedVariablePtrT defineNewVariable(const QString &rDesiredname, const QString &rUnit, const QString &rDescription);
     SharedVariablePtrT defineTempVariable(const QString &rDesiredname);
     SharedVariablePtrT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
@@ -216,7 +215,7 @@ private:
     QString getNewCacheName();
     void rememberIfImported(SharedVariablePtrT pData);
     void removeGenerationCacheIfEmpty(const int gen);
-    SharedVariablePtrT defineNewVectorVariable_NoNameCheck(const QString &rName);
+    SharedVariablePtrT defineNewVectorVariable_NoNameCheck(const QString &rName, VariableTypeT type=VectorType);
 
     ContainerObject *mpParentContainerObject;
 
