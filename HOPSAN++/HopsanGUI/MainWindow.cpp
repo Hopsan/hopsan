@@ -354,7 +354,7 @@ void MainWindow::initializeWorkspace()
 
     // Load built in default Library
 #ifdef BUILTINDEFAULTCOMPONENTLIB
-    gpLibraryHandler->loadLibrary(componentPath, Internal);
+    gpLibraryHandler->loadLibrary(componentPath, InternalLib);
 #else
     gpLibraryHandler->loadLibrary(componentPath+"defaultComponentLibrary.xml", InternalLib);
 #endif
