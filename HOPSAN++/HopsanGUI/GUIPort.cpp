@@ -328,7 +328,7 @@ void Port::openRightClickMenu(QPoint screenPos)
     // Now build plot menue
     QMap<QAction*, int> plotActions;
 
-    QVector<SharedVariablePtrT> logVars = mpParentModelObject->getParentContainerObject()->getLogDataHandler()->getMultipleLogVariableDataPtrs(QRegExp(makeConcatName(mpParentModelObject->getName(),this->getName(),".*")));
+    QVector<SharedVariablePtrT> logVars = mpParentModelObject->getParentContainerObject()->getLogDataHandler()->getMatchingVariablesAtGeneration(QRegExp(makeConcatName(mpParentModelObject->getName(),this->getName(),".*")));
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;

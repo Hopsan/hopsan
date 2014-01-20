@@ -96,9 +96,9 @@ public:
     SharedVariablePtrT getLogVariableDataPtr(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedVariablePtrT getLogVariableDataPtr(const QString &rName, const int generation) const;
 
-    QVector<SharedVariablePtrT> getMultipleLogVariableDataPtrs(const QRegExp &rNameExp, const int generation=-1) const;
-    QVector<SharedVariablePtrT> getAllVariablesAtNewestGeneration();
-    QVector<SharedVariablePtrT> getAllVariablesAtGeneration(const int generation) const;
+    QVector<SharedVariablePtrT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, const int generation=-1) const;
+    QVector<SharedVariablePtrT> getAllUniqueVariablesAtNewestGeneration();
+    QVector<SharedVariablePtrT> getAllUniqueVariablesAtGeneration(const int generation) const;
 
     QList<QString> getImportedVariablesFileNames() const;
     QList<SharedVariablePtrT> getImportedVariablesForFile(const QString &rFileName);
@@ -201,13 +201,13 @@ signals:
     void closePlotsWithOwnedData();
 
 private slots:
-    void forgetImportedLogDataVariable(SharedVariablePtrT pData);
+    void forgetImportedVariable(SharedVariablePtrT pData);
 
 private:
     typedef QMap< QString, QMultiMap<QString, SharedVariablePtrT> > ImportedLogDataMapT;
     typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
-    SharedVariablePtrT insertTimeVariable(const QVector<double> &rTimeVector);
-    SharedVariablePtrT insertTimeVariable(const QVector<double> &rTimeVector, const QString &rImportFileName);
+    SharedVariablePtrT insertTimeVectorVariable(const QVector<double> &rTimeVector);
+    SharedVariablePtrT insertTimeVectorVariable(const QVector<double> &rTimeVector, const QString &rImportFileName);
     SharedVariablePtrT insertTimeDomainVariable(SharedVariablePtrT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc);
     SharedVariablePtrT insertTimeDomainVariable(SharedVariablePtrT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
     void insertVariable(SharedVariablePtrT pVariable, QString keyName=QString(), int gen=-1);

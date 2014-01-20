@@ -299,10 +299,9 @@ private:
     void refreshTitle();
     PlotCurve *mpPlotCurve;
     PlotArea *mpPlotArea;
-    QLabel *mpTitle;
+    QLabel *mpTitle, *mpGenerationLabel, *mpSourceLable;
     QToolButton *mpColorBlob;
     QSpinBox *mpGenerationSpinBox;
-    QLabel *mpGenerationLabel;
     CustomXDataDropEdit *mpCustomXDataDrop;
     QToolButton *mpResetTimeButton;
 };

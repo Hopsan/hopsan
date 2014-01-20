@@ -948,39 +948,65 @@ LogDataHandler *LogVariableContainer::getLogDataHandler()
 
 void LogVariableContainer::actuallyRemoveDataGen(GenerationMapT::iterator git)
 {
+    bool isAlias=false;
     // Remove from alias and imported registers if needed
     if (mAliasGenIndexes.contains(git.key()))
     {
         mAliasGenIndexes.removeValue(git.key());
+        isAlias = true;
     }
     if (mImportedGenIndexes.contains(git.key()))
     {
         mImportedGenIndexes.removeValue(git.key());
+        if (!isAlias)
+        {
+            emit importedVariableBeingRemoved(git.value());
+        }
     }
-    //! @todo should we really emit this if we are removing an alias
-    emit logVariableBeingRemoved(git.value());
     mDataGenerations.erase(git);
 }
 
-//! @brief This function converts a VariableSourceTypeT enum into a string
+//! @brief This function converts a VariableSourceTypeT enum into a human readable string
 QString variableSourceTypeAsString(const VariableSourceTypeT type)
 {
     switch (type)
     {
     case ScriptVariableType :
-        return "ScriptVariableType";
+        return "ScriptVariable";
         break;
     case TempVariableType :
-        return "TempVariableType";
+        return "TempVariable";
         break;
     case ModelVariableType :
-        return "ModelVariableType";
+        return "ModelVariable";
         break;
     case ImportedVariableType :
-        return "ImportedVariableType";
+        return "ImportedVariable";
         break;
     default :
-        return "UndefinedVariableSourceType";
+        return "UndefinedVariableSource";
+    }
+}
+
+//! @brief This function converts a VariableSourceTypeT enum into a human readable short string
+QString variableSourceTypeAsShortString(const VariableSourceTypeT type)
+{
+    switch (type)
+    {
+    case ScriptVariableType :
+        return "S";
+        break;
+    case TempVariableType :
+        return "T";
+        break;
+    case ModelVariableType :
+        return "M";
+        break;
+    case ImportedVariableType :
+        return "I";
+        break;
+    default :
+        return "U";
     }
 }
 
@@ -1007,6 +1033,7 @@ QString variableTypeAsString(const VariableTypeT type)
         return "UndefinedVariableType";
     }
 }
+
 
 
 int LogVariableContainer::getLowestGeneration() const
@@ -1050,7 +1077,14 @@ bool LogVariableContainer::isStoringAlias() const
 
 bool LogVariableContainer::isGenerationAlias(const int gen) const
 {
-    return mAliasGenIndexes.contains(gen);
+    if (gen<0)
+    {
+        return mAliasGenIndexes.contains(getHighestGeneration());
+    }
+    else
+    {
+        return mAliasGenIndexes.contains(gen);
+    }
 }
 
 bool LogVariableContainer::isStoringImported() const
@@ -1060,7 +1094,14 @@ bool LogVariableContainer::isStoringImported() const
 
 bool LogVariableContainer::isGenerationImported(const int gen) const
 {
-    return mImportedGenIndexes.contains(gen);
+    if (gen<0)
+    {
+        return mImportedGenIndexes.contains(getHighestGeneration());
+    }
+    else
+    {
+        return mImportedGenIndexes.contains(gen);
+    }
 }
 
 SharedVariablePtrT LogVariableContainer::getDataGeneration(const int gen) const
@@ -1074,6 +1115,24 @@ SharedVariablePtrT LogVariableContainer::getDataGeneration(const int gen) const
     // Else try to find specified generation
     // Return 0 ptr if generation not found
     return mDataGenerations.value(gen, SharedVariablePtrT(0));
+}
+
+SharedVariablePtrT LogVariableContainer::getNonAliasDataGeneration(int gen) const
+{
+    // We need to know the generation to check
+    if (gen<0)
+    {
+        gen = getHighestGeneration();
+    }
+
+    if (!isGenerationAlias(gen))
+    {
+        return getDataGeneration(gen);
+    }
+
+    // If we can not find one, then return 0 ptr
+    return SharedVariablePtrT();
+
 }
 
 QList<SharedVariablePtrT> LogVariableContainer::getAllDataGenerations() const
@@ -1447,12 +1506,22 @@ ImportedTimeDomainVariable::ImportedTimeDomainVariable(SharedVariablePtrT time, 
     mImportFileName = rImportFile;
 }
 
-bool ImportedVariableBase::isImported() const
+bool ImportedTimeDomainVariable::isImported() const
 {
     return true;
 }
 
-QString ImportedVariableBase::getImportedFileName() const
+QString ImportedTimeDomainVariable::getImportedFileName() const
+{
+    return mImportFileName;
+}
+
+bool ImportedVectorVariable::isImported() const
+{
+    return true;
+}
+
+QString ImportedVectorVariable::getImportedFileName() const
 {
     return mImportFileName;
 }
@@ -1744,5 +1813,7 @@ IndexIntervalCollection::MinMaxT::MinMaxT(int min, int max)
     mMin = min;
     mMax = max;
 }
+
+
 
 

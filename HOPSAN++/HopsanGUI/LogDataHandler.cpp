@@ -131,9 +131,10 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
 
     QVector<SharedVariablePtrT> dataPtrs = rVariables;
     QVector<int> gens;
+    gens.reserve(dataPtrs.size());
     for(int v=0; v<dataPtrs.size(); ++v)
     {
-        gens.append(dataPtrs.last()->getGeneration());
+        gens.append(dataPtrs[v]->getGeneration());
     }
 
     int timeGen = -1;
@@ -283,7 +284,7 @@ void LogDataHandler::exportToCSV(const QString &rFilePath, const QVector<SharedV
 
 void LogDataHandler::exportGenerationToCSV(const QString &rFilePath, const int gen) const
 {
-    QVector<SharedVariablePtrT> vars = getAllVariablesAtGeneration(gen);
+    QVector<SharedVariablePtrT> vars = getAllUniqueVariablesAtGeneration(gen);
     // Now export all of them
     exportToCSV(rFilePath, vars);
 }
@@ -444,7 +445,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
 
         if (importedPLODataVector[0].mDataName == TIMEVARIABLENAME)
         {
-            pTimeVec = insertTimeVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
+            pTimeVec = insertTimeVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
 
         }
 
@@ -577,7 +578,7 @@ void LogDataHandler::importHopsanRowCSV(QString importFilePath)
             int timeIdx = allNames.indexOf(TIMEVARIABLENAME);
             if (timeIdx > -1)
             {
-                pTimeVec = insertTimeVariable(allDatas[timeIdx], fileInfo.absoluteFilePath());
+                pTimeVec = insertTimeVectorVariable(allDatas[timeIdx], fileInfo.absoluteFilePath());
             }
 
             for (int i=1; i<allNames.size(); ++i)
@@ -650,7 +651,7 @@ void LogDataHandler::importFromPlainColumnCsv(QString importFilePath)
         SharedVariablePtrT pTimeVec(0);
 
         // Ugly, assume that first vector is always time
-        pTimeVec = insertTimeVariable(data[0], fileInfo.absoluteFilePath());
+        pTimeVec = insertTimeVectorVariable(data[0], fileInfo.absoluteFilePath());
 
         for (int i=1; i<data.size(); ++i)
         {
@@ -706,7 +707,7 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
             ++mGenerationNumber;
 
             QFileInfo fileInfo(csvFilePath);
-            SharedVariablePtrT pTimeVec = insertTimeVariable(timeColumn, fileInfo.absoluteFilePath());
+            SharedVariablePtrT pTimeVec = insertTimeVectorVariable(timeColumn, fileInfo.absoluteFilePath());
 
             // Ok now we have the data lets add it as a variable
             for (int n=0; n<names.size(); ++n)
@@ -824,7 +825,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                         if(!timeVectorObtained)
                         {
                             // Make sure we use the same time vector
-                            pTimeVec = insertTimeVariable(QVector<double>::fromStdVector(*pTimeVector)); //!< @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
+                            pTimeVec = insertTimeVectorVariable(QVector<double>::fromStdVector(*pTimeVector)); //!< @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
 
                             // Set the custom unit scaling to the default
                             QString defaultTimeUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
@@ -883,7 +884,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
 
 void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int gen, const int version) const
 {
-    QVector<SharedVariablePtrT> vars = getAllVariablesAtGeneration(gen);
+    QVector<SharedVariablePtrT> vars = getAllUniqueVariablesAtGeneration(gen);
 
     // Ok now remove time vector as it will be added again in plo export
     // This is a hack, yes I know
@@ -961,10 +962,10 @@ SharedVariablePtrT LogDataHandler::getLogVariableDataPtr(const QString &rName, c
     return SharedVariablePtrT(0);
 }
 
-//! @brief Returns multiple logdatavariables based on regular expression search. Exluding temp variables.
+//! @brief Returns multiple logdatavariables based on regular expression search. Exluding temp variables but including aliases
 //! @param [in] rNameExp The regular expression for the names to match
 //! @param [in] generation The desired generation of the variable
-QVector<SharedVariablePtrT> LogDataHandler::getMultipleLogVariableDataPtrs(const QRegExp &rNameExp, const int generation) const
+QVector<SharedVariablePtrT> LogDataHandler::getMatchingVariablesAtGeneration(const QRegExp &rNameExp, const int generation) const
 {
     QVector<SharedVariablePtrT> results;
     LogDataMapT::const_iterator it;
@@ -2061,8 +2062,8 @@ PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString 
     return 0;
 }
 
-//! @brief Get a list of all available variables at their respective higest (newest) generation.
-QVector<SharedVariablePtrT> LogDataHandler::getAllVariablesAtNewestGeneration()
+//! @brief Get a list of all available variables at their respective higest (newest) generation. Aliases are excluded.
+QVector<SharedVariablePtrT> LogDataHandler::getAllUniqueVariablesAtNewestGeneration()
 {
     QVector<SharedVariablePtrT> dataPtrVector;
 
@@ -2070,7 +2071,7 @@ QVector<SharedVariablePtrT> LogDataHandler::getAllVariablesAtNewestGeneration()
     LogDataMapT::iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        SharedVariablePtrT pData = dit.value()->getDataGeneration(-1);
+        SharedVariablePtrT pData = dit.value()->getNonAliasDataGeneration(-1);
         if (pData)
         {
             dataPtrVector.push_back(pData);
@@ -2081,8 +2082,8 @@ QVector<SharedVariablePtrT> LogDataHandler::getAllVariablesAtNewestGeneration()
     return dataPtrVector;
 }
 
-//! @brief Get a list of all available variables at a specific generation, variables that does not have this generation will not be included
-QVector<SharedVariablePtrT> LogDataHandler::getAllVariablesAtGeneration(const int generation) const
+//! @brief Get a list of all available variables at a specific generation, variables that does not have this generation will not be included.  Aliases are excluded.
+QVector<SharedVariablePtrT> LogDataHandler::getAllUniqueVariablesAtGeneration(const int generation) const
 {
     QVector<SharedVariablePtrT> dataPtrVector;
 
@@ -2091,7 +2092,7 @@ QVector<SharedVariablePtrT> LogDataHandler::getAllVariablesAtGeneration(const in
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
         // Now try to find given generation
-        SharedVariablePtrT pData = dit.value()->getDataGeneration(generation);
+        SharedVariablePtrT pData = dit.value()->getNonAliasDataGeneration(generation);
         if (pData)
         {
             dataPtrVector.push_back(pData);
@@ -2225,8 +2226,7 @@ QMap<QString, QList<int> > LogDataHandler::getImportFilesAndGenerations() const
 {
     QMap<QString, QList<int> > results;
     QList<QString> keys = mImportedLogDataMap.keys();
-    QString file;
-    Q_FOREACH(file, keys)
+    Q_FOREACH(QString file, keys)
     {
         results.insert(file, getImportFileGenerations(file));
     }
@@ -2268,7 +2268,13 @@ void LogDataHandler::rememberIfImported(SharedVariablePtrT pData)
             mImportedLogDataMap.insert(pData->getImportedFileName(),newFileMap);
         }
         // connect delete signal so we know to remove this when generation is removed
-        connect(pData->getLogVariableContainer(), SIGNAL(logVariableBeingRemoved(SharedVariablePtrT)), this, SLOT(forgetImportedLogDataVariable(SharedVariablePtrT)));
+        if (pData->getLogVariableContainer())
+        {
+            connect(pData->getLogVariableContainer(), SIGNAL(importedVariableBeingRemoved(SharedVariablePtrT)), this, SLOT(forgetImportedVariable(SharedVariablePtrT)));
+        }
+
+        // Make data description source know its imported
+        pData->mpVariableDescription->mVariableSourceType = ImportedVariableType;
     }
 }
 
@@ -2519,7 +2525,7 @@ void LogDataHandler::unregisterAlias(const QString &rAlias)
 }
 
 //! @brief This slot should be signaled when a variable that might be registered as imported is removed
-void LogDataHandler::forgetImportedLogDataVariable(SharedVariablePtrT pData)
+void LogDataHandler::forgetImportedVariable(SharedVariablePtrT pData)
 {
     if (pData)
     {
@@ -2541,7 +2547,7 @@ void LogDataHandler::forgetImportedLogDataVariable(SharedVariablePtrT pData)
     }
 }
 
-SharedVariablePtrT LogDataHandler::insertTimeVariable(const QVector<double> &rTimeVector)
+SharedVariablePtrT LogDataHandler::insertTimeVectorVariable(const QVector<double> &rTimeVector)
 {
     SharedVariablePtrT pTimeVec = SharedVariablePtrT(new VectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
                                                                         getGenerationMultiCache(mGenerationNumber)));
@@ -2549,7 +2555,7 @@ SharedVariablePtrT LogDataHandler::insertTimeVariable(const QVector<double> &rTi
     return pTimeVec;
 }
 
-SharedVariablePtrT LogDataHandler::insertTimeVariable(const QVector<double> &rTimeVector, const QString &rImportFileName)
+SharedVariablePtrT LogDataHandler::insertTimeVectorVariable(const QVector<double> &rTimeVector, const QString &rImportFileName)
 {
     SharedVariablePtrT pTimeVec = SharedVariablePtrT(new ImportedVectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
                                                                                 rImportFileName, getGenerationMultiCache(mGenerationNumber)));

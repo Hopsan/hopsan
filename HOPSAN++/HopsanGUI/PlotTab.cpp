@@ -56,118 +56,9 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
 {
     mpParentPlotTabWidget = pParentPlotTabWidget;
     mpParentPlotWindow = pParentPlotWindow;
-//    setAcceptDrops(true);
-//    setMouseTracking(true);
-//    mHasCustomXData=false;
-//    mLeftAxisLogarithmic = false;
-//    mRightAxisLogarithmic = false;
-//    mBottomAxisLogarithmic = false;
-
-
-//    mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
-//    for(int i=0; i<mCurveColors.size(); ++i)
-//    {
-//        mUsedColorsCounter.append(0);
-//    }
-
-//    for(int plotID=0; plotID<2; ++plotID)
-//    {
-//        // Plots
-//        mpQwtPlots[plotID] = new HopQwtPlot(this);
-//        mpQwtPlots[plotID]->setMouseTracking(true);
-//        mpQwtPlots[plotID]->setAcceptDrops(false);
-//        mpQwtPlots[plotID]->setCanvasBackground(QColor(Qt::white));
-//        mpQwtPlots[plotID]->setAutoReplot(true);
-
-//        // Panning Tool
-//        mpPanner[plotID] = new QwtPlotPanner(mpQwtPlots[plotID]->canvas());
-//        mpPanner[plotID]->setMouseButton(Qt::LeftButton);
-//        mpPanner[plotID]->setEnabled(false);
-
-//        // Rubber Band Zoom
-//        QPen rubberBandPen(Qt::green);
-//        rubberBandPen.setWidth(2);
-
-//        mpZoomerLeft[plotID] = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpQwtPlots[plotID]->canvas());      //Zoomer for left y axis
-//        mpZoomerLeft[plotID]->setMaxStackDepth(10000);
-//        mpZoomerLeft[plotID]->setRubberBand(QwtPicker::NoRubberBand);
-//        mpZoomerLeft[plotID]->setRubberBandPen(rubberBandPen);
-//        mpZoomerLeft[plotID]->setTrackerMode(QwtPicker::AlwaysOff);
-//        mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
-//        mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-//        mpZoomerLeft[plotID]->setEnabled(false);
-
-//        mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpQwtPlots[plotID]->canvas());   //Zoomer for right y axis
-//        mpZoomerRight[plotID]->setMaxStackDepth(10000);
-//        mpZoomerRight[plotID]->setRubberBand(QwtPicker::NoRubberBand);
-//        mpZoomerRight[plotID]->setRubberBandPen(rubberBandPen);
-//        mpZoomerRight[plotID]->setTrackerMode(QwtPicker::AlwaysOff);
-//        mpZoomerRight[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
-//        mpZoomerRight[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-//        mpZoomerRight[plotID]->setEnabled(false);
-
-//        // Wheel Zoom
-//        mpMagnifier[plotID] = new QwtPlotMagnifier(mpQwtPlots[plotID]->canvas());
-//        mpMagnifier[plotID]->setAxisEnabled(QwtPlot::yLeft, true);
-//        mpMagnifier[plotID]->setAxisEnabled(QwtPlot::yRight, true);
-//        mpMagnifier[plotID]->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
-//        mpMagnifier[plotID]->setWheelFactor(1.1);
-//        mpMagnifier[plotID]->setMouseButton(Qt::NoButton, Qt::NoModifier);
-//        mpMagnifier[plotID]->setEnabled(true);
-
-//        // Grid
-//        mpGrid[plotID] = new QwtPlotGrid;
-//        mpGrid[plotID]->enableXMin(true);
-//        mpGrid[plotID]->enableYMin(true);
-//        mpGrid[plotID]->setMajorPen(QPen(Qt::black, 0, Qt::DotLine));
-//        mpGrid[plotID]->setMinorPen(QPen(Qt::gray, 0 , Qt::DotLine));
-//        mpGrid[plotID]->setZ(GridLinesZOrderType);
-//        mpGrid[plotID]->attach(mpQwtPlots[plotID]);
-
-//        // Init curve counters
-//        mNumYlCurves[plotID] = 0;
-//        mNumYrCurves[plotID] = 0;
-//    }
-
-//    // Attach lock boxes to first plot
-//    mpXLockCheckBox = new QCheckBox(mpQwtPlots[0]->axisWidget(QwtPlot::xBottom));
-//    mpXLockCheckBox->setCheckable(true);
-//    mpXLockCheckBox->setToolTip("Lock the x-axis");
-//    mpYLLockCheckBox = new QCheckBox(mpQwtPlots[0]->axisWidget(QwtPlot::yLeft));
-//    mpYLLockCheckBox->setCheckable(true);
-//    mpYLLockCheckBox->setToolTip("Lock the left y-axis");
-//    mpYRLockCheckBox = new QCheckBox(mpQwtPlots[0]->axisWidget(QwtPlot::yRight));
-//    mpYRLockCheckBox->setCheckable(true);
-//    mpYRLockCheckBox->setToolTip("Lock the right y-axis");
-//    connect(mpXLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(axisLockHandler()));
-//    connect(mpYLLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(axisLockHandler()));
-//    connect(mpYRLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(axisLockHandler()));
-
-//    // Connect the refresh signal for repositioning the lock boxes
-//    connect(mpQwtPlots[0], SIGNAL(afterReplot()), this, SLOT(refreshLockCheckBoxPositions()));
-
-
-
-
-//    // Legend Stuff
-//    constructLegendSettingsDialog();
-
-//    mpRightPlotLegend = new PlotLegend(QwtPlot::yRight);
-//    mpRightPlotLegend->attach(this->getQwtPlot());
-//    mpRightPlotLegend->setAlignment(Qt::AlignRight | Qt::AlignTop);
-//    mpRightPlotLegend->setZ(LegendBelowCurveZOrderType);
-
-//    mpLeftPlotLegend = new PlotLegend(QwtPlot::yLeft);
-//    mpLeftPlotLegend->attach(this->getQwtPlot());
-//    mpLeftPlotLegend->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-//    mpLeftPlotLegend->setZ(LegendBelowCurveZOrderType);
-
-
-//    // Create the lock axis dialog
-//    constructAxisSettingsDialog();
-//    constructAxisLabelDialog();
 
     mpTabLayout = new QGridLayout(this);
+    mpTabLayout->setContentsMargins(0,0,0,0);
 
     // Create the scroll area and widget/layout for curve info boxes
     QVBoxLayout *pCurveInfoLayout = new QVBoxLayout();
@@ -186,24 +77,8 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mpCurveInfoScrollArea->setMinimumHeight(110);
     mpParentPlotWindow->mpPlotCurveControlsStack->addWidget(mpCurveInfoScrollArea);
 
-//    for(int plotID=0; plotID<2; ++plotID)
-//    {
-//        mpQwtPlots[plotID]->setAutoFillBackground(true);
-//        mpQwtPlots[plotID]->setPalette(gpConfig->getPalette());
-//        mpTabLayout->addWidget(mpQwtPlots[plotID]);
-//    }
     addPlotArea();
 
-//    mpPainterWidget = new PainterWidget(this);
-//    mpPainterWidget->clearRect();
-//    mpTabLayout->addWidget(mpPainterWidget, 0, 0);
-
-//    for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
-//    {
-//        showPlot(int(plotID), false);
-//    }
-
-//    mpQwtPlots[0]->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 

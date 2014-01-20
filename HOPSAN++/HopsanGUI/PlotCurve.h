@@ -96,6 +96,7 @@ public:
     const QString &getDataOriginalUnit() const;
     const QString &getDataCustomPlotUnit() const;
     const QString &getCurrentUnit() const;
+    VariableSourceTypeT getDataSource() const;
 
     void setCustomCurveDataUnit(const QString &rUnit);
     void setCustomCurveDataUnit(const QString &rUnit, double scale);
@@ -122,7 +123,7 @@ signals:
     void markedActive(bool);
 
 public slots:
-    bool setGeneration(int generation);
+    bool setGeneration(const int generation);
     void setPreviousGeneration();
     void setNextGeneration();
 

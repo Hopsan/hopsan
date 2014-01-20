@@ -50,6 +50,7 @@ void splitConcatName(const QString fullName, QString &rCompName, QString &rPortN
 //! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)
 enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType, UndefinedVariableSourceType};
 QString variableSourceTypeAsString(const VariableSourceTypeT type);
+QString variableSourceTypeAsShortString(const VariableSourceTypeT type);
 
 //! @brief This enum describes the variable type
 enum VariableTypeT {VectorType, TimeDomainType, FrequencyDomainType, RealFrequencyDomainType, ImaginaryFrequencyDomainType, AmplitudeFrequencyDomainType, PhaseFrequencyDomainType, ComplexType, UndefinedVariableType};
@@ -133,6 +134,7 @@ public:
     bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
 
     SharedVariablePtrT getDataGeneration(const int gen=-1) const;
+    SharedVariablePtrT getNonAliasDataGeneration(int gen=-1) const;
     QList<SharedVariablePtrT> getAllDataGenerations() const;
     bool hasDataGeneration(const int gen);
     int getLowestGeneration() const;
@@ -151,7 +153,7 @@ public:
     LogDataHandler *getLogDataHandler();
 
 signals:
-    void logVariableBeingRemoved(SharedVariablePtrT);
+    void importedVariableBeingRemoved(SharedVariablePtrT);
 
 private:
     void actuallyRemoveDataGen(GenerationMapT::iterator git);
@@ -295,27 +297,18 @@ protected:
     double mDataPlotScale;
     double mDataPlotOffset;
     int mGeneration;
-
-private:
-    QVector<double> *pTempCheckoutData;
 };
 
-class ImportedVariableBase
-{
-public:
-    virtual bool isImported() const;
-    virtual QString getImportedFileName() const;
-protected:
-    QString mImportFileName;
-
-};
-
-class ImportedVectorVariable : public VectorVariable, public ImportedVariableBase
+class ImportedVectorVariable : public VectorVariable
 {
     Q_OBJECT
 public:
     ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile,
                            SharedMultiDataVectorCacheT pGenerationMultiCache);
+    bool isImported() const;
+    QString getImportedFileName() const;
+private:
+    QString mImportFileName;
 };
 
 class TimeDomainVariable : public VectorVariable
@@ -342,12 +335,17 @@ public slots:
     void setTimePlotOffset(double offset);
 };
 
-class ImportedTimeDomainVariable : public TimeDomainVariable, public ImportedVariableBase
+class ImportedTimeDomainVariable : public TimeDomainVariable
 {
     Q_OBJECT
 public:
     ImportedTimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                                const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache);
+    bool isImported() const;
+    QString getImportedFileName() const;
+
+private:
+    QString mImportFileName;
 };
 
 class FrequencyDomainVariable : public VectorVariable

@@ -295,10 +295,10 @@ void VariableTree::updateList()
     refreshImportedVariables();
 
     // Now add variables to the Alis and Variable tree
-    QVector<SharedVariablePtrT> variables = getLogDataHandler()->getAllVariablesAtNewestGeneration();
+    QVector<SharedVariablePtrT> variables = getLogDataHandler()->getAllUniqueVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
-        if ( (variables[i]->getVariableSourceType() == TempVariableType) || (variables[i]->getVariableSourceType() == ImportedVariableType) )
+        if ( variables[i]->isImported() || (variables[i]->getVariableSourceType() == TempVariableType) )
         {
             continue;
         }
@@ -498,7 +498,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
 
         if(selectedAction == pRemovefileAction)
         {
-           mpLogDataHandler->removeImportedFileGenerations(pFileItem->text(0));
+           mpLogDataHandler->removeImportedFileGenerations(pFileItem->toolTip(0));
         }
     }
 }
@@ -818,7 +818,9 @@ FullVariableTreeItem::FullVariableTreeItem(SharedVariablePtrT pData, QTreeWidget
 ImportedFileTreeItem::ImportedFileTreeItem(const QString &rFileName, QTreeWidgetItem *pParent)
     : QTreeWidgetItem(pParent)
 {
-    setText(0, rFileName);
+    QFileInfo fileInfo(rFileName);
+    setText(0, fileInfo.fileName());
+    setToolTip(0, rFileName);
     QFont boldfont = font(0);
     boldfont.setBold(true);
     setFont(0, boldfont);

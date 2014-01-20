@@ -254,6 +254,11 @@ const QString &PlotCurve::getCurrentUnit() const
     }
 }
 
+VariableSourceTypeT PlotCurve::getDataSource() const
+{
+    return mpData->getVariableSourceType();
+}
+
 
 const SharedVariablePtrT PlotCurve::getLogDataVariablePtr() const
 {
@@ -297,15 +302,15 @@ const SharedVariablePtrT PlotCurve::getSharedCustomXData() const
 //! @brief Sets the generation of a plot curve
 //! Updates the data to specified generation, and updates plot info box.
 //! @param genereation Genereation to use
-bool PlotCurve::setGeneration(int generation)
+bool PlotCurve::setGeneration(const int generation)
 {
-    // Make sure we don try to use logdata handler from a variable that does not have one
-    if(mpData->getLogDataHandler())
+    QPointer<LogVariableContainer> pContainer = mpData->getLogVariableContainer();
+    // Make sure we don try to use container from a variable that does not have one (then we cant switch generation)
+    if(pContainer)
     {
-         //! @todo maybe not set generation if same as current but what aboput custom x-axis
-
+        //! @todo maybe not set generation if same as current but what aboput custom x-axis
         // Make sure we have the data requested
-        SharedVariablePtrT pNewData = mpData->getLogDataHandler()->getLogVariableDataPtr(mpData->getFullVariableName(), generation);
+        SharedVariablePtrT pNewData = pContainer->getDataGeneration(generation);
         if (pNewData)
         {
             this->disconnect(mpData.data());
@@ -320,31 +325,24 @@ bool PlotCurve::setGeneration(int generation)
 
         if (hasCustomXData())
         {
-            //! @todo why not be able to ask parent data container for other generations
-            if (mpCustomXdata->getLogDataHandler())
+            QPointer<LogVariableContainer> pCustXContainer = mpCustomXdata->getLogVariableContainer();
+            if (pCustXContainer)
             {
-                SharedVariablePtrT pNewXData = mpCustomXdata->getLogDataHandler()->getLogVariableDataPtr(mpCustomXdata->getFullVariableName(), generation);
+                SharedVariablePtrT pNewXData = pCustXContainer->getDataGeneration(generation);
                 if (pNewXData)
                 {
                     setCustomXData(pNewXData);
                 }
             }
+            //! @todo else what ??
         }
 
         updateCurve();
         refreshCurveTitle();
-
-        //! @todo manny signals that notify of basically the same thing, (clean up maybe)
-        emit curveInfoUpdated();
-
-        //! @todo maybe this one should be signaled instead of calling up
-        mpParentPlotArea->replot();
+        //emit curveInfoUpdated();
 
         //! @todo should this be done here
-//        if(!mpParentPlotTab->areAxesLocked())
-//        {
-            mpParentPlotArea->resetZoom();
-//        }
+        mpParentPlotArea->resetZoom();
 
         return true;
     }

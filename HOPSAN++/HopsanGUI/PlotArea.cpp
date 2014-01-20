@@ -2273,6 +2273,11 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     tempFont.setBold(true);
     mpGenerationLabel->setFont(tempFont);
 
+    mpSourceLable = new QLabel(this);
+    mpSourceLable->setFont(tempFont);
+    mpSourceLable->setText("U");
+    mpSourceLable->setToolTip(variableSourceTypeAsShortString(UndefinedVariableSourceType));
+
     QCheckBox *pAutoUpdateCheckBox = new QCheckBox("Auto Update");
     pAutoUpdateCheckBox->setChecked(true);
 
@@ -2339,6 +2344,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     pInfoBoxLayout->addWidget(mpResetTimeButton);
     pInfoBoxLayout->addWidget(mpGenerationSpinBox);
     pInfoBoxLayout->addWidget(mpGenerationLabel);
+    pInfoBoxLayout->addWidget(mpSourceLable);
     pInfoBoxLayout->addWidget(pAutoUpdateCheckBox);
     pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
     pInfoBoxLayout->addWidget(pScaleButton);
@@ -2417,6 +2423,10 @@ void PlotCurveControlBox::updateInfo()
     // Set generation number strings
     //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
     mpGenerationLabel->setText(QString("[%1,%2]").arg(lowGen+1).arg(highGen+1));
+
+    // Set source lable
+    mpSourceLable->setText(variableSourceTypeAsShortString(mpPlotCurve->getDataSource()));
+    mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource()));
 
     // Update curve name
     refreshTitle();
