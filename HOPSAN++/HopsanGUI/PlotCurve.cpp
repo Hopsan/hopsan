@@ -339,7 +339,6 @@ bool PlotCurve::setGeneration(const int generation)
 
         updateCurve();
         refreshCurveTitle();
-        //emit curveInfoUpdated();
 
         //! @todo should this be done here
         mpParentPlotArea->resetZoom();
@@ -715,7 +714,7 @@ void PlotCurve::setLineColor(QString colorName)
 void PlotCurve::openScaleDialog()
 {
     QDialog *pScaleDialog = new QDialog(mpParentPlotArea);
-    pScaleDialog->setWindowTitle("Change data plot-scale and plot-offsets");
+    pScaleDialog->setWindowTitle("Change plot-scale and plot-offsets");
 
     QLabel *pYPlotScale = new QLabel(pScaleDialog);
     QLabel *pYPlotScaleUnit = new QLabel(pScaleDialog);
@@ -754,42 +753,61 @@ void PlotCurve::openScaleDialog()
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout(pScaleDialog);
-    pDialogLayout->addWidget(new QLabel(this->getCurveName() + QString(", Gen: %1").arg(this->getGeneration()+1), pScaleDialog), 0,0,1,2,Qt::AlignLeft);
-    pDialogLayout->addWidget(new QLabel("Affects all curves with data:", pScaleDialog),1,0,1,2,Qt::AlignCenter);
-    pDialogLayout->addWidget(new QLabel("Data Plot Scale: ", pScaleDialog),     2,0);
-    pDialogLayout->addWidget(pYPlotScale,                                       2,1);
-    pDialogLayout->addWidget(pYPlotScaleUnit,                                   2,2);
-    pDialogLayout->addWidget(new QLabel("Data Plot Offset: ", pScaleDialog),    3,0);
-    pDialogLayout->addWidget(mpDataPlotOffsetLineEdit,                          3,1);
-    pDialogLayout->addWidget(new QLabel("Affects only this curve:", pScaleDialog),4,0,1,2,Qt::AlignCenter);
-    pDialogLayout->addWidget(new QLabel("Curve Unit Scale: ", pScaleDialog),    5,0);
-    pDialogLayout->addWidget(pCurveUnitScale,                                   5,1);
-    pDialogLayout->addWidget(pCurveUnitScaleUnit,                               6,2);
-    pDialogLayout->addWidget(new QLabel("Local Curve Scale: ", pScaleDialog),   6,0);
-    pDialogLayout->addWidget(mpLocalCurveScaleLineEdit,                         6,1);
-    pDialogLayout->addWidget(new QLabel("Local Curve Offset: ", pScaleDialog),  7,0);
-    pDialogLayout->addWidget(mpLocalCurveOffsetLineEdit,                        7,1);
+    QLabel *pName = new QLabel(this->getCurveName() + QString(",     Generation: %1").arg(this->getGeneration()+1), pScaleDialog);
+    QFont font = pName->font();
+    font.setBold(true);
+    pName->setFont(font);
+    int r=0;
+    pDialogLayout->addWidget(pName, r,0,1,2,Qt::AlignLeft);
+    ++r;
+    //Space
+    pDialogLayout->setRowMinimumHeight(r,12);
+    ++r;
+    pDialogLayout->addWidget(new QLabel("Data plot scale and offset that affects all plot curves based on this data variable:", pScaleDialog),r,0,1,2,Qt::AlignLeft);
+    ++r;
+    pDialogLayout->addWidget(new QLabel("Data plot scale: ", pScaleDialog),         r,0);
+    pDialogLayout->addWidget(pYPlotScale,                                           r,1);
+    pDialogLayout->addWidget(pYPlotScaleUnit,                                       r,2);
+    ++r;
+    pDialogLayout->addWidget(new QLabel("Data plot offset: ", pScaleDialog),        r,0);
+    pDialogLayout->addWidget(mpDataPlotOffsetLineEdit,                              r,1);
+    ++r;
+    //Space
+    pDialogLayout->setRowMinimumHeight(r,12);
+    ++r;
+    pDialogLayout->addWidget(new QLabel("Local plot curve scale and offset that affects only this plot curve:", pScaleDialog),r,0,1,2,Qt::AlignLeft);
+    ++r;
+    pDialogLayout->addWidget(new QLabel("Plot curve unit scale: ", pScaleDialog),   r,0);
+    pDialogLayout->addWidget(pCurveUnitScale,                                       r,1);
+    pDialogLayout->addWidget(pCurveUnitScaleUnit,                                   r,2);
+    ++r;
+    pDialogLayout->addWidget(new QLabel("Plot curve scale: ", pScaleDialog),        r,0);
+    pDialogLayout->addWidget(mpLocalCurveScaleLineEdit,                             r,1);
+    ++r;
+    pDialogLayout->addWidget(new QLabel("Plot curve offset: ", pScaleDialog),       r,0);
+    pDialogLayout->addWidget(mpLocalCurveOffsetLineEdit,                            r,1);
+    ++r;
 
-    pDialogLayout->addWidget(pButtonBox,8,0,1,2);
+    pDialogLayout->addWidget(pButtonBox,r,0,1,2);
     pScaleDialog->setLayout(pDialogLayout);
 
-
-    connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
-    connect(mpLocalCurveScaleLineEdit, SIGNAL(textChanged(QString)), SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
-    connect(mpLocalCurveOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
-    connect(mpDataPlotOffsetLineEdit, SIGNAL(textChanged(QString)), SLOT(updateDataPlotOffsetFromDialog()));
+    connect(pDoneButton,                SIGNAL(clicked()),pScaleDialog, SLOT(close()));
+    connect(mpLocalCurveScaleLineEdit,  SIGNAL(textChanged(QString)),   SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
+    connect(mpLocalCurveOffsetLineEdit, SIGNAL(textChanged(QString)),   SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
+    connect(mpDataPlotOffsetLineEdit,   SIGNAL(textChanged(QString)),   SLOT(updateDataPlotOffsetFromDialog()));
 
     pScaleDialog->exec();
-    //! @todo is the dialog ever deleted ?
 
     // Disconnect again to avoid triggering value update the next time the dialog is built
     disconnect(mpLocalCurveScaleLineEdit, 0, 0, 0);
     disconnect(mpLocalCurveOffsetLineEdit, 0, 0, 0);
     disconnect(mpDataPlotOffsetLineEdit, 0, 0, 0);
+
+    pScaleDialog->deleteLater();
 }
 
 
-//! @brief Updates the scaling of a plot curve form values in scaling dialog
+//! @brief Updates the scaling of a plot curve from values in scaling dialog
 //! @todo FIXA  /Peter
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
