@@ -890,7 +890,7 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     // Save the taext displaying the component name
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
     nametext.setAttribute("position", getNameTextPos());
-    nametext.setAttribute("visible", mpNameText->isVisible());
+    nametext.setAttribute("visible", mNameTextAlwaysVisible);
 
     // Save any custom selected plot scales
     if (!mRegisteredCustomPlotUnitsOrScales.isEmpty())
