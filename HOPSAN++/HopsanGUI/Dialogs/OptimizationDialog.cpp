@@ -24,8 +24,9 @@
 
 #include <QDebug>
 #include <limits>
+#ifndef WIN32
 #include <unistd.h>
-
+#endif
 #include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
