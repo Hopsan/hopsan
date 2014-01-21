@@ -4249,6 +4249,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
         return "NaN";
     }
 
+    //! @todo is it working with the correct model here ?
     ContainerObject *pContainer = mpModel->getViewContainerObject();
     ModelObject *pComp = pContainer->getModelObject(compName);
     QString fullNameFromAlias = pContainer->getFullNameFromAlias(parName);

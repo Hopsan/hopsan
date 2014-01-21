@@ -1423,7 +1423,7 @@ QString LogDataHandler::addVariableWithScalar(const QString &a, const double x)
 
 SharedVariablePtrT LogDataHandler::addVariableWithScalar(const SharedVariablePtrT a, const double x)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"+"+QString::number(x));
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"+"+QString::number(x), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->addToData(x);
     return pTempVar;
@@ -1446,7 +1446,7 @@ QString LogDataHandler::subVariableWithScalar(const QString &a, const double x)
 
 SharedVariablePtrT LogDataHandler::subVariableWithScalar(const SharedVariablePtrT a, const double x)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"-"+QString::number(x));
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"-"+QString::number(x), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->subFromData(x);
     return pTempVar;
@@ -1469,7 +1469,7 @@ QString LogDataHandler::mulVariableWithScalar(const QString &a, const double x)
 
 SharedVariablePtrT LogDataHandler::mulVariableWithScalar(const SharedVariablePtrT a, const double x)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"*"+QString::number(x));
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"*"+QString::number(x), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->multData(x);
     return pTempVar;
@@ -1492,7 +1492,7 @@ QString LogDataHandler::divVariableWithScalar(const QString &a, const double x)
 
 SharedVariablePtrT LogDataHandler::divVariableWithScalar(const SharedVariablePtrT a, const double x)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"/"+QString::number(x));
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"/"+QString::number(x), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->divData(x);
     return pTempVar;
@@ -1517,7 +1517,7 @@ QString LogDataHandler::addVariables(const QString &a, const QString &b)
 
 SharedVariablePtrT LogDataHandler::addVariables(const SharedVariablePtrT a, const SharedVariablePtrT b)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"+"+b->getSmartName());
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"+"+b->getSmartName(), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->addToData(b);
     return pTempVar;
@@ -1573,7 +1573,7 @@ QString LogDataHandler::divVariables(const QString &a, const QString &b)
 
 SharedVariablePtrT LogDataHandler::diffVariables(const SharedVariablePtrT a, const SharedVariablePtrT b)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"_Diff");
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"_Diff", a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->diffBy(b);
     return pTempVar;
@@ -1602,7 +1602,7 @@ QString LogDataHandler::diffVariables(const QString &a, const QString &b)
 
 SharedVariablePtrT LogDataHandler::integrateVariables(const SharedVariablePtrT a, const SharedVariablePtrT b)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"_Int");
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"_Int", a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->integrateBy(b);
     return pTempVar;
@@ -1631,7 +1631,7 @@ QString LogDataHandler::integrateVariables(const QString &a, const QString &b)
 
 SharedVariablePtrT LogDataHandler::lowPassFilterVariable(const SharedVariablePtrT a, const SharedVariablePtrT b, const double freq)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"_Lp1");
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"_Lp1", a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->lowPassFilter(b, freq);
     return pTempVar;
@@ -1812,7 +1812,7 @@ SharedVariablePtrT LogDataHandler::elementWiseGT(SharedVariablePtrT pData, const
 {
     if (pData)
     {
-        SharedVariablePtrT pTempVar = createOrphanVariable(pData->getSmartName()+"_gt");
+        SharedVariablePtrT pTempVar = createOrphanVariable(pData->getSmartName()+"_gt", pData->getVariableType());
         QVector<double> res;
         pData->elementWiseGt(res,thresh);
         pTempVar->assignFrom(res);
@@ -1825,7 +1825,7 @@ SharedVariablePtrT LogDataHandler::elementWiseLT(SharedVariablePtrT pData, const
 {
     if (pData)
     {
-        SharedVariablePtrT pTempVar = createOrphanVariable(pData->getSmartName()+"_lt");
+        SharedVariablePtrT pTempVar = createOrphanVariable(pData->getSmartName()+"_lt", pData->getVariableType());
         QVector<double> res;
         pData->elementWiseLt(res,thresh);
         pTempVar->assignFrom(res);
@@ -1856,7 +1856,7 @@ QString LogDataHandler::saveVariable(const QString &currName, const QString &new
 
 SharedVariablePtrT LogDataHandler::subVariables(const SharedVariablePtrT a, const SharedVariablePtrT b)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"-"+b->getSmartName());
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"-"+b->getSmartName(), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->subFromData(b);
     return pTempVar;
@@ -1864,7 +1864,7 @@ SharedVariablePtrT LogDataHandler::subVariables(const SharedVariablePtrT a, cons
 
 SharedVariablePtrT LogDataHandler::multVariables(const SharedVariablePtrT a, const SharedVariablePtrT b)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"*"+b->getSmartName());
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"*"+b->getSmartName(), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->multData(b);
     return pTempVar;
@@ -1872,7 +1872,7 @@ SharedVariablePtrT LogDataHandler::multVariables(const SharedVariablePtrT a, con
 
 SharedVariablePtrT LogDataHandler::divVariables(const SharedVariablePtrT a, const SharedVariablePtrT b)
 {
-    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"/"+b->getSmartName());
+    SharedVariablePtrT pTempVar = createOrphanVariable(a->getSmartName()+"/"+b->getSmartName(), a->getVariableType());
     pTempVar->assignFrom(a);
     pTempVar->divData(b);
     return pTempVar;
@@ -1926,11 +1926,9 @@ SharedVariablePtrT LogDataHandler::createOrphanVariable(const QString &rName, Va
     SharedVariableDescriptionT varDesc = SharedVariableDescriptionT(new VariableDescription());
     varDesc->mDataName = rName;
     varDesc->mVariableSourceType = ScriptVariableType;
-
-    SharedVariablePtrT pNewVar;
-
-
-    return SharedVariablePtrT(new VectorVariable(QVector<double>(), mGenerationNumber, varDesc, SharedMultiDataVectorCacheT()));
+    SharedVariablePtrT pNewData = createFreeVariable(type,varDesc);
+    pNewData->mGeneration = mGenerationNumber;
+    return pNewData;
 }
 
 
