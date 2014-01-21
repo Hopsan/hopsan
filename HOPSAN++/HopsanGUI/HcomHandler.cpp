@@ -3561,7 +3561,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     timer.toc("Vector functions", 1);
 
     //Evaluate expression using SymHop
-    SymHop::Expression symHopExpr = SymHop::Expression(expr);
+    SymHop::Expression symHopExpr = SymHop::Expression(expr, SymHop::Expression::TrivialSimplifications);
 
     //Multiplication between data vector and scalar
     timer.tic();

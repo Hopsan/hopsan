@@ -2491,6 +2491,8 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
             }
         }
 
+        bool removedFactorOrDivisor=false;
+
         //Cancel out same factors and divisors
         restart:
         Q_FOREACH(const Expression &factor, mFactors)
@@ -2499,9 +2501,12 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
             {
                 mDivisors.removeOne(factor);
                 mFactors.removeOne(factor);
+                removedFactorOrDivisor = true;
                 goto restart;
             }
         }
+
+        if(removedFactorOrDivisor && mFactors.isEmpty() && mDivisors.isEmpty()) { replaceBy(Expression(1)); }
 
         //Join multiple factors to powers
         restart2:
