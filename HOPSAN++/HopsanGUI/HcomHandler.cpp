@@ -3559,8 +3559,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
     //Multiplication between data vector and scalar
     timer.tic();
-    //! @todo what aboud multiplication with more than two factors?
     //! @todo this code does pointer lookup, then does it again, and then get names to use string versions of logdatahandler functions, it could lookup once and then use the pointer versions instead
+    //! @todo If SymHop simplifies expression to a constant, the code below won't find it
     if(desiredType != Scalar && symHopExpr.isMultiplyOrDivide() && (symHopExpr.getDivisors().isEmpty() || symHopExpr.getFactors().size() > 1) && pLogData)
     {
         SymHop::Expression f0 = symHopExpr.getFactors()[0];
@@ -3683,6 +3683,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         SymHop::Expression t0 = symHopExpr.getTerms()[0];
         SymHop::Expression t1 = symHopExpr;
         t1.subtractBy(t0);
+        t1._simplify(SymHop::Expression::FullSimplification);
 
         VariableType varType0, varType1;
         double scalar0, scalar1;
