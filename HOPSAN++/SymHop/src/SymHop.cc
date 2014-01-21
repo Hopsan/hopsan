@@ -2337,8 +2337,8 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         //Join all similar terms together (i.e. replace "2*x+x+x+y" with "4*x+y")
         for(int t=0; t<mTerms.size(); ++t)
         {
-            int cnt = this->countTerm(mTerms[t]);
-            int num = mTerms[t].getNumericalFactor();
+            double cnt = this->countTerm(mTerms[t]);
+            double num = mTerms[t].getNumericalFactor();
             if(cnt != num)
             {
                 Expression tempTerm = mTerms[t].removeNumericalFactors();
@@ -2844,10 +2844,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
 
 
 //FIXED
-int Expression::countTerm(const Expression &expr) const
+double Expression::countTerm(const Expression &expr) const
 {
     Expression pureTerm = expr.removeNumericalFactors();
-    int ret=0;
+    double ret=0;
     Q_FOREACH(const Expression &term, mTerms)
     {
         if(term.removeNumericalFactors() == pureTerm)

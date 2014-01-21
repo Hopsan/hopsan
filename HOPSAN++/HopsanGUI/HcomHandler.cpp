@@ -3689,6 +3689,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         SymHop::Expression t0 = symHopExpr.getTerms()[0];
         SymHop::Expression t1 = symHopExpr;
         t1.subtractBy(t0);
+        t0._simplify(SymHop::Expression::FullSimplification);
         t1._simplify(SymHop::Expression::FullSimplification);
 
         VariableType varType0, varType1;

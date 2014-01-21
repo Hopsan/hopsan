@@ -140,7 +140,7 @@ public:
     bool _verifyFunctions() const;
     void _simplify(ExpressionSimplificationT type = Expression::FullSimplification, const ExpressionRecursiveT recursive=NonRecursive);
 
-    int countTerm(const Expression &expr) const;
+    double countTerm(const Expression &expr) const;
     void removeTerm(const Expression &term);
     Expression removeNumericalFactors() const;
     double getNumericalFactor() const;

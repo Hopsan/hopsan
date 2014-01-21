@@ -613,18 +613,18 @@ private Q_SLOTS:
     {
         QFETCH(Expression, expr);
         QFETCH(Expression, term);
-        QFETCH(int, count);
+        QFETCH(double, count);
 
         QString failmsg("Failure! countTerm() did something wrong.");
-        QVERIFY2(expr.countTerm(term) == count, failmsg.toStdString().c_str());
+        QVERIFY2(fuzzyEqual(expr.countTerm(term), count), failmsg.toStdString().c_str());
     }
 
     void SymHop_Count_Term_data()
     {
         QTest::addColumn<Expression>("expr");
         QTest::addColumn<Expression>("term");
-        QTest::addColumn<int>("count");
-        QTest::newRow("0") << Expression("4*sin(x)+3*cos(x)-2*sin(x)+sin(x)") << Expression("sin(x)") << 3;
+        QTest::addColumn<double>("count");
+        QTest::newRow("0") << Expression("4*sin(x)+3*cos(x)-2*sin(x)+sin(x)") << Expression("sin(x)") << 3.0;
     }
 
     void SymHop_Remove_Term()
