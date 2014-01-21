@@ -152,6 +152,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mpConfig = 0;
     mpOptHandler = 0;
 
+    mAcceptsOptimizationCommands = false;
+
     mAnsType = Undefined;
     mAborted = false;
     mRetvalType = Scalar;
@@ -1285,6 +1287,7 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     }
 
     QString code;
+
     QTextStream t(&file);
 
     code = t.readAll();
@@ -1293,6 +1296,12 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     {
         QString str = "$"+QString::number(i+1);
         code.replace(str, splitCmd[i+1]);
+    }
+
+    if(!mAcceptsOptimizationCommands && (code.contains("\nopt init") || code.contains("\nopt run") || code.contains(" opt init") || code.contains(" opt run")))
+    {
+        HCOMINFO("This HCOM terminal does not accept optimization scripts.\nUse the optimization dialog instead.");
+        return;
     }
 
     QStringList lines = code.split("\n");
@@ -2551,6 +2560,12 @@ void HcomHandler::executeAbsCommand(const QString cmd)
 //! @brief Execute function for "opt" command
 void HcomHandler::executeOptimizationCommand(const QString cmd)
 {
+    if(!mAcceptsOptimizationCommands)
+    {
+        HCOMINFO("This console does not accept optimization commands.\nUse the optimization dialog instead.");
+        return;
+    }
+
     if(!mpModel)
     {
         HCOMERR("No model is open.");
@@ -3772,6 +3787,16 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     mAnsType = Wildcard;
     mAnsWildcard = expr;
     return;
+}
+
+void HcomHandler::setAcceptsOptimizationCommands(const bool value)
+{
+    mAcceptsOptimizationCommands = value;
+}
+
+bool HcomHandler::getAcceptsOptimizationCommands() const
+{
+    return mAcceptsOptimizationCommands;
 }
 
 

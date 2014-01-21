@@ -87,6 +87,10 @@ public:
 
     void evaluateExpression(QString expr, VariableType desiredType=Undefined);
 
+    void setAcceptsOptimizationCommands(const bool value);
+    bool getAcceptsOptimizationCommands() const;
+
+
     // Return values from evaluation
     double mAnsScalar;
     QString mAnsWildcard;
@@ -206,6 +210,8 @@ private:
     QMap<QString, QPair<QString, QString> > mLocalFunctionDescriptions;
 
     VariableType mRetvalType;
+
+    bool mAcceptsOptimizationCommands;
 
     // Functions
     QMap<QString, QStringList> mFunctions;

@@ -270,6 +270,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpCoreProgressBarsLayout = new QGridLayout();
     mpParametersOutputTextEditsLayout = new QGridLayout();
     mpTerminal = new TerminalWidget(this);
+    mpTerminal->mpHandler->setAcceptsOptimizationCommands(true);
     QGridLayout *pRunLayout = new QGridLayout(this);
     pRunLayout->addWidget(mpStartButton,                         0,0,1,1);
     pRunLayout->addLayout(mpParametersOutputTextEditsLayout,    1,0,1,1);
@@ -288,7 +289,9 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     setButtonText(QWizard::FinishButton, tr("&Close Dialog"));
     setButtonText(QWizard::CustomButton1, tr("&Save To Script File"));
+    setButtonText(QWizard::CustomButton2, tr("&Load From Script File"));
     setOption(QWizard::HaveCustomButton1, true);
+    setOption(QWizard::HaveCustomButton2, true);
     setOption(QWizard::CancelButtonOnLeft, false);
     button(QWizard::CustomButton1)->setDisabled(true);
     button(QWizard::FinishButton)->setEnabled(true);
@@ -304,6 +307,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     connect(pHelpButton,                   SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
     connect(mpStartButton, SIGNAL(clicked()), this, SLOT(run()));
     connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
+    connect(button(QWizard::CustomButton2), SIGNAL(clicked()), this, SLOT(loadScriptFile()));
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfiguration()));
 }
 
@@ -1288,12 +1292,12 @@ void OptimizationDialog::update(int idx)
     //Finished parameters tab
     if(idx == 2)
     {
-        if(mSelectedParameters.isEmpty())
-        {
-            gpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
-            this->back();
-            return;
-        }
+//        if(mSelectedParameters.isEmpty())
+//        {
+//            gpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
+//            this->back();
+//            return;
+//        }
     }
 
     //Finished objective function tab
@@ -1367,6 +1371,32 @@ void OptimizationDialog::saveScriptFile()
     QTextStream out(&file);
     out << mpOutputBox->toPlainText();
     file.close();
+}
+
+void OptimizationDialog::loadScriptFile()
+{
+    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Script File)"),
+                                                    gpConfig->getScriptDir(),
+                                                    tr("HCOM Script (*.hcom)"));
+    if(filePath.isEmpty())      //Cancelled by user
+        return;
+
+    gpConfig->setScriptDir(QFileInfo(filePath).absolutePath());
+
+    this->next();
+    this->next();
+    this->next();
+    this->next();
+    this->next();
+    this->back();   //Ugly hack to show correct page
+
+
+    QFile file(filePath);
+    file.open(QFile::Text | QFile::ReadOnly);
+    mScript = file.readAll();
+    file.close();
+
+    mpOutputBox->setPlainText(mScript);
 }
 
 void OptimizationDialog::updateCoreProgressBars()

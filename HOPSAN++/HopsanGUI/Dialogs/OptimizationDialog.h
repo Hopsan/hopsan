@@ -73,6 +73,7 @@ private slots:
     void update(int idx);
     void run();
     void saveScriptFile();
+    void loadScriptFile();
     void updateCoreProgressBars();
     void recreateCoreProgressBars();
     void recreateParameterOutputLineEdits();
