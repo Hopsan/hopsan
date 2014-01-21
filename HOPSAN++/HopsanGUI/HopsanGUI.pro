@@ -216,7 +216,8 @@ SOURCES += main.cpp \
     LibraryHandler.cpp \
     UnitScale.cpp \
     PlotArea.cpp \
-    Utilities/HelpPopUpWidget.cpp
+    Utilities/HelpPopUpWidget.cpp \
+    PlotCurveControlBox.cpp
 
 
 
@@ -299,7 +300,8 @@ HEADERS += MainWindow.h \
     global.h \
     UnitScale.h \
     PlotArea.h \
-    Utilities/HelpPopUpWidget.h
+    Utilities/HelpPopUpWidget.h \
+    PlotCurveControlBox.h
 
 OTHER_FILES += \
     ../hopsandefaults \

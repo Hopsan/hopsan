@@ -2898,10 +2898,6 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
 //! @param axis Axis to add curve to
 void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 {
-    if(!mpModel) return;
-    SystemContainer *pCurrentSystem = mpModel->getTopLevelSystemContainer();
-    if(!pCurrentSystem) { return; }
-
     SharedVariablePtrT pData = getLogVariablePtr(cmd);
     if(!pData)
     {

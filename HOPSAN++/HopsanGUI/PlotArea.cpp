@@ -27,12 +27,14 @@
 
 #include "PlotArea.h"
 #include "PlotCurve.h"
+#include "PlotCurveControlBox.h"
 #include "PlotTab.h"
 #include "global.h"
 #include "Configuration.h"
 #include "Utilities/GUIUtilities.h"
 #include "ModelHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUISystem.h"
 #include "PlotWindow.h"
 #include "Widgets/HcomWidget.h"
 
@@ -340,10 +342,23 @@ PlotArea::~PlotArea()
 //! @param desiredColor Desired color for curve (will override default colors)
 void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
 {
+    // Attach the curve to this plot area
     pCurve->attach(mpQwtPlot);
-    pCurve->mpParentPlotArea = this;
     mPlotCurves.append(pCurve);
 
+    // Set some private members in the curve based on this current plot area
+    pCurve->mpParentPlotArea = this;
+    pCurve->mIncludeGenInTitle = mpIncludeGenInCurveTitle->isChecked();
+    pCurve->mIncludeSourceInTitle = mpIncludeSourceInCurveTitle->isChecked();
+    pCurve->setZ(CurveZOrderType);
+    pCurve->setLineWidth(2);
+    pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+    setLegendSymbol(mpLegendSymbolType->currentText(), pCurve);
+
+    // Refresh the curve
+    pCurve->refreshCurveTitle();
+
+    // Set custom xdata if one is already pressent in this tab
     if(mHasCustomXData)
     {
         if (pCurve->hasCustomXData())
@@ -357,18 +372,10 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
         }
     }
 
+    // Determine what plot scales to use
     determineAddedCurveUnitOrScale(pCurve);
 
-    connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
-    connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
-
-    // Create a curve info box for this curve
-    mPlotCurveControlBoxes.append(new PlotCurveControlBox(pCurve, this));
-    mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveControlBoxes.last());
-    mPlotCurveControlBoxes.last()->show();
-
-
-    //! @todo this code is unclear, rewrite and add a comment, mayb also deal wit desired color
+    //! @todo this code is very unclear, rewrite and add a comment, mayb also deal with desired color
     for(int i=0; true; ++i)
     {
         bool stop=false;
@@ -385,6 +392,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
         if(stop) break;
     }
 
+    // Enable axis and zoomers as needed
     // If this is the first curve on one of the axis, then then exis will just be enabled and we need to normalize the zoom (copy from the other curve)
     if (!mpQwtPlot->axisEnabled(pCurve->getAxisY()))
     {
@@ -414,13 +422,21 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     {
         ++mNumYrCurves;
     }
-    pCurve->setZ(CurveZOrderType);
-    pCurve->setLineWidth(2);
-    setLegendSymbol(mpLegendSymbolType->currentText());
 
+    // Create a curve info box for this curve
+    mPlotCurveControlBoxes.append(new PlotCurveControlBox(pCurve, this));
+    mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveControlBoxes.last());
+    mPlotCurveControlBoxes.last()->show();
+
+    // Connect som signasl from the curve
+    connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
+    connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
+
+    // Refresh and redraw the plot area
     //! @todo maybe make it possible to rescale only selected axis, instead of always recscaling both of them
     rescaleAxesToCurves();
     updateAxisLabels();
+    updateWindowtitleModelName();
     replot();
 }
 
@@ -510,6 +526,7 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
 
     rescaleAxesToCurves();
     updateAxisLabels();
+    updateWindowtitleModelName();
     replot();
 }
 
@@ -560,6 +577,11 @@ PlotCurve *PlotArea::getActivePlotCurve()
 QwtPlot *PlotArea::getQwtPlot()
 {
     return mpQwtPlot;
+}
+
+const QStringList &PlotArea::getModelPaths() const
+{
+    return mModelPaths;
 }
 
 int PlotArea::getNumberOfCurves() const
@@ -767,9 +789,10 @@ void PlotArea::dropEvent(QDropEvent *event)
             {
                 qDebug() << mimeText;
                 QStringList fields = mimeText.split(":");
-                if (fields.size() > 2)
+                if (fields.size() > 3)
                 {
                     QString &name = fields[1];
+                    QString &model = fields[3];
                     bool parseOk = false;
                     int gen = fields[2].toInt(&parseOk);
                     if (!parseOk)
@@ -777,19 +800,35 @@ void PlotArea::dropEvent(QDropEvent *event)
                         gen = -1;
                     }
 
-                    QCursor cursor;
-                    if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
+                    //! @todo what about subsystems here
+                    ContainerObject *pContainer = gpModelHandler->getTopLevelSystem(model);
+                    // If we failed to find by modelpath (like for imported vars), then try the current view
+                    if (!pContainer)
                     {
-                        setCustomXVectorForAll(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen));
-                        //! @todo do we need to reset to default unit too ?
+                        pContainer = gpModelHandler->getCurrentViewContainerObject();
                     }
-                    else if(this->mapFromGlobal(cursor.pos()).x() < getQwtPlot()->canvas()->x()+9 + getQwtPlot()->canvas()->width()/2)
+                    if (pContainer)
                     {
-                        mpParentPlotTab->mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yLeft);
-                    }
-                    else
-                    {
-                        mpParentPlotTab->mpParentPlotWindow->addPlotCurve(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(name, gen), QwtPlot::yRight);
+                        SharedVariablePtrT pData = pContainer->getLogDataHandler()->getLogVariableDataPtr(name, gen);
+                        // If we have found data then add it to the plot
+                        if (pData)
+                        {
+                            QCursor cursor;
+                            if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
+                            {
+                                setCustomXVectorForAll(pData);
+                                //! @todo do we need to reset to default unit too ?
+                            }
+                            else if(this->mapFromGlobal(cursor.pos()).x() < getQwtPlot()->canvas()->x()+9 + getQwtPlot()->canvas()->width()/2)
+                            {
+                                //! @todo maybe go to tab only and let it handle main window updates
+                                mpParentPlotTab->mpParentPlotWindow->addPlotCurve(pData, QwtPlot::yLeft);
+                            }
+                            else
+                            {
+                                mpParentPlotTab->mpParentPlotWindow->addPlotCurve(pData, QwtPlot::yRight);
+                            }
+                        }
                     }
                 }
             }
@@ -1463,6 +1502,7 @@ void PlotArea::applyLegendSettings()
     //! @todo maybe this should be in a slot of its own
     for (int i=0; i<mPlotCurves.size(); ++i)
     {
+        mPlotCurves[i]->setIncludeSourceInTitle(mpIncludeSourceInCurveTitle->isChecked());
         mPlotCurves[i]->setIncludeGenerationInTitle(mpIncludeGenInCurveTitle->isChecked());
         mPlotCurves[i]->refreshCurveTitle();
     }
@@ -1641,6 +1681,10 @@ void PlotArea::constructLegendSettingsDialog()
     mpIncludeGenInCurveTitle->setCheckable(true);
     mpIncludeGenInCurveTitle->setChecked(true);
 
+    mpIncludeSourceInCurveTitle = new QCheckBox(this);
+    mpIncludeSourceInCurveTitle->setCheckable(true);
+    mpIncludeSourceInCurveTitle->setChecked(false);
+
     mpLegendLPosition = new QComboBox(this);
     mpLegendLPosition->addItem("Top");
     mpLegendLPosition->addItem("Bottom");
@@ -1698,6 +1742,9 @@ void PlotArea::constructLegendSettingsDialog()
     row++;
     legendBoxLayout->addWidget( new QLabel( "Include generation in curve name: " ), row, 0, 1, 2, Qt::AlignRight );
     legendBoxLayout->addWidget( mpIncludeGenInCurveTitle, row, 2 );
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Include source in curve name: " ), row, 0, 1, 2, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpIncludeSourceInCurveTitle, row, 2 );
 
 
     row++;
@@ -1745,6 +1792,7 @@ void PlotArea::constructLegendSettingsDialog()
     connect(mpLegendCols, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendsEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(mpIncludeGenInCurveTitle, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+    connect(mpIncludeSourceInCurveTitle, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(mpLegendBgType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendSymbolType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendLPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
@@ -1881,42 +1929,47 @@ void PlotArea::constructAxisLabelDialog()
     connect(pFinishedButton, SIGNAL(clicked()), mpUserDefinedLabelsDialog, SLOT(close()));
 }
 
-//! @brief Help function to set legend symbole style
-//! @todo allways sets for all curves, maybe should only set for one
+//! @brief Help function to set legend symbole style for all curves
 void PlotArea::setLegendSymbol(const QString symStyle)
 {
     for(int j=0; j<mPlotCurves.size(); ++j)
     {
-        mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendNoAttribute, false);
-        mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowLine, false);
-        mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowSymbol, false);
-        mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowBrush, false);
-
-        if( symStyle == "Rectangle")
-        {
-            mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendNoAttribute, true);
-        }
-        else if( symStyle == "Line")
-        {
-            mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowLine, true);
-        }
-        else if( symStyle == "Symbol")
-        {
-            mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
-         }
-        else if ( symStyle == "Line&Symbol")
-        {
-            mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowLine, true);
-            mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
-        }
-        else if( symStyle == "Brush")
-        {
-            mPlotCurves[j]->setLegendAttribute( PlotCurve::LegendShowBrush, true);
-        }
-
-        // Fix legend size after possible change in style
-        mPlotCurves[j]->resetLegendSize();
+        setLegendSymbol(symStyle, mPlotCurves[j]);
     }
+}
+
+//! @brief Help function to set legend symbole style for one particualr curve
+void PlotArea::setLegendSymbol(const QString symStyle, PlotCurve *pCurve)
+{
+    pCurve->setLegendAttribute( PlotCurve::LegendNoAttribute, false);
+    pCurve->setLegendAttribute( PlotCurve::LegendShowLine, false);
+    pCurve->setLegendAttribute( PlotCurve::LegendShowSymbol, false);
+    pCurve->setLegendAttribute( PlotCurve::LegendShowBrush, false);
+
+    if( symStyle == "Rectangle")
+    {
+        pCurve->setLegendAttribute( PlotCurve::LegendNoAttribute, true);
+    }
+    else if( symStyle == "Line")
+    {
+        pCurve->setLegendAttribute( PlotCurve::LegendShowLine, true);
+    }
+    else if( symStyle == "Symbol")
+    {
+        pCurve->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
+     }
+    else if ( symStyle == "Line&Symbol")
+    {
+        pCurve->setLegendAttribute( PlotCurve::LegendShowLine, true);
+        pCurve->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
+    }
+    else if( symStyle == "Brush")
+    {
+        pCurve->setLegendAttribute( PlotCurve::LegendShowBrush, true);
+    }
+
+    // Fix legend size after possible change in style
+    pCurve->resetLegendSize();
 }
 
 void PlotArea::setTabOnlyCustomXVector(SharedVariablePtrT pData)
@@ -2157,6 +2210,21 @@ void PlotArea::updatePlotMarkers()
     }
 }
 
+void PlotArea::updateWindowtitleModelName()
+{
+    //! @todo instead of string, maybe should use shared pointers (in the data variables to avoid duplicating the string for variables from same model) /Peter
+    mModelPaths.clear();
+    foreach(PlotCurve *pCurve, mPlotCurves)
+    {
+        const QString &name = pCurve->getLogDataVariablePtr()->getModelPath();
+        if (!mModelPaths.contains(name) && !name.isEmpty())
+        {
+            mModelPaths.append(name);
+        }
+    }
+    emit refreshContainsDataFromModels();
+}
+
 void PlotArea::enableArrow()
 {
     mpQwtZoomerLeft->setEnabled(false);
@@ -2208,298 +2276,4 @@ void PlotArea::resetXTimeVector()
 }
 
 
-CustomXDataDropEdit::CustomXDataDropEdit(QWidget *pParent)
-    : QLineEdit(pParent)
-{
-    //Nothing
-}
 
-void CustomXDataDropEdit::dropEvent(QDropEvent *e)
-{
-    QLineEdit::dropEvent(e);
-    QString mimeText = e->mimeData()->text();
-    if(mimeText.startsWith("HOPSANPLOTDATA:"))
-    {
-        QStringList fields = mimeText.split(":");
-        if (fields.size() > 2)
-        {
-            // We do not want to include gen here, as the curve should decide for it self what gen to use
-            emit newXData(fields[1]);
-        }
-    }
-    else
-    {
-        emit newXData(mimeText);
-    }
-}
-
-
-//! @brief Constructor for plot info box
-//! @param pParentPlotCurve pointer to parent plot curve
-//! @param pParent Pointer to parent widget
-PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParentArea)
-    : QWidget(pParentArea)
-{
-    mpPlotArea = pParentArea;
-    mpPlotCurve = pPlotCurve;
-    connect(mpPlotCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateInfo()));
-    connect(mpPlotCurve, SIGNAL(colorChanged(QColor)), this, SLOT(updateColor(QColor)));
-    connect(mpPlotCurve, SIGNAL(markedActive(bool)), this, SLOT(markActive(bool)));
-
-    mpColorBlob = new QToolButton(this);
-    mpColorBlob->setFixedSize(20,20);
-    mpColorBlob->setCheckable(true);
-    mpColorBlob->setChecked(false);
-    updateColor(mpPlotCurve->getLineColor());
-
-    mpTitle = new QLabel(this);
-    mpTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    mpTitle->setAlignment(Qt::AlignHCenter);
-    refreshTitle();
-
-    mpCustomXDataDrop = new CustomXDataDropEdit(this);
-    mpCustomXDataDrop->setToolTip("Drag and Drop here to set Custom XData Vector");
-    mpResetTimeButton = new QToolButton(this);
-    mpResetTimeButton->setToolTip("Reset Time Vector");
-    mpResetTimeButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
-    mpResetTimeButton->setEnabled(false);
-
-    mpGenerationSpinBox = new QSpinBox(this);
-    mpGenerationSpinBox->setToolTip("Change generation");
-
-    mpGenerationLabel = new QLabel(this);
-    mpGenerationLabel->setToolTip("Available generations");
-    QFont tempFont = mpGenerationLabel->font();
-    tempFont.setBold(true);
-    mpGenerationLabel->setFont(tempFont);
-
-    mpSourceLable = new QLabel(this);
-    mpSourceLable->setFont(tempFont);
-    mpSourceLable->setText("U");
-    mpSourceLable->setToolTip(variableSourceTypeAsShortString(UndefinedVariableSourceType));
-
-    QCheckBox *pAutoUpdateCheckBox = new QCheckBox("Auto Update");
-    pAutoUpdateCheckBox->setChecked(true);
-
-    QToolButton *pColorButton = new QToolButton(this);
-    pColorButton->setToolTip("Select Line Color");
-    pColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LineColor.png"));
-
-    QToolButton *pFrequencyAnalysisButton = new QToolButton(this);
-    pFrequencyAnalysisButton->setToolTip("Frequency Analysis");
-    pFrequencyAnalysisButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-FrequencyAnalysis.png"));
-
-    QToolButton *pScaleButton = new QToolButton(this);
-    pScaleButton->setToolTip("Scale Curve");
-    pScaleButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
-
-    QLabel *pSizeLabel = new QLabel(tr("Line Width: "));
-    pSizeLabel->setAcceptDrops(false);
-    QSpinBox *pSizeSpinBox = new QSpinBox(this);
-    pSizeSpinBox->setAcceptDrops(false);
-    pSizeSpinBox->setRange(1,10);
-    pSizeSpinBox->setSingleStep(1);
-    pSizeSpinBox->setValue(2);
-    pSizeSpinBox->setSuffix(" pt");
-
-    // New Combo Box for Line Style
-    QComboBox *pLineStyleCombo = new QComboBox;
-    pLineStyleCombo->addItem(tr("Solid Line"));
-    pLineStyleCombo->addItem(tr("Dash Line"));
-    pLineStyleCombo->addItem(tr("Dot Line"));
-    pLineStyleCombo->addItem(tr("Dash Dot Line"));
-    pLineStyleCombo->addItem(tr("Dash Dot Dot Line"));
-    pLineStyleCombo->addItem(tr("No Curve")); //CustomDashLine
-
-    // New Combo Box for Symbol Style
-    QComboBox *pLineSymbol = new QComboBox;
-    pLineSymbol->addItem(tr("None"));
-    pLineSymbol->addItem(tr("Cross"));
-    pLineSymbol->addItem(tr("Ellipse"));
-    pLineSymbol->addItem(tr("XCross"));
-    pLineSymbol->addItem(tr("Triangle"));
-    pLineSymbol->addItem(tr("Rectangle"));
-    pLineSymbol->addItem(tr("Diamond"));
-    pLineSymbol->addItem(tr("Down Triangle"));
-    pLineSymbol->addItem(tr("Up Triangle"));
-    pLineSymbol->addItem(tr("Right Triangle"));
-    pLineSymbol->addItem(tr("Hexagon"));
-    pLineSymbol->addItem(tr("Horizontal Line"));
-    pLineSymbol->addItem(tr("Vertical Line"));
-    pLineSymbol->addItem(tr("Star 1"));
-    pLineSymbol->addItem(tr("Star 2"));
-    //mpLineSymbol->addItem(tr("Dots"));
-
-
-    QToolButton *pCloseButton = new QToolButton(this);
-    pCloseButton->setToolTip("Remove Curve");
-    pCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
-
-    QLabel *pDummy = new QLabel("", this);
-
-    QHBoxLayout *pInfoBoxLayout = new QHBoxLayout(this);
-    pInfoBoxLayout->addWidget(mpColorBlob);
-    pInfoBoxLayout->addWidget(mpTitle);
-    pInfoBoxLayout->addWidget(mpCustomXDataDrop);
-    pInfoBoxLayout->addWidget(mpResetTimeButton);
-    pInfoBoxLayout->addWidget(mpGenerationSpinBox);
-    pInfoBoxLayout->addWidget(mpGenerationLabel);
-    pInfoBoxLayout->addWidget(mpSourceLable);
-    pInfoBoxLayout->addWidget(pAutoUpdateCheckBox);
-    pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
-    pInfoBoxLayout->addWidget(pScaleButton);
-    pInfoBoxLayout->addWidget(pSizeSpinBox);
-    pInfoBoxLayout->addWidget(pColorButton);
-    pInfoBoxLayout->addWidget(pLineStyleCombo);
-    pInfoBoxLayout->addWidget(pLineSymbol);
-    pInfoBoxLayout->addWidget(pCloseButton);
-    pInfoBoxLayout->addWidget(pDummy); // This one must be here to prevent colorblob from having a very small clickable area, (really strange)
-
-    setLayout(pInfoBoxLayout);
-
-    connect(mpColorBlob,               SIGNAL(clicked(bool)),       this,               SLOT(activateCurve(bool)));
-    connect(mpCustomXDataDrop,         SIGNAL(newXData(QString)),   this,               SLOT(setXData(QString)));
-    connect(mpResetTimeButton,         SIGNAL(clicked()),           this,               SLOT(resetTimeVector()));
-    connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
-    connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
-    connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpPlotCurve,  SLOT(openFrequencyAnalysisDialog())); //!< @todo this should probably be in the plot area, and signaled directly with curve
-    connect(pColorButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(setLineColor()));
-    connect(pScaleButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(openScaleDialog()));
-    connect(pCloseButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(removeMe()));
-    connect(pSizeSpinBox,    SIGNAL(valueChanged(int)),             mpPlotCurve,  SLOT(setLineWidth(int)));
-    connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineStyle(QString)));
-    connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineSymbol(QString)));
-
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    setPalette(gpConfig->getPalette());
-
-    if(mpPlotCurve->getCurveType() != PortVariableType)
-    {
-        pAutoUpdateCheckBox->setDisabled(true);
-        mpGenerationSpinBox->setDisabled(true);
-        pFrequencyAnalysisButton->setDisabled(true);
-    }
-    updateInfo();
-}
-
-PlotCurve *PlotCurveControlBox::getCurve()
-{
-    return mpPlotCurve;
-}
-
-void PlotCurveControlBox::updateColor(const QColor color)
-{
-    QString buttonStyle;
-
-    // Update color blob in plot info box
-    buttonStyle.append(QString("QToolButton                 { border: 1px solid gray;           border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:unchecked		{ border: 1px solid gray;           border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:checked         { border: 1px solid gray;           border-style: inset;    border-radius: 5px;    	padding: 1px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:hover           { border: 2px solid gray;           border-style: outset;   border-radius: 10px;    padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:hover:unchecked { border: 1px solid gray;           border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-
-    //! @todo need to fix the syle so that it is shown which is activated
-
-    mpColorBlob->setStyleSheet(buttonStyle);
-}
-
-//! @brief Updates buttons and text in plot info box to correct values
-void PlotCurveControlBox::updateInfo()
-{
-    // Enable/diable generation buttons
-    const int lowGen = mpPlotCurve->getLogDataVariablePtr()->getLowestGeneration();
-    const int highGen = mpPlotCurve->getLogDataVariablePtr()->getHighestGeneration();
-    const int gen = mpPlotCurve->getGeneration();
-    const int nGen = mpPlotCurve->getLogDataVariablePtr()->getNumGenerations();
-    disconnect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int))); //Need to temporarily disconnect to avoid loop
-    mpGenerationSpinBox->setRange(lowGen+1, highGen+1);
-    mpGenerationSpinBox->setValue(gen+1);
-    connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int)));
-    mpGenerationSpinBox->setEnabled(nGen > 1);
-
-    // Set generation number strings
-    //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
-    mpGenerationLabel->setText(QString("[%1,%2]").arg(lowGen+1).arg(highGen+1));
-
-    // Set source lable
-    mpSourceLable->setText(variableSourceTypeAsShortString(mpPlotCurve->getDataSource()));
-    mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource()));
-
-    // Update curve name
-    refreshTitle();
-
-    // Update Xdata
-    if (mpPlotCurve->hasCustomXData())
-    {
-        mpCustomXDataDrop->setText(mpPlotCurve->getSharedCustomXData()->getFullVariableName());
-        if (mpPlotCurve->getSharedTimeOrFrequencyVector())
-        {
-            mpResetTimeButton->setEnabled(true);
-        }
-    }
-    else
-    {
-        mpCustomXDataDrop->setText("");
-        mpResetTimeButton->setEnabled(false);
-    }
-}
-
-void PlotCurveControlBox::refreshTitle()
-{
-    mpTitle->setText(mpPlotCurve->getCurveName() + " ["+mpPlotCurve->getCurrentUnit()+"]");
-}
-
-void PlotCurveControlBox::markActive(bool active)
-{
-    //! @todo this is not visible (marking doesnt show)
-    mpColorBlob->setChecked(active);
-    if (active)
-    {
-        setAutoFillBackground(true);
-        setPalette(gpConfig->getPalette());
-    }
-    else
-    {
-        setAutoFillBackground(false);
-    }
-}
-
-void PlotCurveControlBox::activateCurve(bool active)
-{
-    if(active)
-    {
-        mpPlotArea->setActivePlotCurve(mpPlotCurve);
-    }
-    else
-    {
-        mpPlotArea->setActivePlotCurve(0);
-    }
-}
-
-void PlotCurveControlBox::setXData(QString fullName)
-{
-    mpPlotCurve->setCustomXData(fullName);
-}
-
-void PlotCurveControlBox::resetTimeVector()
-{
-    mpPlotCurve->setCustomXData(0);
-}
-
-void PlotCurveControlBox::setGeneration(const int gen)
-{
-    // Since info box begins counting at 1 we need to subtract one, but we do not want underflow as that would set latest generation (-1)
-    if (!mpPlotCurve->setGeneration(qMax(gen-1,0)))
-    {
-        mpGenerationSpinBox->setPrefix("NA<");
-        mpGenerationSpinBox->setSuffix(">");
-    }
-    else
-    {
-        mpGenerationSpinBox->setPrefix("");
-        mpGenerationSpinBox->setSuffix("");
-    }
-}

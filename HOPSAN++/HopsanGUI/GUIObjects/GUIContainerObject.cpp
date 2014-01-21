@@ -2082,7 +2082,7 @@ void ContainerObject::setModelFile(QString path)
 
 
 //! @brief Returns a copy of the model file info of the container object
-QFileInfo ContainerObject::getModelFileInfo()
+const QFileInfo &ContainerObject::getModelFileInfo() const
 {
     return mModelFileInfo;
 }

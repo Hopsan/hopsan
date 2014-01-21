@@ -768,8 +768,7 @@ void PlotTab::exportToPLO()
 
 void PlotTab::shiftAllGenerationsDown()
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
+    Q_FOREACH(PlotArea *pArea, mPlotAreas)
     {
         pArea->shiftAllGenerationsDown();
     }
@@ -777,11 +776,20 @@ void PlotTab::shiftAllGenerationsDown()
 
 void PlotTab::shiftAllGenerationsUp()
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
+    Q_FOREACH(PlotArea *pArea, mPlotAreas)
     {
         pArea->shiftAllGenerationsUp();
     }
+}
+
+void PlotTab::updateWindowtitleModelNames()
+{
+    QStringList names;
+    foreach(PlotArea *pArea, mPlotAreas)
+    {
+        names.append(pArea->getModelPaths());
+    }
+    mpParentPlotWindow->setModelPaths(names);
 }
 
 
@@ -877,11 +885,19 @@ QwtPlot *PlotTab::getQwtPlot(const int subPlotId)
     return mPlotAreas[subPlotId]->getQwtPlot();
 }
 
-void PlotTab::addCurve(PlotCurve *pCurve, int subPlotId)
+void PlotTab::addCurve(PlotCurve *pCurve, const int subPlotId)
 {
     if (subPlotId < mPlotAreas.size())
     {
         mPlotAreas[subPlotId]->addCurve(pCurve);
+    }
+}
+
+void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, const int subPlotId)
+{
+    if (subPlotId < mPlotAreas.size())
+    {
+        mPlotAreas[subPlotId]->addCurve(pCurve, desiredColor);
     }
 }
 
@@ -1226,6 +1242,7 @@ PlotArea *PlotTab::addPlotArea()
     PlotArea *pArea = new PlotArea(this);
     mPlotAreas.append(pArea);
     mpTabLayout->addWidget(pArea);
+    connect(pArea, SIGNAL(refreshContainsDataFromModels()), this, SLOT(updateWindowtitleModelNames()));
     return pArea;
 }
 
@@ -1233,6 +1250,7 @@ void PlotTab::removePlotArea(const int id)
 {
     if (id < mPlotAreas.size())
     {
+        mPlotAreas[id]->disconnect();
         mPlotAreas[id]->deleteLater();
         mPlotAreas.removeAt(id);
     }

@@ -75,10 +75,8 @@ public:
 
     void showHelpPopupMessage(const QString &rMessage);
 
-    //! @todo these three should not be used, need to fix somehow, or maybe we should keep them? /Peter
-    //! @todo might actually be convenient to plott to primary tab directly (and create it)
-    PlotCurve* addPlotCurve(SharedVariablePtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
-    PlotCurve* addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
 
 signals:
     void windowClosed(PlotWindow *pWindow);
@@ -114,9 +112,10 @@ protected slots:
 
 private:
     void refreshWindowTitle();
+    void setModelPaths(const QStringList &rPaths);
 
     QString mName;
-    QString mModelName;
+    QStringList mModelPaths;
     QPointF dragStartPosition;
 
     PlotTabWidget *mpPlotTabWidget;

@@ -73,12 +73,13 @@ class PlotCurve : public QObject, public QwtPlotCurve
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
-    PlotCurve(SharedVariablePtrT pData, int axisY=QwtPlot::yLeft, HopsanPlotCurveTypeEnumT curveType=PortVariableType);
+    PlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY=QwtPlot::yLeft, const HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     void setIncludeGenerationInTitle(bool doit);
+    void setIncludeSourceInTitle(bool doit);
     QString getCurveName() const;
-    QString getCurveNameWithGeneration() const;
+    QString getCurveName(bool includeGeneration, bool includeSourceFile) const;
     HopsanPlotCurveTypeEnumT getCurveType();
     int getAxisY();
 
@@ -97,6 +98,7 @@ public:
     const QString &getDataCustomPlotUnit() const;
     const QString &getCurrentUnit() const;
     VariableSourceTypeT getDataSource() const;
+    const QString &getDataModelPath() const;
 
     void setCustomCurveDataUnit(const QString &rUnit);
     void setCustomCurveDataUnit(const QString &rUnit, double scale);
@@ -165,8 +167,8 @@ private:
     double mLocalAdditionalCurveOffset;
 
     // Curve properties settings
-    bool mAutoUpdate, mIsActive, mIncludeGenInTitle;
-    int mAxisY;
+    bool mAutoUpdate, mIsActive, mIncludeGenInTitle, mIncludeSourceInTitle;
+    QwtPlot::Axis mAxisY;
     QComboBox *mpTimeScaleComboBox;
     QDoubleSpinBox *mpTimeOffsetSpinBox;
     QLineEdit *mpLocalCurveScaleLineEdit;

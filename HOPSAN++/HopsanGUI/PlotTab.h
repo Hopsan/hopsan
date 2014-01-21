@@ -77,7 +77,8 @@ public:
     int getNumPlotAreas() const;
     QwtPlot *getQwtPlot(const int subPlotId=0);
 
-    void addCurve(PlotCurve *pCurve, int subPlotId=0);
+    void addCurve(PlotCurve *pCurve, const int subPlotId=0);
+    void addCurve(PlotCurve *pCurve, QColor desiredColor, const int subPlotId=0);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
     void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, int plotID=0);
@@ -144,9 +145,8 @@ public slots:
     void shiftAllGenerationsUp();
 
 protected slots:
+    void updateWindowtitleModelNames();
     QString updateXmlOutputTextInDialog();
-
-    // PlotTab only
     void saveToXml();
     void exportImage();
     void changedGraphicsExportSettings();

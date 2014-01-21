@@ -839,7 +839,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
 
                         foundData=true;
                         SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-                        pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
+                        pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().filePath();
                         pVarDesc->mComponentName = pModelObject->getName();
                         pVarDesc->mPortName = (*pit)->getName();
                         pVarDesc->mDataName = varDescs[i].mName;

@@ -187,7 +187,7 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVariabl
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    pPlotWindow->addPlotCurve(pData, axis, curveColor);
+    pPlotWindow->addPlotCurve(pData, QwtPlot::Axis(axis), curveColor);
 
     return pPlotWindow;
 }
@@ -198,6 +198,6 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVariabl
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    pPlotWindow->addPlotCurve(pDataX, pDataY, axis, curveColor);
+    pPlotWindow->addPlotCurve(pDataX, pDataY, QwtPlot::Axis(axis), curveColor);
     return pPlotWindow;
 }

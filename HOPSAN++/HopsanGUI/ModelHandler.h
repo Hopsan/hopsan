@@ -48,8 +48,10 @@ public:
     void setCurrentModel(int idx);
     void setCurrentModel(ModelWidget *pWidget);
 
+    ModelWidget *getModel(const QString &rModelFilePath);
     ModelWidget *getModel(int idx);
     ModelWidget *getCurrentModel();
+    SystemContainer *getTopLevelSystem(const QString &rModelFilePath);
     SystemContainer *getTopLevelSystem(int idx);
     SystemContainer *getCurrentTopLevelSystem();
     ContainerObject *getViewContainerObject(int idx);

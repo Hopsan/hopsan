@@ -112,6 +112,9 @@ class PlotArea : public QWidget
     friend class PlotCurve;
     friend class PlotMarker;
 
+signals:
+    void refreshContainsDataFromModels();
+
 public:
     PlotArea(PlotTab *pParentPlotTab);
     ~PlotArea();
@@ -126,6 +129,8 @@ public:
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
     QwtPlot *getQwtPlot();
+
+    const QStringList &getModelPaths() const;
 
     int getNumberOfCurves() const;
     bool isArrowEnabled() const;
@@ -189,11 +194,13 @@ private:
     void constructAxisSettingsDialog();
     void constructAxisLabelDialog();
     void setLegendSymbol(const QString symStyle);
+    void setLegendSymbol(const QString symStyle, PlotCurve *pCurve);
     void setTabOnlyCustomXVector(SharedVariablePtrT pData);
     void determineAddedCurveUnitOrScale(PlotCurve *pCurve);
     void rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
     void updatePlotMarkers();
+    void updateWindowtitleModelName();
 
     PlotTab *mpParentPlotTab;
 
@@ -210,6 +217,8 @@ private:
     QStringList mCurveColors;
     QList<int> mUsedColorsCounter;
 
+    QStringList mModelPaths;
+
     QList<PlotCurveControlBox*> mPlotCurveControlBoxes;
     RectanglePainterWidget *mpPainterWidget;
 
@@ -221,6 +230,7 @@ private:
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
     QCheckBox *mpLegendsEnabledCheckBox;
     QCheckBox *mpIncludeGenInCurveTitle;
+    QCheckBox *mpIncludeSourceInCurveTitle;
     QCheckBox *mpLegendsAutoOffsetCheckBox;
     QDialog *mpLegendSettingsDialog;
     QComboBox *mpLegendLPosition;
@@ -261,49 +271,6 @@ private:
 private slots:
     void refreshLockCheckBoxPositions();
     void axisLockHandler();
-};
-
-class CustomXDataDropEdit : public QLineEdit
-{
-    Q_OBJECT
-public:
-    CustomXDataDropEdit(QWidget *pParent=0);
-
-signals:
-    void newXData(QString fullName);
-
-protected:
-    void dropEvent(QDropEvent *e);
-
-};
-
-class PlotCurveControlBox : public QWidget
-{
-    Q_OBJECT
-public:
-    PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParentArea);
-    PlotCurve *getCurve();
-
-public slots:
-    void updateInfo();
-    void updateColor(const QColor color);
-    void markActive(bool active);
-
-private slots:
-    void activateCurve(bool active);
-    void setXData(QString fullName);
-    void resetTimeVector();
-    void setGeneration(const int gen);
-
-private:
-    void refreshTitle();
-    PlotCurve *mpPlotCurve;
-    PlotArea *mpPlotArea;
-    QLabel *mpTitle, *mpGenerationLabel, *mpSourceLable;
-    QToolButton *mpColorBlob;
-    QSpinBox *mpGenerationSpinBox;
-    CustomXDataDropEdit *mpCustomXDataDrop;
-    QToolButton *mpResetTimeButton;
 };
 
 #endif // PLOTAREA_H

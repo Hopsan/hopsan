@@ -488,19 +488,15 @@ QString PlotWindow::getName() const
 
 
 //! @brief Creates a new plot curve from a plot variable in current container object and adds it to the current plot tab
-//! @param generation Generation of plot data
-//! @param componentName Name of component where variable is located
-//! @param portName Name of port where variable is located
-//! @param dataName Name of variable
-//! @param dataUnit Unit of variable
-PlotCurve* PlotWindow::addPlotCurve(SharedVariablePtrT pData, int axisY, QColor desiredColor)
+//! @param[in] pData Shared pointer to data that you want to plot
+//! @param[in] axisY  0=left 1=right
+//! @param[in] desiredColor The desired color (you might not get what you ask for)
+PlotCurve* PlotWindow::addPlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY, QColor desiredColor)
 {
     if (pData)
     {
-        //! @todo check if model path same as earlier to prvent mixing data
         // Remember which model it belongs to, and connect the closeWindow signal from the data handler
-        // this makes it possible to autoclose all plotwindows with data from a particaulr model(logdatahandler)
-        mModelName = pData->getModelPath();
+        // this makes it possible to autoclose all plotwindows with data from a particular model(logdatahandler)
         if (pData->getLogDataHandler())
         {
             connect(pData->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
@@ -512,15 +508,16 @@ PlotCurve* PlotWindow::addPlotCurve(SharedVariablePtrT pData, int axisY, QColor 
             addPlotTab();
             changedTab();
         }
+
+        // Create and add a curve
         PlotCurve *pTempCurve = new PlotCurve(pData, axisY);
-        getCurrentPlotTab()->getPlotArea()->addCurve(pTempCurve, desiredColor);
-        refreshWindowTitle();
+        getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
         return pTempCurve;
     }
     return 0;
 }
 
-PlotCurve *PlotWindow::addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, int axisY, QColor desiredColor)
+PlotCurve *PlotWindow::addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, const QwtPlot::Axis axisY, QColor desiredColor)
 {
     PlotCurve *pCurve = addPlotCurve(pYData, axisY, desiredColor);
     if (pCurve)
@@ -897,14 +894,26 @@ void PlotWindow::changedTab()
 
 void PlotWindow::refreshWindowTitle()
 {
-    if (mModelName.isEmpty())
+    if (mModelPaths.isEmpty())
     {
         setWindowTitle(mName);
     }
     else
     {
-        setWindowTitle(mName + " (" + mModelName + ")");
+        QStringList models;
+        for (int i=0; i<mModelPaths.size(); ++i)
+        {
+            QFileInfo file(mModelPaths[i]);
+            models.append(file.fileName());
+        }
+        setWindowTitle(mName + " (" + models.join(", ") + ")");
     }
+}
+
+void PlotWindow::setModelPaths(const QStringList &rPaths)
+{
+    mModelPaths = rPaths;
+    refreshWindowTitle();
 }
 
 

@@ -143,7 +143,7 @@ public:
 
     //Model and script file methods
     void setModelFile(QString path);
-    QFileInfo getModelFileInfo();
+    const QFileInfo &getModelFileInfo() const;
     void setScriptFile(QString path);
     QString getScriptFile();
 

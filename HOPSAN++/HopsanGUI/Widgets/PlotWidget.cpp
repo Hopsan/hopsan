@@ -63,6 +63,7 @@ public:
     QString getDataName();
     QString getDataUnit();
     QString getAliasName();
+    QString getModelName();
     int getGeneration() const;
 
 protected:
@@ -147,6 +148,11 @@ QString BaseVariableTreeItem::getDataUnit()
 QString BaseVariableTreeItem::getAliasName()
 {
     return mpData->getAliasName();
+}
+
+QString BaseVariableTreeItem::getModelName()
+{
+    return mpData->getModelPath();
 }
 
 int BaseVariableTreeItem::getGeneration() const
@@ -411,7 +417,7 @@ void VariableTree::mouseMoveEvent(QMouseEvent *event)
     if(item != 0)
     {
         QString mimeText;
-        mimeText = QString("HOPSANPLOTDATA:"+item->getFullName()+QString(":%1").arg(item->getGeneration()));
+        mimeText = QString("HOPSANPLOTDATA:%1:%2:%3").arg(item->getFullName()).arg(item->getGeneration()).arg(item->getModelName());
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
         mimeData->setText(mimeText);

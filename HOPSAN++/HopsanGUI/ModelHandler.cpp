@@ -105,6 +105,18 @@ void ModelHandler::setCurrentModel(ModelWidget *pWidget)
     setCurrentModel(mModelPtrs.indexOf(pWidget));
 }
 
+ModelWidget *ModelHandler::getModel(const QString &rModelFilePath)
+{
+    for (int i=0; i<mModelPtrs.size(); ++i)
+    {
+        if (mModelPtrs[i]->getTopLevelSystemContainer()->getModelFileInfo().filePath() == rModelFilePath)
+        {
+            return mModelPtrs[i];
+        }
+    }
+    return 0;
+}
+
 
 ModelWidget *ModelHandler::getModel(int idx)
 {
@@ -119,6 +131,16 @@ ModelWidget *ModelHandler::getModel(int idx)
 ModelWidget *ModelHandler::getCurrentModel()
 {
     return getModel(mCurrentIdx);
+}
+
+SystemContainer *ModelHandler::getTopLevelSystem(const QString &rModelFilePath)
+{
+    ModelWidget *pMW = getModel(rModelFilePath);
+    if (pMW)
+    {
+        return pMW->getTopLevelSystemContainer();
+    }
+    return 0;
 }
 
 SystemContainer *ModelHandler::getTopLevelSystem(int idx)

@@ -57,16 +57,11 @@ public:
 
 
 //! @brief Constructor for plot curves.
-//! @param generation Generation of plot data to use
-//! @param componentName Name of component where plot data is located
-//! @param portName Name of port where plot data is located
-//! @param dataName Name of physical quantity to use (e.g. "Pressure", "Velocity"...)
-//! @param dataUnit Name of unit to show data in
-//! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
-//! @param parent Pointer to plot tab which curve shall be created it
-PlotCurve::PlotCurve(SharedVariablePtrT pData,
-                     int axisY,
-                     HopsanPlotCurveTypeEnumT curveType)
+//! @param pData A shared pointer to the data to plot
+//! @param curveType The type of the curve (controls the name and some other special things)
+//! @todo why is the axis in the curve constructor, it would make more sence if the axis is specified when adding a curve to a plot area /Peter
+PlotCurve::PlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY, const HopsanPlotCurveTypeEnumT curveType)
+    : QObject(), QwtPlotCurve()
 {
     mpParentPlotArea = 0;
     mHaveCustomData = false;
@@ -79,6 +74,7 @@ PlotCurve::PlotCurve(SharedVariablePtrT pData,
     mCurveSymbolSize = 8;
     mIsActive = false;
     mIncludeGenInTitle = true;
+    mIncludeSourceInTitle = false;
     mCurveType = curveType;
 
     mAxisY = axisY;
@@ -88,7 +84,6 @@ PlotCurve::PlotCurve(SharedVariablePtrT pData,
     //! @todo maybe this code should be run when we are adding a curve to a plottab
     refreshCurveTitle();
     updateCurve();
-    this->setRenderHint(QwtPlotItem::RenderAntialiased);
     this->setYAxis(axisY);
     this->setItemAttribute(QwtPlotItem::Legend, true);
 
@@ -110,20 +105,11 @@ PlotCurve::PlotCurve(SharedVariablePtrT pData,
     {
         mpData->getLogDataHandler()->incrementOpenPlotCurves();
     }
-
-
 }
 
 void PlotCurve::refreshCurveTitle()
 {
-    if (mIncludeGenInTitle)
-    {
-        setTitle(getCurveNameWithGeneration());
-    }
-    else
-    {
-        setTitle(getCurveName());
-    }
+    setTitle(getCurveName(mIncludeGenInTitle, mIncludeSourceInTitle));
 }
 
 //! @brief Destructor for plot curves
@@ -136,9 +122,6 @@ PlotCurve::~PlotCurve()
         pDataHandler->decrementOpenPlotCurves();
     }
 
-    // Delete the plot info box for this curve
-    //delete mpPlotCurveInfoBox;
-
     // Delete custom data if any
     deleteCustomData();
 }
@@ -146,6 +129,11 @@ PlotCurve::~PlotCurve()
 void PlotCurve::setIncludeGenerationInTitle(bool doit)
 {
     mIncludeGenInTitle=doit;
+}
+
+void PlotCurve::setIncludeSourceInTitle(bool doit)
+{
+    mIncludeSourceInTitle=doit;
 }
 
 
@@ -180,16 +168,40 @@ QString PlotCurve::getCurveName() const
         return "Unnamed Curve";
 }
 
-QString PlotCurve::getCurveNameWithGeneration() const
+QString PlotCurve::getCurveName(bool includeGeneration, bool includeSourceFile) const
 {
-    if(mCurveType == PortVariableType)
+    QString name = getCurveName();
+    if (includeGeneration)
     {
-        return getCurveName()+QString("  (%1)").arg(mpData->getGeneration()+1);
+        name.append(QString("  (%1)").arg(mpData->getGeneration()+1));
     }
-    else
+    if (includeSourceFile)
     {
-        return getCurveName();
+        QString source;
+        if (mpData->isImported())
+        {
+            source = mpData->getImportedFileName();
+        }
+        else
+        {
+            source = mpData->getModelPath();
+        }
+
+        if (!source.isEmpty())
+        {
+            QFileInfo file(source);
+            name.append(QString("    %1").arg(file.fileName()));
+        }
     }
+    return name;
+//    if(mCurveType == PortVariableType)
+//    {
+//        return getCurveName()+QString("  (%1)").arg(mpData->getGeneration()+1);
+//    }
+//    else
+//    {
+//        return getCurveName();
+//    }
 }
 
 
@@ -257,6 +269,11 @@ const QString &PlotCurve::getCurrentUnit() const
 VariableSourceTypeT PlotCurve::getDataSource() const
 {
     return mpData->getVariableSourceType();
+}
+
+const QString &PlotCurve::getDataModelPath() const
+{
+    return mpData->getModelPath();
 }
 
 
