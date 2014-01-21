@@ -1,0 +1,198 @@
+# A "UnitTest" script for arithmetic HCOM expressions working with aliases
+# $Id$
+
+# Alias arithmetics tests
+
+nTests=0
+nOkTests=0
+
+define clearAndSim
+  rmvar *
+  sim
+enddefine
+
+define startNewTest
+  echo off
+  nTests = nTests+1
+  echo on
+  print "Running test $nTests$"
+enddefine
+
+define testOk
+  echo off
+  nOkTests = nOkTests+1
+  echo on
+  print "Test $nTests$" was OK"
+enddefine
+
+define testFailed
+  print -w "Test $nTests$ ----------------- FAILED!"
+enddefine
+
+
+load hcomArithmeticsTests.hmf
+call clearAndSim
+
+# Addition and subtraction test
+print "*** Addition and subtraction test ***"
+
+call startNewTest
+if (aver(a1+a1) == 2)
+  call testOk
+else
+  call testFailed
+endif
+  
+call startNewTest
+if (aver(a1+a2) == 3)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a5-a4) == 1)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a1+a2+a3-a4-a4+a1) == (-1))
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a1+a2+a3-(a4+a4)+a1) == (-1))
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(-a1-a2+a3) == 0)
+  call testOk
+else
+  call testFailed
+endif
+
+
+# Multiplication tests
+print "*** Multiplication tests ***"
+
+call startNewTest
+if (aver(a1*a2) == 2)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2*a2) == 4)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2*a3*a4) == 24)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2*2*a3*a4) == 48)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2*0.5*(a3*a4)) == 12)
+  call testOk
+else
+  call testFailed
+endif
+
+
+# Division tests
+print "*** Division tests ***"
+
+call startNewTest
+if (aver(a1/a2) == 0.5)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2/a2) == 1)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2/a3/a4) == 2/(3*4))
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2/a3/a4) == 0.166667)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2/(a3/a4)) == 2.66667)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a2/0.5) == 4)
+  call testOk
+else
+  call testFailed
+endif
+
+# Mixed tests
+print "*** Mixed tests ***"
+
+call startNewTest
+if (aver(a2/2*a3*a4) == 12)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(a1+a1+a2*2+a3/3) == 7)
+  call testOk
+else
+  call testFailed
+endif  
+
+call startNewTest
+if (aver(a1*2+a1/2-a2/8) == 2.25)
+  call testOk
+else
+  call testFailed
+endif 
+
+
+
+# Check if successful
+print ""
+print "$nTests$ HCOM Tests were successful"
+print "$(nTests-nOkTests)$ HCOM Tests FAILED!"
+if (nOkTests < nTests)
+  print -e "Some HCOM tests FAILED!"
+endif
