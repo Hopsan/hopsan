@@ -2344,8 +2344,18 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
                 Expression tempTerm = mTerms[t].removeNumericalFactors();
                 tempTerm.multiplyBy(Expression(this->countTerm(mTerms[t])));
                 this->removeTerm(mTerms[t]);
-                if(!this->isAdd()) { this->replaceBy(fromTwoTerms(*this, tempTerm)); }    //Only one term was left, so it was converted to symbol - convert back
-                else { mTerms.append(tempTerm); }
+                if(!this->isSymbol() && !this->isAdd() && !this->isMultiplyOrDivide() && !this->isFunction() && !this->isPower()) //Nothing left at all, replace with sum of terms
+                {
+                    this->replaceBy(tempTerm);
+                }
+                else if(!this->isAdd()) //Only one term was left, so it was converted to symbol - convert back
+                {
+                    this->replaceBy(fromTwoTerms(*this, tempTerm));
+                }
+                else
+                {
+                    mTerms.append(tempTerm);
+                }
                 --t;
             }
         }

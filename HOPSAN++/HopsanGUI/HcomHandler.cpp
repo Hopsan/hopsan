@@ -3082,8 +3082,14 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         //timer.tocDbg("getParameterValue");
         if( parVal != "NaN")
         {
+            bool ok;
+            mAnsScalar = parVal.toDouble(&ok);
+            if(!ok)     //It is not a numerical, so assume it is a system parameter
+            {
+                parVal = getParameterValue(parVal);
+                mAnsScalar = parVal.toDouble();
+            }
             mAnsType = Scalar;
-            mAnsScalar = parVal.toDouble();
             return;
         }
     }
