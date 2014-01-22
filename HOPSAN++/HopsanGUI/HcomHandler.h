@@ -66,6 +66,7 @@ public:
 
     // Public variable access functions
     LocalVarsMapT getLocalVariables() const;
+    void setLocalVariables(const LocalVarsMapT &vars);
     QMap<QString, SymHopFunctionoid *> getLocalFunctionoidPointers() const;
     SharedVariablePtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
     SharedVariablePtrT getLogVariablePtr(QString fullShortName) const;

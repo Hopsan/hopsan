@@ -735,6 +735,11 @@ HcomHandler::LocalVarsMapT HcomHandler::getLocalVariables() const
     return mLocalVars;
 }
 
+void HcomHandler::setLocalVariables(const HcomHandler::LocalVarsMapT &vars)
+{
+    mLocalVars = vars;
+}
+
 
 //! @brief Returns a map with all local functions and pointers to them
 QMap<QString, SymHopFunctionoid*> HcomHandler::getLocalFunctionoidPointers() const
@@ -2689,6 +2694,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->mModelPtrs.clear();
             mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
             mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+            mpOptHandler->mModelPtrs.last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
             mpOptHandler->crfInit();
             mpOptHandler->crfRun();
         }

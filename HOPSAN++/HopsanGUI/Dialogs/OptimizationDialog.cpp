@@ -315,6 +315,25 @@ void OptimizationDialog::updateParameterOutputs(QVector< QVector<double> > &valu
 {
     if(!this->isVisible()) return;
 
+    if(mpTerminal->mpHandler->mpOptHandler->mAlgorithm == OptimizationHandler::Complex)
+    {
+        int nPoints = mpTerminal->mpHandler->mpOptHandler->mNumPoints;
+        if(nPoints != mpSearchPointsSpinBox->value())
+        {
+            mpSearchPointsSpinBox->setValue(nPoints);
+            recreateParameterOutputLineEdits();
+        }
+    }
+    else if(mpTerminal->mpHandler->mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
+    {
+        int nPoints = mpTerminal->mpHandler->mpOptHandler->mNumPoints;
+        if(nPoints != mpParticlesSpinBox->value())
+        {
+            mpParticlesSpinBox->setValue(nPoints);
+            recreateParameterOutputLineEdits();
+        }
+    }
+
     for(int i=0; i<values.size(); ++i)
     {
         QString output="[ ";
@@ -465,6 +484,12 @@ void OptimizationDialog::open()
 {
     mpSystem = gpModelHandler->getCurrentTopLevelSystem();
     connect(mpSystem, SIGNAL(destroyed()), this, SLOT(close()));
+
+    //Set correct working directory for HCOM terminal
+    mpTerminal->mpHandler->setWorkingDirectory(gpTerminalWidget->mpHandler->getWorkingDirectory());
+
+    //Copy local variables from main HCOM terminal
+    mpTerminal->mpHandler->setLocalVariables(gpTerminalWidget->mpHandler->getLocalVariables());
 
     //Load the objective functions
     if(!loadObjectiveFunctions())
@@ -1319,6 +1344,11 @@ void OptimizationDialog::update(int idx)
             return;
         }
     }
+
+    if(idx == 4)
+    {
+        mpTerminal->mpHandler->setModelPtr(gpModelHandler->getCurrentModel());
+    }
 }
 
 
@@ -1340,7 +1370,6 @@ void OptimizationDialog::run()
     bool *abort = new bool;
     mpTerminal->setEnabledAbortButton(true);
     mpTimer->start(10);
-    mpTerminal->mpHandler->setModelPtr(gpModelHandler->getCurrentModel());
     mpTerminal->mpHandler->runScriptCommands(commands, abort);
     mpTerminal->setEnabledAbortButton(false);
     mpTimer->stop();
