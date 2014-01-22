@@ -206,6 +206,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
             str.replace("/+", "/");
             str.replace("*+", "*");
             str.replace("^+", "^");
+            str.replace("!=", "$"); //! @todo Ugly solutions to rename like this
             str.replace("==", "!"); //! @todo Ugly solutions to rename like this
             str.replace(">=", "?");
             str.replace("<=", "|");
@@ -293,6 +294,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     else if(splitAtSeparator("^", symbols, simplifications)) {}                  //Power
     else if(splitAtSeparator("%", symbols, simplifications)) {}                  //Modulus
     else if(splitAtSeparator("!", symbols, simplifications)) {}                  //Logical equality (replace with function)
+    else if(splitAtSeparator("$", symbols, simplifications)) {}                  //Logical inequality (replace with function)
     else if(splitAtSeparator(">", symbols, simplifications)) {}                  //Logical greater than (replace with function)
     else if(splitAtSeparator("?", symbols, simplifications)) {}                  //Logical greaater than or equal (replace with function)
     else if(splitAtSeparator("<", symbols, simplifications)) {}                  //Logical smaller than (replace with function)
@@ -733,6 +735,13 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
                     retval=1;
                 else
                     retval=0;
+            }
+            else if(mFunction == "notEqual")
+            {
+                if(mArguments[0].evaluate(variables, functions, &ok1) == mArguments[1].evaluate(variables, functions, &ok2))
+                    retval=0;
+                else
+                    retval=1;
             }
             else if(mFunction == "greaterThan")
             {
@@ -2730,6 +2739,33 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                 return false;
             }
             mFunction = "equal";
+            mArguments.append(Expression(left));
+            mArguments.append(Expression(right));
+        }
+        else if(sep == "$")
+        {
+            QStringList left, right;
+            bool onRight=false;
+            for(int i=0; i<subSymbols.size(); ++i)
+            {
+                if(subSymbols[i] == "$")
+                {
+                    onRight = true;
+                }
+                else if(!onRight)
+                {
+                    left.append(subSymbols[i]);
+                }
+                else
+                {
+                    right.append(subSymbols[i]);
+                }
+            }
+            if(left.isEmpty() || right.isEmpty())
+            {
+                return false;
+            }
+            mFunction = "notEqual";
             mArguments.append(Expression(left));
             mArguments.append(Expression(right));
         }
