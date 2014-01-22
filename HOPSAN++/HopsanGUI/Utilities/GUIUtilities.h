@@ -49,7 +49,6 @@ qreal normRad(const qreal rad);
 qreal dist(const QPointF &rPoint);
 qreal dist(const QPointF &rPoint1, const QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
-bool fuzzyEqual(const qreal first, const qreal second, const qreal eps);
 bool fuzzyLT(const qreal first, const qreal second, const qreal eps);
 void replaceWord(QString &string, QString before, QString after);
 QString parseVariableDescription(QString input);
@@ -69,6 +68,14 @@ void santizeName(QString &rString);
 bool isNameValid(const QString &rString);
 QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, const QChar &rLast);
 QVector<int> linspace(const int start, const int stop, const int step=1);
+
+// Inline utility functions
+//! @brief Compare two qreals with given tolerance
+//! @return True if qAbs(first-last) < eps
+inline bool fuzzyEqual(const double first, const double second, const double eps)
+{
+    return (qAbs(first-second) < eps);
+}
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

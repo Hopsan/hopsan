@@ -188,6 +188,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunctionoid("time", new HcomFunctionoidTime(this), "Returns last simulation time", "Usage: time()");
     registerFunctionoid("optvar", new HcomFunctionoidOptVar(this), "Returns specified optimization variable", "Usage: optvar(idx)");
     registerFunctionoid("optpar", new HcomFunctionoidOptPar(this), "Returns specified optimization parameter", "Usage: optpar(idx)");
+    registerFunctionoid("fc", new HcomFunctionoidFC(this), "Fuzzy compare, returns 1 if the values of the arguments are almost the same", "Usage: fc(expr, expr, tolerance)");
 
     createCommands();
 
@@ -786,7 +787,7 @@ void HcomHandler::executeCommand(QString cmd)
         TicToc timer;
         if(!evaluateArithmeticExpression(cmd))
         {
-            HCOMERR("Unrecognized command: " + majorCmd);
+            HCOMERR("Failed to evaluate expression: " + majorCmd);
         }
         timer.toc("evaluateArithmeticExpression " + cmd);
     }
@@ -5184,7 +5185,6 @@ void HcomHandler::registerFunctionoid(const QString &funcName, SymHopFunctionoid
 double HcomFunctionoidAver::operator()(QString &str, bool &ok)
 {
     SharedVariablePtrT pData = mpHandler->getLogVariablePtr(str);
-
     if(!pData)
     {
         mpHandler->evaluateExpression(str);
@@ -5193,9 +5193,10 @@ double HcomFunctionoidAver::operator()(QString &str, bool &ok)
         {
             pData = mpHandler->mAnsVector;
         }
-        else
+        else if (mpHandler->mAnsType == HcomHandler::Scalar)
         {
-            pData.clear();
+            ok=true;
+            return mpHandler->mAnsScalar;
         }
     }
 
@@ -5204,6 +5205,8 @@ double HcomFunctionoidAver::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->averageOfData());
     }
+
+    mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
     ok=false;
     return 0;
 }
@@ -5224,7 +5227,9 @@ double HcomFunctionoidPeek::operator()(QString &str, bool &ok)
         }
         else
         {
-            pData.clear();
+            mpHandler->mpConsole->printErrorMessage(QString("%1, is not a vector").arg(str), "", false);
+            ok = false;
+            return 0;
         }
     }
 
@@ -5259,9 +5264,10 @@ double HcomFunctionoidSize::operator()(QString &str, bool &ok)
         {
             pData = mpHandler->mAnsVector;
         }
-        else
+        else if (mpHandler->mAnsType == HcomHandler::Scalar)
         {
-            pData.clear();
+            ok=true;
+            return 1;
         }
     }
 
@@ -5270,6 +5276,7 @@ double HcomFunctionoidSize::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->getDataSize());
     }
+    mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
     ok=false;
     return 0;
 }
@@ -5303,7 +5310,6 @@ double HcomFunctionoidObj::operator()(QString &str, bool &ok)
 double HcomFunctionoidMin::operator()(QString &str, bool &ok)
 {
     SharedVariablePtrT pData = mpHandler->getLogVariablePtr(str);
-
     if(!pData)
     {
         mpHandler->evaluateExpression(str, HcomHandler::DataVector);
@@ -5311,9 +5317,10 @@ double HcomFunctionoidMin::operator()(QString &str, bool &ok)
         {
             pData = mpHandler->mAnsVector;
         }
-        else
+        else if (mpHandler->mAnsType == HcomHandler::Scalar)
         {
-            pData.clear();
+            ok=true;
+            return mpHandler->mAnsScalar;
         }
     }
 
@@ -5322,6 +5329,7 @@ double HcomFunctionoidMin::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->minOfData());
     }
+    mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
     ok=false;
     return 0;
 }
@@ -5331,7 +5339,6 @@ double HcomFunctionoidMin::operator()(QString &str, bool &ok)
 double HcomFunctionoidMax::operator()(QString &str, bool &ok)
 {
     SharedVariablePtrT pData = mpHandler->getLogVariablePtr(str);
-
     if(!pData)
     {
         mpHandler->evaluateExpression(str, HcomHandler::DataVector);
@@ -5339,9 +5346,10 @@ double HcomFunctionoidMax::operator()(QString &str, bool &ok)
         {
             pData = mpHandler->mAnsVector;
         }
-        else
+        else if (mpHandler->mAnsType == HcomHandler::Scalar)
         {
-            pData.clear();
+            ok=true;
+            return mpHandler->mAnsScalar;
         }
     }
 
@@ -5350,6 +5358,7 @@ double HcomFunctionoidMax::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->maxOfData());
     }
+    mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
     ok=false;
     return 0;
 }
@@ -5369,7 +5378,9 @@ double HcomFunctionoidIMin::operator()(QString &str, bool &ok)
         }
         else
         {
-            pData.clear();
+            mpHandler->mpConsole->printErrorMessage(QString("%1, is not a vector").arg(str), "", false);
+            ok = false;
+            return 0;
         }
     }
 
@@ -5399,7 +5410,9 @@ double HcomFunctionoidIMax::operator()(QString &str, bool &ok)
         }
         else
         {
-            pData.clear();
+            mpHandler->mpConsole->printErrorMessage(QString("%1, is not a vector").arg(str), "", false);
+            ok = false;
+            return 0;
         }
     }
 
@@ -5463,4 +5476,95 @@ double HcomFunctionoidOptPar::operator()(QString &str, bool &ok)
         parIdx = mpHandler->mAnsScalar;
     }
     return mpHandler->mpOptHandler->getParameter(pointIdx,parIdx);
+}
+
+    //! @brief Function operator for the "fc" functionoid
+double HcomFunctionoidFC::operator()(QString &str, bool &ok)
+{
+    QStringList args = str.split(',');
+    if (args.size() != 3)
+    {
+        ok = false;
+        mpHandler->mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return 0;
+    }
+
+    const double tol = args.last().toDouble(&ok);
+    if (!ok)
+    {
+        mpHandler->mpConsole->printErrorMessage(QString("Could not evaluate tolerance %1").arg(args.last()), "", false);
+        return 0;
+    }
+
+    ok=true;
+
+    bool isScalar1=false, isScalar2=false;
+    double scalar1, scalar2;
+    SharedVariablePtrT pData1 = mpHandler->getLogVariablePtr(args.first());
+    if(!pData1)
+    {
+        mpHandler->evaluateExpression(args.first());
+        if(mpHandler->mAnsType == HcomHandler::DataVector)
+        {
+            pData1 = mpHandler->mAnsVector;
+        }
+        else if (mpHandler->mAnsType == HcomHandler::Scalar)
+        {
+            isScalar1 = true;
+            scalar1 = mpHandler->mAnsScalar;
+        }
+        else
+        {
+            mpHandler->mpConsole->printErrorMessage(QString("Could not evaluate %1").arg(args.first()), "", false);
+            ok = false;
+            return 0;
+        }
+    }
+
+
+    SharedVariablePtrT pData2 = mpHandler->getLogVariablePtr(args[1]);
+    if(!pData2)
+    {
+        mpHandler->evaluateExpression(args[1]);
+        if(mpHandler->mAnsType == HcomHandler::DataVector)
+        {
+            pData2 = mpHandler->mAnsVector;
+        }
+        else if (mpHandler->mAnsType == HcomHandler::Scalar)
+        {
+            isScalar2 = true;
+            scalar2 = mpHandler->mAnsScalar;
+        }
+        else
+        {
+            mpHandler->mpConsole->printErrorMessage(QString("Could not evaluate %1").arg(args[1]), "", false);
+            ok = false;
+            return 0;
+        }
+    }
+
+    // If both are vector variables, then compare the data
+    if (pData1 && pData2)
+    {
+        if ( pData1->compare(pData2, tol) )
+        {
+            return 1;
+        }
+    }
+    // If both are scalars compare the scalars
+    else if (isScalar1 && isScalar2)
+    {
+        if ( fuzzyEqual(scalar1, scalar2, tol) )
+        {
+            return 1;
+        }
+    }
+    else if ((pData1 || pData2) && (isScalar1 || isScalar2))
+    {
+        //! @todo maybe support this as a elementwise comparisson
+        mpHandler->mpConsole->printWarningMessage("Comparing scalar with vector (will fail)", "", false);
+    }
+
+    // Else they are not the same
+    return 0;
 }

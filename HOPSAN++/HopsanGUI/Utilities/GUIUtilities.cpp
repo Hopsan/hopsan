@@ -189,12 +189,7 @@ double dist(const double x1, const double y1, const double x2, const double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-//! @brief Compare two qreals with given tolerance
-//! @return True if fabs(first-last) < eps
-bool fuzzyEqual(const qreal first, const qreal second, const qreal eps)
-{
-    return (fabs(first-second) < eps);
-}
+
 
 //! @brief Check if first+eps is less then second, convenient to make usre float comparison works on all platforms
 //! @return True if first+eps < second

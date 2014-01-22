@@ -818,6 +818,32 @@ void VectorVariable::elementWiseLt(QVector<double> &rResult, const double thresh
     mpCachedDataVector->endFullVectorOperation(pVector);
 }
 
+bool VectorVariable::compare(SharedVariablePtrT pOther, const double eps) const
+{
+    //! @todo right now we compare the data vectors we do not care about the type of variable (timedomain frequency domain and so on) maybe we should? /Peter
+    bool isOK=false;
+    if (this->getDataSize() == pOther->getDataSize())
+    {
+        QVector<double> *pThisData = mpCachedDataVector->beginFullVectorOperation();
+        QVector<double> *pOtherData = pOther->beginFullVectorOperation();
+        if (pThisData && pOtherData)
+        {
+            isOK=true;
+            for (int i=0; i<pThisData->size(); ++i)
+            {
+                if (!fuzzyEqual((*pThisData)[i], (*pOtherData)[i], eps))
+                {
+                    isOK = false;
+                    break;
+                }
+            }
+        }
+        pOther->endFullVectorOperation(pOtherData);
+        mpCachedDataVector->endFullVectorOperation(pThisData);
+    }
+    return isOK;
+}
+
 QVector<double> *VectorVariable::beginFullVectorOperation()
 {
     return mpCachedDataVector->beginFullVectorOperation();

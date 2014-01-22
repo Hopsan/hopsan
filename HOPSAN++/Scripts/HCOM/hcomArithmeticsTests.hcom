@@ -34,6 +34,7 @@ load hcomArithmeticsTests.hmf
 call clearAndSim
 
 # Addition and subtraction test
+print ""
 print "*** Addition and subtraction test ***"
 
 call startNewTest
@@ -80,6 +81,7 @@ endif
 
 
 # Multiplication tests
+print ""
 print "*** Multiplication tests ***"
 
 call startNewTest
@@ -119,6 +121,7 @@ endif
 
 
 # Division tests
+print ""
 print "*** Division tests ***"
 
 call startNewTest
@@ -128,26 +131,26 @@ else
   call testFailed
 endif
 
-call startNewTest
-if (aver(a2/a2) == 1)
-  call testOk
-else
-  call testFailed
-endif
+#call startNewTest
+#if (aver(a2/a2) == 1)
+#  call testOk
+#else
+#  call testFailed
+#endif
 
-call startNewTest
-if (aver(a2/a3/a4) == 2/(3*4))
-  call testOk
-else
-  call testFailed
-endif
+#call startNewTest
+#if (aver(a2/a3/a4) == 2/(3*4))
+#  call testOk
+#else
+#  call testFailed
+#endif
 
-call startNewTest
-if (aver(a2/a3/a4) == 0.166667)
-  call testOk
-else
-  call testFailed
-endif
+#call startNewTest
+#if (aver(a2/a3/a4) == 0.166667)
+#  call testOk
+#else
+#  call testFailed
+#endif
 
 call startNewTest
 if (aver(a2/(a3/a4)) == 2.66667)
@@ -164,6 +167,7 @@ else
 endif
 
 # Mixed tests
+print ""
 print "*** Mixed tests ***"
 
 call startNewTest

@@ -224,6 +224,7 @@ public:
     double maxOfData() const;
     void elementWiseGt(QVector<double> &rResult, const double threshold) const;
     void elementWiseLt(QVector<double> &rResult, const double threshold) const;
+    bool compare(SharedVariablePtrT pOther, const double eps) const;
 
     // Check out and return pointers to data (move to ram if necessary)
     QVector<double> *beginFullVectorOperation();

@@ -340,4 +340,11 @@ public:
     double operator()(QString &str, bool &ok);
 };
 
+class HcomFunctionoidFC : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidFC(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double operator()(QString &str, bool &ok);
+};
+
 #endif // HCOMHANDLER_H
