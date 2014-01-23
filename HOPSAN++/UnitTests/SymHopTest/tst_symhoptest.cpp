@@ -810,6 +810,10 @@ private Q_SLOTS:
         QTest::newRow("17") << Expression("x!=5.1") << variables << 0.0 << true;
         QTest::newRow("18") << Expression("x==y") << variables << 0.0 << true;
         QTest::newRow("19") << Expression("x!=y") << variables << 1.0 << true;
+        QTest::newRow("20") << Expression("-2==-2") << variables << 1.0 << true;
+        QTest::newRow("21") << Expression("-2!=-2") << variables << 0.0 << true;
+        QTest::newRow("22") << Expression("-x==-x") << variables << 1.0 << true;
+        QTest::newRow("23") << Expression("-x!=-x") << variables << 0.0 << true;
     }
 };
 

@@ -195,6 +195,12 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         //Don't create empty expressions
         if(str.isEmpty()) { return; }
 
+        if(str.startsWith("-(") && str.endsWith(")"))
+        {
+            str.remove(0, 1);
+            str.insert(0, "-1*");
+        }
+
         //Trivial simplifications before parsing
         if(str.size() > 1)
         {
@@ -213,9 +219,11 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         }
         while(str.contains("++")) { str.replace("++", "+"); }
         while(str.contains("+-+-")) { str.replace("+-+-","+-"); }
-        while(str.contains("-(")) { str.replace("-(", "(-"); }
+        //while(str.contains("-(")) { str.replace("-(", "(-"); }
         while(str.startsWith("+")) { str = str.right(str.size()-1); }
         while(str.contains("=+")) { str.replace("=+", "="); }
+        while(str.contains("$+")) { str.replace("$+", "$"); }
+        while(str.contains("!+")) { str.replace("!+", "!"); }
 
         //Remove all excessive parentheses
         while(str.startsWith("(") && str.endsWith(")"))
