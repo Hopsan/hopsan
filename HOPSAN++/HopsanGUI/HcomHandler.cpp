@@ -3666,10 +3666,10 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    if(desiredType != Scalar && pLogData && symHopExpr.getFactors().size() == 1 && symHopExpr.getDivisors().size() == 1)
+    if(desiredType != Scalar && pLogData && symHopExpr.isMultiplyOrDivide() && symHopExpr.getFactors().size() == 1)
     {
         SymHop::Expression f = symHopExpr.getFactors()[0];
-        SymHop::Expression d = symHopExpr.getDivisors()[0];
+        SymHop::Expression d = SymHop::Expression::fromFactorsDivisors(symHopExpr.getDivisors(), QList<SymHop::Expression>());
 
         VariableType varType0, varType1;
         double scalar1;
