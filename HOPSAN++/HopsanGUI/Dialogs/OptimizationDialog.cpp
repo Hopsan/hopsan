@@ -1559,8 +1559,10 @@ void OptimizationDialog::applyParameters()
     QStringList code;
     mpTerminal->mpHandler->getFunctionCode("setpars", code);
     bool abort;
-    gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "optvar(evalid) = "+QString::number(idx), &abort);
+    gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(true);
+    gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "opt set evalid "+QString::number(idx), &abort);
     gpTerminalWidget->mpHandler->runScriptCommands(code, &abort);
+    gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(false);
 
     //Switch back HCOM handler
     gpTerminalWidget->mpHandler->mpOptHandler = pOrgOptHandler;
