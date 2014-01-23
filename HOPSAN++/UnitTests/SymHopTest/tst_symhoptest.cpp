@@ -814,6 +814,14 @@ private Q_SLOTS:
         QTest::newRow("21") << Expression("-2!=-2") << variables << 0.0 << true;
         QTest::newRow("22") << Expression("-x==-x") << variables << 1.0 << true;
         QTest::newRow("23") << Expression("-x!=-x") << variables << 0.0 << true;
+        QTest::newRow("24") << Expression("x||y") << variables << 1.0 << true;
+        QTest::newRow("25") << Expression("x||0") << variables << 1.0 << true;
+        QTest::newRow("26") << Expression("0||y") << variables << 1.0 << true;
+        QTest::newRow("27") << Expression("0||0") << variables << 0.0 << true;
+        QTest::newRow("28") << Expression("x&&y") << variables << 1.0 << true;
+        QTest::newRow("29") << Expression("x&&0") << variables << 0.0 << true;
+        QTest::newRow("30") << Expression("0&&y") << variables << 0.0 << true;
+        QTest::newRow("31") << Expression("0&&0") << variables << 0.0 << true;
     }
 };
 
