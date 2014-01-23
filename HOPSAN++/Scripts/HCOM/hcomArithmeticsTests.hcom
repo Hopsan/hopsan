@@ -131,28 +131,27 @@ else
   call testFailed
 endif
 
-#call startNewTest
-#if (aver(a2/a2) == 1)
-#  call testOk
-#else
-#  call testFailed
-#endif
+call startNewTest
+if (aver(a2/a2) == 1)
+  call testOk
+else
+  call testFailed
+endif
 
-#call startNewTest
-#if (aver(a2/a3/a4) == 2/(3*4))
-#  call testOk
-#else
-#  call testFailed
-#endif
+call startNewTest
+if (aver(a2/a3/a4) == 2/(3*4))
+  call testOk
+else
+  call testFailed
+endif
 
-#call startNewTest
-#if (aver(a2/a3/a4) == 0.166667)
-#  call testOk
-#else
-#  call testFailed
-#endif
+call startNewTest
+if (aver(a2/a3/a4) == 0.166667)
+  call testOk
+else
+  call testFailed
+endif
 
-print "apa"
 call startNewTest
 if (aver(a2/(a3/a4)) == 2.66667)
   call testOk

@@ -771,23 +771,13 @@ void HcomHandler::executeCommand(QString cmd)
         if(mCmdList[i].cmd == majorCmd) { idx = i; }
     }
 
-//    ModelWidget *pCurrentTab = gpModelHandler->getCurrentModel();
-//    SystemContainer *pCurrentSystem;
-//    if(pCurrentTab)
-//    {
-//        pCurrentSystem = pCurrentTab->getTopLevelSystem();
-//    }
-//    else
-//    {
-//        pCurrentSystem = 0;
-//    }
-
     if(idx<0)
     {
         TicToc timer;
         if(!evaluateArithmeticExpression(cmd))
         {
-            HCOMERR("Failed to evaluate expression: " + majorCmd);
+            //! @todo this text is to generic, a better error should be given someplace else, is it an unknown command or what?
+            HCOMERR("Unknown command or failed to evaluate: " + majorCmd);
         }
         timer.toc("evaluateArithmeticExpression " + cmd);
     }
