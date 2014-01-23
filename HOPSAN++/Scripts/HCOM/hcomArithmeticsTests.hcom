@@ -152,6 +152,7 @@ endif
 #  call testFailed
 #endif
 
+print "apa"
 call startNewTest
 if (aver(a2/(a3/a4)) == 2.66667)
   call testOk
