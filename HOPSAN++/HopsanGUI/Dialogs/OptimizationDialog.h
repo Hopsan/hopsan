@@ -55,7 +55,7 @@ public:
     void updateParameterOutputs(QVector<QVector<double> > &values, int bestId, int worstId);
     void updateTotalProgressBar(double progress);
     void setOptimizationFinished();
-
+    void setCode(const QString &code);
 protected:
     QTreeWidgetItem* findParameterTreeItem(QString componentName, QString parameterName);
 

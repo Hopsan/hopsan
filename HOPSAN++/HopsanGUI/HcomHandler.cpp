@@ -1306,7 +1306,11 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
 
     if(!mAcceptsOptimizationCommands && (code.contains("\nopt init") || code.contains("\nopt run") || code.contains(" opt init") || code.contains(" opt run")))
     {
-        HCOMINFO("This HCOM terminal does not accept optimization scripts.\nUse the optimization dialog instead.");
+        //HCOMINFO("This HCOM terminal does not accept optimization scripts.\nUse the optimization dialog instead.");
+        //return;
+
+        gpMainWindow->mpOptimizationDialog->open();
+        gpMainWindow->mpOptimizationDialog->setCode(code);
         return;
     }
 

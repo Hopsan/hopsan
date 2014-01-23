@@ -370,6 +370,17 @@ void OptimizationDialog::setOptimizationFinished()
     }
 }
 
+void OptimizationDialog::setCode(const QString &code)
+{
+    this->next();
+    this->next();
+    this->next();
+    this->next();
+    this->next();
+    this->back();   //Ugly hack to show correct page
+    mpOutputBox->setPlainText(code);
+}
+
 
 void OptimizationDialog::loadConfiguration()
 {
@@ -1412,20 +1423,12 @@ void OptimizationDialog::loadScriptFile()
 
     gpConfig->setScriptDir(QFileInfo(filePath).absolutePath());
 
-    this->next();
-    this->next();
-    this->next();
-    this->next();
-    this->next();
-    this->back();   //Ugly hack to show correct page
-
-
     QFile file(filePath);
     file.open(QFile::Text | QFile::ReadOnly);
     mScript = file.readAll();
     file.close();
 
-    mpOutputBox->setPlainText(mScript);
+    setCode(mScript);
 }
 
 void OptimizationDialog::updateCoreProgressBars()
