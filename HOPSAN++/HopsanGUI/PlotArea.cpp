@@ -681,6 +681,31 @@ bool PlotArea::isRightAxisLogarithmic() const
     return mRightAxisLogarithmic;
 }
 
+void PlotArea::setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis)
+{
+    mpQwtPlot->setAxisScale(axis, min, max);
+
+    // Lock the axis if desired, but do not unlock it if not
+    //! @todo maybe we should
+    if (lockAxis)
+    {
+        switch (axis) {
+        case QwtPlot::xBottom:
+            mpXLockCheckBox->setChecked(true);
+            break;
+        case QwtPlot::yLeft:
+            mpYLLockCheckBox->setChecked(true);
+            break;
+        case QwtPlot::yRight:
+            mpYRLockCheckBox->setChecked(true);
+            break;
+        default:
+            break;
+            //Nothing for the other axis
+        }
+    }
+}
+
 void PlotArea::setLegendsVisible(bool value)
 {
     if (value)

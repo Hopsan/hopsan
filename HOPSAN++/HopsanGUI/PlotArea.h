@@ -149,6 +149,8 @@ public:
     bool isLeftAxisLogarithmic() const;
     bool isRightAxisLogarithmic() const;
 
+    void setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis=true);
+
     void setLegendsVisible(bool value);
 
 public slots:
