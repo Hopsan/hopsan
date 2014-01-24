@@ -326,7 +326,7 @@ void OptimizationHandler::crfInit()
 //        return;
 //    }
 
-    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasLogVariableData("WorstObjective"))
     {
@@ -750,7 +750,7 @@ void OptimizationHandler::psInit()
     }
     mObjectives.resize(mNumPoints);
 
-    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasLogVariableData("WorstObjective"))
     {
@@ -1003,7 +1003,7 @@ void OptimizationHandler::plotPoints()
         return;
     }
 
-    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumPoints; ++p)
     {
         QString namex = "par"+QString::number(p)+"x";
@@ -1060,7 +1060,7 @@ void OptimizationHandler::plotObjectiveFunctionValues()
 {
     if(!mPlotObjectiveFunctionValues) { return; }
 
-    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     SharedVariablePtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
     if(bestVar.isNull())
     {
@@ -1103,7 +1103,7 @@ void OptimizationHandler::plotParameters()
 {
     if(!mPlotParameters) { return; }
 
-    LogDataHandler *pHandler = mpHcomHandler->getModelPtr()->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumParameters; ++p)
     {
         SharedVariablePtrT par = pHandler->getLogVariableDataPtr("NewPar"+QString::number(p), -1);
