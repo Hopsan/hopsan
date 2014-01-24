@@ -136,6 +136,8 @@ private:
     void executeSetCommand(const QString cmd);
     void executeSaveToPloCommand(const QString cmd);
     void executeLoadVariableCommand(const QString cmd);
+    void executeSaveParametersCommand(const QString cmd);
+    void executeLoadParametersCommand(const QString cmd);
     void executeLoadModelCommand(const QString cmd);
     void executeLoadRecentCommand(const QString cmd);
     void executeRenameComponentCommand(const QString cmd);

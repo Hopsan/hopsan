@@ -488,6 +488,22 @@ void HcomHandler::createCommands()
     replCmd.group = "Plot Commands";
     mCmdList << replCmd;
 
+    HcomCommand sapaCmd;
+    sapaCmd.cmd = "sapa";
+    sapaCmd.description.append("Saves parameter set to .XML");
+    sapaCmd.help.append(" Usage: sapa [filepath]");
+    sapaCmd.fnc = &HcomHandler::executeSaveParametersCommand;
+    sapaCmd.group = "Parameter Commands";
+    mCmdList << sapaCmd;
+
+    HcomCommand repaCmd;
+    repaCmd.cmd = "repa";
+    repaCmd.description.append("Loads parameters from .XML");
+    repaCmd.help.append(" Usage: repa [filepath]");
+    repaCmd.fnc = &HcomHandler::executeLoadParametersCommand;
+    repaCmd.group = "Plot Commands";
+    mCmdList << repaCmd;
+
     HcomCommand loadCmd;
     loadCmd.cmd = "load";
     loadCmd.description.append("Loads a model file");
@@ -2052,6 +2068,46 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
     {
         mpModel->getTopLevelSystemContainer()->getLogDataHandler()->importFromPlo(filePath);
     }
+}
+
+void HcomHandler::executeSaveParametersCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) > 1)
+    {
+        HCOMERR("Wrong numer of arguments.");
+        return;
+    }
+    QString path = getArgument(cmd, 0);
+    if(!path.contains("/"))
+    {
+        path.prepend("./");
+    }
+
+    QString dir = path.left(path.lastIndexOf("/"));
+    dir = getDirectory(dir);
+    path = dir+path.right(path.size()-path.lastIndexOf("/"));
+
+    mpModel->saveTo(path, ParametersOnly);
+}
+
+void HcomHandler::executeLoadParametersCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) > 1)
+    {
+        HCOMERR("Wrong numer of arguments.");
+        return;
+    }
+    QString path = getArgument(cmd, 0);
+    if(!path.contains("/"))
+    {
+        path.prepend("./");
+    }
+
+    QString dir = path.left(path.lastIndexOf("/"));
+    dir = getDirectory(dir);
+    path = dir+path.right(path.size()-path.lastIndexOf("/"));
+
+    qobject_cast<SystemContainer*>(mpModel->getViewContainerObject())->loadParameterFile(path);
 }
 
 

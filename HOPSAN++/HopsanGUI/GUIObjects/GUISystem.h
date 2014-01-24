@@ -133,7 +133,7 @@ public:
     void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents = FullModel);
     void loadFromDomElement(QDomElement &rDomElement);
     void setModelFileInfo(QFile &rFile);
-    void loadParameterFile();
+    void loadParameterFile(const QString &path="");
 
     void exportToLabView();
     void exportToFMU();

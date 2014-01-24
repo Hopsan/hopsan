@@ -1737,12 +1737,17 @@ void SystemContainer::setModelFileInfo(QFile &rFile)
 }
 
 
-void SystemContainer::loadParameterFile()
+void SystemContainer::loadParameterFile(const QString &path)
 {
     qDebug() << "loadParameterFile()";
-    QString parameterFileName = QFileDialog::getOpenFileName(gpMainWindow, tr("Load Parameter File"),
-                                                         gpConfig->getLoadModelDir(),
-                                                         tr("Hopsan Parameter Files (*.hpf *.xml)"));
+    QString parameterFileName = path;
+    if(path.isEmpty())
+    {
+        parameterFileName = QFileDialog::getOpenFileName(gpMainWindow, tr("Load Parameter File"),
+                                                             gpConfig->getLoadModelDir(),
+                                                             tr("Hopsan Parameter Files (*.hpf *.xml)"));
+    }
+
     if(!parameterFileName.isEmpty())
     {
         mpCoreSystemAccess->loadParameterFile(parameterFileName);
