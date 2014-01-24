@@ -145,27 +145,27 @@ int PlotCurve::getGeneration() const
 
 QString PlotCurve::getCurveName() const
 {
-    if(mCurveType == PortVariableType)
-    {
-        if (mpData->getAliasName().isEmpty())
-        {
-            return mpData->getFullVariableNameWithSeparator(", ");
-        }
-        else
+//    if(mCurveType == PortVariableType)
+//    {
+        if (mpData->hasAliasName())
         {
             return mpData->getAliasName();
         }
-    }
-    else if(mCurveType == FrequencyAnalysisType)
-        return "Frequency Spectrum";
-    else if(mCurveType == NyquistType)
-        return "Nyquist Plot";
-    else if(mCurveType == BodeGainType)
-        return "Magnitude Plot";
-    else if(mCurveType == BodePhaseType)
-        return "Phase Plot";
-    else
-        return "Unnamed Curve";
+        else
+        {
+            return mpData->getFullVariableNameWithSeparator(", ");
+        }
+//    }
+//    else if(mCurveType == FrequencyAnalysisType)
+//        return "Frequency Spectrum";
+//    else if(mCurveType == NyquistType)
+//        return "Nyquist Plot";
+//    else if(mCurveType == BodeGainType)
+//        return "Magnitude Plot";
+//    else if(mCurveType == BodePhaseType)
+//        return "Phase Plot";
+//    else
+//        return "Unnamed Curve";
 }
 
 QString PlotCurve::getCurveName(bool includeGeneration, bool includeSourceFile) const
@@ -277,7 +277,7 @@ const QString &PlotCurve::getDataModelPath() const
 }
 
 
-const SharedVariablePtrT PlotCurve::getLogDataVariablePtr() const
+const SharedVariablePtrT PlotCurve::getDataVariable() const
 {
     return mpData;
 }
@@ -300,17 +300,17 @@ QVector<double> PlotCurve::getDataVectorCopy() const
 
 //! @brief Returns the shared time or frequency vector of the plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
-const SharedVariablePtrT PlotCurve::getSharedTimeOrFrequencyVector() const
+const SharedVariablePtrT PlotCurve::getSharedTimeOrFrequencyVariable() const
 {
     return mpData->getSharedTimeOrFrequencyVector();
 }
 
-bool PlotCurve::hasCustomXData() const
+bool PlotCurve::hasCustomXVariable() const
 {
     return !mpCustomXdata.isNull();
 }
 
-const SharedVariablePtrT PlotCurve::getSharedCustomXData() const
+const SharedVariablePtrT PlotCurve::getSharedCustomXVariable() const
 {
     return mpCustomXdata;
 }
@@ -340,7 +340,7 @@ bool PlotCurve::setGeneration(const int generation)
             return false;
         }
 
-        if (hasCustomXData())
+        if (hasCustomXVariable())
         {
             QPointer<LogVariableContainer> pCustXContainer = mpCustomXdata->getLogVariableContainer();
             if (pCustXContainer)
@@ -521,11 +521,6 @@ void PlotCurve::resetLegendSize()
 {
     // For now hardcoded but maybe in the future be possible to select, (default 8x8 is to small to see difference between dashed and solid lines)
     setLegendIconSize(QSize(40,12));
-}
-
-SharedVariablePtrT PlotCurve::getLogDataVariablePtr()
-{
-    return mpData;
 }
 
 
@@ -904,60 +899,73 @@ void PlotCurve::markActive(bool value)
 //! @todo add optional index if we only want to update particular value
 void PlotCurve::updateCurve()
 {
-    QVector<double> tempX;
-    // We copy here, it should be faster then peek (at least when data is cached on disc)
-    //! @todo maybe be smart about doing this copy
-    QVector<double> tempY = mpData->getDataVectorCopy();
-    const double dataScale = mpData->getPlotScale();
-    const double dataOffset = mpData->getPlotOffset();
-
-    if(mpCustomXdata.isNull())
+    // Handle complex variables in a special way
+    if (mpData->getVariableType() == ComplexType)
     {
-        const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
-        const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
-
-        // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
-        if (mpData->getSharedTimeOrFrequencyVector())
+        ComplexVectorVariable *pComplexVar = qobject_cast<ComplexVectorVariable*>(mpData.data());
+        if (pComplexVar)
         {
-            tempX = mpData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
-            const double timeScale = mpData->getSharedTimeOrFrequencyVector()->getPlotScale();
-            const double timeOffset = mpData->getSharedTimeOrFrequencyVector()->getPlotOffset();
-
-            for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
-            {
-                tempX[i] = tempX[i]*timeScale + timeOffset;
-                tempY[i] = tempY[i]*yScale + yOffset;
-            }
-        }
-        else
-        {
-            // No timevector or special x-vector, plot vs samples
-            tempX.resize(tempY.size());
-            for (int i=0; i< tempX.size(); ++i)
-            {
-                tempX[i] = i;
-                tempY[i] = tempY[i]*yScale + yOffset;
-            }
+            setSamples(pComplexVar->getRealDataCopy(), pComplexVar->getImagDataCopy());
         }
     }
     else
     {
-        const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
-        const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
-
-        // Use special X-data
+        QVector<double> tempX, tempY;
         // We copy here, it should be faster then peek (at least when data is cached on disc)
-        tempX = mpCustomXdata->getDataVectorCopy();
-        const double xScale = mpCustomXdata->getPlotScale();
-        const double xOffset = mpCustomXdata->getPlotOffset();
-        for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
+        //! @todo maybe be smart about doing this copy
+        tempY = mpData->getDataVectorCopy();
+        const double dataScale = mpData->getPlotScale();
+        const double dataOffset = mpData->getPlotOffset();
+
+        if(mpCustomXdata.isNull())
         {
-            tempX[i] = tempX[i]*xScale + xOffset;
-            tempY[i] = tempY[i]*yScale + yOffset;
+            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+            const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
+
+            // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
+            if (mpData->getSharedTimeOrFrequencyVector())
+            {
+                tempX = mpData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+                const double timeScale = mpData->getSharedTimeOrFrequencyVector()->getPlotScale();
+                const double timeOffset = mpData->getSharedTimeOrFrequencyVector()->getPlotOffset();
+
+                for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
+                {
+                    tempX[i] = tempX[i]*timeScale + timeOffset;
+                    tempY[i] = tempY[i]*yScale + yOffset;
+                }
+            }
+            else
+            {
+                // No timevector or special x-vector, plot vs samples
+                tempX.resize(tempY.size());
+                for (int i=0; i< tempX.size(); ++i)
+                {
+                    tempX[i] = i;
+                    tempY[i] = tempY[i]*yScale + yOffset;
+                }
+            }
         }
+        else
+        {
+            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+            const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
+
+            // Use special X-data
+            // We copy here, it should be faster then peek (at least when data is cached on disc)
+            tempX = mpCustomXdata->getDataVectorCopy();
+            const double xScale = mpCustomXdata->getPlotScale();
+            const double xOffset = mpCustomXdata->getPlotOffset();
+            for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
+            {
+                tempX[i] = tempX[i]*xScale + xOffset;
+                tempY[i] = tempY[i]*yScale + yOffset;
+            }
+        }
+
+        setSamples(tempX, tempY);
     }
 
-    setSamples(tempX, tempY);
     emit curveDataUpdated();
 }
 

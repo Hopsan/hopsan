@@ -46,7 +46,7 @@ SharedVariableDescriptionT createFrequencyVariableDescription()
 {
     SharedVariableDescriptionT pVarDesc(new VariableDescription());
     pVarDesc->mDataName = FREQUENCYVARIABLENAME;
-    pVarDesc->mDataUnit = "rad/s";
+    pVarDesc->mDataUnit = "Hz";
     return pVarDesc;
 }
 
@@ -1558,22 +1558,45 @@ QString ImportedVectorVariable::getImportedFileName() const
 ComplexVectorVariable::ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(QVector<double>(0), generation, varDesc, pGenerationMultiCache)
 {
-    mpCachedRealVector = new CachableDataVector(rReal, pGenerationMultiCache, gpConfig->getCacheLogData());
-    mpCachedImagVector = new CachableDataVector(rImaginary, pGenerationMultiCache, gpConfig->getCacheLogData());
+    SharedVariableDescriptionT pRealDesc(new VariableDescription());
+    pRealDesc->mDataName = "Real";
+    mpSharedReal = SharedVariablePtrT(new VectorVariable(rReal, generation, pRealDesc, pGenerationMultiCache));
+
+    SharedVariableDescriptionT pImagDesc(new VariableDescription());
+    pImagDesc->mDataName = "Imaginary";
+    mpSharedImag = SharedVariablePtrT(new VectorVariable(rImaginary, generation, pImagDesc, pGenerationMultiCache));
 }
 
 ComplexVectorVariable::ComplexVectorVariable(SharedVariablePtrT pReal, SharedVariablePtrT pImaginary, const int generation, SharedVariableDescriptionT varDesc)
     : VectorVariable(QVector<double>(0), generation, varDesc, SharedMultiDataVectorCacheT())
 {
-    mpCachedRealVector = 0;
-    mpCachedImagVector = 0;
     mpSharedReal = pReal;
-    mpSharedImag =pImaginary;
+    mpSharedImag = pImaginary;
 }
 
 VariableTypeT ComplexVectorVariable::getVariableType() const
 {
     return ComplexType;
+}
+
+const QString &ComplexVectorVariable::getDataName() const
+{
+    return mpSharedImag->getDataName();
+}
+
+const SharedVariablePtrT ComplexVectorVariable::getSharedTimeOrFrequencyVector() const
+{
+    return mpSharedReal;
+}
+
+QVector<double> ComplexVectorVariable::getRealDataCopy() const
+{
+    return mpSharedReal->getDataVectorCopy();
+}
+
+QVector<double> ComplexVectorVariable::getImagDataCopy() const
+{
+    return mpSharedImag->getDataVectorCopy();
 }
 
 
@@ -1590,7 +1613,7 @@ ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, con
 }
 
 
-void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax, SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv, SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData)
+void createBodeVariables(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax, SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv, SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData)
 {
     // Create temporary real vectors
     //! @todo is X Y input output naming correct ?
@@ -1649,7 +1672,7 @@ void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutpu
             vRe.append(G[i].real());
             vIm.append(G[i].imag());
             vImNeg.append(-G[i].imag());
-            vBodeGain.append(20*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
+            vBodeGain.append(20.*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
             vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180./3.14159265);          //Phase: arg(G) = arctan(X/R)
 
             // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
@@ -1676,23 +1699,25 @@ void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutpu
     vBodeGain.resize(F.size());
     vBodePhase.resize(F.size());
 
-    // Create the output variables
-    rNyquistData = SharedVariablePtrT(new ComplexVectorVariable(vRe, vIm,pOutput->getGeneration(),
-                                                                SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
-                                                                SharedMultiDataVectorCacheT()));
+    // Create the output variables for nyquist plots
+    //! @todo add description to description, (what was the data based on)
+    SharedVariableDescriptionT pNyquistDesc(new VariableDescription()); pNyquistDesc->mDataName = "Nyquist";
+    rNyquistData = SharedVariablePtrT(new ComplexVectorVariable(vRe, vIm, pOutput->getGeneration(), pNyquistDesc, SharedMultiDataVectorCacheT()));
 
-    rNyquistDataInv = SharedVariablePtrT(new ComplexVectorVariable(vRe, vImNeg,pOutput->getGeneration(),
-                                                                   SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
-                                                                   SharedMultiDataVectorCacheT()));
+    SharedVariableDescriptionT pNyquistInvDesc(new VariableDescription()); pNyquistInvDesc->mDataName = "Nyquist Inverted";
+    rNyquistDataInv = SharedVariablePtrT(new ComplexVectorVariable(vRe, vImNeg, pOutput->getGeneration(), pNyquistInvDesc, SharedMultiDataVectorCacheT()));
 
+    // Create the output variables for bode diagram
     SharedVariablePtrT pFrequencyVar = createFreeFrequencyVectorVariabel(F);
-    rGainData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutput->getGeneration(),
-                                                               SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
-                                                               SharedMultiDataVectorCacheT()));
 
-    rPhaseData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutput->getGeneration(),
-                                                                SharedVariableDescriptionT(new VariableDescription(*pOutput->getVariableDescription().data())),
-                                                                SharedMultiDataVectorCacheT()));
+    SharedVariableDescriptionT pGainDesc(new VariableDescription());
+    pGainDesc->mDataName = "Magnitude";
+    rGainData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutput->getGeneration(), pGainDesc, SharedMultiDataVectorCacheT()));
+
+    SharedVariableDescriptionT pPhaseDesc(new VariableDescription());
+    pPhaseDesc->mDataName = "Phase";
+    pPhaseDesc->mDataUnit = "Deg";
+    rPhaseData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutput->getGeneration(), pPhaseDesc, SharedMultiDataVectorCacheT()));
 }
 
 void IndexIntervalCollection::addValue(const int val)

@@ -106,6 +106,20 @@ private:
 
 };
 
+class CurveColorSelector
+{
+public:
+    CurveColorSelector();
+    QStringList getCurveColors() const;
+    QColor getLeastCommonCurveColor();
+    void incrementCurveColorCounter(const QColor &rColor);
+    void decrementCurveColorCounter(const QColor &rColor);
+
+private:
+    QStringList mCurveColors;
+    QVector<int> mUsedColorsCounters;
+};
+
 class PlotArea : public QWidget
 {
     Q_OBJECT
@@ -216,8 +230,8 @@ private:
     QList<PlotCurve*> mPlotCurves;
     PlotCurve *mpActivePlotCurve;
     quint32 mNumYlCurves, mNumYrCurves;
-    QStringList mCurveColors;
-    QList<int> mUsedColorsCounter;
+
+    CurveColorSelector mCurveColorSelector;
 
     QStringList mModelPaths;
 

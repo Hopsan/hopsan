@@ -190,7 +190,7 @@ public:
     const QString &getModelPath() const;
     const QString &getComponentName() const;
     const QString &getPortName() const;
-    const QString &getDataName() const;
+    virtual const QString &getDataName() const;
     const QString &getDataUnit() const;
     bool hasAliasName() const;
     int getGeneration() const;
@@ -358,7 +358,7 @@ public:
     //! @todo add a bunch of reimplemented functions
 };
 
-
+//! @todo complex varibales is a bit strange right now, it abuses overloading of function from vector variable. Reason is that real xy plots are not supported /Peter
 class ComplexVectorVariable : public VectorVariable
 {
     Q_OBJECT
@@ -367,14 +367,19 @@ public:
                           SharedMultiDataVectorCacheT pGenerationMultiCache);
     ComplexVectorVariable(SharedVariablePtrT pReal, SharedVariablePtrT pImaginary, const int generation, SharedVariableDescriptionT varDesc);
     virtual VariableTypeT getVariableType() const;
+
+    const QString &getDataName() const;
+    const SharedVariablePtrT getSharedTimeOrFrequencyVector() const;
+
+    QVector<double> getRealDataCopy() const;
+    QVector<double> getImagDataCopy() const;
     //! @todo add a bunch of reimplemented functions
 protected:
-    CachableDataVector *mpCachedRealVector, *mpCachedImagVector;
     SharedVariablePtrT mpSharedReal, mpSharedImag;
 };
 
-void createBode(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax,
-                SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv,
-                SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData);
+void createBodeVariables(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax,
+                         SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv,
+                         SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData);
 
 #endif // LOGVARIABLE_H

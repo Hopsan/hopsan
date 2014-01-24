@@ -139,21 +139,21 @@ else
 endif
 
 call startNewTest
-if (aver(a2/a3/a4) == 2/(3*4))
+if ( fc (aver(a2/a3/a4), 2/(3*4), 1e-10 ) )
   call testOk
 else
   call testFailed
 endif
 
 call startNewTest
-if (aver(a2/a3/a4) == 0.166667)
+if ( fc( aver(a2/a3/a4), 0.166667, 1e-6 ) )
   call testOk
 else
   call testFailed
 endif
 
 call startNewTest
-if (aver(a2/(a3/a4)) == 2.66667)
+if ( fc( aver(a2/(a3/a4)), 2.666667, 1e-6 ) )
   call testOk
 else
   call testFailed

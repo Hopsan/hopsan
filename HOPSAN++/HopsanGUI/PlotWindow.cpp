@@ -932,7 +932,7 @@ void PlotWindow::createPlotWindowFromTab()
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
         //pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
-        pPW = gpPlotHandler->plotDataToWindow(pPW,getCurrentPlotTab()->getCurves().at(i)->getLogDataVariablePtr(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+        pPW = gpPlotHandler->plotDataToWindow(pPW,getCurrentPlotTab()->getCurves().at(i)->getDataVariable(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }
 
@@ -941,36 +941,24 @@ void PlotWindow::createPlotWindowFromTab()
 void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax)
 {
     SharedVariablePtrT pNyquist, pNyquistInv, pGain, pPhase;
-    createBode(var1, var2, Fmax, pNyquist, pNyquistInv, pGain, pPhase);
+    createBodeVariables(var1, var2, Fmax, pNyquist, pNyquistInv, pGain, pPhase);
 
     // Nyquist plot
     PlotTab *pNyquistTab = addPlotTab("Nyquist Plot");
-    pNyquistTab->addCurve(new PlotCurve(pNyquist, QwtPlot::yLeft, NyquistType));
-    pNyquistTab->addCurve(new PlotCurve(pNyquistInv, QwtPlot::yLeft, NyquistType));
-
-    //! @todo these three should not be needded they should be called in the addCurve function
-    pNyquistTab->getQwtPlot()->replot();
-    pNyquistTab->rescaleAxesToCurves();
-    pNyquistTab->updateGeometry();
+    pNyquistTab->addCurve(new PlotCurve(pNyquist, QwtPlot::yLeft, NyquistType), "Blue");
+    pNyquistTab->addCurve(new PlotCurve(pNyquistInv, QwtPlot::yLeft, NyquistType), "Blue");
 
     // Bode plot
     PlotTab *pBodeTab = addPlotTab("Bode Diagram", BodePlotType);
     PlotCurve *pGainCurve = new PlotCurve(pGain, QwtPlot::yLeft, BodeGainType);
     pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->addCurve(pGainCurve);
+    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
 
     PlotCurve *pPhaseCurve = new PlotCurve(pPhase, QwtPlot::yLeft, BodePhaseType);
-    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve, QColor());
-
-    //! @todo are these really needed they should be called in the addCurve function (but something special here for first and second plot)
-    pBodeTab->getQwtPlot(BodePlotTab::MagnitudePlot)->replot();
-    pBodeTab->getQwtPlot(BodePlotTab::PhasePlot)->replot();
-
-    //getCurrentPlotTab()->updateGeometry();
-    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
+    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve);
     pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->setBottomAxisLogarithmic(true);
 
     pBodeTab->rescaleAxesToCurves();
-
 
     // Add a curve marker at the amplitude margin
     for(int i=1; i<pPhase->getDataSize(); ++i)

@@ -235,10 +235,10 @@ void PlotCurveControlBox::updateColor(const QColor color)
 void PlotCurveControlBox::updateInfo()
 {
     // Enable/diable generation buttons
-    const int lowGen = mpPlotCurve->getLogDataVariablePtr()->getLowestGeneration();
-    const int highGen = mpPlotCurve->getLogDataVariablePtr()->getHighestGeneration();
+    const int lowGen = mpPlotCurve->getDataVariable()->getLowestGeneration();
+    const int highGen = mpPlotCurve->getDataVariable()->getHighestGeneration();
     const int gen = mpPlotCurve->getGeneration();
-    const int nGen = mpPlotCurve->getLogDataVariablePtr()->getNumGenerations();
+    const int nGen = mpPlotCurve->getDataVariable()->getNumGenerations();
     disconnect(mpGenerationSpinBox,         SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int))); //Need to temporarily disconnect to avoid loop
     mpGenerationSpinBox->setRange(lowGen+1, highGen+1);
     mpGenerationSpinBox->setValue(gen+1);
@@ -257,7 +257,7 @@ void PlotCurveControlBox::updateInfo()
         mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getDataModelPath());
         break;
     case ImportedVariableType:
-        mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getLogDataVariablePtr()->getImportedFileName());
+        mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getDataVariable()->getImportedFileName());
         break;
     default:
         mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource()));
@@ -267,10 +267,10 @@ void PlotCurveControlBox::updateInfo()
     refreshTitle();
 
     // Update Xdata
-    if (mpPlotCurve->hasCustomXData())
+    if (mpPlotCurve->hasCustomXVariable())
     {
-        mpCustomXDataDrop->setText(mpPlotCurve->getSharedCustomXData()->getFullVariableName());
-        if (mpPlotCurve->getSharedTimeOrFrequencyVector())
+        mpCustomXDataDrop->setText(mpPlotCurve->getSharedCustomXVariable()->getFullVariableName());
+        if (mpPlotCurve->getSharedTimeOrFrequencyVariable())
         {
             mpResetTimeButton->setEnabled(true);
         }

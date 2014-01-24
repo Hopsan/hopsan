@@ -83,12 +83,11 @@ public:
     HopsanPlotCurveTypeEnumT getCurveType();
     int getAxisY();
 
-    SharedVariablePtrT getLogDataVariablePtr(); //! @todo is this needed
-    const SharedVariablePtrT getLogDataVariablePtr() const;
+    const SharedVariablePtrT getDataVariable() const;
+    const SharedVariablePtrT getSharedTimeOrFrequencyVariable() const;
+    const SharedVariablePtrT getSharedCustomXVariable() const;
+    bool hasCustomXVariable() const;
     QVector<double> getDataVectorCopy() const;
-    const SharedVariablePtrT getSharedTimeOrFrequencyVector() const;
-    bool hasCustomXData() const;
-    const SharedVariablePtrT getSharedCustomXData() const;
 
     int getGeneration() const;
     const QString &getComponentName() const;

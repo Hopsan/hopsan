@@ -223,12 +223,6 @@ PlotArea::PlotArea(PlotTab *pParentPlotTab)
     mRightAxisLogarithmic = false;
     mBottomAxisLogarithmic = false;
 
-    mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
-    for(int i=0; i<mCurveColors.size(); ++i)
-    {
-        mUsedColorsCounter.append(0);
-    }
-
     // Plots
     mpQwtPlot = new HopQwtPlot(this);
     mpQwtPlot->setMouseTracking(true);
@@ -361,7 +355,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     // Set custom xdata if one is already pressent in this tab
     if(mHasCustomXData)
     {
-        if (pCurve->hasCustomXData())
+        if (pCurve->hasCustomXVariable())
         {
             //! @todo check that same unit
             qWarning("todo Check that same unit");
@@ -375,21 +369,15 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     // Determine what plot scales to use
     determineAddedCurveUnitOrScale(pCurve);
 
-    //! @todo this code is very unclear, rewrite and add a comment, mayb also deal with desired color
-    for(int i=0; true; ++i)
+    // Determine plot curve color, if desired color is valid then use that color, else use the color selector the get the least common one
+    if (desiredColor.isValid())
     {
-        bool stop=false;
-        for(int j=0; j<mUsedColorsCounter.size(); ++j)
-        {
-            if(mUsedColorsCounter[j] == i)
-            {
-                pCurve->setLineColor(mCurveColors[j]);
-                ++mUsedColorsCounter[j];
-                stop=true;
-                break;
-            }
-        }
-        if(stop) break;
+        pCurve->setLineColor(desiredColor);
+        mCurveColorSelector.incrementCurveColorCounter(desiredColor.name());
+    }
+    else
+    {
+        pCurve->setLineColor(mCurveColorSelector.getLeastCommonCurveColor());
     }
 
     // Enable axis and zoomers as needed
@@ -450,7 +438,7 @@ void PlotArea::setCustomXVectorForAll(SharedVariablePtrT pData)
 {
     for(int i=0; i<mPlotCurves.size(); ++i)
     {
-        if (!mPlotCurves[i]->hasCustomXData())
+        if (!mPlotCurves[i]->hasCustomXVariable())
         {
             mPlotCurves[i]->setCustomXData(pData);
         }
@@ -485,14 +473,8 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
         }
     }
 
-    for(int i=0; i<mCurveColors.size(); ++i)
-    {
-        if(pCurve->pen().color() == mCurveColors[i])
-        {
-            --mUsedColorsCounter[i];
-            break;
-        }
-    }
+    // Reduce the curve color counter for this curve color
+    mCurveColorSelector.decrementCurveColorCounter(pCurve->pen().color());
 
     if (pCurve->getAxisY() == QwtPlot::yLeft)
     {
@@ -505,9 +487,8 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
 
     pCurve->detach();
     mPlotCurves.removeAll(pCurve);
-
-
-    pCurve->deleteLater();
+    pCurve->disconnect();
+    delete pCurve;
 
     // Reset timevector incase we had special x-axis set previously
     if (mPlotCurves.isEmpty() && mHasCustomXData)
@@ -1051,11 +1032,11 @@ void PlotArea::rescaleAxesToCurves()
         for(int i=0; i<mPlotCurves.size(); ++i)
         {
             // First check if some curve has a custom x-axis and plot does not
-            someoneHasCustomXdata = someoneHasCustomXdata || mPlotCurves[i]->hasCustomXData();
+            someoneHasCustomXdata = someoneHasCustomXdata || mPlotCurves[i]->hasCustomXVariable();
             if (!mHasCustomXData && someoneHasCustomXdata)
             {
                 //! @todo maybe should do this with signal slot instead, to avoid unesisarry checks all the time
-                setTabOnlyCustomXVector(mPlotCurves[i]->getSharedCustomXData());
+                setTabOnlyCustomXVector(mPlotCurves[i]->getSharedCustomXVariable());
             }
 
             if(mPlotCurves[i]->getAxisY() == QwtPlot::yLeft)
@@ -1240,13 +1221,13 @@ void PlotArea::updateAxisLabels()
             // First decide new y-axis label
             // If alias empty then use data name, else use the alias name
             QString newLabel;
-            if (mPlotCurves[i]->getLogDataVariablePtr()->getAliasName().isEmpty())
+            if (mPlotCurves[i]->getDataVariable()->getAliasName().isEmpty())
             {
                 newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getDataName()).arg(mPlotCurves[i]->getCurrentUnit());
             }
             else
             {
-                newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getLogDataVariablePtr()->getAliasName()).arg(mPlotCurves[i]->getCurrentUnit());
+                newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getDataVariable()->getAliasName()).arg(mPlotCurves[i]->getCurrentUnit());
             }
 
             // If new label is not already on the axis then we may want to add it
@@ -1264,10 +1245,10 @@ void PlotArea::updateAxisLabels()
 
             // Now decide new bottom axis label
             // Use custom x-axis if availible, else try to use the time or frequency vector (if set)
-            SharedVariablePtrT pSharedXVector = mPlotCurves[i]->getSharedCustomXData();
+            SharedVariablePtrT pSharedXVector = mPlotCurves[i]->getSharedCustomXVariable();
             if (pSharedXVector.isNull())
             {
-                pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVector();
+                pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
             }
             QString bottomLabel;
             if (pSharedXVector.isNull())
@@ -1407,7 +1388,7 @@ void PlotArea::openTimeScalingDialog()
         int gen = mPlotCurves[i]->getGeneration();
         if (!activeGenerations.contains(gen))
         {
-            SharedVariablePtrT pTime = mPlotCurves[i]->getSharedTimeOrFrequencyVector();
+            SharedVariablePtrT pTime = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
             //if (pTime)
             {
                 TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, &scaleDialog);
@@ -2241,7 +2222,7 @@ void PlotArea::updateWindowtitleModelName()
     mModelPaths.clear();
     foreach(PlotCurve *pCurve, mPlotCurves)
     {
-        const QString &name = pCurve->getLogDataVariablePtr()->getModelPath();
+        const QString &name = pCurve->getDataVariable()->getModelPath();
         if (!mModelPaths.contains(name) && !name.isEmpty())
         {
             mModelPaths.append(name);
@@ -2302,3 +2283,58 @@ void PlotArea::resetXTimeVector()
 
 
 
+
+
+CurveColorSelector::CurveColorSelector()
+{
+    // Init colors
+    mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
+
+    // Init color counters
+    mUsedColorsCounters.reserve(mCurveColors.size());
+    for(int i=0; i<mCurveColors.size(); ++i)
+    {
+        mUsedColorsCounters.append(0);
+    }
+}
+
+QColor CurveColorSelector::getLeastCommonCurveColor()
+{
+    // Find the curve that has been used to least amount of times
+    for(int i=0; ; ++i)
+    {
+        // We check each curve in order
+        for(int c=0; c<mUsedColorsCounters.size(); ++c)
+        {
+            if(mUsedColorsCounters[c] == i)
+            {
+                ++mUsedColorsCounters[c];
+                return mCurveColors[c];
+            }
+        }
+    }
+}
+
+void CurveColorSelector::decrementCurveColorCounter(const QColor &rColor)
+{
+    for (int c=0; c<mCurveColors.size(); ++c)
+    {
+        if (rColor==mCurveColors[c])
+        {
+            --mUsedColorsCounters[c];
+            break;
+        }
+    }
+}
+
+void CurveColorSelector::incrementCurveColorCounter(const QColor &rColor)
+{
+    for (int c=0; c<mCurveColors.size(); ++c)
+    {
+        if (rColor==mCurveColors[c])
+        {
+            ++mUsedColorsCounters[c];
+            break;
+        }
+    }
+}
