@@ -311,6 +311,8 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfiguration()));
 }
 
+
+//! @brief Updates output boxes displaying the parameters
 void OptimizationDialog::updateParameterOutputs(QVector< QVector<double> > &values, int bestId, int worstId)
 {
     if(!this->isVisible()) return;
@@ -339,7 +341,7 @@ void OptimizationDialog::updateParameterOutputs(QVector< QVector<double> > &valu
         QString output="[ ";
         for(int j=0; j<values[i].size(); ++j)
         {
-            output.append(QString::number(values[i][j])+" ");
+            output.append(QString::number(values[i][j], 'g', 8)+" ");
         }
         output.append("]");
         QPalette palette;
@@ -1518,9 +1520,12 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
         nPoints=0;
     }
 
+    QFont font;
+    font.setFixedPitch(true);
     while(mParametersOutputLineEditPtrs.size() < nPoints)
     {
         mParametersOutputLineEditPtrs.append(new QLineEdit(this));
+        mParametersOutputLineEditPtrs.last()->setFont(font);
         mParametersApplyButtonPtrs.append(new QPushButton("Apply", this));
         mpParametersOutputTextEditsLayout->addWidget(mParametersApplyButtonPtrs.last(), mParametersOutputLineEditPtrs.size(), 0);
         mpParametersOutputTextEditsLayout->addWidget(mParametersOutputLineEditPtrs.last(), mParametersOutputLineEditPtrs.size(), 1);

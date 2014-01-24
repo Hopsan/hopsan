@@ -37,6 +37,7 @@
 #include "PlotTab.h"
 #include "PlotWindow.h"
 #include "PlotCurve.h"
+#include "PlotArea.h"
 #include "Utilities/GUIUtilities.h"
 #include "MainWindow.h"
 #include "Dialogs/OptimizationDialog.h"
@@ -1023,6 +1024,8 @@ void OptimizationHandler::plotPoints()
             parVar_y->assignFrom(y);
 
             gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0);
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::xBottom, mParMin[0], mParMax[0]);
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::yLeft, mParMin[1], mParMax[1]);
         }
         else
         {

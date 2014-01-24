@@ -871,6 +871,7 @@ void VectorVariable::append(const double y)
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
     pData->append(y);
     mpCachedDataVector->endFullVectorOperation(pData);
+    emit dataChanged();
 }
 
 
