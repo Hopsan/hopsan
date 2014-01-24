@@ -412,11 +412,14 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     }
 
     // Create a curve info box for this curve
-    mPlotCurveControlBoxes.append(new PlotCurveControlBox(pCurve, this));
+    PlotCurveControlBox *pControlBox = new PlotCurveControlBox(pCurve, this);
+    connect(pControlBox, SIGNAL(removeCurve(PlotCurve*)), this, SLOT(removeCurve(PlotCurve*)));
+    mPlotCurveControlBoxes.append(pControlBox);
     mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveControlBoxes.last());
     mPlotCurveControlBoxes.last()->show();
 
-    // Connect som signasl from the curve
+
+    // Connect som signals from the curve
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
     connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
 
@@ -454,9 +457,7 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
     {
         if(mPlotMarkers[i]->getCurve() == pCurve)
         {
-            mpQwtPlot->canvas()->removeEventFilter(mPlotMarkers[i]);
-            mPlotMarkers[i]->detach();
-            mPlotMarkers.removeAt(i);
+            removePlotMarker(mPlotMarkers[i]);
             --i;
         }
     }
@@ -487,6 +488,7 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
 
     pCurve->detach();
     mPlotCurves.removeAll(pCurve);
+    pCurve->mpParentPlotArea = 0;
     pCurve->disconnect();
     delete pCurve;
 
@@ -521,6 +523,18 @@ void PlotArea::removeAllCurvesOnAxis(const int axis)
         {
             removeCurve(curvePtrs[c]);
         }
+    }
+}
+
+void PlotArea::removePlotMarker(PlotMarker *pMarker)
+{
+    if (pMarker)
+    {
+        mpQwtPlot->canvas()->removeEventFilter(pMarker);
+        pMarker->hide();
+        pMarker->detach();
+        pMarker->deleteLater();
+        mPlotMarkers.removeAll(pMarker);
     }
 }
 

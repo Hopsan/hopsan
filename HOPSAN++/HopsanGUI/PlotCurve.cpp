@@ -94,11 +94,7 @@ PlotCurve::PlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY, const 
 
     // Create relay connections
     connect(this, SIGNAL(curveDataUpdated()), this, SIGNAL(curveInfoUpdated()));
-
-    // Create other connections
-    //! @todo we should not connect like this /Peter
-    connect(gpModelHandler->getCurrentModel(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-
+    // Create data connections
     connectDataSignals();
 
     if (mpData->getLogDataHandler())
@@ -854,13 +850,6 @@ void PlotCurve::updateDataPlotOffsetFromDialog()
 }
 
 
-//! @brief Tells the parent plot tab of a curve to remove it
-void PlotCurve::removeMe()
-{
-    mpParentPlotArea->removeCurve(this);
-}
-
-
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
@@ -986,6 +975,13 @@ void PlotCurve::deleteCustomData()
 
 void PlotCurve::connectDataSignals()
 {
+    //! @todo Might be better to connect to a signal from the variable container instead, then we only trigger if our data might have new information
+    //! @todo what will happen if you import or set alias with same name as data then this will also trigger
+    if (mpData->getLogDataHandler())
+    {
+        connect(mpData->getLogDataHandler(), SIGNAL(newDataAvailable()), this, SLOT(updateToNewGeneration()));
+    }
+
     connect(mpData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     connect(mpData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
     if (mpCustomXdata)
@@ -1042,11 +1038,10 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotArea *pPlotTab)
 //! This will interrupt events from plot canvas, to enable using mouse and key events for modifying markers.
 //! @returns True if event was interrupted, false if its propagation shall continue
 //! @param object Pointer to the object the event belongs to (in this case the plot canvas)
-//! @param ev ent Event to be interrupted
-bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
+//! @param event Event to be interrupted
+bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 {
-    if(!mIsMovable)
-        return false; //!< @todo this will also block delete, is that OK?
+    Q_UNUSED(object);
 
     if (event->type() == QEvent::ContextMenu)
     {
@@ -1121,6 +1116,9 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
     // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
     else if (event->type() == QEvent::MouseButtonPress)
     {
+        if(!mIsMovable)
+            return false;
+
         if (static_cast<QMouseEvent*>(event)->button() == Qt::LeftButton)
         {
             QCursor cursor;
@@ -1142,6 +1140,9 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
     // Mouse move (hover) events, used to change marker color or move marker if cursor is close enough.
     else if (event->type() == QEvent::MouseMove)
     {
+        if(!mIsMovable)
+            return false;
+
         bool retval = false;
         QCursor cursor;
         QPointF midPoint;
@@ -1199,12 +1200,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             midPoint.setY(this->plot()->transform(mpCurve->yAxis(), value().y()));
             if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
-                plot()->canvas()->removeEventFilter(this);
-                mpPlotArea->mPlotMarkers.removeAll(this);     //Cycle all plots and remove the marker if it is found
-
-                this->hide();           // This will only hide and inactivate the marker. Deleting it seem to make program crash.
-                this->detach();
-                this->deleteLater();
+                mpPlotArea->removePlotMarker(this);
                 return true;
             }
         }

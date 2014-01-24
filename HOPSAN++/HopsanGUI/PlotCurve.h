@@ -138,7 +138,6 @@ public slots:
     void updateLocalPlotScaleAndOffsetFromDialog();
     void updateDataPlotOffsetFromDialog();
     void updateToNewGeneration();
-    void removeMe();
 
     void refreshCurveTitle();
     void setAutoUpdate(bool value);
@@ -192,7 +191,7 @@ class PlotMarker : public QObject, public QwtPlotMarker
 public:
     PlotMarker(PlotCurve *pCurve, PlotArea *pPlotTab);
     PlotCurve *getCurve();
-    virtual bool eventFilter (QObject *, QEvent *);
+    virtual bool eventFilter (QObject *object, QEvent *event);
     void setMovable(bool movable);
 
 public slots:

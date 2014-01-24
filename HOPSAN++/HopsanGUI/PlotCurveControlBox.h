@@ -56,6 +56,9 @@ public:
     PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParentArea);
     PlotCurve *getCurve();
 
+signals:
+    void removeCurve(PlotCurve* pCurve);
+
 public slots:
     void updateInfo();
     void updateColor(const QColor color);
@@ -66,6 +69,7 @@ private slots:
     void setXData(QString fullName);
     void resetTimeVector();
     void setGeneration(const int gen);
+    void removeTheCurve();
 
 private:
     void refreshTitle();

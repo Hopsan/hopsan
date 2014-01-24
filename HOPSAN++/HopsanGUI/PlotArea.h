@@ -136,8 +136,9 @@ public:
     void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor());
     void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc);
     void setCustomXVectorForAll(SharedVariablePtrT pData);
-    void removeCurve(PlotCurve *pCurve);
     void removeAllCurvesOnAxis(const int axis);
+
+    void removePlotMarker(PlotMarker *pMarker);
 
     QList<PlotCurve*> &getCurves();
     void setActivePlotCurve(PlotCurve *pCurve);
@@ -193,6 +194,8 @@ public slots:
 
     void shiftAllGenerationsDown();
     void shiftAllGenerationsUp();
+
+    void removeCurve(PlotCurve *pCurve);
 
     void insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel=QString(), bool movable=true);
     void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);

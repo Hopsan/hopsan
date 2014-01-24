@@ -186,11 +186,11 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     connect(mpCustomXDataDrop,         SIGNAL(newXData(QString)),   this,               SLOT(setXData(QString)));
     connect(mpResetTimeButton,         SIGNAL(clicked()),           this,               SLOT(resetTimeVector()));
     connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
+    connect(pCloseButton,              SIGNAL(clicked()),           this,               SLOT(removeTheCurve()));
     connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
     connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpPlotCurve,  SLOT(openFrequencyAnalysisDialog())); //!< @todo this should probably be in the plot area, and signaled directly with curve
     connect(pColorButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(setLineColor()));
     connect(pScaleButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(openScaleDialog()));
-    connect(pCloseButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(removeMe()));
     connect(pSizeSpinBox,    SIGNAL(valueChanged(int)),             mpPlotCurve,  SLOT(setLineWidth(int)));
     connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineStyle(QString)));
     connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineSymbol(QString)));
@@ -337,4 +337,9 @@ void PlotCurveControlBox::setGeneration(const int gen)
         mpGenerationSpinBox->setPrefix("");
         mpGenerationSpinBox->setSuffix("");
     }
+}
+
+void PlotCurveControlBox::removeTheCurve()
+{
+    emit removeCurve(mpPlotCurve);
 }
