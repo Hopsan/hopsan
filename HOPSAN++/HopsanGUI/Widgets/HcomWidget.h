@@ -103,7 +103,8 @@ public slots:
     void showWarningMessages(bool value);
     void showInfoMessages(bool value);
     void showDebugMessages(bool value);
-    void setDontPrint(bool value);
+    bool getDontPrint() const;
+    void setDontPrint(const bool value);
 
 protected:
     virtual void keyPressEvent(QKeyEvent * event);

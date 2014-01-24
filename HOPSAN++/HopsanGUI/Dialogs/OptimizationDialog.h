@@ -52,7 +52,7 @@ public:
     OptimizationDialog(QWidget *parent = 0);
     TerminalWidget *mpTerminal;
 
-    void updateParameterOutputs(QVector<QVector<double> > &values, int bestId, int worstId);
+    void updateParameterOutputs(const QVector<double> &objectives, const QVector<QVector<double> > &values, const int bestId, const int worstId);
     void updateTotalProgressBar(double progress);
     void setOptimizationFinished();
     void setCode(const QString &code);

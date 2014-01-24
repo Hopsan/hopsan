@@ -277,6 +277,8 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pRunLayout->addLayout(mpCoreProgressBarsLayout,             1,1,1,1);
     pRunLayout->addWidget(mpTerminal,                           2,0,1,2);
     pRunLayout->setRowStretch(2,1);
+    pRunLayout->setColumnStretch(0,1);
+    pRunLayout->setColumnMinimumWidth(1,400);
    // pRunLayout->addWidget(mpTotalProgressBar,           3,0,1,2);
     QWizardPage *pRunWidget = new QWizardPage(this);
     pRunWidget->setLayout(pRunLayout);
@@ -313,7 +315,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
 
 //! @brief Updates output boxes displaying the parameters
-void OptimizationDialog::updateParameterOutputs(QVector< QVector<double> > &values, int bestId, int worstId)
+void OptimizationDialog::updateParameterOutputs(const QVector<double> &objectives, const QVector<QVector<double> > &values, const int bestId, const int worstId)
 {
     if(!this->isVisible()) return;
 
@@ -338,10 +340,22 @@ void OptimizationDialog::updateParameterOutputs(QVector< QVector<double> > &valu
 
     for(int i=0; i<values.size(); ++i)
     {
-        QString output="[ ";
+        QString output = "obj: ";
+        QString objStr = QString::number(objectives[i], 'g', 8);
+        while(objStr.size() < 12)
+        {
+            objStr.append(" ");
+        }
+        output.append(objStr);
+        output.append(" [ ");
         for(int j=0; j<values[i].size(); ++j)
         {
-            output.append(QString::number(values[i][j], 'g', 8)+" ");
+            QString numStr = QString::number(values[i][j], 'g', 8);
+            while(numStr.size() < 13)
+            {
+                numStr.append(" ");
+            }
+            output.append(numStr);
         }
         output.append("]");
         QPalette palette;
@@ -1520,8 +1534,8 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
         nPoints=0;
     }
 
-    QFont font;
-    font.setFixedPitch(true);
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
     while(mParametersOutputLineEditPtrs.size() < nPoints)
     {
         mParametersOutputLineEditPtrs.append(new QLineEdit(this));
@@ -1564,10 +1578,12 @@ void OptimizationDialog::applyParameters()
     QStringList code;
     mpTerminal->mpHandler->getFunctionCode("setpars", code);
     bool abort;
-    gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(true);
-    gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "opt set evalid "+QString::number(idx), &abort);
-    gpTerminalWidget->mpHandler->runScriptCommands(code, &abort);
-    gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(false);
+    bool oldEchoState = gpTerminalWidget->mpHandler->mpConsole->getDontPrint();     //Remember old dont print setting (necessary in case the setpars function contains an "echo off" command)
+    gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(true);              //Temporarily allow optimization commands in main terminal
+    gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "opt set evalid "+QString::number(idx), &abort);    //Set evalId corresponding to clicked button
+    gpTerminalWidget->mpHandler->runScriptCommands(code, &abort);                   //Run the setpars function
+    gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(false);             //Disable optimization commands again
+    gpTerminalWidget->mpHandler->mpConsole->setDontPrint(oldEchoState);             //Reset old dont print setting
 
     //Switch back HCOM handler
     gpTerminalWidget->mpHandler->mpOptHandler = pOrgOptHandler;

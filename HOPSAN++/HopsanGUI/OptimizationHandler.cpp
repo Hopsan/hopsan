@@ -472,7 +472,7 @@ void OptimizationHandler::crfRun()
             mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
         }
         newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
-        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mParameters, mBestId, mWorstId);
+        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Evaluate new point
         TicToc timer;
@@ -527,7 +527,7 @@ void OptimizationHandler::crfRun()
                 mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
             }
             newPoint = mParameters[wid];
-            gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mParameters, mBestId, mWorstId);
+            gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
             //Evaluate new point
             mpHcomHandler->executeCommand("call evalworst");
@@ -909,7 +909,7 @@ void OptimizationHandler::psRun()
             mPsBestObj = mObjectives[mBestId];
             mPsBestPoint = mParameters[mBestId];
         }
-        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mParameters, mBestId, mWorstId);
+        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         plotPoints();
         plotObjectiveFunctionValues();

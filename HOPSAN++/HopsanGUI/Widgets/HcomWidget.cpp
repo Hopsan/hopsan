@@ -432,7 +432,12 @@ void TerminalConsole::showDebugMessages(bool value)
     //   updateEverything();
 }
 
-void TerminalConsole::setDontPrint(bool value)
+bool TerminalConsole::getDontPrint() const
+{
+    return mDontPrint;
+}
+
+void TerminalConsole::setDontPrint(const bool value)
 {
     mDontPrint = value;
 }
