@@ -300,19 +300,19 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
 
 
     //Find top level symbol, set correct string and type, generate children
-    if(splitAtSeparator("=", symbols, simplifications)) {}                        //Equality
-    else if(splitAtSeparator("+", symbols, simplifications)) {}                  //Addition
-    else if(splitAtSeparator("*", symbols, simplifications)) {}                  //Multiplication/division
-    else if(splitAtSeparator("^", symbols, simplifications)) {}                  //Power
-    else if(splitAtSeparator("%", symbols, simplifications)) {}                  //Modulus
+    if(splitAtSeparator("=", symbols, simplifications)) {}                        //Assignment
     else if(splitAtSeparator("!", symbols, simplifications)) {}                  //Logical equality (replace with function)
     else if(splitAtSeparator("$", symbols, simplifications)) {}                  //Logical inequality (replace with function)
-    else if(splitAtSeparator("{", symbols, simplifications)) {}                  //Logical inequality (replace with function)
-    else if(splitAtSeparator("}", symbols, simplifications)) {}                  //Logical inequality (replace with function)
+    else if(splitAtSeparator("{", symbols, simplifications)) {}                  //Logical and (replace with function)
+    else if(splitAtSeparator("}", symbols, simplifications)) {}                  //Logical or (replace with function)
     else if(splitAtSeparator(">", symbols, simplifications)) {}                  //Logical greater than (replace with function)
     else if(splitAtSeparator("?", symbols, simplifications)) {}                  //Logical greaater than or equal (replace with function)
     else if(splitAtSeparator("<", symbols, simplifications)) {}                  //Logical smaller than (replace with function)
     else if(splitAtSeparator("|", symbols, simplifications)) {}                  //Logical smaller than or equal (replace with function)
+    else if(splitAtSeparator("+", symbols, simplifications)) {}                  //Addition
+    else if(splitAtSeparator("*", symbols, simplifications)) {}                  //Multiplication/division
+    else if(splitAtSeparator("^", symbols, simplifications)) {}                  //Power
+    else if(splitAtSeparator("%", symbols, simplifications)) {}                  //Modulus
     else if(symbols.size() == 1 && symbols.first().contains("(") && symbols.first().endsWith(")"))                   //Function
     {
         QString str = symbols.first();
