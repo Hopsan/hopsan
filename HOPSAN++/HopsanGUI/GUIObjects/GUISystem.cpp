@@ -566,19 +566,6 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
             this->mModelObjectAppearance.setBasePath(this->getParentContainerObject()->getAppearanceData()->getBasePath());
         }
         this->mModelObjectAppearance.saveToDomElement(xmlApp);
-
-        //Save favorite variables
-        QDomElement xmlFavVars = appendDomElement(guiStuff, HMF_FAVORITEVARIABLES);
-        QList<VariableDescription> favVars = this->getLogDataHandler()->getFavoriteVariableList();
-        QList<VariableDescription>::iterator itf;
-        for(itf = favVars.begin(); itf != favVars.end(); ++itf)
-        {
-            QDomElement favoriteElement = appendDomElement(xmlFavVars, HMF_FAVORITEVARIABLETAG);
-            favoriteElement.setAttribute("componentname", (*itf).mComponentName);
-            favoriteElement.setAttribute("portname", (*itf).mPortName);
-            favoriteElement.setAttribute("dataname", (*itf).mDataName);
-            favoriteElement.setAttribute("dataunit", (*itf).mDataUnit);
-        }
     }
 
     saveOptimizationSettingsToDomElement(guiStuff);
@@ -872,22 +859,13 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 
 
         //8. Load favorite variables
-        QDomElement xmlFavVariables = guiStuff.firstChildElement(HMF_FAVORITEVARIABLES);
-        QDomElement xmlFavVariable = xmlFavVariables.firstChildElement(HMF_FAVORITEVARIABLETAG);
-        while (!xmlFavVariable.isNull())
-        {
-            loadFavoriteVariable(xmlFavVariable, this);
-            xmlFavVariable = xmlFavVariable.nextSiblingElement(HMF_FAVORITEVARIABLETAG);
-        }
-
-        //8.1 Load favorite variables, from old place among core data (which is wrong)
-        //! @deprecated Remove this block of code later on in the future
-        xmlSubObject = xmlParameters.firstChildElement(HMF_FAVORITEVARIABLETAG);
-        while (!xmlSubObject.isNull())
-        {
-            loadFavoriteVariable(xmlSubObject, this);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_FAVORITEVARIABLETAG);
-        }
+//        QDomElement xmlFavVariables = guiStuff.firstChildElement(HMF_FAVORITEVARIABLES);
+//        QDomElement xmlFavVariable = xmlFavVariables.firstChildElement(HMF_FAVORITEVARIABLETAG);
+//        while (!xmlFavVariable.isNull())
+//        {
+//            loadFavoriteVariable(xmlFavVariable, this);
+//            xmlFavVariable = xmlFavVariable.nextSiblingElement(HMF_FAVORITEVARIABLETAG);
+//        }
 
         //9. Load plot variable aliases
         QDomElement xmlAliases = rDomElement.firstChildElement(HMF_ALIASES);

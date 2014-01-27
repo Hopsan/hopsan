@@ -425,18 +425,18 @@ void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, Con
     pContainer->setOrAddParameter(paramData, true);
 }
 
-//! @brief Loads a FavouriteParameter from the supplied load data
-//! @param[in] rDomElement The FavoriteVariableLoadData DOM element to load from
-//! @param[in] pContainer The Container Object to load into (Must be a system)
-void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
-{
-    QString componentName = rDomElement.attribute("componentname");
-    QString portName = rDomElement.attribute("portname");
-    QString dataName = rDomElement.attribute("dataname");
-    QString dataUnit = rDomElement.attribute("dataunit");
+////! @brief Loads a FavouriteParameter from the supplied load data
+////! @param[in] rDomElement The FavoriteVariableLoadData DOM element to load from
+////! @param[in] pContainer The Container Object to load into (Must be a system)
+//void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
+//{
+//    QString componentName = rDomElement.attribute("componentname");
+//    QString portName = rDomElement.attribute("portname");
+//    QString dataName = rDomElement.attribute("dataname");
+//    QString dataUnit = rDomElement.attribute("dataunit");
 
-    dynamic_cast<SystemContainer *>(pContainer)->getLogDataHandler()->setFavoriteVariable(componentName, portName, dataName, dataUnit);
-}
+//    dynamic_cast<SystemContainer *>(pContainer)->getLogDataHandler()->setFavoriteVariable(componentName, portName, dataName, dataUnit);
+//}
 
 //! @todo We should remove Plot from the name as this is suposed to be useable for more then plotting only
 void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)

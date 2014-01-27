@@ -150,10 +150,6 @@ void VariableDescription::setFullName(const QString compName, const QString port
     mDataName = dataName;
 }
 
-bool VariableDescription::operator==(const VariableDescription &other) const
-{
-    return (mComponentName == other.mComponentName && mPortName == other.mPortName && mDataName == other.mDataName && mDataUnit == other.mDataUnit);
-}
 
 void VectorVariable::setPlotOffset(double offset)
 {
@@ -276,6 +272,11 @@ const QString &VectorVariable::getDataUnit() const
     return mpVariableDescription->mDataUnit;
 }
 
+const QString &VectorVariable::getCustomLabel() const
+{
+    return mpVariableDescription->mCustomLabel;
+}
+
 const QString &VectorVariable::getPlotScaleDataUnit() const
 {
     return mCustomUnitScale.mUnit;
@@ -296,6 +297,11 @@ const QString &VectorVariable::getActualPlotDataUnit() const
 bool VectorVariable::hasAliasName() const
 {
     return !mpVariableDescription->mAliasName.isEmpty();
+}
+
+bool VectorVariable::hasCustomLabel() const
+{
+    return !mpVariableDescription->mCustomLabel.isEmpty();
 }
 
 int VectorVariable::getGeneration() const
@@ -632,7 +638,17 @@ SharedVariablePtrT VectorVariable::toFrequencySpectrum(const SharedVariablePtrT 
             freq.append(double(i)/maxt);
         }
 
-        SharedVariableDescriptionT pDesc(new VariableDescription(*mpVariableDescription.data()));
+        SharedVariableDescriptionT pDesc(new VariableDescription());
+        pDesc->mCustomLabel = mpVariableDescription->getFullNameWithSeparator(",");
+        if (doPowerSpectrum)
+        {
+            pDesc->mDataName = "Power Spectral Density";
+        }
+        else
+        {
+            pDesc->mDataName = "Relative Magnitude";
+        }
+
         //! @todo we may need to change description information for this variable to avoid trouble
         return SharedVariablePtrT(new FrequencyDomainVariable(createFreeFrequencyVectorVariabel(freq), mag, this->getGeneration(), pDesc, SharedMultiDataVectorCacheT()));
     }
@@ -1712,11 +1728,12 @@ void createBodeVariables(const SharedVariablePtrT pInput, const SharedVariablePt
 
     SharedVariableDescriptionT pGainDesc(new VariableDescription());
     pGainDesc->mDataName = "Magnitude";
+    pGainDesc->mDataUnit = "dB";
     rGainData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutput->getGeneration(), pGainDesc, SharedMultiDataVectorCacheT()));
 
     SharedVariableDescriptionT pPhaseDesc(new VariableDescription());
     pPhaseDesc->mDataName = "Phase";
-    pPhaseDesc->mDataUnit = "Deg";
+    pPhaseDesc->mDataUnit = "deg";
     rPhaseData = SharedVariablePtrT(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutput->getGeneration(), pPhaseDesc, SharedMultiDataVectorCacheT()));
 }
 

@@ -133,10 +133,6 @@ public:
     bool hasOpenPlotCurves();
     void closePlotsWithCurvesBasedOnOwnedData();
 
-    FavoriteListT getFavoriteVariableList();
-    void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
-    void removeFavoriteVariableByComponentName(QString componentName);
-
     QString plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
     QString plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color=QColor());
     PlotWindow *plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color=QColor());

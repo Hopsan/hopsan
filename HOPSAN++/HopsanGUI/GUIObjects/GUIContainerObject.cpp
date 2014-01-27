@@ -634,8 +634,6 @@ void ContainerObject::deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings
 //! @param rObjectName is the name of the componenet to delete
 void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings)
 {
-    mpLogDataHandler->removeFavoriteVariableByComponentName(rObjectName);   //Does nothing unless this is a system
-
     ModelObjectMapT::iterator it = mModelObjectMap.find(rObjectName);
     if (it != mModelObjectMap.end())
     {

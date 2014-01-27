@@ -1984,51 +1984,6 @@ void LogDataHandler::closePlotsWithCurvesBasedOnOwnedData()
 }
 
 
-//! @brief Returns the list of favorite variables
-LogDataHandler::FavoriteListT LogDataHandler::getFavoriteVariableList()
-{
-    return mFavoriteVariables;
-}
-
-
-//! @brief Defines a new favorite variable
-//! @param[in] componentName Name of component
-//! @param[in] portName Name of port
-//! @param[in] dataName Name of data variable
-//! @param[in] dataUnit Unit of the variable
-void LogDataHandler::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
-{
-    VariableDescription tempVariable;
-    tempVariable.mComponentName = componentName;
-    tempVariable.mPortName = portName;
-    tempVariable.mDataName = dataName;
-    tempVariable.mDataUnit = dataUnit;
-    if(!mFavoriteVariables.contains(tempVariable))
-    {
-        mFavoriteVariables.append(tempVariable);
-    }
-    gpPlotWidget->updateList();
-
-    mpParentContainerObject->mpModelWidget->hasChanged();
-}
-
-
-//! @brief Removse a favorite variable
-//! @param[in] componentName Name of component
-void LogDataHandler::removeFavoriteVariableByComponentName(QString componentName)
-{
-    FavoriteListT::iterator it;
-    for(it=mFavoriteVariables.begin(); it!=mFavoriteVariables.end(); ++it)
-    {
-        if((*it).mComponentName == componentName)
-        {
-            mFavoriteVariables.removeAll((*it));
-            gpPlotWidget->updateList();
-            return;
-        }
-    }
-}
-
 QString LogDataHandler::plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color)
 {
     SharedVariablePtrT pData = getLogVariableDataPtr(fullVarName, gen);

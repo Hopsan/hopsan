@@ -1486,8 +1486,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
 
         PlotTab *pTab = mpParentPlotWindow->addPlotTab();
         pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));
-        //getCurrentPlotTab()->getQwtPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-        //getCurrentPlotTab()->updateAxisLabels();
+        pTab->setTabName("Frequency Spectrum");
 
         if(pLogScaleCheckBox->isChecked())
         {

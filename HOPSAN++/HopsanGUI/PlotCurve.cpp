@@ -141,27 +141,18 @@ int PlotCurve::getGeneration() const
 
 QString PlotCurve::getCurveName() const
 {
-//    if(mCurveType == PortVariableType)
-//    {
-        if (mpData->hasAliasName())
-        {
-            return mpData->getAliasName();
-        }
-        else
-        {
-            return mpData->getFullVariableNameWithSeparator(", ");
-        }
-//    }
-//    else if(mCurveType == FrequencyAnalysisType)
-//        return "Frequency Spectrum";
-//    else if(mCurveType == NyquistType)
-//        return "Nyquist Plot";
-//    else if(mCurveType == BodeGainType)
-//        return "Magnitude Plot";
-//    else if(mCurveType == BodePhaseType)
-//        return "Phase Plot";
-//    else
-//        return "Unnamed Curve";
+    if (mpData->hasCustomLabel())
+    {
+        return mpData->getCustomLabel();
+    }
+    else if (mpData->hasAliasName())
+    {
+        return mpData->getAliasName();
+    }
+    else
+    {
+        return mpData->getFullVariableNameWithSeparator(", ");
+    }
 }
 
 QString PlotCurve::getCurveName(bool includeGeneration, bool includeSourceFile) const
@@ -190,14 +181,6 @@ QString PlotCurve::getCurveName(bool includeGeneration, bool includeSourceFile) 
         }
     }
     return name;
-//    if(mCurveType == PortVariableType)
-//    {
-//        return getCurveName()+QString("  (%1)").arg(mpData->getGeneration()+1);
-//    }
-//    else
-//    {
-//        return getCurveName();
-//    }
 }
 
 
@@ -783,7 +766,7 @@ void PlotCurve::openScaleDialog()
     //Space
     pDialogLayout->setRowMinimumHeight(r,12);
     ++r;
-    pDialogLayout->addWidget(new QLabel("Local plot curve scale and offset that affects only this plot curve:", pScaleDialog),r,0,1,2,Qt::AlignLeft);
+    pDialogLayout->addWidget(new QLabel("Plot curve scale and offset that affects only this plot curve (all generations):", pScaleDialog),r,0,1,2,Qt::AlignLeft);
     ++r;
     pDialogLayout->addWidget(new QLabel("Plot curve unit scale: ", pScaleDialog),   r,0);
     pDialogLayout->addWidget(pCurveUnitScale,                                       r,1);

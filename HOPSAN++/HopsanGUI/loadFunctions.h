@@ -48,7 +48,7 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEn
 
 void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, ContainerObject* pContainer);
 
-void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer);
+//void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer);
 
 void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer);
 

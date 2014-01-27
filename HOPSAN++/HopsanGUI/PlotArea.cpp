@@ -1237,11 +1237,17 @@ void PlotArea::updateAxisLabels()
             QString newLabel;
             if (mPlotCurves[i]->getDataVariable()->getAliasName().isEmpty())
             {
-                newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getDataName()).arg(mPlotCurves[i]->getCurrentUnit());
+                newLabel = QString("%1").arg(mPlotCurves[i]->getDataName());
             }
             else
             {
-                newLabel = QString("%1 [%2]").arg(mPlotCurves[i]->getDataVariable()->getAliasName()).arg(mPlotCurves[i]->getCurrentUnit());
+                newLabel = QString("%1").arg(mPlotCurves[i]->getDataVariable()->getAliasName());
+            }
+
+            // Add unit if it exists
+            if (!mPlotCurves[i]->getCurrentUnit().isEmpty())
+            {
+                newLabel.append(QString(" [%1]").arg(mPlotCurves[i]->getCurrentUnit()));
             }
 
             // If new label is not already on the axis then we may want to add it
@@ -1286,38 +1292,6 @@ void PlotArea::updateAxisLabels()
         mpQwtPlot->setAxisTitle(QwtPlot::yLeft, QwtText(leftLabels.join(", ")));
         mpQwtPlot->setAxisTitle(QwtPlot::yRight, QwtText(rightLabels.join(", ")));
     }
-    //        else if(mPlotCurves[0]->getCurveType() == FrequencyAnalysisType)
-    //        {
-    //            for(int i=0; i<mPlotCurves.size(); ++i)
-    //            {
-    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Relative Magnitude [-]");
-    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-    //            }
-    //        }
-    //        else if(mPlotCurves[0]->getCurveType() == NyquistType)
-    //        {
-    //            for(int i=0; i<mPlotCurves.size(); ++i)
-    //            {
-    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Im");
-    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Re");
-    //            }
-    //        }
-    //        else if(mPlotCurves[0]->getCurveType() == BodeGainType)
-    //        {
-    //            for(int i=0; i<mPlotCurves.size(); ++i)
-    //            {
-    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Magnitude [dB]");
-    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot below with same label
-    //            }
-    //        }
-    //        else if(mPlotCurves[0]->getCurveType() == BodePhaseType)
-    //        {
-    //            for(int i=0; i<mPlotCurves.size(); ++i)
-    //            {
-    //                mpQwtPlot->setAxisTitle(mPlotCurves[i]->getAxisY(), "Phase [deg]");
-    //                mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
-    //            }
-    //        }
 
     // If Usercustom labels exist overwrite automatic label
     if (mpUserDefinedLabelsCheckBox->isChecked())

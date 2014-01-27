@@ -57,25 +57,26 @@ enum VariableTypeT {VectorType, TimeDomainType, FrequencyDomainType, RealFrequen
 QString variableTypeAsString(const VariableTypeT type);
 
 //! @class VariableCommonDescription
-//! @brief Container class for strings describing a log variable (common data for all generations)
+//! @brief Container class for strings describing a log variable
 class VariableDescription
 {
 public:
     VariableDescription() : mVariableSourceType(UndefinedVariableSourceType) {}
-    QString mModelPath;
+    QString mAliasName;
     QString mComponentName;
     QString mPortName;
     QString mDataName;
+
     QString mDataUnit;
     QString mDataDescription;
-    QString mAliasName;
+    QString mCustomLabel;
+
+    QString mModelPath;
     VariableSourceTypeT mVariableSourceType;
 
     QString getFullName() const;
     QString getFullNameWithSeparator(const QString sep) const;
     void setFullName(const QString compName, const QString portName, const QString dataName);
-
-    bool operator==(const VariableDescription &other) const;
 };
 
 
@@ -192,7 +193,9 @@ public:
     const QString &getPortName() const;
     virtual const QString &getDataName() const;
     const QString &getDataUnit() const;
+    const QString &getCustomLabel() const;
     bool hasAliasName() const;
+    bool hasCustomLabel() const;
     int getGeneration() const;
     int getLowestGeneration() const;
     int getHighestGeneration() const;
