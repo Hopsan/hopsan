@@ -620,18 +620,21 @@ SharedVariablePtrT VectorVariable::toFrequencySpectrum(const SharedVariablePtrT 
         // Scalar multiply complex vector with its conjugate, and divide it with its size
         // Alos build frequency vector
         DataVectorT freq, mag;
-        freq.reserve(n/2-1);
-        mag.reserve(n/2-1);
+        freq.reserve(n/2);
+        mag.reserve(n/2);
         const double maxt = time.last();
-        for(int i=1; i<n/2; ++i)        //FFT is symmetric, so only use first half
+
+        // FFT is symmetric, so only use first half
+        // Also skip f=0, but include n/2 (nyquist)
+        for(int i=1; i<=n/2; ++i)
         {
             if(doPowerSpectrum)
             {
-                mag.append(real(vComplex[i]*conj(vComplex[i]))/n);
+                mag.append(real(vComplex[i]*conj(vComplex[i]))/double(n));
             }
             else
             {
-                mag.append(sqrt(vComplex[i].real()*vComplex[i].real() + vComplex[i].imag()*vComplex[i].imag()));
+                mag.append(std::abs(vComplex[i])/double(n));
             }
 
             // Build freq vector
@@ -642,7 +645,7 @@ SharedVariablePtrT VectorVariable::toFrequencySpectrum(const SharedVariablePtrT 
         pDesc->mCustomLabel = mpVariableDescription->getFullNameWithSeparator(",");
         if (doPowerSpectrum)
         {
-            pDesc->mDataName = "Power Spectral Density";
+            pDesc->mDataName = "Power Spectrum";
         }
         else
         {
