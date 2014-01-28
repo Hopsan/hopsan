@@ -89,6 +89,9 @@ public:
     bool hasCustomXVariable() const;
     QVector<double> getDataVectorCopy() const;
 
+    bool minMaxPositiveNonZeroYValues(double &rMin, double &rMax);
+    bool minMaxPositiveNonZeroXValues(double &rMin, double &rMax);
+
     int getGeneration() const;
     const QString &getComponentName() const;
     const QString &getPortName() const;

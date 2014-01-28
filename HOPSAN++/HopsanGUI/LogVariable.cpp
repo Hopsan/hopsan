@@ -730,7 +730,6 @@ double VectorVariable::peekData(const int index, QString &rErr) const
 
 double VectorVariable::averageOfData() const
 {
-    TicToc timer;
     double ret = 0;
     int i=0;
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
@@ -740,7 +739,6 @@ double VectorVariable::averageOfData() const
     }
     ret /= i;
     mpCachedDataVector->endFullVectorOperation(pVector);
-    //timer.tocDbg("Actual average calc");
     return ret;
 }
 
@@ -749,15 +747,19 @@ double VectorVariable::minOfData(int &rIdx) const
     rIdx = -1;
     double ret = std::numeric_limits<double>::max();
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
-    for(int i=0; i<pVector->size(); ++i)
+    if (pVector)
     {
-        if(pVector->at(i) < ret)
+        for(int i=0; i<pVector->size(); ++i)
         {
-            ret = pVector->at(i);
-            rIdx=i;
+            const double &v = (*pVector)[i];
+            if(v < ret)
+            {
+                ret = v;
+                rIdx=i;
+            }
         }
+        mpCachedDataVector->endFullVectorOperation(pVector);
     }
-    mpCachedDataVector->endFullVectorOperation(pVector);
     return ret;
 }
 
@@ -767,39 +769,6 @@ double VectorVariable::minOfData() const
     return minOfData(dummy);
 }
 
-//double LogVariableData::indexOfMinOfData() const
-//{
-//    double minVal = std::numeric_limits<double>::max();
-//    double ret = 0;
-//    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
-//    for(int i=0; i<pVector->size(); ++i)
-//    {
-//        if(pVector->at(i) < minVal)
-//        {
-//            minVal = pVector->at(i);
-//            ret=i;
-//        }
-//    }
-//    mpCachedDataVector->endFullVectorOperation(pVector);
-//    return ret;
-//}
-
-//double LogVariableData::indexOfMaxOfData() const
-//{
-//    double maxVal = std::numeric_limits<double>::min();
-//    double ret = 0;
-//    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
-//    for(int i=0; i<pVector->size(); ++i)
-//    {
-//        if(pVector->at(i) > maxVal)
-//        {
-//            maxVal = pVector->at(i);
-//            ret=i;
-//        }
-//    }
-//    mpCachedDataVector->endFullVectorOperation(pVector);
-//    return ret;
-//}
 
 void VectorVariable::elementWiseGt(QVector<double> &rResult, const double threshold) const
 {
@@ -899,15 +868,19 @@ double VectorVariable::maxOfData(int &rIdx) const
     rIdx = -1;
     double ret = -std::numeric_limits<double>::max();
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
-    for(int i=0; i<pVector->size(); ++i)
+    if (pVector)
     {
-        if(pVector->at(i) > ret)
+        for(int i=0; i<pVector->size(); ++i)
         {
-            ret = pVector->at(i);
-            rIdx = i;
+            const double &v = (*pVector)[i];
+            if(v > ret)
+            {
+                ret = v;
+                rIdx = i;
+            }
         }
+        mpCachedDataVector->endFullVectorOperation(pVector);
     }
-    mpCachedDataVector->endFullVectorOperation(pVector);
     return ret;
 }
 
@@ -915,6 +888,63 @@ double VectorVariable::maxOfData() const
 {
     int dummy;
     return maxOfData(dummy);
+}
+
+void VectorVariable::minMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const
+{
+    rMinIdx = -1;
+    rMaxIdx = -1;
+    rMin = std::numeric_limits<double>::max();
+    rMax = -rMin;
+
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    if (pVector)
+    {
+        for(int i=0; i<pVector->size(); ++i)
+        {
+            const double &v = (*pVector)[i];
+            if(v < rMin)
+            {
+                rMin = v;
+                rMinIdx = i;
+            }
+            if(v > rMax)
+            {
+                rMax = v;
+                rMaxIdx = i;
+            }
+        }
+        mpCachedDataVector->endFullVectorOperation(pVector);
+    }
+}
+
+bool VectorVariable::positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const
+{
+    rMinIdx = -1;
+    rMaxIdx = -1;
+    rMin = std::numeric_limits<double>::max();
+    rMax = std::numeric_limits<double>::epsilon();
+
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    if (pVector)
+    {
+        for(int i=0; i<pVector->size(); ++i)
+        {
+            const double &v = (*pVector)[i];
+            if( (v < rMin) && (v > std::numeric_limits<double>::epsilon()) )
+            {
+                rMin = v;
+                rMinIdx = i;
+            }
+            if( v > rMax)
+            {
+                rMax = v;
+                rMaxIdx = i;
+            }
+        }
+        mpCachedDataVector->endFullVectorOperation(pVector);
+    }
+    return ((rMinIdx > -1) && (rMaxIdx>-1));
 }
 
 void VectorVariable::preventAutoRemoval()
@@ -1635,88 +1665,102 @@ ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, con
 void createBodeVariables(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax, SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv, SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData)
 {
     // Create temporary real vectors
-    //! @todo is X Y input output naming correct ?
-    QVector<double> realYvector = pInput->getDataVectorCopy();
-    QVector<double> realXvector = pOutput->getDataVectorCopy();
+    QVector<double> vRealIn = pInput->getDataVectorCopy();
+    QVector<double> vRealOut = pOutput->getDataVectorCopy();
 
     // Abort and inform user if vectors are not of same size
-    if(realXvector.size() != realYvector.size())
+    if(vRealOut.size() != vRealIn.size())
     {
         QMessageBox::warning(gpMainWindowWidget, QWidget::tr("Wrong Vector Size"), QWidget::tr("Input and output vector must be of same size."));
         return;
     }
 
     // Reduce vector size if they are not equal to an even potential of 2, and inform user
-    int n = pow(2, int(log2(realXvector.size())));
-    if(n != realXvector.size())     //Vector is not an exact potential, so reduce it
+    int n = pow(2, int(log2(vRealOut.size())));
+    if(n != vRealOut.size())     //Vector is not an exact potential, so reduce it
     {
         QString oldString, newString;
-        oldString.setNum(realXvector.size());
+        oldString.setNum(vRealOut.size());
         newString.setNum(n);
         QMessageBox::information(gpMainWindowWidget, QWidget::tr("Wrong Vector Size"), "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
-        reduceVectorSize(realXvector, n);
-        reduceVectorSize(realYvector, n);
+        reduceVectorSize(vRealOut, n);
+        reduceVectorSize(vRealIn, n);
     }
 
     //Create complex vectors
-    QVector< std::complex<double> > Y = realToComplex(realYvector);
-    QVector< std::complex<double> > X = realToComplex(realXvector);
+    QVector< std::complex<double> > vCompIn = realToComplex(vRealIn);
+    QVector< std::complex<double> > vCompOut = realToComplex(vRealOut);
 
     //Apply the fourier transforms
-    FFT(X);
-    FFT(Y);
+    FFT(vCompOut);
+    FFT(vCompIn);
 
-    //Divide the fourier transform elementwise and take their absolute value
+    // Calculate the trasfere function G and then the bode vectors
     QVector< std::complex<double> > G;
-    QVector<double> vRe;
-    QVector<double> vIm;
-    QVector<double> vImNeg;
-    QVector<double> vBodeGain;
-    QVector<double> vBodePhase;
+    QVector<double> vRe, vIm, vImNeg, vBodeGain, vBodePhase, vBodePhaseUncorrected, freq;
+    // Reserve memory
+    G.reserve(vCompIn.size()/2);
+    vRe.reserve(vCompIn.size()/2);
+    vIm.reserve(vCompIn.size()/2);
+    vImNeg.reserve(vCompIn.size()/2);
+    vBodeGain.reserve(vCompIn.size()/2);
+    vBodePhase.reserve(vCompIn.size()/2);
+    vBodePhaseUncorrected.reserve(vCompIn.size()/2);
+    freq.reserve(vCompIn.size()/2);
 
     double phaseCorrection=0;
-    QVector<double> vBodePhaseUncorrected;
-    for(int i=0; i<Y.size()/2; ++i)
+    for(int i=0; i<vCompIn.size()/2; ++i)
     {
-        if(Y.at(i) == std::complex<double>(0,0))        //Check for division by zero
+        if(vCompIn[i] == std::complex<double>(0,0))        //Check for division by zero
         {
-            G.append(G[i-1]);    //! @todo This is not a good solution, and what if i=0?
+            G.append(G[i-1]);    //!< @warning This is not a good solution, and what if i=0?
         }
         else
         {
-            G.append(X.at(i)/Y.at(i));                  //G(iw) = FFT(Y(iw))/FFT(X(iw))
+            G.append(vCompOut[i]/vCompIn[i]);                  //G(iw) = FFT(Y(iw))/FFT(X(iw))
         }
-        if(i!=0)
+
+        if(i>0)
         {
             vRe.append(G[i].real());
             vIm.append(G[i].imag());
             vImNeg.append(-G[i].imag());
-            vBodeGain.append(20.*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
-            vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180./3.14159265);          //Phase: arg(G) = arctan(X/R)
+            vBodeGain.append( 20.*log10( std::abs(G[i]) ) );            // Gain: abs(G) = sqrt(R^2 + X^2) in dB
+            vBodePhaseUncorrected.append( rad2deg(std::arg(G[i])) );    // Phase: arg(G) = arctan(X/R) in deg
 
             // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
             if(vBodePhaseUncorrected.size() > 1)
             {
-                if(vBodePhaseUncorrected.last() > 170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] < -170)
+                //! @todo there is a risk here that the skip from +-180 to -+180 is missed if the value lies below (abs) 170
+                if( (vBodePhaseUncorrected.last() > 170) && (vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] < -170) )
+                {
                     phaseCorrection -= 360;
-                else if(vBodePhaseUncorrected.last() < -170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] > 170)
+                }
+                else if( (vBodePhaseUncorrected.last() < -170) && (vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] > 170) )
+                {
                     phaseCorrection += 360;
+                }
             }
             vBodePhase.append(vBodePhaseUncorrected.last() + phaseCorrection);
         }
     }
 
-
-    QVector<double> F;
+    // Build the frequency vector
     const double stoptime = pInput->getSharedTimeOrFrequencyVector()->last();
-    F.reserve(G.size());
+    // We skip f=0
     for(int i=1; i<G.size(); ++i)
     {
-        F.append((i+1)/stoptime);
-        if(F.last() >= Fmax) break;
+        freq.append(double(i)/stoptime);
+        // Abort if we reach the desired max frequency
+        if(freq.last() >= Fmax)
+        {
+            // Truncate the output vectors if we aborted due to Fmax
+            vBodeGain.resize(freq.size());
+            vBodePhase.resize(freq.size());
+            break;
+        }
     }
-    vBodeGain.resize(F.size());
-    vBodePhase.resize(F.size());
+
 
     // Create the output variables for nyquist plots
     //! @todo add description to description, (what was the data based on)
@@ -1727,7 +1771,7 @@ void createBodeVariables(const SharedVariablePtrT pInput, const SharedVariablePt
     rNyquistDataInv = SharedVariablePtrT(new ComplexVectorVariable(vRe, vImNeg, pOutput->getGeneration(), pNyquistInvDesc, SharedMultiDataVectorCacheT()));
 
     // Create the output variables for bode diagram
-    SharedVariablePtrT pFrequencyVar = createFreeFrequencyVectorVariabel(F);
+    SharedVariablePtrT pFrequencyVar = createFreeFrequencyVectorVariabel(freq);
 
     SharedVariableDescriptionT pGainDesc(new VariableDescription());
     pGainDesc->mDataName = "Magnitude";

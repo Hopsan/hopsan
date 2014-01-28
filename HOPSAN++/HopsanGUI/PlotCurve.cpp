@@ -276,6 +276,33 @@ QVector<double> PlotCurve::getDataVectorCopy() const
     return mpData->getDataVectorCopy();
 }
 
+//! @brief Returns the minimum and maximum value of the curve (for values higher then 0)
+//! @details values <= 0 are ignored
+bool PlotCurve::minMaxPositiveNonZeroYValues(double &rMin, double &rMax)
+{
+    int imax, imin;
+    return mpData->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+}
+
+bool PlotCurve::minMaxPositiveNonZeroXValues(double &rMin, double &rMax)
+{
+    int imax, imin;
+    if (!mpCustomXdata.isNull())
+    {
+        return mpCustomXdata->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+    }
+    else if (!mpData->getSharedTimeOrFrequencyVector().isNull())
+    {
+        return mpData->getSharedTimeOrFrequencyVector()->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+    }
+    else
+    {
+        rMin = 0;
+        rMax = mpData->getDataSize()-1;
+        return (rMax > -1);
+    }
+}
+
 
 //! @brief Returns the shared time or frequency vector of the plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
@@ -1035,7 +1062,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         {
             QMenu *pContextMenu = new QMenu();
 
-            //Line style selection menu
+            // Line style selection menu
             QMenu *pLineStyleMenu = new QMenu("Line Style");
             pContextMenu->addMenu(pLineStyleMenu);
             QAction *pNoLinesAction = new QAction("No Lines", pContextMenu);
@@ -1047,7 +1074,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
             pLineStyleMenu->addAction(pHorizontalLineAction);
             pLineStyleMenu->addAction(pCrossAction);
 
-            //Label alignment selection menu
+            // Label alignment selection menu
             QMenu *pAlignmentMenu = new QMenu("Label Alignment");
             pContextMenu->addMenu(pAlignmentMenu);
             QList<AlignmentSelectionStruct> alignments;
@@ -1068,8 +1095,17 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
                 alignSelectionMap.insert(pAction, &alignments[i]);
             }
 
+            // Delete marker action
+            QAction *pDeleteAction = pContextMenu->addAction("Remove Marker");
+
+
+            // Execute selected action
             pAction = pContextMenu->exec(QCursor::pos());
-            if(pAction == pNoLinesAction)
+            if (pAction == pDeleteAction)
+            {
+                mpPlotArea->removePlotMarker(this);
+            }
+            else if(pAction == pNoLinesAction)
             {
                 this->setLineStyle(NoLine);
             }

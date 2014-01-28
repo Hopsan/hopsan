@@ -701,6 +701,26 @@ void PlotArea::setAxisLimits(QwtPlot::Axis axis, const double min, const double 
     }
 }
 
+void PlotArea::setAxisLabel(QwtPlot::Axis axis, const QString &rLabel)
+{
+    mpUserDefinedLabelsCheckBox->setChecked(true);
+    switch (axis) {
+    case QwtPlot::xBottom:
+        mpUserDefinedXLabel->setText(rLabel);
+        break;
+    case QwtPlot::yLeft:
+        mpUserDefinedYlLabel->setText(rLabel);
+        break;
+    case QwtPlot::yRight:
+        mpUserDefinedYrLabel->setText(rLabel);
+        break;
+    default:
+        break;
+        //Nothing for the other axis
+    }
+    updateAxisLabels();
+}
+
 void PlotArea::setLegendsVisible(bool value)
 {
     if (value)
@@ -873,19 +893,22 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     QMenu menu;
     QMenu *pYAxisRightMenu;
     QMenu *pYAxisLeftMenu;
+    QMenu *pBottomAxisMenu;
     QMenu *pChangeUnitsMenu;
     QMenu *pInsertMarkerMenu;
 
     QAction *pSetRightAxisLogarithmic = 0;
     QAction *pSetLeftAxisLogarithmic = 0;
+    QAction *pSetBottomAxisLogarithmic = 0;
     QAction *pSetUserDefinedAxisLabels = 0;
 
     pYAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     pYAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
+    pBottomAxisMenu = menu.addMenu(QString("Bottom Axis"));
 
     pYAxisLeftMenu->setEnabled(mpQwtPlot->axisEnabled(QwtPlot::yLeft));
     pYAxisRightMenu->setEnabled(mpQwtPlot->axisEnabled(QwtPlot::yRight));
-
+    pBottomAxisMenu->setEnabled(mpQwtPlot->axisEnabled(QwtPlot::xBottom));
 
     // Create menu and actions for changing units
     pChangeUnitsMenu = menu.addMenu(QString("Change Units"));
@@ -929,6 +952,12 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         pSetRightAxisLogarithmic->setCheckable(true);
         pSetRightAxisLogarithmic->setChecked(mRightAxisLogarithmic);
     }
+    if(mpQwtPlot->axisEnabled(QwtPlot::xBottom))
+    {
+        pSetBottomAxisLogarithmic = pBottomAxisMenu->addAction("Logarithmic Scale");
+        pSetBottomAxisLogarithmic->setCheckable(true);
+        pSetBottomAxisLogarithmic->setChecked(mBottomAxisLogarithmic);
+    }
 
 
     // Create menu for inserting curve markers
@@ -944,79 +973,82 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     pSetUserDefinedAxisLabels = menu.addAction("Set userdefined axis labels");
 
     // ----- Wait for user to make a selection ----- //
-
-    QCursor *cursor;
-    QAction *selectedAction = menu.exec(cursor->pos());
+    QAction *pSelectedAction = menu.exec(QCursor::pos());
 
     // ----- User has selected something -----  //
 
-
-
     // Check if user did not click on a menu item
-    if(selectedAction == 0)
+    if(pSelectedAction == 0)
     {
         return;
     }
 
 
     // Change unit on selected curve
-    if(selectedAction->parentWidget()->parentWidget() == pChangeUnitsMenu)
+    if(pSelectedAction->parentWidget()->parentWidget() == pChangeUnitsMenu)
     {
-        actionToCurveMap.find(selectedAction).value()->setCustomCurveDataUnit(selectedAction->text());
+        actionToCurveMap.find(pSelectedAction).value()->setCustomCurveDataUnit(pSelectedAction->text());
     }
 
 
-    //Make axis logarithmic
-    if (selectedAction == pSetRightAxisLogarithmic)
+    // Make axis logarithmic
+    if (pSelectedAction == pSetRightAxisLogarithmic)
     {
         mRightAxisLogarithmic = !mRightAxisLogarithmic;
         if(mRightAxisLogarithmic)
         {
             mpQwtPlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLogScaleEngine(10));
-            rescaleAxesToCurves();
-            mpQwtPlot->replot();
-            mpQwtPlot->updateGeometry();
         }
         else
         {
             mpQwtPlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
-            rescaleAxesToCurves();
-            mpQwtPlot->replot();
-            mpQwtPlot->updateGeometry();
         }
+        rescaleAxesToCurves();
+        mpQwtPlot->replot();
+        mpQwtPlot->updateGeometry();
     }
-    else if (selectedAction == pSetLeftAxisLogarithmic)
+    else if (pSelectedAction == pSetLeftAxisLogarithmic)
     {
         mLeftAxisLogarithmic = !mLeftAxisLogarithmic;
         if(mLeftAxisLogarithmic)
         {
-            qDebug() << "Logarithmic!";
             mpQwtPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
-            rescaleAxesToCurves();
-            mpQwtPlot->replot();
-            mpQwtPlot->updateGeometry();
         }
         else
         {
-            qDebug() << "Linear!";
             mpQwtPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
-            rescaleAxesToCurves();
-            mpQwtPlot->replot();
-            mpQwtPlot->updateGeometry();
         }
+        rescaleAxesToCurves();
+        mpQwtPlot->replot();
+        mpQwtPlot->updateGeometry();
+    }
+    else if (pSelectedAction == pSetBottomAxisLogarithmic)
+    {
+        mBottomAxisLogarithmic = !mBottomAxisLogarithmic;
+        if(mBottomAxisLogarithmic)
+        {
+            mpQwtPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
+        }
+        else
+        {
+            mpQwtPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
+        }
+        rescaleAxesToCurves();
+        mpQwtPlot->replot();
+        mpQwtPlot->updateGeometry();
     }
 
     // Set user axes labels
-    if (selectedAction == pSetUserDefinedAxisLabels)
+    if (pSelectedAction == pSetUserDefinedAxisLabels)
     {
         openAxisLabelDialog();
     }
 
 
-    //Insert curve marker
-    if(selectedAction->parentWidget() == pInsertMarkerMenu)
+    // Insert curve marker
+    if(pSelectedAction->parentWidget() == pInsertMarkerMenu)
     {
-        insertMarker(actionToCurveMap.find(selectedAction).value(), event->pos());
+        insertMarker(actionToCurveMap.find(pSelectedAction).value(), event->pos());
     }
 }
 
@@ -1038,9 +1070,8 @@ void PlotArea::rescaleAxesToCurves()
             yrAxisLim.setInterval(DoubleMax,DoubleMin);
         }
 
-        // Initialize values for X axis by using the first curve
-        xAxisLim.setMinValue(mPlotCurves.first()->minXValue());
-        xAxisLim.setMaxValue(mPlotCurves.first()->maxXValue());
+        // Initialize values for X axis
+        xAxisLim.setInterval(DoubleMax, DoubleMin);
 
         bool someoneHasCustomXdata = false;
         for(int i=0; i<mPlotCurves.size(); ++i)
@@ -1057,33 +1088,56 @@ void PlotArea::rescaleAxesToCurves()
             {
                 if(mLeftAxisLogarithmic)
                 {
-                    // Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                    ylAxisLim.extendMin(qMax(mPlotCurves[i]->minYValue(), Double100Min));
+                    // Only consider positive (non-zero) values if logarithmic scaling is used
+                    double min, max;
+                    if (mPlotCurves[i]->minMaxPositiveNonZeroYValues(min, max))
+                    {
+                        ylAxisLim.extendMin(min);
+                        ylAxisLim.extendMax(max);
+                    }
                 }
                 else
                 {
                     ylAxisLim.extendMin(mPlotCurves[i]->minYValue());
+                    ylAxisLim.extendMax(mPlotCurves[i]->maxYValue());
                 }
-                ylAxisLim.extendMax(mPlotCurves[i]->maxYValue());
             }
 
             if(mPlotCurves[i]->getAxisY() == QwtPlot::yRight)
             {
                 if(mRightAxisLogarithmic)
                 {
-                    // Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                    yrAxisLim.extendMin(qMax(mPlotCurves[i]->minYValue(), Double100Min));
+                    // Only consider positive (non-zero) values if logarithmic scaling is used
+                    double min, max;
+                    if (mPlotCurves[i]->minMaxPositiveNonZeroYValues(min, max))
+                    {
+                        yrAxisLim.extendMin(min);
+                        yrAxisLim.extendMax(max);
+                    }
                 }
                 else
                 {
                     yrAxisLim.extendMin(mPlotCurves[i]->minYValue());
+                    yrAxisLim.extendMax(mPlotCurves[i]->maxYValue());
                 }
-                yrAxisLim.extendMax(mPlotCurves[i]->maxYValue());
             }
 
-            // find min / max x-value
-            xAxisLim.extendMin(mPlotCurves[i]->minXValue());
-            xAxisLim.extendMax(mPlotCurves[i]->maxXValue());
+            // Find min / max x-value
+            if (mBottomAxisLogarithmic)
+            {
+                // Only consider positive (non-zero) values if logarithmic scaling is used
+                double min, max;
+                if (mPlotCurves[i]->minMaxPositiveNonZeroXValues(min, max))
+                {
+                    xAxisLim.extendMin(min);
+                    xAxisLim.extendMax(max);
+                }
+            }
+            else
+            {
+                xAxisLim.extendMin(mPlotCurves[i]->minXValue());
+                xAxisLim.extendMax(mPlotCurves[i]->maxXValue());
+            }
         }
 
         if (mHasCustomXData && !someoneHasCustomXdata)
@@ -1279,7 +1333,12 @@ void PlotArea::updateAxisLabels()
             {
                 //! @todo for custom x mayb check for alias name
                 sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
-                bottomLabel = QString("%1 [%2]").arg(pSharedXVector->getDataName()).arg(pSharedXVector->getActualPlotDataUnit());
+                bottomLabel = QString("%1").arg(pSharedXVector->getDataName());
+                if (!pSharedXVector->getActualPlotDataUnit().isEmpty())
+                {
+                    bottomLabel.append(QString(" [%1]").arg(pSharedXVector->getActualPlotDataUnit()));
+                }
+
             }
             if (!bottomLabel.isEmpty() && !bottomLabels.contains(bottomLabel))
             {

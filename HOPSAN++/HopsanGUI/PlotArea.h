@@ -165,6 +165,7 @@ public:
     bool isRightAxisLogarithmic() const;
 
     void setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis=true);
+    void setAxisLabel(QwtPlot::Axis axis, const QString &rLabel);
 
     void setLegendsVisible(bool value);
 

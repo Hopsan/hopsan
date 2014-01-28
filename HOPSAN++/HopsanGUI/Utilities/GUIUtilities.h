@@ -41,8 +41,6 @@ QString readName(QString namestring);
 void stripLTSpaces(QString &rString);
 QString addQuotes(QString str);
 QString relativePath(QFileInfo pathtochange, QDir basedir);
-qreal deg2rad(const qreal deg);
-qreal rad2deg(const qreal rad);
 qreal normDeg180(const qreal deg);
 qreal normDeg360(const qreal deg);
 qreal normRad(const qreal rad);
@@ -53,7 +51,7 @@ bool fuzzyLT(const qreal first, const qreal second, const qreal eps);
 void replaceWord(QString &string, QString before, QString after);
 QString parseVariableDescription(QString input);
 QString parseVariableUnit(QString input);
-QVector< std::complex<double> > realToComplex(QVector<double> realVector);
+QVector< std::complex<double> > realToComplex(const QVector<double> &rRealVector);
 void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
 void removeDir(QString path);
@@ -75,6 +73,18 @@ QVector<int> linspace(const int start, const int stop, const int step=1);
 inline bool fuzzyEqual(const double first, const double second, const double eps)
 {
     return (qAbs(first-second) < eps);
+}
+
+//! @brief Utility function to convert degrees to radians
+inline double deg2rad(const double deg)
+{
+    return deg*M_PI/180.0;
+}
+
+//! @brief Utility function to convert degrees to radians
+inline double rad2deg(const double rad)
+{
+    return rad*180.0/M_PI;
 }
 
 //Optimization

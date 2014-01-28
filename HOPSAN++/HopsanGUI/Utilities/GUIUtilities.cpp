@@ -140,17 +140,6 @@ QString relativePath(QFileInfo pathtochange, QDir basedir)
     return basedir.relativeFilePath(pathtochange.absoluteFilePath());
 }
 
-//! @brief Utility function to convert degrees to radians
-qreal deg2rad(const qreal deg)
-{
-    return deg*M_PI/180.0;
-}
-
-//! @brief Utility function to convert degrees to radians
-qreal rad2deg(const qreal rad)
-{
-    return rad*180.0/M_PI;
-}
 
 //! @brief normalises degrees to range between -180 and 180 degrees
 qreal normDeg180(const qreal deg)
@@ -345,12 +334,13 @@ QString parseVariableUnit(QString input)
 //! @brief Converts a vector of real numbers to a vector of complex numbers with i=0
 //! @param realVector Vector with real numbers
 //! @returns Vector with complex numbers
-QVector< complex<double> > realToComplex(QVector<double> realVector)
+QVector< complex<double> > realToComplex(const QVector<double> &rRealVector)
 {
     QVector< complex<double> > complexVector;
-    for(int i=0; i<realVector.size(); ++i)
+    complexVector.reserve(rRealVector.size());
+    for(int i=0; i<rRealVector.size(); ++i)
     {
-        complexVector.append(std::complex<double>(realVector[i], 0));
+        complexVector.append(std::complex<double>(rRealVector[i], 0));
     }
     return complexVector;
 }

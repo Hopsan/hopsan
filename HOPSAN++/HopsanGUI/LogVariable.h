@@ -225,6 +225,8 @@ public:
     double minOfData() const;
     double maxOfData(int &rIdx) const;
     double maxOfData() const;
+    void minMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const;
+    bool positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const;
     void elementWiseGt(QVector<double> &rResult, const double threshold) const;
     void elementWiseLt(QVector<double> &rResult, const double threshold) const;
     bool compare(SharedVariablePtrT pOther, const double eps) const;
