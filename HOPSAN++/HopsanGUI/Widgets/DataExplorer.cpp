@@ -86,7 +86,7 @@ void DataExplorer::setLogdataHandler(LogDataHandler *pLogDataHanlder)
     }
 
     mpLogDataHandler = pLogDataHanlder;
-    connect(mpLogDataHandler, SIGNAL(newDataAvailable()), this, SLOT(refreshGenerationList()));
+    connect(mpLogDataHandler, SIGNAL(dataAdded()), this, SLOT(refreshGenerationList()));
     connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(refreshGenerationList()));
     refreshGenerationList();
 

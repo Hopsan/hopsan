@@ -462,7 +462,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
         // We do not want imported data to be removed automatically
         preventGenerationAutoRemoval(mGenerationNumber);
 
-        emit newDataAvailable();
+        emit dataAdded();
     }
 
     // Limit number of plot generations if there are too many
@@ -602,7 +602,7 @@ void LogDataHandler::importHopsanRowCSV(QString importFilePath)
             // Limit number of plot generations if there are too many
             limitPlotGenerations();
 
-            emit newDataAvailable();
+            emit dataAdded();
         }
     }
     file.close();
@@ -663,7 +663,7 @@ void LogDataHandler::importFromPlainColumnCsv(QString importFilePath)
         // We do not want imported data to be removed automatically
         preventGenerationAutoRemoval(mGenerationNumber);
 
-        emit newDataAvailable();
+        emit dataAdded();
     }
 
     // Limit number of plot generations if there are too many
@@ -723,7 +723,7 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
             // We do not want imported data to be removed automatically
             preventGenerationAutoRemoval(mGenerationNumber);
 
-            emit newDataAvailable();
+            emit dataAdded();
         }
         else
         {
@@ -872,7 +872,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
     // Increment generation counter
     if (foundData)
     {
-        emit newDataAvailable();
+        emit dataAdded();
     }
     else if (!overWriteLastGeneration)
     {
@@ -2404,6 +2404,7 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
             const QList<int> fullGens = pFullContainer->getGenerations();
             QPointer<LogVariableContainer> pAliasContainer;
             QString currentAliasName;
+            bool didChangeAlias=false;
             for(int i=0; i<fullGens.size(); ++i)
             {
                 SharedVariablePtrT pFullData = pFullContainer->getDataGeneration(fullGens[i]);
@@ -2423,11 +2424,13 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
                         pAliasContainer->removeDataGeneration(fullGens[i]);
                     }
                     pFullData->mpVariableDescription->mAliasName = rAlias;
+                    didChangeAlias = true;
                 }
             }
-
-            //! @todo maybe use different signal for remove
-            emit newDataAvailable();
+            if (didChangeAlias)
+            {
+                emit aliasChanged();
+            }
         }
         else
         {
@@ -2461,7 +2464,7 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
                     insertVariable(pData, rAlias, fullGens[i]);
                 }
             }
-            emit newDataAvailable();
+            emit aliasChanged();
         }
     }
 }

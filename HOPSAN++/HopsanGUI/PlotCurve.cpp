@@ -336,7 +336,7 @@ bool PlotCurve::setGeneration(const int generation)
         SharedVariablePtrT pNewData = pContainer->getDataGeneration(generation);
         if (pNewData)
         {
-            this->disconnect(mpData.data());
+            disconnectDataSignals();
             mpData = pNewData;
             connectDataSignals();
         }
@@ -457,7 +457,7 @@ void PlotCurve::setDataPlotOffset(const double offset)
 void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData)
 {
     // First disconnect all signals from the old data
-    this->disconnect(mpData.data());
+    disconnectDataSignals();
 
     // If we already have custom data, then delete it from memory as it is being replaced
     deleteCustomData();
@@ -484,13 +484,10 @@ void PlotCurve::setCustomXData(SharedVariablePtrT pData)
     //! @todo maybe prevent reset if timevector is null, but then it will (currently) be impossible to reset x vector in curve.
 
     // Disconnect any signals first, in case we are changing x-data
-    if (mpCustomXdata)
-    {
-        disconnect(mpCustomXdata.data(),0,this,0);
-    }
+    disconnectCustomXDataSignals();
     // Set new data and connect signals
     mpCustomXdata = pData;
-    connectDataSignals();
+    connectCustomXDataSignals();
 
     // Redraw curve
     updateCurve();
@@ -989,14 +986,44 @@ void PlotCurve::connectDataSignals()
     //! @todo what will happen if you import or set alias with same name as data then this will also trigger
     if (mpData->getLogDataHandler())
     {
-        connect(mpData->getLogDataHandler(), SIGNAL(newDataAvailable()), this, SLOT(updateToNewGeneration()));
+        connect(mpData->getLogDataHandler(), SIGNAL(dataAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
     }
 
     connect(mpData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     connect(mpData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
+}
+
+void PlotCurve::connectCustomXDataSignals()
+{
     if (mpCustomXdata)
     {
         connect(mpCustomXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+    }
+}
+
+void PlotCurve::disconnectDataSignals()
+{
+    //! @todo new gen signal
+    if (mpData)
+    {
+        // Disconnect all data signals from mpData to this
+        mpData.data()->disconnect(this);
+
+        //! @todo Might be better to connect to a signal from the variable container instead, then we only trigger if our data might have new information
+        //! @todo what will happen if you import or set alias with same name as data then this will also trigger
+        if (mpData->getLogDataHandler())
+        {
+            mpData->getLogDataHandler()->disconnect(this);
+        }
+    }
+}
+
+void PlotCurve::disconnectCustomXDataSignals()
+{
+    if (mpCustomXdata)
+    {
+        // Disconnect all data signals from any custom x-data
+        mpCustomXdata.data()->disconnect(this);
     }
 }
 

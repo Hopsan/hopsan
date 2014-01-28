@@ -155,6 +155,9 @@ private:
     // Private member functions
     void deleteCustomData();
     void connectDataSignals();
+    void connectCustomXDataSignals();
+    void disconnectDataSignals();
+    void disconnectCustomXDataSignals();
 
     // Curve data
     HopsanPlotCurveTypeEnumT mCurveType;

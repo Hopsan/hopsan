@@ -658,8 +658,9 @@ void PlotWidget::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler)
     // Connect signals if the pLogdataHndler is not a null pointer
     if (pLogDataHandler)
     {
-        connect(pLogDataHandler, SIGNAL(newDataAvailable()), this, SLOT(updateList()));
+        connect(pLogDataHandler, SIGNAL(dataAdded()), this, SLOT(updateList()));
         connect(pLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(updateList()));
+        connect(pLogDataHandler, SIGNAL(aliasChanged()), this, SLOT(updateList()));
     }
     updateList();
 }

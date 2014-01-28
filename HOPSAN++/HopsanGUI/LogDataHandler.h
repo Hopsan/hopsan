@@ -192,8 +192,9 @@ public slots:
 
 
 signals:
-    void newDataAvailable();
+    void dataAdded();
     void dataRemoved();
+    void aliasChanged();
     void closePlotsWithOwnedData();
 
 private slots:
