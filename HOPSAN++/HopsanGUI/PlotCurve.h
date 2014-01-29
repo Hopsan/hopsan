@@ -73,7 +73,7 @@ class PlotCurve : public QObject, public QwtPlotCurve
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
-    PlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY=QwtPlot::yLeft, const HopsanPlotCurveTypeEnumT curveType=PortVariableType);
+    PlotCurve(VariableDataPair data, const QwtPlot::Axis axisY=QwtPlot::yLeft, const HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     void setIncludeGenerationInTitle(bool doit);
@@ -84,6 +84,7 @@ public:
     int getAxisY();
 
     const SharedVariablePtrT getDataVariable() const;
+    const QPointer<LogVariableContainer> getDataContainer() const;
     const SharedVariablePtrT getSharedTimeOrFrequencyVariable() const;
     const SharedVariablePtrT getSharedCustomXVariable() const;
     bool hasCustomXVariable() const;
@@ -111,7 +112,7 @@ public:
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
-    void setCustomXData(SharedVariablePtrT pData);
+    void setCustomXData(VariableDataPair data);
     void setCustomXData(const QString fullName);
 
     QColor getLineColor() const;
@@ -161,8 +162,8 @@ private:
 
     // Curve data
     HopsanPlotCurveTypeEnumT mCurveType;
-    SharedVariablePtrT mpData;
-    SharedVariablePtrT mpCustomXdata;
+    VariableDataPair mData;
+    VariableDataPair mCustomXdata;
     bool mHaveCustomData;
 
     QString mCustomCurveDataUnit;

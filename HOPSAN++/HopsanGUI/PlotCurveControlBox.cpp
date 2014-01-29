@@ -235,15 +235,26 @@ void PlotCurveControlBox::updateColor(const QColor color)
 void PlotCurveControlBox::updateInfo()
 {
     // Enable/diable generation buttons
-    const int lowGen = mpPlotCurve->getDataVariable()->getLowestGeneration();
-    const int highGen = mpPlotCurve->getDataVariable()->getHighestGeneration();
-    const int gen = mpPlotCurve->getGeneration();
-    const int nGen = mpPlotCurve->getDataVariable()->getNumGenerations();
+    QPointer<LogVariableContainer> pVarContainer = mpPlotCurve->getDataContainer();
+    int gen = mpPlotCurve->getGeneration();
+    int lowGen, highGen, nGen;
+    if (pVarContainer)
+    {
+        lowGen = pVarContainer->getLowestGeneration();
+        highGen = pVarContainer->getHighestGeneration();
+        nGen = pVarContainer->getNumGenerations();
+    }
+    else
+    {
+        lowGen = highGen = gen;
+        nGen = 1;
+    }
     disconnect(mpGenerationSpinBox,         SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int))); //Need to temporarily disconnect to avoid loop
     mpGenerationSpinBox->setRange(lowGen+1, highGen+1);
     mpGenerationSpinBox->setValue(gen+1);
     connect(mpGenerationSpinBox,            SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int)));
     mpGenerationSpinBox->setEnabled(nGen > 1);
+
 
     // Set generation number strings
     //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)

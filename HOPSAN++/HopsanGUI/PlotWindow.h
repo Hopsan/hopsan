@@ -75,8 +75,8 @@ public:
 
     void showHelpPopupMessage(const QString &rMessage);
 
-    PlotCurve* addPlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
-    PlotCurve* addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(VariableDataPair data, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(VariableDataPair xdata, VariableDataPair ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
 
 signals:
     void windowClosed(PlotWindow *pWindow);

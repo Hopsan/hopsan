@@ -148,13 +148,14 @@ public:
     bool isStoringImported() const;
     bool isGenerationImported(const int gen) const;
 
-    void preventAutoRemove(const int gen);
-    void allowAutoRemove(const int gen);
-
     LogDataHandler *getLogDataHandler();
+
+public slots:
+    void allowGenerationAutoRemoval(int gen, bool allow);
 
 signals:
     void importedVariableBeingRemoved(SharedVariablePtrT);
+    void generationAdded();
 
 private:
     void actuallyRemoveDataGen(GenerationMapT::iterator git);
@@ -197,9 +198,6 @@ public:
     bool hasAliasName() const;
     bool hasCustomLabel() const;
     int getGeneration() const;
-    int getLowestGeneration() const;
-    int getHighestGeneration() const;
-    int getNumGenerations() const;
     virtual bool isImported() const;
     virtual QString getImportedFileName() const;
 
@@ -263,7 +261,6 @@ public:
     virtual void integrateBy(SharedVariablePtrT pOther);
     virtual void lowPassFilter(SharedVariablePtrT pTime, const double w);
 
-
     // Functions to toggle "keep" generation
     void preventAutoRemoval();
     void allowAutoRemoval();
@@ -274,8 +271,7 @@ public:
     void sendDataToStream(QTextStream &rStream, QString separator);
 
     // Access to parent object pointers
-    LogVariableContainer *getLogVariableContainer();
-    LogDataHandler *getLogDataHandler();
+    QPointer<LogDataHandler> getLogDataHandler();
 
 public slots:
     void setPlotScale(double scale);
@@ -290,10 +286,12 @@ public slots:
 signals:
     void dataChanged();
     void nameChanged();
+    void allowAutoRemove(int gen, bool allow);
 
 protected:
     typedef QVector<double> DataVectorT;
-    QPointer<LogVariableContainer> mpParentVariableContainer;
+
+    QPointer<LogDataHandler> mpParentLogDataHandler;
 
     CachableDataVector *mpCachedDataVector;
     SharedVariableDescriptionT mpVariableDescription;
@@ -386,5 +384,26 @@ protected:
 void createBodeVariables(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax,
                          SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv,
                          SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData);
+
+
+class VariableDataPair
+{
+public:
+    VariableDataPair();
+    VariableDataPair(SharedVariablePtrT pData);
+    VariableDataPair(QPointer<LogVariableContainer> pContainer, SharedVariablePtrT pData);
+
+    LogDataHandler *getLogDataHandler();
+
+    bool isNull() const;
+    operator bool() const;
+    bool operator!() const;
+
+    bool isVariableAlias() const;
+
+    QPointer<LogVariableContainer> mpContainer;
+    SharedVariablePtrT mpVariable;
+};
+
 
 #endif // LOGVARIABLE_H

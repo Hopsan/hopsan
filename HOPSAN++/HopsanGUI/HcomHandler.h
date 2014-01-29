@@ -68,8 +68,7 @@ public:
     LocalVarsMapT getLocalVariables() const;
     void setLocalVariables(const LocalVarsMapT &vars);
     QMap<QString, SymHopFunctionoid *> getLocalFunctionoidPointers() const;
-    SharedVariablePtrT getLogVariablePtr(QString fullShortName, bool &rFoundAlias) const;
-    SharedVariablePtrT getLogVariablePtr(QString fullShortName) const;
+    VariableDataPair getLogVariable(QString fullShortName) const;
 
     // Public utilities
     void toShortDataNames(QString &rName) const;
@@ -167,7 +166,7 @@ private:
     void generateCommandsHelpText();
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void addPlotCurve(QString cmd, const int axis) const;
-    void addPlotCurve(SharedVariablePtrT pData, const int axis) const;
+    void addPlotCurve(VariableDataPair data, const int axis) const;
     void removePlotCurves(const int axis) const;
     void removeLogVariable(QString fullShortVarNameWithGen) const;
     void getComponents(const QString &rStr, QList<ModelObject*> &rComponents) const;

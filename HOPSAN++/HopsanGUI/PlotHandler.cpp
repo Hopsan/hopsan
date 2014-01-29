@@ -145,22 +145,43 @@ PlotWindow *PlotHandler::getPlotWindow(const QString &rName)
     return 0;
 }
 
-QString PlotHandler::plotDataToWindow(QString windowName, SharedVariablePtrT pData, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, VariableDataPair data, int axis, QColor curveColor)
 {
     PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
-    plotDataToWindow(pWindow, pData, axis, curveColor);
-    return pWindow->getName();
+    plotDataToWindow(pWindow, data, axis, curveColor);
+    return pWindow;
 }
 
-QString PlotHandler::plotDataToWindow(QString windowName, SharedVariablePtrT pDataX, SharedVariablePtrT pDataY, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, VariableDataPair xdata, VariableDataPair ydata, int axis, QColor curveColor)
 {
-    if (pDataX && pDataY)
+    if (xdata && ydata)
     {
         PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
-        plotDataToWindow(pWindow, pDataX, pDataY, axis, curveColor);
-        return pWindow->getName();
+        plotDataToWindow(pWindow, xdata, ydata, axis, curveColor);
+        return pWindow;
     }
-    return "";
+    return 0;
+}
+
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, VariableDataPair data, int axis, QColor curveColor)
+{
+    if(!pPlotWindow)
+    {
+        pPlotWindow = createNewPlotWindowOrGetCurrentOne();
+    }
+    pPlotWindow->addPlotCurve(data, QwtPlot::Axis(axis), curveColor);
+
+    return pPlotWindow;
+}
+
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, VariableDataPair xdata, VariableDataPair ydata, int axis, QColor curveColor)
+{
+    if(!pPlotWindow)
+    {
+        pPlotWindow = createNewPlotWindowOrGetCurrentOne();
+    }
+    pPlotWindow->addPlotCurve(xdata, ydata, QwtPlot::Axis(axis), curveColor);
+    return pPlotWindow;
 }
 
 void PlotHandler::closeWindow(const QString &rWindowName)
@@ -179,25 +200,4 @@ void PlotHandler::closeAllOpenWindows()
         PlotWindow* pPW = mOpenPlotWindows.begin().value();
         pPW->close();
     }
-}
-
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVariablePtrT pData, int axis, QColor curveColor)
-{
-    if(!pPlotWindow)
-    {
-        pPlotWindow = createNewPlotWindowOrGetCurrentOne();
-    }
-    pPlotWindow->addPlotCurve(pData, QwtPlot::Axis(axis), curveColor);
-
-    return pPlotWindow;
-}
-
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVariablePtrT pDataX, SharedVariablePtrT pDataY, int axis, QColor curveColor)
-{
-    if(!pPlotWindow)
-    {
-        pPlotWindow = createNewPlotWindowOrGetCurrentOne();
-    }
-    pPlotWindow->addPlotCurve(pDataX, pDataY, QwtPlot::Axis(axis), curveColor);
-    return pPlotWindow;
 }

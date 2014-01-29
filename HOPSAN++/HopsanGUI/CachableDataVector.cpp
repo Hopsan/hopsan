@@ -48,7 +48,8 @@ bool MultiDataVectorCache::addVector(const QVector<double> &rDataVector, quint64
 
 bool MultiDataVectorCache::beginMultiAppend()
 {
-    mIsMultiAppending = smartOpenFile(QIODevice::WriteOnly | QIODevice::Append);
+    // We need to open in read write mode to make it possible to read earlier data from file while new data is appended
+    mIsMultiAppending = smartOpenFile(QIODevice::ReadWrite | QIODevice::Append);
     return mIsMultiAppending;
 }
 
@@ -106,6 +107,8 @@ bool MultiDataVectorCache::appendToCache(const QVector<double> &rDataVector, qui
     bool success = false;
     if (smartOpenFile(QIODevice::WriteOnly | QIODevice::Append))
     {
+        // In case someone has moved the pointer by reading, lets us seek to 'end of file' instead
+        mCacheFile.seek( mCacheFile.size() );
         rStartByte = mCacheFile.pos();
         rNumBytes = mCacheFile.write((const char*)rDataVector.data(), sizeof(double)*rDataVector.size());
         if ( rNumBytes == sizeof(double)*rDataVector.size())
@@ -150,7 +153,8 @@ bool MultiDataVectorCache::smartOpenFile(QIODevice::OpenMode flags)
 {
     if (mCacheFile.isOpen())
     {
-        if (mCacheFile.openMode() == flags)
+        // If the file was already open, then we must check if the desired flags are already set
+        if ( (mCacheFile.openMode() & flags) != 0 )
         {
             return true;
         }

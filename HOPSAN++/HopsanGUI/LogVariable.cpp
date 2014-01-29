@@ -189,7 +189,6 @@ void VectorVariable::setPlotScale(double scale)
 
 VectorVariable::VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache)
 {
-    mpParentVariableContainer = 0;
     mpVariableDescription = varDesc;
     mDataPlotOffset = 0.0;
     mDataPlotScale = 1.0;
@@ -307,36 +306,6 @@ bool VectorVariable::hasCustomLabel() const
 int VectorVariable::getGeneration() const
 {
     return mGeneration;
-}
-
-int VectorVariable::getLowestGeneration() const
-{
-    // Using QPointer to avoid crash if container removed before data
-    if (mpParentVariableContainer.isNull())
-    {
-        return mGeneration;
-    }
-    return mpParentVariableContainer->getLowestGeneration();
-}
-
-int VectorVariable::getHighestGeneration() const
-{
-    // Using QPointer to avoid crash if container removed before data
-    if (mpParentVariableContainer.isNull())
-    {
-        return mGeneration;
-    }
-    return mpParentVariableContainer->getHighestGeneration();
-}
-
-int VectorVariable::getNumGenerations() const
-{
-    // Using QPointer to avoid crash if container removed before data
-    if (mpParentVariableContainer.isNull())
-    {
-        return 1;
-    }
-    return mpParentVariableContainer->getNumGenerations();
 }
 
 bool VectorVariable::isImported() const
@@ -949,18 +918,12 @@ bool VectorVariable::positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int
 
 void VectorVariable::preventAutoRemoval()
 {
-    if (!mpParentVariableContainer.isNull())
-    {
-        mpParentVariableContainer.data()->preventAutoRemove(mGeneration);
-    }
+    emit allowAutoRemove(mGeneration, false);
 }
 
 void VectorVariable::allowAutoRemoval()
 {
-    if (!mpParentVariableContainer.isNull())
-    {
-        mpParentVariableContainer.data()->allowAutoRemove(mGeneration);
-    }
+    emit allowAutoRemove(mGeneration, true);
 }
 
 void VectorVariable::setCacheDataToDisk(const bool toDisk)
@@ -973,25 +936,15 @@ bool VectorVariable::isCachingDataToDisk() const
     return mpCachedDataVector->isCached();
 }
 
-LogVariableContainer *VectorVariable::getLogVariableContainer()
-{
-    return mpParentVariableContainer;
-}
-
 bool VectorVariable::indexInRange(const int idx) const
 {
     //! @todo Do we need to check timevector also ? (or should we assume thay are the same)
     return (idx>=0 && idx<mpCachedDataVector->size());
 }
 
-LogDataHandler *VectorVariable::getLogDataHandler()
+QPointer<LogDataHandler> VectorVariable::getLogDataHandler()
 {
-    // Using QPointer to avoid crash if container removed before data
-    if (mpParentVariableContainer.isNull())
-    {
-        return 0;
-    }
-    return mpParentVariableContainer->getLogDataHandler();
+    return mpParentLogDataHandler;
 }
 
 
@@ -1001,21 +954,24 @@ const QString &LogVariableContainer::getName() const
 }
 
 
-void LogVariableContainer::preventAutoRemove(const int gen)
+void LogVariableContainer::allowGenerationAutoRemoval(int gen, bool allow)
 {
-    //! @todo what happens if we tell it to keep a generation it does not have
-    //! @todo maybe special -1 input for ALL
-    if (!mKeepGenerations.contains(gen))
+    if (allow)
     {
-        mKeepGenerations.prepend(gen);
+        //! @todo maybe special -1 input for ALL
+        mKeepGenerations.removeOne(gen);
+    }
+    else
+    {
+        //! @todo what happens if we tell it to keep a generation it does not have
+        //! @todo maybe special -1 input for ALL
+        if (!mKeepGenerations.contains(gen))
+        {
+            mKeepGenerations.prepend(gen);
+        }
     }
 }
 
-void LogVariableContainer::allowAutoRemove(const int gen)
-{
-    //! @todo maybe special -1 input for ALL
-    mKeepGenerations.removeOne(gen);
-}
 
 LogDataHandler *LogVariableContainer::getLogDataHandler()
 {
@@ -1025,6 +981,8 @@ LogDataHandler *LogVariableContainer::getLogDataHandler()
 void LogVariableContainer::actuallyRemoveDataGen(GenerationMapT::iterator git)
 {
     bool isAlias=false;
+    // Disconnect signals from data to this container
+    git.value().data()->disconnect(this,0);
     // Remove from alias and imported registers if needed
     if (mAliasGenIndexes.contains(git.key()))
     {
@@ -1224,8 +1182,7 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
 //! @brief Adds or replaces a data generation
 void LogVariableContainer::addDataGeneration(const int generation, SharedVariablePtrT pData)
 {
-    // Set some data that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
-    pData->mpParentVariableContainer = this;
+    // Set generation that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
     pData->mGeneration = generation;
     // Insert into generation storage
     mDataGenerations.insert(generation, pData);
@@ -1239,6 +1196,11 @@ void LogVariableContainer::addDataGeneration(const int generation, SharedVariabl
     {
         mImportedGenIndexes.addValue(generation);
     }
+    // Connect signals from data
+    connect(pData.data(), SIGNAL(allowAutoRemove(int,bool)), this, SLOT(allowGenerationAutoRemoval(int,bool)), Qt::UniqueConnection);
+
+    // Emmit notification of new generation
+    emit generationAdded();
 }
 
 //! @brief Removes a generation of the variable
@@ -1933,3 +1895,55 @@ IndexIntervalCollection::MinMaxT::MinMaxT(int min, int max)
 
 
 
+
+
+VariableDataPair::VariableDataPair()
+    : mpContainer(0), mpVariable(0)
+{
+    //Nothing
+}
+
+VariableDataPair::VariableDataPair(SharedVariablePtrT pData)
+    : mpContainer(0), mpVariable(0)
+{
+    mpVariable = pData;
+}
+
+VariableDataPair::VariableDataPair(QPointer<LogVariableContainer> pContainer, SharedVariablePtrT pData)
+    : mpContainer(0), mpVariable(0)
+{
+    mpContainer = pContainer;
+    mpVariable = pData;
+}
+
+LogDataHandler *VariableDataPair::getLogDataHandler()
+{
+    if (mpVariable)
+    {
+        return mpVariable->getLogDataHandler();
+    }
+    return 0;
+}
+
+bool VariableDataPair::isNull() const
+{
+    return mpVariable.isNull();
+}
+
+bool VariableDataPair::operator!() const
+{
+    return mpVariable.isNull();
+}
+
+bool VariableDataPair::isVariableAlias() const
+{
+    if (mpContainer && mpVariable)
+    {
+        return mpContainer->isGenerationAlias(mpVariable->getGeneration());
+    }
+}
+
+VariableDataPair::operator bool() const
+{
+    return !mpVariable.isNull();
+}

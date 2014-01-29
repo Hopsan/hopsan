@@ -188,6 +188,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
     mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
     connect(mpSaveButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpSaveButton->setDisabled(true);
 
     mpImportPloAction = new QAction(this);
     mpImportPloAction->setText("Import from Old Hopsan File (.plo)");
@@ -239,6 +240,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpLoadFromXmlButton->setToolTip("Import Plot");
     mpLoadFromXmlButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
     connect(mpLoadFromXmlButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpLoadFromXmlButton->setDisabled(true);
 
     mpGridButton = new QAction(this);
     mpGridButton->setToolTip("Show Grid (G)");
@@ -490,16 +492,16 @@ QString PlotWindow::getName() const
 //! @brief Creates a new plot curve from a plot variable in current container object and adds it to the current plot tab
 //! @param[in] pData Shared pointer to data that you want to plot
 //! @param[in] axisY  0=left 1=right
-//! @param[in] desiredColor The desired color (you might not get what you ask for)
-PlotCurve* PlotWindow::addPlotCurve(SharedVariablePtrT pData, const QwtPlot::Axis axisY, QColor desiredColor)
+//! @param[in] desiredColor The desired color
+PlotCurve* PlotWindow::addPlotCurve(VariableDataPair data, const QwtPlot::Axis axisY, QColor desiredColor)
 {
-    if (pData)
+    if (data)
     {
         // Remember which model it belongs to, and connect the closeWindow signal from the data handler
         // this makes it possible to autoclose all plotwindows with data from a particular model(logdatahandler)
-        if (pData->getLogDataHandler())
+        if (data.mpVariable->getLogDataHandler())
         {
-            connect(pData->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
+            connect(data.mpVariable->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
         }
 
         // Make sure that we have a tab
@@ -510,19 +512,19 @@ PlotCurve* PlotWindow::addPlotCurve(SharedVariablePtrT pData, const QwtPlot::Axi
         }
 
         // Create and add a curve
-        PlotCurve *pTempCurve = new PlotCurve(pData, axisY);
+        PlotCurve *pTempCurve = new PlotCurve(data, axisY);
         getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
         return pTempCurve;
     }
     return 0;
 }
 
-PlotCurve *PlotWindow::addPlotCurve(SharedVariablePtrT pXData, SharedVariablePtrT pYData, const QwtPlot::Axis axisY, QColor desiredColor)
+PlotCurve *PlotWindow::addPlotCurve(VariableDataPair xdata, VariableDataPair ydata, const QwtPlot::Axis axisY, QColor desiredColor)
 {
-    PlotCurve *pCurve = addPlotCurve(pYData, axisY, desiredColor);
+    PlotCurve *pCurve = addPlotCurve(ydata, axisY, desiredColor);
     if (pCurve)
     {
-        pCurve->setCustomXData(pXData);
+        pCurve->setCustomXData(xdata);
     }
     return pCurve;
 }

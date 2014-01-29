@@ -951,15 +951,20 @@ SharedVariablePtrT LogDataHandler::getLogVariableDataPtr(int generation, QString
 
 SharedVariablePtrT LogDataHandler::getLogVariableDataPtr(const QString &rName, const int generation) const
 {
+    return getLogVariableDataPair(rName, generation).mpVariable;
+}
+
+VariableDataPair LogDataHandler::getLogVariableDataPair(const QString &rName, const int generation) const
+{
+    QPointer<LogVariableContainer> pContainer=0;
     // Find the data variable
     LogDataMapT::const_iterator dit = mLogDataMap.find(rName);
     if (dit != mLogDataMap.end())
     {
-        return dit.value()->getDataGeneration(generation);
+        pContainer = dit.value();
+        return VariableDataPair(pContainer, pContainer->getDataGeneration(generation));
     }
-
-    // If not found return 0
-    return SharedVariablePtrT(0);
+    return VariableDataPair();
 }
 
 //! @brief Returns multiple logdatavariables based on regular expression search. Exluding temp variables but including aliases
@@ -1324,7 +1329,7 @@ void LogDataHandler::preventGenerationAutoRemoval(const int gen)
     LogDataMapT::iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        dit.value()->preventAutoRemove(gen);
+        dit.value()->allowGenerationAutoRemoval(gen, false);
     }
 }
 
@@ -1334,7 +1339,7 @@ void LogDataHandler::allowGenerationAutoRemoval(const int gen)
     LogDataMapT::iterator dit = mLogDataMap.begin();
     for ( ; dit!=mLogDataMap.end(); ++dit)
     {
-        dit.value()->allowAutoRemove(gen);
+        dit.value()->allowGenerationAutoRemoval(gen,true);
     }
 }
 
@@ -1984,33 +1989,33 @@ void LogDataHandler::closePlotsWithCurvesBasedOnOwnedData()
 }
 
 
-QString LogDataHandler::plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color)
+PlotWindow *LogDataHandler::plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color)
 {
-    SharedVariablePtrT pData = getLogVariableDataPtr(fullVarName, gen);
-    if(pData)
+    VariableDataPair data = getLogVariableDataPair(fullVarName, gen);
+    if(data)
     {
-        return gpPlotHandler->plotDataToWindow(plotName, pData, axis, color);
+        return gpPlotHandler->plotDataToWindow(plotName, data, axis, color);
     }
-    return "";
+    return 0;
 }
 
-QString LogDataHandler::plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color)
+PlotWindow *LogDataHandler::plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color)
 {
-    SharedVariablePtrT pDataX = getLogVariableDataPtr(rFullNameX, gen);
-    SharedVariablePtrT pDataY = getLogVariableDataPtr(rFullNameY, gen);
-    if (pDataX && pDataY)
+    VariableDataPair xdata = getLogVariableDataPair(rFullNameX, gen);
+    VariableDataPair ydata = getLogVariableDataPair(rFullNameY, gen);
+    if (xdata && ydata)
     {
-        return gpPlotHandler->plotDataToWindow(plotName, pDataX, pDataY, axis, color);
+        return gpPlotHandler->plotDataToWindow(plotName, xdata, ydata, axis, color);
     }
-    return "";
+    return 0;
 }
 
 PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color)
 {
-    SharedVariablePtrT pData = getLogVariableDataPtr(fullVarName, gen);
-    if(pData)
+    VariableDataPair data = getLogVariableDataPair(fullVarName, gen);
+    if(data)
     {
-        return gpPlotHandler->plotDataToWindow(pPlotWindow, pData, axis, color);
+        return gpPlotHandler->plotDataToWindow(pPlotWindow, data, axis, color);
     }
     return 0;
 }
@@ -2203,31 +2208,31 @@ QString LogDataHandler::getNewCacheName()
     return mCacheDirs.first().absoluteFilePath("cf"+QString("%1").arg(mCacheSubDirCtr++));
 }
 
-void LogDataHandler::rememberIfImported(SharedVariablePtrT pData)
+void LogDataHandler::rememberIfImported(VariableDataPair data)
 {
     // Remember the imported file in the import map, so we know what generations belong to which file
-    if (pData->isImported())
+    if (data.mpVariable->isImported())
     {
         ImportedLogDataMapT::iterator fit; // File name iterator
-        fit = mImportedLogDataMap.find(pData->getImportedFileName());
+        fit = mImportedLogDataMap.find(data.mpVariable->getImportedFileName());
         if (fit != mImportedLogDataMap.end())
         {
-            fit.value().insertMulti(pData->getFullVariableName(),pData);
+            fit.value().insertMulti(data.mpVariable->getFullVariableName(),data.mpVariable);
         }
         else
         {
             QMultiMap<QString,SharedVariablePtrT> newFileMap;
-            newFileMap.insert(pData->getFullVariableName(),pData);
-            mImportedLogDataMap.insert(pData->getImportedFileName(),newFileMap);
+            newFileMap.insert(data.mpVariable->getFullVariableName(),data.mpVariable);
+            mImportedLogDataMap.insert(data.mpVariable->getImportedFileName(),newFileMap);
         }
         // connect delete signal so we know to remove this when generation is removed
-        if (pData->getLogVariableContainer())
+        if (data.mpContainer)
         {
-            connect(pData->getLogVariableContainer(), SIGNAL(importedVariableBeingRemoved(SharedVariablePtrT)), this, SLOT(forgetImportedVariable(SharedVariablePtrT)));
+            connect(data.mpContainer, SIGNAL(importedVariableBeingRemoved(SharedVariablePtrT)), this, SLOT(forgetImportedVariable(SharedVariablePtrT)));
         }
 
         // Make data description source know its imported
-        pData->mpVariableDescription->mVariableSourceType = ImportedVariableType;
+        data.mpVariable->mpVariableDescription->mVariableSourceType = ImportedVariableType;
     }
 }
 
@@ -2244,15 +2249,12 @@ void LogDataHandler::removeGenerationCacheIfEmpty(const int gen)
 
 SharedVariablePtrT LogDataHandler::defineNewVectorVariable_NoNameCheck(const QString &rName, VariableTypeT type)
 {
-    //! @todo insertVariable maybe should be used instead
     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
     pVarDesc->mDataName = rName;
     pVarDesc->mVariableSourceType = ScriptVariableType;
-    LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc->getFullName(), this);
     SharedVariablePtrT pNewData = createFreeVariable(type, pVarDesc);
-    pDataContainer->addDataGeneration(mGenerationNumber, pNewData);
-    mLogDataMap.insert(pVarDesc->getFullName(), pDataContainer);
-    return pDataContainer->getDataGeneration(mGenerationNumber);
+    insertVariable(pNewData);
+    return pNewData;
 }
 
 void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration)
@@ -2311,70 +2313,6 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
                 tookOwnershipOfSomeData=true;
 
                 //! @todo how to detect if alias colision appear, how to notify user
-
-//                LogDataMapT::iterator this_it = mLogDataMap.find(keyName);
-//                if (this_it == mLogDataMap.end())
-//                {
-//                    // If variable does not exist, then create it
-//                    LogVariableContainer *pNewContainer = new LogVariableContainer(this);
-//                    pNewContainer->addDataGeneration(mGenerationNumber, other_it->mpDataContainer->getDataGeneration(otherGeneration));
-//                    mLogDataMap.insert(keyName, LogDataStructT(pNewContainer,false));
-
-//                    // Take alias
-//                    const QString &aliasName = other_it->mpDataContainer->getAliasName();
-//                    if (!aliasName.isEmpty())
-//                    {
-//                        LogDataMapT::iterator this_a_it = mLogDataMap.find(aliasName);
-//                        if (this_a_it == mLogDataMap.end())
-//                        {
-//                            // Insert new alias
-//                            mLogDataMap.insert(aliasName, LogDataStructT(pNewContainer,true));
-//                        }
-//                        else
-//                        {
-//                            //! @todo maybe handle this
-//                            // If alias points to wrong thing then igonre it
-//                            if (this_a_it->mpDataContainer->getFullVariableName() != keyName)
-//                            {
-//                                qWarning() << "In takeOwnership: Alias: "+aliasName+" LOST!!!";
-//                            }
-//                        }
-//                    }
-
-//                    // Remove from other, (note! Generation in alias in other will also be removed since they are pointing to the same thing)
-//                    other_it->mpDataContainer->removeDataGeneration(otherGeneration, true);
-//                    tookOwnershipOfSomeData=true;
-//                }
-//                else
-//                {
-//                    // Varaiable exist, append to it
-//                    this_it.value().mpDataContainer->addDataGeneration(mGenerationNumber, other_it->mpDataContainer->getDataGeneration(otherGeneration));
-
-//                    // check so that alias exist, if not add
-//                    const QString &aliasName = other_it->mpDataContainer->getAliasName();
-//                    if (!aliasName.isEmpty())
-//                    {
-//                        LogDataMapT::iterator this_a_it = mLogDataMap.find(aliasName);
-//                        if (this_a_it == mLogDataMap.end())
-//                        {
-//                            // Insert new alias
-//                            mLogDataMap.insert(aliasName, LogDataStructT(this_it.value().mpDataContainer,true));
-//                        }
-//                        else
-//                        {
-//                            //! @todo maybe handle this
-//                            // If alias points to wrong thing then igonre it
-//                            if (this_a_it->mpDataContainer->getFullVariableName() != keyName)
-//                            {
-//                                qWarning() << "In takeOwnership: Alias: "+aliasName+" LOST!!!";
-//                            }
-//                        }
-//                    }
-
-//                    // Remove from other, (note! Generation in alias in other will also be removed since they are pointing to the same thing)
-//                    other_it->mpDataContainer->removeDataGeneration(otherGeneration, true);
-//                    tookOwnershipOfSomeData=true;
-//                }
             }
 
         }
@@ -2553,18 +2491,19 @@ void LogDataHandler::insertVariable(SharedVariablePtrT pVariable, QString keyNam
         gen = mGenerationNumber;
     }
 
-    // First check if a data variable with this name alread exist
+    LogVariableContainer *pDataContainer=0;
+    // First check if a data variable with this name alread exist, if it exist then insert into it
     LogDataMapT::iterator it = mLogDataMap.find(keyName);
-    // If it exist insert into it
     if (it != mLogDataMap.end())
     {
         // Insert it into the generations map
-        it.value()->addDataGeneration(gen, pVariable);
+        pDataContainer = it.value();
+        pDataContainer->addDataGeneration(gen, pVariable);
     }
     else
     {
         // Create a new toplevel map item and insert data into the generations map
-        LogVariableContainer *pDataContainer = new LogVariableContainer(keyName, this);
+        pDataContainer = new LogVariableContainer(keyName, this);
         pDataContainer->addDataGeneration(gen, pVariable);
         mLogDataMap.insert(keyName, pDataContainer);
     }
@@ -2576,7 +2515,10 @@ void LogDataHandler::insertVariable(SharedVariablePtrT pVariable, QString keyNam
     }
 
     // Remember imported files in the import map, so that we know what generations belong to which file
-    rememberIfImported(pVariable);
+    rememberIfImported(VariableDataPair(pDataContainer,pVariable));
+
+    // Make the variable remember that this logdatahandler is its parent (creator)
+    pVariable->mpParentLogDataHandler = this;
 }
 
 bool LogDataHandler::hasLogVariableData(const QString &rFullName, const int generation)

@@ -95,6 +95,7 @@ public:
     QVector<double> copyLogDataVariableValues(const QString &rName, const int generation);
     SharedVariablePtrT getLogVariableDataPtr(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedVariablePtrT getLogVariableDataPtr(const QString &rName, const int generation) const;
+    VariableDataPair getLogVariableDataPair(const QString &rName, const int generation) const;
 
     QVector<SharedVariablePtrT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, const int generation=-1) const;
     QVector<SharedVariablePtrT> getAllUniqueVariablesAtNewestGeneration();
@@ -133,8 +134,8 @@ public:
     bool hasOpenPlotCurves();
     void closePlotsWithCurvesBasedOnOwnedData();
 
-    QString plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
-    QString plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color=QColor());
+    PlotWindow *plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
+    PlotWindow *plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color=QColor());
     PlotWindow *plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
 
     SharedVariablePtrT addVariableWithScalar(const SharedVariablePtrT a, const double x);
@@ -210,7 +211,7 @@ private:
     void insertVariable(SharedVariablePtrT pVariable, QString keyName=QString(), int gen=-1);
 
     QString getNewCacheName();
-    void rememberIfImported(SharedVariablePtrT pData);
+    void rememberIfImported(VariableDataPair data);
     void removeGenerationCacheIfEmpty(const int gen);
     SharedVariablePtrT defineNewVectorVariable_NoNameCheck(const QString &rName, VariableTypeT type=VectorType);
 
