@@ -406,15 +406,14 @@ void OptimizationHandler::crfRun()
     timer.toc("Copy opt parameters");
 
     //Run optimization loop
-    TicToc timer2;
     int i=0;
     int percent=-1;
     for(; i<mMaxEvals && !mpHcomHandler->isAborted(); ++i)
     {
-        timer2.tic(QString("******************* Starting OptLoop %1").arg(i));
-
         //Plot optimization points
+        timer.tic();
         plotPoints();
+        timer.toc("PlotPoints");
 
         //Process UI events (required so that we don't lock up the program)
         qApp->processEvents();
@@ -429,6 +428,7 @@ void OptimizationHandler::crfRun()
         }
 
         //Print progress as percentage of maximum number of evaluations
+        timer.tic();
         int dummy=int(100.0*double(i)/mMaxEvals);
         if(dummy != percent)    //Only update at whole numbers
         {
@@ -438,24 +438,36 @@ void OptimizationHandler::crfRun()
             percent = dummy;
             gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
         }
+        timer.toc("Print progress");
 
         //Check convergence
+        timer.tic();
         if(checkForConvergence()) break;
+        timer.toc("Check convergence");
 
         //Increase all objective values (forgetting principle)
+        timer.tic();
         crfForget();
+        timer.toc("Forgetting principle");
 
         //Calculate best and worst point
+        timer.tic();
         calculatebestandworstid();
         int wid = mWorstId;
+        timer.toc("Calculate best and worst Id");
 
         //Plot best and worst objective values
+        timer.tic();
         plotObjectiveFunctionValues();
+        timer.toc("Plot objective function values");
 
         //Find geometrical center
+        timer.tic();
         crfFindcenter();
+        timer.toc("Find center");
 
         //Reflect worst point
+        timer.tic();
         QVector<double> newPoint;
         newPoint.resize(mNumParameters);
         for(int j=0; j<mNumParameters; ++j)
@@ -472,11 +484,14 @@ void OptimizationHandler::crfRun()
             mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
         }
         newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
+        timer.toc("Reflect worst point");
+
+        timer.tic();
         gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+        timer.toc("Update parameter outputs");
 
         //Evaluate new point
-        TicToc timer;
-        timer.tic("+++++++++ Begin Evaluate new point");
+        timer.tic();
         mpHcomHandler->executeCommand("call evalworst");
         if(mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
@@ -486,15 +501,16 @@ void OptimizationHandler::crfRun()
             finalize();
             return;
         }
-        timer.toc("+++++++++ End Evaluate new point");
+        timer.toc("Evaluate worst point");
 
         //Calculate best and worst points
+        timer.tic();
         mLastWorstId=wid;
         calculatebestandworstid();
         wid = mWorstId;
+        timer.tic("Calculate best and worst Id");
 
         //Iterate until worst point is no longer the same
-        timer.tic("--------- Begin Iterate until worst point is no longer the same");
         mCrfWorstCounter=0;
         while(mLastWorstId == wid)
         {
@@ -550,10 +566,10 @@ void OptimizationHandler::crfRun()
             mpHcomHandler->executeCommand("echo off");
         }
 
+        timer.tic();
         plotParameters();
+        timer.tic("Plot parameters");
 
-        timer.toc("--------- End Iterate until worst point is no longer the same");
-        timer2.toc(QString("******************* OptLoop %1").arg(i));
         qDebug() << "\n";
     }
 
@@ -1026,6 +1042,8 @@ void OptimizationHandler::plotPoints()
             gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::xBottom, mParMin[0], mParMax[0]);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::yLeft, mParMin[1], mParMax[1]);
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::yLeft, "Optimization Parameter 1");
         }
         else
         {

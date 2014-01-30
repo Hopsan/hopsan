@@ -226,7 +226,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpObjectiveLayout->addWidget(pDataLabel,               3, 5, 1, 2);
     mpObjectiveLayout->addWidget(new QWidget(this),         4, 0, 1, 7);
     mpObjectiveLayout->setRowStretch(0, 0);
-    mpObjectiveLayout->setRowStretch(1, 0);
+    mpObjectiveLayout->setRowStretch(1, 1);
     mpObjectiveLayout->setRowStretch(2, 0);
     mpObjectiveLayout->setRowStretch(3, 0);
     mpObjectiveLayout->setRowStretch(4, 1);
@@ -1344,12 +1344,12 @@ void OptimizationDialog::update(int idx)
     //Finished parameters tab
     if(idx == 2)
     {
-//        if(mSelectedParameters.isEmpty())
-//        {
-//            gpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
+        if(mSelectedParameters.isEmpty())
+        {
+            gpTerminalWidget->mpConsole->printWarningMessage("No parameters specified for optimization.");
 //            this->back();
-//            return;
-//        }
+            return;
+        }
     }
 
     //Finished objective function tab
@@ -1357,8 +1357,8 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedFunctions.isEmpty())
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
-            this->back();
+            gpTerminalWidget->mpConsole->printWarningMessage("No objective functions specified for optimization.");
+           // this->back();
             return;
         }
         else
