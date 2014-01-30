@@ -38,7 +38,7 @@ class HcomHandler;
 class HcomCommand;
 class CoreMessagesAccess;
 
-typedef QSharedPointer<VectorVariable> SharedVariablePtrT;
+typedef QSharedPointer<VectorVariable> SharedVectorVariableT;
 
 class TerminalWidget : public QWidget
 {

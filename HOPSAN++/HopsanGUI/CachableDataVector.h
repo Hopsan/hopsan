@@ -33,43 +33,6 @@
 #include <QMap>
 #include <QTextStream>
 
-////! @todo this could be a template
-//class CachedSingleDataVector
-//{
-//public:
-//    CachedSingleDataVector(const QVector<double> &rDataVector, const QString fileName=QString());
-//    ~CachedSingleDataVector();
-
-//    bool setCacheFile(const QString fileName);
-//    bool setCached(const bool cached);
-//    bool isCached() const;
-
-//    int size() const;
-//    bool isEmpty() const;
-
-//    bool copyData(QVector<double> &rData);
-//    bool replaceData(const QVector<double> &rNewData);
-//    bool peek(const int idx, double &rVal);
-//    bool poke(const int idx, const double val);
-
-//    QVector<double> *beginFullVectorOperation();
-//    bool endFullVectorOperation(QVector<double> *&rpData);
-
-//    QString getError() const;
-
-//private:
-//    bool writeToCache(const QVector<double> &rDataVector);
-//    bool moveToCache();
-//    bool readToMem(QVector<double> &rDataVector);
-//    bool moveToMem();
-
-//    QString mError;
-//    QFile mCacheFile;
-//    QVector<double> mDataVector;
-//    int mNumElements;
-//};
-
-
 //! @todo this could be a template
 class MultiDataVectorCache
 {

@@ -158,7 +158,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     if(!mpPlotData->isEmpty())
     {
         //Obtain time values from plot data
-        mTimeValues = mpContainer->getLogDataHandler()->getTimeVectorPtr(-1)->getDataVectorCopy();
+        mTimeValues = mpContainer->getLogDataHandler()->getTimeVectorVariable(-1)->getDataVectorCopy();
 
         //Calculate total simulation time and number of samples
         mTotalTime = mTimeValues.last();

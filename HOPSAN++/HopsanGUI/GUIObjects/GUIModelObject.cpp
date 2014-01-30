@@ -418,7 +418,7 @@ void ModelObject::showLosses()
     if(getTypeCQS() == "S")
         return;
 
-    int generation = mpParentContainerObject->getLogDataHandler()->getLatestGeneration();
+    int generation = mpParentContainerObject->getLogDataHandler()->getCurrentGeneration();
 
     time.start();
 
@@ -448,8 +448,8 @@ void ModelObject::showLosses()
                         QString componentName = vConnectedPorts.at(i)->getParentModelObjectName();
                         QString portName = vConnectedPorts.at(i)->getName();
                         //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, componentName, portName, NodeInfo(type).intensity);
-                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, componentName, portName, NodeInfo(type).flow);
+                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(generation, componentName, portName, NodeInfo(type).intensity);
+                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(generation, componentName, portName, NodeInfo(type).flow);
                         QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
                         for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                         {
@@ -462,8 +462,8 @@ void ModelObject::showLosses()
                 else    //Normal port!
                 {
                     //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity);
-                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyLogDataVariableValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow);
+                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity);
+                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow);
                     QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
                     for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {

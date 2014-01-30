@@ -351,7 +351,7 @@ void PyMainWindowClassWrapper::plotToWindow(MainWindow* o, const int& generation
 
 void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString varName, const double value, const int gen)
 {
-    SharedVariablePtrT pData = o->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr(varName, gen);
+    SharedVectorVariableT pData = o->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable(varName, gen);
     if (pData)
     {
         pData->setPlotOffset(value);
@@ -515,7 +515,7 @@ double PyLogDataHandlerClassWrapper::peekVariables(LogDataHandler *o,const QStri
 
 QVector<double> PyLogDataHandlerClassWrapper::data(LogDataHandler *o, const QString fullName)
 {
-    return o->copyLogDataVariableValues(fullName, -1);
+    return o->copyVariableDataVector(fullName, -1);
 }
 
 void PyLogDataHandlerClassWrapper::plot(LogDataHandler* o, const QString &rVarX, const QString &rVarY, int gen, int axis)

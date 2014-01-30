@@ -328,11 +328,11 @@ void OptimizationHandler::crfInit()
 
     LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
-    if (pHandler->hasLogVariableData("WorstObjective"))
+    if (pHandler->hasVariable("WorstObjective"))
     {
         pHandler->deleteVariable("WorstObjective");
     }
-    if (pHandler->hasLogVariableData("BestObjective"))
+    if (pHandler->hasVariable("BestObjective"))
     {
         pHandler->deleteVariable("BestObjective");
     }
@@ -768,11 +768,11 @@ void OptimizationHandler::psInit()
 
     LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
-    if (pHandler->hasLogVariableData("WorstObjective"))
+    if (pHandler->hasVariable("WorstObjective"))
     {
         pHandler->deleteVariable("WorstObjective");
     }
-    if (pHandler->hasLogVariableData("BestObjective"))
+    if (pHandler->hasVariable("BestObjective"))
     {
         pHandler->deleteVariable("BestObjective");
     }
@@ -1026,8 +1026,8 @@ void OptimizationHandler::plotPoints()
         QString namey = "par"+QString::number(p)+"y";
         double x = mParameters[p][0];
         double y = mParameters[p][1];
-        SharedVariablePtrT parVar_x = pHandler->getLogVariableDataPtr(namex, -1);
-        SharedVariablePtrT parVar_y = pHandler->getLogVariableDataPtr(namey, -1);
+        SharedVectorVariableT parVar_x = pHandler->getVectorVariable(namex, -1);
+        SharedVectorVariableT parVar_y = pHandler->getVectorVariable(namey, -1);
         if(!parVar_x)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
@@ -1079,7 +1079,7 @@ void OptimizationHandler::plotObjectiveFunctionValues()
     if(!mPlotObjectiveFunctionValues) { return; }
 
     LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
-    SharedVariablePtrT bestVar = pHandler->getLogVariableDataPtr("BestObjective", -1);
+    SharedVectorVariableT bestVar = pHandler->getVectorVariable("BestObjective", -1);
     if(bestVar.isNull())
     {
         //! @todo unit and description
@@ -1092,7 +1092,7 @@ void OptimizationHandler::plotObjectiveFunctionValues()
     {
         bestVar->append(mObjectives[mBestId]);
     }
-    SharedVariablePtrT worstVar = pHandler->getLogVariableDataPtr("WorstObjective", -1);
+    SharedVectorVariableT worstVar = pHandler->getVectorVariable("WorstObjective", -1);
     if(worstVar.isNull())
     {
         worstVar = pHandler->defineNewVariable("WorstObjective");
@@ -1124,7 +1124,7 @@ void OptimizationHandler::plotParameters()
     LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumParameters; ++p)
     {
-        SharedVariablePtrT par = pHandler->getLogVariableDataPtr("NewPar"+QString::number(p), -1);
+        SharedVectorVariableT par = pHandler->getVectorVariable("NewPar"+QString::number(p), -1);
         if(par.isNull())
         {
             par = pHandler->defineNewVariable("NewPar"+QString::number(p));

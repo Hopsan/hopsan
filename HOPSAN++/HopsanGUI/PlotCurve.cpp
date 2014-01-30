@@ -60,7 +60,7 @@ public:
 //! @param pData A shared pointer to the data to plot
 //! @param curveType The type of the curve (controls the name and some other special things)
 //! @todo why is the axis in the curve constructor, it would make more sence if the axis is specified when adding a curve to a plot area /Peter
-PlotCurve::PlotCurve(VariableDataPair data, const QwtPlot::Axis axisY, const HopsanPlotCurveTypeEnumT curveType)
+PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const HopsanPlotCurveTypeEnumT curveType)
     : QObject(), QwtPlotCurve()
 {
     mpParentPlotArea = 0;
@@ -256,12 +256,12 @@ const QString &PlotCurve::getDataModelPath() const
 }
 
 
-const SharedVariablePtrT PlotCurve::getDataVariable() const
+const SharedVectorVariableT PlotCurve::getVariable() const
 {
     return mData.mpVariable;
 }
 
-const QPointer<LogVariableContainer> PlotCurve::getDataContainer() const
+const SharedVectorVariableContainerT PlotCurve::getVariableContainer() const
 {
     return mData.mpContainer;
 }
@@ -275,7 +275,7 @@ int PlotCurve::getAxisY()
 
 
 //! @brief Returns the (unscaled) data vector of a plot curve
-QVector<double> PlotCurve::getDataVectorCopy() const
+QVector<double> PlotCurve::getVariableDataCopy() const
 {
     //! @todo this is no longer a reference need to see where it was used to avoid REALY slow code feetching data all the time /Peter
     return mData.mpVariable->getDataVectorCopy();
@@ -311,7 +311,7 @@ bool PlotCurve::minMaxPositiveNonZeroXValues(double &rMin, double &rMax)
 
 //! @brief Returns the shared time or frequency vector of the plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
-const SharedVariablePtrT PlotCurve::getSharedTimeOrFrequencyVariable() const
+const SharedVectorVariableT PlotCurve::getSharedTimeOrFrequencyVariable() const
 {
     return mData.mpVariable->getSharedTimeOrFrequencyVector();
 }
@@ -321,7 +321,7 @@ bool PlotCurve::hasCustomXVariable() const
     return !mCustomXdata.isNull();
 }
 
-const SharedVariablePtrT PlotCurve::getSharedCustomXVariable() const
+const SharedVectorVariableT PlotCurve::getSharedCustomXVariable() const
 {
     return mCustomXdata.mpVariable;
 }
@@ -336,7 +336,7 @@ bool PlotCurve::setGeneration(const int generation)
     {
         //! @todo maybe not set generation if same as current but what aboput custom x-axis
         // Make sure we have the data requested
-        SharedVariablePtrT pNewData = mData.mpContainer->getDataGeneration(generation);
+        SharedVectorVariableT pNewData = mData.mpContainer->getDataGeneration(generation);
         if (pNewData)
         {
             disconnectDataSignals();
@@ -353,7 +353,7 @@ bool PlotCurve::setGeneration(const int generation)
         {
             if (mCustomXdata.mpContainer)
             {
-                SharedVariablePtrT pNewXData = mCustomXdata.mpContainer->getDataGeneration(generation);
+                SharedVectorVariableT pNewXData = mCustomXdata.mpContainer->getDataGeneration(generation);
                 if (pNewXData)
                 {
                     setCustomXData(pNewXData);
@@ -466,7 +466,7 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
 
     // Create new custom data
     //! @todo we are abusing tiedomain variable here
-    mData.mpVariable = SharedVariablePtrT(new TimeDomainVariable(createFreeTimeVectorVariabel(rvTime), rvData, 0,
+    mData.mpVariable = SharedVectorVariableT(new TimeDomainVariable(createFreeTimeVectorVariabel(rvTime), rvData, 0,
                                                        SharedVariableDescriptionT(new VariableDescription(rVarDesc)), SharedMultiDataVectorCacheT()));
     mHaveCustomData = true;
 
@@ -481,7 +481,7 @@ void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVecto
     setCustomXData(createFreeVectorVariable(rvXdata, SharedVariableDescriptionT(new VariableDescription(rVarDesc))));
 }
 
-void PlotCurve::setCustomXData(VariableDataPair data)
+void PlotCurve::setCustomXData(HopsanVariable data)
 {
     //! @todo maybe prevent reset if timevector is null, but then it will (currently) be impossible to reset x vector in curve.
 
@@ -500,14 +500,14 @@ void PlotCurve::setCustomXData(const QString fullName)
     // If empty then reset time vector
     if (fullName.isEmpty())
     {
-        setCustomXData(SharedVariablePtrT());
+        setCustomXData(SharedVectorVariableT());
     }
     else
     {
         LogDataHandler *pHandler = mData.mpVariable->getLogDataHandler();
         if (pHandler)
         {
-            SharedVariablePtrT pData = pHandler->getLogVariableDataPtr(fullName, mData.mpVariable->getGeneration());
+            SharedVectorVariableT pData = pHandler->getVectorVariable(fullName, mData.mpVariable->getGeneration());
             if (pData)
             {
                 setCustomXData(pData);

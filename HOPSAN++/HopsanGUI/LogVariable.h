@@ -81,14 +81,14 @@ public:
 
 
 typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
-typedef QSharedPointer<VectorVariable> SharedVariablePtrT;
+typedef QSharedPointer<VectorVariable> SharedVectorVariableT;
 
 SharedVariableDescriptionT createTimeVariableDescription();
 SharedVariableDescriptionT createFrequencyVariableDescription();
-SharedVariablePtrT createFreeVectorVariable(const QVector<double> &rData, SharedVariableDescriptionT pVarDesc);
-SharedVariablePtrT createFreeTimeVectorVariabel(const QVector<double> &rTime);
-SharedVariablePtrT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency);
-SharedVariablePtrT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc);
+SharedVectorVariableT createFreeVectorVariable(const QVector<double> &rData, SharedVariableDescriptionT pVarDesc);
+SharedVectorVariableT createFreeTimeVectorVariabel(const QVector<double> &rTime);
+SharedVectorVariableT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency);
+SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc);
 
 class IndexIntervalCollection
 {
@@ -117,26 +117,26 @@ private:
     QList<MinMaxT> mIntervalList;
 };
 
-class LogVariableContainer : public QObject
+class VectorVariableContainer : public QObject
 {
     Q_OBJECT
 public:
-    typedef QMap<int, SharedVariablePtrT> GenerationMapT;
+    typedef QMap<int, SharedVectorVariableT> GenerationMapT;
 
-    LogVariableContainer(const QString &rName, LogDataHandler *pParentLogDataHandler);
-    ~LogVariableContainer();
+    VectorVariableContainer(const QString &rName, LogDataHandler *pParentLogDataHandler);
+    ~VectorVariableContainer();
 
     const QString &getName() const;
 
-    void addDataGeneration(const int generation, SharedVariablePtrT pData);
+    void addDataGeneration(const int generation, SharedVectorVariableT pData);
     bool removeDataGeneration(const int generation, const bool force=false);
     void removeAllGenerations();
     bool removeAllImportedGenerations();
     bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
 
-    SharedVariablePtrT getDataGeneration(const int gen=-1) const;
-    SharedVariablePtrT getNonAliasDataGeneration(int gen=-1) const;
-    QList<SharedVariablePtrT> getAllDataGenerations() const;
+    SharedVectorVariableT getDataGeneration(const int gen=-1) const;
+    SharedVectorVariableT getNonAliasDataGeneration(int gen=-1) const;
+    QList<SharedVectorVariableT> getAllDataGenerations() const;
     bool hasDataGeneration(const int gen);
     int getLowestGeneration() const;
     int getHighestGeneration() const;
@@ -154,7 +154,7 @@ public slots:
     void allowGenerationAutoRemoval(int gen, bool allow);
 
 signals:
-    void importedVariableBeingRemoved(SharedVariablePtrT);
+    void importedVariableBeingRemoved(SharedVectorVariableT);
     void generationAdded();
 
 private:
@@ -167,11 +167,13 @@ private:
     QList<int> mKeepGenerations;
 };
 
+typedef QSharedPointer<VectorVariableContainer> SharedVectorVariableContainerT;
+
 
 class VectorVariable : public QObject
 {
     Q_OBJECT
-    friend class LogVariableContainer;
+    friend class VectorVariableContainer;
     friend class LogDataHandler;
 
 public:
@@ -227,39 +229,39 @@ public:
     bool positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const;
     void elementWiseGt(QVector<double> &rResult, const double threshold) const;
     void elementWiseLt(QVector<double> &rResult, const double threshold) const;
-    bool compare(SharedVariablePtrT pOther, const double eps) const;
+    bool compare(SharedVectorVariableT pOther, const double eps) const;
 
     // Check out and return pointers to data (move to ram if necessary)
     QVector<double> *beginFullVectorOperation();
     bool endFullVectorOperation(QVector<double> *&rpData);
 
     // Functions that only read data but that require reimplementation in derived classes
-    virtual const SharedVariablePtrT getSharedTimeOrFrequencyVector() const;
-    virtual SharedVariablePtrT toFrequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
+    virtual const SharedVectorVariableT getSharedTimeOrFrequencyVector() const;
+    virtual SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum);
 
     // Functions that modify the data
     void assignFrom(const QVector<double> &rSrc);
     void assignFrom(const double src);
-    void addToData(const SharedVariablePtrT pOther);
+    void addToData(const SharedVectorVariableT pOther);
     void addToData(const double other);
-    void subFromData(const SharedVariablePtrT pOther);
+    void subFromData(const SharedVectorVariableT pOther);
     void subFromData(const double other);
-    void multData(const SharedVariablePtrT pOther);
+    void multData(const SharedVectorVariableT pOther);
     void multData(const double other);
-    void divData(const SharedVariablePtrT pOther);
+    void divData(const SharedVectorVariableT pOther);
     void divData(const double other);
     void absData();
     double pokeData(const int index, const double value, QString &rErr);
     void append(const double y);
 
     // Functions that modify data, but that may require reimplementation in derived classes
-    virtual void assignFrom(const SharedVariablePtrT pOther);
-    virtual void assignFrom(SharedVariablePtrT time, const QVector<double> &rData);
+    virtual void assignFrom(const SharedVectorVariableT pOther);
+    virtual void assignFrom(SharedVectorVariableT time, const QVector<double> &rData);
     virtual void assignFrom(QVector<double> &rTime, QVector<double> &rData);
     virtual void append(const double t, const double y);
-    virtual void diffBy(SharedVariablePtrT pOther);
-    virtual void integrateBy(SharedVariablePtrT pOther);
-    virtual void lowPassFilter(SharedVariablePtrT pTime, const double w);
+    virtual void diffBy(SharedVectorVariableT pOther);
+    virtual void integrateBy(SharedVectorVariableT pOther);
+    virtual void lowPassFilter(SharedVectorVariableT pTime, const double w);
 
     // Functions to toggle "keep" generation
     void preventAutoRemoval();
@@ -295,7 +297,7 @@ protected:
 
     CachableDataVector *mpCachedDataVector;
     SharedVariableDescriptionT mpVariableDescription;
-    SharedVariablePtrT mpSharedTimeOrFrequencyVector;
+    SharedVectorVariableT mpSharedTimeOrFrequencyVector;
 
     UnitScale mCustomUnitScale;
     double mDataPlotScale;
@@ -319,17 +321,17 @@ class TimeDomainVariable : public VectorVariable
 {
     Q_OBJECT
 public:
-    TimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
+    TimeDomainVariable(SharedVectorVariableT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                        SharedMultiDataVectorCacheT pGenerationMultiCache);
 
     virtual VariableTypeT getVariableType() const;
 
-    void diffBy(SharedVariablePtrT pOther);
-    void integrateBy(SharedVariablePtrT pOther);
-    void lowPassFilter(SharedVariablePtrT pTime, const double w);
-    SharedVariablePtrT toFrequencySpectrum(const SharedVariablePtrT pTime, const bool doPowerSpectrum);
-    void assignFrom(const SharedVariablePtrT pOther);
-    virtual void assignFrom(SharedVariablePtrT time, const QVector<double> &rData);
+    void diffBy(SharedVectorVariableT pOther);
+    void integrateBy(SharedVectorVariableT pOther);
+    void lowPassFilter(SharedVectorVariableT pTime, const double w);
+    SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum);
+    void assignFrom(const SharedVectorVariableT pOther);
+    virtual void assignFrom(SharedVectorVariableT time, const QVector<double> &rData);
     virtual void assignFrom(QVector<double> &rTime, QVector<double> &rData);
     virtual void append(const double t, const double y);
 
@@ -343,7 +345,7 @@ class ImportedTimeDomainVariable : public TimeDomainVariable
 {
     Q_OBJECT
 public:
-    ImportedTimeDomainVariable(SharedVariablePtrT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
+    ImportedTimeDomainVariable(SharedVectorVariableT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                                const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache);
     bool isImported() const;
     QString getImportedFileName() const;
@@ -356,7 +358,7 @@ class FrequencyDomainVariable : public VectorVariable
 {
     Q_OBJECT
 public:
-    FrequencyDomainVariable(SharedVariablePtrT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
+    FrequencyDomainVariable(SharedVectorVariableT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                             SharedMultiDataVectorCacheT pGenerationMultiCache);
     //! @todo add a bunch of reimplemented functions
 };
@@ -368,41 +370,42 @@ class ComplexVectorVariable : public VectorVariable
 public:
     ComplexVectorVariable(const QVector<double> &rReal, const QVector<double> &rImaginary, const int generation, SharedVariableDescriptionT varDesc,
                           SharedMultiDataVectorCacheT pGenerationMultiCache);
-    ComplexVectorVariable(SharedVariablePtrT pReal, SharedVariablePtrT pImaginary, const int generation, SharedVariableDescriptionT varDesc);
+    ComplexVectorVariable(SharedVectorVariableT pReal, SharedVectorVariableT pImaginary, const int generation, SharedVariableDescriptionT varDesc);
     virtual VariableTypeT getVariableType() const;
 
     const QString &getDataName() const;
-    const SharedVariablePtrT getSharedTimeOrFrequencyVector() const;
+    const SharedVectorVariableT getSharedTimeOrFrequencyVector() const;
 
     QVector<double> getRealDataCopy() const;
     QVector<double> getImagDataCopy() const;
     //! @todo add a bunch of reimplemented functions
 protected:
-    SharedVariablePtrT mpSharedReal, mpSharedImag;
+    SharedVectorVariableT mpSharedReal, mpSharedImag;
 };
 
-void createBodeVariables(const SharedVariablePtrT pInput, const SharedVariablePtrT pOutput, int Fmax,
-                         SharedVariablePtrT &rNyquistData, SharedVariablePtrT &rNyquistDataInv,
-                         SharedVariablePtrT &rGainData, SharedVariablePtrT &rPhaseData);
+void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorVariableT pOutput, int Fmax,
+                         SharedVectorVariableT &rNyquistData, SharedVectorVariableT &rNyquistDataInv,
+                         SharedVectorVariableT &rGainData, SharedVectorVariableT &rPhaseData);
 
 
-class VariableDataPair
+class HopsanVariable
 {
 public:
-    VariableDataPair();
-    VariableDataPair(SharedVariablePtrT pData);
-    VariableDataPair(QPointer<LogVariableContainer> pContainer, SharedVariablePtrT pData);
+    HopsanVariable();
+    HopsanVariable(SharedVectorVariableT pData);
+    HopsanVariable(SharedVectorVariableContainerT pContainer, SharedVectorVariableT pData);
 
     LogDataHandler *getLogDataHandler();
 
+    bool hasContainer() const;
     bool isNull() const;
     operator bool() const;
     bool operator!() const;
 
     bool isVariableAlias() const;
 
-    QPointer<LogVariableContainer> mpContainer;
-    SharedVariablePtrT mpVariable;
+    SharedVectorVariableContainerT mpContainer;
+    SharedVectorVariableT mpVariable;
 };
 
 

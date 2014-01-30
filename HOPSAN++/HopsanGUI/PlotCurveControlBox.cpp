@@ -235,7 +235,7 @@ void PlotCurveControlBox::updateColor(const QColor color)
 void PlotCurveControlBox::updateInfo()
 {
     // Enable/diable generation buttons
-    QPointer<LogVariableContainer> pVarContainer = mpPlotCurve->getDataContainer();
+    SharedVectorVariableContainerT pVarContainer = mpPlotCurve->getVariableContainer();
     int gen = mpPlotCurve->getGeneration();
     int lowGen, highGen, nGen;
     if (pVarContainer)
@@ -268,7 +268,7 @@ void PlotCurveControlBox::updateInfo()
         mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getDataModelPath());
         break;
     case ImportedVariableType:
-        mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getDataVariable()->getImportedFileName());
+        mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getVariable()->getImportedFileName());
         break;
     default:
         mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource()));

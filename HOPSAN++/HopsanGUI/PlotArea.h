@@ -88,7 +88,7 @@ class TimeScaleWidget : public QWidget
 {
     Q_OBJECT
 public:
-    TimeScaleWidget(SharedVariablePtrT pTime, QWidget *pParent=0);
+    TimeScaleWidget(SharedVectorVariableT pTime, QWidget *pParent=0);
     void setScale(const QString &rUnitScale);
     void setOffset(const QString &rOffset);
 
@@ -99,7 +99,7 @@ public slots:
     void setVaules();
 
 private:
-    SharedVariablePtrT mpTime;
+    SharedVectorVariableT mpTime;
     QComboBox *mpTimeScaleComboBox;
     QLineEdit *mpTimeOffsetLineEdit;
 
@@ -135,7 +135,7 @@ public:
 
     void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor());
     void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc);
-    void setCustomXVectorForAll(SharedVariablePtrT pData);
+    void setCustomXVectorForAll(HopsanVariable data);
     void removeAllCurvesOnAxis(const int axis);
 
     void removePlotMarker(PlotMarker *pMarker);
@@ -155,7 +155,7 @@ public:
     bool isZoomed() const;
 
     bool hasCustomXData() const;
-    const SharedVariablePtrT getCustomXData() const;
+    const HopsanVariable getCustomXData() const;
 
     void setBottomAxisLogarithmic(bool value);
     void setLeftAxisLogarithmic(bool value);
@@ -215,7 +215,7 @@ private:
     void constructAxisLabelDialog();
     void setLegendSymbol(const QString symStyle);
     void setLegendSymbol(const QString symStyle, PlotCurve *pCurve);
-    void setTabOnlyCustomXVector(SharedVariablePtrT pData);
+    void setTabOnlyCustomXVector(HopsanVariable data);
     void determineAddedCurveUnitOrScale(PlotCurve *pCurve);
     void rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
@@ -244,7 +244,7 @@ private:
 
     // Custom X data axis variables
     bool mHasCustomXData;
-    SharedVariablePtrT mpCustomXData;
+    HopsanVariable mCustomXData;
 
     // Legend related member variables
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;

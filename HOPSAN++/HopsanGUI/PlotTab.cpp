@@ -163,6 +163,7 @@ PlotArea *PlotTab::getPlotArea(const int subPlotId)
 
 void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 {
+    Q_UNUSED(pItemModel);
     // Do nothing by default, should only be implemented in barchart plots
 }
 
@@ -218,7 +219,7 @@ void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescr
     }
 }
 
-void PlotTab::setCustomXVectorForAll(SharedVariablePtrT pData, int plotID)
+void PlotTab::setCustomXVectorForAll(SharedVectorVariableT pData, int plotID)
 {
     if (plotID < mPlotAreas.size())
     {
@@ -360,13 +361,13 @@ void PlotTab::exportToCsv(QString fileName)
         //! @todo how to handle this with multiple xvectors per curve
         //! @todo take into account wheter cached or not, Should have some smart auto function for this in the data object
 
-        QVector<double> xvec = pPlotArea->getCustomXData()->getDataVectorCopy(); //! @todo shoudl direct access if not in cache
+        QVector<double> xvec = pPlotArea->getCustomXData().mpVariable->getDataVectorCopy(); //! @todo shoudl direct access if not in cache
         for(int i=0; i<xvec.size(); ++i)
         {
             fileStream << xvec[i];
             for(int j=0; j<curves.size(); ++j)
             {
-                fileStream << ", " << curves[j]->getDataVariable()->peekData(i,dummy);
+                fileStream << ", " << curves[j]->getVariable()->peekData(i,dummy);
             }
             fileStream << "\n";
         }
@@ -379,7 +380,7 @@ void PlotTab::exportToCsv(QString fileName)
             fileStream << time[i];
             for(int j=0; j<curves.size(); ++j)
             {
-                fileStream << ", " << curves[j]->getDataVariable()->peekData(i,dummy);
+                fileStream << ", " << curves[j]->getVariable()->peekData(i,dummy);
             }
             fileStream << "\n";
         }
@@ -439,7 +440,7 @@ void PlotTab::exportToHvc(QString fileName)
     hvcroot.setAttribute("hvcversion", "0.1");
 
     QList<PlotCurve*> curves = mPlotAreas.first()->getCurves();
-    QString modelPath = relativePath(curves.first()->getDataVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
+    QString modelPath = relativePath(curves.first()->getVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
     validation.setAttribute("date", QDateTime::currentDateTime().toString("yyyyMMdd"));
     validation.setAttribute("time", QDateTime::currentDateTime().toString("hhmmss"));
@@ -515,7 +516,7 @@ void PlotTab::exportToMatlab()
             if(pArea->hasCustomXData())
             {
                 //! @todo need smart function to autoselect copy or direct access depending on cached or not (also in other places)
-                QVector<double> xvec = pArea->getCustomXData()->getDataVectorCopy();
+                QVector<double> xvec = pArea->getCustomXData().mpVariable->getDataVectorCopy();
                 for(int j=0; j<xvec.size(); ++j)
                 {
                     if(j>0) fileStream << ",";
@@ -535,7 +536,7 @@ void PlotTab::exportToMatlab()
             fileStream << "];\n";
 
             fileStream << "y" << c+nTotCurves << "=[";                                             //Write data vector
-            QVector<double> data=curves[c]->getDataVectorCopy();
+            QVector<double> data=curves[c]->getVariableDataCopy();
             for(int k=0; k<data.size(); ++k)
             {
                 if(k>0) fileStream << ",";
@@ -641,7 +642,7 @@ void PlotTab::exportToGnuplot()
 
         for(int k=0; k<curves.size(); ++k)
         {
-            dummy.setNum(curves[k]->getDataVariable()->peekData(i,err));
+            dummy.setNum(curves[k]->getVariable()->peekData(i,err));
             fileStream << dummy;
             for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
         }
@@ -756,14 +757,14 @@ void PlotTab::exportToPLO()
     }
     //! @todo make sure that csv can export from multiple sub plots (but how)
 
-    QVector<SharedVariablePtrT> variables;
+    QVector<SharedVectorVariableT> variables;
     for(int c=0; c<getCurves(0).size(); ++c)
     {
-        variables.append(getCurves(0)[c]->getDataVariable());
+        variables.append(getCurves(0)[c]->getVariable());
     }
 
     //! @todo this assumes that all curves belong to the same model
-    getCurves(0).first()->getDataVariable()->getLogDataHandler()->exportToPlo(filePath, variables);
+    getCurves(0).first()->getVariable()->getLogDataHandler()->exportToPlo(filePath, variables);
 }
 
 void PlotTab::shiftAllGenerationsDown()
@@ -1482,7 +1483,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     int rc = pDialog->exec();
     if (rc == QDialog::Accepted)
     {
-        SharedVariablePtrT pNewVar = pCurve->getDataVariable()->toFrequencySpectrum(SharedVariablePtrT(), pPowerSpectrumCheckBox->isChecked());
+        SharedVectorVariableT pNewVar = pCurve->getVariable()->toFrequencySpectrum(SharedVectorVariableT(), pPowerSpectrumCheckBox->isChecked());
 
         PlotTab *pTab = mpParentPlotWindow->addPlotTab();
         pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));
@@ -1544,7 +1545,7 @@ void PlotTab::openCreateBodePlotDialog()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    SharedVariablePtrT pTimeVector = getCurves(0).first()->getSharedTimeOrFrequencyVariable();
+    SharedVectorVariableT pTimeVector = getCurves(0).first()->getSharedTimeOrFrequencyVariable();
     if (pTimeVector)
     {
         const double dataSize = pTimeVector->getDataSize()+1;
@@ -1624,7 +1625,7 @@ void PlotTab::openCreateBodePlotDialog()
             }
             else
             {
-                mpParentPlotWindow->createBodePlot(pInputCurve->getDataVariable(), pOutputCurve->getDataVariable(), pMaxFrequencySlider->value());
+                mpParentPlotWindow->createBodePlot(pInputCurve->getVariable(), pOutputCurve->getVariable(), pMaxFrequencySlider->value());
             }
         }
     }

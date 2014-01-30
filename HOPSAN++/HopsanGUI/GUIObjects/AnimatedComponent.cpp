@@ -77,7 +77,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                 mpData->append(QList<QVector<double> >());
                 mpNodeDataPtrs->append(QList<double*>());
                 //! @todo generation info should be some kind of "propertie" for alla of the animation code sp that if you change it it should change everywhere, to make it possible to animate different generations
-                int generations = mpAnimationWidget->mpContainer->getLogDataHandler()->getLatestGeneration();
+                int generations = mpAnimationWidget->mpContainer->getLogDataHandler()->getCurrentGeneration();
                 QString componentName = unanimatedComponent->getName();
                 for(int j=0; j<mpAnimationData->dataPorts.at(i).size(); ++j)
                 {
@@ -86,7 +86,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
 
                     if(!mpAnimationWidget->getPlotDataPtr()->isEmpty())
                     {
-                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyLogDataVariableValues(generations, componentName, portName, dataName));
+                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyVariableDataVector(generations, componentName, portName, dataName));
                     }
                     mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
                     //qDebug() << "mpData = " << *mpData;

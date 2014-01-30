@@ -298,7 +298,7 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
             {
                 QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
                                                   getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
-                mpPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getLogVariableDataPtr(fullName, -1));
+                mpPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getVectorVariable(fullName, -1));
             }
         }
         mpPlotWindow->showNormal();

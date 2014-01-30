@@ -71,12 +71,12 @@ public:
     PlotTab *getCurrentPlotTab();
     PlotTabWidget *getPlotTabWidget(); //!< @todo should this realy be needed
 
-    void createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax);
+    void createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax);
 
     void showHelpPopupMessage(const QString &rMessage);
 
-    PlotCurve* addPlotCurve(VariableDataPair data, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
-    PlotCurve* addPlotCurve(VariableDataPair xdata, VariableDataPair ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
 
 signals:
     void windowClosed(PlotWindow *pWindow);
@@ -87,7 +87,7 @@ public slots:
 
     //! @todo these two should not be used
     void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc);
-    void setCustomXVector(SharedVariablePtrT pData);
+    void setCustomXVector(SharedVectorVariableT pData);
 
     void saveToXml();
     void loadFromXml();

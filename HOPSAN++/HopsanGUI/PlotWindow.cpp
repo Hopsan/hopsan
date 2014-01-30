@@ -459,7 +459,7 @@ void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescript
     getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, 0);
 }
 
-void PlotWindow::setCustomXVector(SharedVariablePtrT pData)
+void PlotWindow::setCustomXVector(SharedVectorVariableT pData)
 {
     getCurrentPlotTab()->setCustomXVectorForAll(pData);
 }
@@ -493,7 +493,7 @@ QString PlotWindow::getName() const
 //! @param[in] pData Shared pointer to data that you want to plot
 //! @param[in] axisY  0=left 1=right
 //! @param[in] desiredColor The desired color
-PlotCurve* PlotWindow::addPlotCurve(VariableDataPair data, const QwtPlot::Axis axisY, QColor desiredColor)
+PlotCurve* PlotWindow::addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, QColor desiredColor)
 {
     if (data)
     {
@@ -519,7 +519,7 @@ PlotCurve* PlotWindow::addPlotCurve(VariableDataPair data, const QwtPlot::Axis a
     return 0;
 }
 
-PlotCurve *PlotWindow::addPlotCurve(VariableDataPair xdata, VariableDataPair ydata, const QwtPlot::Axis axisY, QColor desiredColor)
+PlotCurve *PlotWindow::addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY, QColor desiredColor)
 {
     PlotCurve *pCurve = addPlotCurve(ydata, axisY, desiredColor);
     if (pCurve)
@@ -933,16 +933,16 @@ void PlotWindow::createPlotWindowFromTab()
     PlotWindow *pPW = 0;
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
-        //pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
-        pPW = gpPlotHandler->plotDataToWindow(pPW,getCurrentPlotTab()->getCurves().at(i)->getDataVariable(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+        HopsanVariable data(getCurrentPlotTab()->getCurves().at(i)->getVariableContainer(), getCurrentPlotTab()->getCurves().at(i)->getVariable());
+        pPW = gpPlotHandler->plotDataToWindow(pPW, data, getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }
 
 
 //! @todo should not run code on non bodeplot tabs
-void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2, int Fmax)
+void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax)
 {
-    SharedVariablePtrT pNyquist, pNyquistInv, pGain, pPhase;
+    SharedVectorVariableT pNyquist, pNyquistInv, pGain, pPhase;
     createBodeVariables(var1, var2, Fmax, pNyquist, pNyquistInv, pGain, pPhase);
 
     // Nyquist plot
@@ -991,17 +991,17 @@ void PlotWindow::createBodePlot(SharedVariablePtrT var1, SharedVariablePtrT var2
     }
 
     //! @todo this should not happen here
-    SharedVariablePtrT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
+    SharedVectorVariableT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
     if(gainVar.isNull())
     {
-        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
+        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);
     }
     gainVar.data()->assignFrom(pGain);
 
-    SharedVariablePtrT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
+    SharedVectorVariableT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
     if(phaseVar.isNull())
     {
-        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getLogVariableDataPtr("bodegain",-1);
+        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);
     }
     phaseVar.data()->assignFrom(pPhase);
 }

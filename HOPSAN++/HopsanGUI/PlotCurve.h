@@ -73,7 +73,7 @@ class PlotCurve : public QObject, public QwtPlotCurve
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
-    PlotCurve(VariableDataPair data, const QwtPlot::Axis axisY=QwtPlot::yLeft, const HopsanPlotCurveTypeEnumT curveType=PortVariableType);
+    PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY=QwtPlot::yLeft, const HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     void setIncludeGenerationInTitle(bool doit);
@@ -83,12 +83,12 @@ public:
     HopsanPlotCurveTypeEnumT getCurveType();
     int getAxisY();
 
-    const SharedVariablePtrT getDataVariable() const;
-    const QPointer<LogVariableContainer> getDataContainer() const;
-    const SharedVariablePtrT getSharedTimeOrFrequencyVariable() const;
-    const SharedVariablePtrT getSharedCustomXVariable() const;
+    QVector<double> getVariableDataCopy() const;
+    const SharedVectorVariableContainerT getVariableContainer() const;
+    const SharedVectorVariableT getVariable() const;
+    const SharedVectorVariableT getSharedTimeOrFrequencyVariable() const;
+    const SharedVectorVariableT getSharedCustomXVariable() const;
     bool hasCustomXVariable() const;
-    QVector<double> getDataVectorCopy() const;
 
     bool minMaxPositiveNonZeroYValues(double &rMin, double &rMax);
     bool minMaxPositiveNonZeroXValues(double &rMin, double &rMax);
@@ -100,8 +100,8 @@ public:
     const QString &getDataOriginalUnit() const;
     const QString &getDataCustomPlotUnit() const;
     const QString &getCurrentUnit() const;
-    VariableSourceTypeT getDataSource() const;
     const QString &getDataModelPath() const;
+    VariableSourceTypeT getDataSource() const;
 
     void setCustomCurveDataUnit(const QString &rUnit);
     void setCustomCurveDataUnit(const QString &rUnit, double scale);
@@ -112,7 +112,7 @@ public:
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
-    void setCustomXData(VariableDataPair data);
+    void setCustomXData(HopsanVariable data);
     void setCustomXData(const QString fullName);
 
     QColor getLineColor() const;
@@ -162,8 +162,8 @@ private:
 
     // Curve data
     HopsanPlotCurveTypeEnumT mCurveType;
-    VariableDataPair mData;
-    VariableDataPair mCustomXdata;
+    HopsanVariable mData;
+    HopsanVariable mCustomXdata;
     bool mHaveCustomData;
 
     QString mCustomCurveDataUnit;

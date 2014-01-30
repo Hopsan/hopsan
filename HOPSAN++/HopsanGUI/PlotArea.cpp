@@ -135,7 +135,7 @@ void HopQwtPlot::replot()
 }
 
 
-TimeScaleWidget::TimeScaleWidget(SharedVariablePtrT pTime, QWidget *pParent) : QWidget(pParent)
+TimeScaleWidget::TimeScaleWidget(SharedVectorVariableT pTime, QWidget *pParent) : QWidget(pParent)
 {
     mpTime = pTime;
 
@@ -362,7 +362,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
         }
         else
         {
-            pCurve->setCustomXData(mpCustomXData);
+            pCurve->setCustomXData(mCustomXData);
         }
     }
 
@@ -437,17 +437,17 @@ void PlotArea::setCustomXVectorForAll(QVector<double> xArray, const VariableDesc
     setCustomXVectorForAll(createFreeVectorVariable(xArray, pVarDesc));
 }
 
-void PlotArea::setCustomXVectorForAll(SharedVariablePtrT pData)
+void PlotArea::setCustomXVectorForAll(HopsanVariable data)
 {
     for(int i=0; i<mPlotCurves.size(); ++i)
     {
         if (!mPlotCurves[i]->hasCustomXVariable())
         {
-            mPlotCurves[i]->setCustomXData(pData);
+            mPlotCurves[i]->setCustomXData(data);
         }
     }
     rescaleAxesToCurves();
-    setTabOnlyCustomXVector(pData);
+    setTabOnlyCustomXVector(data);
 }
 
 void PlotArea::removeCurve(PlotCurve *pCurve)
@@ -617,9 +617,9 @@ bool PlotArea::hasCustomXData() const
     return mHasCustomXData;
 }
 
-const SharedVariablePtrT PlotArea::getCustomXData() const
+const HopsanVariable PlotArea::getCustomXData() const
 {
-    return mpCustomXData;
+    return mCustomXData;
 }
 
 void PlotArea::setBottomAxisLogarithmic(bool value)
@@ -849,24 +849,24 @@ void PlotArea::dropEvent(QDropEvent *event)
                     }
                     if (pContainer)
                     {
-                        SharedVariablePtrT pData = pContainer->getLogDataHandler()->getLogVariableDataPtr(name, gen);
+                        HopsanVariable data = pContainer->getLogDataHandler()->getHopsanVariable(name, gen);
                         // If we have found data then add it to the plot
-                        if (pData)
+                        if (data)
                         {
                             QCursor cursor;
                             if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
                             {
-                                setCustomXVectorForAll(pData);
+                                setCustomXVectorForAll(data);
                                 //! @todo do we need to reset to default unit too ?
                             }
                             else if(this->mapFromGlobal(cursor.pos()).x() < getQwtPlot()->canvas()->x()+9 + getQwtPlot()->canvas()->width()/2)
                             {
                                 //! @todo maybe go to tab only and let it handle main window updates
-                                mpParentPlotTab->mpParentPlotWindow->addPlotCurve(pData, QwtPlot::yLeft);
+                                mpParentPlotTab->mpParentPlotWindow->addPlotCurve(data, QwtPlot::yLeft);
                             }
                             else
                             {
-                                mpParentPlotTab->mpParentPlotWindow->addPlotCurve(pData, QwtPlot::yRight);
+                                mpParentPlotTab->mpParentPlotWindow->addPlotCurve(data, QwtPlot::yRight);
                             }
                         }
                     }
@@ -1283,19 +1283,19 @@ void PlotArea::updateAxisLabels()
     if (!mPlotCurves.empty())
     {
         QStringList leftLabels, rightLabels, bottomLabels;
-        QList<SharedVariablePtrT> sharedBottomVars;
+        QList<SharedVectorVariableT> sharedBottomVars;
         for(int i=0; i<mPlotCurves.size(); ++i)
         {
             // First decide new y-axis label
             // If alias empty then use data name, else use the alias name
             QString newLabel;
-            if (mPlotCurves[i]->getDataVariable()->getAliasName().isEmpty())
+            if (mPlotCurves[i]->getVariable()->getAliasName().isEmpty())
             {
                 newLabel = QString("%1").arg(mPlotCurves[i]->getDataName());
             }
             else
             {
-                newLabel = QString("%1").arg(mPlotCurves[i]->getDataVariable()->getAliasName());
+                newLabel = QString("%1").arg(mPlotCurves[i]->getVariable()->getAliasName());
             }
 
             // Add unit if it exists
@@ -1319,7 +1319,7 @@ void PlotArea::updateAxisLabels()
 
             // Now decide new bottom axis label
             // Use custom x-axis if availible, else try to use the time or frequency vector (if set)
-            SharedVariablePtrT pSharedXVector = mPlotCurves[i]->getSharedCustomXVariable();
+            SharedVectorVariableT pSharedXVector = mPlotCurves[i]->getSharedCustomXVariable();
             if (pSharedXVector.isNull())
             {
                 pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
@@ -1435,7 +1435,7 @@ void PlotArea::openTimeScalingDialog()
         int gen = mPlotCurves[i]->getGeneration();
         if (!activeGenerations.contains(gen))
         {
-            SharedVariablePtrT pTime = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
+            SharedVectorVariableT pTime = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
             //if (pTime)
             {
                 TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, &scaleDialog);
@@ -2025,10 +2025,10 @@ void PlotArea::setLegendSymbol(const QString symStyle, PlotCurve *pCurve)
     pCurve->resetLegendSize();
 }
 
-void PlotArea::setTabOnlyCustomXVector(SharedVariablePtrT pData)
+void PlotArea::setTabOnlyCustomXVector(HopsanVariable data)
 {
-    mHasCustomXData = true;
-    mpCustomXData = pData;
+    mHasCustomXData = true; //!< @todo we could get rid of this bool, and check data directly
+    mCustomXData = data;
 
     updateAxisLabels();
     replot();
@@ -2269,7 +2269,7 @@ void PlotArea::updateWindowtitleModelName()
     mModelPaths.clear();
     foreach(PlotCurve *pCurve, mPlotCurves)
     {
-        const QString &name = pCurve->getDataVariable()->getModelPath();
+        const QString &name = pCurve->getVariable()->getModelPath();
         if (!mModelPaths.contains(name) && !name.isEmpty())
         {
             mModelPaths.append(name);
@@ -2315,12 +2315,12 @@ void PlotArea::setBackgroundColor(const QColor &rColor)
 void PlotArea::resetXTimeVector()
 {
     mHasCustomXData = false;
-    mpCustomXData = SharedVariablePtrT(0);
+    mCustomXData = HopsanVariable();
 
     PlotCurve *pCurve;
     Q_FOREACH(pCurve, mPlotCurves)
     {
-        pCurve->setCustomXData(SharedVariablePtrT(0)); //Remove any custom x-data
+        pCurve->setCustomXData(mCustomXData); //Remove any custom x-data
     }
 
     rescaleAxesToCurves();

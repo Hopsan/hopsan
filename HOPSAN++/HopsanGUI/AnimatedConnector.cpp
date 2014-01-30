@@ -57,26 +57,26 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
     {
         if(pConnector->getStartPort()->getPortType() == "PowerMultiportType")
         {
-            int g = pConnector->getParentContainer()->getLogDataHandler()->getLatestGeneration();
+            int g = pConnector->getParentContainer()->getLogDataHandler()->getCurrentGeneration();
             QString componentName = pConnector->getEndPort()->getParentModelObject()->getName();
             QString portName = pConnector->getEndPort()->getName();
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyLogDataVariableValues(g, componentName, portName, "Pressure");
-                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyLogDataVariableValues(g, componentName, portName, "Flow");
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Pressure");
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Flow");
             }
         }
         else
         {
-            int g = pConnector->getParentContainer()->getLogDataHandler()->getLatestGeneration();
+            int g = pConnector->getParentContainer()->getLogDataHandler()->getCurrentGeneration();
             QString componentName = pConnector->getStartPort()->getParentModelObject()->getName();
             QString portName = pConnector->getStartPort()->getName();
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyLogDataVariableValues(g, componentName, portName, "Pressure");
-                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyLogDataVariableValues(g, componentName, portName, "Flow");
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Pressure");
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Flow");
             }
         }
 

@@ -145,14 +145,14 @@ PlotWindow *PlotHandler::getPlotWindow(const QString &rName)
     return 0;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, VariableDataPair data, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable data, int axis, QColor curveColor)
 {
     PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
     plotDataToWindow(pWindow, data, axis, curveColor);
     return pWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, VariableDataPair xdata, VariableDataPair ydata, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor)
 {
     if (xdata && ydata)
     {
@@ -163,7 +163,7 @@ PlotWindow *PlotHandler::plotDataToWindow(QString windowName, VariableDataPair x
     return 0;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, VariableDataPair data, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable data, int axis, QColor curveColor)
 {
     if(!pPlotWindow)
     {
@@ -174,7 +174,7 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, VariableDataP
     return pPlotWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, VariableDataPair xdata, VariableDataPair ydata, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor)
 {
     if(!pPlotWindow)
     {

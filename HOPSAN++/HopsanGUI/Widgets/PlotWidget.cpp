@@ -55,37 +55,37 @@
 class BaseVariableTreeItem : public QTreeWidgetItem
 {
 public:
-    BaseVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
-    SharedVariablePtrT getDataPtr();
+    BaseVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent);
+    HopsanVariable getData();
     QString getFullName() const;
-    QString getComponentName();
-    QString getPortName();
-    QString getDataName();
-    QString getDataUnit();
-    QString getAliasName();
-    QString getModelName();
+    const QString &getComponentName() const;
+    const QString &getPortName() const;
+    const QString &getDataName() const;
+    const QString &getDataUnit() const;
+    const QString &getAliasName() const;
+    const QString &getModelName() const;
     int getGeneration() const;
 
 protected:
-    SharedVariablePtrT mpData;
+    HopsanVariable mData;
 };
 
 class FullVariableTreeItem : public BaseVariableTreeItem
 {
 public:
-    FullVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
+    FullVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent);
 };
 
 class ImportedVariableTreeItem : public BaseVariableTreeItem
 {
 public:
-    ImportedVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
+    ImportedVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent);
 };
 
 class AliasVariableTreeItem : public BaseVariableTreeItem
 {
 public:
-    AliasVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent);
+    AliasVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent);
 };
 
 class ImportedFileTreeItem : public QTreeWidgetItem
@@ -101,63 +101,63 @@ public:
 //! @brief Constructor for the variable items in the variable tree
 //! @param pData Shared pointer to variable to represent
 //! @param pParent Pointer to the parent tree widget item
-BaseVariableTreeItem::BaseVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
+BaseVariableTreeItem::BaseVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent)
         : QTreeWidgetItem(pParent)
 {
-    mpData = pData;
+    mData = data;
 }
 
-SharedVariablePtrT BaseVariableTreeItem::getDataPtr()
+HopsanVariable BaseVariableTreeItem::getData()
 {
-    return mpData;
+    return mData;
 }
 
 QString BaseVariableTreeItem::getFullName() const
 {
-    return mpData->getFullVariableName();
+    return mData.mpVariable->getFullVariableName();
 }
 
 
 //! @brief Returns the name of the component where the variable is located
-QString BaseVariableTreeItem::getComponentName()
+const QString &BaseVariableTreeItem::getComponentName() const
 {
-    return mpData->getComponentName();
+    return mData.mpVariable->getComponentName();
 }
 
 
 //! @brief Returns the name of the port where the variable is located
-QString BaseVariableTreeItem::getPortName()
+const QString &BaseVariableTreeItem::getPortName() const
 {
-    return mpData->getPortName();
+    return mData.mpVariable->getPortName();
 }
 
 
 //! @brief Returns the name of the variable
-QString BaseVariableTreeItem::getDataName()
+const QString &BaseVariableTreeItem::getDataName() const
 {
-    return mpData->getDataName();
+    return mData.mpVariable->getDataName();
 }
 
 
 //! @brief Returns the name of the unit of the variable
-QString BaseVariableTreeItem::getDataUnit()
+const QString &BaseVariableTreeItem::getDataUnit() const
 {
-    return mpData->getDataUnit();
+    return mData.mpVariable->getDataUnit();
 }
 
-QString BaseVariableTreeItem::getAliasName()
+const QString &BaseVariableTreeItem::getAliasName() const
 {
-    return mpData->getAliasName();
+    return mData.mpVariable->getAliasName();
 }
 
-QString BaseVariableTreeItem::getModelName()
+const QString &BaseVariableTreeItem::getModelName() const
 {
-    return mpData->getModelPath();
+    return mData.mpVariable->getModelPath();
 }
 
 int BaseVariableTreeItem::getGeneration() const
 {
-    return mpData->getGeneration();
+    return mData.mpVariable->getGeneration();
 }
 
 //! @brief Constructor for the variable tree widget
@@ -196,15 +196,15 @@ void VariableTree::setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindo
     mpPreferedPlotWindow = pPreferedPlotWindow;
 }
 
-void VariableTree::addFullVariable(SharedVariablePtrT pData)
+void VariableTree::addFullVariable(HopsanVariable data)
 {
     QTreeWidgetItem *pComponentItem=0;
     // Did we have the top-level component item (in that case use it)
-    QString cname = pData->getComponentName();
+    QString cname = data.mpVariable->getComponentName();
     if (cname.isEmpty())
     {
         // Mostly for the timevariable
-        cname = pData->getFullVariableName();
+        cname = data.mpVariable->getFullVariableName();
     }
     // Try to find the component if it has already been added
     QMap<QString, QTreeWidgetItem*>::iterator cit = mFullVariableItemMap.find(cname);
@@ -223,31 +223,31 @@ void VariableTree::addFullVariable(SharedVariablePtrT pData)
         this->addTopLevelItem(pComponentItem);
 
         //Also remember that we created it
-        mFullVariableItemMap.insert(pData->getComponentName(), pComponentItem);
+        mFullVariableItemMap.insert(data.mpVariable->getComponentName(), pComponentItem);
     }
 
     // Add the actual variable item
-    pComponentItem->addChild(new FullVariableTreeItem(pData, pComponentItem));
+    pComponentItem->addChild(new FullVariableTreeItem(data, pComponentItem));
     this->show();
 }
 
-void VariableTree::addAliasVariable(SharedVariablePtrT pData)
+void VariableTree::addAliasVariable(HopsanVariable data)
 {
     // Check if this is an alias variable, if alias is set and not already in the aliasLevelItemMap map
-    if ( !mAliasVariableItemMap.contains(pData->getAliasName()) )
+    if ( !mAliasVariableItemMap.contains(data.mpVariable->getAliasName()) )
     {
         // Add a sub item with alias name and remember it in the map
-        AliasVariableTreeItem *pItem = new AliasVariableTreeItem(pData, 0);
+        AliasVariableTreeItem *pItem = new AliasVariableTreeItem(data, 0);
         mpAliasItemParent->addChild(pItem);
-        mAliasVariableItemMap.insert(pData->getAliasName(), pItem);
+        mAliasVariableItemMap.insert(data.mpVariable->getAliasName(), pItem);
         mpAliasItemParent->setHidden(false);
         mpAliasItemParent->setExpanded(true);
     }
 }
 
-void VariableTree::addImportedVariable(SharedVariablePtrT pData)
+void VariableTree::addImportedVariable(HopsanVariable data)
 {
-    QString fName = pData->getImportedFileName();
+    QString fName = data.mpVariable->getImportedFileName();
     QTreeWidgetItem *pFileItem = mImportedFileItemMap.value(fName, 0);
     // If this file was not alrady added then create it
     if (!pFileItem)
@@ -260,7 +260,7 @@ void VariableTree::addImportedVariable(SharedVariablePtrT pData)
     }
 
     // Add a sub item with data name name
-    new ImportedVariableTreeItem(pData, pFileItem);
+    new ImportedVariableTreeItem(data, pFileItem);
     mpImportedItemParent->setHidden(false);
     mpImportedItemParent->setExpanded(true);
 }
@@ -271,7 +271,7 @@ void VariableTree::refreshImportedVariables()
     QList<QString> importedFileNames = mpLogDataHandler->getImportedVariablesFileNames();
     for (int f=0; f<importedFileNames.size(); ++f)
     {
-        QList<SharedVariablePtrT> vars = mpLogDataHandler->getImportedVariablesForFile(importedFileNames[f]);
+        QList<HopsanVariable> vars = mpLogDataHandler->getImportedVariablesForFile(importedFileNames[f]);
         if (!vars.isEmpty())
         {
             for (int v=0; v<vars.size(); ++v)
@@ -301,16 +301,16 @@ void VariableTree::updateList()
     refreshImportedVariables();
 
     // Now add variables to the Alis and Variable tree
-    QVector<SharedVariablePtrT> variables = getLogDataHandler()->getAllUniqueVariablesAtNewestGeneration();
+    QVector<HopsanVariable> variables = getLogDataHandler()->getAllUniqueVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
-        if ( variables[i]->isImported() || (variables[i]->getVariableSourceType() == TempVariableType) )
+        if ( variables[i].mpVariable->isImported() || (variables[i].mpVariable->getVariableSourceType() == TempVariableType) )
         {
             continue;
         }
 
         // Handle alias variables
-        if ( variables[i]->hasAliasName() )
+        if ( variables[i].mpVariable->hasAliasName() )
         {
             addAliasVariable(variables[i]);
         }
@@ -376,11 +376,11 @@ PlotWindow *VariableTree::plotToPreferedPlotWindow(QTreeWidgetItem *item)
     {
         if (mpPreferedPlotWindow)
         {
-            return gpPlotHandler->plotDataToWindow(mpPreferedPlotWindow, pVariableItem->getDataPtr(), QwtPlot::yLeft);
+            return gpPlotHandler->plotDataToWindow(mpPreferedPlotWindow, pVariableItem->getData(), QwtPlot::yLeft);
         }
         else
         {
-            return gpPlotHandler->plotDataToWindow(0, pVariableItem->getDataPtr(), QwtPlot::yLeft);
+            return gpPlotHandler->plotDataToWindow(0, pVariableItem->getData(), QwtPlot::yLeft);
         }
     }
     return 0;
@@ -787,25 +787,25 @@ void PlotWidget::loadFromXml()
 //    file.close();
 }
 
-ImportedVariableTreeItem::ImportedVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
-    : BaseVariableTreeItem(pData, pParent)
+ImportedVariableTreeItem::ImportedVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent)
+    : BaseVariableTreeItem(data, pParent)
 {
-    setText(0, mpData->getFullVariableName() + ", [" + mpData->getDataUnit() + "]");
+    setText(0, getFullName() + ", [" + getDataUnit() + "]");
 }
 
 
-AliasVariableTreeItem::AliasVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
-    : BaseVariableTreeItem(pData, pParent)
+AliasVariableTreeItem::AliasVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent)
+    : BaseVariableTreeItem(data, pParent)
 {
-    setText(0, mpData->getAliasName() + ", [" + mpData->getDataUnit() + "]");
+    setText(0, getAliasName() + ", [" + getDataUnit() + "]");
 }
 
-FullVariableTreeItem::FullVariableTreeItem(SharedVariablePtrT pData, QTreeWidgetItem *pParent)
-    : BaseVariableTreeItem(pData, pParent)
+FullVariableTreeItem::FullVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent)
+    : BaseVariableTreeItem(data, pParent)
 {
-    QString alias = mpData->getAliasName();
-    const QString &portName = mpData->getPortName();
-    const QString &dataName = mpData->getDataName();
+    QString alias = getAliasName();
+    const QString &portName = getPortName();
+    const QString &dataName = getDataName();
     if(!alias.isEmpty())
     {
         alias.prepend("<");
@@ -813,11 +813,11 @@ FullVariableTreeItem::FullVariableTreeItem(SharedVariablePtrT pData, QTreeWidget
     }
     if (portName.isEmpty())
     {
-        this->setText(0, alias + dataName + ", [" +  mpData->getDataUnit() + "]");
+        this->setText(0, alias + dataName + ", [" +  getDataUnit() + "]");
     }
     else
     {
-        this->setText(0, alias + portName + ", " + dataName + ", [" +  mpData->getDataUnit() + "]");
+        this->setText(0, alias + portName + ", " + dataName + ", [" +  getDataUnit() + "]");
     }
 }
 
