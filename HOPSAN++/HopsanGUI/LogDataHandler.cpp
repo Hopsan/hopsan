@@ -1742,6 +1742,10 @@ bool LogDataHandler::deleteVariable(const QString &rVarName)
             unregisterAlias(rVarName);
             //! @todo should we delete the actual variable also?
         }
+
+        // Explicitly remove all generations, if you trigger a delete then you expect the data to be removed (otherwise it would remin untill all shared pointers dies)
+        it.value()->removeAllGenerations();
+
         // Remove data ptr from map, the actual container will be deleted automatically when nowone is using it any longer
         mLogDataMap.erase(it);
         emit dataRemoved();
