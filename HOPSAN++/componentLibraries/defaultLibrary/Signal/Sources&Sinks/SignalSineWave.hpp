@@ -66,10 +66,10 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("t_start", "Start Time", "s", 0.0, &mpStartTime);
             addInputVariable("f", "Frequencty", "Hz", 1.0, &mpFrequency);
             addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
             addInputVariable("y_offset", "(Phase) Offset", "s", 0.0, &mpPhaseTOffset);
+            addInputVariable("t_start", "Start Time", "s", 0.0, &mpStartTime);
 
             addOutputVariable("out", "Sinus wave output", "", &mpOut);
         }
