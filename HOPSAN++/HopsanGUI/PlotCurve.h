@@ -67,7 +67,6 @@ enum HopsanPlotCurveTypeEnumT {PortVariableType, FrequencyAnalysisType, NyquistT
 class PlotCurve : public QObject, public QwtPlotCurve
 {
     Q_OBJECT
-    friend class CurveInfoBox;
     friend class PlotWindow;
     friend class PlotArea;
 public:
@@ -115,6 +114,7 @@ public:
     void setCustomXData(HopsanVariable data);
     void setCustomXData(const QString fullName);
 
+    bool isAutoUpdating() const;
     QColor getLineColor() const;
     void resetLegendSize();
 

@@ -104,7 +104,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     mpSourceLable->setToolTip(variableSourceTypeAsShortString(UndefinedVariableSourceType));
 
     QCheckBox *pAutoUpdateCheckBox = new QCheckBox("Auto Update");
-    pAutoUpdateCheckBox->setChecked(true);
+    pAutoUpdateCheckBox->setChecked(mpPlotCurve->isAutoUpdating());
 
     QToolButton *pColorButton = new QToolButton(this);
     pColorButton->setToolTip("Select Line Color");

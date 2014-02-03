@@ -78,7 +78,16 @@ PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const Hopsa
     mCurveType = curveType;
 
     mAxisY = axisY;
-    mAutoUpdate = true;
+
+    // We do not want imported data to auto refresh, incase the data name is the same as somthing from the model (alias)
+    if (data.mpVariable->isImported())
+    {
+        mAutoUpdate = false;
+    }
+    else
+    {
+        mAutoUpdate = true;
+    }
 
     // Set QwtPlotCurve stuff
     //! @todo maybe this code should be run when we are adding a curve to a plottab
@@ -514,6 +523,11 @@ void PlotCurve::setCustomXData(const QString fullName)
             }
         }
     }
+}
+
+bool PlotCurve::isAutoUpdating() const
+{
+    return mAutoUpdate;
 }
 
 QColor PlotCurve::getLineColor() const
