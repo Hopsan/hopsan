@@ -2971,7 +2971,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
 void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 {
     HopsanVariable data = getLogVariable(cmd);
-    if(data)
+    if(!data)
     {
         HCOMERR(QString("Variable not found: %1").arg(cmd));
         return;
