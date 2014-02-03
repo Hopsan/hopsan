@@ -1763,35 +1763,39 @@ void IndexIntervalCollection::addValue(const int val)
     {
         for(int i=0; i<mIntervalList.size(); ++i)
         {
-            // First check if we should insert before or extend downwards
             if (val < mIntervalList[i].mMin)
             {
-                // Extend
+                // Check if we should extend downwards
                 if (val ==  mIntervalList[i].mMin-1)
                 {
                     mIntervalList[i].mMin = val;
                 }
+                // If not then we should add a new one
+                // We do not need to check if we should merge here as that should have been
+                // handled while processing the previous intervals
                 else
-                // Add new
                 {
                     mIntervalList.insert(i, MinMaxT(val,val));
                 }
+                break;
             }
-            // Now check if we should insert or extend upwards
             else if (val > mIntervalList[i].mMax)
             {
-                // Extend
+                // Check if we should extend upwards
                 if (val ==  mIntervalList[i].mMax+1)
                 {
                     mIntervalList[i].mMax = val;
+                    //! @todo check merge FIXA /Peter
                 }
-                else
-                // Add new
+                // Add new, if this is the last one
+                // else this is handled by the less then check above
+                else if (i+1 >= mIntervalList.size())
                 {
                     mIntervalList.insert(i+1, MinMaxT(val,val));
                 }
+                break;
             }
-
+            //! @todo need to check and merge intervals after adding
             // If non of the above were triggered then the value was within an already existing interval
         }
     }

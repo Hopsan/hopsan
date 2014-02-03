@@ -31,11 +31,11 @@ Configure QtCreator:
 4. Configure a "Kit" (Combination of Qt version, Compiler and Debugger), use GDB as debugger.
 5. \b Optional, (if you want to run debugger). Replace the debugger manually with the one in `qtcreator-gdb-7.4-MINGW32_NT-6.1-i686.tar.gz` the old one does not work with newer QtCreator versions.
 
+For examples of how the configuration \b could look, see these \b screen \b shots \subpage devBaseRequirementsPageQtCreatorSettingsPage
+
 Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project (Select your Kit). 
 If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
 The project should now be configured automatically, but check the Projects tab on the left menu to be sure 
-
-For examples of how the configuration \b could look, see \subpage devBaseRequirementsPageQtCreatorSettingsPage
 
 \subsubsection _mingwwindows64 64-bit MinGW
 This guide is relevant for Hopsan version 0.6.* 64-bit development.
@@ -49,8 +49,9 @@ Installation:
    Recommended: `c:\Qt\mingw64`  and  `c:\Qt\Qt64-4.8.5`
 3. Open a command prompt "Start->run->cmd" and navigate to your `C:\Qt\Qt64-4.8.5` directory (cd `c:\Qt\Qt64-4.8.5`) \n
    Run the command "qtbinpatcher.exe --nobackup" to path the binaries
-4. Download and install \b Qt \b Creator version of your choice from http://qt-project.org/downloads, (latest version is recommended) \n
+4. Download and install \b Qt \b Creator version of your choice from http://qt-project.org/downloads, (latest 2.8* version is recommended) \n
    \b Note! Scroll down on the download page until you find Qt Creator only installers. (Do \b NOT install Qt 5.*) \n
+   \b Note! When new releases are published the old ones can be found from http://download.qt-project.org/official_releases/qtcreator/ \n
    \b Note! A 32-bit version of Qt Creator will work fine, it is just the code editor
 
 Configure QtCreator:
@@ -64,12 +65,12 @@ Configure QtCreator:
    Again! Choose a clever name. \n
    Set Qt mkspec: win32-g++-4.6 \n
    YES! "win32-g++-4.6" is correct! \n
+
+For examples of how the configuration \b could look, see these \b screen \b shots \ref devBaseRequirementsPageQtCreatorSettingsPage
    
 Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project (Select your Kit)
 If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
 The project should now be configured automatically, but check the Projects tab on the left menu to be sure.
-
-For examples of how the configuration \b could look, see \ref devBaseRequirementsPageQtCreatorSettingsPage
 
 \subsection _msvccompiler MSVC++ (The Microsoft Visual C++ Compiler) 
 This guide describes what you need to install to be able to build MSVC2008 and MSVC2010 versions of the HopsanCore
