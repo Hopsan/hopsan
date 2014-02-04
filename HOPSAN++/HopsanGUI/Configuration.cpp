@@ -218,7 +218,10 @@ void Configuration::loadFromXml()
     qDebug() << "Reading config from " << file.fileName();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
+        if(gpTerminalWidget)
+        {
+            gpTerminalWidget->mpConsole->printWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
+        }
         return;
     }
 
