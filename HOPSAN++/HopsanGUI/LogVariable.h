@@ -108,12 +108,15 @@ public:
     bool isEmpty() const;
     bool contains(const int val) const;
     void clear();
-    int getNumAddedValues() const;
 
     QList<MinMaxT> getList() const;
     QList<int> getCompleteList() const;
+    int getNumIIC() const;
+
+    void testMe();
 
 private:
+    void mergeIntervals(int first, int second);
     QList<MinMaxT> mIntervalList;
 };
 

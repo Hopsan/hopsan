@@ -1786,14 +1786,26 @@ void IndexIntervalCollection::addValue(const int val)
                 {
                     mIntervalList[i].mMax = val;
                     //! @todo check merge FIXA /Peter
+                    // If we have an other interval after ours, then lets check if we should merge them
+                    if (i+1<mIntervalList.size())
+                    {
+                        // Check if we should merge
+                        if (mIntervalList[i+1].mMin == val+1)
+                        {
+                            mergeIntervals(i,i+1);
+                        }
+                    }
+                    break;
                 }
                 // Add new, if this is the last one
                 // else this is handled by the less then check above
                 else if (i+1 >= mIntervalList.size())
                 {
                     mIntervalList.insert(i+1, MinMaxT(val,val));
+                    break;
                 }
-                break;
+
+                // Else keep checking the next iic
             }
             //! @todo need to check and merge intervals after adding
             // If non of the above were triggered then the value was within an already existing interval
@@ -1826,9 +1838,11 @@ void IndexIntervalCollection::removeValue(const int val)
             else
             {
                 MinMaxT newInterv(val+1, mIntervalList[i].mMax);
-                mIntervalList[i].mMax -= 1;
+                mIntervalList[i].mMax = val-1;
                 mIntervalList.insert(i+1,newInterv);
             }
+            // Since we took care of the value we can break the loop
+            break;
         }
     }
 }
@@ -1848,7 +1862,7 @@ int IndexIntervalCollection::max() const
     {
         return 0;
     }
-    return mIntervalList[0].mMax;
+    return mIntervalList.last().mMax;
 }
 
 QList<IndexIntervalCollection::MinMaxT> IndexIntervalCollection::getList() const
@@ -1867,6 +1881,42 @@ QList<int> IndexIntervalCollection::getCompleteList() const
         }
     }
     return complete;
+}
+
+int IndexIntervalCollection::getNumIIC() const
+{
+    return mIntervalList.size();
+}
+
+void IndexIntervalCollection::testMe()
+{
+    addValue(1); qDebug() << "IIC: " << getNumIIC() << ", " << getCompleteList();
+    addValue(3); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+
+    addValue(0); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(-2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+
+    addValue(4); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(6); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+
+    addValue(10); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(15); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(12); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+
+    removeValue(4); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    removeValue(2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+
+    addValue(4); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+
+}
+
+void IndexIntervalCollection::mergeIntervals(int first, int second)
+{
+    // We assume that the intervals to merge are actually continuos neighbors
+    mIntervalList[first].mMax = mIntervalList[second].mMax;
+    mIntervalList.removeAt(second);
 }
 
 bool IndexIntervalCollection::isContinuos() const
