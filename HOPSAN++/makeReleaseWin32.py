@@ -564,31 +564,35 @@ def createInstallFiles():
     #Create zip package
     print "Creating zip package..."
     call7z(r'a -tzip '+zipFile+r' '+tempDir+r'\*')
-    callMove(zipFile, "output")
-    if not fileExists(r'output/'+zipFile):
+    callMove(zipFile, hopsanDirOutput)
+    if not fileExists(hopsanDirOutput+r'/'+zipFile):
         printError("Failed to create zip package.")
         return False
     printSuccess("Created zip package!")
         
     #Execute Inno compile script
     print "Generating install executable..."
-    innocmd=r' /o"output" /f"'+exeFileName+r'" /dMyAppVersion="'+version+r'" /dMyArchitecture="'+innoArch+r'" '+scriptFile  
+    innocmd=r' /o"'+hopsanDirOutput+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+version+r'" /dMyArchitecture="'+innoArch+r'" '+scriptFile  
     #print innocmd
     callEXE(innoDir+r'\iscc.exe', innocmd)
-    if not fileExists(r'output/'+exeFile):
+    if not fileExists(hopsanDirOutput+r'/'+exeFile):
         printError("Failed to create installer executable.")
         return False
     printSuccess("Generated install executable!")
 
     #Copy release notes to output directory
-    callCopyFile('Hopsan-release-notes.txt', 'output')
+    callCopyFile('Hopsan-release-notes.txt', hopsanDirOutput)
     
     return True
 
 def createCleanOutputDirectory():
+    global hopsanDirOutput
     """Try to remove and recreate the output directory"""
-    hopsanDirOutput=hopsanDir+r'\output'
-
+    if do64BitRelease:
+        hopsanDirOutput=hopsanDir+r'\output64'
+    else:
+        hopsanDirOutput=hopsanDir+r'\output'
+    
     #Clear old output folder
     callRd(hopsanDirOutput)
     if pathExists(hopsanDirOutput):
