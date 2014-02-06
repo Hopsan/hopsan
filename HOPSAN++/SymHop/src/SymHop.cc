@@ -3254,7 +3254,7 @@ bool SymHop::isWhole(const double value)
 //! @brief Checks whether or no the parentheses are correct in a string
 //! @param str String to verify
 //FIXED
-bool Expression::verifyParantheses(const QString str) const
+bool Expression::verifyParantheses(const QString str)
 {
     int balance = 0;
     for(int i=0; i<str.size(); ++i)

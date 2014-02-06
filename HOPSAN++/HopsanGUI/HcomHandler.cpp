@@ -3060,18 +3060,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     TicToc timer;
 
     //Remove parentheses around expression
-    QString tempStr = expr.mid(1, expr.size()-2);
-    if(expr.count("(") == 1 && expr.count(")") == 1 && expr.startsWith("(") && expr.endsWith(")"))
+    //Remove all excessive parentheses
+    while(expr.startsWith("(") && expr.endsWith(")"))
     {
-        expr = tempStr;
-    }
-    else if(expr.count("(") > 1 && expr.count(")") > 1 && expr.startsWith("(") && expr.endsWith(")"))
-    {
-
-        if(tempStr.indexOf("(") < tempStr.indexOf(")"))
-        {
-            expr = tempStr;
-        }
+        QString tempStr = expr.mid(1, expr.size()-2);
+        if(SymHop::Expression::verifyParantheses(tempStr)) { expr = tempStr; }
+        else { break; }
     }
 
     // Check if "ans"

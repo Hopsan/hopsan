@@ -146,6 +146,7 @@ public:
     double getNumericalFactor() const;
 
     static QStringList splitWithRespectToParentheses(const QString str, const QChar c);
+    static bool verifyParantheses(const QString str);
 
     //! @todo Must be public for the object-less constructor functions, solve later (AND DON'T USE THEM ANYWHERE ELSE!!!)
     //ExpressionTypeT mType;
@@ -162,10 +163,8 @@ public:
     Expression *mpDividend;   //Used in modulo
 
 private:
-    QStringList reservedSymbols;
-
     bool splitAtSeparator(const QString sep, const QStringList subSymbols, const ExpressionSimplificationT simplifications);
-    bool verifyParantheses(const QString str) const;
+    QStringList reservedSymbols;
 };
 
 QString DLLIMPORTEXPORT getFunctionDerivative(const QString &key);
