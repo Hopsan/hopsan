@@ -624,10 +624,10 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 //    if(!copyFile(msvcPath+"HopsanCore.exp", savePath+"/HopsanCore.exp")) return ;
 
 #else
-    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
-    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
+//    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
+//    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
 
-    //! @todo copy all of the symolic links and the .so
+//    //! @todo copy all of the symolic links and the .so
 
 #endif
     //compileFile.close();
