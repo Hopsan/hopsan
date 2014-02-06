@@ -399,7 +399,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     }
     else if(mFactors.isEmpty() && !mDivisors.isEmpty())
     {
-        this->replaceBy(Expression(0));
+        this->replaceBy(Expression::fromFactorsDivisors(QList<Expression>() << Expression("1"), mDivisors));
     }
     else if(mTerms.size() == 1)
     {
