@@ -47,7 +47,7 @@ using namespace hopsan;
 
 //! @brief HopsanEssentials Constructor
 HopsanEssentials::HopsanEssentials()
-{
+{ 
     // Create Factories and handlers
     mpNodeFactory = new NodeFactory;
     mpComponentFactory = new ComponentFactory;

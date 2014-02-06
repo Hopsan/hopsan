@@ -63,7 +63,7 @@ public:
     bool generateFromCpp(QString hppFile, bool compile=false);
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, bool me, SystemContainer *pSystem);
-    bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
+    bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false);
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
     void generateLibrary(QString path, QStringList hppFiles);

@@ -562,6 +562,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/ComponentSystem.h" <<
                     "../HopsanCore/include/ComponentUtilities.h" <<
                     "../HopsanCore/include/HopsanCore.h" <<
+                    "../HopsanCore/include/HopsanCoreMacros.h" <<
                     "../HopsanCore/include/HopsanEssentials.h" <<
                     "../HopsanCore/include/HopsanTypes.h" <<
                     "../HopsanCore/include/Node.h" <<

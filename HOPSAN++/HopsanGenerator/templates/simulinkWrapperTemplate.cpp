@@ -74,7 +74,13 @@ static void mdlInitializeSizes(SimStruct *S)
     ssSetOutputPortWidth(S, <<<14>>>, DYNAMICALLY_SIZED);		//Debug output signal
     ssSetNumSampleTimes(S, 1);
     ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);
-  
+
+    if(!gHopsanCore.hasComponent("HydraulicLaminarOrifice"))
+    {
+        ssSetErrorStatus(S, "Error: Component libraries failed to load.");
+        return;
+    }
+
     std::vector<std::string> extLibs;
     readExternalLibsFromTxtFile("externalLibs.txt",extLibs);
     for (size_t i=0; i<extLibs.size(); ++i)

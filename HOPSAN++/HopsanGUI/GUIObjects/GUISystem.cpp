@@ -1483,27 +1483,27 @@ void SystemContainer::exportToSimulink()
     QLabel *pExportDialogLabel1 = new QLabel(tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console."), pExportDialog);
     pExportDialogLabel1->setWordWrap(true);
 
-    QGroupBox *pCompilerGroupBox = new QGroupBox(tr("Choose compiler:"), pExportDialog);
-    QRadioButton *pMSVC2008RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2008"));
-    QRadioButton *pMSVC2010RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2010"));
-    pMSVC2008RadioButton->setChecked(true);
-    QVBoxLayout *pCompilerLayout = new QVBoxLayout;
-    pCompilerLayout->addWidget(pMSVC2008RadioButton);
-    pCompilerLayout->addWidget(pMSVC2010RadioButton);
-    pCompilerLayout->addStretch(1);
-    pCompilerGroupBox->setLayout(pCompilerLayout);
+//    QGroupBox *pCompilerGroupBox = new QGroupBox(tr("Choose compiler:"), pExportDialog);
+//    QRadioButton *pMSVC2008RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2008"));
+//    QRadioButton *pMSVC2010RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2010"));
+//    pMSVC2008RadioButton->setChecked(true);
+//    QVBoxLayout *pCompilerLayout = new QVBoxLayout;
+//    pCompilerLayout->addWidget(pMSVC2008RadioButton);
+//    pCompilerLayout->addWidget(pMSVC2010RadioButton);
+//    pCompilerLayout->addStretch(1);
+//    pCompilerGroupBox->setLayout(pCompilerLayout);
 
-    QGroupBox *pArchitectureGroupBox = new QGroupBox(tr("Choose architecture:"), pExportDialog);
-    QRadioButton *p32bitRadioButton = new QRadioButton(tr("32-bit (x86)"));
-    QRadioButton *p64bitRadioButton = new QRadioButton(tr("64-bit (x64)"));
-    p32bitRadioButton->setChecked(true);
-    QVBoxLayout *pArchitectureLayout = new QVBoxLayout;
-    pArchitectureLayout->addWidget(p32bitRadioButton);
-    pArchitectureLayout->addWidget(p64bitRadioButton);
-    pArchitectureLayout->addStretch(1);
-    pArchitectureGroupBox->setLayout(pArchitectureLayout);
+//    QGroupBox *pArchitectureGroupBox = new QGroupBox(tr("Choose architecture:"), pExportDialog);
+//    QRadioButton *p32bitRadioButton = new QRadioButton(tr("32-bit (x86)"));
+//    QRadioButton *p64bitRadioButton = new QRadioButton(tr("64-bit (x64)"));
+//    p32bitRadioButton->setChecked(true);
+//    QVBoxLayout *pArchitectureLayout = new QVBoxLayout;
+//    pArchitectureLayout->addWidget(p32bitRadioButton);
+//    pArchitectureLayout->addWidget(p64bitRadioButton);
+//    pArchitectureLayout->addStretch(1);
+//    pArchitectureGroupBox->setLayout(pArchitectureLayout);
 
-    QLabel *pExportDialogLabel2 = new QLabel("Matlab must use the same compiler during compilation.    ", pExportDialog);
+//    QLabel *pExportDialogLabel2 = new QLabel("Matlab must use the same compiler during compilation.    ", pExportDialog);
 
     QCheckBox *pDisablePortLabels = new QCheckBox("Disable port labels (for older versions of Matlab)");
 
@@ -1515,9 +1515,9 @@ void SystemContainer::exportToSimulink()
 
     QVBoxLayout *pExportDialogLayout = new QVBoxLayout(pExportDialog);
     pExportDialogLayout->addWidget(pExportDialogLabel1);
-    pExportDialogLayout->addWidget(pCompilerGroupBox);
-    pExportDialogLayout->addWidget(pArchitectureGroupBox);
-    pExportDialogLayout->addWidget(pExportDialogLabel2);
+//    pExportDialogLayout->addWidget(pCompilerGroupBox);
+//    pExportDialogLayout->addWidget(pArchitectureGroupBox);
+//    pExportDialogLayout->addWidget(pExportDialogLabel2);
     pExportDialogLayout->addWidget(pDisablePortLabels);
     pExportDialogLayout->addWidget(pExportButtonBox);
     pExportDialog->setLayout(pExportDialogLayout);
@@ -1561,36 +1561,36 @@ void SystemContainer::exportToSimulink()
        //Save xml document
     mpModelWidget->saveTo(savePath+"/"+fileName);
 
-    int compiler;
-    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
-    {
-        compiler=0;
-    }
-    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
-    {
-        compiler=1;
-    }
-    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
-    {
-        compiler=2;
-    }
-    else/* if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())*/
-    {
-        compiler=3;
-    }
+//    int compiler;
+//    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
+//    {
+//        compiler=0;
+//    }
+//    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
+//    {
+//        compiler=1;
+//    }
+//    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
+//    {
+//        compiler=2;
+//    }
+//    else/* if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())*/
+//    {
+//        compiler=3;
+//    }
 
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked(), compiler);
+    pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked());
     delete(pCoreAccess);
 
 
     //Clean up widgets that do not have a parent
     delete(pDisablePortLabels);
-    delete(pMSVC2008RadioButton);
-    delete(pMSVC2010RadioButton);
-    delete(p32bitRadioButton);
-    delete(p64bitRadioButton);
+//    delete(pMSVC2008RadioButton);
+//    delete(pMSVC2010RadioButton);
+//    delete(p32bitRadioButton);
+//    delete(p64bitRadioButton);
 }
 
 
