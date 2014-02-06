@@ -37,12 +37,12 @@
 void loadApplicationFonts();
 
 // Declare global pointers
-MainWindow* gpMainWindow;
-QWidget *gpMainWindowWidget;
-Configuration *gpConfig;
-DesktopHandler *gpDesktopHandler;
-CopyStack *gpCopyStack;
-QSplashScreen *gpSplash;
+MainWindow* gpMainWindow  = 0;
+QWidget *gpMainWindowWidget  = 0;
+Configuration *gpConfig  = 0;
+DesktopHandler *gpDesktopHandler  = 0;
+CopyStack *gpCopyStack = 0;
+QSplashScreen *gpSplash = 0;
 
 int main(int argc, char *argv[])
 {

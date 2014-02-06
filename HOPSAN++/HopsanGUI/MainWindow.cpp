@@ -75,15 +75,15 @@
 #include "GUIObjects/GUISystem.h"
 
 // Declare (create) global pointers that will point to MainWindow children
-PlotHandler *gpPlotHandler;
-LibraryWidget *gpLibraryWidget;
-TerminalWidget *gpTerminalWidget;
-ModelHandler *gpModelHandler;
-PlotWidget *gpPlotWidget;
-CentralTabWidget *gpCentralTabWidget;
-SystemParametersWidget *gpSystemParametersWidget;
-UndoWidget *gpUndoWidget;
-LibraryHandler *gpLibraryHandler;
+PlotHandler *gpPlotHandler = 0;
+LibraryWidget *gpLibraryWidget = 0;
+TerminalWidget *gpTerminalWidget = 0;
+ModelHandler *gpModelHandler = 0;
+PlotWidget *gpPlotWidget = 0;
+CentralTabWidget *gpCentralTabWidget = 0;
+SystemParametersWidget *gpSystemParametersWidget = 0;
+UndoWidget *gpUndoWidget = 0;
+LibraryHandler *gpLibraryHandler = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
