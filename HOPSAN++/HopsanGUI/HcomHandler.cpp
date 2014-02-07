@@ -3174,7 +3174,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         if(splitArgs.size() == 1)
         {
             evaluateExpression(args.trimmed(),DataVector);
-            SharedVectorVariableT pVar = getLogVariable(args.trimmed()).mpVariable;
+            SharedVectorVariableT pVar = mAnsVector;
             if (mAnsType == DataVector)
             {
                 mAnsType = DataVector;
