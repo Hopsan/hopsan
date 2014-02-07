@@ -33,16 +33,18 @@
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "DesktopHandler.h"
+#include "MessageHandler.h"
 
 void loadApplicationFonts();
 
 // Declare global pointers
-MainWindow* gpMainWindow  = 0;
-QWidget *gpMainWindowWidget  = 0;
-Configuration *gpConfig  = 0;
-DesktopHandler *gpDesktopHandler  = 0;
+MainWindow* gpMainWindow = 0;
+QWidget *gpMainWindowWidget = 0;
+Configuration *gpConfig = 0;
+DesktopHandler *gpDesktopHandler = 0;
 CopyStack *gpCopyStack = 0;
 QSplashScreen *gpSplash = 0;
+GUIMessageHandler *gpMessageHandler = 0;
 
 int main(int argc, char *argv[])
 {
@@ -58,16 +60,10 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
-    // Create/set global objects
-    gpConfig = new Configuration();
-    gpDesktopHandler = new DesktopHandler();
-    gpDesktopHandler->setupPaths();
-    gpCopyStack = new CopyStack();
-
-    //Load settings
+    // Load application fonts
     loadApplicationFonts();
 
-    //Create the splash screen
+    // Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     gpSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint);
     //! @todo We need to delete it somehow, but still be able to check if it has been deleted or not (perhaps a QPointer will work)
@@ -75,21 +71,31 @@ int main(int argc, char *argv[])
     gpSplash->showMessage("Starting Hopsan...");
     gpSplash->show();
 
+    // Create/set global objects
+    gpConfig = new Configuration();
+    gpDesktopHandler = new DesktopHandler();
+    gpDesktopHandler->setupPaths();
+    gpCopyStack = new CopyStack();
+    gpMessageHandler = new GUIMessageHandler();
+
     // Create the mainwindow
     MainWindow mainwindow;
     gpMainWindow = &mainwindow;
     gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
     mainwindow.createContents();
 
-    //Show main window and initialize workspace
+    // Show main window and initialize workspace
     //QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
     mainwindow.initializeWorkspace();
     mainwindow.showMaximized();
 
+    // Process any received messages
+    gpMessageHandler->startPublish();
+
     // Execute application
     int rc = a.exec();
 
-    // Deltete global objects
+    // Deltete global objects after program execution is finished
     delete gpCopyStack;
     delete gpDesktopHandler;
     delete gpConfig;
@@ -99,7 +105,6 @@ int main(int argc, char *argv[])
 }
 
 
-//! @todo Not sure if this shall be here or in main window, it has nothing to do with a main window and must be loaded before main window is loaded.
 //! @todo This error checking may slow down startup, and it is probably never needed. Remove when this functionality is tested and verified.
 void loadApplicationFonts()
 {
@@ -128,6 +133,7 @@ void loadApplicationFonts()
         qDebug() << "Successfully loaded fonts!";
 }
 
+//! @brief Returns the date and time when the HopsanGUI application was built
 const char* getHopsanGUIBuildTime()
 {
     return __DATE__" "__TIME__;

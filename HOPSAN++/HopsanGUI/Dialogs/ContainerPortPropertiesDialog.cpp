@@ -29,6 +29,7 @@
 #include <QHBoxLayout>
 #include <QDialogButtonBox>
 #include <QGroupBox>
+#include <QPushButton>
 
 #include "global.h"
 #include "GUIObjects/GUIContainerPort.h"

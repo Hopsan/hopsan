@@ -25,9 +25,12 @@
 #ifndef HCOMWIDGET_H
 #define HCOMWIDGET_H
 
-#include <QtGui>
+#include <QWidget>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QTextEdit>
 
-#include "Widgets/MessageWidget.h"
+#include "MessageHandler.h"
 
 class MainWindow;
 class Port;
@@ -36,7 +39,7 @@ class VectorVariable;
 class TerminalConsole;
 class HcomHandler;
 class HcomCommand;
-class CoreMessagesAccess;
+
 
 typedef QSharedPointer<VectorVariable> SharedVectorVariableT;
 
@@ -48,24 +51,18 @@ public:
     QSize sizeHint() const;
     void loadConfig();
     void saveConfig();
-    TerminalConsole *mpConsole;
-    HcomHandler *mpHandler;
     void setEnabledAbortButton(bool enable);
 
-public slots:
-    void checkMessages();
+    //! @todo should not be public
+    TerminalConsole *mpConsole;
+    HcomHandler *mpHandler;
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    QPushButton *mpClearMessageWidgetButton;
     QPushButton *mpAbortHCOMWidgetButton;
-    QToolButton *mpShowErrorMessagesButton;
-    QToolButton *mpShowWarningMessagesButton;
-    QToolButton *mpShowInfoMessagesButton;
-    QToolButton *mpShowDebugMessagesButton;
     QCheckBox *mpGroupByTagCheckBox;
 };
 
@@ -82,20 +79,17 @@ public:
     void printFirstInfo();
     HcomHandler *getHandler();
 
-    void printCoreMessages();
+    void printInfoMessage(QString message,      QString tag="", bool timeStamp=true);
+    void printWarningMessage(QString message,   QString tag="", bool timeStamp=true);
+    void printErrorMessage(QString message,     QString tag="", bool timeStamp=true);
     void printFatalMessage(QString message);
-    void printErrorMessage(QString message, QString tag="", bool timeStamp=true);
-    void printWarningMessage(QString message, QString tag="", bool timeStamp=true);
-    void printInfoMessage(QString message, QString tag="", bool timeStamp=true);
-    void printDebugMessage(QString message, QString tag="", bool timeStamp=true);
+    void printDebugMessage(QString message,     QString tag="", bool timeStamp=true);
     void print(QString message);
-    void updateNewMessages();
-    void appendOneMessage(GUIMessage msg, bool timeStamp="");
 
     TerminalWidget *mpTerminal;
 
 public slots:
-    void checkMessages();
+    void printMessage(const GUIMessage &rMessage, bool timeStamp=true);
     void clear();
     void abortHCOM();
     void setGroupByTag(bool value);
@@ -111,7 +105,7 @@ protected:
 
 private:
     //Output
-    void setOutputColor(QString type);
+    void setOutputColor(MessageTypeEnumT type);
 
     //Cursor & keypress functions
     bool isOnLastLine();
@@ -135,8 +129,6 @@ private:
     QStringList mAutoCompleteResults;
     int mCurrentAutoCompleteIndex;
 
-    QList< GUIMessage > mNewMessageList;
-    QList< GUIMessage > mPrintedMessageList;
     QString mLastTag;
     int mSubsequentTags;
     bool mGroupByTag;

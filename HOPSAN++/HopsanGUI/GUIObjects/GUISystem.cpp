@@ -32,7 +32,7 @@
 #include "UndoStack.h"
 #include "version_gui.h"
 #include "LibraryHandler.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "Dialogs/ContainerPropertiesDialog.h"
 #include "Utilities/GUIUtilities.h"
@@ -775,7 +775,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
             ModelObject* pObj = loadModelObject(xmlSubObject, this, NoUndo);
             if(pObj == NULL)
             {
-                gpTerminalWidget->mpConsole->printErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
+                gpMessageHandler->addErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
                                                                     xmlSubObject.attribute(HMF_TYPENAME) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
 
                 // Insert missing component dummy instead
@@ -923,7 +923,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
     }
     else
     {
-        gpTerminalWidget->mpConsole->printWarningMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
+        gpMessageHandler->addWarningMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
     }
 }
 
@@ -1134,7 +1134,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me)
 //    modelSourceFile.setFileName(savePath + "/" + modelName + ".c");
 //    if(!modelSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open " + modelName + ".c for writing.");
+//        gpMessageHandler->addErrorMessage("Failed to open " + modelName + ".c for writing.");
 //        return;
 //    }
 
@@ -1142,7 +1142,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me)
 //    modelDescriptionFile.setFileName(savePath + "/modelDescription.xml");
 //    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open modelDescription.xml for writing.");
+//        gpMessageHandler->addErrorMessage("Failed to open modelDescription.xml for writing.");
 //        return;
 //    }
 
@@ -1150,7 +1150,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me)
 //    fmuHeaderFile.setFileName(savePath + "/HopsanFMU.h");
 //    if(!fmuHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open HopsanFMU.h for writing.");
+//        gpMessageHandler->addErrorMessage("Failed to open HopsanFMU.h for writing.");
 //        return;
 //    }
 
@@ -1158,7 +1158,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me)
 //    fmuSourceFile.setFileName(savePath + "/HopsanFMU.cpp");
 //    if(!fmuSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open HopsanFMU.cpp for writing.");
+//        gpMessageHandler->addErrorMessage("Failed to open HopsanFMU.cpp for writing.");
 //        return;
 //    }
 
@@ -1167,7 +1167,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me)
 //    clBatchFile.setFileName(savePath + "/compile.bat");
 //    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
 //    {
-//        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open compile.bat for writing.");
+//        gpMessageHandler->addErrorMessage("Failed to open compile.bat for writing.");
 //        return;
 //    }
 //#endif

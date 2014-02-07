@@ -40,7 +40,6 @@
 #include "GUIPort.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "Utilities/XMLUtilities.h"
-#include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PyDockWidget.h"
 

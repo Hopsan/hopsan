@@ -44,6 +44,7 @@ class CentralTabWidget;
 class SystemParametersWidget;
 class UndoWidget;
 class LibraryHandler;
+class GUIMessageHandler;
 
 // Global pointer to the main window and QWidget cast version
 extern MainWindow* gpMainWindow;
@@ -54,6 +55,7 @@ extern Configuration *gpConfig;
 extern DesktopHandler *gpDesktopHandler;
 extern CopyStack *gpCopyStack;
 extern QSplashScreen *gpSplash;
+extern GUIMessageHandler *gpMessageHandler;
 
 // Global object pointers that are children to main window
 extern PlotHandler *gpPlotHandler;

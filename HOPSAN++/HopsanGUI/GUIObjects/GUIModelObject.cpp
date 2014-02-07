@@ -22,6 +22,9 @@
 //!
 //$Id$
 
+#include <QtGui>
+
+
 #include "GUIModelObject.h"
 
 #include "GUISystem.h"
@@ -30,8 +33,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
-#include "Widgets/MessageWidget.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "LibraryHandler.h"
 #include "UndoStack.h"
 #include "Configuration.h"
@@ -649,7 +651,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
         else
         {
             // Port does not exist in core, lets print warning message and remove its appearance data
-            gpTerminalWidget->mpConsole->printWarningMessage("Port:  "+portName+"  does not exist in Component:  "+getName()+"  when trying to create port graphics. Ignoring!");
+            gpMessageHandler->addWarningMessage("Port:  "+portName+"  does not exist in Component:  "+getName()+"  when trying to create port graphics. Ignoring!");
             mModelObjectAppearance.erasePortAppearance(portName);
         }
     }

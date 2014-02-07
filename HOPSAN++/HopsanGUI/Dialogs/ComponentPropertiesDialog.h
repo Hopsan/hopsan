@@ -25,7 +25,12 @@
 #ifndef COMPONENTPROPERTIESDIALOG_H
 #define COMPONENTPROPERTIESDIALOG_H
 
-#include <QtGui>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QTextEdit>
+#include <QDialogButtonBox>
+
 #include "Dialogs/ModelObjectPropertiesDialog.h"
 
 class Component;

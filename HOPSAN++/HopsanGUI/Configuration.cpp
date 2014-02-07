@@ -30,7 +30,7 @@
 #include "Utilities/XMLUtilities.h"
 #include "Utilities/GUIUtilities.h"
 #include "MainWindow.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Widgets/PyDockWidget.h"
 
 #include <QDomElement>
@@ -218,10 +218,7 @@ void Configuration::loadFromXml()
     qDebug() << "Reading config from " << file.fileName();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        if(gpTerminalWidget)
-        {
-            gpTerminalWidget->mpConsole->printWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
-        }
+        gpMessageHandler->addWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
         return;
     }
 

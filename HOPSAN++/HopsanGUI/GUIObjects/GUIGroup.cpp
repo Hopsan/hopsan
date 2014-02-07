@@ -40,13 +40,11 @@
 #include "GUIConnector.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "GraphicsView.h"
 #include "Widgets/LibraryWidget.h"
 #include "loadFunctions.h"
 #include "CopyStack.h"
-
-//using namespace std;
 
 //! @class GUIGroup
 //! @brief The GUIGroup class implement a class to group components graphically
@@ -90,7 +88,7 @@ GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObje
     //! @todo this is not good all mpModelWidget should be set in one common place not in guigroup and guisystem
     this->mpModelWidget = pParentContainer->mpModelWidget;
 
-    gpTerminalWidget->mpConsole->printWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
+    gpMessageHandler->addWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
 }
 
 

@@ -113,10 +113,6 @@ public:
     void showHelpPopupMessage(const QString &rMessage);
     void hideHelpPopupMessage();
 
-    //Configuration object
-    Configuration *mpConfig;    //Public so that python wrappers can access it
-                                //! @todo Why can't python wrappers use gpConfig?
-
     //Widgets
     //! @todo These should probably not be public
     UndoWidget *mpUndoWidget;

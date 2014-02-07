@@ -721,13 +721,13 @@ void OptimizationDialog::generateScriptFile()
 
     if(mSelectedParameters.isEmpty())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
+        gpMessageHandler->addErrorMessage("No parameters specified for optimization.");
         return;
     }
 
     if(mSelectedFunctions.isEmpty())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
+        gpMessageHandler->addErrorMessage("No objective functions specified for optimization.");
         return;
     }
 
@@ -740,7 +740,7 @@ void OptimizationDialog::generateScriptFile()
         generateParticleSwarmScript();
         break;
     default :
-        gpTerminalWidget->mpConsole->printErrorMessage("Algorithm type undefined.");
+        gpMessageHandler->addErrorMessage("Algorithm type undefined.");
     }
 }
 
@@ -1346,7 +1346,7 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedParameters.isEmpty())
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("No parameters specified for optimization.");
+            gpMessageHandler->addWarningMessage("No parameters specified for optimization.");
 //            this->back();
             return;
         }
@@ -1357,7 +1357,7 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedFunctions.isEmpty())
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("No objective functions specified for optimization.");
+            gpMessageHandler->addWarningMessage("No objective functions specified for optimization.");
            // this->back();
             return;
         }
@@ -1598,12 +1598,12 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
     if(nSelVar > nVar)
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Too many variables selected for this function.");
+        gpMessageHandler->addErrorMessage("Too many variables selected for this function.");
         return false;
     }
     else if(nSelVar < nVar)
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Too few variables selected for this function.");
+        gpMessageHandler->addErrorMessage("Too few variables selected for this function.");
         return false;
     }
     return true;

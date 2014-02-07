@@ -22,27 +22,27 @@
 //!
 //$Id$
 
-#include "CoreAccess.h"
 #include <QDebug>
 #include <QDir>
+#include <QMessageBox>
+
+#include "CoreAccess.h"
 #include "global.h"
 #include "GUIObjects/GUISystem.h"
 #include "Configuration.h"
+#include "DesktopHandler.h"
+#include "LibraryHandler.h"
+#include "common.h"
+#include "Utilities/GUIUtilities.h"
 
-//HopsanCore includes
+// HopsanCore includes
 #include "HopsanCore.h"
 #include "Node.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/GeneratorHandler.h"
-#include "DesktopHandler.h"
-#include "LibraryHandler.h"
-#include "Widgets/MessageWidget.h"
-#include "common.h"
-#include "Utilities/GUIUtilities.h"
 #include "ComponentUtilities/CSVParser.h"
 
-using namespace std;
-
+// Here the HopsanCore object is created
 hopsan::HopsanEssentials gHopsanCore;
 
 //! @brief Help function to copy parameter data from core to GUI class

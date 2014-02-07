@@ -31,7 +31,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Widgets/UndoWidget.h"
 
 
@@ -84,7 +84,7 @@ void UndoStack::clear(QString errorMsg)
 
     if(!errorMsg.isEmpty())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(errorMsg);
+        gpMessageHandler->addErrorMessage(errorMsg);
     }
 }
 

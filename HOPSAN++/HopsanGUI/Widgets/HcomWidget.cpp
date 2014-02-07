@@ -26,6 +26,10 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include <QWidget>
+#include <QToolButton>
+#include <QGridLayout>
+#include <QTextBlock>
+#include <QScrollBar>
 
 
 #include <cmath>
@@ -45,39 +49,39 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
 {
     this->setMouseTracking(true);
 
-    mpClearMessageWidgetButton = new QPushButton("Clear Messages");
+    QPushButton *pClearMessageWidgetButton = new QPushButton("Clear Messages");
     mpAbortHCOMWidgetButton = new QPushButton("Abort Script");
     mpAbortHCOMWidgetButton->setDisabled(true);
-    QFont tempFont = mpClearMessageWidgetButton->font();
+    QFont tempFont = pClearMessageWidgetButton->font();
     tempFont.setBold(true);
-    mpClearMessageWidgetButton->setFont(tempFont);
-    mpClearMessageWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    pClearMessageWidgetButton->setFont(tempFont);
+    pClearMessageWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     mpAbortHCOMWidgetButton->setFont(tempFont);
     mpAbortHCOMWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
-    mpShowErrorMessagesButton = new QToolButton();
-    mpShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowErrorMessages.png"));
-    mpShowErrorMessagesButton->setCheckable(true);
-    mpShowErrorMessagesButton->setChecked(true);
-    mpShowErrorMessagesButton->setToolTip("Show Error Messages");
+    QToolButton *pShowErrorMessagesButton = new QToolButton();
+    pShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowErrorMessages.png"));
+    pShowErrorMessagesButton->setCheckable(true);
+    pShowErrorMessagesButton->setChecked(true);
+    pShowErrorMessagesButton->setToolTip("Show Error Messages");
 
-    mpShowWarningMessagesButton = new QToolButton();
-    mpShowWarningMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowWarningMessages.png"));
-    mpShowWarningMessagesButton->setCheckable(true);
-    mpShowWarningMessagesButton->setChecked(true);
-    mpShowWarningMessagesButton->setToolTip("Show Warning Messages");
+    QToolButton *pShowWarningMessagesButton = new QToolButton();
+    pShowWarningMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowWarningMessages.png"));
+    pShowWarningMessagesButton->setCheckable(true);
+    pShowWarningMessagesButton->setChecked(true);
+    pShowWarningMessagesButton->setToolTip("Show Warning Messages");
 
-    mpShowInfoMessagesButton = new QToolButton();
-    mpShowInfoMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowInfoMessages.png"));
-    mpShowInfoMessagesButton->setCheckable(true);
-    mpShowInfoMessagesButton->setChecked(true);
-    mpShowInfoMessagesButton->setToolTip("Show Info Messages");
+    QToolButton *pShowInfoMessagesButton = new QToolButton();
+    pShowInfoMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowInfoMessages.png"));
+    pShowInfoMessagesButton->setCheckable(true);
+    pShowInfoMessagesButton->setChecked(true);
+    pShowInfoMessagesButton->setToolTip("Show Info Messages");
 
-    mpShowDebugMessagesButton = new QToolButton();
-    mpShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDebugMessages.png"));
-    mpShowDebugMessagesButton->setCheckable(true);
-    mpShowDebugMessagesButton->setChecked(false);
-    mpShowDebugMessagesButton->setToolTip("Show Debug Messages");
+    QToolButton *pShowDebugMessagesButton = new QToolButton();
+    pShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDebugMessages.png"));
+    pShowDebugMessagesButton->setCheckable(true);
+    pShowDebugMessagesButton->setChecked(false);
+    pShowDebugMessagesButton->setToolTip("Show Debug Messages");
 
     mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
     mpGroupByTagCheckBox->setChecked(gpConfig->getGroupMessagesByTag());
@@ -89,12 +93,12 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
     pLayout->addWidget(mpConsole,0,0,1,1);
     pLayout->addWidget(mpConsole,0,0,1,7);
     size_t x = 0;
-    pLayout->addWidget(mpClearMessageWidgetButton,1,x++,1,1);
+    pLayout->addWidget(pClearMessageWidgetButton,1,x++,1,1);
     pLayout->addWidget(mpAbortHCOMWidgetButton,1,x++,1,1);
-    pLayout->addWidget(mpShowErrorMessagesButton,1,x++,1,1);
-    pLayout->addWidget(mpShowWarningMessagesButton,1,x++,1,1);
-    pLayout->addWidget(mpShowInfoMessagesButton,1,x++,1,1);
-    pLayout->addWidget(mpShowDebugMessagesButton,1,x++,1,1);
+    pLayout->addWidget(pShowErrorMessagesButton,1,x++,1,1);
+    pLayout->addWidget(pShowWarningMessagesButton,1,x++,1,1);
+    pLayout->addWidget(pShowInfoMessagesButton,1,x++,1,1);
+    pLayout->addWidget(pShowDebugMessagesButton,1,x++,1,1);
     pLayout->addWidget(mpGroupByTagCheckBox, 1,x++,1,1);
     pLayout->setContentsMargins(4,4,4,4);
     this->setLayout(pLayout);
@@ -103,13 +107,15 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
     this->setMouseTracking(true);
     this->setMinimumHeight(0);
 
-    connect(mpClearMessageWidgetButton, SIGNAL(clicked()),mpConsole, SLOT(clear()));
+    connect(pClearMessageWidgetButton, SIGNAL(clicked()),mpConsole, SLOT(clear()));
     connect(mpAbortHCOMWidgetButton, SIGNAL(clicked()),mpConsole, SLOT(abortHCOM()));
-    connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showErrorMessages(bool)));
-    connect(mpShowWarningMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showWarningMessages(bool)));
-    connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showInfoMessages(bool)));
-    connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showDebugMessages(bool)));
+    connect(pShowErrorMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showErrorMessages(bool)));
+    connect(pShowWarningMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showWarningMessages(bool)));
+    connect(pShowInfoMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showInfoMessages(bool)));
+    connect(pShowDebugMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showDebugMessages(bool)));
     connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), mpConsole, SLOT(setGroupByTag(bool)));
+
+    connect(gpMessageHandler, SIGNAL(newAnyMessage(GUIMessage)), mpConsole, SLOT(printMessage(GUIMessage)));
 }
 
 
@@ -176,14 +182,6 @@ bool TerminalWidget::eventFilter(QObject *obj, QEvent *event)
 }
 
 
-//! @brief Slot that checks messages from core and prints them
-//! @todo Is this function necessary? All it does is calling another one...
-void TerminalWidget::checkMessages()
-{
-    mpConsole->printCoreMessages();
-}
-
-
 void TerminalWidget::setEnabledAbortButton(bool enable)
 {
     mpAbortHCOMWidgetButton->setEnabled(enable);
@@ -238,103 +236,91 @@ HcomHandler *TerminalConsole::getHandler()
     return mpTerminal->mpHandler;
 }
 
-//! @brief Obtains messages from core and prints them in the message widget
-void TerminalConsole::printCoreMessages()
-{
-    int nmsg = mpCoreAccess->getNumberOfMessages();
-    //nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
+////! @brief Obtains messages from core and prints them in the message widget
+//void TerminalConsole::printCoreMessages()
+//{
+//    int nmsg = mpCoreAccess->getNumberOfMessages();
+//    //nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
 
-    //bool playErrorSound = false;
-    for (int idx=0; idx < nmsg; ++idx)
-    {
-        QString message, type, tag;
-        mpCoreAccess->getMessage(message, type, tag);
-        //if(type == "error")
-            //playErrorSound = true;
-        if(type == "fatal")
-        {
-            QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");
-
-        }
-        mNewMessageList.append(GUIMessage(message, type, tag));
-        updateNewMessages();
-    }
-//    if(playErrorSound)
+//    //bool playErrorSound = false;
+//    for (int idx=0; idx < nmsg; ++idx)
 //    {
-//        mpErrorSound->play();
+//        QString message, type, tag;
+//        mpCoreAccess->getMessage(message, type, tag);
+//        //if(type == "error")
+//            //playErrorSound = true;
+//        if(type == "fatal")
+//        {
+//            QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");
+
+//        }
+//        mNewMessageList.append(GUIMessage(message, type, tag));
+//        updateNewMessages();
 //    }
-}
+////    if(playErrorSound)
+////    {
+////        mpErrorSound->play();
+////    }
+//}
 
 
 void TerminalConsole::printFatalMessage(QString message)
 {
-    QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now attempt to exit.", "Ok");
-    gpMainWindowWidget->close();//gpMainWindow->close();
+    printMessage(GUIMessage(message.prepend("Error: "), "", Fatal), true);
+    QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");
 }
 
 
 void TerminalConsole::printErrorMessage(QString message, QString tag, bool timeStamp)
 {
-    //mpErrorSound->play();
-    appendOneMessage(GUIMessage(message.prepend("Error: "), "error", tag), timeStamp);
+    printMessage(GUIMessage(message.prepend("Error: "), tag, Error), timeStamp);
 }
 
 
 void TerminalConsole::printWarningMessage(QString message, QString tag, bool timeStamp)
 {
-    appendOneMessage(GUIMessage(message.prepend("Warning: "), "warning", tag), timeStamp);
+    printMessage(GUIMessage(message.prepend("Warning: "), tag, Warning), timeStamp);
 }
 
 
 void TerminalConsole::printInfoMessage(QString message, QString tag, bool timeStamp)
 {
-    appendOneMessage(GUIMessage(message.prepend("Info: "), "info", tag), timeStamp);
+    printMessage(GUIMessage(message.prepend("Info: "), tag, Info), timeStamp);
 }
 
 
 void TerminalConsole::print(QString message)
 {
-    appendOneMessage(GUIMessage(message, "default", ""), false);
+    printMessage(GUIMessage(message, "", UndefinedMessageType), false);
 }
 
 
 void TerminalConsole::printDebugMessage(QString message, QString tag, bool timeStamp)
 {
-    appendOneMessage(GUIMessage(message.prepend("Debug: "), "debug", tag), timeStamp);
+    printMessage(GUIMessage(message.prepend("Debug: "), tag, Debug), timeStamp);
 }
 
 
-void TerminalConsole::updateNewMessages()
-{
-        //Loop through message list and print messages
-    for(int msg=0; msg<mNewMessageList.size(); ++msg)
-    {
-        appendOneMessage(mNewMessageList.at(msg));
-    }
-
-    mPrintedMessageList.append(mNewMessageList);
-    mNewMessageList.clear();
-
-    verticalScrollBar()->setValue(verticalScrollBar()->maximum());
-}
-
-
-void TerminalConsole::appendOneMessage(GUIMessage msg, bool timeStamp)
+void TerminalConsole::printMessage(const GUIMessage &rMessage, bool timeStamp)
 {
     if(mDontPrint) return;
 
-    if( !(msg.type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
-        !(msg.type == "warning" && !mShowWarningMessages) &&
-        !(msg.type == "info" && !mShowInfoMessages) &&
-        !(msg.type == "debug" && !mShowDebugMessages))
+    // Only show message if its type shall be shown
+    if( (rMessage.mType == Info    && mShowInfoMessages)     ||
+        (rMessage.mType == Warning && mShowWarningMessages)  ||
+        (rMessage.mType == Error   && mShowErrorMessages)    ||
+        (rMessage.mType == Debug   && mShowDebugMessages)    ||
+        (rMessage.mType == UndefinedMessageType)             ||
+        (rMessage.mType == Fatal) )
     {
-        QString output = msg.message;
+        QString output = rMessage.mMessage;
         if(timeStamp)
         {
-            output.prepend("["+msg.time+"] ");
+            output.prepend("["+rMessage.mTimestamp+"] ");
         }
 
-        if(!msg.tag.isEmpty() && msg.tag == mLastTag && mGroupByTag)     //Message is tagged, and group by tag setting is active
+        // Message is tagged, and group by tag setting is active
+        if(mGroupByTag && !rMessage.mTag.isEmpty() && (rMessage.mTag == mLastTag) )
         {
             ++mSubsequentTags;
             QString numString;
@@ -342,31 +328,25 @@ void TerminalConsole::appendOneMessage(GUIMessage msg, bool timeStamp)
             this->undo();
             output.append("    (" + numString + " similar)");
         }
-        else        //Message is not tagged, or group by tag setting is not active
+        // Message is not tagged, or group by tag setting is not active
+        else
         {
             mSubsequentTags = 1;
-            mLastTag =msg.tag;
+            mLastTag =rMessage.mTag;
         }
 
 
         this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
         this->moveCursor( QTextCursor::StartOfLine, QTextCursor::MoveAnchor );
-        setOutputColor(msg.type);
+        setOutputColor(rMessage.mType);
         this->insertPlainText(output+"\n");
         this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
 
-        setOutputColor("default");
+        // Reset default color
+        setOutputColor(UndefinedMessageType);
     }
 }
 
-
-
-//! @brief Slot that checks messages from core and prints them
-//! @todo Is this function necessary? All it does is calling another one...
-void TerminalConsole::checkMessages()
-{
-    printCoreMessages();
-}
 
 
 //! @brief Clear function for message widget, this will empty the message widget and also remove all messages from the list
@@ -374,9 +354,6 @@ void TerminalConsole::clear()
 {
     QTextEdit::clear();
     append(">> ");
-    mPrintedMessageList.clear();
-    mNewMessageList.clear();
-   // updateEverything();
 }
 
 
@@ -393,7 +370,6 @@ void TerminalConsole::setGroupByTag(bool value)
 {
     mGroupByTag = value;
     gpConfig->setGroupMessagesByTag(value);
-  //  updateEverything();
 }
 
 
@@ -402,7 +378,6 @@ void TerminalConsole::setGroupByTag(bool value)
 void TerminalConsole::showErrorMessages(bool value)
 {
     mShowErrorMessages = value;
- //   updateEverything();
 }
 
 
@@ -411,7 +386,6 @@ void TerminalConsole::showErrorMessages(bool value)
 void TerminalConsole::showWarningMessages(bool value)
 {
     mShowWarningMessages = value;
- //   updateEverything();
 }
 
 
@@ -420,7 +394,6 @@ void TerminalConsole::showWarningMessages(bool value)
 void TerminalConsole::showInfoMessages(bool value)
 {
     mShowInfoMessages = value;
- //   updateEverything();
 }
 
 
@@ -429,7 +402,6 @@ void TerminalConsole::showInfoMessages(bool value)
 void TerminalConsole::showDebugMessages(bool value)
 {
     mShowDebugMessages = value;
-    //   updateEverything();
 }
 
 bool TerminalConsole::getDontPrint() const
@@ -444,21 +416,21 @@ void TerminalConsole::setDontPrint(const bool value)
 
 
 
-void TerminalConsole::setOutputColor(QString type)
+void TerminalConsole::setOutputColor(MessageTypeEnumT type)
 {
-    if (type == "error" || type == "fatal")
+    if (type == Error || type == Fatal)
     {
         this->setTextColor(QColor("Red"));
     }
-    else if (type == "warning")
+    else if (type == Warning)
     {
         this->setTextColor(QColor(216, 115, 0));
     }
-    else if (type == "info")
+    else if (type == Info)
     {
         this->setTextColor("BLACK");
     }
-    else if (type == "debug")
+    else if (type == Debug)
     {
         this->setTextColor("BLUE");
     }
@@ -585,7 +557,7 @@ void TerminalConsole::handleEnterKeyPress()
 
     //Insert new command line
     this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
-    this->setOutputColor("default");
+    this->setOutputColor(UndefinedMessageType);
     this->insertPlainText(">> ");
     this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
 
@@ -608,7 +580,7 @@ void TerminalConsole::handleUpKeyPress()
     {
         mCurrentHistoryItem = mHistory.size()-1;
     }
-    setOutputColor("default");
+    setOutputColor(UndefinedMessageType);
     this->insertPlainText(">> " + mHistory.at(mCurrentHistoryItem));
 
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -624,7 +596,7 @@ void TerminalConsole::handleDownKeyPress()
     this->moveCursor( QTextCursor::End, QTextCursor::KeepAnchor );
     this->textCursor().removeSelectedText();
 
-    setOutputColor("default");
+    setOutputColor(UndefinedMessageType);
     --mCurrentHistoryItem;
     if(mCurrentHistoryItem == -1)
     {
@@ -789,7 +761,7 @@ void TerminalConsole::handleTabKeyPress()
     this->textCursor().removeSelectedText();
 
     QString autoString = mAutoCompleteResults.at(mCurrentAutoCompleteIndex);
-    this->setOutputColor("default");
+    this->setOutputColor(UndefinedMessageType);
     this->insertPlainText(">> "+autoString);
 
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -810,7 +782,7 @@ void TerminalConsole::handleEscapeKeyPress()
     this->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
     this->textCursor().removeSelectedText();
 
-    this->setOutputColor("default");
+    this->setOutputColor(UndefinedMessageType);
     this->insertPlainText(">> ");
 
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);

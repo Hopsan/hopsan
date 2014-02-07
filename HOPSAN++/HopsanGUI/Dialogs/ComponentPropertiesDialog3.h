@@ -1,12 +1,17 @@
 #ifndef COMPONENTPROPERTIESDIALOG3_H
 #define COMPONENTPROPERTIESDIALOG3_H
 
-#include <QtGui>
+#include <QTableWidget>
+#include <QDialog>
+#include <QGridLayout>
+#include <QDialogButtonBox>
+#include <QSpinBox>
+#include <QTextEdit>
+#include <QComboBox>
 #include "CoreAccess.h"
 
 class ModelObject;
 class ParameterSettingsLayout;
-class MainWindow;
 class SystemParametersWidget;
 
 class TableWidgetTotalSize : public QTableWidget

@@ -36,7 +36,7 @@
 #include "SimulationThreadHandler.h"
 #include "version_gui.h"
 #include "Widgets/DebuggerWidget.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
@@ -52,7 +52,7 @@ ModelHandler::ModelHandler(QObject *parent)
 
     mCurrentIdx = -1;
 
-    connect(this, SIGNAL(checkMessages()),      gpTerminalWidget,    SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(checkMessages()),      gpMessageHandler,    SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 }
 
 void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name, bool detatched)
@@ -232,7 +232,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     if(!file.exists())
     {
         qDebug() << "File not found: " + file.fileName();
-        gpTerminalWidget->mpConsole->printErrorMessage("File not found: " + file.fileName());
+        gpMessageHandler->addErrorMessage("File not found: " + file.fileName());
         return 0;
     }
     QFileInfo fileInfo(file);
@@ -261,7 +261,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     pNewModel->getTopLevelSystemContainer()->setUndoEnabled(false, true);
 
     if(!detatched)
-        gpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
+        gpMessageHandler->addInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
 
     //Check if this is an expected hmf xml file
     //! @todo maybe write helpfunction that does this directly in system (or container)
@@ -276,11 +276,11 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
         QString hmfFormatVersion = hmfRoot.attribute(HMF_VERSIONTAG, "0");
         if (!verifyHmfFormatVersion(hmfFormatVersion))
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
+            gpMessageHandler->addErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
         }
         else if (hmfFormatVersion < HMF_VERSIONNUM)
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
+            gpMessageHandler->addWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
         }
 
         pNewModel->getTopLevelSystemContainer()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
@@ -293,7 +293,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
         QDomElement compLib = reqDom.firstChildElement("componentlibrary");
         while (!compLib.isNull())
         {
-            gpTerminalWidget->mpConsole->printDebugMessage("This model MIGHT require Lib: " + compLib.text());
+            gpMessageHandler->addDebugMessage("This model MIGHT require Lib: " + compLib.text());
             compLib = compLib.nextSiblingElement("componentlibrary");
         }
         pNewModel->setSaved(true);
@@ -302,7 +302,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     }
     else
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
+        gpMessageHandler->addErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
         closeModel(pNewModel);
         gpMainWindow->unRegisterRecentModel(fileInfo);
 

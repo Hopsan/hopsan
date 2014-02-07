@@ -33,7 +33,7 @@
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
 #include "Widgets/PlotWidget.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 
@@ -760,11 +760,11 @@ void GraphicsView::exportToPNG()
         pScene->render(&painter);
         if(!image.save(fileName))
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Failed to export PNG file: " +fileName);
+            gpMessageHandler->addErrorMessage("Failed to export PNG file: " +fileName);
         }
         else
         {
-            gpTerminalWidget->mpConsole->printInfoMessage("Successfully exported PNG to: " +fileName);
+            gpMessageHandler->addInfoMessage("Successfully exported PNG to: " +fileName);
         }
     }
 }

@@ -23,7 +23,6 @@
 //$Id: ComponentPropertiesDialog3.cpp 4807 2012-11-28 14:07:11Z petno25 $
 
 //Qt includes
-#include <QtGui>
 #include <QDebug>
 
 //Hopsan includes
@@ -42,7 +41,6 @@
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "LibraryHandler.h"
-#include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "LibraryHandler.h"

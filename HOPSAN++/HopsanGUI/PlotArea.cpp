@@ -36,7 +36,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "PlotWindow.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 
 //Qwt includes
 #include "qwt_legend.h"
@@ -2054,7 +2054,7 @@ void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
             //! @todo if same unit exist in multiple places we have a problem
             if (pqs.size() > 1)
             {
-                gpTerminalWidget->mpConsole->printWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
+                gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
             }
             if (pqs.size() == 1)
             {

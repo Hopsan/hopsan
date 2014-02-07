@@ -26,7 +26,7 @@
 #include "LibraryHandler.h"
 #include "global.h"
 #include "PyWrapperClasses.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "PlotWindow.h"
 #include "PlotTab.h"
 #include "PlotHandler.h"
@@ -134,23 +134,23 @@ void PyMainWindowClassWrapper::gotoTab(MainWindow* o, int tab)
 }
 void PyMainWindowClassWrapper::printMessage(MainWindow* o, const QString& message)
 {
-    o->mpTerminalWidget->mpConsole->printInfoMessage(QString("pyMessage: ").append(message));
-    o->mpTerminalWidget->mpConsole->checkMessages();
+    gpMessageHandler->addInfoMessage(QString("pyMessage: ").append(message));
+    gpMessageHandler->collectHopsanCoreMessages();
 }
 void PyMainWindowClassWrapper::printInfo(MainWindow* o, const QString& message)
 {
-    o->mpTerminalWidget->mpConsole->printInfoMessage(QString("pyInfo: ").append(message));
-    o->mpTerminalWidget->mpConsole->checkMessages();
+    gpMessageHandler->addInfoMessage(QString("pyInfo: ").append(message));
+    gpMessageHandler->collectHopsanCoreMessages();
 }
 void PyMainWindowClassWrapper::printWarning(MainWindow* o, const QString& message)
 {
-    o->mpTerminalWidget->mpConsole->printWarningMessage(QString("pyWarning: ").append(message));
-    o->mpTerminalWidget->mpConsole->checkMessages();
+    gpMessageHandler->addWarningMessage(QString("pyWarning: ").append(message));
+    gpMessageHandler->collectHopsanCoreMessages();
 }
 void PyMainWindowClassWrapper::printError(MainWindow* o, const QString& message)
 {
-    o->mpTerminalWidget->mpConsole->printErrorMessage(QString("pyError: ").append(message));
-    o->mpTerminalWidget->mpConsole->checkMessages();
+    gpMessageHandler->addErrorMessage(QString("pyError: ").append(message));
+    gpMessageHandler->collectHopsanCoreMessages();
 }
 ModelObject* PyMainWindowClassWrapper::component(MainWindow* o, const QString& compName)
 {
@@ -159,21 +159,21 @@ ModelObject* PyMainWindowClassWrapper::component(MainWindow* o, const QString& c
 void PyMainWindowClassWrapper::setStartTime(MainWindow* o, const double& start)
 {
     Q_UNUSED(start);
-    o->mpTerminalWidget->mpConsole->printErrorMessage(QString("pyError: ").append("Not implemented"));
+    gpMessageHandler->addErrorMessage(QString("pyError: ").append("Not implemented"));
     //! @todo fix this
     //o->setStartTimeInToolBar(start);
 }
 void PyMainWindowClassWrapper::setTimeStep(MainWindow* o, const double& timestep)
 {
     Q_UNUSED(timestep);
-    o->mpTerminalWidget->mpConsole->printErrorMessage(QString("pyError: ").append("Not implemented"));
+    gpMessageHandler->addErrorMessage(QString("pyError: ").append("Not implemented"));
     //! @todo fix this
     //o->setTimeStepInToolBar(timestep);
 }
 void PyMainWindowClassWrapper::setFinishTime(MainWindow* o, const double& stop)
 {
     Q_UNUSED(stop);
-    o->mpTerminalWidget->mpConsole->printErrorMessage(QString("pyError: ").append("Not implemented"));
+    gpMessageHandler->addErrorMessage(QString("pyError: ").append("Not implemented"));
     //! @todo fix this
     //o->setStopTimeInToolBar(stop);
 }
@@ -376,27 +376,32 @@ int PyMainWindowClassWrapper::getSimulationTime(MainWindow* o)
 
 void PyMainWindowClassWrapper::useMultiCore(MainWindow* o)
 {
-    o->mpConfig->setUseMultiCore(true);
+    Q_UNUSED(o);
+    gpConfig->setUseMultiCore(true);
 }
 
 void PyMainWindowClassWrapper::useSingleCore(MainWindow* o)
 {
-    o->mpConfig->setUseMultiCore(false);
+    Q_UNUSED(o);
+    gpConfig->setUseMultiCore(false);
 }
 
 void PyMainWindowClassWrapper::setNumberOfThreads(MainWindow* o, const int& value)
 {
-    o->mpConfig->setNumberOfThreads(value);
+    Q_UNUSED(o);
+    gpConfig->setNumberOfThreads(value);
 }
 
 void PyMainWindowClassWrapper::turnOnProgressBar(MainWindow* o)
 {
-    o->mpConfig->setEnableProgressBar(true);
+    Q_UNUSED(o);
+    gpConfig->setEnableProgressBar(true);
 }
 
 void PyMainWindowClassWrapper::turnOffProgressBar(MainWindow* o)
 {
-    o->mpConfig->setEnableProgressBar(false);
+    Q_UNUSED(o);
+    gpConfig->setEnableProgressBar(false);
 }
 
 QStringList PyMainWindowClassWrapper::componentNames(MainWindow* o)

@@ -54,7 +54,6 @@
 #include "version_gui.h"
 #include "Widgets/HcomWidget.h"
 #include "LibraryHandler.h"
-#include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/PyDockWidget.h"
@@ -62,6 +61,7 @@
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
 #include "Widgets/DataExplorer.h"
+#include "Widgets/MessageWidget.h"
 #include "PlotHandler.h"
 
 
@@ -101,7 +101,7 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
     mpLogDataHandler = new LogDataHandler(this);
 
     //Establish connections that should always remain
-    connect(this, SIGNAL(checkMessages()), gpTerminalWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(checkMessages()), gpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 
 }
 
@@ -548,7 +548,7 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
 
     if ( mModelObjectMap.contains(mpTempGUIModelObject->getName()) )
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+        gpMessageHandler->addErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
         //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
     }
     else
@@ -666,7 +666,7 @@ void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEn
     }
     else
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Could not delete object with name " + rObjectName + ", object not found");
+        gpMessageHandler->addErrorMessage("Could not delete object with name " + rObjectName + ", object not found");
     }
     emit checkMessages();
     mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo maybe handle by signal, and maybe have a bool in view that tells it to hold redraw (usefull on multiple deletes like when closing a model)
@@ -707,7 +707,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, UndoSt
         }
         else
         {
-            gpTerminalWidget->mpConsole->printErrorMessage(QString("No GUI Object with name: ") + oldName + " found when attempting rename!");
+            gpMessageHandler->addErrorMessage(QString("No GUI Object with name: ") + oldName + " found when attempting rename!");
         }
 
         if (undoSettings == Undo)
@@ -1166,7 +1166,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                      {
                          if (disconStartRealPort && disconEndRealPort)
                          {
-                             gpTerminalWidget->mpConsole->printErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
+                             gpMessageHandler->addErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
                              success = false;
                          }
 
@@ -1275,14 +1275,14 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
             //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
             if ( startPortIsGroupPort && endPortIsGroupPort )
             {
-                gpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
+                gpMessageHandler->addErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
                 return 0;
             }
 
             // Abort with error if trying to connect two undefined group ports to each other
             if ( (pStartRealPort==0) && (pEndRealPort==0) )
             {
-                gpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two undefined group ports to each other");
+                gpMessageHandler->addErrorMessage("You are not allowed to connect two undefined group ports to each other");
                 return 0;
             }
 
@@ -1408,7 +1408,7 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
     else
     {
         // This should never happen, but just in case
-        gpTerminalWidget->mpConsole->printErrorMessage("Could not create connector, connector creation already in progress");
+        gpMessageHandler->addErrorMessage("Could not create connector, connector creation already in progress");
         return 0;
     }
 }
@@ -2471,7 +2471,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QFile file(modelFilePath);   //Create a QFile object
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+            gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
             return;
         }
 
@@ -2498,7 +2498,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QFile xmlFile(modelFilePath);
         if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + modelFilePath);
+            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
             return;
         }
         QTextStream out(&xmlFile);
@@ -2756,7 +2756,7 @@ void ContainerObject::showLossesFromDialog()
     //We should not be here if there is no plot data, but let's check to be sure
     if(mpLogDataHandler->isEmpty())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
+        gpMessageHandler->addErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
         return;
     }
 

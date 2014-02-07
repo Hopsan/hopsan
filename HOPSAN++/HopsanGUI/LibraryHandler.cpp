@@ -38,7 +38,7 @@
 #include "LibraryHandler.h"
 #include "ModelHandler.h"
 #include "version_gui.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Dialogs/EditComponentDialog.h"
 #include "GUIObjects/GUISystem.h"
 
@@ -84,7 +84,7 @@ void LibraryHandler::loadLibrary()
         }
         else
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
+            gpMessageHandler->addErrorMessage("Error: Library " + libDir + " is already loaded!");
         }
     }
 }
@@ -223,22 +223,22 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                         if(!coreAccess.loadComponentLib(tempLib.libFilePath))
                         {
                             //Failed to load, attempt recompilation
-                            gpTerminalWidget->checkMessages();
-                            gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+it.filePath());
-                            gpTerminalWidget->mpConsole->printInfoMessage("Attempting to recompile library: "+tempLib.name+"...");
+                            gpMessageHandler->collectHopsanCoreMessages();
+                            gpMessageHandler->addErrorMessage("Failed to load library: "+it.filePath());
+                            gpMessageHandler->addInfoMessage("Attempting to recompile library: "+tempLib.name+"...");
                             recompileLibrary(tempLib,false,0,true);
-                            gpTerminalWidget->checkMessages();
+                            gpMessageHandler->collectHopsanCoreMessages();
 
                             //Try to load again
                             if(!coreAccess.loadComponentLib(tempLib.libFilePath))
                             {
                                 //Still no success, recompilation failed. Ignore and go on.
-                                gpTerminalWidget->mpConsole->printErrorMessage("Recompilation failed.");
+                                gpMessageHandler->addErrorMessage("Recompilation failed.");
                             }
                             else
                             {
                                 //Successful loading after recompilation
-                                gpTerminalWidget->mpConsole->printInfoMessage("Recompilation successful!");
+                                gpMessageHandler->addInfoMessage("Recompilation successful!");
                                 loadedLibs.append(tempLib.libFilePath);
                                 loadedSomething = true;
                             }
@@ -273,9 +273,9 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         if(!coreAccess.loadComponentLib(itd.filePath()))
         {
 
-            gpTerminalWidget->checkMessages();
-            gpTerminalWidget->mpConsole->printErrorMessage("Failed to load library: "+it.filePath());
-            gpTerminalWidget->checkMessages();
+            gpMessageHandler->collectHopsanCoreMessages();
+            gpMessageHandler->addErrorMessage("Failed to load library: "+it.filePath());
+            gpMessageHandler->collectHopsanCoreMessages();
         }
         else
         {
@@ -307,7 +307,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         QFile file(cafFiles[i]);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + cafFiles[i]);
+            gpMessageHandler->addErrorMessage("Failed to open file or not a text file: " + cafFiles[i]);
             continue;
         }
         QDomDocument domDocument;
@@ -396,7 +396,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             success = coreAccess.hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
             if(!success)
             {
-                gpTerminalWidget->mpConsole->printWarningMessage("Failed to load component: "+pAppearanceData->getTypeName()+", (library is not recompilable)", "failedtoloadcomp");
+                gpMessageHandler->addWarningMessage("Failed to load component: "+pAppearanceData->getTypeName()+", (library is not recompilable)", "failedtoloadcomp");
                 continue;
             }
         }
@@ -455,7 +455,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             }
             else
             {
-                gpTerminalWidget->mpConsole->printWarningMessage("Component with full type name \""+fullTypeName+"\" is already registered in library handler. Ignored.");
+                gpMessageHandler->addWarningMessage("Component with full type name \""+fullTypeName+"\" is already registered in library handler. Ignored.");
             }
         }
     }
@@ -473,7 +473,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         gpConfig->removeUserLib(xmlPath);
     }
 
-    gpTerminalWidget->checkMessages();
+    gpMessageHandler->collectHopsanCoreMessages();
 }
 
 
@@ -525,7 +525,7 @@ void LibraryHandler::unloadLibrary(QString typeName)
         }
     }
 
-    gpTerminalWidget->checkMessages();
+    gpMessageHandler->collectHopsanCoreMessages();
     emit contentsChanged();
 }
 
@@ -657,7 +657,7 @@ void LibraryHandler::importFmu()
     QFileInfo fmuFileInfo = QFileInfo(filePath);
     if(!fmuFileInfo.exists())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("File not found: "+filePath);
+        gpMessageHandler->addErrorMessage("File not found: "+filePath);
         return;
     }
     gpConfig->setFmuImportDir(fmuFileInfo.absolutePath());

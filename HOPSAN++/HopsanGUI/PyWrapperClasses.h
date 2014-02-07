@@ -33,7 +33,6 @@
 #include "MainWindow.h"
 #include "PlotWindow.h"
 #include "Widgets/LibraryWidget.h"
-#include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/PyDockWidget.h"

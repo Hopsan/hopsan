@@ -36,7 +36,6 @@
 
 #include "../global.h"
 #include "GUIUtilities.h"
-#include "Widgets/MessageWidget.h"
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"

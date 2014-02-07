@@ -45,7 +45,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h" //!< @todo why is this needed in here
 #include "Widgets/ProjectTabWidget.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 
 
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
@@ -628,14 +628,14 @@ void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
     QUrl url = reply->url();
     if (reply->error())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
+        gpMessageHandler->addErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
         return;
     }
     else
     {
         QFile file(gpDesktopHandler->getDataPath()+"/update.exe");
         if (!file.open(QIODevice::WriteOnly)) {
-            gpTerminalWidget->mpConsole->printErrorMessage("Could not open update.exe for writing.");
+            gpMessageHandler->addErrorMessage("Could not open update.exe for writing.");
             return;
         }
         file.write(reply->readAll());

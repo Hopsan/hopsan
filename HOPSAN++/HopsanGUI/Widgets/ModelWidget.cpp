@@ -47,7 +47,7 @@
 #include "version_gui.h"
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/DebuggerWidget.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/QuickNavigationWidget.h"
@@ -425,7 +425,7 @@ void ModelWidget::exportModelParameters()
 //    QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
 //    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
 //    {
-//        gpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
+//        gpMessageHandler->addErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
 //        return;
 //    }
 //    QTextStream out(&xmlhmf);
@@ -442,7 +442,7 @@ void ModelWidget::exportModelParameters()
 //    gpMainWindow->updateRecentList();
 //    this->setSaved(true);
 
-//    gpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
+//    gpMessageHandler->addInfoMessage("Saved model: " + tabName);
 
 }
 
@@ -665,7 +665,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             this->setSaved(true);
         }
 
-        gpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
+        gpMessageHandler->addInfoMessage("Saved model: " + modelFilePathToSave);
 
         mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
     }
@@ -677,7 +677,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     QFile file(path);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+        gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
         return false;
     }
 
@@ -726,7 +726,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     QFile xmlFile(path);
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + path);
+        gpMessageHandler->addErrorMessage("Could not save to file: " + path);
         return false;
     }
     QTextStream out(&xmlFile);

@@ -33,7 +33,7 @@
 #include "GUIPort.h"
 #include "LibraryHandler.h"
 #include "UndoStack.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Utilities/GUIUtilities.h"
 
 #include <QMap>
@@ -123,12 +123,12 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
         }
     }
 
-    gpTerminalWidget->checkMessages();
+    gpMessageHandler->collectHopsanCoreMessages();;
 
     if (!success)
     {
         const QString str("Failed to load connector between: "+startComponentName+"->"+startPortName+" and "+endComponentName+"->"+endPortName+" in system: "+pContainer->getName());
-        gpTerminalWidget->mpConsole->printErrorMessage(str, "FailedLoadConnector");
+        gpMessageHandler->addErrorMessage(str, "FailedLoadConnector");
     }
 
     return success;
@@ -169,11 +169,11 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     {
         if (parameterName.contains("#"))
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Startvalue ignored.", "startvaluemismatch");
+            gpMessageHandler->addWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Startvalue ignored.", "startvaluemismatch");
         }
         else
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("Parameter mismatch: "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Parameter ignored.", "parametermismatch");
+            gpMessageHandler->addWarningMessage("Parameter mismatch: "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Parameter ignored.", "parametermismatch");
         }
         return;
     }
@@ -192,7 +192,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         QString portparname = parameterName.split("::")[0];
         if (theotherparameternames.contains(portparname))
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting:  "+portparname+"  with:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
+            gpMessageHandler->addWarningMessage("Prevented overwriting:  "+portparname+"  with:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
         }
         else
         {

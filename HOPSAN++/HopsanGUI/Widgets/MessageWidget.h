@@ -25,46 +25,42 @@
 #ifndef MESSAGEWIDGET_H
 #define MESSAGEWIDGET_H
 
-#include <QtGui>
+#include <QWidget>
+#include "MessageHandler.h"
 
-class MainWindow;
-class CoreMessagesAccess;
-class GUIMessage;
-class TerminalWidget;
+// Forward Declaration
+class QTextEdit;
+class QCheckBox;
 
 class MessageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    MessageWidget(QWidget *pParent=0, TerminalWidget *pTerminalWidget=0);
-    void printCoreMessages();
-    void printGUIInfoMessage(QString message, QString tag=QString());
-    void printGUIErrorMessage(QString message, QString tag=QString());
-    void printGUIWarningMessage(QString message, QString tag=QString());
-    void printGUIDebugMessage(QString message, QString tag=QString());
+    MessageWidget(QWidget *pParent=0);
+    void addText(const QString &rText);
     QSize sizeHint() const;
     void loadConfig();
     bool textEditHasFocus();
 
 public slots:
-    void clear();
-    void checkMessages();
+    void receiveMessage(const GUIMessage &rMessage);
     void setGroupByTag(bool value);
     void showErrorMessages(bool value);
     void showWarningMessages(bool value);
     void showInfoMessages(bool value);
     void showDebugMessages(bool value);
+    void clear();
     void copy();
 
 protected:
-    virtual void mouseMoveEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    void setMessageColor(QString type);
-    void updateNewMessagesOnly();
-    void updateEverything();
-    void appendOneMessage(GUIMessage msg);
+    void printNewMessagesOnly();
+    void reprintEverything();
+    void determineMessageColor(MessageTypeEnumT type);
+    void printOneMessage(const GUIMessage &rMessage);
     QList< GUIMessage > mNewMessageList;
     QList< GUIMessage > mPrintedMessageList;
     bool mGroupByTag;
@@ -75,28 +71,11 @@ private:
     QString mLastTag;
     int mSubsequentTags;
 
-    CoreMessagesAccess *mpCoreAccess;
-    TerminalWidget *mpTerminalWidget;
-
     QTextEdit *mpTextEdit;
-    QGridLayout *mpLayout;
-    QPushButton *mpClearMessageWidgetButton;
-    QToolButton *mpShowErrorMessagesButton;
-    QToolButton *mpShowWarningMessagesButton;
-    QToolButton *mpShowInfoMessagesButton;
-    QToolButton *mpShowDebugMessagesButton;
     QCheckBox *mpGroupByTagCheckBox;
 };
 
 
-class GUIMessage
-{
-public:
-    GUIMessage(QString message, QString type, QString tag="");
-    QString message;
-    QString type;
-    QString tag;
-    QString time;
-};
+
 
 #endif // MESSAGEWIDGET_H

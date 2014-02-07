@@ -25,7 +25,7 @@
 #ifndef MODELOBJECTPROPERTIESDIALOG_H
 #define MODELOBJECTPROPERTIESDIALOG_H
 
-#include <QtGui>
+#include <QDialog>
 
 //Forward Declaration
 class ModelObject;

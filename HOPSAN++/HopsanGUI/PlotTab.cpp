@@ -36,7 +36,7 @@
 #include "PlotWindow.h"
 #include "Utilities/GUIUtilities.h"
 #include "version_gui.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "PlotArea.h"
 #include "MainWindow.h"
@@ -337,7 +337,7 @@ void PlotTab::exportToCsv(QString fileName)
     file.setFileName(fileName);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + fileName);
         return;
     }
 
@@ -348,7 +348,7 @@ void PlotTab::exportToCsv(QString fileName)
     //! @todo this seems to write column ordered data, we need to support column or row ordered data
     if (getPlotTabType() != XYPlotType)
     {
-        gpTerminalWidget->mpConsole->printWarningMessage("Will only export from first sub-plot");
+        gpMessageHandler->addWarningMessage("Will only export from first sub-plot");
     }
     //! @todo make sure that csv can export from multiple sub plots (but how)
 
@@ -421,7 +421,7 @@ void PlotTab::exportToHvc(QString fileName)
     QFile file(fileInfo.absoluteFilePath());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + fileName);
         return;
     }
 
@@ -492,7 +492,7 @@ void PlotTab::exportToMatlab()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
@@ -606,7 +606,7 @@ void PlotTab::exportToGnuplot()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
 
@@ -616,7 +616,7 @@ void PlotTab::exportToGnuplot()
 
     if (getPlotTabType() != XYPlotType)
     {
-        gpTerminalWidget->mpConsole->printWarningMessage("Will only export from first sub-plot");
+        gpMessageHandler->addWarningMessage("Will only export from first sub-plot");
     }
     //! @todo make sure that csv can export from multiple sub plots (but how)
 
@@ -753,7 +753,7 @@ void PlotTab::exportToPLO()
 
     if (getPlotTabType() != XYPlotType)
     {
-        gpTerminalWidget->mpConsole->printWarningMessage("Will only export from first sub-plot");
+        gpMessageHandler->addWarningMessage("Will only export from first sub-plot");
     }
     //! @todo make sure that csv can export from multiple sub plots (but how)
 
@@ -1149,7 +1149,7 @@ void PlotTab::saveToXml()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
 

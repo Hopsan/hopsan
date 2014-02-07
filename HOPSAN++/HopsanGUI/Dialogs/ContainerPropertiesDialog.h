@@ -32,6 +32,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QDialogButtonBox>
+#include <QTextEdit>
 
 #include "Dialogs/ModelObjectPropertiesDialog.h"
 

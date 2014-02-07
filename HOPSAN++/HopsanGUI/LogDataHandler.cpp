@@ -22,12 +22,18 @@
 //!
 //$Id$
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QProgressDialog>
+#include <QInputDialog>
+#include <QDialogButtonBox>
+
 #include "LogDataHandler.h"
 
 #include "PlotWindow.h"
 #include "DesktopHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "common.h"
 #include "global.h"
@@ -96,7 +102,7 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QStringList &rV
         }
         else
         {
-            gpTerminalWidget->mpConsole->printWarningMessage(QString("In export PLO: %1 was not found, ignoring!").arg(rVariables[v]));
+            gpMessageHandler->addWarningMessage(QString("In export PLO: %1 was not found, ignoring!").arg(rVariables[v]));
         }
     }
     exportToPlo(rFilePath, dataPtrs, version);
@@ -115,7 +121,7 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     file.setFileName(rFilePath);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + rFilePath);
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + rFilePath);
         return;
     }
 
@@ -142,7 +148,7 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     {
         if ( gens.count(gens.first()) != gens.size() )
         {
-            gpTerminalWidget->mpConsole->printWarningMessage(QString("In export PLO: Data had different generations, time vector may not be correct for all exported data!"));
+            gpMessageHandler->addWarningMessage(QString("In export PLO: Data had different generations, time vector may not be correct for all exported data!"));
         }
         timeGen = gens.first();
     }
@@ -267,7 +273,7 @@ void LogDataHandler::exportToCSV(const QString &rFilePath, const QVector<SharedV
     file.setFileName(rFilePath);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + rFilePath);
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + rFilePath);
         return;
     }
 
@@ -349,7 +355,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
                 // Check if this seems to be a plo file
                 if (line != "'VERSION'")
                 {
-                    gpTerminalWidget->mpConsole->printErrorMessage(fileInfo.fileName()+" Does not seem to be a plo file, Aborting import!");
+                    gpMessageHandler->addErrorMessage(fileInfo.fileName()+" Does not seem to be a plo file, Aborting import!");
                     return;
                 }
             }
@@ -410,7 +416,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
         }
         if (!parseOK)
         {
-            gpTerminalWidget->mpConsole->printErrorMessage(QString("A parse error occured while parsing the header of: ")+fileInfo.fileName()+" Aborting import!");
+            gpMessageHandler->addErrorMessage(QString("A parse error occured while parsing the header of: ")+fileInfo.fileName()+" Aborting import!");
             return;
         }
     }
@@ -507,7 +513,7 @@ void LogDataHandler::importFromCSV_AutoFormat(QString importFilePath)
     }
     else
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(QString("Could not open file: %1").arg(importFilePath));
+        gpMessageHandler->addErrorMessage(QString("Could not open file: %1").arg(importFilePath));
     }
     file.close();
 }
@@ -631,7 +637,7 @@ void LogDataHandler::importFromPlainColumnCsv(QString importFilePath)
 
     if(!pParser->isOk())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("CSV file could not be parsed.");
+        gpMessageHandler->addErrorMessage("CSV file could not be parsed.");
         return;
     }
 
@@ -727,12 +733,12 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
         }
         else
         {
-            gpTerminalWidget->mpConsole->printErrorMessage("Could not open data file:  "+csvFilePath);
+            gpMessageHandler->addErrorMessage("Could not open data file:  "+csvFilePath);
         }
     }
     else
     {
-        gpTerminalWidget->mpConsole->printErrorMessage("columns.size() != names.size() in:  LogDataHandler::importTimeVariablesFromCSVColumns()");
+        gpMessageHandler->addErrorMessage("columns.size() != names.size() in:  LogDataHandler::importTimeVariablesFromCSVColumns()");
     }
 }
 
@@ -1727,7 +1733,7 @@ double LogDataHandler::pokeVariable(const QString &a, const int index, const dou
     {
         return pokeVariable(pData1, index, value);
     }
-    gpTerminalWidget->mpConsole->printErrorMessage("In Poke, No such variable: " + a);
+    gpMessageHandler->addErrorMessage("In Poke, No such variable: " + a);
     return -1;
 }
 
@@ -1751,7 +1757,7 @@ bool LogDataHandler::deleteVariable(const QString &rVarName)
         emit dataRemoved();
         return true;
     }
-    gpTerminalWidget->mpConsole->printErrorMessage("In Delete, No such variable: " + rVarName);
+    gpMessageHandler->addErrorMessage("In Delete, No such variable: " + rVarName);
     return false;
 }
 
@@ -1790,7 +1796,7 @@ double LogDataHandler::peekVariable(const QString &a, const int index)
     {
         return peekVariable(pData1,index);
     }
-    gpTerminalWidget->mpConsole->printErrorMessage("In Peek, No such variable: " + a);
+    gpMessageHandler->addErrorMessage("In Peek, No such variable: " + a);
     return 0;
 }
 
@@ -1833,10 +1839,10 @@ QString LogDataHandler::saveVariable(const QString &currName, const QString &new
             pNewData->assignFrom(pCurrData);
             return pNewData->getFullVariableName();
         }
-        gpTerminalWidget->mpConsole->printErrorMessage("Could not create variable: " + newName);
+        gpMessageHandler->addErrorMessage("Could not create variable: " + newName);
         return QString();
     }
-    gpTerminalWidget->mpConsole->printErrorMessage("Variable: " + currName + " does not exist, or Variable: " + newName + " already exist");
+    gpMessageHandler->addErrorMessage("Variable: " + currName + " does not exist, or Variable: " + newName + " already exist");
     return QString();
 }
 
@@ -1870,7 +1876,7 @@ double LogDataHandler::pokeVariable(SharedVectorVariableT a, const int index, co
     double r = a->pokeData(index,value,err);
     if (!err.isEmpty())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(err);
+        gpMessageHandler->addErrorMessage(err);
     }
     return r;
 }
@@ -1888,7 +1894,7 @@ double LogDataHandler::peekVariable(SharedVectorVariableT a, const int index)
     double r = a->peekData(index, err);
     if (!err.isEmpty())
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(err);
+        gpMessageHandler->addErrorMessage(err);
     }
     return r;
 }
@@ -1926,7 +1932,7 @@ void LogDataHandler::appendVariable(const QString &a, const double x, const doub
         pData1->append(x,y);
         return;
     }
-    gpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    gpMessageHandler->addErrorMessage("No such variable: " + a);
     return;
 }
 
@@ -1935,7 +1941,7 @@ SharedVectorVariableT LogDataHandler::defineNewVariable(const QString &rDesiredn
     bool ok = isNameValid(rDesiredname);
     if (!ok)
     {
-        gpTerminalWidget->mpConsole->printErrorMessage(QString("Invalid variable name: %1").arg(rDesiredname));
+        gpMessageHandler->addErrorMessage(QString("Invalid variable name: %1").arg(rDesiredname));
     }
     if( ok && (mLogDataMap.find(rDesiredname) == mLogDataMap.end()) )
     {
@@ -2337,7 +2343,7 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
                 {
                     // Abort if we reach a generation that already exist and does not match
                     //! @todo we could keep going and try every gen (but then we do not want to duplicate this warning message)
-                    gpTerminalWidget->mpConsole->printWarningMessage("Alias collision when trying to merge alias, Aborting alias merge!");
+                    gpMessageHandler->addWarningMessage("Alias collision when trying to merge alias, Aborting alias merge!");
                     break;
                 }
                 else

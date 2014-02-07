@@ -257,7 +257,7 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
     mProgressBarWorkerThread.quit();
 
     //! @todo maybe use signals and slots for messages instead
-    mpTerminal->checkMessages();
+    gpMessageHandler->collectHopsanCoreMessages();
 
     // Handle printing of all the error messages
     if (mAborted)

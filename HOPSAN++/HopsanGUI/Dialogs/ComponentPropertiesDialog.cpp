@@ -23,7 +23,6 @@
 //$Id$
 
 //Qt includes
-#include <QtGui>
 #include <QDebug>
 
 //Hopsan includes
@@ -40,7 +39,6 @@
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "LibraryHandler.h"
-#include "Widgets/MessageWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 

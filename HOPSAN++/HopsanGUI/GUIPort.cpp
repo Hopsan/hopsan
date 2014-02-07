@@ -39,7 +39,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/ModelWidget.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 
 
 QPointF getOffsetPointfromPort(Port *pStartPort, Port *pEndPort)
@@ -342,7 +342,7 @@ void Port::openRightClickMenu(QPoint screenPos)
             //! @todo if same unit exist in multiple places we have a problem
             if (pqs.size() > 1)
             {
-                gpTerminalWidget->mpConsole->printWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
+                gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
             }
             QString defaultUnit;
             if (pqs.size() == 1)
@@ -657,7 +657,7 @@ void Port::refreshPortLabelText()
         // backwards compatible
         if (!mpPortAppearance->mDescription.isEmpty())
         {
-            gpTerminalWidget->mpConsole->printWarningMessage("You seem to have entered a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
+            gpMessageHandler->addWarningMessage("You seem to have entered a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
             //Append description
            desc = mpPortAppearance->mDescription;
            label.append("<br>\"" + desc + "\"");

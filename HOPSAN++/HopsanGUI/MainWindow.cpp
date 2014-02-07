@@ -135,8 +135,6 @@ void MainWindow::createContents()
     // Create plothandler as child to mainwindo but assign to global ptr
     gpPlotHandler = new PlotHandler(this);
 
-    mpConfig = gpConfig;
-
     //Create the terminal widget
     mpTerminalDock = new QDockWidget(tr("Terminal"), this);
     mpTerminalDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -151,21 +149,18 @@ void MainWindow::createContents()
     //Create the message widget and its dock (must be done before everything that uses it!)
     mpMessageDock = new QDockWidget(tr("Messages"), this);
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    mpMessageWidget = new MessageWidget(this, mpTerminalWidget);
+    mpMessageWidget = new MessageWidget(this);
     mpMessageDock->setWidget(mpMessageWidget);
     mpMessageDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
-    mpMessageDock->hide();
-    //mpMessageWidget->checkMessages();
-    //mpMessageWidget->printGUIInfoMessage(tr("HopsanGUI, Version: ") + QString(HOPSANGUIVERSION));
+    connect(gpMessageHandler, SIGNAL(newAnyMessage(GUIMessage)), mpMessageWidget, SLOT(receiveMessage(GUIMessage)));
 
-    mpTerminalWidget->checkMessages();
+    gpMessageHandler->collectHopsanCoreMessages();
 #ifdef HOPSANCOMPILED64BIT
-    mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI 64-bit, Version: " + QString(HOPSANGUIVERSION));
+    gpMessageHandler->addInfoMessage("HopsanGUI 64-bit, Version: " + QString(HOPSANGUIVERSION));
 #else
-    mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI 32-bit, Version: " + QString(HOPSANGUIVERSION));
+    gpMessageHandler->addInfoMessage("HopsanGUI 32-bit, Version: " + QString(HOPSANGUIVERSION));
 #endif
-
 
     //Load configuration from settings file
     gpSplash->showMessage("Loading configuration...");
