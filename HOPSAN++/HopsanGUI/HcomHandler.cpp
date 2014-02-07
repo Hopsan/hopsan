@@ -501,7 +501,7 @@ void HcomHandler::createCommands()
     repaCmd.description.append("Loads parameters from .XML");
     repaCmd.help.append(" Usage: repa [filepath]");
     repaCmd.fnc = &HcomHandler::executeLoadParametersCommand;
-    repaCmd.group = "Plot Commands";
+    repaCmd.group = "Parameter Commands";
     mCmdList << repaCmd;
 
     HcomCommand loadCmd;
