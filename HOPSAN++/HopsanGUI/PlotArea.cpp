@@ -1289,13 +1289,13 @@ void PlotArea::updateAxisLabels()
             // First decide new y-axis label
             // If alias empty then use data name, else use the alias name
             QString newLabel;
-            if (mPlotCurves[i]->getVariable()->getAliasName().isEmpty())
+            if (mPlotCurves[i]->getVectorVariable()->getAliasName().isEmpty())
             {
                 newLabel = QString("%1").arg(mPlotCurves[i]->getDataName());
             }
             else
             {
-                newLabel = QString("%1").arg(mPlotCurves[i]->getVariable()->getAliasName());
+                newLabel = QString("%1").arg(mPlotCurves[i]->getVectorVariable()->getAliasName());
             }
 
             // Add unit if it exists
@@ -2269,7 +2269,7 @@ void PlotArea::updateWindowtitleModelName()
     mModelPaths.clear();
     foreach(PlotCurve *pCurve, mPlotCurves)
     {
-        const QString &name = pCurve->getVariable()->getModelPath();
+        const QString &name = pCurve->getVectorVariable()->getModelPath();
         if (!mModelPaths.contains(name) && !name.isEmpty())
         {
             mModelPaths.append(name);

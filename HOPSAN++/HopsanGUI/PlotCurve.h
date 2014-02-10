@@ -83,8 +83,9 @@ public:
     int getAxisY();
 
     QVector<double> getVariableDataCopy() const;
-    const SharedVectorVariableContainerT getVariableContainer() const;
-    const SharedVectorVariableT getVariable() const;
+    const HopsanVariable getHopsanVariable() const;
+    const SharedVectorVariableContainerT getVectorVariableContainer() const;
+    const SharedVectorVariableT getVectorVariable() const;
     const SharedVectorVariableT getSharedTimeOrFrequencyVariable() const;
     const SharedVectorVariableT getSharedCustomXVariable() const;
     bool hasCustomXVariable() const;

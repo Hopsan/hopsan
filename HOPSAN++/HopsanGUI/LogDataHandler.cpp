@@ -91,24 +91,25 @@ void LogDataHandler::setParentContainerObject(ContainerObject *pParent)
 
 void LogDataHandler::exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version) const
 {
-    QVector<SharedVectorVariableT> dataPtrs;
+    QList<HopsanVariable> dataList;
+    dataList.reserve(rVariables.size());
     for(int v=0; v<rVariables.size(); ++v)
     {
         // Do not try to export missing data
-        SharedVectorVariableT pData = getVectorVariable(rVariables[v],-1);
-        if (pData)
+        HopsanVariable data = getHopsanVariable(rVariables[v],-1);
+        if (data)
         {
-            dataPtrs.append(pData);
+            dataList.append(data);
         }
         else
         {
             gpMessageHandler->addWarningMessage(QString("In export PLO: %1 was not found, ignoring!").arg(rVariables[v]));
         }
     }
-    exportToPlo(rFilePath, dataPtrs, version);
+    exportToPlo(rFilePath, dataList, version);
 }
 
-void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedVectorVariableT> &rVariables, int version) const
+void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable> variables, int version) const
 {
     if ( (version < 1) || (version > 2) )
     {
@@ -135,12 +136,11 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     //QStringList plotScaleStringList;
     //QStringList startvaluesList;
 
-    QVector<SharedVectorVariableT> dataPtrs = rVariables;
     QVector<int> gens;
-    gens.reserve(dataPtrs.size());
-    for(int v=0; v<dataPtrs.size(); ++v)
+    gens.reserve(variables.size());
+    for(int v=0; v<variables.size(); ++v)
     {
-        gens.append(dataPtrs[v]->getGeneration());
+        gens.append(variables[v].mpVariable->getGeneration());
     }
 
     int timeGen = -1;
@@ -157,13 +157,13 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     SharedVectorVariableT pTime = getVectorVariable(TIMEVARIABLENAME, timeGen);
     if (pTime)
     {
-        dataPtrs.prepend(pTime);
+        variables.prepend(pTime);
     }
 
 
     // Now begin to write to pro file
-    int nDataRows = dataPtrs[0]->getDataSize();
-    int nDataCols = dataPtrs.size();
+    int nDataRows = variables[0].mpVariable->getDataSize();
+    int nDataCols = variables.size();
 
     // Write initial Header data
     if (version == 1)
@@ -173,10 +173,10 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
         fileStream << "    '"<<ploFileInfo.baseName()<<".PLO'\n";
         fileStream << "    " << nDataCols-1  <<"    "<< nDataRows <<"\n";
         fileStream << "    'Time'";
-        for(int i=1; i<dataPtrs.size(); ++i)
+        for(int i=1; i<variables.size(); ++i)
         {
             //! @todo fix this formating so that it looks nice in plo file (need to know length of previous
-            fileStream << ",    '" << dataPtrs[i]->getSmartName()<<"'";
+            fileStream << ",    '" << variables[i].mpVariable->getSmartName()<<"'";
         }
         fileStream << "\n";
     }
@@ -188,11 +188,11 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
         fileStream << "    " << nDataCols  <<"    "<< nDataRows <<"\n";
         if (nDataCols > 0)
         {
-            fileStream << "    '" << dataPtrs[0]->getSmartName() << "'";
-            for(int i=1; i<dataPtrs.size(); ++i)
+            fileStream << "    '" << variables[0].mpVariable->getSmartName() << "'";
+            for(int i=1; i<variables.size(); ++i)
             {
                 //! @todo fix this formating so that it looks nice in plo file (need to know length of previous
-                fileStream << ",    '" << dataPtrs[i]->getSmartName()<<"'";
+                fileStream << ",    '" << variables[i].mpVariable->getSmartName()<<"'";
             }
         }
         else
@@ -203,10 +203,10 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     }
 
     // Write plotScalings line
-    for(int i=0; i<dataPtrs.size(); ++i)
+    for(int i=0; i<variables.size(); ++i)
     {
         QString str;
-        str.setNum(dataPtrs[i]->getPlotScale(),'E',6);
+        str.setNum(variables[i].mpVariable->getPlotScale(),'E',6);
         //plotScaleStringList.append(str); //Remember till later
         if (str[0] == '-')
         {
@@ -221,13 +221,13 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
 
     // If data is cached to disk, we need to move it to ram before writing plo
     QVector<bool> wasCached;
-    wasCached.reserve(dataPtrs.size());
-    for(int col=0; col<dataPtrs.size(); ++col)
+    wasCached.reserve(variables.size());
+    for(int col=0; col<variables.size(); ++col)
     {
-        wasCached.push_back(dataPtrs[col]->isCachingDataToDisk());
-        if (dataPtrs[col]->isCachingDataToDisk())
+        wasCached.push_back(variables[col].mpVariable->isCachingDataToDisk());
+        if (variables[col].mpVariable->isCachingDataToDisk())
         {
-            dataPtrs[col]->setCacheDataToDisk(false);
+            variables[col].mpVariable->setCacheDataToDisk(false);
         }
     }
 
@@ -236,9 +236,9 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     for(int row=0; row<nDataRows; ++row)
     {
         QString str;
-        for(int col=0; col<dataPtrs.size(); ++col)
+        for(int col=0; col<variables.size(); ++col)
         {
-            str.setNum(dataPtrs[col]->peekData(row,err),'E',6);
+            str.setNum(variables[col].mpVariable->peekData(row,err),'E',6);
             if (str[0] == '-')
             {
                 fileStream << " " << str;
@@ -252,9 +252,9 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     }
 
     // If data was cached to disk, we need to move it back to cache again
-    for(int col=0; col<dataPtrs.size(); ++col)
+    for(int col=0; col<variables.size(); ++col)
     {
-        dataPtrs[col]->setCacheDataToDisk(wasCached[col]);
+        variables[col].mpVariable->setCacheDataToDisk(wasCached[col]);
     }
 
     // Write plot data ending header
@@ -267,7 +267,7 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, const QVector<SharedV
     file.close();
 }
 
-void LogDataHandler::exportToCSV(const QString &rFilePath, const QVector<SharedVectorVariableT> &rVariables) const
+void LogDataHandler::exportToCSV(const QString &rFilePath, const QList<HopsanVariable> &rVariables) const
 {
     QFile file;
     file.setFileName(rFilePath);   //Create a QFile object
@@ -282,15 +282,16 @@ void LogDataHandler::exportToCSV(const QString &rFilePath, const QVector<SharedV
     // Save each variable to one line each
     for (int i=0; i<rVariables.size(); ++i)
     {
-        fileStream << rVariables[i]->getFullVariableName() << "," << rVariables[i]->getAliasName() << "," << rVariables[i]->getDataUnit() << ",";
-        rVariables[i]->sendDataToStream(fileStream, ",");
+        SharedVectorVariableT pVariable = rVariables[i].mpVariable;
+        fileStream << pVariable->getFullVariableName() << "," << pVariable->getAliasName() << "," << pVariable->getDataUnit() << ",";
+        pVariable->sendDataToStream(fileStream, ",");
         fileStream << "\n";
     }
 }
 
 void LogDataHandler::exportGenerationToCSV(const QString &rFilePath, const int gen) const
 {
-    QVector<SharedVectorVariableT> vars = getAllUniqueVariablesAtGeneration(gen);
+    QList<HopsanVariable> vars = getAllNonAliasVariablesAtGeneration(gen);
     // Now export all of them
     exportToCSV(rFilePath, vars);
 }
@@ -885,15 +886,15 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
 
 void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int gen, const int version) const
 {
-    QVector<SharedVectorVariableT> vars = getAllUniqueVariablesAtGeneration(gen);
+    QList<HopsanVariable> vars = getAllNonAliasVariablesAtGeneration(gen);
 
     // Ok now remove time vector as it will be added again in plo export
     // This is a hack, yes I know
     for (int i=0; i<vars.size(); ++i)
     {
-        if (vars[i]->getDataName() == TIMEVARIABLENAME)
+        if (vars[i].mpVariable->getDataName() == TIMEVARIABLENAME)
         {
-            vars.remove(i);
+            vars.removeAt(i);
         }
     }
 
@@ -1998,29 +1999,16 @@ PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString 
 }
 
 //! @brief Get a list of all available variables at their respective higest (newest) generation. Aliases are excluded.
-QVector<HopsanVariable> LogDataHandler::getAllUniqueVariablesAtNewestGeneration()
+QList<HopsanVariable> LogDataHandler::getAllNonAliasVariablesAtRespectiveNewestGeneration()
 {
-    QVector<HopsanVariable> dataPtrVector;
-
-    // First go through all data variable
-    LogDataMapT::iterator dit = mLogDataMap.begin();
-    for ( ; dit!=mLogDataMap.end(); ++dit)
-    {
-        SharedVectorVariableT pData = dit.value()->getNonAliasDataGeneration(-1);
-        if (pData)
-        {
-            dataPtrVector.append(HopsanVariable(dit.value(), pData));
-        }
-        //! @todo what about alias duplicates
-    }
-
-    return dataPtrVector;
+    return getAllNonAliasVariablesAtGeneration(-1);
 }
 
 //! @brief Get a list of all available variables at a specific generation, variables that does not have this generation will not be included.  Aliases are excluded.
-QVector<SharedVectorVariableT> LogDataHandler::getAllUniqueVariablesAtGeneration(const int generation) const
+QList<HopsanVariable> LogDataHandler::getAllNonAliasVariablesAtGeneration(const int generation) const
 {
-    QVector<SharedVectorVariableT> dataPtrVector;
+    QList<HopsanVariable> dataList;
+    dataList.reserve(mLogDataMap.size()); //(may not use all reserved space but that does not matter)
 
     // First go through all data variable
     LogDataMapT::const_iterator dit = mLogDataMap.begin();
@@ -2030,14 +2018,34 @@ QVector<SharedVectorVariableT> LogDataHandler::getAllUniqueVariablesAtGeneration
         SharedVectorVariableT pData = dit.value()->getNonAliasDataGeneration(generation);
         if (pData)
         {
-            dataPtrVector.push_back(pData);
+            dataList.push_back(pData);
         }
-        //! @todo what about alias duplicates
     }
-
-    return dataPtrVector;
+    return dataList;
 }
 
+QList<HopsanVariable> LogDataHandler::getAllVariablesAtRespectiveNewestGeneration()
+{
+    return getAllVariablesAtGeneration(-1);
+}
+
+QList<HopsanVariable> LogDataHandler::getAllVariablesAtGeneration(const int gen)
+{
+    QList<HopsanVariable> dataList;
+    dataList.reserve(mLogDataMap.size());
+
+    // First go through all data variable
+    LogDataMapT::iterator dit = mLogDataMap.begin();
+    for ( ; dit!=mLogDataMap.end(); ++dit)
+    {
+        SharedVectorVariableT pData = dit.value()->getDataGeneration(gen);
+        if (pData)
+        {
+            dataList.append(HopsanVariable(dit.value(), pData));
+        }
+    }
+    return dataList;
+}
 
 void LogDataHandler::getVariableNamesWithHighestGeneration(QStringList &rNames, QList<int> &rGens) const
 {
@@ -2051,14 +2059,6 @@ void LogDataHandler::getVariableNamesWithHighestGeneration(QStringList &rNames, 
         SharedVectorVariableT pData = dit.value()->getDataGeneration(-1);
         if(pData)
         {
-//            if (dit.value().mIsAlias)
-//            {
-//                rNames.append(dit.value().mpDataContainer->getAliasName());
-//            }
-//            else
-//            {
-//                rNames.append(dit.value().mpDataContainer->getFullVariableNameWithSeparator(rSeparator));
-//            }
             rNames.append(dit.key());
             rGens.append(pData->getGeneration());
         }

@@ -59,8 +59,8 @@ public:
 
     void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version=-1) const;
-    void exportToPlo(const QString &rFilePath, const QVector<SharedVectorVariableT> &rVariables, int version=-1) const;
-    void exportToCSV(const QString &rFilePath, const QVector<SharedVectorVariableT> &rVariables) const;
+    void exportToPlo(const QString &rFilePath, QList<HopsanVariable> variables, int version=-1) const;
+    void exportToCSV(const QString &rFilePath, const QList<HopsanVariable> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
 
     SharedVectorVariableT defineNewVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
@@ -93,8 +93,10 @@ public:
     HopsanVariable getHopsanVariable(const QString &rName, const int generation) const;
 
     QVector<SharedVectorVariableT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, const int generation=-1) const;
-    QVector<HopsanVariable> getAllUniqueVariablesAtNewestGeneration();
-    QVector<SharedVectorVariableT> getAllUniqueVariablesAtGeneration(const int generation) const;
+    QList<HopsanVariable> getAllNonAliasVariablesAtRespectiveNewestGeneration();
+    QList<HopsanVariable> getAllNonAliasVariablesAtGeneration(const int generation) const;
+    QList<HopsanVariable> getAllVariablesAtRespectiveNewestGeneration();
+    QList<HopsanVariable> getAllVariablesAtGeneration(const int gen);
 
     QList<QString> getImportedVariablesFileNames() const;
     QList<HopsanVariable> getImportedVariablesForFile(const QString &rFileName);

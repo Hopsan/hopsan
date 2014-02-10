@@ -1206,7 +1206,7 @@ void VectorVariableContainer::addDataGeneration(const int generation, SharedVect
     // Connect signals from data
     connect(pData.data(), SIGNAL(allowAutoRemove(int,bool)), this, SLOT(allowGenerationAutoRemoval(int,bool)), Qt::UniqueConnection);
 
-    // Emmit notification of new generation
+    // Emit notification of new generation
     emit generationAdded();
 }
 

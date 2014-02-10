@@ -57,6 +57,7 @@ class BaseVariableTreeItem : public QTreeWidgetItem
 public:
     BaseVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent);
     HopsanVariable getData();
+    QString getName() const;
     QString getFullName() const;
     const QString &getComponentName() const;
     const QString &getPortName() const;
@@ -110,6 +111,18 @@ BaseVariableTreeItem::BaseVariableTreeItem(HopsanVariable data, QTreeWidgetItem 
 HopsanVariable BaseVariableTreeItem::getData()
 {
     return mData;
+}
+
+QString BaseVariableTreeItem::getName() const
+{
+    if (mData.mpContainer)
+    {
+        return mData.mpContainer->getName();
+    }
+    else
+    {
+        return mData.mpVariable->getSmartName();
+    }
 }
 
 QString BaseVariableTreeItem::getFullName() const
@@ -233,15 +246,18 @@ void VariableTree::addFullVariable(HopsanVariable data)
 
 void VariableTree::addAliasVariable(HopsanVariable data)
 {
-    // Check if this is an alias variable, if alias is set and not already in the aliasLevelItemMap map
-    if ( !mAliasVariableItemMap.contains(data.mpVariable->getAliasName()) )
+    // Prevent adding the same alias again
+    if (!mAliasVariableItemMap.contains(data.mpVariable->getAliasName()))
     {
-        // Add a sub item with alias name and remember it in the map
-        AliasVariableTreeItem *pItem = new AliasVariableTreeItem(data, 0);
-        mpAliasItemParent->addChild(pItem);
-        mAliasVariableItemMap.insert(data.mpVariable->getAliasName(), pItem);
+        AliasVariableTreeItem *pAliasItem = new AliasVariableTreeItem(data, 0);
+        mAliasVariableItemMap.insert(data.mpVariable->getAliasName(), pAliasItem);
+        mpAliasItemParent->addChild(pAliasItem);
         mpAliasItemParent->setHidden(false);
         mpAliasItemParent->setExpanded(true);
+    }
+    else
+    {
+        qDebug() << "In VariableTree::addAliasVariable();  This should not happen!";
     }
 }
 
@@ -301,7 +317,7 @@ void VariableTree::updateList()
     refreshImportedVariables();
 
     // Now add variables to the Alis and Variable tree
-    QVector<HopsanVariable> variables = getLogDataHandler()->getAllUniqueVariablesAtNewestGeneration();
+    QList<HopsanVariable> variables = getLogDataHandler()->getAllVariablesAtRespectiveNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
         if ( variables[i].mpVariable->isImported() || (variables[i].mpVariable->getVariableSourceType() == TempVariableType) )
@@ -310,13 +326,15 @@ void VariableTree::updateList()
         }
 
         // Handle alias variables
-        if ( variables[i].mpVariable->hasAliasName() )
+        if ( variables[i].isVariableAlias() )
         {
             addAliasVariable(variables[i]);
         }
-
-        // Handle all non-temp non-imported variables
-        addFullVariable(variables[i]);
+        else
+        {
+            // Handle all non-temp non-imported non-alias variables
+            addFullVariable(variables[i]);
+        }
     }
 
     // Sort the tree widget
@@ -417,7 +435,7 @@ void VariableTree::mouseMoveEvent(QMouseEvent *event)
     if(item != 0)
     {
         QString mimeText;
-        mimeText = QString("HOPSANPLOTDATA:%1:%2:%3").arg(item->getFullName()).arg(item->getGeneration()).arg(item->getModelName());
+        mimeText = QString("HOPSANPLOTDATA:%1:%2:%3").arg(item->getName()).arg(item->getGeneration()).arg(item->getModelName());
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
         mimeData->setText(mimeText);

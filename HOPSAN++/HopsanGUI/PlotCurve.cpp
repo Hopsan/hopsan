@@ -265,12 +265,12 @@ const QString &PlotCurve::getDataModelPath() const
 }
 
 
-const SharedVectorVariableT PlotCurve::getVariable() const
+const SharedVectorVariableT PlotCurve::getVectorVariable() const
 {
     return mData.mpVariable;
 }
 
-const SharedVectorVariableContainerT PlotCurve::getVariableContainer() const
+const SharedVectorVariableContainerT PlotCurve::getVectorVariableContainer() const
 {
     return mData.mpContainer;
 }
@@ -288,6 +288,11 @@ QVector<double> PlotCurve::getVariableDataCopy() const
 {
     //! @todo this is no longer a reference need to see where it was used to avoid REALY slow code feetching data all the time /Peter
     return mData.mpVariable->getDataVectorCopy();
+}
+
+const HopsanVariable PlotCurve::getHopsanVariable() const
+{
+    return mData;
 }
 
 //! @brief Returns the minimum and maximum value of the curve (for values higher then 0)
