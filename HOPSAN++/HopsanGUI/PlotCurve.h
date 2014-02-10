@@ -102,7 +102,9 @@ public:
     const QString &getCurrentUnit() const;
     const QString &getDataModelPath() const;
     VariableSourceTypeT getDataSource() const;
+    bool hasCustomDataPlotScale() const;
 
+    bool hasCustomCurveDataPlotScale() const;
     void setCustomCurveDataUnit(const QString &rUnit);
     void setCustomCurveDataUnit(const QString &rUnit, double scale);
     void removeCustomCurveDataUnit();
@@ -167,8 +169,7 @@ private:
     HopsanVariable mCustomXdata;
     bool mHaveCustomData;
 
-    QString mCustomCurveDataUnit;
-    double mCustomCurveDataUnitScale;
+    UnitScale mCustomCurveDataUnitScale;
     double mLocalAdditionalCurveScale;
     double mLocalAdditionalCurveOffset;
 

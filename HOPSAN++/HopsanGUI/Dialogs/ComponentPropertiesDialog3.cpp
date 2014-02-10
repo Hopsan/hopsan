@@ -911,6 +911,7 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
 {
     mVariableTypeName = rData.mName;
     mVariablePortDataName = rData.mPortName+"#"+rData.mName;
+    mOriginalUnit = rData.mUnit;
     mpModelObject = pModelObject;
 
     QHBoxLayout* pLayout = new QHBoxLayout(this);
@@ -950,7 +951,19 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
 void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
 {
     QMenu menu;
-    QMap<QString, double> unitScales = gpConfig->getCustomUnits(mVariableTypeName);
+    QMap<QString, double> unitScales;
+    if (mVariableTypeName == "Value")
+    {
+        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
+        if (pqs.size() > 0)
+        {
+            unitScales = gpConfig->getCustomUnits(pqs.first());
+        }
+    }
+    else
+    {
+        unitScales = gpConfig->getCustomUnits(mVariableTypeName);
+    }
     if (!unitScales.isEmpty())
     {
         QList<QString> keys = unitScales.keys();

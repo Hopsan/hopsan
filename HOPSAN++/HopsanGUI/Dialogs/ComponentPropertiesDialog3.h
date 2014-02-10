@@ -105,7 +105,7 @@ private slots:
 private:
     QLineEdit *mpPlotScaleEdit;
     ModelObject *mpModelObject;
-    QString mVariableTypeName, mVariablePortDataName;
+    QString mVariableTypeName, mVariablePortDataName, mOriginalUnit;
 };
 
 

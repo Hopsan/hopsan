@@ -35,7 +35,9 @@ public:
     UnitScale(const QString &rUnit, const double scale);
     void clear();
     double toDouble() const;
+    double toDouble(const double def) const;
     bool isEmpty() const;
+    bool isOne() const;
     void setScale(const double scale);
     void setOnlyScale(const double scale);
     QString mUnit;

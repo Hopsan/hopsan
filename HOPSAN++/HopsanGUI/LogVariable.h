@@ -303,7 +303,6 @@ protected:
     SharedVectorVariableT mpSharedTimeOrFrequencyVector;
 
     UnitScale mCustomUnitScale;
-    double mDataPlotScale;
     double mDataPlotOffset;
     int mGeneration;
 };

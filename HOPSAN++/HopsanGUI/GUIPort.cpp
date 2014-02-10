@@ -336,44 +336,55 @@ void Port::openRightClickMenu(QPoint screenPos)
         //! @todo should have a help function for this as similar checks are done elsewere
         const QString &dataName = logVars[i]->getDataName();
         const QString &dataUnit = logVars[i]->getDataUnit();
-        if ( dataName == "Value" && dataUnit != "-")
-        {
-            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(dataUnit);
-            //! @todo if same unit exist in multiple places we have a problem
-            if (pqs.size() > 1)
-            {
-                gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
-            }
-            QString defaultUnit;
-            if (pqs.size() == 1)
-            {
-                defaultUnit = gpConfig->getDefaultUnit(pqs.first());
-            }
 
-            if (!defaultUnit.isEmpty())
+        QString displayUnit;
+        UnitScale custUS;
+        mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+dataName, custUS);
+        if (custUS.isEmpty())
+        {
+            if ( dataName == "Value" && dataUnit != "-")
             {
-                pTempAction = menu.addAction(QString("Plot "+dataName+" ["+defaultUnit+"]"));
+                QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(dataUnit);
+                //! @todo if same unit exist in multiple places we have a problem
+                if (pqs.size() > 1)
+                {
+                    gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
+                }
+                QString defaultUnit;
+                if (pqs.size() == 1)
+                {
+                    defaultUnit = gpConfig->getDefaultUnit(pqs.first());
+                }
+
+                if (!defaultUnit.isEmpty())
+                {
+                    displayUnit = defaultUnit;
+                }
+                else
+                {
+                    displayUnit = dataUnit;
+                }
             }
             else
             {
-                pTempAction = menu.addAction(QString("Plot "+dataName+" ["+dataUnit+"]"));
+                displayUnit = gpConfig->getDefaultUnit(dataName);
             }
         }
         else
         {
-            QString unit;
-            UnitScale custUS;
-            mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+dataName, custUS);
-            if (custUS.mScale.isEmpty())
-            {
-                unit = gpConfig->getDefaultUnit(dataName);
-            }
-            else
-            {
-                unit = custUS.mUnit;
-            }
-            pTempAction = menu.addAction(QString("Plot "+dataName+" ["+unit+"]"));
+            displayUnit = custUS.mUnit;
         }
+
+        QString actionText;
+        if (logVars[i]->hasAliasName())
+        {
+            actionText = QString("Plot %1 (%2) [%3]").arg(dataName).arg(logVars[i]->getAliasName()).arg(displayUnit);
+        }
+        else
+        {
+            actionText = QString("Plot %1 [%2]").arg(dataName).arg(displayUnit);;
+        }
+        pTempAction = menu.addAction(actionText);
         plotActions.insert(pTempAction, i);
     }
 
@@ -412,8 +423,9 @@ void Port::openDefineAliasDialog(const QString &rVarName, const QString &rCurren
 }
 
 
-void Port::moveEvent(QGraphicsSceneMoveEvent */*event*/)
+void Port::moveEvent(QGraphicsSceneMoveEvent *event)
 {
+    Q_UNUSED(event);
     double px = mpParentModelObject->boundingRect().width();
     double py = mpParentModelObject->boundingRect().height();
 
@@ -674,13 +686,13 @@ void Port::refreshPortLabelText()
     if (!var_alias.isEmpty())
     {
         label.append("<table style=\"background-color:lightyellow;font-size:12px\">");
-        label.append("<tr><th>Name</th><th>Alias</th></tr>");
+        label.append("<tr><th>Name</th><th width=\"12\"></th><th>Alias</th></tr>");
         QMap<QString, QString>::iterator it;
         for (it=var_alias.begin(); it!=var_alias.end(); ++it)
         {
             label.append("<tr><td align=center>");
             label.append(it.key());
-            label.append("</td><td align=center>");
+            label.append("</td><td></td><td align=center>");
             label.append(it.value());
             label.append("</td></tr>");
         }

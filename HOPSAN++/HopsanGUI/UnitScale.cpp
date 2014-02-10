@@ -56,11 +56,32 @@ double UnitScale::toDouble() const
     return mScale.toDouble();
 }
 
+//! @brief Convert scale string to double (return default value if this UnitScale is NULL)
+//! @param[in] def Default value to use if scle is NULL
+//! @returns Scale as double
+double UnitScale::toDouble(const double def) const
+{
+    if (mScale.isEmpty())
+    {
+        return def;
+    }
+    else
+    {
+        return toDouble();
+    }
+}
+
 //! @brief Check if scale is empty
 //! @returns True if empty else false
 bool UnitScale::isEmpty() const
 {
     return mScale.isEmpty();
+}
+
+bool UnitScale::isOne() const
+{
+    //! @todo this may not work if scale is very close to 1 due to truncation
+    return mScale == "1";
 }
 
 //! @brief Set the scale from a double

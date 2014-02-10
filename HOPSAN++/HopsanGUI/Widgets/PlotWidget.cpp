@@ -63,6 +63,7 @@ public:
     const QString &getPortName() const;
     const QString &getDataName() const;
     const QString &getDataUnit() const;
+    const QString &getPlotDataUnit() const;
     const QString &getAliasName() const;
     const QString &getModelName() const;
     int getGeneration() const;
@@ -156,6 +157,11 @@ const QString &BaseVariableTreeItem::getDataName() const
 const QString &BaseVariableTreeItem::getDataUnit() const
 {
     return mData.mpVariable->getDataUnit();
+}
+
+const QString &BaseVariableTreeItem::getPlotDataUnit() const
+{
+    return mData.mpVariable->getActualPlotDataUnit();
 }
 
 const QString &BaseVariableTreeItem::getAliasName() const
@@ -808,14 +814,14 @@ void PlotWidget::loadFromXml()
 ImportedVariableTreeItem::ImportedVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(data, pParent)
 {
-    setText(0, getFullName() + ", [" + getDataUnit() + "]");
+    setText(0, getFullName() + ", [" + getPlotDataUnit() + "]");
 }
 
 
 AliasVariableTreeItem::AliasVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(data, pParent)
 {
-    setText(0, getAliasName() + ", [" + getDataUnit() + "]");
+    setText(0, getAliasName() + ", [" + getPlotDataUnit() + "]");
 }
 
 FullVariableTreeItem::FullVariableTreeItem(HopsanVariable data, QTreeWidgetItem *pParent)
@@ -831,11 +837,11 @@ FullVariableTreeItem::FullVariableTreeItem(HopsanVariable data, QTreeWidgetItem 
     }
     if (portName.isEmpty())
     {
-        this->setText(0, alias + dataName + ", [" +  getDataUnit() + "]");
+        this->setText(0, alias + dataName + ", [" +  getPlotDataUnit() + "]");
     }
     else
     {
-        this->setText(0, alias + portName + ", " + dataName + ", [" +  getDataUnit() + "]");
+        this->setText(0, alias + portName + ", " + dataName + ", [" +  getPlotDataUnit() + "]");
     }
 }
 

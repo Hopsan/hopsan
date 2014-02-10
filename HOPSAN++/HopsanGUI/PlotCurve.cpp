@@ -69,7 +69,6 @@ PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const Hopsa
 
     mLocalAdditionalCurveScale = 1.0;
     mLocalAdditionalCurveOffset = 0.0;
-    mCustomCurveDataUnitScale = 1.0;
     mpCurveSymbol = 0;
     mCurveSymbolSize = 8;
     mIsActive = false;
@@ -236,27 +235,36 @@ const QString &PlotCurve::getDataOriginalUnit() const
 //! @brief Returns the current unit of a plot curve in the following priority (Local unit, Data unit or Original unit)
 const QString &PlotCurve::getCurrentUnit() const
 {
-    if (mCustomCurveDataUnit.isEmpty())
+    if (mCustomCurveDataUnitScale.isEmpty())
     {
-        const QString &unit = getDataCustomPlotUnit();
-        if (unit.isEmpty())
+        if (hasCustomDataPlotScale())
         {
-            return getDataOriginalUnit();
+            return getDataCustomPlotUnit();
         }
         else
         {
-            return unit;
+            return getDataOriginalUnit();
         }
     }
     else
     {
-        return mCustomCurveDataUnit;
+        return mCustomCurveDataUnitScale.mUnit;
     }
 }
 
 VariableSourceTypeT PlotCurve::getDataSource() const
 {
     return mData.mpVariable->getVariableSourceType();
+}
+
+bool PlotCurve::hasCustomDataPlotScale() const
+{
+    return !mData.mpVariable->getCustomUnitScale().isEmpty();
+}
+
+bool PlotCurve::hasCustomCurveDataPlotScale() const
+{
+    return !mCustomCurveDataUnitScale.isEmpty();
 }
 
 const QString &PlotCurve::getDataModelPath() const
@@ -424,20 +432,25 @@ void PlotCurve::setCustomCurveDataUnit(const QString &rUnit)
 //! @param scale What scaling towards default (usually SI) unit to use
 void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
 {
-    mCustomCurveDataUnit = rUnit;
-    mCustomCurveDataUnitScale = scale*1.0/mData.mpVariable->getPlotScale();
+    mCustomCurveDataUnitScale.mUnit = rUnit;
+    mCustomCurveDataUnitScale.setScale(scale*1.0/mData.mpVariable->getPlotScale());
 
-    updateCurve();
-
-    //! @todo shouldnt these be triggered by signal in update curve?
-    mpParentPlotArea->replot();
+    // Clear the custom scale if it is one and we have a data unit
+    if (!getDataOriginalUnit().isEmpty() && mCustomCurveDataUnitScale.isOne())
+    {
+        removeCustomCurveDataUnit();
+    }
+    else
+    {
+        updateCurve();
+        //! @todo shouldnt these be triggered by signal in update curve?
+        mpParentPlotArea->replot();
+    }
 }
 
 void PlotCurve::removeCustomCurveDataUnit()
 {
-    mCustomCurveDataUnit.clear();
-    mCustomCurveDataUnitScale = 1.0;
-
+    mCustomCurveDataUnitScale.clear();
     updateCurve();
 
     //! @todo shouldnt these be triggered by signal in update curve?
@@ -778,8 +791,8 @@ void PlotCurve::openScaleDialog()
 
     QLabel *pCurveUnitScale = new QLabel(pScaleDialog);
     QLabel *pCurveUnitScaleUnit = new QLabel(pScaleDialog);
-    pCurveUnitScale->setText(QString("%1").arg(mCustomCurveDataUnitScale));
-    pCurveUnitScaleUnit->setText(mCustomCurveDataUnit);
+    pCurveUnitScale->setText(mCustomCurveDataUnitScale.mScale);
+    pCurveUnitScaleUnit->setText(mCustomCurveDataUnitScale.mUnit);
 
     mpLocalCurveScaleLineEdit = new QLineEdit(pScaleDialog);
     mpLocalCurveScaleLineEdit->setValidator(new QDoubleValidator(mpLocalCurveScaleLineEdit));
@@ -942,7 +955,7 @@ void PlotCurve::updateCurve()
 
         if(!mCustomXdata)
         {
-            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale.toDouble(1.0)*dataScale;
             const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
             // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
@@ -971,7 +984,7 @@ void PlotCurve::updateCurve()
         }
         else
         {
-            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale*dataScale;
+            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale.toDouble(1.0)*dataScale;
             const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
             // Use special X-data

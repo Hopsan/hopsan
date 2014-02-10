@@ -160,7 +160,6 @@ void VectorVariable::setPlotOffset(double offset)
 void VectorVariable::setPlotScaleAndOffset(const double scale, const double offset)
 {
     mCustomUnitScale.setOnlyScale(scale);
-    mDataPlotScale = scale;
     mDataPlotOffset = offset;
     emit dataChanged();
 }
@@ -187,7 +186,6 @@ void VectorVariable::setTimePlotScaleAndOffset(const double scale, const double 
 void VectorVariable::setPlotScale(double scale)
 {
     mCustomUnitScale.setOnlyScale(scale);
-    mDataPlotScale = scale;
     emit dataChanged();
 }
 
@@ -195,7 +193,6 @@ VectorVariable::VectorVariable(const QVector<double> &rData, const int generatio
 {
     mpVariableDescription = varDesc;
     mDataPlotOffset = 0.0;
-    mDataPlotScale = 1.0;
     mGeneration = generation;
     mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gpConfig->getCacheLogData());
 }
@@ -287,7 +284,7 @@ const QString &VectorVariable::getPlotScaleDataUnit() const
 
 const QString &VectorVariable::getActualPlotDataUnit() const
 {
-    if (mCustomUnitScale.mUnit.isEmpty())
+    if (mCustomUnitScale.isEmpty())
     {
         return getDataUnit();
     }
@@ -1356,16 +1353,15 @@ double VectorVariable::peekData(const int idx) const
     return val;
 }
 
-
+//! @brief Returns the custom plot scale or 1 if not plotscale set.
 double VectorVariable::getPlotScale() const
 {
-    return mDataPlotScale;
+    return mCustomUnitScale.toDouble(1.0);
 }
 
 void VectorVariable::setCustomUnitScale(const UnitScale &rUnitScale)
 {
     mCustomUnitScale = rUnitScale;
-    mDataPlotScale = rUnitScale.toDouble();
     emit dataChanged();
 }
 
@@ -1377,7 +1373,6 @@ const UnitScale &VectorVariable::getCustomUnitScale() const
 void VectorVariable::removeCustomUnitScale()
 {
     mCustomUnitScale.clear();
-    mDataPlotScale = 1.0;
     emit dataChanged();
 }
 

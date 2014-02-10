@@ -895,6 +895,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     QMenu *pYAxisLeftMenu;
     QMenu *pBottomAxisMenu;
     QMenu *pChangeUnitsMenu;
+    QMenu *pResetUnitsMenu;
     QMenu *pInsertMarkerMenu;
 
     QAction *pSetRightAxisLogarithmic = 0;
@@ -912,13 +913,17 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
 
     // Create menu and actions for changing units
     pChangeUnitsMenu = menu.addMenu(QString("Change Units"));
+    pResetUnitsMenu = menu.addMenu(QString("Reset Units"));
     QMap<QAction *, PlotCurve *> actionToCurveMap;
     QMap<QString, double> unitMap;
     QList<PlotCurve *>::iterator itc;
     QMap<QString, double>::iterator itu;
     for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
     {
-        QMenu *pTempMenu = pChangeUnitsMenu->addMenu(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
+        QAction *pTempResetUnitAction = pResetUnitsMenu->addAction((*itc)->getCurveName());
+        actionToCurveMap.insert(pTempResetUnitAction, (*itc));
+
+        QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu((*itc)->getCurveName());
         if ((*itc)->getDataName() == "Value")
         {
             QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit((*itc)->getDataOriginalUnit());
@@ -934,7 +939,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
 
         for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
         {
-            QAction *pTempAction = pTempMenu->addAction(itu.key());
+            QAction *pTempAction = pTempChangeUnitMenu->addAction(itu.key());
             actionToCurveMap.insert(pTempAction, (*itc));
         }
     }
@@ -988,6 +993,12 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     if(pSelectedAction->parentWidget()->parentWidget() == pChangeUnitsMenu)
     {
         actionToCurveMap.find(pSelectedAction).value()->setCustomCurveDataUnit(pSelectedAction->text());
+    }
+
+    // Reset unit on selected curve
+    if(pSelectedAction->parentWidget() == pResetUnitsMenu)
+    {
+        actionToCurveMap.find(pSelectedAction).value()->removeCustomCurveDataUnit();
     }
 
 
@@ -2037,24 +2048,25 @@ void PlotArea::setTabOnlyCustomXVector(HopsanVariable data)
 
 void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
 {
-    // If a custom plotunit is set then use that
-    const QString &custPlotUnit = pCurve->getDataCustomPlotUnit();
-    if (custPlotUnit.isEmpty())
+    // If a custom plotunit is not set on the data, then try to figure out if we should set one on the curve
+    if (!pCurve->hasCustomDataPlotScale())
     {
-        // Else use the default unit for this curve, unless it is a "Value" with an actual unit set
-        const QString &dataUnit = pCurve->getDataOriginalUnit();
+        const QString &originalDataUnit = pCurve->getDataOriginalUnit();
+        // Figure out the desired default unit (set in configuration) for the data behind this curve
         QString defaultUnit;
         if ( pCurve->getDataName() != "Value" )
         {
+            // If not "Value", then lookup default unit based on data name (ex: "Position")
             defaultUnit = gpConfig->getDefaultUnit(pCurve->getDataName());
         }
         else
         {
-            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(dataUnit);
+            // Figure out compatible default unit based on the original data unit
+            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(originalDataUnit);
             //! @todo if same unit exist in multiple places we have a problem
             if (pqs.size() > 1)
             {
-                gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
+                gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(originalDataUnit));
             }
             if (pqs.size() == 1)
             {
@@ -2062,8 +2074,8 @@ void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
             }
         }
 
-
-        if (!defaultUnit.isEmpty() && (defaultUnit != dataUnit) )
+        // Use the default unit if it is not the same as the original unit
+        if (!defaultUnit.isEmpty() && (defaultUnit != originalDataUnit) )
         {
             pCurve->setCustomCurveDataUnit(defaultUnit);
         }
@@ -2074,30 +2086,43 @@ void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
         }
 
         // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
-        QString customUnit;
-        for(int i=0; i<mPlotCurves.size(); ++i)
+        // But only if there is an original unit to begin with otherwise we swould scale somthing with unknown original unit (bad)
+        if (!originalDataUnit.isEmpty())
         {
-            if(mPlotCurves[i]->getAxisY() == pCurve->getAxisY())
+            QString customUnit;
+            for(int i=0; i<mPlotCurves.size(); ++i)
             {
-                if(customUnit.isEmpty())
+                // Skip checking the curve we are adding, and only check for curves on teh same axis as we are adding to
+                if ( (mPlotCurves[i] != pCurve) && (mPlotCurves[i]->getAxisY() == pCurve->getAxisY()) )
                 {
-                    customUnit = mPlotCurves[i]->getCurrentUnit();
-                }
-                else if(customUnit != mPlotCurves[i]->getCurrentUnit())  //Unit is different between the other curves, so don't use it
-                {
-                    customUnit = QString();
-                    break;
+                    if( customUnit.isEmpty() )
+                    {
+                        // Assign custom unit on first occurance
+                        customUnit = mPlotCurves[i]->getCurrentUnit();
+                    }
+                    else if(customUnit != mPlotCurves[i]->getCurrentUnit())
+                    {
+                        // Unit is different between the other curves, so we do not want to use it
+                        customUnit = QString();
+                        break;
+                    }
                 }
             }
-        }
 
-        // If we have found a custom unit and the original unit is not empty then try to set custom unit
-        if(!customUnit.isEmpty() && !pCurve->getDataOriginalUnit().isEmpty())
-        {
-            pCurve->setCustomCurveDataUnit(customUnit);
+            // If we have found a custom unit that is shared among the other curves, then set that custom scale
+            // but only if it is different from the current unit, (we do not want a custom curve scale 1)
+            if( !customUnit.isEmpty()  && (customUnit != pCurve->getCurrentUnit()) )
+            {
+                pCurve->setCustomCurveDataUnit(customUnit);
+            }
         }
     }
-    // Else the given plot unit in the data will be used
+    else
+    {
+        // Else the given plot unit in the data will be used
+        //pCurve->removeCustomCurveDataUnit();
+    }
+
 }
 
 void PlotArea::rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits)
