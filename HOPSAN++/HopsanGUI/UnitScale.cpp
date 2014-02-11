@@ -33,7 +33,13 @@ UnitScale::UnitScale(const QString &rUnit, const double scale) : mUnit(rUnit)
 //! @brief Constructor for a unit / scale (QString) combination
 UnitScale::UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale)
 {
-    //Everything is done in initializer list
+    // Check if valid
+    bool isOK;
+    mScale.toDouble(&isOK);
+    if (!isOK)
+    {
+        clear();
+    }
 }
 
 //! @brief Default constructor (empty unitscale)

@@ -950,8 +950,8 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
 
 void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
 {
-    QMenu menu;
     QMap<QString, double> unitScales;
+    QMenu menu;
     if (mVariableTypeName == "Value")
     {
         QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
@@ -1000,7 +1000,7 @@ void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
             if(!key.isEmpty())
             {
                 // Set the selected unit scale
-                mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, key, QString("%1").arg(unitScales.value(key)));
+                //mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, key, QString("%1").arg(unitScales.value(key)));
                 mpPlotScaleEdit->setText(key);
             }
         }
@@ -1009,8 +1009,31 @@ void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
 
 void PlotScaleSelectionWidget::registerCustomScale()
 {
-    //! @todo need to check if text is valid number
-    mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", mpPlotScaleEdit->text());
+    QString val = mpPlotScaleEdit->text();
+
+    QMap<QString, double> unitScales;
+    if (mVariableTypeName == "Value")
+    {
+        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
+        if (pqs.size() > 0)
+        {
+            unitScales = gpConfig->getCustomUnits(pqs.first());
+        }
+    }
+    else
+    {
+        unitScales = gpConfig->getCustomUnits(mVariableTypeName);
+    }
+
+    if (unitScales.contains(val))
+    {
+        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, val, QString("%1").arg(unitScales.value(val)));
+    }
+    else
+    {
+        //! @todo need to check if text is valid number
+        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", val);
+    }
 }
 
 

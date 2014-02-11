@@ -756,13 +756,19 @@ void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &
 
 void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue)
 {
-    if (rScaleValue.isEmpty())
+    UnitScale us(rDescription, rScaleValue);
+    if (!rScaleValue.isEmpty() && us.isEmpty())
+    {
+        gpMessageHandler->addErrorMessage(QString("Invalid unit-scale value: %1, ignoring!").arg(rScaleValue));
+    }
+
+    if (us.isEmpty())
     {
         unregisterCustomPlotUnitOrScale(rVariablePortDataName);
     }
     else
     {
-        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, UnitScale(rDescription, rScaleValue));
+        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, us);
     }
 }
 
