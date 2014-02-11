@@ -208,6 +208,7 @@ void DataExplorer::openExportDataDialog()
         QProgressDialog progress("Exporting Data", "Cancel", 0, fNames.size(), this);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
+        progress.setValue(0);
         for (int i=0; i<fNames.size(); ++i)
         {
             // Abort if canceld
@@ -233,6 +234,7 @@ void DataExplorer::openExportDataDialog()
             }
             progress.setValue(i+1);
         }
+        progress.setValue(progress.maximum());
     }
 }
 
@@ -299,6 +301,7 @@ void DataExplorer::removeSelectedGenerations()
     QProgressDialog progress("Removing generations", "Cancel", 0, gens.size(), this);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
+    progress.setValue(0);
     // Since removeGeneration will also remove from mGenerationItemMap, we cant remove directly in for loop above
     for (int i=0; i<gens.size(); ++i)
     {
@@ -309,6 +312,7 @@ void DataExplorer::removeSelectedGenerations()
         removeGeneration(gens[i]);
         progress.setValue(i+1);
     }
+    progress.setValue(progress.maximum());
 }
 
 void DataExplorer::removeGeneration(int gen)

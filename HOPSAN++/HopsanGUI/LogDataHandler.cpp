@@ -128,13 +128,12 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable>
 
     // Create a QTextStream object to stream the content of file
     QTextStream fileStream(&file);
+    fileStream.setRealNumberNotation(QTextStream::ScientificNotation);
+    fileStream.setRealNumberPrecision(6);
     QString dateTimeString = QDateTime::currentDateTime().toString();
     QFileInfo ploFileInfo(rFilePath);
     QString modelPath = mpParentContainerObject->getModelFileInfo().filePath();
     QFileInfo modelFileInfo(modelPath);
-
-    //QStringList plotScaleStringList;
-    //QStringList startvaluesList;
 
     QVector<int> gens;
     gens.reserve(variables.size());
@@ -159,7 +158,6 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable>
     {
         variables.prepend(pTime);
     }
-
 
     // Now begin to write to pro file
     int nDataRows = variables[0].mpVariable->getDataSize();
@@ -205,56 +203,41 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable>
     // Write plotScalings line
     for(int i=0; i<variables.size(); ++i)
     {
-        QString str;
-        str.setNum(variables[i].mpVariable->getPlotScale(),'E',6);
-        //plotScaleStringList.append(str); //Remember till later
-        if (str[0] == '-')
+        const double val =  variables[i].mpVariable->getPlotScale();
+        if (val < 0)
         {
-            fileStream << " " << str;
+            fileStream << " " << val;
         }
         else
         {
-            fileStream << "  " << str;
+            fileStream << "  " << val;
         }
     }
     fileStream << "\n";
 
-    // If data is cached to disk, we need to move it to ram before writing plo
-    QVector<bool> wasCached;
-    wasCached.reserve(variables.size());
-    for(int col=0; col<variables.size(); ++col)
+    QVector< double > allData;
+    allData.reserve(nDataRows*nDataCols);
+    for(int var=0; var<variables.size(); ++var)
     {
-        wasCached.push_back(variables[col].mpVariable->isCachingDataToDisk());
-        if (variables[col].mpVariable->isCachingDataToDisk())
-        {
-            variables[col].mpVariable->setCacheDataToDisk(false);
-        }
+        allData << variables[var].mpVariable->getDataVectorCopy();
     }
 
     // Write data lines
-    QString err;
     for(int row=0; row<nDataRows; ++row)
     {
-        QString str;
         for(int col=0; col<variables.size(); ++col)
         {
-            str.setNum(variables[col].mpVariable->peekData(row,err),'E',6);
-            if (str[0] == '-')
+            const double val = allData[col*nDataRows+row];
+            if (val < 0)
             {
-                fileStream << " " << str;
+                fileStream << " " << val;
             }
             else
             {
-                fileStream << "  " << str;
+                fileStream << "  " << val;
             }
         }
         fileStream << "\n";
-    }
-
-    // If data was cached to disk, we need to move it back to cache again
-    for(int col=0; col<variables.size(); ++col)
-    {
-        variables[col].mpVariable->setCacheDataToDisk(wasCached[col]);
     }
 
     // Write plot data ending header
@@ -331,8 +314,9 @@ void LogDataHandler::importFromPlo(QString importFilePath)
 
     QProgressDialog progressImportBar(tr("Importing PLO"), QString(), 0, 0, gpMainWindowWidget);
     progressImportBar.setWindowModality(Qt::WindowModal);
-    progressImportBar.setRange(0,0);
     progressImportBar.show();
+    progressImportBar.setMinimum(0);
+    progressImportBar.setMaximum(0);
 
     unsigned int nDataRows = 0;
     int nDataColumns = 0;
