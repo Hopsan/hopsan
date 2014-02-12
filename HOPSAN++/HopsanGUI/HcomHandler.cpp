@@ -1976,14 +1976,14 @@ void HcomHandler::executeSetCommand(const QString cmd)
 //! @brief Execute function for "sapl" command
 void HcomHandler::executeSaveToPloCommand(const QString cmd)
 {
-    QStringList split = cmd.split(" ");
-    if(split.size() < 2)
+    QStringList cmdSplit = cmd.split(" ");
+    if(cmdSplit.size() < 2)
     {
         HCOMERR("Too few arguments.");
         return;
     }
-    QString path = split.first();
 
+    QString path = cmdSplit.first();
     if(!path.contains("/"))
     {
         path.prepend("./");
@@ -1991,7 +1991,6 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     QString dir = path.left(path.lastIndexOf("/"));
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
-
 
     QString temp = cmd.right(cmd.size()-path.size()-1);
 
@@ -2011,18 +2010,47 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         }
     }
     splitCmdMajor.append(temp.right(temp.size()-start));
-    QStringList allVariables;
-    for(int i=0; i<splitCmdMajor.size(); ++i)
+
+    // Handle special case where we want to export a specific generation only
+    int g=-1;
+    if ((splitCmdMajor.size() == 2) && (splitCmdMajor.last()=="*.L"))
+    {
+        // Export lowest generation
+        g = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber();
+        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->exportGenerationToPlo(path, g);
+        return;
+    }
+    else if ((splitCmdMajor.size() == 2) && (splitCmdMajor.last()=="*.H"))
+    {
+        // Export highest generation
+        g = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber();
+        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->exportGenerationToPlo(path, g);
+        return;
+    }
+
+    // Handle special case *.g (Example: g=15)
+    if ((splitCmdMajor.size() == 2) &&  splitCmdMajor.last().left(2)=="*.")
+    {
+        // Try to convert right of *. to int if that works then export that generation
+        if (toInt(splitCmdMajor.last().right(splitCmdMajor.last().size()-2), g))
+        {
+            g -= 1; //Sutract due to display gens +1
+            mpModel->getTopLevelSystemContainer()->getLogDataHandler()->exportGenerationToPlo(path, g);
+            return;
+        }
+    }
+
+    // If we get here we should try to read all variable patterns explicitly
+    QList<HopsanVariable> allVariables;
+    for(int i=1; i<splitCmdMajor.size(); ++i)
     {
         splitCmdMajor[i].remove("\"");
         QStringList variables;
         getMatchingLogVariableNames(splitCmdMajor[i], variables);
         for(int v=0; v<variables.size(); ++v)
         {
-            toLongDataNames(variables[v]);
+            allVariables.append(getLogVariable(variables[v]));
         }
-        allVariables.append(variables);
-        //splitCmdMajor[i] = getVariablePtr(splitCmdMajor[i])->getFullVariableName();
     }
 
     mpModel->getTopLevelSystemContainer()->getLogDataHandler()->exportToPlo(path, allVariables);
@@ -4622,9 +4650,8 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             QStringList fields = pattern.split('.');
             if (fields.size() > 0)
             {
-                bool isOK=false;
-                int g = fields.last().toInt(&isOK);
-                if (isOK)
+                int g;
+                if (toInt(fields.last(), g))
                 {
                     //! @todo what about handling zero, maybe should disp nothing
                     desiredGen = qMax(g-1, -1);
@@ -4877,8 +4904,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
 
 
-//! @brief Returns a pointer to a data variable for given full data name
-//! @param fullName Full concatinated name of the variable
+//! @brief Returns data pointers for the variable with given full short name format (may include generation)
+//! @param fullShortName Full concatinated name of the variable, (short name format expected)
 //! @returns Pointers to the data variable and container
 HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
 {
@@ -4893,25 +4920,21 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
     {
         //! @todo handle .L .H
         const QString genText = fullShortName.split(".").last();
-        bool isOK;
-        generation = genText.toInt(&isOK)-1;      //Subtract 1 due to zero indexing
-        if (!isOK)
+        if (toInt(genText, generation))
+        {
+            generation -= 1;
+            fullShortName.chop(genText.size()+1);
+        }
+        else
         {
             return HopsanVariable();
         }
-        fullShortName.chop(genText.size()+1);
     }
 
     // Convert to long name
     toLongDataNames(fullShortName);
 
-    SharedVectorVariableContainerT pDataContainer = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getVariableContainer(fullShortName);
-    if (pDataContainer)
-    {
-        return HopsanVariable(pDataContainer, pDataContainer->getDataGeneration(generation));
-    }
-
-    return HopsanVariable();
+    return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHopsanVariable(fullShortName, generation);
 }
 
 

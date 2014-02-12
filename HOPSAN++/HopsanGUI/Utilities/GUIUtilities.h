@@ -87,6 +87,17 @@ inline double rad2deg(const double rad)
     return rad*180.0/M_PI;
 }
 
+//! @brief Converts a string to Integer returning true if sucess
+//!@param[in] rString The string to convert
+//!@param[out] rIntValue The value of the converted int
+//!@returns True if conversion was successfull
+inline bool toInt(const QString &rString, int &rIntValue)
+{
+    bool isOK=false;
+    rIntValue = rString.toInt(&isOK);
+    return isOK;
+}
+
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);
 double sum(QVector< QVector<double> > vector, int i);

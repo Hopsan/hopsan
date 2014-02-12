@@ -89,26 +89,6 @@ void LogDataHandler::setParentContainerObject(ContainerObject *pParent)
 }
 
 
-void LogDataHandler::exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version) const
-{
-    QList<HopsanVariable> dataList;
-    dataList.reserve(rVariables.size());
-    for(int v=0; v<rVariables.size(); ++v)
-    {
-        // Do not try to export missing data
-        HopsanVariable data = getHopsanVariable(rVariables[v],-1);
-        if (data)
-        {
-            dataList.append(data);
-        }
-        else
-        {
-            gpMessageHandler->addWarningMessage(QString("In export PLO: %1 was not found, ignoring!").arg(rVariables[v]));
-        }
-    }
-    exportToPlo(rFilePath, dataList, version);
-}
-
 void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable> variables, int version) const
 {
     if ( (version < 1) || (version > 2) )

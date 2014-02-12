@@ -58,7 +58,6 @@ public:
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
 
     void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
-    void exportToPlo(const QString &rFilePath, const QStringList &rVariables, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, QList<HopsanVariable> variables, int version=-1) const;
     void exportToCSV(const QString &rFilePath, const QList<HopsanVariable> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
