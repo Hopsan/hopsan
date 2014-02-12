@@ -67,7 +67,7 @@ public slots:
 private slots:
     void activateCurve(bool active);
     void setXData(QString fullName);
-    void resetTimeVector();
+    void resetXData();
     void setGeneration(const int gen);
     void removeTheCurve();
 
@@ -79,7 +79,7 @@ private:
     QToolButton *mpColorBlob;
     QSpinBox *mpGenerationSpinBox;
     CustomXDataDropEdit *mpCustomXDataDrop;
-    QToolButton *mpResetTimeButton;
+    QToolButton *mpResetXDataButton;
 };
 
 #endif // PLOTCURVECONTROLBOX_H

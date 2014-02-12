@@ -84,10 +84,10 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     mpCustomXDataDrop = new CustomXDataDropEdit(this);
     mpCustomXDataDrop->setToolTip("Drag and Drop here to set Custom XData Vector");
-    mpResetTimeButton = new QToolButton(this);
-    mpResetTimeButton->setToolTip("Reset Time Vector");
-    mpResetTimeButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
-    mpResetTimeButton->setEnabled(false);
+    mpResetXDataButton = new QToolButton(this);
+    mpResetXDataButton->setToolTip("Reset XData");
+    mpResetXDataButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
+    mpResetXDataButton->setEnabled(false);
 
     mpGenerationSpinBox = new QSpinBox(this);
     mpGenerationSpinBox->setToolTip("Change generation");
@@ -166,7 +166,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     pInfoBoxLayout->addWidget(mpColorBlob);
     pInfoBoxLayout->addWidget(mpTitle);
     pInfoBoxLayout->addWidget(mpCustomXDataDrop);
-    pInfoBoxLayout->addWidget(mpResetTimeButton);
+    pInfoBoxLayout->addWidget(mpResetXDataButton);
     pInfoBoxLayout->addWidget(mpGenerationSpinBox);
     pInfoBoxLayout->addWidget(mpGenerationLabel);
     pInfoBoxLayout->addWidget(mpSourceLable);
@@ -184,7 +184,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     connect(mpColorBlob,               SIGNAL(clicked(bool)),       this,               SLOT(activateCurve(bool)));
     connect(mpCustomXDataDrop,         SIGNAL(newXData(QString)),   this,               SLOT(setXData(QString)));
-    connect(mpResetTimeButton,         SIGNAL(clicked()),           this,               SLOT(resetTimeVector()));
+    connect(mpResetXDataButton,         SIGNAL(clicked()),           this,               SLOT(resetXData()));
     connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
     connect(pCloseButton,              SIGNAL(clicked()),           this,               SLOT(removeTheCurve()));
     connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
@@ -280,16 +280,13 @@ void PlotCurveControlBox::updateInfo()
     // Update Xdata
     if (mpPlotCurve->hasCustomXVariable())
     {
-        mpCustomXDataDrop->setText(mpPlotCurve->getSharedCustomXVariable()->getFullVariableName());
-        if (mpPlotCurve->getSharedTimeOrFrequencyVariable())
-        {
-            mpResetTimeButton->setEnabled(true);
-        }
+        mpCustomXDataDrop->setText(mpPlotCurve->getSharedCustomXVariable()->getSmartName());
+        mpResetXDataButton->setEnabled(true);
     }
     else
     {
         mpCustomXDataDrop->setText("");
-        mpResetTimeButton->setEnabled(false);
+        mpResetXDataButton->setEnabled(false);
     }
 }
 
@@ -331,7 +328,7 @@ void PlotCurveControlBox::setXData(QString fullName)
     mpPlotCurve->setCustomXData(fullName);
 }
 
-void PlotCurveControlBox::resetTimeVector()
+void PlotCurveControlBox::resetXData()
 {
     mpPlotCurve->setCustomXData(0);
 }
