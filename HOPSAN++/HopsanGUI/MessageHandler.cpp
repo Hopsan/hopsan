@@ -139,18 +139,18 @@ void GUIMessageHandler::addInfoMessage(QString message, QString tag)
 
 void GUIMessageHandler::addWarningMessage(QString message, QString tag)
 {
-    addMessage(message.prepend("Warning: "), tag, Info);
+    addMessage(message.prepend("Warning: "), tag, Warning);
 }
 
 void GUIMessageHandler::addErrorMessage(QString message, QString tag)
 {
-    addMessage(message.prepend("Error: "), tag, Info);
+    addMessage(message.prepend("Error: "), tag, Error);
     QSound::play(QString(SOUNDSPATH) + "error.wav");
 }
 
 void GUIMessageHandler::addDebugMessage(QString message, QString tag)
 {
-    addMessage(message.prepend("Debug: "), tag, Info);
+    addMessage(message.prepend("Debug: "), tag, Debug);
 }
 
 void GUIMessageHandler::addMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type)
