@@ -161,7 +161,6 @@ public:
     SharedVectorVariableT lowPassFilterVariable(const SharedVectorVariableT a, const SharedVectorVariableT b, const double freq);
     QString lowPassFilterVariable(const QString &a, const QString &b, const double freq); //!< @deprecated
 
-    SharedVectorVariableT fftVariable(const SharedVectorVariableT a, const SharedVectorVariableT b, const bool doPowerSpectrum);
     QString fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum); //!< @deprecated
 
     QString assignVariable(const QString &dst, const QString &src); //!< @deprecated

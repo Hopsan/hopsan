@@ -1633,13 +1633,6 @@ QString LogDataHandler::lowPassFilterVariable(const QString &a, const QString &b
     }
 }
 
-SharedVectorVariableT LogDataHandler::fftVariable(const SharedVectorVariableT a, const SharedVectorVariableT b, const bool doPowerSpectrum)
-{
-    SharedVectorVariableT pFFTVar = createOrphanVariable(a->getSmartName()+"_fft", FrequencyDomainType);
-    pFFTVar = a->toFrequencySpectrum(b, doPowerSpectrum);
-    return pFFTVar;
-}
-
 QString LogDataHandler::fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum)
 {
     SharedVectorVariableT pData1 = getVectorVariable(a, -1);
@@ -1656,7 +1649,7 @@ QString LogDataHandler::fftVariable(const QString &a, const QString &b, const bo
     }
     else
     {
-        SharedVectorVariableT pTemp = fftVariable(pData1,pData2,doPowerSpectrum);
+        SharedVectorVariableT pTemp = pData1->toFrequencySpectrum(pData2,doPowerSpectrum);
         return pTemp->getFullVariableName();
     }
 }

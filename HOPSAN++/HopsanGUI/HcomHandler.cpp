@@ -3376,7 +3376,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             if (mAnsType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->fftVariable(pVar, pVar->getSharedTimeOrFrequencyVector(), false);
+                mAnsVector = pVar->toFrequencySpectrum(pVar->getSharedTimeOrFrequencyVector(), false);
                 return;
             }
             else
@@ -3411,7 +3411,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = pLogData->fftVariable(pVar, pTimeVar, power);
+                    mAnsVector = pVar->toFrequencySpectrum(pTimeVar, power);
                     return;
                 }
                 else
@@ -3443,7 +3443,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = pLogData->fftVariable(pVar, pTimeVar, power);
+                    mAnsVector = pVar->toFrequencySpectrum(pTimeVar, power);
                     return;
                 }
                 else

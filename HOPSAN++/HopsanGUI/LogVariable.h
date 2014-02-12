@@ -362,6 +362,11 @@ class FrequencyDomainVariable : public VectorVariable
 public:
     FrequencyDomainVariable(SharedVectorVariableT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
                             SharedMultiDataVectorCacheT pGenerationMultiCache);
+    virtual VariableTypeT getVariableType() const;
+
+    virtual void assignFrom(const SharedVectorVariableT pOther);
+    virtual void assignFrom(SharedVectorVariableT freq, const QVector<double> &rData);
+    virtual void assignFrom(QVector<double> &rFreq, QVector<double> &rData);
     //! @todo add a bunch of reimplemented functions
 };
 

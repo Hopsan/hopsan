@@ -1619,6 +1619,30 @@ FrequencyDomainVariable::FrequencyDomainVariable(SharedVectorVariableT frequency
     mpSharedTimeOrFrequencyVector = frequency;
 }
 
+VariableTypeT FrequencyDomainVariable::getVariableType() const
+{
+    return FrequencyDomainType;
+}
+
+void FrequencyDomainVariable::assignFrom(const SharedVectorVariableT pOther)
+{
+    mpSharedTimeOrFrequencyVector = pOther->getSharedTimeOrFrequencyVector();
+    VectorVariable::assignFrom(pOther);
+}
+
+void FrequencyDomainVariable::assignFrom(SharedVectorVariableT freq, const QVector<double> &rData)
+{
+    mpCachedDataVector->replaceData(rData);
+    mpSharedTimeOrFrequencyVector = freq;
+    emit dataChanged();
+}
+
+void FrequencyDomainVariable::assignFrom(QVector<double> &rFreq, QVector<double> &rData)
+{
+    // We create a new non managed free frequency vector from the supplied frequency data
+    assignFrom(createFreeFrequencyVectorVariabel(rFreq), rData);
+}
+
 ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
