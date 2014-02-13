@@ -14,18 +14,88 @@
 - There is no guarantee that the default components are working under all conditions, you have decide for yourself if you trust the simulation results.
   From version 0.6.0, the source code for all default components are included in the release.
 
-- There have been substantial "under the hood" changes between the 0.5.* and 0.6.* versions of hopsan.
+- There have been substantial "under the hood" changes between the 0.5.* and 0.6.* versions of Hopsan.
   Loading old models in 0.6.0 should work without issues in most cases, HOWEVER, to be sure that you do not loose any information:
   * Deactivate "Group Similar Messages" in the message widget at the bottom before loading a model.
   * Pay attention to any Warnings or Errors you may receive when loading your old model. If parameters fail to load they will be discarded.
   * Parameters and ports may have changed name, in such cases you have to manually set the parameter value that could not be loaded (according to messages).
   
-- Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We do not yet know why. If this is a problem take a screen shot instead. 
+- Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We do not yet know why. If this is a problem take a screen-shot instead. 
 
 ******************************
     Version History
 ******************************
-0.6.4
+0.6.5    (2014-02-14)
+
+- Feature: SAPA and REPA commands in HCOM (Save and read parameter files from scripts)
+- Feature: Integrate function in HCOM
+- Feature: SymHop: Logical OR and AND operators
+- Feature: SymHop: Inequality operator and function
+- Feature: The actual optimization will be run as a separate object instead of working directly with the open model.
+- Feature: HCOM: "optexec" command (run your optimization script from the main hcom terminal). The dialog (controlling the separate optimization object) will be opened.
+- Feature: Highlight C, Q and S components (for educational purposes)
+- Feature: FMU for co-simulation
+- Feature: Library widget has a filter option
+- Feature: User will get a warning about unused system parameters
+- Feature: Uniform distribution option in sensitivity analysis dialog
+- Feature: Compiler and other build information has been added (see about dialog)
+- Feature: When hovering a system parameter, the components that use it will be highlighted
+
+- New component: Ball screw component
+
+- Documentation: The detailed hcom command documentation has been updated
+- Documentation: There is now hcom help for special commands such as ddt lp1 gt lt and other similar
+
+- Enhancement: Lots of improvements to the code behind plots and alias / variable name handling. (Should result in fewer strange problems)
+- Enhancement: Simulink export is using the source code for HopsanCore instead of pre-compiled DLL libraries. (You must build the entire HopsanCore as an s-function)
+               This solves "DLL-hell" issues. (The pre-compiled DLLs are still included in the release though)
+- Enhancement: Optimization dialog shows objective values next to parameter values
+- Enhancement: The HCOM handler in the optimization dialogs will get a copy of all local variables from the global HCOM handler
+- Enhancement: It is now possible to go directly to code tab in the optimization dialog
+- Enhancement: Plot curve markers can use vertical and/or horizontal lines
+- Enhancement: Alias / Variable name pairs will be shown when hovering a port
+- Enhancement: It is now possible to import variables with the same name as aliases and they will end up as a new generation for that alias
+- Enhancement: Individual variables (imported), can now be removed from the plotwidget
+- Enhancement: Generation numbers are now shown in the legend in the plots. Variable source can also be shown. (See legend options)
+- Enhancement: It is now possible to delete imported data files by right-click menu in the plotwidget
+- Enhancement: The lookupTable2d component has an option whether or not to reload csv file on each initialization. (Good for large files that never changes)
+- Enhancement: Lots of improvements in the optimization dialog
+- Enhancement: Some hcom commands such as "chdfsc" will work even if no log data is available (since they work towards the model)
+- Enhancement: Route components have changeable parameters for their limit values
+- Enhancement: HopsanCore HMF loader will indicate the number of warnings and errors that occurred while loading a model (better test capability)
+- Enhancement: The hcom SAPL command now takes wild-card expressions such as *.L *.H *.n, making it possible to export entire generations from scripts.
+- Enhancement: The generation shift arrows in a plotwindow will no longer trigger a generation shift in imported variables. (That rarely make sense, based on user feedback)
+- Enhancement: If your configuration file is read-only (it should not be) you will get an error message. (You need to fix the problem yourself)
+
+- Fixed: Default custom (without unit) scale applied to the data generation is undone by the clever plot curve local scaling
+- Fixed: Sometimes echo is turned off in main terminal after optimization
+- Fixed: Optimization crashes second time if using PS algorithm and plotting objective functions
+- Fixed: HCOM: It is not possible to divide with several vectors at the same time
+- Fixed: Optimization models cannot handle relative search paths in lookup table components
+- Fixed: HCOM Crash if using negative power functions
+- Fixed: Undo and redo removal of a component with an alias will make the component loose alias and crash the program at next simulation
+         (The alias will still be lost, but the program will at least not crash anymore)
+- Fixed: Alias will not work if you rename a component (the old alias will get stuck)
+- Fixed: Alias is not removed when a component is deleted
+- Fixed: HCOM: int, ddt and lp1 functions does not evaluate arguments properly
+- Fixed: Sometimes the component library gets "locked" right-clicking in the library space "unlocks" it again
+- Fixed: Sensitivity analysis and likely others get the simulation time from the global sim time edits instead of model local values
+- Fixed: If always show name is selected, then the name is shown even if the component is hidden
+- Fixed: It should be possible to import a file with the same name multiple times without confusing generations
+- Fixed: Crash if trying to hide/show a disabled outputvariable port
+- Fixed: Double clicking a variable in the plotwidget in a plotwindow opens the curve in a new window
+- Fixed: Adding a signal plot curve after an other curve with unit has been added, the new curve gets the previous unit
+- Fixed: Hopsan crash if you show losses after simulating an empty model
+- Fixed: If you open a properties dialogue from two different models and then move values over to the new one and click OK the name of the first model tab will change
+- Fixed: Hide button for messages/terminal does not react immediately when pressed, and steels vertical space. (It was removed, there is now a hide/show docks button in the left menu)
+- Fixed: Abort script function often fails
+- Fixed: Crash if closing model during optimization
+- Fixed: Sometime the model name shown in the plotwindow title is not correct, it could be a model that is not even open
+- Fixed: Clicking debug multiple time opens multiple dialogues even if one is already open
+- Fixed: Load-order in the HopsanCore hmdf loader. To avoid warnings while loading components using nested subsystem parameters
+
+
+0.6.4    (2013-12-02)
 
 - Feature: True 64-bit GUI and CLI application version (for Ms Windows) to make use of more then 4GB ram. (*Ubuntu releases were already 64-bit)
 
@@ -73,7 +143,7 @@
 - Fixed: Translational multi-port mass overrides start values with 0
 
 
-0.6.3a
+0.6.3a    (2013-10-28)
 - Fixed: Update notification and auto updater was not working (since 0.6.0)
 - Enhancement: If you import variables and then run a simulation resulting in variables with same name, the model variables will be shown in the PlotWidget.
                Imported variables are still shown under the __Imported__ category.
