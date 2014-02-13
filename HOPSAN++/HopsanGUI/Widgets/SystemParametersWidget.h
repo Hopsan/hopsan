@@ -102,7 +102,7 @@ protected slots:
     void removeSelected();
 
 private:
-    ContainerObject *mpContainerObject;
+    QPointer<ContainerObject> mpContainerObject;
     QTableView *mpSysParamTableView;
     QSortFilterProxyModel *mpProxyModel;
     SysParamTableModel *mpModel;

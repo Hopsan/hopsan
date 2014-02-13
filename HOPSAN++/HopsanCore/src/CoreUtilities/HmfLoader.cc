@@ -229,7 +229,7 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
         pComp->setSubTypeName(subTypeName.c_str());
         pSystem->addComponent(pComp);
 
-        //Load parameters
+        // Load parameters
         //! @todo should be able to load parameters and system parmaeters with same help function
         rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
         if (pParams)
@@ -292,7 +292,7 @@ void loadSystemPort(rapidxml::xml_node<> *pSysPortNode, ComponentSystem* pSystem
 //! @brief Help function to load system parameters
 void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
 {
-    //Load system parameters
+    // Load system parameters
     rapidxml::xml_node<> *pParameters = pSysNode->first_node("parameters");
     if (pParameters)
     {
@@ -368,7 +368,10 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 
     //! @todo we really need defines for allof these "strings"
 
-    //Load contents
+    // Load system parameters (needed before objects are loaded as they may be using sys-parameters)
+    loadSystemParameters(pSysNode, pSystem);
+
+    // Load contents
     rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");
     if (pObjects)
     {
@@ -393,22 +396,22 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                     pSys = loadHopsanModelFile(externalPath, pHopsanEssentials, dummy1, dummy2);
                     if (pSys != 0)
                     {
+                        // Add new system to parent
+                        pSystem->addComponent(pSys);
                         // load overwriten parameter values
                         loadSystemParameters(pObject, pSys);
                         // Overwrite name
                         string displayNameExt = readStringAttribute(pObject, "name", typeName );
                         pSys->setName(displayNameExt.c_str());
-                        // Add new system to parent
-                        pSystem->addComponent(pSys);
                     }
                 }
                 else
                 {
                     pSys = pHopsanEssentials->createComponentSystem();
-                    // Load system contents
-                    loadSystemContents(pObject, pSys, pHopsanEssentials, rootFilePath);
                     // Add new system to parent
                     pSystem->addComponent(pSys);
+                    // Load system contents
+                    loadSystemContents(pObject, pSys, pHopsanEssentials, rootFilePath);
                 }
             }
             else if (strcmp(pObject->name(), "systemport")==0)
@@ -420,7 +423,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
         }
     }
 
-    //Load connections
+    // Load connections
     rapidxml::xml_node<> *pConnections = pSysNode->first_node("connections");
     if (pConnections)
     {
@@ -434,9 +437,6 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
             pConnection = pConnection->next_sibling();
         }
     }
-
-    //Load system parameters
-    loadSystemParameters(pSysNode, pSystem);
 
     // Load aliases
     rapidxml::xml_node<> *pAliases = pSysNode->first_node("aliases");

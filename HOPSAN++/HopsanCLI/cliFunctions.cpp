@@ -815,6 +815,11 @@ bool performModelTest(const std::string hvcFilePath)
 
                         if ( pRootSystem && ((gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages()) < 1) )
                         {
+                            if (gHopsanCore.getNumWarningMessages() > 0)
+                            {
+                                printWaitingMessages(false);
+                            }
+
                             //! @todo maybe use simulation handler object
                             //First simulation
                             if (!pRootSystem->checkModelBeforeSimulation())
