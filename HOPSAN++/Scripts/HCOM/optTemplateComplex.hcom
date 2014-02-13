@@ -13,7 +13,7 @@ define obj
 enddefine
 
 opt set maxevals <<<maxevals>>>
-opt set algorithm complex
+opt set algorithm <<<subalgorithm>>>
 opt set datatype double
 opt set npoints <<<npoints>>>
 opt set nparams <<<nparams>>>

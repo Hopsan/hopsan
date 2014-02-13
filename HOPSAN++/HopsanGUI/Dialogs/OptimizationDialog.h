@@ -82,7 +82,7 @@ private slots:
 
 private:
     void generateScriptFile();
-    void generateComplexScript();
+    void generateComplexScript(const QString &subAlgorithm);
     void generateComplexScriptOld();
     void generateParticleSwarmScript();
     void generateParticleSwarmScriptOld();

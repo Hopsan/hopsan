@@ -47,6 +47,9 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "SymHop.h"
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 //HopsanGenerator includes
 #include "SymHop.h"
@@ -2669,11 +2672,11 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 return;
             }
             int idx = mAnsScalar;
-            if(idx < 0 || idx > mpOptHandler->mNumPoints-1)
-            {
-                HCOMERR("Index out of range.");
-                return;
-            }
+//            if(idx < 0 || idx > mpOptHandler->getOptVar("npoints")-1)
+//            {
+//                HCOMERR("Index out of range.");
+//                return;
+//            }
 
             double val = getNumber(split[3], &ok);
             if(!ok)
@@ -2682,7 +2685,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 return;
             }
 
-            mpOptHandler->mObjectives[idx] = val;
+            mpOptHandler->setOptimizationObjectiveValue(idx, val);
             return;
         }
         else if(split.size() == 5 && split[1] == "limits")
@@ -2694,7 +2697,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 HCOMERR("Argument number 2 must be a number.");
                 return;
             }
-            if(optParIdx < 0 || optParIdx > mpOptHandler->mNumParameters-1)
+            if(optParIdx < 0 || optParIdx > mpOptHandler->getOptVar("nparams")-1)
             {
                 HCOMERR("Index out of range.");
                 return;
@@ -2715,8 +2718,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 return;
             }
 
-            mpOptHandler->mParMin[optParIdx] = min;
-            mpOptHandler->mParMax[optParIdx] = max;
+            mpOptHandler->setParMin(optParIdx, min);
+            mpOptHandler->setParMax(optParIdx, max);
             return;
         }
         else if(split.size() == 3)
@@ -2768,34 +2771,55 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         mpModel->saveTo(savePath);
         mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
 
-        if(mpOptHandler->mAlgorithm == OptimizationHandler::Complex)
+        if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRF ||
+           mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFM)
         {
-            mpOptHandler->mModelPtrs.clear();
-            mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-            mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
-            mpOptHandler->mModelPtrs.last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
-            mpOptHandler->crfInit();
-            mpOptHandler->crfRun();
+            mpOptHandler->getModelPtrs()->clear();
+            mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
+            mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+            mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
+        }
+        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
+        {
+            mpOptHandler->getModelPtrs()->clear();
+
+            int nThreads = gpConfig->getNumberOfThreads();
+            if(nThreads == 0)
+            {
+        #ifdef WIN32
+                std::string temp = getenv("NUMBER_OF_PROCESSORS");
+                nThreads = atoi(temp.c_str());
+        #else
+                nThreads = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+        #endif
+            }
+
+            for(int i=0; i<nThreads; ++i)
+            {
+                mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
+                mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+            }
+
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
         {
-            mpOptHandler->mModelPtrs.clear();
+            mpOptHandler->getModelPtrs()->clear();
             if(getConfigPtr()->getUseMulticore())
             {
-                for(int i=0; i<mpOptHandler->mNumPoints; ++i)
+                for(int i=0; i<mpOptHandler->getOptVar("npoints"); ++i)
                 {
-                    mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-                    mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+                    mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
+                    mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
                 }
             }
             else
             {
-                mpOptHandler->mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-                mpOptHandler->mModelPtrs.last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+                mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
+                mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
             }
-            mpOptHandler->psInit();
-            mpOptHandler->psRun();
         }
+
+        mpOptHandler->startOptimization();
     }
 }
 

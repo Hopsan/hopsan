@@ -27,22 +27,23 @@
 #ifndef WIN32
 #include <unistd.h>
 #endif
-#include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
-#include "GUIPort.h"
 #include "Dialogs/OptimizationDialog.h"
-#include "HcomHandler.h"
+#include "global.h"
 #include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUISystem.h"
+#include "GUIPort.h"
+#include "HcomHandler.h"
+#include "MainWindow.h"
+#include "ModelHandler.h"
+#include "OptimizationHandler.h"
+#include "Optimization/OptimizationWorker.h"
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "Widgets/HcomWidget.h"
-#include "ModelHandler.h"
-#include "Widgets/PyDockWidget.h"
-#include "MainWindow.h"
-#include "OptimizationHandler.h"
-#include "GUIObjects/GUISystem.h"
 #include "Widgets/ModelWidget.h"
+#include "Widgets/PyDockWidget.h"
 
 class CentralTabWidget;
 
@@ -64,7 +65,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     QLabel *pAlgorithmLabel = new QLabel("Optimiation algorithm:");
     mpAlgorithmBox = new QComboBox(this);
-    mpAlgorithmBox->addItems(QStringList() << "Complex" << "Particle Swarm");
+    mpAlgorithmBox->addItems(QStringList() << "Complex-RF" << "Complex-RFM" << "Complex-RFP" << "Particle Swarm");
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
 
     QLabel *pIterationsLabel = new QLabel("Number of iterations:");
@@ -319,19 +320,23 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 {
     if(!this->isVisible()) return;
 
-    if(mpTerminal->mpHandler->mpOptHandler->mAlgorithm == OptimizationHandler::Complex)
+    bool ok;
+    OptimizationHandler::OptAlgorithmType algorithm = mpTerminal->mpHandler->mpOptHandler->mAlgorithm;
+    if(algorithm == OptimizationHandler::ComplexRF ||
+       algorithm == OptimizationHandler::ComplexRFM ||
+       algorithm == OptimizationHandler::ComplexRFP)
     {
-        int nPoints = mpTerminal->mpHandler->mpOptHandler->mNumPoints;
-        if(nPoints != mpSearchPointsSpinBox->value())
+        int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
+        if(nPoints != mParametersOutputLineEditPtrs.size())
         {
             mpSearchPointsSpinBox->setValue(nPoints);
             recreateParameterOutputLineEdits();
         }
     }
-    else if(mpTerminal->mpHandler->mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
+    else if(algorithm == OptimizationHandler::ParticleSwarm)
     {
-        int nPoints = mpTerminal->mpHandler->mpOptHandler->mNumPoints;
-        if(nPoints != mpParticlesSpinBox->value())
+        int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
+        if(nPoints != mParametersOutputLineEditPtrs.size())
         {
             mpParticlesSpinBox->setValue(nPoints);
             recreateParameterOutputLineEdits();
@@ -734,9 +739,15 @@ void OptimizationDialog::generateScriptFile()
     switch (mpAlgorithmBox->currentIndex())
     {
     case 0 :
-        generateComplexScript();
+        generateComplexScript("complexrf");
         break;
     case 1 :
+        generateComplexScript("complexrfm");
+        break;
+    case 2 :
+        generateComplexScript("complexrfp");
+        break;
+    case 3 :
         generateParticleSwarmScript();
         break;
     default :
@@ -744,7 +755,7 @@ void OptimizationDialog::generateScriptFile()
     }
 }
 
-void OptimizationDialog::generateComplexScript()
+void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
 {
     QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateComplex.hcom");
     templateFile.open(QFile::ReadOnly | QFile::Text);
@@ -853,6 +864,8 @@ void OptimizationDialog::generateComplexScript()
 //    {
         templateCode.replace("<<<plotvars>>>", "");
     //}
+
+    templateCode.replace("<<<subalgorithm>>>", subAlgorithm);
     templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
@@ -1452,11 +1465,11 @@ void OptimizationDialog::updateCoreProgressBars()
     for(int p=0; p<mCoreProgressBarPtrs.size(); ++p)
     {
         OptimizationHandler *pOptHandler = mpTerminal->mpHandler->mpOptHandler;
-        if(pOptHandler)
+        if(pOptHandler && pOptHandler->mpWorker)
         {
-            if(pOptHandler->mModelPtrs.size() > p)
+            if(pOptHandler->mpWorker->mModelPtrs.size() > p)
             {
-                ModelWidget *pOptModel = pOptHandler->mModelPtrs[p];
+                ModelWidget *pOptModel = pOptHandler->mpWorker->mModelPtrs[p];
                 double stopT = pOptModel->getStopTime().toDouble();
                 if(pOptModel)
                 {
@@ -1483,17 +1496,39 @@ void OptimizationDialog::recreateCoreProgressBars()
     mCoreProgressBarPtrs.clear();
 
     //Add new stuff depending on algorithm and number of threads
-    switch (mpAlgorithmBox->currentIndex())
+    switch (mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
     {
-    case 0 :    //Complex
+    case OptimizationHandler::ComplexRF :    //Complex-RF
         mCoreProgressBarPtrs.append(new QProgressBar(this));
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         break;
-    case 1 :    //Particle swarm
+    case OptimizationHandler::ComplexRFM :    //Complex-RF
+        mCoreProgressBarPtrs.append(new QProgressBar(this));
+        mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
+        mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
+        break;
+    case OptimizationHandler::ComplexRFP :    //Particle swarm
         if(gpConfig->getUseMulticore())
         {
-            for(int n=0; n<mpParticlesSpinBox->value(); ++n)
+            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)
+            {
+                mCoreProgressBarPtrs.append(new QProgressBar(this));
+                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
+                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
+            }
+        }
+        else
+        {
+            mCoreProgressBarPtrs.append(new QProgressBar(this));
+            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
+            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
+        }
+        break;
+    case OptimizationHandler::ParticleSwarm :    //Particle swarm
+        if(gpConfig->getUseMulticore())
+        {
+            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)
             {
                 mCoreProgressBarPtrs.append(new QProgressBar(this));
                 mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
@@ -1522,12 +1557,18 @@ void OptimizationDialog::recreateCoreProgressBars()
 void OptimizationDialog::recreateParameterOutputLineEdits()
 {
     int nPoints;
-    switch(mpAlgorithmBox->currentIndex())
+    switch(mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
     {
-    case 0:     //Complex
+    case OptimizationHandler::ComplexRF:     //Complex-RF
         nPoints=mpSearchPointsSpinBox->value();
         break;
-    case 1:
+    case OptimizationHandler::ComplexRFM:     //Complex-RFM
+        nPoints=mpSearchPointsSpinBox->value();
+        break;
+    case OptimizationHandler::ComplexRFP:     //Complex-RFP
+        nPoints=mpSearchPointsSpinBox->value();
+        break;
+    case OptimizationHandler::ParticleSwarm:     //Complex
         nPoints=mpParticlesSpinBox->value();
         break;
     default:

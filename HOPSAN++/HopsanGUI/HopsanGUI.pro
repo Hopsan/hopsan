@@ -218,7 +218,13 @@ SOURCES += main.cpp \
     PlotArea.cpp \
     Utilities/HelpPopUpWidget.cpp \
     PlotCurveControlBox.cpp \
-    MessageHandler.cpp
+    MessageHandler.cpp \
+    Optimization/OptimizationWorker.cpp \
+    Optimization/OptimizationWorkerComplex.cpp \
+    Optimization/OptimizationWorkerComplexRF.cpp \
+    Optimization/OptimizationWorkerComplexRFM.cpp \
+    Optimization/OptimizationWorkerComplexRFP.cpp \
+    Optimization/OptimizationWorkerParticleSwarm.cpp
 
 
 
@@ -303,7 +309,13 @@ HEADERS += MainWindow.h \
     PlotArea.h \
     Utilities/HelpPopUpWidget.h \
     PlotCurveControlBox.h \
-    MessageHandler.h
+    MessageHandler.h \
+    Optimization/OptimizationWorker.h \
+    Optimization/OptimizationWorkerComplex.h \
+    Optimization/OptimizationWorkerComplexRF.h \
+    Optimization/OptimizationWorkerComplexRFM.h \
+    Optimization/OptimizationWorkerComplexRFP.h \
+    Optimization/OptimizationWorkerParticleSwarm.h
 
 OTHER_FILES += \
     ../hopsandefaults \

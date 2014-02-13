@@ -112,7 +112,7 @@ void GUIMessageHandler::collectHopsanCoreMessages()
             else if( type == "fatal")
             {
                 addMessage(message, tag, Fatal);
-                QSound::play(QString(SOUNDSPATH) + "error.wav");
+                //QSound::play(QString(SOUNDSPATH) + "error.wav");
                 QMessageBox::critical(gpMainWindowWidget, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");
                 playErrorSound = true;
             }
@@ -125,10 +125,10 @@ void GUIMessageHandler::collectHopsanCoreMessages()
                 addMessage(message, tag, UndefinedMessageType);
             }
         }
-        if(playErrorSound)
-        {
-            QSound::play(QString(SOUNDSPATH) + "error.wav");
-        }
+//        if(playErrorSound)
+//        {
+//            QSound::play(QString(SOUNDSPATH) + "error.wav");
+//        }
     }
 }
 
@@ -145,7 +145,7 @@ void GUIMessageHandler::addWarningMessage(QString message, QString tag)
 void GUIMessageHandler::addErrorMessage(QString message, QString tag)
 {
     addMessage(message.prepend("Error: "), tag, Error);
-    QSound::play(QString(SOUNDSPATH) + "error.wav");
+    //QSound::play(QString(SOUNDSPATH) + "error.wav");
 }
 
 void GUIMessageHandler::addDebugMessage(QString message, QString tag)

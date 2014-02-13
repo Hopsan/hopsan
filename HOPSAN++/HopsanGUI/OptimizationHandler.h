@@ -36,6 +36,7 @@ class TerminalWidget;
 class TerminalConsole;
 class HcomHandler;
 class Configuration;
+class OptimizationWorker;
 
 class OptimizationHandler : public QObject
 {
@@ -45,81 +46,33 @@ class OptimizationHandler : public QObject
     friend class OptimizationDialog;
 public:
     //Enums
-    enum OptDataType{Int, Double};
-    enum OptAlgorithmType{Uninitialized, Complex, ParticleSwarm};
+    enum OptDataType{Integer, Double};
+    enum OptAlgorithmType{Uninitialized, ComplexRF, ComplexRFM, ComplexRFP, ParticleSwarm};
 
     //Constructor
     OptimizationHandler(HcomHandler *pHandler);
 
     //Public access functions
+    void startOptimization();
+    void setOptimizationObjectiveValue(int idx, double value);
+    void setParMin(int idx, double value);
+    void setParMax(int idx, double value);
     double getOptimizationObjectiveValue(int idx);
-    double getOptVar(QString &var, bool &ok) const;
+    double getOptVar(const QString &var);
+    double getOptVar(const QString &var, bool &ok) const;
     void setOptVar(const QString &var, const QString &value, bool &ok);
     double getParameter(const int pointIdx, const int parIdx) const;
+    QVector<ModelWidget *> *getModelPtrs() const;
 
     Configuration *mpConfig;
     TerminalConsole *mpConsole;
     HcomHandler *mpHcomHandler;
 
-signals:
-    void optimizationFinished();
+    OptDataType mParameterType; //! @todo Should be public
 
 private:
-    //Help functions (Complex-RF)
-    void crfInit();
-    void crfRun();
-    void crfForget();
-    void crfFindcenter();
-    void crfReflectWorst();
-    double crfMaxpardiff();
-
-    //Help functions (Particle Swarm)
-    void psInit();
-    void psRun();
-    void psMoveParticles();
-    void psPrintLogOutput();
-
-    //Help functions (all algorithms)
-    bool checkForConvergence();
-    void plotPoints();
-    void plotObjectiveFunctionValues();
-    void plotParameters();
-    void finalize();
-    void calculatebestandworstid();
-
-    //Complex-RF member variables
-    double mCrfAlpha, mCrfRfak, mCrfGamma, mCrfKf;
-    int mCrfWorstCounter;
-    QVector<double> mCrfCenter;
-
-    //Particle swarm member variables
-    double mPsOmega, mPsC1, mPsC2;
-    bool mPsPrintLogOutput;
-    QStringList mPsLogOutput;
-    QVector< QVector<double> > mPsVelocities, mPsBestKnowns;
-    QVector<double> mObjectives, mPsBestObjectives, mPsBestPoint;
-    double mPsBestObj;
-
-    //Member variables (both algorithms)
-    int mNumPoints;
-    int mEvalId;
-    int mNumParameters;
-    QVector<double> mParMin, mParMax;
-    QVector< QVector<double> > mParameters, mOldParameters;
+    OptimizationWorker *mpWorker;
     OptAlgorithmType mAlgorithm;
-    OptDataType mParameterType;
-    double mMaxEvals;
-    int mWorstId, mBestId, mLastWorstId;
-    int mConvergenceReason;
-    double mParTol, mFuncTol;
-    QVector<ModelWidget *> mModelPtrs;
-    bool mPlotPoints;
-    bool mPlotObjectiveFunctionValues;
-    bool mPlotParameters;
-    bool mPlotVariables;
-
-    //Used to remember if connections with model widget was disconnected before optimization and should be re-connected
-    bool mDisconnectedFromModelHandler;
 };
 
 #endif // OPTIMIZATIONHANDLER_H
