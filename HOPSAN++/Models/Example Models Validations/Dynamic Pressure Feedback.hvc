@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
-  <validation hopsanguiversion="0.6.0" time="135702" date="20130729" hopsancoreversion="0.6.0">
+  <validation hopsanguiversion="0.6.x_r6569" time="102254" date="20140213" hopsancoreversion="0.6.x_r6545">
     <modelfile>../Example Models/Dynamic Pressure Feedback.hmf</modelfile>
     <component name="Translational_Mass">
       <port name="P2">
