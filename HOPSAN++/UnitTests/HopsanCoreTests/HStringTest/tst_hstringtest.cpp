@@ -208,6 +208,45 @@ private Q_SLOTS:
         QTest::newRow("Replace empty2") << HString("") << HString("") << HString("_") << HString("");
 
     }
+
+    void HString_isNummeric()
+    {
+        QFETCH(HString, str);
+        QFETCH(bool, isnum);
+        QVERIFY2(str.isNummeric() == isnum, (HString("isNummeric produced the wrong result for: ")+str).c_str());
+    }
+    void HString_isNummeric_data()
+    {
+        QTest::addColumn<HString>("str");
+        QTest::addColumn<bool>("isnum");
+
+        QTest::newRow("0")      << HString("0") << true;
+        QTest::newRow("+0")     << HString("+0") << true;
+        QTest::newRow("-0")     << HString("-0") << true;
+        QTest::newRow("1")      << HString("1") << true;
+        QTest::newRow("+1")     << HString("+1") << true;
+        QTest::newRow("-1")     << HString("-1") << true;
+        QTest::newRow("-3467")  << HString("-3467") << true;
+        QTest::newRow("0.056")  << HString("0.056") << true;
+        QTest::newRow("+0.056") << HString("+0.056") << true;
+        QTest::newRow("-0.056") << HString("-0.056") << true;
+        QTest::newRow("0.056e-12")  << HString("0.056e-12") << true;
+        QTest::newRow("-0.056e-12") << HString("-0.056e-12") << true;
+        QTest::newRow("+0.056e-12") << HString("+0.056e-12") << true;
+        QTest::newRow("0.056E-12")  << HString("0.056E-12") << true;
+        QTest::newRow("+0.056E-12") << HString("+0.056E-12") << true;
+        QTest::newRow("-0.056E-12") << HString("-0.056E-12") << true;
+        QTest::newRow("2346346.457457")     << HString("2346346.457457") << true;
+
+        QTest::newRow("0.056d-12")  << HString("0.056d-12") << false;
+        QTest::newRow("apa")        << HString("apa") << false;
+        QTest::newRow("1234f")      << HString("1234f") << false;
+        QTest::newRow("AB10F")      << HString("AB10F") << false;
+        QTest::newRow("0.056e")     << HString("0.056e") << false;
+        QTest::newRow("234634 6.457457")     << HString("234634 6.457457") << false;
+        QTest::newRow(" 2346346.457457")     << HString(" 2346346.457457") << false;
+        QTest::newRow("2346346.457457 ")     << HString("2346346.457457 ") << false;
+    }
 };
 
 QTEST_APPLESS_MAIN(HStringTests)

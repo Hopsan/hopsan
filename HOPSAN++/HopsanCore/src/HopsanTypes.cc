@@ -184,6 +184,20 @@ bool HString::compare(const HString &rOther) const
     }
 }
 
+bool HString::isNummeric() const
+{
+    if (empty() || isspace(*mpDataBuffer))
+    {
+        return false;
+    }
+    else
+    {
+        char *pEnd;
+        strtod(mpDataBuffer, &pEnd);
+        return *pEnd == '\0';
+    }
+}
+
 size_t HString::find_first_of(const char c, size_t pos) const
 {
     return find(c,pos);

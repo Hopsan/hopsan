@@ -229,9 +229,17 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     // Strip + or - from name incase we want to take a negative value of a system parameter
     splitSignPrefix(mParameterValue, prefix, strippedValue);
 
+    // Determine if we should look for parameter among other parameters and system parameters
+    bool doCheckOthers=false;
+    //! @todo handle bool and conditional also
+    if (mType=="double" || mType=="integer")
+    {
+        doCheckOthers = !strippedValue.isNummeric();
+    }
+
     // First check if this parameter value is in fact the name of one of the other parameters or system parameter
-    if( mpParentParameters->evaluateParameter(strippedValue, evaluatedParameterValue, mType, this) )
 //        if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, ignoreMe) ) //To allow a parameter to use a systemsparameter with same name the component parameter itself has to be excluded in this check by ignore it here, issue #783
+    if( doCheckOthers && mpParentParameters->evaluateParameter(strippedValue, evaluatedParameterValue, mType, this) )
     {
         // Make sure sign is sane
         splitSignPrefix(prefix + evaluatedParameterValue, prefix, strippedValue);
@@ -245,6 +253,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         evaluatedParameterValue = prefix + strippedValue;
     }
 
+    // Now try to evaluate the actual parameter value based on type
     if(mType=="double")
     {
         double tmpParameterValue;
@@ -465,7 +474,7 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
             {
                 newParameter->mConditions = conditions;
             }
-            success = newParameter && newParameter->evaluate();
+            success = newParameter && newParameter->evaluate(); //! @todo here we evaluate again (why?)
             if(success || force)
             {
                 mParameters.push_back(newParameter);

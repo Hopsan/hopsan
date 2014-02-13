@@ -36,6 +36,7 @@ public:
     bool empty() const;
     bool compare(const char* other) const;
     bool compare(const HString &rOther) const;
+    bool isNummeric() const;
 
     HString substr(const size_t pos, const size_t len=npos) const;
 
