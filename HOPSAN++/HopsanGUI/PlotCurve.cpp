@@ -561,31 +561,43 @@ void PlotCurve::resetLegendSize()
 }
 
 
-//! @brief Changes a curve to the previous available gneraetion of its data
-void PlotCurve::setPreviousGeneration()
+//! @brief Changes a curve to the previous available model generation
+void PlotCurve::gotoPreviousGeneration()
 {
-    // Loop until we find next lower generation, abort if gen<0
-    if (mData.mpContainer)
+    // We do not want to switch generations automatically for curves representing imported data.
+    // That would make it very difficult to compare imported data with a model variable of the same name
+    // This was decided based on how AC is using the program
+    if (!mData.mpVariable->isImported())
     {
-        int gen = getGeneration()-1;
-        while ((gen >= 0) && (gen >= mData.mpContainer->getLowestGeneration())  && !setGeneration(gen))
+        // Loop until we find next lower generation, abort if gen<0
+        if (mData.mpContainer)
         {
-            --gen;
+            int gen = getGeneration()-1;
+            while ((gen >= 0) && (gen >= mData.mpContainer->getLowestGeneration())  && !setNonImportedGeneration(gen))
+            {
+                --gen;
+            }
         }
     }
 }
 
 
-//! @brief Changes a curve to the next available generation of its data
-void PlotCurve::setNextGeneration()
+//! @brief Changes a curve to the next available model generation
+void PlotCurve::gotoNextGeneration()
 {
-    // Loop until we find next higher generation, abort if we reach the highest
-    if (mData.mpContainer)
+    // We do not want to switch generations automatically for curves representing imported data.
+    // That would make it very difficult to compare imported data with a model variable of the same name
+    // This was decided based on how AC is using the program
+    if (!mData.mpVariable->isImported())
     {
-        int gen = getGeneration()+1;
-        while ((gen <= mData.mpContainer->getHighestGeneration()) && !setGeneration(gen))
+        // Loop until we find next higher generation, abort if we reach the highest
+        if (mData.mpContainer)
         {
-            ++gen;
+            int gen = getGeneration()+1;
+            while ((gen <= mData.mpContainer->getHighestGeneration()) && !setNonImportedGeneration(gen))
+            {
+                ++gen;
+            }
         }
     }
 }
@@ -903,7 +915,7 @@ void PlotCurve::updateToNewGeneration()
     // Only change the generation if auto update is on
     if(mAutoUpdate)
     {
-        setGeneration(-1);
+        setNonImportedGeneration(-1);
     }
     // Update the plot info box regardless of auto update setting, to show number of available generations correctly
     emit curveInfoUpdated();
@@ -1009,6 +1021,18 @@ void PlotCurve::updateCurveName()
 {
     refreshCurveTitle();
     emit curveInfoUpdated();
+}
+
+bool PlotCurve::setNonImportedGeneration(const int gen)
+{
+    if (mData.mpContainer)
+    {
+        if (!mData.mpContainer->isGenerationImported(gen))
+        {
+            return setGeneration(gen);
+        }
+    }
+    return false;
 }
 
 void PlotCurve::deleteCustomData()

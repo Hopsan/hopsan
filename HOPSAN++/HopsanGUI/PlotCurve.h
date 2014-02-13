@@ -132,8 +132,9 @@ signals:
 
 public slots:
     bool setGeneration(const int generation);
-    void setPreviousGeneration();
-    void setNextGeneration();
+    bool setNonImportedGeneration(const int gen);
+    void gotoPreviousGeneration();
+    void gotoNextGeneration();
 
     void setLineWidth(int);
     void setLineStyle(QString lineStyle);

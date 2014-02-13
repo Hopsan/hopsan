@@ -287,11 +287,11 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpAllGenerationsDown = new QAction(this);
     mpAllGenerationsDown->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
-    mpAllGenerationsDown->setToolTip("Shift all curve generations down");
+    mpAllGenerationsDown->setToolTip("Shift model curve generations down");
 
     mpAllGenerationsUp = new QAction(this);
     mpAllGenerationsUp->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
-    mpAllGenerationsUp->setToolTip("Shift all curve generations up");
+    mpAllGenerationsUp->setToolTip("Shift model curve generations up");
 
     // Initialize the help message popup
     mpHelpPopup = new HelpPopUpWidget(this);

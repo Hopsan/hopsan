@@ -1612,7 +1612,7 @@ void PlotArea::shiftAllGenerationsDown()
     PlotCurve *pCurve;
     Q_FOREACH(pCurve, mPlotCurves)
     {
-        pCurve->setPreviousGeneration();
+        pCurve->gotoPreviousGeneration();
     }
 }
 
@@ -1621,7 +1621,7 @@ void PlotArea::shiftAllGenerationsUp()
     PlotCurve *pCurve;
     Q_FOREACH(pCurve, mPlotCurves)
     {
-        pCurve->setNextGeneration();
+        pCurve->gotoNextGeneration();
     }
 }
 
