@@ -64,6 +64,8 @@ public:
     double getParameter(const int pointIdx, const int parIdx) const;
     QVector<ModelWidget *> *getModelPtrs() const;
 
+    int getAlgorithm() const;
+
     Configuration *mpConfig;
     TerminalConsole *mpConsole;
     HcomHandler *mpHcomHandler;

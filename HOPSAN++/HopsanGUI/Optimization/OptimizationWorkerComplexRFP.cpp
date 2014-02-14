@@ -37,8 +37,11 @@
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotWindow.h"
+#include "PlotArea.h"
+#include "PlotCurve.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
+#include "Utilities/GUIUtilities.h"
 
 //C++ includes
 #include <math.h>
@@ -240,58 +243,86 @@ void OptimizationWorkerComplexRFP::run()
         wid = mWorstId;
 
         //Iterate until worst point is no longer the same
-        //! @todo Implement (if necessary)
-//        mWorstCounter=0;
-//        while(mLastWorstId == wid)
-//        {
-//            plotPoints();
+        mWorstCounter=0;
 
-//            qApp->processEvents();
-//            if(mpHandler->mpHcomHandler->isAborted())
-//            {
-//                execute("echo on");
-//                print("Optimization aborted.");
-//                finalize();
-//                mpHandler->mpHcomHandler->abortHCOM();
-//                return;
-//            }
+        QVector<double> newPoint = mCandidateParticles[0];
+        while(mNoPointsChanged)
+        {
+            plotPoints();
 
-//            if(i>mMaxEvals) break;
+            qApp->processEvents();
+            if(mpHandler->mpHcomHandler->isAborted())
+            {
+                execute("echo on");
+                print("Optimization aborted.");
+                finalize();
+                mpHandler->mpHcomHandler->abortHCOM();
+                return;
+            }
 
-//            double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
+            if(i>mMaxEvals) break;
 
-//            //Reflect worst point
-//            for(int j=0; j<mNumParameters; ++j)
-//            {
-//                double best = mParameters[mBestId][j];
-//                double maxDiff = getMaxParDiff();
-//                double r = (double)rand() / (double)RAND_MAX;
-//                mParameters[wid][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-//                mParameters[wid][j] = min(mParameters[wid][j], mParMax[j]);
-//                mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
-//            }
-//            newPoint = mParameters[wid];
-//            gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+            //Move reflected points
+            for(int t=0; t<mNumThreads; ++t)
+            {
+                double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
+                for(int j=0; j<mNumParameters; ++j)
+                {
+                    double best = mParameters[mBestId][j];
+                    double maxDiff = getMaxParDiff();
+                    double r = (double)rand() / (double)RAND_MAX;
+                    mCandidateParticles[t][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                    mCandidateParticles[t][j] = min(mCandidateParticles[t][j], mParMax[j]);
+                    mCandidateParticles[t][j] = max(mCandidateParticles[t][j], mParMin[j]);
+                }
+                newPoint = mCandidateParticles[t];
+                ++mWorstCounter;
+            }
 
-//            //Evaluate new point
-//            execute("call evalworst");
-//            if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
-//            {
-//                execute("echo on");
-//                print("Optimization aborted.");
-//                finalize();
-//                return;
-//            }
+            newPoint = mCandidateParticles.last();
+            gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
-//            //Calculate best and worst points
-//            mLastWorstId=wid;
-//            calculateBestAndWorstId();
-//            wid = mWorstId;
 
-//            ++mWorstCounter;
-//            ++i;
-//            execute("echo off");
-//        }
+            //Evaluate new point
+            evaluateCandidateParticles();
+
+            //Find best candidate particle
+            double bestCandidateObjective = mObjectives[mNumPoints];
+            int bestCandidateIdx = 0;
+            for(int o=1; o<mNumThreads; ++o)
+            {
+                if(mObjectives[mNumPoints+o] < bestCandidateObjective)
+                {
+                    bestCandidateObjective = mObjectives[mNumPoints+o];
+                    bestCandidateIdx = o;
+                }
+            }
+
+            //Replace worst objective if best candidate was better
+            mNoPointsChanged=true;
+            if(bestCandidateObjective < mObjectives[mWorstId])
+            {
+                mParameters[mWorstId] = mCandidateParticles[bestCandidateIdx];
+                mNoPointsChanged = false;
+            }
+
+
+            if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+            {
+                execute("echo on");
+                print("Optimization aborted.");
+                finalize();
+                return;
+            }
+
+            //Calculate best and worst points
+            mLastWorstId=wid;
+            calculateBestAndWorstId();
+            wid = mWorstId;
+
+            ++i;
+            execute("echo off");
+        }
 
         plotParameters();
     }
@@ -310,6 +341,8 @@ void OptimizationWorkerComplexRFP::run()
         print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
         break;
     }
+
+    mTotalIterations = i;
 
     print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
@@ -396,61 +429,111 @@ double OptimizationWorkerComplexRFP::getParameter(const int pointIdx, const int 
 
 void OptimizationWorkerComplexRFP::pickCandidateParticles()
 {
-    //Reflect first point
-    for(int j=0; j<mNumParameters; ++j)
-    {
-        //Reflect
-        double worst = mParameters[mWorstId][j];
-        mCandidateParticles[0][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha1;
+    int method=1;
 
-        //Add some random noise
-        double maxDiff = getMaxParDiff();
-        double r = (double)rand() / (double)RAND_MAX;
-        mCandidateParticles[0][j] = mCandidateParticles[0][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-        mCandidateParticles[0][j] = min(mCandidateParticles[0][j], mParMax[j]);
-        mCandidateParticles[0][j] = max(mCandidateParticles[0][j], mParMin[j]);
-    }
-
-    if(mNumThreads > 1)
+    if(method==0)
     {
-        //Reflect second point
+        //Reflect first point
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
             double worst = mParameters[mWorstId][j];
-            mCandidateParticles[1][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha2;
+            mCandidateParticles[0][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha1;
 
             //Add some random noise
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
-            mCandidateParticles[1][j] = mCandidateParticles[1][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[1][j] = min(mCandidateParticles[1][j], mParMax[j]);
-            mCandidateParticles[1][j] = max(mCandidateParticles[1][j], mParMin[j]);
+            mCandidateParticles[0][j] = mCandidateParticles[0][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[0][j] = min(mCandidateParticles[0][j], mParMax[j]);
+            mCandidateParticles[0][j] = max(mCandidateParticles[0][j], mParMin[j]);
         }
-    }
 
-    if(mNumThreads > 2)
-    {
-        //Reflect second point
-        for(int j=0; j<mNumParameters; ++j)
+        if(mNumThreads > 1)
         {
-            //Reflect
-            double worst = mParameters[mWorstId][j];
-            mCandidateParticles[2][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha3;
+            //Reflect second point
+            for(int j=0; j<mNumParameters; ++j)
+            {
+                //Reflect
+                double worst = mParameters[mWorstId][j];
+                mCandidateParticles[1][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha2;
 
-            //Add some random noise
-            double maxDiff = getMaxParDiff();
-            double r = (double)rand() / (double)RAND_MAX;
-            mCandidateParticles[2][j] = mCandidateParticles[2][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[2][j] = min(mCandidateParticles[2][j], mParMax[j]);
-            mCandidateParticles[2][j] = max(mCandidateParticles[2][j], mParMin[j]);
+                //Add some random noise
+                double maxDiff = getMaxParDiff();
+                double r = (double)rand() / (double)RAND_MAX;
+                mCandidateParticles[1][j] = mCandidateParticles[1][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                mCandidateParticles[1][j] = min(mCandidateParticles[1][j], mParMax[j]);
+                mCandidateParticles[1][j] = max(mCandidateParticles[1][j], mParMin[j]);
+            }
+        }
+
+        if(mNumThreads > 2)
+        {
+            //Reflect second point
+            for(int j=0; j<mNumParameters; ++j)
+            {
+                //Reflect
+                double worst = mParameters[mWorstId][j];
+                mCandidateParticles[2][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha3;
+
+                //Add some random noise
+                double maxDiff = getMaxParDiff();
+                double r = (double)rand() / (double)RAND_MAX;
+                mCandidateParticles[2][j] = mCandidateParticles[2][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                mCandidateParticles[2][j] = min(mCandidateParticles[2][j], mParMax[j]);
+                mCandidateParticles[2][j] = max(mCandidateParticles[2][j], mParMin[j]);
+            }
+        }
+
+        //Create random scout particles
+        for(int i=3; i<mNumThreads; ++i)
+        {
+            generateRandomParticleWeightedToCenter(mCandidateParticles[i]);
         }
     }
-
-    //Create random scout particles
-    for(int i=3; i<mNumThreads; ++i)
+    else if(method==1)
     {
-        generateRandomParticleWeightedToCenter(mCandidateParticles[i]);
+        //Sort ids by objective value (worst to best)
+        QVector<int> vIdx;
+        while(vIdx.size() != mNumPoints)
+        {
+            int worstId = 0;
+            double worstObjective = -1000000000;
+            for(int i=0; i<mNumPoints; ++i)
+            {
+                if(vIdx.contains(i)) continue;  //Ignore alraedy added indexes
+
+                if(mObjectives[i] > worstObjective)
+                {
+                    worstObjective = mObjectives[i];
+                    worstId = i;
+                }
+            }
+            vIdx.append(worstId);
+        }
+
+        QVector< QVector<double> > otherPoints = mParameters;
+        for(int i=0; i<max(mNumThreads,mNumPoints); ++i)
+        {
+            otherPoints.remove(vIdx[i]);
+            findCenter(otherPoints);
+
+            //Reflect first point
+            for(int j=0; j<mNumParameters; ++j)
+            {
+                //Reflect
+                double worst = mParameters[vIdx[i]][j];
+                mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+                //Add some random noise
+                double maxDiff = getMaxParDiff();
+                double r = (double)rand() / (double)RAND_MAX;
+                mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
+                mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            }
+
+            otherPoints.append(mCandidateParticles[i]);
+        }
     }
 }
 
@@ -465,6 +548,7 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles()
         execute("call setpars");
     }
     gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+
     for(int i=0; i<mCandidateParticles.size() && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
@@ -475,9 +559,13 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles()
 }
 
 
+
 void OptimizationWorkerComplexRFP::examineCandidateParticles()
 {
-    bool didSomething=false;        //! @todo Us
+    TicToc timer;
+    timer.tic();
+
+    mNoPointsChanged=true;        //! @todo Us
     while(true)
     {
         int worstParticleIdx = 0;
@@ -504,7 +592,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
 
         if(bestCandidate < worstParticle)
         {
-            didSomething=true;
+            mNoPointsChanged=false;
             QVector<double> tempParameters = mParameters[worstParticleIdx];
             double tempObjective = mObjectives[worstParticleIdx];
             mParameters[worstParticleIdx] = mCandidateParticles[bestCandidateIdx];
@@ -517,24 +605,29 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
             break;
         }
     }
+
+    timer.toc("examineCandidateParticles()");
 }
 
 
 double OptimizationWorkerComplexRFP::triangularDistribution(double min, double mid, double max)
 {
-    double r = (double)rand() / (double)RAND_MAX;
-    if(min+r*(max-min) > mid)     //Generate number larger than midpoint
+    if(mid > max+min/2.0)
     {
-        double r1 = (double)rand()/(double)RAND_MAX;
-        double r2 = (double)rand()/(double)RAND_MAX;
-        return r1*(max-mid)-r2*(max-mid);
+        min = max-2.0*mid;
     }
-    else            //Generate number smaller than midpoint
+    else
     {
-        double r1 = (double)rand()/(double)RAND_MAX;
-        double r2 = (double)rand()/(double)RAND_MAX;
-        return r1*(mid-min)+r2*(mid-min);
+        max = min+2.0*mid;
     }
+
+    double r1 = (double)rand()/(double)RAND_MAX;
+    double r2 = (double)rand()/(double)RAND_MAX;
+    double r3 = (double)rand()/(double)RAND_MAX;
+    double r4 = (double)rand()/(double)RAND_MAX;
+    double temp1 = abs(1.0-(r1-r2)*(r3-r4));
+    double temp2 = temp1*(max+min)/2.0;
+    return temp2;
 }
 
 
@@ -560,5 +653,127 @@ void OptimizationWorkerComplexRFP::generateRandomParticleWeightedToCenter(QVecto
         {
             rParticle[i] = round(rParticle[i]);
         }
+    }
+}
+
+void OptimizationWorkerComplexRFP::findCenter()
+{
+    OptimizationWorkerComplex::findCenter();
+}
+
+void OptimizationWorkerComplexRFP::findCenter(QVector<QVector<double> > &particles)
+{
+    mCenter.resize(mNumParameters);
+    for(int i=0; i<mCenter.size(); ++i)
+    {
+        mCenter[i] = 0;
+    }
+    for(int p=0; p<particles.size(); ++p)
+    {
+        for(int i=0; i<mNumParameters; ++i)
+        {
+            mCenter[i] = mCenter[i]+particles[p][i];
+        }
+    }
+    for(int i=0; i<mCenter.size(); ++i)
+    {
+        mCenter[i] = mCenter[i]/double(particles.size());
+    }
+}
+
+
+//! @brief Plots the optimization points (if there are at least two parameters and the option is selected)
+void OptimizationWorkerComplexRFP::plotPoints()
+{
+    if(!mPlotPoints) { return; }
+
+    if(mNumParameters < 2)
+    {
+        printError("Plotting points requires at least two parameters.");
+        return;
+    }
+
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    for(int p=0; p<mNumPoints; ++p)
+    {
+        QString namex = "par"+QString::number(p)+"x";
+        QString namey = "par"+QString::number(p)+"y";
+        double x = mParameters[p][0];
+        double y = mParameters[p][1];
+        SharedVectorVariableT parVar_x = pHandler->getVectorVariable(namex, -1);
+        SharedVectorVariableT parVar_y = pHandler->getVectorVariable(namey, -1);
+        if(!parVar_x)
+        {
+            //! @todo we should set name and unit and maybe description (in define variable)
+            parVar_x = pHandler->defineNewVariable(namex);
+            parVar_y = pHandler->defineNewVariable(namey);
+            parVar_x->preventAutoRemoval();
+            parVar_y->preventAutoRemoval();
+
+            parVar_x->assignFrom(x);
+            parVar_y->assignFrom(y);
+
+            gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0, QColor("blue"));
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::xBottom, mParMin[0], mParMax[0]);
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::yLeft, mParMin[1], mParMax[1]);
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::yLeft, "Optimization Parameter 1");
+        }
+        else
+        {
+            //! @todo need to turn of auto refresh on plot and trygger it manually to avoid multiple redraws here
+            parVar_x->assignFrom(x);
+            parVar_y->assignFrom(y);
+        }
+    }
+    for(int p=0; p<mNumThreads; ++p)
+    {
+        QString namex = "candidate"+QString::number(p)+"x";
+        QString namey = "candidate"+QString::number(p)+"y";
+        double x = mCandidateParticles[p][0];
+        double y = mCandidateParticles[p][1];
+        SharedVectorVariableT parVar_x = pHandler->getVectorVariable(namex, -1);
+        SharedVectorVariableT parVar_y = pHandler->getVectorVariable(namey, -1);
+        if(!parVar_x)
+        {
+            //! @todo we should set name and unit and maybe description (in define variable)
+            parVar_x = pHandler->defineNewVariable(namex);
+            parVar_y = pHandler->defineNewVariable(namey);
+            parVar_x->preventAutoRemoval();
+            parVar_y->preventAutoRemoval();
+
+            parVar_x->assignFrom(x);
+            parVar_y->assignFrom(y);
+
+            gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0, QColor("red"));
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::xBottom, mParMin[0], mParMax[0]);
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::yLeft, mParMin[1], mParMax[1]);
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
+            gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::yLeft, "Optimization Parameter 1");
+        }
+        else
+        {
+            //! @todo need to turn of auto refresh on plot and trygger it manually to avoid multiple redraws here
+            parVar_x->assignFrom(x);
+            parVar_y->assignFrom(y);
+        }
+    }
+
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+    if(pPlotWindow)
+    {
+        PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
+        for(int c=0; c<pTab->getCurves(0).size(); ++c)
+        {
+            if(c==mBestId)
+            {
+                pTab->getCurves(0).at(c)->setLineSymbol("Star 1");
+            }
+            else
+            {
+                pTab->getCurves(0).at(c)->setLineSymbol("XCross");
+            }
+        }
+        pTab->update();
     }
 }

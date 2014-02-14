@@ -306,6 +306,8 @@ void OptimizationWorkerComplexRFM::run()
         break;
     }
 
+    mTotalIterations = i;
+
     print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
     {

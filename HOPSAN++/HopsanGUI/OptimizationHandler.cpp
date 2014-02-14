@@ -226,3 +226,8 @@ QVector<ModelWidget *> *OptimizationHandler::getModelPtrs() const
     return new QVector<ModelWidget *>();
 }
 
+int OptimizationHandler::getAlgorithm() const
+{
+    return (int)mAlgorithm;
+}
+

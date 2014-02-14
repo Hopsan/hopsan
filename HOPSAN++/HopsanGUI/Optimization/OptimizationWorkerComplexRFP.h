@@ -50,8 +50,12 @@ protected:
     double triangularDistribution(double min, double mid, double max);
     void generateRandomParticle(QVector<double> &rParticle);
     void generateRandomParticleWeightedToCenter(QVector<double> &rParticle);
+    void findCenter();
+    void findCenter(QVector< QVector<double> > &particles);
+    void plotPoints();
 
     QVector< QVector<double> > mCandidateParticles;
+    bool mNoPointsChanged;
 
     double mAlpha1, mAlpha2, mAlpha3;
     int mNumThreads;

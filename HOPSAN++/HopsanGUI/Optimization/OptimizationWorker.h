@@ -89,6 +89,8 @@ protected:
     bool mPlotObjectiveFunctionValues;
     bool mPlotParameters;
     bool mPlotVariables;
+
+    int mTotalIterations;
 };
 
 #endif // OPTIMIZATIONWORKER_H

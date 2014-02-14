@@ -792,19 +792,19 @@ void HcomHandler::executeCommand(QString cmd)
 
     if(idx<0)
     {
-        TicToc timer;
+        //TicToc timer;
         if(!evaluateArithmeticExpression(cmd))
         {
             //! @todo this text is to generic, a better error should be given someplace else, is it an unknown command or what?
             HCOMERR("Unknown command or failed to evaluate: " + majorCmd);
         }
-        timer.toc("evaluateArithmeticExpression " + cmd);
+        //timer.toc("evaluateArithmeticExpression " + cmd);
     }
     else
     {
-        TicToc timer;
+        //TicToc timer;
         mCmdList[idx].runCommand(subCmd, this);
-        timer.toc("runCommand "+QString("(%1)  %2").arg(majorCmd).arg(subCmd));
+        //timer.toc("runCommand "+QString("(%1)  %2").arg(majorCmd).arg(subCmd));
     }
 }
 
@@ -833,13 +833,13 @@ void HcomHandler::executeSimulateCommand(const QString cmd)
     }
     else if(cmd == "")
     {
-        TicToc timer;
-        timer.tic("!!!! Beginning blocking simulation");
+        //TicToc timer;
+        //timer.tic("!!!! Beginning blocking simulation");
         if(mpModel)
         {
             mpModel->simulate_blocking();
         }
-        timer.toc("!!!! Blocking simulation");
+        //timer.toc("!!!! Blocking simulation");
     }
     else
     {
@@ -2840,12 +2840,12 @@ void HcomHandler::executeCallFunctionCommand(const QString cmd)
         return;
     }
 
-    TicToc timer;
-    timer.tic(" >>>>>>>>>>>>> In executeCallFunctionCommand: Starting runScriptCommands for: "+cmd+" func: "+funcName);
+    //TicToc timer;
+    //timer.tic(" >>>>>>>>>>>>> In executeCallFunctionCommand: Starting runScriptCommands for: "+cmd+" func: "+funcName);
 
     bool abort = false;
     runScriptCommands(mFunctions.find(funcName).value(), &abort);
-    timer.toc(" <<<<<<<<<<<<< In executeCallFunctionCommand: Finnished runScriptCommands for: "+cmd+" func: "+funcName);
+    //timer.toc(" <<<<<<<<<<<<< In executeCallFunctionCommand: Finnished runScriptCommands for: "+cmd+" func: "+funcName);
     if(abort)
     {
         HCOMPRINT("Function aborted");
@@ -3109,7 +3109,7 @@ void HcomHandler::removePlotCurves(const int axis) const
 
 void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 {
-    TicToc timer;
+    //TicToc timer;
 
     //Remove parentheses around expression
     //Remove all excessive parentheses
@@ -3195,7 +3195,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     if(desiredType != DataVector)
     {
         //Parameter name, return its value
-        timer.tic();
+        //timer.tic();
         QString parVal = getParameterValue(expr);
         //timer.tocDbg("getParameterValue");
         if( parVal != "NaN")
@@ -3213,7 +3213,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     }
 
     // Vector functions
-    timer.tic();
+    //timer.tic();
     LogDataHandler *pLogData=0;
     if(mpModel && mpModel->getTopLevelSystemContainer())
     {
@@ -3676,13 +3676,13 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    timer.toc("Vector functions", 1);
+    //timer.toc("Vector functions", 1);
 
     //Evaluate expression using SymHop
     SymHop::Expression symHopExpr = SymHop::Expression(expr, SymHop::Expression::TrivialSimplifications);
 
     //Multiplication between data vector and scalar
-    timer.tic();
+    //timer.tic();
     //! @todo this code does pointer lookup, then does it again, and then get names to use string versions of logdatahandler functions, it could lookup once and then use the pointer versions instead
     //! @todo If SymHop simplifies expression to a constant, the code below won't find it
     if(desiredType != Scalar && symHopExpr.isMultiplyOrDivide() && (symHopExpr.getDivisors().isEmpty() || symHopExpr.getFactors().size() > 1) && pLogData)
@@ -3863,11 +3863,11 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    timer.toc("Multiplication between data vector and scalar", 0);
+    //timer.toc("Multiplication between data vector and scalar", 0);
 
     if(desiredType != DataVector)
     {
-        timer.tic();
+        //timer.tic();
         QMap<QString, double> localVars = mLocalVars;
         QStringList localPars;
         getParameters("*", localPars);
@@ -3875,7 +3875,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         {
             localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
         }
-        timer.toc("local pars to local vars");
+        //timer.toc("local pars to local vars");
 
         bool ok;
         double scalar = symHopExpr.evaluate(localVars, &mLocalFunctionoidPtrs, &ok);
@@ -4018,7 +4018,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
 
             //Evaluate expression using SymHop
             SymHop::Expression symHopExpr = SymHop::Expression(argument);
-            TicToc timer;
+            //TicToc timer;
             QMap<QString, double> localVars = mLocalVars;
             QStringList localPars;
             getParameters("*", localPars);
@@ -4026,8 +4026,8 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             {
                 localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
             }
-            timer.toc("runScriptCommand: pars to local vars");
-            timer.tic();
+            //timer.toc("runScriptCommand: pars to local vars");
+            //timer.tic();
             bool ok = true;
             while(symHopExpr.evaluate(localVars, &mLocalFunctionoidPtrs, &ok) > 0 && ok)
             {
@@ -4050,7 +4050,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 }
 
                 //Update local variables for SymHop in case they have changed
-                TicToc timer2;
+                //TicToc timer2;
                 localVars = mLocalVars;
                 QStringList localPars;
                 getParameters("*", localPars);
@@ -4058,9 +4058,9 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 {
                     localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
                 }
-                timer2.toc("runScriptCommand: pars to local vars 2");
+                //timer2.toc("runScriptCommand: pars to local vars 2");
             }
-            timer.toc("runScriptCommand: While loop");
+            //timer.toc("runScriptCommand: While loop");
         }
         else if(lines[l].startsWith("if"))        //Handle if statements
         {
@@ -4141,7 +4141,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 loop.append(lines[l]);
             }
             loop.removeLast();
-            TicToc timer;
+            //TicToc timer;
             for(int v=0; v<vars.size(); ++v)
             {
                 //Append quotations around spaces
@@ -4177,7 +4177,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     return gotoLabel;
                 }
             }
-            timer.toc("runScriptCommand: foreach vars loop");
+            //timer.toc("runScriptCommand: foreach vars loop");
         }
         else
         {
@@ -4630,7 +4630,7 @@ void HcomHandler::getMatchingLogVariableNamesWithoutLogDataHandler(QString patte
 //! @warning If you make changes to this function you MUST MAKE SURE that all other Hcom functions using this is are still working for all cases. Many depend on the behavior of this function.
 void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const
 {
-    TicToc timer;
+    //TicToc timer;
     rVariables.clear();
 
     // Abort if no model found
@@ -4740,7 +4740,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
         }
     }
 
-    timer.toc("getMatchingLogVariableNames("+pattern+")");
+    //timer.toc("getMatchingLogVariableNames("+pattern+")");
 }
 
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
@@ -4905,9 +4905,9 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     else  //Not an assignment, evaluate with SymHop
     {
         //! @todo Should we allow pure expessions without assignment?
-        TicToc timer;
+        //TicToc timer;
         evaluateExpression(cmd);
-        timer.toc("Evaluate expression "+cmd);
+        //timer.toc("Evaluate expression "+cmd);
         if(mAnsType == Scalar)
         {
             HCOMPRINT(QString::number(mAnsScalar));

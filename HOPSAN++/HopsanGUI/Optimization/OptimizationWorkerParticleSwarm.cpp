@@ -254,6 +254,8 @@ void OptimizationWorkerParticleSwarm::run()
         break;
     }
 
+    mTotalIterations = i;
+
     mpHandler->mpConsole->print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
     {

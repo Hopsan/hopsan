@@ -92,6 +92,16 @@ void OptimizationWorker::finalize()
     mpHandler->mpConsole->mpTerminal->setEnabledAbortButton(false);
 
     gpMainWindow->mpOptimizationDialog->setOptimizationFinished();
+
+
+
+    QFile resultFile(gpDesktopHandler->getDocumentsPath()+"/optimization_results_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
+    resultFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
+    QString output = QString::number(mpHandler->getAlgorithm())+",";
+    output.append(QString::number(mTotalIterations)+",");
+    output.append(QString::number(mObjectives[mBestId])+"\n");
+    resultFile.write(output.toUtf8());
+    resultFile.close();
 }
 
 bool OptimizationWorker::checkForConvergence()
@@ -285,7 +295,7 @@ void OptimizationWorker::plotParameters()
         if(par.data()->getDataSize() == 1)
         {
             PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");
-            gpPlotHandler->plotDataToWindow(pPW, par, 0);
+            gpPlotHandler->plotDataToWindow(pPW, par, 0, QColor("blue"));
         }
     }
 }
