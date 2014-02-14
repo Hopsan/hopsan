@@ -265,7 +265,6 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     //Run tab
     mpStartButton = new QPushButton("Start Optimization", this);
-    connect(mpStartButton, SIGNAL(clicked(bool)), mpStartButton, SLOT(setEnabled(bool)));
     mpTotalProgressBar = new QProgressBar(this);
     mpTotalProgressBar->hide();
     mpCoreProgressBarsLayout = new QGridLayout();
@@ -1401,6 +1400,7 @@ void OptimizationDialog::run()
     recreateCoreProgressBars();
     recreateParameterOutputLineEdits();
 
+    mpStartButton->setEnabled(false);
     for(int i=0; i<mParametersApplyButtonPtrs.size(); ++i)
     {
         mParametersApplyButtonPtrs[i]->setEnabled(false);
@@ -1412,6 +1412,7 @@ void OptimizationDialog::run()
     mpTimer->start(10);
     mpTerminal->mpHandler->runScriptCommands(commands, abort);
     mpTerminal->setEnabledAbortButton(false);
+    setOptimizationFinished();
     mpTimer->stop();
     delete(abort);
 }
