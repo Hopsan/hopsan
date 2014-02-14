@@ -84,7 +84,7 @@ void OptimizationWorkerComplexRFP::init()
     {
 #ifdef WIN32
         std::string temp = getenv("NUMBER_OF_PROCESSORS");
-        nThreads = atoi(temp.c_str());
+        mNumThreads = atoi(temp.c_str());
 #else
         mNumThreads = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
 #endif
