@@ -33,7 +33,7 @@
 - Feature: SymHop: Inequality operator and function
 - Feature: The actual optimization will be run as a separate object instead of working directly with the open model.
 - Feature: HCOM: "optexec" command (run your optimization script from the main hcom terminal). The dialog (controlling the separate optimization object) will be opened.
-- Feature: Highlight C, Q and S components (for educational purposes)
+- Feature: Highlight C, Q and S components (for educational purposes) (Alt+Shift+s,c,q)
 - Feature: FMU for co-simulation
 - Feature: Library widget has a filter option
 - Feature: User will get a warning about unused system parameters
