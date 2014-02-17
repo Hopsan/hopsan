@@ -22,7 +22,13 @@
 //!
 //$Id$
 
-#include <QtGui>
+#include <QGraphicsColorizeEffect>
+//! @todo figure out a way not to need to include eveerything here (qtGui / qtWidgets) due to multiplication of qtransfrom and qpointf
+#if QT_VERSION >= 0x050000
+    #include <QtWidgets>
+#else
+    #include <QtGui>
+#endif
 
 
 #include "GUIModelObject.h"

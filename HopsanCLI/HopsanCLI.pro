@@ -32,7 +32,7 @@ INCLUDEPATH *= $${PWD}/../Utilities
 
 #--------------------------------------------------------
 # Set hopsan core paths
-INCLUDEPATH *= $${PWD}/../HopsanCore/include/
+INCLUDEPATH *= $${PWD}/../HopsanCore/include
 LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------------
 
@@ -66,8 +66,6 @@ win32 {
     system($${PWD}/../getSvnRevision.bat) {
         DEFINES *= "HOPSANCLISVNREVISION=$$system($${PWD}/../getSvnRevision.bat)"
     }
-
-
 }
 
 #Debug output

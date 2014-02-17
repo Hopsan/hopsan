@@ -26,6 +26,10 @@
 
 #include <QDebug>
 #include <QGridLayout>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include "common.h"
 #include "global.h"

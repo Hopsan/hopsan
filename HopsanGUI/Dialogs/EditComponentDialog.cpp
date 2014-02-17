@@ -27,6 +27,15 @@
 
 //Qt includes
 #include <QFont>
+#include <QVBoxLayout>
+#include <QTextEdit>
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSpinBox>
+#include <QLineEdit>
+#include <QGridLayout>
 
 //Hopsan includes
 #include "common.h"
@@ -124,7 +133,7 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language,
 
 void EditComponentDialog::retranslateUi()
 {
-    this->setWindowTitle(QApplication::translate("EditComponentDialog", "Edit Component", 0, QApplication::UnicodeUTF8));
+    this->setWindowTitle(tr("Edit Component"));
 }
 
 

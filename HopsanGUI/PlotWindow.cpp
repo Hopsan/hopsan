@@ -32,6 +32,8 @@
 #include <QStandardItemModel>
 #include <QtGlobal>
 #include <QtGui>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"

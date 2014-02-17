@@ -22,6 +22,9 @@
 //!
 //$Id$
 
+#include <QMenu>
+#include <QMessageBox>
+
 #include "global.h"
 #include "ParameterSettingsLayout.h"
 #include "Utilities/GUIUtilities.h"

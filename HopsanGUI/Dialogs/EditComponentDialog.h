@@ -25,13 +25,23 @@
 #ifndef EDITCOMPONENTDIALOG_H_INCLUDED
 #define EDITCOMPONENTDIALOG_H_INCLUDED
 
-#include <QtGui>
+#include <QDialog>
+#include <QWizard>
 
-//#include "Utilities/ComponentGeneratorUtilities.h"  //Needed because we define lists with classes declared here
+class QTextDocument;
+class QVBoxLayout;
+class QComboBox;
+class QTextEdit;
+class QDialogButtonBox;
+class QToolButton;
+class QWizardPage;
+class QLabel;
+class QLineEdit;
+class QGridLayout;
+class QDoubleSpinBox;
+class QSpinBox;
 
 class ModelObjectAppearance;
-class QTextDocument;
-
 
 class EditComponentDialog : public QDialog
 {
@@ -65,14 +75,6 @@ private slots:
     void load();
     void save();
 };
-
-
-
-
-
-
-
-
 
 
 class CreateComponentWizard : public QWizard

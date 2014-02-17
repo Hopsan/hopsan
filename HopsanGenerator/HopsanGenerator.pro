@@ -9,6 +9,9 @@ CONFIG += shared
 DESTDIR = $${PWD}/../bin
 
 QT += xml core gui
+isEqual(QT_MAJOR_VERSION, 5){
+QT += widgets concurrent
+}
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 

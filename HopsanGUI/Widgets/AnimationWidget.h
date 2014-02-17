@@ -43,6 +43,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QtGui>
+#include <QDoubleSpinBox>
 
 class ContainerObject;
 class CentralTabWidget;
@@ -55,20 +56,24 @@ class AnimatedConnector;
 
 class CentralTabWidget;
 class GraphicsView;
-class QGraphicsScene;
 class LibraryWidget;
 class Configuration; // Might not need
 class AnimatedComponent;
 
 class AnimatedGraphicsView;
-class QGraphicsScene;
-class QTextEdit;
-class QPushButton;
-class QTimer;
 class MainWindow;
 class ModelObject;
 class LogDataHandler;
 class ModelObjectAnimationData;
+
+class QGraphicsScene;
+class QTextEdit;
+class QPushButton;
+class QTimer;
+class QGraphicsScene;
+class QGridLayout;
+class QToolButton;
+class QLabel;
 
 class AnimationWidget : public QWidget
 {

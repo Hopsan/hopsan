@@ -22,6 +22,9 @@
 //!
 //$Id$
 
+#include <QMessageBox>
+#include <QFileDialog>
+
 #include "global.h"
 #include "GUISystem.h"
 #include "GraphicsView.h"

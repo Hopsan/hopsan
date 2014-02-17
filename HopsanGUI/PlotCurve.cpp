@@ -38,6 +38,13 @@
 //Other includes
 #include <limits>
 #include <qwt_plot_zoomer.h>
+#include <QColorDialog>
+#include <QDialog>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QMenu>
+#include <QAction>
+
 
 const double DoubleMax = std::numeric_limits<double>::max();
 

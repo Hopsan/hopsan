@@ -22,6 +22,12 @@
 //!
 //$Id$
 
+#include <QScrollBar>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QFileDialog>
+#include <QInputDialog>
+
 #include "global.h"
 #include "common.h"
 #include "GraphicsView.h"

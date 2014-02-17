@@ -27,6 +27,9 @@
 
 #include <QObject>
 
+// Qt Forward declaritions
+class QProgressDialog;
+
 #include "Configuration.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"

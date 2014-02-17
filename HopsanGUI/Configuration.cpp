@@ -36,6 +36,7 @@
 #include <QDomElement>
 #include <QMessageBox>
 #include <QMap>
+#include <QAction>
 
 
 //! @class Configuration

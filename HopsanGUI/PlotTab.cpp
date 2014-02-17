@@ -24,6 +24,16 @@
 
 //Other includes
 #include <cmath>
+#include <QDialog>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QAction>
+#include <QColorDialog>
+#include <QGroupBox>
+#include <QRadioButton>
+#include <QVBoxLayout>
+#include <QMessageBox>
 
 
 //Hopsan includes

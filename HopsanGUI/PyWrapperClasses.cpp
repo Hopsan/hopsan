@@ -22,6 +22,8 @@
 //!
 //$Id$
 
+#include <QProgressDialog>
+
 #include "common.h"
 #include "LibraryHandler.h"
 #include "global.h"

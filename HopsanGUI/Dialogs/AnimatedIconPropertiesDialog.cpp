@@ -22,9 +22,13 @@
 //!
 //$Id$
 
-#include <QtGui>
-//#include <cassert>
-//#include <iostream>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QDoubleValidator>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QGridLayout>
 
 #include "global.h"
 #include "GUIObjects/AnimatedComponent.h"

@@ -22,10 +22,12 @@
 //!
 //$Id$
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QSplashScreen>
 #include <QTimer>
 #include <QLocale>
+#include <QDebug>
+#include <QFontDatabase>
 
 #include "common.h"
 #include "global.h"

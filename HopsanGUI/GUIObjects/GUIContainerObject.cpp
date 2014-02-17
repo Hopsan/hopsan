@@ -27,7 +27,13 @@
 #include <QDomElement>
 #include <QStandardItemModel>
 #include <QToolBar>
-#include "qfile.h"
+#include <QMessageBox>
+#include <QFile>
+#include <QFileDialog>
+#include <QGroupBox>
+#include <QInputDialog>
+#include <QHeaderView>
+#include <QDialogButtonBox>
 
 //Hopsan includes
 #include "global.h"

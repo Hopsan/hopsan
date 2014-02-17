@@ -22,6 +22,8 @@
 //!
 //$Id$
 
+#include <QMessageBox>
+
 #include "ModelObjectPropertiesDialog.h"
 
 #include "GUIObjects/GUIModelObject.h"

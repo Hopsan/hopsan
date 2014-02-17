@@ -25,7 +25,14 @@
 #ifndef PARAMETERSETTINGSLAYOUT_H
 #define PARAMETERSETTINGSLAYOUT_H
 
-#include <QtGui>
+#include <QGridLayout>
+#include <QToolButton>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QCheckBox>
+
+
 #include "CoreAccess.h" //!< @todo mayeb should have parameter stuff in h file of its own so that we dont need to include coreaccess whenever we want to work with parameters
 
 class ModelObject;

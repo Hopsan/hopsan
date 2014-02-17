@@ -25,8 +25,19 @@
 #ifndef SENSITIVITYANALYSISDIALOG_H
 #define SENSITIVITYANALYSISDIALOG_H
 
-#include <QtGui>
+#include <QDialog>
 
+// Qt forward declaration
+class QTreeWidgetItem;
+class QTreeWidget;
+class QGridLayout;
+class QSpinBox;
+class QRadioButton;
+class QProgressBar;
+class QLabel;
+class QLineEdit;
+
+// Hospan forward declaration
 class ModelWidget;
 class SensitivityAnalysisSettings;
 class SystemContainer;

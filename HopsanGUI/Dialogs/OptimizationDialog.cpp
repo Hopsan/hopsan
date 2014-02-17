@@ -23,6 +23,8 @@
 //$Id$
 
 #include <QDebug>
+#include <QMessageBox>
+#include <QFileDialog>
 #include <limits>
 #ifndef WIN32
 #include <unistd.h>

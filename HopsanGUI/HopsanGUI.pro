@@ -10,8 +10,15 @@ TARGET = HopsanGUI
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
+
 QT += svg xml
-QT += core gui webkit network
+QT += core gui network
+
+isEqual(QT_MAJOR_VERSION, 5){
+    QT += widgets webkitwidgets
+} else {
+    QT += webkit
+}
 
 
 TARGET = $${TARGET}$${DEBUG_EXT}

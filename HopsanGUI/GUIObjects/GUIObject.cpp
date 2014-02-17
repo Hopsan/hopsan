@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include <QtGui>
+#include <QGraphicsSceneMouseEvent>
 
 #include "GUIObject.h"
 #include "GUIObjects/GUIContainerObject.h"

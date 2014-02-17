@@ -24,6 +24,9 @@
 
 //Qt includes
 #include <QDebug>
+#include <QScrollArea>
+#include <QApplication>
+#include <QDesktopWidget>
 
 //Hopsan includes
 #include "global.h"

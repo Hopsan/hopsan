@@ -30,6 +30,8 @@
 #include <QCursor>
 #include <QAction>
 #include <QTextStream>
+#include <QApplication>
+#include <QDrag>
 
 //Hopsan includes
 #include "global.h"

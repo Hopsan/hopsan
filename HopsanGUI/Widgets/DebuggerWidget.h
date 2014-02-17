@@ -25,25 +25,26 @@
 #ifndef DEBUGGERWIDGET_H
 #define DEBUGGERWIDGET_H
 
-#include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QSpinBox>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QListWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QTabWidget>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QWidget>
+#include <QVariant>
+#include <QAction>
+#include <QSpinBox>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QDialog>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QListWidget>
+#include <QPushButton>
+#include <QTabWidget>
+#include <QTableWidget>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QFile>
 
-#include "GUIObjects/GUISystem.h"
+// Forward declaration
+class SystemContainer;
 
 class DebuggerWidget : public QDialog
 {

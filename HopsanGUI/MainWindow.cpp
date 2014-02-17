@@ -33,6 +33,13 @@
 #include <QFontDatabase>
 #include <QtNetwork>
 #include <QPixmap>
+#include <QDesktopWidget>
+#include <QDockWidget>
+#include <QStatusBar>
+#include <QMenuBar>
+#include <QToolBar>
+#include <QMessageBox>
+
 
 #include "common.h"
 #include "global.h"

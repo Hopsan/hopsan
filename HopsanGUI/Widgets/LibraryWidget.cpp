@@ -22,6 +22,12 @@
 //!
 //$Id$
 
+#include <QApplication>
+#include <QDrag>
+#include <QMenu>
+#include <QAction>
+#include <QDesktopServices>
+
 //Hopsan includes
 #include "common.h"
 #include "global.h"

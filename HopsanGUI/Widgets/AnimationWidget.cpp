@@ -25,6 +25,9 @@
 
 //Qt includes
 #include <QVector>
+#include <QLineEdit>
+#include <QGridLayout>
+#include <QDialogButtonBox>
 
 //Hopsan includes
 #include "global.h"

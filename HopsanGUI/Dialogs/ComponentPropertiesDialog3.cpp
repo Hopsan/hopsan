@@ -24,6 +24,15 @@
 
 //Qt includes
 #include <QDebug>
+#include <QMessageBox>
+#include <QScrollArea>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QTableView>
+#include <QHeaderView>
+#include <QScrollBar>
+#include <QMenu>
+
 
 //Hopsan includes
 #include "common.h"
@@ -641,6 +650,16 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     resizeColumnToContents(ShowPort);
     setColumnWidth(Description, 2*columnWidth(Description));
 
+#if QT_VERSION >= 0x050000
+    horizontalHeader()->setSectionResizeMode(Name, QHeaderView::ResizeToContents);
+//    horizontalHeader()->setSectionResizeMode(Alias, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionResizeMode(Unit, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionResizeMode(Description, QHeaderView::Stretch);
+    horizontalHeader()->setSectionResizeMode(Value, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionResizeMode(Scale, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionResizeMode(ShowPort, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionsClickable(false);
+#else
     horizontalHeader()->setResizeMode(Name, QHeaderView::ResizeToContents);
 //    horizontalHeader()->setResizeMode(Alias, QHeaderView::ResizeToContents);
     horizontalHeader()->setResizeMode(Unit, QHeaderView::ResizeToContents);
@@ -649,6 +668,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     horizontalHeader()->setResizeMode(Scale, QHeaderView::ResizeToContents);
     horizontalHeader()->setResizeMode(ShowPort, QHeaderView::ResizeToContents);
     horizontalHeader()->setClickable(false);
+#endif
 
     verticalHeader()->hide();
 }

@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include <QtGui>
+#include <QHeaderView>
 
 #include "Widgets/UndoWidget.h"
 #include "UndoStack.h"

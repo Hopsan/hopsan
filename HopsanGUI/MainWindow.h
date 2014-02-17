@@ -26,7 +26,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtGui>
+#include <QLineEdit>
+#include <QGridLayout>
+#include <QFileInfo>
+#include <QDir>
+#include <QLabel>
+#include <QToolButton>
 
 class CentralTabWidget;
 class GraphicsView;

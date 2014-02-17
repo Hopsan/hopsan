@@ -31,6 +31,9 @@
 #include <QtXml>
 #include <QWebPage>
 #include <QNetworkReply>
+#include <QProgressBar>
+#include <QMenu>
+#include <QApplication>
 
 //Hopsan includes
 #include "global.h"

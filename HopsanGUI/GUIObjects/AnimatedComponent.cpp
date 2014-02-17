@@ -23,8 +23,9 @@
 //!
 //$Id$
 
-#include <math.h>
+#include <qmath.h>
 #include <float.h>
+#include <QGraphicsColorizeEffect>
 
 #include "common.h"
 #include "global.h"
@@ -231,7 +232,8 @@ void AnimatedComponent::updateAnimation()
                 double initX = mpAnimationData->initScaleX[m];
                 double initY = mpAnimationData->initScaleY[m];
                 mpMovables[m]->resetTransform();
-                mpMovables[m]->scale(initX-scaleX, initY-scaleY);
+                //mpMovables[m]->scale(initX-scaleX, initY-scaleY);
+                mpMovables[m]->setTransform(QTransform::fromScale(initX-scaleX, initY-scaleY), true);
             }
 
             //Set color
@@ -357,7 +359,7 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
 
    // mpBase->refreshIconPosition();
 
-    mpText = new QGraphicsTextItem(mpBase, 0);
+    mpText = new QGraphicsTextItem(mpBase);
     mpText->setPlainText("0");
     mpText->setFont(QFont("Arial", 16));
     mpText->setPos(7,0);

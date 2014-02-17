@@ -1,3 +1,13 @@
+
+#include <QGraphicsView>
+#include <QGridLayout>
+#include <QCheckBox>
+#include <QPushButton>
+#include <Qlabel>
+#include <QLineEdit>
+#include <QDoubleValidator>
+
+
 #include "MovePortsDialog.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIPort.h"

@@ -25,9 +25,20 @@
 #ifndef MOVEPORTSDIALOG_H
 #define MOVEPORTSDIALOG_H
 
-#include <QtGui>
-#include <QGraphicsSvgItem>
-#include <QSvgRenderer>
+#include <QDialog>
+#include <QGraphicsWidget>
+
+// Qt Forward Declarations
+class QGraphicsSvgItem;
+class QGraphicsView;
+class QGridLayout;
+class QSlider;
+class QCheckBox;
+class QLineEdit;
+class QLabel;
+class QGraphicsItem;
+class QGraphicsTextItem;
+class QGraphicsSceneMouseEvent;
 
 #include "GUIPortAppearance.h"
 #include "common.h"

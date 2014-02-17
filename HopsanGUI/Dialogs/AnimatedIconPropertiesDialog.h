@@ -25,7 +25,14 @@
 #ifndef ANIMATEDICONPROPERTIESDIALOG_H
 #define ANIMATEDICONPROPERTIESDIALOG_H
 
-#include <QtGui>
+#include <QDialog>
+
+class QCheckBox;
+class QDialogButtonBox;
+class QDoubleSpinbox;
+class QLabel;
+class QLineEdit;
+class QGridLayout;
 
 class AnimatedComponent;
 class AnimatedIcon;

@@ -22,29 +22,12 @@
 //! @brief Contains a class for the debugger widget
 //!
 
-//Qt includes
-#include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QListWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QTabWidget>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QWidget>
+#include "DebuggerWidget.h"
 
 //Hopsan includes
 #include "global.h"
 #include "ComponentSystem.h"
 #include "CoreAccess.h"
-#include "DebuggerWidget.h"
 #include "DesktopHandler.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"

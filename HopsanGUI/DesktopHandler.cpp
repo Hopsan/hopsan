@@ -34,6 +34,22 @@
 #include <QApplication>
 #include "Utilities/GUIUtilities.h"
 
+#if QT_VERSION >= 0x050000
+#include <QStandardPaths>
+QString getStandardLocation(QStandardPaths::StandardLocation type)
+{
+    QStringList locations = QStandardPaths::standardLocations(type);
+    if (locations.isEmpty())
+    {
+        return "";
+    }
+    else
+    {
+        return locations.first();
+    }
+}
+#endif
+
 
 
 DesktopHandler::DesktopHandler()
@@ -42,9 +58,15 @@ DesktopHandler::DesktopHandler()
     mUseCustomDataPath = false;
     mUseCustomTempPath = false;
     mUseCustomDocumentsPath = false;
+#if QT_VERSION >= 0x050000
+    mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation) + "/Hopsan/";
+    mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "/Hopsan/";
+    mDefaultDocumentsPath = getStandardLocation(QStandardPaths::DocumentsLocation) + "/Hopsan/";
+#else
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
     mDefaultTempPath = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/";
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
+#endif
     mBackupPath = mDefaultDocumentsPath+"/Backup/";
     mModelsPath = mDefaultDocumentsPath+"/Models/";
     mScriptsPath = mDefaultDocumentsPath+"/Scripts";

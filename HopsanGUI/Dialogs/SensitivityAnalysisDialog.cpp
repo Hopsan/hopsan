@@ -22,6 +22,11 @@
 //!
 //$Id$
 
+#include <QGroupBox>
+#include <QDialogButtonBox>
+#include <QAction>
+#include <QProgressBar>
+
 #include "global.h"
 #include "Configuration.h"
 #include "GUIPort.h"

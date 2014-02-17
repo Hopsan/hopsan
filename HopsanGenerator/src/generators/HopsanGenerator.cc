@@ -931,7 +931,7 @@ bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &
     {
         printErrorMessage("Unable to open file "+fileName+" for writing.");
     }
-    file.write(contents.toAscii());
+    file.write(contents.toLatin1());
     file.close();
 
     return true;

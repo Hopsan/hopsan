@@ -22,6 +22,10 @@
 //!
 //$Id$
 
+#include <QFileDialog>
+#include <QMessageBox>
+
+
 //Hopsan includes
 #include "common.h"
 #include "global.h"

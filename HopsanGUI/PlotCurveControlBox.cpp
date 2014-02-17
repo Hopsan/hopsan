@@ -23,6 +23,7 @@
 //$Id: ModelHandler.cpp 5551 2013-06-20 08:54:16Z petno25 $
 
 #include <QDropEvent>
+#include <QMimeData>
 
 #include "PlotCurveControlBox.h"
 #include "PlotArea.h"

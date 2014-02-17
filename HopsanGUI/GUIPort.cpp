@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include <QtGui>
+#include <QInputDialog>
 #include <QSvgRenderer>
 
 #include "common.h"

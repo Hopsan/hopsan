@@ -1,7 +1,10 @@
 #ifndef PLOTTERBASE_H
 #define PLOTTERBASE_H
 
-#include <QtGui>
+#include <QWidget>
+#include <QAbstractItemModel>
+#include <QPen>
+#include <QBrush>
 
 
 namespace QSint

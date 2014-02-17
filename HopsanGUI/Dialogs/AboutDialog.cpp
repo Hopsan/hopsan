@@ -27,7 +27,13 @@
 #include "version_gui.h"
 #include "CoreAccess.h"
 
-#include <QtGui>
+#include <QPushButton>
+#include <QTimer>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+#include <QKeyEvent>
+#include <QDate>
+#include <qmath.h>
 
 //! @class AboutDialog
 //! @brief A class for displaying the "About Hopsan" dialog
@@ -230,7 +236,7 @@ void AboutDialog::update()
 
     QPixmap image;
     image.load(QString(GRAPHICSPATH) + "about.png");
-    mpHopsanLogotype->setPixmap(image.scaled(454-300*sin((num-QDate::currentDate().dayOfYear())*3.1415/Qt::Key_0), 110));
+    mpHopsanLogotype->setPixmap(image.scaled(454-300*qSin((num-QDate::currentDate().dayOfYear())*3.1415/Qt::Key_0), 110));
 }
 
 

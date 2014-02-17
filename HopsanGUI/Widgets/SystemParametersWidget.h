@@ -25,7 +25,13 @@
 #ifndef SYSTEMPARAMETERSWIDGET_H
 #define SYSTEMPARAMETERSWIDGET_H
 
-#include <QtGui>
+#include <QComboBox>
+#include <QItemDelegate>
+#include <QTableView>
+#include <QSortFilterProxyModel>
+#include <QPushButton>
+#include <QPointer>
+
 #include "CoreAccess.h"
 
 // Forward Declarations

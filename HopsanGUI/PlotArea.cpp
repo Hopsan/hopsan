@@ -24,6 +24,11 @@
 
 #include <QLineEdit>
 #include <QGridLayout>
+#include <QMenu>
+#include <QAction>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QDialog>
 
 #include "PlotArea.h"
 #include "PlotCurve.h"

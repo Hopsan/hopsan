@@ -29,6 +29,12 @@
 //!
 //$Id$
 
+#include <QMessageBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QDialogButtonBox>
+
 #include "SystemParametersWidget.h"
 #include "common.h"
 #include "global.h"

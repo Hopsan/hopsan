@@ -22,8 +22,9 @@
 //!
 //$Id$
 
-#include <QtGui>
+#include <QMessageBox>
 #include <QDebug>
+#include <QColorDialog>
 
 #include "global.h"
 #include "Configuration.h"

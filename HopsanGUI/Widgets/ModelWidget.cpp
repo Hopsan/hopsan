@@ -23,9 +23,11 @@
 //$Id$
 
 //Qt includes
-#include <QtGui>
+#include <QGraphicsColorizeEffect>
 #include <QSizePolicy>
 #include <QHash>
+#include <QFileDialog>
+
 
 //Hopsan includes
 #include "global.h"

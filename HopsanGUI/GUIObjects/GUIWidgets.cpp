@@ -31,6 +31,7 @@
 #include <QDialogButtonBox>
 #include <QFontDialog>
 #include <QColorDialog>
+#include <QGraphicsRectItem>
 
 #include <cassert>
 
@@ -182,7 +183,7 @@ TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSyste
     : Widget(other.pos(), other.rotation(), Deselected, pSystem, 0)
 {
     mType = other.mType;
-    mpRectItem = new QGraphicsRectItem(other.mpRectItem->rect(), this, pSystem->getContainedScenePtr());
+    mpRectItem = new QGraphicsRectItem(other.mpRectItem->rect(), this);
     if(other.mpRectItem->isVisible())
     {
         mpRectItem->show();
@@ -191,7 +192,7 @@ TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSyste
     {
         mpRectItem->hide();
     }
-    mpTextItem = new QGraphicsTextItem(other.mpTextItem->toPlainText(), this, pSystem->getContainedScenePtr());
+    mpTextItem = new QGraphicsTextItem(other.mpTextItem->toPlainText(), this);
     mpTextItem->setFont(other.mpTextItem->font());
     mpTextItem->show();
     setColor(other.mpTextItem->defaultTextColor());

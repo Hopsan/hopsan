@@ -29,6 +29,10 @@
 #define XML_LIBRARY_CAF "caf"
 #define XML_LIBRARY_SOURCE "source"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QPushButton>
+
 //Hopsan includes
 #include "global.h"
 #include "Configuration.h"
