@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = TransmissionLib TestLib
+SUBDIRS = TestLib
