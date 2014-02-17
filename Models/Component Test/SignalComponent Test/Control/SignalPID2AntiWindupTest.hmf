@@ -1,0 +1,888 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6037" hopsancoreversion="0.6.x_r6028">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info>
+    <author>Peter Nordin</author>
+    <email>peter.nordin@liu.se</email>
+    <affiliation>Flumes</affiliation>
+    <description>Test model for SignalPID2 component that shows anti-windup</description>
+  </info>
+  <system typename="Subsystem" name="SignalPID2AntiWindupTest">
+    <simulationtime stop="20" timestep="0.0001" start="0" inherit_timestep="true"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="1"/>
+      <animation flowspeed="100"/>
+      <viewport x="2487" y="2386.5" zoom="1"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="SignalPID2AntiWindupTest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <favoritevariables/>
+      <optimization>
+        <settings>
+          <niter>100</niter>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+    </hopsangui>
+    <objects>
+      <component typename="SignalPID2" name="SignalPID2_AntiWindup">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="e#Value"/>
+          <parameter unit="-" value="0" type="double" name="de#Value"/>
+          <parameter unit="" value="0.5" type="double" name="K"/>
+          <parameter unit="s" value="0.5" type="double" name="Ti"/>
+          <parameter unit="s" value="0.5" type="double" name="Tt"/>
+          <parameter unit="s" value="0" type="double" name="Td"/>
+          <parameter unit="" value="-5" type="double" name="Umin"/>
+          <parameter unit="" value="5" type="double" name="Umax"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="de"/>
+          <port nodetype="NodeSignal" name="u"/>
+          <port nodetype="NodeSignal" name="e"/>
+        </ports>
+        <hopsangui>
+          <pose x="2274.88" y="2659.47" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalPID2" displayname="SignalPID2_AntiWindup">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalPID2" name="SignalPID2_no_AntiWindup">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="e#Value"/>
+          <parameter unit="-" value="0" type="double" name="de#Value"/>
+          <parameter unit="" value="0.5" type="double" name="K"/>
+          <parameter unit="s" value="0.5" type="double" name="Ti"/>
+          <parameter unit="s" value="10" type="double" name="Tt"/>
+          <parameter unit="s" value="0" type="double" name="Td"/>
+          <parameter unit="" value="-1e+10" type="double" name="Umin"/>
+          <parameter unit="" value="1e+10" type="double" name="Umax"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="de"/>
+          <port nodetype="NodeSignal" name="u"/>
+          <port nodetype="NodeSignal" name="e"/>
+        </ports>
+        <hopsangui>
+          <pose x="2274.715723" y="2320.704475" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalPID2" displayname="SignalPID2_no_AntiWindup">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSubtract" name="error_1">
+        <parameters>
+          <parameter unit="-" value=".3" type="double" name="in1#Value"/>
+          <parameter unit="-" value=".3" type="double" name="in2#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2160.629568" y="2659.472169" flipped="true" a="180"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSubtract" displayname="error_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSaturation" name="Saturation_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="5" type="double" name="y_upper#Value"/>
+          <parameter unit="-" value="-5" type="double" name="y_lower#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2418" y="2660" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSaturation" displayname="Saturation_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSubtract" name="error">
+        <parameters>
+          <parameter unit="-" value=".3" type="double" name="in1#Value"/>
+          <parameter unit="-" value=".3" type="double" name="in2#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2160.465291" y="2320.706644" flipped="true" a="180"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSubtract" displayname="error">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2614" y="2525" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalUnitDelay" name="Unit_Delay_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2292.835723" y="2415.234475" flipped="false" a="180"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalUnitDelay" displayname="Unit_Delay_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_2">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2613.835723" y="2186.234475" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_3">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2614.835723" y="2320.706644" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_3">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalIntegrator2" name="System_No_AntiWindup">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0" type="double" name="out#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2496" y="2321" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalIntegrator2" displayname="System_No_AntiWindup">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalIntegrator2" name="System_With_AntiWindup">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0" type="double" name="out#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2496" y="2660" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalIntegrator2" displayname="System_With_AntiWindup">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSaturation" name="Saturation">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="5" type="double" name="y_upper#Value"/>
+          <parameter unit="-" value="-5" type="double" name="y_lower#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2418" y="2321" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSaturation" displayname="Saturation">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalStep" name="Step">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="20" type="double" name="y_A#Value"/>
+          <parameter unit="-" value="1" type="double" name="t_step#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2072.835723" y="2443.706644" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalStep" displayname="Step">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Compare_system_response">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2803" y="2530" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Compare_system_response">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalUnitDelay" name="Unit_Delay">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2293" y="2754" flipped="false" a="180"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalUnitDelay" displayname="Unit_Delay">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Compare_control_signals">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2802" y="2443" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Compare_control_signals">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2615" y="2659.472169" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2377.000000" y="2260.000000"/>
+          <textobject fontcolor="#556b2f" text="Actuator with&#xa;+-5 Ulim" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="82.750000" height="100.000000"/>
+          <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2379.625000" y="2591.000000"/>
+          <textobject fontcolor="#556b2f" text="Actuator with&#xa;+-5 Ulim" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="82.750000" height="100.000000"/>
+          <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+    </objects>
+    <connections>
+      <connect endport="e" endcomponent="SignalPID2_AntiWindup" startport="out" startcomponent="error_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2173.12956825000037497375" y="2659.47216858333285927074"/>
+            <coordinate x="2225.87911028209236974362" y="2659.47216858333285927074"/>
+            <coordinate x="2225.87911028209236974362" y="2659.46999999999934516381"/>
+            <coordinate x="2246.88000000000010913936" y="2659.46999999999934516381"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="error_1" startport="out" startcomponent="Unit_Delay">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2275.50000000000000000000" y="2754.00000000000000000000"/>
+            <coordinate x="2160.62956825000037497375" y="2754.00000000000000000000"/>
+            <coordinate x="2160.62956825000037497375" y="2671.97216858333285927074"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_1" startport="u" startcomponent="SignalPID2_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2302.88000000000010913936" y="2659.46999999999934516381"/>
+            <coordinate x="2370.00000000000000000000" y="2659.46999999999934516381"/>
+            <coordinate x="2370.00000000000000000000" y="2525.00000041666726247058"/>
+            <coordinate x="2594.00000000000000000000" y="2525.00000041666726247058"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="error_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2173.12956825000037497375" y="2659.47216858333285927074"/>
+            <coordinate x="2227.00000000000000000000" y="2659.47216858333285927074"/>
+            <coordinate x="2227.00000000000000000000" y="2525.00000041666726247058"/>
+            <coordinate x="2594.00000000000000000000" y="2525.00000041666726247058"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="e" endcomponent="SignalPID2_no_AntiWindup" startport="out" startcomponent="error">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2172.96529078571438731160" y="2320.70664403571481670951"/>
+            <coordinate x="2225.71483306780692146276" y="2320.70664403571481670951"/>
+            <coordinate x="2225.71483306780692146276" y="2320.70447503571449487936"/>
+            <coordinate x="2246.71572278571466085850" y="2320.70447503571449487936"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="error" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2114.96529103571447194554" y="2443.70664403571481670951"/>
+            <coordinate x="2114.96529103571447194554" y="2320.70664403571481670951"/>
+            <coordinate x="2147.96529078571438731160" y="2320.70664403571481670951"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="error" startport="out" startcomponent="Unit_Delay_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2275.33572278571409697179" y="2415.23447503571514971554"/>
+            <coordinate x="2160.46529078571393256425" y="2415.23447503571514971554"/>
+            <coordinate x="2160.46529078571393256425" y="2333.20664403571527145687"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_3" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2114.83572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2114.83572278571409697179" y="2234.23447503571469496819"/>
+            <coordinate x="2548.83572278571409697179" y="2234.23447503571469496819"/>
+            <coordinate x="2548.83572278571409697179" y="2320.70664403571481670951"/>
+            <coordinate x="2594.83572278571409697179" y="2320.70664403571481670951"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_2" startport="u" startcomponent="SignalPID2_no_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2302.71572278571511560585" y="2320.70447503571449487936"/>
+            <coordinate x="2369.83572278571500646649" y="2320.70447503571449487936"/>
+            <coordinate x="2369.83572278571500646649" y="2186.23447503571469496819"/>
+            <coordinate x="2593.83572278571500646649" y="2186.23447503571469496819"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2113.83572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2113.83572278571409697179" y="2186.23447503571514971554"/>
+            <coordinate x="2593.83572278571409697179" y="2186.23447503571514971554"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="error">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2172.96529078571438731160" y="2320.70664403571481670951"/>
+            <coordinate x="2226.83572278571455171914" y="2320.70664403571481670951"/>
+            <coordinate x="2226.83572278571455171914" y="2186.23447503571469496819"/>
+            <coordinate x="2593.83572278571455171914" y="2186.23447503571469496819"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="error_1" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2115.00000000000000000000" y="2443.70664403571481670951"/>
+            <coordinate x="2115.00000000000000000000" y="2659.47216858333285927074"/>
+            <coordinate x="2148.12956825000037497375" y="2659.47216858333285927074"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2114.00000000000000000000" y="2443.70664403571481670951"/>
+            <coordinate x="2114.00000000000000000000" y="2525.00000041666680772323"/>
+            <coordinate x="2594.00000000000000000000" y="2525.00000041666680772323"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Compare_control_signals" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2115.00000000000000000000" y="2443.70664403571481670951"/>
+            <coordinate x="2115.00000000000000000000" y="2442.99999996428505255608"/>
+            <coordinate x="2782.00000021428604668472" y="2442.99999996428505255608"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Compare_control_signals" startport="u" startcomponent="SignalPID2_no_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2302.71572278571511560585" y="2320.70447503571449487936"/>
+            <coordinate x="2370.00000000000000000000" y="2320.70447503571449487936"/>
+            <coordinate x="2370.00000000000000000000" y="2442.99999996428505255608"/>
+            <coordinate x="2782.00000021428604668472" y="2442.99999996428505255608"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Compare_control_signals" startport="u" startcomponent="SignalPID2_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2302.88000000000010913936" y="2659.46999999999934516381"/>
+            <coordinate x="2371.00000000000000000000" y="2659.46999999999934516381"/>
+            <coordinate x="2371.00000000000000000000" y="2442.99999996428505255608"/>
+            <coordinate x="2782.00000021428604668472" y="2442.99999996428505255608"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2154.00000000000000000000" y="2443.70664403571481670951"/>
+            <coordinate x="2154.00000000000000000000" y="2444.00000000000000000000"/>
+            <coordinate x="2549.00000000000000000000" y="2444.00000000000000000000"/>
+            <coordinate x="2549.00000000000000000000" y="2659.47216858333285927074"/>
+            <coordinate x="2595.00000000000000000000" y="2659.47216858333285927074"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="System_No_AntiWindup" startport="out" startcomponent="Saturation">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2438.00000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2446.70491502499999114661" y="2321.00000000000000000000"/>
+            <coordinate x="2446.70491502499999114661" y="2321.00000000000000000000"/>
+            <coordinate x="2478.50000000000000000000" y="2321.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="System_With_AntiWindup" startport="out" startcomponent="Saturation_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2438.00000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2449.70491502499999114661" y="2660.00000000000000000000"/>
+            <coordinate x="2449.70491502499999114661" y="2660.00000000000000000000"/>
+            <coordinate x="2478.50000000000000000000" y="2660.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Saturation_1" startport="u" startcomponent="SignalPID2_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2302.88000000000010913936" y="2659.46999999999934516381"/>
+            <coordinate x="2391.00000000000000000000" y="2659.46999999999934516381"/>
+            <coordinate x="2391.00000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2398.00000000000000000000" y="2660.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="System_With_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2513.50000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2595.00000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2595.00000000000000000000" y="2659.47216858333285927074"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Saturation" startport="u" startcomponent="SignalPID2_no_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2302.71572278571511560585" y="2320.70447503571449487936"/>
+            <coordinate x="2389.00000000000000000000" y="2320.70447503571449487936"/>
+            <coordinate x="2389.00000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2398.00000000000000000000" y="2321.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_3" startport="out" startcomponent="System_No_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2513.50000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2597.00000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2597.00000000000000000000" y="2320.70664403571481670951"/>
+            <coordinate x="2594.83572278571409697179" y="2320.70664403571481670951"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Unit_Delay_1" startport="out" startcomponent="System_No_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2513.50000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2548.00000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2548.00000000000000000000" y="2415.23447503571514971554"/>
+            <coordinate x="2310.33572278571409697179" y="2415.23447503571514971554"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Unit_Delay" startport="out" startcomponent="System_With_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2513.50000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2549.00000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2549.00000000000000000000" y="2754.00000000000000000000"/>
+            <coordinate x="2310.50000000000000000000" y="2754.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Compare_system_response" startport="out" startcomponent="System_With_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2513.50000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2570.00000000000000000000" y="2660.00000000000000000000"/>
+            <coordinate x="2570.00000000000000000000" y="2574.00000000000000000000"/>
+            <coordinate x="2734.00000000000000000000" y="2574.00000000000000000000"/>
+            <coordinate x="2734.00000000000000000000" y="2530.00000003571494744392"/>
+            <coordinate x="2782.99999978571395331528" y="2530.00000003571494744392"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Compare_system_response" startport="out" startcomponent="System_No_AntiWindup">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2513.50000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2568.00000000000000000000" y="2321.00000000000000000000"/>
+            <coordinate x="2568.00000000000000000000" y="2417.00000000000000000000"/>
+            <coordinate x="2702.00000000000000000000" y="2417.00000000000000000000"/>
+            <coordinate x="2702.00000000000000000000" y="2530.00000003571494744392"/>
+            <coordinate x="2782.99999978571395331528" y="2530.00000003571494744392"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Compare_system_response" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2085.33572278571409697179" y="2443.70664403571481670951"/>
+            <coordinate x="2688.00000000000000000000" y="2443.70664403571481670951"/>
+            <coordinate x="2688.00000000000000000000" y="2530.00000003571494744392"/>
+            <coordinate x="2782.99999978571395331528" y="2530.00000003571494744392"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>

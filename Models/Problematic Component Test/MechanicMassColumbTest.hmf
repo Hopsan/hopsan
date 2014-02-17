@@ -1,0 +1,1350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system typename="Subsystem" name="MechanicMassColumbTest">
+        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2600.48" y="2325.59" zoom="0.842152"/>
+            <ports hidden="0"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="MechanicMassColumbTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicOverCenterValve" name="Over Center Valve">
+                            <parameters>
+                                <parameter value="2e+006" name="p_ref"/>
+                                <parameter value="0.01" name="tao"/>
+                                <parameter value="1e-008" name="k_c,s"/>
+                                <parameter value="1e-008" name="k_c,f"/>
+                                <parameter value="0.001" name="q_nom"/>
+                                <parameter value="7e+006" name="p_nom"/>
+                                <parameter value="500000" name="p_h"/>
+                                <parameter value="5" name="a_ratio"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2266.00000000000000000000" y="2484" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="2">
+                    <stuff what="deletedobject">
+                        <component typename="HydraulicOverCenterValve" name="Over Center Valve">
+                            <parameters>
+                                <parameter value="2e+006" name="p_ref"/>
+                                <parameter value="0.01" name="tao"/>
+                                <parameter value="1e-008" name="k_c,s"/>
+                                <parameter value="1e-008" name="k_c,f"/>
+                                <parameter value="0.001" name="q_nom"/>
+                                <parameter value="7e+006" name="p_nom"/>
+                                <parameter value="500000" name="p_h"/>
+                                <parameter value="5" name="a_ratio"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2266.00000000000000000000" y="2484" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="addedobject">
+                        <component typename="Hydraulic22PoppetValve" name="2/2 Poppet Valve">
+                            <parameters>
+                                <parameter value="0" name="xv_out::Value"/>
+                                <parameter value="0.67" name="C_q"/>
+                                <parameter value="890" name="rho"/>
+                                <parameter value="0.01" name="d_1"/>
+                                <parameter value="0.015" name="d_2"/>
+                                <parameter value="10000" name="k"/>
+                                <parameter value="100" name="F_0"/>
+                                <parameter value="1" name="f"/>
+                                <parameter value="0.01" name="x_v,max"/>
+                                <parameter value="0.0001" name="d_d"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2241.00000000000000000000" y="2460" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="deletedobject">
+                        <component typename="Hydraulic22PoppetValve" name="2/2 Poppet Valve">
+                            <parameters>
+                                <parameter value="0" name="xv_out::Value"/>
+                                <parameter value="0.67" name="C_q"/>
+                                <parameter value="890" name="rho"/>
+                                <parameter value="0.01" name="d_1"/>
+                                <parameter value="0.015" name="d_2"/>
+                                <parameter value="10000" name="k"/>
+                                <parameter value="100" name="F_0"/>
+                                <parameter value="1" name="f"/>
+                                <parameter value="0.01" name="x_v,max"/>
+                                <parameter value="0.0001" name="d_d"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2241.00000000000000000000" y="2460" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff what="addedobject">
+                        <component typename="MechanicTranslationalMassWithCoulumbFriction" name="Translational Mass With Coulumb Friction">
+                            <parameters>
+                                <parameter value="100" name="m"/>
+                                <parameter value="10" name="b"/>
+                                <parameter value="50" name="f_s"/>
+                                <parameter value="45" name="f_k"/>
+                                <parameter value="0" name="x_min"/>
+                                <parameter value="1" name="x_max"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2322.00000000000000000000" y="2432" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="6">
+                    <stuff what="movedobject" name="Translational Mass With Coulumb Friction">
+                        <oldpos>2282 2408</oldpos>
+                        <newpos>2304 2432</newpos>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="movedobject" name="Translational Mass With Coulumb Friction">
+                        <oldpos>2304 2432</oldpos>
+                        <newpos>2324 2440</newpos>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="addedobject">
+                        <component typename="MechanicTranslationalSpring" name="Translational Spring">
+                            <parameters>
+                                <parameter value="0" name="P1::Velocity"/>
+                                <parameter value="0" name="P1::Force"/>
+                                <parameter value="0" name="P1::Position"/>
+                                <parameter value="0" name="P2::Velocity"/>
+                                <parameter value="0" name="P2::Force"/>
+                                <parameter value="0" name="P2::Position"/>
+                                <parameter value="100" name="k"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2204.00000000000000000000" y="2469" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="movedobject" name="Translational Spring">
+                        <oldpos>2187.5 2459</oldpos>
+                        <newpos>2241.5 2451</newpos>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="movedobject" name="Translational Mass With Coulumb Friction">
+                        <oldpos>2324 2440</oldpos>
+                        <newpos>2346 2443</newpos>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff what="movedobject" name="Translational Spring">
+                        <oldpos>2241.5 2451</oldpos>
+                        <newpos>2273.5 2453</newpos>
+                    </stuff>
+                </post>
+                <post number="12">
+                    <stuff what="addedobject">
+                        <component typename="MechanicVelocityTransformer" name="Position &amp; Velocity Source">
+                            <parameters>
+                                <parameter value="0" name="v"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2187.00000000000000000000" y="2468" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="13">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Translational Spring" startport="Pm1" startcomponent="Position &amp; Velocity Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2206.50000000000000000000" y="2463.00000000000000000000"/>
+                                    <coordinate x="2253.50000000000000000000" y="2463.00000000000000000000"/>
+                                    <coordinate x="2253.50000000000000000000" y="2463.00000000000000000000"/>
+                                    <coordinate x="2273.50000000000000000000" y="2463.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="14">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction" startport="P2" startcomponent="Translational Spring">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2306.50000000000000000000" y="2463.00000000000000000000"/>
+                                    <coordinate x="2334.13500000000021827873" y="2463.00000000000000000000"/>
+                                    <coordinate x="2334.13500000000021827873" y="2463.00000000000000000000"/>
+                                    <coordinate x="2354.13500000000021827873" y="2463.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff what="addedobject">
+                        <component typename="MechanicForceTransformer" name="Force Source">
+                            <parameters>
+                                <parameter value="0" name="P1::Velocity"/>
+                                <parameter value="0" name="P1::Position"/>
+                                <parameter value="0" name="F"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2495.00000000000000000000" y="2479" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="16">
+                    <stuff what="horizontalflip" objectname="Force Source"/>
+                </post>
+                <post number="17">
+                    <stuff what="addedconnector">
+                        <connect endport="P2" endcomponent="Translational Mass With Coulumb Friction" startport="P1" startcomponent="Force Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2475.50000000000000000000" y="2479.00000000000000000000"/>
+                                    <coordinate x="2437.86499999999978172127" y="2479.00000000000000000000"/>
+                                    <coordinate x="2437.86499999999978172127" y="2463.00000000000000000000"/>
+                                    <coordinate x="2417.86499999999978172127" y="2463.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="movedobject" name="Force Source">
+                        <oldpos>2514.5 2472.5</oldpos>
+                        <newpos>2522.5 2456.5</newpos>
+                    </stuff>
+                </post>
+                <post number="19">
+                    <stuff what="movedobject" name="Translational Spring">
+                        <oldpos>2273.5 2453</oldpos>
+                        <newpos>2290.5 2453</newpos>
+                    </stuff>
+                </post>
+                <post number="20">
+                    <stuff what="movedobject" name="Force Source">
+                        <oldpos>2522.5 2456.5</oldpos>
+                        <newpos>2494.5 2456.5</newpos>
+                    </stuff>
+                </post>
+                <post number="21">
+                    <stuff what="movedobject" name="Position &amp; Velocity Source">
+                        <oldpos>2167.5 2456.5</oldpos>
+                        <newpos>2206.5 2456.5</newpos>
+                    </stuff>
+                </post>
+                <post number="22">
+                    <stuff what="movedobject" name="Position &amp; Velocity Source">
+                        <oldpos>2206.5 2456.5</oldpos>
+                        <newpos>2223.5 2456.5</newpos>
+                    </stuff>
+                </post>
+                <post number="23" type="movedmultiple">
+                    <stuff what="movedobject" name="Translational Spring">
+                        <oldpos>2273.5 2453</oldpos>
+                        <newpos>2430.5 2453</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Position &amp; Velocity Source">
+                        <oldpos>2206.5 2456.5</oldpos>
+                        <newpos>2363.5 2456.5</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Translational Mass With Coulumb Friction">
+                        <oldpos>2346 2443</oldpos>
+                        <newpos>2486 2443</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Force Source">
+                        <oldpos>2522.5 2456.5</oldpos>
+                        <newpos>2634.5 2456.5</newpos>
+                    </stuff>
+                </post>
+                <post number="24">
+                    <stuff what="addedobject">
+                        <component typename="SignalSineWave" name="Sine Wave">
+                            <parameters>
+                                <parameter value="0" name="t_start"/>
+                                <parameter value="1" name="f"/>
+                                <parameter value="1" name="y_A"/>
+                                <parameter value="0" name="y_offset"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2215.00000000000000000000" y="2472" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="25">
+                    <stuff what="addedconnector">
+                        <connect endport="vin" endcomponent="Position &amp; Velocity Source" startport="out" startcomponent="Sine Wave">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2227.50000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2343.50000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2343.50000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2363.50000000000000000000" y="2469.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="26">
+                    <stuff what="addedobject">
+                        <component typename="SignalIntegrator2" name="Integrator">
+                            <parameters>
+                                <parameter value="0" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2278.00000000000000000000" y="2429" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="27">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Sine Wave">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2227.50000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2240.50000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2240.50000000000000000000" y="2429.00000000000000000000"/>
+                                    <coordinate x="2260.50000000000000000000" y="2429.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="28">
+                    <stuff what="addedconnector">
+                        <connect endport="xin" endcomponent="Position &amp; Velocity Source" startport="out" startcomponent="Integrator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2295.50000000000000000000" y="2429.00000000000000000000"/>
+                                    <coordinate x="2343.50000000000000000000" y="2429.00000000000000000000"/>
+                                    <coordinate x="2343.50000000000000000000" y="2456.50000000000000000000"/>
+                                    <coordinate x="2363.50000000000000000000" y="2456.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="29">
+                    <stuff what="movedobject" name="Sine Wave">
+                        <oldpos>2202.5 2457</oldpos>
+                        <newpos>2194.5 2456</newpos>
+                    </stuff>
+                </post>
+                <post number="30" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="0" parametername="y_offset" objectname="Sine Wave"/>
+                </post>
+                <post number="31" type="changedparameters">
+                    <stuff newvalue="10000" what="changedparameter" oldvalue="100" parametername="k" objectname="Translational Spring"/>
+                </post>
+                <post number="32" type="changedparameters">
+                    <stuff newvalue=".5" what="changedparameter" oldvalue="0" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="33" type="changedparameters">
+                    <stuff newvalue=".5" what="changedparameter" oldvalue="1" parametername="y_offset" objectname="Sine Wave"/>
+                </post>
+                <post number="34" type="changedparameters">
+                    <stuff newvalue="-.5" what="changedparameter" oldvalue=".5" parametername="y_offset" objectname="Sine Wave"/>
+                </post>
+                <post number="35" type="changedparameters">
+                    <stuff newvalue="100000" what="changedparameter" oldvalue="10000" parametername="k" objectname="Translational Spring"/>
+                </post>
+                <post number="36" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="100" parametername="m" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="37" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="10" parametername="m" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="38" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="10" parametername="b" objectname="Translational Mass With Coulumb Friction"/>
+                    <stuff newvalue="45" what="changedparameter" oldvalue="50" parametername="f_s" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="39" type="changedparameters">
+                    <stuff newvalue="10000" what="changedparameter" oldvalue="100000" parametername="k" objectname="Translational Spring"/>
+                </post>
+                <post number="40" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="0" parametername="b" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="41" type="changedparameters">
+                    <stuff newvalue="30" what="changedparameter" oldvalue="10" parametername="b" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="42" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="1" parametername="f" objectname="Sine Wave"/>
+                </post>
+                <post number="43" type="changedparameters">
+                    <stuff newvalue=".1" what="changedparameter" oldvalue="10" parametername="f" objectname="Sine Wave"/>
+                </post>
+                <post number="44" type="changedparameters">
+                    <stuff newvalue=".2" what="changedparameter" oldvalue=".1" parametername="f" objectname="Sine Wave"/>
+                </post>
+                <post number="45" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="30" parametername="b" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="46" type="changedparameters">
+                    <stuff newvalue="300" what="changedparameter" oldvalue="100" parametername="b" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="47">
+                    <stuff what="addedobject">
+                        <component typename="MechanicPositionSensor" name="Position Transducer">
+                            <parameters>
+                                <parameter value="0" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2621.00000000000000000000" y="2521" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="48">
+                    <stuff what="movedobject" name="Position Transducer">
+                        <oldpos>2603 2503</oldpos>
+                        <newpos>2542 2360</newpos>
+                    </stuff>
+                </post>
+                <post number="49">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Position Transducer" startport="P2" startcomponent="Translational Mass With Coulumb Friction">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2557.86499999999978172127" y="2463.00000000000000000000"/>
+                                    <coordinate x="2557.86499999999978172127" y="2463.00000000000000000000"/>
+                                    <coordinate x="2557.86499999999978172127" y="2396.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="50">
+                    <stuff what="movedobject" name="Position Transducer">
+                        <oldpos>2539.86 2360</oldpos>
+                        <newpos>2550.86 2360</newpos>
+                    </stuff>
+                </post>
+                <post number="51">
+                    <stuff what="movedobject" name="Position Transducer">
+                        <oldpos>2550.86 2360</oldpos>
+                        <newpos>2550.86 2371</newpos>
+                    </stuff>
+                </post>
+                <post number="52">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2660.00000000000000000000" y="2350" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="53">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Position Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2568.86499999999978172127" y="2371.00000000000000000000"/>
+                                    <coordinate x="2568.86499999999978172127" y="2350.00000000000000000000"/>
+                                    <coordinate x="2647.50000000000000000000" y="2350.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="54">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2647.5 2337.5</oldpos>
+                        <newpos>2628.5 2323.5</newpos>
+                    </stuff>
+                </post>
+                <post number="55">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink" startport="vin" startcomponent="Position &amp; Velocity Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2363.50000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2641.00000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2641.00000000000000000000" y="2348.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="56">
+                    <stuff what="deletedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink" startport="vin" startcomponent="Position &amp; Velocity Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2363.50000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2641.00000000000000000000" y="2469.50000000000000000000"/>
+                                    <coordinate x="2641.00000000000000000000" y="2348.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="57">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2290.000000" y="2265.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="58">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Note: this is not ideal colomb friction. There is a linear region around zero speed that has to be defined" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="59">
+                    <stuff h_new="103.000000" what="resizedtextboxwidget" w_old="677.000000" h_old="100.000000" index="0" w_new="677.000000">
+                        <oldpos>2290 2265</oldpos>
+                        <newpos>2290 2262</newpos>
+                    </stuff>
+                </post>
+                <post number="60">
+                    <stuff h_new="33.000000" what="resizedtextboxwidget" w_old="677.000000" h_old="103.000000" index="0" w_new="677.000000">
+                        <oldpos>2290 2262</oldpos>
+                        <newpos>2290 2262</newpos>
+                    </stuff>
+                </post>
+                <post number="61">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2290 2262</oldpos>
+                        <newpos>2092 2256</newpos>
+                    </stuff>
+                </post>
+                <post number="62">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Note: this is not ideal colomb friction. There is a linear region around zero speed that has to be defined" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Note: this is not ideal colomb friction.&#xa; There is a linear region around zero speed that has to be defined" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="63">
+                    <stuff h_new="46.000000" what="resizedtextboxwidget" w_old="677.000000" h_old="33.000000" index="0" w_new="677.000000">
+                        <oldpos>2290 2262</oldpos>
+                        <newpos>2092 2256</newpos>
+                    </stuff>
+                </post>
+                <post number="64">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Note: this is not ideal colomb friction.&#xa; There is a linear region around zero speed that has to be defined" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Note: this is not ideal colomb friction. &#xa;There is a linear region around zero speed that has to be defined" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="65">
+                    <stuff h_new="46.000000" what="resizedtextboxwidget" w_old="677.000000" h_old="46.000000" index="0" w_new="454.000000">
+                        <oldpos>2092 2256</oldpos>
+                        <newpos>2092 2256</newpos>
+                    </stuff>
+                </post>
+                <post number="66">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2092 2256</oldpos>
+                        <newpos>2182 2241</newpos>
+                    </stuff>
+                </post>
+                <post number="67">
+                    <stuff what="addedobject">
+                        <component typename="MechanicForceSensor" name="Force Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2709" y="2408" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="68">
+                    <stuff what="addedobject">
+                        <component typename="MechanicSpeedSensor" name="Velocity Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2744" y="2500" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="69">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink_1">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2824" y="2390" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="70">
+                    <stuff what="movedobject" name="Velocity Transducer">
+                        <oldpos>2726 2482</oldpos>
+                        <newpos>2746.19 2422.63</newpos>
+                    </stuff>
+                </post>
+                <post number="71">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2804 2375</oldpos>
+                        <newpos>2837.25 2328.69</newpos>
+                    </stuff>
+                </post>
+                <post number="72">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Force Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2709.00000000000000000000" y="2390.50000000000000000000"/>
+                                    <coordinate x="2709.00000000000000000000" y="2343.69006586055229490739"/>
+                                    <coordinate x="2837.24815784370639448753" y="2343.69006586055229490739"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="73">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2764.18638154796417438774" y="2422.62828956481052955496"/>
+                                    <coordinate x="2764.18638154796417438774" y="2378.69006586055229490739"/>
+                                    <coordinate x="2857.24815784370639448753" y="2378.69006586055229490739"/>
+                                    <coordinate x="2857.24815784370639448753" y="2358.69006586055229490739"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="74">
+                    <stuff what="movedobject" name="Velocity Transducer">
+                        <oldpos>2746.19 2422.63</oldpos>
+                        <newpos>2839.25 2401.25</newpos>
+                    </stuff>
+                </post>
+                <post number="75">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Force Transducer" startport="P2" startcomponent="Translational Mass With Coulumb Friction">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2557.86499999999978172127" y="2463.00000000159980118042"/>
+                                    <coordinate x="2709.00000000000000000000" y="2463.00000000159980118042"/>
+                                    <coordinate x="2709.00000000000000000000" y="2425.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="76">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Velocity Transducer" startport="P2" startcomponent="Translational Mass With Coulumb Friction">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2557.86499999999978172127" y="2463.00000000159980118042"/>
+                                    <coordinate x="2857.24815784370639448753" y="2463.00000000159980118042"/>
+                                    <coordinate x="2857.24815784370639448753" y="2437.25447380814239295432"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="77" type="movedmultiple">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2804 2375</oldpos>
+                        <newpos>2767.19 2328.69</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Velocity Transducer">
+                        <oldpos>2839.25 2401.25</oldpos>
+                        <newpos>2769.19 2401.25</newpos>
+                    </stuff>
+                </post>
+                <post number="78" type="movedmultiple">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2804 2375</oldpos>
+                        <newpos>2756.5 2316.82</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Velocity Transducer">
+                        <oldpos>2769.19 2401.25</oldpos>
+                        <newpos>2758.5 2389.38</newpos>
+                    </stuff>
+                </post>
+                <post number="79">
+                    <stuff what="deletedconnector">
+                        <connect endport="P1" endcomponent="Force Transducer" startport="P2" startcomponent="Translational Mass With Coulumb Friction">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2557.86499999999978172127" y="2463.00000000159980118042"/>
+                                    <coordinate x="2709.00000000000000000000" y="2463.00000000159980118042"/>
+                                    <coordinate x="2709.00000000000000000000" y="2425.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="80">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction" startport="P1" startcomponent="Force Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2709.00000000000000000000" y="2425.50000000000000000000"/>
+                                    <coordinate x="2709.00000000000000000000" y="2441.36473309499569950276"/>
+                                    <coordinate x="2474.13500000000021827873" y="2441.36473309499569950276"/>
+                                    <coordinate x="2474.13500000000021827873" y="2463.00000000159980118042"/>
+                                    <coordinate x="2494.13500000000021827873" y="2463.00000000159980118042"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="81">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>0 -5.93717</newpos>
+                        <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction" startport="P1" startcomponent="Force Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2709.00000000000000000000" y="2425.50000000000000000000"/>
+                                    <coordinate x="2709.00000000000000000000" y="2435.42756205147679793299"/>
+                                    <coordinate x="2474.13500000000021827873" y="2435.42756205147679793299"/>
+                                    <coordinate x="2474.13500000000021827873" y="2463.00000000159980118042"/>
+                                    <coordinate x="2494.13500000000021827873" y="2463.00000000159980118042"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="82">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 -5.93717</oldpos>
+                        <newpos>0 -7.12461</newpos>
+                        <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction" startport="P1" startcomponent="Force Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2709.00000000000000000000" y="2425.50000000000000000000"/>
+                                    <coordinate x="2709.00000000000000000000" y="2434.24012784277329046745"/>
+                                    <coordinate x="2474.13500000000021827873" y="2434.24012784277329046745"/>
+                                    <coordinate x="2474.13500000000021827873" y="2463.00000000159980118042"/>
+                                    <coordinate x="2494.13500000000021827873" y="2463.00000000159980118042"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="83">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2756.5 2316.82</oldpos>
+                        <newpos>2794.5 2318</newpos>
+                    </stuff>
+                </post>
+                <post number="84">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2794.5 2318</oldpos>
+                        <newpos>2846.75 2318</newpos>
+                    </stuff>
+                </post>
+                <post number="85">
+                    <stuff what="deletedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2776.50263165184787794715" y="2389.38013172110458981479"/>
+                                    <coordinate x="2776.50263165184787794715" y="2366.81572377351449176786"/>
+                                    <coordinate x="2866.74763151333627320128" y="2366.81572377351449176786"/>
+                                    <coordinate x="2866.74763151333627320128" y="2348.00315798221890872810"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="86">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2776.50263165184787794715" y="2389.38013172110458981479"/>
+                                    <coordinate x="2776.50263165184787794715" y="2333.00315798221890872810"/>
+                                    <coordinate x="2846.74763151333627320128" y="2333.00315798221890872810"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="87">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2776.50263165184787794715" y="2389.38013172110458981479"/>
+                                    <coordinate x="2776.50263165184787794715" y="2333.00315798221890872810"/>
+                                    <coordinate x="2846.74763151333627320128" y="2333.00315798221890872810"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="88">
+                    <stuff what="addedconnector">
+                        <connect endport="in_right" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2776.50263165184787794715" y="2389.38013172110458981479"/>
+                                    <coordinate x="2776.50263165184787794715" y="2372.49354899017589559662"/>
+                                    <coordinate x="2910.40124553299347098800" y="2372.49354899017589559662"/>
+                                    <coordinate x="2910.40124553299347098800" y="2333.00315798221890872810"/>
+                                    <coordinate x="2886.74763151333627320128" y="2333.00315798221890872810"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="89">
+                    <stuff what="deletedconnector">
+                        <connect endport="in_right" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2776.50263165184787794715" y="2389.38013172110458981479"/>
+                                    <coordinate x="2776.50263165184787794715" y="2372.49354899017589559662"/>
+                                    <coordinate x="2910.40124553299347098800" y="2372.49354899017589559662"/>
+                                    <coordinate x="2910.40124553299347098800" y="2333.00315798221890872810"/>
+                                    <coordinate x="2886.74763151333627320128" y="2333.00315798221890872810"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="90">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2776.50263165184787794715" y="2389.38013172110458981479"/>
+                                    <coordinate x="2776.50263165184787794715" y="2378.43072003369479716639"/>
+                                    <coordinate x="2866.74763151333627320128" y="2378.43072003369479716639"/>
+                                    <coordinate x="2866.74763151333627320128" y="2348.00315798221890872810"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="91" type="changedparameters">
+                    <stuff newvalue="" what="changedparameter" oldvalue="300" parametername="b" objectname="Translational Mass With Coulumb Friction"/>
+                </post>
+                <post number="92">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2621 2321</oldpos>
+                        <newpos>2630.5 2318.63</newpos>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <objects>
+            <component typename="MechanicTranslationalMassWithCoulumbFriction" name="Translational Mass With Coulumb Friction">
+                <parameters>
+                    <parameter value="1" type="double" name="m"/>
+                    <parameter value="300" type="double" name="b"/>
+                    <parameter value="45" type="double" name="f_s"/>
+                    <parameter value="45" type="double" name="f_k"/>
+                    <parameter value="0" type="double" name="x_min"/>
+                    <parameter value="1" type="double" name="x_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2526" y="2467" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSineWave" name="Sine Wave">
+                <parameters>
+                    <parameter value=".5" type="double" name="t_start"/>
+                    <parameter value=".2" type="double" name="f"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                    <parameter value="-.5" type="double" name="y_offset"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2207" y="2468.5" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2650.499474" y="2333.625132" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceSensor" name="Force Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2709" y="2408" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicSpeedSensor" name="Velocity Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2776.502632" y="2407.380132" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicVelocityTransformer" name="Position &amp; Velocity Source">
+                <parameters>
+                    <parameter value="0" type="double" name="v"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2383" y="2463" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2866.747632" y="2333.003158" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalIntegrator2" name="Integrator">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2278" y="2429" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Force"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P2::Velocity"/>
+                    <parameter value="0" type="double" name="P2::Force"/>
+                    <parameter value="0" type="double" name="P2::Position"/>
+                    <parameter value="10000" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2447" y="2463" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Source">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="F"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2615" y="2463" flipped="true" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicPositionSensor" name="Position Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2568.865" y="2389" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2182.000000" y="2241.000000"/>
+                    <textobject fontcolor="#556b2f" text="Note: this is not ideal colomb friction. &#xa;There is a linear region around zero speed that has to be defined" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="454.000000" height="46.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Translational Spring" startport="Pm1" startcomponent="Position &amp; Velocity Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2402.50000000000000000000" y="2463.00000000000000000000"/>
+                        <coordinate x="2393.50000000000000000000" y="2463.00000000000000000000"/>
+                        <coordinate x="2393.50000000000000000000" y="2463.00000000000000000000"/>
+                        <coordinate x="2430.50000000000000000000" y="2463.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction" startport="P2" startcomponent="Translational Spring">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2463.50000000000000000000" y="2463.00000000000000000000"/>
+                        <coordinate x="2474.13500000000021827873" y="2463.00000000000000000000"/>
+                        <coordinate x="2474.13500000000021827873" y="2463.00000000159980118042"/>
+                        <coordinate x="2494.13500000000021827873" y="2463.00000000159980118042"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass With Coulumb Friction" startport="P1" startcomponent="Force Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2595.50000000000000000000" y="2463.00000000000000000000"/>
+                        <coordinate x="2577.86499999999978172127" y="2463.00000000000000000000"/>
+                        <coordinate x="2577.86499999999978172127" y="2463.00000000159980118042"/>
+                        <coordinate x="2557.86499999999978172127" y="2463.00000000159980118042"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="vin" endcomponent="Position &amp; Velocity Source" startport="out" startcomponent="Sine Wave">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2219.50000000000000000000" y="2468.50000000000000000000"/>
+                        <coordinate x="2343.50000000000000000000" y="2468.50000000000000000000"/>
+                        <coordinate x="2343.50000000000000000000" y="2469.50000000000000000000"/>
+                        <coordinate x="2363.50000000000000000000" y="2469.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Sine Wave">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2219.50000000000000000000" y="2468.50000000000000000000"/>
+                        <coordinate x="2240.50000000000000000000" y="2468.50000000000000000000"/>
+                        <coordinate x="2240.50000000000000000000" y="2429.00000000000000000000"/>
+                        <coordinate x="2260.50000000000000000000" y="2429.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="xin" endcomponent="Position &amp; Velocity Source" startport="out" startcomponent="Integrator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2295.50000000000000000000" y="2429.00000000000000000000"/>
+                        <coordinate x="2343.50000000000000000000" y="2429.00000000000000000000"/>
+                        <coordinate x="2343.50000000000000000000" y="2456.50000000000000000000"/>
+                        <coordinate x="2363.50000000000000000000" y="2456.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Position Transducer" startport="P2" startcomponent="Translational Mass With Coulumb Friction">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2557.86499999999978172127" y="2463.00000000159980118042"/>
+                        <coordinate x="2568.86499999999978172127" y="2463.00000000159980118042"/>
+                        <coordinate x="2568.86499999999978172127" y="2407.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Position Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2568.86499999999978172127" y="2371.00000000000000000000"/>
+                        <coordinate x="2568.86499999999978172127" y="2333.62513158259207557421"/>
+                        <coordinate x="2630.49947366962987871375" y="2333.62513158259207557421"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Force Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2709.00000000000000000000" y="2390.50000000000000000000"/>
+                        <coordinate x="2709.00000000000000000000" y="2333.00315798221890872810"/>
+                        <coordinate x="2846.74763151333627320128" y="2333.00315798221890872810"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Velocity Transducer" startport="P2" startcomponent="Translational Mass With Coulumb Friction">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2557.86499999999978172127" y="2463.00000000159980118042"/>
+                        <coordinate x="2776.50263165184787794715" y="2463.00000000159980118042"/>
+                        <coordinate x="2776.50263165184787794715" y="2425.38013172110458981479"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction" startport="P1" startcomponent="Force Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2709.00000000000000000000" y="2425.50000000000000000000"/>
+                        <coordinate x="2709.00000000000000000000" y="2434.24012784277329046745"/>
+                        <coordinate x="2474.13500000000021827873" y="2434.24012784277329046745"/>
+                        <coordinate x="2474.13500000000021827873" y="2463.00000000159980118042"/>
+                        <coordinate x="2494.13500000000021827873" y="2463.00000000159980118042"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2776.50263165184787794715" y="2389.38013172110458981479"/>
+                        <coordinate x="2776.50263165184787794715" y="2378.43072003369479716639"/>
+                        <coordinate x="2866.74763151333627320128" y="2378.43072003369479716639"/>
+                        <coordinate x="2866.74763151333627320128" y="2348.00315798221890872810"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

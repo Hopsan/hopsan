@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.1">
+  <validation hopsanguiversion="0.6.0" time="134920" date="20130729" hopsancoreversion="0.6.0">
+    <modelfile>../Example Models/Electric Capacitances &amp; Resistors.hmf</modelfile>
+    <component name="Voltage_sensor_1">
+      <port name="Puout">
+        <variable name="Value">
+          <csvfile>Electric Capacitances &amp; Resistors.csv</csvfile>
+          <column>1</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+  </validation>
+</hopsanvalidationconfiguration>

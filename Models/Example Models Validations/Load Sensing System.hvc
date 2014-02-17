@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.1">
+  <validation hopsanguiversion="0.6.0" time="140037" date="20130729" hopsancoreversion="0.6.0">
+    <modelfile>../Example Models/Load Sensing System.hmf</modelfile>
+    <component name="Position_Sensor">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>Load Sensing System.csv</csvfile>
+          <column>1</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+    <component name="Position_Sensor_1">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>Load Sensing System.csv</csvfile>
+          <column>2</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+    <component name="Position_Sensor_2">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>Load Sensing System.csv</csvfile>
+          <column>3</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+    <component name="Position_Sensor_3">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>Load Sensing System.csv</csvfile>
+          <column>4</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+  </validation>
+</hopsanvalidationconfiguration>
