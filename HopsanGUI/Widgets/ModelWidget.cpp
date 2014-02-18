@@ -64,19 +64,20 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-ModelWidget::ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent)
+ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent)
     : QWidget(parent)
 {
+    mpMessageHandler = 0;
+    mpAnimationWidget = 0;
+
     mStartTime.setNum(0.0,'g',10);
     mStopTime.setNum(10.0,'g',10);
-
-    mpAnimationWidget = 0;
 
     mEditingEnabled = true;
     this->setPalette(gpConfig->getPalette());
     this->setMouseTracking(true);
 
-    mpParentModelHandler = modelHandler;
+    mpParentModelHandler = pModelHandler;
     mpQuickNavigationWidget = new QuickNavigationWidget(this);
 
     mpExternalSystemWidget = new QWidget(this);
@@ -97,13 +98,12 @@ ModelWidget::ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent)
     mpExternalSystemWidget->hide();
 
     mpToplevelSystem = new SystemContainer(this, 0);
-    mpSimulationThreadHandler = new SimulationThreadHandler(gpTerminalWidget);
+    mpSimulationThreadHandler = new SimulationThreadHandler();
+    setMessageHandler(gpMessageHandler);
 
     connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
-    connect(this, SIGNAL(checkMessages()), mpParentModelHandler, SIGNAL(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
-    connect(mpParentModelHandler->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
 
     emit checkMessages();
 
@@ -149,6 +149,20 @@ ModelWidget::~ModelWidget()
     mpToplevelSystem->deleteInHopsanCore();
     mpToplevelSystem->deleteLater();
     mpSimulationThreadHandler->deleteLater();
+}
+
+void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)
+{
+    // Disconnect old message handler
+    if (mpMessageHandler)
+    {
+        disconnect(this, SIGNAL(checkMessages()), mpMessageHandler, SLOT(collectHopsanCoreMessages()));
+    }
+
+    // Assign new message handler
+    mpMessageHandler = pMessageHandler;
+    mpSimulationThreadHandler->setMessageHandler(pMessageHandler);
+    connect(this, SIGNAL(checkMessages()), mpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 }
 
 void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
@@ -667,7 +681,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             this->setSaved(true);
         }
 
-        gpMessageHandler->addInfoMessage("Saved model: " + modelFilePathToSave);
+        mpMessageHandler->addInfoMessage("Saved model: " + modelFilePathToSave);
 
         mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
     }
@@ -679,7 +693,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     QFile file(path);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+        mpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
         return false;
     }
 
@@ -728,7 +742,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     QFile xmlFile(path);
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMessageHandler->addErrorMessage("Could not save to file: " + path);
+        mpMessageHandler->addErrorMessage("Could not save to file: " + path);
         return false;
     }
     QTextStream out(&xmlFile);

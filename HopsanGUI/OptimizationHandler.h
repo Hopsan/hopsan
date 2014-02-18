@@ -33,10 +33,10 @@
 //Forward declarations
 class ModelWidget;
 class TerminalWidget;
-class TerminalConsole;
 class HcomHandler;
 class Configuration;
 class OptimizationWorker;
+class GUIMessageHandler;
 
 class OptimizationHandler : public QObject
 {
@@ -62,17 +62,21 @@ public:
     double getOptVar(const QString &var, bool &ok) const;
     void setOptVar(const QString &var, const QString &value, bool &ok);
     double getParameter(const int pointIdx, const int parIdx) const;
-    QVector<ModelWidget *> *getModelPtrs() const;
+
+    const QVector<ModelWidget *> *getModelPtrs() const;
+    void clearModels();
+    void addModel(ModelWidget *pModel);
 
     int getAlgorithm() const;
+    GUIMessageHandler *getMessageHandler();
 
     Configuration *mpConfig;
-    TerminalConsole *mpConsole;
     HcomHandler *mpHcomHandler;
 
     OptDataType mParameterType; //! @todo Should be public
 
 private:
+    GUIMessageHandler *mpMessageHandler;
     OptimizationWorker *mpWorker;
     OptAlgorithmType mAlgorithm;
 };

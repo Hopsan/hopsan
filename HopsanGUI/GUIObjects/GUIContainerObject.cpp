@@ -1437,9 +1437,16 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
 //! @see paste()
 void ContainerObject::copySelected(CopyStack *xmlStack)
 {
-    //Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
-    if(gpMainWindow->mpMessageWidget->textEditHasFocus() || gpTerminalWidget->mpConsole->hasFocus())
+    // Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
+    //if(gpMainWindow->mpMessageWidget->textEditHasFocus() || gpTerminalWidget->mpConsole->hasFocus())
+    //    return;
+    //! @todo FIXA /Peter
+    // Do not copy if we do not have focus
+    if (!getContainedScenePtr()->hasFocus())
+    {
         return;
+    }
+
 
     QDomElement *copyRoot;
     if(xmlStack == 0)
@@ -1506,9 +1513,6 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
 //! @see copySelected()
 void ContainerObject::paste(CopyStack *xmlStack)
 {
-
-    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(gCopyStack.getXML());
-
     mpUndoStack->newPost("paste");
     mpModelWidget->hasChanged();
 

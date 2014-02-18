@@ -31,19 +31,20 @@
 #include "Optimization/OptimizationWorkerComplexRFP.h"
 #include "Optimization/OptimizationWorker.h"
 #include "Optimization/OptimizationWorkerParticleSwarm.h"
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
+#include "Widgets/ModelWidget.h"
 
 
 //! @brief Constructor for optimization  handler class
 OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
 {
     mpHcomHandler = pHandler;
-    mpConsole = pHandler->mpConsole;
-    mpConfig = new Configuration();
+    mpMessageHandler = new GUIMessageHandler(this);
+    mpMessageHandler->startPublish();
+    mpConfig = new Configuration(); //!< @todo memory leak, never deleted
     mpConfig->loadFromXml();        //This should work, since changes are always saved to file immideately from gpConfig
 
     mpWorker = 0;
-
     mAlgorithm = Uninitialized;
 }
 
@@ -56,8 +57,8 @@ void OptimizationHandler::startOptimization()
     }
     else
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
     }
 }
 
@@ -65,8 +66,8 @@ void OptimizationHandler::setOptimizationObjectiveValue(int idx, double value)
 {
     if(!mpWorker)
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
         return;
     }
 
@@ -77,8 +78,8 @@ void OptimizationHandler::setParMin(int idx, double value)
 {
     if(!mpWorker)
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
         return;
     }
 
@@ -90,8 +91,8 @@ void OptimizationHandler::setParMax(int idx, double value)
 {
     if(!mpWorker)
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
         return;
     }
 
@@ -104,8 +105,8 @@ double OptimizationHandler::getOptimizationObjectiveValue(int idx)
 {
     if(!mpWorker)
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
         return 0;
     }
 
@@ -131,8 +132,8 @@ double OptimizationHandler::getOptVar(const QString &var, bool &ok) const
 
     if(!mpWorker)
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
         return 0;
     }
 
@@ -195,8 +196,8 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
 
     if(!mpWorker)
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
         return;
     }
 
@@ -207,8 +208,8 @@ double OptimizationHandler::getParameter(const int pointIdx, const int parIdx) c
 {
     if(!mpWorker)
     {
-        mpConsole->printErrorMessage("No optimization algorithm selected.");
-        mpConsole->printInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
         return 0;
     }
 
@@ -216,18 +217,45 @@ double OptimizationHandler::getParameter(const int pointIdx, const int parIdx) c
 }
 
 
-QVector<ModelWidget *> *OptimizationHandler::getModelPtrs() const
+const QVector<ModelWidget *> *OptimizationHandler::getModelPtrs() const
 {
     if(mpWorker)
     {
         return (&mpWorker->mModelPtrs);
     }
 
+    //! @todo this is a memory leak
     return new QVector<ModelWidget *>();
+}
+
+void OptimizationHandler::clearModels()
+{
+    if (mpWorker)
+    {
+        mpWorker->mModelPtrs.clear();
+    }
+}
+
+void OptimizationHandler::addModel(ModelWidget *pModel)
+{
+    if (mpWorker)
+    {
+        mpWorker->mModelPtrs.append(pModel);
+        pModel->setMessageHandler(mpMessageHandler);
+    }
+    else
+    {
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+    }
 }
 
 int OptimizationHandler::getAlgorithm() const
 {
     return (int)mAlgorithm;
+}
+
+GUIMessageHandler *OptimizationHandler::getMessageHandler()
+{
+    return mpMessageHandler;
 }
 

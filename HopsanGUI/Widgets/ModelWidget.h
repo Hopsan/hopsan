@@ -42,6 +42,7 @@ class ModelHandler;
 class CentralTabWidget;
 class AnimationWidget;
 class SimulationThreadHandler;
+class GUIMessageHandler;
 
 
 class ModelWidget : public QWidget
@@ -49,27 +50,32 @@ class ModelWidget : public QWidget
     Q_OBJECT
 
 public:
-    ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent = 0);
+    ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent = 0);
     ~ModelWidget();
+
+    void setMessageHandler(GUIMessageHandler *pMessageHandler);
 
     QString getStartTime();
     QString getTimeStep();
     QString getStopTime();
+    int getLastSimulationTime();
+    void setLastSimulationTime(int time);
+
     bool saveTo(QString path, SaveContentsEnumT contents=FullModel);
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
+
+    bool isEditingEnabled();
+
     SystemContainer *getTopLevelSystemContainer();
     ContainerObject *getViewContainerObject();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
-    void setLastSimulationTime(int time);
-    int getLastSimulationTime();
-    bool isEditingEnabled();
+
     ModelHandler *mpParentModelHandler;
     GraphicsView *mpGraphicsView;
     AnimationWidget *mpAnimationWidget;
-    SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
     void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
@@ -99,14 +105,17 @@ private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
 
     QString mStartTime, mStopTime;
+    int mLastSimulationTime;
 
     bool mIsSaved;
-    SystemContainer *mpToplevelSystem;
-    QuickNavigationWidget *mpQuickNavigationWidget;
-    QWidget *mpExternalSystemWidget;
-    int mLastSimulationTime;
     bool mEditingEnabled;
 
+    QuickNavigationWidget *mpQuickNavigationWidget;
+    QWidget *mpExternalSystemWidget;
+
+    SystemContainer *mpToplevelSystem;
+    GUIMessageHandler *mpMessageHandler;
+    SimulationThreadHandler *mpSimulationThreadHandler;
     QMutex mSimulateMutex;
 };
 

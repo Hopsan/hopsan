@@ -110,7 +110,7 @@ void OptimizationWorkerParticleSwarm::run()
 {
     plotPoints();
 
-    mpHandler->mpConsole->mpTerminal->setEnabledAbortButton(true);
+    mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(true);
 
     mConvergenceReason=0;
 
@@ -120,7 +120,7 @@ void OptimizationWorkerParticleSwarm::run()
         return;
     }
 
-    mpHandler->mpConsole->print("Running optimization...");
+    print("Running optimization...");
 
     //Disable terminal output during optimization
     execute("echo off");
@@ -130,7 +130,7 @@ void OptimizationWorkerParticleSwarm::run()
     if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
     {
         execute("echo on");
-        mpHandler->mpConsole->print("Optimization aborted.");
+        print("Optimization aborted.");
         finalize();
         return;
     }
@@ -156,7 +156,7 @@ void OptimizationWorkerParticleSwarm::run()
         //Abort if abort key was pressed
         if(mpHandler->mpHcomHandler->isAborted())
         {
-            mpHandler->mpConsole->print("Optimization aborted.");
+            print("Optimization aborted.");
             //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
             finalize();
             return;
@@ -176,7 +176,7 @@ void OptimizationWorkerParticleSwarm::run()
         if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
         {
             execute("echo on");
-            mpHandler->mpConsole->print("Optimization aborted.");
+            print("Optimization aborted.");
            //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
             finalize();
             return;
@@ -213,20 +213,20 @@ void OptimizationWorkerParticleSwarm::run()
     switch(mConvergenceReason)
     {
     case 0:
-        mpHandler->mpConsole->print("Optimization failed to converge after "+QString::number(i)+" iterations.");
+        print("Optimization failed to converge after "+QString::number(i)+" iterations.");
         break;
     case 1:
-        mpHandler->mpConsole->print("Optimization converged in function values after "+QString::number(i)+" iterations.");
+        print("Optimization converged in function values after "+QString::number(i)+" iterations.");
         break;
     case 2:
-        mpHandler->mpConsole->print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
+        print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
         break;
     }
 
-    mpHandler->mpConsole->print("\nBest point:");
+    print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
     {
-        mpHandler->mpConsole->print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
+        print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
     }
 
     //Clean up

@@ -24,7 +24,7 @@
 #include "defaultComponentLibraryInternal.h"
 using namespace hopsan;
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* /*pNodeFactory*/)
+extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
 {
     // ========== Register Components ==========
     // Use the registerCreatorFunction(KeyValue, Function) in the component factory to register components
@@ -37,6 +37,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
     // ========== Register Custom Nodes (if any) ==========
     // These are built into Hopsan Core
+    HOPSAN_UNUSED(pNodeFactory)
 
 }
 

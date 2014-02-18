@@ -32,7 +32,7 @@
 // Forward Declaration
 class SystemContainer;
 class SimulationWorkerObject;
-class TerminalWidget;
+class GUIMessageHandler;
 
 class SimulationWorkerObject : public QObject
 {
@@ -99,6 +99,7 @@ private:
     SimulationWorkerObject *mpSimulationWorkerObject;
     ProgressBarWorkerObject *mpProgressBarWorkerObject;
     QProgressDialog *mpProgressDialog;
+    GUIMessageHandler *mpMessageHandler;
 
     QThread mSimulationWorkerThread;
     QThread mProgressBarWorkerThread;
@@ -117,10 +118,7 @@ protected slots:
     void aborted();
 
 public:
-    SimulationThreadHandler(TerminalWidget *pTerminal) : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true)
-    {
-        mpTerminal = pTerminal;
-    }
+    SimulationThreadHandler();
 
     void setSimulationTimeVariables(const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     void setProgressDilaogBehaviour(bool enabled, bool modal);
@@ -130,7 +128,7 @@ public:
     bool wasSuccessful();
     int getLastSimulationTime();
 
-    TerminalWidget *mpTerminal;
+    void setMessageHandler(GUIMessageHandler *pMessageHandler);
 
 signals:
     void startSimulation();

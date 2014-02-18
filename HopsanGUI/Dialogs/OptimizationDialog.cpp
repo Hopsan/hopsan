@@ -273,6 +273,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpParametersOutputTextEditsLayout = new QGridLayout();
     mpTerminal = new TerminalWidget(this);
     mpTerminal->mpHandler->setAcceptsOptimizationCommands(true);
+    mpMessageHandler = mpTerminal->mpHandler->mpOptHandler->getMessageHandler();
     QGridLayout *pRunLayout = new QGridLayout(this);
     pRunLayout->addWidget(mpStartButton,                         0,0,1,1);
     pRunLayout->addLayout(mpParametersOutputTextEditsLayout,    1,0,1,1);
@@ -727,13 +728,13 @@ void OptimizationDialog::generateScriptFile()
 
     if(mSelectedParameters.isEmpty())
     {
-        gpMessageHandler->addErrorMessage("No parameters specified for optimization.");
+        mpMessageHandler->addErrorMessage("No parameters specified for optimization.");
         return;
     }
 
     if(mSelectedFunctions.isEmpty())
     {
-        gpMessageHandler->addErrorMessage("No objective functions specified for optimization.");
+        mpMessageHandler->addErrorMessage("No objective functions specified for optimization.");
         return;
     }
 
@@ -752,7 +753,7 @@ void OptimizationDialog::generateScriptFile()
         generateParticleSwarmScript();
         break;
     default :
-        gpMessageHandler->addErrorMessage("Algorithm type undefined.");
+        mpMessageHandler->addErrorMessage("Algorithm type undefined.");
     }
 }
 
@@ -1360,7 +1361,7 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedParameters.isEmpty())
         {
-            gpMessageHandler->addWarningMessage("No parameters specified for optimization.");
+            mpMessageHandler->addWarningMessage("No parameters specified for optimization.");
 //            this->back();
             return;
         }
@@ -1371,7 +1372,7 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedFunctions.isEmpty())
         {
-            gpMessageHandler->addWarningMessage("No objective functions specified for optimization.");
+            mpMessageHandler->addWarningMessage("No objective functions specified for optimization.");
            // this->back();
             return;
         }
@@ -1410,10 +1411,10 @@ void OptimizationDialog::run()
 
     QStringList commands = mpOutputBox->toPlainText().split("\n");
     bool *abort = new bool;
-    mpTerminal->setEnabledAbortButton(true);
+    mpTerminal->setAbortButtonEnabled(true);
     mpTimer->start(10);
     mpTerminal->mpHandler->runScriptCommands(commands, abort);
-    mpTerminal->setEnabledAbortButton(false);
+    mpTerminal->setAbortButtonEnabled(false);
     setOptimizationFinished();
     mpTimer->stop();
     delete(abort);
@@ -1642,12 +1643,12 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
     if(nSelVar > nVar)
     {
-        gpMessageHandler->addErrorMessage("Too many variables selected for this function.");
+        mpMessageHandler->addErrorMessage("Too many variables selected for this function.");
         return false;
     }
     else if(nSelVar < nVar)
     {
-        gpMessageHandler->addErrorMessage("Too few variables selected for this function.");
+        mpMessageHandler->addErrorMessage("Too few variables selected for this function.");
         return false;
     }
     return true;

@@ -32,15 +32,9 @@
 
 #include "MessageHandler.h"
 
-class MainWindow;
-class Port;
-class ModelObject;
-class VectorVariable;
 class TerminalConsole;
 class HcomHandler;
-class HcomCommand;
-
-
+class VectorVariable;
 typedef QSharedPointer<VectorVariable> SharedVectorVariableT;
 
 class TerminalWidget : public QWidget
@@ -51,11 +45,14 @@ public:
     QSize sizeHint() const;
     void loadConfig();
     void saveConfig();
-    void setEnabledAbortButton(bool enable);
+    void setAbortButtonEnabled(bool enable);
 
     //! @todo should not be public
     TerminalConsole *mpConsole;
     HcomHandler *mpHandler;
+
+public slots:
+    void printMessage(const GUIMessage &rMessage);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);

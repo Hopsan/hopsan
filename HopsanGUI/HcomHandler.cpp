@@ -166,6 +166,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mCurrentPlotWindowName = "PlotWindow0";
 
     mpOptHandler = new OptimizationHandler(this);
+    // connect the optimization message handler to the consol for this HCOM handler
+    connect(mpOptHandler->getMessageHandler(), SIGNAL(newAnyMessage(GUIMessage)), mpConsole, SLOT(printMessage(GUIMessage)));
 
     mPwd = gpDesktopHandler->getDocumentsPath();
     mPwd.chop(1);
@@ -2774,14 +2776,13 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRF ||
            mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFM)
         {
-            mpOptHandler->getModelPtrs()->clear();
-            mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
-            mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+            mpOptHandler->clearModels();
+            mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
             mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
         {
-            mpOptHandler->getModelPtrs()->clear();
+            mpOptHandler->clearModels();
 
             int nThreads = gpConfig->getNumberOfThreads();
             if(nThreads == 0)
@@ -2796,26 +2797,22 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 
             for(int i=0; i<nThreads; ++i)
             {
-                mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
-                mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+                mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
             }
-
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
         {
-            mpOptHandler->getModelPtrs()->clear();
+            mpOptHandler->clearModels();
             if(getConfigPtr()->getUseMulticore())
             {
                 for(int i=0; i<mpOptHandler->getOptVar("npoints"); ++i)
                 {
-                    mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
-                    mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+                    mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
                 }
             }
             else
             {
-                mpOptHandler->getModelPtrs()->append(gpModelHandler->loadModel(savePath, true, true));
-                mpOptHandler->getModelPtrs()->last()->mpSimulationThreadHandler->mpTerminal = mpConsole->mpTerminal;
+                mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
             }
         }
 

@@ -114,8 +114,6 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
     connect(pShowInfoMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showInfoMessages(bool)));
     connect(pShowDebugMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showDebugMessages(bool)));
     connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), mpConsole, SLOT(setGroupByTag(bool)));
-
-    connect(gpMessageHandler, SIGNAL(newAnyMessage(GUIMessage)), mpConsole, SLOT(printMessage(GUIMessage)));
 }
 
 
@@ -182,9 +180,14 @@ bool TerminalWidget::eventFilter(QObject *obj, QEvent *event)
 }
 
 
-void TerminalWidget::setEnabledAbortButton(bool enable)
+void TerminalWidget::setAbortButtonEnabled(bool enable)
 {
     mpAbortHCOMWidgetButton->setEnabled(enable);
+}
+
+void TerminalWidget::printMessage(const GUIMessage &rMessage)
+{
+    mpConsole->printMessage(rMessage);
 }
 
 
@@ -546,13 +549,13 @@ void TerminalConsole::handleEnterKeyPress()
 
     if(!cmd.isEmpty())
     {
-        mpTerminal->setEnabledAbortButton(true);
+        mpTerminal->setAbortButtonEnabled(true);
         //Execute command
         getHandler()->executeCommand(cmd);
 
         //Add command to history
         mHistory.prepend(cmd);
-        mpTerminal->setEnabledAbortButton(false);
+        mpTerminal->setAbortButtonEnabled(false);
     }
 
     //Insert new command line

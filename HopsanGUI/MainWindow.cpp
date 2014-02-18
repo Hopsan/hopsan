@@ -145,13 +145,13 @@ void MainWindow::createContents()
     //Create the terminal widget
     mpTerminalDock = new QDockWidget(tr("Terminal"), this);
     mpTerminalDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    mpTerminalWidget = new TerminalWidget(this);
-    gpTerminalWidget = mpTerminalWidget;
-    mpTerminalWidget->mpConsole->printFirstInfo();
-    mpTerminalDock->setWidget(mpTerminalWidget);
+    gpTerminalWidget = new TerminalWidget(this);
+    gpTerminalWidget->mpConsole->printFirstInfo();
+    mpTerminalDock->setWidget(gpTerminalWidget);
     mpTerminalDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpTerminalDock);
     mpTerminalDock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    connect(gpMessageHandler, SIGNAL(newAnyMessage(GUIMessage)), gpTerminalWidget, SLOT(printMessage(GUIMessage)));
 
     //Create the message widget and its dock (must be done before everything that uses it!)
     mpMessageDock = new QDockWidget(tr("Messages"), this);
@@ -235,19 +235,6 @@ void MainWindow::createContents()
     mpCentralTabs->setMouseTracking(true);
     mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
 
-
-//    QToolButton *pHideTerminalButton = new QToolButton(this);
-//    pHideTerminalButton->setText("Hide");
-//    pHideTerminalButton->setFixedSize(300,12);
-//    pHideTerminalButton->setCheckable(true);
-//    pHideTerminalButton->setChecked(false);
-//    mpCentralGridLayout->addWidget(pHideTerminalButton,5,0,1,4, Qt::AlignCenter);
-//    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpTerminalDock, SLOT(setVisible(bool)));
-//    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpMessageDock, SLOT(setVisible(bool)));
-//#ifdef USEPYTHONQT
-//    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpPyDockWidget, SLOT(setVisible(bool)));
-//#endif
-
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
     gpSystemParametersWidget = mpSystemParametersWidget;
@@ -309,10 +296,10 @@ void MainWindow::createContents()
     this->createToolbars();
     this->createMenus();
 
-   // connect(mpCopyAction, SIGNAL(triggered()), mpMessageWidget, SLOT(copy()));
-    connect(mpCopyAction, SIGNAL(triggered()), mpTerminalWidget->mpConsole, SLOT(copy()));
+    connect(mpCopyAction, SIGNAL(triggered()), mpMessageWidget, SLOT(copy()));
+    connect(mpCopyAction, SIGNAL(triggered()), gpTerminalWidget->mpConsole, SLOT(copy()));
 
-    mpTerminalWidget->loadConfig();
+    gpTerminalWidget->loadConfig();
 
     mpWelcomeWidget = 0;
 
@@ -436,8 +423,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     }
 
-    mpTerminalWidget->saveConfig();
-
+    gpTerminalWidget->saveConfig();
     gpConfig->saveToXml();
 }
 

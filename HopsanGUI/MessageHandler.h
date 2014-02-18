@@ -37,7 +37,7 @@ enum MessageTypeEnumT {Info, Warning, Error, Fatal, Debug, UndefinedMessageType}
 class GUIMessage
 {
 public:
-    GUIMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT mType);
+    GUIMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type, bool doTimeStamp=true);
     QString getMessageTypeAsString() const;
 
     QString mMessage;
@@ -52,7 +52,7 @@ class GUIMessageHandler : public QObject
     Q_OBJECT
 
 public:
-    GUIMessageHandler();
+    GUIMessageHandler(QObject *pParent=0);
     void clear();
     void startPublish();
     void stopPublish();
@@ -61,10 +61,10 @@ public:
 
 public slots:
     void collectHopsanCoreMessages();
-    void addInfoMessage(QString message, QString tag=QString());
-    void addWarningMessage(QString message, QString tag=QString());
-    void addErrorMessage(QString message, QString tag=QString());
-    void addDebugMessage(QString message, QString tag=QString());
+    void addInfoMessage(QString message, QString tag=QString(), bool doTimeStamp=true);
+    void addWarningMessage(QString message, QString tag=QString(), bool doTimeStamp=true);
+    void addErrorMessage(QString message, QString tag=QString(), bool doTimeStamp=true);
+    void addDebugMessage(QString message, QString tag=QString(), bool doTimeStamp=true);
 
 signals:
     void newAnyMessage(const GUIMessage &rMessage);
@@ -74,7 +74,7 @@ signals:
     void newDebugMessage(const GUIMessage &rMessage);
 
 private:
-    void addMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type);
+    void addMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type, bool doTimeStamp=true);
 
     CoreMessagesAccess *mpCoreAccess;
     QList<GUIMessage> mMessageList;

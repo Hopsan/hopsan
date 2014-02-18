@@ -95,7 +95,7 @@ void OptimizationWorker::finalize()
         connect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHandler->mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
     }
 
-    mpHandler->mpConsole->mpTerminal->setEnabledAbortButton(false);
+    mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(false);
 
     gpMainWindow->mpOptimizationDialog->setOptimizationFinished();
 
@@ -466,12 +466,12 @@ double OptimizationWorker::getParameter(const int pointIdx, const int parIdx) co
 
 void OptimizationWorker::print(const QString &msg, const QString &tag, bool timeStamp)
 {
-    mpHandler->mpConsole->printInfoMessage(msg, tag, timeStamp);
+    mpHandler->getMessageHandler()->addInfoMessage(msg, tag, timeStamp);
 }
 
 void OptimizationWorker::printError(const QString &msg, const QString &tag, bool timeStamp)
 {
-    mpHandler->mpConsole->printErrorMessage(msg, tag, timeStamp);
+    mpHandler->getMessageHandler()->addErrorMessage(msg, tag, timeStamp);
 }
 
 void OptimizationWorker::execute(const QString &cmd)

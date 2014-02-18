@@ -31,7 +31,7 @@ using namespace hopsan;
 // When you load your model into Hopsan, the register_contents() function bellow will be called
 // It will register YOUR components into the Hopsan ComponentFactory
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* /*pNodeFactory*/)
+extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
 {
     // ========== Register Components ==========
     // Use the registerCreatorFunction(KeyValue, Function) in the component factory to register components
@@ -49,7 +49,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported
-
+    HOPSAN_UNUSED(pNodeFactory)
 }
 
 // When you load your model into Hopsan, the get_hopsan_info() function bellow will be called

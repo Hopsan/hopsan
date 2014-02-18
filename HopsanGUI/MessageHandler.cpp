@@ -32,13 +32,15 @@
 #include "CoreAccess.h"
 
 //! @brief Constructor for the GUIMessage class
-GUIMessage::GUIMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type)
+GUIMessage::GUIMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type, bool doTimeStamp)
 {
-    QTime time = QTime::currentTime();
     mMessage = rMessage;
     mTag = rTag;
-    mTimestamp = time.toString();
     mType = type;
+    if (doTimeStamp)
+    {
+        mTimestamp = QTime::currentTime().toString();
+    }
 }
 
 QString GUIMessage::getMessageTypeAsString() const
@@ -59,7 +61,8 @@ QString GUIMessage::getMessageTypeAsString() const
 
 
 
-GUIMessageHandler::GUIMessageHandler()
+GUIMessageHandler::GUIMessageHandler(QObject *pParent) :
+    QObject(pParent)
 {
     mIsPublishing = false;
     mpCoreAccess = new CoreMessagesAccess;
@@ -132,30 +135,30 @@ void GUIMessageHandler::collectHopsanCoreMessages()
     }
 }
 
-void GUIMessageHandler::addInfoMessage(QString message, QString tag)
+void GUIMessageHandler::addInfoMessage(QString message, QString tag, bool doTimeStamp)
 {
-    addMessage(message.prepend("Info: "), tag, Info);
+    addMessage(message.prepend("Info: "), tag, Info, doTimeStamp);
 }
 
-void GUIMessageHandler::addWarningMessage(QString message, QString tag)
+void GUIMessageHandler::addWarningMessage(QString message, QString tag, bool doTimeStamp)
 {
-    addMessage(message.prepend("Warning: "), tag, Warning);
+    addMessage(message.prepend("Warning: "), tag, Warning, doTimeStamp);
 }
 
-void GUIMessageHandler::addErrorMessage(QString message, QString tag)
+void GUIMessageHandler::addErrorMessage(QString message, QString tag, bool doTimeStamp)
 {
-    addMessage(message.prepend("Error: "), tag, Error);
+    addMessage(message.prepend("Error: "), tag, Error, doTimeStamp);
     //QSound::play(QString(SOUNDSPATH) + "error.wav");
 }
 
-void GUIMessageHandler::addDebugMessage(QString message, QString tag)
+void GUIMessageHandler::addDebugMessage(QString message, QString tag, bool doTimeStamp)
 {
-    addMessage(message.prepend("Debug: "), tag, Debug);
+    addMessage(message.prepend("Debug: "), tag, Debug, doTimeStamp);
 }
 
-void GUIMessageHandler::addMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type)
+void GUIMessageHandler::addMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type, bool doTimeStamp)
 {
-    mMessageList.append(GUIMessage(rMessage, rTag, type));
+    mMessageList.append(GUIMessage(rMessage, rTag, type, doTimeStamp));
     publishWaitingMessages();
 }
 

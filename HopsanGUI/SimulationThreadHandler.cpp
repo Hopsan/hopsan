@@ -24,7 +24,7 @@
 
 #include "SimulationThreadHandler.h"
 
-#include "Widgets/HcomWidget.h"
+#include "MessageHandler.h"
 #include "Configuration.h"
 #include "common.h"
 #include "global.h"
@@ -213,7 +213,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     if(!gpConfig->getUseMulticore())
     {
         QTimer *pCheckMessagesTimer = new QTimer();
-        connect(pCheckMessagesTimer, SIGNAL(timeout()), mpTerminal, SLOT(checkMessages()));
+        connect(pCheckMessagesTimer, SIGNAL(timeout()), mpMessageHandler, SLOT(checkMessages()));
         connect(this, SIGNAL(done(bool)), pCheckMessagesTimer, SLOT(deleteLater()));
         pCheckMessagesTimer->setSingleShot(false);
         pCheckMessagesTimer->start(1000);
@@ -256,25 +256,25 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
     mSimulationWorkerThread.quit();
     mProgressBarWorkerThread.quit();
 
-    //! @todo maybe use signals and slots for messages instead
-    gpMessageHandler->collectHopsanCoreMessages();
+    // Collect core messages prior to showing Simulation finished message
+    mpMessageHandler->collectHopsanCoreMessages();
 
     // Handle printing of all the error messages
     if (mAborted)
     {
-        mpTerminal->mpConsole->printErrorMessage(tr("Simulation was canceled by user"));
+        mpMessageHandler->addErrorMessage(tr("Simulation was canceled by user"));
     }
     else if (!mInitSuccess)
     {
-        mpTerminal->mpConsole->printErrorMessage(tr("Initialize was stopped or aborted for some reason"));
+        mpMessageHandler->addErrorMessage(tr("Initialize was stopped or aborted for some reason"));
     }
     else if (!mSimuSucess)
     {
-        mpTerminal->mpConsole->printErrorMessage(tr("Simulation was stopped or aborted for some reason"));
+        mpMessageHandler->addErrorMessage(tr("Simulation was stopped or aborted for some reason"));
     }
     else if (!mFiniSucess)
     {
-        mpTerminal->mpConsole->printErrorMessage(tr("Finalize was stopped or aborted for some reason"));
+        mpMessageHandler->addErrorMessage(tr("Finalize was stopped or aborted for some reason"));
     }
     else
     {
@@ -290,7 +290,7 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
         QString msg = tr("Simulated").append(" '").append(name).append("' ").append(tr("successfully!"));
         msg.append(" ").append(tr("Initialization time: ")).append(QString::number(mInitTime).append(" ms"));
         msg.append(", ").append(tr("Simulation time: ").append(QString::number(mSimuTime)).append(" ms"));
-        mpTerminal->mpConsole->printInfoMessage(msg);
+        mpMessageHandler->addInfoMessage(msg);
     }
 
     // Wait until threads have been shut down before we delete objects
@@ -328,6 +328,12 @@ void SimulationThreadHandler::aborted()
     mAborted = true;
 }
 
+SimulationThreadHandler::SimulationThreadHandler() :
+    mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true)
+{
+    mpMessageHandler = gpMessageHandler;
+}
+
 bool SimulationThreadHandler::wasSuccessful()
 {
     return mInitSuccess && mSimuSucess && mFiniSucess && !mAborted;
@@ -336,4 +342,9 @@ bool SimulationThreadHandler::wasSuccessful()
 int SimulationThreadHandler::getLastSimulationTime()
 {
     return mSimuTime;
+}
+
+void SimulationThreadHandler::setMessageHandler(GUIMessageHandler *pMessageHandler)
+{
+    mpMessageHandler = pMessageHandler;
 }

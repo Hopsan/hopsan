@@ -33,7 +33,7 @@
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
-#include "HcomHandler.h"
+#include "MessageHandler.h"
 #include "LogDataHandler.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
@@ -52,7 +52,7 @@ ModelHandler::ModelHandler(QObject *parent)
 
     mNumberOfUntitledModels=0;
 
-    mpSimulationThreadHandler = new SimulationThreadHandler(gpTerminalWidget);
+    mpSimulationThreadHandler = new SimulationThreadHandler(); //!< @todo is this ever deleted
 
     mCurrentIdx = -1;
 

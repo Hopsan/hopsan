@@ -109,7 +109,7 @@ void OptimizationWorkerComplexRF::run()
     //Plot optimization points
     plotPoints();
 
-    mpHandler->mpConsole->mpTerminal->setEnabledAbortButton(true);
+    mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(true);
 
     //Reset convergence reason variable (0 = failed to converge)
     mConvergenceReason=0;

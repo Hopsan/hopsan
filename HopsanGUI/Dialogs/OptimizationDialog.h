@@ -41,6 +41,7 @@
 
 class TerminalWidget;
 class SystemContainer;
+class GUIMessageHandler;
 
 class OptimizationDialog : public QWizard
 {
@@ -50,7 +51,6 @@ class OptimizationDialog : public QWizard
 
 public:
     OptimizationDialog(QWidget *parent = 0);
-    TerminalWidget *mpTerminal;
 
     void updateParameterOutputs(const QVector<double> &objectives, const QVector<QVector<double> > &values, const int bestId, const int worstId);
     void updateTotalProgressBar(double progress);
@@ -151,6 +151,8 @@ private:
 
     //Output
     QTextEdit *mpOutputBox;
+    TerminalWidget *mpTerminal;
+    GUIMessageHandler *mpMessageHandler;
 
     //Run page
     QGridLayout *mpParametersOutputTextEditsLayout;
