@@ -111,7 +111,7 @@ namespace hopsan {
         //! prints Matrix (using mprint)
         void print() const;
         // friends
-        friend Vec operator *(const Matrix &mx, const Vec &v); //!< matix multipled by Vec
+        Vec operator *(const Vec &v) const; //!< matix multipled by Vec
         friend Vec operator *(const Vec &v, const Matrix &mx); //!< Vec multiplied by Matrix
     private:
         int nrows; //!< number of rows in the Matrix
@@ -144,7 +144,6 @@ namespace hopsan {
     DLLIMPORTEXPORT double* vector(int length);
     DLLIMPORTEXPORT int* ivector(int length);
     DLLIMPORTEXPORT void errmsg(char *text);
-
 }
 
 #endif
