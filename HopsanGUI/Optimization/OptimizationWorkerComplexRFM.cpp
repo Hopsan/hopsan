@@ -56,7 +56,6 @@ void OptimizationWorkerComplexRFM::init()
 {
     OptimizationWorkerComplex::init();
 
-
     mLastWorstId = -1;
     mWorstCounter = 0;
 
@@ -143,6 +142,8 @@ void OptimizationWorkerComplexRFM::run()
     //Evaluate initial objective values
     execute("call evalall");
 
+    mEvaluations = mNumPoints;
+
     //Calculate best and worst id, and initialize last worst id
     calculateBestAndWorstId();
     mLastWorstId = mWorstId;
@@ -223,10 +224,12 @@ void OptimizationWorkerComplexRFM::run()
         {
             evaluateWithMetaModel();
             metaModelCounter++;
+            ++mMetaModelEvaluations;
         }
         else
         {
             execute("call evalworst");
+            ++mEvaluations;
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
             {
                 execute("echo on");
@@ -281,10 +284,12 @@ void OptimizationWorkerComplexRFM::run()
             {
                 evaluateWithMetaModel();
                 metaModelCounter++;
+                ++mMetaModelEvaluations;
             }
             else
             {
                 execute("call evalworst");
+                ++mEvaluations;
                 if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
                 {
                     execute("echo on");
@@ -325,6 +330,7 @@ void OptimizationWorkerComplexRFM::run()
 
             mWorstId = mLastWorstId;
             execute("call evalworst");
+            ++mEvaluations;
             storeValuesForMetaModel(mWorstId);
             calculateBestAndWorstId();
             wid=mWorstId;
@@ -379,13 +385,13 @@ void OptimizationWorkerComplexRFM::run()
         break;
     }
 
-    mTotalIterations = i;
-
     print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
     {
         print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
     }
+
+    mIterations = mMetaModelEvaluations + mEvaluations;
 
     // Clean up
     finalize();
@@ -462,56 +468,14 @@ void OptimizationWorkerComplexRFM::createMetaModel()
         mBVec[i] = mStoredObjectives[i];
     }
 
-    print("Stored objectives:");
-    for(int i=0; i<n; ++i)
-    {
-        execute("echo on");
-        print(" "+QString::number(mBVec[i]));
-        execute("echo off");
-    }
-
-
-    printMatrix(mMatrix);
-
-    hopsan::Matrix matrixT = mMatrix.transpose();
-    printMatrix(matrixT);
-
-    hopsan::Matrix tempMatrix = matrixT*mMatrix;
-    printMatrix(tempMatrix);
-
-    hopsan::Vec tempVec = matrixT*mStoredObjectives;
-
-    print("tempVec:");
-    for(int i=0; i<m; ++i)
-    {
-        execute("echo on");
-        print(" "+QString::number(tempVec[i]));
-        execute("echo off");
-    }
-
 
     //Solve system using L and U matrices
+    hopsan::Matrix matrixT = mMatrix.transpose();       //Multiply matrix and vector with transpose of matrix, because we need a square matrix
+    hopsan::Matrix tempMatrix = matrixT*mMatrix;
+    hopsan::Vec tempVec = matrixT*mStoredObjectives;
     int* order = new int[m];
     hopsan::ludcmp(tempMatrix, order);
     hopsan::solvlu(tempMatrix,tempVec,mMetaModelCoefficients,order);
-
-    execute("echo on");
-    print("Meta model coefficients:");
-    for(int i=0; i<m; ++i)
-    {
-        print(" "+QString::number(mMetaModelCoefficients[i]));
-    }
-    execute("echo off");
-
-
-//    int temp = mWorstId;
-//    for(int i=0; i<mNumPoints; ++i)
-//    {
-
-//        mWorstId = i;
-//        evaluateWithMetaModel();
-//    }
-//    mWorstId = temp;
 }
 
 
@@ -548,10 +512,6 @@ void OptimizationWorkerComplexRFM::evaluateWithMetaModel()
             obj += mMetaModelCoefficients[1+i*mNumParameters+j+mNumParameters]*mParameters[mWorstId][i]*mParameters[mWorstId][j];
         }
     }
-
-    execute("echo on");
-    print("OBJECTIVE: "+QString::number(obj));
-    execute("echo off");
 
     mObjectives[mWorstId] = obj;
 }

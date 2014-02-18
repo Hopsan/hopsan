@@ -51,6 +51,10 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
 
 void OptimizationWorker::init()
 {
+    mIterations = 0;
+    mEvaluations = 0;
+    mMetaModelEvaluations = 0;
+
     mDisconnectedFromModelHandler = disconnect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHandler->mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
 
     mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
@@ -100,7 +104,9 @@ void OptimizationWorker::finalize()
     QFile resultFile(gpDesktopHandler->getDocumentsPath()+"/optimization_results_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
     resultFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
     QString output = QString::number(mpHandler->getAlgorithm())+",";
-    output.append(QString::number(mTotalIterations)+",");
+    output.append(QString::number(mIterations)+",");
+    output.append(QString::number(mEvaluations)+",");
+    output.append(QString::number(mMetaModelEvaluations)+",");
     output.append(QString::number(mObjectives[mBestId])+"\n");
     resultFile.write(output.toUtf8());
     resultFile.close();

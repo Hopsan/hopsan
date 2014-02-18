@@ -126,12 +126,11 @@ void OptimizationWorkerParticleSwarm::run()
     execute("echo off");
 
     //Evaluate initial objevtive values
-    execute("call evalall");
-    if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+    evaluateAllParticles();
+    if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
     {
         execute("echo on");
         mpHandler->mpConsole->print("Optimization aborted.");
-        //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
         finalize();
         return;
     }
@@ -149,7 +148,6 @@ void OptimizationWorkerParticleSwarm::run()
     mBestPoint = mParameters[mBestId];
 
     int i=0;
-    int percent=-1;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         //Process events, to make sure GUI is updated
@@ -174,28 +172,7 @@ void OptimizationWorkerParticleSwarm::run()
         moveParticles();
 
         //Evaluate objevtive values
-        if(mpHandler->mpConfig->getUseMulticore())
-        {
-            //Multi-threading, we cannot use the "evalall" function
-            for(int i=0; i<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++i)
-            {
-                mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
-                execute("opt set evalid "+QString::number(i));
-                execute("call setpars");
-            }
-            gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
-            for(int i=0; i<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++i)
-            {
-                mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
-                execute("opt set evalid "+QString::number(i));
-                execute("call obj");
-            }
-            mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
-        }
-        else
-        {
-            execute("call evalall");
-        }
+        evaluateAllParticles();
         if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
         {
             execute("echo on");
@@ -246,8 +223,6 @@ void OptimizationWorkerParticleSwarm::run()
         break;
     }
 
-    mTotalIterations = i;
-
     mpHandler->mpConsole->print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
     {
@@ -288,6 +263,35 @@ void OptimizationWorkerParticleSwarm::moveParticles()
             }
         }
     }
+}
+
+void OptimizationWorkerParticleSwarm::evaluateAllParticles()
+{
+    if(mpHandler->mpConfig->getUseMulticore())
+    {
+        //Multi-threading, we cannot use the "evalall" function
+        for(int j=0; j<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++j)
+        {
+            mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[j]);
+            execute("opt set evalid "+QString::number(j));
+            execute("call setpars");
+        }
+        gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+        for(int j=0; j<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++j)
+        {
+            mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[j]);
+            execute("opt set evalid "+QString::number(j));
+            execute("call obj");
+        }
+        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
+    }
+    else
+    {
+        execute("call evalall");
+    }
+
+    ++mIterations;
+    mEvaluations += mNumPoints;
 }
 
 

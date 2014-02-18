@@ -93,7 +93,9 @@ protected:
     bool mPlotVariables;
     int mPercent;
 
-    int mTotalIterations;
+    int mIterations;
+    int mEvaluations;
+    int mMetaModelEvaluations;
 };
 
 #endif // OPTIMIZATIONWORKER_H

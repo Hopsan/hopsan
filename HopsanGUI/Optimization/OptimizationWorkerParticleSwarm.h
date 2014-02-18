@@ -44,6 +44,7 @@ public:
     void finalize();
 
     void moveParticles();
+    void evaluateAllParticles();
     void printLogOutput();
 
     void setOptVar(const QString &var, const QString &value);

@@ -98,7 +98,7 @@ void OptimizationWorkerComplexRFP::init()
 
     mObjectives.resize(mNumPoints+mNumThreads);
 
-    mKf = 1.0-pow(mAlpha1/2.0, mGamma/mNumPoints);
+    mKf = 1.0-pow(mAlpha/2.0, mGamma/mNumPoints);
 
     LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
@@ -158,7 +158,24 @@ void OptimizationWorkerComplexRFP::run()
     execute("echo off");
 
     //Evaluate all points
-    execute("call evalall");
+    for(int i=0; i<mParameters.size(); ++i)
+    {
+        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        execute("opt set evalid "+QString::number(i));
+        execute("call setpars");
+    }
+    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+
+    for(int i=0; i<mParameters.size() && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    {
+        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        execute("opt set evalid "+QString::number(i));
+        execute("call obj");
+    }
+    mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
+    ++mIterations;
+    mEvaluations += mNumPoints;
+
 
     //Calculate best and worst id, and initialize last worst id
     calculateBestAndWorstId();
@@ -278,6 +295,7 @@ void OptimizationWorkerComplexRFP::run()
                     mParameters[mWorstId] = mCandidateParticles[o];
                     mObjectives[mWorstId] = mObjectives[mNumPoints+o];
                     mNoPointsChanged = false;
+                    break;
                 }
             }
 
@@ -336,8 +354,6 @@ void OptimizationWorkerComplexRFP::run()
         print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
         break;
     }
-
-    mTotalIterations = i;
 
     print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
@@ -627,6 +643,9 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles()
         execute("call obj");
     }
     mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
+
+    ++mIterations;
+    mEvaluations += mNumPoints;
 }
 
 
@@ -651,22 +670,8 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
     }
-
-    ++i;
-
-    nWorsePoints=0;
-    for(int j=0; j<mNumPoints; ++j)
+    else
     {
-        if(mObjectives[j] > mObjectives[mNumPoints+i])
-        {
-            ++nWorsePoints;
-        }
-    }
-
-    if(nWorsePoints >= 2)
-    {
-        mParameters[mvIdx[i]] = mCandidateParticles[i];
-        mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
         return;
     }
 
@@ -685,6 +690,9 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+    }
+    else
+    {
         return;
     }
 
@@ -703,6 +711,30 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+    }
+    else
+    {
+        return;
+    }
+
+    ++i;
+
+    nWorsePoints=0;
+    for(int j=0; j<mNumPoints; ++j)
+    {
+        if(mObjectives[j] > mObjectives[mNumPoints+i])
+        {
+            ++nWorsePoints;
+        }
+    }
+
+    if(nWorsePoints >= 2)
+    {
+        mParameters[mvIdx[i]] = mCandidateParticles[i];
+        mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+    }
+    else
+    {
         return;
     }
 
