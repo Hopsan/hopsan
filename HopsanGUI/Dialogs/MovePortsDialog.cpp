@@ -3,7 +3,7 @@
 #include <QGridLayout>
 #include <QCheckBox>
 #include <QPushButton>
-#include <Qlabel>
+#include <QLabel>
 #include <QLineEdit>
 #include <QDoubleValidator>
 
