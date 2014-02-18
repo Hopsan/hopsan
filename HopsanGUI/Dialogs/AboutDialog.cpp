@@ -77,15 +77,19 @@ AboutDialog::AboutDialog(QWidget *parent)
     pVersionHeading->setFont(boldHeadingFont);
     QLabel *pVersionText = new QLabel();
     //! @todo if we build tables and other richtext stuff like this often, a utility function would be nice
-    pVersionText->setText(
-            QString("<table> \
+    pVersionText->setText(QString("<table> \
             <tr><th></th> <th align=left>HopsanCore</th>  <th align=left>HopsanGUI</th></tr> \
-            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Version:</td>         <td style=\"padding-right:10px\">%1</td>    <td>%5</td></tr> \
-            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Architecture:</td>    <td style=\"padding-right:10px\">%2</td>    <td>%6</td></tr> \
-            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Compiler:</td>        <td style=\"padding-right:10px\">%3</td>    <td>%7</td></tr> \
-            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Build Time:</td>      <td style=\"padding-right:10px\">%4</td>    <td>%8</td></tr> \
-            </table>").arg(getHopsanCoreVersion()).arg(getHopsanCoreArchitecture()).arg(getHopsanCoreCompiler()).arg(getHopsanCoreBuildTime())
-            .arg(HOPSANGUIVERSION).arg(arch).arg(HOPSANCOMPILEDWITH).arg(getHopsanGUIBuildTime()));
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Version:</td>         <td style=\"padding-right:10px\">%1</td>    <td>%2</td></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Architecture:</td>    <td style=\"padding-right:10px\">%3</td>    <td>%4</td></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Qt Version:</td>      <td style=\"padding-right:10px\">-</td>     <td>%9</td></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Compiler:</td>        <td style=\"padding-right:10px\">%5</td>    <td>%6</td></tr> \
+            <tr><td align=right style=\"padding-right:10px; font-weight:bold\">Build Time:</td>      <td style=\"padding-right:10px\">%7</td>    <td>%8</td></tr> \
+            </table>")
+            .arg(getHopsanCoreVersion(),        HOPSANGUIVERSION)
+            .arg(getHopsanCoreArchitecture(),   arch)
+            .arg(getHopsanCoreCompiler(),       HOPSANCOMPILEDWITH)
+            .arg(getHopsanCoreBuildTime(),      getHopsanGUIBuildTime())
+            .arg(QT_VERSION_STR));
             //! @todo include debug or relase info here as well
 
     QLabel *pAuthorsHeading = new QLabel();
