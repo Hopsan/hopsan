@@ -9,7 +9,7 @@ This guide tells you how to install the Qt Development Environment and Compilers
 1. Development of the Hopsan program 
 2. Development of Hopsan component libraries
 
-\subsubsection _mingwwindows32 32-bit MinGW
+\subsubsection _mingwwindows32 32-bit MinGW (For Hopsan 0.6.*)
 This guide is relevant for Hopsan version 0.6.* 32-bit development.
 You do not need the Qt Development Environment if you only want to use the built in compilation feature in Hopsan, then you only need MinGW_4.4
 
@@ -37,7 +37,7 @@ Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project
 If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
 The project should now be configured automatically, but check the Projects tab on the left menu to be sure 
 
-\subsubsection _mingwwindows64 64-bit MinGW
+\subsubsection _mingwwindows64 64-bit MinGW (For Hopsan 0.6.*)
 This guide is relevant for Hopsan version 0.6.* 64-bit development.
 If you want to compile 64-bit component libraries YOU MUST compile against a 64-bit version of Hopsan
 
@@ -48,7 +48,7 @@ Installation:
 2. Unzip the file (with 7-Zip), copy the directories mingw64 and Qt64-4.8.5 to your desired location. \n
    Recommended: `c:\Qt\mingw64`  and  `c:\Qt\Qt64-4.8.5`
 3. Open a command prompt "Start->run->cmd" and navigate to your `C:\Qt\Qt64-4.8.5` directory (cd `c:\Qt\Qt64-4.8.5`) \n
-   Run the command "qtbinpatcher.exe --nobackup" to path the binaries
+   Run the command "qtbinpatcher.exe --nobackup" to patch the binaries
 4. Download and install \b Qt \b Creator version of your choice from http://qt-project.org/downloads, (latest 2.8* version is recommended) \n
    \b Note! Scroll down on the download page until you find Qt Creator only installers. (Do \b NOT install Qt 5.*) \n
    \b Note! When new releases are published the old ones can be found from http://download.qt-project.org/official_releases/qtcreator/ \n
@@ -85,16 +85,16 @@ If you have previous installations of Microsoft Windows SDKs installed you need 
 You don't need to install the .NET stuff, but make sure that you install the "Debugging Tools for Windows"
 -# (Optional if you want to be able to debug) If you are using a 64-bit OS you will also need to install the 32-bit version of the debugging tools. The SDK will autmatically only install the 64-bit version. If you can not get the newest version manually then select version 6.11.1.404 from the archive downloads list that you can find <a href="http://msdn.microsoft.com/en-us/windows/hardware/gg463009" target="_blank">here</a>. This link does no longer seem to contain the needed file though.
 -# Pay attention to the messages in the last window in the installation, if you have an error here you will have to remove the conflicting version and then reinstall the SDK components that failed.
--# Repete the above for "Microsoft Windows SDK for Windows 7 and .NET Framework 4" (Windows SDK 7.1)
+-# Repeat the above for "Microsoft Windows SDK for Windows 7 and .NET Framework 4" (Windows SDK 7.1)
    -# If you are unable to install the Visual Compilers (because a newer version already seems to be installed) see Microsoft KB2519277 for a patch.
       -# First install the Windows SDK 7.1 without compilers, then run the patch file to reinstall compilers.
-      -# The issue is moste likely cause by you having previously installed "MS Visual Studio 2010 Express SP1"
-      -# Unfortunattely the KB2519277 patch is missing files, this is also a known bug that will no be fixed by misrosoft (official statement)
-      -# Now go to add/remove programs and unsintall all Microsoft Visual C++ 2010 compilers
-      -# Hopefully you will now be able to reinstall Windows SDK 7.1 with compilers (which have a slighly older version then thos that came with Visual Studio and KB2519277)
+      -# The issue is most likely cause by you having previously installed "MS Visual Studio 2010 Express SP1"
+      -# Unfortunately the KB2519277 patch is missing files, this is also a known bug that will no be fixed by Microsoft (official statement)
+      -# Now go to add/remove programs and uninstall all Microsoft Visual C++ 2010 compilers
+      -# Hopefully you will now be able to reinstall Windows SDK 7.1 with compilers (which have a slightly older version then those that came with Visual Studio and KB2519277)
 
 If you get an error about "cl.exe" not being found when building, then the "Visual Studio 9.0/VC/bin" or "Visual Studio 10.0/VC/bin" folder has not been added to your PATH system environment variable.
-    -# Note! the release build script should do this automatically, adding the path manually is not recomended as that could mean that the wrong version will be used when you try to compile for a different MSVC version.
+    -# Note! the release build script should do this automatically, adding the path manually is not recommended as that could mean that the wrong version will be used when you try to compile for a different MSVC version.
 	
 To get a working MSVC debugger in Qt creator
 -# Go into Tools->Options->Debugger->Cdb and check the Cdb box. Now set the path to the Debugging tools for Windows 32-bit version. (Autodetect should work).
@@ -110,8 +110,8 @@ You should use the Qt- libraries in you distribution package repository. Make su
 /*!
 \page devBaseRequirementsPageQtCreatorSettingsPage Qt Creator Settings Examples
 \section _qtcreatorsettingswindows Setting up Qt Creator on MS Windows
-\subsection _qtcreatorsettingsmingw32 For 32-bit MinGW
-To setup Qt Creator for MinGW32 use, your settings should look something similar to this.\n
+\subsection _qtcreatorsettingsmingw32 For 32-bit MinGW (For Hopsan 0.6.*)
+To setup Qt Creator 2.8.1 for MinGW32 use, your settings should look something similar to this.\n
 \b Note! These images may be outdated for newer compiler/Qt versions. You should check the install instruction for the actual versions \ref devBaseRequirementsPage 
 \htmllinkimage{../../graphics/QtSettingsCompilers32.png,500}
 \image latex "QtSettingsCompilers32.png" "Compiler settings in Qt Creator" width=1\linewidth
@@ -122,8 +122,8 @@ To setup Qt Creator for MinGW32 use, your settings should look something similar
 \htmllinkimage{../../graphics/QtSettingsKitSelection32.png,500}
 \image latex "QtSettingsKitSelection32.png" "Qt kit selection in Qt Creator" width=1\linewidth
 
-\subsection _qtcreatorsettingsmingw64 For 64-bit MinGW
-To setup Qt Creator for MinGW64 use, your settings should look something similar to this.\n
+\subsection _qtcreatorsettingsmingw64 For 64-bit MinGW (For Hopsan 0.6.*)
+To setup Qt Creator 2.8.1 for MinGW64 use, your settings should look something similar to this.\n
 \b Note! These images may be outdated for newer compiler/Qt versions. You should check the install instruction for the actual versions \ref devBaseRequirementsPage 
 \htmllinkimage{../../graphics/QtSettingsCompilers64.png,500}
 \image latex "QtSettingsCompilers64.png" "Compiler settings in Qt Creator" width=1\linewidth
