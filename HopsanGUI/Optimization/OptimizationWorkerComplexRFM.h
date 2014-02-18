@@ -45,15 +45,17 @@ public:
 private:
     void storeValuesForMetaModel(int idx);
     void createMetaModel();
-    void printMatrix();
+    void printMatrix(hopsan::Matrix &matrix);
     void evaluateWithMetaModel();
 
     int mStorageSize;
     QVector< QVector<double> > mStoredParameters;
-    QVector<double> mStoredObjectives;
-    QVector<double> mMetaModelCoefficients;
 
+    hopsan::Vec mStoredObjectives;
+    hopsan::Vec mMetaModelCoefficients;
     hopsan::Matrix mMatrix;
+    hopsan::Vec mAVec;
+    hopsan::Vec mBVec;
 };
 
 #endif // OPTIMIZATIONWORKERCOMPLEXRFM_H

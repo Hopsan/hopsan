@@ -75,6 +75,8 @@ void OptimizationWorker::init()
         return;
     }
     mpHandler->mpHcomHandler->setWorkingDirectory(oldPath);
+
+    mPercent = -1;
 }
 
 void OptimizationWorker::run()
@@ -469,6 +471,16 @@ void OptimizationWorker::printError(const QString &msg, const QString &tag, bool
 void OptimizationWorker::execute(const QString &cmd)
 {
     mpHandler->mpHcomHandler->executeCommand(cmd);
+}
+
+void OptimizationWorker::updateProgressBar(int i)
+{
+    int dummy=int(100.0*double(i)/mMaxEvals);
+    if(dummy != mPercent)    //Only update at whole numbers
+    {
+        mPercent = dummy;
+        gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
+    }
 }
 
 //! @brief Returns the maximum difference between smallest and largest parameter

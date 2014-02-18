@@ -157,18 +157,8 @@ void OptimizationWorkerComplexRFP::run()
     //Turn of terminal output during optimization
     execute("echo off");
 
+    //Evaluate all points
     execute("call evalall");
-
-    findCenter();
-
-    calculateBestAndWorstId();
-
-    pickCandidateParticles();
-
-    //Evaluate initial objevtive values
-    evaluateCandidateParticles();
-
-    examineCandidateParticles();
 
     //Calculate best and worst id, and initialize last worst id
     calculateBestAndWorstId();
@@ -179,7 +169,6 @@ void OptimizationWorkerComplexRFP::run()
 
     //Run optimization loop
     int i=0;
-    int percent=-1;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         //Plot optimization points
@@ -197,12 +186,7 @@ void OptimizationWorkerComplexRFP::run()
         }
 
         //Print progress as percentage of maximum number of evaluations
-        int dummy=int(100.0*double(i)/mMaxEvals);
-        if(dummy != percent)    //Only update at whole numbers
-        {
-            percent = dummy;
-            gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
-        }
+        updateProgressBar(i);
 
         //Check convergence
         if(checkForConvergence()) break;
@@ -286,25 +270,36 @@ void OptimizationWorkerComplexRFP::run()
             //Evaluate new point
             evaluateCandidateParticles();
 
-            //Find best candidate particle
-            double bestCandidateObjective = mObjectives[mNumPoints];
-            int bestCandidateIdx = 0;
-            for(int o=1; o<mNumThreads; ++o)
+            //Replace worst point with first candidate point that is better, if any
+            for(int o=0; o<mNumThreads; ++o)
             {
-                if(mObjectives[mNumPoints+o] < bestCandidateObjective)
+                if(mObjectives[mNumPoints+o] < mObjectives[mWorstId])
                 {
-                    bestCandidateObjective = mObjectives[mNumPoints+o];
-                    bestCandidateIdx = o;
+                    mParameters[mWorstId] = mCandidateParticles[o];
+                    mObjectives[mWorstId] = mObjectives[mNumPoints+o];
+                    mNoPointsChanged = false;
                 }
             }
 
-            //Replace worst objective if best candidate was better
-            mNoPointsChanged=true;
-            if(bestCandidateObjective < mObjectives[mWorstId])
-            {
-                mParameters[mWorstId] = mCandidateParticles[bestCandidateIdx];
-                mNoPointsChanged = false;
-            }
+//            //Find best candidate particle
+//            double bestCandidateObjective = mObjectives[mNumPoints];
+//            int bestCandidateIdx = 0;
+//            for(int o=1; o<mNumThreads; ++o)
+//            {
+//                if(mObjectives[mNumPoints+o] < bestCandidateObjective)
+//                {
+//                    bestCandidateObjective = mObjectives[mNumPoints+o];
+//                    bestCandidateIdx = o;
+//                }
+//            }
+
+//            //Replace worst objective if best candidate was better
+//            mNoPointsChanged=true;
+//            if(bestCandidateObjective < mObjectives[mWorstId])
+//            {
+//                mParameters[mWorstId] = mCandidateParticles[bestCandidateIdx];
+//                mNoPointsChanged = false;
+//            }
 
 
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
@@ -493,14 +488,14 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
     else if(method==1)
     {
         //Sort ids by objective value (worst to best)
-        QVector<int> vIdx;
-        while(vIdx.size() != mNumPoints)
+        mvIdx.clear();
+        while(mvIdx.size() != mNumPoints)
         {
             int worstId = 0;
             double worstObjective = -1000000000;
             for(int i=0; i<mNumPoints; ++i)
             {
-                if(vIdx.contains(i)) continue;  //Ignore alraedy added indexes
+                if(mvIdx.contains(i)) continue;  //Ignore alraedy added indexes
 
                 if(mObjectives[i] > worstObjective)
                 {
@@ -508,32 +503,108 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
                     worstId = i;
                 }
             }
-            vIdx.append(worstId);
+            mvIdx.append(worstId);
         }
 
+        QList<int> nTests;
+        int i=0;
         QVector< QVector<double> > otherPoints = mParameters;
-        for(int i=0; i<max(mNumThreads,mNumPoints); ++i)
+        findCenter(otherPoints);
+
+        //Reflect first point
+        for(int j=0; j<mNumParameters; ++j)
         {
-            otherPoints.remove(vIdx[i]);
-            findCenter(otherPoints);
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
 
-            //Reflect first point
-            for(int j=0; j<mNumParameters; ++j)
-            {
-                //Reflect
-                double worst = mParameters[vIdx[i]][j];
-                mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
-
-                //Add some random noise
-                double maxDiff = getMaxParDiff();
-                double r = (double)rand() / (double)RAND_MAX;
-                mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-                mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-                mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
-            }
-
-            otherPoints.append(mCandidateParticles[i]);
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
         }
+        otherPoints.remove(mvIdx[i]);
+        otherPoints.append(mCandidateParticles[i]);
+
+        findCenter(otherPoints);
+
+        ++i;
+        if(i >= mNumThreads) return;
+
+        //Reflect second point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+        }
+        otherPoints.remove(mvIdx[i]);
+        otherPoints.append(mCandidateParticles[i]);
+
+        ++i;
+        if(i >= mNumThreads) return;
+
+        //Reflect third point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+        }
+
+        ++i;
+        if(i >= mNumThreads) return;
+
+        //Reflect forth point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+        }
+
+        //! @todo Maybe reflect more points if more processors are available?
+
+//        i=0;
+//        if(i >= mNumThreads) return;
+
+//        //Reflect third
+//        for(int j=0; j<mNumParameters; ++j)
+//        {
+//            //Reflect
+//            double worst = mParameters[mvIdx[i]][j];
+//            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+//            //Add some random noise
+//            double maxDiff = getMaxParDiff();
+//            double r = (double)rand() / (double)RAND_MAX;
+//            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+//            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
+//            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+//        }
     }
 }
 
@@ -562,51 +633,124 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles()
 
 void OptimizationWorkerComplexRFP::examineCandidateParticles()
 {
-    TicToc timer;
-    timer.tic();
+    mNoPointsChanged=true;
 
-    mNoPointsChanged=true;        //! @todo Us
-    while(true)
+    int i=0;
+    int nWorsePoints=0;
+    for(int j=0; j<mNumPoints; ++j)
     {
-        int worstParticleIdx = 0;
-        double worstParticle = mObjectives[0];
-        for(int i=1; i<mNumPoints; ++i)
+        if(mObjectives[j] > mObjectives[mNumPoints+i])
         {
-            if(mObjectives[i] > worstParticle)
-            {
-                worstParticleIdx = i;
-                worstParticle = mObjectives[i];
-            }
-        }
-
-        int bestCandidateIdx = 0;
-        double bestCandidate = mObjectives[mNumPoints];
-        for(int i=mNumPoints; i<mNumPoints+mNumThreads; ++i)
-        {
-            if(mObjectives[i] < bestCandidate)
-            {
-                bestCandidateIdx = i-mNumPoints;
-                bestCandidate = mObjectives[i];
-            }
-        }
-
-        if(bestCandidate < worstParticle)
-        {
-            mNoPointsChanged=false;
-            QVector<double> tempParameters = mParameters[worstParticleIdx];
-            double tempObjective = mObjectives[worstParticleIdx];
-            mParameters[worstParticleIdx] = mCandidateParticles[bestCandidateIdx];
-            mObjectives[worstParticleIdx] = mObjectives[mNumPoints+bestCandidateIdx];
-            mCandidateParticles[bestCandidateIdx] = tempParameters;
-            mObjectives[mNumPoints+bestCandidateIdx] = tempObjective;
-        }
-        else
-        {
-            break;
+            ++nWorsePoints;
         }
     }
 
-    timer.toc("examineCandidateParticles()");
+    if(nWorsePoints >= 2)
+    {
+        mNoPointsChanged = false;
+        mParameters[mvIdx[i]] = mCandidateParticles[i];
+        mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+    }
+
+    ++i;
+
+    nWorsePoints=0;
+    for(int j=0; j<mNumPoints; ++j)
+    {
+        if(mObjectives[j] > mObjectives[mNumPoints+i])
+        {
+            ++nWorsePoints;
+        }
+    }
+
+    if(nWorsePoints >= 2)
+    {
+        mParameters[mvIdx[i]] = mCandidateParticles[i];
+        mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        return;
+    }
+
+    ++i;
+
+    nWorsePoints=0;
+    for(int j=0; j<mNumPoints; ++j)
+    {
+        if(mObjectives[j] > mObjectives[mNumPoints+i])
+        {
+            ++nWorsePoints;
+        }
+    }
+
+    if(nWorsePoints >= 2)
+    {
+        mParameters[mvIdx[i]] = mCandidateParticles[i];
+        mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        return;
+    }
+
+    ++i;
+
+    nWorsePoints=0;
+    for(int j=0; j<mNumPoints; ++j)
+    {
+        if(mObjectives[j] > mObjectives[mNumPoints+i])
+        {
+            ++nWorsePoints;
+        }
+    }
+
+    if(nWorsePoints >= 2)
+    {
+        mParameters[mvIdx[i]] = mCandidateParticles[i];
+        mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        return;
+    }
+
+//    TicToc timer;
+//    timer.tic();
+
+//    mNoPointsChanged=true;        //! @todo Us
+//    while(true)
+//    {
+//        int worstParticleIdx = 0;
+//        double worstParticle = mObjectives[0];
+//        for(int i=1; i<mNumPoints; ++i)
+//        {
+//            if(mObjectives[i] > worstParticle)
+//            {
+//                worstParticleIdx = i;
+//                worstParticle = mObjectives[i];
+//            }
+//        }
+
+//        int bestCandidateIdx = 0;
+//        double bestCandidate = mObjectives[mNumPoints];
+//        for(int i=mNumPoints; i<mNumPoints+mNumThreads; ++i)
+//        {
+//            if(mObjectives[i] < bestCandidate)
+//            {
+//                bestCandidateIdx = i-mNumPoints;
+//                bestCandidate = mObjectives[i];
+//            }
+//        }
+
+//        if(bestCandidate < worstParticle)
+//        {
+//            mNoPointsChanged=false;
+//            QVector<double> tempParameters = mParameters[worstParticleIdx];
+//            double tempObjective = mObjectives[worstParticleIdx];
+//            mParameters[worstParticleIdx] = mCandidateParticles[bestCandidateIdx];
+//            mObjectives[worstParticleIdx] = mObjectives[mNumPoints+bestCandidateIdx];
+//            mCandidateParticles[bestCandidateIdx] = tempParameters;
+//            mObjectives[mNumPoints+bestCandidateIdx] = tempObjective;
+//        }
+//        else
+//        {
+//            break;
+//        }
+//    }
+
+//    timer.toc("examineCandidateParticles()");
 }
 
 

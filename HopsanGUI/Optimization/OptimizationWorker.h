@@ -69,6 +69,7 @@ protected:
     void print(const QString &msg, const QString &tag="", bool timeStamp=true);
     void printError(const QString &msg, const QString &tag="", bool timeStamp=true);
     void execute(const QString &cmd);
+    void updateProgressBar(int i);
 
     OptimizationHandler *mpHandler;
 
@@ -76,6 +77,7 @@ protected:
     bool mDisconnectedFromModelHandler;
 
     int mNumPoints;
+    QVector<int> mvIdx;
     int mEvalId;
     int mNumParameters;
     QVector<double> mParMin, mParMax;
@@ -89,6 +91,7 @@ protected:
     bool mPlotObjectiveFunctionValues;
     bool mPlotParameters;
     bool mPlotVariables;
+    int mPercent;
 
     int mTotalIterations;
 };

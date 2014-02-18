@@ -143,7 +143,6 @@ void OptimizationWorkerComplexRF::run()
 
     //Run optimization loop
     int i=0;
-    int percent=-1;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         //Plot optimization points
@@ -161,12 +160,7 @@ void OptimizationWorkerComplexRF::run()
         }
 
         //Print progress as percentage of maximum number of evaluations
-        int dummy=int(100.0*double(i)/mMaxEvals);
-        if(dummy != percent)    //Only update at whole numbers
-        {
-            percent = dummy;
-            gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
-        }
+        updateProgressBar(i);
 
         //Check convergence
         if(checkForConvergence()) break;

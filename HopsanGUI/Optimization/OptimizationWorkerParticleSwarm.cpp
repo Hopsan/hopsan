@@ -167,16 +167,8 @@ void OptimizationWorkerParticleSwarm::run()
         //Print log output
         printLogOutput();
 
-        //Print progress as percentage of maximum number of evaluations
-        int dummy=int(100.0*double(i)/mMaxEvals);
-        if(dummy != percent)    //Only update at whole numbers
-        {
-//            mpConsole->setDontPrint(false);
-//            mpConsole->print(QString::number(dummy)+"%");
-//            mpConsole->setDontPrint(true);
-            percent = dummy;
-            gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
-        }
+        //Update progress bar in dialog
+        updateProgressBar(i);
 
         //Move particles
         moveParticles();
