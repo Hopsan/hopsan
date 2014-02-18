@@ -196,7 +196,12 @@ void hopsan::solvlu(const Matrix &a, const Vec &b, Vec &x, const int order[])
     x[0] /= a[0][0];
     for (i=1; i<n; i++) {
         sum = 0.0;
-        for (j=0; j<i; j++) sum += a[i][j]*x[j];
+        for (j=0; j<i; j++)
+        {
+            double temp1 = a[i][j];
+            double temp2 = x[j];
+            sum += temp1*temp2;
+        }
         x[i] = (x[i]-sum)/a[i][i];
     }
 

@@ -125,18 +125,18 @@ Matrix Matrix::operator *(const Matrix &mx) const
 	return out;
 }
 
-Vec operator *(const Matrix &mx, const Vec &v)
+Vec Matrix::operator *(const Vec &v) const
 {
 	int i, j;
-	int m = mx.rows();
-	int n = mx.cols();
+    int m = rows();
+    int n = cols();
 	double sum;
 	assert(m>0 && n>0);
 	assert(n==v.length());
 	Vec vout(m);
 	for (i=0; i<m; i++) {
 		sum = 0.0;
-		double *ptr = mx[i];
+        double *ptr = this->body[i];
 		for (j=0; j<n; j++) sum += (*ptr++) * v[j];
 		vout[i] = sum;
 	}
