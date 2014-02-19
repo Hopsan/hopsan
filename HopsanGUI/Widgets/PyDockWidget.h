@@ -25,7 +25,10 @@
 #ifndef PYDOCKWIDGET_H
 #define PYDOCKWIDGET_H
 
-#include <QtGui>
+#include <QDockWidget>
+#include <QLineEdit>
+#include <QTextEdit>
+#include <QToolButton>
 #include <QtXml>
 
 // Forward declarations

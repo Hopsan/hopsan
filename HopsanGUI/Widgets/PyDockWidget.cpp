@@ -23,6 +23,9 @@
 //$Id$
 
 #include "PyDockWidget.h"
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QFileDialog>
 
 #ifdef USEPYTHONQT
 
