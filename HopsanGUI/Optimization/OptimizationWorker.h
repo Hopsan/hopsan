@@ -66,8 +66,10 @@ public:
     QVector<ModelWidget *> mModelPtrs;
 
 protected:
-    void print(const QString &msg, const QString &tag="", bool timeStamp=true);
-    void printError(const QString &msg, const QString &tag="", bool timeStamp=true);
+    void print(const QString &msg);
+    void print(const QString &msg, const QString &tag, bool timeStamp=true);
+    void printError(const QString &msg);
+    void printError(const QString &msg, const QString &tag, bool timeStamp=true);
     void execute(const QString &cmd);
     void updateProgressBar(int i);
 

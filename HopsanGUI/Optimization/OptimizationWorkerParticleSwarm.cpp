@@ -120,7 +120,7 @@ void OptimizationWorkerParticleSwarm::run()
         return;
     }
 
-    print("Running optimization...");
+    print("Running optimization...", "", true);
 
     //Disable terminal output during optimization
     execute("echo off");

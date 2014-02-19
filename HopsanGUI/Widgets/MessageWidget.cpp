@@ -224,24 +224,32 @@ void MessageWidget::printOneMessage(const GUIMessage &rMessage)
         (rMessage.mType == UndefinedMessageType)             ||
         (rMessage.mType == Fatal) )
     {
+
+        QString msg;
+        // Add the message with or without timestamp
+        if (!rMessage.mTimestamp.isEmpty())
+        {
+            msg.append("[" + rMessage.mTimestamp + "] ");
+        }
+        msg.append(rMessage.mMessage);
+
         // If message is tagged, and group by tag setting is active
         if( mGroupByTag && !rMessage.mTag.isEmpty() && (rMessage.mTag == mLastTag) )
         {
             ++mSubsequentTags;
-            QString numString;
-            numString.setNum(mSubsequentTags);
             mpTextEdit->undo();
-            determineMessageColor(rMessage.mType);
-            mpTextEdit->append("[" + rMessage.mTimestamp + "] " + rMessage.mMessage + "    (" + numString + " similar)");
+            msg.append(QString("    (%1 similar)").arg(mSubsequentTags));
         }
         // Else message is not tagged, or group by tag setting is not active
         else
         {
             mSubsequentTags = 1;
-            determineMessageColor(rMessage.mType);
-            mpTextEdit->append("[" + rMessage.mTimestamp + "] " + rMessage.mMessage);
             mLastTag = rMessage.mTag;
         }
+
+        // Write the message (needs to be printed all at once)
+        determineMessageColor(rMessage.mType);
+        mpTextEdit->append(msg);
     }
 }
 

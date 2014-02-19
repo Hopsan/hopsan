@@ -152,7 +152,7 @@ void OptimizationWorkerComplexRFP::run()
         return;
     }
 
-    print("Running optimization...");
+    print("Running optimization...", "", true);
 
     //Turn of terminal output during optimization
     execute("echo off");

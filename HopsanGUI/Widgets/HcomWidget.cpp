@@ -317,7 +317,7 @@ void TerminalConsole::printMessage(const GUIMessage &rMessage, bool timeStamp)
         (rMessage.mType == Fatal) )
     {
         QString output = rMessage.mMessage;
-        if(timeStamp)
+        if(timeStamp && !rMessage.mTimestamp.isEmpty())
         {
             output.prepend("["+rMessage.mTimestamp+"] ");
         }
@@ -326,10 +326,8 @@ void TerminalConsole::printMessage(const GUIMessage &rMessage, bool timeStamp)
         if(mGroupByTag && !rMessage.mTag.isEmpty() && (rMessage.mTag == mLastTag) )
         {
             ++mSubsequentTags;
-            QString numString;
-            numString.setNum(mSubsequentTags);
             this->undo();
-            output.append("    (" + numString + " similar)");
+            output.append(QString("    (%1 similar)").arg(mSubsequentTags));
         }
         // Message is not tagged, or group by tag setting is not active
         else

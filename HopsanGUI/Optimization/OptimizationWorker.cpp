@@ -464,9 +464,19 @@ double OptimizationWorker::getParameter(const int pointIdx, const int parIdx) co
 }
 
 
+void OptimizationWorker::print(const QString &msg)
+{
+    print(msg, "", false);
+}
+
 void OptimizationWorker::print(const QString &msg, const QString &tag, bool timeStamp)
 {
     mpHandler->getMessageHandler()->addInfoMessage(msg, tag, timeStamp);
+}
+
+void OptimizationWorker::printError(const QString &msg)
+{
+    printError(msg, "", false);
 }
 
 void OptimizationWorker::printError(const QString &msg, const QString &tag, bool timeStamp)
