@@ -85,9 +85,9 @@ public:
     const SharedVectorVariableT getTimeVectorVariable(int generation) const;
     QVector<double> copyTimeVector(const int generation) const;
 
-    QVector<double> copyVariableDataVector(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
+//    QVector<double> copyVariableDataVector(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     QVector<double> copyVariableDataVector(const QString &rName, const int generation);
-    SharedVectorVariableT getVectorVariable(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
+//    SharedVectorVariableT getVectorVariable(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedVectorVariableT getVectorVariable(const QString &rName, const int generation) const;
     HopsanVariable getHopsanVariable(const QString &rName, const int generation) const;
 
@@ -137,47 +137,23 @@ public:
     SharedVectorVariableT subVariableWithScalar(const SharedVectorVariableT a, const double x);
     SharedVectorVariableT mulVariableWithScalar(const SharedVectorVariableT a, const double x);
     SharedVectorVariableT divVariableWithScalar(const SharedVectorVariableT a, const double x);
-    QString addVariableWithScalar(const QString &a, const double x); //!< @deprecated
-    QString subVariableWithScalar(const QString &a, const double x); //!< @deprecated
-    QString mulVariableWithScalar(const QString &a, const double x); //!< @deprecated
-    QString divVariableWithScalar(const QString &a, const double x); //!< @deprecated
 
     SharedVectorVariableT addVariables(const SharedVectorVariableT a, const SharedVectorVariableT b);
     SharedVectorVariableT subVariables(const SharedVectorVariableT a, const SharedVectorVariableT b);
     SharedVectorVariableT multVariables(const SharedVectorVariableT a, const SharedVectorVariableT b);
     SharedVectorVariableT divVariables(const SharedVectorVariableT a, const SharedVectorVariableT b);
-    QString addVariables(const QString &a, const QString &b); //!< @deprecated
-    QString subVariables(const QString &a, const QString &b); //!< @deprecated
-    QString multVariables(const QString &a, const QString &b); //!< @deprecated
-    QString divVariables(const QString &a, const QString &b); //!< @deprecated
 
     SharedVectorVariableT diffVariables(const SharedVectorVariableT a, const SharedVectorVariableT b);
-    QString diffVariables(const QString &a, const QString &b); //!< @deprecated
-
     SharedVectorVariableT integrateVariables(const SharedVectorVariableT a, const SharedVectorVariableT b);
-    QString integrateVariables(const QString &a, const QString &b); //!< @deprecated
-
     SharedVectorVariableT lowPassFilterVariable(const SharedVectorVariableT a, const SharedVectorVariableT b, const double freq);
-    QString lowPassFilterVariable(const QString &a, const QString &b, const double freq); //!< @deprecated
-
-    QString fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum); //!< @deprecated
-
-    QString assignVariable(const QString &dst, const QString &src); //!< @deprecated
-    QString assignVariable(const QString &dst, const QVector<double> &src); //!< @deprecated
 
     double pokeVariable(SharedVectorVariableT a, const int index, const double value);
-    double pokeVariable(const QString &a, const int index, const double value); //!< @deprecated
-
     double peekVariable(SharedVectorVariableT a, const int b);
-    double peekVariable(const QString &a, const int index); //!< @deprecated
 
     SharedVectorVariableT elementWiseGT(SharedVectorVariableT pData, const double thresh);
     SharedVectorVariableT elementWiseLT(SharedVectorVariableT pData, const double thresh);
 
     SharedVectorVariableT saveVariable(SharedVectorVariableT a);
-    QString saveVariable(const QString &currName, const QString &newName); //!< @deprecated
-
-    void appendVariable(const QString &a, const double x, const double y); //!< @deprecated
 
     void takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration=-2);
 

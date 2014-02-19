@@ -35,29 +35,28 @@
 
 #include "PyWrapperClasses.h"
 
+#include "GUIObjects/GUIModelObject.h"
+#include "GUIPort.h"
+#include "Configuration.h"
+#include "LogVariable.h"
+
 
 //! Create a dock for the Python console
 
 //! Constructor
-PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
+PyDockWidget::PyDockWidget(QWidget *parent)
     : QDockWidget(tr("Python Console"), parent)
 {
     PythonQt::init(PythonQt::RedirectStdOut);
     PythonQt_QtAll::init();
 
-    //PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyMainWindowClassWrapper>);
-    //PythonQt::self()->registerCPPClass("ModelObject", "","", PythonQtCreateObject<PyModelObjectClassWrapper>);
-    //PythonQt::self()->registerCPPClass("Port", "","", PythonQtCreateObject<PyPortClassWrapper>);
-    PythonQt::self()->registerClass(&MainWindow::staticMetaObject, NULL, PythonQtCreateObject<PyMainWindowClassWrapper>);
     PythonQt::self()->registerClass(&ModelObject::staticMetaObject, NULL, PythonQtCreateObject<PyModelObjectClassWrapper>);
     PythonQt::self()->registerClass(&Port::staticMetaObject, NULL, PythonQtCreateObject<PyPortClassWrapper>);
-    PythonQt::self()->registerClass(&LogDataHandler::staticMetaObject, NULL, PythonQtCreateObject<PyLogDataHandlerClassWrapper>);
+    PythonQt::self()->registerClass(&VectorVariable::staticMetaObject, NULL, PythonQtCreateObject<PyVectorVariableClassWrapper>);
 
+    PythonHopsanInterface *pPythonHopsanInterface = new PythonHopsanInterface;
     PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
-    mainContext.addObject("hopsan", pMainWindow);
-
-//        pyTestClass *test = new pyTestClass();
-//        mainContext.addObject("test", test);
+    mainContext.addObject("hopsan", pPythonHopsanInterface);
 
     mpPyConsole = new PythonQtScriptingConsole(NULL, mainContext);
     mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan.");

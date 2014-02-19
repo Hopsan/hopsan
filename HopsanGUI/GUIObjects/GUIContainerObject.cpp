@@ -118,6 +118,11 @@ ContainerObject::~ContainerObject()
     //qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
+bool ContainerObject::isTopLevelContainer() const
+{
+    return (mpParentContainerObject==0);
+}
+
 //! @brief Notify the parent project tab that changes has occured
 void ContainerObject::hasChanged()
 {

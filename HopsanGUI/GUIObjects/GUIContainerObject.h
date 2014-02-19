@@ -54,6 +54,8 @@ public:
     ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~ContainerObject();
 
+    bool isTopLevelContainer() const;
+
     void hasChanged();
     ModelWidget *mpModelWidget;  //!< @todo not public
 

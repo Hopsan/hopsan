@@ -63,8 +63,8 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Pressure");
-                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Flow");
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Pressure"), g);
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Flow"), g);
             }
         }
         else
@@ -75,8 +75,8 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Pressure");
-                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(g, componentName, portName, "Flow");
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Pressure"),g);
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Flow"),g);
             }
         }
 

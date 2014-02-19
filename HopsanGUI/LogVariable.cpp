@@ -659,7 +659,7 @@ void VectorVariable::assignFrom(SharedVectorVariableT time, const QVector<double
     assignFrom(rData);
 }
 
-void VectorVariable::assignFrom(QVector<double> &rTime, QVector<double> &rData)
+void VectorVariable::assignFrom(const QVector<double> &rTime, const QVector<double> &rData)
 {
     Q_UNUSED(rTime);
     // By default we do not have a time vector so lets just assign the data
@@ -1498,7 +1498,7 @@ void TimeDomainVariable::assignFrom(SharedVectorVariableT time, const QVector<do
     emit dataChanged();
 }
 
-void TimeDomainVariable::assignFrom(QVector<double> &rTime, QVector<double> &rData)
+void TimeDomainVariable::assignFrom(const QVector<double> &rTime, const QVector<double> &rData)
 {
     // We create a new non managed free timevector from the supplied time data
     assignFrom(createFreeTimeVectorVariabel(rTime), rData);
@@ -1637,7 +1637,7 @@ void FrequencyDomainVariable::assignFrom(SharedVectorVariableT freq, const QVect
     emit dataChanged();
 }
 
-void FrequencyDomainVariable::assignFrom(QVector<double> &rFreq, QVector<double> &rData)
+void FrequencyDomainVariable::assignFrom(const QVector<double> &rFreq, const QVector<double> &rData)
 {
     // We create a new non managed free frequency vector from the supplied frequency data
     assignFrom(createFreeFrequencyVectorVariabel(rFreq), rData);

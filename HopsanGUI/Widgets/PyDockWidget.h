@@ -29,7 +29,6 @@
 #include <QtXml>
 
 // Forward declarations
-class MainWindow;
 class PythonQtScriptingConsole;
 
 #ifdef USEPYTHONQT
@@ -38,7 +37,7 @@ class PyDockWidget : public QDockWidget
     Q_OBJECT
 
 public:
-    PyDockWidget(MainWindow *pMainWindow, QWidget * parent = 0);
+    PyDockWidget(QWidget *parent=0);
     QString getScriptFileName();
     void saveSettingsToDomElement(QDomElement &rDomElement);
     QString getLastOutput();

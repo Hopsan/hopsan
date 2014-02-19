@@ -182,7 +182,7 @@ void MainWindow::createContents()
 
     //Create the Python widget
 #ifdef USEPYTHONQT
-    mpPyDockWidget = new PyDockWidget(this, this);
+    mpPyDockWidget = new PyDockWidget(this);
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 #else

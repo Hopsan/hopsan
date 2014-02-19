@@ -868,23 +868,10 @@ void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int g
 
 
 //! @brief Returns the plot data for specified variable
+//! @param[in] rName The full variable name
 //! @param[in] generation Generation of plot data
-//! @param[in] componentName Name of component where variable is located
-//! @param[in] portName Name of port where variable is located
-//! @param[in] dataName Name of variable
+//! @returns A copy of the variable data vector or an empty vector if variable not found
 //! @warning Do not call this function for multiports unless you know what you are doing. It will return the data from the first node only.
-//! @deprecated
-QVector<double> LogDataHandler::copyVariableDataVector(int generation, QString componentName, QString portName, QString dataName)
-{
-    SharedVectorVariableT pData = getVectorVariable(generation, componentName, portName, dataName);
-    if (pData)
-    {
-        return pData->getDataVectorCopy();
-    }
-
-    return QVector<double>();
-}
-
 QVector<double> LogDataHandler::copyVariableDataVector(const QString &rName, const int generation)
 {
     SharedVectorVariableT pData = getVectorVariable(rName, generation);
@@ -894,25 +881,6 @@ QVector<double> LogDataHandler::copyVariableDataVector(const QString &rName, con
     }
 
     return QVector<double>();
-}
-
-//! @deprecated
-SharedVectorVariableT LogDataHandler::getVectorVariable(int generation, QString componentName, QString portName, QString dataName)
-{
-    //! @todo how to handle request by alias
-    QString concName = componentName+"#"+portName+"#"+dataName;
-
-    //! @todo this should probalby be handled in collectData
-    if(mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "PowerMultiportType" ||
-       mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "ReadMultiportType")
-    {
-        QString newPortName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getName();
-        QString newComponentName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getParentModelObjectName();
-
-        concName= newComponentName+"#"+newPortName+"#"+dataName;
-    }
-
-    return getVectorVariable(concName, generation);
 }
 
 SharedVectorVariableT LogDataHandler::getVectorVariable(const QString &rName, const int generation) const
@@ -1362,20 +1330,6 @@ void LogDataHandler::decrementOpenPlotCurves()
 }
 
 
-QString LogDataHandler::addVariableWithScalar(const QString &a, const double x)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    if( (pData1 == NULL))
-    {
-        return NULL;
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = addVariableWithScalar(pData1,x);
-        return pTemp->getFullVariableName();
-    }
-}
-
 SharedVectorVariableT LogDataHandler::addVariableWithScalar(const SharedVectorVariableT a, const double x)
 {
     SharedVectorVariableT pTempVar = createOrphanVariable(a->getSmartName()+"+"+QString::number(x), a->getVariableType());
@@ -1384,20 +1338,6 @@ SharedVectorVariableT LogDataHandler::addVariableWithScalar(const SharedVectorVa
     return pTempVar;
 }
 
-
-QString LogDataHandler::subVariableWithScalar(const QString &a, const double x)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    if( (pData1 == NULL))
-    {
-        return NULL;
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = subVariableWithScalar(pData1,x);
-        return pTemp->getFullVariableName();
-    }
-}
 
 SharedVectorVariableT LogDataHandler::subVariableWithScalar(const SharedVectorVariableT a, const double x)
 {
@@ -1408,20 +1348,6 @@ SharedVectorVariableT LogDataHandler::subVariableWithScalar(const SharedVectorVa
 }
 
 
-QString LogDataHandler::mulVariableWithScalar(const QString &a, const double x)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    if( (pData1 == NULL))
-    {
-        return NULL;
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = mulVariableWithScalar(pData1,x);
-        return pTemp->getFullVariableName();
-    }
-}
-
 SharedVectorVariableT LogDataHandler::mulVariableWithScalar(const SharedVectorVariableT a, const double x)
 {
     SharedVectorVariableT pTempVar = createOrphanVariable(a->getSmartName()+"*"+QString::number(x), a->getVariableType());
@@ -1430,20 +1356,6 @@ SharedVectorVariableT LogDataHandler::mulVariableWithScalar(const SharedVectorVa
     return pTempVar;
 }
 
-
-QString LogDataHandler::divVariableWithScalar(const QString &a, const double x)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    if( (pData1 == NULL))
-    {
-        return NULL;
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = divVariableWithScalar(pData1,x);
-        return pTemp->getFullVariableName();
-    }
-}
 
 SharedVectorVariableT LogDataHandler::divVariableWithScalar(const SharedVectorVariableT a, const double x)
 {
@@ -1454,22 +1366,6 @@ SharedVectorVariableT LogDataHandler::divVariableWithScalar(const SharedVectorVa
 }
 
 
-QString LogDataHandler::addVariables(const QString &a, const QString &b)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2 = getVectorVariable(b, -1);
-
-    if( (pData1 == 0) || (pData2 == 0) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = addVariables(pData1,pData2);
-        return pTemp->getFullVariableName();
-    }
-}
-
 SharedVectorVariableT LogDataHandler::addVariables(const SharedVectorVariableT a, const SharedVectorVariableT b)
 {
     SharedVectorVariableT pTempVar = createOrphanVariable(a->getSmartName()+"+"+b->getSmartName(), a->getVariableType());
@@ -1478,53 +1374,6 @@ SharedVectorVariableT LogDataHandler::addVariables(const SharedVectorVariableT a
     return pTempVar;
 }
 
-QString LogDataHandler::subVariables(const QString &a, const QString &b)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2 = getVectorVariable(b, -1);
-
-    if( (pData1 == 0) || (pData2 == 0) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = subVariables(pData1,pData2);
-        return pTemp->getFullVariableName();
-    }
-}
-
-QString LogDataHandler::multVariables(const QString &a, const QString &b)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2 = getVectorVariable(b, -1);
-
-    if( (pData1 == 0) || (pData2 == 0) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = multVariables(pData1,pData2);
-        return pTemp->getFullVariableName();
-    }
-}
-
-QString LogDataHandler::divVariables(const QString &a, const QString &b)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2 = getVectorVariable(b, -1);
-
-    if( (pData1 == 0) || (pData2 == 0) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = divVariables(pData1,pData2);
-        return pTemp->getFullVariableName();
-    }
-}
 
 SharedVectorVariableT LogDataHandler::diffVariables(const SharedVectorVariableT a, const SharedVectorVariableT b)
 {
@@ -1534,26 +1383,6 @@ SharedVectorVariableT LogDataHandler::diffVariables(const SharedVectorVariableT 
     return pTempVar;
 }
 
-QString LogDataHandler::diffVariables(const QString &a, const QString &b)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2;
-    if(b!=TIMEVARIABLENAME)
-    {
-        pData2 = getVectorVariable(b, -1);
-    }
-
-
-    if( (pData1 == 0) || ((pData2 == 0) && (b != TIMEVARIABLENAME)) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = diffVariables(pData1,pData2);
-        return pTemp->getFullVariableName();
-    }
-}
 
 SharedVectorVariableT LogDataHandler::integrateVariables(const SharedVectorVariableT a, const SharedVectorVariableT b)
 {
@@ -1561,26 +1390,6 @@ SharedVectorVariableT LogDataHandler::integrateVariables(const SharedVectorVaria
     pTempVar->assignFrom(a);
     pTempVar->integrateBy(b);
     return pTempVar;
-}
-
-QString LogDataHandler::integrateVariables(const QString &a, const QString &b)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2;
-    if(b!=TIMEVARIABLENAME)
-    {
-        pData2 = getVectorVariable(b, -1);
-    }
-
-    if( (pData1 == 0) || ((pData2 == 0) && (b != TIMEVARIABLENAME)) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = integrateVariables(pData1,pData2);
-        return pTemp->getFullVariableName();
-    }
 }
 
 
@@ -1592,108 +1401,6 @@ SharedVectorVariableT LogDataHandler::lowPassFilterVariable(const SharedVectorVa
     return pTempVar;
 }
 
-QString LogDataHandler::lowPassFilterVariable(const QString &a, const QString &b, const double freq)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2;
-    if(b!=TIMEVARIABLENAME)
-    {
-        pData2 = getVectorVariable(b, -1);
-    }
-
-
-    if( (pData1 == 0) || (pData2 == 0 && b != TIMEVARIABLENAME) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = lowPassFilterVariable(pData1,pData2,freq);
-        return pTemp->getFullVariableName();
-    }
-}
-
-QString LogDataHandler::fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    SharedVectorVariableT pData2;
-    if(b!=TIMEVARIABLENAME)
-    {
-        pData2 = getVectorVariable(b, -1);
-    }
-
-
-    if( (pData1 == 0) || (pData2 == 0 && b != TIMEVARIABLENAME) )
-    {
-        return QString();
-    }
-    else
-    {
-        SharedVectorVariableT pTemp = pData1->toFrequencySpectrum(pData2,doPowerSpectrum);
-        return pTemp->getFullVariableName();
-    }
-}
-
-
-QString LogDataHandler::assignVariable(const QString &dst, const QString &src)
-{
-    SharedVectorVariableT pSrcData = getVectorVariable(src, -1);
-    // If source does not exist then return unsuccessfully
-    if(!pSrcData)
-    {
-        return QString();
-    }
-
-    // If dst does not exist, then try to create it
-    SharedVectorVariableT pDstData = getVectorVariable(dst, -1);
-    if(!pDstData)
-    {
-        pDstData = defineNewVariable(dst);
-    }
-
-    // If we were successfull in creating dst then use it else return unsuccessfully
-    if (pDstData)
-    {
-        pDstData->assignFrom(pSrcData);
-        return pDstData->getFullVariableName();
-    }
-    else
-    {
-        return QString();
-    }
-}
-
-QString LogDataHandler::assignVariable(const QString &dst, const QVector<double> &src)
-{
-    SharedVectorVariableT pDstData = getVectorVariable(dst, -1);
-    if (!pDstData)
-    {
-        pDstData = defineNewVariable(dst);
-    }
-
-    // Check again if new def was succesfull, else return empty
-    if (pDstData)
-    {
-        pDstData->assignFrom(src);
-        return pDstData->getFullVariableName();
-    }
-    else
-    {
-        return QString();
-    }
-
-}
-
-double LogDataHandler::pokeVariable(const QString &a, const int index, const double value)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    if(pData1)
-    {
-        return pokeVariable(pData1, index, value);
-    }
-    gpMessageHandler->addErrorMessage("In Poke, No such variable: " + a);
-    return -1;
-}
 
 bool LogDataHandler::deleteVariable(const QString &rVarName)
 {
@@ -1742,21 +1449,6 @@ int LogDataHandler::getNumVariables() const
     return mLogDataMap.size();
 }
 
-//bool LogDataHandler::deleteVariable(SharedVariablePtrT pVariable)
-//{
-//    return deleteVariable(pVariable->getFullVariableName());
-//}
-
-double LogDataHandler::peekVariable(const QString &a, const int index)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    if(pData1)
-    {
-        return peekVariable(pData1,index);
-    }
-    gpMessageHandler->addErrorMessage("In Peek, No such variable: " + a);
-    return 0;
-}
 
 SharedVectorVariableT LogDataHandler::elementWiseGT(SharedVectorVariableT pData, const double thresh)
 {
@@ -1784,25 +1476,25 @@ SharedVectorVariableT LogDataHandler::elementWiseLT(SharedVectorVariableT pData,
     return SharedVectorVariableT();
 }
 
-QString LogDataHandler::saveVariable(const QString &currName, const QString &newName)
-{
-    SharedVectorVariableT pCurrData = getVectorVariable(currName, -1);
-    SharedVectorVariableT pNewData = getVectorVariable(newName, -1);
-    // If curr data exist and new data does not exist
-    if( (pNewData == 0) && (pCurrData != 0) )
-    {
-        SharedVectorVariableT pNewData = defineNewVariable(newName);
-        if (pNewData)
-        {
-            pNewData->assignFrom(pCurrData);
-            return pNewData->getFullVariableName();
-        }
-        gpMessageHandler->addErrorMessage("Could not create variable: " + newName);
-        return QString();
-    }
-    gpMessageHandler->addErrorMessage("Variable: " + currName + " does not exist, or Variable: " + newName + " already exist");
-    return QString();
-}
+//QString LogDataHandler::saveVariable(const QString &currName, const QString &newName)
+//{
+//    SharedVectorVariableT pCurrData = getVectorVariable(currName, -1);
+//    SharedVectorVariableT pNewData = getVectorVariable(newName, -1);
+//    // If curr data exist and new data does not exist
+//    if( (pNewData == 0) && (pCurrData != 0) )
+//    {
+//        SharedVectorVariableT pNewData = defineNewVariable(newName);
+//        if (pNewData)
+//        {
+//            pNewData->assignFrom(pCurrData);
+//            return pNewData->getFullVariableName();
+//        }
+//        gpMessageHandler->addErrorMessage("Could not create variable: " + newName);
+//        return QString();
+//    }
+//    gpMessageHandler->addErrorMessage("Variable: " + currName + " does not exist, or Variable: " + newName + " already exist");
+//    return QString();
+//}
 
 SharedVectorVariableT LogDataHandler::subVariables(const SharedVectorVariableT a, const SharedVectorVariableT b)
 {
@@ -1881,18 +1573,6 @@ SharedVectorVariableT LogDataHandler::createOrphanVariable(const QString &rName,
     return pNewData;
 }
 
-
-void LogDataHandler::appendVariable(const QString &a, const double x, const double y)
-{
-    SharedVectorVariableT pData1 = getVectorVariable(a, -1);
-    if(pData1)
-    {
-        pData1->append(x,y);
-        return;
-    }
-    gpMessageHandler->addErrorMessage("No such variable: " + a);
-    return;
-}
 
 SharedVectorVariableT LogDataHandler::defineNewVariable(const QString &rDesiredname, VariableTypeT type)
 {

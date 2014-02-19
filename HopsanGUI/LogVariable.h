@@ -260,7 +260,7 @@ public:
     // Functions that modify data, but that may require reimplementation in derived classes
     virtual void assignFrom(const SharedVectorVariableT pOther);
     virtual void assignFrom(SharedVectorVariableT time, const QVector<double> &rData);
-    virtual void assignFrom(QVector<double> &rTime, QVector<double> &rData);
+    virtual void assignFrom(const QVector<double> &rTime, const QVector<double> &rData);
     virtual void append(const double t, const double y);
     virtual void diffBy(SharedVectorVariableT pOther);
     virtual void integrateBy(SharedVectorVariableT pOther);
@@ -334,7 +334,7 @@ public:
     SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum);
     void assignFrom(const SharedVectorVariableT pOther);
     virtual void assignFrom(SharedVectorVariableT time, const QVector<double> &rData);
-    virtual void assignFrom(QVector<double> &rTime, QVector<double> &rData);
+    virtual void assignFrom(const QVector<double> &rTime, const QVector<double> &rData);
     virtual void append(const double t, const double y);
 
 public slots:
@@ -366,7 +366,7 @@ public:
 
     virtual void assignFrom(const SharedVectorVariableT pOther);
     virtual void assignFrom(SharedVectorVariableT freq, const QVector<double> &rData);
-    virtual void assignFrom(QVector<double> &rFreq, QVector<double> &rData);
+    virtual void assignFrom(const QVector<double> &rFreq, const QVector<double> &rData);
     //! @todo add a bunch of reimplemented functions
 };
 

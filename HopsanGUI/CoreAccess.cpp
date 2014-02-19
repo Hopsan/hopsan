@@ -955,10 +955,10 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
         {
             vector<double> *pData = pPort->getDataVectorPtr();
             rData = pData->at(dataId);
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 

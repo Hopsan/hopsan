@@ -74,7 +74,10 @@ public:
 
     virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ActualPortType);
     virtual QString getNodeType();
-    QString getPortDescription() const;
+    QString getPortDescription();
+
+    QStringList getVariableNames();
+    QStringList getFullVariableNames();
 
     bool getLastNodeData(QString dataName, double& rData);
 

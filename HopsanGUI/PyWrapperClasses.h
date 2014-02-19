@@ -26,88 +26,126 @@
 #define PYWRAPPERCLASSES_H
 
 #include <QObject>
+#include <QPointer>
+#include <QStringList>
+#include <QVector>
 
 // Qt Forward declaritions
 class QProgressDialog;
 
-#include "Configuration.h"
-#include "GUIConnector.h"
-#include "GUIPort.h"
-#include "MainWindow.h"
-#include "PlotWindow.h"
-#include "Widgets/LibraryWidget.h"
-#include "Widgets/ModelWidget.h"
-#include "Widgets/PlotWidget.h"
-#include "Widgets/PyDockWidget.h"
-#include "Widgets/SystemParametersWidget.h"
-#include "GUIObjects/GUIModelObject.h"
-#include "GUIObjects/GUISystem.h"
+// Hopsan Forward declarations
+class VectorVariable;
+class ModelObject;
+class Port;
+class PlotWindow;
 
-//Just for test purposes
-class pyTestClass : public QObject
+class PythonHopsanInterface : public QObject
 {
     Q_OBJECT
-
 public:
-    pyTestClass()
-    {
-        mpVector = new QVector<double>;
-        mpVector->append(3.34);
-        mpVector->append(4.45);
-    }
+    PythonHopsanInterface();
 
 public slots:
-    QVector<double> getVector()
-    {
-        return *mpVector;
-    }
+    // Messages
+    void printMessage(const QString& message);
+    void printInfo(const QString& message);
+    void printWarning(const QString& message);
+    void printError(const QString& message);
+
+    // Simulation
+    void setStartTime(const QString start);
+    void setTimeStep(const QString timestep);
+    void setFinishTime(const QString stop);
+    double startTime();
+    double timeStep();
+    double finishTime();
+
+    bool simulate();
+    int getSimulationTime();
+
+    void openAbortDialog(const QString &text);
+    bool isAborted();
+    void abort();
+
+    // Simulation options
+    void useMultiCore(const bool tf);
+    void setNumberOfThreads(const int numThreads);
+    void enableProgressBar(const bool tf);
+
+    // Model loading and closing
+    void newModel();
+    void loadModel(const QString& rModelFileName); //!< @todo should return a model wraper
+    void closeAllModels();
+
+    // Model navigation
+    void gotoTab(int tab); //!< @todo should take modelwrapper as input
+    void enterSystem(const QString& rSysName);
+    void exitSystem();
+
+    // Model access
+    ModelObject* component(const QString &rCompName);
+    QStringList componentNames();
+
+    // Parameter access
+    double parameter(const QString &rCompName, const QString &rParName);
+    void setParameter(const QString &rCompName, const QString &rParName, const double value);
+    void setParameter(const QString &rCompName, const QString &rParName, const QString &value);
+    void setSystemParameter(const QString &rSysParName, const double value);
+
+    // Modell manipulation
+    ModelObject* addComponent(const QString& rName, const QString& rTypeName, const int x, const int y, const int rot=0);
+    ModelObject* addComponent(const QString& rName, const QString& rTypeName, const QString& rSubTypeName, const int x, const int y, const int rot=0);
+    bool connect(const QString& rComp1, const QString& rPort1, const QString& rComp2, const QString& rPort2);
+    void clearComponents();
+
+    // Plot functions
+    void plot(const QString& rCompName, const QString& rPortName, const QString& rDataName, const int gen=-1);
+    void plot(const QString& rName, const int gen=-1);
+    void plot(const VectorVariable* pVariable);
+    void figure(const QString& rName);
+    void savePlotDataCSV(const QString& rFileName);
+    void savePlotDataPLO(const QString& rFileName);
+
+    // Log data access
+    VectorVariable* getVariable(const QString& rCompName, const QString& rPortName, const QString& rDataName, const int gen=-1);
+    VectorVariable* getVariable(const QString& rName, const int gen=-1);
+
+    VectorVariable* addVectorVariable(const QString& rName, QVector<double> &rData);
+    VectorVariable* addTimeVariable(const QString& rName, QVector<double> &rTime, QVector<double> &rData);
+    VectorVariable* addFrequencyVariable(const QString& rName, QVector<double> &rFrequency, QVector<double> &rData);
 
 private:
-    QVector<double> *mpVector;
+    QPointer<PlotWindow> mpPlotWindow;
+    bool mAbort;
+    QProgressDialog *mpAbortDialog;
 };
 
-//class PyLogVariableDataWrapper : public QObject
-//{
-//    Q_OBJECT
-//public slots:
 
-//};
-
-class PyLogDataHandlerClassWrapper : public QObject
+class PyVectorVariableClassWrapper : public QObject
 {
     Q_OBJECT
 public slots:
-    QString addVariables(LogDataHandler* o, const QString &a, const QString &b);
-    QString subVariables(LogDataHandler* o, const QString &a, const QString &b);
-    QString multVariables(LogDataHandler* o, const QString &a, const QString &b);
-    QString divVariables(LogDataHandler* o, const QString &a, const QString &b);
-    QString assignVariable(LogDataHandler* o, const QString &dst, const QString &src);
-    QString assignVariable(LogDataHandler* o, const QString &dst, const QVector<double> &src);
-    bool pokeVariables(LogDataHandler* o, const QString &a, const int index, const double value);
-    double peekVariables(LogDataHandler* o, const QString &varName, const int index);
-    bool delVariables(LogDataHandler* o, const QString &a);
-    QString saveVariables(LogDataHandler* o, const QString &currName, const QString &newName);
-    QString addVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
-    QString subVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
-    QString multVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
-    QString divVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
-    QVector<double> data(LogDataHandler* o, const QString fullName);
-    //SharedLogVariableDataPtrT getcurrentVariable(LogDataHandler* o, QString name);
-    //LogVariableContainer getcurrentContainer(LogDataHandler* o, QString name);
-    void plot(LogDataHandler* o, const QString &rVarX, const QString &rVarY, int gen=-1, int axis=0);
-    void plot(LogDataHandler* o, const QString &rVarName, int gen=-1, int axis=0);
-    //! @todo a defineNewVariable function were it is possible to set unit and such data
-};
+    QString variableType(VectorVariable* o) const;
 
+    QVector<double> time(VectorVariable* o);
+    QVector<double> frequency(VectorVariable* o);
+    QVector<double> data(VectorVariable* o);
+    double peek(VectorVariable* o, const int index);
+
+    bool poke(VectorVariable* o, const int index, const double value);
+    void assign(VectorVariable* o, const QVector<double> &rSrc);
+    void assign(VectorVariable* o, const QVector<double> &rSrcX, const QVector<double> &rSrcY);
+};
 
 class PyPortClassWrapper : public QObject
 {
     Q_OBJECT
 public slots:
-    QString plot(Port* o, const QString& dataName);
-    double lastData(Port* o, const QString& dataName);
-    QVector<double> data(Port* o, const QString& dataName);
+    void plot(Port* o, const QString& rDataName);
+    double lastData(Port* o, const QString& rDataName);
+    QVector<double> data(Port* o, const QString& rDataName);
     QVector<double> time(Port* o);
+    VectorVariable *variable(Port* o, const QString& rDataName);
     QStringList variableNames(Port* o);
 };
 
@@ -122,62 +160,6 @@ public slots:
     void setParameter(ModelObject* o, const QString& parName, const QString& value);
     Port* port(ModelObject* o, const QString& portName);
     QStringList portNames(ModelObject* o);
-};
-
-
-class PyMainWindowClassWrapper : public QObject
-{
-    Q_OBJECT
-
-public slots:
-    void newModel(MainWindow* o);
-    void loadModel(MainWindow* o, const QString& modelFileName);
-    void closeAllModels(MainWindow* o);
-    void gotoTab(MainWindow* o, int tab);
-    void printMessage(MainWindow* o, const QString& message);
-    void printInfo(MainWindow* o, const QString& message);
-    void printWarning(MainWindow* o, const QString& message);
-    void printError(MainWindow* o, const QString& message);
-    ModelObject* component(MainWindow* o, const QString& compName);
-    void setStartTime(MainWindow* o, const double& start);
-    void setTimeStep(MainWindow* o, const double& timestep);
-    void setFinishTime(MainWindow* o, const double& stop);
-    double getStartTime(MainWindow* o);
-    double getTimeStep(MainWindow* o);
-    double getFinishTime(MainWindow* o);
-    bool simulate(MainWindow* o);
-    bool simulateAllOpenModels(MainWindow* o, bool modelsHaveNotChanged);
-    double getParameter(MainWindow* o, const QString& compName, const QString& parName);
-    void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value);
-    void setParameter(MainWindow* o, const QString& compName, const QString& parName, const QString& value);
-    void setSystemParameter(MainWindow* o, const QString& parName, const double& value);
-    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const int& x, const int& y, const int& rot);
-    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const QString& subTypeName, const int& x, const int& y, const int& rot);
-    bool connect(MainWindow* o, const QString& comp1, const QString& port1, const QString& comp2, const QString& port2);
-    void enterSystem(MainWindow* o, const QString& sysName);
-    void exitSystem(MainWindow* o);
-    void clear(MainWindow* o);
-    void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName);
-    void plot(MainWindow* o, const QString &portAlias);
-    //! @todo maybe need a version for alias too,
-    void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const QString& windowName);
-    void offset(MainWindow* o, const QString varName, const double value, const int gen=-1);
-    void savePlotData(MainWindow* o, const QString& fileName, const QString &windowName);
-    int getSimulationTime(MainWindow* o);
-    void useMultiCore(MainWindow* o);
-    void useSingleCore(MainWindow* o);
-    void setNumberOfThreads(MainWindow* o, const int& value);
-    void turnOnProgressBar(MainWindow* o);
-    void turnOffProgressBar(MainWindow* o);
-    QStringList componentNames(MainWindow* o);
-    LogDataHandler* getLogDataHandler(MainWindow* o);
-    void openAbortDialog(MainWindow* o, const QString &text);
-    bool isAborted(MainWindow* o);
-    void abort(MainWindow* o);
-
-private:
-    bool mAbort;
-    QProgressDialog *mpDialog;
 };
 
 #endif // PYWRAPPERCLASSES_H

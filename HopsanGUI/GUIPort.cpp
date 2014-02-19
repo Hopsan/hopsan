@@ -731,19 +731,37 @@ PlotWindow *Port::plot(QString dataName, QString /*dataUnit*/, QColor desiredCur
 //! Wrapper for the Core getPortTypeString() function
 QString Port::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)
 {
-    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getParentModelObjectName(), this->getName(), ind);
+    return getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getParentModelObjectName(), this->getName(), ind);
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString Port::getNodeType()
 {
-    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(getParentModelObjectName(), this->getName());
+    return getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(getParentModelObjectName(), this->getName());
 }
 
-QString Port::getPortDescription() const
+QString Port::getPortDescription()
 {
-    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortDescription(getParentModelObjectName(), this->getName());
+    return getParentContainerObject()->getCoreSystemAccessPtr()->getPortDescription(getParentModelObjectName(), this->getName());
+}
+
+QStringList Port::getVariableNames()
+{
+    QVector<QString> names, units;
+    getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(getParentModelObjectName(), getName(), names, units);
+    return QStringList::fromVector(names);
+}
+
+QStringList Port::getFullVariableNames()
+{
+    QStringList names = getVariableNames();
+    QStringList names2;
+    Q_FOREACH(QString name, names)
+    {
+        names2.append(name.prepend(makeConcatName(getParentModelObjectName(), getName(), name)));
+    }
+    return names2;
 }
 
 
