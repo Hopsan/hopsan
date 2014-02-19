@@ -158,15 +158,14 @@ void OptimizationWorkerComplexRFP::run()
     execute("echo off");
 
     //Evaluate all points
-    for(int i=0; i<mParameters.size(); ++i)
+    for(int i=0; i<mNumPoints; ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
         execute("opt set evalid "+QString::number(i));
         execute("call setpars");
     }
-    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
-
-    for(int i=0; i<mParameters.size() && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    bool simSuccess = gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+    for(int i=0; i<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
         execute("opt set evalid "+QString::number(i));
@@ -176,13 +175,9 @@ void OptimizationWorkerComplexRFP::run()
     ++mIterations;
     mEvaluations += mNumPoints;
 
-
     //Calculate best and worst id, and initialize last worst id
     calculateBestAndWorstId();
     mLastWorstId = mWorstId;
-
-    //Store parameters for undo
-    mParameters = mParameters;
 
     //Run optimization loop
     int i=0;

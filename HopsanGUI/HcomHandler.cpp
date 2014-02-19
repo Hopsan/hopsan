@@ -464,6 +464,22 @@ void HcomHandler::createCommands()
     discCmd.group = "Variable Commands";
     mCmdList << discCmd;
 
+    HcomCommand dlogCmd;
+    dlogCmd.cmd = "dlog";
+    dlogCmd.description.append("Disables logging in specified ports");
+    dlogCmd.help.append(" Usage: dlog [ports]");
+    dlogCmd.fnc = &HcomHandler::executeDisableLoggingCommand;
+    dlogCmd.group = "Variable Commands";
+    mCmdList << dlogCmd;
+
+    HcomCommand elogCmd;
+    elogCmd.cmd = "elog";
+    elogCmd.description.append("Enables logging in specified ports");
+    elogCmd.help.append(" Usage: elog [ports]");
+    elogCmd.fnc = &HcomHandler::executeEnableLoggingCommand;
+    elogCmd.group = "Variable Commands";
+    mCmdList << elogCmd;
+
     HcomCommand setCmd;
     setCmd.cmd = "set";
     setCmd.description.append("Sets Hopsan preferences");
@@ -1895,6 +1911,40 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
     }
 
     return;
+}
+
+void HcomHandler::executeDisableLoggingCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    QList<Port*> vPortPtrs;
+    getPorts(cmd, vPortPtrs);
+
+    for(int p=0; p<vPortPtrs.size(); ++p)
+    {
+        mpModel->getViewContainerObject()->getCoreSystemAccessPtr()->setLoggingEnabled(vPortPtrs.at(p)->getParentModelObjectName(), vPortPtrs.at(p)->getName(), false);
+    }
+}
+
+void HcomHandler::executeEnableLoggingCommand(const QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    QList<Port*> vPortPtrs;
+    getPorts(cmd, vPortPtrs);
+
+    for(int p=0; p<vPortPtrs.size(); ++p)
+    {
+        mpModel->getViewContainerObject()->getCoreSystemAccessPtr()->setLoggingEnabled(vPortPtrs.at(p)->getParentModelObjectName(), vPortPtrs.at(p)->getName(), true);
+    }
 }
 
 
@@ -4213,6 +4263,43 @@ void HcomHandler::getComponents(const QString &rStr, QList<ModelObject*> &rCompo
         rComponents.append(pCurrentSystem->getModelObject(rStr));
     }
 }
+
+
+//! @brief Help function that returns a list of ports depending on input (with support for asterisks)
+//! @param[in] rStr Port name to look for
+//! @param[out] rPorts Reference to list of found components
+void HcomHandler::getPorts(const QString &rStr, QList<Port*> &rPorts) const
+{
+    if(!mpModel) { return; }
+    SystemContainer *pCurrentSystem = mpModel->getTopLevelSystemContainer();
+    if(!pCurrentSystem) { return; }
+
+    if (rStr.contains("*"))
+    {
+        QStringList compNames = pCurrentSystem->getModelObjectNames();
+        Q_FOREACH(const QString &compName, compNames)
+        {
+            for(int p=0; p<pCurrentSystem->getModelObject(compName)->getPortListPtrs().size(); ++p)
+            {
+                Port *pPort = pCurrentSystem->getModelObject(compName)->getPortListPtrs().at(p);
+                QString testStr = compName+"."+pPort->getName();
+                QRegExp rx(rStr);
+                rx.setPatternSyntax(QRegExp::Wildcard);
+                if(rx.exactMatch(testStr))
+                {
+                    rPorts.append(pPort);
+                }
+            }
+        }
+    }
+    else
+    {
+        QString compName = rStr.split(".").first();
+        QString portName = rStr.split(".").last();
+        rPorts.append(pCurrentSystem->getModelObject(compName)->getPort(portName));
+    }
+}
+
 
 QString HcomHandler::getfullNameFromAlias(const QString &rAlias) const
 {

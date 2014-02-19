@@ -192,6 +192,7 @@ public:
     QString getNodeType(QString componentName, QString portName);
     QString getPortDescription(QString componentName, QString portName);
     bool isPortConnected(QString componentName, QString portName);
+    void setLoggingEnabled(const QString &componentName, const QString &portName, bool enable);
 
     // Component creation and removal
     QString createComponent(QString type, QString name="");

@@ -36,6 +36,7 @@ class HcomCommand;
 class ModelWidget;
 class OptimizationHandler;
 class Configuration;
+class Port;
 
 class HcomHandler : public QObject
 {
@@ -132,6 +133,8 @@ private:
     void executeDisplayDefaultPlotScaleCommand(const QString cmd);
     void executeChangePlotScaleCommand(const QString cmd);
     void executeDisplayPlotScaleCommand(const QString cmd);
+    void executeDisableLoggingCommand(const QString cmd);
+    void executeEnableLoggingCommand(const QString cmd);
     void executeSetCommand(const QString cmd);
     void executeSaveToPloCommand(const QString cmd);
     void executeLoadVariableCommand(const QString cmd);
@@ -169,7 +172,8 @@ private:
     void addPlotCurve(HopsanVariable data, const int axis) const;
     void removePlotCurves(const int axis) const;
     void removeLogVariable(QString fullShortVarNameWithGen) const;
-    void getComponents(const QString &rStr, QList<ModelObject*> &rComponents) const;
+    void getComponents(const QString &rStr, QList<ModelObject *> &rComponents) const;
+    void getPorts(const QString &rStr, QList<Port *> &rPorts) const;
     QString getfullNameFromAlias(const QString &rAlias) const;
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);

@@ -1017,6 +1017,15 @@ bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
     }
 }
 
+void CoreSystemAccess::setLoggingEnabled(const QString &componentName, const QString &portName, bool enable)
+{
+    hopsan::Port* pPort = this->getCorePortPtr(componentName, portName);
+    if(pPort->getNodePtr())
+    {
+        pPort->getNodePtr()->setForceDisableLog(!enable);
+    }
+}
+
 
 bool CoreSystemAccess::writeNodeData(const QString compname, const QString portname, const QString dataname, double data)
 {

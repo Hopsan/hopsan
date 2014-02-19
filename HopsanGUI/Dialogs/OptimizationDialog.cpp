@@ -1411,6 +1411,7 @@ void OptimizationDialog::run()
 
     QStringList commands = mpOutputBox->toPlainText().split("\n");
     bool *abort = new bool;
+    *abort = false;
     mpTerminal->setAbortButtonEnabled(true);
     mpTimer->start(10);
     mpTerminal->mpHandler->runScriptCommands(commands, abort);

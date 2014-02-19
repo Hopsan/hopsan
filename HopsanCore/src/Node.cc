@@ -292,7 +292,10 @@ bool Node::isConnectedToPort(const Port *pPort) const
 //! @brief Enable node data logging
 void Node::enableLog()
 {
-    mDoLog = true;
+    if(!mForceDisableLog)
+    {
+        mDoLog = true;
+    }
 }
 
 
@@ -301,6 +304,12 @@ void Node::disableLog()
 {
     mDoLog = false;
     mDataStorage.clear();
+}
+
+
+void Node::setForceDisableLog(bool value)
+{
+    mForceDisableLog = value;
 }
 
 

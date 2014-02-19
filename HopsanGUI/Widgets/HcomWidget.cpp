@@ -42,6 +42,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "GUIObjects/GUIModelObject.h"
+#include "GUIPort.h"
 
 
 TerminalWidget::TerminalWidget(QWidget *pParent)
@@ -694,6 +695,23 @@ void TerminalConsole::handleTabKeyPress()
                     componentNames.last().prepend(componentCmds[c]);
                 }
                 mAutoCompleteResults.append(componentNames);
+            }
+        }
+
+        QStringList portCmds = QStringList() << "elog " << "dlog ";
+        for(int c=0; c<portCmds.size(); ++c)
+        {
+            if(mAutoCompleteFilter.startsWith(portCmds[c]))
+            {
+                QList<Port*> ports;
+                QStringList portNames;
+                getHandler()->getPorts(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-portCmds[c].size())+"*",ports);
+                for(int v=0; v<ports.size(); ++v)
+                {
+                    portNames.append(ports[v]->getParentModelObjectName()+"."+ports[v]->getName());
+                    portNames.last().prepend(portCmds[c]);
+                }
+                mAutoCompleteResults.append(portNames);
             }
         }
 

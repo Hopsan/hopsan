@@ -107,7 +107,13 @@ void OptimizationWorker::finalize()
     output.append(QString::number(mIterations)+",");
     output.append(QString::number(mEvaluations)+",");
     output.append(QString::number(mMetaModelEvaluations)+",");
-    output.append(QString::number(mObjectives[mBestId])+"\n");
+    output.append(QString::number(mObjectives[mBestId])+",");
+    for(int i=0; i<mNumParameters; ++i)
+    {
+        output.append(QString::number(mParameters[mBestId][i])+",");
+    }
+    output.chop(1);
+    output.append("\n");
     resultFile.write(output.toUtf8());
     resultFile.close();
 }
