@@ -49,6 +49,31 @@ namespace hopsan {
         double mMin, mMax;
         double mTimeStep;
     };
+
+    class DLLIMPORTEXPORT SecondOrderTransferFunctionVariable
+    {
+    public:
+        void initialize(double *pTimestep, double num[3], double den[3], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
+        void initializeValues(double u0, double y0);
+        void setNum(double num[3]);
+        void setDen(double den[3]);
+        void setNumDen(double num[3], double den[3]);
+        void setMinMax(double min, double max);
+        double update(double u);
+        double value();
+        double recalculateCoefficients();
+
+    private:
+        double mValue;
+        double mDelayU[2], mDelayY[2];
+        double mDen[3];
+        double mNum[3];
+        double mCoeffU[3];
+        double mCoeffY[3];
+        double mMin, mMax;
+        double *mpTimeStep;
+        double mPrevTimeStep;
+    };
 }
 
 #endif

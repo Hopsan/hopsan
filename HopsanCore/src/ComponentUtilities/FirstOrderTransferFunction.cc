@@ -126,3 +126,120 @@ double FirstOrderTransferFunction::value()
 {
     return mValue;
 }
+
+
+
+
+
+
+
+
+void FirstOrderTransferFunctionVariable::initialize(double *pTimestep, double num[2], double den[2], double u0, double y0, double min, double max)
+{
+    mMin = min;
+    mMax = max;
+    mValue = y0;
+    mDelayU = u0;
+    mDelayY = std::max(std::min(y0, mMax), mMin);
+    mpTimeStep = pTimestep;
+    mPrevTimeStep = *pTimestep;
+    mNum[0] = num[0];
+    mNum[1] = num[1];
+    mDen[0] = den[0];
+    mDen[1] = den[1];
+
+    recalculateCoefficients();
+}
+
+
+void FirstOrderTransferFunctionVariable::setMinMax(double min, double max)
+{
+    mMin = min;
+    mMax = max;
+}
+
+
+void FirstOrderTransferFunctionVariable::setNum(double num[2])
+{
+    mNum[0] = num[0];
+    mNum[1] = num[1];
+    recalculateCoefficients();
+}
+
+
+void FirstOrderTransferFunctionVariable::setDen(double den[2])
+{
+    mDen[0] = den[0];
+    mDen[1] = den[1];
+    recalculateCoefficients();
+}
+
+
+void FirstOrderTransferFunctionVariable::setNumDen(double num[2], double den[2])
+{
+    mNum[0] = num[0];
+    mNum[1] = num[1];
+    mDen[0] = den[0];
+    mDen[1] = den[1];
+    recalculateCoefficients();
+}
+
+void FirstOrderTransferFunctionVariable::recalculateCoefficients()
+{
+    mCoeffU[0] = mNum[0]*(*mpTimeStep)-2.0*mNum[1];
+    mCoeffU[1] = mNum[0]*(*mpTimeStep)+2.0*mNum[1];
+
+    mCoeffY[0] = mDen[0]*(*mpTimeStep)-2.0*mDen[1];
+    mCoeffY[1] = mDen[0]*(*mpTimeStep)+2.0*mDen[1];
+}
+
+
+void FirstOrderTransferFunctionVariable::initializeValues(double u0, double y0)
+{
+    mDelayU = u0;
+    mDelayY = y0;
+    mValue = y0;
+}
+
+
+double FirstOrderTransferFunctionVariable::update(double u)
+{
+    //Filter equation
+    //Bilinear transform is used
+
+    if((*mpTimeStep) != mPrevTimeStep)
+    {
+        mPrevTimeStep = (*mpTimeStep);
+        recalculateCoefficients();
+    }
+
+    mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayU - mCoeffY[0]*mDelayY);
+
+    if (mValue > mMax)
+    {
+        mDelayY = mMax;
+        mDelayU = mMax;
+        mValue = mMax;
+    }
+    else if (mValue < mMin)
+    {
+        mDelayY = mMin;
+        mDelayU = mMin;
+        mValue = mMin;
+    }
+    else
+    {
+        mDelayY = mValue;
+        mDelayU = u;
+    }
+
+    return mValue;
+}
+
+
+//! Read current filter output value
+//! @return The filtered actual value.
+double FirstOrderTransferFunctionVariable::value()
+{
+    return mValue;
+}

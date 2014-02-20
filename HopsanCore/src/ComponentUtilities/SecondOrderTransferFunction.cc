@@ -151,3 +151,123 @@ double SecondOrderTransferFunction::value()
 {
     return mValue;
 }
+
+
+
+
+
+void SecondOrderTransferFunctionVariable::initialize(double *pTimeStep, double num[3], double den[3], double u0, double y0, double min, double max)
+{
+    mMin = min;
+    mMax = max;
+    mDelayU[0] = u0;
+    mDelayU[1] = u0;
+    mDelayY[0] = std::max(std::min(y0, mMax), mMin);
+    mDelayY[1] = mDelayY[0];
+    mpTimeStep = pTimeStep;
+    mPrevTimeStep = (*pTimeStep);
+    setNumDen(num, den);
+}
+
+
+void SecondOrderTransferFunctionVariable::setNum(double num[3])
+{
+    mNum[0] = num[0];
+    mNum[1] = num[1];
+    mNum[2] = num[2];
+    recalculateCoefficients();
+}
+
+
+void SecondOrderTransferFunctionVariable::setDen(double den[3])
+{
+    mDen[0] = den[0];
+    mDen[1] = den[1];
+    mDen[2] = den[2];
+    recalculateCoefficients();
+}
+
+
+void SecondOrderTransferFunctionVariable::setNumDen(double num[3], double den[3])
+{
+    mNum[0] = num[0];
+    mNum[1] = num[1];
+    mNum[2] = num[2];
+    mDen[0] = den[0];
+    mDen[1] = den[1];
+    mDen[2] = den[2];
+    recalculateCoefficients();
+}
+
+
+void SecondOrderTransferFunctionVariable::setMinMax(double min, double max)
+{
+    mMin = min;
+    mMax = max;
+}
+
+
+void SecondOrderTransferFunctionVariable::initializeValues(double u0, double y0)
+{
+    mDelayU[0] = u0;
+    mDelayU[1] = u0;
+    mDelayY[0] = y0;
+    mDelayY[1] = y0;
+}
+
+
+double SecondOrderTransferFunctionVariable::update(double u)
+{
+    if(mPrevTimeStep != (*mpTimeStep))
+    {
+        mPrevTimeStep = (*mpTimeStep);
+        recalculateCoefficients();
+    }
+
+    mValue = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU[0] + mCoeffU[2]*mDelayU[1] - (mCoeffY[1]*mDelayY[0] + mCoeffY[2]*mDelayY[1]));
+
+    if (mValue > mMax)
+    {
+        mDelayU[1] = mMax;
+        mDelayU[0] = mMax;
+        mDelayY[1] = mMax;
+        mDelayY[0] = mMax;
+        mValue     = mMax;
+    }
+    else if (mValue < mMin)
+    {
+        mDelayU[1] = mMin;
+        mDelayU[0] = mMin;
+        mDelayY[1] = mMin;
+        mDelayY[0] = mMin;
+        mValue     = mMin;
+    }
+    else
+    {
+        mDelayU[1] = mDelayU[0];
+        mDelayU[0] = u;
+        mDelayY[1] = mDelayY[0];
+        mDelayY[0] = mValue;
+    }
+
+    return mValue;
+}
+
+
+//! Return current filter output value
+//! @return The filtered actual value.
+double SecondOrderTransferFunctionVariable::value()
+{
+    return mValue;
+}
+
+double SecondOrderTransferFunctionVariable::recalculateCoefficients()
+{
+    mCoeffU[0] = mNum[0]*(*mpTimeStep)*(*mpTimeStep) + 2.0*mNum[1]*(*mpTimeStep) + 4.0*mNum[2];
+    mCoeffU[1] = 2.0*mNum[0]*(*mpTimeStep)*(*mpTimeStep) - 8.0*mNum[2];
+    mCoeffU[2] = mNum[0]*(*mpTimeStep)*(*mpTimeStep) - 2.0*mNum[1]*(*mpTimeStep) + 4.0*mNum[2];
+
+    mCoeffY[0] = mDen[0]*(*mpTimeStep)*(*mpTimeStep) + 2.0*mDen[1]*(*mpTimeStep) + 4.0*mDen[2];
+    mCoeffY[1] = 2.0*mDen[0]*(*mpTimeStep)*(*mpTimeStep) - 8.0*mDen[2];
+    mCoeffY[2] = mDen[0]*(*mpTimeStep)*(*mpTimeStep) - 2.0*mDen[1]*(*mpTimeStep) + 4.0*mDen[2];
+}
