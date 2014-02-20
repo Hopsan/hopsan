@@ -90,7 +90,7 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n, M
 void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variables, int iteration)
 {
     //Stop simulation if LU decomposition failed due to singularity
-    if(!ludcmp(jacobian, mpOrder))
+    if(!ludcmp(jacobian, mpOrder) && mpParentComponent)
     {
         mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is probably singular.");
         mpParentComponent->stopSimulation();
@@ -115,7 +115,7 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
 void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variables)
 {
     //Stop simulation if LU decomposition failed due to singularity
-    if(!ludcmp(jacobian, mpOrder))
+    if(!ludcmp(jacobian, mpOrder) && mpParentComponent)
     {
         mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is probably singular.");
         mpParentComponent->stopSimulation();
@@ -142,7 +142,7 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
 void EquationSystemSolver::solve()
 {
     //Stop simulation if LU decomposition failed due to singularity
-    if(!ludcmp(*mpJacobian, mpOrder))
+    if(!ludcmp(*mpJacobian, mpOrder) && mpParentComponent)
     {
         mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is probably singular.");
         mpParentComponent->stopSimulation();
