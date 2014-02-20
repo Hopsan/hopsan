@@ -53,7 +53,7 @@ namespace hopsan {
 
         void configure()
         {
-            mCanHandleVariableTimeStep = true;
+            //mCanHandleVariableTimeStep = true;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
