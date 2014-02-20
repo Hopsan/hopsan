@@ -163,8 +163,6 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 
     mpConsole = pConsole;
 
-    mCurrentPlotWindowName = "PlotWindow0";
-
     mpOptHandler = new OptimizationHandler(this);
     // connect the optimization message handler to the consol for this HCOM handler
     connect(mpOptHandler->getMessageHandler(), SIGNAL(newAnyMessage(GUIMessage)), mpConsole, SLOT(printMessage(GUIMessage)));
@@ -1488,14 +1486,21 @@ void HcomHandler::executeChangePlotWindowCommand(const QString cmd)
         return;
     }
 
-    mCurrentPlotWindowName = cmd;
+    mpCurrentPlotWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne(cmd);
 }
 
 
 //! @brief Execute function for "dipw" command
 void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
 {
-    HCOMPRINT(mCurrentPlotWindowName);
+    if (mpCurrentPlotWindow)
+    {
+        HCOMPRINT(mpCurrentPlotWindow->getName());
+    }
+    else
+    {
+        HCOMPRINT("Current plotwindow not set");
+    }
 }
 
 
@@ -3067,7 +3072,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
 //! @brief Adds a plot curve to specified axis in current plot
 //! @param cmd Name of variable
 //! @param axis Axis to add curve to
-void HcomHandler::addPlotCurve(QString cmd, const int axis) const
+void HcomHandler::addPlotCurve(QString cmd, const int axis)
 {
     HopsanVariable data = getLogVariable(cmd);
     if(!data)
@@ -3081,9 +3086,11 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
     }
 }
 
-void HcomHandler::addPlotCurve(HopsanVariable data, const int axis) const
+void HcomHandler::addPlotCurve(HopsanVariable data, const int axis)
 {
-    gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, data, axis);
+    // If mpCurrentPlotWindow is 0, then we wil lset it to the window that is actually created
+    // else we will just set to same
+    mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis);
 }
 
 
@@ -3146,10 +3153,9 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
 //! @param axis Axis to remove from
 void HcomHandler::removePlotCurves(const int axis) const
 {
-    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow(mCurrentPlotWindowName);
-    if(pPlotWindow)
+    if(mpCurrentPlotWindow && mpCurrentPlotWindow->getCurrentPlotTab())
     {
-        pPlotWindow->getCurrentPlotTab()->removeAllCurvesOnAxis(axis);
+        mpCurrentPlotWindow->getCurrentPlotTab()->removeAllCurvesOnAxis(axis);
     }
 }
 

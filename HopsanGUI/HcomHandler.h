@@ -37,6 +37,7 @@ class ModelWidget;
 class OptimizationHandler;
 class Configuration;
 class Port;
+class PlotWindow;
 
 class HcomHandler : public QObject
 {
@@ -168,8 +169,8 @@ private:
     void createCommands();
     void generateCommandsHelpText();
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
-    void addPlotCurve(QString cmd, const int axis) const;
-    void addPlotCurve(HopsanVariable data, const int axis) const;
+    void addPlotCurve(QString cmd, const int axis);
+    void addPlotCurve(HopsanVariable data, const int axis);
     void removePlotCurves(const int axis) const;
     void removeLogVariable(QString fullShortVarNameWithGen) const;
     void getComponents(const QString &rStr, QList<ModelObject *> &rComponents) const;
@@ -208,7 +209,7 @@ private:
     QList<HcomCommand> mCmdList;
 
     // Plotting
-    QString mCurrentPlotWindowName;
+    QPointer<PlotWindow> mpCurrentPlotWindow;
 
     // Local variables
     LocalVarsMapT mLocalVars;
