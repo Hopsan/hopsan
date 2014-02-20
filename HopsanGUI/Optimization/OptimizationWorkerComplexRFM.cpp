@@ -47,7 +47,8 @@
 OptimizationWorkerComplexRFM::OptimizationWorkerComplexRFM(OptimizationHandler *pHandler)
     : OptimizationWorkerComplex(pHandler)
 {
-
+    mPercDiff = 0.002;
+    mCountMax = 2;
 }
 
 
@@ -155,8 +156,6 @@ void OptimizationWorkerComplexRFM::run()
     int i=0;
     bool metaModelExist = false;
     int metaModelCounter = 0;
-    double percDiff = 0.002;
-    int countMax = 2;
     int timesWeHaveNotRunTheLastCode=10;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
@@ -324,7 +323,7 @@ void OptimizationWorkerComplexRFM::run()
 
         plotParameters();
 
-        if(metaModelCounter > 0 && timesWeHaveNotRunTheLastCode >= countMax)
+        if(metaModelCounter > 0 && timesWeHaveNotRunTheLastCode >= mCountMax)
         {
             metaModelCounter = 0;
 
@@ -355,7 +354,7 @@ void OptimizationWorkerComplexRFM::run()
                 }
             }
 
-            if(maxDiff < percDiff)
+            if(maxDiff < mPercDiff)
             {
                 timesWeHaveNotRunTheLastCode=0;
             }
@@ -402,6 +401,46 @@ void OptimizationWorkerComplexRFM::run()
 void OptimizationWorkerComplexRFM::finalize()
 {
     OptimizationWorkerComplex::finalize();
+}
+
+
+void OptimizationWorkerComplexRFM::setOptVar(const QString &var, const QString &value)
+{
+    OptimizationWorkerComplex::setOptVar(var, value);
+
+    if(var == "percDiff")
+    {
+        mPercDiff = value.toDouble();
+    }
+    else if(var == "countMax")
+    {
+        mCountMax = value.toDouble();
+    }
+}
+
+
+double OptimizationWorkerComplexRFM::getOptVar(const QString &var, bool &ok)
+{
+    double retval = OptimizationWorkerComplex::getOptVar(var, ok);
+    if(ok)
+    {
+        return retval;
+    }
+
+    ok = true;
+    if(var == "percDiff")
+    {
+        return mPercDiff;
+    }
+    else if(var == "countMax")
+    {
+        return mCountMax;
+    }
+    else
+    {
+        ok = false;
+        return 0;
+    }
 }
 
 

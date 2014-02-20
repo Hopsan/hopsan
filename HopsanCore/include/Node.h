@@ -100,6 +100,7 @@ public:
     ComponentSystem *getOwnerSystem() const;
 
     void setForceDisableLog(bool value);
+    bool getForceDisableLog() const;
 
 protected:
     // Protected member functions

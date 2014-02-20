@@ -42,6 +42,9 @@ public:
     void run();
     void finalize();
 
+    void setOptVar(const QString &var, const QString &value);
+    double getOptVar(const QString &var, bool &ok);
+
 private:
     void storeValuesForMetaModel(int idx);
     void createMetaModel();
@@ -56,6 +59,9 @@ private:
     hopsan::Matrix mMatrix;
     hopsan::Vec mAVec;
     hopsan::Vec mBVec;
+
+    double mPercDiff;
+    int mCountMax;
 };
 
 #endif // OPTIMIZATIONWORKERCOMPLEXRFM_H

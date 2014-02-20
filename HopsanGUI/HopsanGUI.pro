@@ -231,7 +231,8 @@ SOURCES += main.cpp \
     Optimization/OptimizationWorkerComplexRF.cpp \
     Optimization/OptimizationWorkerComplexRFM.cpp \
     Optimization/OptimizationWorkerComplexRFP.cpp \
-    Optimization/OptimizationWorkerParticleSwarm.cpp
+    Optimization/OptimizationWorkerParticleSwarm.cpp \
+    Optimization/OptimizationWorkerParameterSweep.cpp
 
 
 
@@ -322,7 +323,8 @@ HEADERS += MainWindow.h \
     Optimization/OptimizationWorkerComplexRF.h \
     Optimization/OptimizationWorkerComplexRFM.h \
     Optimization/OptimizationWorkerComplexRFP.h \
-    Optimization/OptimizationWorkerParticleSwarm.h
+    Optimization/OptimizationWorkerParticleSwarm.h \
+    Optimization/OptimizationWorkerParameterSweep.h
 
 OTHER_FILES += \
     ../hopsandefaults \

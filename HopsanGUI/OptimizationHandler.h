@@ -47,7 +47,7 @@ class OptimizationHandler : public QObject
 public:
     //Enums
     enum OptDataType{Integer, Double};
-    enum OptAlgorithmType{Uninitialized, ComplexRF, ComplexRFM, ComplexRFP, ParticleSwarm};
+    enum OptAlgorithmType{Uninitialized, ComplexRF, ComplexRFM, ComplexRFP, ParticleSwarm, ParameterSweep};
 
     //Constructor
     OptimizationHandler(HcomHandler *pHandler);

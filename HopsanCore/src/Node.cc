@@ -312,6 +312,11 @@ void Node::setForceDisableLog(bool value)
     mForceDisableLog = value;
 }
 
+bool Node::getForceDisableLog() const
+{
+    return mForceDisableLog;
+}
+
 
 //! @brief Returns the number of attached ports of a specific type
 int Node::getNumberOfPortsByType(const int type) const

@@ -2835,7 +2835,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
             mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
         }
-        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
+        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP || mpOptHandler->mAlgorithm == OptimizationHandler::ParameterSweep)
         {
             mpOptHandler->clearModels();
 
@@ -2853,6 +2853,18 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             for(int i=0; i<nThreads; ++i)
             {
                 mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
+
+                //Make sure logging is disabled in all nodes if they were disabled in original model
+                QStringList compNames = mpModel->getTopLevelSystemContainer()->getModelObjectNames();
+                for(int c=0; c<compNames.size(); ++c)
+                {
+                    QList<Port*> portPtrs = mpModel->getTopLevelSystemContainer()->getModelObject(compNames[c])->getPortListPtrs();
+                    for(int p=0; p<portPtrs.size(); ++p)
+                    {
+                        bool doLog = mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->isLoggingEnabled(compNames[c], portPtrs[p]->getName());
+                        mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->setLoggingEnabled(compNames[c], portPtrs[p]->getName(),doLog);
+                    }
+                }
             }
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)

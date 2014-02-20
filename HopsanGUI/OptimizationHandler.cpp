@@ -31,6 +31,7 @@
 #include "Optimization/OptimizationWorkerComplexRFP.h"
 #include "Optimization/OptimizationWorker.h"
 #include "Optimization/OptimizationWorkerParticleSwarm.h"
+#include "Optimization/OptimizationWorkerParameterSweep.h"
 #include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 
@@ -183,6 +184,15 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
                 delete mpWorker;
             }
             mpWorker = new OptimizationWorkerParticleSwarm(this);
+        }
+        else if(value == "parametersweep")
+        {
+            mAlgorithm = OptimizationHandler::ParameterSweep;
+            if(mpWorker)
+            {
+                delete mpWorker;
+            }
+            mpWorker = new OptimizationWorkerParameterSweep(this);
         }
         return;
     }
