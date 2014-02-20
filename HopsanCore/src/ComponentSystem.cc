@@ -2130,7 +2130,8 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
                 else// if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
                 {
                     //subTs should get the nearest multiple of timestep as possible,
-                    subTs = mTimestep/floor(mTimestep/subTs+0.5);
+                    //subTs = mTimestep/floor(mTimestep/subTs+0.5);
+                    //! @note There is no reason for only allowing multiples of master time step, with the new simulate to stop time method
                 }
                 componentPtrs[c]->setTimestep(subTs);
             }
@@ -3871,6 +3872,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
         for(size_t i=0; i<rSystemVector.size(); ++i)                     //Loop through the systems, set start time, log nodes and measure simulation time
         {
             rSystemVector.at(i)->simulateAndMeasureTime(5);              //Measure time
+            rSystemVector.at(i)->initialize(startT, stopT);
         }
         sortSystemsByTotalMeasuredTime(rSystemVector);                   //Sort systems by total measured time
         mSplitSystemVector = distributeSystems(rSystemVector, nThreads); //Distribute systems evenly over split vectors
