@@ -67,7 +67,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     QLabel *pAlgorithmLabel = new QLabel("Optimiation algorithm:");
     mpAlgorithmBox = new QComboBox(this);
-    mpAlgorithmBox->addItems(QStringList() << "Complex-RF" << "Complex-RFM" << "Complex-RFP" << "Particle Swarm");
+    mpAlgorithmBox->addItems(QStringList() << "Complex-RF" << "Complex-RFM" << "Complex-RFP" << "Particle Swarm" << "Parameter Sweep");
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
 
     QLabel *pIterationsLabel = new QLabel("Number of iterations:");
@@ -101,13 +101,25 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpOmegaLineEdit = new QLineEdit("1", this);
     mpOmegaLineEdit->setValidator(new QDoubleValidator());
 
-    mpC1Label = new QLabel("Learning factor 1: ");
+    mpC1Label = new QLabel("Learning Factor 1: ");
     mpC1LineEdit = new QLineEdit("2", this);
     mpC1LineEdit->setValidator(new QDoubleValidator());
 
     mpC2Label = new QLabel("Learning Factor 2: ");
     mpC2LineEdit = new QLineEdit("2", this);
     mpC2LineEdit->setValidator(new QDoubleValidator());
+
+    mpLengthLabel = new QLabel("Length: ");
+    mpLengthSpinBox = new QSpinBox(this);
+    mpLengthSpinBox->setValue(10);
+
+    mpPercDiffLabel = new QLabel("Difference [%]: ");
+    mpPercDiffLineEdit = new QLineEdit("0.002", this);
+    mpPercDiffLineEdit->setValidator(new QDoubleValidator());
+
+    mpCountMaxLabel = new QLabel("Max Count: ");
+    mpCountMaxSpinBox = new QSpinBox(this);
+    mpCountMaxSpinBox->setValue(2);
 
     QLabel *pEpsilonFLabel = new QLabel("Tolerance for function convergence: ");
     mpEpsilonFLineEdit = new QLineEdit("0.00001", this);
@@ -129,43 +141,50 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpExport2CSVBox= new QCheckBox("Export trace data to CSV file", this);
     mpExport2CSVBox->setChecked(false);
 
+    int row=0;
     QGridLayout *pSettingsLayout = new QGridLayout(this);
-    pSettingsLayout->addWidget(pSettingsLabel,        0, 0);
-    pSettingsLayout->addWidget(pAlgorithmLabel,       1, 0);
-    pSettingsLayout->addWidget(mpAlgorithmBox,         1, 1);
+    pSettingsLayout->addWidget(pSettingsLabel,         row++, 0);
+    pSettingsLayout->addWidget(pAlgorithmLabel,        row,   0);
+    pSettingsLayout->addWidget(mpAlgorithmBox,         row++, 1);
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateCoreProgressBars()));
-    pSettingsLayout->addWidget(pIterationsLabel,      2, 0);
-    pSettingsLayout->addWidget(mpIterationsSpinBox,    2, 1);
-    pSettingsLayout->addWidget(mpSearchPointsLabel,    3, 0);
-    pSettingsLayout->addWidget(mpSearchPointsSpinBox,  3, 1);
+    pSettingsLayout->addWidget(pIterationsLabel,       row,   0);
+    pSettingsLayout->addWidget(mpIterationsSpinBox,    row++, 1);
+    pSettingsLayout->addWidget(mpSearchPointsLabel,    row,   0);
+    pSettingsLayout->addWidget(mpSearchPointsSpinBox,  row++, 1);
     connect(mpSearchPointsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateCoreProgressBars()));
     connect(mpSearchPointsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateParameterOutputLineEdits()));
-    pSettingsLayout->addWidget(mpParticlesLabel,       3, 0);
-    pSettingsLayout->addWidget(mpParticlesSpinBox,     3, 1);
+    pSettingsLayout->addWidget(mpParticlesLabel,       row,   0);
+    pSettingsLayout->addWidget(mpParticlesSpinBox,     row++, 1);
     connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateCoreProgressBars()));
     connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateParameterOutputLineEdits()));
-    pSettingsLayout->addWidget(mpAlphaLabel,           4, 0);
-    pSettingsLayout->addWidget(mpAlphaLineEdit,        4, 1);
-    pSettingsLayout->addWidget(mpOmegaLabel,           4, 0);
-    pSettingsLayout->addWidget(mpOmegaLineEdit,        4, 1);
-    pSettingsLayout->addWidget(mpBetaLabel,            5, 0);
-    pSettingsLayout->addWidget(mpBetaLineEdit,         5, 1);
-    pSettingsLayout->addWidget(mpC1Label,              5, 0);
-    pSettingsLayout->addWidget(mpC1LineEdit,           5, 1);
-    pSettingsLayout->addWidget(mpGammaLabel,           6, 0);
-    pSettingsLayout->addWidget(mpGammaLineEdit,        6, 1);
-    pSettingsLayout->addWidget(mpC2Label,              6, 0);
-    pSettingsLayout->addWidget(mpC2LineEdit,           6, 1);
-    pSettingsLayout->addWidget(pEpsilonFLabel,        7, 0);
-    pSettingsLayout->addWidget(mpEpsilonFLineEdit,     7, 1);
-    pSettingsLayout->addWidget(pEpsilonXLabel,        8, 0);
-    pSettingsLayout->addWidget(mpEpsilonXLineEdit,     8, 1);
-    pSettingsLayout->addWidget(mpPlottingCheckBox,     9, 0, 1, 2);
-    pSettingsLayout->addWidget(mpPlotBestWorstCheckBox,10, 0, 1, 2);
-    pSettingsLayout->addWidget(mpPlotParticlesCheckBox,11, 0, 1, 2);
-    pSettingsLayout->addWidget(mpExport2CSVBox,        12, 0, 1, 2);
-    pSettingsLayout->addWidget(new QWidget(this),      13, 0, 1, 2);    //Dummy widget for stretching the layout
-    pSettingsLayout->setRowStretch(13, 1);
+    pSettingsLayout->addWidget(mpAlphaLabel,           row,   0);
+    pSettingsLayout->addWidget(mpAlphaLineEdit,        row++, 1);
+    pSettingsLayout->addWidget(mpOmegaLabel,           row,   0);
+    pSettingsLayout->addWidget(mpOmegaLineEdit,        row++, 1);
+    pSettingsLayout->addWidget(mpBetaLabel,            row,   0);
+    pSettingsLayout->addWidget(mpBetaLineEdit,         row++, 1);
+    pSettingsLayout->addWidget(mpC1Label,              row,   0);
+    pSettingsLayout->addWidget(mpC1LineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpGammaLabel,           row,   0);
+    pSettingsLayout->addWidget(mpGammaLineEdit,        row++, 1);
+    pSettingsLayout->addWidget(mpC2Label,              row,   0);
+    pSettingsLayout->addWidget(mpC2LineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpLengthLabel,          row,   0);
+    pSettingsLayout->addWidget(mpLengthSpinBox,        row++, 1);
+    pSettingsLayout->addWidget(mpPercDiffLabel,        row,   0);
+    pSettingsLayout->addWidget(mpPercDiffLineEdit,     row++, 1);
+    pSettingsLayout->addWidget(mpCountMaxLabel,        row,   0);
+    pSettingsLayout->addWidget(mpCountMaxSpinBox,      row++, 1);
+    pSettingsLayout->addWidget(pEpsilonFLabel,         row,   0);
+    pSettingsLayout->addWidget(mpEpsilonFLineEdit,     row++, 1);
+    pSettingsLayout->addWidget(pEpsilonXLabel,         row,   0);
+    pSettingsLayout->addWidget(mpEpsilonXLineEdit,     row++, 1);
+    pSettingsLayout->addWidget(mpPlottingCheckBox,     row++, 0, 1, 2);
+    pSettingsLayout->addWidget(mpPlotBestWorstCheckBox,row++, 0, 1, 2);
+    pSettingsLayout->addWidget(mpPlotParticlesCheckBox,row++, 0, 1, 2);
+    pSettingsLayout->addWidget(mpExport2CSVBox,        row++, 0, 1, 2);
+    pSettingsLayout->addWidget(new QWidget(this),      row++, 0, 1, 2);    //Dummy widget for stretching the layout
+    pSettingsLayout->setRowStretch(row++, 1);
     QWizardPage *pSettingsWidget = new QWizardPage(this);
     pSettingsWidget->setLayout(pSettingsLayout);
     setAlgorithm(0);
@@ -298,7 +317,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     setOption(QWizard::HaveCustomButton1, true);
     setOption(QWizard::HaveCustomButton2, true);
     setOption(QWizard::CancelButtonOnLeft, false);
-    button(QWizard::CustomButton1)->setDisabled(true);
+    //button(QWizard::CustomButton1)->setDisabled(true);
     button(QWizard::FinishButton)->setEnabled(true);
     button(QWizard::FinishButton)->setHidden(true);
 
@@ -740,17 +759,20 @@ void OptimizationDialog::generateScriptFile()
 
     switch (mpAlgorithmBox->currentIndex())
     {
-    case 0 :
+    case OptimizationHandler::ComplexRF :
         generateComplexScript("complexrf");
         break;
-    case 1 :
+    case OptimizationHandler::ComplexRFM :
         generateComplexScript("complexrfm");
         break;
-    case 2 :
+    case OptimizationHandler::ComplexRFP :
         generateComplexScript("complexrfp");
         break;
-    case 3 :
+    case OptimizationHandler::ParticleSwarm :
         generateParticleSwarmScript();
+        break;
+    case OptimizationHandler::ParameterSweep :
+        generateParameterSweepScript();
         break;
     default :
         mpMessageHandler->addErrorMessage("Algorithm type undefined.");
@@ -766,7 +788,6 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
 
     QString objFuncs;
     QString totalObj;
-    QString objPars;
     //QStringList plotVarsList;
     //! @todo Reimplement plotting variables support
     //QString plotVars = "chpv ";
@@ -792,11 +813,6 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
             gpTerminalWidget->mpHandler->toShortDataNames(varName);
             objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
 
-//            if(!plotVarsList.contains(varName))
-//            {
-//                plotVarsList.append(varName);
-//                plotVars.append(varName+" ");
-//            }
         }
         for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
         {
@@ -814,15 +830,8 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
         }
         QString idx = QString::number(i+1);
         totalObj.append(mWeightLineEditPtrs[i]->text()+"*"+mNormLineEditPtrs[i]->text()+"*exp("+mExpLineEditPtrs[i]->text()+")*obj"+idx);
-
-//        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
-
-//        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
-//        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
-//        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
     }
     objFuncs.chop(1);
-   // objPars.chop(1);
 
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
@@ -854,18 +863,17 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
     }
     extraPlots.chop(1);
 
+    QString extraVars;
+    if(subAlgorithm == "complexrfm")
+    {
+        extraVars = "percDiff = "+mpPercDiffLineEdit->text()+"\n";
+        extraVars.append("countMax = "+QString::number(mpCountMaxSpinBox->value())+"\n");
+    }
+
 
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
-   // templateCode.replace("<<<objpars>>>", objPars);
-//    if(mpPlottingCheckBox->isChecked())
-//    {
-//        templateCode.replace("<<<plotvars>>>", plotVars);
-//    }
-//    else
-//    {
-        templateCode.replace("<<<plotvars>>>", "");
-    //}
+    templateCode.replace("<<<plotvars>>>", "");
 
     templateCode.replace("<<<subalgorithm>>>", subAlgorithm);
     templateCode.replace("<<<extraplots>>>", extraPlots);
@@ -879,6 +887,7 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
     templateCode.replace("<<<gamma>>>", mpGammaLineEdit->text());
     templateCode.replace("<<<functol>>>", mpEpsilonFLineEdit->text());
     templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+    templateCode.replace("<<<extravars>>>", extraVars);
 
     mScript = templateCode;
 }
@@ -994,27 +1003,191 @@ void OptimizationDialog::generateParticleSwarmScript()
 }
 
 
+void OptimizationDialog::generateParameterSweepScript()
+{
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateParameterSweep.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    QString objFuncs;
+    QString totalObj;
+    //QStringList plotVarsList;
+    //! @todo Reimplement plotting variables support
+    //QString plotVars = "chpv ";
+    QString setMinMax;
+    QString setPars;
+    for(int i=0; i<mFunctionName.size(); ++i)
+    {
+        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
+        objFunc.prepend("    ");
+        objFunc.replace("\n", "\n    ");
+        objFunc.replace("<<<id>>>", QString::number(i+1));
+        for(int j=0; j<mFunctionComponents[i].size(); ++j)
+        {
+            QString varName;
+            if(mFunctionComponents[i][j].isEmpty())   //Alias
+            {
+                varName = mFunctionVariables[i][j];
+            }
+            else
+            {
+                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            }
+            gpTerminalWidget->mpHandler->toShortDataNames(varName);
+            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
+
+        }
+        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
+        {
+            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
+        }
+        objFuncs.append(objFunc+"\n");
+
+        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
+        {
+            totalObj.append("+");
+        }
+        else
+        {
+            totalObj.append("-");
+        }
+        QString idx = QString::number(i+1);
+        totalObj.append(mWeightLineEditPtrs[i]->text()+"*"+mNormLineEditPtrs[i]->text()+"*exp("+mExpLineEditPtrs[i]->text()+")*obj"+idx);
+    }
+    objFuncs.chop(1);
+
+    for(int p=0; p<mSelectedParameters.size(); ++p)
+    {
+        QString par;
+        if(mSelectedComponents[p] == "_System Parameters")
+        {
+            par = mSelectedParameters[p];
+        }
+        else
+        {
+            par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        }
+        gpTerminalWidget->mpHandler->toShortDataNames(par);
+        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
+
+        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
+    }
+    setPars.chop(1);
+    setMinMax.chop(1);
+
+    QString extraPlots;
+    if(mpPlotParticlesCheckBox->isChecked())
+    {
+        extraPlots.append("opt set plotpoints on\n");
+    }
+    if(mpPlotBestWorstCheckBox->isChecked())
+    {
+        extraPlots.append("opt set plotbestworst on\n");
+    }
+    extraPlots.chop(1);
+
+
+    templateCode.replace("<<<objfuncs>>>", objFuncs);
+    templateCode.replace("<<<totalobj>>>", totalObj);
+    templateCode.replace("<<<plotvars>>>", "");
+
+    templateCode.replace("<<<subalgorithm>>>", "parametersweep");
+    templateCode.replace("<<<extraplots>>>", extraPlots);
+    templateCode.replace("<<<setminmax>>>", setMinMax);
+    templateCode.replace("<<<setpars>>>", setPars);
+    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
+    templateCode.replace("<<<length>>>", QString::number(mpLengthSpinBox->value()));
+
+
+    mScript = templateCode;
+}
+
+
+
 void OptimizationDialog::setAlgorithm(int i)
 {
+    mpSearchPointsLabel->setVisible(false);
+    mpSearchPointsSpinBox->setVisible(false);
+    mpAlphaLabel->setVisible(false);
+    mpAlphaLineEdit->setVisible(false);
+    mpBetaLabel->setVisible(false);
+    mpBetaLineEdit->setVisible(false);
+    mpGammaLabel->setVisible(false);
+    mpGammaLineEdit->setVisible(false);
+    mpParticlesLabel->setVisible(false);
+    mpParticlesSpinBox->setVisible(false);
+    mpOmegaLabel->setVisible(false);
+    mpOmegaLineEdit->setVisible(false);
+    mpC1Label->setVisible(false);
+    mpC1LineEdit->setVisible(false);
+    mpC2Label->setVisible(false);
+    mpC2LineEdit->setVisible(false);
+    mpLengthLabel->setVisible(false);
+    mpLengthSpinBox->setVisible(false);
+    mpPercDiffLabel->setVisible(false);
+    mpPercDiffLineEdit->setVisible(false);
+    mpCountMaxLabel->setVisible(false);
+    mpCountMaxSpinBox->setVisible(false);
+
+    switch(i)
+    {
+    case OptimizationHandler::ComplexRF:
+        mpSearchPointsLabel->setVisible(true);
+        mpSearchPointsSpinBox->setVisible(true);
+        mpAlphaLabel->setVisible(true);
+        mpAlphaLineEdit->setVisible(true);
+        mpBetaLabel->setVisible(true);
+        mpBetaLineEdit->setVisible(true);
+        mpGammaLabel->setVisible(true);
+        mpGammaLineEdit->setVisible(true);
+        break;
+    case OptimizationHandler::ComplexRFM:
+        mpSearchPointsLabel->setVisible(true);
+        mpSearchPointsSpinBox->setVisible(true);
+        mpAlphaLabel->setVisible(true);
+        mpAlphaLineEdit->setVisible(true);
+        mpBetaLabel->setVisible(true);
+        mpBetaLineEdit->setVisible(true);
+        mpGammaLabel->setVisible(true);
+        mpGammaLineEdit->setVisible(true);
+        mpPercDiffLabel->setVisible(true);
+        mpPercDiffLineEdit->setVisible(true);
+        mpCountMaxLabel->setVisible(true);
+        mpCountMaxSpinBox->setVisible(true);
+        break;
+    case OptimizationHandler::ComplexRFP:
+        mpSearchPointsLabel->setVisible(true);
+        mpSearchPointsSpinBox->setVisible(true);
+        mpAlphaLabel->setVisible(true);
+        mpAlphaLineEdit->setVisible(true);
+        mpBetaLabel->setVisible(true);
+        mpBetaLineEdit->setVisible(true);
+        mpGammaLabel->setVisible(true);
+        mpGammaLineEdit->setVisible(true);
+        break;
+    case OptimizationHandler::ParticleSwarm:
+        mpParticlesLabel->setVisible(true);
+        mpParticlesSpinBox->setVisible(true);
+        mpOmegaLabel->setVisible(true);
+        mpOmegaLineEdit->setVisible(true);
+        mpC1Label->setVisible(true);
+        mpC1LineEdit->setVisible(true);
+        mpC2Label->setVisible(true);
+        mpC2LineEdit->setVisible(true);
+        break;
+    case OptimizationHandler::ParameterSweep:
+        mpLengthLabel->setVisible(true);
+        mpLengthSpinBox->setVisible(true);
+        break;
+    default:
+        break;
+    }
+
     //Complex
-    mpSearchPointsLabel->setVisible(i==0);
-    mpSearchPointsSpinBox->setVisible(i==0);
-    mpAlphaLabel->setVisible(i==0);
-    mpAlphaLineEdit->setVisible(i==0);
-    mpBetaLabel->setVisible(i==0);
-    mpBetaLineEdit->setVisible(i==0);
-    mpGammaLabel->setVisible(i==0);
-    mpGammaLineEdit->setVisible(i==0);
 
     //Particle swarm
-    mpParticlesLabel->setVisible(i==1);
-    mpParticlesSpinBox->setVisible(i==1);
-    mpOmegaLabel->setVisible(i==1);
-    mpOmegaLineEdit->setVisible(i==1);
-    mpC1Label->setVisible(i==1);
-    mpC1LineEdit->setVisible(i==1);
-    mpC2Label->setVisible(i==1);
-    mpC2LineEdit->setVisible(i==1);
+
 }
 
 
@@ -1378,7 +1551,7 @@ void OptimizationDialog::update(int idx)
         }
         else
         {
-            button(QWizard::CustomButton1)->setDisabled(false);
+            //button(QWizard::CustomButton1)->setDisabled(false);
             generateScriptFile();
             mpOutputBox->clear();
             mpOutputBox->insertPlainText(mScript);
@@ -1425,6 +1598,11 @@ void OptimizationDialog::run()
 //! @brief Saves generated script to a script file
 void OptimizationDialog::saveScriptFile()
 {
+    if(mpOutputBox->toPlainText().isEmpty())
+    {
+        return;
+    }
+
     QString filePath = QFileDialog::getSaveFileName(this, tr("Save Script File"),
                                                  gpConfig->getScriptDir(),
                                                  this->tr("HCOM Script (*.hcom)"));
@@ -1459,10 +1637,12 @@ void OptimizationDialog::loadScriptFile()
 
     QFile file(filePath);
     file.open(QFile::Text | QFile::ReadOnly);
-    mScript = file.readAll();
+    QString script = file.readAll();
     file.close();
 
-    setCode(mScript);
+    setCode(script);
+
+    mScript = script;
 }
 
 void OptimizationDialog::updateCoreProgressBars()
@@ -1508,12 +1688,12 @@ void OptimizationDialog::recreateCoreProgressBars()
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         break;
-    case OptimizationHandler::ComplexRFM :    //Complex-RF
+    case OptimizationHandler::ComplexRFM :    //Complex-RFM
         mCoreProgressBarPtrs.append(new QProgressBar(this));
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         break;
-    case OptimizationHandler::ComplexRFP :    //Particle swarm
+    case OptimizationHandler::ComplexRFP :    //Complex-RFP
         if(gpConfig->getUseMulticore())
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)
@@ -1531,6 +1711,23 @@ void OptimizationDialog::recreateCoreProgressBars()
         }
         break;
     case OptimizationHandler::ParticleSwarm :    //Particle swarm
+        if(gpConfig->getUseMulticore())
+        {
+            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)
+            {
+                mCoreProgressBarPtrs.append(new QProgressBar(this));
+                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
+                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
+            }
+        }
+        else
+        {
+            mCoreProgressBarPtrs.append(new QProgressBar(this));
+            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
+            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
+        }
+        break;
+    case OptimizationHandler::ParameterSweep :    //Particle swarm
         if(gpConfig->getUseMulticore())
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)

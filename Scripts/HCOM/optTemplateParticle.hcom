@@ -13,8 +13,8 @@ define obj
     opt set obj optvar(evalid) totalObj
 enddefine
 
-opt set maxevals <<<maxevals>>>
 opt set algorithm particleswarm
+opt set maxevals <<<maxevals>>>
 opt set datatype double
 opt set npoints <<<npoints>>>
 opt set nparams <<<nparams>>>

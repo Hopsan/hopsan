@@ -85,6 +85,7 @@ private:
     void generateComplexScript(const QString &subAlgorithm);
     void generateComplexScriptOld();
     void generateParticleSwarmScript();
+    void generateParameterSweepScript();
     void generateParticleSwarmScriptOld();
     bool verifyNumberOfVariables(int i, int nSelVar);
     bool loadObjectiveFunctions();
@@ -116,6 +117,12 @@ private:
     QLineEdit *mpC1LineEdit;
     QLabel *mpC2Label;
     QLineEdit *mpC2LineEdit;
+    QLabel *mpLengthLabel;
+    QSpinBox *mpLengthSpinBox;
+    QLabel *mpPercDiffLabel;
+    QLineEdit *mpPercDiffLineEdit;
+    QLabel *mpCountMaxLabel;
+    QSpinBox *mpCountMaxSpinBox;
     QLineEdit *mpEpsilonFLineEdit;
     QLineEdit *mpEpsilonXLineEdit;
     QCheckBox *mpPlotParticlesCheckBox;

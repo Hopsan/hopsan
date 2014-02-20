@@ -47,6 +47,7 @@ private:
     QVector< QVector<double> > mAllPoints;
     QVector<double> mAllObjectives;
     int mNumThreads;
+    int mLength;
 };
 
 #endif // OPTIMIZATIONWORKERPARAMETERSWEEP_H

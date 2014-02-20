@@ -13,17 +13,10 @@ define obj
 enddefine
 
 opt set algorithm <<<subalgorithm>>>
-opt set maxevals <<<maxevals>>>
 opt set datatype double
-opt set npoints <<<npoints>>>
 opt set nparams <<<nparams>>>
-opt set functol <<<functol>>>
-opt set partol <<<partol>>>
-opt set alpha <<<alpha>>>
-opt set rfak <<<rfak>>>
-opt set gamma <<<gamma>>>
-<<<extravars>>>
-<<<extraplots>>>
+opt set length <<<length>>>
+
 <<<setminmax>>>
 
 opt run

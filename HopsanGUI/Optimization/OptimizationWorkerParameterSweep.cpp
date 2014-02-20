@@ -64,6 +64,17 @@ void OptimizationWorkerParameterSweep::init()
 #endif
     }
 
+    mAllPoints.resize(pow(mLength, mNumParameters));
+    mAllObjectives.reserve(pow(mLength, mNumParameters));
+    for(int i=0; i<pow(mLength, mNumParameters); ++i)
+    {
+        for(int p=0; p<mNumParameters; ++p)
+        {
+            double x = floor(fmod(double(i)/double(pow(mLength,p)),mLength)) / double(mLength-1);
+            mAllPoints[i].append(mParMin[p]+(mParMax[p]-mParMin[p])*x);
+        }
+    }
+
     mNumPoints = mNumThreads;
     mParameters.resize(mNumPoints);
     mObjectives.resize(mNumPoints);
@@ -130,31 +141,7 @@ void OptimizationWorkerParameterSweep::setOptVar(const QString &var, const QStri
 
     if(var == "length")
     {
-        int length = value.toInt();
-
-        mAllPoints.resize(pow(length, mNumParameters));
-        mAllObjectives.reserve(pow(length, mNumParameters));
-        for(int i=0; i<pow(length, mNumParameters); ++i)
-        {
-            for(int p=0; p<mNumParameters; ++p)
-            {
-                double x = floor(fmod(double(i)/double(pow(length,p)),length)) / double(length-1);
-                mAllPoints[i].append(mParMin[p]+(mParMax[p]-mParMin[p])*x);
-            }
-        }
-
-
-        qDebug() << "Sweep points:";
-        for(int i=0; i<mAllPoints.size(); ++i)
-        {
-            QString output;
-            for(int p=0; p<mNumParameters; ++p)
-            {
-                output.append(QString::number(mAllPoints[i][p])+",");
-            }
-            output.chop(1);
-            qDebug() << output;
-        }
+        mLength = value.toInt();
     }
 }
 
