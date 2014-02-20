@@ -17,6 +17,7 @@
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
 #include "Hydraulic/HopsanHydraulicComponents.h"
+#include "Mechanical/MechanicTranslationalMassVariable.hpp"
 //#include "Signal/SignalComponents.h"
 
 
@@ -41,6 +42,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
     pComponentFactory->registerCreatorFunction("HydraulicComponentsInComponentTest", HydraulicComponentsInComponentTest::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicLamOrfPortParamTest", HydraulicLaminarOrificeInterfaceVar::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTranslationalMassVariable", MechanicTranslationalMassVariable::Creator);
     //pComponentFactory->registerCreatorFunction("SignalBETest", SignalBETest::Creator);
 
     // ========== Register Custom Nodes (if any) ==========

@@ -34,7 +34,8 @@ HEADERS += \
     Hydraulic/HopsanHydraulicComponents.h \
     Hydraulic/HydraulicAlternativePRV.hpp \
     Signal/SignalBETest.hpp \
-    Signal/SignalComponents.h
+    Signal/SignalComponents.h \
+    Mechanical/MechanicTranslationalMassVariable.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf
