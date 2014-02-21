@@ -261,7 +261,7 @@ double SecondOrderTransferFunctionVariable::value()
     return mValue;
 }
 
-double SecondOrderTransferFunctionVariable::recalculateCoefficients()
+void SecondOrderTransferFunctionVariable::recalculateCoefficients()
 {
     mCoeffU[0] = mNum[0]*(*mpTimeStep)*(*mpTimeStep) + 2.0*mNum[1]*(*mpTimeStep) + 4.0*mNum[2];
     mCoeffU[1] = 2.0*mNum[0]*(*mpTimeStep)*(*mpTimeStep) - 8.0*mNum[2];

@@ -61,7 +61,7 @@ namespace hopsan {
         void setMinMax(double min, double max);
         double update(double u);
         double value();
-        double recalculateCoefficients();
+        void recalculateCoefficients();
 
     private:
         double mValue;
