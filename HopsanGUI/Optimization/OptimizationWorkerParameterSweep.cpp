@@ -78,10 +78,14 @@ void OptimizationWorkerParameterSweep::init()
     mNumPoints = mNumThreads;
     mParameters.resize(mNumPoints);
     mObjectives.resize(mNumPoints);
+
+    mMaxEvals = pow(mLength, mNumParameters);
 }
 
 void OptimizationWorkerParameterSweep::run()
 {
+    execute("echo off");
+
     //Verify that everything is ok
     if(!mpHandler->mpHcomHandler->hasFunction("evalall"))
     {
@@ -99,6 +103,8 @@ void OptimizationWorkerParameterSweep::run()
 
     for(int i=0; i<mAllPoints.size(); ++i)
     {
+        updateProgressBar(i);
+
         mParameters[i%mNumThreads] = mAllPoints[i];
 
         if(i%mNumThreads == 3)
@@ -116,6 +122,8 @@ void OptimizationWorkerParameterSweep::run()
         }
     }
 
+    execute("echo on");
+
     print("Best objective:");
     print(QString::number(mAllObjectives[bestIdx]));
     print("At point:");
@@ -123,6 +131,7 @@ void OptimizationWorkerParameterSweep::run()
     {
         print(QString::number(mAllPoints[bestIdx][p]));
     }
+
 
     printOutput();
 }

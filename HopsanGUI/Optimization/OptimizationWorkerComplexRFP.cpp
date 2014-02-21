@@ -164,7 +164,7 @@ void OptimizationWorkerComplexRFP::run()
         execute("opt set evalid "+QString::number(i));
         execute("call setpars");
     }
-    bool simSuccess = gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
     for(int i=0; i<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
@@ -586,7 +586,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[i]][j];
+            double worst = mParameters[mvIdx[0]][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
 
             //Add some random noise
@@ -706,9 +706,6 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
-    }
-    else
-    {
         return;
     }
 
@@ -727,6 +724,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        return;
     }
     else
     {
