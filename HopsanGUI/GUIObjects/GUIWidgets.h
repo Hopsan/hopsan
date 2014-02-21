@@ -77,11 +77,17 @@ public:
 
     void setText(QString text);
     void setFont(QFont font);
+    void setTextColor(QColor color);
     void setLineWidth(int value);
     void setLineStyle(Qt::PenStyle style);
-    void setColor(QColor color);
+    void setLineColor(QColor color);
     void setSize(qreal w, qreal h);
     void setBoxVisible(bool boxVisible);
+
+    void makeSureBoxNotToSmallForText();
+    void resizeBoxToText();
+    void resizeTextToBox();
+    void reflowText(bool doReflow);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -89,6 +95,8 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+    virtual void refreshSelectionBoxSize();
 
 public slots:
     void deleteMe(UndoStatusEnumT undoSettings=Undo);
@@ -98,32 +106,36 @@ public slots:
 private slots:
     void updateWidgetFromDialog();
     void openFontDialog();
-    void openColorDialog();
+    void openTextColorDialog();
+    void openLineColorDialog();
 
 private:
+    void refreshWidgetSize();
+
     QGraphicsTextItem *mpTextItem;
-    QGraphicsRectItem *mpRectItem;
+    QGraphicsRectItem *mpBorderItem;
 
     QDialog *mpEditDialog;
-    QCheckBox *mpShowBoxCheckBoxInDialog;
-    QLabel *mpWidthLabelInDialog;
-    QSpinBox *mpWidthBoxInDialog;
-    QLabel *mpColorLabelInDialog;
-    QPushButton *mpFontInDialogButton;
-    QToolButton *mpColorInDialogButton;
-    QLabel *mpStyleLabelInDialog;
-    QComboBox *mpStyleBoxInDialog;
-    QPushButton *mpDoneInDialogButton;
-    QPushButton *mpCancelInDialogButton;
+    QTextEdit *mpDialogTextBox;
+    QPushButton *mpDialogFontButton;
+    QToolButton *mpDialogLineColorButton;
+    QToolButton *mpDialogTextColorButton;
+    QCheckBox *mpDialogReflowCheckBox;
 
-    QTextEdit *mpTextBoxInDialog;
+    QCheckBox *mpDialogShowBorderCheckBox;
+    QSpinBox *mpDialogLineWidth;
+    QComboBox *mpDialogLineStyle;
+
     QFont mSelectedFont;
-    QColor mSelectedColor;
+    QColor mSelectedTextColor;
+    QColor mSelectedLineColor;
 
+    bool mReflowText;
     bool mResizeTop;
     bool mResizeBottom;
     bool mResizeLeft;
     bool mResizeRight;
+
     QPointF mPosBeforeResize;
     qreal mWidthBeforeResize;
     qreal mHeightBeforeResize;

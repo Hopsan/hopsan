@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
     // Load application fonts
-    loadApplicationFonts();
+    //loadApplicationFonts();
 
     // Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");

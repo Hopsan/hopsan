@@ -474,7 +474,7 @@ TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pCon
 {
     QString text;
     QFont font;
-    QColor color;
+    QColor textColor, lineColor;
     QString linestyle;
     bool lineVisible;
     QPointF point;
@@ -485,8 +485,8 @@ TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pCon
 
     QDomElement textobjectTag = guiData.firstChildElement("textobject");
     text = textobjectTag.attribute("text");
-    font.fromString(textobjectTag.attribute("font"));
-    color.setNamedColor(textobjectTag.attribute("fontcolor"));
+    font.fromString(textobjectTag.attribute("font")); //!< @todo what if font do not exist, need to check that ant act appropriately
+    textColor.setNamedColor(textobjectTag.attribute("fontcolor"));
 
     QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
     QPointF tempPoint;
@@ -502,14 +502,16 @@ TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pCon
     lineVisible = lineTag.attribute("visible").toInt();
     linewidth = lineTag.attribute("width").toDouble();
     linestyle = lineTag.attribute(HMF_STYLETAG);
+    lineColor.setNamedColor(lineTag.attribute("color"));
 
     TextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NoUndo);
     pWidget->setText(text);
     pWidget->setFont(font);
-    pWidget->setColor(color);
-    pWidget->setSize(width, height);
+    pWidget->setTextColor(textColor);
+    pWidget->setLineColor(lineColor);
     pWidget->setLineWidth(linewidth);
     pWidget->setBoxVisible(lineVisible);
+    pWidget->setSize(width, height);
     if(linestyle == "solidline")
         pWidget->setLineStyle(Qt::SolidLine);
     if(linestyle == "dashline")
@@ -524,6 +526,10 @@ TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pCon
     {
         pContainer->getUndoStackPtr()->registerAddedWidget(pWidget);
     }
+
+    //! @todo load save reflow setting, reflow = false if missing (from old code)
+    // In case font is not correct this is nice to run
+    pWidget->makeSureBoxNotToSmallForText();
 
     return pWidget;
 }

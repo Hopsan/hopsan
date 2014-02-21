@@ -92,6 +92,8 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
+    virtual void refreshSelectionBoxSize();
+
     // Protected members
     ContainerObject *mpParentContainerObject;
     QString mHmfTagName;

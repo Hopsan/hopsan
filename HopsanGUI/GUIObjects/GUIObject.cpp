@@ -180,6 +180,11 @@ void WorkspaceObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsWidget::hoverLeaveEvent(event);
 }
 
+void WorkspaceObject::refreshSelectionBoxSize()
+{
+    // Do nothing by default (need to be overloaded)
+}
+
 
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)

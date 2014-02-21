@@ -381,7 +381,7 @@ void UndoStack::undoOneStep()
 
             pWidget->setText(stuffElement.attribute("text_old"));
             pWidget->setFont(font);
-            pWidget->setColor(QColor(stuffElement.attribute("color_old")));
+            pWidget->setLineColor(QColor(stuffElement.attribute("color_old")));
             pWidget->setLineWidth(lineWidth);
             pWidget->setBoxVisible(boxVisibleBefore);
 
@@ -751,7 +751,7 @@ void UndoStack::redoOneStep()
 
             pWidget->setText(stuffElement.attribute("text"));
             pWidget->setFont(font);
-            pWidget->setColor(QColor(stuffElement.attribute("color")));
+            pWidget->setLineColor(QColor(stuffElement.attribute("color")));
             pWidget->setLineWidth(lineWidth);
             pWidget->setBoxVisible(boxVisible);
         }

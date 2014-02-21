@@ -33,17 +33,12 @@
 #include <QColorDialog>
 #include <QGraphicsRectItem>
 
-#include <cassert>
-
 #include "global.h"
 #include "GUIWidgets.h"
 #include "GUISystem.h"
 #include "Widgets/ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
-
-using namespace std;
-
 
 Widget::Widget(QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
     : WorkspaceObject(pos, rot, startSelected, pSystem, pParent)
@@ -96,7 +91,8 @@ QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)
 
 void Widget::deleteMe(UndoStatusEnumT /*undoSettings*/)
 {
-    assert(1 == 2);
+    // Should be overloaded
+    qFatal("This function must be overloaded");
 }
 
 
@@ -139,43 +135,40 @@ TextBoxWidget::TextBoxWidget(QString text, QPointF pos, qreal rot, SelectionStat
     : Widget(pos, rot, startSelected, pSystem, pParent)
 {
     mType="TextBoxWidget";
+    mHmfTagName = HMF_TEXTBOXWIDGETTAG;
+    mWidgetIndex = widgetIndex;
 
-    this->mHmfTagName = HMF_TEXTBOXWIDGETTAG;
-
-    mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
-    QPen tempPen = mpRectItem->pen();
-    tempPen.setWidth(2);
-    tempPen.setStyle(Qt::SolidLine);//Qt::DotLine);
-    tempPen.setCapStyle(Qt::RoundCap);
-    tempPen.setJoinStyle(Qt::RoundJoin);
-    mpRectItem->setPen(tempPen);
-    mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
-    mpRectItem->show();
+    mpBorderItem = new QGraphicsRectItem(0, 0, 200, 100, this);
+    QPen borderPen = mpBorderItem->pen();
+    borderPen.setWidth(2);
+    borderPen.setStyle(Qt::SolidLine);
+    borderPen.setCapStyle(Qt::RoundCap);
+    borderPen.setJoinStyle(Qt::RoundJoin);
+    mpBorderItem->setPen(borderPen);
+    mpBorderItem->setPos(mpBorderItem->pen().width()/2.0, mpBorderItem->pen().width()/2.0);
+    mpBorderItem->show();
 
     mpTextItem = new QGraphicsTextItem(text, this);
-    QFont tempFont = mpTextItem->font();
-    tempFont.setPointSize(12);
-    mpTextItem->setFont(tempFont);
+    QFont textFont = mpTextItem->font();
+    textFont.setPointSize(12);
+    mpTextItem->setFont(textFont);
     mpTextItem->setPos(this->boundingRect().center());
     mpTextItem->show();
     mpTextItem->setAcceptHoverEvents(false);
+    // Activate text reflow, to match border width
+    mReflowText=true;
+    mpTextItem->setTextWidth(mpBorderItem->boundingRect().width());
 
-    this->setColor(QColor("darkolivegreen"));
+    setLineColor(QColor("darkolivegreen"));
+    setTextColor(QColor("darkolivegreen"));
 
-    this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
-    mpSelectionBox->setSize(0.0, 0.0, max(mpTextItem->boundingRect().width(), mpRectItem->boundingRect().width()),
-                                      max(mpTextItem->boundingRect().height(), mpRectItem->boundingRect().height()));
+    refreshWidgetSize();
 
-    this->resize(max(mpTextItem->boundingRect().width(), mpRectItem->boundingRect().width()),
-                 max(mpTextItem->boundingRect().height(), mpRectItem->boundingRect().height()));
+    setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
 
-      this->setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
-
-    mWidthBeforeResize = mpRectItem->rect().width();
-    mHeightBeforeResize = mpRectItem->rect().height();
+    mWidthBeforeResize = mpBorderItem->rect().width();
+    mHeightBeforeResize = mpBorderItem->rect().height();
     mPosBeforeResize = this->pos();
-
-    mWidgetIndex = widgetIndex;
 }
 
 
@@ -183,19 +176,19 @@ TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSyste
     : Widget(other.pos(), other.rotation(), Deselected, pSystem, 0)
 {
     mType = other.mType;
-    mpRectItem = new QGraphicsRectItem(other.mpRectItem->rect(), this);
-    if(other.mpRectItem->isVisible())
+    mpBorderItem = new QGraphicsRectItem(other.mpBorderItem->rect(), this);
+    if(other.mpBorderItem->isVisible())
     {
-        mpRectItem->show();
+        mpBorderItem->show();
     }
     else
     {
-        mpRectItem->hide();
+        mpBorderItem->hide();
     }
     mpTextItem = new QGraphicsTextItem(other.mpTextItem->toPlainText(), this);
     mpTextItem->setFont(other.mpTextItem->font());
     mpTextItem->show();
-    setColor(other.mpTextItem->defaultTextColor());
+    setLineColor(other.mpTextItem->defaultTextColor());
 }
 
 
@@ -218,21 +211,22 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     xmlText.setAttribute("fontcolor", mpTextItem->defaultTextColor().name());
 
     QDomElement xmlSize = appendDomElement(xmlGuiStuff, "size");
-    setQrealAttribute(xmlSize, "width", mpRectItem->rect().width());
-    setQrealAttribute(xmlSize, "height", mpRectItem->rect().height());
+    setQrealAttribute(xmlSize, "width", mpBorderItem->rect().width());
+    setQrealAttribute(xmlSize, "height", mpBorderItem->rect().height());
 
     QDomElement xmlLine = appendDomElement(xmlGuiStuff, "line");
-    xmlLine.setAttribute("visible", mpRectItem->isVisible());
-    setQrealAttribute(xmlLine, "width", mpRectItem->pen().width());
+    xmlLine.setAttribute("visible", mpBorderItem->isVisible());
+    setQrealAttribute(xmlLine, "width", mpBorderItem->pen().width());
+    xmlLine.setAttribute("color", mpBorderItem->pen().color().name());
 
     QString style;
-    if(mpRectItem->pen().style() == Qt::SolidLine)
+    if(mpBorderItem->pen().style() == Qt::SolidLine)
         style = "solidline";
-    else if(mpRectItem->pen().style() == Qt::DashLine)
+    else if(mpBorderItem->pen().style() == Qt::DashLine)
         style = "dashline";
-    else if(mpRectItem->pen().style() == Qt::DotLine)
+    else if(mpBorderItem->pen().style() == Qt::DotLine)
         style = "dotline";
-    else if(mpRectItem->pen().style() == Qt::DashDotLine)
+    else if(mpBorderItem->pen().style() == Qt::DashDotLine)
         style = "dashdotline";
     xmlLine.setAttribute(HMF_STYLETAG, style);
 }
@@ -240,9 +234,7 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
 void TextBoxWidget::setText(QString text)
 {
     mpTextItem->setPlainText(text);
-    mpRectItem->setRect(mpRectItem->rect().united(mpTextItem->boundingRect()));
-
-    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    makeSureBoxNotToSmallForText();
     mpSelectionBox->setPassive();
 }
 
@@ -250,136 +242,168 @@ void TextBoxWidget::setText(QString text)
 void TextBoxWidget::setFont(QFont font)
 {
     mpTextItem->setFont(font);
-    mpRectItem->setRect(mpRectItem->rect().united(mpTextItem->boundingRect()));
-    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    makeSureBoxNotToSmallForText();
     mpSelectionBox->setPassive();
-    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
 }
 
+void TextBoxWidget::setTextColor(QColor color)
+{
+    mpTextItem->setDefaultTextColor(color);
+}
 
 void TextBoxWidget::setLineWidth(int value)
 {
-    QPen tempPen;
-    tempPen = mpRectItem->pen();
-    tempPen.setWidth(value);
-    mpRectItem->setPen(tempPen);
+    QPen borderPen = mpBorderItem->pen();
+    borderPen.setWidth(value);
+    mpBorderItem->setPen(borderPen);
 }
 
 
 void TextBoxWidget::setLineStyle(Qt::PenStyle style)
 {
-    QPen tempPen;
-    tempPen = mpRectItem->pen();
-    tempPen.setStyle(style);
-    mpRectItem->setPen(tempPen);
+    QPen borderPen = mpBorderItem->pen();
+    borderPen.setStyle(style);
+    mpBorderItem->setPen(borderPen);
 }
 
 
-void TextBoxWidget::setColor(QColor color)
+void TextBoxWidget::setLineColor(QColor color)
 {
-    mpTextItem->setDefaultTextColor(color);
-
-    QPen tempPen;
-    tempPen = mpRectItem->pen();
-    tempPen.setColor(color);
-    mpRectItem->setPen(tempPen);
+    QPen borderPen = mpBorderItem->pen();
+    borderPen.setColor(color);
+    mpBorderItem->setPen(borderPen);
 }
 
 
 void TextBoxWidget::setSize(qreal w, qreal h)
 {
-    QPointF posBeforeResize = this->pos();
-    mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), w, h);
-    this->setPos(posBeforeResize);
+    QPointF posBeforeResize = pos();
+    mpBorderItem->setRect(mpBorderItem->rect().x(), mpBorderItem->rect().y(), w, h);
+    setPos(posBeforeResize);
+    mpBorderItem->setPos(mpBorderItem->pen().width()/2.0, mpBorderItem->pen().width()/2.0);
 
-    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    if (mReflowText)
+    {
+        mpTextItem->setTextWidth(mpBorderItem->boundingRect().width());
+    }
+    else
+    {
+        mpTextItem->setTextWidth(-1);
+    }
 
+    refreshWidgetSize();
     mpSelectionBox->setActive();
-    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
-    mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
 
-    mWidthBeforeResize = mpRectItem->rect().width();
-    mHeightBeforeResize = mpRectItem->rect().height();
-    mPosBeforeResize = this->pos();
+    mWidthBeforeResize = mpBorderItem->rect().width();
+    mHeightBeforeResize = mpBorderItem->rect().height();
+    mPosBeforeResize = pos();
 }
 
 
 void TextBoxWidget::setBoxVisible(bool boxVisible)
 {
-    mpRectItem->setVisible(boxVisible);
+    mpBorderItem->setVisible(boxVisible);
+}
+
+void TextBoxWidget::makeSureBoxNotToSmallForText()
+{
+    mpBorderItem->setRect(mpBorderItem->rect().united(mpTextItem->boundingRect()));
+    refreshWidgetSize();
+}
+
+void TextBoxWidget::resizeBoxToText()
+{
+    mpBorderItem->setRect(mpBorderItem->rect().x(), mpBorderItem->rect().y(), mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
+    refreshWidgetSize();
+}
+
+void TextBoxWidget::resizeTextToBox()
+{
+    reflowText(true);
+    mpTextItem->setTextWidth(mpBorderItem->boundingRect().width());
+}
+
+void TextBoxWidget::reflowText(bool doReflow)
+{
+    mReflowText = doReflow;
 }
 
 
-void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
+void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    //! @todo Make a separate file for this dialog
+    Q_UNUSED(event)
 
-        //Open a dialog where line width and color can be selected
+    // Open a dialog where line width and color can be selected
     mpEditDialog = new QDialog(gpMainWindowWidget);
-    mpEditDialog->setWindowTitle("Edit Box Widget");
+    mpEditDialog->setWindowTitle("Edit TextBox Widget");
+    mpEditDialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    mpShowBoxCheckBoxInDialog = new QCheckBox("Show box rectangle");
-    mpShowBoxCheckBoxInDialog->setChecked(mpRectItem->isVisible());
+    mpDialogShowBorderCheckBox = new QCheckBox("Show box rectangle");
+    mpDialogShowBorderCheckBox->setChecked(mpBorderItem->isVisible());
 
-    mpWidthLabelInDialog = new QLabel("Line Width: ");
-    mpWidthBoxInDialog = new QSpinBox();
-    mpWidthBoxInDialog->setMinimum(1);
-    mpWidthBoxInDialog->setMaximum(100);
-    mpWidthBoxInDialog->setSingleStep(1);
-    mpWidthBoxInDialog->setValue(mpRectItem->pen().width());
-    mpColorLabelInDialog = new QLabel("Line Color: ");
-    mpColorInDialogButton = new QToolButton();
-    QString redString, greenString, blueString;
-    redString.setNum(mpRectItem->pen().color().red());
-    greenString.setNum(mpRectItem->pen().color().green());
-    blueString.setNum(mpRectItem->pen().color().blue());
-    mpColorInDialogButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
-    mpColorInDialogButton->setAutoRaise(true);
+    mpDialogLineWidth = new QSpinBox();
+    mpDialogLineWidth->setMinimum(1);
+    mpDialogLineWidth->setMaximum(100);
+    mpDialogLineWidth->setSingleStep(1);
+    mpDialogLineWidth->setValue(mpBorderItem->pen().width());
 
-    mpStyleLabelInDialog = new QLabel("Line Style: ");
-    mpStyleBoxInDialog = new QComboBox();
-    mpStyleBoxInDialog->insertItem(0, "Solid Line");
-    mpStyleBoxInDialog->insertItem(1, "Dashes");
-    mpStyleBoxInDialog->insertItem(2, "Dots");
-    mpStyleBoxInDialog->insertItem(3, "Dashes and Dots");
+    mpDialogLineColorButton = new QToolButton();
+    mpDialogLineColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3); }").arg(mpBorderItem->pen().color().red())
+                                                                                            .arg(mpBorderItem->pen().color().green())
+                                                                                            .arg(mpBorderItem->pen().color().blue()));
+    mpDialogLineStyle = new QComboBox();
+    mpDialogLineStyle->insertItem(0, "Solid Line");
+    mpDialogLineStyle->insertItem(1, "Dashes");
+    mpDialogLineStyle->insertItem(2, "Dots");
+    mpDialogLineStyle->insertItem(3, "Dashes and Dots");
+    if(mpBorderItem->pen().style() == Qt::SolidLine)
+        mpDialogLineStyle->setCurrentIndex(0);
+    if(mpBorderItem->pen().style() == Qt::DashLine)
+        mpDialogLineStyle->setCurrentIndex(1);
+    if(mpBorderItem->pen().style() == Qt::DotLine)
+        mpDialogLineStyle->setCurrentIndex(2);
+    if(mpBorderItem->pen().style() == Qt::DashDotLine)
+        mpDialogLineStyle->setCurrentIndex(3);
 
-    if(mpRectItem->pen().style() == Qt::SolidLine)
-        mpStyleBoxInDialog->setCurrentIndex(0);
-    if(mpRectItem->pen().style() == Qt::DashLine)
-        mpStyleBoxInDialog->setCurrentIndex(1);
-    if(mpRectItem->pen().style() == Qt::DotLine)
-        mpStyleBoxInDialog->setCurrentIndex(2);
-    if(mpRectItem->pen().style() == Qt::DashDotLine)
-        mpStyleBoxInDialog->setCurrentIndex(3);
+    mpDialogTextBox = new QTextEdit();
+    mpDialogTextBox->setPlainText(mpTextItem->toPlainText());
+    mpDialogTextBox->setFont(mpTextItem->font());
+    mpDialogFontButton = new QPushButton("Change Text Font");
 
-    mpTextBoxInDialog = new QTextEdit();
-    mpTextBoxInDialog->setPlainText(mpTextItem->toPlainText());
-    mpTextBoxInDialog->setTextColor(mSelectedColor);
-    mpTextBoxInDialog->setFont(mSelectedFont);
-    mpFontInDialogButton = new QPushButton("Change Font");
+    mpDialogTextColorButton = new QToolButton();
+    mpDialogTextColorButton->setToolTip("Change text color");
+    mpDialogTextColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3); }").arg(mpTextItem->defaultTextColor().red())
+                                                                                            .arg(mpTextItem->defaultTextColor().green())
+                                                                                            .arg(mpTextItem->defaultTextColor().blue()));
+
+    mpDialogReflowCheckBox = new QCheckBox(tr("Reflow text"));
+    mpDialogReflowCheckBox->setChecked(mReflowText);
+
+    mSelectedFont = mpTextItem->font();
+    mSelectedTextColor = mpTextItem->defaultTextColor();
+    mSelectedLineColor = mpBorderItem->pen().color();
 
     QGridLayout *pEditGroupLayout = new QGridLayout();
-    pEditGroupLayout->addWidget(mpTextBoxInDialog,          0,0,1,2);
-    pEditGroupLayout->addWidget(mpFontInDialogButton,       1,0,1,2);
-    pEditGroupLayout->addWidget(mpShowBoxCheckBoxInDialog,  2,0,1,2);
-    pEditGroupLayout->addWidget(mpWidthLabelInDialog,       3,0);
-    pEditGroupLayout->addWidget(mpWidthBoxInDialog,         3,1);
-    pEditGroupLayout->addWidget(mpColorLabelInDialog,       4,0);
-    pEditGroupLayout->addWidget(mpColorInDialogButton,      4,1);
-    pEditGroupLayout->addWidget(mpStyleLabelInDialog,       5,0);
-    pEditGroupLayout->addWidget(mpStyleBoxInDialog,         5,1);
+    pEditGroupLayout->addWidget(mpDialogTextBox,                            0,0,1,3);
+    pEditGroupLayout->addWidget(mpDialogFontButton,                         1,0);
+    pEditGroupLayout->addWidget(mpDialogTextColorButton,                    1,1);
+    pEditGroupLayout->addWidget(mpDialogReflowCheckBox,                     1,2);
+    pEditGroupLayout->addWidget(mpDialogShowBorderCheckBox,                 2,0,1,3);
+    pEditGroupLayout->addWidget(new QLabel("Line Width: ", mpEditDialog),   3,0);
+    pEditGroupLayout->addWidget(mpDialogLineWidth,                          3,1,1,2);
+    pEditGroupLayout->addWidget(new QLabel("Line Color: ", mpEditDialog),   4,0);
+    pEditGroupLayout->addWidget(mpDialogLineColorButton,                    4,1,1,2);
+    pEditGroupLayout->addWidget(new QLabel("Line Style: ", mpEditDialog),   5,0);
+    pEditGroupLayout->addWidget(mpDialogLineStyle,                          5,1,1,2);
 
     QGroupBox *pEditGroupBox = new QGroupBox();
     pEditGroupBox->setLayout(pEditGroupLayout);
 
-    mSelectedFont = mpTextItem->font();
-    mSelectedColor = mpTextItem->defaultTextColor();
-
-    mpDoneInDialogButton = new QPushButton("Done");
-    mpCancelInDialogButton = new QPushButton("Cancel");
+    QPushButton *pDialogDoneButton = new QPushButton("Done");
+    QPushButton *pDialogCancelButton = new QPushButton("Cancel");
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    pButtonBox->addButton(mpDoneInDialogButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pDialogDoneButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pDialogCancelButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout();
     pDialogLayout->addWidget(pEditGroupBox,0,0);
@@ -390,16 +414,14 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
     this->setZValue(WidgetZValue);
     this->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
-    mSelectedColor = mpRectItem->pen().color();
-
-    connect(mpShowBoxCheckBoxInDialog, SIGNAL(toggled(bool)), mpWidthLabelInDialog, SLOT(setEnabled(bool)));
-    connect(mpShowBoxCheckBoxInDialog, SIGNAL(toggled(bool)), mpWidthBoxInDialog, SLOT(setEnabled(bool)));
-    connect(mpShowBoxCheckBoxInDialog, SIGNAL(toggled(bool)), mpStyleLabelInDialog, SLOT(setEnabled(bool)));
-    connect(mpShowBoxCheckBoxInDialog, SIGNAL(toggled(bool)), mpStyleBoxInDialog, SLOT(setEnabled(bool)));
-    connect(mpFontInDialogButton,SIGNAL(clicked()),this,SLOT(openFontDialog()));
-    connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(openColorDialog()));
-    connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
-    connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditDialog,SLOT(close()));
+    connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineWidth,       SLOT(setEnabled(bool)));
+    connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineColorButton, SLOT(setEnabled(bool)));
+    connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineStyle,       SLOT(setEnabled(bool)));
+    connect(mpDialogFontButton,         SIGNAL(clicked()),      this,                   SLOT(openFontDialog()));
+    connect(mpDialogTextColorButton,    SIGNAL(clicked()),      this,                   SLOT(openTextColorDialog()));
+    connect(mpDialogLineColorButton,    SIGNAL(clicked()),      this,                   SLOT(openLineColorDialog()));
+    connect(pDialogDoneButton,          SIGNAL(clicked()),      this,                   SLOT(updateWidgetFromDialog()));
+    connect(pDialogCancelButton,        SIGNAL(clicked()),      mpEditDialog,           SLOT(close()));
 }
 
 void TextBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
@@ -446,8 +468,8 @@ void TextBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if(mResizeLeft || mResizeRight || mResizeTop || mResizeBottom)
     {
         mPosBeforeResize = this->pos();
-        mWidthBeforeResize = this->mpRectItem->rect().width();
-        mHeightBeforeResize = this->mpRectItem->rect().height();
+        mWidthBeforeResize = this->mpBorderItem->rect().width();
+        mHeightBeforeResize = this->mpBorderItem->rect().height();
         mIsResizing = true;
     }
     else
@@ -464,84 +486,120 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     if(mResizeLeft && mResizeTop)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         if(desiredRect.width() < mpTextItem->boundingRect().width())
-            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpRectItem->boundingRect().width()+mpRectItem->pen().widthF());
+            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
         if(desiredRect.height() < mpTextItem->boundingRect().height())
-            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpRectItem->boundingRect().height()+mpRectItem->pen().widthF());
+            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
     }
     else if(mResizeTop && mResizeRight)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         this->setX(mPosBeforeResize.x());
         if(desiredRect.height() < mpTextItem->boundingRect().height())
-            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpRectItem->boundingRect().height()+mpRectItem->pen().widthF());
+            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
     }
     else if(mResizeRight && mResizeBottom)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         this->setX(mPosBeforeResize.x());
         this->setY(mPosBeforeResize.y());
     }
     else if(mResizeBottom && mResizeLeft)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         this->setY(mPosBeforeResize.y());
         if(desiredRect.width() < mpTextItem->boundingRect().width())
-            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpRectItem->boundingRect().width()+mpRectItem->pen().widthF());
+            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
     }
     else if(mResizeLeft)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), mpRectItem->rect().height());
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), mpBorderItem->rect().height());
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         this->setY(mPosBeforeResize.y());
         if(desiredRect.width() < mpTextItem->boundingRect().width())
-            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpRectItem->boundingRect().width()+mpRectItem->pen().widthF());
+            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
     }
     else if(mResizeRight)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), mpRectItem->rect().height());
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), mpBorderItem->rect().height());
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         this->setPos(mPosBeforeResize);
     }
     else if(mResizeTop)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(),  mpRectItem->rect().width(), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(),  mpBorderItem->rect().width(), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         this->setX(mPosBeforeResize.x());
         if(desiredRect.height() < mpTextItem->boundingRect().height())
-            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpRectItem->boundingRect().height()+mpRectItem->pen().widthF());
+            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
     }
     else if(mResizeBottom)
     {
-        QRectF desiredRect = QRectF(mpRectItem->rect().x(), mpRectItem->rect().y(), mpRectItem->rect().width(), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
-        mpRectItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), mpBorderItem->rect().width(), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+        if (mReflowText)
+        {
+            mpTextItem->setTextWidth(desiredRect.width());
+        }
+        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
         this->setPos(mPosBeforeResize);
     }
 
-    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    mpBorderItem->setPos(mpBorderItem->pen().width()/2.0, mpBorderItem->pen().width()/2.0);
 
+    refreshWidgetSize();
     mpSelectionBox->setActive();
-    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
-    mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
 }
 
 
 void TextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     Widget::mouseReleaseEvent(event);
-    if(mWidthBeforeResize != mpRectItem->rect().width() || mHeightBeforeResize != mpRectItem->rect().height())
+    if(mWidthBeforeResize != mpBorderItem->rect().width() || mHeightBeforeResize != mpBorderItem->rect().height())
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
-        mpParentContainerObject->getUndoStackPtr()->registerResizedTextBoxWidget( mWidgetIndex, mWidthBeforeResize, mHeightBeforeResize, mpRectItem->rect().width(), mpRectItem->rect().height(), mPosBeforeResize, this->pos());
-        mWidthBeforeResize = mpRectItem->rect().width();
-        mHeightBeforeResize = mpRectItem->rect().height();
+        mpParentContainerObject->getUndoStackPtr()->registerResizedTextBoxWidget( mWidgetIndex, mWidthBeforeResize, mHeightBeforeResize, mpBorderItem->rect().width(), mpBorderItem->rect().height(), mPosBeforeResize, this->pos());
+        mWidthBeforeResize = mpBorderItem->rect().width();
+        mHeightBeforeResize = mpBorderItem->rect().height();
         mPosBeforeResize = this->pos();
     }
+}
+
+void TextBoxWidget::refreshSelectionBoxSize()
+{
+    mpSelectionBox->setSize(0.0, 0.0, boundingRect().width(), boundingRect().height());
 }
 
 void TextBoxWidget::deleteMe(UndoStatusEnumT undoSettings)
@@ -565,47 +623,64 @@ void TextBoxWidget::flipHorizontal(UndoStatusEnumT undoSettings)
 void TextBoxWidget::updateWidgetFromDialog()
 {
     Qt::PenStyle selectedStyle;
-    if(mpStyleBoxInDialog->currentIndex() == 0)
+    switch(mpDialogLineStyle->currentIndex())
+    {
+    case 0:
         selectedStyle = Qt::SolidLine;
-    else if(mpStyleBoxInDialog->currentIndex() == 1)
+        break;
+    case 1:
         selectedStyle = Qt::DashLine;
-    else if(mpStyleBoxInDialog->currentIndex() == 2)
+        break;
+    case 2:
         selectedStyle = Qt::DotLine;
-    else if(mpStyleBoxInDialog->currentIndex() == 3)
+        break;
+    case 3:
         selectedStyle = Qt::DashDotLine;
-    else
-        selectedStyle = Qt::SolidLine;      //This shall never happen, but will supress a warning message
+        break;
+    default:
+        selectedStyle = Qt::SolidLine;  // This shall never happen
+    }
 
+    // Remember for UnDo
+    //! @todo undo settings should use save to xml instead, also missing reflow setting
     mpParentContainerObject->getUndoStackPtr()->newPost();
     mpParentContainerObject->getUndoStackPtr()->registerModifiedTextBoxWidget(mWidgetIndex, mpTextItem->toPlainText(), mpTextItem->font(), mpTextItem->defaultTextColor(),
-                                                                              mpTextBoxInDialog->toPlainText(), mSelectedFont, mSelectedColor,
-                                                                              mpRectItem->pen().width(), mpRectItem->pen().style(), mpWidthBoxInDialog->value(), selectedStyle,
-                                                                              mpRectItem->isVisible(), mpShowBoxCheckBoxInDialog->isChecked());
-    mpParentContainerObject->mpModelWidget->hasChanged();
+                                                                              mpDialogTextBox->toPlainText(), mSelectedFont, mSelectedTextColor,
+                                                                              mpBorderItem->pen().width(), mpBorderItem->pen().style(), mpDialogLineWidth->value(), selectedStyle,
+                                                                              mpBorderItem->isVisible(), mpDialogShowBorderCheckBox->isChecked());
 
-    mpTextItem->setPlainText(mpTextBoxInDialog->toPlainText());
+    // Update text
+    mReflowText = mpDialogReflowCheckBox->isChecked();
+    if (mReflowText)
+    {
+        mpTextItem->setTextWidth(boundingRect().width());
+    }
+    else
+    {
+        mpTextItem->setTextWidth(-1);
+    }
+    mpTextItem->setPlainText(mpDialogTextBox->toPlainText());
     mpTextItem->setFont(mSelectedFont);
-    mpTextItem->setDefaultTextColor(mSelectedColor);
+    mpTextItem->setDefaultTextColor(mSelectedTextColor);
 
-    //this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
+    // Update border box
+    QPen borderPen = mpBorderItem->pen();
+    borderPen.setColor(mSelectedLineColor);
+    borderPen.setWidth(mpDialogLineWidth->value());
+    borderPen.setStyle(selectedStyle);
+    mpBorderItem->setPen(borderPen);
+    mpBorderItem->setRect(mpBorderItem->rect().united(mpTextItem->boundingRect()));
+    mpBorderItem->setVisible(mpDialogShowBorderCheckBox->isChecked());
 
-    //Update box
-    mpRectItem->setVisible(mpShowBoxCheckBoxInDialog->isChecked());
-
-    QPen tempPen = mpRectItem->pen();
-    tempPen.setColor(mSelectedColor);
-    tempPen.setWidth(mpWidthBoxInDialog->value());
-    tempPen.setStyle(selectedStyle);
-    mpRectItem->setPen(tempPen);
-    mpRectItem->setRect(mpRectItem->rect().united(mpTextItem->boundingRect()));
-
-    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    // Update the size
+    refreshWidgetSize();
 
     if(this->isSelected())
     {
         mpSelectionBox->setActive();
     }
-    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+
+    mpParentContainerObject->mpModelWidget->hasChanged();
 
     mpEditDialog->close();
 }
@@ -614,27 +689,37 @@ void TextBoxWidget::updateWidgetFromDialog()
 void TextBoxWidget::openFontDialog()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, mpTextBoxInDialog->font(), gpMainWindowWidget);
+    QFont font = QFontDialog::getFont(&ok, mpDialogTextBox->font(), gpMainWindowWidget);
     if (ok)
     {
         mSelectedFont = font;
-        mpTextBoxInDialog->setFont(font);
+        mpDialogTextBox->setFont(font);
     }
 }
 
-void TextBoxWidget::openColorDialog()
+void TextBoxWidget::openTextColorDialog()
 {
-    QColor color;
-    color = QColorDialog::getColor(mSelectedColor, gpMainWindowWidget);
-
+    QColor color = QColorDialog::getColor(mSelectedTextColor, gpMainWindowWidget);
     if (color.isValid())
     {
-        mSelectedColor = color;
-        mpTextBoxInDialog->setTextColor(color);
-        QString redString, greenString, blueString;
-        redString.setNum(mSelectedColor.red());
-        greenString.setNum(mSelectedColor.green());
-        blueString.setNum(mSelectedColor.blue());
-        mpColorInDialogButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
+        mSelectedTextColor = color;
+        mpDialogTextColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3) }").arg(color.red()).arg(color.green()).arg(color.blue()));
     }
+}
+
+void TextBoxWidget::openLineColorDialog()
+{
+    QColor color = QColorDialog::getColor(mSelectedTextColor, gpMainWindowWidget);
+    if (color.isValid())
+    {
+        mSelectedLineColor = color;
+        QString style = QString("* { background-color: rgb(%1,%2,%3) }").arg(color.red()).arg(color.green()).arg(color.blue());
+        mpDialogLineColorButton->setStyleSheet(style);
+    }
+}
+
+void TextBoxWidget::refreshWidgetSize()
+{
+    resize(mpBorderItem->boundingRect().width(), mpBorderItem->boundingRect().height());
+    refreshSelectionBoxSize();
 }
