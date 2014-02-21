@@ -201,6 +201,35 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
             str.insert(0, "-1*");
         }
 
+        //Replace power operators with pow() functions
+        for(int i=0; i<str.size(); ++i)
+        {
+            if(str[i] == '^')
+            {
+                str[i] = ',';
+                int j=i-1;
+                int parBal = 0;
+                while(j>=0 && (str[j].isLetterOrNumber() || str[j] == '.' || str[j] == ')' || (str[j] == '(' && parBal != 0) || parBal > 0))
+                {
+                    if(str[j] == ')') parBal++;
+                    if(str[j] == '(') parBal--;
+                    --j;
+                }
+                ++j;
+                str.insert(j, "pow(");
+
+                j = i+6;
+                parBal = 0;
+                while(j<str.size() && (str[j].isLetterOrNumber() || str[j] == '.' || str[j] == '(' || (str[j] == ')' && parBal != 0) || parBal > 0))
+                {
+                    if(str[j] == ')') parBal--;
+                    if(str[j] == '(') parBal++;
+                    ++j;
+                }
+                str.insert(j, ")");
+            }
+        }
+
         //Trivial simplifications before parsing
         if(str.size() > 1)
         {

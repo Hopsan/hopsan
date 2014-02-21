@@ -823,6 +823,8 @@ private Q_SLOTS:
         QTest::newRow("30") << Expression("0&&y") << variables << 0.0 << true;
         QTest::newRow("31") << Expression("0&&0") << variables << 0.0 << true;
         QTest::newRow("32") << Expression("0.5*4 == 1+1") << variables << 1.0 << true;
+        QTest::newRow("33") << Expression("x^2-y^2") << variables << x*x-y*y << true;
+        QTest::newRow("33") << Expression("(x-y)^2-(2*y+23)^2") << variables << (x-y)*(x-y)-(2*y+23)*(2*y+23) << true;
     }
 };
 
