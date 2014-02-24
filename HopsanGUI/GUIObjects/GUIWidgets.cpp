@@ -54,15 +54,9 @@ Widget::Widget(QPointF pos, qreal rot, SelectionStatusEnumT startSelected, Conta
 }
 
 
-void Widget::setOldPos()
+void Widget::rememberOldPos()
 {
     mOldPos = this->pos();
-}
-
-
-void Widget::setWidgetIndex(int idx)
-{
-    mWidgetIndex = idx;
 }
 
 
@@ -209,6 +203,7 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     xmlText.setAttribute("text", mpTextItem->toPlainText());
     xmlText.setAttribute("font", mpTextItem->font().toString());
     xmlText.setAttribute("fontcolor", mpTextItem->defaultTextColor().name());
+    xmlText.setAttribute("reflow", mReflowText);
 
     QDomElement xmlSize = appendDomElement(xmlGuiStuff, "size");
     setQrealAttribute(xmlSize, "width", mpBorderItem->rect().width());
@@ -216,7 +211,7 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
 
     QDomElement xmlLine = appendDomElement(xmlGuiStuff, "line");
     xmlLine.setAttribute("visible", mpBorderItem->isVisible());
-    setQrealAttribute(xmlLine, "width", mpBorderItem->pen().width());
+    xmlLine.setAttribute("width", mpBorderItem->pen().width());
     xmlLine.setAttribute("color", mpBorderItem->pen().color().name());
 
     QString style;
@@ -229,6 +224,62 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     else if(mpBorderItem->pen().style() == Qt::DashDotLine)
         style = "dashdotline";
     xmlLine.setAttribute(HMF_STYLETAG, style);
+}
+
+void TextBoxWidget::loadFromDomElement(const QDomElement &rDomElement)
+{
+    QFont font;
+    QColor textColor, lineColor;
+
+    // Read gui specific stuff
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+
+    // Text
+    QDomElement textObject = guiData.firstChildElement("textobject");
+    QString text = textObject.attribute("text");
+    font.fromString(textObject.attribute("font"));
+    textColor.setNamedColor(textObject.attribute("fontcolor"));
+    bool reflowText = parseAttributeBool(textObject, "reflow", false);
+
+    // Box
+    QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
+    QPointF point( parseAttributeQreal(poseTag,"x",0), parseAttributeQreal(poseTag,"y",0));
+    QDomElement sizeTag = guiData.firstChildElement("size");
+    qreal width = parseAttributeQreal(sizeTag, "width", 10);
+    qreal height = parseAttributeQreal(sizeTag, "height", 10);
+    QDomElement lineTag = guiData.firstChildElement("line");
+    bool lineVisible = parseAttributeBool(lineTag, "visible", true);
+    int linewidth = parseAttributeInt(lineTag, "width", 1);
+    //! @todo this check is for backwards compatibility, remove in the future (added 20140224)
+    if (linewidth == 1)
+    {
+        // Try double parsing
+        linewidth = parseAttributeQreal(lineTag, "width", linewidth);
+    }
+    QString linestyle = lineTag.attribute(HMF_STYLETAG);
+    lineColor.setNamedColor(lineTag.attribute("color"));
+
+    setText(text);
+    setFont(font);
+    setTextColor(textColor);
+    setReflowText(reflowText);
+    setLineColor(lineColor);
+    setLineWidth(linewidth);
+    setBoxVisible(lineVisible);
+    setSize(width, height);
+    setPos(point);
+
+    if(linestyle == "solidline")
+        setLineStyle(Qt::SolidLine);
+    if(linestyle == "dashline")
+        setLineStyle(Qt::DashLine);
+    if(linestyle == "dotline")
+        setLineStyle(Qt::DotLine);
+    if(linestyle == "dashdotline")
+        setLineStyle(Qt::DashDotLine);
+
+    // In case font is not correct this is nice to run
+    makeSureBoxNotToSmallForText();
 }
 
 void TextBoxWidget::setText(QString text)
@@ -319,11 +370,11 @@ void TextBoxWidget::resizeBoxToText()
 
 void TextBoxWidget::resizeTextToBox()
 {
-    reflowText(true);
+    setReflowText(true);
     mpTextItem->setTextWidth(mpBorderItem->boundingRect().width());
 }
 
-void TextBoxWidget::reflowText(bool doReflow)
+void TextBoxWidget::setReflowText(bool doReflow)
 {
     mReflowText = doReflow;
 }
@@ -375,11 +426,9 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpDialogTextColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3); }").arg(mpTextItem->defaultTextColor().red())
                                                                                             .arg(mpTextItem->defaultTextColor().green())
                                                                                             .arg(mpTextItem->defaultTextColor().blue()));
-
     mpDialogReflowCheckBox = new QCheckBox(tr("Reflow text"));
     mpDialogReflowCheckBox->setChecked(mReflowText);
 
-    mSelectedFont = mpTextItem->font();
     mSelectedTextColor = mpTextItem->defaultTextColor();
     mSelectedLineColor = mpBorderItem->pen().color();
 
@@ -642,12 +691,8 @@ void TextBoxWidget::updateWidgetFromDialog()
     }
 
     // Remember for UnDo
-    //! @todo undo settings should use save to xml instead, also missing reflow setting
-    mpParentContainerObject->getUndoStackPtr()->newPost();
-    mpParentContainerObject->getUndoStackPtr()->registerModifiedTextBoxWidget(mWidgetIndex, mpTextItem->toPlainText(), mpTextItem->font(), mpTextItem->defaultTextColor(),
-                                                                              mpDialogTextBox->toPlainText(), mSelectedFont, mSelectedTextColor,
-                                                                              mpBorderItem->pen().width(), mpBorderItem->pen().style(), mpDialogLineWidth->value(), selectedStyle,
-                                                                              mpBorderItem->isVisible(), mpDialogShowBorderCheckBox->isChecked());
+    mpParentContainerObject->getUndoStackPtr()->newPost("Modified TextBox");
+    mpParentContainerObject->getUndoStackPtr()->registerModifiedTextBoxWidget(this);
 
     // Update text
     mReflowText = mpDialogReflowCheckBox->isChecked();
@@ -660,7 +705,7 @@ void TextBoxWidget::updateWidgetFromDialog()
         mpTextItem->setTextWidth(-1);
     }
     mpTextItem->setPlainText(mpDialogTextBox->toPlainText());
-    mpTextItem->setFont(mSelectedFont);
+    mpTextItem->setFont(mpDialogTextBox->font());
     mpTextItem->setDefaultTextColor(mSelectedTextColor);
 
     // Update border box
@@ -689,10 +734,19 @@ void TextBoxWidget::updateWidgetFromDialog()
 void TextBoxWidget::openFontDialog()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, mpDialogTextBox->font(), gpMainWindowWidget);
+    // We need to create a fontinfo objeect here to figure out what font is actually beeing used to render the text
+    // The qfont object might not correspon exactly to the actual font used
+    QFontInfo fi(mpDialogTextBox->font());
+    qDebug()  << fi.family();
+    qDebug()  << fi.styleName();
+    qDebug()  << fi.style();
+    qDebug()  << fi.styleHint();
+    qDebug()  << fi.weight();
+    QFont initialFont(fi.family(), fi.pointSize());
+    initialFont.setStyleName(fi.styleName());
+    QFont font = QFontDialog::getFont(&ok, initialFont, gpMainWindowWidget);
     if (ok)
     {
-        mSelectedFont = font;
         mpDialogTextBox->setFont(font);
     }
 }

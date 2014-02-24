@@ -47,8 +47,7 @@ class Widget : public WorkspaceObject
 public:
     Widget(QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
     QString mType;
-    void setOldPos();
-    void setWidgetIndex(int idx);
+    void rememberOldPos();
     int getWidgetIndex();
 
 protected:
@@ -74,6 +73,7 @@ public:
     TextBoxWidget(QString text, QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem);
     void saveToDomElement(QDomElement &rDomElement);
+    void loadFromDomElement(const QDomElement &rDomElement);
 
     void setText(QString text);
     void setFont(QFont font);
@@ -87,7 +87,7 @@ public:
     void makeSureBoxNotToSmallForText();
     void resizeBoxToText();
     void resizeTextToBox();
-    void reflowText(bool doReflow);
+    void setReflowText(bool doReflow);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -126,7 +126,6 @@ private:
     QSpinBox *mpDialogLineWidth;
     QComboBox *mpDialogLineStyle;
 
-    QFont mSelectedFont;
     QColor mSelectedTextColor;
     QColor mSelectedLineColor;
 

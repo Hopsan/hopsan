@@ -203,7 +203,7 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         for(int i = 0; i < mpParentContainerObject->getSelectedGUIWidgetPtrs().size(); ++i)
         {
-            mpParentContainerObject->getSelectedGUIWidgetPtrs()[i]->setOldPos();
+            mpParentContainerObject->getSelectedGUIWidgetPtrs()[i]->rememberOldPos();
         }
     }
 

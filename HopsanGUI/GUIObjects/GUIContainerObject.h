@@ -90,7 +90,9 @@ public:
 
     //GUIWidgets methods
     TextBoxWidget *addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings=Undo);
+    TextBoxWidget *addTextBoxWidget(QPointF position, const int desiredWidgetId, UndoStatusEnumT undoSettings=Undo);
     void deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings=Undo);
+    void deleteWidget(const int id, UndoStatusEnumT undoSettings=Undo);
     void rememberSelectedWidget(Widget *widget);
     void forgetSelectedWidget(Widget *widget);
     QList<Widget *> getSelectedGUIWidgetPtrs();
@@ -151,6 +153,7 @@ public:
 
     QStringList getModelObjectNames();
     QList<Widget*> getWidgets();
+    Widget *getWidget(const int id);
 
     void replaceComponent(QString name, QString newType);
 
@@ -317,7 +320,6 @@ protected:
     //Widget members
     QMap<size_t, Widget *> mWidgetMap;
     QList<Widget *> mSelectedWidgetsList;
-    size_t mHighestWidgetIndex;
 
     //Contained object appearance members
     bool mShowSubComponentPorts;

@@ -470,66 +470,14 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 }
 
 
+//! @todo this function should not be needed, figure out the stupid stuff below then code this function away
 TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, UndoStatusEnumT undoSettings)
 {
-    QString text;
-    QFont font;
-    QColor textColor, lineColor;
-    QString linestyle;
-    bool lineVisible;
-    QPointF point;
-    qreal width, height, linewidth;
+    TextBoxWidget *pWidget = pContainer->addTextBoxWidget(QPointF(1,1), NoUndo);
+    pWidget->loadFromDomElement(rDomElement);
 
-    //Read gui specific stuff
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-
-    QDomElement textobjectTag = guiData.firstChildElement("textobject");
-    text = textobjectTag.attribute("text");
-    font.fromString(textobjectTag.attribute("font")); //!< @todo what if font do not exist, need to check that ant act appropriately
-    textColor.setNamedColor(textobjectTag.attribute("fontcolor"));
-
-    QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
-    QPointF tempPoint;
-    tempPoint.setX(poseTag.attribute("x").toDouble());
-    tempPoint.setY(poseTag.attribute("y").toDouble());
-    point = tempPoint.toPoint();
-
-    QDomElement sizeTag = guiData.firstChildElement("size");
-    width = sizeTag.attribute("width").toDouble();
-    height = sizeTag.attribute("height").toDouble();
-
-    QDomElement lineTag = guiData.firstChildElement("line");
-    lineVisible = lineTag.attribute("visible").toInt();
-    linewidth = lineTag.attribute("width").toDouble();
-    linestyle = lineTag.attribute(HMF_STYLETAG);
-    lineColor.setNamedColor(lineTag.attribute("color"));
-
-    TextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NoUndo);
-    pWidget->setText(text);
-    pWidget->setFont(font);
-    pWidget->setTextColor(textColor);
-    pWidget->setLineColor(lineColor);
-    pWidget->setLineWidth(linewidth);
-    pWidget->setBoxVisible(lineVisible);
-    pWidget->setSize(width, height);
-    if(linestyle == "solidline")
-        pWidget->setLineStyle(Qt::SolidLine);
-    if(linestyle == "dashline")
-        pWidget->setLineStyle(Qt::DashLine);
-    if(linestyle == "dotline")
-        pWidget->setLineStyle(Qt::DotLine);
-    if(linestyle == "dashdotline")
-        pWidget->setLineStyle(Qt::DashDotLine);
     pWidget->setSelected(true);     //!< @todo Stupid!
     pWidget->setSelected(false);    //For some reason this is needed...
-    if(undoSettings == Undo)
-    {
-        pContainer->getUndoStackPtr()->registerAddedWidget(pWidget);
-    }
-
-    //! @todo load save reflow setting, reflow = false if missing (from old code)
-    // In case font is not correct this is nice to run
-    pWidget->makeSureBoxNotToSmallForText();
 
     return pWidget;
 }

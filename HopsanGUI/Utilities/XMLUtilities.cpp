@@ -445,12 +445,14 @@ qreal parseAttributeQreal(const QDomElement domElement, const QString attributeN
 {
     if (domElement.hasAttribute(attributeName))
     {
-        return domElement.attribute(attributeName).toDouble();
+        bool isOK=false;
+        const qreal val = domElement.attribute(attributeName).toDouble(&isOK);
+        if (isOK)
+        {
+            return val;
+        }
     }
-    else
-    {
-        return defaultValue;
-    }
+    return defaultValue;
 }
 
 bool parseAttributeBool(const QDomElement domElement, const QString attributeName, const bool defaultValue)
@@ -676,4 +678,19 @@ void parseLogSettingsTag(QDomElement domElement, double &rLogStartTime, int &rNu
 {
     rLogStartTime = parseAttributeQreal(domElement, "starttime", 0);
     rNumLogSamples = domElement.attribute("numsamples", "0").toInt();
+}
+
+
+int parseAttributeInt(const QDomElement domElement, const QString attributeName, const int defaultValue)
+{
+    if (domElement.hasAttribute(attributeName))
+    {
+        bool isOK=false;
+        const int val = domElement.attribute(attributeName).toInt(&isOK);
+        if (isOK)
+        {
+            return val;
+        }
+    }
+    return defaultValue;
 }

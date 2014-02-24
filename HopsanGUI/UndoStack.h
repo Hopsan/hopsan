@@ -78,12 +78,16 @@ public:
     void registerAddedWidget(Widget *item);
     void registerDeletedWidget(Widget *item);
     void registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos);
-    void registerModifiedTextBoxWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color, int oldLineWidth, Qt::PenStyle oldLineStyle, int lineWidth, Qt::PenStyle lineStyle, bool boxVisibleBefore, bool boxVisible);
     void registerResizedTextBoxWidget(const int index, const qreal w_old, const qreal h_old, const qreal w_new, const qreal h_new, const QPointF oldPos, const QPointF newPos);
+    void registerModifiedTextBoxWidget(Widget *pItem);
 
 private:
     ContainerObject *mpParentContainerObject;
     int mCurrentStackPosition;
+
+    void addTextboxwidget(const QDomElement &rStuffElement);
+    void removeTextboxWidget(const QDomElement &rStuffElement);
+    void modifyTextboxWidget(QDomElement &rStuffElement);
 
     QDomElement getCurrentPost();
     QDomDocument mDomDocument;

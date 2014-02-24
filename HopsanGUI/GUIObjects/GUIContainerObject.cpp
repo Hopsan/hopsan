@@ -91,8 +91,6 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
     mUndoDisabled = false;
     mGfxType = UserGraphics;
 
-    mHighestWidgetIndex = 0;
-
     mPasteOffset = -30;
 
     //Create the scene
@@ -607,19 +605,29 @@ bool ContainerObject::areLossesVisible()
 
 TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings)
 {
-    TextBoxWidget *pTempTextBoxWidget;
-    pTempTextBoxWidget = new TextBoxWidget("Text", position, 0, Deselected, this, mHighestWidgetIndex);
-    qDebug() << "Creating widget, index = " << pTempTextBoxWidget->getWidgetIndex();
-    mWidgetMap.insert(mHighestWidgetIndex, pTempTextBoxWidget);
-    qDebug() << "Inserting widget in map, index = " << mHighestWidgetIndex;
-    ++mHighestWidgetIndex;
+    return addTextBoxWidget(position, 0, undoSettings);
+}
+
+TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, const int desiredWidgetId, UndoStatusEnumT undoSettings)
+{
+    TextBoxWidget *pNewTextBoxWidget;
+    if (mWidgetMap.contains(desiredWidgetId))
+    {
+        pNewTextBoxWidget = new TextBoxWidget("Text", position, 0, Deselected, this, mWidgetMap.keys().last()+1);
+    }
+    else
+    {
+        pNewTextBoxWidget = new TextBoxWidget("Text", position, 0, Deselected, this, desiredWidgetId);
+    }
+    mWidgetMap.insert(pNewTextBoxWidget->getWidgetIndex(), pNewTextBoxWidget);
+
     if(undoSettings == Undo)
     {
-        mpUndoStack->registerAddedWidget(pTempTextBoxWidget);
+        mpUndoStack->registerAddedWidget(pNewTextBoxWidget);
     }
     mpModelWidget->hasChanged();
 
-    return pTempTextBoxWidget;
+    return pNewTextBoxWidget;
 }
 
 
@@ -638,6 +646,15 @@ void ContainerObject::deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings
     mSelectedWidgetsList.removeAll(pWidget);
     mWidgetMap.remove(pWidget->getWidgetIndex());
     pWidget->deleteLater();
+}
+
+void ContainerObject::deleteWidget(const int id, UndoStatusEnumT undoSettings)
+{
+    Widget *pWidget = mWidgetMap.value(id, 0);
+    if (pWidget)
+    {
+        deleteWidget(pWidget, undoSettings);
+    }
 }
 
 
@@ -2132,13 +2149,12 @@ QStringList ContainerObject::getModelObjectNames()
 //! @brief Returns a list with pointers to GUI widgets
 QList<Widget *> ContainerObject::getWidgets()
 {
-    QList<Widget *> list;
-    QMap<size_t, Widget *>::iterator it;
-    for(it=mWidgetMap.begin(); it!=mWidgetMap.end(); ++it)
-    {
-        list.append(it.value());
-    }
-    return list;
+    return mWidgetMap.values();
+}
+
+Widget *ContainerObject::getWidget(const int id)
+{
+    return mWidgetMap.value(id, 0);
 }
 
 //! @brief Returns the path to the icon with iso graphics.

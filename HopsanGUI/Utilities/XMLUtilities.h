@@ -68,6 +68,7 @@ void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rS
 void parseLogSettingsTag(QDomElement domElement, double &rLogStartTime, int &rNumLogSamples);
 
 bool parseAttributeBool(const QDomElement domElement, const QString attributeName, const bool defaultValue);
+int parseAttributeInt(const QDomElement domElement, const QString attributeName, const int defaultValue);
 qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue);
 
 //Color help functions
