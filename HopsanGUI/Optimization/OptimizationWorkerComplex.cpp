@@ -58,6 +58,7 @@ void OptimizationWorkerComplex::findCenter()
     }
     for(int p=0; p<mNumPoints; ++p)
     {
+        if(p == mWorstId) continue;
         for(int i=0; i<mNumParameters; ++i)
         {
             mCenter[i] = mCenter[i]+mParameters[p][i];
@@ -65,7 +66,7 @@ void OptimizationWorkerComplex::findCenter()
     }
     for(int i=0; i<mCenter.size(); ++i)
     {
-        mCenter[i] = mCenter[i]/double(mNumPoints);
+        mCenter[i] = mCenter[i]/double(mNumPoints-1);
     }
 }
 
