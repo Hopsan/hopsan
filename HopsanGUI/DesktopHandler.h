@@ -38,6 +38,7 @@ public:
 
     const QString &getExecPath() const;
     const QString &getDataPath() const;
+    const QString &getConfigPath() const;
     const QString &getTempPath() const;
     const QString &getDocumentsPath() const;
     const QString getGeneratedComponentsPath() const;
@@ -58,6 +59,7 @@ private:
     QString mExecPath;
 
     bool mUseCustomDataPath;
+    QString mDefaultConfigPath;
     QString mDefaultDataPath;
     QString mCustomDataPath;
 

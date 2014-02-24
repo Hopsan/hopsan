@@ -59,11 +59,13 @@ DesktopHandler::DesktopHandler()
     mUseCustomTempPath = false;
     mUseCustomDocumentsPath = false;
 #if QT_VERSION >= 0x050000
-    mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation) + "/Hopsan/";
+    mDefaultConfigPath = getStandardLocation(QStandardPaths::ConfigLocation);
+    mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation);
     mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "/Hopsan/";
     mDefaultDocumentsPath = getStandardLocation(QStandardPaths::DocumentsLocation) + "/Hopsan/";
 #else
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
+    mDefaultConfigPath = mDefaultDataPath;
     mDefaultTempPath = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/";
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
 #endif
@@ -195,6 +197,11 @@ const QString &DesktopHandler::getDataPath() const
         return mCustomDataPath;
     else
         return mDefaultDataPath;
+}
+
+const QString &DesktopHandler::getConfigPath() const
+{
+    return mDefaultConfigPath;
 }
 
 

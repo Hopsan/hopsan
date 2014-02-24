@@ -195,11 +195,11 @@ void Configuration::saveToXml()
     appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
-    if(!QDir(gpDesktopHandler->getDataPath()).exists())
+    if(!QDir(gpDesktopHandler->getConfigPath()).exists())
     {
-        QDir().mkpath(gpDesktopHandler->getDataPath());
+        QDir().mkpath(gpDesktopHandler->getConfigPath());
     }
-    QFile xmlsettings(gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml"));
+    QFile xmlsettings(gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         gpMessageHandler->addErrorMessage("Failed to open config file for writing: "+gpDesktopHandler->getDataPath()+"hopsanconfig.xml");

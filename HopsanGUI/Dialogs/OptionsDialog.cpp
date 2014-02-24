@@ -313,8 +313,8 @@ void OptionsDialog::reset()
 //! @brief Opens settings XML file outside Hopsan with default application
 void OptionsDialog::openXml()
 {
-    qDebug() << "Opening: " << gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml");
-    QDesktopServices::openUrl(QUrl("file:///"+gpDesktopHandler->getDataPath() + QString("hopsanconfig.xml")));
+    qDebug() << "Opening: " << gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml");
+    QDesktopServices::openUrl(QUrl("file:///"+gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml")));
 }
 
 
