@@ -111,6 +111,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     mpLengthLabel = new QLabel("Length: ");
     mpLengthSpinBox = new QSpinBox(this);
+    mpLengthSpinBox->setMaximum(100000000);
     mpLengthSpinBox->setValue(10);
 
     mpPercDiffLabel = new QLabel("Difference [%]: ");
