@@ -55,9 +55,10 @@ protected:
     void plotPoints();
 
     QVector< QVector<double> > mCandidateParticles;
-    bool mNoPointsChanged;
+    bool mNeedsIteration;
 
     double mAlpha1, mAlpha2, mAlpha3;
     int mNumThreads;
+    int mMethod;
 };
 #endif // OPTIMIZATIONWORKERCOMPLEXRFP_H
