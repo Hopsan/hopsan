@@ -39,6 +39,7 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 
 #include "common.h"

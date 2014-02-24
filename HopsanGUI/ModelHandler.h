@@ -25,9 +25,9 @@
 #ifndef MODELHANDLER_H
 #define MODELHANDLER_H
 
-#include <QtGui>
 #include <QObject>
 #include <QDomElement>
+#include <QAction>
 
 class ModelWidget;
 class CentralTabWidget;

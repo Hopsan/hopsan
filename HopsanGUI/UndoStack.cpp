@@ -22,8 +22,6 @@
 //!
 //$Id$
 
-#include <QtGui>
-
 #include "global.h"
 #include "UndoStack.h"
 #include "GUIConnector.h"

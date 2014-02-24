@@ -25,6 +25,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QColorDialog>
+#include <QDesktopServices>
 
 #include "global.h"
 #include "Configuration.h"

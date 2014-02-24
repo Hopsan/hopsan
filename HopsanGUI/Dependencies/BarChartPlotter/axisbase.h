@@ -1,7 +1,10 @@
 #ifndef AXISBASE_H
 #define AXISBASE_H
 
-#include <QtGui>
+#include <QObject>
+#include <QAbstractItemModel>
+#include <QPen>
+#include <QFont>
 
 
 namespace QSint

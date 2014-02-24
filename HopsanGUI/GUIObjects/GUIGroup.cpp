@@ -26,7 +26,6 @@
 #include "GUIGroup.h"
 
 #include <QVector>
-#include <QtGui> //!< @todo maybe only need qtfile dialog
 
 #include "common.h"
 #include "global.h"

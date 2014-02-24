@@ -42,7 +42,6 @@
 #include <QPushButton>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QtGui>
 #include <QDoubleSpinBox>
 
 class ContainerObject;

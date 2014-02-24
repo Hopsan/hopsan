@@ -1,6 +1,8 @@
 #include "barchartplotter.h"
 #include "axisbase.h"
 
+#include <QPainter>
+
 
 namespace QSint
 {

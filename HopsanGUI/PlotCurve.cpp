@@ -44,6 +44,7 @@
 #include <QDialogButtonBox>
 #include <QMenu>
 #include <QAction>
+#include <QMouseEvent>
 
 
 const double DoubleMax = std::numeric_limits<double>::max();

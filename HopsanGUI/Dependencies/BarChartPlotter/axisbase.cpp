@@ -1,6 +1,7 @@
 #include "axisbase.h"
 #include "plotterbase.h"
 
+#include <QPainter>
 
 namespace QSint
 {

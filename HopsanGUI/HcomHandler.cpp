@@ -20,7 +20,10 @@
 //! @version $Id$
 //!
 //! @brief Contains a handler for the HCOM scripting language
-//!
+
+// Qt includes
+#include <QDesktopServices>
+
 //HopsanGUI includes
 #include "common.h"
 #include "global.h"

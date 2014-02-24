@@ -34,6 +34,7 @@
 
 //Qt includes
 #include <QDebug>
+#include <QDateTime>
 
 //C++ includes
 #include <math.h>

@@ -34,6 +34,7 @@
 #include <QProgressBar>
 #include <QMenu>
 #include <QApplication>
+#include <QDesktopServices>
 
 //Hopsan includes
 #include "global.h"

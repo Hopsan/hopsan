@@ -31,7 +31,6 @@
 #include <QDateTime>
 #include <QStandardItemModel>
 #include <QtGlobal>
-#include <QtGui>
 #include <QApplication>
 #include <QDesktopWidget>
 
