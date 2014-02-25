@@ -63,7 +63,6 @@ public:
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
 
     SharedVectorVariableT defineNewVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
-    SharedVectorVariableT defineTempVariable(const QString &rDesiredname);
     SharedVectorVariableT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
     bool deleteVariable(const QString &rVarName);
@@ -85,9 +84,7 @@ public:
     const SharedVectorVariableT getTimeVectorVariable(int generation) const;
     QVector<double> copyTimeVector(const int generation) const;
 
-//    QVector<double> copyVariableDataVector(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     QVector<double> copyVariableDataVector(const QString &rName, const int generation);
-//    SharedVectorVariableT getVectorVariable(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedVectorVariableT getVectorVariable(const QString &rName, const int generation) const;
     HopsanVariable getHopsanVariable(const QString &rName, const int generation) const;
 
@@ -153,8 +150,6 @@ public:
     SharedVectorVariableT elementWiseGT(SharedVectorVariableT pData, const double thresh);
     SharedVectorVariableT elementWiseLT(SharedVectorVariableT pData, const double thresh);
 
-    SharedVectorVariableT saveVariable(SharedVectorVariableT a);
-
     void takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration=-2);
 
 public slots:
@@ -191,9 +186,8 @@ private:
     ImportedLogDataMapT mImportedLogDataMap;
     GenerationCacheMapT mGenerationCacheMap;
 
-    int mnPlotCurves;
+    int mNumPlotCurves;
     int mGenerationNumber;
-    quint64 mTempVarCtr;
     QList<QDir> mCacheDirs;
     quint64 mCacheSubDirCtr;
 };

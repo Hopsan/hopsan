@@ -1012,9 +1012,6 @@ QString variableSourceTypeAsString(const VariableSourceTypeT type)
     case ScriptVariableType :
         return "ScriptVariable";
         break;
-    case TempVariableType :
-        return "TempVariable";
-        break;
     case ModelVariableType :
         return "ModelVariable";
         break;
@@ -1033,9 +1030,6 @@ QString variableSourceTypeAsShortString(const VariableSourceTypeT type)
     {
     case ScriptVariableType :
         return "S";
-        break;
-    case TempVariableType :
-        return "T";
         break;
     case ModelVariableType :
         return "M";

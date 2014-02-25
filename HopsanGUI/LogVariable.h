@@ -48,7 +48,7 @@ QString makeConcatName(const QString componentName, const QString portName, cons
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
 
 //! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)
-enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType, UndefinedVariableSourceType};
+enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, UndefinedVariableSourceType};
 QString variableSourceTypeAsString(const VariableSourceTypeT type);
 QString variableSourceTypeAsShortString(const VariableSourceTypeT type);
 

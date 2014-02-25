@@ -328,7 +328,7 @@ void VariableTree::updateList()
     QList<HopsanVariable> variables = getLogDataHandler()->getAllVariablesAtRespectiveNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
-        if ( variables[i].mpVariable->isImported() || (variables[i].mpVariable->getVariableSourceType() == TempVariableType) )
+        if ( variables[i].mpVariable->isImported() )
         {
             continue;
         }

@@ -55,9 +55,8 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
 {
     mpParentContainerObject = 0;
     setParentContainerObject(pParent);
-    mnPlotCurves = 0;
+    mNumPlotCurves = 0;
     mGenerationNumber = -1;
-    mTempVarCtr = 0;
 
     // Create the temporary directory that will contain cache data
     int ctr=0;
@@ -1316,7 +1315,7 @@ SharedMultiDataVectorCacheT LogDataHandler::getGenerationMultiCache(const int ge
 //! @see PlotData::hasOpenPlotCurves()
 void LogDataHandler::incrementOpenPlotCurves()
 {
-    ++mnPlotCurves;
+    ++mNumPlotCurves;
 }
 
 
@@ -1326,7 +1325,7 @@ void LogDataHandler::incrementOpenPlotCurves()
 //! @see PlotData::hasOpenPlotCurves()
 void LogDataHandler::decrementOpenPlotCurves()
 {
-    --mnPlotCurves;
+    --mNumPlotCurves;
 }
 
 
@@ -1531,12 +1530,6 @@ double LogDataHandler::pokeVariable(SharedVectorVariableT a, const int index, co
     return r;
 }
 
-SharedVectorVariableT LogDataHandler::saveVariable(SharedVectorVariableT a)
-{
-    SharedVectorVariableT pTempVar = defineTempVariable(a->getFullVariableName());
-    pTempVar->assignFrom(a);
-    return pTempVar;
-}
 
 double LogDataHandler::peekVariable(SharedVectorVariableT a, const int index)
 {
@@ -1549,18 +1542,6 @@ double LogDataHandler::peekVariable(SharedVectorVariableT a, const int index)
     return r;
 }
 
-//! @brief Creates a new temp variable (appending tempctr to name) that will be added to and manageed by the logdatahandler, it will not be automatically deleted unless its generation is auto-removed
-//! @note Avoid this function if possible
-SharedVectorVariableT LogDataHandler::defineTempVariable(const QString &rDesiredname)
-{
-    SharedVectorVariableT pData = defineNewVectorVariable_NoNameCheck(rDesiredname+QString("%1").arg(mTempVarCtr));
-    if (pData)
-    {
-        pData->mpVariableDescription->mVariableSourceType = TempVariableType;
-        ++mTempVarCtr;
-    }
-    return pData;
-}
 
 //! @brief Creates an orphan temp variable that will be deleted when its shared pointer reference counter reaches zero (when no one is using it)
 SharedVectorVariableT LogDataHandler::createOrphanVariable(const QString &rName, VariableTypeT type)
@@ -1595,7 +1576,7 @@ SharedVectorVariableT LogDataHandler::defineNewVariable(const QString &rDesiredn
 //! @see PlotData::decrementOpenPlotCurves()
 bool LogDataHandler::hasOpenPlotCurves()
 {
-    return (mnPlotCurves > 0);
+    return (mNumPlotCurves > 0);
 }
 
 void LogDataHandler::closePlotsWithCurvesBasedOnOwnedData()
@@ -1911,12 +1892,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
 
         }
 
-        if (tookOwnershipOfSomeData)
-        {
-            // If we did actually take some data then it might be a good idea to make sure our tempvariable counter is set high enough to avoid colision
-            mTempVarCtr = qMax(mTempVarCtr, pOtherHandler->mTempVarCtr);
-        }
-        else
+        if (!tookOwnershipOfSomeData)
         {
             // Revert generation if no data was taken
             --mGenerationNumber;
