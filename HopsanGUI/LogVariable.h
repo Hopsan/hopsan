@@ -294,6 +294,7 @@ signals:
     void allowAutoRemove(int gen, bool allow);
 
 protected:
+    void replaceSharedTFVector(SharedVectorVariableT pToFVector);
     typedef QVector<double> DataVectorT;
 
     QPointer<LogDataHandler> mpParentLogDataHandler;

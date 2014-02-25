@@ -140,77 +140,90 @@ void HopQwtPlot::replot()
 }
 
 
-TimeScaleWidget::TimeScaleWidget(SharedVectorVariableT pTime, QWidget *pParent) : QWidget(pParent)
+TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pVariable, QWidget *pParent) :
+    QWidget(pParent)
 {
-    mpTime = pTime;
+    mpTimeOrFrequency = pVariable->getSharedTimeOrFrequencyVector();
 
     QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-    mpTimeScaleComboBox = new QComboBox(this);
-    mpTimeOffsetLineEdit = new QLineEdit(this);
-    mpTimeOffsetLineEdit->setValidator(new QDoubleValidator(this));
+    mpScaleComboBox = new QComboBox(this);
+    mpOffsetLineEdit = new QLineEdit(this);
+    mpOffsetLineEdit->setValidator(new QDoubleValidator(this));
 
-    pHBoxLayout->addWidget(new QLabel("Time", this));
+    if ( pVariable->getVariableType() == TimeDomainType )
+    {
+        pHBoxLayout->addWidget(new QLabel("Time", this));
+    }
+    else if ( pVariable->getVariableType() == FrequencyDomainType )
+    {
+        pHBoxLayout->addWidget(new QLabel("Frequency", this));
+    }
+    else
+    {
+        pHBoxLayout->addWidget(new QLabel("Invalid", this));
+    }
+
     pHBoxLayout->addWidget(new QLabel("Scale: ", this));
-    pHBoxLayout->addWidget(mpTimeScaleComboBox);
+    pHBoxLayout->addWidget(mpScaleComboBox);
     pHBoxLayout->addWidget(new QLabel("Offset: ", this));
-    pHBoxLayout->addWidget(mpTimeOffsetLineEdit);
+    pHBoxLayout->addWidget(mpOffsetLineEdit);
 
-    // Dont do stuff if mpTime = NULL ptr
-    if (mpTime)
+    // Dont do stuff if mpTimeOrFrequency = NULL ptr
+    if (mpTimeOrFrequency)
     {
         // Populate time scale box and try to figure out current time unit
         //! @todo what if time = 0
         //! @todo would be nice if we could sort on scale size
-        QMap<QString,double> units = gpConfig->getCustomUnits(TIMEVARIABLENAME);
-        QString currUnit = mpTime->getPlotScaleDataUnit();
+        QMap<QString,double> units = gpConfig->getCustomUnits(mpTimeOrFrequency->getDataName());
+        QString currUnit = mpTimeOrFrequency->getPlotScaleDataUnit();
         if (currUnit.isEmpty())
         {
-            currUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
+            currUnit = gpConfig->getDefaultUnit(mpTimeOrFrequency->getDataName());
         }
         QMap<QString,double>::iterator it;
         int ctr=0;
         for (it = units.begin(); it != units.end(); ++it)
         {
-            mpTimeScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
+            mpScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
             if (currUnit == it.key())
             {
-                mpTimeScaleComboBox->setCurrentIndex(ctr);
+                mpScaleComboBox->setCurrentIndex(ctr);
             }
             ++ctr;
         }
 
         // Set the current offset value
-        mpTimeOffsetLineEdit->setText(QString("%1").arg(mpTime->getPlotOffset()));
+        mpOffsetLineEdit->setText(QString("%1").arg(mpTimeOrFrequency->getPlotOffset()));
 
         // Connect signals to update time scale and ofset when changing values
-        connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setVaules()));
-        connect(mpTimeOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setVaules()));
+        connect(mpScaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setVaules()));
+        connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setVaules()));
     }
     else
     {
-        mpTimeScaleComboBox->setDisabled(true);
-        mpTimeOffsetLineEdit->setDisabled(true);
+        mpScaleComboBox->setDisabled(true);
+        mpOffsetLineEdit->setDisabled(true);
     }
 }
 
-void TimeScaleWidget::setScale(const QString &rUnitScale)
+void TimeOrFrequencyScaleWidget::setScale(const QString &rUnitScale)
 {
-    mpTimeScaleComboBox->findText(rUnitScale, Qt::MatchContains);
+    mpScaleComboBox->findText(rUnitScale, Qt::MatchContains);
     setVaules();
 }
 
-void TimeScaleWidget::setOffset(const QString &rOffset)
+void TimeOrFrequencyScaleWidget::setOffset(const QString &rOffset)
 {
-    mpTimeOffsetLineEdit->setText(rOffset);
+    mpOffsetLineEdit->setText(rOffset);
     setVaules();
 }
 
-void TimeScaleWidget::setVaules()
+void TimeOrFrequencyScaleWidget::setVaules()
 {
-    QString newUnit = extractBetweenFromQString(mpTimeScaleComboBox->currentText().split(" ").last(), '[', ']');
-    QString newScaleStr = mpTimeScaleComboBox->currentText().split(" ")[0];
-    mpTime->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
-    mpTime->setPlotOffset(mpTimeOffsetLineEdit->text().toDouble());
+    QString newUnit = extractBetweenFromQString(mpScaleComboBox->currentText().split(" ").last(), '[', ']');
+    QString newScaleStr = mpScaleComboBox->currentText().split(" ")[0];
+    mpTimeOrFrequency->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
+    mpTimeOrFrequency->setPlotOffset(mpOffsetLineEdit->text().toDouble());
     emit valuesChanged();
     //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
 }
@@ -1444,20 +1457,16 @@ void PlotArea::openTimeScalingDialog()
     scaleDialog.setWindowTitle("Change Time scaling and offset");
 
     // One for each generation, automatic sort on key
-    QMap<int, TimeScaleWidget*> activeGenerations;
+    QMap<int, TimeOrFrequencyScaleWidget*> activeGenerations;
     //! @todo what if massive amount of generations
     for (int i=0; i<mPlotCurves.size(); ++i)
     {
         int gen = mPlotCurves[i]->getGeneration();
         if (!activeGenerations.contains(gen))
         {
-            SharedVectorVariableT pTime = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
-            //if (pTime)
-            {
-                TimeScaleWidget *pTimeScaleW = new TimeScaleWidget(pTime, &scaleDialog);
-                connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
-                activeGenerations.insert(gen, pTimeScaleW);
-            }
+            TimeOrFrequencyScaleWidget *pTimeScaleW = new TimeOrFrequencyScaleWidget(mPlotCurves[i]->getVectorVariable(), &scaleDialog);
+            connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
+            activeGenerations.insert(gen, pTimeScaleW);
         }
     }
 
@@ -1466,7 +1475,7 @@ void PlotArea::openTimeScalingDialog()
     // Now push scale widgets into grid, in sorted order from map
     pGridLayout->addWidget(new QLabel("Changing a generation time scale or offset will affect all variables at generation in all plot windows!",&scaleDialog), 0, 0, 1, 2, Qt::AlignLeft);
     int row = 1;
-    QMap<int, TimeScaleWidget*>::iterator it;
+    QMap<int, TimeOrFrequencyScaleWidget*>::iterator it;
     for (it=activeGenerations.begin(); it!=activeGenerations.end(); ++it)
     {
         pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(it.key()+1), &scaleDialog), row, 0);

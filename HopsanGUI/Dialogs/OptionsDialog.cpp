@@ -177,6 +177,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpAngularVelocityUnitComboBox = new QComboBox();
     QLabel *pTimeUnitLabel = new QLabel(tr("Default Time Unit"));
     mpTimeUnitComboBox = new QComboBox();
+    QLabel *pFrequencyUnitLabel = new QLabel(tr("Default Frequency Unit"));
+    mpFrequencyUnitComboBox = new QComboBox();
 
     QPushButton *pAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit", this);
     QPushButton *pAddFlowUnitButton = new QPushButton("Add Custom Flow Unit", this);
@@ -187,6 +189,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QPushButton *pAddAngleUnitButton = new QPushButton("Add Custom Angle Unit", this);
     QPushButton *pAddAngularVelocityUnitButton = new QPushButton("Add Custom Angular Velocity Unit", this);
     QPushButton *pTimeUnitButton = new QPushButton("Add Custom Time Unit", this);
+    QPushButton *pFrequencyUnitButton = new QPushButton("Add Custom Frequency Unit", this);
 
     int r=0;
     mpPlottingWidget = new QWidget(this);
@@ -236,6 +239,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpPlottingLayout->addWidget(mpTimeUnitComboBox,                r, 1);
     mpPlottingLayout->addWidget(pTimeUnitButton,                   r, 2);
     ++r;
+    mpPlottingLayout->addWidget(pFrequencyUnitLabel,               r, 0);
+    mpPlottingLayout->addWidget(mpFrequencyUnitComboBox,           r, 1);
+    mpPlottingLayout->addWidget(pFrequencyUnitButton,              r, 2);
+    ++r;
     mpPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 3);
     mpPlottingLayout->setRowStretch(10, 1);
     mpPlottingWidget->setLayout(mpPlottingLayout);
@@ -273,6 +280,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     connect(pAddAngleUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addAngleUnit()));
     connect(pAddAngularVelocityUnitButton, SIGNAL(clicked()),      this,                   SLOT(addAngularVelocityUnit()));
     connect(pTimeUnitButton,               SIGNAL(clicked()),      this,                   SLOT(addTimeUnit()));
+    connect(pFrequencyUnitButton,          SIGNAL(clicked()),      this,                   SLOT(addFrequencyUnit()));
 
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsLabel,         SLOT(setEnabled(bool)));
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsSpinBox,       SLOT(setEnabled(bool)));
@@ -497,6 +505,11 @@ void OptionsDialog::addTimeUnit()
     addCustomUnitDialog("Time");
 }
 
+void OptionsDialog::addFrequencyUnit()
+{
+    addCustomUnitDialog("Frequency");
+}
+
 
 //! @brief Slot that opens "Add Custom Unit" dialog
 void OptionsDialog::addCustomUnitDialog(QString physicalQuantity)
@@ -668,6 +681,20 @@ void OptionsDialog::updateCustomUnits()
         if(mpTimeUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Time"))
         {
             mpTimeUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpFrequencyUnitComboBox->clear();
+    QMap<QString, double> customFrequencyUnits = gpConfig->getCustomUnits("Frequency");
+    for(it = customFrequencyUnits.begin(); it != customFrequencyUnits.end(); ++it)
+    {
+        mpFrequencyUnitComboBox->addItem(it.key());
+    }
+    for(int i = 0; i<mpFrequencyUnitComboBox->count(); ++i)
+    {
+        if(mpFrequencyUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Frequency"))
+        {
+            mpFrequencyUnitComboBox->setCurrentIndex(i);
         }
     }
 }

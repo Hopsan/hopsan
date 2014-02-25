@@ -84,11 +84,11 @@ signals:
     void afterReplot();
 };
 
-class TimeScaleWidget : public QWidget
+class TimeOrFrequencyScaleWidget : public QWidget
 {
     Q_OBJECT
 public:
-    TimeScaleWidget(SharedVectorVariableT pTime, QWidget *pParent=0);
+    TimeOrFrequencyScaleWidget(SharedVectorVariableT pVariable, QWidget *pParent=0);
     void setScale(const QString &rUnitScale);
     void setOffset(const QString &rOffset);
 
@@ -99,9 +99,9 @@ public slots:
     void setVaules();
 
 private:
-    SharedVectorVariableT mpTime;
-    QComboBox *mpTimeScaleComboBox;
-    QLineEdit *mpTimeOffsetLineEdit;
+    SharedVectorVariableT mpTimeOrFrequency;
+    QComboBox *mpScaleComboBox;
+    QLineEdit *mpOffsetLineEdit;
 
 
 };

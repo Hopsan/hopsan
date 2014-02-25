@@ -205,6 +205,24 @@ VectorVariable::~VectorVariable()
     }
 }
 
+void VectorVariable::replaceSharedTFVector(SharedVectorVariableT pToFVector)
+{
+    // Disconnect the old one
+    if (mpSharedTimeOrFrequencyVector)
+    {
+        mpSharedTimeOrFrequencyVector.data()->disconnect(this, 0);
+    }
+
+    // Assign
+    mpSharedTimeOrFrequencyVector = pToFVector;
+
+    // Connect to the new one
+    if (mpSharedTimeOrFrequencyVector)
+    {
+        connect(mpSharedTimeOrFrequencyVector.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
+    }
+}
+
 const SharedVariableDescriptionT VectorVariable::getVariableDescription() const
 {
     return mpVariableDescription;
@@ -1374,11 +1392,7 @@ void VectorVariable::removeCustomUnitScale()
 TimeDomainVariable::TimeDomainVariable(SharedVectorVariableT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
-    mpSharedTimeOrFrequencyVector = time;
-    if (!mpSharedTimeOrFrequencyVector.isNull())
-    {
-        connect(mpSharedTimeOrFrequencyVector.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
-    }
+    replaceSharedTFVector(time);
 }
 
 VariableTypeT TimeDomainVariable::getVariableType() const
@@ -1481,14 +1495,14 @@ SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVector
 
 void TimeDomainVariable::assignFrom(const SharedVectorVariableT pOther)
 {
-    mpSharedTimeOrFrequencyVector = pOther->getSharedTimeOrFrequencyVector();
+    replaceSharedTFVector(pOther->getSharedTimeOrFrequencyVector());
     VectorVariable::assignFrom(pOther);
 }
 
 void TimeDomainVariable::assignFrom(SharedVectorVariableT time, const QVector<double> &rData)
 {
     mpCachedDataVector->replaceData(rData);
-    mpSharedTimeOrFrequencyVector = time;
+    replaceSharedTFVector(time);
     emit dataChanged();
 }
 
@@ -1610,7 +1624,7 @@ QVector<double> ComplexVectorVariable::getImagDataCopy() const
 FrequencyDomainVariable::FrequencyDomainVariable(SharedVectorVariableT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
-    mpSharedTimeOrFrequencyVector = frequency;
+    replaceSharedTFVector(frequency);
 }
 
 VariableTypeT FrequencyDomainVariable::getVariableType() const
@@ -1620,14 +1634,14 @@ VariableTypeT FrequencyDomainVariable::getVariableType() const
 
 void FrequencyDomainVariable::assignFrom(const SharedVectorVariableT pOther)
 {
-    mpSharedTimeOrFrequencyVector = pOther->getSharedTimeOrFrequencyVector();
+    replaceSharedTFVector(pOther->getSharedTimeOrFrequencyVector());
     VectorVariable::assignFrom(pOther);
 }
 
 void FrequencyDomainVariable::assignFrom(SharedVectorVariableT freq, const QVector<double> &rData)
 {
     mpCachedDataVector->replaceData(rData);
-    mpSharedTimeOrFrequencyVector = freq;
+    replaceSharedTFVector(freq);
     emit dataChanged();
 }
 

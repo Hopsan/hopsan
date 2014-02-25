@@ -130,11 +130,17 @@
         <defaultunit unit="Pa" name="Pressure"/>
         <defaultunit unit="Nm" name="Torque"/>
         <defaultunit unit="m/s" name="Velocity"/>
-	<defaultunit unit="s" name="Time"/>
-	<customunit unit="s" scale="1" name="Time"/>
-	<customunit unit="ms" scale="1e3" name="Time"/>
-	<customunit unit="us" scale="1e6" name="Time"/>
-	<customunit unit="ns" scale="1e9" name="Time"/>
+        <defaultunit unit="s" name="Time"/>
+        <defaultunit unit="Hz" name="Frequency"/>
+        <customunit unit="Hz" scale="1" name="Frequency"/>
+        <customunit unit="kHz" scale="1e-3" name="Frequency"/>
+        <customunit unit="MHz" scale="1e-6" name="Frequency"/>
+        <customunit unit="GHz" scale="1e-9" name="Frequency"/>
+        <customunit unit="rad/s" scale="0.159154943091895" name="Frequency"/>
+        <customunit unit="s" scale="1" name="Time"/>
+        <customunit unit="ms" scale="1e3" name="Time"/>
+        <customunit unit="us" scale="1e6" name="Time"/>
+        <customunit unit="ns" scale="1e9" name="Time"/>
         <customunit unit="V" scale="1" name="Voltage"/>
         <customunit unit="A" scale="1" name="Current"/>
         <customunit unit="deg" scale="57.296" name="Angle"/>

@@ -59,6 +59,7 @@ private slots:
     void addAngleUnit();
     void addAngularVelocityUnit();
     void addTimeUnit();
+    void addFrequencyUnit();
     void addCustomUnitDialog(QString physicalQuantity);
     void addCustomUnit();
     void updateCustomUnits();
@@ -104,6 +105,7 @@ private:
     QComboBox *mpAngleUnitComboBox;
     QComboBox *mpAngularVelocityUnitComboBox;
     QComboBox *mpTimeUnitComboBox;
+    QComboBox *mpFrequencyUnitComboBox;
 
     QWidget *mpPlottingWidget;
     QGridLayout *mpPlottingLayout;
