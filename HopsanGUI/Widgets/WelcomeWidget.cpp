@@ -22,7 +22,7 @@
 //!
 //$Id: UndoWidget.h 3547 2011-10-25 11:48:47Z petno25 $
 
-//Qt includes
+// Qt includes
 #include <QLabel>
 #include <QGridLayout>
 #include <QDebug>
@@ -36,18 +36,16 @@
 #include <QApplication>
 #include <QDesktopServices>
 
-//Hopsan includes
-#include "global.h"
+// Hopsan includes
 #include "Widgets/WelcomeWidget.h"
+#include "global.h"
 #include "common.h"
+#include "version_gui.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "Dialogs/OptionsDialog.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
-#include "version_gui.h"
-#include "Widgets/LibraryWidget.h"
-#include "Widgets/PlotWidget.h" //!< @todo why is this needed in here
 #include "Widgets/ProjectTabWidget.h"
 #include "MessageHandler.h"
 

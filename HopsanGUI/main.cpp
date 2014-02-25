@@ -37,8 +37,6 @@
 #include "DesktopHandler.h"
 #include "MessageHandler.h"
 
-void loadApplicationFonts();
-
 // Declare global pointers
 MainWindow* gpMainWindow = 0;
 QWidget *gpMainWindowWidget = 0;
@@ -61,9 +59,6 @@ int main(int argc, char *argv[])
     //! @todo this does not seem to help, DomElement.setAttribute still use comma decimal point on swedish ubuntu, maybe a Qt bug
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
-
-    // Load application fonts
-    //loadApplicationFonts();
 
     // Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
@@ -106,34 +101,6 @@ int main(int argc, char *argv[])
     return rc;
 }
 
-
-//! @todo This error checking may slow down startup, and it is probably never needed. Remove when this functionality is tested and verified.
-void loadApplicationFonts()
-{
-    bool error=false;
-    int i;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibri.ttf");
-    if(i == -1) error=true;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrib.ttf");
-    if(i == -1) error=true;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrii.ttf");
-    if(i == -1) error=true;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibriz.ttf");
-    if(i == -1) error=true;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consola.ttf");
-    if(i == -1) error=true;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolab.ttf");
-    if(i == -1) error=true;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolai.ttf");
-    if(i == -1) error=true;
-    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolaz.ttf");
-    if(i == -1) error=true;
-
-    if(error)
-        qDebug() << "Error loading fonts!";
-    else
-        qDebug() << "Successfully loaded fonts!";
-}
 
 //! @brief Returns the date and time when the HopsanGUI application was built
 const char* getHopsanGUIBuildTime()

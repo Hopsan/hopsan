@@ -308,19 +308,18 @@ void MainWindow::createContents()
     QTimer::singleShot(3000, gpSplash, SLOT(close()));
 
     mpWelcomeWidget = new WelcomeWidget(this);
-
     mpCentralTabs->addTab(mpWelcomeWidget, "Welcome");
     mpCentralTabs->setTabNotClosable(0);
 
     this->updateRecentList();
 
-    // Update style sheet setting after all children hasbeen created and added so that they too will be affected
+    // Update style sheet setting after all children has been created and added so that they too will be affected
     if(!gpConfig->getUseNativeStyleSheet())
     {
         setStyleSheet(gpConfig->getStyleSheet());
         setPalette(gpConfig->getPalette());
+        qApp->setFont(gpConfig->getFont());
     }
-    qApp->setFont(gpConfig->getFont());
 
     updateToolBarsToNewTab();
 }
