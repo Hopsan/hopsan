@@ -179,7 +179,7 @@ void MainWindow::createContents()
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
     mpOptimizationDialog = new OptimizationDialog(this);
-    mpHelpDialog = new HelpDialog(0);
+    mpHelpDialog = new HelpDialog(this);
 
     //Create the Python widget
 #ifdef USEPYTHONQT

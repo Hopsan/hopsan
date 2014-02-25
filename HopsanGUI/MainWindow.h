@@ -125,11 +125,10 @@ public:
     ModelHandler *mpModelHandler;
     WelcomeWidget *mpWelcomeWidget;
     LibraryWidget *mpLibraryWidget;
-
     SystemParametersWidget *mpSystemParametersWidget;
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
     QGridLayout *mpCentralGridLayout;
-    HelpDialog *mpHelpDialog;   //Should not be public but accessable from other widgets somehow
+
     HVCWidget *mpHVCWidget;
     DataExplorer *mpDataExplorer;
     OptimizationDialog *mpOptimizationDialog;
@@ -265,6 +264,7 @@ private:
     // Widgets
     PyDockWidget *mpPyDockWidget;
     MessageWidget *mpMessageWidget;
+    HelpDialog *mpHelpDialog;
 
     // Menubar items
     QMenuBar *mpMenuBar;
