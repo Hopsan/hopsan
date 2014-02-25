@@ -108,7 +108,7 @@ void OptimizationWorkerParameterSweep::run()
 
         mParameters[i%mNumThreads] = mAllPoints[i];
 
-        if(i%mNumThreads == 3)
+        if(i%mNumThreads == mNumThreads-1)
         {
             evaluateAllPoints();
 

@@ -47,6 +47,7 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
 
     mpWorker = 0;
     mAlgorithm = Uninitialized;
+    mIsRunning = false;
 }
 
 void OptimizationHandler::startOptimization()
@@ -224,6 +225,16 @@ double OptimizationHandler::getParameter(const int pointIdx, const int parIdx) c
     }
 
     return mpWorker->getParameter(pointIdx, parIdx);
+}
+
+void OptimizationHandler::setIsRunning(bool value)
+{
+    mIsRunning = value;
+}
+
+bool OptimizationHandler::isRunning()
+{
+    return mIsRunning;
 }
 
 

@@ -81,6 +81,8 @@ void OptimizationWorker::init()
     mpHandler->mpHcomHandler->setWorkingDirectory(oldPath);
 
     mPercent = -1;
+
+    mpHandler->setIsRunning(true);
 }
 
 void OptimizationWorker::run()
@@ -90,6 +92,8 @@ void OptimizationWorker::run()
 
 void OptimizationWorker::finalize()
 {
+    mpHandler->setIsRunning(false);
+
     if(mDisconnectedFromModelHandler)
     {
         connect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHandler->mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));

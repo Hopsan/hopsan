@@ -315,12 +315,16 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     setButtonText(QWizard::FinishButton, tr("&Close Dialog"));
     setButtonText(QWizard::CustomButton1, tr("&Save To Script File"));
     setButtonText(QWizard::CustomButton2, tr("&Load From Script File"));
+    setButtonText(QWizard::CustomButton3, tr("&Regenerate Script"));
     setOption(QWizard::HaveCustomButton1, true);
     setOption(QWizard::HaveCustomButton2, true);
+    setOption(QWizard::HaveCustomButton3, true);
     setOption(QWizard::CancelButtonOnLeft, false);
     //button(QWizard::CustomButton1)->setDisabled(true);
     button(QWizard::FinishButton)->setEnabled(true);
     button(QWizard::FinishButton)->setHidden(true);
+    button(QWizard::CustomButton3)->setHidden(true);
+    button(QWizard::CustomButton3)->setDisabled(true);
 
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), this, SLOT(updateCoreProgressBars()));
@@ -333,6 +337,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     connect(mpStartButton, SIGNAL(clicked()), this, SLOT(run()));
     connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
     connect(button(QWizard::CustomButton2), SIGNAL(clicked()), this, SLOT(loadScriptFile()));
+    connect(button(QWizard::CustomButton3), SIGNAL(clicked()), this, SLOT(regenerateScript()));
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfiguration()));
 }
 
@@ -343,7 +348,7 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
     if(!this->isVisible()) return;
 
     bool ok;
-    OptimizationHandler::OptAlgorithmType algorithm = mpTerminal->mpHandler->mpOptHandler->mAlgorithm;
+    OptimizationHandler::AlgorithmT algorithm = mpTerminal->mpHandler->mpOptHandler->mAlgorithm;
     if(algorithm == OptimizationHandler::ComplexRF ||
        algorithm == OptimizationHandler::ComplexRFM ||
        algorithm == OptimizationHandler::ComplexRFP)
@@ -530,6 +535,15 @@ void OptimizationDialog::saveConfiguration()
     }
 
     mpSystem->setOptimizationSettings(optSettings);
+}
+
+void OptimizationDialog::regenerateScript()
+{
+    generateScriptFile();
+    mpOutputBox->clear();
+    mpOutputBox->insertPlainText(mScript);
+    saveConfiguration();
+    button(QWizard::CustomButton3)->setEnabled(true);
 }
 
 
@@ -1530,6 +1544,8 @@ void OptimizationDialog::removeFunction()
 //! @brief Generates the script code and shows it in the output box
 void OptimizationDialog::update(int idx)
 {
+    button(QWizard::CustomButton3)->setVisible(false);      //Should be hidden on all tabs except code tab
+
     //Finished parameters tab
     if(idx == 2)
     {
@@ -1544,19 +1560,23 @@ void OptimizationDialog::update(int idx)
     //Finished objective function tab
     if(idx == 3)
     {
+        button(QWizard::CustomButton3)->setVisible(true);
+        button(QWizard::CustomButton3)->setEnabled(!mpOutputBox->toPlainText().isEmpty());
+
         if(mSelectedFunctions.isEmpty())
         {
             mpMessageHandler->addWarningMessage("No objective functions specified for optimization.");
            // this->back();
             return;
         }
-        else
+        else if(mpOutputBox->toPlainText().isEmpty())
         {
             //button(QWizard::CustomButton1)->setDisabled(false);
             generateScriptFile();
             mpOutputBox->clear();
             mpOutputBox->insertPlainText(mScript);
             saveConfiguration();
+            button(QWizard::CustomButton3)->setEnabled(true);
             return;
         }
     }
@@ -1572,9 +1592,10 @@ void OptimizationDialog::update(int idx)
 //! @brief Saves the generated script code to file and executes the script
 void OptimizationDialog::run()
 {
+    mCoreProgressBarsRecreated = false;
+
     saveConfiguration();
 
-    recreateCoreProgressBars();
     recreateParameterOutputLineEdits();
 
     mpStartButton->setEnabled(false);
@@ -1648,6 +1669,12 @@ void OptimizationDialog::loadScriptFile()
 
 void OptimizationDialog::updateCoreProgressBars()
 {
+    if(!mCoreProgressBarsRecreated && mpTerminal->mpHandler->mpOptHandler->isRunning())
+    {
+        recreateCoreProgressBars();
+        mCoreProgressBarsRecreated = true;
+    }
+
     for(int p=0; p<mCoreProgressBarPtrs.size(); ++p)
     {
         OptimizationHandler *pOptHandler = mpTerminal->mpHandler->mpOptHandler;

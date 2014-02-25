@@ -46,8 +46,8 @@ class OptimizationHandler : public QObject
     friend class OptimizationDialog;
 public:
     //Enums
-    enum OptDataType{Integer, Double};
-    enum OptAlgorithmType{ComplexRF, ComplexRFM, ComplexRFP, ParticleSwarm, ParameterSweep, Uninitialized};
+    enum DataT{Integer, Double};
+    enum AlgorithmT{ComplexRF, ComplexRFM, ComplexRFP, ParticleSwarm, ParameterSweep, Uninitialized};
 
     //Constructor
     OptimizationHandler(HcomHandler *pHandler);
@@ -62,6 +62,9 @@ public:
     double getOptVar(const QString &var, bool &ok) const;
     void setOptVar(const QString &var, const QString &value, bool &ok);
     double getParameter(const int pointIdx, const int parIdx) const;
+    void setIsRunning(bool value);
+    bool isRunning();
+
 
     const QVector<ModelWidget *> *getModelPtrs() const;
     void clearModels();
@@ -73,12 +76,13 @@ public:
     Configuration *mpConfig;
     HcomHandler *mpHcomHandler;
 
-    OptDataType mParameterType; //! @todo Should be public
+    DataT mParameterType; //! @todo Should be public
 
 private:
     GUIMessageHandler *mpMessageHandler;
     OptimizationWorker *mpWorker;
-    OptAlgorithmType mAlgorithm;
+    AlgorithmT mAlgorithm;
+    bool mIsRunning;
 };
 
 #endif // OPTIMIZATIONHANDLER_H

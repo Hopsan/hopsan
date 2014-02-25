@@ -79,6 +79,7 @@ private slots:
     void recreateParameterOutputLineEdits();
     void applyParameters();
     void saveConfiguration();
+    void regenerateScript();
 
 private:
     void generateScriptFile();
@@ -187,6 +188,7 @@ private:
     QList<QLineEdit*> mpParameterMaxLineEdits;
     QList<QToolButton*> mpParameterRemoveButtons;
     QList<QStringList> mSelectedVariables;
+    bool mCoreProgressBarsRecreated;
 };
 
 #endif // OPTIMIZATIONDIALOG_H
