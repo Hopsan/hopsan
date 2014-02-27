@@ -49,6 +49,8 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mPlotParameters = false;
 }
 
+
+//! @brief Initialization function for optimization worker base class (should never be called directly)
 void OptimizationWorker::init()
 {
     mIterations = 0;
@@ -85,11 +87,15 @@ void OptimizationWorker::init()
     mpHandler->setIsRunning(true);
 }
 
+
+//! @brief Run function for optimization worker base class (should never be called directly)
 void OptimizationWorker::run()
 {
     //Nothing to do
 }
 
+
+//! @brief Finalie function for optimization worker base class (should never be called directly)
 void OptimizationWorker::finalize()
 {
     mpHandler->setIsRunning(false);
@@ -120,8 +126,156 @@ void OptimizationWorker::finalize()
     output.append("\n");
     resultFile.write(output.toUtf8());
     resultFile.close();
+
+    printLogFile();
 }
 
+void OptimizationWorker::printLogFile()
+{
+    QString htmlCode;
+
+    //Header
+    htmlCode.append("<html>\n<head>\n<title>Hopsan Optimization Log</title>\n</head>\n<body>\n\n");
+
+    //CSS style
+    htmlCode.append("<style type=\"text/css\">\n  td {\n    width: 170pt\n  }\n</style>\n\n");
+
+    //Title
+    htmlCode.append("<h1>Hopsan Optimization Log</h1>\n");
+
+    //Begin general information
+    htmlCode.append("<h3>General Information:</h3>\n<table>\n");
+
+    //Date & time
+    htmlCode.append("<tr>\n<td><b>Date & time:</b></td>\n<td>"+QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")+"</td>\n</tr>\n");
+
+    //Model name
+    htmlCode.append("<tr>\n<td><b>Model:</b></td>\n<td>"+mModelPtrs.first()->getViewContainerObject()->getName()+"</td>\n</tr>\n");
+
+    //Algorithm
+    QString algStr;
+    switch(mpHandler->getAlgorithm())
+    {
+    case OptimizationHandler::ComplexRF:
+        algStr = "Complex-RF";
+        break;
+    case OptimizationHandler::ComplexRFM:
+            algStr = "Complex-RFM";
+        break;
+    case OptimizationHandler::ComplexRFP:
+        algStr = "Complex-RFP";
+        break;
+    case OptimizationHandler::ParticleSwarm:
+        algStr = "Particle Swarm";
+        break;
+    case OptimizationHandler::ParameterSweep:
+        algStr = "Parameter Sweep";
+        break;
+    case OptimizationHandler::Uninitialized:
+        algStr = "Uninitialized";
+    default:
+        algStr = "Unknown";
+    }
+    htmlCode.append("<tr>\n<td><b>Algorithm:</b></td>\n<td>"+algStr+"</td>\n</tr>\n");
+
+    //Iterations
+    htmlCode.append("<tr>\n<td><b>Iterations:</b></td>\n<td>"+QString::number(mIterations)+"</td>\n</tr>\n");
+
+    //Function Evaluations
+    htmlCode.append("<tr>\n<td><b>Function Evaluations:</b></td>\n<td>"+QString::number(mEvaluations)+"</td>\n</tr>\n");
+
+    //Meta model evaluations
+    htmlCode.append("<tr>\n<td><b>Meta Model Evaluations:</b></td>\n<td>"+QString::number(mMetaModelEvaluations)+"</td>\n</tr>\n");
+
+    //End general information
+    htmlCode.append("</table>\n\n");
+
+    //Begin general information
+    htmlCode.append("<h3>Best Point:</h3>\n<table>\n");
+
+    //Objective function value
+    htmlCode.append("<tr>\n<td><b>f(x)</b></td>\n<td>"+QString::number(mObjectives[mBestId])+"</td>\n</tr>\n");
+
+    //Parameter values
+    for(int i=0; i<mNumParameters; ++i)
+    {
+        htmlCode.append("<tr>\n<td><b>x"+QString::number(i+1)+"</b></td>\n<td>"+QString::number(mParameters[mBestId][i])+"</td>\n</tr>\n");
+
+    }
+
+    //End general information
+    htmlCode.append("</table>\n\n");
+
+    //End body
+    htmlCode.append("</body>\n");
+
+    QFile logFile(gpDesktopHandler->getDocumentsPath()+"/OptLog"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".html");
+    logFile.open(QFile::WriteOnly | QFile::Text);
+    logFile.write(htmlCode.toUtf8());
+    logFile.close();
+}
+
+
+//! @brief Logs all parameters and the objective value of specified point to log variables
+//! @param idx Index of point to save
+void OptimizationWorker::logPoint(int idx)
+{
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+
+    for(int p=0; p<mNumParameters; ++p)
+    {
+        QString name = "optpar"+QString::number(p);
+        SharedVectorVariableT parVar = pHandler->getVectorVariable(name, -1);
+        if(!parVar)
+        {
+            //! @todo we should set name and unit and maybe description (in define variable)
+            parVar = pHandler->defineNewVariable(name);
+            parVar->preventAutoRemoval();
+
+            parVar->assignFrom(mParameters[idx][p]);
+        }
+        else
+        {
+            parVar->append(mParameters[idx][p]);
+        }
+    }
+
+    QString name = "optobj";
+    SharedVectorVariableT objVar = pHandler->getVectorVariable(name, -1);
+    if(!objVar)
+    {
+        //! @todo we should set name and unit and maybe description (in define variable)
+        objVar = pHandler->defineNewVariable(name);
+        objVar->preventAutoRemoval();
+
+        objVar->assignFrom(mObjectives[idx]);
+    }
+    else
+    {
+        objVar->append(mObjectives[idx]);
+    }
+}
+
+
+
+//! @brief Logs parameters and objective value of worst point to log variables
+void OptimizationWorker::logWorstPoint()
+{
+    logPoint(mWorstId);
+}
+
+
+//! @brief Logs parameters and objective value of all points to log variables
+void OptimizationWorker::logAllPoints()
+{
+    for(int i=0; i<mNumPoints; ++i)
+    {
+        logPoint(i);
+    }
+}
+
+
+//! @brief Checks whether or not any of the convergence cricterias has been fulfilled
 bool OptimizationWorker::checkForConvergence()
 {
     //Check objective function convergence
@@ -318,6 +472,10 @@ void OptimizationWorker::plotParameters()
     }
 }
 
+
+//! @brief Set function for optimization variables
+//! @param var Name of variable to set
+//! @param value Value for variable
 void OptimizationWorker::setOptVar(const QString &var, const QString &value)
 {
     if(var == "plotpoints")
@@ -368,6 +526,10 @@ void OptimizationWorker::setOptVar(const QString &var, const QString &value)
     }
 }
 
+
+//! @brief Returns value of specified optimization variable
+//! @param var Name of variable
+//! @param ok True if variable was found, else false
 double OptimizationWorker::getOptVar(const QString &var, bool &ok)
 {
     ok=true;
@@ -431,17 +593,28 @@ double OptimizationWorker::getOptVar(const QString &var, bool &ok)
     }
 }
 
+
+//! @brief Sets minimum parameter value for specified parameter
+//! @param idx Index of parameter
+//! @param value New minimum value for parameter
 void OptimizationWorker::setParMin(int idx, double value)
 {
     mParMin[idx] = value;
 }
 
+
+//! @brief Sets maximum parameter value for specified parameter
+//! @param idx Index of parameter
+//! @param value New maximum value for parameter
 void OptimizationWorker::setParMax(int idx, double value)
 {
     mParMax[idx] = value;
 }
 
 
+//! @brief Sets objective function value for specified point
+//! @param idx Index of point
+//! @param value New objective value
 void OptimizationWorker::setOptimizationObjectiveValue(int idx, double value)
 {
     if(idx<0 || idx > mObjectives.size()-1)
@@ -451,6 +624,9 @@ void OptimizationWorker::setOptimizationObjectiveValue(int idx, double value)
     mObjectives[idx] = value;
 }
 
+
+//! @brief Returns objective value of specified point
+//! @param idx Index of point
 double OptimizationWorker::getOptimizationObjectiveValue(int idx)
 {
     if(idx<0 || idx > mObjectives.size()-1)
@@ -460,6 +636,10 @@ double OptimizationWorker::getOptimizationObjectiveValue(int idx)
     return mObjectives[idx];
 }
 
+
+//! @brief Returns value in specified parameter in specified point
+//! @param pointIdx Index of point
+//! @param parIdx Index of parameter
 double OptimizationWorker::getParameter(const int pointIdx, const int parIdx) const
 {
     if(mParameters.size() < pointIdx+1)
@@ -474,16 +654,26 @@ double OptimizationWorker::getParameter(const int pointIdx, const int parIdx) co
 }
 
 
+//! @brief Prints a message to the console
+//! @param msg Message to print
 void OptimizationWorker::print(const QString &msg)
 {
     print(msg, "", false);
 }
 
+
+//! @brief Prints a message to the console with specified flags
+//! @param msg Message to print
+//! @param tag Tag of message (for grouping similar messages)
+//! @param timeStamp Tells whether or not time stamps shall be shown
 void OptimizationWorker::print(const QString &msg, const QString &tag, bool timeStamp)
 {
     mpHandler->getMessageHandler()->addInfoMessage(msg, tag, timeStamp);
 }
 
+
+//! @brief Prints an error message to the console
+//! @param msg Message to print
 void OptimizationWorker::printError(const QString &msg)
 {
     printError(msg, "", false);

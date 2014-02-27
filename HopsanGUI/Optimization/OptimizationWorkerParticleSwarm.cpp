@@ -135,6 +135,8 @@ void OptimizationWorkerParticleSwarm::run()
         return;
     }
 
+    logAllPoints();
+
     //Initialize best known point for each point
     for(int i=0; i<mNumPoints; ++i)
     {

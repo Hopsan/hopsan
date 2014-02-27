@@ -142,7 +142,7 @@ void OptimizationWorkerComplexRFM::run()
 
     //Evaluate initial objective values
     execute("call evalall");
-
+    logAllPoints();
     mEvaluations = mNumPoints;
 
     //Calculate best and worst id, and initialize last worst id
@@ -223,11 +223,13 @@ void OptimizationWorkerComplexRFM::run()
         {
             evaluateWithMetaModel();
             metaModelCounter++;
+            logWorstPoint();
             ++mMetaModelEvaluations;
         }
         else
         {
             execute("call evalworst");
+            logWorstPoint();
             ++mEvaluations;
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
             {
@@ -283,11 +285,13 @@ void OptimizationWorkerComplexRFM::run()
             {
                 evaluateWithMetaModel();
                 metaModelCounter++;
+                logWorstPoint();
                 ++mMetaModelEvaluations;
             }
             else
             {
                 execute("call evalworst");
+                logWorstPoint();
                 ++mEvaluations;
                 if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
                 {
@@ -329,6 +333,7 @@ void OptimizationWorkerComplexRFM::run()
 
             mWorstId = mLastWorstId;
             execute("call evalworst");
+            logWorstPoint();
             ++mEvaluations;
             storeValuesForMetaModel(mWorstId);
             calculateBestAndWorstId();

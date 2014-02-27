@@ -179,6 +179,7 @@ void OptimizationWorkerComplexRFP::run()
     }
     mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
     ++mIterations;
+    logAllPoints();
     mEvaluations += mNumPoints;
 
     //Calculate best and worst id, and initialize last worst id
@@ -619,6 +620,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        logPoint(mvIdx[i]);
     }
     else        //New point is not better, iterate
     {
@@ -641,6 +643,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        logPoint(mvIdx[i]);
     }
     else        //New point is not better, iterate
     {
@@ -663,6 +666,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        logPoint(mvIdx[i]);
     }
     else
     {
@@ -685,6 +689,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         mParameters[mvIdx[i]] = mCandidateParticles[i];
         mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+        logPoint(mvIdx[i]);
     }
     else
     {

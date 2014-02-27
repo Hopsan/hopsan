@@ -43,6 +43,8 @@ public:
     virtual void run();
     virtual void finalize();
 
+    virtual void printLogFile();
+
     bool checkForConvergence();
     void calculateBestAndWorstId();
 
@@ -98,6 +100,9 @@ protected:
     int mIterations;
     int mEvaluations;
     int mMetaModelEvaluations;
+    void logPoint(int idx);
+    void logWorstPoint();
+    void logAllPoints();
 };
 
 #endif // OPTIMIZATIONWORKER_H

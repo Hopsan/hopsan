@@ -134,7 +134,7 @@ void OptimizationWorkerParameterSweep::run()
     }
 
 
-    printOutput();
+    printLogFile();
 }
 
 void OptimizationWorkerParameterSweep::finalize()
@@ -190,12 +190,13 @@ void OptimizationWorkerParameterSweep::evaluateAllPoints()
     {
         execute("call evalall");
     }
+    logAllPoints();
 
     ++mIterations;
     mEvaluations += mNumPoints;
 }
 
-void OptimizationWorkerParameterSweep::printOutput()
+void OptimizationWorkerParameterSweep::printLogFile()
 {
     QFile outputFile(gpDesktopHandler->getDocumentsPath()+"/parameter_sweep_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
     outputFile.open(QFile::WriteOnly | QFile::Text);

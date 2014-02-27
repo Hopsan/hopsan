@@ -133,7 +133,7 @@ void OptimizationWorkerComplexRF::run()
 
     //Evaluate initial objevtive values
     execute("call evalall");
-
+    logAllPoints();
     mEvaluations = mNumPoints;
 
     //Calculate best and worst id, and initialize last worst id
@@ -202,6 +202,7 @@ void OptimizationWorkerComplexRF::run()
 
         //Evaluate new point
         execute("call evalworst");
+        logWorstPoint();
         ++mEvaluations;
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
@@ -251,6 +252,7 @@ void OptimizationWorkerComplexRF::run()
 
             //Evaluate new point
             execute("call evalworst");
+            logWorstPoint();
             ++mEvaluations;
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
             {

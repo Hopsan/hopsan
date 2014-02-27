@@ -41,7 +41,7 @@ public:
     virtual double getOptVar(const QString &var, bool &ok);
 
     void evaluateAllPoints();
-    void printOutput();
+    void printLogFile();
 
 private:
     QVector< QVector<double> > mAllPoints;
