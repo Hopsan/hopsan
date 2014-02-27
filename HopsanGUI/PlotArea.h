@@ -163,9 +163,12 @@ public:
     bool isBottomAxisLogarithmic() const;
     bool isLeftAxisLogarithmic() const;
     bool isRightAxisLogarithmic() const;
+    bool isAxisLogarithmic(const QwtPlot::Axis axis) const;
 
     void setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis=true);
     void setAxisLabel(QwtPlot::Axis axis, const QString &rLabel);
+
+    HopQwtInterval getAxisCurveLimits(const QwtPlot::Axis axis) const;
 
     void setLegendsVisible(bool value);
 
@@ -217,7 +220,7 @@ private:
     void setLegendSymbol(const QString symStyle, PlotCurve *pCurve);
     void setTabOnlyCustomXVector(HopsanVariable data);
     void determineAddedCurveUnitOrScale(PlotCurve *pCurve);
-    void rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits);
+    void setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisLimits);
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
     void updatePlotMarkers();
     void updateWindowtitleModelName();

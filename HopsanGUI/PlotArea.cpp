@@ -694,6 +694,20 @@ bool PlotArea::isRightAxisLogarithmic() const
     return mRightAxisLogarithmic;
 }
 
+bool PlotArea::isAxisLogarithmic(const QwtPlot::Axis axis) const
+{
+    switch (axis) {
+    case QwtPlot::xBottom:
+        return isBottomAxisLogarithmic();
+    case QwtPlot::yLeft:
+        return isLeftAxisLogarithmic();
+    case QwtPlot::yRight:
+        return isRightAxisLogarithmic();
+    default:
+        return false;
+    }
+}
+
 void PlotArea::setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis)
 {
     mpQwtPlot->setAxisScale(axis, min, max);
@@ -739,6 +753,37 @@ void PlotArea::setAxisLabel(QwtPlot::Axis axis, const QString &rLabel)
     updateAxisLabels();
 }
 
+//! @brief Get the min and max values of the curves on the current axis, (lienar or logarithmic values)
+HopQwtInterval PlotArea::getAxisCurveLimits(const QwtPlot::Axis axis) const
+{
+    HopQwtInterval curveLimits(DoubleMax,-DoubleMax);
+    bool axisLog = isAxisLogarithmic(axis);
+
+    for (int i=0; i<mPlotCurves.size(); ++i)
+    {
+        if(mPlotCurves[i]->getAxisY() == axis)
+        {
+            if(axisLog)
+            {
+                // Only consider positive (non-zero) values if logarithmic scaling is used
+                double min, max;
+                if (mPlotCurves[i]->minMaxPositiveNonZeroYValues(min, max))
+                {
+                    curveLimits.extendMin(min);
+                    curveLimits.extendMax(max);
+                }
+            }
+            else
+            {
+                curveLimits.extendMin(mPlotCurves[i]->minYValue());
+                curveLimits.extendMax(mPlotCurves[i]->maxYValue());
+            }
+        }
+    }
+
+    return curveLimits;
+}
+
 void PlotArea::setLegendsVisible(bool value)
 {
     if (value)
@@ -770,7 +815,11 @@ void PlotArea::replot()
 void PlotArea::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    this->rescaleAxesToCurves();
+    // Unless we are zoomd, try to readjust the axis (to add auto offset for legend)
+    if (!isZoomed())
+    {
+        rescaleAxesToCurves();
+    }
 }
 
 void PlotArea::dragEnterEvent(QDragEnterEvent *event)
@@ -1084,7 +1133,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
 void PlotArea::rescaleAxesToCurves()
 {
     // Set defaults when no axis available
-    HopQwtInterval xAxisLim(0,10), ylAxisLim(0,10), yrAxisLim(0,10);
+    HopQwtInterval xAxisLim(0.0, 1.0), ylAxisLim(-1.0, 1.0), yrAxisLim(-1.0, 1.0);
 
     // Cycle plots, ignore if no curves
     if(!mPlotCurves.empty())
@@ -1092,16 +1141,15 @@ void PlotArea::rescaleAxesToCurves()
         // Init left/right min max
         if (mNumYlCurves > 0)
         {
-            ylAxisLim.setInterval(DoubleMax,DoubleMin);
+            ylAxisLim = getAxisCurveLimits(QwtPlot::yLeft);
         }
         if (mNumYrCurves > 0)
         {
-            yrAxisLim.setInterval(DoubleMax,DoubleMin);
+            yrAxisLim = getAxisCurveLimits(QwtPlot::yRight);
         }
 
         // Initialize values for X axis
-        xAxisLim.setInterval(DoubleMax, DoubleMin);
-
+        xAxisLim.setInterval(DoubleMax, -DoubleMax);
         bool someoneHasCustomXdata = false;
         for(int i=0; i<mPlotCurves.size(); ++i)
         {
@@ -1111,44 +1159,6 @@ void PlotArea::rescaleAxesToCurves()
             {
                 //! @todo maybe should do this with signal slot instead, to avoid unesisarry checks all the time
                 setTabOnlyCustomXVector(mPlotCurves[i]->getSharedCustomXVariable());
-            }
-
-            if(mPlotCurves[i]->getAxisY() == QwtPlot::yLeft)
-            {
-                if(mLeftAxisLogarithmic)
-                {
-                    // Only consider positive (non-zero) values if logarithmic scaling is used
-                    double min, max;
-                    if (mPlotCurves[i]->minMaxPositiveNonZeroYValues(min, max))
-                    {
-                        ylAxisLim.extendMin(min);
-                        ylAxisLim.extendMax(max);
-                    }
-                }
-                else
-                {
-                    ylAxisLim.extendMin(mPlotCurves[i]->minYValue());
-                    ylAxisLim.extendMax(mPlotCurves[i]->maxYValue());
-                }
-            }
-
-            if(mPlotCurves[i]->getAxisY() == QwtPlot::yRight)
-            {
-                if(mRightAxisLogarithmic)
-                {
-                    // Only consider positive (non-zero) values if logarithmic scaling is used
-                    double min, max;
-                    if (mPlotCurves[i]->minMaxPositiveNonZeroYValues(min, max))
-                    {
-                        yrAxisLim.extendMin(min);
-                        yrAxisLim.extendMax(max);
-                    }
-                }
-                else
-                {
-                    yrAxisLim.extendMin(mPlotCurves[i]->minYValue());
-                    yrAxisLim.extendMax(mPlotCurves[i]->maxYValue());
-                }
             }
 
             // Find min / max x-value
@@ -1168,7 +1178,6 @@ void PlotArea::rescaleAxesToCurves()
                 xAxisLim.extendMax(mPlotCurves[i]->maxXValue());
             }
         }
-
         if (mHasCustomXData && !someoneHasCustomXdata)
         {
             this->resetXTimeVector();
@@ -1178,25 +1187,28 @@ void PlotArea::rescaleAxesToCurves()
     // Fix incorrect or bad limit values
     if(!ylAxisLim.isValid())
     {
-        ylAxisLim.setInterval(0,10);
+        ylAxisLim.setInterval(-1.0, 1.0);
     }
     if(!yrAxisLim.isValid())
     {
-        yrAxisLim.setInterval(0,10);
+        yrAxisLim.setInterval(-1.0, 1.0);
     }
 
     const double sameLimFrac = 0.1;
+    bool leftSameLimitEnlargeApplied=false, rightSameLimitEnlargeApplied=false;
     // Max and min must not be same value; if they are, decrease/increase
     if ( (ylAxisLim.width()) < Double100Min)
     {
         ylAxisLim.extendMax(ylAxisLim.maxValue()+qMax(qAbs(ylAxisLim.maxValue()) * sameLimFrac, Double100Min));
         ylAxisLim.extendMin(ylAxisLim.minValue()-qMax(qAbs(ylAxisLim.minValue()) * sameLimFrac, Double100Min));
+        leftSameLimitEnlargeApplied=true;
     }
 
     if ( (yrAxisLim.width()) < Double100Min)
     {
         yrAxisLim.extendMax(yrAxisLim.maxValue()+qMax(qAbs(yrAxisLim.maxValue()) * sameLimFrac, Double100Min));
         yrAxisLim.extendMin(yrAxisLim.maxValue()-qMax(qAbs(yrAxisLim.minValue()) * sameLimFrac, Double100Min));
+        rightSameLimitEnlargeApplied=true;
     }
 
     if ( (xAxisLim.width()) < Double100Min)
@@ -1208,34 +1220,33 @@ void PlotArea::rescaleAxesToCurves()
     // If plot has log scale, we use a different approach for calculating margins
     // (fixed margins would not make sense with a log scale)
 
-    //! @todo In new qwt the type in the transform has been removed, Trying with dynamic cast instead
-    if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlot->axisScaleEngine(QwtPlot::yLeft)))
+    // Now enlarge the Left and Right axis limits to get some margin around values but only if the sameLimit enlargement has not already been applied
+    const double linearEnlargeFrac=0.05; // 5%
+    if (!leftSameLimitEnlargeApplied)
     {
-        ylAxisLim.setInterval(ylAxisLim.minValue()/2.0, ylAxisLim.maxValue()*2.0);
-    }
-    else
-    {
-        // For linear scale expand by 5%
-        //! @todo no need to add 5% if sameLimFrac has been added above
-        ylAxisLim.setInterval(ylAxisLim.minValue()-0.05*ylAxisLim.width(), ylAxisLim.maxValue()+0.05*ylAxisLim.width());
-    }
-
-    if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlot->axisScaleEngine(QwtPlot::yRight)))
-    {
-        yrAxisLim.setInterval(yrAxisLim.minValue()/2.0, yrAxisLim.maxValue()*2.0);
-    }
-    else
-    {
-        // For linear scale expand by 5%
-        yrAxisLim.setInterval(yrAxisLim.minValue()-0.05*yrAxisLim.width(), yrAxisLim.maxValue()+0.05*yrAxisLim.width());
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlot->axisScaleEngine(QwtPlot::yLeft)))
+        {
+            ylAxisLim.setInterval(ylAxisLim.minValue()/2.0, ylAxisLim.maxValue()*2.0);
+        }
+        else
+        {
+            // For linear scale expand by linearEnlargeFrac
+            ylAxisLim.setInterval(ylAxisLim.minValue()-linearEnlargeFrac*ylAxisLim.width(), ylAxisLim.maxValue()+linearEnlargeFrac*ylAxisLim.width());
+        }
     }
 
-
-
-    // Create the zoom base (original zoom) rectangle for the left and right axis
-    QRectF baseZoomRect;
-    baseZoomRect.setX(xAxisLim.minValue());
-    baseZoomRect.setWidth(xAxisLim.width());
+    if (!rightSameLimitEnlargeApplied)
+    {
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlot->axisScaleEngine(QwtPlot::yRight)))
+        {
+            yrAxisLim.setInterval(yrAxisLim.minValue()/2.0, yrAxisLim.maxValue()*2.0);
+        }
+        else
+        {
+            // For linear scale expand by linearEnlargeFrac
+            yrAxisLim.setInterval(yrAxisLim.minValue()-linearEnlargeFrac*yrAxisLim.width(), yrAxisLim.maxValue()+linearEnlargeFrac*yrAxisLim.width());
+        }
+    }
 
     // Scale the axes autoamtically if not locked
     if (!mpXLockCheckBox->isChecked())
@@ -1243,27 +1254,8 @@ void PlotArea::rescaleAxesToCurves()
         mpQwtPlot->setAxisScale(QwtPlot::xBottom, xAxisLim.minValue(), xAxisLim.maxValue());
     }
 
-    if (!mpYLLockCheckBox->isChecked())
-    {
-        rescaleAxisLimitsToMakeRoomForLegend(QwtPlot::yLeft, ylAxisLim);
-        //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
-        mpQwtPlot->setAxisScale(QwtPlot::yLeft, ylAxisLim.minValue(), ylAxisLim.maxValue());
-        baseZoomRect.setY(ylAxisLim.minValue());
-        baseZoomRect.setHeight(ylAxisLim.width());
-        mpQwtZoomerLeft->setZoomBase(baseZoomRect);
-    }
-
-    if (!mpYRLockCheckBox->isChecked())
-    {
-        rescaleAxisLimitsToMakeRoomForLegend(QwtPlot::yRight, yrAxisLim);
-        //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
-        mpQwtPlot->setAxisScale(QwtPlot::yRight, yrAxisLim.minValue(), yrAxisLim.maxValue());
-        baseZoomRect.setY(yrAxisLim.minValue());
-        baseZoomRect.setHeight(yrAxisLim.width());
-        mpQwtZoomerRight->setZoomBase(baseZoomRect);
-    }
-
-    //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis, this is a todo problem with legend buffer ofset
+    setSmartYAxisLimits(QwtPlot::yLeft, ylAxisLim);
+    setSmartYAxisLimits(QwtPlot::yRight, yrAxisLim);
 
     refreshLockCheckBoxPositions();
 
@@ -2139,8 +2131,21 @@ void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
 
 }
 
-void PlotArea::rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, QwtInterval &rAxisLimits)
+//! @brief This help function will append bottom or top space to make room for legend, space will be appended to input axis limits
+//! @param[in] axisId The axis to append to
+//! @param[in] rAxisLimits The initial axis limits to append to
+void PlotArea::setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisLimits)
 {
+    // check abort conditions
+    if ( (axisId == QwtPlot::yLeft) && (mNumYlCurves == 0 || mpYLLockCheckBox->isChecked()) )
+    {
+        return;
+    }
+    else if ( (axisId == QwtPlot::yRight) && (mNumYrCurves == 0 || mpYRLockCheckBox->isChecked()) )
+    {
+        return;
+    }
+
     //! @todo only works for top buffer right now
     if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlot->axisScaleEngine(axisId)))
     {
@@ -2150,7 +2155,7 @@ void PlotArea::rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, 
     else
     {
         // Curves range
-        const double cr = rAxisLimits.width();
+        const double cr = axisLimits.width();
 
         // Find largest legend height in pixels
         double lht, lhb;
@@ -2160,7 +2165,7 @@ void PlotArea::rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, 
         const double ah = mpQwtPlot->axisWidget(axisId)->size().height();
 
         // Remove legend and margin height from axis height, what remains is the height for the curves
-        // Divid with the curves value range to get the scale
+        // Divide with the curves value range to get the scale
         double s = (ah-(lht+lhb))/cr; //[px/unit]
 
         // Dont try to change axis limits if legend is higher then teh axis that will look strange and risk krashing Hopsan when axis limit -> inf
@@ -2172,11 +2177,31 @@ void PlotArea::rescaleAxisLimitsToMakeRoomForLegend(const QwtPlot::Axis axisId, 
             // Calculate new axis range for current axis height given the scale
             const double ar = ah/s;
 
-            rAxisLimits.setMaxValue(rAxisLimits.minValue() + ar - lhb/s);
-            rAxisLimits.setMinValue(rAxisLimits.minValue() - lhb/s);
+            axisLimits.setMaxValue(axisLimits.minValue() + ar - lhb/s);
+            axisLimits.setMinValue(axisLimits.minValue() - lhb/s);
         }
     }
+
+    //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
+    // Set the new axis value
+    mpQwtPlot->setAxisScale(axisId, axisLimits.minValue(), axisLimits.maxValue());
+    // Create the zoom base (original zoom) rectangle for the left or right axis
+    QRectF baseZoomRect;
+    baseZoomRect.setX(mpQwtPlot->axisInterval(QwtPlot::xBottom).minValue());
+    baseZoomRect.setWidth(mpQwtPlot->axisInterval(QwtPlot::xBottom).width());
+    baseZoomRect.setY(axisLimits.minValue());
+    baseZoomRect.setHeight(axisLimits.width());
+    if (axisId == QwtPlot::yLeft)
+    {
+        mpQwtZoomerLeft->setZoomBase(baseZoomRect);
+    }
+    else if (axisId == QwtPlot::yRight)
+    {
+        mpQwtZoomerRight->setZoomBase(baseZoomRect);
+    }
+    //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis, this is a todo problem with legend buffer ofset
 }
+
 
 //! @todo only works for linear scale right now, need to check for log scale also
 void PlotArea::calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset)

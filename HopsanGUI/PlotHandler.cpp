@@ -28,7 +28,6 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "PlotWindow.h"
 #include "LogDataHandler.h"
-#include "MainWindow.h"
 #include "PlotCurve.h"
 
 PlotHandler::PlotHandler(QObject *pParent) : QObject(pParent){}
@@ -62,7 +61,7 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
     PlotWindow* pPlotWindow = getPlotWindow(name);
     if (pPlotWindow==0)
     {
-        pPlotWindow = new PlotWindow(name, gpMainWindow);
+        pPlotWindow = new PlotWindow(name, gpMainWindowWidget);
         pPlotWindow->show();
         mOpenPlotWindows.insert(name, pPlotWindow);
         connect(pPlotWindow, SIGNAL(windowClosed(PlotWindow*)), this, SLOT(forgetPlotWindow(PlotWindow*)));
@@ -86,7 +85,7 @@ PlotWindow *PlotHandler::createNewUniquePlotWindow(const QString &rName)
         keyName = actualName+QString("%1").arg(ctr++);
     }
 
-    PlotWindow *pPlotWindow = new PlotWindow(rName, gpMainWindow);
+    PlotWindow *pPlotWindow = new PlotWindow(rName, gpMainWindowWidget);
     pPlotWindow->show();
     mOpenPlotWindows.insert(keyName, pPlotWindow);
     connect(pPlotWindow, SIGNAL(windowClosed(PlotWindow*)), this, SLOT(forgetPlotWindow(PlotWindow*)));
@@ -123,7 +122,7 @@ PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<doubl
         name = "PlotWindow"+mOpenPlotWindows.size();
     }
 
-    PlotWindow *plotWindow = new PlotWindow(name, gpMainWindow);
+    PlotWindow *plotWindow = new PlotWindow(name, gpMainWindowWidget);
     plotWindow->show();
 
 
