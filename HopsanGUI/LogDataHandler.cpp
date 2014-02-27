@@ -551,7 +551,7 @@ void LogDataHandler::importHopsanRowCSV(QString importFilePath)
                 pTimeVec = insertTimeVectorVariable(allDatas[timeIdx], fileInfo.absoluteFilePath());
             }
 
-            for (int i=1; i<allNames.size(); ++i)
+            for (int i=0; i<allNames.size(); ++i)
             {
                 // We already inserted time
                 if (i == timeIdx)
