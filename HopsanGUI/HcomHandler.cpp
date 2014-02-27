@@ -496,8 +496,10 @@ void HcomHandler::createCommands()
 
     HcomCommand saplCmd;
     saplCmd.cmd = "sapl";
-    saplCmd.description.append("Saves plot file to .PLO");
-    saplCmd.help.append(" Usage: sapl [filepath variables]");
+    saplCmd.description.append("Save log variables to file");
+    saplCmd.help.append(" Usage: sapl [filepath -flags variables]");
+    saplCmd.help.append("\nFlags:");
+    saplCmd.help.append("\n-csv    Use CSV format (default is PLO format)");
     saplCmd.fnc = &HcomHandler::executeSaveToPloCommand;
     saplCmd.group = "Plot Commands";
     mCmdList << saplCmd;
@@ -2046,6 +2048,14 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         return;
     }
 
+    bool useCsv = false;
+    QString temp = cmd;
+    if(cmdSplit.contains("-csv"))
+    {
+        useCsv = true;
+        temp.remove("-csv");
+    }
+
     QString path = cmdSplit.first();
     if(!path.contains("/"))
     {
@@ -2055,7 +2065,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
 
-    QString temp = cmd.right(cmd.size()-path.size()-1);
+    temp = temp.right(temp.size()-path.size()-1);
 
     QStringList splitCmdMajor;
     bool withinQuotations = false;
@@ -2116,7 +2126,14 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         }
     }
 
-    mpModel->getTopLevelSystemContainer()->getLogDataHandler()->exportToPlo(path, allVariables);
+    if(useCsv)
+    {
+        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->exportToCSV(path, allVariables);
+    }
+    else
+    {
+        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->exportToPlo(path, allVariables);
+    }
 }
 
 void HcomHandler::executeLoadVariableCommand(const QString cmd)
@@ -2127,9 +2144,17 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
         return;
     }
 
-    QString filePath = getArgument(cmd,0);
+    QString path = getArgument(cmd,0);
+    if(!path.contains("/"))
+    {
+        path.prepend("./");
+    }
+    QString dir = path.left(path.lastIndexOf("/"));
+    dir = getDirectory(dir);
+    path = dir+path.right(path.size()-path.lastIndexOf("/"));
 
-    QFile file(filePath);
+
+    QFile file(path);
     if(!file.exists())
     {
         HCOMERR("File not found!");
@@ -2137,11 +2162,11 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
     }
 
     bool csv;
-    if(filePath.endsWith(".csv") || filePath.endsWith(".CSV"))
+    if(path.endsWith(".csv") || path.endsWith(".CSV"))
     {
         csv=true;
     }
-    else if(filePath.endsWith(".plo") || filePath.endsWith(".PLO"))
+    else if(path.endsWith(".plo") || path.endsWith(".PLO"))
     {
         csv=false;
     }
@@ -2153,11 +2178,11 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
 
     if(csv)
     {
-        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->importFromCSV_AutoFormat(filePath);
+        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->importFromCSV_AutoFormat(path);
     }
     else
     {
-        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->importFromPlo(filePath);
+        mpModel->getTopLevelSystemContainer()->getLogDataHandler()->importFromPlo(path);
     }
 }
 

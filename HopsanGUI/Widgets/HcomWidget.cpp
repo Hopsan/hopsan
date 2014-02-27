@@ -742,7 +742,7 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
-        QStringList fileCmds = QStringList() << "exec " << "edit ";
+        QStringList fileCmds = QStringList() << "exec " << "edit " << "load " << "repl ";
         for(int c=0; c<fileCmds.size(); ++c)
         {
             if(mAutoCompleteFilter.startsWith(fileCmds[c]))
