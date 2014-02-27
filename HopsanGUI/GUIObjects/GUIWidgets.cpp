@@ -257,7 +257,7 @@ void TextBoxWidget::loadFromDomElement(const QDomElement &rDomElement)
         linewidth = parseAttributeQreal(lineTag, "width", linewidth);
     }
     QString linestyle = lineTag.attribute(HMF_STYLETAG);
-    lineColor.setNamedColor(lineTag.attribute("color"));
+    lineColor.setNamedColor(lineTag.attribute("color",textColor.name()));
 
     setText(text);
     setFont(font);
