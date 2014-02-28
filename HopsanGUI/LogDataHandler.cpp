@@ -1547,6 +1547,7 @@ double LogDataHandler::peekVariable(SharedVectorVariableT a, const int index)
 
 
 //! @brief Creates an orphan temp variable that will be deleted when its shared pointer reference counter reaches zero (when no one is using it)
+//! @todo this function should not be inside logdatahdnler, it should be free spo that you do not need to use a log datahnadler to create a free variable
 SharedVectorVariableT LogDataHandler::createOrphanVariable(const QString &rName, VariableTypeT type)
 {
     SharedVariableDescriptionT varDesc = SharedVariableDescriptionT(new VariableDescription());

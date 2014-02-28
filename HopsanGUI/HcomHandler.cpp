@@ -181,6 +181,12 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("fft", "Generates frequency spectrum plot from vector","Usage: fft(vector), fft(vector, power[true/false]), fft(vector, timevector) or fft(vector, timevector, power[true/false])");
     registerInternalFunction("gt", "Index-wise greater than check between vector and scalar (equivalent to \">\" operator)","Usage: gt(varName, threshold)");
     registerInternalFunction("lt", "Index-wise less than check between vector and scalar  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)");
+    registerInternalFunction("linspace", "Linearly spaced vector","Usage: linspace(min, max, numSamples)");
+    registerInternalFunction("logspace", "Logarithmicly spaced vector","Usage: logspace(min, max, numSamples)");
+    registerInternalFunction("ones", "Create a vector of ones","Usage: ones(size)");
+    registerInternalFunction("zeros", "Create a vector of zeros","Usage: zeros(size)");
+    registerInternalFunction("maxof", "Returns the element-wise maximum values of x and y vectors","Usage: maxof(x,y)");
+    registerInternalFunction("minof", "Returns the element-wise minimum values of x and y vectors","Usage: minof(x,y)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
@@ -3664,6 +3670,260 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             mAnsType = Undefined;
             return;
         }
+    }
+    else if(desiredType != Scalar && (expr.startsWith("linspace(") && expr.endsWith(")")))
+    {
+        QString args = expr.mid(9, expr.size()-10);
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
+        if (splitArgs.size() == 3)
+        {
+            bool minOK, maxOK, nOK;
+            double min = splitArgs.first().toDouble(&minOK);
+            double max = splitArgs[1].toDouble(&maxOK);
+            int nSamp = int(splitArgs.last().toDouble(&nOK)+0.5);
+
+            if (minOK && maxOK && nOK)
+            {
+                if (nSamp>1)
+                {
+                    if (mpModel)
+                    {
+                        QVector<double> data(nSamp);
+                        for (int i=0; i<data.size(); ++i)
+                        {
+                            data[i] = min+double(i)*(max-min)/double(nSamp-1);
+                        }
+                        mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable("linspace");
+                        mAnsVector->assignFrom(data);
+                        mAnsType = DataVector;
+                        return;
+                    }
+                    else
+                    {
+                        HCOMERR("Could not create new vector, no model open");
+                    }
+                }
+                else
+                {
+                    HCOMERR("Number of samples must be > 1");
+                }
+            }
+            else
+            {
+                HCOMERR("Could not parse arguments");
+            }
+        }
+        else
+        {
+            HCOMERR("Wrong number of arguments provided for linspace function");
+        }
+        mAnsType = Undefined;
+        return;
+    }
+    else if(desiredType != Scalar && (expr.startsWith("logspace(") && expr.endsWith(")")))
+    {
+        QString args = expr.mid(9, expr.size()-10);
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
+        if (splitArgs.size() == 3)
+        {
+            bool minOK, maxOK, nOK;
+            double min = splitArgs.first().toDouble(&minOK);
+            double max = splitArgs[1].toDouble(&maxOK);
+            int nSamp = int(splitArgs.last().toDouble(&nOK)+0.5);
+
+            if (minOK && maxOK && nOK)
+            {
+                if (nSamp>1)
+                {
+                    if (mpModel)
+                    {
+                        QVector<double> data(nSamp);
+                        for (int i=0; i<data.size(); ++i)
+                        {
+                            data[i] = pow(10, min+double(i)*(max-min)/double(nSamp-1));
+                        }
+                        mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable("linspace");
+                        mAnsVector->assignFrom(data);
+                        mAnsType = DataVector;
+                        return;
+                    }
+                    else
+                    {
+                        HCOMERR("Could not create new vector, no model open");
+                    }
+                }
+                else
+                {
+                    HCOMERR("Number of samples must be > 1");
+                }
+            }
+            else
+            {
+                HCOMERR("Could not parse arguments");
+            }
+        }
+        else
+        {
+            HCOMERR("Wrong number of arguments provided for logspace function");
+        }
+        mAnsType = Undefined;
+        return;
+    }
+    else if(desiredType != Scalar && (expr.startsWith("ones(") && expr.endsWith(")")))
+    {
+        QString arg = expr.mid(5, expr.size()-6);
+        bool parseOK;
+        int nElem = int(arg.toDouble(&parseOK)+0.5);
+        if (parseOK)
+        {
+            if (nElem > 0)
+            {
+                if (mpModel)
+                {
+                    QVector<double> data(nElem, 1.0);
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable("ones");
+                    mAnsVector->assignFrom(data);
+                    mAnsType = DataVector;
+                    return;
+                }
+                else
+                {
+                    HCOMERR("Could not create new vector, no model open");
+                }
+            }
+            else
+            {
+                HCOMERR("Size must be > 0");
+            }
+        }
+        else
+        {
+            HCOMERR("Could not parse size argument");
+        }
+        mAnsType = Undefined;
+        return;
+    }
+    else if(desiredType != Scalar && (expr.startsWith("zeros(") && expr.endsWith(")")))
+    {
+        QString arg = expr.mid(6, expr.size()-7);
+        bool parseOK;
+        int nElem = int(arg.toDouble(&parseOK)+0.5);
+        if (parseOK)
+        {
+            if (nElem > 0)
+            {
+                if (mpModel)
+                {
+                    QVector<double> data(nElem, 0.0);
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable("zeros");
+                    mAnsVector->assignFrom(data);
+                    mAnsType = DataVector;
+                    return;
+                }
+                else
+                {
+                    HCOMERR("Could not create new vector, no model open");
+                }
+            }
+            else
+            {
+                HCOMERR("Size must be > 0");
+            }
+        }
+        else
+        {
+            HCOMERR("Could not parse size argument");
+        }
+        mAnsType = Undefined;
+        return;
+    }
+    else if(desiredType != Scalar && expr.startsWith("maxof(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(6, expr.size()-7);
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
+        if(splitArgs.size() == 2)
+        {
+            const QString varName1 = splitArgs.first().trimmed();
+            const QString varName2 = splitArgs.last().trimmed();
+
+            HopsanVariable var1 = getLogVariable(varName1);
+            if (var1)
+            {
+                HopsanVariable var2 = getLogVariable(varName2);
+                if (var2)
+                {
+                    mAnsType = DataVector;
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(var1.mpVariable->getSmartName()).arg(var2.mpVariable->getSmartName()));
+                    QVector<double> a = var1.mpVariable->getDataVectorCopy();
+                    QVector<double> b = var2.mpVariable->getDataVectorCopy();
+                    QVector<double> c(qMin(a.size(), b.size()));
+                    for (int i=0; i<c.size(); ++i)
+                    {
+                        c[i] = qMax(a[i],b[i]);
+                    }
+                    mAnsVector->assignFrom(c);
+                    return;
+                }
+                else
+                {
+                    HCOMERR(QString("Variable %1 could not be found").arg(varName2));
+                }
+            }
+            else
+            {
+                HCOMERR(QString("Variable %1 could not be found").arg(varName1));
+            }
+        }
+        else
+        {
+            HCOMERR("Wrong number of arguments provided for maxof function.\n"+mLocalFunctionDescriptions.find("maxof").value().second);
+        }
+        mAnsType = Undefined;
+        return;
+    }
+    else if(desiredType != Scalar && expr.startsWith("minof(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(6, expr.size()-7);
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
+        if(splitArgs.size() == 2)
+        {
+            const QString varName1 = splitArgs.first().trimmed();
+            const QString varName2 = splitArgs.last().trimmed();
+
+            HopsanVariable var1 = getLogVariable(varName1);
+            if (var1)
+            {
+                HopsanVariable var2 = getLogVariable(varName2);
+                if (var2)
+                {
+                    mAnsType = DataVector;
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(var1.mpVariable->getSmartName()).arg(var2.mpVariable->getSmartName()));
+                    QVector<double> a = var1.mpVariable->getDataVectorCopy();
+                    QVector<double> b = var2.mpVariable->getDataVectorCopy();
+                    QVector<double> c(qMin(a.size(), b.size()));
+                    for (int i=0; i<c.size(); ++i)
+                    {
+                        c[i] = qMin(a[i],b[i]);
+                    }
+                    mAnsVector->assignFrom(c);
+                    return;
+                }
+                else
+                {
+                    HCOMERR(QString("Variable %1 could not be found").arg(varName2));
+                }
+            }
+            else
+            {
+                HCOMERR(QString("Variable %1 could not be found").arg(varName1));
+            }
+        }
+        else
+        {
+            HCOMERR("Wrong number of arguments provided for minof function.\n"+mLocalFunctionDescriptions.find("minof").value().second);
+        }
+        mAnsType = Undefined;
+        return;
     }
     else if(desiredType != Scalar && expr.count("<")==1 && getLogVariable(expr.section("<",0,0)))
     {
