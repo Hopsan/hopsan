@@ -28,8 +28,6 @@
 
 //Hopsan includes
 #include "Configuration.h"
-#include "MainWindow.h"
-#include "ModelHandler.h"
 #include "ProjectTabWidget.h"
 #include "global.h"
 
@@ -38,20 +36,11 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-CentralTabWidget::CentralTabWidget(MainWindow *pParentMainWindow)
-        :   QTabWidget(pParentMainWindow)
+CentralTabWidget::CentralTabWidget(QWidget *parent)
+        :   QTabWidget(parent)
 {
-    this->setPalette(gpConfig->getPalette());
-
-    connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
-    connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
-
+    this->setPalette(parent->palette());
     setTabsClosable(true);
-
-    connect(this,   SIGNAL(currentChanged(int)),    gpModelHandler, SLOT(selectModelByTabIndex(int)), Qt::UniqueConnection);
-    connect(this,   SIGNAL(tabCloseRequested(int)), gpModelHandler, SLOT(closeModelByTabIndex(int)), Qt::UniqueConnection);
-
-    //this->hide();
 }
 
 void CentralTabWidget::setTabNotClosable(int index)
@@ -70,8 +59,4 @@ void CentralTabWidget::tabRemoved(int index)
     tabBar()->setVisible(this->count() > 1);
     QTabWidget::tabRemoved(index);
 }
-
-
-
-//!  Tells current tab to export itself to PDF. This is needed because a direct connection to current tab would be too complicated.
 

@@ -36,8 +36,9 @@
 
 #include "common.h"
 
-class Configuration
+class Configuration : public QObject
 {
+    Q_OBJECT
 
 public:
     void saveToXml();
@@ -210,6 +211,9 @@ private:
     int mParallelAlgorighm;
 
     QMap < ConnectorStyleEnumT, QMap< QString, QMap<QString, QPen> > > mPenStyles;
+
+signals:
+    void recentModelsListChanged();
 };
 
 #endif // CONFIGURATION_H

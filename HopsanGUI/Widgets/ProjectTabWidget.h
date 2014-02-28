@@ -36,7 +36,7 @@ class CentralTabWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    CentralTabWidget(MainWindow *pParentMainWindow = 0);
+    CentralTabWidget(QWidget *parent = 0);
 
     void setTabNotClosable(int index);
 

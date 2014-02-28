@@ -204,8 +204,6 @@ public slots:
     void initializeWorkspace();
     void updateToolBarsToNewTab();
     void refreshUndoWidgetList();
-    void registerRecentModel(QFileInfo model);
-    void unRegisterRecentModel(QFileInfo model);
     void updateRecentList();
 
 signals:

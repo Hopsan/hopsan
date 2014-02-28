@@ -31,7 +31,6 @@
 #include "LogDataHandler.h"
 #include "ModelHandler.h"
 #include "OptimizationHandler.h"
-#include "OptimizationWorkerComplex.h"
 #include "OptimizationWorkerComplexRFP.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"

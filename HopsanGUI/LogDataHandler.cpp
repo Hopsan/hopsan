@@ -838,6 +838,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
     if (foundData)
     {
         emit dataAdded();
+        emit dataAddedFromModel(true);
     }
     else if (!overWriteLastGeneration)
     {

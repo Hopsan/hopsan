@@ -22,18 +22,25 @@
 //!
 //$Id$
 
+//Qt includes
 #include <QDebug>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QTimer>
+
+//C++ includes
 #include <limits>
 #ifndef WIN32
 #include <unistd.h>
 #endif
+
+//Hopsan includes
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "global.h"
-#include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "HcomHandler.h"
@@ -41,11 +48,9 @@
 #include "ModelHandler.h"
 #include "OptimizationHandler.h"
 #include "Optimization/OptimizationWorker.h"
-#include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
-#include "Widgets/PyDockWidget.h"
 
 class CentralTabWidget;
 

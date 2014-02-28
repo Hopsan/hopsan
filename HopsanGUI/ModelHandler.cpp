@@ -83,6 +83,8 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
     ModelWidget *pNewModelWidget = new ModelWidget(this,gpCentralTabWidget);    //! @todo Should probably use ModelHandler as parent
     pNewModelWidget->getTopLevelSystemContainer()->setName(modelName);
 
+    connect(pNewModelWidget->getTopLevelSystemContainer()->getLogDataHandler(), SIGNAL(dataAddedFromModel(bool)), gpMainWindow->mpShowLossesAction, SLOT(setEnabled(bool)));
+
     addModelWidget(pNewModelWidget, modelName, hidden);
 
     pNewModelWidget->setSaved(true);
@@ -256,7 +258,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
 
     if(!detatched)
     {
-        gpMainWindow->registerRecentModel(fileInfo);    //! @todo Can this be done without including main window?
+        gpConfig->addRecentModel(fileInfo.filePath());
     }
 
     ModelWidget *pNewModel = new ModelWidget(this, gpCentralTabWidget);
@@ -308,7 +310,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     {
         gpMessageHandler->addErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
         closeModel(pNewModel);
-        gpMainWindow->unRegisterRecentModel(fileInfo);
+        gpConfig->removeRecentModel(fileInfo.filePath());
 
     }
 

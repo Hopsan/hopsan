@@ -40,7 +40,6 @@
 #include "GUIObjects/GUIWidgets.h"
 #include "HcomWidget.h"
 #include "InitializationThread.h"
-#include "MainWindow.h"
 #include "ModelHandler.h"
 #include "ProgressBarThread.h"
 #include "ProjectTabWidget.h"
@@ -538,7 +537,7 @@ void ModelWidget::collectPlotData()
 {
     //If we collect plot data, we can plot and calculate losses, so enable these buttons
     //gpMainWindow->mpPlotAction->setEnabled(true);
-    gpMainWindow->mpShowLossesAction->setEnabled(true); //! @todo Can this be done without including main window?
+    //gpMainWindow->mpShowLossesAction->setEnabled(true); //! @todo Can this be done without including main window?
    // gpMainWindow->mpAnimateAction->setEnabled(true);
 
     // Tell container to do the job
@@ -557,7 +556,7 @@ void ModelWidget::openAnimation()
     if(!getTopLevelSystemContainer()->getModelObjectNames().isEmpty())   //Animation widget cannot be created with no objects
     {
         mpAnimationWidget = new AnimationWidget(this);
-        gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);  //! @todo Can this be done without including main window?
+        gpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);  //! @todo Can this be done without including main window?
         mpAnimationWidget->show();
         gpCentralTabWidget->hide();
     }
@@ -571,7 +570,7 @@ void ModelWidget::lockTab(bool locked)
 
 void ModelWidget::closeAnimation()
 {
-    gpMainWindow->mpCentralGridLayout->removeWidget(mpAnimationWidget); //! @todo Can this be done without including main window?
+    gpCentralGridLayout->removeWidget(mpAnimationWidget); //! @todo Can this be done without including main window?
     delete mpAnimationWidget;
     mpAnimationWidget = 0;
     gpCentralTabWidget->show();
@@ -678,7 +677,6 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         if(contents == FullModel)
         {
             gpConfig->addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
-            gpMainWindow->updateRecentList();  //! @todo Can this be done without including main window?
             this->setSaved(true);
         }
 

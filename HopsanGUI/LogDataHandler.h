@@ -159,6 +159,7 @@ public slots:
 
 signals:
     void dataAdded();
+    void dataAddedFromModel(bool);
     void dataRemoved();
     void aliasChanged();
     void closePlotsWithOwnedData();

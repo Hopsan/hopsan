@@ -29,11 +29,9 @@
 #include "HcomHandler.h"
 #include "ModelHandler.h"
 #include "DesktopHandler.h"
-#include "MainWindow.h"
 #include "global.h"
 #include "Widgets/ModelWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "LogDataHandler.h"
 #include "PlotHandler.h"
 #include "PlotWindow.h"
 #include "PlotArea.h"
@@ -107,7 +105,7 @@ void OptimizationWorker::finalize()
 
     mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(false);
 
-    gpMainWindow->mpOptimizationDialog->setOptimizationFinished();
+    gpOptimizationDialog->setOptimizationFinished();
 
 
 
@@ -695,7 +693,7 @@ void OptimizationWorker::updateProgressBar(int i)
     if(dummy != mPercent)    //Only update at whole numbers
     {
         mPercent = dummy;
-        gpMainWindow->mpOptimizationDialog->updateTotalProgressBar(dummy);
+        gpOptimizationDialog->updateTotalProgressBar(dummy);
     }
 }
 

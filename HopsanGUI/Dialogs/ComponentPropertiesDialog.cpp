@@ -27,23 +27,21 @@
 #include <QScrollArea>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QTabWidget>
 
 //Hopsan includes
 #include "global.h"
 #include "ComponentPropertiesDialog.h"
 #include "Configuration.h"
-#include "CoreAccess.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIPort.h"
-#include "UndoStack.h"
-#include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "LibraryHandler.h"
 #include "Widgets/ModelWidget.h"
-#include "Widgets/SystemParametersWidget.h"
 
 
 //! @class ComponentPropertiesDialog

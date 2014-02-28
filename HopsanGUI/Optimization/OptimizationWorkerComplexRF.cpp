@@ -29,7 +29,6 @@
 #include "HcomHandler.h"
 #include "LogDataHandler.h"
 #include "OptimizationHandler.h"
-#include "OptimizationWorkerComplex.h"
 #include "OptimizationWorkerComplexRF.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"

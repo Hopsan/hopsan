@@ -100,12 +100,15 @@ OptimizationDialog *gpOptimizationDialog = 0;
 QAction *gpToggleNamesAction = 0;
 QAction *gpTogglePortsAction = 0;
 OptionsDialog *gpOptionsDialog = 0;
+QGridLayout *gpCentralGridLayout = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     this->hide();
+
+    connect(gpConfig, SIGNAL(recentModelsListChanged()), this, SLOT(updateRecentList()));
 
     // Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
@@ -231,6 +234,7 @@ void MainWindow::createContents()
 
     //Create the grid layout for the centralwidget
     mpCentralGridLayout = new QGridLayout(mpCentralWidget);
+    gpCentralGridLayout = mpCentralGridLayout;
     mpCentralGridLayout->setContentsMargins(4,4,4,4);
 
     //Create the model handler object
@@ -248,6 +252,11 @@ void MainWindow::createContents()
     mpCentralTabs->setObjectName("centralTabs");
     mpCentralTabs->setMouseTracking(true);
     mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
+
+    connect(mpCentralTabs, SIGNAL(currentChanged(int)),         this,           SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
+    connect(mpCentralTabs, SIGNAL(currentChanged(int)),         this,           SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
+    connect(mpCentralTabs,   SIGNAL(currentChanged(int)),       gpModelHandler, SLOT(selectModelByTabIndex(int)), Qt::UniqueConnection);
+    connect(mpCentralTabs,   SIGNAL(tabCloseRequested(int)),    gpModelHandler, SLOT(closeModelByTabIndex(int)), Qt::UniqueConnection);
 
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
@@ -1334,27 +1343,6 @@ void MainWindow::updateToolBarsToNewTab()
 void MainWindow::refreshUndoWidgetList()
 {
     mpUndoWidget->refreshList();
-}
-
-
-//! @brief Registers a recently opened model file in the "Recent Models" list
-void MainWindow::registerRecentModel(QFileInfo model)
-{
-    if(model.fileName() == "")
-        return;
-
-    gpConfig->addRecentModel(model.filePath());
-    updateRecentList();
-}
-
-//! @brief Unregisters a model from the "Recent Models" list
-void MainWindow::unRegisterRecentModel(QFileInfo model)
-{
-    if(model.fileName() == "")
-        return;
-
-    gpConfig->removeRecentModel(model.filePath());
-    updateRecentList();
 }
 
 

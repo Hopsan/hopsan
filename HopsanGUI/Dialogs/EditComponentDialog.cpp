@@ -36,21 +36,17 @@
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QGridLayout>
+#include <QLabel>
+#include <QToolButton>
+#include <QDebug>
 
 //Hopsan includes
 #include "common.h"
 #include "global.h"
 #include "Configuration.h"
-#include "CoreAccess.h"
-#include "DesktopHandler.h"
 #include "Dialogs/EditComponentDialog.h"
-#include "Dialogs/MovePortsDialog.h"
-#include "GUIObjects/GUIModelObjectAppearance.h"
 #include "GUIPort.h"
 #include "Utilities/HighlightingUtilities.h"
-#include "Utilities/XMLUtilities.h"
-#include "Widgets/LibraryWidget.h"
-#include "Widgets/PyDockWidget.h"
 
 
 EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language, QWidget *parent)

@@ -30,16 +30,17 @@
 #include <QScrollArea>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDoubleValidator>
+#include <QListWidget>
 
-#include "common.h"
+//#include "common.h"
 #include "global.h"
 #include "Configuration.h"
+#include "ModelObjectPropertiesDialog.h"
 #include "DesktopHandler.h"
 #include "ModelHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "Widgets/LibraryWidget.h"
-#include "Widgets/ModelWidget.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
 

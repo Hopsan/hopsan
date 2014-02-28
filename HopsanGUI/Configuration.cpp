@@ -1191,12 +1191,16 @@ void Configuration::addRecentModel(QString value)
         mRecentModels.pop_back();
     }
     saveToXml();
+
+    emit recentModelsListChanged();
 }
 
 void Configuration::removeRecentModel(QString value)
 {
     mRecentModels.removeAll(value);
     saveToXml();
+
+    emit recentModelsListChanged();
 }
 
 
