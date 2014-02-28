@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+//Hopsan includes
 #include "common.h"
 #include "global.h"
 #include "version_gui.h"
@@ -29,16 +30,17 @@
 #include "DesktopHandler.h"
 #include "Utilities/XMLUtilities.h"
 #include "Utilities/GUIUtilities.h"
-#include "MainWindow.h"
 #include "MessageHandler.h"
 #include "Widgets/PyDockWidget.h"
 //! @todo this config object should not need to include all those other things, rather tehy should prepare their data and sent it into the config object, or something similar
 
+//Qt includes
 #include <QDomElement>
 #include <QMessageBox>
 #include <QMap>
 #include <QAction>
 #include <QApplication>
+#include <QMainWindow>
 
 
 //! @class Configuration
@@ -69,8 +71,8 @@ void Configuration::saveToXml()
     appendDomIntegerNode(settings, "progressbar_step", mProgressBarStep);
     appendDomBooleanNode(settings, "multicore", mUseMulticore);
     appendDomIntegerNode(settings, "numberofthreads", mNumberOfThreads);
-    appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->mpToggleNamesAction->isChecked());
-    appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
+    appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpToggleNamesAction->isChecked());
+    appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpTogglePortsAction->isChecked());
     appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
     appendDomIntegerNode(settings, "generationlimit", mGenerationLimit);
     appendDomBooleanNode(settings, "autolimitgenerations", mAutoLimitLogDataGenerations);
@@ -182,7 +184,7 @@ void Configuration::saveToXml()
     //Save python session
 #ifdef USEPYTHONQT
     QDomElement python = appendDomElement(configRoot, "python");
-    gpMainWindow->getPythonDock()->saveSettingsToDomElement(python);
+    gpPyDockWidget->saveSettingsToDomElement(python);
 #endif
 
     QDomElement hcom = appendDomElement(configRoot, "hcom");
@@ -230,8 +232,8 @@ void Configuration::loadFromXml()
     int errorLine, errorColumn;
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-                                 gpMainWindow->tr("hopsanconfig.xml: Parse error at line %1, column %2:\n%3")
+        QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
+                                 gpMainWindowWidget->tr("hopsanconfig.xml: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
                                  .arg(errorStr));
@@ -241,7 +243,7 @@ void Configuration::loadFromXml()
         QDomElement configRoot = domDocument.documentElement();
         if (configRoot.tagName() != "hopsanconfig")
         {
-            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
+            QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
                                      "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
                                      + configRoot.tagName() + " != hopsanconfig");
         }
@@ -286,7 +288,7 @@ void Configuration::loadDefaultsFromXml()
     QFile file(gpDesktopHandler->getMainPath() + "hopsandefaults");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
+        QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
                                  "Unable to read default configuration file. Please reinstall program.\n" + gpDesktopHandler->getMainPath());
 
         qApp->quit();
@@ -296,8 +298,8 @@ void Configuration::loadDefaultsFromXml()
     int errorLine, errorColumn;
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-                                 gpMainWindow->tr("hopsandefaults: Parse error at line %1, column %2:\n%3")
+        QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
+                                 gpMainWindowWidget->tr("hopsandefaults: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
                                  .arg(errorStr));
@@ -307,7 +309,7 @@ void Configuration::loadDefaultsFromXml()
         QDomElement configRoot = domDocument.documentElement();
         if (configRoot.tagName() != "hopsandefaults")
         {
-            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
+            QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
                                      "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
                                      + configRoot.tagName() + " != hopsandefaults");
         }

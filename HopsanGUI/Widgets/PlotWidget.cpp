@@ -43,13 +43,13 @@
 #include "GUIPort.h"
 #include "LibraryWidget.h"
 #include "loadFunctions.h"
-#include "MainWindow.h"
 #include "MessageWidget.h"
 #include "PlotHandler.h"
 #include "PlotWidget.h"
 #include "PlotWindow.h"
 #include "ProjectTabWidget.h"
 #include "Utilities/GUIUtilities.h"
+#include "Utilities/HelpPopUpWidget.h"
 
 // Plot Widget help classes declarations
 // ----------------------------------------------------------------------------
@@ -415,7 +415,7 @@ PlotWindow *VariableTree::plotToPreferedPlotWindow(QTreeWidgetItem *item)
 //! @brief Defines what happens when clicking in the variable list. Used to initiate drag operations.
 void VariableTree::mousePressEvent(QMouseEvent *event)
 {
-    gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
+    gpHelpPopupWidget->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
     QTreeWidget::mousePressEvent(event);
 
     if (event->button() == Qt::LeftButton)
@@ -427,7 +427,7 @@ void VariableTree::mousePressEvent(QMouseEvent *event)
 void VariableTree::mouseMoveEvent(QMouseEvent *event)
 {
     //! @todo maybe should try to be smart with a lcoal function that selcts plotwindow if one is set (for message)
-    gpMainWindow->showHelpPopupMessage("Double click on a variable to plot it, or drag it to an existing plot window.");
+    gpHelpPopupWidget->showHelpPopupMessage("Double click on a variable to plot it, or drag it to an existing plot window.");
     if (!(event->buttons() & Qt::LeftButton))
     {
         return;

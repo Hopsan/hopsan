@@ -36,7 +36,6 @@
 #include "PlotTab.h"
 #include "global.h"
 #include "PlotWindow.h"
-#include "MainWindow.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "ModelHandler.h"
 
@@ -201,7 +200,7 @@ void OptimizationWorkerParticleSwarm::run()
             mPsBestObj = mObjectives[mBestId];
             mBestPoint = mParameters[mBestId];
         }
-        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         plotPoints();
         plotObjectiveFunctionValues();

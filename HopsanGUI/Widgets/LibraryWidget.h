@@ -82,9 +82,6 @@ private:
     QTreeWidgetItem *mpAddCppComponentItemDual;
     QLabel *mpComponentNameLabel;
     QLineEdit *mpFilterEdit;
-    QToolButton *mpTreeViewButton;
-    QToolButton *mpDualViewButton;
-    QToolButton *mpHelpButton;
 
     //Maps between GUI objects and library contents
     QMap<QTreeWidgetItem *, QString> mItemToTypeNameMap;        //Map between component items and typenames

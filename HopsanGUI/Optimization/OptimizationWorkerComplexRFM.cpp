@@ -29,7 +29,6 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "HcomHandler.h"
 #include "LogDataHandler.h"
-#include "MainWindow.h"
 #include "OptimizationHandler.h"
 #include "OptimizationWorkerComplex.h"
 #include "OptimizationWorkerComplexRFM.h"
@@ -216,7 +215,7 @@ void OptimizationWorkerComplexRFM::run()
         }
         newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
 
-        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Evaluate new point
         if(metaModelExist)
@@ -278,7 +277,7 @@ void OptimizationWorkerComplexRFM::run()
                 mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
             }
             newPoint = mParameters[wid];
-            gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
             //Evaluate new point
             if(metaModelExist)

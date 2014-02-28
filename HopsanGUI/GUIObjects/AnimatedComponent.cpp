@@ -33,7 +33,6 @@
 #include "GraphicsView.h"
 #include "GUIModelObject.h"
 #include "GUIPort.h"
-#include "MainWindow.h"
 #include "../HopsanCore/include/Port.h"
 #include "Dialogs/AnimatedIconPropertiesDialog.h"
 #include "GUIObjects/GUIContainerObject.h"

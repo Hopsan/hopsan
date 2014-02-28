@@ -37,7 +37,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "HcomHandler.h"
-#include "MainWindow.h"
+#include "Utilities/HelpPopUpWidget.h"
 #include "ModelHandler.h"
 #include "OptimizationHandler.h"
 #include "Optimization/OptimizationWorker.h"
@@ -333,7 +333,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     //Connections
     connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(update(int)));
     connect(mpAddFunctionButton,            SIGNAL(clicked()),      this,                   SLOT(addFunction()));
-    connect(pHelpButton,                   SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(pHelpButton,                   SIGNAL(clicked()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
     connect(mpStartButton, SIGNAL(clicked()), this, SLOT(run()));
     connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
     connect(button(QWizard::CustomButton2), SIGNAL(clicked()), this, SLOT(loadScriptFile()));

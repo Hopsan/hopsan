@@ -57,6 +57,7 @@
 #include "PlotWindow.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
+#include "Utilities/HelpPopUpWidget.h"
 #include "version_gui.h"
 #include "Widgets/HcomWidget.h"
 #include "LibraryHandler.h"
@@ -69,6 +70,7 @@
 #include "Widgets/DataExplorer.h"
 #include "Widgets/MessageWidget.h"
 #include "PlotHandler.h"
+#include "Utilities/HelpPopUpWidget.h"
 
 
 
@@ -1355,7 +1357,7 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
 
         if (success)
         {
-            gpMainWindow->hideHelpPopupMessage();
+            gpHelpPopupWidget->hide();
             mpTempConnector->setEndPort(pPort);
             mpTempConnector->finishCreation();
             mSubConnectorList.append(mpTempConnector);
@@ -1405,7 +1407,7 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
 
         mpTempConnector->drawConnector();
 
-        gpMainWindow->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
+        gpHelpPopupWidget->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
         mIsCreatingConnector = true;
 
         // Return ptr to the created connector
@@ -2227,7 +2229,7 @@ void ContainerObject::cancelCreatingConnector()
         }
         mIsCreatingConnector = false;
         delete(mpTempConnector);
-        gpMainWindow->hideHelpPopupMessage();
+        gpHelpPopupWidget->hide();
     }
 }
 
@@ -2277,7 +2279,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
         mIsCreatingConnector = false;
         mpModelWidget->getGraphicsView()->setIgnoreNextContextMenuEvent();
         delete(mpTempConnector);
-        gpMainWindow->hideHelpPopupMessage();
+        gpHelpPopupWidget->hide();
     }
 
     if(mIsCreatingConnector)
@@ -2776,7 +2778,7 @@ void ContainerObject::showLosses(bool show)
 
     connect(pCancelButton, SIGNAL(clicked()), mpLossesDialog, SLOT(close()));
     connect(pNextButton, SIGNAL(clicked()), this, SLOT(showLossesFromDialog()));
-    connect(pHelpAction, SIGNAL(triggered()), gpMainWindow, SLOT(openContextHelp()));
+    connect(pHelpAction, SIGNAL(triggered()), gpHelpPopupWidget, SLOT(openContextHelp()));
 }
 
 
@@ -3005,7 +3007,7 @@ void ContainerObject::measureSimulationTime()
     QStandardItem *pTypeTimeHeaderItem = new QStandardItem("Times");
     pTypeModel->setHorizontalHeaderItem(1, pTypeTimeHeaderItem);
 
-    QDialog *pDialog = new QDialog(gpMainWindow);
+    QDialog *pDialog = new QDialog(gpMainWindowWidget);
     pDialog->setWindowTitle("Simulation Time Measurements");
     pDialog->setWindowModality(Qt::WindowModal);
     pDialog->setWindowIcon(QIcon(QString(ICONPATH)+"Hopsan-MeasureSimulationTime.png"));

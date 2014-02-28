@@ -453,7 +453,7 @@ void WelcomeWidget::mousePressEvent(QMouseEvent *event)
     }
     else if(mpOptionsFrame->underMouse())
     {
-        gpMainWindow->getOptionsDialog()->show();
+        gpOptionsDialog->show();
     }
 
     QWidget::mousePressEvent(event);

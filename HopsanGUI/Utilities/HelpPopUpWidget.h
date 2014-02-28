@@ -36,6 +36,8 @@ public:
 
 public slots:
     void showHelpPopupMessage(const QString &rMessage);
+    void openContextHelp();
+    void openContextHelp(QString file);
 
 private:
     QLabel *mpHelpText;

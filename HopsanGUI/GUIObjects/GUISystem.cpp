@@ -30,7 +30,6 @@
 #include "GraphicsView.h"
 #include "CoreAccess.h"
 #include "loadFunctions.h"
-#include "MainWindow.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "version_gui.h"
@@ -717,8 +716,8 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         if(gfxType == "user") { mGfxType = UserGraphics; }
         else if(gfxType == "iso") { mGfxType = ISOGraphics; }
         //! @todo these two should not be set here
-        gpMainWindow->mpToggleNamesAction->setChecked(mShowSubComponentNames);
-        gpMainWindow->mpTogglePortsAction->setChecked(mShowSubComponentPorts);
+        gpToggleNamesAction->setChecked(mShowSubComponentNames);
+        gpTogglePortsAction->setChecked(mShowSubComponentPorts);
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
         double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
         double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
@@ -918,7 +917,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         this->mpModelWidget->setSaved(true);
 
 #ifdef USEPYTHONQT
-        gpMainWindow->getPythonDock()->runPyScript(mScriptFilePath);
+        gpPyDockWidget->runPyScript(mScriptFilePath);
 #endif
 
         emit systemParametersChanged(); // Make sure we refresh the syspar widget
@@ -934,7 +933,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 void SystemContainer::exportToLabView()
 {
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(gpMainWindow, tr("Export to LabVIEW/SIT"),
+    reply = QMessageBox::question(gpMainWindowWidget, tr("Export to LabVIEW/SIT"),
                                   "This will create source code for a LabVIEW/SIT DLL-file from current model. You will need the HopsanCore source code and Visual Studio 2003 to compile it.\nContinue?",
                                   QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::No)
@@ -944,7 +943,7 @@ void SystemContainer::exportToLabView()
     QString filePath;
     //QFileInfo fileInfo;
     //QFile file;
-    filePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Export Project to HopsanRT Wrapper Code"),
+    filePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Export Project to HopsanRT Wrapper Code"),
                                             gpConfig->getLabViewExportDir(),
                                             tr("C++ Source File (*.cpp)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
@@ -962,7 +961,7 @@ void SystemContainer::exportToFMU()
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
+    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
                                                     gpConfig->getFmuExportDir(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
@@ -976,7 +975,7 @@ void SystemContainer::exportToFMU()
     {
         qDebug() << saveDir.entryList();
         QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindow->windowIcon());
+        msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
         msgBox.setText(QString("Folder is not empty!"));
         msgBox.setInformativeText("Are you sure you want to export files here?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -998,7 +997,7 @@ void SystemContainer::exportToFMUCoSim()
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
+    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
                                                     gpConfig->getFmuExportDir(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
@@ -1012,7 +1011,7 @@ void SystemContainer::exportToFMUCoSim()
     {
         qDebug() << saveDir.entryList();
         QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindow->windowIcon());
+        msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
         msgBox.setText(QString("Folder is not empty!"));
         msgBox.setInformativeText("Are you sure you want to export files here?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -1480,7 +1479,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me)
 
 void SystemContainer::exportToSimulink()
 {
-    QDialog *pExportDialog = new QDialog(gpMainWindow);
+    QDialog *pExportDialog = new QDialog(gpMainWindowWidget);
     pExportDialog->setWindowTitle("Create Simulink Source Files");
 
     QLabel *pExportDialogLabel1 = new QLabel(tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console."), pExportDialog);
@@ -1553,7 +1552,7 @@ void SystemContainer::exportToSimulink()
 
         //Open file dialog and initialize the file stream
     QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
+    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
                                                     gpConfig->getSimulinkExportDir(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
@@ -1599,7 +1598,7 @@ void SystemContainer::exportToSimulink()
 
 void SystemContainer::exportToSimulinkCoSim()
 {
-    QDialog *pExportDialog = new QDialog(gpMainWindow);
+    QDialog *pExportDialog = new QDialog(gpMainWindowWidget);
     pExportDialog->setWindowTitle("Create Simulink Source Files");
 
     QLabel *pExportDialogLabel1 = new QLabel(tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console."), pExportDialog);
@@ -1664,7 +1663,7 @@ void SystemContainer::exportToSimulinkCoSim()
 
         //Open file dialog and initialize the file stream
     QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
+    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
                                                     gpConfig->getSimulinkExportDir(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
@@ -1724,7 +1723,7 @@ void SystemContainer::loadParameterFile(const QString &path)
     QString parameterFileName = path;
     if(path.isEmpty())
     {
-        parameterFileName = QFileDialog::getOpenFileName(gpMainWindow, tr("Load Parameter File"),
+        parameterFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
                                                              gpConfig->getLoadModelDir(),
                                                              tr("Hopsan Parameter Files (*.hpf *.xml)"));
     }

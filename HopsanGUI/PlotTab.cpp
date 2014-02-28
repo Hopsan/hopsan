@@ -49,7 +49,7 @@
 #include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "PlotArea.h"
-#include "MainWindow.h"
+#include "Utilities/HelpPopUpWidget.h"
 
 #include "qwt_plot_renderer.h"
 #include "Dependencies/BarChartPlotter/barchartplotter.h"
@@ -1511,8 +1511,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
 
 void PlotTab::showFrequencyAnalysisHelp()
 {
-    //! @todo solve in some smarter way then gpMainWindow (we do not want to include it everywhere
-    gpMainWindow->openContextHelp("userFrequencyAnalysis.html");
+    gpHelpPopupWidget->openContextHelp("userFrequencyAnalysis.html");
 }
 
 void PlotTab::openCreateBodePlotDialog()

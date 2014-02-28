@@ -35,7 +35,6 @@
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "HcomHandler.h"
-#include "MainWindow.h"
 #include "OptimizationHandler.h"
 #include "PlotCurve.h"
 #include "PlotHandler.h"
@@ -833,7 +832,7 @@ void HcomHandler::executeCommand(QString cmd)
 //! @brief Execute function for "exit" command
 void HcomHandler::executeExitCommand(const QString /*cmd*/)
 {
-    gpMainWindow->close();
+    gpMainWindowWidget->close();
 }
 
 
@@ -1339,8 +1338,8 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
         //HCOMINFO("This HCOM terminal does not accept optimization scripts.\nUse the optimization dialog instead.");
         //return;
 
-        gpMainWindow->mpOptimizationDialog->open();
-        gpMainWindow->mpOptimizationDialog->setCode(code);
+        gpOptimizationDialog->open();
+        gpOptimizationDialog->setCode(code);
         return;
     }
 

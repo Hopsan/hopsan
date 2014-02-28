@@ -207,8 +207,6 @@ public slots:
     void registerRecentModel(QFileInfo model);
     void unRegisterRecentModel(QFileInfo model);
     void updateRecentList();
-    void openContextHelp();
-    void openContextHelp(QString file);
 
 signals:
     void simulateKeyPressed();

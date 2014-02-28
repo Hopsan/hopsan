@@ -29,7 +29,6 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "HcomHandler.h"
 #include "LogDataHandler.h"
-#include "MainWindow.h"
 #include "ModelHandler.h"
 #include "OptimizationHandler.h"
 #include "OptimizationWorkerComplex.h"
@@ -226,7 +225,7 @@ void OptimizationWorkerComplexRFP::run()
         //Reflect worst point
         pickCandidateParticles();
 
-        gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Evaluate new point
         evaluateCandidateParticles();
@@ -283,7 +282,7 @@ void OptimizationWorkerComplexRFP::run()
             }
 
             newPoint = mCandidateParticles.last();
-            gpMainWindow->mpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
 
             //Evaluate new point

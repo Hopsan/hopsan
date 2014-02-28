@@ -31,7 +31,7 @@
 #include "DesktopHandler.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
-#include "MainWindow.h"
+#include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
 
 
@@ -152,7 +152,7 @@ void DebuggerWidget::retranslateUi()
 
 void DebuggerWidget::setInitData()
 {
-    mCurrentTime = gpMainWindow->getStartTimeFromToolBar();
+    mCurrentTime = gpModelHandler->getCurrentModel()->getStartTime().toDouble();
 
     mpComponentsList->addItems(mpSystem->getModelObjectNames());
     mpComponentsList->sortItems();
@@ -367,11 +367,11 @@ double DebuggerWidget::getTimeStep() const
 
 double DebuggerWidget::getStartTime() const
 {
-    return gpMainWindow->getStartTimeFromToolBar();
+    return gpModelHandler->getCurrentModel()->getStartTime().toDouble();
 }
 
 double DebuggerWidget::getStopTime() const
 {
-    return gpMainWindow->getFinishTimeFromToolBar();
+    return gpModelHandler->getCurrentModel()->getStopTime().toDouble();
 }
 

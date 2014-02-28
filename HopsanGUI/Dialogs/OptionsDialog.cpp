@@ -26,13 +26,14 @@
 #include <QDebug>
 #include <QColorDialog>
 #include <QDesktopServices>
+#include <QMainWindow>
+#include <QLineEdit>
 
 #include "global.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "MainWindow.h"
 #include "OptionsDialog.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/ModelWidget.h"
@@ -307,7 +308,7 @@ void OptionsDialog::reset()
     QMessageBox resetWarningBox(QMessageBox::Warning, tr("Warning"),tr("This will reset ALL settings to default values. Do you want to continue?"), 0, 0);
     resetWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
     resetWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
-    resetWarningBox.setWindowIcon(gpMainWindow->windowIcon());
+    resetWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
     bool doIt = (resetWarningBox.exec() == QMessageBox::AcceptRole);
 
     if(doIt)
@@ -335,15 +336,15 @@ void OptionsDialog::updateValues()
 
     if(gpConfig->getUseNativeStyleSheet())
     {
-        gpMainWindow->setStyleSheet((" "));
+        gpMainWindowWidget->setStyleSheet((" "));
         QMainWindow dummy;
-        gpMainWindow->setPalette(dummy.palette());
+        gpMainWindowWidget->setPalette(dummy.palette());
         this->setPalette(dummy.palette());
     }
     else
     {
-        gpMainWindow->setStyleSheet(gpConfig->getStyleSheet());
-        gpMainWindow->setPalette(gpConfig->getPalette());
+        gpMainWindowWidget->setStyleSheet(gpConfig->getStyleSheet());
+        gpMainWindowWidget->setPalette(gpConfig->getPalette());
         this->setPalette(gpConfig->getPalette());
     }
     emit paletteChanged();

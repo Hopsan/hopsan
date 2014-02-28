@@ -199,7 +199,7 @@ int ModelHandler::count() const
 void ModelHandler::loadModel()
 {
     QDir fileDialogOpenDir;
-    QString modelFileName = QFileDialog::getOpenFileName(gpMainWindow, tr("Choose Model File"),
+    QString modelFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose Model File"),
                                                          gpConfig->getLoadModelDir(),
                                                          tr("Hopsan Model Files (*.hmf *.xml)"));
     if(!modelFileName.isEmpty())
@@ -248,7 +248,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
         {
             if(this->getTopLevelSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath() && gpCentralTabWidget->indexOf(mModelPtrs[t]) > -1)
             {
-                QMessageBox::information(gpMainWindow, tr("Error"), tr("Unable to load model. File is already open."));
+                QMessageBox::information(gpMainWindowWidget, tr("Error"), tr("Unable to load model. File is already open."));
                 return 0;
             }
         }
@@ -256,7 +256,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
 
     if(!detatched)
     {
-        gpMainWindow->registerRecentModel(fileInfo);
+        gpMainWindow->registerRecentModel(fileInfo);    //! @todo Can this be done without including main window?
     }
 
     ModelWidget *pNewModel = new ModelWidget(this, gpCentralTabWidget);
@@ -350,7 +350,7 @@ bool ModelHandler::closeModel(int idx, bool force)
         {
             QString modelName = pModelToClose->getTopLevelSystemContainer()->getName();
             QMessageBox msgBox;
-            msgBox.setWindowIcon(gpMainWindow->windowIcon());
+            msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
             msgBox.setText(QString("The model '").append(modelName).append("'  is not saved."));
             msgBox.setInformativeText("Do you want to save your changes before closing?");
             msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);

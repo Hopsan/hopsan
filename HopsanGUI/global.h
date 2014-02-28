@@ -45,6 +45,13 @@ class SystemParametersWidget;
 class UndoWidget;
 class LibraryHandler;
 class GUIMessageHandler;
+class HelpPopUpWidget;
+class SensitivityAnalysisDialog;
+class HelpDialog;
+class PyDockWidget;
+class OptimizationDialog;
+class QAction;
+class OptionsDialog;
 
 // Global pointer to the main window and QWidget cast version
 extern MainWindow* gpMainWindow;
@@ -67,6 +74,16 @@ extern CentralTabWidget *gpCentralTabWidget;
 extern SystemParametersWidget *gpSystemParametersWidget;
 extern UndoWidget *gpUndoWidget;
 extern LibraryHandler *gpLibraryHandler;
+extern HelpPopUpWidget *gpHelpPopupWidget;
+extern SensitivityAnalysisDialog *gpSensitivityAnalysisDialog;
+extern HelpDialog *gpHelpDialog;
+extern PyDockWidget *gpPyDockWidget;
+extern OptimizationDialog *gpOptimizationDialog;
+extern OptionsDialog *gpOptionsDialog;
+
+//Global actions
+extern QAction *gpTogglePortsAction;
+extern QAction *gpToggleNamesAction;
 
 // Global variables
 extern QString gHopsanCoreVersion;

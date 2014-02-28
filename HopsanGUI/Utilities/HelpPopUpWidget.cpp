@@ -22,13 +22,22 @@
 //!
 //$Id: PlotWindow.h 6422 2014-01-13 16:10:52Z petno25 $
 
+//Qt includes
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QTimer>
+#include <QAction>
 
+//Hopsan includes
 #include "HelpPopUpWidget.h"
 #include "global.h"
 #include "Configuration.h"
+#include "Dialogs/HelpDialog.h"
+#include "ModelHandler.h"
+#include "Dialogs/SensitivityAnalysisDialog.h"
+#include "Widgets/LibraryWidget.h"
+#include "GUIObjects/GUIContainerObject.h"
+
 
 HelpPopUpWidget::HelpPopUpWidget(QWidget *pParent)
     : QWidget(pParent)
@@ -71,4 +80,55 @@ void HelpPopUpWidget::showHelpPopupMessage(const QString &rMessage)
         mpTimer->stop();
         mpTimer->start(5000);
     }
+}
+
+
+
+void HelpPopUpWidget::openContextHelp()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if(action != 0)
+    {
+        if(action->parent() == gpSensitivityAnalysisDialog)
+        {
+            gpHelpDialog->open("userSensitivityAnalysis.html");
+        }
+        else if(action->parent() == gpModelHandler->getCurrentViewContainerObject())
+        {
+            gpHelpDialog->open("userEnergyLosses.html");
+        }
+        else if(action->parent() == gpLibraryWidget)
+        {
+            gpHelpDialog->open("userCustomComponents.html");
+        }
+        else
+        {
+            gpHelpDialog->open();
+        }
+    }
+    QToolButton *button = qobject_cast<QToolButton *>(sender());
+    if(button != 0)
+    {
+        if(button->parent() == gpLibraryWidget)
+        {
+            gpHelpDialog->open("userCustomComponents.html");
+        }
+        else if(button->objectName() == "optimizationHelpButton")
+        {
+            gpHelpDialog->open("userOptimization.html");
+        }
+        else
+        {
+            gpHelpDialog->open();
+        }
+    }
+    gpHelpDialog->centerOnScreen();
+}
+
+
+
+void HelpPopUpWidget::openContextHelp(QString file)
+{
+    gpHelpDialog->open(file);
+    gpHelpDialog->centerOnScreen();
 }

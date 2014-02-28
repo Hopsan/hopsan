@@ -33,12 +33,12 @@
 #include "PlotWindow.h"
 #include "DesktopHandler.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
+#include "Utilities/HelpPopUpWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
-#include "MainWindow.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotCurve.h"
@@ -169,7 +169,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     //Connections
     connect(pCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
     connect(pRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
-    connect(pHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(pHelpAction,                   SIGNAL(triggered()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
     connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), pParameterAverageLabel, SLOT(setVisible(bool)));
     connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), pParameterSigmaLabel, SLOT(setVisible(bool)));
     connect(mpUniformDistributionRadioButton, SIGNAL(toggled(bool)), pParameterMinLabel, SLOT(setVisible(bool)));

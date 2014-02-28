@@ -92,6 +92,14 @@ CentralTabWidget *gpCentralTabWidget = 0;
 SystemParametersWidget *gpSystemParametersWidget = 0;
 UndoWidget *gpUndoWidget = 0;
 LibraryHandler *gpLibraryHandler = 0;
+HelpPopUpWidget *gpHelpPopupWidget = 0;
+SensitivityAnalysisDialog *gpSensitivityAnalysisDialog = 0;
+HelpDialog *gpHelpDialog = 0;
+PyDockWidget *gpPyDockWidget = 0;
+OptimizationDialog *gpOptimizationDialog = 0;
+QAction *gpToggleNamesAction = 0;
+QAction *gpTogglePortsAction = 0;
+OptionsDialog *gpOptionsDialog = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -179,11 +187,14 @@ void MainWindow::createContents()
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
     mpOptimizationDialog = new OptimizationDialog(this);
+    gpOptimizationDialog = mpOptimizationDialog;
     mpHelpDialog = new HelpDialog(this);
+    gpHelpDialog = mpHelpDialog;
 
     //Create the Python widget
 #ifdef USEPYTHONQT
     mpPyDockWidget = new PyDockWidget(this);
+    gpPyDockWidget = mpPyDockWidget;
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 #else
@@ -210,6 +221,7 @@ void MainWindow::createContents()
     mpUndoWidget = new UndoWidget(this);
     gpUndoWidget = mpUndoWidget;
     mpOptionsDialog = new OptionsDialog(this);
+    gpOptionsDialog = mpOptionsDialog;
 
     //Create the central widget for the main window
     mpCentralWidget = new QWidget(this);
@@ -228,6 +240,7 @@ void MainWindow::createContents()
 
     //Create the sensitivity analysis dialog
     mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
+    gpSensitivityAnalysisDialog = mpSensitivityAnalysisDialog;
 
     //Create the main tab container, need at least one tab
     mpCentralTabs = new CentralTabWidget(this);
@@ -279,6 +292,7 @@ void MainWindow::createContents()
 
     // Initialize the help message popup
     mpHelpPopup = new HelpPopUpWidget(this);
+    gpHelpPopupWidget = mpHelpPopup;
 
     // Set the correct position of the help popup message in the central widget
     mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
@@ -428,19 +442,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
-//! @brief Shows the help popup message
-//! @param[in] rMessage String with text message
-void MainWindow::showHelpPopupMessage(const QString &rMessage)
-{
-    mpHelpPopup->showHelpPopupMessage(rMessage);
-}
-
-
-//! @brief Hides the help popup message
-void MainWindow::hideHelpPopupMessage()
-{
-    mpHelpPopup->hide();
-}
 
 
 //! @brief Returns a pointer to the python scripting dock widget.
@@ -680,6 +681,7 @@ void MainWindow::createActions()
     QIcon toggleNamesIcon;
     toggleNamesIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleNames.png", QSize(), QIcon::Normal, QIcon::On);
     mpToggleNamesAction = new QAction(toggleNamesIcon, tr("&Show Component Names (Ctrl+N)"), this);
+    gpToggleNamesAction = mpToggleNamesAction;
     mpToggleNamesAction->setText("Show Component Names (Ctrl+N)");
     mpToggleNamesAction->setCheckable(true);
     mpToggleNamesAction->setChecked(gpConfig->getToggleNamesButtonCheckedLastSession());
@@ -767,6 +769,7 @@ void MainWindow::createActions()
     QIcon togglePortsIcon;
     togglePortsIcon.addFile(QString(ICONPATH) + "Hopsan-TogglePorts.png", QSize(), QIcon::Normal, QIcon::On);
     mpTogglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
+    gpTogglePortsAction = mpTogglePortsAction;
     mpTogglePortsAction->setText("Show Unconnected Ports (Ctrl+T)");
     mpTogglePortsAction->setCheckable(true);
     mpTogglePortsAction->setChecked(gpConfig->getTogglePortsButtonCheckedLastSession());
@@ -1194,6 +1197,20 @@ void MainWindow::updateSystemParametersActionButton(bool)
 }
 
 
+
+//! @brief Slot that loads an example model, based on the name of the calling action
+void MainWindow::openModelByAction()
+{
+    QAction *pAction = qobject_cast<QAction *>(sender());
+    if (pAction)
+    {
+        QString modelPath = pAction->data().toString();
+        qDebug() << "Trying to open " << modelPath;
+        mpModelHandler->loadModel(modelPath);
+    }
+}
+
+
 //! @brief Shows help popup for the toolbar icon that is currently hovered by the mouse pointer
 void MainWindow::showToolBarHelpPopup()
 {
@@ -1214,77 +1231,13 @@ void MainWindow::showToolBarHelpPopup()
     // See if action exists in map, or if a line edit is hovered
     if(mHelpPopupTextMap.contains(pHoveredAction))
     {
-        showHelpPopupMessage(mHelpPopupTextMap.find(pHoveredAction).value());
+        gpHelpPopupWidget->showHelpPopupMessage(mHelpPopupTextMap.find(pHoveredAction).value());
     }
     else if (mpSimulationTimeEdit->underMouse())
     {
-        showHelpPopupMessage("Set simulation time (in seconds).");
+        gpHelpPopupWidget->showHelpPopupMessage("Set simulation time (in seconds).");
     }
 }
-
-
-//! @brief Slot that loads an example model, based on the name of the calling action
-void MainWindow::openModelByAction()
-{
-    QAction *pAction = qobject_cast<QAction *>(sender());
-    if (pAction)
-    {
-        QString modelPath = pAction->data().toString();
-        qDebug() << "Trying to open " << modelPath;
-        mpModelHandler->loadModel(modelPath);
-    }
-}
-
-
-//! @todo Does this function need to be in main window? (Will require more includes of mainwindow.h)
-void MainWindow::openContextHelp()
-{
-    QAction *action = qobject_cast<QAction *>(sender());
-    if(action != 0)
-    {
-        if(action->parent() == mpSensitivityAnalysisDialog)
-        {
-            mpHelpDialog->open("userSensitivityAnalysis.html");
-        }
-        else if(action->parent() == mpModelHandler->getCurrentViewContainerObject())
-        {
-            mpHelpDialog->open("userEnergyLosses.html");
-        }
-        else if(action->parent() == mpLibraryWidget)
-        {
-            mpHelpDialog->open("userCustomComponents.html");
-        }
-        else
-        {
-            mpHelpDialog->open();
-        }
-    }
-    QToolButton *button = qobject_cast<QToolButton *>(sender());
-    if(button != 0)
-    {
-        if(button->parent() == mpLibraryWidget)
-        {
-            mpHelpDialog->open("userCustomComponents.html");
-        }
-        else if(button->objectName() == "optimizationHelpButton")
-        {
-            mpHelpDialog->open("userOptimization.html");
-        }
-        else
-        {
-            mpHelpDialog->open();
-        }
-    }
-    mpHelpDialog->centerOnScreen();
-}
-
-
-void MainWindow::openContextHelp(QString file)
-{
-    mpHelpDialog->open(file);
-    mpHelpDialog->centerOnScreen();
-}
-
 
 
 void MainWindow::showReleaseNotes()
@@ -1432,7 +1385,7 @@ void MainWindow::updateRecentList()
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    hideHelpPopupMessage();
+    gpHelpPopupWidget->hide();
     QMainWindow::mouseMoveEvent(event);
 }
 

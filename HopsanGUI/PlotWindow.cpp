@@ -42,7 +42,6 @@
 #include "Utilities/GUIUtilities.h"
 #include "Dialogs/OptionsDialog.h"
 #include "GUIObjects/GUISystem.h"
-#include "MainWindow.h"
 #include "PlotWindow.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
@@ -388,7 +387,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     connect(mpImportCsvAction,                  SIGNAL(triggered()),            this,               SLOT(importCsv()));
     connect(mpSaveButton,                       SIGNAL(triggered()),            this,               SLOT(saveToXml()));
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
-    connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
+    connect(gpOptionsDialog,   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
     connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(changedTab()));
 
     // Hide curve settings area by default if screen size is to small
@@ -922,7 +921,7 @@ void PlotWindow::setModelPaths(const QStringList &rPaths)
 //! @brief Slot that updates the palette to match the one used in main window
 void PlotWindow::updatePalette()
 {
-    setPalette(gpMainWindow->palette());
+    setPalette(gpMainWindowWidget->palette());
 }
 
 
