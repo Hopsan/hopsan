@@ -104,7 +104,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, bool c
     }
 
     QFile xmlFile;
-    xmlFile.setFileName(QFileInfo(hppFile).filePath()+typeName+".xml");
+    xmlFile.setFileName(QFileInfo(hppFile).path()+"/"+typeName+".xml");
     if(!xmlFile.exists())
     {
         if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -114,7 +114,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, bool c
         QTextStream xmlStream(&xmlFile);
         xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
-        xmlStream << "  <modelobject typename=\"" << typeName << "\" displayname=\"" << displayName << "\">\n";
+        xmlStream << "  <modelobject typename=\"" << typeName << "\" displayname=\"" << displayName << "\" sourcecode=\"" << QFileInfo(xmlFile).dir().relativeFilePath(QString(hppPath.c_str())) << "\">\n";
         xmlStream << "    <icons/>\n";
         xmlStream << "    <ports>\n";
         double xDelay = 1.0/(portNames.size()+1.0);
