@@ -850,6 +850,8 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
 void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int gen, const int version) const
 {
     QList<HopsanVariable> vars = getAllNonAliasVariablesAtGeneration(gen);
+    //! @todo what if you have removed all of the original variables and only want to export the alias variables
+    //! @todo error message if nothing found
 
     // Ok now remove time vector as it will be added again in plo export
     // This is a hack, yes I know

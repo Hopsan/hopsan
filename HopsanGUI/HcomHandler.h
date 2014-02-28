@@ -181,6 +181,7 @@ private:
     QString getParameterValue(QString parameter) const;
     void getMatchingLogVariableNamesWithoutLogDataHandler(QString pattern, QStringList &rVariables) const;
     void getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const;
+    int parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const;
     void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
