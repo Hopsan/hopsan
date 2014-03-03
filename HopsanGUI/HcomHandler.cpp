@@ -824,7 +824,7 @@ void HcomHandler::executeCommand(QString cmd)
         if(!evaluateArithmeticExpression(cmd))
         {
             //! @todo this text is to generic, a better error should be given someplace else, is it an unknown command or what?
-            HCOMERR("Unknown command or failed to evaluate: " + majorCmd);
+            HCOMERR("Unknown command or failed to evaluate: " + cmd);
         }
         //timer.toc("evaluateArithmeticExpression " + cmd);
     }
