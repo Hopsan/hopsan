@@ -82,7 +82,7 @@ void OptimizationWorkerComplex::forget()
         if(obj > maxObj) maxObj = obj;
         if(obj < minObj) minObj = obj;
     }
-    for(int i=0; i<mObjectives.size(); ++i)
+    for(int i=0; i<mNumPoints; ++i)
     {
         mObjectives[i] = mObjectives[i]+(maxObj-minObj)*mKf;
     }
@@ -104,6 +104,29 @@ void OptimizationWorkerComplex::setOptVar(const QString &var, const QString &val
     else if(var == "gamma")
     {
         mGamma = value.toDouble();
+    }
+    else if(var == "dontchangestartvalues")
+    {
+        mDontChangeStartValues = (value=="on");
+    }
+    else if(var == "start")
+    {
+        QString value2 = value;
+        value2.remove("str");
+        int pointId = value2.section(",",0,0).toInt();
+        int parId = value2.section(",",1,1).toInt();
+        double val = value2.section(",",2,2).toDouble();
+
+        if(mParameters.size() < pointId+1)
+        {
+            mParameters.resize(pointId+1);
+        }
+        if(mParameters[pointId].size() < parId+1)
+        {
+            mParameters[pointId].resize(parId+1);
+        }
+
+        mParameters[pointId][parId] = val;
     }
 }
 

@@ -47,6 +47,7 @@ public:
 
 protected:
     double mAlpha, mRfak, mGamma, mKf;
+    bool mDontChangeStartValues;
     int mWorstCounter;
     QVector<double> mCenter;
 };

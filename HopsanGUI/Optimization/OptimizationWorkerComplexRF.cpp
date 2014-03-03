@@ -58,13 +58,16 @@ void OptimizationWorkerComplexRF::init()
     for(int p=0; p<mNumPoints; ++p)
     {
         mParameters[p].resize(mNumParameters);
-        for(int i=0; i<mNumParameters; ++i)
+        if(!mDontChangeStartValues)
         {
-            double r = (double)rand() / (double)RAND_MAX;
-            mParameters[p][i] = mParMin[i] + r*(mParMax[i]-mParMin[i]);
-            if(mpHandler->mParameterType == OptimizationHandler::Integer)
+            for(int i=0; i<mNumParameters; ++i)
             {
-                mParameters[p][i] = round(mParameters[p][i]);
+                double r = (double)rand() / (double)RAND_MAX;
+                mParameters[p][i] = mParMin[i] + r*(mParMax[i]-mParMin[i]);
+                if(mpHandler->mParameterType == OptimizationHandler::Integer)
+                {
+                    mParameters[p][i] = round(mParameters[p][i]);
+                }
             }
         }
     }
@@ -200,7 +203,7 @@ void OptimizationWorkerComplexRF::run()
 
         //Evaluate new point
         execute("call evalworst");
-        logWorstPoint();
+
         ++mEvaluations;
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
@@ -214,6 +217,11 @@ void OptimizationWorkerComplexRF::run()
         mLastWorstId=wid;
         calculateBestAndWorstId();
         wid = mWorstId;
+
+        if(wid != mLastWorstId)
+        {
+            logPoint(mLastWorstId);
+        }
 
         //Iterate until worst point is no longer the same
         mWorstCounter=0;
@@ -250,7 +258,7 @@ void OptimizationWorkerComplexRF::run()
 
             //Evaluate new point
             execute("call evalworst");
-            logWorstPoint();
+
             ++mEvaluations;
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
             {
@@ -264,6 +272,11 @@ void OptimizationWorkerComplexRF::run()
             mLastWorstId=wid;
             calculateBestAndWorstId();
             wid = mWorstId;
+
+            if(wid != mLastWorstId)
+            {
+                logPoint(mLastWorstId);
+            }
 
             ++mWorstCounter;
             ++i;

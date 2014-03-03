@@ -62,6 +62,7 @@ public:
     double getOptimizationObjectiveValue(int idx);
     virtual double getParameter(const int pointIdx, const int parIdx) const;
     double getMaxParDiff();
+    double getMaxParDiff(QVector<QVector<double> > &points);
 
     //Public members
     //! @todo These should not be required
