@@ -240,6 +240,7 @@ PlotArea::PlotArea(PlotTab *pParentPlotTab)
     mLeftAxisLogarithmic = false;
     mRightAxisLogarithmic = false;
     mBottomAxisLogarithmic = false;
+    mBottomAxisShowOnlySamples = false;
 
     // Plots
     mpQwtPlot = new HopQwtPlot(this);
@@ -366,6 +367,12 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     pCurve->setLineWidth(2);
     pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     setLegendSymbol(mpLegendSymbolType->currentText(), pCurve);
+
+    // Show only samples
+    if (mBottomAxisShowOnlySamples != pCurve->getShowVsSamples())
+    {
+        pCurve->setShowVsSamples(mBottomAxisShowOnlySamples);
+    }
 
     // Refresh the curve
     pCurve->refreshCurveTitle();
@@ -968,6 +975,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     QAction *pSetRightAxisLogarithmic = 0;
     QAction *pSetLeftAxisLogarithmic = 0;
     QAction *pSetBottomAxisLogarithmic = 0;
+    QAction *pSetBottomAxisShowSamples = 0;
     QAction *pSetUserDefinedAxisLabels = 0;
 
     pYAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
@@ -1029,6 +1037,10 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         pSetBottomAxisLogarithmic = pBottomAxisMenu->addAction("Logarithmic Scale");
         pSetBottomAxisLogarithmic->setCheckable(true);
         pSetBottomAxisLogarithmic->setChecked(mBottomAxisLogarithmic);
+
+        pSetBottomAxisShowSamples = pBottomAxisMenu->addAction("Show Samples");
+        pSetBottomAxisShowSamples->setCheckable(true);
+        pSetBottomAxisShowSamples->setChecked(mBottomAxisShowOnlySamples);
     }
 
 
@@ -1111,6 +1123,19 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         {
             mpQwtPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
         }
+        rescaleAxesToCurves();
+        mpQwtPlot->replot();
+        mpQwtPlot->updateGeometry();
+    }
+    else if (pSelectedAction == pSetBottomAxisShowSamples)
+    {
+        mBottomAxisShowOnlySamples = !mBottomAxisShowOnlySamples;
+
+        Q_FOREACH(PlotCurve *pCurve, mPlotCurves)
+        {
+            pCurve->setShowVsSamples(mBottomAxisShowOnlySamples);
+        }
+
         rescaleAxesToCurves();
         mpQwtPlot->replot();
         mpQwtPlot->updateGeometry();
@@ -1339,11 +1364,15 @@ void PlotArea::updateAxisLabels()
             }
 
             // Now decide new bottom axis label
-            // Use custom x-axis if availible, else try to use the time or frequency vector (if set)
-            SharedVectorVariableT pSharedXVector = mPlotCurves[i]->getSharedCustomXVariable();
-            if (pSharedXVector.isNull())
+            // Use custom x-axis if availible, else try to use the time or frequency vector (if set), but also check for showVSsamples
+            SharedVectorVariableT pSharedXVector;
+            if (!mPlotCurves[i]->getShowVsSamples())
             {
-                pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
+                pSharedXVector = mPlotCurves[i]->getSharedCustomXVariable();
+                if (pSharedXVector.isNull())
+                {
+                    pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
+                }
             }
             QString bottomLabel;
             if (pSharedXVector.isNull())

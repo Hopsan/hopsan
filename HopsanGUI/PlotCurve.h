@@ -89,6 +89,7 @@ public:
     const SharedVectorVariableT getSharedTimeOrFrequencyVariable() const;
     const SharedVectorVariableT getSharedCustomXVariable() const;
     bool hasCustomXVariable() const;
+    bool getShowVsSamples() const;
 
     bool minMaxPositiveNonZeroYValues(double &rMin, double &rMax);
     bool minMaxPositiveNonZeroXValues(double &rMin, double &rMax);
@@ -116,6 +117,7 @@ public:
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
     void setCustomXData(HopsanVariable data);
     void setCustomXData(const QString fullName);
+    void setShowVsSamples(bool tf);
 
     bool isAutoUpdating() const;
     QColor getLineColor() const;
@@ -169,6 +171,7 @@ private:
     HopsanVariable mData;
     HopsanVariable mCustomXdata;
     bool mHaveCustomData;
+    bool mShowVsSamples;
 
     UnitScale mCustomCurveDataUnitScale;
     double mLocalAdditionalCurveScale;

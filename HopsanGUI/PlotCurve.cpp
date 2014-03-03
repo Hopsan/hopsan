@@ -73,6 +73,7 @@ PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const Hopsa
 {
     mpParentPlotArea = 0;
     mHaveCustomData = false;
+    mShowVsSamples = false;
     mData = data;
 
     mLocalAdditionalCurveScale = 1.0;
@@ -351,6 +352,11 @@ bool PlotCurve::hasCustomXVariable() const
     return !mCustomXdata.isNull();
 }
 
+bool PlotCurve::getShowVsSamples() const
+{
+    return mShowVsSamples;
+}
+
 const SharedVectorVariableT PlotCurve::getSharedCustomXVariable() const
 {
     return mCustomXdata.mpVariable;
@@ -549,6 +555,12 @@ void PlotCurve::setCustomXData(const QString fullName)
             }
         }
     }
+}
+
+void PlotCurve::setShowVsSamples(bool tf)
+{
+    mShowVsSamples = tf;
+    updateCurve();
 }
 
 bool PlotCurve::isAutoUpdating() const
@@ -972,41 +984,11 @@ void PlotCurve::updateCurve()
         tempY = mData.mpVariable->getDataVectorCopy();
         const double dataScale = mData.mpVariable->getPlotScale();
         const double dataOffset = mData.mpVariable->getPlotOffset();
+        const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale.toDouble(1.0)*dataScale;
+        const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
-        if(!mCustomXdata)
+        if (mCustomXdata && !mShowVsSamples)
         {
-            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale.toDouble(1.0)*dataScale;
-            const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
-
-            // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
-            if (mData.mpVariable->getSharedTimeOrFrequencyVector())
-            {
-                tempX = mData.mpVariable->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
-                const double timeScale = mData.mpVariable->getSharedTimeOrFrequencyVector()->getPlotScale();
-                const double timeOffset = mData.mpVariable->getSharedTimeOrFrequencyVector()->getPlotOffset();
-
-                for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
-                {
-                    tempX[i] = tempX[i]*timeScale + timeOffset;
-                    tempY[i] = tempY[i]*yScale + yOffset;
-                }
-            }
-            else
-            {
-                // No timevector or special x-vector, plot vs samples
-                tempX.resize(tempY.size());
-                for (int i=0; i< tempX.size(); ++i)
-                {
-                    tempX[i] = i;
-                    tempY[i] = tempY[i]*yScale + yOffset;
-                }
-            }
-        }
-        else
-        {
-            const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale.toDouble(1.0)*dataScale;
-            const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
-
             // Use special X-data
             // We copy here, it should be faster then peek (at least when data is cached on disc)
             tempX = mCustomXdata.mpVariable->getDataVectorCopy();
@@ -1015,6 +997,29 @@ void PlotCurve::updateCurve()
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = tempX[i]*xScale + xOffset;
+                tempY[i] = tempY[i]*yScale + yOffset;
+            }
+        }
+        // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
+        else if (mData.mpVariable->getSharedTimeOrFrequencyVector() && !mShowVsSamples)
+        {
+            tempX = mData.mpVariable->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+            const double timeScale = mData.mpVariable->getSharedTimeOrFrequencyVector()->getPlotScale();
+            const double timeOffset = mData.mpVariable->getSharedTimeOrFrequencyVector()->getPlotOffset();
+
+            for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
+            {
+                tempX[i] = tempX[i]*timeScale + timeOffset;
+                tempY[i] = tempY[i]*yScale + yOffset;
+            }
+        }
+        else
+        {
+            // No timevector or special x-vector, plot vs samples
+            tempX.resize(tempY.size());
+            for (int i=0; i< tempX.size(); ++i)
+            {
+                tempX[i] = i;
                 tempY[i] = tempY[i]*yScale + yOffset;
             }
         }

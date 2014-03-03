@@ -270,6 +270,7 @@ private:
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
     bool mBottomAxisLogarithmic;
+    bool mBottomAxisShowOnlySamples;
     QCheckBox *mpXLockCheckBox;
     QCheckBox *mpYLLockCheckBox;
     QCheckBox *mpYRLockCheckBox;
