@@ -328,9 +328,30 @@ void VariableTree::updateList()
     QList<HopsanVariable> variables = getLogDataHandler()->getAllVariablesAtRespectiveNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
-        if ( variables[i].mpVariable->isImported() )
+        // Skip data that is only imported, (they are handled above)
+        // But try to switch to newest non-imported data for others
+        if (variables[i].mpVariable->isImported())
         {
-            continue;
+            if (variables[i].mpContainer)
+            {
+                int nimpg = variables[i].mpContainer->getNewestNonImportedGeneration();
+                if (nimpg > -1)
+                {
+                    variables[i].switchToGeneration(nimpg);
+                    if (!variables[i])
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                continue;
+            }
         }
 
         // Handle alias variables

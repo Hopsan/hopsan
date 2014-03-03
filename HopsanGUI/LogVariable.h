@@ -112,6 +112,7 @@ public:
     QList<MinMaxT> getList() const;
     QList<int> getCompleteList() const;
     int getNumIIC() const;
+    int getNumI() const;
 
     void testMe();
 
@@ -145,11 +146,16 @@ public:
     int getHighestGeneration() const;
     int getNumGenerations() const;
     QList<int> getGenerations() const;
+    int getNewestImportedGeneration() const;
+    int getNewestNonImportedGeneration() const;
+    int getNewestAliasGeneration() const;
 
     bool isStoringAlias() const;
     bool isGenerationAlias(const int gen) const;
     bool isStoringImported() const;
     bool isGenerationImported(const int gen) const;
+    bool isStoringNonImported() const;
+    bool isGenerationNonImported(const int gen) const;
 
     LogDataHandler *getLogDataHandler();
 
@@ -167,6 +173,7 @@ private:
     GenerationMapT mDataGenerations;
     IndexIntervalCollection mAliasGenIndexes;
     IndexIntervalCollection mImportedGenIndexes;
+    IndexIntervalCollection mNonImportedGenIndexes;
     QList<int> mKeepGenerations;
 };
 
@@ -402,6 +409,7 @@ public:
     HopsanVariable();
     HopsanVariable(SharedVectorVariableT pData);
     HopsanVariable(SharedVectorVariableContainerT pContainer, SharedVectorVariableT pData);
+    void switchToGeneration(const int gen);
 
     LogDataHandler *getLogDataHandler();
 

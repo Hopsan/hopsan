@@ -1019,6 +1019,10 @@ void VectorVariableContainer::actuallyRemoveDataGen(GenerationMapT::iterator git
             emit importedVariableBeingRemoved(git.value());
         }
     }
+    if (mNonImportedGenIndexes.contains(git.key()))
+    {
+        mNonImportedGenIndexes.removeValue(git.key());
+    }
     mDataGenerations.erase(git);
 }
 
@@ -1120,6 +1124,21 @@ QList<int> VectorVariableContainer::getGenerations() const
     return mDataGenerations.keys();
 }
 
+int VectorVariableContainer::getNewestImportedGeneration() const
+{
+    return mImportedGenIndexes.max();
+}
+
+int VectorVariableContainer::getNewestNonImportedGeneration() const
+{
+    return mNonImportedGenIndexes.max();
+}
+
+int VectorVariableContainer::getNewestAliasGeneration() const
+{
+    return mAliasGenIndexes.max();
+}
+
 bool VectorVariableContainer::isStoringAlias() const
 {
     return !mAliasGenIndexes.isEmpty();
@@ -1152,6 +1171,16 @@ bool VectorVariableContainer::isGenerationImported(const int gen) const
     {
         return mImportedGenIndexes.contains(gen);
     }
+}
+
+bool VectorVariableContainer::isStoringNonImported() const
+{
+    return !mNonImportedGenIndexes.isEmpty();
+}
+
+bool VectorVariableContainer::isGenerationNonImported(const int gen) const
+{
+    return mNonImportedGenIndexes.contains(gen);
 }
 
 SharedVectorVariableT VectorVariableContainer::getDataGeneration(const int gen) const
@@ -1212,6 +1241,13 @@ void VectorVariableContainer::addDataGeneration(const int generation, SharedVect
     {
         mImportedGenIndexes.addValue(generation);
     }
+    else
+    // Remember non-imported variables
+    {
+        mNonImportedGenIndexes.addValue(generation);
+    }
+
+
     // Connect signals from data
     connect(pData.data(), SIGNAL(allowAutoRemove(int,bool)), this, SLOT(allowGenerationAutoRemoval(int,bool)), Qt::UniqueConnection);
 
@@ -1878,16 +1914,16 @@ int IndexIntervalCollection::min() const
 {
     if (mIntervalList.isEmpty())
     {
-        return 0;
+        return -1;
     }
-    return mIntervalList[0].mMin;
+    return mIntervalList.first().mMin;
 }
 
 int IndexIntervalCollection::max() const
 {
     if (mIntervalList.isEmpty())
     {
-        return 0;
+        return -1;
     }
     return mIntervalList.last().mMax;
 }
@@ -1915,27 +1951,37 @@ int IndexIntervalCollection::getNumIIC() const
     return mIntervalList.size();
 }
 
+int IndexIntervalCollection::getNumI() const
+{
+    int ctr=0;
+    for (int ic=0; ic<mIntervalList.size(); ++ic)
+    {
+        ctr += (mIntervalList[ic].mMax - mIntervalList[ic].mMin) + 1;
+    }
+    return ctr;
+}
+
 void IndexIntervalCollection::testMe()
 {
-    addValue(1); qDebug() << "IIC: " << getNumIIC() << ", " << getCompleteList();
-    addValue(3); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
-    addValue(2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(1); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", " << getCompleteList();
+    addValue(3); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
+    addValue(2); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
 
-    addValue(0); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
-    addValue(-2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(0); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
+    addValue(-2); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
 
-    addValue(4); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
-    addValue(6); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(4); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
+    addValue(6); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
 
-    addValue(10); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
-    addValue(15); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
-    addValue(12); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(10); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
+    addValue(15); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
+    addValue(12); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
 
-    removeValue(4); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
-    removeValue(2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    removeValue(4); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
+    removeValue(2); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
 
-    addValue(4); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
-    addValue(2); qDebug() << "IIC: " << getNumIIC() << ", "  << getCompleteList();
+    addValue(4); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
+    addValue(2); qDebug() << "IIC: " << getNumIIC() << "nI: " << getNumI() << ", "  << getCompleteList();
 
 }
 
@@ -2002,6 +2048,14 @@ HopsanVariable::HopsanVariable(SharedVectorVariableContainerT pContainer, Shared
 {
     mpContainer = pContainer;
     mpVariable = pData;
+}
+
+void HopsanVariable::switchToGeneration(const int gen)
+{
+    if (mpContainer)
+    {
+        mpVariable = mpContainer->getDataGeneration(gen);
+    }
 }
 
 LogDataHandler *HopsanVariable::getLogDataHandler()
