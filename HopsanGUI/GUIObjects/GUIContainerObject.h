@@ -74,6 +74,7 @@ public:
     ModelObject *addModelObject(QString fullTypeName, QPointF position, qreal rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
     ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
     ModelObject *getModelObject(const QString modelObjectName);
+    const QList<ModelObject* > getModelObjects() const;
     Port *getModelObjectPort(const QString modelObjectName, const QString portName);
     void deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings=Undo);
     void renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings=Undo);

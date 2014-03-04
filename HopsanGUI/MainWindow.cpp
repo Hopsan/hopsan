@@ -68,6 +68,7 @@
 #include "Widgets/WelcomeWidget.h"
 #include "Widgets/HVCWidget.h"
 #include "Widgets/DataExplorer.h"
+#include "Widgets/FindWidget.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -389,6 +390,10 @@ void MainWindow::initializeWorkspace()
     mpDataExplorer = new DataExplorer(this);
     mpDataExplorer->hide();
 
+    // Create the find widget
+    mpFindWidget = new FindWidget(this);
+    mpFindWidget->hide();
+
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
     {
@@ -541,6 +546,11 @@ void MainWindow::createActions()
     mpOpenDataExplorerAction->setShortcut(QKeySequence("Ctrl+Shift+d"));
     mpOpenDataExplorerAction->setToolTip("Open the Data Explorer Widget (Ctrl+Shift+d)");
     connect(mpOpenDataExplorerAction, SIGNAL(triggered()), this, SLOT(openDataExplorerWidget()));
+
+    mpOpenFindWidgetAction = new QAction(tr("&Find Widget"), this);
+    mpOpenFindWidgetAction->setShortcut(QKeySequence("Ctrl+Shift+f"));
+    mpOpenFindWidgetAction->setToolTip("Open the Find Widget (Ctrl+Shift+f)");
+    connect(mpOpenFindWidgetAction, SIGNAL(triggered()), this, SLOT(openFindWidget()));
 
     mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     mpCutAction->setShortcut(tr("Ctrl+x"));
@@ -932,6 +942,7 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
     mpToolsMenu->addAction(mpOpenHvcWidgetAction);
     mpToolsMenu->addAction(mpOpenDataExplorerAction);
+    mpToolsMenu->addAction(mpOpenFindWidgetAction);
 
     mpImportMenu->addAction(mpLoadModelParametersAction);
     mpImportMenu->addSeparator();
@@ -1428,6 +1439,11 @@ void MainWindow::openHVCWidget()
 void MainWindow::openDataExplorerWidget()
 {
     mpDataExplorer->setVisible(true);
+}
+
+void MainWindow::openFindWidget()
+{
+    mpFindWidget->setVisible(true);
 }
 
 

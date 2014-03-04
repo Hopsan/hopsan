@@ -68,6 +68,7 @@
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
 #include "Widgets/DataExplorer.h"
+#include "Widgets/FindWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "PlotHandler.h"
 #include "Utilities/HelpPopUpWidget.h"
@@ -161,6 +162,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 
     // Update main window widgets with data from this container
     gpMainWindow->mpDataExplorer->setLogdataHandler(this->mpLogDataHandler);
+    gpMainWindow->mpFindWidget->setContainer(this);
     gpPlotWidget->setLogDataHandler(this->getLogDataHandler());
     gpMainWindow->mpSystemParametersWidget->update(this);
     gpUndoWidget->refreshList();
@@ -988,6 +990,11 @@ ModelObject *ContainerObject::getModelObject(const QString modelObjectName)
     {
         return 0;
     }
+}
+
+const QList<ModelObject *> ContainerObject::getModelObjects() const
+{
+    return mModelObjectMap.values();
 }
 
 //! @brief Get the port of a sub model object, returns 0 if modelobject or port not found

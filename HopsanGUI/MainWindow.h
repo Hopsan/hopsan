@@ -56,6 +56,7 @@ class HVCWidget;
 class ModelHandler;
 class MainWindowLineEdit;
 class DataExplorer;
+class FindWidget;
 class HelpPopUpWidget;
 
 
@@ -131,6 +132,7 @@ public:
 
     HVCWidget *mpHVCWidget;
     DataExplorer *mpDataExplorer;
+    FindWidget *mpFindWidget;
     OptimizationDialog *mpOptimizationDialog;
     SimulationTimeEdit *mpSimulationTimeEdit;
 
@@ -154,6 +156,7 @@ public:
     QAction *mpOpenSystemParametersAction;
     QAction *mpOpenHvcWidgetAction;
     QAction *mpOpenDataExplorerAction;
+    QAction *mpOpenFindWidgetAction;
     QAction *mpDisableUndoAction;
     QAction *mpCutAction;
     QAction *mpCopyAction;
@@ -217,6 +220,7 @@ private slots:
     void simulateKeyWasPressed();
     void openHVCWidget();
     void openDataExplorerWidget();
+    void openFindWidget();
     void toggleVisiblePlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();
