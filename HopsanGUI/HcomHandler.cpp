@@ -5058,7 +5058,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             {
                 if (pLeftData->getVariableType() != mAnsVector->getVariableType())
                 {
-                    HCOMWARN(QString("Variable typ missmatch: %1 != %2, you may have lost information!").arg(variableTypeAsString(pLeftData->getVariableType())).arg(variableTypeAsString(mAnsVector->getVariableType())));
+                    HCOMWARN(QString("Variable type missmatch: %1 != %2, you may have lost information!").arg(variableTypeAsString(pLeftData->getVariableType())).arg(variableTypeAsString(mAnsVector->getVariableType())));
                 }
                 pLeftData->assignFrom(mAnsVector);
                 return true;
@@ -5071,6 +5071,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
                 {
                     pLeftData->assignFrom(mAnsVector);
                     pLeftData->preventAutoRemoval();
+                    mLocalVars.remove(left);    //Remove scalar variable with same name if it exists
                     return true;
                 }
             }
