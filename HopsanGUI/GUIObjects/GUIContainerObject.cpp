@@ -1692,19 +1692,40 @@ void ContainerObject::paste(CopyStack *xmlStack)
 //! @brief Aligns all selected objects vertically to the last selected object.
 void ContainerObject::alignX()
 {
-    if(mSelectedModelObjectsList.size() > 1)
+    double newX;
+    if(!mSelectedModelObjectsList.isEmpty())
+    {
+        newX = mSelectedModelObjectsList.last()->getCenterPos().x();
+    }
+    else if(!mSelectedWidgetsList.isEmpty())
+    {
+        newX = mSelectedWidgetsList.last()->getCenterPos().x();
+    }
+    else
+    {
+        return;
+    }
+
+    if(mSelectedModelObjectsList.size()+mSelectedWidgetsList.size() > 1)
     {
         mpUndoStack->newPost("alignx");
         for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
-            mSelectedModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedModelObjectsList.last()->getCenterPos().x(), mSelectedModelObjectsList.at(i)->getCenterPos().y()));
+            mSelectedModelObjectsList.at(i)->setCenterPos(QPointF(newX, mSelectedModelObjectsList.at(i)->getCenterPos().y()));
             QPointF newPos = mSelectedModelObjectsList.at(i)->pos();
             mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedModelObjectsList.at(i)->getName());
             for(int j=0; j<mSelectedModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
             {
                 mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
+        }
+        for(int i=0; i<mSelectedWidgetsList.size(); ++i)
+        {
+            QPointF oldPos = mSelectedWidgetsList.at(i)->pos();
+            mSelectedWidgetsList.at(i)->setCenterPos(QPointF(newX, mSelectedWidgetsList.at(i)->getCenterPos().y()));
+            QPointF newPos = mSelectedWidgetsList.at(i)->pos();
+            mpUndoStack->registerMovedWidget(mSelectedWidgetsList.at(i), oldPos, newPos);
         }
         mpModelWidget->hasChanged();
     }
@@ -1714,19 +1735,40 @@ void ContainerObject::alignX()
 //! @brief Aligns all selected objects horizontally to the last selected object.
 void ContainerObject::alignY()
 {
-    if(mSelectedModelObjectsList.size() > 1)
+    double newY;
+    if(!mSelectedModelObjectsList.isEmpty())
+    {
+        newY = mSelectedModelObjectsList.last()->getCenterPos().y();
+    }
+    else if(!mSelectedWidgetsList.isEmpty())
+    {
+        newY = mSelectedWidgetsList.last()->getCenterPos().y();
+    }
+    else
+    {
+        return;
+    }
+
+    if(mSelectedModelObjectsList.size()+mSelectedWidgetsList.size() > 1)
     {
         mpUndoStack->newPost("aligny");
         for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
-            mSelectedModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedModelObjectsList.at(i)->getCenterPos().x(), mSelectedModelObjectsList.last()->getCenterPos().y()));
+            mSelectedModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedModelObjectsList.at(i)->getCenterPos().x(), newY));
             QPointF newPos = mSelectedModelObjectsList.at(i)->pos();
             mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedModelObjectsList.at(i)->getName());
             for(int j=0; j<mSelectedModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
             {
                 mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
+        }
+        for(int i=0; i<mSelectedWidgetsList.size(); ++i)
+        {
+            QPointF oldPos = mSelectedWidgetsList.at(i)->pos();
+            mSelectedWidgetsList.at(i)->setCenterPos(QPointF(mSelectedWidgetsList.at(i)->getCenterPos().x(), newY));
+            QPointF newPos = mSelectedWidgetsList.at(i)->pos();
+            mpUndoStack->registerMovedWidget(mSelectedWidgetsList.at(i), oldPos, newPos);
         }
         mpModelWidget->hasChanged();
     }
