@@ -24,12 +24,18 @@ isEqual(QT_MAJOR_VERSION, 5){
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
-# Set the QWT paths and dll/so post linking copy command
+# Set the QWT paths and dll/so/dylib/framework post linking copy command
 d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
 isEmpty(d):error('Failed to find QWT libs, have you compiled them and put them in the expected location')
 LIBS *= $$magic_hopsan_libpath
 INCLUDEPATH *= $$magic_hopsan_includepath
 QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+
+# OS X uses the Frameworks concept instead of lib&include directories. A security meassure.
+macx:QMAKE_OBJECTIVE_CFLAGS *= -F$$magic_hopsan_libpath/lib/
+macx:QMAKE_LFLAGS *= -F$$magic_hopsan_libpath/lib/
+macx:QMAKE_LINK *= -framework qwt
+macx:message(On mac we use Frameworks. [$$magic_hopsan_libpath])
 #--------------------------------------------------------
 
 #--------------------------------------------------------
