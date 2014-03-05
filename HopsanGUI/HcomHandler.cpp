@@ -1257,7 +1257,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 
         if(idx < 0)
         {
-            HCOMERR("No help available for this command.");
+            HCOMERR("Command not found or no help available for this command.");
         }
         else
         {
