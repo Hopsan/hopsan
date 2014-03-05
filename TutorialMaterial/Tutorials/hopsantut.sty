@@ -1,0 +1,53 @@
+\usepackage{graphicx}
+\usepackage{a4wide}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[cm]{sfmath}
+
+\renewcommand*{\familydefault}{\sfdefault}
+
+\renewcommand{\headrulewidth}{0pt}
+\rhead{\includegraphics[width=3cm]{gfx/flumes.png}}
+\lhead{\today \vspace{0.8cm}}
+
+\renewcommand{\maketitle}[1]{
+\noindent
+\includegraphics[width=5cm]{gfx/hopsan.png} \vspace{0.2cm} \\
+\LARGE \textsf{\textbf{Tutorial - #1}} \vspace{-0.1cm} \\ \rule{\textwidth}{1.2pt}\normalsize}
+
+
+\newcommand{\listicon}[3]{
+\vspace{-4pt}
+\icon{#1}{#2}{#3}
+\vspace{-10pt}
+}
+
+\newcommand{\foldericon}[2]{
+\listicon{#1}{{gfx/Hopsan-Folder.png}}{#2}
+}
+
+\newcommand{\icon}[3]{
+\vspace{5pt}
+\def\temp{0.5cm}
+\hspace{\dimexpr\temp*#1}
+\begin{tabular}{m{12pt} m{10cm}}
+\includegraphics[width=12pt]{#2} & \hspace{-10pt} \textit{\textbf{#3}} 
+\end{tabular}
+
+\vspace{3pt}
+}
+
+\newcommand{\component}[2]{
+\vspace{2pt}
+\def\temp{0.5cm}
+\hspace{\dimexpr\temp*#1-0.2cm}
+\begin{tabular}{m{0.2cm} m{10cm}}
+ & \textit{#2}
+\end{tabular}
+
+\vspace{-6pt}
+}
