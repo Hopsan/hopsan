@@ -227,8 +227,6 @@ void OptimizationWorkerComplexRFP::run()
         //Reflect worst point
         pickCandidateParticles();
 
-        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
-
         //Evaluate new point
         evaluateCandidateParticles();
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
@@ -240,6 +238,8 @@ void OptimizationWorkerComplexRFP::run()
         }
 
         examineCandidateParticles();
+
+        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Calculate best and worst points
         mLastWorstId=wid;
@@ -293,8 +293,6 @@ void OptimizationWorkerComplexRFP::run()
             }
 
             newPoint = mCandidateParticles.last();
-            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
-
 
             //Evaluate new point
             evaluateCandidateParticles();
@@ -339,8 +337,12 @@ void OptimizationWorkerComplexRFP::run()
             execute("echo off");
         }
 
+        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
         plotParameters();
     }
+
+    gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
     execute("echo on");
 
@@ -626,6 +628,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     if(nWorsePoints >= 2)   //New point is better, keep it
     {
         logPoint(mvIdx[i]);
+        if(checkForConvergence()) return;   //Check convergence
     }
     else        //New point is not better, iterate
     {
@@ -650,6 +653,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     if(nWorsePoints >= 2)   //New point is better, keep it
     {
         logPoint(mvIdx[i]);
+        if(checkForConvergence()) return;   //Check convergence
     }
     else        //New point is not better, iterate
     {
@@ -677,6 +681,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     if(nWorsePoints >= 2)   //New point is better, keep it
     {
         logPoint(mvIdx[i]);
+        if(checkForConvergence()) return;   //Check convergence
     }
     else
     {
@@ -704,6 +709,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     if(nWorsePoints >= 2)   //New point is better, keep it
     {
         logPoint(mvIdx[i]);
+        if(checkForConvergence()) return;   //Check convergence
     }
     else
     {

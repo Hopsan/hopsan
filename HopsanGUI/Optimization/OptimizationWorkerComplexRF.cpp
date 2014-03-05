@@ -286,6 +286,8 @@ void OptimizationWorkerComplexRF::run()
         plotParameters();
     }
 
+    gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
     execute("echo on");
 
     switch(mConvergenceReason)
