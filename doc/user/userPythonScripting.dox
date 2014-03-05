@@ -1,0 +1,243 @@
+/*!
+\page userScriptingPagePythonPage Python Scripting
+The Python Console in Hopsan can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. All Python interaction with Hopsan is done trough an object called "hopsan". The commands as well as command examples are available and described below. 
+
+\b Note! Python script functions are not working very well! It is recommended that you use HCOM instead. Python script support may be improved in a future release.
+
+\section PyMessageCommands Message Commands
+
+\subsection printMessage printMessage(message)
+Prints a message in the Messages Console. Example: hopsan.printMessage("Goddag yxskaft.")
+
+\subsection printInfo printInfo(message)
+Prints a info message in the Messages Console. Example: hopsan.printInfo("Goddag yxskaft.")
+
+\subsection printWarning printWarning(message)
+Prints a warning message in the Messages Console. Example: hopsan.printWarning("Goddag yxskaft.")
+
+\subsection printError printError(message)
+Prints a error message in the Messages Console. Example: hopsan.printError("Goddag yxskaft.")
+
+
+\section PyModelCommands Model Commands
+
+\subsection newmodel newModel()
+Create a new model.
+
+\subsection loadmodel loadModel(modelFileName)
+Load the model "modelFileName". Example: hopsan.loadModel("c:\mymodel.hmf")
+
+\subsection closeallmodels closeAllModels()
+Closes all opened models.
+
+\subsection gototab gotoTab(tab)
+Changes active tab to specified tab number.
+
+\subsection entersystem enterSystem(sysName)
+Enter subsystem with specified name. Example: hopsan.enterSystem("My Subsystem")
+
+\subsection exitsystem exitSystem()
+Leaves current subsystem and opens parent system.
+
+
+\section PySimulationCommands Simulation Commands
+
+\subsection setStartTime setStartTime(start)
+Sets the start time of a simulation. Example: hopsan.setStartTime(1.62)
+
+\subsection setTimeStep setTimeStep(timestep)
+Sets the time step of a simulation. Example: hopsan.setTimeStep(0.002)
+
+\subsection setFinishTime setFinishTime(stop)
+Sets the finish time of a simulation. Example: hopsan.setFinishTime(16.2)
+
+\subsection startTime startTime()
+Returns the start time of a simulation. Example: startTime = hopsan.startTime()
+
+\subsection timeStep timeStep()
+Returns the time step time of a simulation. Example: timeStep = hopsan.timeStep()
+
+\subsection finishTime finishTime()
+Returns the finish time of a simulation. Example: finishTime = hopsan.finishTime()
+
+\subsection simulate simulate()
+Simulates the current model. Example hopsan.simulate()
+
+\subsection getSimulationTime getSimulationTime()
+Returns the actual simlation time from last simulation. Example: hopsan.getSimlationTime()
+
+\subsection openAbortDialog openAbortDialog(text)
+Open a abort dialog with given text. This makes it possible to abort a lengthy simulation manually. Example: hopsan.openAbortDialog("Abort Simulation")
+
+\subsection isAborted isAborted()
+Check if simulation was aborted. Example: hopsan.isAborted()
+
+\subsection abort abort()
+Abort a simulation. Example: hopsan.abort()
+
+
+\section PySimulationOptions Simulation Options
+
+\subsection useMultiCore useMultiCore(tf)
+Activates multi-threaded simulations. Example: hopsan.useMultiCore(true)
+
+\subsection setNumberOfThreads setNumberOfThreads(value)
+Specifies how many simulation threads that will be used in multi-threaded simulations. Example: hopsan.setNumberOfThreads(2)
+
+\subsection enableProgressBar enableProgressBar(tf)
+Enables the simulation progress bar. Example: hopsan.enableProgressBar(true)
+
+
+\section PyModelAccess Model Access and Manipulation
+
+\subsection component component(compName)
+Returns a handle to a component. Example: A handle to a component called "myComponent" can be reached and stored in "myHandle" with the command line: myHandle = hopsan.component("myComponent")
+
+\subsection componentNames componentNames()
+Returns a list of all component names in the current system. Example: hopsan.componentNames();
+
+\subsection addComponent addComponent(name, typename, x, y, rotation)
+Adds a new component with specified name and typename at position (x,y) with specified rotation. Example: hopsan.addComponent("My Orifice", "HydraulicLaminarOrifice", 2000, 2100, 90)
+
+\subsection addComponent addComponent(name, typename, subtypename x, y, rotation)
+Adds a new component with specified name and typename and subtypename at position (x,y) with specified rotation. Example: hopsan.addComponent("My Orifice", "My SpecailOrifice2", "HydraulicLaminarOrifice", 2000, 2100, 90)
+
+\subsection connect connect(compName1, portName1, compName2, portName2)
+Connects specified ports with a straight connector. Example: hopsan.connect("My Orifice", "P1", "My Volume", "P2")
+
+\subsection clearComponents clearComponents()
+Removes all components and connections in current open system.
+
+
+\section PyParameterAccess Parameter Access
+
+\subsection parameter gparameter(compName, parName)
+Returns the value for the parameter "parName" in the component "compName", Example: value = hopsan.parameter("myOrifice", "Kc")
+
+\subsection setParameter setParameter(compName, parName, value)
+Sets the value for the parameter "parName" in the component "compName" to "value", Example: value = hopsan.setParameter("myOrifice", "Kc", 1e-11)
+
+\subsection setSystemParameter setSystemParameter(parName, value)
+Sets the system parameter "parName" to "value" in the current system.
+
+
+\section PyPlotFunctions Plot Functions
+
+\subsection plot plot(compName, portName, dataName, gen)
+Plots the variable "dataName" in the port "portName" of the component "compName" at the specified (optional) generation "gen". Example: hopsan.plot("sink", "in", "Value")
+
+\subsection plot2 plot(alias, gen)
+Plots the variable with (alias) name "alias" at the specified (optional) generation. Name can also be the full name of the variable.
+
+\subsection plot3 plot(VectorVariable)
+Plots the variable pointed to by the VectorVariable python handle object
+
+\subsection figure figure(name)
+Create a new empty figure to plot into, or retrieve an existing one
+
+\subsection savePlotDataCSV savePlotDataCSV(fileName)
+Save the current figure plot data to CSV file with given fileName.
+
+\subsection savePlotDataPLO savePlotDataPLO(fileName)
+Save the current figure plot data to PLO file with given fileName.
+
+
+\section PyVariableAccess Variable Access
+
+\subsection getVariable getVariable(compName, portName, dataName, gen)
+Returns a VectorVariable handle to the data variable "dataName" in the port "portName" of the component "compName" at the specified (optional) generation "gen". Example: var=hopsan.getVariable("sink", "in", "Value", 5)
+
+\subsection getVariable2 getVariable(name, gen)
+Returns a VectorVariable handle to the data variable with alias or fullName "name" at the specified (optional) generation "gen". Example: var=hopsan.getVariable("apa")
+
+\subsection addVectorVariable addVectorVariable(name, data)
+Add a hopsan vector variable with desired "name" from a raw python array or list of values "data". Example: hopsan.addVectorVariable("pyVar", a)
+
+\subsection addTimeVariable addTimeVariable(name, time, data)
+Add a hopsan time domain vector variable with desired "name" from a raw python array or list of values "time" and "data"
+
+\subsection addFrequencyVariable addFrequencyVariable(name, freq, data)
+Add a hopsan frequency domain vector variable with desired "name" from a raw python array or list of values "freq" and "data"
+
+
+
+
+\section componentCommands Component Python Handle Commands
+These commands can be used on Python Component Handle objects.
+
+\subsection parameter parameter(parName)
+Returns the value of parameter "parName".
+Example: Kc = hopsan.component("Orifice").parameter("Kc")
+
+\subsection setParameter setParameter(parName, value)
+Sets the parameter "parName" to "value".
+Example: hopsan.component("Orifice").setParameter("Kc", 1e-10)
+
+\subsection port port(portName)
+Returns a handle to the port "portName"
+Example: hopsan.component("Orifice").port("P2")
+
+\subsection portNames portNames()
+Returns an array of port names in the component
+Example hopsan.component("Orifice").portNames()
+
+
+
+
+\section portCommands Port Python Handle Commands
+These commands can be used on Python Port Handle objects.
+
+\subsection portplot plot(dataName)
+Opens a new plot window with the variable "dataName".
+Example: hopsan.component("Orifice").port("P2").plot("Pressure")
+
+\subsection lastData lastData(dataName)
+Returns the last value of variable "dataName".
+Example: lastP1 = hopsan.component("Orifice").port("P2").lastData("Pressure")
+
+\subsection getdatavector data(dataName)
+Returns the raw Python data vector from last simulation for variable "dataName".
+Example: pressuredata = hopsan.component("Orifice").port("P2").data("Pressure")
+
+\subsection gettimevector time()
+Returns the time vector from the last simulation.
+Example: time = hopsan.component("Orifice").port("P2").time()
+
+\subsection variable variable(dataName)
+Returns a handle to the VectorVariable with name "dataName"
+Example: pressureVar = hopsan.component("Orifice").port("P2").variable("Pressure")
+
+\subsection variableNames variableNames()
+Returns a list of the variable names in this port
+
+
+
+
+\section variableCommands VectorVariable Python Handle Commands
+These commands can be used on Python VectorVariable Handle objects.
+
+\subsection varibaleType variableType()
+Returns the type of the variable, VectorVariable, TimeDomain or FrequencyDomain
+
+\subsection time time()
+Returns the raw python array of time values for a TimeDomain variable
+
+\subsection frequency frequency()
+Returns the raw python array of frequency values for a FrequencyDomain variable
+
+\subsection data data()
+Returns the raw python array of data values from the variable
+
+\subsection peek peek(index)
+Returns the value at "index" in the vector variable
+
+\subsection poke poke(index, value)
+Sets the "value" at given "index" in the vector variable
+
+\subsection assign assign(data)
+Assign the data in a vector variable from the raw python array "data"
+
+\subsection assign assign(timeORfrequency, data)
+Assign the time or frequency and data in a TimeDomain or FrequnecyDomain vector variable from the raw python arrays "timeORfrequency" and "data"
+
+*/
