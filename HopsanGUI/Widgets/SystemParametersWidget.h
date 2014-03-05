@@ -100,7 +100,6 @@ public slots:
     void update(ContainerObject* pNewContainer);
     void openAddParameterDialog();
     void highlightComponents(QModelIndex index);
-    void unHighlightComponents();
 
 protected slots:
     bool addParameter();

@@ -162,7 +162,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 
     // Update main window widgets with data from this container
     gpMainWindow->mpDataExplorer->setLogdataHandler(this->mpLogDataHandler);
-    gpMainWindow->mpFindWidget->setContainer(this);
+    gpFindWidget->setContainer(this);
     gpPlotWidget->setLogDataHandler(this->getLogDataHandler());
     gpMainWindow->mpSystemParametersWidget->update(this);
     gpUndoWidget->refreshList();

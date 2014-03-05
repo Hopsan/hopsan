@@ -102,6 +102,7 @@ QAction *gpToggleNamesAction = 0;
 QAction *gpTogglePortsAction = 0;
 OptionsDialog *gpOptionsDialog = 0;
 QGridLayout *gpCentralGridLayout = 0;
+FindWidget *gpFindWidget = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -391,8 +392,8 @@ void MainWindow::initializeWorkspace()
     mpDataExplorer->hide();
 
     // Create the find widget
-    mpFindWidget = new FindWidget(this);
-    mpFindWidget->hide();
+    gpFindWidget = new FindWidget(this);
+    gpFindWidget->hide();
 
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
@@ -1443,7 +1444,7 @@ void MainWindow::openDataExplorerWidget()
 
 void MainWindow::openFindWidget()
 {
-    mpFindWidget->setVisible(true);
+    gpFindWidget->setVisible(true);
 }
 
 

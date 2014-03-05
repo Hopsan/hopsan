@@ -132,7 +132,6 @@ public:
 
     HVCWidget *mpHVCWidget;
     DataExplorer *mpDataExplorer;
-    FindWidget *mpFindWidget;
     OptimizationDialog *mpOptimizationDialog;
     SimulationTimeEdit *mpSimulationTimeEdit;
 

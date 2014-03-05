@@ -50,6 +50,7 @@
 #include "ProjectTabWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HelpPopUpWidget.h"
+#include "Widgets/FindWidget.h"
 
 // Plot Widget help classes declarations
 // ----------------------------------------------------------------------------
@@ -96,6 +97,12 @@ class ImportedFileTreeItem : public QTreeWidgetItem
 {
 public:
     ImportedFileTreeItem(const QString &rFileName, QTreeWidgetItem *pParent);
+};
+
+class ComponentHeaderTreeItem : public QTreeWidgetItem
+{
+public:
+    ComponentHeaderTreeItem(const QString &rCompName, QTreeWidgetItem *pParent);
 };
 
 // ----------------------------------------------------------------------------
@@ -236,12 +243,8 @@ void VariableTree::addFullVariable(HopsanVariable data)
     else
     // Ok, we did not find it, then this is the first time the component is added, lets create and add that top-lvel item
     {
-        pComponentItem = new QTreeWidgetItem();
-        pComponentItem->setText(0, cname);
-        QFont tempFont = pComponentItem->font(0);
-        tempFont.setBold(true);
-        pComponentItem->setFont(0, tempFont);
-        this->addTopLevelItem(pComponentItem);
+        pComponentItem = new ComponentHeaderTreeItem(cname,0);
+        addTopLevelItem(pComponentItem);
 
         //Also remember that we created it
         mFullVariableItemMap.insert(data.mpVariable->getComponentName(), pComponentItem);
@@ -490,12 +493,13 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         QMenu menu;
         QAction *pDefineAliasAction = 0;
         QAction *pRemoveAliasAction = 0;
+        QAction *pFindAliasAction = 0;
         QAction *pDeleteVariableAction = 0;
 
         // Add actions
         if (!isImportVariabel)
         {
-            // Only show alisa buttons for npn imported variables
+            // Only show alisa buttons for non imported variables
             if(pItem->getAliasName().isEmpty())
             {
                 pDefineAliasAction = menu.addAction(QString("Define Variable Alias"));
@@ -504,6 +508,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             {
                 pDefineAliasAction = menu.addAction(QString("Change Alias"));
                 pRemoveAliasAction = menu.addAction(QString("Remove Alias"));
+                pFindAliasAction = menu.addAction("Find Alias");
             }
             menu.addSeparator();
         }
@@ -521,6 +526,10 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             else if(pSelectedAction == pDefineAliasAction)
             {
                 mpLogDataHandler->defineAlias(pItem->getFullName());
+            }
+            else if(pSelectedAction == pFindAliasAction)
+            {
+                gpFindWidget->findAlias(pItem->getAliasName());
             }
             else if (pSelectedAction == pDeleteVariableAction)
             {
@@ -544,14 +553,23 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
     {
         QMenu menu;
         QAction *pRemovefileAction = menu.addAction("Unload File");
-
-        QCursor *cursor;
-        QAction *selectedAction = menu.exec(cursor->pos());
-
-
+        QAction *selectedAction = menu.exec(QCursor::pos());
         if(selectedAction == pRemovefileAction)
         {
            mpLogDataHandler->removeImportedFileGenerations(pFileItem->toolTip(0));
+        }
+    }
+
+    // Build context menue for component header items
+    ComponentHeaderTreeItem *pComponentItem = dynamic_cast<ComponentHeaderTreeItem *>(currentItem());
+    if (pComponentItem)
+    {
+        QMenu menu;
+        QAction *pFindComponentAction = menu.addAction("Find Component");
+        QAction *selectedAction = menu.exec(QCursor::pos());
+        if (selectedAction == pFindComponentAction)
+        {
+            gpFindWidget->findComponent(pComponentItem->text(0));
         }
     }
 }
@@ -878,4 +896,14 @@ ImportedFileTreeItem::ImportedFileTreeItem(const QString &rFileName, QTreeWidget
     QFont boldfont = font(0);
     boldfont.setBold(true);
     setFont(0, boldfont);
+}
+
+
+ComponentHeaderTreeItem::ComponentHeaderTreeItem(const QString &rCompName, QTreeWidgetItem *pParent)
+    : QTreeWidgetItem(pParent)
+{
+    setText(0, rCompName);
+    QFont tempFont = font(0);
+    tempFont.setBold(true);
+    setFont(0, tempFont);
 }

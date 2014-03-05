@@ -33,12 +33,13 @@ public:
 signals:
 
 public slots:
-    void findComponent(const QString &rName);
-    void findAlias(const QString &rName);
-    void findSystemParameter(const QString &rName);
+    void findComponent(const QString &rName, const bool centerView=true);
+    void findAlias(const QString &rName, const bool centerView=true);
+    void findSystemParameter(const QString &rName, const bool centerView=true);
     void findAny(const QString &rName);
 
 private:
+    void clearHighlights();
     QPointer<ContainerObject> mpContainer;
 
 };

@@ -8,6 +8,7 @@
 
 #include <QLineEdit>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -16,16 +17,20 @@
 FindHelper::FindHelper(QWidget *pParent) :
     QWidget(pParent)
 {
-    QHBoxLayout *pLayout = new QHBoxLayout(this);
-    QPushButton *pClearButton = new QPushButton(this);
+    mpLineEdit = new QLineEdit(this);
+
+    QToolButton *pClearButton = new QToolButton(this);
     pClearButton->setIcon(QIcon(ICONPATH"Hopsan-Discard.png"));
     pClearButton->setToolTip("Clear");
-    pLayout->addWidget(pClearButton);
-    mpLineEdit = new QLineEdit(this);
-    pLayout->addWidget(mpLineEdit);
-    QPushButton *pFindButton = new QPushButton(this);
+    pClearButton->setMaximumWidth(24);
+
+    QToolButton *pFindButton = new QToolButton(this);
     pFindButton->setToolTip("Find");
     pFindButton->setIcon(QIcon(ICONPATH"Hopsan-Zoom.png"));
+
+    QHBoxLayout *pLayout = new QHBoxLayout(this);
+    pLayout->addWidget(pClearButton);
+    pLayout->addWidget(mpLineEdit);
     pLayout->addWidget(pFindButton);
 
     connect(pClearButton, SIGNAL(clicked()), mpLineEdit, SLOT(clear()));
@@ -46,6 +51,8 @@ FindWidget::FindWidget(QWidget *parent) :
     FindHelper *pComponentFinder = new FindHelper(this);
     FindHelper *pAliasFinder = new FindHelper(this);
     FindHelper *pSystemparFinder = new FindHelper(this);
+    QPushButton *pCloseButton = new QPushButton("Close", this);
+    pCloseButton->setAutoDefault(false);
 
     QVBoxLayout *pLayout = new QVBoxLayout(this);
     pLayout->addWidget(new QLabel("Find by name. Note! You can use wildcard matching: (? one any charachter), (* one or more any characters), ([...] specific characters)",this));
@@ -56,15 +63,14 @@ FindWidget::FindWidget(QWidget *parent) :
     pLayout->addWidget(pAliasFinder);
     pLayout->addWidget(new QLabel("Find System Parameter:", this));
     pLayout->addWidget(pSystemparFinder);
-
-    //setSizePolicy();
+    pLayout->addWidget(pCloseButton,0,Qt::AlignRight);
 
     connect(pComponentFinder, SIGNAL(find(QString)), this, SLOT(findComponent(QString)));
     connect(pAliasFinder, SIGNAL(find(QString)), this, SLOT(findAlias(QString)));
     connect(pSystemparFinder, SIGNAL(find(QString)), this, SLOT(findSystemParameter(QString)));
+    connect(pCloseButton, SIGNAL(clicked()), this, SLOT(close()));
 
-
-    resize(800, height());
+    resize(600, height());
     setWindowTitle("Find Widget");
 }
 
@@ -73,10 +79,12 @@ void FindWidget::setContainer(ContainerObject *pContainer)
     mpContainer = pContainer;
 }
 
-void FindWidget::findComponent(const QString &rName)
+void FindWidget::findComponent(const QString &rName, const bool centerView)
 {
     if (mpContainer)
     {
+        clearHighlights();
+
         QPointF mean;
         int nFound=0;
         QStringList compNames = mpContainer->getModelObjectNames();
@@ -98,7 +106,7 @@ void FindWidget::findComponent(const QString &rName)
         }
 
         // Now center view over found model objects
-        if (nFound > 0)
+        if (nFound > 0 && centerView)
         {
             mean /= double(nFound);
             mpContainer->mpModelWidget->getGraphicsView()->centerOn(mean);
@@ -106,10 +114,12 @@ void FindWidget::findComponent(const QString &rName)
     }
 }
 
-void FindWidget::findAlias(const QString &rName)
+void FindWidget::findAlias(const QString &rName, const bool centerView)
 {
     if (mpContainer)
     {
+        clearHighlights();
+
         QPointF mean;
         int nFound=0;
         QStringList aliasNames = mpContainer->getAliasNames();
@@ -135,7 +145,7 @@ void FindWidget::findAlias(const QString &rName)
         }
 
         // Now center view over found model objects
-        if (nFound > 0)
+        if (nFound > 0 && centerView)
         {
             mean /= double(nFound);
             mpContainer->mpModelWidget->getGraphicsView()->centerOn(mean);
@@ -143,10 +153,12 @@ void FindWidget::findAlias(const QString &rName)
     }
 }
 
-void FindWidget::findSystemParameter(const QString &rName)
+void FindWidget::findSystemParameter(const QString &rName, const bool centerView)
 {
     if (mpContainer)
     {
+        clearHighlights();
+
         QPointF mean;
         int nFound=0;
         const QList<ModelObject*> mops = mpContainer->getModelObjects();
@@ -172,7 +184,7 @@ void FindWidget::findSystemParameter(const QString &rName)
             }
         }
 
-        if (nFound > 0)
+        if (nFound > 0 && centerView)
         {
             mean /= double(nFound);
             mpContainer->mpModelWidget->getGraphicsView()->centerOn(mean);
@@ -183,4 +195,9 @@ void FindWidget::findSystemParameter(const QString &rName)
 void FindWidget::findAny(const QString &rName)
 {
     //Not yet implemented
+}
+
+void FindWidget::clearHighlights()
+{
+    mpContainer->mpModelWidget->getGraphicsView()->clearHighlights();
 }

@@ -40,7 +40,7 @@
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
-#include "ModelHandler.h"
+#include "FindWidget.h"
 
 
 QWidget *ParamTypeComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -473,42 +473,8 @@ void SystemParametersWidget::openAddParameterDialog()
 
 void SystemParametersWidget::highlightComponents(QModelIndex index)
 {
-    unHighlightComponents();
-
     QString parName = index.model()->data(index, Qt::EditRole).toString();
-    qDebug() << "Clicked on: " << parName;
-
-    ContainerObject *pContainer = gpModelHandler->getCurrentViewContainerObject();
-    QStringList compNames = pContainer->getModelObjectNames();
-    foreach(QString comp, compNames)
-    {
-        bool hasPar = false;
-        QVector<CoreParameterData> pars;
-        pContainer->getModelObject(comp)->getParameters(pars);
-        foreach(CoreParameterData par, pars)
-        {
-            if(par.mValue == parName)
-            {
-                hasPar = true;
-            }
-        }
-
-        if(hasPar)
-        {
-            qDebug() << "Component: " << comp << " has the parameter!";
-            pContainer->getModelObject(comp)->highlight();
-        }
-    }
-}
-
-void SystemParametersWidget::unHighlightComponents()
-{
-    ContainerObject *pContainer = gpModelHandler->getCurrentViewContainerObject();
-    QStringList compNames = pContainer->getModelObjectNames();
-    foreach(QString comp, compNames)
-    {
-        pContainer->getModelObject(comp)->unHighlight();
-    }
+    gpFindWidget->findSystemParameter(parName, false);
 }
 
 

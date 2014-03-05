@@ -53,6 +53,7 @@ class OptimizationDialog;
 class QAction;
 class OptionsDialog;
 class QGridLayout;
+class FindWidget;
 
 // Global pointer to the main window and QWidget cast version
 extern MainWindow* gpMainWindow;
@@ -82,6 +83,7 @@ extern PyDockWidget *gpPyDockWidget;
 extern OptimizationDialog *gpOptimizationDialog;
 extern OptionsDialog *gpOptionsDialog;
 extern QGridLayout *gpCentralGridLayout;
+extern FindWidget *gpFindWidget;
 
 //Global actions
 extern QAction *gpTogglePortsAction;

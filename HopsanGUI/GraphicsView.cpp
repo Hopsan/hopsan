@@ -273,6 +273,11 @@ double GraphicsView::getZoomFactor()
     return mZoomFactor;
 }
 
+void GraphicsView::clearHighlights()
+{
+    emit unHighlightAll();
+}
+
 
 //! @brief Returns the vieports center and zoom in the supplied reference variables
 void GraphicsView::getViewPort(qreal &rX, qreal &rY, qreal &rZoom)

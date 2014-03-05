@@ -51,6 +51,7 @@ public:
     void setIgnoreNextContextMenuEvent();
     void setZoomFactor(double zoomFactor);
     double getZoomFactor();
+    void clearHighlights();
 
     ModelWidget *mpParentModelWidget;
 
