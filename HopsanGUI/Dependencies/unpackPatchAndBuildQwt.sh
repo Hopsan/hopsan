@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # $Id$
 
 # Shell script building HopsaGUI dependency Qwt automatically
@@ -25,8 +25,16 @@ patch --binary -p0 < $qwtname.patch
 # Create Shadowbbuild directory
 mkdir $qwtname\_shb
 cd $qwtname\_shb
-# Generate makefiles
-qmake ../$qwtname/qwt.pro -r -spec linux-g++
+# Generate makefiles on different platforms
+if [ "$OSTYPE" == "linux-gnu" ]
+then
+        qmake ../$qwtname/qwt.pro -r -spec linux-g++
+elif [ "$OSTYPE" == "darwin13" ]
+then
+        $HOME/Qt/5.2.1/clang_64/bin/qmake ../$qwtname/qwt.pro -r # This is a rather temporary ugly solution...
+else
+        echo "Unknown OS for qwt build and patch"
+fi
 # Build
 make -w
 cd $basepwd
