@@ -71,8 +71,10 @@ Changes plot variables on right axis in current plot<br>
  Usage: chpvr [var1 var2 ... ]
 
 \subsection sapl sapl
-Saves plot file to .PLO<br>
- Usage: sapl [filepath variables]
+Save log variables to file<br>
+ Usage: sapl [filepath -flags variables]
+<br><br><br>Flags:
+<br><br><br>-csv    Use CSV format (default is PLO format)
 
 \subsection repl repl
 Loads plot files from .CSV or .PLO<br>
@@ -96,13 +98,13 @@ Add (system) parameter<br>
 Change parameter value<br>
  Usage: chpa [parameter value]
 
-\subsection repa repa
-Loads parameters from .XML<br>
- Usage: repa [filepath]
- 
 \subsection sapa sapa
 Saves parameter set to .XML<br>
  Usage: sapa [filepath]
+
+\subsection repa repa
+Loads parameters from .XML<br>
+ Usage: repa [filepath]
 
 \section filecommands File Commands
 
@@ -172,6 +174,14 @@ Change plot scale of specified variable<br>
 Display plot scale of specified variable<br>
  Usage: disc [variable]
 
+\subsection dlog dlog
+Disables logging in specified ports<br>
+ Usage: dlog [ports]
+
+\subsection elog elog
+Enables logging in specified ports<br>
+ Usage: elog [ports]
+
 \subsection abs abs
 Calculates absolute value of scalar of variable<br>
  Usage: abs [var]
@@ -223,24 +233,24 @@ Exits the program<br>
 \subsection print print
 Prints arguments on the screen<br>
  Usage: print [-flag "string"]
-<br> Flags (optional):
-<br> -i Info message
-<br> -w Warning message
-<br> -e Error message
-<br> Variables can be printed by putting them in dollar signs.
-<br> Example:
-<br> \>\> print -w "x=$x$"
-<br> Warning: x=12
+<br><br><br> Flags (optional):
+<br><br><br> -i Info message
+<br><br><br> -w Warning message
+<br><br><br> -e Error message
+<br><br><br> Variables can be printed by putting them in dollar signs.
+<br><br><br> Example:
+<br><br><br> \>\> print -w "x=$x$"
+<br><br><br> Warning: x=12
 
 \subsection set set
 Sets Hopsan preferences<br>
  Usage: set [preference value]
-<br> Available commands:
-<br>  multicore [on/off]
-<br>  threads [number]
-<br>  cachetodisk [on/off]
-<br>  generationlimit [number]
-<br>  samples [number]
+<br><br><br> Available commands:
+<br><br><br>  multicore [on/off]
+<br><br><br>  threads [number]
+<br><br><br>  cachetodisk [on/off]
+<br><br><br>  generationlimit [number]
+<br><br><br>  samples [number]
 
 \subsection close close
 Closes current model<br>
@@ -253,8 +263,8 @@ Exports current model to Functional Mockup Unit (FMU)<br>
 \subsection opt opt
 Initialize an optimization<br>
  Usage: opt [algorithm partype parnum parmin parmax -flags]
-<br>Algorithms:   Flags:
-<br>complex       alpha
+<br><br><br>Algorithms:   Flags:
+<br><br><br>complex       alpha
 
 \subsection call call
 Calls a pre-defined function<br>
@@ -263,6 +273,10 @@ Calls a pre-defined function<br>
 \subsection echo echo
 Sets terminal output on or off<br>
  Usage: echo [on/off]
+
+\subsection semt semt
+Applies low-pass filter of first degree to vector<br>
+ Usage: semt [on/off threads algorithm]
 
 \section functions Local Functions
 
@@ -298,6 +312,14 @@ Usage: imin(vector)
 Integrates vector with respect to time (or to custom vector)
 Usage: int(vector) or int(vector, timevector)
 
+\subsection linspace linspace()
+Linearly spaced vector
+Usage: linspace(min, max, numSamples)
+
+\subsection logspace logspace()
+Logarithmicly spaced vector
+Usage: logspace(min, max, numSamples)
+
 \subsection lp1 lp1()
 Applies low-pass filter of first degree to vector
 Usage: lp1(vector, frequency) or lp1(vector, timevector, frequency)
@@ -310,13 +332,25 @@ Usage: lt(varName, threshold)
 Calculate maximum value of vector
 Usage:max(vector)
 
+\subsection maxof maxof()
+Returns the element-wise maximum values of x and y vectors
+Usage: maxof(x,y)
+
 \subsection min min()
 Calculate minimum value of vector
 Usage: min(vector)
 
+\subsection minof minof()
+Returns the element-wise minimum values of x and y vectors
+Usage: minof(x,y)
+
 \subsection obj obj()
 Returns optimization objective function value with specified index
 Usage: obj(idx)
+
+\subsection ones ones()
+Create a vector of ones
+Usage: ones(size)
 
 \subsection optpar optpar()
 Returns specified optimization parameter
@@ -341,6 +375,10 @@ Usage: size(vector)
 \subsection time time()
 Returns last simulation time
 Usage: time()
+
+\subsection zeros zeros()
+Create a vector of zeros
+Usage: zeros(size)
 
 */
 
