@@ -378,6 +378,19 @@ public:
     //! @todo add a bunch of reimplemented functions
 };
 
+class ImportedFrequencyDomainVariable : public FrequencyDomainVariable
+{
+    Q_OBJECT
+public:
+    ImportedFrequencyDomainVariable(SharedVectorVariableT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
+                                    const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache);
+    bool isImported() const;
+    QString getImportedFileName() const;
+
+private:
+    QString mImportFileName;
+};
+
 //! @todo complex varibales is a bit strange right now, it abuses overloading of function from vector variable. Reason is that real xy plots are not supported /Peter
 class ComplexVectorVariable : public VectorVariable
 {

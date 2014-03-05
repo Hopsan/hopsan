@@ -95,6 +95,12 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable>
         version = gpConfig->getPLOExportVersion();
     }
 
+    if (variables.isEmpty())
+    {
+        gpMessageHandler->addWarningMessage("Trying to export nothing!");
+        return;
+    }
+
     if(rFilePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
     QFile file;
@@ -114,32 +120,71 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable>
     QString modelPath = mpParentContainerObject->getModelFileInfo().filePath();
     QFileInfo modelFileInfo(modelPath);
 
-    QVector<int> gens;
-    gens.reserve(variables.size());
-    for(int v=0; v<variables.size(); ++v)
+    QList<int> gens;
+    QList<int> lengths;
+    QList<SharedVectorVariableT> timeVectors;
+    QList<SharedVectorVariableT> freqVectors;
+    int minLength=INT_MAX;
+    foreach(HopsanVariable var, variables)
     {
-        gens.append(variables[v].mpVariable->getGeneration());
-    }
-
-    int timeGen = -1;
-    if (!gens.isEmpty())
-    {
-        if ( gens.count(gens.first()) != gens.size() )
+        const int g = var.mpVariable->getGeneration();
+        if (gens.isEmpty() || (gens.last() != g))
         {
-            gpMessageHandler->addWarningMessage(QString("In export PLO: Data had different generations, time vector may not be correct for all exported data!"));
+            gens.append(g);
         }
-        timeGen = gens.first();
+
+        const int l = var.mpVariable->getDataSize();
+        if (lengths.isEmpty() || (lengths.last() != l))
+        {
+            lengths.append(l);
+            minLength = qMin(minLength, l);
+        }
+
+        SharedVectorVariableT pToF = var.mpVariable->getSharedTimeOrFrequencyVector();
+        if (pToF)
+        {
+            if (pToF->getDataName() == TIMEVARIABLENAME )
+            {
+                if (timeVectors.isEmpty() || (timeVectors.last() != pToF))
+                {
+                    timeVectors.append(pToF);
+                }
+            }
+            else if (pToF->getDataName() == FREQUENCYVARIABLENAME)
+            {
+                if (freqVectors.isEmpty() || (freqVectors.last() != pToF))
+                {
+                    freqVectors.append(pToF);
+                }
+            }
+        }
     }
 
-    // We insert time last when we know what generation the data had, (to avoid taking last time generation that may belong to imported data)
-    SharedVectorVariableT pTime = getVectorVariable(TIMEVARIABLENAME, timeGen);
-    if (pTime)
+    if ( (timeVectors.size() > 0) && (freqVectors.size() > 0) )
     {
-        variables.prepend(pTime);
+        gpMessageHandler->addErrorMessage(QString("In export PLO: You are mixing time and frequency variables, this is not supported!"));
+    }
+    if (gens.size() > 1)
+    {
+        gpMessageHandler->addWarningMessage(QString("In export PLO: Data had different generations, time vector may not be correct for all exported data!"));
+    }
+    if (lengths.size() > 1)
+    {
+        gpMessageHandler->addWarningMessage(QString("In export PLO: Data had different lengths, truncating to shortest data!"));
+    }
+
+    // We insert time or frequency last when we know what generation the data had, (to avoid taking last time generation that may belong to imported data)
+    if (timeVectors.size() > 0)
+    {
+        variables.prepend(timeVectors.first());
+    }
+    else if (freqVectors.size() > 0)
+    {
+        variables.prepend(freqVectors.first());
     }
 
     // Now begin to write to pro file
-    int nDataRows = variables[0].mpVariable->getDataSize();
+    int nDataRows = minLength;
     int nDataCols = variables.size();
 
     // Write initial Header data
@@ -148,8 +193,15 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable>
         fileStream << "    'VERSION'\n";
         fileStream << "    1\n";
         fileStream << "    '"<<ploFileInfo.baseName()<<".PLO'\n";
-        fileStream << "    " << nDataCols-1  <<"    "<< nDataRows <<"\n";
-        fileStream << "    'Time'";
+        if ((timeVectors.size() > 0) || (freqVectors.size() > 0))
+        {
+            fileStream << "    " << nDataCols-1  <<"    "<< nDataRows <<"\n";
+        }
+        else
+        {
+            fileStream << "    " << nDataCols  <<"    "<< nDataRows <<"\n";
+        }
+        fileStream << "    '" << variables.first().mpVariable->getSmartName() << "'";
         for(int i=1; i<variables.size(); ++i)
         {
             //! @todo fix this formating so that it looks nice in plo file (need to know length of previous
@@ -348,9 +400,9 @@ void LogDataHandler::importFromPlo(QString importFilePath)
             // Else check for data header info
             else if(lineNum == 5)//(line.startsWith("'Time"))
             {
-                if ((ploVersion == 1) && line.startsWith("'Time"))
+                if ( (ploVersion == 1) && (line.startsWith("'"TIMEVARIABLENAME) || line.startsWith("'"FREQUENCYVARIABLENAME)) )
                 {
-                    // We add one to include "time or x column"
+                    // We add one to include "time or frequency x column"
                     nDataColumns+=1;
                     importedPLODataVector.resize(nDataColumns);
                     for(int c=0; c<nDataColumns; ++c)
@@ -412,20 +464,49 @@ void LogDataHandler::importFromPlo(QString importFilePath)
     {
         ++mGenerationNumber;
         SharedVectorVariableT pTimeVec(0);
+        SharedVectorVariableT pFreqVec(0);
 
-        if (importedPLODataVector[0].mDataName == TIMEVARIABLENAME)
+        if (importedPLODataVector.first().mDataName == TIMEVARIABLENAME)
         {
             pTimeVec = insertTimeVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
-
+        }
+        else if (importedPLODataVector.first().mDataName == FREQUENCYVARIABLENAME)
+        {
+            pFreqVec = insertFrequencyVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
         }
 
-        for (int i=1; i<importedPLODataVector.size(); ++i)
+        // First decide if we should skip the first column (if time or frequency vector)
+        int i=0;
+        if (pTimeVec || pFreqVec)
+        {
+            i=1;
+        }
+        // Go through all imported variable columns, and create the appropriate vector variable type and insert it
+        // Note! You can not mix time frequency or plain vector types in the sam plo (v1) file
+        for (; i<importedPLODataVector.size(); ++i)
         {
             SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
             pVarDesc->mDataName = importedPLODataVector[i].mDataName;
             //! @todo what about reading the unit
 
-            SharedVectorVariableT pNewData = insertTimeDomainVariable(pTimeVec,importedPLODataVector[i].mDataValues, pVarDesc, fileInfo.absoluteFilePath());
+            SharedVectorVariableT pNewData;
+            // Insert timedomain variable
+            if (pTimeVec)
+            {
+                pNewData = insertTimeDomainVariable(pTimeVec, importedPLODataVector[i].mDataValues, pVarDesc, fileInfo.absoluteFilePath());
+            }
+            // Insert frequencydomain variable
+            else if (pFreqVec)
+            {
+                pNewData = insertFrequencyDomainVariable(pFreqVec, importedPLODataVector[i].mDataValues, pVarDesc, fileInfo.absoluteFilePath());
+            }
+            // Insert plain vector variables
+            else
+            {
+                pNewData = SharedVectorVariableT(new ImportedVectorVariable(importedPLODataVector[i].mDataValues, mGenerationNumber, pVarDesc,
+                                                                            fileInfo.absoluteFilePath(), getGenerationMultiCache(mGenerationNumber)));
+                insertVariable(pNewData);
+            }
             pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
         }
 
@@ -2031,6 +2112,22 @@ SharedVectorVariableT LogDataHandler::insertTimeVectorVariable(const QVector<dou
     return pTimeVec;
 }
 
+SharedVectorVariableT LogDataHandler::insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector)
+{
+    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new VectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
+                                                                              getGenerationMultiCache(mGenerationNumber)));
+    insertVariable(pFreqVec);
+    return pFreqVec;
+}
+
+SharedVectorVariableT LogDataHandler::insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector, const QString &rImportFileName)
+{
+    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new ImportedVectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
+                                                                                      rImportFileName, getGenerationMultiCache(mGenerationNumber)));
+    insertVariable(pFreqVec);
+    return pFreqVec;
+}
+
 SharedVectorVariableT LogDataHandler::insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc)
 {
     SharedVectorVariableT pNewData = SharedVectorVariableT(new TimeDomainVariable(pTimeVector, rDataVector, mGenerationNumber, pVarDesc,
@@ -2043,6 +2140,22 @@ SharedVectorVariableT LogDataHandler::insertTimeDomainVariable(SharedVectorVaria
 {
     SharedVectorVariableT pNewData = SharedVectorVariableT(new ImportedTimeDomainVariable(pTimeVector, rDataVector, mGenerationNumber, pVarDesc,
                                                                                     rImportFileName, getGenerationMultiCache(mGenerationNumber)));
+    insertVariable(pNewData);
+    return pNewData;
+}
+
+SharedVectorVariableT LogDataHandler::insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc)
+{
+    SharedVectorVariableT pNewData = SharedVectorVariableT(new FrequencyDomainVariable(pFrequencyVector, rDataVector, mGenerationNumber, pVarDesc,
+                                                                                       getGenerationMultiCache(mGenerationNumber)));
+    insertVariable(pNewData);
+    return pNewData;
+}
+
+SharedVectorVariableT LogDataHandler::insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName)
+{
+    SharedVectorVariableT pNewData = SharedVectorVariableT(new ImportedFrequencyDomainVariable(pFrequencyVector, rDataVector, mGenerationNumber, pVarDesc,
+                                                                                               rImportFileName, getGenerationMultiCache(mGenerationNumber)));
     insertVariable(pNewData);
     return pNewData;
 }

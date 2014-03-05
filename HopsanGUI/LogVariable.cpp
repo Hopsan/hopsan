@@ -2095,3 +2095,20 @@ HopsanVariable::operator bool() const
 {
     return !mpVariable.isNull();
 }
+
+
+ImportedFrequencyDomainVariable::ImportedFrequencyDomainVariable(SharedVectorVariableT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache)
+    : FrequencyDomainVariable(frequency, rData, generation, varDesc, pGenerationMultiCache)
+{
+    mImportFileName = rImportFile;
+}
+
+bool ImportedFrequencyDomainVariable::isImported() const
+{
+    return true;
+}
+
+QString ImportedFrequencyDomainVariable::getImportedFileName() const
+{
+    return mImportFileName;
+}

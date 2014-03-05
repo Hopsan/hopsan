@@ -172,8 +172,12 @@ private:
     typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
     SharedVectorVariableT insertTimeVectorVariable(const QVector<double> &rTimeVector);
     SharedVectorVariableT insertTimeVectorVariable(const QVector<double> &rTimeVector, const QString &rImportFileName);
+    SharedVectorVariableT insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector);
+    SharedVectorVariableT insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector, const QString &rImportFileName);
     SharedVectorVariableT insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc);
     SharedVectorVariableT insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
+    SharedVectorVariableT insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc);
+    SharedVectorVariableT insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
     void insertVariable(SharedVectorVariableT pVariable, QString keyName=QString(), int gen=-1);
 
     QString getNewCacheName();
