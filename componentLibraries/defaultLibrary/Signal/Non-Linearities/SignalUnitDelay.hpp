@@ -49,7 +49,7 @@ namespace hopsan {
         void configure()
         {
             addInputVariable("in", "", "", 0.0, &mpND_in);
-            addOutputVariable("out", "", "", &mpND_out);
+            addOutputVariable("out", "", "", 0.0, &mpND_out);
         }
 
 
