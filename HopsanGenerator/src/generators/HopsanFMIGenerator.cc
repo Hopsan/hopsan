@@ -83,6 +83,8 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux32");
 #elif linux && __x86_64__
     QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux64");
+#elif __APPLE__
+    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/macx64");
 #endif
     if(!binaryDir.exists())
     {
@@ -658,6 +660,8 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/";
 #elif linux
     QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/linux/";
+#elif __APPLE__
+    QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/macx/";
 #endif
 
     if(!copyFile(fmiSrcPath+"sim_support.c", fmuDir.path()+"/sim_support.c")) return;
@@ -682,6 +686,8 @@ void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
     if(!copyFile(fmiSrcPath+"libexpatw.dll", fmuDir.path()+"/libexpatw.dll")) return;
 #elif linux
     if(!copyFile(fmiSrcPath+"libexpatMT.lib", fmuDir.path()+"/libexpatMT.lib")) return;
+#elif __APPLE__
+    if(!copyFile(fmiSrcPath+"libexpatMT.a", fmuDir.path()+"/libexpatMT.a")) return;
 #endif
 
     printMessage("Writing " + fmuName + "_lib.xml...");
