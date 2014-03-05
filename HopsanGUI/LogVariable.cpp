@@ -587,7 +587,11 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
 
         // Vector size has to be an even potential of 2.
         // Calculate largets potential that is smaller than or equal to the vector size.
-        const int n = pow(2, int(log2(data.size())));
+#ifndef __APPLE__
+        const int n = pow(2, int(log2(data.size()))); // This is odd.... /magse
+#else
+        const int n = (int)round(ldexp(2.0, int(log2(data.size()))));
+#endif
         if(n != data.size())     // Vector is not an exact potential, so reduce it
         {
             QString oldString, newString;
@@ -1708,7 +1712,11 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
     }
 
     // Reduce vector size if they are not equal to an even potential of 2, and inform user
-    int n = pow(2, int(log2(vRealOut.size())));
+#ifndef __APPLE__
+        int n = pow(2, int(log2(vRealOut.size()))); // Odd.... /magse
+#else
+        int n = (int)round(ldexp(2.0, int(log2(vRealOut.size()))));
+#endif
     if(n != vRealOut.size())     //Vector is not an exact potential, so reduce it
     {
         QString oldString, newString;
