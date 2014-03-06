@@ -40,12 +40,23 @@ defineReplace(setQWTPathInfo){
             win32:CONFIG(debug, debug|release):dbg_ext = d
             #unix:CONFIG(debug, debug|release):dbg_ext = d
 
-            magic_hopsan_libpath = -L$${libDir} -l$${libName}$${dbg_ext}
-            magic_hopsan_includepath = $${QWT_PATH}/src
+            # OS X uses the Frameworks concept instead of lib&include directories. A security meassure.
+            macx {
+                magic_hopsan_libpath = $${libDir}
+                magic_hopsan_includepath = $${QWT_PATH}
+            }
+
+            # Standard way of finding qwt lib&include
+            !macx {
+                magic_hopsan_libpath = -L$${libDir} -l$${libName}$${dbg_ext}
+                magic_hopsan_includepath = $${QWT_PATH}/src
+            }
 
             #Set files to copy,  only qwt[d].dll/libqwt[d].so
             win32:files = $${libName}$${dbg_ext}$${DLL_EXT}
             unix:files = lib$${libName}$${dbg_ext}$${DLL_EXT}*
+            # On mac we need all of the framework
+            macx:files = $${libName}.framework
 
             #Generate the copy command
             magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)

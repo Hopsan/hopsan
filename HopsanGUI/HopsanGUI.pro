@@ -27,15 +27,20 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 # Set the QWT paths and dll/so/dylib/framework post linking copy command
 d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
 isEmpty(d):error('Failed to find QWT libs, have you compiled them and put them in the expected location')
-LIBS *= $$magic_hopsan_libpath
-INCLUDEPATH *= $$magic_hopsan_includepath
-QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+!macx:LIBS *= $$magic_hopsan_libpath
+!macx:INCLUDEPATH *= $$magic_hopsan_includepath
 
-# OS X uses the Frameworks concept instead of lib&include directories. A security meassure.
-macx:QMAKE_OBJECTIVE_CFLAGS *= -F$$magic_hopsan_libpath/lib/
-macx:QMAKE_LFLAGS *= -F$$magic_hopsan_libpath/lib/
-macx:QMAKE_LINK *= -framework qwt
-macx:message(On mac we use Frameworks. [$$magic_hopsan_libpath])
+macx:message(On mac using QWT framework in: $$magic_hopsan_includepath)
+#macx:LIBS *= -L$$magic_hopsan_libpath -L$$magic_hopsan_libpath/qwt.framework -lqwt
+macx:LIBS *= -framework qwt
+macx:QMAKE_LIBDIR *= $$magic_hopsan_libpath
+macx:QMAKE_LFLAGS *= -L$$magic_hopsan_libpath -L$$magic_hopsan_libpath/qwt.framework -F$$magic_hopsan_libpath
+macx:INCLUDEPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
+macx:DEPENDPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
+macx:message($$LIBS)
+macx:message($$INCLUDEPATH)
+
+QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 #--------------------------------------------------------
 
 #--------------------------------------------------------

@@ -25,6 +25,8 @@
 #ifndef PYDOCKWIDGET_H
 #define PYDOCKWIDGET_H
 
+#ifdef USEPYTHONQT
+
 #include <QDockWidget>
 #include <QLineEdit>
 #include <QTextEdit>
@@ -34,7 +36,6 @@
 // Forward declarations
 class PythonQtScriptingConsole;
 
-#ifdef USEPYTHONQT
 class PyDockWidget : public QDockWidget
 {
     Q_OBJECT

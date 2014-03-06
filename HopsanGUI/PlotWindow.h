@@ -34,7 +34,7 @@
 #include <QMainWindow>
 
 #include "PlotTab.h"
-#include <qwt_plot.h>
+#include "qwt_plot.h"
 #include "LogVariable.h"
 
 // Forward Declaration

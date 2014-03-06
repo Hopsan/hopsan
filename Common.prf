@@ -1,9 +1,10 @@
 #Determine debug extension, and debug output on/off
 CONFIG(debug, debug|release) {
-  DEBUG_EXT = _d
+    !macx:DEBUG_EXT = _d
+    macx:DEBUG_EXT =
 } else {
-  DEBUG_EXT =
-  DEFINES *= QT_NO_DEBUG_OUTPUT
+    DEBUG_EXT =
+    DEFINES *= QT_NO_DEBUG_OUTPUT
 }
 
 #Determine the dynamic link library file extension, typically .dll for Windows, .so for UNIX and .dylib for OSX
@@ -69,7 +70,8 @@ defineReplace(generateCopyDllCommand){
     #On unix we dont need to replace slashes
     unix {
         for(file, files){
-            qmake_post_link += $$quote(cp -df $${file} $${dstDir}$$escape_expand(\\n\\t))
+            !macx:qmake_post_link += $$quote(cp -df $${file} $${dstDir}$$escape_expand(\\n\\t))
+             macx:qmake_post_link += $$quote(cp -af $${file} $${dstDir}$$escape_expand(\\n\\t))
         }
     }
 
