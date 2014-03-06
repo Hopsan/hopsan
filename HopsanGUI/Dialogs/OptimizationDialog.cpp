@@ -599,13 +599,19 @@ void OptimizationDialog::open()
             QTreeWidgetItem *pParameterItem = new QTreeWidgetItem(QStringList() << parameterNames.at(p));
             pParameterItem->setCheckState(0, Qt::Unchecked);
             Port *pPort = mpSystem->getModelObject(componentNames.at(c))->getPort(parameterNames[p].remove("#Value"));
-            if (pPort && pPort->isConnected())
+            if (pPort)
             {
-                pParameterItem->setTextColor(0, QColor("gray"));
-                pParameterItem->setDisabled(true);
-                QFont italicFont = pParameterItem->font(0);
-                italicFont.setItalic(true);
-                pParameterItem->setFont(0, italicFont);
+                //! @todo we would need to differ between output variables and input variables so that we know if it is a "default startvalue" (in) or a startvalue (out)
+                pParameterItem->setText(0, pParameterItem->text(0)+"  (Default StartValue)");
+                if (pPort->isConnected())
+                {
+                    pParameterItem->setTextColor(0, QColor("gray"));
+                    //! @todo we cant disable unless we know if it is an input variable (default startvalue), startvalues (output vars) should be enabled even if connected
+                    //pParameterItem->setDisabled(true);
+                    QFont italicFont = pParameterItem->font(0);
+                    italicFont.setItalic(true);
+                    pParameterItem->setFont(0, italicFont);
+                }
             }
             pComponentItem->insertChild(0, pParameterItem);
         }
