@@ -602,7 +602,8 @@ void OptimizationDialog::open()
             if (pPort)
             {
                 //! @todo we would need to differ between output variables and input variables so that we know if it is a "default startvalue" (in) or a startvalue (out)
-                pParameterItem->setText(0, pParameterItem->text(0)+"  (Default StartValue)");
+                //! @todo CAnt add this extra text as the text is directly used as the parameter name
+                //pParameterItem->setText(0, pParameterItem->text(0)+"  (Default StartValue)");
                 if (pPort->isConnected())
                 {
                     pParameterItem->setTextColor(0, QColor("gray"));
