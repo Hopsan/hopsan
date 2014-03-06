@@ -10,6 +10,8 @@ TARGET = HopsanGUI
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
+macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+
 
 QT += svg xml
 QT += core gui network
