@@ -19,8 +19,13 @@
 #include <time.h>
 #include <string>
 #include <iostream>
+
 #ifdef WIN32
-        #include "windows.h"
+#include "windows.h"
+#endif
+
+#ifdef __APPLE__
+#include <sys/time.h>
 #endif
 
 class TicToc
@@ -36,7 +41,8 @@ public:
     {
         #ifdef WIN32
             mLastTime = GetTickCount();
-        #elif defined MAC
+        #elif __APPLE__
+            gettimeofday(&m_LastTime,NULL);
         #else
             clock_gettime(CLOCK_REALTIME, &mLastTime);
         #endif
@@ -48,8 +54,13 @@ public:
             int now_time;
             now_time = GetTickCount();
             return (now_time - mLastTime)/1000.0; //Convert to seconds
-        #elif defined MAC
-                return 0;
+        #elif defined __APPLE__
+            double dt;
+            struct timeval now;
+            gettimeofday(&now,NULL);
+            dt=double(now.tv_sec-m_LastTime.tv_sec);
+            dt+=double(now.tv_usec-m_LastTime.tv_usec)*1e-6;
+            return dt;
         #else
             timespec now_time;
             clock_gettime(CLOCK_REALTIME, &now_time);
@@ -76,6 +87,8 @@ private:
     std::string mPrefix;
 #ifdef WIN32
     int mLastTime;
+#elif __APPLE__
+    struct timeval m_LastTime;
 #else
     timespec mLastTime;
     double CalcTimeDiff(const timespec &time_now, const timespec &time_last)
