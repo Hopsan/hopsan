@@ -57,6 +57,8 @@ Node::Node(const size_t datalength)
     mDataDescriptions.resize(datalength);
     mDataValues.resize(datalength,0.0);
 
+    mForceDisableLog = false;
+
     // Default dissabled logging
     disableLog();
 }
