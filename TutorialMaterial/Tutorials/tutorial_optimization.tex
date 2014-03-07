@@ -1,9 +1,12 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper,pdftex]{article}
 
 \usepackage{array}
 \usepackage{placeins}
 
 \usepackage{hopsantut}
+\usepackage{csquotes}
+
+\hypersetup{pdfauthor={Robert Braun}, pdftitle={Hopsan Tutorial - Running an Optimization}, pdfsubject={Hopsan Tutorial}}
 
 \begin{document}
 \maketitle{Running an Optimization}
@@ -29,7 +32,7 @@ Simulate the model by clicking the simulate icon.
  
 \icon{0}{gfx/Hopsan-Simulate.png}{Simulate current project (Ctrl-Shift-S)}
 
-Now double click on the ``Scope'' component on top of the model. Two curves will be plotted, the reference signal and the actual position. The reference signal is a step, and the position shows the corresponding step response. As you can see, it is quite oscillative. We want to adjust the control parameters to reduce its rise time, overshoot and settling time by using the \textit{optimization} feature.
+Now double click on the \enquote{Scope} component on top of the model. Two curves will be plotted, the reference signal and the actual position. The reference signal is a step, and the position shows the corresponding step response. As you can see, it is quite oscillative. We want to adjust the control parameters to reduce its rise time, overshoot and settling time by using the \textit{optimization} feature.
 
 \item \textbf{Open the dialog} \\
 Click the optimization icon to open the dialog.
@@ -91,10 +94,10 @@ The optimization algorithms use objective functions to calculate how good a cert
 \item \textbf{Step} $\rightarrow$ \textbf{out} $\rightarrow$ Value
 \end{itemize}
 
-Then choose ``Minimize'' and ``Absolute Average Difference'' in the boxes. Click ``Add Function''.
+Then choose \enquote{Minimize} and \enquote{Absolute Average Difference} in the boxes. Click \enquote{Add Function}.
 
 \FloatBarrier
-\begin{figure}[h]
+\begin{figure}[htb]
 \center
 \includegraphics[width=0.7\textwidth]{gfx/optimization/screenshot-opt3a.png}
 \end{figure}
@@ -105,12 +108,12 @@ Apart from minimizing the average difference, we also want to minimize the overs
 \item Uncheck \textbf{Step} $\rightarrow$ \textbf{out} $\rightarrow$ Value
 \end{itemize}
 
-Now choose ``Minimize'' and ``Overshoot'', and then click ``Add Function''. In the box called ``arg1'', change the value to 0.7. 
+Now choose \enquote{Minimize} and \enquote{Overshoot}, and then click \enquote{Add Function}. In the box called \enquote{arg1}, change the value to 0.7. 
 
-Now we have added a second objective function. The total objective function will the sum of these. As they may not be equally important or equally scaled, it is possible to weight the individual functions.  Change ``Weight'' for the first function to 10. Now the page should look like this:
+Now we have added a second objective function. The total objective function will the sum of these. As they may not be equally important or equally scaled, it is possible to weight the individual functions.  Change \enquote{Weight} for the first function to 10. Now the page should look like this:
 
 \FloatBarrier
-\begin{figure}[h]
+\begin{figure}[htb]
 \center
 \includegraphics[width=0.7\textwidth]{gfx/optimization/screenshot-opt3b.png}
 \end{figure}
@@ -120,7 +123,7 @@ Now we have added a second objective function. The total objective function will
 Next page shows the generated script code. Modifications can be made if necessary, but leave it as it is for now.
 
 \FloatBarrier
-\begin{figure}[h]
+\begin{figure}[htb]
 \center
 \includegraphics[width=0.7\textwidth]{gfx/optimization/screenshot-opt4.png}
 \end{figure}
@@ -129,32 +132,32 @@ Next page shows the generated script code. Modifications can be made if necessar
 Go to the next page. From here the optimization can be executed:
 
 \FloatBarrier
-\begin{figure}[h]
+\begin{figure}[htb]
 \center
 \includegraphics[width=0.7\textwidth]{gfx/optimization/screenshot-opt5a.png}
 \end{figure}
 \FloatBarrier
 
-Click on ``Start Optimization''. During the optimization the objective function values and the values of the optimization parameters are shown for the different points. The best point is shown in green, and the worst in red.
+Click on \enquote{Start Optimization}. During the optimization the objective function values and the values of the optimization parameters are shown for the different points. The best point is shown in green, and the worst in red.
 
 \FloatBarrier
-\begin{figure}[h]
+\begin{figure}[htb]
 \center
 \includegraphics[width=0.7\textwidth]{gfx/optimization/screenshot-opt5b.png}
 \end{figure}
 \FloatBarrier
 
 \item \textbf{Evaluate the results} \\
-Once the optimization has finished, we can evaluate the results. Parameters from a point can be written back to the original model by using the ``Apply'' buttons. 
+Once the optimization has finished, we can evaluate the results. Parameters from a point can be written back to the original model by using the \enquote{Apply} buttons. 
 
 \FloatBarrier
-\begin{figure}[h]
+\begin{figure}[htb]
 \center
 \includegraphics[width=0.7\textwidth]{gfx/optimization/screenshot-opt5c.png}
 \end{figure}
 \FloatBarrier
 
-Click the ``Apply'' button for the point with green text (the best point). Then go back to the original model and click the Simulate button again.
+Click the \enquote{Apply} button for the point with green text (the best point). Then go back to the original model and click the Simulate button again.
 
 \icon{0}{gfx/Hopsan-Simulate.png}{Simulate current project (Ctrl-Shift-S)}
 
@@ -175,7 +178,7 @@ Click on Save script file in the dialog.
 To load a previously saved script file, click on Load script file in the dialog. You will be taken directly to the code tab. Go to the last tab and start the optimization as before. Note that the settings on the first three pages are not updated by the script. Going back to these might re-generate the script and overwrite the loaded code.
 
 \item \textbf{Loading a script file from command terminal} \\
-It is also possible to load a script file from the command terminal. Just write ``exec'' followed by the path to the file. Hopsan will automatically understand that this is an optimization script and start the dialog. You can use “pwd” to show current directory and “cd” to change directory if necessary. Example:	
+It is also possible to load a script file from the command terminal. Just write \enquote{exec} followed by the path to the file. Hopsan will automatically understand that this is an optimization script and start the dialog. You can use \enquote{pwd} to show current directory and \enquote{cd} to change directory if necessary. Example:	
 \begin{verbatim}
 >> exec ..\folder\myscript.hcom
 \end{verbatim}
