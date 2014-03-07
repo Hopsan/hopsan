@@ -20,7 +20,12 @@
 
 #include <iostream>
 #include "ComponentEssentials.h"
+
+#ifdef __APPLE__
+#include <math.h>
+#else
 #define M_PI       3.14159265358979323846
+#endif
 
 namespace hopsan {
 

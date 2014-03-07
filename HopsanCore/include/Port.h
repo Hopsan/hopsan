@@ -267,8 +267,13 @@ namespace hopsan {
 
     public:
         ReadPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+#ifdef __APPLE__
+        void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
+        inline void writeNode(const size_t idx, const double value, const size_t subPortIdx=0) const;
+#else
         void writeNodeSafe(const size_t idx, const double value);
         inline void writeNode(const size_t idx, const double value) const;
+#endif
         virtual void loadStartValues();
         virtual bool hasConnectedExternalSystemWritePort();
         virtual void forceLoadStartValue();
@@ -309,7 +314,11 @@ namespace hopsan {
 
     public:
         WritePort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+#ifdef __APPLE__
+        inline double readNode(const size_t idx, const size_t subPortIdx=0) const;
+#else
         inline double readNode(const size_t idx) const;
+#endif
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);

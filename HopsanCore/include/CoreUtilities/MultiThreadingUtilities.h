@@ -191,7 +191,11 @@ private:
     size_t mNumSimSteps;
     double mTimeStep;
     double mTime;
+#ifdef __APPLE__
+    /* double *mpSimTime; Never used on mac. /magse */
+#else
     double *mpSimTime;
+#endif
     size_t mnThreads;
     size_t mThreadID;
     BarrierLock *mpBarrier_S;
@@ -312,7 +316,11 @@ private:
     double mTimeStep;
     double mTime;
     vector<double *> mpSimTimes;
+#ifdef __APPLE__
+    /* size_t mnSystems; Never used on mac. /magse */
+#else
     size_t mnSystems;
+#endif
     size_t mnThreads;
     size_t mThreadID;
     BarrierLock *mpBarrier_S;

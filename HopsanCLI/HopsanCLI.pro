@@ -48,7 +48,8 @@ unix {
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
-    LIBS *= -lrt
+    # Is the following really needed on Linux? /magse
+    !macx:LIBS *= -lrt
 
     # Get the svn revision in here if script succeed, we dont care about the external file generated,
     system($${PWD}/../getSvnRevision.sh) {

@@ -727,14 +727,21 @@ ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component
     createStartNode(rNodeType);
 }
 
-
+#ifdef __APPLE__
+void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/, const size_t /*subPortIdx*/)
+#else
 void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/)
+#endif
 {
     mpComponent->addErrorMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
 }
 
 
+#ifdef __APPLE__
+void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/, const size_t /*subPortIdx*/) const
+#else
 void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
+#endif
 {
     mpComponent->addErrorMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
 }
@@ -791,7 +798,11 @@ WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Compone
     createStartNode(mNodeType);
 }
 
+#ifdef __APPLE__
+double WritePort::readNode(const size_t idx, const size_t /*subPortIdx*/) const
+#else
 double WritePort::readNode(const size_t idx) const
+#endif
 {
     HOPSAN_UNUSED(idx)
     mpComponent->addWarningMessage("WritePort::readNode(): Could not read to port, this is a WritePort");

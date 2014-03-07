@@ -85,7 +85,11 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
         if (ues > (u-mUk))
         {
             mDelaySY = 0.0;
+#ifdef __APPLE__
+            /* mDelayY = mDelayY; */ //Note: this is strange. /magse
+#else
             mDelayY = mDelayY; //Note: the movement is skipped for the partial timestep
+#endif
             movement = 0;
         }
         else
@@ -99,7 +103,11 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
         if (ues<(u+mUk))
         {
             mDelaySY = 0.0;
+#ifdef __APPLE__
+            /* mDelayY = mDelayY; */ //Note: this is strange. /magse
+#else
             mDelayY = mDelayY;  //Note: the movement is skipped for the partial timestep
+#endif
             movement = 0;
         }
         else
