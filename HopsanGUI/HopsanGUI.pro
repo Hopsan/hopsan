@@ -35,7 +35,7 @@ isEmpty(d):error('Failed to find QWT libs, have you compiled them and put them i
 macx:message(On mac using QWT framework in: $$magic_hopsan_includepath)
 macx:LIBS *= -framework qwt
 macx:QMAKE_LIBDIR *= $$magic_hopsan_libpath
-macx:QMAKE_LFLAGS *= -L$$magic_hopsan_libpath -L$$magic_hopsan_libpath/qwt.framework #-F$$magic_hopsan_libpath
+macx:QMAKE_LFLAGS *= -L$$magic_hopsan_libpath -L$$magic_hopsan_libpath/qwt.framework -F$$magic_hopsan_libpath
 macx:INCLUDEPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
 macx:DEPENDPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
 macx:message($$LIBS)
