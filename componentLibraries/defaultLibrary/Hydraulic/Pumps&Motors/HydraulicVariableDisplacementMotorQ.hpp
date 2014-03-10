@@ -111,7 +111,7 @@ namespace hopsan {
             //Motor equations
             limitValue(eps, -1, 1);
 
-            dpe = dm / (3.1415 * 2) * eps;
+            dpe = dm / (pi * 2) * eps;
             ble = Bm + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
             gamma = 1 / (clm * (Zc1 + Zc2) + 1);
             c1a = (clm * Zc2 + 1) * gamma * c1 + clm * gamma * Zc1 * c2;

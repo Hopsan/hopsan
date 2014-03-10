@@ -348,10 +348,10 @@ public:
 
         //LocalExpressions
         Ks = (1.4142135623730951*Cq)/Sqrt(rho);
-        Kspa = 3.14159*Frap*Ks*Sd*limit(-Xap0 + xv,0.,-Xap0 + Xvmax);
-        Ksta = 3.14159*Frat*Ks*Sd*limit(-Xap0 - xv,0.,-Xat0 + Xvmax);
-        Kspb = 3.14159*Frbp*Ks*Sd*limit(-Xap0 - xv,0.,-Xbp0 + Xvmax);
-        Kstb = 3.14159*Frbt*Ks*Sd*limit(-Xap0 + xv,0.,-Xbt0 + Xvmax);
+        Kspa = pi*Frap*Ks*Sd*limit(-Xap0 + xv,0.,-Xap0 + Xvmax);
+        Ksta = pi*Frat*Ks*Sd*limit(-Xap0 - xv,0.,-Xat0 + Xvmax);
+        Kspb = pi*Frbp*Ks*Sd*limit(-Xap0 - xv,0.,-Xbp0 + Xvmax);
+        Kstb = pi*Frbt*Ks*Sd*limit(-Xap0 + xv,0.,-Xbt0 + Xvmax);
         Kslsa = Ks*wls*limit(-Xlsa0 + xv,0.,-Xlsa0 + Xvlsmax);
         Kslsb = Ks*wls*limit(-Xlsb0 - xv,0.,-Xlsb0 + Xvlsmax);
         Kslst = Ks*wls*limit(Xls0 - Abs(xv),0.,Xls0);
@@ -402,10 +402,10 @@ public:
 
         //LocalExpressions
         Ks = (1.4142135623730951*Cq)/Sqrt(rho);
-        Kspa = 3.14159*Frap*Ks*Sd*limit(-Xap0 + xv,0.,-Xap0 + Xvmax);
-        Ksta = 3.14159*Frat*Ks*Sd*limit(-Xap0 - xv,0.,-Xat0 + Xvmax);
-        Kspb = 3.14159*Frbp*Ks*Sd*limit(-Xap0 - xv,0.,-Xbp0 + Xvmax);
-        Kstb = 3.14159*Frbt*Ks*Sd*limit(-Xap0 + xv,0.,-Xbt0 + Xvmax);
+        Kspa = pi*Frap*Ks*Sd*limit(-Xap0 + xv,0.,-Xap0 + Xvmax);
+        Ksta = pi*Frat*Ks*Sd*limit(-Xap0 - xv,0.,-Xat0 + Xvmax);
+        Kspb = pi*Frbp*Ks*Sd*limit(-Xap0 - xv,0.,-Xbp0 + Xvmax);
+        Kstb = pi*Frbt*Ks*Sd*limit(-Xap0 + xv,0.,-Xbt0 + Xvmax);
         Kslsa = Ks*wls*limit(-Xlsa0 + xv,0.,-Xlsa0 + Xvlsmax);
         Kslsb = Ks*wls*limit(-Xlsb0 - xv,0.,-Xlsb0 + Xvlsmax);
         Kslst = Ks*wls*limit(Xls0 - Abs(xv),0.,Xls0);

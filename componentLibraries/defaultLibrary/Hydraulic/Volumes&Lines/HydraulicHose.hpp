@@ -283,23 +283,22 @@ namespace hopsan {
             //! Translated from old Hopsan with only syntax changes
         double rq(double &RL, double Q, double D, double L, double rho, double visc)
         {
-            double PI = 3.14159;
             double RE,F;
             double RECRIT = 2300;
             double RQ;
 
-            RE = fabs(4*rho*Q/(PI*D*visc));
+            RE = fabs(4*rho*Q/(pi*D*visc));
 
             if(RE < RECRIT)
             {
-              RL=128*visc*L/(PI*D*D*D*D);
+              RL=128*visc*L/(pi*D*D*D*D);
               RQ=RL*Q;
             }
             else
             {
               F = 0.079*pow(RE,-0.25);
-              RL= 1.75*32*rho*F*L*fabs(Q)/(PI*PI*D*D*D*D*D);
-              RQ = 32*rho*F*L*fabs(Q)*Q/(PI*PI*D*D*D*D*D);
+              RL= 1.75*32*rho*F*L*fabs(Q)/(pi*pi*D*D*D*D*D);
+              RQ = 32*rho*F*L*fabs(Q)*Q/(pi*pi*D*D*D*D*D);
             }
 
             return RQ;

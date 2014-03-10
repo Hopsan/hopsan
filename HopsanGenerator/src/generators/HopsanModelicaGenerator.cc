@@ -1475,7 +1475,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.varNames.append("STATEVARS");
     comp.varTypes.append("std::vector<double>");
 
-    comp.varInits.append("2");
+    comp.varInits.append(QString::number(stateEquations.size()));
     comp.varNames.append("nStateVars");
     comp.varTypes.append("int");
 
@@ -1486,7 +1486,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.confEquations.append("std::vector<HString> availableSolvers = NumericalIntegrationSolver::getAvailableSolverTypes();");
     comp.confEquations.append("addConditionalConstant(\"solverType\", \"Solver Type\", availableSolvers, solverType);");
 
-    comp.initEquations.append("STATEVARS.resize(2);");
+    comp.initEquations.append("STATEVARS.resize("+QString::number(stateEquations.size())+");");
     comp.initEquations.append("mpSolver = new NumericalIntegrationSolver(this, &STATEVARS);");
 
     if(!jacobian.isEmpty())
@@ -1500,7 +1500,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         comp.initEquations << "stateVariables.create("+QString::number(systemEquations.size())+");";
         comp.initEquations << "";
     }
-
     if(!jacobian.isEmpty())
     {
         comp.initEquations << "";

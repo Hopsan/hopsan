@@ -96,7 +96,7 @@ namespace hopsan {
             }
             else if (mTime >= startT && mTime < stopT)
             {
-                (*mpOut) = (*mpBaseValue) + 0.5*(*mpAmplitude)*sin((mTime-startT)*frequency - 3.141592653589/2.0) + (*mpAmplitude)*0.5;
+                (*mpOut) = (*mpBaseValue) + 0.5*(*mpAmplitude)*sin((mTime-startT)*frequency - pi/2.0) + (*mpAmplitude)*0.5;
             }
             else
             {

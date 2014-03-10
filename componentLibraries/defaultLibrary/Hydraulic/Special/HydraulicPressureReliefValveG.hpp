@@ -213,7 +213,7 @@ public:
 
         //LocalExpressions
         Av = 0.785398*Power(Dv,2);
-        w = 3.14159*Dv*frac*Sin(phi);
+        w = pi*Dv*frac*Sin(phi);
         kf = 2*Cq*(p1 - p2)*w*Cos(phi);
         ke = kf + ks;
 
@@ -248,7 +248,7 @@ Av*mTimestep*pref - 2*Bv*xv + ke*mTimestep*xv)/(2*Bv + ke*mTimestep);
 
         //LocalExpressions
         Av = 0.785398*Power(Dv,2);
-        w = 3.14159*Dv*frac*Sin(phi);
+        w = pi*Dv*frac*Sin(phi);
         kf = 2*Cq*(p1 - p2)*w*Cos(phi);
         ke = kf + ks;
 

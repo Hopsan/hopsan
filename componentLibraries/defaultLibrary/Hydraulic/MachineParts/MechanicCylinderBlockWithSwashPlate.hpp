@@ -161,7 +161,7 @@ namespace hopsan {
             double angle = (*mpAngle);
             double ta = tan(angle);
             double s = r*ta;
-            double diff = 2*3.1416/mNumPorts1;
+            double diff = 2*pi/mNumPorts1;
 
             //Calculate torque
             double cp = 0;

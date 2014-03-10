@@ -21,11 +21,7 @@
 #include <iostream>
 #include "ComponentEssentials.h"
 
-#ifdef __APPLE__
 #include <math.h>
-#else
-#define M_PI       3.14159265358979323846
-#endif
 
 namespace hopsan {
 
@@ -95,7 +91,7 @@ namespace hopsan {
 
             //Variable Displacement Pump equations
 
-            q2 = ( dp*n*eps/(2.0*M_PI) + Kcp*(c1-c2) ) / ( (Zc1+Zc2)*Kcp+1 );
+            q2 = ( dp*n*eps/(2.0*pi) + Kcp*(c1-c2) ) / ( (Zc1+Zc2)*Kcp+1 );
             q1 = -q2;
             p2 = c2 + Zc2*q2;
             p1 = c1 + Zc1*q1;

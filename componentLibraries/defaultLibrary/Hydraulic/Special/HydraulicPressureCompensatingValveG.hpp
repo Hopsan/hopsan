@@ -246,7 +246,7 @@ public:
 
         //LocalExpressions
         Av = 0.785398*Power(Dv,2);
-        w = 3.14159*Dv*frac*Sin(phi);
+        w = pi*Dv*frac*Sin(phi);
         p3 = c3;
 
         //Initialize delays
@@ -286,7 +286,7 @@ ks*mTimestep + 2*Cq*mTimestep*p1*w*Cos(phi) - 2*Cq*mTimestep*p2*w*Cos(phi));
 
         //LocalExpressions
         Av = 0.785398*Power(Dv,2);
-        w = 3.14159*Dv*frac*Sin(phi);
+        w = pi*Dv*frac*Sin(phi);
         p3 = c3;
 
         //Initializing variable vector for Newton-Raphson

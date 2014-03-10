@@ -26,12 +26,13 @@
 #ifndef AUXILIARYSIMULATIONFUNCTIONS_H
 #define AUXILIARYSIMULATIONFUNCTIONS_H
 #include "win32dll.h"
+#include <math.h>
 
 namespace hopsan {
 
 //! @brief A const double definition of pi that you can use in your code
 //! @ingroup AuxiliarySimulationFunctions
-const double pi = 3.14159265358979323846;
+const double pi = M_PI;
 
 void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
 bool DLLIMPORTEXPORT fuzzyEqual(const double x, const double y, const double epsilon=0.00001);

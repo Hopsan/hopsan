@@ -109,7 +109,7 @@ namespace hopsan {
             Zx3 = (*mpND_Zx3);
 
             //Motor equations
-            dpe = d / (3.1415 * 2);
+            dpe = d / (pi * 2);
             //dpe = dpr * eps;       //For variable displacement motor
             ble = B + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
             gamma = 1 / (cl * (Zc1 + Zc2) + 1);

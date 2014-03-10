@@ -117,7 +117,7 @@ namespace hopsan {
             double offset = (*mpOffset);
 
             double s = r*tan(angle);
-            double diff = 2*3.1416/mNumPorts1;
+            double diff = 2*pi/mNumPorts1;
 
             double a1 = mIntegrator.update(w1);
 

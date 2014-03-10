@@ -40,5 +40,5 @@ double WhiteGaussianNoise::getValue()
         random1 = (double)rand() / (double)RAND_MAX;
      }
      double random2 = (double)rand() / (double)RAND_MAX;
-     return sqrt((-1.0)*log(random1))*cos(3.1415*random2);
+     return sqrt((-1.0)*log(random1))*cos(M_PI*random2);
 }

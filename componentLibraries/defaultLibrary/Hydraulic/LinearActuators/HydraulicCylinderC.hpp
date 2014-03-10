@@ -337,6 +337,7 @@ class HydraulicCylinderC : public ComponentC
             {
                 ZxLim = 0.0;
                 CxLim = 0.0;
+                NewCxLim = FxLim + ZxLim*v3;
             }
 
             // Filtering of the characteristics
@@ -430,7 +431,6 @@ class HydraulicCylinderC : public ComponentC
 //        HydraulicCylinderC(name) : ComponentC(name)
 //        {
 //            //Set member attributes
-//            PI = 3.14159265;
 //            BK = 0.2;
 //            ALFA = 0.01;
 //            WFAK = 0.1;
