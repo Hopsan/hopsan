@@ -2841,7 +2841,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
             mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
         }
-        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP || mpOptHandler->mAlgorithm == OptimizationHandler::ParameterSweep)
+        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParameterSweep)
         {
             mpOptHandler->clearModels();
 
@@ -2873,7 +2873,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 }
             }
         }
-        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm)
+        else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm || mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
         {
             mpOptHandler->clearModels();
             if(getConfigPtr()->getUseMulticore())
