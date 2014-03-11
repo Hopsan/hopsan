@@ -378,17 +378,17 @@ void ContainerObject::calcSubsystemPortPosition(const double w, const double h, 
     {
         tanAngle=.0001;
     }
-    if(angle>3.1415*3.0/2.0)
+    if(angle>M_PI*3.0/2.0)
     {
         x=-std::max(std::min(h/tanAngle, w), -w);
         y=std::max(std::min(w*tanAngle, h), -h);
     }
-    else if(angle>3.1415)
+    else if(angle>M_PI)
     {
         x=-std::max(std::min(h/tanAngle, w), -w);
         y=-std::max(std::min(w*tanAngle, h), -h);
     }
-    else if(angle>3.1415/2.0)
+    else if(angle>M_PI/2.0)
     {
         x=std::max(std::min(h/tanAngle, w), -w);
         y=-std::max(std::min(w*tanAngle, h), -h);

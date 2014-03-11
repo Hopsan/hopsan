@@ -538,7 +538,7 @@ void VectorVariable::lowPassFilter(SharedVectorVariableT pTime, const double w)
         }
 
         // Run the lp operation
-        double Al = 2.0/(2.0*3.14159265359*w);
+        double Al = 2.0/(2.0*M_PI*w);
         double temp1 = (*pThisData)[0];
         double temp = temp1;
         (*pThisData)[0] = temp;

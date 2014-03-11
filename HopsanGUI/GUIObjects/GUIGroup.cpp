@@ -286,7 +286,7 @@ GroupContainer::~GroupContainer()
 ////        QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
 //////        getContainedScenePtr()->addLine(line); //(just for debugging)
 ////        //Determine the placement of the ports on the group icon
-////        double vinkel=line.angle()*3.141592/180.0;
+////        double vinkel=line.angle()*M_PI/180.0;
 ////        double b = mpIcon->boundingRect().width()/2.0;
 ////        double h = mpIcon->boundingRect().height()/2.0;
 ////        double x, y;

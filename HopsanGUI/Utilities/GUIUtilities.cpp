@@ -558,7 +558,7 @@ double normalDistribution(double average, double sigma)
 {
     double U1 = (double)rand() / (double)RAND_MAX;
     double U2 = (double)rand() / (double)RAND_MAX;
-    return average + sigma*sqrt(-2*log(U1))*cos(2*3.1415926*U2);
+    return average + sigma*sqrt(-2*log(U1))*cos(2*M_PI*U2);
 }
 
 //! @brief Generates random values evenly distributed between a minimum and a maximum value
