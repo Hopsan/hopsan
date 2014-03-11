@@ -96,6 +96,20 @@ void OptimizationWorker::run()
 //! @brief Finalie function for optimization worker base class (should never be called directly)
 void OptimizationWorker::finalize()
 {
+    //Re-evaluate all points (to remove any effect from forgetting factor before logging)
+    execute("call evalall");
+    calculateBestAndWorstId();
+    double secondBestObj = mObjectives[mWorstId];
+    mSecondBestId = mWorstId;
+    for(int i=0; i<mObjectives.size(); ++i)
+    {
+        if(i != mBestId && mObjectives[i] < secondBestObj)
+        {
+            secondBestObj = mObjectives[i];
+            mSecondBestId = i;
+        }
+    }
+
     mpHandler->setIsRunning(false);
 
     if(mDisconnectedFromModelHandler)
@@ -119,6 +133,11 @@ void OptimizationWorker::finalize()
     for(int i=0; i<mNumParameters; ++i)
     {
         output.append(QString::number(mParameters[mBestId][i])+",");
+    }
+    output.append(QString::number(mObjectives[mSecondBestId])+",");
+    for(int i=0; i<mNumParameters; ++i)
+    {
+        output.append(QString::number(mParameters[mSecondBestId][i])+",");
     }
     output.chop(1);
     output.append("\n");

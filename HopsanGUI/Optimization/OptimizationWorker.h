@@ -89,7 +89,7 @@ protected:
     QVector< QVector<double> > mParameters;
     QVector<double> mObjectives;
     double mMaxEvals;
-    int mWorstId, mBestId, mLastWorstId;
+    int mWorstId, mBestId, mLastWorstId, mSecondBestId;
     int mConvergenceReason;
     double mParTol, mFuncTol;
     bool mPlotPoints;

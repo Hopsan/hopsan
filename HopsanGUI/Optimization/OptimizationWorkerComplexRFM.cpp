@@ -472,16 +472,21 @@ void OptimizationWorkerComplexRFM::storeValuesForMetaModel(int idx)
 
 void OptimizationWorkerComplexRFM::createMetaModel()
 {
+    qDebug() << "Begin: createMetaModel()";
+
     //Skapa metamodell
     int n=mStorageSize;
     int m=mMetaModelCoefficients.length();
 
     mMatrix.create(n, m);
 
+    qDebug() << "Number of rows: " << n;
     qDebug() << "Number of columns: " << m;
+    qDebug() << "mNumParameters: " << mNumParameters;
 
     for(int i=0; i<n; ++i)
     {
+        qDebug() << "Assigning matrix element: " << i << 0;
         mMatrix[i][0] = 1;
     }
 
@@ -489,17 +494,21 @@ void OptimizationWorkerComplexRFM::createMetaModel()
     {
         for(int j=0; j<mNumParameters; ++j)
         {
+            qDebug() << "Assigning matrix element: " << i << ", " << j+1;
             mMatrix[i][j+1] = mStoredParameters[i][j];
         }
     }
 
     for(int i=0; i<n; ++i)
     {
+        int col=mNumParameters+1;
         for(int j=0; j<mNumParameters; ++j)
         {
             for(int k=j; k<mNumParameters; ++k)
             {
-                mMatrix[i][1+mNumParameters+k+j*mNumParameters-j] = mStoredParameters[i][j]*mStoredParameters[i][k];
+                qDebug() << "Assigning matrix element: " << i << ", " << col;
+                mMatrix[i][col] = mStoredParameters[i][j]*mStoredParameters[i][k];
+                ++col;
             }
         }
     }
@@ -517,7 +526,15 @@ void OptimizationWorkerComplexRFM::createMetaModel()
     hopsan::Vec tempVec = matrixT*mStoredObjectives;
     int* order = new int[m];
     hopsan::ludcmp(tempMatrix, order);
+
+    qDebug() << "tempMatrix.size() = " << tempMatrix.rows() << ", " << tempMatrix.cols();
+    qDebug() << "tempVec.size() = " << tempVec.length();
+    qDebug() << "mMetaModelCoefficients.size() = " << mMetaModelCoefficients.length();
+    qDebug() << "order.size() = " << m;
+
     hopsan::solvlu(tempMatrix,tempVec,mMetaModelCoefficients,order);
+
+    qDebug() << "End: createMetaModel()";
 }
 
 
