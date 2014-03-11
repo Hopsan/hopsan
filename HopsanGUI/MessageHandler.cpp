@@ -91,7 +91,7 @@ void GUIMessageHandler::collectHopsanCoreMessages()
 {
     if (mpCoreAccess)
     {
-        bool playErrorSound = false;
+        //bool playErrorSound = false;
         int nmsg = mpCoreAccess->getNumberOfMessages();
         for (int idx=0; idx<nmsg; ++idx)
         {
@@ -110,14 +110,14 @@ void GUIMessageHandler::collectHopsanCoreMessages()
             else if( type == "error")
             {
                 addMessage(message, tag, Error);
-                playErrorSound = true;
+                //playErrorSound = true;
             }
             else if( type == "fatal")
             {
                 addMessage(message, tag, Fatal);
                 //QSound::play(QString(SOUNDSPATH) + "error.wav");
                 QMessageBox::critical(gpMainWindowWidget, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");
-                playErrorSound = true;
+                //playErrorSound = true;
             }
             else if ( type == "debug")
             {
