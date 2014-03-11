@@ -29,6 +29,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
+#include <QScrollArea>
 
 //C++ includes
 #include <limits>
@@ -295,19 +296,27 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpTotalProgressBar = new QProgressBar(this);
     mpTotalProgressBar->hide();
     mpCoreProgressBarsLayout = new QGridLayout();
-    mpParametersOutputTextEditsLayout = new QGridLayout();
+    QWidget *pParametersOutputTextEditsWidget = new QWidget(this);
+    pParametersOutputTextEditsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mpParametersOutputTextEditsLayout = new QGridLayout(pParametersOutputTextEditsWidget);
+    QScrollArea *pParametersOutputScrollArea = new QScrollArea(this);
+    pParametersOutputScrollArea->setWidget(pParametersOutputTextEditsWidget);
+    pParametersOutputScrollArea->setWidgetResizable(true);
+    pParametersOutputScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
     mpTerminal = new TerminalWidget(this);
     mpTerminal->mpHandler->setAcceptsOptimizationCommands(true);
     mpMessageHandler = mpTerminal->mpHandler->mpOptHandler->getMessageHandler();
     QGridLayout *pRunLayout = new QGridLayout(this);
-    pRunLayout->addWidget(mpStartButton,                         0,0,1,1);
-    pRunLayout->addLayout(mpParametersOutputTextEditsLayout,    1,0,1,1);
+    pRunLayout->addWidget(mpStartButton,                        0,0,1,1);
+    pRunLayout->addWidget(pParametersOutputScrollArea,    1,0,1,1);
     pRunLayout->addLayout(mpCoreProgressBarsLayout,             1,1,1,1);
     pRunLayout->addWidget(mpTerminal,                           2,0,1,2);
+    pRunLayout->setRowStretch(1,0.5);
     pRunLayout->setRowStretch(2,1);
     pRunLayout->setColumnStretch(0,1);
     pRunLayout->setColumnMinimumWidth(1,400);
-   // pRunLayout->addWidget(mpTotalProgressBar,           3,0,1,2);
+    pRunLayout->addWidget(mpTotalProgressBar,           3,0,1,2);
     QWizardPage *pRunWidget = new QWizardPage(this);
     pRunWidget->setLayout(pRunLayout);
 
