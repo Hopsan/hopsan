@@ -97,11 +97,12 @@ void OptimizationWorker::run()
 void OptimizationWorker::finalize()
 {
     //Re-evaluate all points (to remove any effect from forgetting factor before logging)
+    execute("echo off");
     execute("call evalall");
     calculateBestAndWorstId();
     double secondBestObj = mObjectives[mWorstId];
     mSecondBestId = mWorstId;
-    for(int i=0; i<mObjectives.size(); ++i)
+    for(int i=0; i<mNumParameters; ++i)
     {
         if(i != mBestId && mObjectives[i] < secondBestObj)
         {
@@ -109,6 +110,7 @@ void OptimizationWorker::finalize()
             mSecondBestId = i;
         }
     }
+    execute("echo on");
 
     mpHandler->setIsRunning(false);
 
