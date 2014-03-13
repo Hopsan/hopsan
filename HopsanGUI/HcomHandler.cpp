@@ -1288,16 +1288,15 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 //! @brief Execute function for "exec" command
 void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
-    QStringList splitCmd;
-    splitWithRespectToQuotations(cmd, ' ', splitCmd);
-    if(splitCmd.size() < 1)
+    QStringList args = getArguments(cmd);
+    if(args.size() < 1)
     {
         HCOMERR("Too few arguments.");
         return;
     }
 
-
-    QString path = splitCmd[0];
+    QString path = args[0];
+    path.remove("\"");
     path.replace("\\","/");
     if(!path.contains("/"))
     {
@@ -1335,10 +1334,10 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
 
     code = t.readAll();
 
-    for(int i=0; i<splitCmd.size()-1; ++i)  //Replace arguments with their values
+    for(int i=0; i<args.size()-1; ++i)  //Replace arguments with their values
     {
         QString str = "$"+QString::number(i+1);
-        code.replace(str, splitCmd[i+1]);
+        code.replace(str, args[i+1]);
     }
 
     if(!mAcceptsOptimizationCommands && (code.contains("\nopt init") || code.contains("\nopt run") || code.contains(" opt init") || code.contains(" opt run")))
@@ -1388,15 +1387,14 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 {
     if(!mpConsole) return;
 
-    QStringList split;
-    splitWithRespectToQuotations(cmd, ' ', split);
-    if(split.size() != 1)
+    if(getNumberOfArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString path = cmd;
+    QString path = getArgument(cmd,0);
+    path.remove("\"");
     if(!path.contains("/"))
     {
         path.prepend("./");
@@ -2021,8 +2019,8 @@ void HcomHandler::executeSetCommand(const QString cmd)
 //! @brief Execute function for "sapl" command
 void HcomHandler::executeSaveToPloCommand(const QString cmd)
 {
-    QStringList cmdSplit = cmd.split(" ");
-    if(cmdSplit.size() < 2)
+    QStringList args = getArguments(cmd);
+    if(args.size() < 2)
     {
         HCOMERR("Too few arguments.");
         return;
@@ -2030,13 +2028,14 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
 
     bool useCsv = false;
     QString temp = cmd;
-    if(cmdSplit.contains("-csv"))
+    if(args.contains("-csv"))
     {
         useCsv = true;
         temp.remove("-csv");
     }
 
-    QString path = cmdSplit.first();
+    QString path = args.first();
+    path.remove("\"");
     if(!path.contains("/"))
     {
         path.prepend("./");
@@ -2123,6 +2122,7 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
     }
 
     QString path = getArgument(cmd,0);
+    path.remove("\"");
     if(!path.contains("/"))
     {
         path.prepend("./");
@@ -2172,6 +2172,7 @@ void HcomHandler::executeSaveParametersCommand(const QString cmd)
         return;
     }
     QString path = getArgument(cmd, 0);
+    path.remove("\"");
     if(!path.contains("/"))
     {
         path.prepend("./");
@@ -2192,6 +2193,7 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
         return;
     }
     QString path = getArgument(cmd, 0);
+    path.remove("\"");
     if(!path.contains("/"))
     {
         path.prepend("./");
@@ -2208,7 +2210,8 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
 //! @brief Execute function for "load" command
 void HcomHandler::executeLoadModelCommand(const QString cmd)
 {
-    QString path = cmd;
+    QString path = getArgument(cmd,0);
+    path.remove("\"");
     if(!path.contains("/"))
     {
         path.prepend("./");
