@@ -747,14 +747,17 @@ QMap<QString, QString> ModelObject::getVariableAliases(const QString &rPortName)
 void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions)
 {
     rVarDataDescriptions.clear();
-    QList<Port*>::iterator pit;
-    for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
+    if (mpParentContainerObject)
     {
-        QVector<CoreVariableData> varDescs;
-        mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(this->getName(), (*pit)->getName(), varDescs);
-        for (int i=0; i<varDescs.size(); ++i)
+        QList<Port*>::iterator pit;
+        for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
         {
-            rVarDataDescriptions.push_back(varDescs[i]);
+            QVector<CoreVariableData> varDescs;
+            mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(this->getName(), (*pit)->getName(), varDescs);
+            for (int i=0; i<varDescs.size(); ++i)
+            {
+                rVarDataDescriptions.push_back(varDescs[i]);
+            }
         }
     }
 }
@@ -762,7 +765,10 @@ void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDat
 void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions) const
 {
     rVariameterDescriptions.clear();
-    mpParentContainerObject->getCoreSystemAccessPtr()->getVariameters(this->getName(), rVariameterDescriptions);
+    if (mpParentContainerObject)
+    {
+        mpParentContainerObject->getCoreSystemAccessPtr()->getVariameters(this->getName(), rVariameterDescriptions);
+    }
 }
 
 void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue)
