@@ -5125,7 +5125,7 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
     if (fullShortName.contains(GenerationSpecifierChar))
     {
         bool parseOK;
-        parseAndChopGenerationSpecifier(fullShortName, parseOK);
+        generation = parseAndChopGenerationSpecifier(fullShortName, parseOK);
         if (!parseOK)
         {
             HCOMERR("Could not parse generation specifier");
