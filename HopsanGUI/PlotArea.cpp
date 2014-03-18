@@ -2404,16 +2404,16 @@ void PlotArea::setBackgroundColor(const QColor &rColor)
     }
 }
 
-//! @todo renamethis function
+//! @todo rename this function
 void PlotArea::resetXTimeVector()
 {
     mHasCustomXData = false;
     mCustomXData = HopsanVariable();
 
-    PlotCurve *pCurve;
-    Q_FOREACH(pCurve, mPlotCurves)
+    Q_FOREACH(PlotCurve *pCurve, mPlotCurves)
     {
         pCurve->setCustomXData(mCustomXData); //Remove any custom x-data
+        mCustomXData = HopsanVariable(); //!< @todo FIXA /Peter
     }
 
     rescaleAxesToCurves();

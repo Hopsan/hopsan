@@ -30,10 +30,33 @@
 #include <QSpinBox>
 #include <QToolButton>
 #include <QLineEdit>
+#include <QLabel>
 
 // Forward declarations
 class PlotArea;
 class PlotCurve;
+class VectorVariable;
+
+class CustomXDataControl : public QWidget
+{
+    Q_OBJECT
+public:
+    CustomXDataControl(QWidget *pParent);
+    void updateInfo(const VectorVariable *pData);
+
+signals:
+    void newXData(QString fullName);
+    void resetXData();
+
+protected:
+    void dragEnterEvent(QDragEnterEvent *e);
+    void dropEvent(QDropEvent *e);
+
+private:
+    QLabel *mpNameLabel;
+    QLabel *mpXLabel;
+    QToolButton *mpResetXDataButton;
+};
 
 class CustomXDataDropEdit : public QLineEdit
 {
@@ -78,8 +101,8 @@ private:
     QLabel *mpTitle, *mpGenerationLabel, *mpSourceLable;
     QToolButton *mpColorBlob;
     QSpinBox *mpGenerationSpinBox;
-    CustomXDataDropEdit *mpCustomXDataDrop;
-    QToolButton *mpResetXDataButton;
+    CustomXDataControl *mpCustomXDataDrop;
+
 };
 
 #endif // PLOTCURVECONTROLBOX_H

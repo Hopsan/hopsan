@@ -24,6 +24,7 @@
 
 #include <QDropEvent>
 #include <QMimeData>
+#include <QHBoxLayout>
 
 #include "PlotCurveControlBox.h"
 #include "PlotArea.h"
@@ -83,12 +84,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     mpTitle->setAlignment(Qt::AlignHCenter);
     refreshTitle();
 
-    mpCustomXDataDrop = new CustomXDataDropEdit(this);
-    mpCustomXDataDrop->setToolTip("Drag and Drop here to set Custom XData Vector");
-    mpResetXDataButton = new QToolButton(this);
-    mpResetXDataButton->setToolTip("Reset XData");
-    mpResetXDataButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
-    mpResetXDataButton->setEnabled(false);
+    mpCustomXDataDrop = new CustomXDataControl(this);
 
     mpGenerationSpinBox = new QSpinBox(this);
     mpGenerationSpinBox->setToolTip("Change generation");
@@ -167,7 +163,6 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     pInfoBoxLayout->addWidget(mpColorBlob);
     pInfoBoxLayout->addWidget(mpTitle);
     pInfoBoxLayout->addWidget(mpCustomXDataDrop);
-    pInfoBoxLayout->addWidget(mpResetXDataButton);
     pInfoBoxLayout->addWidget(mpGenerationSpinBox);
     pInfoBoxLayout->addWidget(mpGenerationLabel);
     pInfoBoxLayout->addWidget(mpSourceLable);
@@ -185,7 +180,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     connect(mpColorBlob,               SIGNAL(clicked(bool)),       this,               SLOT(activateCurve(bool)));
     connect(mpCustomXDataDrop,         SIGNAL(newXData(QString)),   this,               SLOT(setXData(QString)));
-    connect(mpResetXDataButton,         SIGNAL(clicked()),           this,               SLOT(resetXData()));
+    connect(mpCustomXDataDrop,         SIGNAL(resetXData()),        this,               SLOT(resetXData()));
     connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
     connect(pCloseButton,              SIGNAL(clicked()),           this,               SLOT(removeTheCurve()));
     connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
@@ -281,13 +276,11 @@ void PlotCurveControlBox::updateInfo()
     // Update Xdata
     if (mpPlotCurve->hasCustomXVariable())
     {
-        mpCustomXDataDrop->setText(mpPlotCurve->getSharedCustomXVariable()->getSmartName());
-        mpResetXDataButton->setEnabled(true);
+        mpCustomXDataDrop->updateInfo(mpPlotCurve->getSharedCustomXVariable().data());
     }
     else
     {
-        mpCustomXDataDrop->setText("");
-        mpResetXDataButton->setEnabled(false);
+        mpCustomXDataDrop->updateInfo(0);
     }
 }
 
@@ -352,4 +345,82 @@ void PlotCurveControlBox::setGeneration(const int gen)
 void PlotCurveControlBox::removeTheCurve()
 {
     emit removeCurve(mpPlotCurve);
+}
+
+
+CustomXDataControl::CustomXDataControl(QWidget *pParent) :
+    QWidget(pParent)
+{
+    // Build widget
+    QHBoxLayout *pLayout = new QHBoxLayout(this);
+
+    mpXLabel = new QLabel("x: ", this);
+    mpXLabel->setEnabled(false);
+    mpNameLabel = new QLabel(this);
+    mpNameLabel->setToolTip("Drag and Drop here to set Custom XData Vector");
+    mpNameLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+    mpNameLabel->setFixedWidth(48);
+    mpResetXDataButton = new QToolButton(this);
+    mpResetXDataButton->setToolTip("Reset XData");
+    mpResetXDataButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
+    mpResetXDataButton->setEnabled(false);
+
+    pLayout->addWidget(mpXLabel);
+    pLayout->addWidget(mpNameLabel);
+    pLayout->addWidget(mpResetXDataButton);
+    pLayout->setSpacing(0);
+
+    // Connect relay signal
+    connect(mpResetXDataButton, SIGNAL(clicked()), this, SIGNAL(resetXData()));
+
+    setAcceptDrops(true);
+}
+
+void CustomXDataControl::updateInfo(const VectorVariable *pData)
+{
+    if (pData)
+    {
+        const QString nameWithGen = QString("%1  (%2)").arg(pData->getSmartName()).arg(pData->getGeneration()+1);
+        mpNameLabel->setText(nameWithGen);
+        mpNameLabel->setFixedWidth(48*4);
+        mpNameLabel->setAlignment(Qt::AlignRight);
+        mpNameLabel->setToolTip(QString("<nobr>Drag and Drop here to set Custom XData Vector</nobr><br><nobr><b>%1</b></nobr>").arg(nameWithGen));
+        mpResetXDataButton->setEnabled(true);
+        mpXLabel->setEnabled(true);
+    }
+    else
+    {
+        mpNameLabel->clear();
+        mpNameLabel->setFixedWidth(48);
+        mpResetXDataButton->setEnabled(false);
+        mpXLabel->setEnabled(false);
+    }
+}
+
+void CustomXDataControl::dragEnterEvent(QDragEnterEvent *e)
+{
+    if (e->mimeData()->text().startsWith("HOPSANPLOTDATA:"))
+    {
+        e->acceptProposedAction();
+    }
+}
+
+void CustomXDataControl::dropEvent(QDropEvent *e)
+{
+    QWidget::dropEvent(e);
+    QString mimeText = e->mimeData()->text();
+    if(mimeText.startsWith("HOPSANPLOTDATA:"))
+    {
+        //! @todo what about model name, if draging from other model (it should not work but sowhere we need to block and warn) (maybe not here)
+        QStringList fields = mimeText.split(":");
+        if (fields.size() > 2)
+        {
+            // We do not want to include gen here, as the curve should decide for it self what gen to use
+            emit newXData(fields[1]);
+        }
+    }
+    else
+    {
+        emit newXData(mimeText);
+    }
 }

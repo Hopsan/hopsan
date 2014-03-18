@@ -389,11 +389,14 @@ bool PlotCurve::setGeneration(const int generation)
         {
             if (mCustomXdata.mpContainer)
             {
-                SharedVectorVariableT pNewXData = mCustomXdata.mpContainer->getDataGeneration(generation);
-                if (pNewXData)
+                // We switch generation in a temp variable to make sure that connecte/disconect of signals works when we set a new one
+                HopsanVariable temp = mCustomXdata;
+                temp.switchToGeneration(mData.mpVariable->getGeneration());
+                if (temp)
                 {
-                    setCustomXData(pNewXData);
+                    setCustomXData(temp);
                 }
+                //! @todo else what ??
             }
             //! @todo else what ??
         }
@@ -529,7 +532,7 @@ void PlotCurve::setCustomXData(HopsanVariable data)
     // Disconnect any signals first, in case we are changing x-data
     disconnectCustomXDataSignals();
     // Set new data and connect signals
-    mCustomXdata = data.mpVariable;
+    mCustomXdata = data;
     connectCustomXDataSignals();
 
     // Redraw curve
@@ -548,10 +551,10 @@ void PlotCurve::setCustomXData(const QString fullName)
         LogDataHandler *pHandler = mData.mpVariable->getLogDataHandler();
         if (pHandler)
         {
-            SharedVectorVariableT pData = pHandler->getVectorVariable(fullName, mData.mpVariable->getGeneration());
-            if (pData)
+            HopsanVariable data = pHandler->getHopsanVariable(fullName, mData.mpVariable->getGeneration());
+            if (data)
             {
-                setCustomXData(pData);
+                setCustomXData(data);
             }
         }
     }
