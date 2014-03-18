@@ -40,7 +40,7 @@
 #define SIGNALSINEWAVE_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
-#include "math.h"
+#include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 
 namespace hopsan {
 
@@ -91,7 +91,7 @@ namespace hopsan {
             else
             {
                 // out = A * sin( (T-Tstart-Toffset)*2*pi*f )
-                (*mpOut) = (*mpAmplitude) * sin( (mTime-(*mpStartTime)-(*mpPhaseTOffset)) * 2.0*M_PI*(*mpFrequency) );
+                (*mpOut) = (*mpAmplitude) * sin( (mTime-(*mpStartTime)-(*mpPhaseTOffset)) * 2.0*pi*(*mpFrequency) );
             }
         }
     };

@@ -25,8 +25,14 @@
 
 #ifndef AUXILIARYSIMULATIONFUNCTIONS_H
 #define AUXILIARYSIMULATIONFUNCTIONS_H
+
 #include "win32dll.h"
-#include <math.h>
+
+// For MSVC we need to define _USE_MATH_DEFINES for M_PI to be available
+#ifdef _MSC_VER
+#define _USE_MATH_DEFINES
+#endif
+#include <cmath>
 
 namespace hopsan {
 

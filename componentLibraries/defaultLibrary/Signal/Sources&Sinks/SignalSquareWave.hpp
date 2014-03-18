@@ -37,7 +37,7 @@
 #define SIGNALSQUAREWAVE_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
-#include "math.h"
+#include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 
 namespace hopsan {
 
@@ -89,7 +89,7 @@ namespace hopsan {
             }
             else
             {
-                if ( sin( (mTime-(*mpStartTime))*2.0*M_PI*(*mpFrequency) ) >= 0.0 )
+                if ( sin( (mTime-(*mpStartTime))*2.0*pi*(*mpFrequency) ) >= 0.0 )
                 {
                     (*mpOut) = (*mpBaseValue) + (*mpAmplitude);
                 }

@@ -22,12 +22,11 @@
 //!
 //$Id$
 
-#include "win32dll.h"
-#include <math.h>
 #include "ComponentUtilities/WhiteGaussianNoise.h"
 #include <stdlib.h>
-#include <time.h>
-#include <float.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 
 using namespace hopsan;
 
