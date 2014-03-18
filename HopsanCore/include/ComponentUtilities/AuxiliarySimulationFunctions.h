@@ -28,17 +28,13 @@
 
 #include "win32dll.h"
 
-// For MSVC we need to define _USE_MATH_DEFINES for M_PI to be available
-#ifdef _MSC_VER
-#define _USE_MATH_DEFINES
-#endif
-#include <cmath>
-
 namespace hopsan {
 
 //! @brief A const double definition of pi that you can use in your code
 //! @ingroup AuxiliarySimulationFunctions
-const double pi = M_PI;
+const double pi = 3.14159265358979323846;
+// We do not use M_PI here as it is not C++ standard (will not work so easily in MSVC compilation)
+// However the value has been copied from M_PI
 
 void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
 bool DLLIMPORTEXPORT fuzzyEqual(const double x, const double y, const double epsilon=0.00001);

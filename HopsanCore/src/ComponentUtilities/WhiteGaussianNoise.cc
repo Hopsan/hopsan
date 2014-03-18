@@ -24,6 +24,7 @@
 
 #include "ComponentUtilities/WhiteGaussianNoise.h"
 #include <stdlib.h>
+// For MSVC we need this define to get access to M_PI
 #define _USE_MATH_DEFINES
 #include <cmath>
 
