@@ -45,6 +45,7 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mPlotPoints = false;
     mPlotObjectiveFunctionValues = false;
     mPlotParameters = false;
+    mDoLog = true;
 }
 
 
@@ -146,7 +147,10 @@ void OptimizationWorker::finalize()
     resultFile.write(output.toUtf8());
     resultFile.close();
 
-    printLogFile();
+    if(mDoLog)
+    {
+        printLogFile();
+    }
 }
 
 void OptimizationWorker::printLogFile()
@@ -542,6 +546,10 @@ void OptimizationWorker::setOptVar(const QString &var, const QString &value)
     else if(var == "evalid")
     {
         mEvalId = value.toDouble();
+    }
+    else if(var == "log")
+    {
+        mDoLog = (value == "on");
     }
 }
 

@@ -45,7 +45,7 @@ public:
 
     virtual void printLogFile();
 
-    bool checkForConvergence();
+    virtual bool checkForConvergence();
     void calculateBestAndWorstId();
 
     void plotPoints();
@@ -83,6 +83,7 @@ protected:
 
     int mNumPoints;
     QVector<int> mvIdx;
+    bool mDoLog;
     int mEvalId;
     int mNumParameters;
     QVector<double> mParMin, mParMax;
