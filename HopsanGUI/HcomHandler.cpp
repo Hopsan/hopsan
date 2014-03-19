@@ -2840,14 +2840,15 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRF ||
            mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFM)
         {
-            mpOptHandler->clearModels();
-            mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
-            mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
+            if(mpOptHandler->getModelPtrs()->size() != 1)
+            {
+                mpOptHandler->clearModels();
+                mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
+                mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
+            }
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParameterSweep)
         {
-            mpOptHandler->clearModels();
-
             int nThreads = gpConfig->getNumberOfThreads();
             if(nThreads == 0)
             {
@@ -2859,36 +2860,49 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         #endif
             }
 
-            for(int i=0; i<nThreads; ++i)
+            if(mpOptHandler->getModelPtrs()->size() != nThreads)
             {
-                mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
+                mpOptHandler->clearModels();
 
-                //Make sure logging is disabled in all nodes if they were disabled in original model
-                QStringList compNames = mpModel->getTopLevelSystemContainer()->getModelObjectNames();
-                for(int c=0; c<compNames.size(); ++c)
+                for(int i=0; i<nThreads; ++i)
                 {
-                    QList<Port*> portPtrs = mpModel->getTopLevelSystemContainer()->getModelObject(compNames[c])->getPortListPtrs();
-                    for(int p=0; p<portPtrs.size(); ++p)
+                    mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
+
+                    //Make sure logging is disabled in all nodes if they were disabled in original model
+                    QStringList compNames = mpModel->getTopLevelSystemContainer()->getModelObjectNames();
+                    for(int c=0; c<compNames.size(); ++c)
                     {
-                        bool doLog = mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->isLoggingEnabled(compNames[c], portPtrs[p]->getName());
-                        mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->setLoggingEnabled(compNames[c], portPtrs[p]->getName(),doLog);
+                        QList<Port*> portPtrs = mpModel->getTopLevelSystemContainer()->getModelObject(compNames[c])->getPortListPtrs();
+                        for(int p=0; p<portPtrs.size(); ++p)
+                        {
+                            bool doLog = mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->isLoggingEnabled(compNames[c], portPtrs[p]->getName());
+                            mpOptHandler->getModelPtrs()->last()->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->setLoggingEnabled(compNames[c], portPtrs[p]->getName(),doLog);
+                        }
                     }
                 }
             }
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParticleSwarm || mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
         {
-            mpOptHandler->clearModels();
             if(getConfigPtr()->getUseMulticore())
             {
-                for(int i=0; i<mpOptHandler->getOptVar("npoints"); ++i)
+                if(mpOptHandler->getModelPtrs()->size() > mpOptHandler->getOptVar("npoints"))
+                {
+                    mpOptHandler->clearModels();
+                }
+                //for(int i=0; i<mpOptHandler->getOptVar("npoints"); ++i)
+                while(mpOptHandler->getModelPtrs()->size() < mpOptHandler->getOptVar("npoints"))
                 {
                     mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
                 }
             }
             else
             {
-                mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
+                if(mpOptHandler->getModelPtrs()->size() != 1)
+                {
+                    mpOptHandler->clearModels();
+                    mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
+                }
             }
         }
 
