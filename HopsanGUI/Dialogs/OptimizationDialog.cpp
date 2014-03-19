@@ -296,11 +296,14 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpTotalProgressBar = new QProgressBar(this);
     mpTotalProgressBar->hide();
     mpCoreProgressBarsLayout = new QGridLayout();
-    QWidget *pParametersOutputTextEditsWidget = new QWidget(this);
-    pParametersOutputTextEditsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mpParametersOutputTextEditsLayout = new QGridLayout(pParametersOutputTextEditsWidget);
+    QWidget *pScrollAreaWidget = new QWidget(this);
+    pScrollAreaWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QHBoxLayout *pScrollAreaLayout = new QHBoxLayout(pScrollAreaWidget);
+    mpParametersOutputTextEditsLayout = new QGridLayout();
+    pScrollAreaLayout->addLayout(mpParametersOutputTextEditsLayout);
+    pScrollAreaLayout->addLayout(mpCoreProgressBarsLayout);
     QScrollArea *pParametersOutputScrollArea = new QScrollArea(this);
-    pParametersOutputScrollArea->setWidget(pParametersOutputTextEditsWidget);
+    pParametersOutputScrollArea->setWidget(pScrollAreaWidget);
     pParametersOutputScrollArea->setWidgetResizable(true);
     pParametersOutputScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
@@ -309,11 +312,11 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpMessageHandler = mpTerminal->mpHandler->mpOptHandler->getMessageHandler();
     QGridLayout *pRunLayout = new QGridLayout(this);
     pRunLayout->addWidget(mpStartButton,                        0,0,1,1);
-    pRunLayout->addWidget(pParametersOutputScrollArea,    1,0,1,1);
-    pRunLayout->addLayout(mpCoreProgressBarsLayout,             1,1,1,1);
+    pRunLayout->addWidget(pParametersOutputScrollArea,    1,0,1,2);
+    //pRunLayout->addLayout(mpCoreProgressBarsLayout,             1,1,1,1);
     pRunLayout->addWidget(mpTerminal,                           2,0,1,2);
-    pRunLayout->setRowStretch(1,0.5);
-    pRunLayout->setRowStretch(2,1);
+    pRunLayout->setRowStretch(1,0.4);
+    pRunLayout->setRowStretch(2,0.6);
     pRunLayout->setColumnStretch(0,1);
     pRunLayout->setColumnMinimumWidth(1,400);
     pRunLayout->addWidget(mpTotalProgressBar,           3,0,1,2);
@@ -361,6 +364,25 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 {
     if(!this->isVisible()) return;
 
+//    double temp = objectives[0];
+//    objectives[0] = objectives[bestId];
+//    objectives.insert(bestId, temp);
+
+//    QVector<double> vTemp = values[0];
+//    values[0] = values[bestId];
+//    values.insert(bestId, vTemp);
+
+//    temp = objectives[1];
+//    objectives[1] = objectives[worstId];
+//    objectives.insert(worstId, temp);
+
+//    vTemp = values[1];
+//    values[1] = values[worstId];
+//    values.insert(worstId, vTemp);
+
+//    bestId = 0;
+//    worstId = 1;
+
     bool ok;
     OptimizationHandler::AlgorithmT algorithm = mpTerminal->mpHandler->mpOptHandler->mAlgorithm;
     if(algorithm == OptimizationHandler::ComplexRF ||
@@ -384,8 +406,20 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
         }
     }
 
+    QVector<int> indexes;
+    indexes.append(bestId);
+    indexes.append(worstId);
     for(int i=0; i<values.size(); ++i)
     {
+        if(i != bestId && i != worstId)
+        {
+            indexes.append(i);
+        }
+    }
+
+    for(int x=0; x<indexes.size(); ++x)
+    {
+        int i = indexes[x];
         QString output = "obj: ";
         QString objStr = QString::number(objectives[i], 'g', 8);
         while(objStr.size() < 12)
@@ -411,8 +445,9 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
             palette.setColor(QPalette::Text,Qt::darkRed);
         else
             palette.setColor(QPalette::Text,Qt::black);
-        mParametersOutputLineEditPtrs[i]->setPalette(palette);
-        mParametersOutputLineEditPtrs[i]->setText(output);
+        mParametersOutputLineEditPtrs[x]->setPalette(palette);
+        mParametersOutputLineEditPtrs[x]->setText(output);
+        mParametersOutputLineEditPtrs[x]->setCursorPosition(0);
     }
 }
 
@@ -750,10 +785,28 @@ void OptimizationDialog::open()
     recreateCoreProgressBars();
     recreateParameterOutputLineEdits();
 
+    if(!mpTerminal->mpHandler->mpOptHandler->isRunning())
+    {
+        this->mpTerminal->mpHandler->mpOptHandler->clearModels();
+    }
+
     QDialog::show();
 }
 
 
+//! @brief Slot that handles closing the dialog
+void OptimizationDialog::close()
+{
+    if(!mpTerminal->mpHandler->mpOptHandler->isRunning())
+    {
+        this->mpTerminal->mpHandler->mpOptHandler->clearModels();
+    }
+
+    QDialog::close();
+}
+
+
+//! @brief Slot that triggers when "ok" button in dialog is pressed
 void OptimizationDialog::okPressed()
 {
     saveConfiguration();
