@@ -408,6 +408,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
 
         // If this is the first curve on one of the axis, then then axis will just be enabled and we need to normalize the zoom (copy from the other curve)
         // unless the axis lock is set on that axis (from a previous plot)
+        //! @todo this code is likely not working at all, when new curves are added everything is always auto rescaled (zoom is lost) (unless axis are locked), I believe this code can be removed /Peter
         if ( (pCurve->getAxisY() == QwtPlot::yLeft) && !mpYLLockCheckBox->isChecked() && mpQwtPlot->axisEnabled(QwtPlot::yRight) )
         {
             mpQwtZoomerLeft->setZoomStack(mpQwtZoomerRight->zoomStack());

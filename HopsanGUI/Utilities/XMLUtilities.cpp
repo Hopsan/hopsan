@@ -536,9 +536,19 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVe
         while (!xmlParameter.isNull())
         {
             // Fix renamed node data vaariables
-            if (xmlParameter.attribute("name").contains("#"))
+            //! @todo :: is used to upconvert old formats, can be removed later after 0.7 release (if 0.7 requires models to be saved in quite new hopsan version)
+            if (xmlParameter.attribute("name").contains("#") || xmlParameter.attribute("name").contains("::"))
             {
-                QStringList parts = xmlParameter.attribute("name").split("#");
+                QStringList parts;
+                if (xmlParameter.attribute("name").contains("#"))
+                {
+                    parts = xmlParameter.attribute("name").split("#");
+                }
+                else
+                {
+                    parts = xmlParameter.attribute("name").split("::");
+                }
+
                 if (parts[1] == "Angular Velocity")
                 {
                     parts[1] = "AngularVelocity";
