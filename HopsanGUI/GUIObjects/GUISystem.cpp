@@ -58,7 +58,6 @@ SystemContainer::SystemContainer(ModelWidget *parentModelWidget, QGraphicsItem *
     this->mpModelWidget = parentModelWidget;
     this->commonConstructorCode();
     this->mpUndoStack->newPost();
-    this->mSaveUndoStack = false;       //Do not save undo stack by default
 }
 
 void SystemContainer::deleteInHopsanCore()
@@ -83,15 +82,16 @@ void SystemContainer::deleteInHopsanCore()
 //! @brief This code is common among the two constructors, we use one function to avoid code duplication
 void SystemContainer::commonConstructorCode()
 {
-        //Set the hmf save tag name
+    // Set the hmf save tag name
     mHmfTagName = HMF_SYSTEMTAG;
 
-        //Set default values
+    // Set default values
     mLoadType = "EMBEDED";
     mNumberOfLogSamples = 2048;
     mLogStartTime = 0;
+    mSaveUndoStack = false;       //Do not save undo stack by default
 
-        //Create the object in core, and update name
+    // Create the object in core, and update name
     if (this->mpParentContainerObject == 0)
     {
         //Create root system
