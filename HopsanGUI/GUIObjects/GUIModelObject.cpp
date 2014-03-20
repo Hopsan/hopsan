@@ -1240,7 +1240,6 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
                 return 0;
             }
         }
-        showName();
         return selectedAction;
     }
     //Return 0 action if any of the above actions were triggered
