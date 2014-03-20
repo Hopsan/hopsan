@@ -402,23 +402,19 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     }
 
     // Enable axis and zoomers as needed
-    // If this is the first curve on one of the axis, then then exis will just be enabled and we need to normalize the zoom (copy from the other curve)
     if (!mpQwtPlot->axisEnabled(pCurve->getAxisY()))
     {
         mpQwtPlot->enableAxis(pCurve->getAxisY());
-        if (pCurve->getAxisY() == QwtPlot::yLeft)
+
+        // If this is the first curve on one of the axis, then then axis will just be enabled and we need to normalize the zoom (copy from the other curve)
+        // unless the axis lock is set on that axis (from a previous plot)
+        if ( (pCurve->getAxisY() == QwtPlot::yLeft) && !mpYLLockCheckBox->isChecked() && mpQwtPlot->axisEnabled(QwtPlot::yRight) )
         {
-            if (mpQwtPlot->axisEnabled(QwtPlot::yRight))
-            {
-                mpQwtZoomerLeft->setZoomStack(mpQwtZoomerRight->zoomStack());
-            }
+            mpQwtZoomerLeft->setZoomStack(mpQwtZoomerRight->zoomStack());
         }
-        if (pCurve->getAxisY() == QwtPlot::yRight)
+        else if ( (pCurve->getAxisY() == QwtPlot::yRight) && !mpYRLockCheckBox->isChecked() && mpQwtPlot->axisEnabled(QwtPlot::yLeft) )
         {
-            if (mpQwtPlot->axisEnabled(QwtPlot::yLeft))
-            {
-                mpQwtZoomerRight->setZoomStack(mpQwtZoomerLeft->zoomStack());
-            }
+            mpQwtZoomerRight->setZoomStack(mpQwtZoomerLeft->zoomStack());
         }
     }
 
