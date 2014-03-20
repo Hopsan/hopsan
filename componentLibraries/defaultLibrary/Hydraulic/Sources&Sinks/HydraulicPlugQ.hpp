@@ -43,7 +43,7 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicFlowSourceQ();
+            return new HydraulicPlugQ();
         }
 
         void configure()
