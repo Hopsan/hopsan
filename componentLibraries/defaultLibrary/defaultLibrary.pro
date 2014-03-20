@@ -302,7 +302,8 @@ HEADERS += \
     Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp \
     Special/CombustionEngine.hpp \
     Signal/Control/SignalPID2.hpp \
-    Mechanic/Rotational/MechanicBallScrew.hpp
+    Mechanic/Rotational/MechanicBallScrew.hpp \
+    Signal/Non-Linearities/SignalRateLimiter.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
