@@ -33,34 +33,6 @@
 #include "Configuration.h"
 
 
-
-CustomXDataDropEdit::CustomXDataDropEdit(QWidget *pParent)
-    : QLineEdit(pParent)
-{
-    //Nothing
-}
-
-void CustomXDataDropEdit::dropEvent(QDropEvent *e)
-{
-    QLineEdit::dropEvent(e);
-    QString mimeText = e->mimeData()->text();
-    if(mimeText.startsWith("HOPSANPLOTDATA:"))
-    {
-        //! @todo what about model name, if draging from other model (it should not work but sowhere we need to block and warn) (maybe not here)
-        QStringList fields = mimeText.split(":");
-        if (fields.size() > 2)
-        {
-            // We do not want to include gen here, as the curve should decide for it self what gen to use
-            emit newXData(fields[1]);
-        }
-    }
-    else
-    {
-        emit newXData(mimeText);
-    }
-}
-
-
 //! @brief Constructor for plot info box
 //! @param pParentPlotCurve pointer to parent plot curve
 //! @param pParent Pointer to parent widget
@@ -231,7 +203,7 @@ void PlotCurveControlBox::updateColor(const QColor color)
 void PlotCurveControlBox::updateInfo()
 {
     // Enable/diable generation buttons
-    SharedVectorVariableContainerT pVarContainer = mpPlotCurve->getVectorVariableContainer();
+    SharedVectorVariableContainerT pVarContainer = mpPlotCurve->getSharedVectorVariableContainer();
     int gen = mpPlotCurve->getGeneration();
     int lowGen, highGen, nGen;
     if (pVarContainer)
@@ -264,7 +236,7 @@ void PlotCurveControlBox::updateInfo()
         mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getDataModelPath());
         break;
     case ImportedVariableType:
-        mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getVectorVariable()->getImportedFileName());
+        mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource())+": "+mpPlotCurve->getSharedVectorVariable()->getImportedFileName());
         break;
     default:
         mpSourceLable->setToolTip(variableSourceTypeAsString(mpPlotCurve->getDataSource()));
@@ -274,7 +246,7 @@ void PlotCurveControlBox::updateInfo()
     refreshTitle();
 
     // Update Xdata
-    if (mpPlotCurve->hasCustomXVariable())
+    if (mpPlotCurve->hasCustomXData())
     {
         mpCustomXDataDrop->updateInfo(mpPlotCurve->getSharedCustomXVariable().data());
     }
@@ -287,7 +259,7 @@ void PlotCurveControlBox::updateInfo()
 void PlotCurveControlBox::refreshTitle()
 {
     mpTitle->setText(mpPlotCurve->getCurveName() + " ["+mpPlotCurve->getCurrentUnit()+"]");
-    mpTitle->setToolTip(mpPlotCurve->getVectorVariable()->getFullVariableName());
+    mpTitle->setToolTip(mpPlotCurve->getSharedVectorVariable()->getFullVariableName());
 }
 
 void PlotCurveControlBox::markActive(bool active)
@@ -357,13 +329,11 @@ CustomXDataControl::CustomXDataControl(QWidget *pParent) :
     mpXLabel = new QLabel("x: ", this);
     mpXLabel->setEnabled(false);
     mpNameLabel = new QLabel(this);
-    mpNameLabel->setToolTip("Drag and Drop here to set Custom XData Vector");
     mpNameLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-    mpNameLabel->setFixedWidth(48);
     mpResetXDataButton = new QToolButton(this);
     mpResetXDataButton->setToolTip("Reset XData");
     mpResetXDataButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
-    mpResetXDataButton->setEnabled(false);
+    updateInfo(0);
 
     pLayout->addWidget(mpXLabel);
     pLayout->addWidget(mpNameLabel);
@@ -392,6 +362,7 @@ void CustomXDataControl::updateInfo(const VectorVariable *pData)
     {
         mpNameLabel->clear();
         mpNameLabel->setFixedWidth(48);
+        mpNameLabel->setToolTip(QString("<nobr>Drag and Drop here to set Custom XData Vector</nobr>"));
         mpResetXDataButton->setEnabled(false);
         mpXLabel->setEnabled(false);
     }

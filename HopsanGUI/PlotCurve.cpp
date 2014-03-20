@@ -282,12 +282,12 @@ const QString &PlotCurve::getDataModelPath() const
 }
 
 
-const SharedVectorVariableT PlotCurve::getVectorVariable() const
+const SharedVectorVariableT PlotCurve::getSharedVectorVariable() const
 {
     return mData.mpVariable;
 }
 
-const SharedVectorVariableContainerT PlotCurve::getVectorVariableContainer() const
+const SharedVectorVariableContainerT PlotCurve::getSharedVectorVariableContainer() const
 {
     return mData.mpContainer;
 }
@@ -310,6 +310,11 @@ QVector<double> PlotCurve::getVariableDataCopy() const
 const HopsanVariable PlotCurve::getHopsanVariable() const
 {
     return mData;
+}
+
+const HopsanVariable PlotCurve::getCustomXHopsanVariable() const
+{
+    return mCustomXdata;
 }
 
 //! @brief Returns the minimum and maximum value of the curve (for values higher then 0)
@@ -347,7 +352,7 @@ const SharedVectorVariableT PlotCurve::getSharedTimeOrFrequencyVariable() const
     return mData.mpVariable->getSharedTimeOrFrequencyVector();
 }
 
-bool PlotCurve::hasCustomXVariable() const
+bool PlotCurve::hasCustomXData() const
 {
     return !mCustomXdata.isNull();
 }
@@ -385,7 +390,7 @@ bool PlotCurve::setGeneration(const int generation)
             return false;
         }
 
-        if (hasCustomXVariable())
+        if (hasCustomXData())
         {
             if (mCustomXdata.mpContainer)
             {
@@ -537,6 +542,8 @@ void PlotCurve::setCustomXData(HopsanVariable data)
 
     // Redraw curve
     updateCurve();
+
+    emit customXDataChanged();
 }
 
 void PlotCurve::setCustomXData(const QString fullName)
@@ -1076,6 +1083,12 @@ void PlotCurve::connectCustomXDataSignals()
 {
     if (mCustomXdata)
     {
+        //! @todo what will happen if you import or set alias with same name as data then this will also trigger
+        if (mCustomXdata.mpContainer)
+        {
+            connect(mCustomXdata.mpContainer.data(), SIGNAL(generationAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
+        }
+
         connect(mCustomXdata.mpVariable.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     }
 }

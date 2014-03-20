@@ -260,7 +260,7 @@ void PlotTab::resetXTimeVector()
     {
         if (pArea->hasCustomXData())
         {
-            pArea->resetXTimeVector();
+            pArea->resetXDataVector();
         }
     }
 //    mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
@@ -377,7 +377,7 @@ void PlotTab::exportToCsv(QString fileName)
             fileStream << xvec[i];
             for(int j=0; j<curves.size(); ++j)
             {
-                fileStream << ", " << curves[j]->getVectorVariable()->peekData(i,dummy);
+                fileStream << ", " << curves[j]->getSharedVectorVariable()->peekData(i,dummy);
             }
             fileStream << "\n";
         }
@@ -390,7 +390,7 @@ void PlotTab::exportToCsv(QString fileName)
             fileStream << time[i];
             for(int j=0; j<curves.size(); ++j)
             {
-                fileStream << ", " << curves[j]->getVectorVariable()->peekData(i,dummy);
+                fileStream << ", " << curves[j]->getSharedVectorVariable()->peekData(i,dummy);
             }
             fileStream << "\n";
         }
@@ -450,7 +450,7 @@ void PlotTab::exportToHvc(QString fileName)
     hvcroot.setAttribute("hvcversion", "0.1");
 
     QList<PlotCurve*> curves = mPlotAreas.first()->getCurves();
-    QString modelPath = relativePath(curves.first()->getVectorVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
+    QString modelPath = relativePath(curves.first()->getSharedVectorVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
     validation.setAttribute("date", QDateTime::currentDateTime().toString("yyyyMMdd"));
     validation.setAttribute("time", QDateTime::currentDateTime().toString("hhmmss"));
@@ -652,7 +652,7 @@ void PlotTab::exportToGnuplot()
 
         for(int k=0; k<curves.size(); ++k)
         {
-            dummy.setNum(curves[k]->getVectorVariable()->peekData(i,err));
+            dummy.setNum(curves[k]->getSharedVectorVariable()->peekData(i,err));
             fileStream << dummy;
             for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
         }
@@ -774,7 +774,7 @@ void PlotTab::exportToPLO()
     }
 
     //! @todo this assumes that all curves belong to the same model
-    getCurves(0).first()->getVectorVariable()->getLogDataHandler()->exportToPlo(filePath, variables);
+    getCurves(0).first()->getSharedVectorVariable()->getLogDataHandler()->exportToPlo(filePath, variables);
 }
 
 void PlotTab::shiftAllGenerationsDown()
@@ -1493,7 +1493,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     int rc = pDialog->exec();
     if (rc == QDialog::Accepted)
     {
-        SharedVectorVariableT pNewVar = pCurve->getVectorVariable()->toFrequencySpectrum(SharedVectorVariableT(), pPowerSpectrumCheckBox->isChecked());
+        SharedVectorVariableT pNewVar = pCurve->getSharedVectorVariable()->toFrequencySpectrum(SharedVectorVariableT(), pPowerSpectrumCheckBox->isChecked());
 
         PlotTab *pTab = mpParentPlotWindow->addPlotTab();
         pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));
@@ -1634,7 +1634,7 @@ void PlotTab::openCreateBodePlotDialog()
             }
             else
             {
-                mpParentPlotWindow->createBodePlot(pInputCurve->getVectorVariable(), pOutputCurve->getVectorVariable(), pMaxFrequencySlider->value());
+                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), pMaxFrequencySlider->value());
             }
         }
     }

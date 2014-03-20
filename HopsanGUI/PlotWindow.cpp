@@ -932,7 +932,7 @@ void PlotWindow::createPlotWindowFromTab()
     PlotWindow *pPW = 0;
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
-        HopsanVariable data(getCurrentPlotTab()->getCurves().at(i)->getVectorVariableContainer(), getCurrentPlotTab()->getCurves().at(i)->getVectorVariable());
+        HopsanVariable data(getCurrentPlotTab()->getCurves().at(i)->getSharedVectorVariableContainer(), getCurrentPlotTab()->getCurves().at(i)->getSharedVectorVariable());
         pPW = gpPlotHandler->plotDataToWindow(pPW, data, getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }

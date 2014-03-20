@@ -189,7 +189,7 @@ public slots:
 
     void enableGrid(bool value);
     void setBackgroundColor(const QColor &rColor);
-    void resetXTimeVector();
+    void resetXDataVector();
 
     void enableArrow();
     void enablePan();
@@ -246,7 +246,6 @@ private:
     RectanglePainterWidget *mpPainterWidget;
 
     // Custom X data axis variables
-    bool mHasCustomXData;
     HopsanVariable mCustomXData;
 
     // Legend related member variables
@@ -294,6 +293,7 @@ private:
 
 private slots:
     void refreshLockCheckBoxPositions();
+    void refreshPlotAreaCustomXData();
     void axisLockHandler();
 };
 

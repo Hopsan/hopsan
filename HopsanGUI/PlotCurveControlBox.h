@@ -58,20 +58,6 @@ private:
     QToolButton *mpResetXDataButton;
 };
 
-class CustomXDataDropEdit : public QLineEdit
-{
-    Q_OBJECT
-public:
-    CustomXDataDropEdit(QWidget *pParent=0);
-
-signals:
-    void newXData(QString fullName);
-
-protected:
-    void dropEvent(QDropEvent *e);
-
-};
-
 class PlotCurveControlBox : public QWidget
 {
     Q_OBJECT

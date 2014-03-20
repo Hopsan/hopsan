@@ -2085,6 +2085,11 @@ bool HopsanVariable::isNull() const
     return mpVariable.isNull();
 }
 
+bool HopsanVariable::isCompletelyNull() const
+{
+    return mpContainer.isNull() && mpVariable.isNull();
+}
+
 bool HopsanVariable::operator!() const
 {
     return mpVariable.isNull();

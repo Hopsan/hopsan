@@ -428,6 +428,7 @@ public:
 
     bool hasContainer() const;
     bool isNull() const;
+    bool isCompletelyNull() const;
     operator bool() const;
     bool operator!() const;
 

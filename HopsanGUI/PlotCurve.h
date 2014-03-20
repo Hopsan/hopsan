@@ -84,11 +84,12 @@ public:
 
     QVector<double> getVariableDataCopy() const;
     const HopsanVariable getHopsanVariable() const;
-    const SharedVectorVariableContainerT getVectorVariableContainer() const;
-    const SharedVectorVariableT getVectorVariable() const;
+    const HopsanVariable getCustomXHopsanVariable() const;
+    const SharedVectorVariableContainerT getSharedVectorVariableContainer() const;
+    const SharedVectorVariableT getSharedVectorVariable() const;
     const SharedVectorVariableT getSharedTimeOrFrequencyVariable() const;
     const SharedVectorVariableT getSharedCustomXVariable() const;
-    bool hasCustomXVariable() const;
+    bool hasCustomXData() const;
     bool getShowVsSamples() const;
 
     bool minMaxPositiveNonZeroYValues(double &rMin, double &rMax);
@@ -129,6 +130,7 @@ public:
 signals:
     void curveDataUpdated();
     void curveInfoUpdated();
+    void customXDataChanged();
     void colorChanged(QColor);
     void markedActive(bool);
 
