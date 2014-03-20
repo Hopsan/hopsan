@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6754" hopsancoreversion="0.6.x_r6745">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info>
+    <author>Peter Nordin</author>
+    <email>peter.nordin@liu.se</email>
+    <affiliation>Linköping University</affiliation>
+    <description>Test model for the signal route components</description>
+  </info>
+  <system typename="Subsystem" name="RoutingTest">
+    <simulationtime stop="4" timestep="0.001" start="0" inherit_timestep="true"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="0"/>
+      <animation flowspeed="100"/>
+      <viewport x="2182" y="2253" zoom="1"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="RoutingTest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <optimization>
+        <settings>
+          <iterations>100</iterations>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
+    </hopsangui>
+    <objects>
+      <component typename="SignalConstant" name="c1">
+        <parameters>
+          <parameter unit="-" value="1" type="double" name="y#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="y"/>
+        </ports>
+        <hopsangui>
+          <pose x="2101" y="2080.833333" flipped="false" a="90"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalConstant" displayname="c1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalStaircase" name="Staircase">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="T_start#Value"/>
+          <parameter unit="-" value="1" type="double" name="H_step#Value"/>
+          <parameter unit="-" value="1" type="double" name="W_step#Value"/>
+          <parameter unit="-" value="0" type="double" name="out#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="1826" y="2185" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalStaircase" displayname="Staircase">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalConstant" name="c2">
+        <parameters>
+          <parameter unit="-" value="2" type="double" name="y#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="y"/>
+        </ports>
+        <hopsangui>
+          <pose x="2060" y="2080.833333" flipped="false" a="90"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalConstant" displayname="c2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2301" y="2347" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalConstant" name="c3">
+        <parameters>
+          <parameter unit="-" value="3" type="double" name="y#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="y"/>
+        </ports>
+        <hopsangui>
+          <pose x="2022" y="2080.833333" flipped="false" a="90"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalConstant" displayname="c3">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_2">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2301" y="2481" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalConstant" name="c4">
+        <parameters>
+          <parameter unit="-" value="4" type="double" name="y#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="y"/>
+        </ports>
+        <hopsangui>
+          <pose x="1972" y="2080.833333" flipped="false" a="90"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalConstant" displayname="c4">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalQuadRoute" name="Route_With_Four_Inputs">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+          <parameter unit="-" value="0" type="double" name="in3#Value"/>
+          <parameter unit="-" value="0" type="double" name="in4#Value"/>
+          <parameter unit="-" value="0" type="double" name="route#Value"/>
+          <parameter unit="-" value="0.5" type="double" name="limit12"/>
+          <parameter unit="-" value="1.5" type="double" name="limit23"/>
+          <parameter unit="-" value="2.5" type="double" name="limit34"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="route"/>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+          <port nodetype="NodeSignal" name="in3"/>
+          <port nodetype="NodeSignal" name="in4"/>
+        </ports>
+        <hopsangui>
+          <pose x="2185" y="2481" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalQuadRoute" displayname="Route_With_Four_Inputs">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalDualRoute" name="Route_With_Two_Inputs">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+          <parameter unit="-" value="0" type="double" name="route#Value"/>
+          <parameter unit="-" value="0.5" type="double" name="limit"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="route"/>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2185" y="2213" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalDualRoute" displayname="Route_With_Two_Inputs">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalTripleRoute" name="Route_With_Three_Inputs">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+          <parameter unit="-" value="0" type="double" name="in3#Value"/>
+          <parameter unit="-" value="0" type="double" name="route#Value"/>
+          <parameter unit="-" value="0.5" type="double" name="limit12"/>
+          <parameter unit="-" value="1.5" type="double" name="limit23"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="route"/>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+          <port nodetype="NodeSignal" name="in3"/>
+        </ports>
+        <hopsangui>
+          <pose x="2185" y="2347" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalTripleRoute" displayname="Route_With_Three_Inputs">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2301" y="2213" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1813.000000" y="1981.000000"/>
+          <textobject reflow="1" fontcolor="#556b2f" text="Signal route test model&#xa;Once each second the constant input value will be switched" font="Ubuntu,14,-1,5,50,0,0,0,0,0"/>
+          <size width="567.000000" height="130.000000"/>
+          <line width="2" visible="0" style="solidline" color="#556b2f"/>
+        </hopsangui>
+      </textboxwidget>
+    </objects>
+    <connections>
+      <connect endport="in1" endcomponent="Route_With_Two_Inputs" startport="y" startcomponent="c1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2101.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2099.50000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2099.50000000000000000000" y="2208.83333333249993302161"/>
+            <coordinate x="2172.50000000000000000000" y="2208.83333333249993302161"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Route_With_Two_Inputs" startport="y" startcomponent="c2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2060.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2061.50000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2061.50000000000000000000" y="2217.16666666750006697839"/>
+            <coordinate x="2172.50000000000000000000" y="2217.16666666750006697839"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in3" endcomponent="Route_With_Three_Inputs" startport="y" startcomponent="c3">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2022.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2021.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2021.00000000000000000000" y="2355.25000000000000000000"/>
+            <coordinate x="2172.50000000000000000000" y="2355.25000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in4" endcomponent="Route_With_Four_Inputs" startport="y" startcomponent="c4">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1972.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="1972.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="1972.00000000000000000000" y="2493.30000000000018189894"/>
+            <coordinate x="2172.50000000000000000000" y="2493.30000000000018189894"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Route_With_Two_Inputs">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2197.50000000000000000000" y="2213.00000000000000000000"/>
+            <coordinate x="2281.00000000000000000000" y="2213.00000000000000000000"/>
+            <coordinate x="2281.00000000000000000000" y="2213.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Route_With_Three_Inputs">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2197.50000000000000000000" y="2347.00000000000000000000"/>
+            <coordinate x="2281.00000000000000000000" y="2347.00000000000000000000"/>
+            <coordinate x="2281.00000000000000000000" y="2347.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="Route_With_Four_Inputs">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2197.50000000000000000000" y="2481.00000000000000000000"/>
+            <coordinate x="2281.00000000000000000000" y="2481.00000000000000000000"/>
+            <coordinate x="2281.00000000000000000000" y="2481.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Route_With_Three_Inputs" startport="y" startcomponent="c1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2101.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2100.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2100.00000000000000000000" y="2338.75000000000000000000"/>
+            <coordinate x="2172.50000000000000000000" y="2338.75000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Route_With_Three_Inputs" startport="y" startcomponent="c2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2060.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2062.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2062.00000000000000000000" y="2347.00000000000000000000"/>
+            <coordinate x="2172.50000000000000000000" y="2347.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Route_With_Four_Inputs" startport="y" startcomponent="c1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2101.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2100.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2100.00000000000000000000" y="2468.69999999999981810106"/>
+            <coordinate x="2172.50000000000000000000" y="2468.69999999999981810106"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Route_With_Four_Inputs" startport="y" startcomponent="c2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2060.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2062.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2062.00000000000000000000" y="2476.90000000000009094947"/>
+            <coordinate x="2172.50000000000000000000" y="2476.90000000000009094947"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in3" endcomponent="Route_With_Four_Inputs" startport="y" startcomponent="c3">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2022.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2021.00000000000000000000" y="2093.33333333249993302161"/>
+            <coordinate x="2021.00000000000000000000" y="2485.09999999999990905053"/>
+            <coordinate x="2172.50000000000000000000" y="2485.09999999999990905053"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="route" endcomponent="Route_With_Two_Inputs" startport="out" startcomponent="Staircase">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1838.50000000000000000000" y="2185.00000000000000000000"/>
+            <coordinate x="2185.00000000000000000000" y="2185.00000000000000000000"/>
+            <coordinate x="2185.00000000000000000000" y="2200.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+          <color>0,128,0</color>
+        </hopsangui>
+      </connect>
+      <connect endport="route" endcomponent="Route_With_Three_Inputs" startport="out" startcomponent="Staircase">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1838.50000000000000000000" y="2185.00000000000000000000"/>
+            <coordinate x="1910.00000000000000000000" y="2185.00000000000000000000"/>
+            <coordinate x="1910.00000000000000000000" y="2297.00000000000000000000"/>
+            <coordinate x="2185.00000000000000000000" y="2297.00000000000000000000"/>
+            <coordinate x="2185.00000000000000000000" y="2330.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+          <color>0,128,0</color>
+        </hopsangui>
+      </connect>
+      <connect endport="route" endcomponent="Route_With_Four_Inputs" startport="out" startcomponent="Staircase">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1838.50000000000000000000" y="2185.00000000000000000000"/>
+            <coordinate x="1910.00000000000000000000" y="2185.00000000000000000000"/>
+            <coordinate x="1910.00000000000000000000" y="2430.00000000000000000000"/>
+            <coordinate x="2185.00000000000000000000" y="2430.00000000000000000000"/>
+            <coordinate x="2185.00000000000000000000" y="2460.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+          <color>0,128,0</color>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>
