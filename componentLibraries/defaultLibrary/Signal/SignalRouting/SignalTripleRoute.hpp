@@ -54,14 +54,14 @@ namespace hopsan {
             addInputVariable("route", "Input selection", "", 0, &mpND_route);
             addOutputVariable("out", "Selected input", "", &mpND_out);
 
-            addConstant("limit12", "Limit value between input 1 and 2", "-", 0.5, limit12);
-            addConstant("limit23", "Limit value between input 2 and 3", "-", 1.5, limit23);
+            addConstant("limit12", "Limit value between input 1 and 2", "", 0.5, limit12);
+            addConstant("limit23", "Limit value between input 2 and 3", "", 1.5, limit23);
         }
 
 
         void initialize()
         {
-
+            simulateOneTimestep();
         }
 
 

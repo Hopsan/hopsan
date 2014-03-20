@@ -56,13 +56,13 @@ namespace hopsan {
             addInputVariable("route", "Input selection", "", 0, &mpND_route);
             addOutputVariable("out", "Selected input", "", &mpND_out);
 
-            addConstant("limit", "Limit value", "-", 0.5, limit);
+            addConstant("limit", "Limit value", "", 0.5, limit);
         }
 
 
         void initialize()
         {
-
+            simulateOneTimestep();
         }
 
 
