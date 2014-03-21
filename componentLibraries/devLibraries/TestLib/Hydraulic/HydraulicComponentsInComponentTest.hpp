@@ -13,7 +13,7 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-//$Id: HydraulicComponentsInComponentTest.hpp 3640 2011-11-20 15:29:53Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICCOMPONENTINCOMPONENTTEST_HPP_INCLUDED
 #define HYDRAULICCOMPONENTINCOMPONENTTEST_HPP_INCLUDED

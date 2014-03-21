@@ -20,7 +20,7 @@
 //!
 //! @brief Contains the help popup widget
 //!
-//$Id: PlotWindow.h 6422 2014-01-13 16:10:52Z petno25 $
+//$Id$
 
 //Qt includes
 #include <QGroupBox>

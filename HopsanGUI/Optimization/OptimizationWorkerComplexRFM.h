@@ -18,7 +18,7 @@
 //! @author Johan Persson <johan.persson@liu.se>
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2014-02-13
-//! @version $Id: OptimizationHandler.cpp 6525 2014-01-30 15:58:59Z petno25 $
+//! @version $Id$
 //!
 //! @brief Contains an optimization worker object for the Complex-RFM algorithm
 //!

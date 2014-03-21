@@ -1,4 +1,4 @@
-//$Id: MechanicVelocityTransformer.hpp 5250 2013-04-15 11:10:34Z petno25 $
+//$Id$
 
 #ifndef MECHANICTHETASOURCE_HPP_INCLUDED
 #define MECHANICTHETASOURCE_HPP_INCLUDED

@@ -20,7 +20,7 @@
 //!
 //! @brief Contains HopsanGUI global pointers and objects
 //!
-//$Id: common.h 5930 2013-10-03 08:10:27Z robbr48 $
+//$Id$
 
 #ifndef GLOBAL_H
 #define GLOBAL_H

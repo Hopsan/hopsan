@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for plot curve control box
 //!
-//$Id: ModelHandler.cpp 5551 2013-06-20 08:54:16Z petno25 $
+//$Id$
 
 #include <QDropEvent>
 #include <QMimeData>

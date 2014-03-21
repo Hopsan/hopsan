@@ -5,7 +5,7 @@
 //!
 //! @brief Contains macros for deciding compiler and architecture used when building
 //!
-//$Id: common.h 6112 2013-11-06 11:43:30Z robbr48 $
+//$Id$
 
 #ifndef COMPILER_INFO_H
 #define COMPILER_INFO_H

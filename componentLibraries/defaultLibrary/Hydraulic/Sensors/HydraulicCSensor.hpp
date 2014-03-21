@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Hydraulic C Sensor Component (from Pressure sensor)
 //!
-//$Id: HydraulicCSensor.hpp 2013-03-28 08:15:57Z petkr14 $
+//$Id$
 
 #ifndef HYDRAULICCSENSOR_HPP_INCLUDED
 #define HYDRAULICCSENSOR_HPP_INCLUDED

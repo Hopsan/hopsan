@@ -17,7 +17,7 @@
 //! @file   OptimizationWorkerComplex.h
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2014-02-13
-//! @version $Id: OptimizationHandler.cpp 6525 2014-01-30 15:58:59Z petno25 $
+//! @version $Id$
 //!
 //! @brief Contains a base class for optimization worker objects using constrained simplex (complex) algorithms
 //!

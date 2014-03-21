@@ -19,7 +19,7 @@
 //! @date   2010-01-08
 //! @brief Includes all HydraulicSpecial components
 //!
-//$Id: HopsanDefaultHydraulicSpecial.h 5413 2013-05-15 10:02:07Z petkr14 $
+//$Id$
 
 #ifndef HOPSANDEFAULTHYDRAULICSPECIAL_H
 #define HOPSANDEFAULTHYDRAULICSPECIAL_H

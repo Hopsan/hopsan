@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a mechanic rack and pinion component
 //!
-//$Id: MechanicRackAndPinion.hpp 2974 2011-05-30 11:12:44Z petno25 $
+//$Id$
 
 #ifndef MECHANICRACKANDPINION_HPP_INCLUDED
 #define MECHANICRACKANDPINION_HPP_INCLUDED

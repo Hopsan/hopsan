@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for handling component libraries
 //!
-//$Id: InitializationThread.cpp 5930 2013-10-03 08:10:27Z robbr48 $
+//$Id$
 
 //Defines
 #define XML_LIBRARY "hopsancomponentlibrary"

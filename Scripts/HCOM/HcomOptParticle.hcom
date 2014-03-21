@@ -1,5 +1,5 @@
 # Example HCOM script, takes one argument, runs a simulation arg number of times
-# $Id: simLoop.hcom 4939 2013-01-28 10:52:04Z petno25 $
+# $Id$
 
 #Simulate to get initial objective values
 define evalall

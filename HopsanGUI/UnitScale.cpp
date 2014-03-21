@@ -20,7 +20,7 @@
 //!
 //! @brief Contains the UnitScale class
 //!
-//$Id: common.h 6112 2013-11-06 11:43:30Z robbr48 $
+//$Id$
 
 #include "UnitScale.h"
 

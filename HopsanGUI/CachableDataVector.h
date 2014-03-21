@@ -20,7 +20,7 @@
 //!
 //! @brief Contains classes for caching data vectors to disk
 //!
-//$Id: LogVariable.cpp 4974 2013-02-01 08:47:48Z petno25 $
+//$Id$
 
 #ifndef CACHABLEDATAVECTOR_H
 #define CACHABLEDATAVECTOR_H

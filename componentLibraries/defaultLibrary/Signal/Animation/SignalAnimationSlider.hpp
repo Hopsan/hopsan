@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Signal Adjustable Slider (does nothing in the simulation)
 //!
-//$Id: SignalAnimationSlider.hpp 3542 2011-10-25 08:06:49Z petno25 $
+//$Id$
 
 #ifndef SIGNALANIMATIONSLIDER_HPP_INCLUDED
 #define SIGNALANIMATIONSLIDER_HPP_INCLUDED

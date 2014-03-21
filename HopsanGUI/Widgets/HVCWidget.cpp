@@ -20,7 +20,7 @@
 //!
 //! @brief Contains class for Hopsan validation widget
 //!
-//$Id: LibraryWidget.cpp 5499 2013-06-04 10:52:33Z robbr48 $
+//$Id$
 
 //Qt includes
 #include <QCheckBox>

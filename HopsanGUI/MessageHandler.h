@@ -20,7 +20,7 @@
 //!
 //! @brief Contains the MessageHanlder and GUIMessage classes
 //!
-//$Id: MessageWidget.h 5849 2013-09-06 08:39:07Z robbr48 $
+//$Id$
 
 #ifndef MESSAGEHANDLER_H
 #define MESSAGEHANDLER_H

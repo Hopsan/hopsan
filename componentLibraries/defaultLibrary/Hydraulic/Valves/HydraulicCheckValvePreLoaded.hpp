@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a pre-loaded hydraulic check valve component
 //!
-//$Id: HydraulicCheckValve.hpp 3808 2012-01-05 13:34:11Z petno25 $
+//$Id$
 
 #ifndef HYDRAULICCHECKVALVEPRELOADED_HPP_INCLUDED
 #define HYDRAULICCHECKVALVEPRELOADED_HPP_INCLUDED

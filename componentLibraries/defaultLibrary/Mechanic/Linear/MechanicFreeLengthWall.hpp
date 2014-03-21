@@ -13,7 +13,7 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-//$Id: MechanicFreeLengthWall.hpp 3510 2011-10-17 15:07:52Z petno25 $
+//$Id$
 
 #ifndef MECHANICFREELENGTHWALL_HPP_INCLUDED
 #define MECHANICFREELENGTHWALL_HPP_INCLUDED

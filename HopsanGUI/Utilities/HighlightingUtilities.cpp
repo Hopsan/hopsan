@@ -20,7 +20,7 @@
 //!
 //! @brief Contains highlighter classes for various languages
 //!
-//$Id: AnimatedComponent.cpp 5734 2013-08-22 14:28:04Z robbr48 $
+//$Id$
 
 #include "common.h"
 #include "global.h"

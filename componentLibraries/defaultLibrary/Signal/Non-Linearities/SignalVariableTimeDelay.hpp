@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Signal Time Delay Component
 //!
-//$Id: SignalTimeDelay.hpp 4915 2013-01-18 12:15:46Z bjoer $
+//$Id$
 
 #ifndef SIGNALVARIABLETIMEDELAY_HPP_INCLUDED
 #define SIGNALVARIABLETIMEDELAY_HPP_INCLUDED

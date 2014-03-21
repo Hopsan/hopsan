@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a dialog class for changing component properties
 //!
-//$Id: ComponentPropertiesDialog3.cpp 4807 2012-11-28 14:07:11Z petno25 $
+//$Id$
 
 //Qt includes
 #include <QDebug>

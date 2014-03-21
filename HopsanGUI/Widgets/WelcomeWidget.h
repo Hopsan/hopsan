@@ -20,7 +20,7 @@
 //!
 //! @brief Contains the welcome widget class
 //!
-//$Id: UndoWidget.h 3547 2011-10-25 11:48:47Z petno25 $
+//$Id$
 
 #ifndef WELCOMEWIDGET_H
 #define WELCOMEWIDGET_H

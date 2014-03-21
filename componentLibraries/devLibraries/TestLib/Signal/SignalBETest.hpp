@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Test Component
 //!
-//$Id: SignalBETest.hpp 5285 2013-04-19 11:58:51Z petno25 $
+//$Id$
 
 #ifndef SIGNALTEST_HPP_INCLUDED
 #define SIGNALTEST_HPP_INCLUDED

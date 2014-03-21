@@ -17,7 +17,7 @@
 //! @file   MessageHandler.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2014-02-07
-//! @version $Id: MessageWidget.cpp 6081 2013-11-04 11:45:46Z petno25 $
+//! @version $Id$
 //!
 //! @brief Contains the MessageHanlder and GUIMessage classes
 //!

@@ -13,7 +13,7 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-//$Id: MechanicTranslationalMass.hpp 5573 2013-06-26 08:26:52Z petno25 $
+//$Id$
 
 #ifndef MECHANICTRANSLATIONALMASSVARIABLE_HPP_INCLUDED
 #define MECHANICTRANSLATIONALMASSVARIABLE_HPP_INCLUDED

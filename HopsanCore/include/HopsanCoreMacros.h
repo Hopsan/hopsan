@@ -20,7 +20,7 @@
 //!
 //! @brief Contains HopsanCore global macro definitions
 //!
-//$Id: HopsanEssentials.h 5505 2013-06-04 16:20:41Z petno25 $
+//$Id$
 
 #ifndef HOPSANCOREMACROS_H
 #define HOPSANCOREMACROS_H

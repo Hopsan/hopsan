@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for plot tabs
 //!
-//$Id: ModelHandler.cpp 5551 2013-06-20 08:54:16Z petno25 $
+//$Id$
 
 #ifndef PLOTTAB_H
 #define PLOTTAB_H
