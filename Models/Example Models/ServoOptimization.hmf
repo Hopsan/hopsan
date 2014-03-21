@@ -462,9 +462,6 @@
             <parameters/>
             <objectives/>
           </optimization>
-          <hopsanundo>
-            <post number="-1"/>
-          </hopsanundo>
         </hopsangui>
         <objects>
           <component typename="SignalDivide" name="Divide_2">

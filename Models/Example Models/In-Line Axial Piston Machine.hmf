@@ -312,9 +312,6 @@
             <parameters/>
             <plotvariables/>
           </senstivitityanalysis>
-          <hopsanundo>
-            <post number="-1"/>
-          </hopsanundo>
         </hopsangui>
         <objects>
           <component typename="SignalDivide" name="Divide_2">
@@ -1016,9 +1013,6 @@
             <parameters/>
             <plotvariables/>
           </senstivitityanalysis>
-          <hopsanundo>
-            <post number="-1"/>
-          </hopsanundo>
         </hopsangui>
         <objects>
           <systemport typename="HopsanGUIContainerPort" name="speed">
@@ -1435,9 +1429,6 @@
             <parameters/>
             <plotvariables/>
           </senstivitityanalysis>
-          <hopsanundo>
-            <post number="-1"/>
-          </hopsanundo>
         </hopsangui>
         <objects>
           <component typename="SignalMultiply" name="Multiply_1">
@@ -2675,9 +2666,6 @@
             <parameters/>
             <plotvariables/>
           </senstivitityanalysis>
-          <hopsanundo>
-            <post number="-1"/>
-          </hopsanundo>
         </hopsangui>
         <objects>
           <systemport typename="HopsanGUIContainerPort" name="T_effective">
