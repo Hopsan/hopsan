@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     Handlers/FileHandler.cpp \
     Utilities/HighlightingUtilities.cpp \
     Widgets/OptionsWidget.cpp \
-    Handlers/OptionsHandler.cpp
+    Handlers/OptionsHandler.cpp \
+    Utilities/CompilingUtilities.cpp
 
 HEADERS  += MainWindow.h \
     Widgets/ProjectFilesWidget.h \
@@ -31,6 +32,7 @@ HEADERS  += MainWindow.h \
     Handlers/FileHandler.h \
     Utilities/HighlightingUtilities.h \
     Widgets/OptionsWidget.h \
-    Handlers/OptionsHandler.h
+    Handlers/OptionsHandler.h \
+    Utilities/CompilingUtilities.h
 
 FORMS    +=

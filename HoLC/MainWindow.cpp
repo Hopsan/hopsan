@@ -56,24 +56,29 @@ MainWindow::MainWindow(QWidget *pParent)
     QAction *pOptionsAction = new QAction("Options", this);
     pOptionsAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Options.png"));
     pOptionsAction->setCheckable(true);
+    QAction *pCompileAction = new QAction("Compile Library", this);
+    pCompileAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Compile.png"));
+
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pNewAction);
     pToolBar->addAction(pOpenAction);
     pToolBar->addAction(pSaveAction);
     pToolBar->addAction(pOptionsAction);
+    pToolBar->addAction(pCompileAction);
     this->addToolBar(pToolBar);
 
     //Create handlers
     mpMessageHandler = new MessageHandler(mpMessageWidget);
-    mpFileHandler = new FileHandler(mpProjectFilesWidget, mpEditorWidget, mpMessageHandler);
+    mpFileHandler = new FileHandler(mpProjectFilesWidget, mpEditorWidget, mpMessageHandler, mpOptionsHandler);
 
     //Setup connetions
-    connect(mpEditorWidget, SIGNAL(textChanged()), mpFileHandler, SLOT(updateText()));
-    connect(pOpenAction, SIGNAL(triggered()), mpFileHandler, SLOT(loadFromXml()));
-    connect(pSaveAction, SIGNAL(triggered()), mpFileHandler, SLOT(saveToXml()));
-    connect(mpEditorWidget, SIGNAL(textChanged()), mpProjectFilesWidget, SLOT(addAsterisk()));
-    connect(pOptionsAction, SIGNAL(toggled(bool)), mpOptionsWidget, SLOT(setVisible(bool)));
-    connect(pOptionsAction, SIGNAL(toggled(bool)), mpEditorWidget, SLOT(setHidden(bool)));
+    connect(mpEditorWidget, SIGNAL(textChanged()),  mpFileHandler,          SLOT(updateText()));
+    connect(pOpenAction,    SIGNAL(triggered()),    mpFileHandler,          SLOT(loadFromXml()));
+    connect(pSaveAction,    SIGNAL(triggered()),    mpFileHandler,          SLOT(saveToXml()));
+    connect(mpEditorWidget, SIGNAL(textChanged()),  mpProjectFilesWidget,   SLOT(addAsterisk()));
+    connect(pOptionsAction, SIGNAL(toggled(bool)),  mpOptionsWidget,        SLOT(setVisible(bool)));
+    connect(pOptionsAction, SIGNAL(toggled(bool)),  mpEditorWidget,         SLOT(setHidden(bool)));
+    connect(pCompileAction, SIGNAL(triggered()),    mpFileHandler,          SLOT(compileLibrary()));
 
     //Debug
     QString msg = "Test message!";

@@ -34,12 +34,12 @@ OptionsWidget::OptionsWidget(OptionsHandler *pOptionsHandler, QWidget *parent) :
     mpWarningLabel->setText("<font color='red'>Warning! Library file or include files not found in specified directory!</font>");
 
     QLabel *pCompilerLabel = new QLabel("Compiler Path:");
-    QLineEdit *pCompilerLineEdit = new QLineEdit(this);
+    mpCompilerLineEdit = new QLineEdit(this);
     QToolButton *pCompilerButton = new QToolButton(this);
     pCompilerButton->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Open.png"));
 
-    QLabel *pCompilerWarningLabel = new QLabel(this);
-    pCompilerWarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
+    mpCompilerWarningLabel = new QLabel(this);
+    mpCompilerWarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
 
     //Setup layout
     QGridLayout *pLayout = new QGridLayout(this);
@@ -53,14 +53,21 @@ OptionsWidget::OptionsWidget(OptionsHandler *pOptionsHandler, QWidget *parent) :
     pLayout->addWidget(mpIncludeLineEdit,        3,1,1,2);
     pLayout->addWidget(mpWarningLabel,           4,0,1,3);
     pLayout->addWidget(pCompilerLabel,          5,0,1,1);
-    pLayout->addWidget(pCompilerLineEdit,       5,1,1,1);
+    pLayout->addWidget(mpCompilerLineEdit,       5,1,1,1);
     pLayout->addWidget(pCompilerButton,         5,2,1,1);
-    pLayout->addWidget(pCompilerWarningLabel,   6,0,1,3);
+    pLayout->addWidget(mpCompilerWarningLabel,   6,0,1,3);
     pLayout->addWidget(new QWidget(this),       7,0,1,3);
     pLayout->setRowStretch(9,1);
 
     //Setup connections
     connect(pHopsanDirButton, SIGNAL(clicked()), this, SLOT(setHopsanPath()));
+    connect(pCompilerButton, SIGNAL(clicked()), this, SLOT(setCompilerPath()));
+
+    if(!mpOptionsHandler->getCompilerPath().isEmpty())
+    {
+        mpCompilerLineEdit->setText(mpOptionsHandler->getCompilerPath());
+        mpCompilerWarningLabel->hide();
+    }
 }
 
 
@@ -106,4 +113,33 @@ void OptionsWidget::setHopsanPath()
         mpIncludeLineEdit->clear();
         mpWarningLabel->setVisible(true);
     }
+}
+
+void OptionsWidget::setCompilerPath()
+{
+    QString path = QFileDialog::getExistingDirectory(this, "Set Hopsan Path:");
+
+    if(path.isEmpty()) return;
+
+    QString filePath;
+#ifdef linux
+    filePath = path+"/gcc";
+
+#else
+    filePath = path+"/gcc.exe";
+#endif
+    //! @todo We should also check that it is the correct version of gcc!
+    if(QFile::exists(filePath))
+    {
+        mpOptionsHandler->setCompilerPath(filePath);
+        mpCompilerLineEdit->setText(filePath);
+        mpCompilerWarningLabel->hide();
+    }
+    else
+    {
+        mpOptionsHandler->setCompilerPath("");
+        mpCompilerLineEdit->clear();
+        mpCompilerWarningLabel->show();
+    }
+
 }

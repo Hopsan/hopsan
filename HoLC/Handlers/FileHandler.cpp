@@ -9,13 +9,16 @@
 #include "Widgets/ProjectFilesWidget.h"
 #include "Widgets/EditorWidget.h"
 #include "MessageHandler.h"
+#include "Utilities/CompilingUtilities.h"
+#include "Handlers/OptionsHandler.h"
 
-FileHandler::FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler) :
+FileHandler::FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler, OptionsHandler *pOptionsHandler) :
     QObject(0)
 {
     mpFilesWidget = pFilesWidget;
     mpEditorWidget = pEditorWidget;
     mpMessageHandler = pMessageHandler;
+    mpOptionsHandler = pOptionsHandler;
 
     connect(pFilesWidget->mpTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(openFile(QTreeWidgetItem*, int)));
     connect(pFilesWidget, SIGNAL(deleteRequested(QTreeWidgetItem*)), this, SLOT(removeFile(QTreeWidgetItem*)));
@@ -180,6 +183,53 @@ void FileHandler::updateText()
     if(mpCurrentFile)
     {
         mpCurrentFile->mText = mpEditorWidget->getText();
+    }
+}
+
+void FileHandler::compileLibrary()
+{
+    if(mpOptionsHandler->getIncludePath().isEmpty())
+    {
+        mpMessageHandler->addErrorMessage("Hopsan path is not setup correctly.");
+        return;
+    }
+    //! @todo Maybe check this in some better way
+    //! @todo Also check compiler path
+
+    QString path;
+    QStringList sources;
+    QStringList includeDirs;
+    QStringList libs;
+
+    foreach(const FileObject *file, mFilePtrs)
+    {
+        if(file->mType == FileObject::XML)
+        {
+            path = file->mFileInfo.absolutePath();
+        }
+        else if(file->mType == FileObject::Source)
+        {
+            sources.append(file->mFileInfo.absoluteFilePath());
+        }
+    }
+
+    includeDirs.append(mpOptionsHandler->getIncludePath());
+    libs.append(mpOptionsHandler->getLibPath());
+
+    QString target = mLibTarget;
+#ifdef linux
+    target.prepend("lib");
+#endif
+
+    QString compilerPath = mpOptionsHandler->getCompilerPath();
+
+    bool success;
+    QStringList output = compileComponentLibrary(compilerPath, path, target, sources, libs, includeDirs, success);
+    //! @todo Do something with the success variable
+
+    foreach(const QString &line, output)
+    {
+        mpMessageHandler->addInfoMessage(line);
     }
 }
 

@@ -19,12 +19,15 @@ public slots:
 
 private slots:
     void setHopsanPath();
+    void setCompilerPath();
 
 private:
     QLineEdit *mpHopsanDirLineEdit;
     QLineEdit *mpLibraryLineEdit;
     QLineEdit *mpIncludeLineEdit;
     QLabel *mpWarningLabel;
+    QLineEdit *mpCompilerLineEdit;
+    QLabel *mpCompilerWarningLabel;
 
     OptionsHandler *mpOptionsHandler;
 };

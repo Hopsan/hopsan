@@ -9,18 +9,20 @@ class ProjectFilesWidget;
 class EditorWidget;
 class MessageHandler;
 class FileObject;
+class OptionsHandler;
 
 class FileHandler : public QObject
 {
     Q_OBJECT
 
 public:
-    FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler);
+    FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler, OptionsHandler *pOptionsHandler);
 
 public slots:
     void loadFromXml();
     void saveToXml();
     void updateText();
+    void compileLibrary();
 
 private slots:
     void openFile(QTreeWidgetItem *pItem, int);
@@ -33,6 +35,7 @@ private:
     ProjectFilesWidget *mpFilesWidget;
     EditorWidget *mpEditorWidget;
     MessageHandler *mpMessageHandler;
+    OptionsHandler *mpOptionsHandler;
 
     QMap<QTreeWidgetItem*, FileObject*> mTreeToFileMap;
 

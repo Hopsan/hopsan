@@ -1,7 +1,16 @@
+#include <QDebug>
+#include <QFile>
+
 #include "OptionsHandler.h"
 
 OptionsHandler::OptionsHandler()
 {
+#ifdef linux
+    if(QFile::exists("/usr/bin/gcc"))
+    {
+        mCompilerPath = "/usr/bin/gcc";
+    }
+#endif
 }
 
 void OptionsHandler::setLibPath(const QString path)
