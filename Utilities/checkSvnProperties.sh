@@ -13,6 +13,7 @@ isOK=1
 
 function checkExactSvnProperty()
 {
+    #echo "Checking exact svn property $2 in $1"
     #file="$1"
     #prop="$2"
     #desval="$3"
@@ -33,7 +34,7 @@ function checkEOLStyleFiles()
 {
     for fpat in "$@"; do
         while IFS= read -r -d $'\0' file; do
-            #echo "Checking file: $file"
+            #echo "Checking EOLStyle file: $file"
             checkExactSvnProperty "$file" "svn:eol-style" "native"
         done < <(find "$rootDir" -type f -name "$fpat" -print0)
     done
@@ -43,7 +44,7 @@ function checkCodeFiles()
 {
     for fpat in "$@"; do
         while IFS= read -r -d $'\0' file; do
-            #echo "Checking file: $file"
+            #echo "Checking Code file: $file"
             checkExactSvnProperty "$file" "svn:eol-style" "native"
             checkExactSvnProperty "$file" "svn:keywords" "Id"
         done < <(find "$rootDir" -type f -name "$fpat" -print0)
@@ -52,9 +53,9 @@ function checkCodeFiles()
 
 function checkScriptFiles()
 {
-    for fext in "$@"; do
+    for fpat in "$@"; do
         while IFS= read -r -d $'\0' file; do
-            #echo "Checking file: $file"
+            #echo "Checking Script file: $file"
             checkExactSvnProperty "$file" "svn:eol-style" "native"
             checkExactSvnProperty "$file" "svn:keywords" "Id"
             checkExactSvnProperty "$file" "svn:executable" "*"
