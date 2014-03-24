@@ -32,6 +32,7 @@ void MessageWidget::addText(const QString &text, const QColor color)
     mpTextEdit->append(text);
     mpTextEdit->setTextColor(Qt::black);
     mpTextEdit->append(">> ");
+    mpTextEdit->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor);
 }
 
 
