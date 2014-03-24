@@ -32,6 +32,7 @@ public:
     enum ColumnEnumT {Name, Alias, Unit, Description, Value, Scale, ShowPort, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
+    bool setCustomPlotScaleValues();
     bool setAliasNames();
 
 private:
@@ -96,11 +97,11 @@ class PlotScaleSelectionWidget : public QWidget
     Q_OBJECT
 public:
     PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+    void registerCustomScale();
+    bool hasChanged() const;
 
 private slots:
     void createPlotScaleSelectionMenu();
-    void registerCustomScale();
-
 
 private:
     QLineEdit *mpPlotScaleEdit;

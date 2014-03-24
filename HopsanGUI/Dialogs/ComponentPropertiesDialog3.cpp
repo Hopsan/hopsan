@@ -291,7 +291,9 @@ bool ComponentPropertiesDialog3::setAliasNames()
 //! @brief Sets the parameters and start values in the core component. Read the values from the dialog and write them into the core component.
 bool ComponentPropertiesDialog3::setVariableValues()
 {
-    return mpVariableTableWidget->setStartValues();
+    bool isOK = mpVariableTableWidget->setStartValues();
+    isOK *= mpVariableTableWidget->setCustomPlotScaleValues();
+    return isOK;
 }
 
 void ComponentPropertiesDialog3::setName()
@@ -744,6 +746,34 @@ bool VariableTableWidget::setStartValues()
     return allok;
 }
 
+bool VariableTableWidget::setCustomPlotScaleValues()
+{
+    bool allok=true;
+    for (int row=0; row<rowCount(); ++row)
+    {
+
+        // First check if row is separator, then skip it
+        if (columnSpan(row,0)>1)
+        {
+            continue;
+        }
+
+        // Extract PlotScaleSelector from row
+        PlotScaleSelectionWidget *pPlotScaleSelector = qobject_cast<PlotScaleSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Scale)));
+        if (!pPlotScaleSelector)
+        {
+            continue;
+        }
+
+        // Only register if changed
+        if (pPlotScaleSelector->hasChanged())
+        {
+            pPlotScaleSelector->registerCustomScale();
+        }
+    }
+    return allok;
+}
+
 bool VariableTableWidget::setAliasNames()
 {
     for (int r=0; r<rowCount(); ++r)
@@ -942,7 +972,6 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
     mpPlotScaleEdit->setAlignment(Qt::AlignCenter);
     mpPlotScaleEdit->setFrame(false);
     pLayout->addWidget(mpPlotScaleEdit);
-    connect(mpPlotScaleEdit, SIGNAL(editingFinished()), this, SLOT(registerCustomScale()));
 
     UnitScale currCustom;
     pModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, currCustom);
@@ -1053,6 +1082,20 @@ void PlotScaleSelectionWidget::registerCustomScale()
     {
         //! @todo need to check if text is valid number
         mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", val);
+    }
+}
+
+bool PlotScaleSelectionWidget::hasChanged() const
+{
+    UnitScale us;
+    mpModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, us);
+    if (us.mUnit.isEmpty())
+    {
+        return us.mScale != mpPlotScaleEdit->text();
+    }
+    else
+    {
+        return us.mUnit != mpPlotScaleEdit->text();
     }
 }
 
