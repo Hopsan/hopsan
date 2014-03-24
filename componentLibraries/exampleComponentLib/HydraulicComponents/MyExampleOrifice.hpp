@@ -24,7 +24,7 @@
 // Put your component class inside the hopsan namespace (optional)
 namespace hopsan {
 
-// Define a new Class that inherits from ComponentC, ComponentQ or ComponentS
+// Define a new Class that inherits from ComponentC, ComponentQ or ComponentSignal
 // This depends on the type of component you want to create, a C, Q or signal component
 class MyExampleOrifice : public ComponentQ
 {

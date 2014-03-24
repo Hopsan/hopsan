@@ -19,7 +19,7 @@ INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 
 # The location of the HopsanCore .dll or .so file, needed to link against when compiling your library
 LIBS *= -L$${PWD}/../../bin
-#LIBS *= -L"C:/SomeDirectoryPath/Hopsan/HopsanCore/include/"
+#LIBS *= -L"C:/SomeDirectoryPath/Hopsan/bin/"
 
 # Special options for deug and release mode. This will link the correct HopsanCore .dll or .so
 # In debug mode HopsanCore has the debug extension _d

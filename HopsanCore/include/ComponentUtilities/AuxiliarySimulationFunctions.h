@@ -199,6 +199,26 @@ inline double limit2(const double x, const double /*sx*/, const double xmin, con
     return hopsan::limit(x, xmin, xmax);
 }
 
+// ----------Inline Functions ----------
+
+//! @brief Converts an angle in degrees to radians
+//! @ingroup AuxiliarySimulationFunctions
+//! @param[in] deg The angle in degrees
+//! @returns The angle in radians
+inline double deg2rad(const double deg)
+{
+    return (hopsan::pi/180.0)*deg;
+}
+
+//! @brief Converts an angle in radians to degrees
+//! @ingroup AuxiliarySimulationFunctions
+//! @param[in] rad The angle in radians
+//! @returns The angle in degrees
+inline double rad2deg(const double rad)
+{
+    return (180.0/hopsan::pi)*rad;
+}
+
 // ----------Inline Functions Modelica Wrappers----------
 
 

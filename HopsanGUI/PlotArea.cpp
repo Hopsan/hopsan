@@ -1209,7 +1209,7 @@ void PlotArea::rescaleAxesToCurves()
     if ( (yrAxisLim.width()) < Double100Min)
     {
         yrAxisLim.extendMax(yrAxisLim.maxValue()+qMax(qAbs(yrAxisLim.maxValue()) * sameLimFrac, Double100Min));
-        yrAxisLim.extendMin(yrAxisLim.maxValue()-qMax(qAbs(yrAxisLim.minValue()) * sameLimFrac, Double100Min));
+        yrAxisLim.extendMin(yrAxisLim.minValue()-qMax(qAbs(yrAxisLim.minValue()) * sameLimFrac, Double100Min));
         rightSameLimitEnlargeApplied=true;
     }
 
