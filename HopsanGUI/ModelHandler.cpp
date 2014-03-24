@@ -283,6 +283,9 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
         if (!verifyHmfFormatVersion(hmfFormatVersion))
         {
             gpMessageHandler->addErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
+            closeModel(pNewModel);
+            gpConfig->removeRecentModel(fileInfo.filePath());
+            return pNewModel;
         }
         else if (hmfFormatVersion < HMF_VERSIONNUM)
         {
