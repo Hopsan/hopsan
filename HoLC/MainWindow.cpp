@@ -1,10 +1,9 @@
 #include <QDockWidget>
-
-//Debug
 #include <QColor>
 #include <QAction>
 #include <QToolBar>
 #include <QGridLayout>
+#include <QMenu>
 
 #include "MainWindow.h"
 #include "Widgets/ProjectFilesWidget.h"
@@ -53,6 +52,8 @@ MainWindow::MainWindow(QWidget *pParent)
     pOpenAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Open.png"));
     QAction *pSaveAction = new QAction("Save Current File", this);
     pSaveAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Save.png"));
+    QAction *pAddComponentAction = new QAction("Add New Component", this);
+    pAddComponentAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Add.png"));
     QAction *pOptionsAction = new QAction("Options", this);
     pOptionsAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Options.png"));
     pOptionsAction->setCheckable(true);
@@ -63,6 +64,7 @@ MainWindow::MainWindow(QWidget *pParent)
     pToolBar->addAction(pNewAction);
     pToolBar->addAction(pOpenAction);
     pToolBar->addAction(pSaveAction);
+    pToolBar->addAction(pAddComponentAction);
     pToolBar->addAction(pOptionsAction);
     pToolBar->addAction(pCompileAction);
     this->addToolBar(pToolBar);
@@ -72,13 +74,14 @@ MainWindow::MainWindow(QWidget *pParent)
     mpFileHandler = new FileHandler(mpProjectFilesWidget, mpEditorWidget, mpMessageHandler, mpOptionsHandler);
 
     //Setup connetions
-    connect(mpEditorWidget, SIGNAL(textChanged()),  mpFileHandler,          SLOT(updateText()));
-    connect(pOpenAction,    SIGNAL(triggered()),    mpFileHandler,          SLOT(loadFromXml()));
-    connect(pSaveAction,    SIGNAL(triggered()),    mpFileHandler,          SLOT(saveToXml()));
-    connect(mpEditorWidget, SIGNAL(textChanged()),  mpProjectFilesWidget,   SLOT(addAsterisk()));
-    connect(pOptionsAction, SIGNAL(toggled(bool)),  mpOptionsWidget,        SLOT(setVisible(bool)));
-    connect(pOptionsAction, SIGNAL(toggled(bool)),  mpEditorWidget,         SLOT(setHidden(bool)));
-    connect(pCompileAction, SIGNAL(triggered()),    mpFileHandler,          SLOT(compileLibrary()));
+    connect(mpEditorWidget, SIGNAL(textChanged()),    mpFileHandler,          SLOT(updateText()));
+    connect(pOpenAction,    SIGNAL(triggered()),      mpFileHandler,          SLOT(loadFromXml()));
+    connect(pSaveAction,    SIGNAL(triggered()),      mpFileHandler,          SLOT(saveToXml()));
+    connect(mpEditorWidget, SIGNAL(textChanged()),    mpProjectFilesWidget,   SLOT(addAsterisk()));
+    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpOptionsWidget,        SLOT(setVisible(bool)));
+    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpEditorWidget,         SLOT(setHidden(bool)));
+    connect(pCompileAction, SIGNAL(triggered()),      mpFileHandler,          SLOT(compileLibrary()));
+    connect(mpFileHandler,  SIGNAL(fileOpened(bool)), pOptionsAction,       SLOT(setChecked(bool)));
 
     //Debug
     QString msg = "Test message!";

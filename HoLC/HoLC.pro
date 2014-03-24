@@ -36,3 +36,6 @@ HEADERS  += MainWindow.h \
     Utilities/CompilingUtilities.h
 
 FORMS    +=
+
+RESOURCES += \
+    icons.qrc

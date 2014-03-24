@@ -254,6 +254,8 @@ void FileHandler::openFile(QTreeWidgetItem *pItem, int)
         type = EditorWidget::Cpp;
     }
     mpEditorWidget->setText(mTreeToFileMap.find(pItem).value()->mText, type, editingEnabled);
+
+    emit fileOpened(false);
 }
 
 void FileHandler::removeFile(QTreeWidgetItem *pItem)

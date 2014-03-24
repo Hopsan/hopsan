@@ -18,6 +18,9 @@ class FileHandler : public QObject
 public:
     FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler, OptionsHandler *pOptionsHandler);
 
+signals:
+    void fileOpened(bool);
+
 public slots:
     void loadFromXml();
     void saveToXml();
