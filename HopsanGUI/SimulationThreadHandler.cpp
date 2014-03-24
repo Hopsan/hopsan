@@ -213,7 +213,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     if(!gpConfig->getUseMulticore())
     {
         QTimer *pCheckMessagesTimer = new QTimer();
-        connect(pCheckMessagesTimer, SIGNAL(timeout()), mpMessageHandler, SLOT(checkMessages()));
+        connect(pCheckMessagesTimer, SIGNAL(timeout()), mpMessageHandler, SLOT(collectHopsanCoreMessages()));
         connect(this, SIGNAL(done(bool)), pCheckMessagesTimer, SLOT(deleteLater()));
         pCheckMessagesTimer->setSingleShot(false);
         pCheckMessagesTimer->start(1000);
