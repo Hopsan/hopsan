@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MyExampleOrifice" displayname="MyExampleOrifice">
+    <modelobject typename="MyExampleOrifice" displayname="MyExampleOrifice" sourcecode="MyExampleOrifice.hpp">
         <icons>
             <icon scale="1" path="orifice_user.svg" iconrotation="ON" type="user"/>
         </icons>

@@ -24,8 +24,8 @@
 
 // Header guard to avoid inclusion of the same code twice
 // Every hpp file need to have its own UNIQUE header guard
-#ifndef SIGNALSUM_HPP_INCLUDED
-#define SIGNALSUM_HPP_INCLUDED
+#ifndef MYEXAMPLESIGNALSUM_HPP_INCLUDED
+#define MYEXAMPLESIGNALSUM_HPP_INCLUDED
 
 // Include the necessary header files from Hopsan
 #include "ComponentEssentials.h"
@@ -35,7 +35,7 @@ namespace hopsan {
 
 // Define a new Class that inherits from ComponentC, ComponentQ or ComponentSignal
 // This depends on the type of component you want to create, a C, Q or signal component
-class SignalSum : public ComponentSignal
+class MyExampleSignalSum : public ComponentSignal
 {
 private:
     // Private member variables
@@ -47,7 +47,7 @@ public:
     // This static function is mandatory
     static Component *Creator()
     {
-        return new SignalSum();
+        return new MyExampleSignalSum();
     }
 
     // The Configure function that is run ONCE when a new object of the class is created

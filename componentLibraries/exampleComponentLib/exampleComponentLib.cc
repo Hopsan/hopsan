@@ -20,7 +20,7 @@
 #include "HydraulicComponents/MyExampleConstantOrifice.hpp"
 #include "HydraulicComponents/MyExampleVolume.hpp"
 #include "HydraulicComponents/MyExampleVolume2.hpp"
-#include "SignalComponents/SignalSum.hpp"
+#include "SignalComponents/MyExampleSignalSum.hpp"
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
 // Also use the hopsan namespace
@@ -45,7 +45,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     pComponentFactory->registerCreatorFunction("MyExampleConstantOrifice", MyExampleConstantOrifice::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleVolume2", MyExampleVolume2::Creator);
-    pComponentFactory->registerCreatorFunction("MyExampleSignalSum", SignalSum::Creator);
+    pComponentFactory->registerCreatorFunction("MyExampleSignalSum", MyExampleSignalSum::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported

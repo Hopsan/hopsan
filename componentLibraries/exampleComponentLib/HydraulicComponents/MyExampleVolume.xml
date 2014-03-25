@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MyExampleVolume" displayname="MyExampleVolume">
+    <modelobject typename="MyExampleVolume" displayname="MyExampleVolume" sourcecode="MyExampleVolume.hpp">
         <icons>
             <icon scale="1" path="volume_user.svg" iconrotation="ON" type="user"/>
         </icons>
