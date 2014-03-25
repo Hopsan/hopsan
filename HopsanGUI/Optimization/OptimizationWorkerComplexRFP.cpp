@@ -81,7 +81,7 @@ void OptimizationWorkerComplexRFP::init()
         }
     }
 
-    mNumThreads = gpConfig->getNumberOfThreads();
+    mNumThreads = 4;//gpConfig->getNumberOfThreads();
     if(mNumThreads == 0)
     {
 #ifdef WIN32
@@ -94,10 +94,10 @@ void OptimizationWorkerComplexRFP::init()
 
     if(mMethod == 1)
     {
-        mNumThreads = max(mNumThreads, mNumPoints-2);
+        mNumThreads = 4;//max(mNumThreads, mNumPoints-2);
     }
 
-    mCandidateParticles.resize(mNumThreads);
+    mCandidateParticles.resize(4);
     for(int i=0; i<mCandidateParticles.size(); ++i)
     {
         mCandidateParticles[i].resize(mNumParameters);
@@ -165,19 +165,20 @@ void OptimizationWorkerComplexRFP::run()
     execute("echo off");
 
     //Evaluate all points
-    for(int i=0; i<mNumPoints; ++i)
-    {
-        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
-        execute("opt set evalid "+QString::number(i));
-        execute("call setpars");
-    }
-    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
-    for(int i=0; i<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++i)
-    {
-        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
-        execute("opt set evalid "+QString::number(i));
-        execute("call obj");
-    }
+    execute("call evalall");
+//    for(int i=0; i<mNumPoints; ++i)
+//    {
+//        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
+//        execute("opt set evalid "+QString::number(i));
+//        execute("call setpars");
+//    }
+//    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+//    for(int i=0; i<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++i)
+//    {
+//        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
+//        execute("opt set evalid "+QString::number(i));
+//        execute("call obj");
+//    }
     mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
     ++mIterations;
     logAllPoints();
@@ -275,7 +276,7 @@ void OptimizationWorkerComplexRFP::run()
 
 
             //Move reflected points
-            for(int t=0; t<mNumThreads; ++t)
+            for(int t=0; t<4; ++t)
             {
                 double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
                 for(int j=0; j<mNumParameters; ++j)

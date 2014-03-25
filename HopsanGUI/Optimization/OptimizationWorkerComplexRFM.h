@@ -42,6 +42,8 @@ public:
     void run();
     void finalize();
 
+    bool checkForConvergence();
+
     void setOptVar(const QString &var, const QString &value);
     double getOptVar(const QString &var, bool &ok);
 
@@ -62,6 +64,9 @@ private:
 
     double mPercDiff;
     int mCountMax;
+
+    bool mUseMetaModel;
+    bool mMetaModelExist;
 };
 
 #endif // OPTIMIZATIONWORKERCOMPLEXRFM_H

@@ -47,6 +47,7 @@ OptimizationWorkerComplexRFM::OptimizationWorkerComplexRFM(OptimizationHandler *
 {
     mPercDiff = 0.002;
     mCountMax = 2;
+    mUseMetaModel = true;
 }
 
 
@@ -55,6 +56,8 @@ void OptimizationWorkerComplexRFM::init()
 {
     OptimizationWorkerComplex::init();
 
+    mUseMetaModel = true;
+    mMetaModelExist = false;
     mLastWorstId = -1;
     mWorstCounter = 0;
 
@@ -106,6 +109,7 @@ void OptimizationWorkerComplexRFM::init()
     mMetaModelCoefficients.create(mStorageSize);
     mStorageSize = int(mStorageSize*1.5);
     mStoredObjectives.create(mStorageSize);
+    mStoredParameters.clear();
 }
 
 
@@ -152,15 +156,15 @@ void OptimizationWorkerComplexRFM::run()
 
     //Run optimization loop
     int i=0;
-    bool metaModelExist = false;
+    mMetaModelExist = false;
     int metaModelCounter = 0;
     int timesWeHaveNotRunTheLastCode=10;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
-        if(!metaModelExist && mStoredParameters.size() == mStorageSize)
+        if(!mMetaModelExist && mStoredParameters.size() == mStorageSize && mUseMetaModel)
         {
             createMetaModel();
-            metaModelExist = true;
+            mMetaModelExist = true;
         }
 
         //Plot optimization points
@@ -217,7 +221,7 @@ void OptimizationWorkerComplexRFM::run()
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Evaluate new point
-        if(metaModelExist)
+        if(mMetaModelExist && mUseMetaModel)
         {
             evaluateWithMetaModel();
             metaModelCounter++;
@@ -245,87 +249,8 @@ void OptimizationWorkerComplexRFM::run()
         calculateBestAndWorstId();
         wid = mWorstId;
 
-        //Iterate until worst point is no longer the same
-        mWorstCounter=0;
-        while(mLastWorstId == wid)
-        {
-            plotPoints();
-
-            qApp->processEvents();
-            if(mpHandler->mpHcomHandler->isAborted())
-            {
-                execute("echo on");
-                print("Optimization aborted.");
-                finalize();
-                mpHandler->mpHcomHandler->abortHCOM();
-                return;
-            }
-
-            if(i>mMaxEvals) break;
-
-            double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
-
-            //Reflect worst point
-            for(int j=0; j<mNumParameters; ++j)
-            {
-                double best = mParameters[mBestId][j];
-                double maxDiff = getMaxParDiff();
-                double r = (double)rand() / (double)RAND_MAX;
-                mParameters[wid][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-                mParameters[wid][j] = min(mParameters[wid][j], mParMax[j]);
-                mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
-            }
-            newPoint = mParameters[wid];
-            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
-
-            //Evaluate new point
-            if(metaModelExist)
-            {
-                evaluateWithMetaModel();
-                metaModelCounter++;
-                logWorstPoint();
-                ++mMetaModelEvaluations;
-            }
-            else
-            {
-                execute("call evalworst");
-                logWorstPoint();
-                ++mEvaluations;
-                if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
-                {
-                    execute("echo on");
-                    print("Optimization aborted.");
-                    finalize();
-                    return;
-                }
-                metaModelCounter = 0;
-                storeValuesForMetaModel(mWorstId);
-            }
-
-            if(!metaModelExist && mStoredParameters.size() == mStorageSize)
-            {
-                createMetaModel();
-                metaModelExist = true;
-            }
-
-            //Calculate best and worst points
-            mLastWorstId=wid;
-            calculateBestAndWorstId();
-            wid = mWorstId;
-
-            ++mWorstCounter;
-            ++i;
-            execute("echo off");
-
-            if(mWorstCounter >= 10)
-            {
-                break;
-            }
-        }
-
-        plotParameters();
-
-        if(metaModelCounter > 0 && timesWeHaveNotRunTheLastCode >= mCountMax)
+        //See if it is time to update meta model
+        if(metaModelCounter > 0 && timesWeHaveNotRunTheLastCode >= mCountMax && mUseMetaModel)
         {
             metaModelCounter = 0;
 
@@ -370,6 +295,153 @@ void OptimizationWorkerComplexRFM::run()
         {
             timesWeHaveNotRunTheLastCode++;
         }
+
+        //Iterate until worst point is no longer the same
+        mWorstCounter=0;
+        while(mLastWorstId == wid)
+        {
+            plotPoints();
+
+            qApp->processEvents();
+            if(mpHandler->mpHcomHandler->isAborted())
+            {
+                execute("echo on");
+                print("Optimization aborted.");
+                finalize();
+                mpHandler->mpHcomHandler->abortHCOM();
+                return;
+            }
+
+            if(i>mMaxEvals) break;
+
+            double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
+
+            //Reflect worst point
+            for(int j=0; j<mNumParameters; ++j)
+            {
+                double best = mParameters[mBestId][j];
+                double maxDiff = getMaxParDiff();
+                double r = (double)rand() / (double)RAND_MAX;
+                mParameters[wid][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                mParameters[wid][j] = min(mParameters[wid][j], mParMax[j]);
+                mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
+            }
+            newPoint = mParameters[wid];
+            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+            //Evaluate new point
+            if(mMetaModelExist && mUseMetaModel)
+            {
+                evaluateWithMetaModel();
+                metaModelCounter++;
+                logWorstPoint();
+                ++mMetaModelEvaluations;
+            }
+            else
+            {
+                execute("call evalworst");
+                logWorstPoint();
+                ++mEvaluations;
+                if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+                {
+                    execute("echo on");
+                    print("Optimization aborted.");
+                    finalize();
+                    return;
+                }
+                metaModelCounter = 0;
+                storeValuesForMetaModel(mWorstId);
+            }
+
+            if(!mMetaModelExist && mStoredParameters.size() == mStorageSize)
+            {
+                createMetaModel();
+                mMetaModelExist = true;
+            }
+
+            //Calculate best and worst points
+            mLastWorstId=wid;
+            calculateBestAndWorstId();
+            wid = mWorstId;
+
+            ++mWorstCounter;
+            ++i;
+            execute("echo off");
+
+
+            //See if it is time to update meta model
+            if(metaModelCounter > 0 && timesWeHaveNotRunTheLastCode >= mCountMax && mUseMetaModel)
+            {
+                metaModelCounter = 0;
+
+                mWorstId = mLastWorstId;
+                execute("call evalworst");
+                logWorstPoint();
+                ++mEvaluations;
+                storeValuesForMetaModel(mWorstId);
+                calculateBestAndWorstId();
+                wid=mWorstId;
+                if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+                {
+                    execute("echo on");
+                    print("Optimization aborted.");
+                    finalize();
+                    return;
+                }
+
+                hopsan::Vec oldMetaModelCoefficients = mMetaModelCoefficients;
+                createMetaModel();
+
+                double maxDiff = 0;
+                for(int j=0; j<mMetaModelCoefficients.length(); ++j)
+                {
+                    double diff = fabs((mMetaModelCoefficients[j]-oldMetaModelCoefficients[j])/mMetaModelCoefficients[j]);
+                    if(diff > maxDiff)
+                    {
+                        maxDiff = diff;
+                    }
+                }
+
+                if(maxDiff < mPercDiff)
+                {
+                    timesWeHaveNotRunTheLastCode=0;
+                }
+                else
+                {
+                    timesWeHaveNotRunTheLastCode++;
+                }
+            }
+            else
+            {
+                timesWeHaveNotRunTheLastCode++;
+            }
+
+
+//            if(mWorstCounter >= 200)
+//            {
+//                execute("call evalall");
+//                //mWorstCounter = 0;
+////                mMetaModelExist = false;
+////                mStoredParameters.clear();
+//                mUseMetaModel = false;
+////                for(int i=0; i<mNumPoints; ++i)
+////                {
+////                    mWorstId = i;
+////                    evaluateWithMetaModel();
+////                    logWorstPoint();
+////                    ++mMetaModelEvaluations;
+////                }
+//                break;
+//            }
+
+            calculateBestAndWorstId();
+
+            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+        }
+
+
+        plotParameters();
     }
 
     execute("echo on");
@@ -404,6 +476,51 @@ void OptimizationWorkerComplexRFM::run()
 void OptimizationWorkerComplexRFM::finalize()
 {
     OptimizationWorkerComplex::finalize();
+}
+
+bool OptimizationWorkerComplexRFM::checkForConvergence()
+{
+    if(mStoredParameters.size() < mNumPoints)
+    {
+        return OptimizationWorker::checkForConvergence();
+    }
+
+    //Check objective function convergence
+    double maxObj = mStoredObjectives[0];
+    double minObj = mStoredObjectives[0];
+    for(int i=0; i<mStoredObjectives.length(); ++i)
+    {
+        double obj = mStoredObjectives[i];
+        if(obj > maxObj) maxObj = obj;
+        if(obj < minObj) minObj = obj;
+    }
+    if(fabs(maxObj-minObj) <= mFuncTol)
+    {
+        mConvergenceReason=1;
+        for(int i=0; i<mObjectives.size(); ++i)
+        {
+            mObjectives[i] = mStoredObjectives[i];
+            mParameters[i] = mStoredParameters[i];
+        }
+        return true;
+    }
+    else if(minObj != 0.0 && fabs(maxObj-minObj)/fabs(minObj) <= mFuncTol)
+    {
+        mConvergenceReason=1;
+        for(int i=0; i<mObjectives.size(); ++i)
+        {
+            mObjectives[i] = mStoredObjectives[i];
+            mParameters[i] = mStoredParameters[i];
+        }
+        mParameters = mStoredParameters;
+
+        return true;
+    }
+    else
+    {
+        return OptimizationWorker::checkForConvergence();
+    }
+
 }
 
 
@@ -462,6 +579,12 @@ void OptimizationWorkerComplexRFM::storeValuesForMetaModel(int idx)
     }
     mStoredObjectives[mStoredObjectives.length()-1] = mObjectives[idx];
 
+    qDebug() << "Stored objectives: ";
+    for(int i=0; i<mStoredObjectives.length(); ++i)
+    {
+        qDebug() << mStoredObjectives[i];
+    }
+
     //Remove first element if stored vectors are too long
     if(mStoredParameters.size() > mStorageSize)
     {
@@ -472,7 +595,9 @@ void OptimizationWorkerComplexRFM::storeValuesForMetaModel(int idx)
 
 void OptimizationWorkerComplexRFM::createMetaModel()
 {
-    qDebug() << "Begin: createMetaModel()";
+    hopsan::Vec orgMetaModelCoefficients = mMetaModelCoefficients;
+
+    //qDebug() << "Begin: createMetaModel()";
 
     //Skapa metamodell
     int n=mStorageSize;
@@ -480,13 +605,13 @@ void OptimizationWorkerComplexRFM::createMetaModel()
 
     mMatrix.create(n, m);
 
-    qDebug() << "Number of rows: " << n;
-    qDebug() << "Number of columns: " << m;
-    qDebug() << "mNumParameters: " << mNumParameters;
+    //qDebug() << "Number of rows: " << n;
+    //qDebug() << "Number of columns: " << m;
+    //qDebug() << "mNumParameters: " << mNumParameters;
 
     for(int i=0; i<n; ++i)
     {
-        qDebug() << "Assigning matrix element: " << i << 0;
+        //qDebug() << "Assigning matrix element: " << i << 0;
         mMatrix[i][0] = 1;
     }
 
@@ -494,7 +619,7 @@ void OptimizationWorkerComplexRFM::createMetaModel()
     {
         for(int j=0; j<mNumParameters; ++j)
         {
-            qDebug() << "Assigning matrix element: " << i << ", " << j+1;
+            //qDebug() << "Assigning matrix element: " << i << ", " << j+1;
             mMatrix[i][j+1] = mStoredParameters[i][j];
         }
     }
@@ -506,18 +631,18 @@ void OptimizationWorkerComplexRFM::createMetaModel()
         {
             for(int k=j; k<mNumParameters; ++k)
             {
-                qDebug() << "Assigning matrix element: " << i << ", " << col;
+                //qDebug() << "Assigning matrix element: " << i << ", " << col;
                 mMatrix[i][col] = mStoredParameters[i][j]*mStoredParameters[i][k];
                 ++col;
             }
         }
     }
 
-    mBVec.create(n);
-    for(int i=0; i<n; ++i)
-    {
-        mBVec[i] = mStoredObjectives[i];
-    }
+//    mBVec.create(n);
+//    for(int i=0; i<n; ++i)
+//    {
+//        mBVec[i] = mStoredObjectives[i];
+//    }
 
 
     //Solve system using L and U matrices
@@ -527,14 +652,43 @@ void OptimizationWorkerComplexRFM::createMetaModel()
     int* order = new int[m];
     hopsan::ludcmp(tempMatrix, order);
 
-    qDebug() << "tempMatrix.size() = " << tempMatrix.rows() << ", " << tempMatrix.cols();
-    qDebug() << "tempVec.size() = " << tempVec.length();
-    qDebug() << "mMetaModelCoefficients.size() = " << mMetaModelCoefficients.length();
-    qDebug() << "order.size() = " << m;
+    //qDebug() << "tempMatrix.size() = " << tempMatrix.rows() << ", " << tempMatrix.cols();
+    //qDebug() << "tempVec.size() = " << tempVec.length();
+    //qDebug() << "mMetaModelCoefficients.size() = " << mMetaModelCoefficients.length();
+    //qDebug() << "order.size() = " << m;
 
     hopsan::solvlu(tempMatrix,tempVec,mMetaModelCoefficients,order);
 
-    qDebug() << "End: createMetaModel()";
+    //qDebug() << "End: createMetaModel()";
+
+    //qDebug() << "Meta model coefficients:";
+    for(int i=0; i<mMetaModelCoefficients.length(); ++i)
+    {
+        //qDebug() << mMetaModelCoefficients[i];
+    }
+    //qDebug() << "";
+
+    double diff=0;
+    double mOldObj = mObjectives[mWorstId];
+    QVector<double> mOldPars = mParameters[mWorstId];
+    for(int i=0; i<mStoredParameters.size(); ++i)
+    {
+
+        mParameters[mWorstId] = mStoredParameters[i];
+        evaluateWithMetaModel();
+        double tempDiff = fabs(mObjectives[mWorstId]-mStoredObjectives[i]);
+        diff = diff+pow(tempDiff,2.0);
+    }
+    mObjectives[mWorstId] = mOldObj;
+    mParameters[mWorstId] = mOldPars;
+    diff = sqrt(diff);
+
+    if(diff > mStorageSize && mEvaluations > 2000)
+    {
+        execute("call evalall");
+        mUseMetaModel = false;
+        qDebug() << "Stopped!";
+    }
 }
 
 
@@ -572,5 +726,16 @@ void OptimizationWorkerComplexRFM::evaluateWithMetaModel()
         }
     }
 
-    mObjectives[mWorstId] = obj;
+    //Use regular evaluate if objective is NaN
+    if(obj != obj)
+    {
+        execute("call evalworst");
+        storeValuesForMetaModel(mWorstId);
+        ++mEvaluations;
+        mMetaModelExist = false;
+    }
+    else
+    {
+        mObjectives[mWorstId] = obj;
+    }
 }
