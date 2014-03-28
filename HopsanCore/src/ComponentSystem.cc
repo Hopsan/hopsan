@@ -3880,7 +3880,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
 
     tbb::task_group *simTasks;                                          //Initialize TBB routines for parallel simulation
     simTasks = new tbb::task_group;
-    for(size_t t=0; t < nThreads; ++t)                                  //Execute simulation
+    for(size_t t=0; t < min(nThreads,mSplitSystemVector.size()); ++t)                                  //Execute simulation
     {
         simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], stopT));
     }
