@@ -1127,7 +1127,7 @@ void Component::setTimestep(const double timestep)
 Port *Component::addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
 {
     //! @todo suport more types
-    Port *pPort = addReadPort(rName,"NodeSignal", Port::NotRequired);
+    Port *pPort = addReadPort(rName,"NodeSignal", rDescription, Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
     setDefaultStartValue(pPort, 0, defaultValue);
 
