@@ -366,10 +366,13 @@ void FileHandler::openFile(QTreeWidgetItem *pItem, int)
     EditorWidget::HighlighterTypeEnum type;
     QString fileName = mpCurrentFile->mFileInfo.fileName();
     bool editingEnabled=true;
+    if(mpCurrentFile->mType == FileObject::XML || mpCurrentFile->mType == FileObject::Source)
+    {
+        editingEnabled=false;
+    }
     if(fileName.endsWith(".xml"))
     {
         type = EditorWidget::XML;
-        editingEnabled=false;
     }
     else if(fileName.endsWith(".hpp") || fileName.endsWith(".c") || fileName.endsWith(".cpp") ||
             fileName.endsWith(".cc") || fileName.endsWith(".h"))
@@ -387,6 +390,8 @@ void FileHandler::removeFile(QTreeWidgetItem *pItem)
     mpFilesWidget->removeItem(pItem);
     mpEditorWidget->clear();
     mTreeToFileMap.remove(pItem);
+
+    generateXmlAndSourceFiles();
 }
 
 

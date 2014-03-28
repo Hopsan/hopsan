@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/templates">
+        <file>Templates/xmlTemplate.xml</file>
+        <file>Templates/sourceTemplate.cc</file>
+        <file>Templates/componentTemplate.hpp</file>
+    </qresource>
+</RCC>
