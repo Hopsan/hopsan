@@ -227,9 +227,7 @@ Information about the component for the graphical interface, such as icon, port 
     <ports>
       <port name="P1" x="1.0" y="0.5" a="0" visible="true"/>
       <port name="P2" x="0.0" y="0.5" a="180" visible="true"/>
-      <port name="Kc" x="0.5" y="0.0" a="270" visible="true">
-        <description>The orifice coefficient</description>
-      </port>
+      <port name="Kc" x="0.5" y="0.0" a="270" visible="false"/>
     </ports>
   </modelobject>
 </hopsanobjectappearance>
@@ -257,7 +255,6 @@ The first line contains basic information about the XML code, and should always 
   - \b x X-position fraction of component icon width (0 = left, 1 = right)
   - \b y Y-position fraction of component icon height (0 = top, 1 = bottom)
   - \b a Angle of port, 0 = right, 90 = down, 180 = left, 270 = up, ports shall normally point outwards from the component
-  - \b visible Is the port is visible by default, \e true or \e false. A hidden port is never shown. (If omitted defaults to true)
-  - \b description A description text (help text) for the port. (Optional)
+  - \b visible If the port is visible by default, \e true or \e false. (If omitted defaults to true)
 */
 }
