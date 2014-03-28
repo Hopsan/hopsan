@@ -43,89 +43,14 @@
 #include "Configuration.h"
 #include "LogVariable.h"
 
-
-//! Create a dock for the Python console
-
-//! Constructor
-PyDockWidget::PyDockWidget(QWidget *parent)
-    : QDockWidget(tr("Python Console"), parent)
-{
-    PythonQt::init(PythonQt::RedirectStdOut);
-    PythonQt_QtAll::init();
-
-    PythonQt::self()->registerClass(&ModelObject::staticMetaObject, NULL, PythonQtCreateObject<PyModelObjectClassWrapper>);
-    PythonQt::self()->registerClass(&Port::staticMetaObject, NULL, PythonQtCreateObject<PyPortClassWrapper>);
-    PythonQt::self()->registerClass(&VectorVariable::staticMetaObject, NULL, PythonQtCreateObject<PyVectorVariableClassWrapper>);
-
-    PythonHopsanInterface *pPythonHopsanInterface = new PythonHopsanInterface;
-    PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
-    mainContext.addObject("hopsan", pPythonHopsanInterface);
-
-    mpPyConsole = new PythonQtScriptingConsole(NULL, mainContext);
-    mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan.");
-    mpPyConsole->appendCommandPrompt();
-
-    mpScriptFileLineEdit = new QLineEdit();
-    //mpScriptFileLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-    //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
-
-    mpLoadScriptButton = new QToolButton(this);
-    mpLoadScriptButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
-    mpLoadScriptButton->setToolTip("Load Script File");
-    connect(mpLoadScriptButton, SIGNAL(clicked()), this, SLOT(loadPyScript()));
-
-    mpInitScriptButton = new QToolButton(this);
-    mpInitScriptButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Script.png"));
-    mpInitScriptButton->setToolTip("Define Initialization Script");
-    connect(mpInitScriptButton, SIGNAL(clicked()), this, SLOT(openInitScriptDialog()));
-
-    QPushButton *pPyCustomButton = new QPushButton(this);
-    pPyCustomButton->setText("Run .py-file");
-    pPyCustomButton->connect(pPyCustomButton,SIGNAL(clicked()), this, SLOT(runPyScript()));
-
-    QHBoxLayout *pScriptFileLayout = new QHBoxLayout();
-    pScriptFileLayout->addWidget(mpScriptFileLineEdit);
-    pScriptFileLayout->addWidget(mpLoadScriptButton);
-    pScriptFileLayout->addWidget(mpInitScriptButton);
-    pScriptFileLayout->addWidget(pPyCustomButton);
-
-    QVBoxLayout *pPyLayout = new QVBoxLayout();
-    pPyLayout->addWidget(mpPyConsole);
-    pPyLayout->setContentsMargins(4,4,4,4);
-    pPyLayout->addLayout(pScriptFileLayout);
-
-    PyWidget *pPyWidget = new PyWidget();
-    pPyWidget->setLayout(pPyLayout);
-
-    runCommand(gpConfig->getInitScript());
-
-    mpScriptFileLineEdit->setText(gpConfig->getLastScriptFile());
-
-    setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    setWidget(pPyWidget);//->setWidget(mpPythonConsole);
-
-    //Add script path to Python path
-    QString scriptPath = QString(gpDesktopHandler->getScriptsPath());
-    scriptPath.replace("\\", "/");
-    scriptPath.replace("//", "/");
-    runCommand("import sys");
-    runCommand("sys.path.append(\""+scriptPath+"\")");
-
-    mpPyConsole->clear();
-}
-
-
-void PyDockWidget::saveSettingsToDomElement(QDomElement &rDomElement)
+void PythonTerminalWidget::saveSettingsToDomElement(QDomElement &rDomElement)
 {
     QDomElement lastscript = appendDomElement(rDomElement, "lastscript");
     lastscript.setAttribute("file", mpScriptFileLineEdit->text());
-
-    if(!mInitScript.isEmpty())
-        appendDomTextNode(rDomElement, "initscript", mInitScript);
 }
 
 
-QString PyDockWidget::getLastOutput()
+QString PythonTerminalWidget::getLastOutput()
 {
     QString text = mpPyConsole->toPlainText();
     QStringList lines = text.split("\n");
@@ -138,7 +63,7 @@ QString PyDockWidget::getLastOutput()
 }
 
 
-void PyDockWidget::runPyScript()
+void PythonTerminalWidget::runPyScript()
 {
     PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
     QString command = QString("execfile('").append(mpScriptFileLineEdit->text()).append("')");
@@ -147,7 +72,7 @@ void PyDockWidget::runPyScript()
 }
 
 
-void PyDockWidget::loadPyScript()
+void PythonTerminalWidget::loadPyScript()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Script File"),
@@ -162,33 +87,7 @@ void PyDockWidget::loadPyScript()
 }
 
 
-void PyDockWidget::openInitScriptDialog()
-{
-    mpDialog = new QDialog(this);
-    mpTextEdit = new QTextEdit(this);
-    mpTextEdit->setPlainText(gpConfig->getInitScript());
-    QPushButton *pOkButton = new QPushButton("Done", mpDialog);
-    QVBoxLayout *pLayout = new QVBoxLayout();
-    pLayout->addWidget(mpTextEdit);
-    pLayout->addWidget(pOkButton);
-    mpDialog->setLayout(pLayout);
-
-    connect(pOkButton, SIGNAL(clicked()), this, SLOT(setInitScriptFromDialog()));
-
-    mpDialog->exec();
-}
-
-
-void PyDockWidget::setInitScriptFromDialog()
-{
-    mInitScript = mpTextEdit->toPlainText();
-
-    mpDialog->close();
-    delete(mpTextEdit);
-    delete(mpDialog);
-}
-
-void PyDockWidget::runPyScript(QString path)
+void PythonTerminalWidget::runPyScript(QString path)
 {
     if(path.isEmpty()) return;
     PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
@@ -198,20 +97,62 @@ void PyDockWidget::runPyScript(QString path)
 }
 
 
-void PyDockWidget::runMultipleCommands(QString command, int n)
+void PythonTerminalWidget::runMultipleCommands(QString command, int n)
 {
     PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
     for(int i=0; i<n; ++i)
     {
         mainContext.evalScript(command);
         mpPyConsole->appendCommandPrompt();
-        //gpPlotWidget->mpPlotVariableTree->getPlotWindow(0)->getCurrentPlotTab()->getCurves(0).last()->updateToNewGeneration();
         qApp->processEvents();
     }
 }
 
+void PythonTerminalWidget::printMessage(const GUIMessage &rMessage)
+{
+    if(!mDoPrintHopsanMessage) return;
 
-QString PyDockWidget::runCommand(QString command)
+    bool mShowInfoMessages = true;
+    bool mShowWarningMessages = true;
+    bool mShowErrorMessages = true;
+    bool mShowDebugMessages = false;
+    // Only show some message types
+    if( (rMessage.mType == Info    && mShowInfoMessages)     ||
+        (rMessage.mType == Warning && mShowWarningMessages)  ||
+        (rMessage.mType == Error   && mShowErrorMessages)    ||
+        (rMessage.mType == Debug   && mShowDebugMessages)    ||
+        (rMessage.mType == UndefinedMessageType)             ||
+        (rMessage.mType == Fatal) )
+    {
+        QString output = rMessage.mMessage;
+        if(!rMessage.mTimestamp.isEmpty())
+        {
+            output.prepend("["+rMessage.mTimestamp+"] ");
+        }
+
+//        // Message is tagged, and group by tag setting is active
+//        if(mGroupByTag && !rMessage.mTag.isEmpty() && (rMessage.mTag == mLastTag) )
+//        {
+//            ++mSubsequentTags;
+//            this->undo();
+//            output.append(QString("    (%1 similar)").arg(mSubsequentTags));
+//        }
+//        // Message is not tagged, or group by tag setting is not active
+//        else
+//        {
+//            mSubsequentTags = 1;
+//            mLastTag =rMessage.mTag;
+//        }
+
+//        mpPyConsole->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+//        mpPyConsole->moveCursor( QTextCursor::StartOfLine, QTextCursor::MoveAnchor );
+        mpPyConsole->consoleMessage(output);
+//        mpPyConsole->->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
+    }
+}
+
+
+QString PythonTerminalWidget::runCommand(QString command)
 {
     //PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
     //QVariant output = mainContext.evalScript(command);
@@ -231,26 +172,71 @@ QString PyDockWidget::runCommand(QString command)
     return getLastOutput();
 }
 
-//! @todo Remove this! It is just a stupid test function, but I am too lazy to fix it now...
-void PyDockWidget::optimize()
-{
-    runMultipleCommands("iterate()", 100);
-}
-
-PyWidget::PyWidget(QWidget *parent)
+PythonTerminalWidget::PythonTerminalWidget(QWidget *parent)
     : QWidget(parent)
 {
-    //Nothing to do...
+    PythonQt::init(PythonQt::RedirectStdOut);
+    PythonQt_QtAll::init();
+
+    PythonQt::self()->registerClass(&ModelObject::staticMetaObject, NULL, PythonQtCreateObject<PyModelObjectClassWrapper>);
+    PythonQt::self()->registerClass(&Port::staticMetaObject, NULL, PythonQtCreateObject<PyPortClassWrapper>);
+    PythonQt::self()->registerClass(&VectorVariable::staticMetaObject, NULL, PythonQtCreateObject<PyVectorVariableClassWrapper>);
+
+    GUIMessageHandler *pPythonMessageHandler = new GUIMessageHandler(this);
+
+    PythonHopsanInterface *pPythonHopsanInterface = new PythonHopsanInterface(pPythonMessageHandler);
+    PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
+    mainContext.addObject("hopsan", pPythonHopsanInterface);
+
+    mpPyConsole = new PythonQtScriptingConsole(NULL, mainContext);
+    mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan.");
+    mpPyConsole->appendCommandPrompt();
+
+    mDoPrintHopsanMessage = true;
+    pPythonMessageHandler->startPublish();
+    connect(pPythonMessageHandler, SIGNAL(newAnyMessage(GUIMessage)), this, SLOT(printMessage(GUIMessage)));
+
+    mpScriptFileLineEdit = new QLineEdit();
+
+    mpLoadScriptButton = new QToolButton(this);
+    mpLoadScriptButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
+    mpLoadScriptButton->setToolTip("Load Script File");
+    connect(mpLoadScriptButton, SIGNAL(clicked()), this, SLOT(loadPyScript()));
+
+    QPushButton *pPyCustomButton = new QPushButton(this);
+    pPyCustomButton->setText("Run .py-file");
+    pPyCustomButton->connect(pPyCustomButton,SIGNAL(clicked()), this, SLOT(runPyScript()));
+
+    QHBoxLayout *pScriptFileLayout = new QHBoxLayout();
+    pScriptFileLayout->addWidget(mpScriptFileLineEdit);
+    pScriptFileLayout->addWidget(mpLoadScriptButton);
+    pScriptFileLayout->addWidget(pPyCustomButton);
+
+    QVBoxLayout *pLayout = new QVBoxLayout(this);
+    pLayout->addWidget(mpPyConsole);
+    pLayout->setContentsMargins(4,4,4,4);
+    pLayout->addLayout(pScriptFileLayout);
+
+    mpScriptFileLineEdit->setText(gpConfig->getLastPyScriptFile());
+
+    // Add script path to Python path
+    QString scriptPath = QString(gpDesktopHandler->getScriptsPath());
+    scriptPath.replace("\\", "/");
+    scriptPath.replace("//", "/");
+    runCommand("import sys");
+    runCommand("sys.path.append(\""+scriptPath+"\")");
+
+    mpPyConsole->clear();
 }
 
 
-//! @brief Reimplementation of QWidget::sizeHint(), used to reduce the size of the plot widget when docked
-QSize PyWidget::sizeHint() const
-{
-    QSize size = QWidget::sizeHint();
-    //Set very small height. A minimum apperantly stops at resonable size.
-    size.rheight() = 1; //pixels
-    return size;
-}
+////! @brief Reimplementation of QWidget::sizeHint(), used to reduce the size of the python widget when docked
+//QSize PyWidget::sizeHint() const
+//{
+//    QSize size = QWidget::sizeHint();
+//    //Set very small height. A minimum apperantly stops at resonable size.
+//    size.rheight() = 1; //pixels
+//    return size;
+//}
 
 #endif

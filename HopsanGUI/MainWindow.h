@@ -107,7 +107,6 @@ public:
     void createContents();
 
     OptionsDialog *getOptionsDialog();
-    PyDockWidget *getPythonDock();
 
     // Get methods for simulation parameters in toolbar
     double getStartTimeFromToolBar();
@@ -256,12 +255,12 @@ private:
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
     QDockWidget *mpSystemParametersDock;
+    QDockWidget *mpPyDockWidget;
 
     QWidget *mpCentralWidget;
     QGridLayout *mpTabgrid;
 
     // Widgets
-    PyDockWidget *mpPyDockWidget;
     MessageWidget *mpMessageWidget;
     HelpDialog *mpHelpDialog;
 

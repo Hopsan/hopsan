@@ -917,7 +917,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         this->mpModelWidget->setSaved(true);
 
 #ifdef USEPYTHONQT
-        gpPyDockWidget->runPyScript(mScriptFilePath);
+        gpPythonTerminalWidget->runPyScript(mScriptFilePath);
 #endif
 
         emit systemParametersChanged(); // Make sure we refresh the syspar widget

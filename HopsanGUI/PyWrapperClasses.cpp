@@ -488,33 +488,49 @@ VectorVariable *PythonHopsanInterface::addFrequencyVariable(const QString &rName
     return pVar.data();
 }
 
-PythonHopsanInterface::PythonHopsanInterface() :
+PythonHopsanInterface::PythonHopsanInterface(GUIMessageHandler *pPythonMessageHandler) :
     QObject(0)
 {
     mpPlotWindow = 0;
     mpAbortDialog = 0;
     mAbort = false;
+    mpPythonMessageHandler = pPythonMessageHandler;
 }
 
 void PythonHopsanInterface::printMessage(const QString& message)
 {
-    gpMessageHandler->addInfoMessage(QString("pyMessage: ").append(message));
-    gpMessageHandler->collectHopsanCoreMessages();
+    if (mpPythonMessageHandler)
+    {
+        mpPythonMessageHandler->addInfoMessage(QString("(Python)  ").append(message));
+        mpPythonMessageHandler->collectHopsanCoreMessages();
+    }
 }
+
 void PythonHopsanInterface::printInfo(const QString& message)
 {
-    gpMessageHandler->addInfoMessage(QString("pyInfo: ").append(message));
-    gpMessageHandler->collectHopsanCoreMessages();
+    if (mpPythonMessageHandler)
+    {
+        mpPythonMessageHandler->addInfoMessage(QString("(Python)  ").append(message));
+        mpPythonMessageHandler->collectHopsanCoreMessages();
+    }
 }
+
 void PythonHopsanInterface::printWarning(const QString& message)
 {
-    gpMessageHandler->addWarningMessage(QString("pyWarning: ").append(message));
-    gpMessageHandler->collectHopsanCoreMessages();
+    if (mpPythonMessageHandler)
+    {
+        mpPythonMessageHandler->addWarningMessage(QString("(Python)  ").append(message));
+        mpPythonMessageHandler->collectHopsanCoreMessages();
+    }
 }
+
 void PythonHopsanInterface::printError(const QString& message)
 {
-    gpMessageHandler->addErrorMessage(QString("pyError: ").append(message));
-    gpMessageHandler->collectHopsanCoreMessages();
+    if (mpPythonMessageHandler)
+    {
+        mpPythonMessageHandler->addErrorMessage(QString("(Python)  ").append(message));
+        mpPythonMessageHandler->collectHopsanCoreMessages();
+    }
 }
 
 

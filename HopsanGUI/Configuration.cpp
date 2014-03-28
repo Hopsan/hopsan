@@ -184,7 +184,7 @@ void Configuration::saveToXml()
     //Save python session
 #ifdef USEPYTHONQT
     QDomElement python = appendDomElement(configRoot, "python");
-    gpPyDockWidget->saveSettingsToDomElement(python);
+    gpPythonTerminalWidget->saveSettingsToDomElement(python);
 #endif
 
     QDomElement hcom = appendDomElement(configRoot, "hcom");
@@ -555,10 +555,7 @@ void Configuration::loadScriptSettings(QDomElement &rPythonElement, QDomElement 
     if(!rPythonElement.isNull())
     {
         QDomElement lastScriptElement = rPythonElement.firstChildElement("lastscript");
-        mLastScriptFile = lastScriptElement.attribute("file");
-
-        QDomElement initScriptElement = rPythonElement.firstChildElement("initscript");
-        mInitScript = initScriptElement.text();
+        mLastPyScriptFile = lastScriptElement.attribute("file");
     }
 
     if(!rHcomElement.isNull())
@@ -852,16 +849,9 @@ QString Configuration::getStyleSheet()
 
 
 //! @brief Returns the last used script file
-QString Configuration::getLastScriptFile()
+QString Configuration::getLastPyScriptFile()
 {
-    return mLastScriptFile;
-}
-
-
-//! @brief Returns the last used script file
-QString Configuration::getInitScript()
-{
-    return mInitScript;
+    return mLastPyScriptFile;
 }
 
 
@@ -1259,18 +1249,12 @@ void Configuration::addCustomUnit(QString dataname, QString unitname, double sca
 
 
 
-void Configuration::setLastScriptFile(QString file)
+void Configuration::setLastPyScriptFile(QString file)
 {
-    mLastScriptFile = file;
+    mLastPyScriptFile = file;
     saveToXml();
 }
 
-
-void Configuration::setInitScript(QString script)
-{
-    mInitScript = script;
-    saveToXml();
-}
 
 void Configuration::setGroupMessagesByTag(bool value)
 {

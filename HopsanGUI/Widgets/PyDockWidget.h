@@ -33,15 +33,18 @@
 #include <QToolButton>
 #include <QtXml>
 
+#include "MessageHandler.h"
+
 // Forward declarations
 class PythonQtScriptingConsole;
 
-class PyDockWidget : public QDockWidget
+class PythonTerminalWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    PyDockWidget(QWidget *parent=0);
+    PythonTerminalWidget(QWidget * parent = 0);
+    //QSize sizeHint() const;
     QString getScriptFileName();
     void saveSettingsToDomElement(QDomElement &rDomElement);
     QString getLastOutput();
@@ -51,31 +54,16 @@ public slots:
     void runPyScript();
     void runPyScript(QString command);
     void runMultipleCommands(QString command, int n);
-    void optimize();
+    void printMessage(const GUIMessage &rMessage);
 
 private slots:
     void loadPyScript();
-    void openInitScriptDialog();
-    void setInitScriptFromDialog();
 
 private:
     PythonQtScriptingConsole *mpPyConsole;
     QLineEdit *mpScriptFileLineEdit;
-    QToolButton *mpInitScriptButton;
     QToolButton *mpLoadScriptButton;
-    QString mInitScript;
-    QDialog *mpDialog;
-    QTextEdit *mpTextEdit;
-};
-
-
-class PyWidget : public QWidget
-{
-    Q_OBJECT
-
-public:
-    PyWidget(QWidget * parent = 0);
-    QSize sizeHint() const;
+    bool mDoPrintHopsanMessage;
 };
 #endif
 

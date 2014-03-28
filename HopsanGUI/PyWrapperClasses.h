@@ -32,6 +32,7 @@
 
 // Qt Forward declaritions
 class QProgressDialog;
+class GUIMessageHandler;
 
 // Hopsan Forward declarations
 class VectorVariable;
@@ -43,7 +44,7 @@ class PythonHopsanInterface : public QObject
 {
     Q_OBJECT
 public:
-    PythonHopsanInterface();
+    PythonHopsanInterface(GUIMessageHandler *pPythonMessageHandler);
 
 public slots:
     // Messages
@@ -115,9 +116,11 @@ public slots:
     VectorVariable* addFrequencyVariable(const QString& rName, QVector<double> &rFrequency, QVector<double> &rData);
 
 private:
+
     QPointer<PlotWindow> mpPlotWindow;
     bool mAbort;
     QProgressDialog *mpAbortDialog;
+    GUIMessageHandler *mpPythonMessageHandler;
 };
 
 

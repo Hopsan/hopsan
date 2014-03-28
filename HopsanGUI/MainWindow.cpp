@@ -96,7 +96,7 @@ LibraryHandler *gpLibraryHandler = 0;
 HelpPopUpWidget *gpHelpPopupWidget = 0;
 SensitivityAnalysisDialog *gpSensitivityAnalysisDialog = 0;
 HelpDialog *gpHelpDialog = 0;
-PyDockWidget *gpPyDockWidget = 0;
+PythonTerminalWidget *gpPythonTerminalWidget = 0;
 OptimizationDialog *gpOptimizationDialog = 0;
 QAction *gpToggleNamesAction = 0;
 QAction *gpTogglePortsAction = 0;
@@ -198,8 +198,10 @@ void MainWindow::createContents()
 
     //Create the Python widget
 #ifdef USEPYTHONQT
-    mpPyDockWidget = new PyDockWidget(this);
-    gpPyDockWidget = mpPyDockWidget;
+    mpPyDockWidget = new QDockWidget(tr("Python Console"),this);
+    mpPyDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    gpPythonTerminalWidget = new PythonTerminalWidget(this);
+    mpPyDockWidget->setWidget(gpPythonTerminalWidget);
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 #else
@@ -354,10 +356,6 @@ void MainWindow::createContents()
 //! All startup events that does not involve creating the main window and its widgets/dialogs belongs here.
 void MainWindow::initializeWorkspace()
 {
-#ifdef USEPYTHONQT
-    mpPyDockWidget->runCommand(gpConfig->getInitScript());
-#endif
-
     gpSplash->showMessage("Loading component libraries...");
 
     // Load HopsanGui built in secret components
@@ -455,16 +453,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     gpTerminalWidget->saveConfig();
     gpConfig->saveToXml();
 }
-
-
-
-
-//! @brief Returns a pointer to the python scripting dock widget.
-PyDockWidget *MainWindow::getPythonDock()
-{
-    return mpPyDockWidget;
-}
-
 
 
 //! @brief Defines the actions used by the toolbars

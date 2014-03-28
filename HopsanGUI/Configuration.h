@@ -72,8 +72,7 @@ public:
     QStringList getRecentGeneratorModels();
     QStringList getLastSessionModels();
 
-    QString getLastScriptFile();
-    QString getInitScript();
+    QString getLastPyScriptFile();
 
     QString getDefaultUnit(const QString &rPhysicalQuantity) const;
     QMap<QString, double> getCustomUnits(const QString &rPhysicalQuantity);
@@ -128,8 +127,7 @@ public:
     void clearLastSessionModels();
     void setDefaultUnit(QString key, QString value);
     void addCustomUnit(QString dataname, QString unitname, double scale);
-    void setLastScriptFile(QString file);
-    void setInitScript(QString script);
+    void setLastPyScriptFile(QString file);
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
     void setCacheLogData(const bool value);
@@ -184,8 +182,7 @@ private:
     QPalette mPalette;
     QFont mFont;
     QString mStyleSheet;
-    QString mLastScriptFile;
-    QString mInitScript;
+    QString mLastPyScriptFile;
     bool mGroupMessagesByTag;
     int mGenerationLimit;
     bool mCacheLogData;
