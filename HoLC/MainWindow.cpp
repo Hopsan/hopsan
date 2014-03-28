@@ -54,24 +54,27 @@ MainWindow::MainWindow(QWidget *pParent)
 
     //Create toolbars
     QAction *pNewAction = new QAction("New Library", this);
-    pNewAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-New.png"));
+    pNewAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-New.png"));
     QAction *pOpenAction = new QAction("Open Library", this);
-    pOpenAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Open.png"));
+    pOpenAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Open.png"));
     QAction *pSaveAction = new QAction("Save Current File", this);
-    pSaveAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Save.png"));
+    pSaveAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Save.png"));
     QAction *pAddComponentAction = new QAction("Add New Component", this);
-    pAddComponentAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Add.png"));
+    pAddComponentAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Add.png"));
+    QAction *pAddComponentFromFileAction = new QAction("Add Component From Existing File", this);
+    pAddComponentFromFileAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-AddFromFile.png"));
     QAction *pOptionsAction = new QAction("Options", this);
-    pOptionsAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Options.png"));
+    pOptionsAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Options.png"));
     pOptionsAction->setCheckable(true);
     QAction *pCompileAction = new QAction("Compile Library", this);
-    pCompileAction->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Compile.png"));
+    pCompileAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Compile.png"));
 
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pNewAction);
     pToolBar->addAction(pOpenAction);
     pToolBar->addAction(pSaveAction);
     pToolBar->addAction(pAddComponentAction);
+    pToolBar->addAction(pAddComponentFromFileAction);
     pToolBar->addAction(pOptionsAction);
     pToolBar->addAction(pCompileAction);
     this->addToolBar(pToolBar);
@@ -87,16 +90,17 @@ MainWindow::MainWindow(QWidget *pParent)
     mpCreateComponentWizard->hide();
 
     //Setup connetions
-    connect(mpEditorWidget, SIGNAL(textChanged()),    mpFileHandler,        SLOT(updateText()));
-    connect(pOpenAction,    SIGNAL(triggered()),      mpFileHandler,        SLOT(loadFromXml()));
-    connect(pSaveAction,    SIGNAL(triggered()),      mpFileHandler,        SLOT(saveToXml()));
-    connect(mpEditorWidget, SIGNAL(textChanged()),    mpProjectFilesWidget, SLOT(addAsterisk()));
-    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpOptionsWidget,      SLOT(setVisible(bool)));
-    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpEditorWidget,       SLOT(setHidden(bool)));
-    connect(pCompileAction, SIGNAL(triggered()),      mpFileHandler,        SLOT(compileLibrary()));
-    connect(mpFileHandler,  SIGNAL(fileOpened(bool)), pOptionsAction,       SLOT(setChecked(bool)));
-    connect(pNewAction,     SIGNAL(triggered()),      mpNewProjectDialog,   SLOT(show()));
-    connect(pAddComponentAction, SIGNAL(triggered()), mpCreateComponentWizard, SLOT(open()));
+    connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(updateText()));
+    connect(pOpenAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(loadFromXml()));
+    connect(pSaveAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(saveToXml()));
+    connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpProjectFilesWidget,       SLOT(addAsterisk()));
+    connect(pOptionsAction,                 SIGNAL(toggled(bool)),      mpOptionsWidget,            SLOT(setVisible(bool)));
+    connect(pOptionsAction,                 SIGNAL(toggled(bool)),      mpEditorWidget,             SLOT(setHidden(bool)));
+    connect(pCompileAction,                 SIGNAL(triggered()),        mpFileHandler,              SLOT(compileLibrary()));
+    connect(mpFileHandler,                  SIGNAL(fileOpened(bool)),   pOptionsAction,             SLOT(setChecked(bool)));
+    connect(pNewAction,                     SIGNAL(triggered()),        mpNewProjectDialog,         SLOT(show()));
+    connect(pAddComponentAction,            SIGNAL(triggered()),        mpCreateComponentWizard,    SLOT(open()));
+    connect(pAddComponentFromFileAction,    SIGNAL(triggered()),        mpFileHandler,              SLOT(addComponent()));
 
     //Debug
     QString msg = "Test message!";

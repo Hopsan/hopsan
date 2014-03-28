@@ -90,9 +90,11 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     {
         if(pFile->mType == FileObject::Component)
         {
-            includeCompString.append("\n#include \""+pFile->mFileInfo.fileName()+"\"");
+            QDir baseDir(path);
+
+            includeCompString.append("\n#include \""+baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())+"\"");
             registerCompString.append("\n    pComponentFactory->registerCreatorFunction(\""+pFile->mFileInfo.baseName()+"\", "+pFile->mFileInfo.baseName()+"::Creator);");
-            xmlCompString.append("\n    <component>"+pFile->mFileInfo.fileName()+"</component>");
+            xmlCompString.append("\n    <component>"+baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())+"</component>");
         }
     }
 
@@ -115,8 +117,42 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     loadFromXml(QFileInfo(xmlFile).absoluteFilePath());
 }
 
+void FileHandler::addComponent(QString path)
+{
+    if(mFilePtrs.isEmpty())
+    {
+        mpMessageHandler->addErrorMessage("A project must be open before adding components.");
+        return;
+    }
+
+    //! @todo Make sure hpp file is in project directory
+
+    if(path.isEmpty())
+    {
+        path = QFileDialog::getOpenFileName(mpEditorWidget->parentWidget(), "Add Component From Existing File", "", "*.hpp");
+    }
+
+    QFile file(path);
+    if(!path.isEmpty() && file.exists())
+    {
+        FileObject *pFileObject = new FileObject(path, FileObject::Component);
+        mFilePtrs.append(pFileObject);
+
+        QTreeWidgetItem *pItem = mpFilesWidget->addFile(mFilePtrs.last());
+        mTreeToFileMap.insert(pItem, mFilePtrs.last());
+
+        generateXmlAndSourceFiles();
+    }
+}
+
 void FileHandler::addComponent(const QString &code, const QString &typeName)
 {
+    if(mFilePtrs.isEmpty())
+    {
+        mpMessageHandler->addErrorMessage("A project must be open before adding components.");
+        return;
+    }
+
     QString path;
     foreach(const FileObject *pFile, mFilePtrs)
     {
@@ -140,13 +176,8 @@ void FileHandler::addComponent(const QString &code, const QString &typeName)
 
     componentFile.close();
 
-    FileObject *pFileObject = new FileObject(QFileInfo(componentFile).absoluteFilePath(), FileObject::Component);
-    mFilePtrs.append(pFileObject);
 
-    QTreeWidgetItem *pItem = mpFilesWidget->addFile(mFilePtrs.last());
-    mTreeToFileMap.insert(pItem, mFilePtrs.last());
-
-    generateXmlAndSourceFiles();
+    addComponent(QFileInfo(componentFile).absoluteFilePath());
 }
 
 
@@ -386,6 +417,13 @@ void FileHandler::openFile(QTreeWidgetItem *pItem, int)
 
 void FileHandler::removeFile(QTreeWidgetItem *pItem)
 {
+    if(mTreeToFileMap.find(pItem).value()->mType == FileObject::XML ||
+       mTreeToFileMap.find(pItem).value()->mType == FileObject::Source)
+    {
+        mpMessageHandler->addErrorMessage("Project files cannot be removed from project.");
+        return;
+    }
+
     mFilePtrs.remove(mFilePtrs.indexOf(mTreeToFileMap.find(pItem).value()));
     mpFilesWidget->removeItem(pItem);
     mpEditorWidget->clear();

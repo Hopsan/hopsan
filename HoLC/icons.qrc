@@ -1,3 +1,11 @@
 <RCC>
-    <qresource prefix="/gfx"/>
+    <qresource prefix="/gfx">
+        <file>graphics/uiicons/Hopsan-Add.png</file>
+        <file>graphics/uiicons/Hopsan-AddFromFile.png</file>
+        <file>graphics/uiicons/Hopsan-Compile.png</file>
+        <file>graphics/uiicons/Hopsan-New.png</file>
+        <file>graphics/uiicons/Hopsan-Open.png</file>
+        <file>graphics/uiicons/Hopsan-Options.png</file>
+        <file>graphics/uiicons/Hopsan-Save.png</file>
+    </qresource>
 </RCC>

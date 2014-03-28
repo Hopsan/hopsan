@@ -24,6 +24,7 @@ signals:
 public slots:
     void generateNewXmlAndSourceFiles(const QString &libName, QString &path);
     void generateXmlAndSourceFiles(QString path="");
+    void addComponent(QString path="");
     void addComponent(const QString &code, const QString &typeName);
     void loadFromXml();
     void saveToXml();
