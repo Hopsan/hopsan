@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     Utilities/HighlightingUtilities.cpp \
     Widgets/OptionsWidget.cpp \
     Handlers/OptionsHandler.cpp \
-    Utilities/CompilingUtilities.cpp
+    Utilities/CompilingUtilities.cpp \
+    Dialogs/NewProjectDialog.cpp
 
 HEADERS  += MainWindow.h \
     Widgets/ProjectFilesWidget.h \
@@ -33,9 +34,11 @@ HEADERS  += MainWindow.h \
     Utilities/HighlightingUtilities.h \
     Widgets/OptionsWidget.h \
     Handlers/OptionsHandler.h \
-    Utilities/CompilingUtilities.h
+    Utilities/CompilingUtilities.h \
+    Dialogs/NewProjectDialog.h
 
 FORMS    +=
 
 RESOURCES += \
-    icons.qrc
+    icons.qrc \
+    templates.qrc

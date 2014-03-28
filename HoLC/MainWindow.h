@@ -10,6 +10,7 @@ class MessageHandler;
 class FileHandler;
 class OptionsWidget;
 class OptionsHandler;
+class NewProjectDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -24,6 +25,7 @@ private:
     MessageWidget *mpMessageWidget;
     EditorWidget *mpEditorWidget;
     OptionsWidget *mpOptionsWidget;
+    NewProjectDialog *mpNewProjectDialog;
 
     MessageHandler *mpMessageHandler;
     FileHandler *mpFileHandler;

@@ -4,6 +4,8 @@
 #include <QToolBar>
 #include <QGridLayout>
 #include <QMenu>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "MainWindow.h"
 #include "Widgets/ProjectFilesWidget.h"
@@ -13,11 +15,15 @@
 #include "Handlers/MessageHandler.h"
 #include "Handlers/FileHandler.h"
 #include "Handlers/OptionsHandler.h"
+#include "Dialogs/NewProjectDialog.h"
 
 MainWindow::MainWindow(QWidget *pParent)
     : QMainWindow(pParent)
 {
-    this->resize(800,600);
+    // Set the size and position of the main window
+    int sh = qApp->desktop()->screenGeometry().height();
+    int sw = qApp->desktop()->screenGeometry().width();
+    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
 
     //Create dock widgets
     QDockWidget *pFilesDockWidget = new QDockWidget("Project Files", this);
@@ -73,15 +79,20 @@ MainWindow::MainWindow(QWidget *pParent)
     mpMessageHandler = new MessageHandler(mpMessageWidget);
     mpFileHandler = new FileHandler(mpProjectFilesWidget, mpEditorWidget, mpMessageHandler, mpOptionsHandler);
 
+    //Create dialogs
+    mpNewProjectDialog = new NewProjectDialog(mpFileHandler, this);
+    mpNewProjectDialog->hide();
+
     //Setup connetions
-    connect(mpEditorWidget, SIGNAL(textChanged()),    mpFileHandler,          SLOT(updateText()));
-    connect(pOpenAction,    SIGNAL(triggered()),      mpFileHandler,          SLOT(loadFromXml()));
-    connect(pSaveAction,    SIGNAL(triggered()),      mpFileHandler,          SLOT(saveToXml()));
-    connect(mpEditorWidget, SIGNAL(textChanged()),    mpProjectFilesWidget,   SLOT(addAsterisk()));
-    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpOptionsWidget,        SLOT(setVisible(bool)));
-    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpEditorWidget,         SLOT(setHidden(bool)));
-    connect(pCompileAction, SIGNAL(triggered()),      mpFileHandler,          SLOT(compileLibrary()));
+    connect(mpEditorWidget, SIGNAL(textChanged()),    mpFileHandler,        SLOT(updateText()));
+    connect(pOpenAction,    SIGNAL(triggered()),      mpFileHandler,        SLOT(loadFromXml()));
+    connect(pSaveAction,    SIGNAL(triggered()),      mpFileHandler,        SLOT(saveToXml()));
+    connect(mpEditorWidget, SIGNAL(textChanged()),    mpProjectFilesWidget, SLOT(addAsterisk()));
+    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpOptionsWidget,      SLOT(setVisible(bool)));
+    connect(pOptionsAction, SIGNAL(toggled(bool)),    mpEditorWidget,       SLOT(setHidden(bool)));
+    connect(pCompileAction, SIGNAL(triggered()),      mpFileHandler,        SLOT(compileLibrary()));
     connect(mpFileHandler,  SIGNAL(fileOpened(bool)), pOptionsAction,       SLOT(setChecked(bool)));
+    connect(pNewAction,     SIGNAL(triggered()),      mpNewProjectDialog,   SLOT(show()));
 
     //Debug
     QString msg = "Test message!";

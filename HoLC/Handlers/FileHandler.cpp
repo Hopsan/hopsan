@@ -26,6 +26,58 @@ FileHandler::FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditor
     mpCurrentFile = 0;
 }
 
+void FileHandler::generateXmlAndSourceFiles(const QString &libName, const QString &path)
+{
+    QFile xmlFile(path+"/"+libName+".xml");
+    QFile sourceFile(path+"/"+libName+".cc");
+    QFile xmlTemplateFile(":/templates/Templates/xmlTemplate.xml");
+    QFile sourceTemplateFile(":/templates/Templates/sourceTemplate.cc");
+
+    if(!xmlFile.open(QFile::WriteOnly | QFile::Text))
+    {
+        mpMessageHandler->addErrorMessage("Unable to open file for writing: "+xmlFile.fileName());
+        return;
+    }
+
+    if(!sourceFile.open(QFile::WriteOnly | QFile::Text))
+    {
+        mpMessageHandler->addErrorMessage("Unable to open file for writing: "+sourceFile.fileName());
+        return;
+    }
+
+    if(!xmlTemplateFile.open(QFile::ReadOnly | QFile::Text))
+    {
+        mpMessageHandler->addErrorMessage("Unable to open file for reading: "+xmlTemplateFile.fileName());
+        return;
+    }
+
+    if(!sourceTemplateFile.open(QFile::ReadOnly | QFile::Text))
+    {
+        mpMessageHandler->addErrorMessage("Unable to open file for reading: "+sourceTemplateFile.fileName());
+        return;
+    }
+
+    QString xmlCode = xmlTemplateFile.readAll();
+    QString sourceCode = sourceTemplateFile.readAll();
+
+    sourceCode.replace("<<<includecomponents>>>","");
+    sourceCode.replace("<<<registercomponents>>>","");
+    sourceCode.replace("<<<libname>>>", libName);
+
+    xmlCode.replace("<<<libname>>>", libName);
+    xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
+    xmlCode.replace("<<<components>>>","");
+    xmlCode.replace("<<<auxiliary>>>","");
+
+    sourceFile.write(sourceCode.toUtf8());
+    xmlFile.write(xmlCode.toUtf8());
+
+    sourceFile.close();
+    xmlFile.close();
+
+    loadFromXml(QFileInfo(xmlFile).absoluteFilePath());
+}
+
 
 void FileHandler::loadFromXml()
 {

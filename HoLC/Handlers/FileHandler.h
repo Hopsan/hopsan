@@ -22,6 +22,7 @@ signals:
     void fileOpened(bool);
 
 public slots:
+    void generateXmlAndSourceFiles(const QString &libName, const QString &path);
     void loadFromXml();
     void saveToXml();
     void updateText();
