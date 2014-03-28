@@ -11,6 +11,7 @@ class FileHandler;
 class OptionsWidget;
 class OptionsHandler;
 class NewProjectDialog;
+class CreateComponentWizard;
 
 class MainWindow : public QMainWindow
 {
@@ -26,6 +27,7 @@ private:
     EditorWidget *mpEditorWidget;
     OptionsWidget *mpOptionsWidget;
     NewProjectDialog *mpNewProjectDialog;
+    CreateComponentWizard *mpCreateComponentWizard;
 
     MessageHandler *mpMessageHandler;
     FileHandler *mpFileHandler;

@@ -16,6 +16,7 @@
 #include "Handlers/FileHandler.h"
 #include "Handlers/OptionsHandler.h"
 #include "Dialogs/NewProjectDialog.h"
+#include "Dialogs/CreateComponentWizard.h"
 
 MainWindow::MainWindow(QWidget *pParent)
     : QMainWindow(pParent)
@@ -82,6 +83,8 @@ MainWindow::MainWindow(QWidget *pParent)
     //Create dialogs
     mpNewProjectDialog = new NewProjectDialog(mpFileHandler, this);
     mpNewProjectDialog->hide();
+    mpCreateComponentWizard = new CreateComponentWizard(mpFileHandler, mpMessageHandler, this);
+    mpCreateComponentWizard->hide();
 
     //Setup connetions
     connect(mpEditorWidget, SIGNAL(textChanged()),    mpFileHandler,        SLOT(updateText()));
@@ -93,6 +96,7 @@ MainWindow::MainWindow(QWidget *pParent)
     connect(pCompileAction, SIGNAL(triggered()),      mpFileHandler,        SLOT(compileLibrary()));
     connect(mpFileHandler,  SIGNAL(fileOpened(bool)), pOptionsAction,       SLOT(setChecked(bool)));
     connect(pNewAction,     SIGNAL(triggered()),      mpNewProjectDialog,   SLOT(show()));
+    connect(pAddComponentAction, SIGNAL(triggered()), mpCreateComponentWizard, SLOT(open()));
 
     //Debug
     QString msg = "Test message!";

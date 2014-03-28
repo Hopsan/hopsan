@@ -1,11 +1,11 @@
 #include "ComponentEssentials.h"
-<<<includecomponents>>>
+#include "ComponentUtilities.h"<<<includecomponents>>>
+
 using namespace hopsan;
 
 //Register components
 extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* /*pNodeFactory*/)
-{
-    <<<registercomponents>>>
+{    <<<registercomponents>>>
 }
 
 //Provide library information for Hopsan

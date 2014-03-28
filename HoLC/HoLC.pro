@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     Widgets/OptionsWidget.cpp \
     Handlers/OptionsHandler.cpp \
     Utilities/CompilingUtilities.cpp \
-    Dialogs/NewProjectDialog.cpp
+    Dialogs/NewProjectDialog.cpp \
+    Dialogs/CreateComponentWizard.cpp
 
 HEADERS  += MainWindow.h \
     Widgets/ProjectFilesWidget.h \
@@ -35,7 +36,8 @@ HEADERS  += MainWindow.h \
     Widgets/OptionsWidget.h \
     Handlers/OptionsHandler.h \
     Utilities/CompilingUtilities.h \
-    Dialogs/NewProjectDialog.h
+    Dialogs/NewProjectDialog.h \
+    Dialogs/CreateComponentWizard.h
 
 FORMS    +=
 

@@ -26,10 +26,33 @@ FileHandler::FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditor
     mpCurrentFile = 0;
 }
 
-void FileHandler::generateXmlAndSourceFiles(const QString &libName, const QString &path)
+void FileHandler::generateNewXmlAndSourceFiles(const QString &libName, QString &path)
 {
-    QFile xmlFile(path+"/"+libName+".xml");
-    QFile sourceFile(path+"/"+libName+".cc");
+    mFilePtrs.clear();
+    mTreeToFileMap.clear();
+    mpFilesWidget->mpTreeWidget->clear();
+
+    mLibName = libName;
+    mLibTarget = libName;
+
+    generateXmlAndSourceFiles(path);
+}
+
+void FileHandler::generateXmlAndSourceFiles(QString path)
+{
+    if(path.isEmpty())
+    {
+        foreach(const FileObject *pFile, mFilePtrs)
+        {
+            if(pFile->mType == FileObject::XML)
+            {
+                path = pFile->mFileInfo.absolutePath();
+            }
+        }
+    }
+
+    QFile xmlFile(path+"/"+mLibName+".xml");
+    QFile sourceFile(path+"/"+mLibName+".cc");
     QFile xmlTemplateFile(":/templates/Templates/xmlTemplate.xml");
     QFile sourceTemplateFile(":/templates/Templates/sourceTemplate.cc");
 
@@ -60,13 +83,27 @@ void FileHandler::generateXmlAndSourceFiles(const QString &libName, const QStrin
     QString xmlCode = xmlTemplateFile.readAll();
     QString sourceCode = sourceTemplateFile.readAll();
 
-    sourceCode.replace("<<<includecomponents>>>","");
-    sourceCode.replace("<<<registercomponents>>>","");
-    sourceCode.replace("<<<libname>>>", libName);
+    QString includeCompString;
+    QString registerCompString;
+    QString xmlCompString;
+    foreach(const FileObject *pFile, mFilePtrs)
+    {
+        if(pFile->mType == FileObject::Component)
+        {
+            includeCompString.append("\n#include \""+pFile->mFileInfo.fileName()+"\"");
+            registerCompString.append("\n    pComponentFactory->registerCreatorFunction(\""+pFile->mFileInfo.baseName()+"\", "+pFile->mFileInfo.baseName()+"::Creator);");
+            xmlCompString.append("\n    <component>"+pFile->mFileInfo.fileName()+"</component>");
+        }
+    }
 
-    xmlCode.replace("<<<libname>>>", libName);
+
+    sourceCode.replace("<<<includecomponents>>>",includeCompString);
+    sourceCode.replace("<<<registercomponents>>>",registerCompString);
+    sourceCode.replace("<<<libname>>>", mLibName);
+
+    xmlCode.replace("<<<libname>>>", mLibName);
     xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
-    xmlCode.replace("<<<components>>>","");
+    xmlCode.replace("<<<components>>>",xmlCompString);
     xmlCode.replace("<<<auxiliary>>>","");
 
     sourceFile.write(sourceCode.toUtf8());
@@ -76,6 +113,40 @@ void FileHandler::generateXmlAndSourceFiles(const QString &libName, const QStrin
     xmlFile.close();
 
     loadFromXml(QFileInfo(xmlFile).absoluteFilePath());
+}
+
+void FileHandler::addComponent(const QString &code, const QString &typeName)
+{
+    QString path;
+    foreach(const FileObject *pFile, mFilePtrs)
+    {
+        if(pFile->mType == FileObject::XML)
+        {
+            path = pFile->mFileInfo.absolutePath();
+        }
+    }
+
+    if(path.isEmpty()) return;
+
+    QFile componentFile(path+"/"+typeName+".hpp");
+
+    if(!componentFile.open(QFile::WriteOnly | QFile::Text))
+    {
+        mpMessageHandler->addErrorMessage("Cannot open file for writing: " + componentFile.fileName());
+        return;
+    }
+
+    componentFile.write(code.toUtf8());
+
+    componentFile.close();
+
+    FileObject *pFileObject = new FileObject(QFileInfo(componentFile).absoluteFilePath(), FileObject::Component);
+    mFilePtrs.append(pFileObject);
+
+    QTreeWidgetItem *pItem = mpFilesWidget->addFile(mFilePtrs.last());
+    mTreeToFileMap.insert(pItem, mFilePtrs.last());
+
+    generateXmlAndSourceFiles();
 }
 
 

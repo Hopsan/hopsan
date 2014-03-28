@@ -69,7 +69,7 @@ void NewProjectDialog::accept()
 
     //! @todo Check that everything is ok
 
-    mpFileHandler->generateXmlAndSourceFiles(libName, libPath);
+    mpFileHandler->generateNewXmlAndSourceFiles(libName, libPath);
 
     QDialog::close();
 }
