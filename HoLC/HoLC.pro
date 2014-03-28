@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HoLC
 TEMPLATE = app
+DESTDIR = $${PWD}/../bin
 
 
 SOURCES += main.cpp\
@@ -24,7 +25,9 @@ SOURCES += main.cpp\
     Handlers/OptionsHandler.cpp \
     Utilities/CompilingUtilities.cpp \
     Dialogs/NewProjectDialog.cpp \
-    Dialogs/CreateComponentWizard.cpp
+    Dialogs/CreateComponentWizard.cpp \
+    Configuration.cpp \
+    Utilities/XMLUtilities.cpp
 
 HEADERS  += MainWindow.h \
     Widgets/ProjectFilesWidget.h \
@@ -37,7 +40,9 @@ HEADERS  += MainWindow.h \
     Handlers/OptionsHandler.h \
     Utilities/CompilingUtilities.h \
     Dialogs/NewProjectDialog.h \
-    Dialogs/CreateComponentWizard.h
+    Dialogs/CreateComponentWizard.h \
+    Configuration.h \
+    Utilities/XMLUtilities.h
 
 FORMS    +=
 

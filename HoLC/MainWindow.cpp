@@ -8,6 +8,7 @@
 #include <QDesktopWidget>
 
 #include "MainWindow.h"
+#include "Configuration.h"
 #include "Widgets/ProjectFilesWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/EditorWidget.h"
@@ -21,6 +22,13 @@
 MainWindow::MainWindow(QWidget *pParent)
     : QMainWindow(pParent)
 {
+    //Create and load configuration
+    mpConfiguration = new Configuration(this);
+    mpConfiguration->loadFromXml();
+
+    this->setStyleSheet(mpConfiguration->getStyleSheet());
+    this->setPalette(mpConfiguration->getPalette());
+
     // Set the size and position of the main window
     int sh = qApp->desktop()->screenGeometry().height();
     int sw = qApp->desktop()->screenGeometry().width();
@@ -111,5 +119,6 @@ MainWindow::MainWindow(QWidget *pParent)
 
 MainWindow::~MainWindow()
 {
+    mpConfiguration->saveToXml();
 }
 

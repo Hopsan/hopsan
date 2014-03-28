@@ -12,6 +12,7 @@ class OptionsWidget;
 class OptionsHandler;
 class NewProjectDialog;
 class CreateComponentWizard;
+class Configuration;
 
 class MainWindow : public QMainWindow
 {
@@ -22,6 +23,8 @@ public:
     ~MainWindow();
 
 private:
+    Configuration *mpConfiguration;
+
     ProjectFilesWidget *mpProjectFilesWidget;
     MessageWidget *mpMessageWidget;
     EditorWidget *mpEditorWidget;
