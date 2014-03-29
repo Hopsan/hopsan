@@ -15,7 +15,6 @@
 #include "Widgets/OptionsWidget.h"
 #include "Handlers/MessageHandler.h"
 #include "Handlers/FileHandler.h"
-#include "Handlers/OptionsHandler.h"
 #include "Dialogs/NewProjectDialog.h"
 #include "Dialogs/CreateComponentWizard.h"
 
@@ -28,6 +27,10 @@ MainWindow::MainWindow(QWidget *pParent)
 
     this->setStyleSheet(mpConfiguration->getStyleSheet());
     this->setPalette(mpConfiguration->getPalette());
+
+    QFont font = qApp->font();
+    font.setPixelSize(12);
+    qApp->setFont(font);
 
     // Set the size and position of the main window
     int sh = qApp->desktop()->screenGeometry().height();
@@ -42,13 +45,11 @@ MainWindow::MainWindow(QWidget *pParent)
     this->addDockWidget(Qt::LeftDockWidgetArea, pFilesDockWidget);
     this->addDockWidget(Qt::BottomDockWidgetArea, pMessageDockWidget);
 
-    mpOptionsHandler = new OptionsHandler();
-
     //Create widgets
     mpEditorWidget = new EditorWidget(this);
     mpProjectFilesWidget = new ProjectFilesWidget(this);
     mpMessageWidget = new MessageWidget(this);
-    mpOptionsWidget = new OptionsWidget(mpOptionsHandler, this);
+    mpOptionsWidget = new OptionsWidget(mpConfiguration, this);
 
     //Assign widgets to areas
     QWidget *pCentralWidget = new QWidget(this);
@@ -89,7 +90,7 @@ MainWindow::MainWindow(QWidget *pParent)
 
     //Create handlers
     mpMessageHandler = new MessageHandler(mpMessageWidget);
-    mpFileHandler = new FileHandler(mpProjectFilesWidget, mpEditorWidget, mpMessageHandler, mpOptionsHandler);
+    mpFileHandler = new FileHandler(mpConfiguration, mpProjectFilesWidget, mpEditorWidget, mpMessageHandler);
 
     //Create dialogs
     mpNewProjectDialog = new NewProjectDialog(mpFileHandler, this);
@@ -110,11 +111,11 @@ MainWindow::MainWindow(QWidget *pParent)
     connect(pAddComponentAction,            SIGNAL(triggered()),        mpCreateComponentWizard,    SLOT(open()));
     connect(pAddComponentFromFileAction,    SIGNAL(triggered()),        mpFileHandler,              SLOT(addComponent()));
 
-    //Debug
-    QString msg = "Test message!";
-    mpMessageHandler->addInfoMessage(msg);
-    mpMessageHandler->addWarningMessage(msg);
-    mpMessageHandler->addErrorMessage(msg);
+    //Load last session project (if exists)
+    if(!mpConfiguration->getProjectPath().isEmpty())
+    {
+        mpFileHandler->loadFromXml(mpConfiguration->getProjectPath());
+    }
 }
 
 MainWindow::~MainWindow()

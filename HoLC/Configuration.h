@@ -21,12 +21,17 @@ public:
     void loadFromXml();
     void loadDefaultsFromXml();
 
-    QString getProjectPath();
-
+    QString getProjectPath() const;
+    QString getHopsanPath() const;
+    QString getIncludePath() const;
+    QString getHopsanCoreLibPath() const;
+    QString getCompilerPath() const;
     QPalette getPalette();
     QString getStyleSheet();
 
-    void setProjectPath(QString dir);
+    void setProjectPath(const QString &value);
+    void setHopsanPath(const QString &value);
+    void setCompilerPath(const QString &value);
 
 private:
     QWidget *mpParent;
@@ -35,6 +40,8 @@ private:
     void loadStyleSettings(QDomElement &rDomElement);
 
     QString mProjectPath;
+    QString mHopsanPath;
+    QString mCompilerPath;
     QPalette mPalette;
     QString mStyleSheet;
 };

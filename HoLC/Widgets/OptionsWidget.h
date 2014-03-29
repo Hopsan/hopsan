@@ -5,13 +5,13 @@
 #include <QLabel>
 #include <QLineEdit>
 
-class OptionsHandler;
+class Configuration;
 
 class OptionsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit OptionsWidget(OptionsHandler *pOptionsHandler, QWidget *parent = 0);
+    explicit OptionsWidget(Configuration *pConfiguration, QWidget *parent = 0);
 
 signals:
 
@@ -19,7 +19,9 @@ public slots:
 
 private slots:
     void setHopsanPath();
+    void setHopsanPath(const QString &path);
     void setCompilerPath();
+    void setCompilerPath(const QString &path);
 
 private:
     QLineEdit *mpHopsanDirLineEdit;
@@ -29,7 +31,7 @@ private:
     QLineEdit *mpCompilerLineEdit;
     QLabel *mpCompilerWarningLabel;
 
-    OptionsHandler *mpOptionsHandler;
+    Configuration *mpConfiguration;
 };
 
 #endif // OPTIONSWIDGET_H

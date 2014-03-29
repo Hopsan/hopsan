@@ -5,6 +5,7 @@
 #include <QtXml>
 #include <QFileDialog>
 
+#include "Configuration.h"
 #include "FileHandler.h"
 #include "Widgets/ProjectFilesWidget.h"
 #include "Widgets/EditorWidget.h"
@@ -12,13 +13,13 @@
 #include "Utilities/CompilingUtilities.h"
 #include "Handlers/OptionsHandler.h"
 
-FileHandler::FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler, OptionsHandler *pOptionsHandler) :
+FileHandler::FileHandler(Configuration *pConfiuration, ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler) :
     QObject(0)
 {
+    mpConfiguration = pConfiuration;
     mpFilesWidget = pFilesWidget;
     mpEditorWidget = pEditorWidget;
     mpMessageHandler = pMessageHandler;
-    mpOptionsHandler = pOptionsHandler;
 
     connect(pFilesWidget->mpTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(openFile(QTreeWidgetItem*, int)));
     connect(pFilesWidget, SIGNAL(deleteRequested(QTreeWidgetItem*)), this, SLOT(removeFile(QTreeWidgetItem*)));
@@ -272,6 +273,8 @@ void FileHandler::loadFromXml(const QString &path)
         }
     }
     file.close();
+
+    mpConfiguration->setProjectPath(path);
 }
 
 void FileHandler::saveToXml(const QString &filePath)
@@ -342,7 +345,7 @@ void FileHandler::updateText()
 
 void FileHandler::compileLibrary()
 {
-    if(mpOptionsHandler->getIncludePath().isEmpty())
+    if(mpConfiguration->getIncludePath().isEmpty())
     {
         mpMessageHandler->addErrorMessage("Hopsan path is not setup correctly.");
         return;
@@ -367,15 +370,19 @@ void FileHandler::compileLibrary()
         }
     }
 
-    includeDirs.append(mpOptionsHandler->getIncludePath());
-    libs.append(mpOptionsHandler->getLibPath());
+    includeDirs.append(mpConfiguration->getIncludePath());
+    libs.append(mpConfiguration->getHopsanCoreLibPath());
 
     QString target = mLibTarget;
 #ifdef linux
     target.prepend("lib");
 #endif
 
-    QString compilerPath = mpOptionsHandler->getCompilerPath();
+#ifdef linux
+    QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
+#elif WIN32
+    QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc.exe";
+#endif
 
     bool success;
     QStringList output = compileComponentLibrary(compilerPath, path, target, sources, libs, includeDirs, success);

@@ -5,12 +5,12 @@
 #include <QFileDialog>
 
 #include "OptionsWidget.h"
-#include "Handlers/OptionsHandler.h"
+#include "Configuration.h"
 
-OptionsWidget::OptionsWidget(OptionsHandler *pOptionsHandler, QWidget *parent) :
+OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     QWidget(parent)
 {
-    mpOptionsHandler = pOptionsHandler;
+    mpConfiguration = pConfiguration;
 
     QFont font = this->font();
     font.setBold(true);
@@ -63,11 +63,15 @@ OptionsWidget::OptionsWidget(OptionsHandler *pOptionsHandler, QWidget *parent) :
     connect(pHopsanDirButton, SIGNAL(clicked()), this, SLOT(setHopsanPath()));
     connect(pCompilerButton, SIGNAL(clicked()), this, SLOT(setCompilerPath()));
 
-    if(!mpOptionsHandler->getCompilerPath().isEmpty())
+    if(!mpConfiguration->getCompilerPath().isEmpty())
     {
-        mpCompilerLineEdit->setText(mpOptionsHandler->getCompilerPath());
+        mpCompilerLineEdit->setText(mpConfiguration->getCompilerPath());
         mpCompilerWarningLabel->hide();
     }
+
+    //Load paths from configuration
+    setCompilerPath(mpConfiguration->getCompilerPath());
+    setHopsanPath(mpConfiguration->getHopsanPath());
 }
 
 
@@ -77,6 +81,11 @@ void OptionsWidget::setHopsanPath()
 
     if(path.isEmpty()) return;
 
+    setHopsanPath(path);
+}
+
+void OptionsWidget::setHopsanPath(const QString &path)
+{
     bool success = true;
     QString lib, includeDir;
 #ifdef WIN32
@@ -95,20 +104,19 @@ void OptionsWidget::setHopsanPath()
     }
 
     mpHopsanDirLineEdit->setText(path);
+    mpConfiguration->setHopsanPath(path);
     if(success)
     {
-        mpOptionsHandler->setLibPath(lib);
-        mpOptionsHandler->setIncludePath(includeDir);
-
+        //mpOptionsHandler->setLibPath(lib);
+        //mpOptionsHandler->setIncludePath(includeDir);
         mpLibraryLineEdit->setText(lib);
         mpIncludeLineEdit->setText(includeDir);
         mpWarningLabel->setVisible(false);
     }
     else
     {
-        mpOptionsHandler->setLibPath(QString());
-        mpOptionsHandler->setIncludePath(QString());
-
+        //mpOptionsHandler->setLibPath(QString());
+        //mpOptionsHandler->setIncludePath(QString());
         mpLibraryLineEdit->clear();
         mpIncludeLineEdit->clear();
         mpWarningLabel->setVisible(true);
@@ -117,10 +125,15 @@ void OptionsWidget::setHopsanPath()
 
 void OptionsWidget::setCompilerPath()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "Set Hopsan Path:");
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:");
 
     if(path.isEmpty()) return;
 
+    setCompilerPath(path);
+}
+
+void OptionsWidget::setCompilerPath(const QString &path)
+{
     QString filePath;
 #ifdef linux
     filePath = path+"/gcc";
@@ -129,17 +142,18 @@ void OptionsWidget::setCompilerPath()
     filePath = path+"/gcc.exe";
 #endif
     //! @todo We should also check that it is the correct version of gcc!
+
+    mpConfiguration->setCompilerPath(path);
     if(QFile::exists(filePath))
     {
-        mpOptionsHandler->setCompilerPath(filePath);
+        //mpOptionsHandler->setCompilerPath(filePath);
         mpCompilerLineEdit->setText(filePath);
         mpCompilerWarningLabel->hide();
     }
     else
     {
-        mpOptionsHandler->setCompilerPath("");
+        //mpOptionsHandler->setCompilerPath("");
         mpCompilerLineEdit->clear();
         mpCompilerWarningLabel->show();
     }
-
 }

@@ -9,7 +9,6 @@ class EditorWidget;
 class MessageHandler;
 class FileHandler;
 class OptionsWidget;
-class OptionsHandler;
 class NewProjectDialog;
 class CreateComponentWizard;
 class Configuration;
@@ -34,7 +33,6 @@ private:
 
     MessageHandler *mpMessageHandler;
     FileHandler *mpFileHandler;
-    OptionsHandler *mpOptionsHandler;
 };
 
 #endif // MAINWINDOW_H

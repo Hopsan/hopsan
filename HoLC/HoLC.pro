@@ -22,7 +22,6 @@ SOURCES += main.cpp\
     Handlers/FileHandler.cpp \
     Utilities/HighlightingUtilities.cpp \
     Widgets/OptionsWidget.cpp \
-    Handlers/OptionsHandler.cpp \
     Utilities/CompilingUtilities.cpp \
     Dialogs/NewProjectDialog.cpp \
     Dialogs/CreateComponentWizard.cpp \
@@ -37,7 +36,6 @@ HEADERS  += MainWindow.h \
     Handlers/FileHandler.h \
     Utilities/HighlightingUtilities.h \
     Widgets/OptionsWidget.h \
-    Handlers/OptionsHandler.h \
     Utilities/CompilingUtilities.h \
     Dialogs/NewProjectDialog.h \
     Dialogs/CreateComponentWizard.h \

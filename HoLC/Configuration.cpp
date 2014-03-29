@@ -36,6 +36,8 @@ void Configuration::saveToXml()
 
     QDomElement settings = appendDomElement(configRoot,"settings");
     appendDomTextNode(settings, "projectpath", mProjectPath);
+    appendDomTextNode(settings, "hopsanpath", mHopsanPath);
+    appendDomTextNode(settings, "compilerpath", mCompilerPath);
 
     appendRootXMLProcessingInstruction(domDocument);
 
@@ -66,7 +68,7 @@ void Configuration::loadFromXml()
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::warning(mpParent, "Warning", "Unable to find configuration file. Configuration file was recreated with default settings.");
+        //QMessageBox::warning(mpParent, "Warning", "Unable to find configuration file. Configuration file was recreated with default settings.");
         return;
     }
 
@@ -159,6 +161,16 @@ void Configuration::loadDefaultsFromXml()
 void Configuration::loadUserSettings(QDomElement &rDomElement)
 {
     mProjectPath = rDomElement.firstChildElement("projectpath").text();
+    mHopsanPath = rDomElement.firstChildElement("hopsanpath").text();
+    mCompilerPath = rDomElement.firstChildElement("compilerpath").text();
+
+    //Default to installed gcc path in linux (if file exists and no other path specified)
+#ifdef linux
+    if(mCompilerPath.isEmpty() && QFile::exists("/usr/bin/gcc"))
+    {
+        mCompilerPath = "/usr/bin";
+    }
+#endif
 }
 
 
@@ -200,14 +212,50 @@ void Configuration::loadStyleSettings(QDomElement &rDomElement)
 
 
 //! @brief Returns which library style to use
-QString Configuration::getProjectPath()
+QString Configuration::getProjectPath() const
 {
     return mProjectPath;
 }
 
-void Configuration::setProjectPath(QString value)
+QString Configuration::getHopsanPath() const
+{
+    return mHopsanPath;
+}
+
+QString Configuration::getIncludePath() const
+{
+    return mHopsanPath+"/HopsanCore/include";
+}
+
+QString Configuration::getHopsanCoreLibPath() const
+{
+#ifdef linux
+    return mHopsanPath+"/bin/libHopsanCore.so";
+#elif WIN32
+    return mHopsanPath+"/bin/HopsanCore.dll";
+#endif
+}
+
+QString Configuration::getCompilerPath() const
+{
+    return mCompilerPath;
+}
+
+void Configuration::setProjectPath(const QString &value)
 {
     mProjectPath = value;
+    saveToXml();
+}
+
+void Configuration::setHopsanPath(const QString &value)
+{
+    mHopsanPath = value;
+    saveToXml();
+}
+
+void Configuration::setCompilerPath(const QString &value)
+{
+    mCompilerPath = value;
     saveToXml();
 }
 
@@ -223,3 +271,4 @@ QString Configuration::getStyleSheet()
 {
     return mStyleSheet;
 }
+

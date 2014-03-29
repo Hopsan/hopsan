@@ -5,18 +5,18 @@
 #include <QFileInfo>
 #include <QTreeWidgetItem>
 
+class Configuration;
 class ProjectFilesWidget;
 class EditorWidget;
 class MessageHandler;
 class FileObject;
-class OptionsHandler;
 
 class FileHandler : public QObject
 {
     Q_OBJECT
 
 public:
-    FileHandler(ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler, OptionsHandler *pOptionsHandler);
+    FileHandler(Configuration *pConfiuration, ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler);
 
 signals:
     void fileOpened(bool);
@@ -30,19 +30,18 @@ public slots:
     void saveToXml();
     void updateText();
     void compileLibrary();
+    void saveToXml(const QString &path);
+    void loadFromXml(const QString &path);
 
 private slots:
     void openFile(QTreeWidgetItem *pItem, int);
     void removeFile(QTreeWidgetItem *pItem);
 
 private:
-    void saveToXml(const QString &path);
-    void loadFromXml(const QString &path);
-
+    Configuration *mpConfiguration;
     ProjectFilesWidget *mpFilesWidget;
     EditorWidget *mpEditorWidget;
     MessageHandler *mpMessageHandler;
-    OptionsHandler *mpOptionsHandler;
 
     QMap<QTreeWidgetItem*, FileObject*> mTreeToFileMap;
 
