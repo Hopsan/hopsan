@@ -11,7 +11,6 @@
 #include "Widgets/EditorWidget.h"
 #include "MessageHandler.h"
 #include "Utilities/CompilingUtilities.h"
-#include "Handlers/OptionsHandler.h"
 
 FileHandler::FileHandler(Configuration *pConfiuration, ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler) :
     QObject(0)
@@ -31,7 +30,8 @@ void FileHandler::generateNewXmlAndSourceFiles(const QString &libName, QString &
 {
     mFilePtrs.clear();
     mTreeToFileMap.clear();
-    mpFilesWidget->mpTreeWidget->clear();
+   //mpFilesWidget->mpTreeWidget->clear();
+    mpFilesWidget->clear();
 
     mLibName = libName;
     mLibTarget = libName;
@@ -212,7 +212,7 @@ void FileHandler::loadFromXml(const QString &path)
     QFile file(path);
     if(!file.open(QFile::ReadOnly | QFile::Text))
     {
-        mpMessageHandler->addErrorMessage("Cannot open file for reading.");
+        mpMessageHandler->addErrorMessage("Cannot open file for reading: "+path);
         return;
     }
 
@@ -381,7 +381,7 @@ void FileHandler::compileLibrary()
 #ifdef linux
     QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
 #elif WIN32
-    QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc.exe";
+    QString compilerPath = mpConfiguration->getCompilerPath()+"/g++.exe";
 #endif
 
     bool success;

@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDebug>
+#include <QProcess>
 
 QStringList compileComponentLibrary(const QString &compilerPath, const QString &path, const QString &target, const QStringList &sourceFiles, const QStringList &libs, const QStringList &includeDirs, bool &success)
 {
@@ -63,11 +64,11 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
     clBatchFile.setFileName(path + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        output = "Could not open compile.bat for writing.";
+        output.append("Could not open compile.bat for writing.");
         return false;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "call g++.exe "+flags;
+    clBatchStream << "call \""+compilerPath+"\" "+flags;
     clBatchStream << c+" -o "+o+".dll "+i+" "+l+"\n";
     clBatchFile.close();
 #endif
@@ -83,7 +84,7 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
     QList<QByteArray> gccResultList = gccResult.split('\n');
     for(int i=0; i<gccResultList.size(); ++i)
     {
-        output = gccResultList.at(i);
+        output.append(gccResultList.at(i));
         //output = output.remove(output.size()-1, 1);
     }
     QList<QByteArray> gccErrorList = gccError.split('\n');
@@ -95,7 +96,7 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
             --i;
             continue;
         }
-        output = output+ gccErrorList.at(i);
+        output.append(gccErrorList.at(i));
         //output = output.remove(output.size()-1, 1);
     }
 #elif linux

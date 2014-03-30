@@ -51,6 +51,8 @@ QTreeWidgetItem *ProjectFilesWidget::addFile(const FileObject *pFile)
         mpAuxiliaryFilesTopLevelItem->addChild(pNewItem);
         mpAuxiliaryFilesTopLevelItem->setExpanded(true);
     }
+
+    mpTreeWidget->update();
     return pNewItem;
 }
 
@@ -85,19 +87,28 @@ void ProjectFilesWidget::removeItem(QTreeWidgetItem *pItem)
 
 void ProjectFilesWidget::clear()
 {
-    while(mpProjectFilesTopLevelItem->childCount() > 0)
+    QList<QTreeWidgetItem*> items = mpProjectFilesTopLevelItem->takeChildren();
+    items.append(mpComponentFilesTopLevelItem->takeChildren());
+    items.append(mpAuxiliaryFilesTopLevelItem->takeChildren());
+
+    foreach(const QTreeWidgetItem *item, items)
     {
-        mpProjectFilesTopLevelItem->removeChild(mpProjectFilesTopLevelItem->child(0));
-    }
-    while(mpComponentFilesTopLevelItem->childCount() > 0)
-    {
-        mpComponentFilesTopLevelItem->removeChild(mpComponentFilesTopLevelItem->child(0));
+        delete(item);
     }
 
-    while(mpAuxiliaryFilesTopLevelItem->childCount() > 0)
-    {
-        mpAuxiliaryFilesTopLevelItem->removeChild(mpAuxiliaryFilesTopLevelItem->child(0));
-    }
+//    while(mpProjectFilesTopLevelItem->childCount() > 0)
+//    {
+//        mpProjectFilesTopLevelItem->removeChild(mpProjectFilesTopLevelItem->child(0));
+//    }
+//    while(mpComponentFilesTopLevelItem->childCount() > 0)
+//    {
+//        mpComponentFilesTopLevelItem->removeChild(mpComponentFilesTopLevelItem->child(0));
+//    }
+
+//    while(mpAuxiliaryFilesTopLevelItem->childCount() > 0)
+//    {
+//        mpAuxiliaryFilesTopLevelItem->removeChild(mpAuxiliaryFilesTopLevelItem->child(0));
+//    }
 }
 
 void ProjectFilesWidget::keyPressEvent(QKeyEvent *event)
