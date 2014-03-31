@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[      7813,        214]
-NotebookOptionsPosition[      6936,        183]
-NotebookOutlinePosition[      7353,        199]
-CellTagsIndexPosition[      7310,        196]
+NotebookDataLength[      7876,        215]
+NotebookOptionsPosition[      6998,        184]
+NotebookOutlinePosition[      7416,        200]
+CellTagsIndexPosition[      7373,        197]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -29,12 +29,13 @@ Cell[BoxData[
    RowBox[{"ToFileName", "[", 
     RowBox[{"{", 
      RowBox[{
-     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", "\"\<HOPSAN++\>\"", ",", 
-      "\"\<CompgenModels\>\""}], "}"}], "]"}]}], ";"}]], "Input",
+     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", 
+      "\"\<componentLibraries\>\"", ",", "\"\<CompgenModels\>\""}], "}"}], 
+    "]"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.5757396383497577`*^9, 3.5757397014206686`*^9}, {
    3.575739740046336*^9, 3.5757398289664927`*^9}, {3.5757398672645597`*^9, 
    3.575739870353365*^9}, 3.575739966777135*^9, {3.5757403504266095`*^9, 
-   3.575740390651291*^9}}],
+   3.575740390651291*^9}, {3.6031890473007793`*^9, 3.60318905383191*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -181,8 +182,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{967, 573},
-WindowMargins->{{0, Automatic}, {0, Automatic}},
+WindowSize->{741, 544},
+WindowMargins->{{2, Automatic}, {Automatic, 37}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
   CharacterEncoding -> "WindowsANSI"]
@@ -200,20 +201,20 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[579, 22, 101, 1, 65, "Title"],
-Cell[683, 25, 505, 11, 41, "Input"],
-Cell[1191, 38, 540, 11, 41, "Input"],
-Cell[1734, 51, 333, 9, 41, "Input"],
-Cell[2070, 62, 485, 10, 41, "Input"],
-Cell[2558, 74, 383, 9, 41, "Input"],
-Cell[2944, 85, 431, 9, 41, "Input"],
-Cell[3378, 96, 486, 10, 41, "Input"],
-Cell[3867, 108, 638, 13, 41, "Input"],
-Cell[4508, 123, 663, 13, 41, "Input"],
-Cell[5174, 138, 499, 10, 41, "Input"],
-Cell[5676, 150, 504, 10, 41, "Input"],
+Cell[683, 25, 567, 12, 41, "Input"],
+Cell[1253, 39, 540, 11, 41, "Input"],
+Cell[1796, 52, 333, 9, 41, "Input"],
+Cell[2132, 63, 485, 10, 41, "Input"],
+Cell[2620, 75, 383, 9, 41, "Input"],
+Cell[3006, 86, 431, 9, 41, "Input"],
+Cell[3440, 97, 486, 10, 41, "Input"],
+Cell[3929, 109, 638, 13, 41, "Input"],
+Cell[4570, 124, 663, 13, 41, "Input"],
+Cell[5236, 139, 499, 10, 41, "Input"],
+Cell[5738, 151, 504, 10, 41, "Input"],
 Cell[CellGroupData[{
-Cell[6205, 164, 105, 1, 23, "Subtitle"],
-Cell[6313, 167, 595, 12, 41, "Input"]
+Cell[6267, 165, 105, 1, 23, "Subtitle"],
+Cell[6375, 168, 595, 12, 41, "Input"]
 }, Open  ]]
 }, Open  ]]
 }

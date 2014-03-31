@@ -7,6 +7,7 @@
 #include "ElectricGround.hpp"
 #include "ElectricMotor.hpp"
 #include "ElectricMotorGear.hpp"
+#include "ElectricMotorGearScrewLink.hpp"
 #include "ElectricIcontroller.hpp"
 #include "ElectricPWMdceq.hpp"
 #include "ElectricInductance.hpp"

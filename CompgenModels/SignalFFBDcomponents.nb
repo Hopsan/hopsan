@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[    187604,       4039]
-NotebookOptionsPosition[    177938,       3778]
-NotebookOutlinePosition[    178687,       3802]
-CellTagsIndexPosition[    178644,       3799]
+NotebookDataLength[    189865,       4075]
+NotebookOptionsPosition[    180319,       3816]
+NotebookOutlinePosition[    180988,       3839]
+CellTagsIndexPosition[    180945,       3836]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -585,7 +585,7 @@ Cell[BoxData["\<\"SignalFFB.xml\"\>"], "Output",
  CellChangeTimes->{{3.5547856731358633`*^9, 3.554785699244403*^9}, 
    3.5764736415692964`*^9, 3.5774507551685653`*^9, 3.5776024547447147`*^9}]
 }, Open  ]]
-}, Closed]],
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -3184,13 +3184,14 @@ Cell[BoxData[
        "\"\<Logical state\>\""}], "}"}], ",", "\n", 
      RowBox[{"{", 
       RowBox[{
-      "notQstate", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+      "notQstate", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
        "\"\<Logical inverse of state\>\""}], "}"}]}], "\n", "}"}]}], 
   ";"}]], "Input",
  CellChangeTimes->{{3.52088004696875*^9, 3.520880046984375*^9}, 
    3.520932825859375*^9, {3.52958588634375*^9, 3.529585902890625*^9}, {
    3.52959659559375*^9, 3.529596615265625*^9}, 3.5296472601147585`*^9, {
-   3.5296473407948947`*^9, 3.5296473473268137`*^9}, 3.529649459263307*^9}],
+   3.5296473407948947`*^9, 3.5296473473268137`*^9}, 3.529649459263307*^9, 
+   3.590904738943883*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3253,7 +3254,8 @@ Cell[BoxData[
    3.52964737482963*^9}, {3.5296486047915845`*^9, 3.529648605072869*^9}, 
    3.529650357502418*^9, {3.5296505716074257`*^9, 3.5296505771857653`*^9}, {
    3.5719247020846977`*^9, 3.5719247186675267`*^9}, {3.577602623323715*^9, 
-   3.5776026269207153`*^9}}],
+   3.5776026269207153`*^9}, {3.5908984708318167`*^9, 3.5908984713828163`*^9}, 
+   3.5908985408758163`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3268,15 +3270,20 @@ Cell[BoxData[
       RowBox[{"onPositive", "[", 
        RowBox[{"resetCond", "-", "oldResetCond"}], "]"}]}], ",", 
      "\[IndentingNewLine]", 
-     RowBox[{"Qstate", "==", 
-      RowBox[{
-       RowBox[{"onPositive", "[", 
-        RowBox[{"oldQstate", "-", "0.5"}], "]"}], "+", 
-       RowBox[{"onPositive", "[", 
-        RowBox[{"DsetCond", "-", "0.5"}], "]"}], "-", 
-       RowBox[{"onPositive", "[", 
-        RowBox[{"DresetCond", "-", "0.5"}], "]"}], "-", "0.5"}]}], ",", 
-     "\[IndentingNewLine]", 
+     RowBox[{"Qstate", "\[Equal]", 
+      RowBox[{"limit", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"2", " ", 
+          RowBox[{"onPositive", "[", 
+           RowBox[{"oldQstate", "-", "0.5"}], "]"}]}], "+", 
+         RowBox[{"2", " ", 
+          RowBox[{"onPositive", "[", 
+           RowBox[{"DsetCond", "-", "0.5"}], "]"}]}], "-", 
+         RowBox[{"2", " ", 
+          RowBox[{"onPositive", "[", 
+           RowBox[{"DresetCond", "-", "0.5"}], "]"}]}]}], ",", "0", ",", 
+        "1"}], "]"}]}], ",", "\[IndentingNewLine]", 
      RowBox[{"oldQstate", "\[Equal]", "Qstate"}], ",", "\[IndentingNewLine]", 
      RowBox[{"notQstate", "==", 
       RowBox[{"1", "-", "Qstate"}]}]}], "\[IndentingNewLine]", "}"}]}], 
@@ -3295,7 +3302,8 @@ Cell[BoxData[
    3.529687484203125*^9}, {3.529687527171875*^9, 3.52968755115625*^9}, {
    3.5297491187115407`*^9, 3.529749138767107*^9}, {3.571924759679999*^9, 
    3.571924782643239*^9}, 3.571925072491748*^9, {3.577602445774715*^9, 
-   3.577602447837715*^9}}],
+   3.577602447837715*^9}, 3.5908985542438164`*^9, {3.5908986701958165`*^9, 
+   3.590898684410816*^9}, {3.590898999878015*^9, 3.590899024486476*^9}}],
 
 Cell[CellGroupData[{
 
@@ -3315,7 +3323,8 @@ ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.577602455745715*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.5908991857255983`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3330,7 +3339,8 @@ ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.577602455747715*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.590899185728598*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3338,8 +3348,35 @@ Cell[BoxData[
    RowBox[{"XMLElement", "::", "cntsList"}], "MessageName"], 
   RowBox[{
   ":", " "}], "\<\"\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"modelobject\\\", \
-\\(\\({\\(\\(\\\"typename\\\" \[Rule] \\\"SignalSRlatch\\\"\\)\\), \\(\\(\
-\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)}\\)\\), \
+\\(\\({\\(\\(\\\"typename\\\" \[Rule] \\\"SignalSRlatch\\\"\\)\\), \
+\\(\\(\\\"displayname\\\" \[Rule] \\\"SignalSRlatch\\\"\\)\\)}\\)\\), \\(\\({\
+\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \[Rule] \
+\\\"SignalSRlatch.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \[Rule] \
+\\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \\\"SignalSRlatch.svg\\\"\\)\
+\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpositions\\\", \\(\\({}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \
+\[Rule] 0.3333333333333333`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"setCond\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+0.6666666666666666`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"resetCond\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+\\\"0.333333\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"1\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"Qstate\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+\\\"0.666667\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"1\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"notQstate\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"hopsanobjectappearance\\\", \\(\\({\\(\
+\[LeftSkeleton] 1 \[RightSkeleton]\\)}\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"modelobject\\\", \\(\\({\\(\\(\\\"typename\\\" \
+\[Rule] \\(\\(\\\"\\\" \[Ellipsis] \\\"\\\"\\)\\)\\)\\), \
+\\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)}\\)\\), \
 \\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
 \[Rule] \\\"SignalSRlatch.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \[Rule] \
 \\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \\\"SignalSRlatch.svg\\\"\\)\
@@ -3361,8 +3398,7 @@ Cell[BoxData[
 \\\"0.666667\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"1\\\"\\)\\), \
 \\(\\(\\\"a\\\" \[Rule] \\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
 \\\"notQstate\\\"\\)\\)}\\)\\), \
-\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\[NoBreak] in \
-\[NoBreak]\\!\\(XMLElement[\\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)]\\)\
+\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
 \[NoBreak] is not a list of contents. The third item in an XMLElement must be \
 a list of contents, even if it is an empty list. \\!\\(\\*ButtonBox[\\\"\
 \[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
@@ -3371,7 +3407,8 @@ ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.577602455766715*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.5908991857476*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3386,7 +3423,8 @@ ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.577602455767715*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.5908991857516003`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3403,7 +3441,8 @@ ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.577602455768715*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.5908991857526007`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3418,7 +3457,8 @@ ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.5776024557697153`*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.590899185753601*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3435,7 +3475,8 @@ ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.5776024557707148`*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.5908991857546005`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3450,7 +3491,8 @@ ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.577602455772715*^9}],
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.590899185755601*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -3466,14 +3508,8 @@ ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
  CellChangeTimes->{
   3.5776018794466467`*^9, {3.577601930674769*^9, 3.577601943869088*^9}, 
    3.5776020329629965`*^9, 3.577602221897715*^9, 3.577602274419715*^9, 
-   3.577602321340715*^9, 3.577602455773715*^9}],
-
-Cell[BoxData["\<\"SignalSRlatch.xml\"\>"], "Output",
- CellChangeTimes->{{3.5547856740577087`*^9, 3.554785699885007*^9}, 
-   3.5774507569427423`*^9, 3.5776018082375264`*^9, 3.5776018797366753`*^9, {
-   3.5776019307007713`*^9, 3.577601943896091*^9}, 3.5776020329919996`*^9, 
-   3.577602221922715*^9, 3.577602274444715*^9, 3.5776023213697147`*^9, 
-   3.577602455774715*^9}]
+   3.577602321340715*^9, 3.577602455745715*^9, 3.5908990766416903`*^9, 
+   3.5908991857566013`*^9}]
 }, Open  ]]
 }, Open  ]],
 
@@ -3588,14 +3624,16 @@ Cell[BoxData[
        RowBox[{"resetCond", "-", "oldResetCond"}], "]"}]}], ",", 
      "\[IndentingNewLine]", 
      RowBox[{"Qstate", "==", 
-      RowBox[{
-       RowBox[{"onPositive", "[", 
-        RowBox[{"oldQstate", "-", "0.5"}], "]"}], "+", 
-       RowBox[{"onPositive", "[", 
-        RowBox[{"DsetCond", "-", "0.5"}], "]"}], "-", 
-       RowBox[{"onPositive", "[", 
-        RowBox[{"DresetCond", "-", "0.5"}], "]"}], "-", "0.5"}]}], ",", 
-     "\[IndentingNewLine]", 
+      RowBox[{"limit", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"onPositive", "[", 
+          RowBox[{"oldQstate", "-", "0.5"}], "]"}], "+", 
+         RowBox[{"onPositive", "[", 
+          RowBox[{"DsetCond", "-", "0.5"}], "]"}], "-", 
+         RowBox[{"onPositive", "[", 
+          RowBox[{"DresetCond", "-", "0.5"}], "]"}], "-", "0.5"}], ",", "0", 
+        ",", "1"}], "]"}]}], ",", "\[IndentingNewLine]", 
      RowBox[{"oldQstate", "\[Equal]", "Qstate"}], ",", "\[IndentingNewLine]", 
      RowBox[{"notQstate", "==", 
       RowBox[{"1", "-", "Qstate"}]}]}], "\[IndentingNewLine]", "}"}]}], 
@@ -3614,7 +3652,7 @@ Cell[BoxData[
    3.529687484203125*^9}, {3.529687527171875*^9, 3.52968755115625*^9}, {
    3.5297491187115407`*^9, 3.529749138767107*^9}, {3.571924759679999*^9, 
    3.571924782643239*^9}, 3.571925072491748*^9, {3.5776023997777147`*^9, 
-   3.577602402345715*^9}}],
+   3.577602402345715*^9}, {3.5908987674618163`*^9, 3.5908987783658657`*^9}}],
 
 Cell[CellGroupData[{
 
@@ -3777,18 +3815,17 @@ Cell[BoxData["\<\"SignalSRflipflop.xml\"\>"], "Output",
 }, Open  ]]
 },
 CellGrouping->Manual,
-WindowSize->{1124, 633},
-WindowMargins->{{Automatic, 37}, {Automatic, 0}},
+WindowSize->{1171, 826},
+WindowMargins->{{26, Automatic}, {-9, Automatic}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->Notebook[{
    Cell[
     StyleData[
     StyleDefinitions -> 
      FrontEnd`FileName[{"Creative"}, "PastelColor.nb", CharacterEncoding -> 
-       "WindowsANSI"]]]}, WindowSize -> {707, 690}, 
-  WindowMargins -> {{Automatic, 54}, {0, Automatic}}, Visible -> False, 
-  FrontEndVersion -> "8.0 for Microsoft Windows (64-bit) (October 6, 2011)", 
-  StyleDefinitions -> "PrivateStylesheetFormatting.nb"]
+       "WindowsANSI"]]]}, Visible -> False, FrontEndVersion -> 
+  "8.0 for Microsoft Windows (64-bit) (October 6, 2011)", StyleDefinitions -> 
+  "PrivateStylesheetFormatting.nb"]
 ]
 (* End of Notebook Content *)
 
@@ -3815,30 +3852,30 @@ Cell[2700, 79, 292, 4, 75, "Section"],
 Cell[2995, 85, 1147, 27, 162, "Input"],
 Cell[4145, 114, 89, 2, 41, "Input"],
 Cell[4237, 118, 1359, 30, 142, "Input"],
-Cell[5599, 150, 1186, 25, 121, "Input"],
+Cell[5599, 150, 1186, 25, 122, "Input"],
 Cell[6788, 177, 1145, 19, 142, "Input"],
 Cell[7936, 198, 219, 5, 41, "Input"],
-Cell[8158, 205, 3038, 53, 241, "Input"],
+Cell[8158, 205, 3038, 53, 242, "Input"],
 Cell[CellGroupData[{
 Cell[11221, 262, 63, 1, 41, "Input"],
-Cell[11287, 265, 967, 18, 70, "Message"],
-Cell[12257, 285, 969, 18, 70, "Message"],
-Cell[13229, 305, 967, 18, 70, "Message"],
-Cell[14199, 325, 1014, 19, 70, "Message"],
-Cell[15216, 346, 4549, 69, 70, "Message"],
-Cell[19768, 417, 945, 18, 70, "Message"],
-Cell[20716, 437, 1060, 19, 70, "Message"],
-Cell[21779, 458, 945, 18, 70, "Message"],
-Cell[22727, 478, 1060, 19, 70, "Message"],
-Cell[23790, 499, 945, 18, 70, "Message"],
-Cell[24738, 519, 1019, 19, 70, "Message"],
-Cell[25760, 540, 1094, 20, 70, "Message"],
-Cell[26857, 562, 1024, 19, 70, "Message"],
-Cell[27884, 583, 192, 2, 70, "Output"]
+Cell[11287, 265, 967, 18, 21, "Message"],
+Cell[12257, 285, 969, 18, 21, "Message"],
+Cell[13229, 305, 967, 18, 21, "Message"],
+Cell[14199, 325, 1014, 19, 21, "Message"],
+Cell[15216, 346, 4549, 69, 141, "Message"],
+Cell[19768, 417, 945, 18, 21, "Message"],
+Cell[20716, 437, 1060, 19, 21, "Message"],
+Cell[21779, 458, 945, 18, 21, "Message"],
+Cell[22727, 478, 1060, 19, 21, "Message"],
+Cell[23790, 499, 945, 18, 21, "Message"],
+Cell[24738, 519, 1019, 19, 21, "Message"],
+Cell[25760, 540, 1094, 20, 21, "Message"],
+Cell[26857, 562, 1024, 19, 21, "Message"],
+Cell[27884, 583, 192, 2, 40, "Output"]
 }, Open  ]]
-}, Closed]],
+}, Open  ]],
 Cell[CellGroupData[{
-Cell[28125, 591, 332, 5, 45, "Section"],
+Cell[28125, 591, 332, 5, 75, "Section"],
 Cell[28460, 598, 1202, 28, 162, "Input"],
 Cell[29665, 628, 89, 2, 41, "Input"],
 Cell[29757, 632, 770, 17, 102, "Input"],
@@ -3999,45 +4036,44 @@ Cell[148430, 3119, 227, 3, 45, "Section"],
 Cell[148660, 3124, 1143, 27, 162, "Input"],
 Cell[149806, 3153, 89, 2, 41, "Input"],
 Cell[149898, 3157, 700, 16, 102, "Input"],
-Cell[150601, 3175, 728, 17, 102, "Input"],
-Cell[151332, 3194, 623, 11, 82, "Input"],
-Cell[151958, 3207, 892, 16, 122, "Input"],
-Cell[152853, 3225, 1522, 30, 122, "Input"],
-Cell[154378, 3257, 2015, 40, 162, "Input"],
+Cell[150601, 3175, 754, 18, 102, "Input"],
+Cell[151358, 3195, 623, 11, 82, "Input"],
+Cell[151984, 3208, 892, 16, 122, "Input"],
+Cell[152879, 3226, 1600, 31, 122, "Input"],
+Cell[154482, 3259, 2318, 46, 162, "Input"],
 Cell[CellGroupData[{
-Cell[156418, 3301, 63, 1, 41, "Input"],
-Cell[156484, 3304, 651, 13, 21, "Message"],
-Cell[157138, 3319, 651, 13, 21, "Message"],
-Cell[157792, 3334, 2444, 39, 90, "Message"],
-Cell[160239, 3375, 629, 13, 21, "Message"],
-Cell[160871, 3390, 776, 15, 21, "Message"],
-Cell[161650, 3407, 631, 13, 21, "Message"],
-Cell[162284, 3422, 778, 15, 21, "Message"],
-Cell[163065, 3439, 629, 13, 21, "Message"],
-Cell[163697, 3454, 703, 14, 21, "Message"],
-Cell[164403, 3470, 370, 5, 40, "Output"]
+Cell[156825, 3309, 63, 1, 41, "Input"],
+Cell[156891, 3312, 703, 14, 21, "Message"],
+Cell[157597, 3328, 701, 14, 21, "Message"],
+Cell[158301, 3344, 4244, 66, 158, "Message"],
+Cell[162548, 3412, 681, 14, 21, "Message"],
+Cell[163232, 3428, 828, 16, 21, "Message"],
+Cell[164063, 3446, 679, 14, 21, "Message"],
+Cell[164745, 3462, 828, 16, 21, "Message"],
+Cell[165576, 3480, 679, 14, 21, "Message"],
+Cell[166258, 3496, 755, 15, 21, "Message"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[164822, 3481, 277, 4, 75, "Section"],
-Cell[165102, 3487, 1195, 28, 162, "Input"],
-Cell[166300, 3517, 89, 2, 41, "Input"],
-Cell[166392, 3521, 700, 16, 102, "Input"],
-Cell[167095, 3539, 728, 17, 102, "Input"],
-Cell[167826, 3558, 892, 16, 122, "Input"],
-Cell[168721, 3576, 2017, 40, 162, "Input"],
+Cell[167062, 3517, 277, 4, 75, "Section"],
+Cell[167342, 3523, 1195, 28, 162, "Input"],
+Cell[168540, 3553, 89, 2, 41, "Input"],
+Cell[168632, 3557, 700, 16, 102, "Input"],
+Cell[169335, 3575, 728, 17, 102, "Input"],
+Cell[170066, 3594, 892, 16, 122, "Input"],
+Cell[170961, 3612, 2158, 42, 162, "Input"],
 Cell[CellGroupData[{
-Cell[170763, 3620, 63, 1, 41, "Input"],
-Cell[170829, 3623, 531, 11, 21, "Message"],
-Cell[171363, 3636, 531, 11, 21, "Message"],
-Cell[171897, 3649, 2359, 37, 90, "Message"],
-Cell[174259, 3688, 509, 11, 21, "Message"],
-Cell[174771, 3701, 656, 13, 21, "Message"],
-Cell[175430, 3716, 509, 11, 21, "Message"],
-Cell[175942, 3729, 656, 13, 21, "Message"],
-Cell[176601, 3744, 509, 11, 21, "Message"],
-Cell[177113, 3757, 583, 12, 21, "Message"],
-Cell[177699, 3771, 199, 2, 40, "Output"]
+Cell[173144, 3658, 63, 1, 41, "Input"],
+Cell[173210, 3661, 531, 11, 21, "Message"],
+Cell[173744, 3674, 531, 11, 21, "Message"],
+Cell[174278, 3687, 2359, 37, 90, "Message"],
+Cell[176640, 3726, 509, 11, 21, "Message"],
+Cell[177152, 3739, 656, 13, 21, "Message"],
+Cell[177811, 3754, 509, 11, 21, "Message"],
+Cell[178323, 3767, 656, 13, 21, "Message"],
+Cell[178982, 3782, 509, 11, 21, "Message"],
+Cell[179494, 3795, 583, 12, 21, "Message"],
+Cell[180080, 3809, 199, 2, 40, "Output"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]

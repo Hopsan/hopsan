@@ -11,6 +11,7 @@
     pComponentFactory->registerCreatorFunction("ElectricIsensor", ElectricIsensor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricMotor", ElectricMotor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricMotorGear", ElectricMotorGear::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricMotorGearScrewLink", ElectricMotorGearScrewLink::Creator);
     pComponentFactory->registerCreatorFunction("ElectricResistor", ElectricResistor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricVarResistor", ElectricVarResistor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricSwitch", ElectricSwitch::Creator);
