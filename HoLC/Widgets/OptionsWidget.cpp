@@ -20,7 +20,7 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     QLabel *pHopsanDirLabel = new QLabel("Hopsan Path:");
     mpHopsanDirLineEdit = new QLineEdit(this);
     QToolButton *pHopsanDirButton = new QToolButton(this);
-    pHopsanDirButton->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Open.png"));
+    pHopsanDirButton->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Open.png"));
 
     QLabel *pLibraryLabel = new QLabel("Library File:");
     mpLibraryLineEdit = new QLineEdit(this);
@@ -36,7 +36,7 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     QLabel *pCompilerLabel = new QLabel("Compiler Path:");
     mpCompilerLineEdit = new QLineEdit(this);
     QToolButton *pCompilerButton = new QToolButton(this);
-    pCompilerButton->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Open.png"));
+    pCompilerButton->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Open.png"));
 
     mpCompilerWarningLabel = new QLabel(this);
     mpCompilerWarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");

@@ -10,8 +10,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HoLC
 TEMPLATE = app
-DESTDIR = $${PWD}/../bin
+DESTDIR = $${PWD}/bin
 
+INCLUDEPATH *= $${PWD}/
+LIBS *= -L$${PWD}/../bin
 
 SOURCES += main.cpp\
         MainWindow.cpp \
