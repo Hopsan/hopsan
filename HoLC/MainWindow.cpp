@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QKeySequence>
 
 #include "MainWindow.h"
 #include "Configuration.h"
@@ -68,6 +69,7 @@ MainWindow::MainWindow(QWidget *pParent)
     pOpenAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Open.png"));
     QAction *pSaveAction = new QAction("Save Current File", this);
     pSaveAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Save.png"));
+    pSaveAction->setShortcut(QKeySequence("Ctrl+S"));
     QAction *pAddComponentAction = new QAction("Add New Component", this);
     pAddComponentAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Add.png"));
     QAction *pAddComponentFromFileAction = new QAction("Add Existing Component Source File", this);
@@ -126,4 +128,3 @@ MainWindow::~MainWindow()
 {
     mpConfiguration->saveToXml();
 }
-

@@ -70,7 +70,7 @@ QTreeWidgetItem *ProjectFilesWidget::addFile(const FileObject *pFile)
 
 void ProjectFilesWidget::addAsterisk()
 {
-    if(!mpTreeWidget->currentItem()->text(0).endsWith("*"))
+    if(mpTreeWidget->currentItem() && !mpTreeWidget->currentItem()->text(0).endsWith("*"))
     {
         mpTreeWidget->currentItem()->setText(0, mpTreeWidget->currentItem()->text(0)+"*");
     }
