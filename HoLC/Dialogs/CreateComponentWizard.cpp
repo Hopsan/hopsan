@@ -322,6 +322,7 @@ void CreateComponentWizard::generate()
     //! @todo Make sure file does not already exist! (both in file system and in project)
 
     QString typeName = mpTypeNameLineEdit->text();
+    QString displayName = mpDisplayNameLineEdit->text();
     QString cqsType = mpCqsTypeComboBox->currentText();
     QString cqsTypeLong = mpCqsTypeComboBox->currentText();
     if(cqsType == "S")
@@ -591,5 +592,65 @@ void CreateComponentWizard::generate()
     code.replace("<<<writetonodes>>>", writeToNodesCode);
 
     mpFileHandler->addComponent(code, typeName);
+
+
+    //Read template file
+    QFile cafTemplateFile(":/templates/Templates/cafTemplate.xml");
+    if(!cafTemplateFile.open(QFile::ReadOnly | QFile::Text))
+    {
+        mpMessageHandler->addErrorMessage("Unable to open file for reading: "+cafTemplateFile.fileName());
+        return;
+    }
+    QString cafCode = cafTemplateFile.readAll();
+    cafTemplateFile.close();
+
+    QString portsCode;
+
+    //Add input variables
+    int nInputs = mInputsNameLineEditPtrs.size();
+    double dist = 1.0/(nInputs+1.0);
+    double pos = 0.0;
+    for(int p=0; p<nInputs; ++p)
+    {
+        pos += dist;
+        QString name = mInputsNameLineEditPtrs[p]->text();
+        QString x = "0.0";
+        QString y = QString::number(pos);
+        portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"180\" name=\""+name+"\" hidden=\"false\"/>");
+    }
+
+    //Add output variables
+    int nOutputs = mOutputsNameLineEditPtrs.size();
+    dist = 1.0/(nOutputs+1.0);
+    pos = 0.0;
+    for(int p=0; p<nOutputs; ++p)
+    {
+        pos += dist;
+        QString name = mOutputsNameLineEditPtrs[p]->text();
+        QString x = "1.0";
+        QString y = QString::number(pos);
+        portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"0\" name=\""+name+"\" hidden=\"false\"/>");
+    }
+
+
+    //Add power ports
+    int nPowerPorts = mPortNameLineEditPtrs.size();
+    dist = 1.0/(nPowerPorts+1.0);
+    pos = 0.0;
+    for(int p=0; p<nPowerPorts; ++p)
+    {
+        pos += dist;
+        QString name = mPortNameLineEditPtrs[p]->text();
+        QString x = QString::number(pos);
+        QString y = "0.0";
+        portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"270\" name=\""+name+"\"/>");
+    }
+
+    cafCode.replace("<<<hppfile>>>", typeName+".hpp");
+    cafCode.replace("<<<typename>>>", typeName);
+    cafCode.replace("<<<displayname>>>", displayName);
+    cafCode.replace("<<<ports>>>", portsCode);
+
+    mpFileHandler->addAppearanceFile(cafCode, typeName+".xml");
 }
 

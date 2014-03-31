@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="<<<hppfile>>>" typename="<<<typename>>>" displayname="<<<displayname>>>">
+        <icons>
+            <icon scale="1" path="" iconrotation="ON" type="user"/>
+            <icon scale="1" path="" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <<<ports>>>            
+        </ports>
+        <animation/>
+    </modelobject>
+</hopsanobjectappearance>

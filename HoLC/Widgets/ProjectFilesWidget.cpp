@@ -21,15 +21,22 @@ ProjectFilesWidget::ProjectFilesWidget(QWidget *parent) :
     mpProjectFilesTopLevelItem = new QTreeWidgetItem(0);
     mpComponentFilesTopLevelItem = new QTreeWidgetItem(0);
     mpAuxiliaryFilesTopLevelItem = new QTreeWidgetItem(0);
+    mpAppearanceFilesTopLevelItem = new QTreeWidgetItem(0);
+
     mpProjectFilesTopLevelItem->setText(0,"Project Files");
     mpComponentFilesTopLevelItem->setText(0,"Component Files");
     mpAuxiliaryFilesTopLevelItem->setText(0,"Auxiliary Files");
+    mpAppearanceFilesTopLevelItem->setText(0,"Appearance Files");
+
     mpProjectFilesTopLevelItem->setFont(0,boldFont);
     mpComponentFilesTopLevelItem->setFont(0,boldFont);
     mpAuxiliaryFilesTopLevelItem->setFont(0,boldFont);
+    mpAppearanceFilesTopLevelItem->setFont(0,boldFont);
+
     mpTreeWidget->addTopLevelItem(mpProjectFilesTopLevelItem);
     mpTreeWidget->addTopLevelItem(mpComponentFilesTopLevelItem);
     mpTreeWidget->addTopLevelItem(mpAuxiliaryFilesTopLevelItem);
+    mpTreeWidget->addTopLevelItem(mpAppearanceFilesTopLevelItem);
 }
 
 QTreeWidgetItem *ProjectFilesWidget::addFile(const FileObject *pFile)
@@ -50,6 +57,11 @@ QTreeWidgetItem *ProjectFilesWidget::addFile(const FileObject *pFile)
     {
         mpAuxiliaryFilesTopLevelItem->addChild(pNewItem);
         mpAuxiliaryFilesTopLevelItem->setExpanded(true);
+    }
+    else if(pFile->mType == FileObject::CAF)
+    {
+        mpAppearanceFilesTopLevelItem->addChild(pNewItem);
+        mpAppearanceFilesTopLevelItem->setExpanded(true);
     }
 
     mpTreeWidget->update();
@@ -83,6 +95,7 @@ void ProjectFilesWidget::removeItem(QTreeWidgetItem *pItem)
     mpProjectFilesTopLevelItem->removeChild(pItem);
     mpComponentFilesTopLevelItem->removeChild(pItem);
     mpAuxiliaryFilesTopLevelItem->removeChild(pItem);
+    mpAppearanceFilesTopLevelItem->removeChild(pItem);
 }
 
 void ProjectFilesWidget::clear()
@@ -90,6 +103,7 @@ void ProjectFilesWidget::clear()
     QList<QTreeWidgetItem*> items = mpProjectFilesTopLevelItem->takeChildren();
     items.append(mpComponentFilesTopLevelItem->takeChildren());
     items.append(mpAuxiliaryFilesTopLevelItem->takeChildren());
+    items.append(mpAppearanceFilesTopLevelItem->takeChildren());
 
     foreach(const QTreeWidgetItem *item, items)
     {
@@ -118,7 +132,8 @@ void ProjectFilesWidget::keyPressEvent(QKeyEvent *event)
         QTreeWidgetItem *pCurrentItem = mpTreeWidget->currentItem();
         if(pCurrentItem != mpProjectFilesTopLevelItem &&
            pCurrentItem != mpComponentFilesTopLevelItem &&
-           pCurrentItem != mpAuxiliaryFilesTopLevelItem)
+           pCurrentItem != mpAuxiliaryFilesTopLevelItem &&
+           pCurrentItem != mpAppearanceFilesTopLevelItem)
         {
             emit deleteRequested(pCurrentItem);
         }

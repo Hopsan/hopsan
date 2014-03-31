@@ -3,5 +3,6 @@
         <file>Templates/xmlTemplate.xml</file>
         <file>Templates/sourceTemplate.cc</file>
         <file>Templates/componentTemplate.hpp</file>
+        <file>Templates/cafTemplate.xml</file>
     </qresource>
 </RCC>

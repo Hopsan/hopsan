@@ -87,6 +87,7 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     QString includeCompString;
     QString registerCompString;
     QString xmlCompString;
+    QString xmlAppearanceString;
     foreach(const FileObject *pFile, mFilePtrs)
     {
         if(pFile->mType == FileObject::Component)
@@ -97,8 +98,13 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
             registerCompString.append("\n    pComponentFactory->registerCreatorFunction(\""+pFile->mFileInfo.baseName()+"\", "+pFile->mFileInfo.baseName()+"::Creator);");
             xmlCompString.append("\n    <component>"+baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())+"</component>");
         }
-    }
+        else if(pFile->mType == FileObject::CAF)
+        {
+            QDir baseDir(path);
 
+            xmlAppearanceString.append("\n    <caf>"+baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())+"</caf>");
+        }
+    }
 
     sourceCode.replace("<<<includecomponents>>>",includeCompString);
     sourceCode.replace("<<<registercomponents>>>",registerCompString);
@@ -108,6 +114,7 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
     xmlCode.replace("<<<components>>>",xmlCompString);
     xmlCode.replace("<<<auxiliary>>>","");
+    xmlCode.replace("<<<caf>>>", xmlAppearanceString);
 
     sourceFile.write(sourceCode.toUtf8());
     xmlFile.write(xmlCode.toUtf8());
@@ -179,6 +186,70 @@ void FileHandler::addComponent(const QString &code, const QString &typeName)
 
 
     addComponent(QFileInfo(componentFile).absoluteFilePath());
+}
+
+
+void FileHandler::addAppearanceFile(const QString &code, const QString &fileName)
+{
+    if(mFilePtrs.isEmpty())
+    {
+        mpMessageHandler->addErrorMessage("A project must be open before adding appearance files.");
+        return;
+    }
+
+    QString path;
+    foreach(const FileObject *pFile, mFilePtrs)
+    {
+        if(pFile->mType == FileObject::XML)
+        {
+            path = pFile->mFileInfo.absolutePath();
+        }
+    }
+
+    if(path.isEmpty()) return;
+
+    QFile cafFile(path+"/"+fileName);
+
+    if(!cafFile.open(QFile::WriteOnly | QFile::Text))
+    {
+        mpMessageHandler->addErrorMessage("Cannot open file for writing: " + cafFile.fileName());
+        return;
+    }
+
+    cafFile.write(code.toUtf8());
+
+    cafFile.close();
+
+
+    addAppearanceFile(QFileInfo(cafFile).absoluteFilePath());
+}
+
+void FileHandler::addAppearanceFile(QString path)
+{
+    if(mFilePtrs.isEmpty())
+    {
+        mpMessageHandler->addErrorMessage("A project must be open before adding appeaerance files.");
+        return;
+    }
+
+    //! @todo Make sure caf file is in project directory
+
+    if(path.isEmpty())
+    {
+        path = QFileDialog::getOpenFileName(mpEditorWidget->parentWidget(), "Add Component Appearance From Existing File", "", "*.caf");
+    }
+
+    QFile file(path);
+    if(!path.isEmpty() && file.exists())
+    {
+        FileObject *pFileObject = new FileObject(path, FileObject::CAF);
+        mFilePtrs.append(pFileObject);
+
+        QTreeWidgetItem *pItem = mpFilesWidget->addFile(mFilePtrs.last());
+        mTreeToFileMap.insert(pItem, mFilePtrs.last());
+
+        generateXmlAndSourceFiles();
+    }
 }
 
 
@@ -270,6 +341,15 @@ void FileHandler::loadFromXml(const QString &path)
             pItem = mpFilesWidget->addFile(mFilePtrs.last());
             mTreeToFileMap.insert(pItem, mFilePtrs.last());
             auxElement = auxElement.nextSiblingElement("auxiliary");
+        }
+
+        QDomElement cafElement = libRoot.firstChildElement("caf");
+        while(!cafElement.isNull())
+        {
+            mFilePtrs.append(new FileObject(info.absolutePath()+"/"+cafElement.text(), FileObject::CAF));
+            pItem = mpFilesWidget->addFile(mFilePtrs.last());
+            mTreeToFileMap.insert(pItem, mFilePtrs.last());
+            cafElement = cafElement.nextSiblingElement("caf");
         }
     }
     file.close();

@@ -26,6 +26,8 @@ public slots:
     void generateXmlAndSourceFiles(QString path="");
     void addComponent(QString path="");
     void addComponent(const QString &code, const QString &typeName);
+    void addAppearanceFile(const QString &code, const QString &fileName);
+    void addAppearanceFile(QString path="");
     void loadFromXml();
     void saveToXml();
     void updateText();
@@ -56,7 +58,7 @@ private:
 class FileObject
 {
 public:
-    enum FileTypeEnum {XML, Source, Component, Auxiliary};
+    enum FileTypeEnum {XML, Source, Component, Auxiliary, CAF};
 
     FileObject();
     FileObject(const QString &path, FileTypeEnum type);

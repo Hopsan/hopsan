@@ -31,6 +31,7 @@ private:
     QTreeWidgetItem *mpProjectFilesTopLevelItem;
     QTreeWidgetItem *mpComponentFilesTopLevelItem;
     QTreeWidgetItem *mpAuxiliaryFilesTopLevelItem;
+    QTreeWidgetItem *mpAppearanceFilesTopLevelItem;
 };
 
 #endif // PROJECTFILESTREE_H
