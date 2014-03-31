@@ -1,6 +1,4 @@
 #include <QGridLayout>
-#include <QLabel>
-#include <QLineEdit>
 #include <QToolButton>
 #include <QFileDialog>
 
@@ -41,27 +39,33 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     mpCompilerWarningLabel = new QLabel(this);
     mpCompilerWarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
 
+    mpAlwaysSaveBeforeCompilingCheckBox = new QCheckBox("Always save all files before compiling", this);
+    mpAlwaysSaveBeforeCompilingCheckBox->setChecked(mpConfiguration->getAlwaysSaveBeforeCompiling());
+
     //Setup layout
     QGridLayout *pLayout = new QGridLayout(this);
-    pLayout->addWidget(pOptionsLabel,           0,0,1,3);
-    pLayout->addWidget(pHopsanDirLabel,         1,0,1,1);
-    pLayout->addWidget(mpHopsanDirLineEdit,      1,1,1,1);
-    pLayout->addWidget(pHopsanDirButton,        1,2,1,1);
-    pLayout->addWidget(pLibraryLabel,           2,0,1,1);
-    pLayout->addWidget(mpLibraryLineEdit,        2,1,1,2);
-    pLayout->addWidget(pIncludeLabel,           3,0,1,1);
-    pLayout->addWidget(mpIncludeLineEdit,        3,1,1,2);
-    pLayout->addWidget(mpWarningLabel,           4,0,1,3);
-    pLayout->addWidget(pCompilerLabel,          5,0,1,1);
-    pLayout->addWidget(mpCompilerLineEdit,       5,1,1,1);
-    pLayout->addWidget(pCompilerButton,         5,2,1,1);
-    pLayout->addWidget(mpCompilerWarningLabel,   6,0,1,3);
-    pLayout->addWidget(new QWidget(this),       7,0,1,3);
+    int row=-1;
+    pLayout->addWidget(pOptionsLabel,                       ++row,0,1,3);
+    pLayout->addWidget(pHopsanDirLabel,                     ++row,0,1,1);
+    pLayout->addWidget(mpHopsanDirLineEdit,                   row,1,1,1);
+    pLayout->addWidget(pHopsanDirButton,                      row,2,1,1);
+    pLayout->addWidget(pLibraryLabel,                       ++row,0,1,1);
+    pLayout->addWidget(mpLibraryLineEdit,                     row,1,1,2);
+    pLayout->addWidget(pIncludeLabel,                       ++row,0,1,1);
+    pLayout->addWidget(mpIncludeLineEdit,                     row,1,1,2);
+    pLayout->addWidget(mpWarningLabel,                      ++row,0,1,3);
+    pLayout->addWidget(pCompilerLabel,                      ++row,0,1,1);
+    pLayout->addWidget(mpCompilerLineEdit,                    row,1,1,1);
+    pLayout->addWidget(pCompilerButton,                       row,2,1,1);
+    pLayout->addWidget(mpCompilerWarningLabel,              ++row,0,1,3);
+    pLayout->addWidget(mpAlwaysSaveBeforeCompilingCheckBox, ++row,0,1,3);
+    pLayout->addWidget(new QWidget(this),                   ++row,0,1,3);
     pLayout->setRowStretch(9,1);
 
     //Setup connections
     connect(pHopsanDirButton, SIGNAL(clicked()), this, SLOT(setHopsanPath()));
     connect(pCompilerButton, SIGNAL(clicked()), this, SLOT(setCompilerPath()));
+    connect(mpAlwaysSaveBeforeCompilingCheckBox, SIGNAL(toggled(bool)), mpConfiguration, SLOT(setAlwaysSaveBeforeCompiling(bool)));
 
     if(!mpConfiguration->getCompilerPath().isEmpty())
     {
@@ -72,6 +76,13 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     //Load paths from configuration
     setCompilerPath(mpConfiguration->getCompilerPath());
     setHopsanPath(mpConfiguration->getHopsanPath());
+}
+
+void OptionsWidget::setVisible(bool visible)
+{
+    mpAlwaysSaveBeforeCompilingCheckBox->setChecked(mpConfiguration->getAlwaysSaveBeforeCompiling());
+
+    QWidget::setVisible(visible);
 }
 
 

@@ -49,3 +49,6 @@ FORMS    +=
 RESOURCES += \
     icons.qrc \
     templates.qrc
+
+OTHER_FILES += \
+    holcdefaults

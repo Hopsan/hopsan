@@ -21,6 +21,8 @@ public:
     void loadFromXml();
     void loadDefaultsFromXml();
 
+public slots:
+    bool getAlwaysSaveBeforeCompiling() const;
     QString getProjectPath() const;
     QString getHopsanPath() const;
     QString getIncludePath() const;
@@ -29,6 +31,7 @@ public:
     QPalette getPalette();
     QString getStyleSheet();
 
+    void setAlwaysSaveBeforeCompiling(const bool &value);
     void setProjectPath(const QString &value);
     void setHopsanPath(const QString &value);
     void setCompilerPath(const QString &value);
@@ -39,6 +42,7 @@ private:
     void loadUserSettings(QDomElement &rDomElement);
     void loadStyleSettings(QDomElement &rDomElement);
 
+    bool mAlwaysSaveBeforeCompiling;
     QString mProjectPath;
     QString mHopsanPath;
     QString mCompilerPath;

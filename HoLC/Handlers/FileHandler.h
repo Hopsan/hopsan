@@ -34,6 +34,7 @@ public slots:
     void compileLibrary();
     void saveToXml(const QString &path);
     void loadFromXml(const QString &path);
+    void setFileNotSaved();
 
 private slots:
     void openFile(QTreeWidgetItem *pItem, int);

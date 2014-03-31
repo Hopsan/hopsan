@@ -35,6 +35,7 @@ void Configuration::saveToXml()
     domDocument.appendChild(configRoot);
 
     QDomElement settings = appendDomElement(configRoot,"settings");
+    appendDomBooleanNode(settings, "alwayssavebeforecompiling", mAlwaysSaveBeforeCompiling);
     appendDomTextNode(settings, "projectpath", mProjectPath);
     appendDomTextNode(settings, "hopsanpath", mHopsanPath);
     appendDomTextNode(settings, "compilerpath", mCompilerPath);
@@ -157,9 +158,15 @@ void Configuration::loadDefaultsFromXml()
     return;
 }
 
+bool Configuration::getAlwaysSaveBeforeCompiling() const
+{
+    return mAlwaysSaveBeforeCompiling;
+}
+
 //! @brief Utility function that loads user settings from dom element
 void Configuration::loadUserSettings(QDomElement &rDomElement)
 {
+    mAlwaysSaveBeforeCompiling = parseDomBooleanNode(rDomElement.firstChildElement("alwayssavebeforecompiling"), false);
     mProjectPath = rDomElement.firstChildElement("projectpath").text();
     mHopsanPath = rDomElement.firstChildElement("hopsanpath").text();
     mCompilerPath = rDomElement.firstChildElement("compilerpath").text();
@@ -270,5 +277,11 @@ QPalette Configuration::getPalette()
 QString Configuration::getStyleSheet()
 {
     return mStyleSheet;
+}
+
+void Configuration::setAlwaysSaveBeforeCompiling(const bool &value)
+{
+    mAlwaysSaveBeforeCompiling = value;
+    saveToXml();
 }
 

@@ -4,6 +4,11 @@
 #include <QFileInfo>
 #include <QtXml>
 #include <QFileDialog>
+#include <QLabel>
+#include <QCheckBox>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 #include "Configuration.h"
 #include "FileHandler.h"
@@ -357,6 +362,13 @@ void FileHandler::loadFromXml(const QString &path)
     mpConfiguration->setProjectPath(path);
 }
 
+void FileHandler::setFileNotSaved()
+{
+    mpFilesWidget->addAsterisk();
+    if(mpFilesWidget->mpTreeWidget->currentItem() && mTreeToFileMap.contains(mpFilesWidget->mpTreeWidget->currentItem()))
+        mTreeToFileMap.find(mpFilesWidget->mpTreeWidget->currentItem()).value()->mIsSaved = false;
+}
+
 void FileHandler::saveToXml(const QString &filePath)
 {
     mpFilesWidget->removeAsterisks();
@@ -434,6 +446,58 @@ void FileHandler::compileLibrary()
         mpMessageHandler->addErrorMessage("Hopsan path is not setup correctly.");
         return;
     }
+
+    if(mpConfiguration->getAlwaysSaveBeforeCompiling())
+    {
+        saveToXml();
+    }
+    else
+    {
+        bool allSaved=true;
+        foreach(const FileObject *file, mFilePtrs)
+        {
+            if(!file->mIsSaved)
+            {
+                allSaved=false;
+            }
+        }
+        if(!allSaved)
+        {
+            QDialog *pSaveDialog = new QDialog(mpEditorWidget->parentWidget());
+            pSaveDialog->setWindowTitle("Warning!");
+
+            QVBoxLayout *pSaveDialogLayout = new QVBoxLayout(pSaveDialog);
+
+            QLabel *pSaveDialogLabel = new QLabel("All files are not saved. Save all files before compiling?");
+            QCheckBox *pAlwaysSaveCheckBox = new QCheckBox("Always save files before compiling", pSaveDialog);
+            QDialogButtonBox *pSaveDialogButtonBox = new QDialogButtonBox(QDialogButtonBox::Yes | QDialogButtonBox::No, Qt::Horizontal, pSaveDialog);
+
+            connect(pAlwaysSaveCheckBox, SIGNAL(toggled(bool)), pSaveDialogButtonBox->button(QDialogButtonBox::No), SLOT(setDisabled(bool)));
+
+            pSaveDialogLayout->addWidget(pSaveDialogLabel);
+            pSaveDialogLayout->addWidget(pAlwaysSaveCheckBox);
+            pSaveDialogLayout->addWidget(pSaveDialogButtonBox);
+
+            connect(pSaveDialogButtonBox->button(QDialogButtonBox::Yes), SIGNAL(clicked()), pSaveDialog, SLOT(accept()));
+            connect(pSaveDialogButtonBox->button(QDialogButtonBox::Yes), SIGNAL(clicked()), pSaveDialog, SLOT(close()));
+            connect(pSaveDialogButtonBox->button(QDialogButtonBox::No), SIGNAL(clicked()), pSaveDialog, SLOT(reject()));
+            connect(pSaveDialogButtonBox->button(QDialogButtonBox::No), SIGNAL(clicked()), pSaveDialog, SLOT(close()));
+
+            int ret = pSaveDialog->exec();
+
+            qDebug() << "ret = " << ret;
+
+            if(ret == QDialog::Accepted)
+            {
+                saveToXml();
+                if(pAlwaysSaveCheckBox->isChecked())
+                {
+                    mpConfiguration->setAlwaysSaveBeforeCompiling(true);
+                }
+            }
+        }
+    }
+
     //! @todo Maybe check this in some better way
     //! @todo Also check compiler path
 

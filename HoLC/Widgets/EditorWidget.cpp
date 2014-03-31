@@ -58,3 +58,4 @@ void EditorWidget::clear()
 {
     mpTextEdit->clear();
 }
+
