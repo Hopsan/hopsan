@@ -64,7 +64,7 @@ QTreeWidgetItem *ProjectFilesWidget::addFile(const FileObject *pFile)
         mpAppearanceFilesTopLevelItem->setExpanded(true);
     }
 
-    mpTreeWidget->update();
+    update();
     return pNewItem;
 }
 
@@ -122,7 +122,17 @@ void ProjectFilesWidget::clear()
 //    while(mpAuxiliaryFilesTopLevelItem->childCount() > 0)
 //    {
 //        mpAuxiliaryFilesTopLevelItem->removeChild(mpAuxiliaryFilesTopLevelItem->child(0));
-//    }
+    //    }
+}
+
+void ProjectFilesWidget::update()
+{
+    mpProjectFilesTopLevelItem->setHidden(mpProjectFilesTopLevelItem->childCount() == 0);
+    mpComponentFilesTopLevelItem->setHidden(mpComponentFilesTopLevelItem->childCount() == 0);
+    mpAuxiliaryFilesTopLevelItem->setHidden(mpAuxiliaryFilesTopLevelItem->childCount() == 0);
+    mpAppearanceFilesTopLevelItem->setHidden(mpAppearanceFilesTopLevelItem->childCount() == 0);
+
+    mpTreeWidget->update();
 }
 
 void ProjectFilesWidget::keyPressEvent(QKeyEvent *event)

@@ -236,7 +236,7 @@ void FileHandler::addAppearanceFile(QString path)
 
     if(path.isEmpty())
     {
-        path = QFileDialog::getOpenFileName(mpEditorWidget->parentWidget(), "Add Component Appearance From Existing File", "", "*.caf");
+        path = QFileDialog::getOpenFileName(mpEditorWidget->parentWidget(), "Add Component Appearance From Existing File", "", "*.xml");
     }
 
     QFile file(path);
@@ -396,6 +396,10 @@ void FileHandler::saveToXml(const QString &filePath)
         else if(mFilePtrs[f]->mType == FileObject::Auxiliary)
         {
             fileElement = domDocument.createElement("auxiliary");
+        }
+        else if(mFilePtrs[f]->mType == FileObject::CAF)
+        {
+            fileElement = domDocument.createElement("caf");
         }
         fileElement.appendChild(domDocument.createTextNode(mFilePtrs[f]->mFileInfo.absoluteFilePath().remove(path+"/")));
         libRoot.appendChild(fileElement);

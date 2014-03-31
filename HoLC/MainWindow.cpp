@@ -70,8 +70,10 @@ MainWindow::MainWindow(QWidget *pParent)
     pSaveAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Save.png"));
     QAction *pAddComponentAction = new QAction("Add New Component", this);
     pAddComponentAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Add.png"));
-    QAction *pAddComponentFromFileAction = new QAction("Add Component From Existing File", this);
+    QAction *pAddComponentFromFileAction = new QAction("Add Existing Component Source File", this);
     pAddComponentFromFileAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-AddFromFile.png"));
+    QAction *pAddCafFromFileAction = new QAction("Add Existing Appearance File", this);
+    pAddCafFromFileAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-AddCafFile.png"));
     QAction *pOptionsAction = new QAction("Options", this);
     pOptionsAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Options.png"));
     pOptionsAction->setCheckable(true);
@@ -84,6 +86,7 @@ MainWindow::MainWindow(QWidget *pParent)
     pToolBar->addAction(pSaveAction);
     pToolBar->addAction(pAddComponentAction);
     pToolBar->addAction(pAddComponentFromFileAction);
+    pToolBar->addAction(pAddCafFromFileAction);
     pToolBar->addAction(pOptionsAction);
     pToolBar->addAction(pCompileAction);
     this->addToolBar(pToolBar);
@@ -110,6 +113,7 @@ MainWindow::MainWindow(QWidget *pParent)
     connect(pNewAction,                     SIGNAL(triggered()),        mpNewProjectDialog,         SLOT(show()));
     connect(pAddComponentAction,            SIGNAL(triggered()),        mpCreateComponentWizard,    SLOT(open()));
     connect(pAddComponentFromFileAction,    SIGNAL(triggered()),        mpFileHandler,              SLOT(addComponent()));
+    connect(pAddCafFromFileAction,          SIGNAL(triggered()),        mpFileHandler,              SLOT(addAppearanceFile()));
 
     //Load last session project (if exists)
     if(!mpConfiguration->getProjectPath().isEmpty())

@@ -23,6 +23,7 @@ public slots:
     void removeAsterisks();
     void removeItem(QTreeWidgetItem *pItem);
     void clear();
+    void update();
 
 protected:
     void keyPressEvent(QKeyEvent *event);

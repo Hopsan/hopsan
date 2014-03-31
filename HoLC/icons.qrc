@@ -8,5 +8,6 @@
         <file>graphics/uiicons/Hopsan-Options.png</file>
         <file>graphics/uiicons/Hopsan-Save.png</file>
         <file>graphics/splash.png</file>
+        <file>graphics/uiicons/Hopsan-AddCafFile.png</file>
     </qresource>
 </RCC>
