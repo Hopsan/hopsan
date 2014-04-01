@@ -39,15 +39,21 @@ namespace hopsan {
         void setNumDen(double num[3], double den[3]);
         void setMinMax(double min, double max);
         double update(double u);
-        double value();
+        double value() const;
+        double delayedU() const;
+        double delayed2U() const;
+        double delayedY() const;
+        double delayed2Y() const;
+        bool isSaturated() const;
 
     private:
-        double mValue;
-        double mDelayU[2], mDelayY[2];
+        double mY;
+        double mDelayedU, mDelayed2U, mDelayedY, mDelayed2Y;
         double mCoeffU[3];
         double mCoeffY[3];
         double mMin, mMax;
         double mTimeStep;
+        bool mIsSaturated;
     };
 
     class DLLIMPORTEXPORT SecondOrderTransferFunctionVariable

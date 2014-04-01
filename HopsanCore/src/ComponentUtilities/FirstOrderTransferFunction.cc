@@ -23,7 +23,6 @@
 //$Id$
 
 //#include <iostream>
-//#include <cassert>
 #include <algorithm>
 #include "ComponentUtilities/FirstOrderTransferFunction.h"
 
@@ -42,11 +41,12 @@ using namespace hopsan;
 
 void FirstOrderTransferFunction::initialize(double timestep, double num[2], double den[2], double u0, double y0, double min, double max)
 {
+    mIsSaturated = false;
     mMin = min;
     mMax = max;
-    mValue = y0;
-    mDelayU = u0;
-    mDelayY = std::max(std::min(y0, mMax), mMin);
+    mY = y0;
+    mDelayedU = u0;
+    mDelayedY = std::max(std::min(y0, mMax), mMin);
     mTimeStep = timestep;
     setNumDen(num, den);
 }
@@ -63,6 +63,8 @@ void FirstOrderTransferFunction::setNum(double num[2])
 {
     mCoeffU[0] = num[0]*mTimeStep-2.0*num[1];
     mCoeffU[1] = num[0]*mTimeStep+2.0*num[1];
+    //std::cout << "DiscNum: " << mCoeffU[1] << " " << mCoeffU[0] << std::endl;
+
 }
 
 
@@ -70,6 +72,7 @@ void FirstOrderTransferFunction::setDen(double den[2])
 {
     mCoeffY[0] = den[0]*mTimeStep-2.0*den[1];
     mCoeffY[1] = den[0]*mTimeStep+2.0*den[1];
+    //std::cout << "DiscDen: " << mCoeffY[1] << " " << mCoeffY[0] << std::endl;
 }
 
 
@@ -85,9 +88,9 @@ void FirstOrderTransferFunction::setNumDen(double num[2], double den[2])
 
 void FirstOrderTransferFunction::initializeValues(double u0, double y0)
 {
-    mDelayU = u0;
-    mDelayY = y0;
-    mValue = y0;
+    mDelayedU = u0;
+    mDelayedY = y0;
+    mY = y0;
 }
 
 
@@ -96,35 +99,73 @@ double FirstOrderTransferFunction::update(double u)
     //Filter equation
     //Bilinear transform is used
 
-    mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayU - mCoeffY[0]*mDelayY);
+    mY = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayedU - mCoeffY[0]*mDelayedY);
 
-    if (mValue > mMax)
+//    if (mValue >= mMax)
+//    {
+//        mDelayY = mMax;
+//        mDelayU = mMax;
+//        mValue = mMax;
+//        mIsSaturated = true;
+//    }
+//    else if (mValue <= mMin)
+//    {
+//        mDelayY = mMin;
+//        mDelayU = mMin;
+//        mValue = mMin;
+//        mIsSaturated = true;
+//    }
+//    else
+//    {
+//        mDelayY = mValue;
+//        mDelayU = u;
+//        mIsSaturated = false;
+//    }
+
+    if (mY >= mMax)
     {
-        mDelayY = mMax;
-        mDelayU = mMax;
-        mValue = mMax;
+        mY = mMax;
+        mIsSaturated = true;
     }
-    else if (mValue < mMin)
+    else if (mY <= mMin)
     {
-        mDelayY = mMin;
-        mDelayU = mMin;
-        mValue = mMin;
+        mY = mMin;
+        mIsSaturated = true;
     }
     else
     {
-        mDelayY = mValue;
-        mDelayU = u;
+        mIsSaturated = false;
     }
 
-    return mValue;
+    mDelayedY = mY;
+    mDelayedU = u;
+
+    return mY;
 }
 
 
 //! Read current filter output value
 //! @return The filtered actual value.
-double FirstOrderTransferFunction::value()
+double FirstOrderTransferFunction::value() const
 {
-    return mValue;
+    return mY;
+}
+
+double FirstOrderTransferFunction::delayedU() const
+{
+    return mDelayedU;
+}
+
+double FirstOrderTransferFunction::delayedY() const
+{
+    return mDelayedY;
+}
+
+//! @brief Check if the transfere function is saturated (har reached the set limits)
+//! @returns true or false
+bool FirstOrderTransferFunction::isSaturated() const
+{
+    return mIsSaturated;
 }
 
 

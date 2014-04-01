@@ -42,7 +42,7 @@
 #ifndef HYDRAULICCYLINDERQ_HPP_INCLUDED
 #define HYDRAULICCYLINDERQ_HPP_INCLUDED
 
-#include <iostream>
+//#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -55,14 +55,19 @@ namespace hopsan {
     class HydraulicCylinderQ : public ComponentQ
     {
     private:
-        double tao, M, sl;
-        double *mpA1, *mpA2, *mpBp, *mpBl, *mpKl;
-        SecondOrderTransferFunction mPositionFilter;
-        FirstOrderTransferFunction mVelocityFilter;
-        double posnum[3], posden[3], velnum[3], velden[3];
-        double p1, q1, c1, Zc1, p2, q2, c2, Zc2, v1, cx1, Zx1, f3, x3, v3, cx3, Zx3;
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f3, *mpND_x3, *mpND_v3, *mpND_cx3, *mpND_Zx3;
+        // Mmebers
+        SecondOrderTransferFunction mPositionTF;
+        FirstOrderTransferFunction mVelocityTF;
+        double mPosNum[3], mPosDen[3], mVelNum[3], mVelDen[3];
+
+        // Constants
+        double mMass, mSl;
+//        double tao;
+
+        // Ports and node data pointers
         Port *mpP1, *mpP2, *mpP3;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc, *mpP3_f, *mpP3_x, *mpP3_v, *mpP3_c, *mpP3_Zx;
+        double *mpA1, *mpA2, *mpBp, *mpBl, *mpKl;
 
     public:
         static Component *Creator()
@@ -80,73 +85,73 @@ namespace hopsan {
             addInputVariable("A_2", "Piston Area 2", "m^2", 0.0001, &mpA2);
             addInputVariable("B_p", "Viscous Friction Coefficient of Piston", "Ns/m", 0.0, &mpBp);
             addInputVariable("B_l", "Viscous Friction of Load", "Ns/m", 0.0, &mpBl);
-            addInputVariable("k_l", "Stiffness of Load", "N/m", 1000, &mpKl);
+            addInputVariable("k_l", "Stiffness of Load", "N/m", 100, &mpKl);
 
-            addConstant("m_l", "Inertia Load", "kg", 0.05, M);
-            addConstant("s_l", "Stroke", "m", 0.01, sl);
+            addConstant("m_l", "Inertia Load", "kg", 0.05, mMass);
+            addConstant("s_l", "Stroke", "m", 0.01, mSl);
         }
 
 
         void initialize()
         {
             //Assign node data pointers
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
-            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
-            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
-            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
-            mpND_cx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
-            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP3_f = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
+            mpP3_x = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
+            mpP3_v = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
+            mpP3_c = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
+            mpP3_Zx = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
 
-            double A1 = (*mpA1);
-            double A2 = (*mpA2);
+//            double A1 = (*mpA1);
+//            double A2 = (*mpA2);
             double bp = (*mpBp);
             double bl = (*mpBl);
             double kl = (*mpKl);
 
             //Read data from nodes
-            x3 = (*mpND_x3);
-            v3 = (*mpND_v3);
-            Zc1 = (*mpND_Zc1);
-            Zc2 = (*mpND_Zc2);
-            cx3 = (*mpND_cx3);
-            Zx3 = (*mpND_Zx3);
+            double x3 = (*mpP3_x);
+            double v3 = (*mpP3_v);
+//            double Zc1 = (*mpND_Zc1);
+//            double Zc2 = (*mpND_Zc2);
+//            double cx3 = (*mpND_cx3);
+//            double Zx3 = (*mpND_Zx3);
 
-            Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
-            tao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
+//            Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
+//            tao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
 
-            //Initialization of filters
-            posnum[0] = 1.0;
-            posnum[1] = 0.0;
-            posnum[2] = 0.0;
-            posden[0] = kl;
-            posden[1] = bl+bp;
-            posden[2] = M;
-            velnum[0] = 1.0;
-            velnum[1] = 0.0;
-            velden[0] = bl+bp;
-            velden[1] = M;
+            // Initialization of filters
+            mPosNum[0] = 1.0;
+            mPosNum[1] = 0.0;
+            mPosNum[2] = 0.0;
+            mPosDen[0] = kl;
+            mPosDen[1] = bl+bp;
+            mPosDen[2] = mMass;
+            mVelNum[0] = 1.0;
+            mVelNum[1] = 0.0;
+            mVelDen[0] = bl+bp;
+            mVelDen[1] = mMass;
 
-            mPositionFilter.initialize(mTimestep, posnum, posden, 0, x3, 0.0, sl);
-            mVelocityFilter.initialize(mTimestep, velnum, velden, 0, v3);
+            mPositionTF.initialize(mTimestep, mPosNum, mPosDen, 0, x3, 0.0, mSl);
+            mVelocityTF.initialize(mTimestep, mVelNum, mVelDen, 0, v3);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            c1 = (*mpND_c1);
-            Zc1 = (*mpND_Zc1);
-            c2 = (*mpND_c2);
-            Zc2 = (*mpND_Zc2);
-            cx3 = (*mpND_cx3);
-            Zx3 = (*mpND_Zx3);
+            double c1 = (*mpP1_c);
+            double Zc1 = (*mpP1_Zc);
+            double c2 = (*mpP2_c);
+            double Zc2 = (*mpP2_Zc);
+            double cx3 = (*mpP3_c);
+            double Zx3 = (*mpP3_Zx);
 
             double A1 = (*mpA1);
             double A2 = (*mpA2);
@@ -158,38 +163,50 @@ namespace hopsan {
             //CylinderCtest Equations
 
             //Internal mechanical port
-            cx1 = A1*c1 - A2*c2;
-            Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
+            double cx1 = A1*c1 - A2*c2;
+            double Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
 
             //Piston
-            posden[1] = bl+bp+Zx1+Zx3;
-            velden[0] = bl+bp+Zx1+Zx3;
-            mPositionFilter.setDen(posden);
-            mVelocityFilter.setDen(velden);
-            x3 = mPositionFilter.update(cx1-cx3);
-            v3 = mVelocityFilter.update(cx1-cx3 - kl*x3);
+            mPosDen[1] = bl+bp+Zx1+Zx3;
+            mPositionTF.setDen(mPosDen);
+            double x3 = mPositionTF.update(cx1-cx3); // (kl is part of denominator)
+            double v3;
+            if (mPositionTF.isSaturated())
+            {
+                mVelocityTF.initializeValues(0,0);
+                v3 = 0;
+            }
+            else
+            {
+                mVelDen[0] = bl+bp+Zx1+Zx3;
+                mVelocityTF.setDen(mVelDen);
+                v3 = mVelocityTF.update(cx1-cx3 - kl*x3);
+            }
 
-            v1 = -v3;
-            f3 = cx3 + Zx3*v3;
+            // An alternative way of calculating velocity
+            // Note update above shifted one step so delayedY is actually this Y
+            //v3 = (mPositionTF.delayedY() - mPositionTF.delayed2Y())/mTimestep;
+
+            double f3 = cx3 + Zx3*v3;
 
             //Volumes
-            q1 = A1*v1;
-            q2 = A2*v3;
-            p1 = c1 + Zc1*q1;
-            p2 = c2 + Zc2*q2;
+            double q1 = A1*-v3;
+            double q2 = A2*v3;
+            double p1 = c1 + Zc1*q1;
+            double p2 = c2 + Zc2*q2;
 
             //Cavitation check
             if(p1 < 0.0) { p1 = 0.0; }
             if(p2 < 0.0) { p2 = 0.0; }
 
             //Write new values to nodes
-            (*mpND_p1) = p1;
-            (*mpND_q1) = q1;
-            (*mpND_p2) = p2;
-            (*mpND_q2) = q2;
-            (*mpND_f3) = f3;
-            (*mpND_x3) = x3;
-            (*mpND_v3) = v3;
+            (*mpP1_p) = p1;
+            (*mpP1_q) = q1;
+            (*mpP2_p) = p2;
+            (*mpP2_q) = q2;
+            (*mpP3_f) = f3;
+            (*mpP3_x) = x3;
+            (*mpP3_v) = v3;
         }
     };
 }

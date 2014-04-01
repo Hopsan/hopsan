@@ -39,15 +39,19 @@ namespace hopsan {
         void setDen(double den[2]);
         void setNumDen(double num[2], double den[2]);
         double update(double u);
-        double value();
+        double value() const;
+        double delayedU() const;
+        double delayedY() const;
+        bool isSaturated() const;
 
     private:
-        double mValue;
-        double mDelayU, mDelayY;
+        double mY;
+        double mDelayedU, mDelayedY;
         double mCoeffU[2];
         double mCoeffY[2];
         double mMin, mMax;
         double mTimeStep;
+        bool mIsSaturated;
     };
 
 

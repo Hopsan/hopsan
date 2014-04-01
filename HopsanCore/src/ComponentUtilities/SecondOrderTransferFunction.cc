@@ -41,12 +41,13 @@ using namespace hopsan;
 
 void SecondOrderTransferFunction::initialize(double timestep, double num[3], double den[3], double u0, double y0, double min, double max)
 {
+    mIsSaturated = false;
     mMin = min;
     mMax = max;
-    mDelayU[0] = u0;
-    mDelayU[1] = u0;
-    mDelayY[0] = std::max(std::min(y0, mMax), mMin);
-    mDelayY[1] = mDelayY[0];
+    mDelayedU = u0;
+    mDelayed2U = u0;
+    mDelayedY = std::max(std::min(y0, mMax), mMin);
+    mDelayed2Y = mDelayedY;
     mTimeStep = timestep;
     setNumDen(num, den);
 }
@@ -70,11 +71,8 @@ void SecondOrderTransferFunction::setDen(double den[3])
 
 void SecondOrderTransferFunction::setNumDen(double num[3], double den[3])
 {
-//num =
-//(c*T^2*q^2 + 2*c*T^2*q + c*T^2 - 2*b*T*q^2 + 2*b*T + 4*a*q^2 - 8*a*q + 4*a)
-//den =
-//(C*T^2*q^2 + 2*C*T^2*q + C*T^2 - 2*B*T*q^2 + 2*B*T + 4*A*q^2 - 8*A*q + 4*A)
-
+    //num = (c*T^2*q^2 + 2*c*T^2*q + c*T^2 - 2*b*T*q^2 + 2*b*T + 4*a*q^2 - 8*a*q + 4*a)
+    //den = (C*T^2*q^2 + 2*C*T^2*q + C*T^2 - 2*B*T*q^2 + 2*B*T + 4*A*q^2 - 8*A*q + 4*A)
     mCoeffU[0] = num[0]*mTimeStep*mTimeStep + 2.0*num[1]*mTimeStep + 4.0*num[2];
     mCoeffU[1] = 2.0*num[0]*mTimeStep*mTimeStep - 8.0*num[2];
     mCoeffU[2] = num[0]*mTimeStep*mTimeStep - 2.0*num[1]*mTimeStep + 4.0*num[2];
@@ -82,18 +80,6 @@ void SecondOrderTransferFunction::setNumDen(double num[3], double den[3])
     mCoeffY[0] = den[0]*mTimeStep*mTimeStep + 2.0*den[1]*mTimeStep + 4.0*den[2];
     mCoeffY[1] = 2.0*den[0]*mTimeStep*mTimeStep - 8.0*den[2];
     mCoeffY[2] = den[0]*mTimeStep*mTimeStep - 2.0*den[1]*mTimeStep + 4.0*den[2];
-
-//    mCoeffU[0] = mTimeStep*mTimeStep*(num[2]*mTimeStep*mTimeStep - 2*num[1]*mTimeStep + 4*num[0]);
-//    mCoeffU[1] = -mTimeStep*mTimeStep*(4*mTimeStep*num[1] - 4*mTimeStep*mTimeStep*num[2]);
-//    mCoeffU[2] = -mTimeStep*mTimeStep*(8*num[0] - 6*mTimeStep*mTimeStep*num[2]);
-//    mCoeffU[3] = mTimeStep*mTimeStep*(4*num[2]*mTimeStep*mTimeStep + 4*num[1]*mTimeStep);
-//    mCoeffU[4] = mTimeStep*mTimeStep*(num[2]*mTimeStep*mTimeStep + 2*num[1]*mTimeStep + 4*num[0]); //To newest U
-//
-//    mCoeffY[0] = NoDelayAndPointersIntegrator*(den[2]*NoDelayAndPointersIntegrator - 2*den[1]*mTimeStep + 4*den[0]);
-//    mCoeffY[1] = -NoDelayAndPointersIntegrator*(4*mTimeStep*den[1] - 4*NoDelayAndPointersIntegrator*den[2]);
-//    mCoeffY[2] = -NoDelayAndPointersIntegrator*(8*den[0] - 6*NoDelayAndPointersIntegrator*den[2]);
-//    mCoeffY[3] = NoDelayAndPointersIntegrator*(4*den[2]*NoDelayAndPointersIntegrator + 4*den[1]*mTimeStep);
-//    mCoeffY[4] = NoDelayAndPointersIntegrator*(den[2]*NoDelayAndPointersIntegrator + 2*den[1]*mTimeStep + 4*den[0]);
 }
 
 
@@ -106,50 +92,103 @@ void SecondOrderTransferFunction::setMinMax(double min, double max)
 
 void SecondOrderTransferFunction::initializeValues(double u0, double y0)
 {
-    mDelayU[0] = u0;
-    mDelayU[1] = u0;
-    mDelayY[0] = y0;
-    mDelayY[1] = y0;
+    mDelayedU = u0;
+    mDelayed2U = u0;
+    mDelayedY = y0;
+    mDelayed2Y = y0;
+    mY = y0;
 }
 
 
 double SecondOrderTransferFunction::update(double u)
 {
-    mValue = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU[0] + mCoeffU[2]*mDelayU[1] - (mCoeffY[1]*mDelayY[0] + mCoeffY[2]*mDelayY[1]));
+//    std::cout << "u: " << u << " Value before: " << mY;
+    mY = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayedU + mCoeffU[2]*mDelayed2U - mCoeffY[1]*mDelayedY - mCoeffY[2]*mDelayed2Y);
+//    std::cout << " Value after: " << mY << std::endl;
 
-    if (mValue > mMax)
+    //    if (mValue >= mMax)
+    //    {
+    //        mDelayed2U = mMax;
+    //        mDelayedU = mMax;
+    //        mDelayed2Y = mMax;
+    //        mDelayedY = mMax;
+    //        mValue     = mMax;
+    //        mIsSaturated = true;
+    //    }
+    //    else if (mValue <= mMin)
+    //    {
+    //        mDelayed2U = mMin;
+    //        mDelayedU = mMin;
+    //        mDelayed2Y = mMin;
+    //        mDelayedY = mMin;
+    //        mValue     = mMin;
+    //        mIsSaturated = true;
+    //    }
+    //    else
+    //    {
+    //        mDelayed2U = mDelayedU;
+    //        mDelayedU = u;
+    //        mDelayed2Y = mDelayedY;
+    //        mDelayedY = mValue;
+    //        mIsSaturated = false;
+    //    }
+
+    if (mY >= mMax)
     {
-        mDelayU[1] = mMax;
-        mDelayU[0] = mMax;
-        mDelayY[1] = mMax;
-        mDelayY[0] = mMax;
-        mValue     = mMax;
+        mY           = mMax;
+        mIsSaturated = true;
     }
-    else if (mValue < mMin)
+    else if (mY <= mMin)
     {
-        mDelayU[1] = mMin;
-        mDelayU[0] = mMin;
-        mDelayY[1] = mMin;
-        mDelayY[0] = mMin;
-        mValue     = mMin;
+        mY           = mMin;
+        mIsSaturated = true;
     }
     else
     {
-        mDelayU[1] = mDelayU[0];
-        mDelayU[0] = u;
-        mDelayY[1] = mDelayY[0];
-        mDelayY[0] = mValue;
+        mIsSaturated = false;
     }
 
-    return mValue;
+    mDelayed2U = mDelayedU;
+    mDelayedU  = u;
+    mDelayed2Y = mDelayedY;
+    mDelayedY  = mY;
+
+    return mY;
 }
 
 
 //! Return current filter output value
 //! @return The filtered actual value.
-double SecondOrderTransferFunction::value()
+double SecondOrderTransferFunction::value() const
 {
-    return mValue;
+    return mY;
+}
+
+double SecondOrderTransferFunction::delayedU() const
+{
+    return mDelayedU;
+}
+
+double SecondOrderTransferFunction::delayed2U() const
+{
+    return mDelayed2U;
+}
+
+double SecondOrderTransferFunction::delayedY() const
+{
+    return mDelayedY;
+}
+
+double SecondOrderTransferFunction::delayed2Y() const
+{
+    return mDelayed2Y;
+}
+
+//! @brief Check if the transfere function is saturated (har reached the set limits)
+//! @returns true or false
+bool SecondOrderTransferFunction::isSaturated() const
+{
+    return mIsSaturated;
 }
 
 
