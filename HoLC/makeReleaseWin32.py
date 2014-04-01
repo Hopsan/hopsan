@@ -6,9 +6,10 @@ import ctypes
 import stat
 from time import sleep
 
-version='1.0'
+version='0.1'
 tempDir=r'C:\temp_release_holc'
 dependecyBinFile=r'holc_bincontents_Qt485_MinGW44.7z'
+mingwThirdPartyDir=r'ThirdParty\mingw'
 
 # Libs
 qtlibDirList = [r'C:\Qt\4.8.5']
@@ -223,6 +224,10 @@ def verifyPaths():
     if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
         isOk = False
 		
+	#Make sure MinGW compiler exist
+	if not pathExists(mingwThirdPartyDir, "MinGW compiler could not be found in specified location.", "Found MinGW to bundle with application!"):
+	    isOk = False
+		
     if isOk:
         printSuccess("Verification of path variables.")
 
@@ -279,12 +284,17 @@ def copyFiles():
 
     # Create directories    
     callMkdir(tempDir+r'\bin')
-
+    callMkdir(tempDir+r'\ThirdParty\mingw')
+	
     # Common export dirs
     tempDirBin=tempDir+r'\bin'
+    tempMingwDir = tempDir+r'\ThirdParty\mingw'
     
     #Copy "bin" folder to temporary directory
     callXcopy(r'bin\*.*', tempDirBin)
+	
+	#Copy MinGW to temporary diectory
+    callXcopy(mingwThirdPartyDir, tempMingwDir);
 
     #Export "HoLC" SVN directory to "include" in temporary directory
     svnExport("HoLC", tempDir+r'\HoLC')

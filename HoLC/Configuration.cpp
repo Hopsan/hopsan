@@ -172,12 +172,20 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     mCompilerPath = rDomElement.firstChildElement("compilerpath").text();
 
     //Default to installed gcc path in linux (if file exists and no other path specified)
-#ifdef linux
-    if(mCompilerPath.isEmpty() && QFile::exists("/usr/bin/gcc"))
+    if(mCompilerPath.isEmpty())
     {
-        mCompilerPath = "/usr/bin";
-    }
+#ifdef linux
+        if(QFile::exists("/usr/bin/gcc"))
+        {
+            mCompilerPath = "/usr/bin";
+        }
+#elif WIN32
+        if(QFile::exists(qApp->applicationDirPath()+"/../ThirdParty/mingw/bin/g++.exe"))
+        {
+            mCompilerPath = qApp->applicationDirPath()+"/../ThirdParty/mingw/bin";
+        }
 #endif
+    }
 }
 
 
