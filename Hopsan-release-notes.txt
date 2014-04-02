@@ -12,7 +12,7 @@
   Desktop->Properties->Appearance->Effects
 
 - There is no guarantee that the default components are working under all conditions, you have decide for yourself if you trust the simulation results.
-  From version 0.6.0, the source code for all default components are included in the release.
+  From version 0.6.0, the source code for all default components is included in the release.
 
 - There have been substantial "under the hood" changes between the 0.5.* and 0.6.* versions of Hopsan.
   Loading old models in 0.6.0 should work without issues in most cases, HOWEVER, to be sure that you do not loose any information:
@@ -25,6 +25,69 @@
 ******************************
     Version History
 ******************************
+0.6.6    (2014-04-03)
+
+- Feature: Find widget capable of finding by component name, system variables, aliases, highlighting the found component(s)
+           Ctrl+Shift+F (or find it in the tools menu)
+           You can also right click an alias in the plot list to find it in the model
+- Feature: HCOM minof(var) and maxof(var) functions
+- Feature: HCOM ones(size) and zeros(size) commands to create a new vector with ones or zeroes
+- Feature: HCOM linspace(min, max, numSamples) and logspace(min, max, numSamples) commands to create a new vector variable
+- Feature: Parameter sweep algorithm for optimization
+- Feature: Parallel Complex-RF algorithm for optimization
+- Feature: Complex-RFM algorithm for optimization
+- Feature: The message widget is back! It will receive all model messages and you are able to see old messages of any type even if they were disabled in the terminal.
+
+- New component: Rate limiter
+
+- Fixed components: HydraulicCylinderQ (Q-type Piston) velocity keep growing even if end stop reached
+- Fixed components: 2/2 On-off and Poppet valves can now start with non-zero spool position (that is you can start with an open valve)
+- Fixed components: Route components now propagates start values
+- Fixed components: You can now set a start value in the UnitDelay component. This lets you avoids problems with initial values in signal loops containing a unit delay.
+- Fixed components: Electrical components regenerated with an assortment of minor fixes.
+
+- Enhancement: Rewrote python interface code, and added help functions to get data variables into python
+               Note! Python is NOT included in Windows64 bit releases due to compatibility issues
+               Note2! Using HCOM instead of Python is currently recommended
+- Enhancement: Made it possible to see generation of custom xdata in the plot curve control box
+- Enhancement: It is now possible to select "show samples" in the axis context menu.
+               It possible to show time-domain variables vs. samples instead of time.
+- Enhancement: Replaced the generation specifier in HCOM, it is now the '@' sign
+               Example "disp apa*@5" would display all variables with a name starting with 'apa' at generation 5
+- Enhancement: Text can now "Reflow" textbox widgets
+- Enhancement: It is now possible to use different color for for text and border in text box widgets
+- Enhancement: It is now possible to run "chpw" in HCOM without a name argument, to auto create a new empty plot window
+- Enhancement: There is now a clear button next to the sort field in the library widget, to quickly allow you to show everything
+- Enhancement: When changing size of a plot window, the zoom is no longer reset (even if axes are not locked)
+- Enhancement: Temp variables are now only used as shared pointer that are auto deleted, before they would get stuck in memory and were never deleted in some cases.
+- Enhancement: Changing timescale on a frequency domain plot does not make sense, Frequency scaling is supported instead
+
+- Fixed: Sometimes "save undo stack" is activated by default in subsystems, it should be disabled by default.
+- Fixed: Copying a component with a broken connector will crash Hopsan
+- Fixed: Crash if simulating multiple systems multi-threaded with more threads than systems
+- Fixed: Description does not show when hovering input signal ports
+- Fixed: When a plot-axis is locked and you remove the last curve and then add a new one the scale is not kept
+- Fixed: If you right click a component the name will be shown again even if it is hidden
+- Fixed: Crash if adding container ports to top level system
+- Fixed: HCOM "exec" command cannot handle paths with spaces
+- Fixed: Global reset-time-vector button only resets time vector for first curve in plot windows
+- Fixed: Unit scaling in component properties dialog is not registered if scaling is selected from drop down menu
+- Fixed: Output start values can not be selected in optimization wizard (they may still be grayed out, but you can select them)
+- Fixed: When importing a data file with variables that has the same name as existing model variable, they are only shown among the imported variables in the plot widget until you simulate again
+- Fixed: Assigning scalar with vector is accepted but both scalar and vector remains
+- Fixed: Plotting something that is only negative keeps lots of white space up to zero in plot windows
+- Fixed: PLO export assumes that first vector is time vector
+- Fixed: Component generator generates strange file (name.hppname.xml) and forgets svg path
+- Fixed: SymHop does not evaluate negative power functions correctly
+- Fixed: Align tool does not work when trying to align textboxwidget to component
+- Fixed: Users guide remaining open when Hopsan is closed
+- Fixed: If you have a parameter alias 'ko' and the parameter value is 'v' (a system parameter) then ko = 0 according to HCOM
+- Fixed: On Kubuntu and maybe others curve marker text is ugly
+         Note! Build in fonts (calibri) were removed as they did not work on Linux systems. If you are moving your models between platforms the font will be replaced and may change size slightly. hopsan wil ltry to choose a font that is as similar to the current one as possible.
+
+- Documentation: Python function documentation is not up to date after python functions have changed names and some new functions have been added.
+
+
 0.6.5    (2014-02-14)
 
 - Feature: SAPA and REPA commands in HCOM (Save and read parameter files from scripts)
