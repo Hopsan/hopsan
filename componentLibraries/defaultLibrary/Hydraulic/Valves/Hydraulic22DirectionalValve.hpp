@@ -19,14 +19,11 @@
 //! @date   2011-02-24
 //!
 //! @brief Contains a hydraulic on/off valve of Q-type
+//$Id$
 
 #ifndef HYDRAULIC22DIRECTIONALVALVE_HPP_INCLUDED
 #define HYDRAULIC22DIRECTIONALVALVE_HPP_INCLUDED
 
-
-
-#include <iostream>
-#include <sstream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -34,21 +31,25 @@ namespace hopsan {
 
     //!
     //! @brief Hydraulic on/off 2/2-valve of Q-type.
+    //! @todo the typename and class name is incorrect, but we cant just rename it, need an auto update function for that
     //! @ingroup HydraulicComponents
     //!
     class Hydraulic22DirectionalValve : public ComponentQ
     {
     private:
-        double *mpCq, *mpD, *mpF, *mpXvmax, *mpRho;
-        double omegah;
-        double deltah;
-
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
-        double *mpND_xvin, *mpND_xvout;
-
-        SecondOrderTransferFunction filter;
+        // Member variables
+        SecondOrderTransferFunction mValveSpoolPosFilter;
         TurbulentFlowFunction qTurb;
+
+        // Port and node data pointers
         Port *mpP1, *mpP2, *mpIn, *mpOut;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc;
+        double *mpIn_xv, *mpOut_xv;
+        double *mpCq, *mpD, *mpF, *mpXvmax, *mpRho;
+
+        // Constants
+        double mOmegah;
+        double mDeltah;
 
     public:
         static Component *Creator()
@@ -60,7 +61,8 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpIn = addReadPort("in", "NodeSignal");
+
+            mpIn = addInputVariable("in", "<0.5 (closed), >0.5 (open)", "", 0.0);
             mpOut = addOutputVariable("xv", "", "");
 
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
@@ -69,45 +71,52 @@ namespace hopsan {
             addInputVariable("f", "Spool Fraction of the Diameter", "-", 1.0, &mpF);
             addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
 
-            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, omegah);
-            addConstant("delta_h", "Damping Factor", "-", 1.0, deltah);
+            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, mOmegah);
+            addConstant("delta_h", "Damping Factor", "-", 1.0, mDeltah);
         }
 
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpIn_xv = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
+            mpOut_xv = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             double num[3] = {1.0, 0.0, 0.0};
-            double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
-            filter.initialize(mTimestep, num, den, 0, 0, 0, (*mpXvmax));
+            double den[3] = {1.0, 2.0*mDeltah/mOmegah, 1.0/(mOmegah*mOmegah)};
+
+            double initialXv=0;
+            if (doubleToBool(*mpIn_xv))
+            {
+                initialXv = (*mpXvmax);
+            }
+            mValveSpoolPosFilter.initialize(mTimestep, num, den, initialXv, initialXv, 0, (*mpXvmax));
+            simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            //Declare local variables
+            // Declare local variables
             double xv, xnom, Kc, q, Cq, rho, d, f, xvmax;
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, xvin;
             bool cav = false;
 
-            //Get variable values from nodes
-            c1 = (*mpND_c1);
-            Zc1 = (*mpND_Zc1);
-            c2 = (*mpND_c2);
-            Zc2 = (*mpND_Zc2);
-            xvin = (*mpND_xvin);
+            // Get variable values from nodes
+            c1 = (*mpP1_c);
+            Zc1 = (*mpP1_Zc);
+            c2 = (*mpP2_c);
+            Zc2 = (*mpP2_Zc);
+            xvin = (*mpIn_xv);
 
             Cq = (*mpCq);
             rho = (*mpRho);
@@ -117,20 +126,20 @@ namespace hopsan {
 
             if(doubleToBool(xvin))
             {
-                filter.update(xvmax);
+                mValveSpoolPosFilter.update(xvmax);
             }
             else
             {
-                filter.update(0);
+                mValveSpoolPosFilter.update(0);
             }
 
-            xv = filter.value();
+            xv = mValveSpoolPosFilter.value();
 
             xnom = std::max(xv,0.0);
 
             Kc = Cq*f*pi*d*xnom*sqrt(2.0/rho);
 
-            //With TurbulentFlowFunction:
+            // With TurbulentFlowFunction:
             qTurb.setFlowCoefficient(Kc);
 
             q = qTurb.getFlow(c1, c2, Zc1, Zc2);
@@ -141,7 +150,7 @@ namespace hopsan {
             p1 = c1 + q1*Zc1;
             p2 = c2 + q2*Zc2;
 
-            //Cavitation check
+            // Cavitation check
             if(p1 < 0.0)
             {
                 c1 = 0.0;
@@ -166,13 +175,13 @@ namespace hopsan {
                 p2 = c2 + q2*Zc2;
             }
 
-            //Write new values to nodes
+            // Write new values to nodes
 
-            (*mpND_p1) = p1;
-            (*mpND_q1) = q1;
-            (*mpND_p2) = p2;
-            (*mpND_q2) = q2;
-            (*mpND_xvout) = Kc;
+            (*mpP1_p) = p1;
+            (*mpP1_q) = q1;
+            (*mpP2_p) = p2;
+            (*mpP2_q) = q2;
+            (*mpOut_xv) = xnom;
         }
     };
 }

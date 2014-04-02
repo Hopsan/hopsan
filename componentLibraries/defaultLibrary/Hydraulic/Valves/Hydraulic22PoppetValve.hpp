@@ -19,13 +19,11 @@
 //! @date   2011-08-26
 //!
 //! @brief Contains a hydraulic 2/2 poppet valve of Q-type
+//$Id$
 
 #ifndef HYDRAULIC22POPPET_HPP_INCLUDED
 #define HYDRAULIC22POPPET_HPP_INCLUDED
 
-
-
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -38,21 +36,22 @@ namespace hopsan {
     class Hydraulic22PoppetValve : public ComponentQ
     {
     private:
-        double *mpCq, *mpF, *mpRho, *mpD1, *mpD2, *mpK, *mpF0, *mpXvout;
-
-        double dd, AN, AS, AC, xvmax;
-        double K21, K3;
-        double v;
-
-        double *mpND_pAN, *mpND_qAN, *mpND_cAN, *mpND_ZcAN,
-               *mpND_pAS, *mpND_qAS, *mpND_cAS, *mpND_ZcAS,
-               *mpND_pAC, *mpND_qAC, *mpND_cAC, *mpND_ZcAC;
-
+        // Member variables
         IntegratorLimited xIntegrator;
-
         TurbulentFlowFunction qTurb_pASAN;
         TurbulentFlowFunction qTurb_AC;
+        double mAN, mAS, mAC;
+
+        // Port and node data pointers
         Port *mpAN, *mpAS, *mpAC;
+        double *mpAN_p, *mpAN_q, *mpAN_c, *mpAN_Zc,
+               *mpAS_p, *mpAS_q, *mpAS_c, *mpAS_Zc,
+               *mpAC_p, *mpAC_q, *mpAC_c, *mpAC_Zc;
+        double *mpCq, *mpF, *mpRho, *mpD1, *mpD2, *mpK, *mpF0, *mpXvout;
+
+        // Constants
+        double mDd, mXvmax;
+
 
     public:
         static Component *Creator()
@@ -67,6 +66,7 @@ namespace hopsan {
             mpAC = addPowerPort("PC", "NodeHydraulic");
 
             addOutputVariable("xv_out", "Spool position", "", 0.0, &mpXvout);
+
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
             addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
             addInputVariable("d_1", "Small diameter", "m", 10e-3, &mpD1);
@@ -75,42 +75,42 @@ namespace hopsan {
             addInputVariable("F_0", "Spring pre-load", "N", 100.0, &mpF0);
             addInputVariable("f", "Fraction of poppet diameter that is opening", "-", 1.0, &mpF);
 
-            addConstant("x_vmax", "Maximum Spool Displacement", "m", 0.01, xvmax);
-            addConstant("d_d", "Damp orifice diam.", "m", 0.1e-3, dd);
+            addConstant("x_vmax", "Maximum Spool Displacement", "m", 0.01, mXvmax);
+            addConstant("d_d", "Damp orifice diam.", "m", 0.1e-3, mDd);
         }
 
 
         void initialize()
         {
-            mpND_pAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::Pressure);
-            mpND_qAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::Flow);
-            mpND_cAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::WaveVariable);
-            mpND_ZcAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::CharImpedance);
+            mpAN_p = getSafeNodeDataPtr(mpAN, NodeHydraulic::Pressure);
+            mpAN_q = getSafeNodeDataPtr(mpAN, NodeHydraulic::Flow);
+            mpAN_c = getSafeNodeDataPtr(mpAN, NodeHydraulic::WaveVariable);
+            mpAN_Zc = getSafeNodeDataPtr(mpAN, NodeHydraulic::CharImpedance);
 
-            mpND_pAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::Pressure);
-            mpND_qAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::Flow);
-            mpND_cAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::WaveVariable);
-            mpND_ZcAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::CharImpedance);
+            mpAS_p = getSafeNodeDataPtr(mpAS, NodeHydraulic::Pressure);
+            mpAS_q = getSafeNodeDataPtr(mpAS, NodeHydraulic::Flow);
+            mpAS_c = getSafeNodeDataPtr(mpAS, NodeHydraulic::WaveVariable);
+            mpAS_Zc = getSafeNodeDataPtr(mpAS, NodeHydraulic::CharImpedance);
 
-            mpND_pAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::Pressure);
-            mpND_qAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::Flow);
-            mpND_cAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::WaveVariable);
-            mpND_ZcAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::CharImpedance);
+            mpAC_p = getSafeNodeDataPtr(mpAC, NodeHydraulic::Pressure);
+            mpAC_q = getSafeNodeDataPtr(mpAC, NodeHydraulic::Flow);
+            mpAC_c = getSafeNodeDataPtr(mpAC, NodeHydraulic::WaveVariable);
+            mpAC_Zc = getSafeNodeDataPtr(mpAC, NodeHydraulic::CharImpedance);
 
             double rho = (*mpRho);
-            double frac_d = (*mpF);
+            //double frac_d = (*mpF);
             double d1 = (*mpD1);
             double d2 = (*mpD2);
             double Cq = (*mpCq);
 
-            AN = pi*d1*d1/4.0;
-            AC = pi*d2*d2/4.0;
-            AS = AC - AN;
+            mAN = pi*d1*d1/4.0;
+            mAC = pi*d2*d2/4.0;
+            mAS = mAC - mAN;
 
-            xIntegrator.initialize(mTimestep, 0.0, 0.0, 0.0, xvmax);
+            xIntegrator.initialize(mTimestep, 0.0, limit(*mpXvout,0.0,mXvmax), 0.0, mXvmax);
 
-            K21 = Cq*pi*d1*frac_d*0.0*sqrt(2.0/rho); //Main flow coeff.
-            K3  = Cq*pi*dd*dd/4.0*sqrt(2.0/rho); //Damping orifice flow coeff.
+            //double K21 = Cq*pi*d1*frac_d*0.0*sqrt(2.0/rho); //Main flow coeff.
+            double K3  = Cq*pi*mDd*mDd/4.0*sqrt(2.0/rho); //Damping orifice flow coeff.
             qTurb_AC.setFlowCoefficient(K3);
         }
 
@@ -125,12 +125,12 @@ namespace hopsan {
             bool cav = false;
 
             //Get variable values from nodes
-            cAN  = (*mpND_cAN);
-            ZcAN = (*mpND_ZcAN);
-            cAS  = (*mpND_cAS);
-            ZcAS = (*mpND_ZcAS);
-            cAC  = (*mpND_cAC);
-            ZcAC = (*mpND_ZcAC);
+            cAN  = (*mpAN_c);
+            ZcAN = (*mpAN_Zc);
+            cAS  = (*mpAS_c);
+            ZcAS = (*mpAS_Zc);
+            cAC  = (*mpAC_c);
+            ZcAC = (*mpAC_Zc);
 
             double rho = (*mpRho);
             double frac_d = (*mpF);
@@ -140,7 +140,7 @@ namespace hopsan {
             double Cq = (*mpCq);
 
 
-            K21 = Cq*pi*d1*frac_d*xIntegrator.value()*sqrt(2.0/rho);
+            double K21 = Cq*pi*d1*frac_d*xIntegrator.value()*sqrt(2.0/rho);
             qTurb_pASAN.setFlowCoefficient(K21);
 
             qAN = qTurb_pASAN.getFlow(cAS, cAN, ZcAN, ZcAS);
@@ -149,10 +149,10 @@ namespace hopsan {
             pAN = cAN + ZcAN*qAN;
             pAS = cAS + ZcAS*qAS;
 
-            pc = (AN*pAN + AS*pAS -(F0+k*xIntegrator.value()))/AC;
+            pc = (mAN*pAN + mAS*pAS -(F0+k*xIntegrator.value()))/mAC;
 
             qAC = qTurb_AC.getFlow(pc, cAC, 0.0, ZcAC);
-            v = qAC/AC;
+            double v = qAC/mAC;
 
             pAC = cAC + ZcAC*qAC;
 
@@ -184,20 +184,20 @@ namespace hopsan {
                 pAN = cAN + ZcAN*qAN;
                 pAS = cAS + ZcAS*qAS;
 
-                pc = (AN*pAN + AS*pAS -(F0+k*xIntegrator.value()))/AC;
+                pc = (mAN*pAN + mAS*pAS -(F0+k*xIntegrator.value()))/mAC;
 
-                v = qTurb_AC.getFlow(pc, cAC, 0.0, ZcAC)/AC;
+                v = qTurb_AC.getFlow(pc, cAC, 0.0, ZcAC)/mAC;
             }
 
             xIntegrator.update(v);
 
             //Write new values to nodes
-            (*mpND_pAN) = pAN;
-            (*mpND_qAN) = qAN;
-            (*mpND_pAS) = pAS;
-            (*mpND_qAS) = qAS;
-            (*mpND_pAC) = pAC;
-            (*mpND_qAC) = qAC;
+            (*mpAN_p) = pAN;
+            (*mpAN_q) = qAN;
+            (*mpAS_p) = pAS;
+            (*mpAS_q) = qAS;
+            (*mpAC_p) = pAC;
+            (*mpAC_q) = qAC;
             (*mpXvout) = xIntegrator.value();
         }
     };

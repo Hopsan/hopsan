@@ -25,7 +25,6 @@
 #ifndef HYDRAULICFLOWSENSOR_HPP_INCLUDED
 #define HYDRAULICFLOWSENSOR_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 
 namespace hopsan {
