@@ -12,6 +12,7 @@
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
+//$Id$
 
 #ifndef TICTOC_HPP_INCLUDED
 #define TICTOC_HPP_INCLUDED
