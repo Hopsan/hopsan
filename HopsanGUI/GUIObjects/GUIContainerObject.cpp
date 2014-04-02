@@ -1471,7 +1471,7 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
     // Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
     //if(gpMainWindow->mpMessageWidget->textEditHasFocus() || gpTerminalWidget->mpConsole->hasFocus())
     //    return;
-    //! @todo FIXA /Peter
+    //! @todo FIXA /Peter hmm kanske redan fixat av nedanstående
     // Do not copy if we do not have focus
     if (!getContainedScenePtr()->hasFocus())
     {
@@ -1491,11 +1491,11 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
         copyRoot = xmlStack->getCopyRoot();
     }
 
-        //Store center point
+    // Store center point
     QPointF center = getCenterPointFromSelection();
     appendCoordinateTag(*copyRoot, center.x(), center.y());
 
-        //Copy components
+    // Copy components
     QList<ModelObject *>::iterator it;
     for(it = mSelectedModelObjectsList.begin(); it!=mSelectedModelObjectsList.end(); ++it)
     {
@@ -1518,16 +1518,24 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
         }
     }
 
-        //Copy connectors
+    // Copy connectors
     for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
-        if(mSubConnectorList[i]->getStartPort()->getParentModelObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getParentModelObject()->isSelected() && mSubConnectorList[i]->isActive())
+        if (mSubConnectorList[i]->isActive() && !mSubConnectorList[i]->isBroken())
         {
-            mSubConnectorList[i]->saveToDomElement(*copyRoot);
+            Port *pStartPort = mSubConnectorList[i]->getStartPort();
+            Port *pEndPort =  mSubConnectorList[i]->getEndPort();
+            if (pStartPort && pEndPort)
+            {
+                if(pStartPort->getParentModelObject()->isSelected() && pEndPort->getParentModelObject()->isSelected())
+                {
+                    mSubConnectorList[i]->saveToDomElement(*copyRoot);
+                }
+            }
         }
     }
 
-        //Copy widgets
+    // Copy widgets
     QMap<size_t, Widget *>::iterator itw;
     for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
     {
