@@ -1,3 +1,6 @@
+
+//$Id$
+
 #include "HopsanTypes.h"
 #include <cstdlib>
 #include <cstring>

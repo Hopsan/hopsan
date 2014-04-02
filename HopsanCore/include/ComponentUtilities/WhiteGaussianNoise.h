@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a helper function that generates white gaussian noise
 //!
-
+//$Id$
 
 #ifndef WHITEGAUSSIANNOISE_H_INCLUDED
 #define WHITEGAUSSIANNOISE_H_INCLUDED

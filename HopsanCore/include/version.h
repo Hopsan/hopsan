@@ -13,6 +13,8 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #ifndef VERSION_H
 #define VERSION_H
 

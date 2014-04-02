@@ -13,6 +13,8 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 /*
  *  ValveHysteresis.h
  *  HOPSAN++

@@ -1,3 +1,6 @@
+
+//$Id$
+
 #include "ComponentUtilities/HopsanPowerUser.h"
 
 using namespace hopsan;

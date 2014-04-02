@@ -1,3 +1,6 @@
+
+//$Id$
+
 #ifndef HOPSANTYPES_H
 #define HOPSANTYPES_H
 

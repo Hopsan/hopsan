@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef HOPSANPOWERUSER_H
 #define HOPSANPOWERUSER_H
 

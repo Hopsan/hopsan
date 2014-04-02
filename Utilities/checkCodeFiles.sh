@@ -12,7 +12,7 @@ isOK=1
 function checkSvnKeywordIdPresent()
 {
     #file="$1"
-    grep "//$Id:" "$1" > /dev/null
+    grep "\$Id\:" "$1" > /dev/null
     if [ $? -eq 1 ]; then
         echo "$file is missing svn Id property line"
     fi

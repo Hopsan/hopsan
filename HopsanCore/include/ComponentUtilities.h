@@ -13,6 +13,8 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #ifndef COMPONENTUTILITIES_H_INCLUDED
 #define COMPONENTUTILITIES_H_INCLUDED
 
