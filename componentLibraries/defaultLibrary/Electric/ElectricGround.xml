@@ -5,7 +5,10 @@
             <icon scale="1" path="ElectricGround.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ElectricGround.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <ports>
+        <help>
+            <text>Electric ground conection.</text>
+            <link>ElectricComponents.nb</link>
+        </help>        <ports>
             <port x="0.5" y="0" a="90" name="Pel1"/>
         </ports>
     </modelobject>

@@ -5,7 +5,10 @@
             <icon scale="1" path="ElectricMotor.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ElectricMotor.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <ports>
+        <help>
+            <text>Electric motor.</text>
+            <link>ElectricComponents.nb</link>
+        </help>        <ports>
             <port x="0.7" y="1" a="90" name="Pin"/>
             <port x="0.9" y="1" a="90" name="Pout"/>
             <port x="0.3361111111" y="0" a="90" name="Pel1"/>

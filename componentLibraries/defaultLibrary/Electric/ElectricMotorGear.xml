@@ -5,7 +5,10 @@
             <icon scale="1" path="ElectricMotorGear.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ElectricMotorGear.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <ports>
+        <help>
+            <text>Electric motor with gearbox.</text>
+            <link>ElectricComponents.nb</link>
+        </help>        <ports>
             <port x="1" y="0.7" a="0" name="wm"/>
             <port x="0.75" y="0.3" a="270" name="gearRatio"/>
             <port x="0.7" y="1" a="90" name="Pin"/>

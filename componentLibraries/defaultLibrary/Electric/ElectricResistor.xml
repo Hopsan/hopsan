@@ -5,7 +5,10 @@
             <icon scale="1" path="ElectricResistor.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ElectricResistor.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <ports>
+        <help>
+            <text>Electric resistor.</text>
+            <link>ElectricComponents.nb</link>
+        </help>        <ports>
             <port x="0" y="0.5" a="180" name="Pel1"/>
             <port x="1" y="0.5" a="0" name="Pel2"/>
         </ports>
