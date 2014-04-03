@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="ElectricMotorGearScrewLink" displayname="ElectricMotorGearScrewLink">
+         <icons>
+            <icon scale="1" path="ElectricMotorGearScrewLink.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ElectricMotorGearScrewLink.svg" iconrotation="ON" type="iso"/>
+        </icons>
+    <ports>
+      <port x="0.6" y="1" enabled="true" a="90" name="Pin" autoplaced="true"/>
+      <port x="0.2" y="1" enabled="true" a="90" name="wm" autoplaced="true"/>
+      <port x="0.4" y="1" enabled="true" a="90" name="tormg" autoplaced="true"/>
+      <port x="0.13" y="0" enabled="true" a="270" name="Pel1" autoplaced="true"/>
+      <port x="0.8" y="1" enabled="true" a="90" name="Pout" autoplaced="true"/>
+      <port x="0.13" y="1" enabled="true" a="90" name="Pel2" autoplaced="true"/>
+      <port x="0.98" y="0.17" enabled="true" a="0" name="Pmr1" autoplaced="true"/>
+    </ports>
+    <animation flowspeed="100"/>
+  </modelobject>
+</hopsanobjectappearance>
