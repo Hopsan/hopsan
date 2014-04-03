@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *pParent)
 
     this->setStyleSheet(mpConfiguration->getStyleSheet());
     this->setPalette(mpConfiguration->getPalette());
+    this->setWindowIcon(QIcon(":/gfx/graphics/uiicons/Holc-Icon.png"));
 
     QFont font = qApp->font();
     font.setPixelSize(12);

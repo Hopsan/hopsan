@@ -9,5 +9,6 @@
         <file>graphics/uiicons/Hopsan-Save.png</file>
         <file>graphics/splash.png</file>
         <file>graphics/uiicons/Hopsan-AddCafFile.png</file>
+        <file>graphics/uiicons/Holc-Icon.png</file>
     </qresource>
 </RCC>
