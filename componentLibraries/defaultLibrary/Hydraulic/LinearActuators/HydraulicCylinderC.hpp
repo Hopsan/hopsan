@@ -314,7 +314,7 @@ class HydraulicCylinderC : public ComponentC
 
         void limitStroke(double &CxLim, double &ZxLim, double x3, double v3, double me, double sl)
         {
-            double FxLim, ZxLim0, NewCxLim, alfa;
+            double FxLim=0.0, ZxLim0, NewCxLim, alfa;
 
             alfa = 0.5;
 
