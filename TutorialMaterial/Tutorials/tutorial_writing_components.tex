@@ -1,0 +1,60 @@
+\documentclass[a4paper,pdftex]{article}
+
+\usepackage{array}
+\usepackage{mathtools}
+\usepackage{hopsantut}
+
+\hypersetup{pdfauthor={Robert Braun and Peter Nordin}, pdftitle={Hopsan Tutorial - Getting Started}, pdfsubject={Hopsan Tutorial}}
+
+\begin{document}
+\maketitle{Writing Component Libraries}
+
+\section{Requirements}
+%Man behöver Hopsan och HoLC
+
+\section*{Hopsan Component Libraries}
+Hopsan component libraries are written in C++ and compiled to shared library files (.dll in Windows or .so in Linux). A Hopsan component library constists of the files listen below. First, there is a \textit{library description file} in .xml format, which contains basic information about the library. Second, there is a source code file of the library with the .cc extension.\vspace{10pt}\\
+$\mathrm{Component\ Library} \begin{cases}
+\mathtt{\textbf{MyLibrary.xml}} \mathrm{\ -\ Library\ description\ file}\\
+\mathtt{\textbf{MyLibrary.cc \mathrm{\ -\ Library\ source\ code}}\vspace{7pt} \\ 
+\begin{rcases}
+  \mathtt{MyFirstComponent.hpp} \\
+  \mathtt{MyFirstComponent.xml} \\
+  \mathtt{MyFirstComponent.svg}
+\end{rcases} \mathrm{Component}\vspace{7pt} \\
+\begin{rcases}
+  \mathtt{MySecondComponent.hpp} \\
+  \mathtt{MySecondComponent.xml} \\
+  \mathtt{MySecondComponent.svg}
+\end{rcases} \mathrm{Component} \\
+\end{cases}$
+
+\subsection*{Library Description File}
+%Beksriv lib.xml
+
+\subsection*{Library Source File}
+%Beskriv lib.cc
+
+\subsection*{Component Source Files}
+%Beskriv comp.hpp
+
+\subsection*{Component Appearance Files}
+%Beskriv comp.xml
+
+\subsection*{Component Icon Files}
+%Beskriv att man kan göra ikoner med Inkscape
+
+\section{Example}
+%Beskriv hur man bygger ett bibliotek med en enkel aritmetisk komponent i HoLC
+
+\begin{enumerate}
+\item \textbf{Title 1}\\
+Description 1
+
+\item \textbf{Title 2}\\
+Description 2
+
+\icon{0}{gfx/Hopsan-New.png}{Create a new empty model}
+\end{enumerate}
+ 	
+\end{document}

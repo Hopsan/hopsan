@@ -39,6 +39,7 @@ private:
     ComponentSystem *mpSystemFromFile;
 
 private Q_SLOTS:
+#define WIN32
 #ifdef WIN32
     void Generator_FMU_Export()
     {
@@ -124,7 +125,7 @@ private Q_SLOTS:
 
         //Generate S-function
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callSimulinkExportGenerator(HString(pwd.toStdString().c_str())+"/simulink/", "unittestmodel_export.hmf", system, false, 0, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", false);
+        pHandler->callSimulinkExportGenerator(HString(pwd.toStdString().c_str())+"/simulink/", "unittestmodel_export.hmf", system, false, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", false);
 
         QVERIFY2(QFile::exists(pwd+"/simulink/externalLibs.txt"), "Failed to generate S-function, all files not found.");
         QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.dll"), "Failed to generate S-function, all files not found.");
