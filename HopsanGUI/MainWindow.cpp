@@ -302,6 +302,7 @@ void MainWindow::createContents()
 #else
     tabifyDockWidget(mpTerminalDock, mpMessageDock);
 #endif
+    mpTerminalDock->raise();
 
     // Initialize the help message popup
     mpHelpPopup = new HelpPopUpWidget(this);
