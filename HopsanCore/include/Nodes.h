@@ -25,6 +25,7 @@
 #define NODES_H_INCLUDED
 
 #include "Node.h"
+#include "HopsanCoreMacros.h"
 
 namespace hopsan {
 
@@ -60,8 +61,9 @@ public:
     }
 
     //! @brief For signals allways return Value slot even if name has been changed
-    int getDataIdFromName(const HString &/*rName*/) const
+    int getDataIdFromName(const HString &rName) const
     {
+        HOPSAN_UNUSED(rName);
         return Value;
     }
 
@@ -69,7 +71,7 @@ private:
     NodeSignal() : Node(DataLength)
     {
         setNiceName("signal");
-        setDataCharacteristics(Value, "Value", "y", "-");
+        setDataCharacteristics(Value, "Value", "y", "");
     }
 };
 

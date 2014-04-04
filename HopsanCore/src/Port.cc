@@ -50,7 +50,6 @@ Port::Port(const HString &rNodeType, const HString &rPortName, Component *pParen
     mConnectedPorts.clear();
     mpNode = 0;
     mpStartNode = 0;
-    //mpTempAlias=0;
 
     // Create the initial node
     mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType.c_str());
@@ -88,8 +87,6 @@ Port::~Port()
         }
         getComponent()->getHopsanEssentials()->removeNode(mpNode);
     }
-
-    //free(mpTempAlias);
 }
 
 
@@ -127,9 +124,26 @@ Port* Port::addSubPort()
 }
 
 //! @brief Removes a subport from multiport
-void Port::removeSubPort(Port* /*ptr*/)
+void Port::removeSubPort(Port* pPort)
 {
-    mpComponent->addFatalMessage("Port::removeSubPort(): This should only be implemented and called from multiports.");
+    HOPSAN_UNUSED(pPort)
+            mpComponent->addFatalMessage("Port::removeSubPort(): This should only be implemented and called from multiports.");
+}
+
+//! @brief This function registers the startvalue parameters from the start node
+void Port::registerStartValueParameters()
+{
+    // Prevent regestering if subports in multiport, or if startnode is missing
+    if (mpStartNode && !mpParentPort)
+    {
+        for(size_t i=0; i<mpStartNode->getNumDataVariables(); ++i)
+        {
+            const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
+            const HString desc = "startvalue: Port "+getName();
+            const HString name = getName()+"#"+pDesc->name;
+            getComponent()->addConstant(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)));
+        }
+    }
 }
 
 
@@ -160,7 +174,7 @@ void Port::loadStartValuesFromSimulation()
 //! @details Safe but slow version, will not crash if idx out of bounds
 //! @return The data value
 //! @ingroup ComponentSimulationFunctions
-double Port::readNodeSafe(const size_t idx, const size_t subPortIdx)
+double Port::readNodeSafe(const size_t idx, const size_t subPortIdx) const
 {
     HOPSAN_UNUSED(subPortIdx)
 
@@ -292,18 +306,12 @@ size_t Port::getNumConnectedPorts(const int subPortIdx)
 void Port::createStartNode(const HString &rNodeType)
 {
     mpStartNode = getComponent()->getHopsanEssentials()->createNode(rNodeType.c_str());
-    //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
+    //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if below
 
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected
     if (mpParentPort == 0)
     {
-        for(size_t i = 0; i < mpStartNode->getNumDataVariables(); ++i)
-        {
-            const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
-            const HString desc = "startvalue: Port "+getName();
-            const HString name = getName()+"#"+pDesc->name;
-            getComponent()->addConstant(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)));
-        }
+        registerStartValueParameters();
     }
 }
 
@@ -727,22 +735,20 @@ ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component
     createStartNode(rNodeType);
 }
 
-#ifdef __APPLE__
-void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/, const size_t /*subPortIdx*/)
-#else
-void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/)
-#endif
+void ReadPort::writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(idx)
+    HOPSAN_UNUSED(value)
+    HOPSAN_UNUSED(subPortIdx)
     mpComponent->addErrorMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
 }
 
 
-#ifdef __APPLE__
-void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/, const size_t /*subPortIdx*/) const
-#else
-void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
-#endif
+void ReadPort::writeNode(const size_t idx, const double value, const size_t subPortIdx)
 {
+    HOPSAN_UNUSED(idx)
+    HOPSAN_UNUSED(value)
+    HOPSAN_UNUSED(subPortIdx)
     mpComponent->addErrorMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
 }
 
@@ -798,13 +804,11 @@ WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Compone
     createStartNode(mNodeType);
 }
 
-#ifdef __APPLE__
-double WritePort::readNode(const size_t idx, const size_t /*subPortIdx*/) const
-#else
-double WritePort::readNode(const size_t idx) const
-#endif
+
+double WritePort::readNode(const size_t idx, const size_t subPortIdx) const
 {
     HOPSAN_UNUSED(idx)
+    HOPSAN_UNUSED(subPortIdx)
     mpComponent->addWarningMessage("WritePort::readNode(): Could not read to port, this is a WritePort");
     return -1;
 }
@@ -831,7 +835,7 @@ MultiPort::~MultiPort()
 //! @details Safe but slow version, will not crash if idx out of bounds
 //! @return The data value or -1 if any of the idxes are out of range
 //! @ingroup ComponentSimulationFunctions
-double MultiPort::readNodeSafe(const size_t idx, const size_t subPortIdx)
+double MultiPort::readNodeSafe(const size_t idx, const size_t subPortIdx) const
 {
     if (subPortIdx < mSubPortsVector.size())
     {
@@ -1081,8 +1085,9 @@ std::vector<Port*> &MultiPort::getConnectedPorts(const int subPortIdx)
     }
 }
 
-void MultiPort::setNode(Node* /*pNode*/)
+void MultiPort::setNode(Node* pNode)
 {
+    HOPSAN_UNUSED(pNode)
     // Do nothing for multiports, only subports are interfaced with
 }
 

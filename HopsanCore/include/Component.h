@@ -81,7 +81,6 @@ public:
     virtual bool checkModelBeforeSimulation();
     virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double stopT);
-    virtual void finalize(const double startT, const double Ts);
 
     // Timestep functions
     void setDesiredTimestep(const double timestep);

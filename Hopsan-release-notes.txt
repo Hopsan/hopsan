@@ -62,7 +62,9 @@
 - Enhancement: Temp variables are now only used as shared pointer that are auto deleted, before they would get stuck in memory and were never deleted in some cases.
 - Enhancement: Changing timescale on a frequency domain plot does not make sense, Frequency scaling is supported instead
 
+- Fixed: Unit meta data is forgotten when startvalues are saved to xml (replaced by -)
 - Fixed: Sometimes "save undo stack" is activated by default in subsystems, it should be disabled by default.
+- Fixed: Depending on the order of variables, sometimes x-data in curves will not be reloaded when a new generation becomes available
 - Fixed: Copying a component with a broken connector will crash Hopsan
 - Fixed: Crash if simulating multiple systems multi-threaded with more threads than systems
 - Fixed: Description does not show when hovering input signal ports

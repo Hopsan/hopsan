@@ -75,13 +75,13 @@ namespace hopsan {
         //! @param [in] idx The data id of the data to write
         //! @param [in] value The value of the data to read
         //! @param [in] subPortIdx Ignored on non multi ports
-        virtual inline void writeNode(const size_t idx, const double value, const size_t subPortIdx=0) const
+        virtual inline void writeNode(const size_t idx, const double value, const size_t subPortIdx=0)
         {
             HOPSAN_UNUSED(subPortIdx)
             mpNode->mDataValues[idx] = value;
         }
 
-        virtual double readNodeSafe(const size_t idx, const size_t subPortIdx=0);
+        virtual double readNodeSafe(const size_t idx, const size_t subPortIdx=0) const;
         virtual void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
 
         virtual const Node *getNodePtr(const size_t subPortIdx=0)const;
@@ -144,7 +144,9 @@ namespace hopsan {
         virtual void setNode(Node* pNode);
 
         virtual Port* addSubPort();
-        virtual void removeSubPort(Port* ptr);
+        virtual void removeSubPort(Port* pPort);
+
+        void registerStartValueParameters();
 
         void addConnectedPort(Port* pPort, const size_t subPortIdx=0);
         void eraseConnectedPort(Port* pPort, const size_t subPortIdx=0);
@@ -191,7 +193,7 @@ namespace hopsan {
         ~MultiPort();
 
         // Overloaded virtual functions
-        double readNodeSafe(const size_t idx, const size_t subPortIdx);
+        double readNodeSafe(const size_t idx, const size_t subPortIdx) const;
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx);
 
         //! @brief Reads a value from the connected node
@@ -201,7 +203,6 @@ namespace hopsan {
         //! @return The data value
         inline double readNode(const size_t idx, const size_t subPortIdx) const
         {
-            //! @todo handle portIdx ot of range
             return mSubPortsVector[subPortIdx]->readNode(idx);
         }
 
@@ -210,7 +211,7 @@ namespace hopsan {
         //! @param [in] idx The data id of the data to write
         //! @param [in] value The value of the data to read
         //! @param [in] subPortIdx The subPort to write to (range is NOT checked)
-        inline void writeNode(const size_t idx, const double value, const size_t subPortIdx) const
+        inline void writeNode(const size_t idx, const double value, const size_t subPortIdx)
         {
             return mSubPortsVector[subPortIdx]->writeNode(idx,value);
         }
@@ -267,13 +268,10 @@ namespace hopsan {
 
     public:
         ReadPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
-#ifdef __APPLE__
+
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
-        inline void writeNode(const size_t idx, const double value, const size_t subPortIdx=0) const;
-#else
-        void writeNodeSafe(const size_t idx, const double value);
-        inline void writeNode(const size_t idx, const double value) const;
-#endif
+        void writeNode(const size_t idx, const double value, const size_t subPortIdx=0);
+
         virtual void loadStartValues();
         virtual bool hasConnectedExternalSystemWritePort();
         virtual void forceLoadStartValue();
@@ -314,11 +312,7 @@ namespace hopsan {
 
     public:
         WritePort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
-#ifdef __APPLE__
-        inline double readNode(const size_t idx, const size_t subPortIdx=0) const;
-#else
-        inline double readNode(const size_t idx) const;
-#endif
+        double readNode(const size_t idx, const size_t subPortIdx=0) const;
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);

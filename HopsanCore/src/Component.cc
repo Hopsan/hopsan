@@ -82,8 +82,9 @@ Component::Component()
 
 
 //! @brief Virtual Function, base version which gives you an error if you try to use it.
-bool Component::initialize(const double startT, const double /*stopT*/)
+bool Component::initialize(const double startT, const double stopT)
 {
+    HOPSAN_UNUSED(stopT)
     mTime = startT;
     initialize();
 
@@ -229,13 +230,6 @@ void Component::setConstantValue(const HString &rName, const bool value)
     setParameterValue(rName, to_hstring(value), true);
 }
 ///@}
-
-//! @brief Virtual Function, base version which gives you an error if you try to use it.
-void Component::finalize(const double /*startT*/, const double /*stopT*/)
-{
-    addErrorMessage("This function should only be used by ComponentSystem, it should be overloded. For a component, use finalize() instead");
-    stopSimulation();
-}
 
 
 //! @brief Simulates the component from current simulation position to stopT using previously set timestep
@@ -1129,6 +1123,7 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
     //! @todo suport more types
     Port *pPort = addReadPort(rName,"NodeSignal", rDescription, Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
+    pPort->registerStartValueParameters(); // Reregister after unit has been changed
     setDefaultStartValue(pPort, 0, defaultValue);
 
     if (ppNodeData)
@@ -1150,6 +1145,7 @@ Port *Component::addOutputVariable(const HString &rName, const HString &rDescrip
 {
     Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
+    pPort->registerStartValueParameters(); // Reregister after unit has been changed
     disableStartValue(pPort,0);
 
     if (ppNodeData)
