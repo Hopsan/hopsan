@@ -40,8 +40,6 @@ namespace hopsan {
             //WRITE EQUATIONS HERE
 
             //Write new values to nodes<<<writetonodes>>>
-
-            //WRITE EQUATIONS HERE
         }
 
 

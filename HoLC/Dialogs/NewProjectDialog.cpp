@@ -26,7 +26,7 @@ NewProjectDialog::NewProjectDialog(FileHandler *pFileHandler, QWidget *parent)
     mpProjectDirLineEdit = new QLineEdit(this);
     mpProjectDirLineEdit->setReadOnly(true);
     QToolButton *pProjectDirButton = new QToolButton(this);
-    pProjectDirButton->setIcon(QIcon("../HopsanGUI/graphics/uiicons/Hopsan-Open.png"));
+    pProjectDirButton->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
 
     mpWarningLabel = new QLabel(this);
     mpWarningLabel->setText("<font color='red'>Warning! Directory is not empty!</font>");

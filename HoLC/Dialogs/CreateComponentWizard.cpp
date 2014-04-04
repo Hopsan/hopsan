@@ -355,7 +355,7 @@ void CreateComponentWizard::generate()
     //! @todo Should maybe be in file handler instead
 
     //Read template file
-    QFile compTemplateFile(":/templates/Templates/componentTemplate.hpp");
+    QFile compTemplateFile(":Templates/componentTemplate.hpp");
     if(!compTemplateFile.open(QFile::ReadOnly | QFile::Text))
     {
         mpMessageHandler->addErrorMessage("Unable to open file for reading: "+compTemplateFile.fileName());
@@ -394,7 +394,17 @@ void CreateComponentWizard::generate()
         variableCode.append("\n        double ");
         for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*"+mInputsNameLineEditPtrs[p]->text()+", ");
+            variableCode.append("*mpND_"+mInputsNameLineEditPtrs[p]->text()+", ");
+        }
+        variableCode.chop(2);
+        variableCode.append(";");
+    }
+    if(!mInputsNameLineEditPtrs.isEmpty())
+    {
+        variableCode.append("\n        double ");
+        for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
+        {
+            variableCode.append(mInputsNameLineEditPtrs[p]->text()+", ");
         }
         variableCode.chop(2);
         variableCode.append(";");
@@ -406,7 +416,17 @@ void CreateComponentWizard::generate()
         variableCode.append("\n        double ");
         for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*"+mOutputsNameLineEditPtrs[p]->text()+", ");
+            variableCode.append("*mpND_"+mOutputsNameLineEditPtrs[p]->text()+", ");
+        }
+        variableCode.chop(2);
+        variableCode.append(";");
+    }
+    if(!mOutputsNameLineEditPtrs.isEmpty())
+    {
+        variableCode.append("\n        double ");
+        for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
+        {
+            variableCode.append(mOutputsNameLineEditPtrs[p]->text()+", ");
         }
         variableCode.chop(2);
         variableCode.append(";");
@@ -434,31 +454,37 @@ void CreateComponentWizard::generate()
     }
 
     //Node data pointers
-    variableCode.append("\n        double ");
-    for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+    if(!mPortNameLineEditPtrs.isEmpty())
     {
-        QStringList varNames;
-        QString portType = mPortTypeComboBoxPtrs[p]->currentText();
-        varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
-        QString numStr;
-
-        numStr = QString::number(p+1);
-        for(int v=0; v<varNames.size(); ++v)
+        variableCode.append("\n        double ");
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*mpND_"+varNames[v]+numStr+", ");
+            QStringList varNames;
+            QString portType = mPortTypeComboBoxPtrs[p]->currentText();
+            varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
+            QString numStr;
+
+            numStr = QString::number(p+1);
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                variableCode.append("*mpND_"+varNames[v]+numStr+", ");
+            }
         }
+        variableCode.chop(2);
+        variableCode.append(";");
     }
-    variableCode.chop(2);
-    variableCode.append(";");
 
     //Port pointers
-    variableCode.append("\n        Port ");
-    for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+    if(!mPortNameLineEditPtrs.isEmpty())
     {
-        variableCode.append("*mp"+mPortNameLineEditPtrs[p]->text()+", ");
+        variableCode.append("\n        Port ");
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            variableCode.append("*mp"+mPortNameLineEditPtrs[p]->text()+", ");
+        }
+        variableCode.chop(2);
+        variableCode.append(";");
     }
-    variableCode.chop(2);
-    variableCode.append(";");
 
     //Add constants
     for(int p=0; p<mConstantsNameLineEditPtrs.size(); ++p)
@@ -556,6 +582,11 @@ void CreateComponentWizard::generate()
             readFromNodesCode.append("\n            "+varNames[v]+numStr+" = (*mpND_"+varNames[v]+numStr+");");
         }
     }
+    for(int i=0; i<mInputsNameLineEditPtrs.size(); ++i)
+    {
+        QString varName = mInputsNameLineEditPtrs[i]->text();
+        readFromNodesCode.append("\n            "+varName+" = (*mpND_"+varName+");");
+    }
 
 
     //Write to nodes
@@ -577,6 +608,11 @@ void CreateComponentWizard::generate()
             writeToNodesCode.append("\n            (*mpND_"+varNames[v]+numStr+") = "+varNames[v]+numStr+";");
         }
     }
+    for(int i=0; i<mOutputsNameLineEditPtrs.size(); ++i)
+    {
+        QString varName = mOutputsNameLineEditPtrs[i]->text();
+        writeToNodesCode.append("\n            (*mpND_"+varName+") = "+varName+";");
+    }
 
     code.replace("<<<headerguard>>>", headerGuard);
     code.replace("<<<typename>>>", typeName);
@@ -593,9 +629,8 @@ void CreateComponentWizard::generate()
 
     mpFileHandler->addComponent(code, typeName);
 
-
     //Read template file
-    QFile cafTemplateFile(":/templates/Templates/cafTemplate.xml");
+    QFile cafTemplateFile(":Templates/cafTemplate.xml");
     if(!cafTemplateFile.open(QFile::ReadOnly | QFile::Text))
     {
         mpMessageHandler->addErrorMessage("Unable to open file for reading: "+cafTemplateFile.fileName());

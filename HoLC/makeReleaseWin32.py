@@ -9,7 +9,8 @@ from time import sleep
 version='0.1'
 tempDir=r'C:\temp_release_holc'
 dependecyBinFile=r'holc_bincontents_Qt485_MinGW44.7z'
-mingwThirdPartyDir=r'ThirdParty\mingw'
+mingw32ThirdPartyDir=r'ThirdParty\mingw32'
+mingw64ThirdPartyDir=r'ThirdParty\mingw64'
 
 # Libs
 qtlibDirList = [r'C:\Qt\4.8.5']
@@ -224,10 +225,14 @@ def verifyPaths():
     if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
         isOk = False
 		
-	#Make sure MinGW compiler exist
-	if not pathExists(mingwThirdPartyDir, "MinGW compiler could not be found in specified location.", "Found MinGW to bundle with application!"):
+	#Make sure MinGW 32-bit compiler exist
+	if not pathExists(mingw32ThirdPartyDir, "MinGW 32-bit compiler could not be found in specified location.", "Found MinGW 32-bit to bundle with application!"):
 	    isOk = False
-		
+
+	#Make sure MinGW 64-bit compiler exist
+	if not pathExists(mingw64ThirdPartyDir, "MinGW 64-bit compiler could not be found in specified location.", "Found MinGW 64-bit to bundle with application!"):
+	    isOk = False		
+	
     if isOk:
         printSuccess("Verification of path variables.")
 
@@ -284,18 +289,23 @@ def copyFiles():
 
     # Create directories    
     callMkdir(tempDir+r'\bin')
-    callMkdir(tempDir+r'\ThirdParty\mingw')
+    callMkdir(tempDir+r'\ThirdParty\mingw32')
+    callMkdir(tempDir+r'\ThirdParty\mingw64')
 	
     # Common export dirs
     tempDirBin=tempDir+r'\bin'
-    tempMingwDir = tempDir+r'\ThirdParty\mingw'
+    tempMingw32Dir = tempDir+r'\ThirdParty\mingw32'
+    tempMingw64Dir = tempDir+r'\ThirdParty\mingw64'
     
     #Copy "bin" folder to temporary directory
     callXcopy(r'bin\*.*', tempDirBin)
 	
-	#Copy MinGW to temporary diectory
-    callXcopy(mingwThirdPartyDir, tempMingwDir);
-
+	#Copy MinGW 32-bit to temporary diectory
+    callXcopy(mingw32ThirdPartyDir, tempMingw32Dir);
+	
+	#Copy MinGW 64-bit to temporary diectory
+    callXcopy(mingw64ThirdPartyDir, tempMingw64Dir);
+	
     #Export "HoLC" SVN directory to "include" in temporary directory
     svnExport("HoLC", tempDir+r'\HoLC')
  

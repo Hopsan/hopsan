@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *pParent)
 
     this->setStyleSheet(mpConfiguration->getStyleSheet());
     this->setPalette(mpConfiguration->getPalette());
-    this->setWindowIcon(QIcon(":/gfx/graphics/uiicons/Holc-Icon.png"));
+    this->setWindowIcon(QIcon(":graphics/uiicons/Holc-Icon.png"));
 
     QFont font = qApp->font();
     font.setPixelSize(12);
@@ -65,23 +65,23 @@ MainWindow::MainWindow(QWidget *pParent)
 
     //Create toolbars
     QAction *pNewAction = new QAction("New Library", this);
-    pNewAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-New.png"));
+    pNewAction->setIcon(QIcon(":graphics/uiicons/Hopsan-New.png"));
     QAction *pOpenAction = new QAction("Open Library", this);
-    pOpenAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Open.png"));
+    pOpenAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
     QAction *pSaveAction = new QAction("Save Current File", this);
-    pSaveAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Save.png"));
+    pSaveAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Save.png"));
     pSaveAction->setShortcut(QKeySequence("Ctrl+S"));
     QAction *pAddComponentAction = new QAction("Add New Component", this);
-    pAddComponentAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Add.png"));
+    pAddComponentAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Add.png"));
     QAction *pAddComponentFromFileAction = new QAction("Add Existing Component Source File", this);
-    pAddComponentFromFileAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-AddFromFile.png"));
+    pAddComponentFromFileAction->setIcon(QIcon(":graphics/uiicons/Hopsan-AddFromFile.png"));
     QAction *pAddCafFromFileAction = new QAction("Add Existing Appearance File", this);
-    pAddCafFromFileAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-AddCafFile.png"));
+    pAddCafFromFileAction->setIcon(QIcon(":graphics/uiicons/Hopsan-AddCafFile.png"));
     QAction *pOptionsAction = new QAction("Options", this);
-    pOptionsAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Options.png"));
+    pOptionsAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Options.png"));
     pOptionsAction->setCheckable(true);
     QAction *pCompileAction = new QAction("Compile Library", this);
-    pCompileAction->setIcon(QIcon(":/gfx/graphics/uiicons/Hopsan-Compile.png"));
+    pCompileAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Compile.png"));
 
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pNewAction);

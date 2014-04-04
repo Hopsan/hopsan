@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QPixmap pixmap(":/gfx/graphics/splash.png");
+    QPixmap pixmap(":graphics/splash.png");
     QSplashScreen *pSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint);
     pSplash->show();
     pSplash->setAttribute(Qt::WA_DeleteOnClose, true);

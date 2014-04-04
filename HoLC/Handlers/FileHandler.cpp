@@ -59,8 +59,8 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
 
     QFile xmlFile(path+"/"+mLibName+".xml");
     QFile sourceFile(path+"/"+mLibName+".cc");
-    QFile xmlTemplateFile(":/templates/Templates/xmlTemplate.xml");
-    QFile sourceTemplateFile(":/templates/Templates/sourceTemplate.cc");
+    QFile xmlTemplateFile(":Templates/xmlTemplate.xml");
+    QFile sourceTemplateFile(":Templates/sourceTemplate.cc");
 
     if(!xmlFile.open(QFile::WriteOnly | QFile::Text))
     {

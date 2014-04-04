@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/templates">
+    <qresource prefix="/">
         <file>Templates/xmlTemplate.xml</file>
         <file>Templates/sourceTemplate.cc</file>
         <file>Templates/componentTemplate.hpp</file>

@@ -50,5 +50,7 @@ RESOURCES += \
     icons.qrc \
     templates.qrc
 
+RC_FILE = HoLC.rc
+
 OTHER_FILES += \
     holcdefaults
