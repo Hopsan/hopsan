@@ -4,6 +4,7 @@
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage[cm]{sfmath}
+\usepackage{cprotect}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -56,4 +57,8 @@
   \end{tabular}
   \par
   \vspace{-6pt}
+}
+
+\newcommand{\tutitem}[1]{%
+  \item\textbf{#1}\\
 }
