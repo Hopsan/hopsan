@@ -38,18 +38,19 @@ namespace hopsan {
     class Hydraulic33ShuttleValve : public ComponentQ
     {
     private:
-        double *mpCq, *mpD, *mpRho, *mpF_pa, *mpF_at, *mpX_pa, *mpX_at;
-
-        double xvmax, d1, d2, K1, K2, A;
-
-        double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct;
-        double *mpXvout;
-
+        // Member variables
         IntegratorLimited xIntegrator;
-
         TurbulentFlowFunction qTurb_pa;
         TurbulentFlowFunction qTurb_at;
+        double *mpCq, *mpD, *mpRho, *mpF_pa, *mpF_at, *mpX_pa, *mpX_at;
+
+        // Port and node data pointers
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpX;
+        double *mpPA_p, *mpPA_q, *mpPA_c, *mpPA_Zc, *mpPP_p, *mpPP_q, *mpPP_c, *mpPP_Zc, *mpPT_p, *mpPT_q, *mpPT_c, *mpPT_Zc;
+        double *mpXvout;
+
+        // Constants
+        double xvmax, d1, d2, K1, K2, A;
 
     public:
         static Component *Creator()
@@ -81,26 +82,27 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Pressure);
-            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Flow);
-            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WaveVariable);
-            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CharImpedance);
+            mpPP_p = getSafeNodeDataPtr(mpPP, NodeHydraulic::Pressure);
+            mpPP_q = getSafeNodeDataPtr(mpPP, NodeHydraulic::Flow);
+            mpPP_c = getSafeNodeDataPtr(mpPP, NodeHydraulic::WaveVariable);
+            mpPP_Zc = getSafeNodeDataPtr(mpPP, NodeHydraulic::CharImpedance);
 
-            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
-            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
-            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
-            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
+            mpPT_p = getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
+            mpPT_q = getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
+            mpPT_c = getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
+            mpPT_Zc = getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
 
-            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
-            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
-            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
-            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
+            mpPA_p = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
+            mpPA_q = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
+            mpPA_c = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
+            mpPA_Zc = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
             double Cq = (*mpCq);
             double rho = (*mpRho);
             double d = (*mpD);
 
-            xIntegrator.initialize(mTimestep, 0, 0, -xvmax, xvmax);
+            double initXv = limit(*mpXvout, -xvmax, xvmax);
+            xIntegrator.initialize(mTimestep, initXv, initXv, -xvmax, xvmax);
 
             K1 = Cq*pi*d1*d1/4.0*sqrt(2.0/rho);
             K2 = Cq*pi*d2*d2/4.0*sqrt(2.0/rho);
@@ -119,12 +121,12 @@ namespace hopsan {
             bool cav = false;
 
             //Get variable values from nodes
-            cp = (*mpND_cp);
-            Zcp = (*mpND_Zcp);
-            ct = (*mpND_ct);
-            Zct = (*mpND_Zct);
-            ca = (*mpND_ca);
-            Zca = (*mpND_Zca);
+            cp = (*mpPP_c);
+            Zcp = (*mpPP_Zc);
+            ct = (*mpPT_c);
+            Zct = (*mpPT_Zc);
+            ca = (*mpPA_c);
+            Zca = (*mpPA_Zc);
 
             Cq = (*mpCq);
             rho = (*mpRho);
@@ -134,8 +136,8 @@ namespace hopsan {
             x_pa = (*mpX_pa);
             x_at = (*mpX_at);
 
-            p = (K1*K1*(*mpND_pp) + K2*K2*(*mpND_pt))/(K1*K1+K2*K2);
-            v = sign((*mpND_pp)-p)*K1*sqrt(fabs((*mpND_pp)-p))/A;
+            p = (K1*K1*(*mpPP_p) + K2*K2*(*mpPT_p))/(K1*K1+K2*K2);
+            v = sign((*mpPP_p)-p)*K1*sqrt(fabs((*mpPP_p)-p))/A;
             xv = xIntegrator.update(v);
 
             //xv=-.01+mTime/10.0*0.02; //Test to see q(xv)
@@ -196,12 +198,12 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            (*mpND_pp) = pp;
-            (*mpND_qp) = qp;
-            (*mpND_pa) = pa;
-            (*mpND_qa) = qa;
-            (*mpND_pt) = pt;
-            (*mpND_qt) = qt;
+            (*mpPP_p) = pp;
+            (*mpPP_q) = qp;
+            (*mpPA_p) = pa;
+            (*mpPA_q) = qa;
+            (*mpPT_p) = pt;
+            (*mpPT_q) = qt;
             (*mpXvout) = xv;
         }
     };

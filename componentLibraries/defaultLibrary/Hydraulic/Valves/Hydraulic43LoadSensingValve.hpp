@@ -19,12 +19,11 @@
 //! @date   2010-01-12
 //!
 //! @brief Contains a hydraulic 4/3-valve with load sensing port of Q-type
+//$Id$
+
 #ifndef HYDRAULIC43LOADSENSINGVALVE_HPP_INCLUDED
 #define HYDRAULIC43LOADSENSINGVALVE_HPP_INCLUDED
 
-
-
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -37,17 +36,25 @@ namespace hopsan {
     class Hydraulic43LoadSensingValve : public ComponentQ
     {
     private:
-        double *mpXvIn, *mpXv, *mpCq, *mpD, *mpF_pa, *mpF_pb, *mpF_at, *mpF_bt, *mpXvmax, *mpRho, *mpX_pa, *mpX_pb, *mpX_at, *mpX_bt;
-        double omegah, deltah;
+        // Member variables
+        SecondOrderTransferFunction mSpoolPosTF;
+        TurbulentFlowFunction mQTurb_pa;
+        TurbulentFlowFunction mQTurb_pb;
+        TurbulentFlowFunction mQTurb_at;
+        TurbulentFlowFunction mQTurb_bt;
 
-        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_pload, *mpND_qload, *mpND_cload, *mpND_Zcload;
-
-        SecondOrderTransferFunction filter;
-        TurbulentFlowFunction qTurb_pa;
-        TurbulentFlowFunction qTurb_pb;
-        TurbulentFlowFunction qTurb_at;
-        TurbulentFlowFunction qTurb_bt;
+        // Port and node data pointers
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpPL;
+        double *mpPP_p, *mpPP_q, *mpPP_c, *mpPP_Zc,
+               *mpPT_p, *mpPT_q, *mpPT_c, *mpPT_Zc,
+               *mpPA_p, *mpPA_q, *mpPA_c, *mpPA_Zc,
+               *mpPB_p, *mpPB_q, *mpPB_c, *mpPB_Zc,
+               *mpPL_p, *mpPL_q, *mpPL_c, *mpPL_Zc;
+        double *mpXvIn, *mpXv;
+        double *mpCq, *mpD, *mpF_pa, *mpF_pb, *mpF_at, *mpF_bt, *mpXvmax, *mpRho, *mpX_pa, *mpX_pb, *mpX_at, *mpX_bt;
+
+        // Constants
+        double mOmegah, mDeltah;
 
     public:
         static Component *Creator()
@@ -63,56 +70,59 @@ namespace hopsan {
             mpPB = addPowerPort("PB", "NodeHydraulic");
             mpPL = addPowerPort("PL", "NodeHydraulic");
 
-            addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
+            addOutputVariable("xv", "Spool position", "m", &mpXv);
+
             addInputVariable("in", "Desired spool position", "m", 0.0, &mpXvIn);
+
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
             addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
             addInputVariable("d", "Spool Diameter", "m", 0.01, &mpD);
             addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "-", 1.0, &mpF_pa);
-            addInputVariable("f_pb", "Fraction of spool circumference that is opening B-T", "-", 1.0, &mpF_pb);
-            addInputVariable("f_at", "Fraction of spool circumference that is opening P-A", "-", 1.0, &mpF_at);
+            addInputVariable("f_pb", "Fraction of spool circumference that is opening P-B", "-", 1.0, &mpF_pb);
+            addInputVariable("f_at", "Fraction of spool circumference that is opening A-T", "-", 1.0, &mpF_at);
             addInputVariable("f_bt", "Fraction of spool circumference that is opening B-T", "-", 1.0, &mpF_bt);
             addInputVariable("x_pa", "Spool Overlap From Port P To A", "m", -1e-6, &mpX_pa);
-            addInputVariable("x_pb", "Spool Overlap From Port A To T", "m", -1e-6, &mpX_pb);
-            addInputVariable("x_at", "Spool Overlap From Port P To A", "m", -1e-6, &mpX_at);
+            addInputVariable("x_pb", "Spool Overlap From Port P To B", "m", -1e-6, &mpX_pb);
+            addInputVariable("x_at", "Spool Overlap From Port A To T", "m", -1e-6, &mpX_at);
             addInputVariable("x_bt", "Spool Overlap From Port A To T", "m", -1e-6, &mpX_bt);
             addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
 
-            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, omegah);
-            addConstant("delta_h", "Damping Factor", "-", 1.0, deltah);
+            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, mOmegah);
+            addConstant("delta_h", "Damping Factor", "-", 1.0, mDeltah);
         }
 
 
         void initialize()
         {
-            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Pressure);
-            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Flow);
-            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WaveVariable);
-            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CharImpedance);
+            mpPP_p = getSafeNodeDataPtr(mpPP, NodeHydraulic::Pressure);
+            mpPP_q = getSafeNodeDataPtr(mpPP, NodeHydraulic::Flow);
+            mpPP_c = getSafeNodeDataPtr(mpPP, NodeHydraulic::WaveVariable);
+            mpPP_Zc = getSafeNodeDataPtr(mpPP, NodeHydraulic::CharImpedance);
 
-            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
-            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
-            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
-            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
+            mpPT_p = getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
+            mpPT_q = getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
+            mpPT_c = getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
+            mpPT_Zc = getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
 
-            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
-            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
-            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
-            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
+            mpPA_p = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
+            mpPA_q = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
+            mpPA_c = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
+            mpPA_Zc = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
-            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Pressure);
-            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Flow);
-            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WaveVariable);
-            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CharImpedance);
+            mpPB_p = getSafeNodeDataPtr(mpPB, NodeHydraulic::Pressure);
+            mpPB_q = getSafeNodeDataPtr(mpPB, NodeHydraulic::Flow);
+            mpPB_c = getSafeNodeDataPtr(mpPB, NodeHydraulic::WaveVariable);
+            mpPB_Zc = getSafeNodeDataPtr(mpPB, NodeHydraulic::CharImpedance);
 
-            mpND_pload = getSafeNodeDataPtr(mpPL, NodeHydraulic::Pressure);
-            mpND_qload = getSafeNodeDataPtr(mpPL, NodeHydraulic::Flow);
-            mpND_cload = getSafeNodeDataPtr(mpPL, NodeHydraulic::WaveVariable);
-            mpND_Zcload = getSafeNodeDataPtr(mpPL, NodeHydraulic::CharImpedance);
+            mpPL_p = getSafeNodeDataPtr(mpPL, NodeHydraulic::Pressure);
+            mpPL_q = getSafeNodeDataPtr(mpPL, NodeHydraulic::Flow);
+            mpPL_c = getSafeNodeDataPtr(mpPL, NodeHydraulic::WaveVariable);
+            mpPL_Zc = getSafeNodeDataPtr(mpPL, NodeHydraulic::CharImpedance);
 
             double num[3] = {1.0, 0.0, 0.0};
-            double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
-            filter.initialize(mTimestep, num, den, 0, 0, -(*mpXvmax), (*mpXvmax));
+            double den[3] = {1.0, 2.0*mDeltah/mOmegah, 1.0/(mOmegah*mOmegah)};
+            double initXv = limit(*mpXvIn,-(*mpXvmax),(*mpXvmax));
+            mSpoolPosTF.initialize(mTimestep, num, den, initXv, initXv, -(*mpXvmax), (*mpXvmax));
         }
 
 
@@ -125,16 +135,16 @@ namespace hopsan {
             bool cav = false;
 
             //Get variable values from nodes
-            cp = (*mpND_cp);
-            Zcp = (*mpND_Zcp);
-            ct = (*mpND_ct);
-            Zct = (*mpND_Zct);
-            ca = (*mpND_ca);
-            Zca = (*mpND_Zca);
-            cb = (*mpND_cb);
-            Zcb = (*mpND_Zcb);
-            cload = (*mpND_cload);
-            Zcload = (*mpND_Zcload);
+            cp = (*mpPP_c);
+            Zcp = (*mpPP_Zc);
+            ct = (*mpPT_c);
+            Zct = (*mpPT_Zc);
+            ca = (*mpPA_c);
+            Zca = (*mpPA_Zc);
+            cb = (*mpPB_c);
+            Zcb = (*mpPB_Zc);
+            cload = (*mpPL_c);
+            Zcload = (*mpPL_Zc);
             xvin = (*mpXvIn);
 
             Cq = (*mpCq);
@@ -151,8 +161,8 @@ namespace hopsan {
             x_bt = (*mpX_bt);
 
             limitValue(xvin, -xvmax, xvmax);
-            filter.update(xvin);
-            xv = filter.value();
+            mSpoolPosTF.update(xvin);
+            xv = mSpoolPosTF.value();
 
             xpanom = std::max(xv-x_pa,0.0);
             xpbnom = std::max(-xv-x_pb,0.0);
@@ -165,15 +175,15 @@ namespace hopsan {
             Kcbt = Cq*f_bt*pi*d*xbtnom*sqrt(2.0/rho);
 
             //With TurbulentFlowFunction:
-            qTurb_pa.setFlowCoefficient(Kcpa);
-            qTurb_pb.setFlowCoefficient(Kcpb);
-            qTurb_at.setFlowCoefficient(Kcat);
-            qTurb_bt.setFlowCoefficient(Kcbt);
+            mQTurb_pa.setFlowCoefficient(Kcpa);
+            mQTurb_pb.setFlowCoefficient(Kcpb);
+            mQTurb_at.setFlowCoefficient(Kcat);
+            mQTurb_bt.setFlowCoefficient(Kcbt);
 
-            qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
-            qpb = qTurb_pb.getFlow(cp, cb, Zcp, Zcb);
-            qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
-            qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
+            qpa = mQTurb_pa.getFlow(cp, ca, Zcp, Zca);
+            qpb = mQTurb_pb.getFlow(cp, cb, Zcp, Zcb);
+            qat = mQTurb_at.getFlow(ca, ct, Zca, Zct);
+            qbt = mQTurb_bt.getFlow(cb, ct, Zcb, Zct);
 
             qp = -qpa-qpb;
             qa = qpa-qat;
@@ -213,10 +223,10 @@ namespace hopsan {
 
             if(cav)
             {
-                qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
-                qpb = qTurb_pb.getFlow(cp, cb, Zcp, Zcb);
-                qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
-                qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
+                qpa = mQTurb_pa.getFlow(cp, ca, Zcp, Zca);
+                qpb = mQTurb_pb.getFlow(cp, cb, Zcp, Zcb);
+                qat = mQTurb_at.getFlow(ca, ct, Zca, Zct);
+                qbt = mQTurb_bt.getFlow(cb, ct, Zcb, Zct);
 
                 qp = -qpa-qpb;
                 qa = qpa-qat;
@@ -241,16 +251,16 @@ namespace hopsan {
 
             //Write new values to nodes
 
-            (*mpND_pp) = pp;
-            (*mpND_qp) = qp;
-            (*mpND_pt) = pt;
-            (*mpND_qt) = qt;
-            (*mpND_pa) = pa;
-            (*mpND_qa) = qa;
-            (*mpND_pb) = pb;
-            (*mpND_qb) = qb;
-            (*mpND_pload) = pload;
-            (*mpND_qload) = (pload - cload)/Zcload;
+            (*mpPP_p) = pp;
+            (*mpPP_q) = qp;
+            (*mpPT_p) = pt;
+            (*mpPT_q) = qt;
+            (*mpPA_p) = pa;
+            (*mpPA_q) = qa;
+            (*mpPB_p) = pb;
+            (*mpPB_q) = qb;
+            (*mpPL_p) = pload;
+            (*mpPL_q) = (pload - cload)/Zcload;
             (*mpXv) = xv;
         }
     };

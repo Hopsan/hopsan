@@ -19,13 +19,12 @@
 //! @date   2010-12-20
 //!
 //! @brief Contains a hydraulic 4/2-valve of Q-type
+//$Id$
 
 #ifndef HYDRAULIC42VALVE_HPP_INCLUDED
 #define HYDRAULIC42VALVE_HPP_INCLUDED
 
 
-
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -38,15 +37,18 @@ namespace hopsan {
     class Hydraulic42Valve : public ComponentQ
     {
     private:
-        double *mpXvIn, *mpXv, *mpCq, *mpD, *mpF_pa, *mpF_bt, *mpXvmax, *mpRho;
-        double omegah, deltah;
-
-        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb;
-
-        SecondOrderTransferFunction filter;
+        // Member variables
+        SecondOrderTransferFunction mSpoolPosTF;
         TurbulentFlowFunction qTurb_pa;
         TurbulentFlowFunction qTurb_bt;
+
+        // Port and node data pointers
         Port *mpPP, *mpPT, *mpPA, *mpPB;
+        double *mpPP_p, *mpPP_q, *mpPP_c, *mpPP_Zc, *mpPT_p, *mpPT_q, *mpPT_c, *mpPT_Zc, *mpPA_p, *mpPA_q, *mpPA_c, *mpPA_Zc, *mpPB_p, *mpPB_q, *mpPB_c, *mpPB_Zc;
+        double *mpXvIn, *mpXv, *mpCq, *mpD, *mpF_pa, *mpF_bt, *mpXvmax, *mpRho;
+
+        // Constants
+        double mOmegah, mDeltah;
 
     public:
         static Component *Creator()
@@ -61,8 +63,9 @@ namespace hopsan {
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpPB = addPowerPort("PB", "NodeHydraulic");
 
-            addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
+            addOutputVariable("xv", "Spool position", "m", &mpXv);
             addInputVariable("in", "Desired spool position", "m", 0.0, &mpXvIn);
+
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
             addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
             addInputVariable("d", "Spool Diameter", "m", 0.01, &mpD);
@@ -70,37 +73,38 @@ namespace hopsan {
             addInputVariable("f_bt", "Fraction of spool circumference that is opening B-T", "-", 1.0, &mpF_bt);
             addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
 
-            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, omegah);
-            addConstant("delta_h", "Damping Factor", "-", 1.0, deltah);
+            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, mOmegah);
+            addConstant("delta_h", "Damping Factor", "-", 1.0, mDeltah);
         }
 
 
         void initialize()
         {
-            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Pressure);
-            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Flow);
-            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WaveVariable);
-            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CharImpedance);
+            mpPP_p = getSafeNodeDataPtr(mpPP, NodeHydraulic::Pressure);
+            mpPP_q = getSafeNodeDataPtr(mpPP, NodeHydraulic::Flow);
+            mpPP_c = getSafeNodeDataPtr(mpPP, NodeHydraulic::WaveVariable);
+            mpPP_Zc = getSafeNodeDataPtr(mpPP, NodeHydraulic::CharImpedance);
 
-            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
-            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
-            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
-            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
+            mpPT_p = getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
+            mpPT_q = getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
+            mpPT_c = getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
+            mpPT_Zc = getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
 
-            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
-            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
-            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
-            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
+            mpPA_p = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
+            mpPA_q = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
+            mpPA_c = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
+            mpPA_Zc = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
-            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Pressure);
-            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Flow);
-            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WaveVariable);
-            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CharImpedance);
+            mpPB_p = getSafeNodeDataPtr(mpPB, NodeHydraulic::Pressure);
+            mpPB_q = getSafeNodeDataPtr(mpPB, NodeHydraulic::Flow);
+            mpPB_c = getSafeNodeDataPtr(mpPB, NodeHydraulic::WaveVariable);
+            mpPB_Zc = getSafeNodeDataPtr(mpPB, NodeHydraulic::CharImpedance);
 
             //Initiate second order low pass filter
             double num[3] = {1.0, 0.0, 0.0};
-            double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
-            filter.initialize(mTimestep, num, den, 0, 0, 0, (*mpXvmax));
+            double den[3] = {1.0, 2.0*mDeltah/mOmegah, 1.0/(mOmegah*mOmegah)};
+            double initXv = limit(*mpXvIn,0.0,(*mpXvmax));
+            mSpoolPosTF.initialize(mTimestep, num, den, initXv, initXv, 0, (*mpXvmax));
         }
 
 
@@ -112,14 +116,14 @@ namespace hopsan {
             bool cav = false;
 
             //Get variable values from nodes
-            cp = (*mpND_cp);
-            Zcp = (*mpND_Zcp);
-            ct = (*mpND_ct);
-            Zct = (*mpND_Zct);
-            ca = (*mpND_ca);
-            Zca = (*mpND_Zca);
-            cb = (*mpND_cb);
-            Zcb = (*mpND_Zcb);
+            cp = (*mpPP_c);
+            Zcp = (*mpPP_Zc);
+            ct = (*mpPT_c);
+            Zct = (*mpPT_Zc);
+            ca = (*mpPA_c);
+            Zca = (*mpPA_Zc);
+            cb = (*mpPB_c);
+            Zcb = (*mpPB_Zc);
 
             xvin = (*mpXvIn);
             Cq = (*mpCq);
@@ -131,8 +135,8 @@ namespace hopsan {
 
             //Dynamics of spool position (second order low pass filter)
             limitValue(xvin, 0, xvmax);
-            filter.update(xvin);
-            xv = filter.value();
+            mSpoolPosTF.update(xvin);
+            xv = mSpoolPosTF.value();
 
             //Determine flow coefficient
             Kcpa = Cq*f_pa*pi*d*xv*sqrt(2.0/rho);
@@ -218,14 +222,14 @@ namespace hopsan {
 
             //Write new values to nodes
 
-            (*mpND_pp) = pp;
-            (*mpND_qp) = qp;
-            (*mpND_pt) = pt;
-            (*mpND_qt) = qt;
-            (*mpND_pa) = pa;
-            (*mpND_qa) = qa;
-            (*mpND_pb) = pb;
-            (*mpND_qb) = qb;
+            (*mpPP_p) = pp;
+            (*mpPP_q) = qp;
+            (*mpPT_p) = pt;
+            (*mpPT_q) = qt;
+            (*mpPA_p) = pa;
+            (*mpPA_q) = qa;
+            (*mpPB_p) = pb;
+            (*mpPB_q) = qb;
             (*mpXv) = xv;
         }
     };
