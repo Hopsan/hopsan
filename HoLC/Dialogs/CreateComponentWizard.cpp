@@ -503,7 +503,7 @@ void CreateComponentWizard::generate()
         QString desc = mInputsDescriptionLineEditPtrs[p]->text();
         QString unit = mInputsUnitLineEditPtrs[p]->text();
         QString value = mInputsValueLineEditPtrs[p]->text();
-        addInputsCode.append("\n            addInputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &"+name+");");
+        addInputsCode.append("\n            addInputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mpND_"+name+");");
     }
 
     //Add output variables
@@ -513,7 +513,7 @@ void CreateComponentWizard::generate()
         QString desc = mOutputsDescriptionLineEditPtrs[p]->text();
         QString unit = mOutputsUnitLineEditPtrs[p]->text();
         QString value = mOutputsValueLineEditPtrs[p]->text();
-        addOutputsCode.append("\n            addOutputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &"+name+");");
+        addOutputsCode.append("\n            addOutputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mpND_"+name+");");
     }
 
     //Add power ports

@@ -3,43 +3,210 @@
 \usepackage{array}
 \usepackage{mathtools}
 \usepackage{hopsantut}
+\usepackage{listings}
 
 \hypersetup{pdfauthor={Robert Braun and Peter Nordin}, pdftitle={Hopsan Tutorial - Getting Started}, pdfsubject={Hopsan Tutorial}}
+
+\lstset{backgroundcolor=\color{yellow!10}}
 
 \begin{document}
 \maketitle{Writing Component Libraries}
 
-\section{Requirements}
-%Man behöver Hopsan och HoLC
+\section*{Requirements}
+%Man behöver Hopsan och HoLC (Inkscape för att rita ikoner)
 
 \section*{Hopsan Component Libraries}
-Hopsan component libraries are written in C++ and compiled to shared library files (.dll in Windows or .so in Linux). A Hopsan component library constists of the files listen below. First, there is a \textit{library description file} in .xml format, which contains basic information about the library. Second, there is a source code file of the library with the .cc extension.\vspace{10pt}\\
+A component library consists of one or more components that can be loaded from Hopsan. It is written in C++ and then compiled to shared library file (.dll in Windows or .so in Linux). A complete Hopsan component library constists of the files listen below. First, there is a \textit{library description file} in .xml format, which contains basic information about the library. Second, there is a source code file of the library with the .cc extension.\vspace{10pt}\\
 $\mathrm{Component\ Library} \begin{cases}
 \mathtt{\textbf{MyLibrary.xml}} \mathrm{\ -\ Library\ description\ file}\\
-\mathtt{\textbf{MyLibrary.cc \mathrm{\ -\ Library\ source\ code}}\vspace{7pt} \\ 
+\mathtt{\textbf{MyLibrary.cc}} \mathrm{\ -\ Library\ source\ code}\vspace{7pt} \\ 
 \begin{rcases}
-  \mathtt{MyFirstComponent.hpp} \\
-  \mathtt{MyFirstComponent.xml} \\
-  \mathtt{MyFirstComponent.svg}
+  \mathtt{\textbf{MyFirstComponent.hpp}} \\
+  \mathtt{\textbf{MyFirstComponent.xml}} \\
+  \mathtt{\textbf{MyFirstComponent.svg}}
 \end{rcases} \mathrm{Component}\vspace{7pt} \\
 \begin{rcases}
-  \mathtt{MySecondComponent.hpp} \\
-  \mathtt{MySecondComponent.xml} \\
-  \mathtt{MySecondComponent.svg}
+  \mathtt{\textbf{MySecondComponent.hpp}} \\
+  \mathtt{\textbf{MySecondComponent.xml}} \\
+  \mathtt{\textbf{MySecondComponent.svg}}
 \end{rcases} \mathrm{Component} \\
 \end{cases}$
+\vspace{10pt}\\
+Each component in the library consist of three files. The first one has the .hpp extension, and contains the source code of the component. The second is an .xml file, which contains specifications about the component and its appearance. Finally there is a .svg file, which contains the graphical icon.
 
 \subsection*{Library Description File}
 %Beksriv lib.xml
 
+\begin{lstlisting}[language=xml, basicstyle=\small\ttfamily]
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="LibName">
+    <lib>LibName</lib>
+    <source>LibName.cc</source>
+    <component>Component1.hpp</component>
+    <component>Component2.hpp</component>
+    <caf>MyComponent1.xml</caf>
+    <caf>MyComponent2.xml</caf>
+</hopsancomponentlibrary>
+\end{lstlisting}
+
+
 \subsection*{Library Source File}
 %Beskriv lib.cc
 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
+#include "Component1.hpp"
+#include "Component2.hpp"
+
+using namespace hopsan;
+
+extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, 
+                                            NodeFactory* /*pNodeFactory*/)
+{    
+    pComponentFactory->registerCreatorFunction("Component1", Component1::Creator);
+    pComponentFactory->registerCreatorFunction("Component2", Component2::Creator);
+}
+
+extern "C" DLLEXPORT void get_hopsan_info(...)
+{
+    pHopsanExternalLibInfo->libName = (char*)"LibName";
+    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
+    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
+}
+\end{lstlisting}
+\end{minipage}
+
 \subsection*{Component Source Files}
-%Beskriv comp.hpp
+Beskriv comp.hpp
+Beskriv likala variabler, typename och konstruktor
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+#include "ComponentEssentials.h"
+
+namespace hopsan {
+
+    class LaminarOrifice : public ComponentQ
+    {
+    private:
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1;
+        double *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_Kc;
+        Port *mpP1, *mpP2;
+
+    public:
+        static Component *Creator()
+        {
+            return new LaminarOrifice();
+        }
+        
+        ...
+    }
+\end{lstlisting}
+\end{minipage}
+
+Beskriv configure()
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void configure()
+{
+    mpP1 = addPowerPort("P1", "NodeHydraulic");
+    mpP2 = addPowerPort("P2", "NodeHydraulic");
+    addInputVariable("Kc","Coefficient","m^5/Ns", 1.0e-11, &mpIn);
+}
+\end{lstlisting}
+\end{minipage}
+
+Beskriv initialize()
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void initialize()
+{
+    mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+    mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+    mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+    mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+
+    mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+    mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+    mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+    mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+}
+\end{lstlisting}
+\end{minipage}
+
+Beskriv simulateOneTimestep()
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void simulateOneTimestep()
+{
+    double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+
+    //Get variable values from nodes
+    c1 = (*mpND_c1);
+    Zc1 = (*mpND_Zc1);
+    c2 = (*mpND_c2);
+    Zc2 = (*mpND_Zc2);
+    Kc = (*mpND_Kc);
+
+    //Orifice equations
+    q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
+    q1 = -q2;
+    p1 = c1 + q1*Zc1;
+    p2 = c2 + q2*Zc2;
+
+    //Write new variables to nodes
+    (*mpND_p1) = p1;
+    (*mpND_q1) = q1;
+    (*mpND_p2) = p2;
+    (*mpND_q2) = q2;
+}
+\end{lstlisting}
+\end{minipage}
+
+Beskriv finalize() och deconfigure()
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void finalize()
+{
+      	//Finalize code
+}
+
+void deconfigure()
+{
+    //Deconfigure code
+}
+\end{lstlisting}
+\end{minipage}
 
 \subsection*{Component Appearance Files}
-%Beskriv comp.xml
+Beskriv comp.xml
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="LaminarOrifice" displayname="Orifice" 
+                 sourcecode="LaminarOrifice.hpp">
+        <icons>
+            <icon scale="1" path="orifice.svg" 
+                  iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="1,0" y="0.5" a="0" name="P1"/>
+            <port x="0,0" y="0.5" a="180" name="P2"/>
+            <port x="0.5" y="0,0" a="270" name="Kc"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
+\end{lstlisting}
+\end{minipage}
+
 
 \subsection*{Component Icon Files}
 %Beskriv att man kan göra ikoner med Inkscape
@@ -48,13 +215,65 @@ $\mathrm{Component\ Library} \begin{cases}
 %Beskriv hur man bygger ett bibliotek med en enkel aritmetisk komponent i HoLC
 
 \begin{enumerate}
-\item \textbf{Title 1}\\
-Description 1
+\tutitem{Open HoLC}
+- Starta HoLC.exe (ligger i bin-mappen)
 
-\item \textbf{Title 2}\\
-Description 2
+\tutitem{Configure HoLC paths}
+- Klicka på options-ikonen
 
-\icon{0}{gfx/Hopsan-New.png}{Create a new empty model}
+\icon{0}{gfx/Hopsan-Options.png}{Options}
+
+- Ett bibliotek måste byggas mot den version av Hopsan som ska användas
+- Peka ut installationsmappen för Hopsan
+- Peka ut kompilatorn (32 eller 64-bit, beroende på Hopsan-versionen)
+
+\tutitem{Create a new project}
+- Klicka på ikonen
+
+\icon{0}{gfx/Hopsan-New.png}{New Library}
+
+- Döp till "MyComponentLibrary"
+- Klicka på mapp-ikonen, välj en tom mapp på valfri plats
+- Två filer skapas, .xml och .cc
+
+\tutitem{Add a component}
+- Vi vill göra en komponent för ekvationen y = A*x + b
+- Klicka på ikonen
+
+\icon{0}{gfx/Hopsan-Add.png}{Add New Component}
+
+- Typename: MyComponent
+- Display name: My Component
+- 2 constants, 1 input, 1 output
+- Döp konstanterna till A och B, input till x och output till y
+- Ge A defaultvärdet 1 och B värdet 0 (default => x = y)
+- Ignorera unit och description 
+- Klicka på ok
+- Två filer skapas, .hpp och .xml
+
+\tutitem{Write component code}
+- Öppna hpp-filen
+- Samtliga funktioner har genererats
+- I det här fallet är vi bara intresserade av simulateOneTimeStep()-funktionen
+- Ersätt raden "//WRITE EQUATIONS HERE" med följande: "y = A*x+B;" (kom ihåg semikolon)
+- Nu är komponenten färdig att kompileras
+- Det är möjligt att ändra t.ex. ikon och portarnas placeringar i .xml-filen, men det struntar vi i just nu
+
+\tutitem{Compile library}
+- Klicka på kompilera
+
+\icon{0}{gfx/Hopsan-Compile.png}{Compile Library}
+
+- Titta på utskrifterna i terminalen. Om allt gick väl kommer det stå att kompileringen lyckades.
+
+\tutitem{Open library in Hopsan}
+- Starta Hopsan
+- Klicka på "Load external library" i bibliotekswidgeten till vänster
+- Bläddra till mappen vi skapade biblioteket i och välj den
+- Om allt gick bra så finns nu komponenten tillgänglig under "External Libraries"
+- Testa att den fungerar!
+- Om det inte gick bra så kan det bero på att man kompilerat med fel kompilator, eller pekat ut en annan Hopsan-installation
+
 \end{enumerate}
  	
 \end{document}
