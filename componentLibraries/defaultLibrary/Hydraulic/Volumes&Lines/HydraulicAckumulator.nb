@@ -1,0 +1,434 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     16083,        425]
+NotebookOptionsPosition[     14421,        370]
+NotebookOutlinePosition[     14979,        391]
+CellTagsIndexPosition[     14936,        388]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[TextData[StyleBox["Ackumulator",
+ FontFamily->"System"]], "Section",
+ Evaluatable->False,
+ CellChangeTimes->{{3.52488616965088*^9, 3.5248861799318666`*^9}, {
+   3.549457210515625*^9, 3.54945721375*^9}, {3.54964439396875*^9, 
+   3.54964439896875*^9}, 3.576214739734736*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Hydraulic\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<Ackumulator\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<This is piston with an inertia load\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.5137112151875*^9, 3.513711217109375*^9}, {
+   3.51378596903125*^9, 3.513785980671875*^9}, 3.515394539753217*^9, {
+   3.515775693875*^9, 3.5157757050625*^9}, {3.517048046727305*^9, 
+   3.51704806093043*^9}, 3.51707206725*^9, {3.5176530686834764`*^9, 
+   3.51765311057437*^9}, {3.517673126703125*^9, 3.517673126796875*^9}, {
+   3.5177214423487377`*^9, 3.517721453114225*^9}, {3.5177222281793466`*^9, 
+   3.517722236008023*^9}, {3.5209603293125*^9, 3.520960329578125*^9}, 
+   3.521782180515625*^9, {3.52178222675*^9, 3.521782271609375*^9}, {
+   3.521782314984375*^9, 3.52178231528125*^9}, 3.5248861854161005`*^9, {
+   3.549457222296875*^9, 3.54945722546875*^9}, 3.575772120031607*^9, 
+   3.576214746669736*^9, {3.576216089867127*^9, 3.5762161017623167`*^9}, 
+   3.576216150378739*^9}],
+
+Cell[CellGroupData[{
+
+Cell["Component description", "Subsection"],
+
+Cell["\<\
+A general ackumulator. This model does not have any thermodynamic losses. The \
+process is considered to be adiabatic.\
+\>", "Text",
+ CellChangeTimes->{{3.6058462493056927`*^9, 3.6058462786656284`*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[
+  TagBox[RasterBox[CompressedData["
+1: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
+    "], {{0, 159}, {65, 0}}, {0, 255},
+    ColorFunction->RGBColor],
+   BoxForm`ImageTag["Byte", ColorSpace -> "RGB", Interleaving -> True],
+   Selectable->False],
+  BaseStyle->"ImageGraphics",
+  ImageSize->{52.14285582912117, Automatic},
+  ImageSizeRaw->{65, 159},
+  PlotRange->{{0, 65}, {0, 159}}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Variables and parameters", "Subsection"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Bp", "=."}], ";", 
+  RowBox[{"Ap", "=."}], ";", 
+  RowBox[{"p0", "=."}], ";"}]], "Input",
+ CellChangeTimes->{{3.54953147675*^9, 3.549531484296875*^9}, {
+  3.6058465047642365`*^9, 3.605846513109071*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "  ", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "V0", ",", "0.001", ",", "double", ",", "\"\<m^3\>\"", ",", 
+       "\"\<Ackumulator Volume\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"Kca", ",", 
+       RowBox[{"1.", " ", 
+        SuperscriptBox["10", 
+         RowBox[{"-", "8"}]]}], ",", "double", ",", "\"\<m^3/(s Pa)\>\"", 
+       ",", "\"\<Ack. inlet coeff.\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "kappa", ",", "1.2", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<polytropic exp. of gas\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"p0", ",", 
+       RowBox[{"1.", "*", 
+        SuperscriptBox["10", "7"]}], ",", "double", ",", "\"\<N/m^2\>\"", 
+       ",", "\"\<Preload pressure\>\""}], "}"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.524850755625*^9, 3.524850755640625*^9}, {
+   3.5494574883125*^9, 3.54945752521875*^9}, {3.549531806859375*^9, 
+   3.54953194565625*^9}, {3.54953217975*^9, 3.549532183765625*^9}, {
+   3.549544892890625*^9, 3.54954489334375*^9}, {3.549548144921875*^9, 
+   3.54954814540625*^9}, 3.5495483063125*^9, {3.549644405828125*^9, 
+   3.5496444085*^9}, 3.576214751415736*^9, {3.576216439434739*^9, 
+   3.576216449688739*^9}, {3.576216712838739*^9, 3.576216716478739*^9}, {
+   3.576216769119055*^9, 3.576216864499592*^9}, 3.605845980530818*^9, {
+   3.605846015044269*^9, 3.6058460162973948`*^9}, 3.605847054209175*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "  ", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"Va", ",", 
+       RowBox[{"1.", "*", 
+        SuperscriptBox["10", 
+         RowBox[{"-", "3"}]]}], ",", "double", ",", "\"\<m^3\>\"", ",", 
+       "\"\<Momentary gas volume\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"pa", ",", 
+       RowBox[{"1.", "*", 
+        SuperscriptBox["10", "7"]}], ",", "double", ",", "\"\<Pa\>\"", ",", 
+       "\"\<Ackumulator oil pressure\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "xmp", ",", "0.", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<State of charge\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "vmp", ",", "0.", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<State of charge speed\>\""}], "}"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.54953165409375*^9, 3.549531724296875*^9}, {
+  3.576217056639804*^9, 3.5762170731454544`*^9}, {3.6058460077685413`*^9, 
+  3.605846008521617*^9}, {3.605846648737632*^9, 3.605846653236082*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\n", "    \t", 
+    RowBox[{"HydraulicQnode", "[", 
+     RowBox[{"1", ",", 
+      RowBox[{"1.", "*", 
+       RowBox[{"10", "^", "5"}]}], ",", "\"\<hydraulic node 1\>\""}], "]"}], 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.524850747078125*^9, 3.524850747078125*^9}, {
+  3.54945737746875*^9, 3.54945738609375*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The system of equations", "Subsection"],
+
+Cell["\<\
+Using the equations for piston ackumulator by setting stroke to one.\
+\>", "Text",
+ CellChangeTimes->{{3.6058460929280567`*^9, 3.605846144053169*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SL", "=", "1"}], ";"}]], "Input",
+ CellChangeTimes->{{3.576216992841425*^9, 3.576216997868928*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Ap", "=", 
+   RowBox[{"V0", "/", "SL"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.5762169483479757`*^9, 3.57621695318746*^9}, {
+   3.605846046908455*^9, 3.6058460474925137`*^9}, 3.6058460805778217`*^9, {
+   3.6058461581285763`*^9, 3.6058461588246455`*^9}}],
+
+Cell["\<\
+The restriction in the inlet is recalculated as a viscous friction on the \
+\[OpenCurlyDoubleQuote]piston\[CloseCurlyDoubleQuote].\
+\>", "Text",
+ CellChangeTimes->{{3.605846183592122*^9, 3.605846237888551*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Bp", "=", 
+   FractionBox[
+    SuperscriptBox["Ap", "2"], "Kca"]}], ";"}]], "Input",
+ CellChangeTimes->{{3.576216660493739*^9, 3.576216693191739*^9}}],
+
+Cell["The generated force on the \"piston\"", "Text",
+ CellChangeTimes->{{3.6058465266064205`*^9, 3.6058465431030693`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fg", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"Ap", " ", "p1"}], " ", "-", " ", 
+    RowBox[{"Ap", " ", "pa"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52178209578125*^9, 3.52178209959375*^9}, {
+   3.54945753215625*^9, 3.549457535234375*^9}, 3.549531626078125*^9}],
+
+Cell[BoxData[
+ RowBox[{"systemEquationsDA", ":=", " ", 
+  RowBox[{"{", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Bp", " ", 
+      RowBox[{"der", "[", "xmp", "]"}]}], " ", "==", " ", "fg"}], " ", ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Bp", " ", "vmp"}], "  ", "==", " ", "fg"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"q1", " ", "\[Equal]", 
+     RowBox[{
+      RowBox[{"-", " ", "Ap"}], " ", "vmp"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"pa", "  ", 
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"SL", "-", "xmp"}], ")"}], "Ap"}], ")"}], "kappa"]}], " ", "==", 
+     RowBox[{"p0", " ", 
+      SuperscriptBox[
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"SL", " ", "Ap"}], ")"}], " "}], "kappa"]}]}]}], "\n", "\t", 
+   "}"}]}]], "Input",
+ CellChangeTimes->{{3.524850724265625*^9, 3.524850724265625*^9}, 
+   3.549457307015625*^9, {3.549457351265625*^9, 3.54945736171875*^9}, {
+   3.549457392*^9, 3.549457398203125*^9}, {3.54945742834375*^9, 
+   3.549457482296875*^9}, {3.5494575509375*^9, 3.549457556703125*^9}, 
+   3.549526952765625*^9, {3.549532039546875*^9, 3.549532058125*^9}, {
+   3.54953211190625*^9, 3.5495321299375*^9}, {3.549532235765625*^9, 
+   3.549532235828125*^9}, {3.549544864359375*^9, 3.549544883234375*^9}, {
+   3.549548317125*^9, 3.549548322796875*^9}, {3.549548688859375*^9, 
+   3.549548692421875*^9}, {3.5719033502092543`*^9, 3.571903383796113*^9}, {
+   3.5762147596047363`*^9, 3.576214789346736*^9}, 3.576214838815736*^9, 
+   3.5762149233297358`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", " ", "=", " ", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{"Va", "==", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"SL", "-", "xmp"}], ")"}], "Ap"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.54952682025*^9, 3.54952686515625*^9}, {
+   3.5719034223281803`*^9, 3.571903426477788*^9}, 3.6058465630910683`*^9}],
+
+Cell["Limitatons", "Text",
+ CellChangeTimes->{{3.524850848515625*^9, 3.524850857984375*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variable2Limits", "=", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"xmp", ",", "vmp", ",", "0.", ",", "SL"}], "}"}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.521781710359375*^9, 3.521781715921875*^9}, 
+   3.521781911703125*^9, {3.521782089203125*^9, 3.521782090109375*^9}, {
+   3.549457539921875*^9, 3.54945754465625*^9}}],
+
+Cell["The boundarys", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemBoundaryEquations", " ", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"p1", "==", 
+     RowBox[{"c1e", "+", 
+      RowBox[{"Zc1e", " ", "q1"}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52485078196875*^9, 3.52485078196875*^9}, {
+  3.549457268203125*^9, 3.549457269234375*^9}, {3.5494574144375*^9, 
+  3.549457415609375*^9}, {3.5719034112833614`*^9, 3.5719034182409735`*^9}, {
+  3.594115692243491*^9, 3.5941157083961067`*^9}}],
+
+Cell["The  vector of independent variables of the system are", "Text",
+ CellChangeTimes->{{3.524850810625*^9, 3.52485083609375*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{"xmp", ",", "vmp", ",", "q1", ",", "pa", ",", "p1"}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.524850716875*^9, 3.524850716875*^9}, {
+  3.54952696459375*^9, 3.54952699509375*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Bp", "=."}], ";", 
+  RowBox[{"Ap", "=."}], ";", 
+  RowBox[{"SL", "=."}], ";"}]], "Input",
+ CellChangeTimes->{{3.5762171779989386`*^9, 3.5762171919883375`*^9}, 
+   3.605775706999442*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{707, 505},
+WindowMargins->{{Automatic, 232}, {Automatic, 200}},
+PrintingCopies->1,
+PrintingPageRange->{32000, 32000},
+PrintingOptions->{"Magnification"->1.,
+"PaperOrientation"->"Portrait",
+"PaperSize"->{582.9599999999999, 829.0799999999999}},
+Magnification->1.100000023841858,
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 277, 5, 77, "Section",
+ Evaluatable->False],
+Cell[859, 29, 1659, 35, 193, "Input"],
+Cell[CellGroupData[{
+Cell[2543, 68, 43, 0, 40, "Subsection"],
+Cell[2589, 70, 212, 4, 49, "Text"],
+Cell[2804, 76, 2812, 50, 156, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5653, 131, 46, 0, 40, "Subsection"],
+Cell[5702, 133, 237, 6, 32, "Input"],
+Cell[5942, 141, 1613, 33, 142, "Input"],
+Cell[7558, 176, 1194, 28, 141, "Input"],
+Cell[8755, 206, 398, 10, 53, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9190, 221, 45, 0, 40, "Subsection"],
+Cell[9238, 223, 160, 3, 30, "Text"],
+Cell[9401, 228, 134, 3, 32, "Input"],
+Cell[9538, 233, 291, 6, 32, "Input"],
+Cell[9832, 241, 220, 4, 30, "Text"],
+Cell[10055, 247, 185, 5, 50, "Input"],
+Cell[10243, 254, 123, 1, 30, "Text"],
+Cell[10369, 257, 301, 7, 32, "Input"],
+Cell[10673, 266, 1606, 37, 137, "Input"],
+Cell[12282, 305, 378, 9, 53, "Input"],
+Cell[12663, 316, 92, 1, 30, "Text"],
+Cell[12758, 319, 372, 9, 32, "Input"],
+Cell[13133, 330, 29, 0, 30, "Text"],
+Cell[13165, 332, 519, 11, 73, "Input"],
+Cell[13687, 345, 132, 1, 30, "Text"],
+Cell[13822, 348, 282, 7, 32, "Input"],
+Cell[14107, 357, 63, 1, 32, "Input"],
+Cell[14173, 360, 220, 6, 32, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

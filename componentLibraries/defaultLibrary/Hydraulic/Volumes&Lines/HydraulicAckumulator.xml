@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="HydraulicAckumulator.hpp" typename="HydraulicAckumulator" displayname="Gas Accumulator">
+    <modelobject sourcecode="HydraulicAckumulator.hpp" typename="HydraulicAckumulator" displayname="Gas Ackumulator">
         <icons>
-            <icon scale="1" path="ackumulator_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicAckumulator.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ackumulator_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <help>
-            <text>Q-type hydraulic gas accumulator with laminar restrictor. Internal oil volume can be obtained from signal port.</text>
-            <picture>ackumulatorhelp.svg</picture>
-        </help>
+		<help>
+		    <text>Adiabatic model of a hydraulic gas ackumulator.</text>
+			<link>HydraulicAckumulator.pdf</link>
+		</help>
         <ports>
             <port x="0.5" y="1" a="90" name="P1"/>
             <port x="0.5" y="0" a="270" name="Va"/>
