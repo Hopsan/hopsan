@@ -1,0 +1,384 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     14339,        374]
+NotebookOptionsPosition[     13348,        340]
+NotebookOutlinePosition[     13691,        355]
+CellTagsIndexPosition[     13648,        352]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["PressureRelief2ValveG", "Section",
+ CellChangeTimes->{{3.4785828348125*^9, 3.47858284740625*^9}, 
+   3.47867904165625*^9, {3.483026885*^9, 3.483026890359375*^9}, 
+   3.4988885288318987`*^9, {3.507886987593746*^9, 3.507887015984008*^9}, {
+   3.571980272122896*^9, 3.57198027376266*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["System model", "Subsection",
+ CellChangeTimes->{{3.504161099890625*^9, 3.504161102453125*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Hydraulic\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<PressureRelief2ValveG\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "brief", "=", 
+   "\"\<A hydraulic pressure relief valve based on geometry\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.503905077842648*^9, 3.503905079842648*^9}, {
+   3.5039103076641607`*^9, 3.5039103985397425`*^9}, {3.5039164662834997`*^9, 
+   3.5039164750178747`*^9}, {3.5039165143772497`*^9, 
+   3.5039165189397497`*^9}, {3.5041051675625*^9, 3.504105226359375*^9}, {
+   3.507570546125*^9, 3.507570569546875*^9}, {3.507570601046875*^9, 
+   3.50757067696875*^9}, 3.507796401609375*^9, {3.5158209060653677`*^9, 
+   3.5158209366274767`*^9}, {3.522605643625*^9, 3.522605643875*^9}, 
+   3.571980270467515*^9, 3.5757721137915964`*^9, 3.576838311357515*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"HydraulicQnode", "[", 
+      RowBox[{"1", ",", 
+       RowBox[{"1.", "*", 
+        RowBox[{"10", "^", "5"}]}], ",", "\"\<Upstream port\>\""}], "]"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"HydraulicQnode", "[", 
+      RowBox[{"2", ",", 
+       RowBox[{"1.", "*", 
+        RowBox[{"10", "^", "5"}]}], ",", "\"\<Downstream port\>\""}], "]"}]}],
+     "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.4752292939381866`*^9, 3.4752293318441935`*^9}, {
+   3.47808399728125*^9, 3.478083998921875*^9}, 3.4988885288475237`*^9, {
+   3.50394176215625*^9, 3.503941811890625*^9}, {3.507576389140625*^9, 
+   3.507576508765625*^9}, {3.50757655321875*^9, 3.507576570375*^9}, {
+   3.507796238859375*^9, 3.50779624034375*^9}, {3.5156830475625*^9, 
+   3.515683050984375*^9}, {3.538136856098759*^9, 3.5381369597752786`*^9}, {
+   3.5719055396181374`*^9, 3.5719055424261427`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{"pref", ",", 
+      RowBox[{"1.", "*", 
+       RowBox[{"10", "^", "7"}]}], ",", "double", ",", "\"\<Pa\>\"", ",", 
+      "\"\<Reference pressure\>\""}], "}"}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5381369657755475`*^9, 3.5381370104181724`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"outputVariables", "=", 
+    RowBox[{"{", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "xv", ",", "0.", ",", "double", ",", "\"\<m\>\"", ",", 
+        "\"\<Spool position\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+       "dxv", ",", "0.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+        "\"\<Spool velocity\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}], 
+   ";"}], " "}]], "Input",
+ CellChangeTimes->{{3.5381369720414534`*^9, 3.5381369916673326`*^9}, {
+  3.57772189105064*^9, 3.577721891954692*^9}, {3.5777293219406624`*^9, 
+  3.5777293343173704`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "rho", ",", "860.", ",", "double", ",", "\"\<kg/m3\>\"", ",", 
+       "\"\<oil density\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "visc", ",", "0.03", ",", "double", ",", "\"\<Ns/m2\>\"", ",", 
+       "\"\<viscosity \>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Dv", ",", "0.03", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<Spool diameter\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Bv", ",", "0.03", ",", "double", ",", "\"\<N/(m s)\>\"", ",", 
+       "\"\<Damping\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Mv", ",", "0.03", ",", "double", ",", "\"\<kg\>\"", ",", 
+       "\"\<Spool mass\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Xvmax", ",", "0.03", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<Max spool displacement\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Cq", ",", "0.67", ",", "double", ",", "\"\< \>\"", ",", 
+       "\"\<Flow coefficient\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "phi", ",", "0.03", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Stream angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "ks", ",", "100.", ",", "double", ",", "\"\<N/m\>\"", ",", 
+       "\"\<Spring constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "p0", ",", "100000.", ",", "double", ",", "\"\<Pa\>\"", ",", 
+       "\"\<Turbulent pressure trans.\>\""}], "}"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.},
+ CellChangeTimes->{{3.4779981058619356`*^9, 3.4779981542683554`*^9}, 
+   3.4780017782035847`*^9, {3.478002203430644*^9, 3.478002217153696*^9}, {
+   3.478002277203772*^9, 3.4780023021490927`*^9}, {3.4780026209521627`*^9, 
+   3.478002664340765*^9}, {3.478021796078125*^9, 3.478021842203125*^9}, {
+   3.478021885296875*^9, 3.47802199571875*^9}, {3.47802539628125*^9, 
+   3.478025479125*^9}, {3.478026054375*^9, 3.47802606034375*^9}, {
+   3.47818056640625*^9, 3.47818064359375*^9}, {3.478184752578125*^9, 
+   3.478184788859375*^9}, {3.4781848254375*^9, 3.47818487890625*^9}, {
+   3.47818496809375*^9, 3.478184980140625*^9}, {3.478189354859375*^9, 
+   3.478189379078125*^9}, {3.478679541453125*^9, 3.478679542*^9}, 
+   3.47868324640625*^9, 3.478683514703125*^9, {3.4807602098503075`*^9, 
+   3.480760210147073*^9}, {3.480760285603793*^9, 3.4807602892909627`*^9}, 
+   3.480760331584048*^9, 3.483026964640625*^9, {3.483027180765625*^9, 
+   3.483027244046875*^9}, {3.4873878032782784`*^9, 3.4873878199976707`*^9}, 
+   3.4988223817958884`*^9, 3.4988885288318987`*^9, {3.5023520516875*^9, 
+   3.50235222190625*^9}, {3.50235391759375*^9, 3.50235391940625*^9}, 
+   3.503905029342648*^9, 3.5039111089927917`*^9, {3.503914664843855*^9, 
+   3.503914668218855*^9}, {3.50391516520323*^9, 3.503915204718855*^9}, {
+   3.5039967133130913`*^9, 3.5039967163764143`*^9}, {3.5039969681607733`*^9, 
+   3.503996993616342*^9}, {3.507574582234375*^9, 3.507574588828125*^9}, {
+   3.507576286109375*^9, 3.507576354453125*^9}, {3.5077959019375*^9, 
+   3.507795944828125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"kf", "=."}], ";", 
+  RowBox[{"ke", "=."}], ";"}]], "Input",
+ CellChangeTimes->{{3.577616272848119*^9, 3.5776162781606503`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"localExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Av", "==", 
+      FractionBox[
+       RowBox[{"pi", " ", 
+        SuperscriptBox["Dv", "2"]}], "4"]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"w", "==", 
+      RowBox[{"pi", " ", "Dv", " ", 
+       RowBox[{"Sin", "[", "phi", "]"}]}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"kf", "==", 
+      RowBox[{"2", " ", "Cq", " ", "w", " ", 
+       RowBox[{"Cos", "[", "phi", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{"p1", "-", "p2"}], ")"}]}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"ke", "==", 
+      RowBox[{"ks", "+", "kf"}]}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.483027001578125*^9, 3.483027021109375*^9}, {
+   3.4873877137123394`*^9, 3.487387727322237*^9}, 3.4988885288318987`*^9, {
+   3.503914893406355*^9, 3.50391490070323*^9}, {3.50391509367198*^9, 
+   3.503915095406355*^9}, {3.571904349616847*^9, 3.5719044026725407`*^9}, {
+   3.576241468772646*^9, 3.5762414692562466`*^9}, {3.576241502031904*^9, 
+   3.5762415161811285`*^9}}],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.573149714210846*^9, 3.5731497291246986`*^9}, {
+   3.573149782505752*^9, 3.573149788960121*^9}, 3.576241498007097*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDA", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"Mv", " ", 
+        RowBox[{"der", "[", 
+         RowBox[{"der", "[", "xv", "]"}], "]"}]}], " ", "+", " ", 
+       RowBox[{"Bv", " ", 
+        RowBox[{"der", "[", " ", "xv", "]"}]}], " ", "+", 
+       RowBox[{"ke", " ", "xv"}]}], " ", "==", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"p1", "-", "p2", "-", "pref"}], ")"}], "Av"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Mv", " ", 
+        RowBox[{"der", "[", "dxv", "]"}]}], " ", "+", " ", 
+       RowBox[{"Bv", "  ", "dxv"}], " ", "+", 
+       RowBox[{"ke", " ", "xv"}]}], " ", "==", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"p1", "-", "p2", "-", "pref"}], ")"}], "Av"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"q2", "==", 
+      RowBox[{"xv", "*", "Cq", " ", "w", " ", 
+       SqrtBox[
+        FractionBox["2.", "rho"]], 
+       RowBox[{"signedSquareL", "[", 
+        RowBox[{
+         RowBox[{"p1", "-", "p2"}], ",", "p0"}], "]"}]}]}]}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.478679350421875*^9, 3.4786793594375*^9}, {
+   3.47867939090625*^9, 3.478679416*^9}, 3.483026918*^9, 
+   3.4873877224157987`*^9, 3.4988885288318987`*^9, {3.5039967325838947`*^9, 
+   3.5039967690624475`*^9}, {3.504104403484375*^9, 3.50410440521875*^9}, {
+   3.5075701360625*^9, 3.507570153265625*^9}, {3.507570213453125*^9, 
+   3.507570214015625*^9}, {3.5075703420625*^9, 3.507570342109375*^9}, 
+   3.5076079715712585`*^9, {3.507796204234375*^9, 3.50779621396875*^9}, {
+   3.571904411642556*^9, 3.571904426244182*^9}, {3.5719045423707857`*^9, 
+   3.5719045433223877`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemBoundaryEquations", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"p1", "==", 
+      RowBox[{"(", 
+       RowBox[{"c1", "-", 
+        RowBox[{"Zc1", " ", "q2"}]}], ")"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"p2", "==", 
+      RowBox[{"(", 
+       RowBox[{"c2", "+", 
+        RowBox[{"Zc2", " ", "q2"}]}], ")"}]}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.478679428921875*^9, 3.478679481265625*^9}, 
+   3.4873877346662693`*^9, 3.4988885288318987`*^9, {3.51582106834556*^9, 
+   3.5158210687986856`*^9}, {3.5159004801768446`*^9, 
+   3.5159004806455917`*^9}, {3.5719044730910645`*^9, 3.571904505617121*^9}, {
+   3.571921169738586*^9, 3.571921172484191*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", "=", 
+   RowBox[{"{", 
+    RowBox[{"xv", ",", "dxv", ",", "q2", ",", "p1", ",", "p2"}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{
+  3.504160940796875*^9, {3.504171522859375*^9, 3.504171524921875*^9}, {
+   3.507570128828125*^9, 3.507570132078125*^9}, 3.50757021896875*^9, 
+   3.507796195640625*^9, 3.5719045376751776`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", 
+    RowBox[{"q1", "\[Equal]", 
+     RowBox[{"-", "q2"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.571904437694602*^9, 3.5719044499406233`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variable2Limits", "=", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"xv", ",", "dxv", ",", "0.", ",", "Xvmax"}], "}"}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{
+  3.5078869449067926`*^9, {3.52577632090125*^9, 3.52577633262*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variableLowLimits", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"p1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"p2", ",", "0"}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.578505814681842*^9, 3.5785058445435495`*^9}, 
+   3.578509359037567*^9}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input",
+ CellChangeTimes->{3.5039025691670113`*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{707, 505},
+WindowMargins->{{Automatic, 307}, {8, Automatic}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 291, 4, 71, "Section"],
+Cell[CellGroupData[{
+Cell[895, 30, 100, 1, 36, "Subsection"],
+Cell[998, 33, 1444, 33, 172, "Input"],
+Cell[2445, 68, 1015, 21, 92, "Input"],
+Cell[3463, 91, 410, 10, 72, "Input"],
+Cell[3876, 103, 674, 17, 92, "Input"],
+Cell[4553, 122, 3457, 68, 252, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.}],
+Cell[8013, 192, 162, 4, 31, "Input"],
+Cell[8178, 198, 1090, 24, 144, "Input"],
+Cell[9271, 224, 166, 2, 31, "Input"],
+Cell[9440, 228, 1776, 43, 150, "Input"],
+Cell[11219, 273, 765, 18, 92, "Input"],
+Cell[11987, 293, 381, 9, 31, "Input"],
+Cell[12371, 304, 224, 6, 31, "Input"],
+Cell[12598, 312, 275, 8, 31, "Input"],
+Cell[12876, 322, 334, 10, 31, "Input"],
+Cell[13213, 334, 107, 2, 31, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

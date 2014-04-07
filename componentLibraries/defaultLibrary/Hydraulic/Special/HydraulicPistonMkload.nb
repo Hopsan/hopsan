@@ -1,0 +1,329 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     10376,        320]
+NotebookOptionsPosition[      9181,        276]
+NotebookOutlinePosition[      9522,        291]
+CellTagsIndexPosition[      9479,        288]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[TextData[{
+ StyleBox["PistonMkload\n",
+  FontFamily->"System"],
+ StyleBox["Piston with an inertia load and spring",
+  FontSize->16]
+}], "Section",
+ Evaluatable->False,
+ CellChangeTimes->{{3.52488616965088*^9, 3.5248861799318666`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Hydraulic\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<PistonMkload\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<This is piston with an inertia load\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.5137112151875*^9, 3.513711217109375*^9}, {
+   3.51378596903125*^9, 3.513785980671875*^9}, 3.515394539753217*^9, {
+   3.515775693875*^9, 3.5157757050625*^9}, {3.517048046727305*^9, 
+   3.51704806093043*^9}, 3.51707206725*^9, {3.5176530686834764`*^9, 
+   3.51765311057437*^9}, {3.517673126703125*^9, 3.517673126796875*^9}, {
+   3.5177214423487377`*^9, 3.517721453114225*^9}, {3.5177222281793466`*^9, 
+   3.517722236008023*^9}, {3.5209603293125*^9, 3.520960329578125*^9}, 
+   3.521782180515625*^9, {3.52178222675*^9, 3.521782271609375*^9}, {
+   3.521782314984375*^9, 3.52178231528125*^9}, 3.5248861854161005`*^9, 
+   3.5757721184092045`*^9}],
+
+Cell[CellGroupData[{
+
+Cell["Component description", "Subsection"],
+
+Cell["Piston with an inertia load", "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Component equations", "Subsection"],
+
+Cell["The name of the component  is stored in ComponentName.", "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Variables and parameters", "Subsection"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "  ", "=", " ", 
+   RowBox[{"{", "\n", "\t", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "A1", ",", "0.001", ",", "double", ",", "\"\<m2\>\"", ",", 
+       "\"\<Piston area 1\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "A2", ",", "0.001", ",", "double", ",", "\"\<m2\>\"", ",", 
+       "\"\<Piston area 2\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "SL", ",", "0.5", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<Stroke\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "Cip", ",", "0.", ",", "double", ",", "\"\<m3/(s Pa)\>\"", ",", 
+       "\"\<Leak coeff.\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "Bp", ",", "0.", ",", "double", ",", "\"\<N/m/s\>\"", ",", 
+       "\"\<Visc. friction coeff.\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "ML", ",", "1000.", ",", "double", ",", "\"\<kg\>\"", ",", 
+       "\"\<Inertia\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "BL", ",", "0.", ",", "double", ",", "\"\<Ns/m\>\"", ",", 
+       "\"\<Viscous friction coefficient of load\>\""}], "}"}], ",", "\n", 
+     "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "KL", ",", "0.", ",", "double", ",", "\"\<N/m\>\"", ",", 
+       "\"\<Stiffness coefficient of load\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "xmin", ",", "0.", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<Limitation on stroke\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "xmax", ",", "0.5", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<Limitation on stroke\>\""}], "}"}]}], "\n", "\t", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.524850755625*^9, 3.524850755640625*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\n", "    \t", 
+    RowBox[{
+     RowBox[{"HydraulicQnode", "[", 
+      RowBox[{"1", ",", 
+       RowBox[{"1.", "*", 
+        RowBox[{"10", "^", "5"}]}], ",", "\"\<hydraulic node 1\>\""}], "]"}], 
+     ",", "\n", "    \t", 
+     RowBox[{"HydraulicQnode", "[", 
+      RowBox[{"2", ",", 
+       RowBox[{"1.", "*", 
+        RowBox[{"10", "^", "5"}]}], ",", "\"\<hydraulic node 2\>\""}], "]"}], 
+     ",", "\n", "    \t", 
+     RowBox[{"MechanicQnode", "[", 
+      RowBox[{"mp", ",", "0.", ",", "\"\<mechanical node\>\""}], "]"}]}], 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.524850747078125*^9, 3.524850747078125*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The system of equations", "Subsection"],
+
+Cell["The generated piston force", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fg", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"A1", " ", "p1"}], " ", "-", " ", 
+    RowBox[{"A2", " ", "p2"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52178209578125*^9, 3.52178209959375*^9}}],
+
+Cell["The  vector of independent variables of the system are", "Text",
+ CellChangeTimes->{{3.524850810625*^9, 3.52485083609375*^9}}],
+
+Cell[BoxData[
+ RowBox[{"systemEquationsDA", " ", ":=", " ", 
+  RowBox[{"{", "\n", "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"ML", " ", 
+       RowBox[{"der", "[", 
+        RowBox[{"der", "[", "xmp", "]"}], "]"}]}], " ", "+", " ", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"Bp", "+", "BL"}], ")"}], " ", "vmp"}], " ", "+", " ", 
+      RowBox[{"KL", " ", "xmp"}]}], " ", "==", " ", 
+     RowBox[{"(", 
+      RowBox[{"fg", " ", "-", " ", "fmp"}], ")"}]}], ",", "\n", "\t", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"ML", " ", 
+       RowBox[{"der", "[", "vmp", "]"}]}], " ", "+", " ", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"Bp", "+", "BL"}], ")"}], " ", "vmp"}], " ", "+", " ", 
+      RowBox[{"KL", " ", "xmp"}]}], " ", "==", " ", 
+     RowBox[{"(", 
+      RowBox[{"fg", " ", "-", " ", "fmp"}], ")"}]}], ",", "\n", "\t", 
+    RowBox[{"q1", " ", "\[Equal]", 
+     RowBox[{"-", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"A1", " ", "vmp"}], " ", "+", " ", 
+        RowBox[{"Cip", "*", 
+         RowBox[{"(", 
+          RowBox[{"p1", "-", "p2"}], ")"}]}]}], ")"}]}]}], ",", "\n", "\t", 
+    RowBox[{"q2", " ", "==", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"A2", " ", "vmp"}], " ", "+", " ", 
+       RowBox[{"Cip", "*", 
+        RowBox[{"(", 
+         RowBox[{"p1", "-", "p2"}], ")"}]}]}], ")"}]}]}], "\n", "\t", 
+   "}"}]}]], "Input",
+ CellChangeTimes->{{3.524850724265625*^9, 3.524850724265625*^9}, {
+  3.571903224566633*^9, 3.571903236734655*^9}}],
+
+Cell["The boundarys", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemBoundaryEquations", " ", "=", " ", 
+   RowBox[{"{", "\n", "\t", 
+    RowBox[{
+     RowBox[{"p1", " ", "==", " ", 
+      RowBox[{"c1", " ", "+", " ", 
+       RowBox[{"Zc1", " ", "q1"}]}]}], ",", "\n", "\t", 
+     RowBox[{"p2", " ", "==", " ", 
+      RowBox[{"c2", " ", "+", " ", 
+       RowBox[{"Zc2", " ", "q2"}]}]}], ",", "\n", "\t", 
+     RowBox[{"fmp", " ", "==", " ", 
+      RowBox[{"cmp", " ", "+", " ", 
+       RowBox[{"Zcmp", " ", "vmp"}]}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52485078196875*^9, 3.52485078196875*^9}, {
+  3.5719029765417976`*^9, 3.571902992984226*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+    "xmp", ",", "vmp", ",", "q1", ",", "q2", ",", "p1", ",", "p2", ",", 
+     "fmp"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.524850716875*^9, 3.524850716875*^9}}],
+
+Cell["Limitatons", "Text",
+ CellChangeTimes->{{3.524850848515625*^9, 3.524850857984375*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variable2Limits", "=", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"xmp", ",", "vmp", ",", "xmin", ",", "xmax"}], "}"}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.521781710359375*^9, 3.521781715921875*^9}, 
+   3.521781911703125*^9, {3.521782089203125*^9, 3.521782090109375*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variableLowLimits", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"p1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"p2", ",", "0"}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.578505814681842*^9, 3.5785058445435495`*^9}, 
+   3.578509359037567*^9}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input",
+ CellChangeTimes->{{3.6057976322344937`*^9, 3.605797638142832*^9}, {
+  3.60579769056083*^9, 3.605797691809901*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{707, 505},
+WindowMargins->{{Automatic, 0}, {0, Automatic}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 239, 7, 92, "Section",
+ Evaluatable->False],
+Cell[821, 31, 1517, 33, 172, "Input"],
+Cell[CellGroupData[{
+Cell[2363, 68, 43, 0, 36, "Subsection"],
+Cell[2409, 70, 43, 0, 29, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2489, 75, 41, 0, 36, "Subsection"],
+Cell[2533, 77, 70, 0, 29, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2640, 82, 46, 0, 36, "Subsection"],
+Cell[2689, 84, 1837, 47, 252, "Input"],
+Cell[4529, 133, 701, 18, 92, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5267, 156, 45, 0, 36, "Subsection"],
+Cell[5315, 158, 42, 0, 29, "Text"],
+Cell[5360, 160, 230, 6, 31, "Input"],
+Cell[5593, 168, 132, 1, 29, "Text"],
+Cell[5728, 171, 1517, 42, 132, "Input"],
+Cell[7248, 215, 29, 0, 29, "Text"],
+Cell[7280, 217, 660, 16, 112, "Input"],
+Cell[7943, 235, 266, 7, 31, "Input"],
+Cell[8212, 244, 92, 1, 29, "Text"],
+Cell[8307, 247, 327, 8, 31, "Input"],
+Cell[8637, 257, 334, 10, 31, "Input"],
+Cell[8974, 269, 179, 3, 31, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

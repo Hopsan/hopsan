@@ -1,0 +1,333 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     11074,        323]
+NotebookOptionsPosition[      9801,        276]
+NotebookOutlinePosition[     10144,        291]
+CellTagsIndexPosition[     10101,        288]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[TextData[StyleBox["MotorJload",
+ FontFamily->"System"]], "Section",
+ Evaluatable->False,
+ CellChangeTimes->{{3.52488616965088*^9, 3.5248861799318666`*^9}, {
+  3.577956172776149*^9, 3.5779561799815607`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Hydraulic\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<MotorJload\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<This is a motor with an inertia load\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.5137112151875*^9, 3.513711217109375*^9}, {
+   3.51378596903125*^9, 3.513785980671875*^9}, 3.515394539753217*^9, {
+   3.515775693875*^9, 3.5157757050625*^9}, {3.517048046727305*^9, 
+   3.51704806093043*^9}, 3.51707206725*^9, {3.5176530686834764`*^9, 
+   3.51765311057437*^9}, {3.517673126703125*^9, 3.517673126796875*^9}, {
+   3.5177214423487377`*^9, 3.517721453114225*^9}, {3.5177222281793466`*^9, 
+   3.517722236008023*^9}, {3.5209603293125*^9, 3.520960329578125*^9}, 
+   3.521782180515625*^9, {3.52178222675*^9, 3.521782271609375*^9}, {
+   3.521782314984375*^9, 3.52178231528125*^9}, 3.5248861854161005`*^9, 
+   3.5757721184092045`*^9, {3.577957012447175*^9, 3.5779570270120087`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Component description", "Subsection"],
+
+Cell["Piston with an inertia load", "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Component equations", "Subsection"],
+
+Cell["The name of the component  is stored in ComponentName.", "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Variables and parameters", "Subsection"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "  ", "=", " ", 
+   RowBox[{"{", "\n", "\t", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"Dm", ",", 
+       RowBox[{"50.", " ", 
+        SuperscriptBox["10", 
+         RowBox[{"-", "6"}]]}], ",", "double", ",", "\"\<m3\>\"", ",", 
+       "\"\<Displacement\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "Cim", ",", "0.", ",", "double", ",", "\"\<m3/(s Pa)\>\"", ",", 
+       "\"\<Leak coeff.\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "Bm", ",", "0.", ",", "double", ",", "\"\<N/m/s\>\"", ",", 
+       "\"\<Visc. friction coeff.\>\""}], "}"}], ",", "\n", "\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "Jm", ",", ".1", ",", "double", ",", "\"\<kg\>\"", ",", 
+       "\"\<Moment of inertia\>\""}], "}"}]}], "\n", "\t", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.524850755625*^9, 3.524850755640625*^9}, {
+   3.577956201851812*^9, 3.577956272255839*^9}, 3.5779573492194376`*^9, {
+   3.5779654805065203`*^9, 3.5779655140924416`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"HydraulicQnode", "[", 
+      RowBox[{"1", ",", 
+       RowBox[{"1.", "*", 
+        RowBox[{"10", "^", "5"}]}], ",", "\"\<hydraulic node 1\>\""}], "]"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"HydraulicQnode", "[", 
+      RowBox[{"2", ",", 
+       RowBox[{"1.", "*", 
+        RowBox[{"10", "^", "5"}]}], ",", "\"\<hydraulic node 2\>\""}], "]"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"MechanicRotQnode", "[", 
+      RowBox[{
+      "m1", ",", "0.", ",", "0.", ",", "\"\<Mechanical rot.connection\>\""}], 
+      "]"}]}], "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.524850747078125*^9, 3.524850747078125*^9}, {
+   3.57795627770615*^9, 3.5779562880827436`*^9}, {3.5779577305582485`*^9, 
+   3.577957764802208*^9}, 3.5779578544903374`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The system of equations", "Subsection"],
+
+Cell["The generated piston force", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"torg", " ", "=", 
+   RowBox[{
+    FractionBox[
+     RowBox[{" ", "Dm"}], 
+     RowBox[{"2", " ", "pi"}]], 
+    RowBox[{"(", " ", 
+     RowBox[{"p1", " ", "-", "  ", "p2"}], ")"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52178209578125*^9, 3.52178209959375*^9}, {
+  3.577956496099642*^9, 3.5779565177508802`*^9}}],
+
+Cell["The  vector of independent variables of the system are", "Text",
+ CellChangeTimes->{{3.524850810625*^9, 3.52485083609375*^9}}],
+
+Cell[BoxData[
+ RowBox[{"systemEquationsDA", " ", ":=", " ", 
+  RowBox[{"{", "\n", "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"Jm", " ", 
+       RowBox[{"der", "[", 
+        RowBox[{"der", "[", "thetam1", "]"}], "]"}]}], " ", "+", " ", 
+      RowBox[{"Bm", " ", 
+       RowBox[{"der", "[", "thetam1", "]"}]}]}], "  ", "==", " ", 
+     RowBox[{"(", 
+      RowBox[{"torg", " ", "-", " ", "torm1"}], ")"}]}], ",", "\n", "\t", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Jm", " ", 
+       RowBox[{"der", "[", "wm1", "]"}]}], " ", "+", " ", 
+      RowBox[{"Bm", " ", "wm1"}]}], "  ", "==", " ", 
+     RowBox[{"(", 
+      RowBox[{"torg", " ", "-", " ", "torm1"}], ")"}]}], ",", "\n", "\t", 
+    RowBox[{"q2", " ", "\[Equal]", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        FractionBox["Dm", 
+         RowBox[{"2", " ", "pi"}]], " ", "wm1"}], " ", "+", " ", 
+       RowBox[{"Cim", "*", 
+        RowBox[{"(", 
+         RowBox[{"p1", "-", "p2"}], ")"}]}]}], ")"}]}]}], 
+   "\[IndentingNewLine]", "\t", "}"}]}]], "Input",
+ CellChangeTimes->{{3.524850724265625*^9, 3.524850724265625*^9}, {
+   3.571903224566633*^9, 3.571903236734655*^9}, {3.5779562974972825`*^9, 
+   3.577956423703501*^9}, {3.57795648347992*^9, 3.5779564933454847`*^9}, {
+   3.577956816134947*^9, 3.5779568302647552`*^9}, {3.577957767610368*^9, 
+   3.5779577781419706`*^9}, 3.577957863609859*^9, {3.5781111461206555`*^9, 
+   3.5781111554625897`*^9}, {3.5781273950757246`*^9, 3.5781274254949446`*^9}}],
+
+Cell["The boundarys", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemBoundaryEquations", " ", "=", " ", 
+   RowBox[{"{", "\n", "\t", 
+    RowBox[{
+     RowBox[{"p1", " ", "==", " ", 
+      RowBox[{"c1", " ", "-", " ", 
+       RowBox[{"Zc1", " ", "q2"}]}]}], ",", "\n", "\t", 
+     RowBox[{"p2", " ", "==", " ", 
+      RowBox[{"c2", " ", "+", " ", 
+       RowBox[{"Zc2", " ", "q2"}]}]}], ",", "\n", "\t", 
+     RowBox[{"torm1", " ", "==", " ", 
+      RowBox[{"cm1", " ", "+", " ", 
+       RowBox[{"Zcm1", " ", "wm1"}]}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52485078196875*^9, 3.52485078196875*^9}, {
+   3.5719029765417976`*^9, 3.571902992984226*^9}, {3.5779564425205774`*^9, 
+   3.577956443148613*^9}, {3.577956840335331*^9, 3.577956842188437*^9}, {
+   3.577957783064252*^9, 3.5779577871134834`*^9}, 3.577957893385562*^9, {
+   3.577963667558826*^9, 3.5779636729951367`*^9}, {3.578111159305974*^9, 
+   3.5781111616112046`*^9}, {3.5785058494368296`*^9, 3.5785058525850096`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["systemBoundaryEquations"], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"p1", "\[Equal]", 
+    RowBox[{"c1", "-", 
+     RowBox[{"q2", " ", "Zc1"}]}]}], ",", 
+   RowBox[{"p2", "\[Equal]", 
+    RowBox[{"c2", "+", 
+     RowBox[{"q2", " ", "Zc2"}]}]}], ",", 
+   RowBox[{"torm1", "\[Equal]", 
+    RowBox[{"cm1", "+", 
+     RowBox[{"wm1", " ", "Zcm1"}]}]}]}], "}"}]], "Output",
+ CellChangeTimes->{3.5779639625847006`*^9, 3.577964045752457*^9, 
+  3.57796453830863*^9, 3.577964617549162*^9, 3.5779652415638537`*^9, 
+  3.578106853536295*^9, 3.5781111845434976`*^9, 3.5781261170973096`*^9, 
+  3.578505797409854*^9, 3.5785059048379984`*^9, 3.578509712321774*^9, 
+  3.578816620134367*^9, 3.5814059925764*^9, 3.581406277861717*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+    "thetam1", ",", "wm1", ",", "q2", ",", "p1", ",", "p2", ",", "torm1"}], 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.524850716875*^9, 3.524850716875*^9}, {
+   3.577956431479946*^9, 3.5779564393723974`*^9}, {3.577956859515428*^9, 
+   3.5779568640126853`*^9}, {3.5779577901476574`*^9, 3.577957792222776*^9}, 
+   3.5779578730333977`*^9, 3.5781111509651403`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variableLowLimits", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"p1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"p2", ",", "0"}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.578505814681842*^9, 3.5785058445435495`*^9}, 
+   3.578509359037567*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"q1", "\[Equal]", 
+     RowBox[{"-", "q2"}]}], "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.577956890459198*^9, 3.5779569714248285`*^9}, {
+  3.578111147599804*^9, 3.578111149042948*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{707, 505},
+WindowMargins->{{96, Automatic}, {Automatic, 30}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 211, 4, 71, "Section",
+ Evaluatable->False],
+Cell[793, 28, 1564, 33, 172, "Input"],
+Cell[CellGroupData[{
+Cell[2382, 65, 43, 0, 36, "Subsection"],
+Cell[2428, 67, 43, 0, 29, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2508, 72, 41, 0, 36, "Subsection"],
+Cell[2552, 74, 70, 0, 29, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2659, 79, 46, 0, 36, "Subsection"],
+Cell[2708, 81, 1049, 26, 138, "Input"],
+Cell[3760, 109, 905, 21, 112, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4702, 135, 45, 0, 36, "Subsection"],
+Cell[4750, 137, 42, 0, 29, "Text"],
+Cell[4795, 139, 350, 10, 49, "Input"],
+Cell[5148, 151, 132, 1, 29, "Text"],
+Cell[5283, 154, 1488, 35, 143, "Input"],
+Cell[6774, 191, 29, 0, 29, "Text"],
+Cell[6806, 193, 989, 20, 112, "Input"],
+Cell[CellGroupData[{
+Cell[7820, 217, 49, 0, 31, "Input"],
+Cell[7872, 219, 697, 16, 30, "Output"]
+}, Open  ]],
+Cell[8584, 238, 464, 10, 31, "Input"],
+Cell[9051, 250, 334, 10, 31, "Input"],
+Cell[9388, 262, 319, 7, 72, "Input"],
+Cell[9710, 271, 63, 1, 31, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
