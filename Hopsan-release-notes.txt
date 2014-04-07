@@ -25,7 +25,7 @@
 ******************************
     Version History
 ******************************
-0.6.6    (2014-04-03)
+0.6.6    (2014-04-07)
 
 - Feature: Find widget capable of finding by component name, system variables, aliases, highlighting the found component(s)
            Ctrl+Shift+F (or find it in the tools menu)
