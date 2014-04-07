@@ -41,7 +41,7 @@ namespace hopsan {
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderTransferFunction mFilterLP;
-        double mPrevX0, x0;
+        double mPrevX0;
 
         // Port and node data pointers
         Port *mpP1, *mpP2;
@@ -89,14 +89,13 @@ namespace hopsan {
             Cs = sqrt(mPnom) / mKcs;
             Cf = 1.0 / (mKcf*sqrt(mPnom));
 
-            //! @todo this is strange, and what about the filter
-            x0 = 0.00001;
+            //x0 = 0.00001;
             mPrevX0 = 0;
 
             double wCutoff = 1 / mTao;
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
-            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, x0max);
+            mFilterLP.initialize(mTimestep, num, den, mPrevX0, mPrevX0, 0.0, x0max);
         }
 
 
@@ -130,9 +129,9 @@ namespace hopsan {
             //Help variable gamma
             if (p1>p2)
             {
-                if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*x0) != 0.0 )
+                if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mPrevX0) != 0.0 )
                 {
-                    gamma = sqrt(p1-p2)*2.0 / (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*x0);
+                    gamma = sqrt(p1-p2)*2.0 / (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mPrevX0);
                 }
                 else
                 {
@@ -141,9 +140,9 @@ namespace hopsan {
             }
             else
             {
-                if ( (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*x0) != 0.0 )
+                if ( (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mPrevX0) != 0.0 )
                 {
-                    gamma = sqrt(p2-p1)*2.0 / (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*x0);
+                    gamma = sqrt(p2-p1)*2.0 / (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mPrevX0);
                 }
                 else
                 {
@@ -166,7 +165,7 @@ namespace hopsan {
             }
 
             // Calculation of spool position
-            xs = (gamma*(c1-c2) + b2*x0/2.0 - pref) / (b1+b2);
+            xs = (gamma*(c1-c2) + b2*mPrevX0/2.0 - pref) / (b1+b2);
 
             //Hysteresis
             xh = ph / (b1+b2);                                  //Hysteresis width [m]
@@ -177,8 +176,7 @@ namespace hopsan {
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.setNumDen(num,den);
-            mFilterLP.update(xsh);
-            x0 = mFilterLP.value();
+            double x0 = mFilterLP.update(xsh);
 
             //Turbulent flow equation
             mTurb.setFlowCoefficient(x0);

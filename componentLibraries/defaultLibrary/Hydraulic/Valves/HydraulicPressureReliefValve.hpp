@@ -64,7 +64,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic", "High pressure side");
             mpP2 = addPowerPort("P2", "NodeHydraulic", "Low pressure side");
 
-            addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
+            addOutputVariable("xv", "Equivalent spool position", "", &mpXv);
 
             addInputVariable("p_max", "Maximum opening pressure", "Pa", 20000000.0, &mpPmax);
             addInputVariable("tao", "Time Constant of Spool", "s", 0.01, &mpTao);
@@ -92,18 +92,17 @@ namespace hopsan {
 
             double tao = (*mpTao);
 
-            //! @todo this is strange, and what about the filter, and what about spoolpos start value
-            x0 = 0.00001;
-            mPrevX0 = 0;
-
             x0max = mQnom / sqrt(mPnom);
             Cs = sqrt(mPnom) / mKcs;
             Cf = 1.0 / (mKcf*sqrt(mPnom));
 
+            //x0 = 0.00001;
+            mPrevX0 = 0.0;
+
             double wCutoff = 1 / tao;
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
-            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, x0max);
+            mFilterLP.initialize(mTimestep, num, den, mPrevX0, mPrevX0, 0.0, x0max);
         }
 
 
@@ -138,9 +137,9 @@ namespace hopsan {
             //Help variable gamma
             if (p1>p2)
             {
-                if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*x0) != 0.0 )
+                if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mPrevX0) != 0.0 )
                 {
-                    gamma = sqrt(p1-p2)*2.0 / (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*x0);
+                    gamma = sqrt(p1-p2)*2.0 / (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mPrevX0);
                 }
                 else
                 {
@@ -149,9 +148,9 @@ namespace hopsan {
             }
             else
             {
-                if ( (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*x0) != 0.0 )
+                if ( (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mPrevX0) != 0.0 )
                 {
-                    gamma = sqrt(p2-p1)*2.0 / (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*x0);
+                    gamma = sqrt(p2-p1)*2.0 / (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mPrevX0);
                 }
                 else
                 {
@@ -174,7 +173,7 @@ namespace hopsan {
             }
 
             // Calculation of spool position
-            xs = (gamma*(c1) + b2*x0/2.0 - pmax) / (b1+b2);
+            xs = (gamma*(c1) + b2*mPrevX0/2.0 - pmax) / (b1+b2);
 
             //Hysteresis
             xh = ph / (b1+b2);                                  //Hysteresis width [m]
@@ -185,8 +184,7 @@ namespace hopsan {
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.setNumDen(num,den);
-            mFilterLP.update(xsh);
-            x0 = mFilterLP.value();
+            double x0 = mFilterLP.update(xsh);
 
             //Turbulent flow equation
             mTurb.setFlowCoefficient(x0);

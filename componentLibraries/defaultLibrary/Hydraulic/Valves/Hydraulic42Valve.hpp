@@ -63,7 +63,7 @@ namespace hopsan {
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpPB = addPowerPort("PB", "NodeHydraulic");
 
-            addOutputVariable("xv", "Spool position", "m", &mpXv);
+            addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
             addInputVariable("in", "Desired spool position", "m", 0.0, &mpXvIn);
 
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
@@ -103,7 +103,7 @@ namespace hopsan {
             //Initiate second order low pass filter
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*mDeltah/mOmegah, 1.0/(mOmegah*mOmegah)};
-            double initXv = limit(*mpXvIn,0.0,(*mpXvmax));
+            double initXv = limit(*mpXv,0.0,(*mpXvmax));
             mSpoolPosTF.initialize(mTimestep, num, den, initXv, initXv, 0, (*mpXvmax));
         }
 

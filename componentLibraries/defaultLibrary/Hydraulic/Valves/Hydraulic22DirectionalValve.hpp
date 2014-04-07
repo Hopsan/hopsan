@@ -63,7 +63,7 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
             mpIn = addInputVariable("in", "<0.5 (closed), >0.5 (open)", "", 0.0);
-            mpOut = addOutputVariable("xv", "", "");
+            mpOut = addOutputVariable("xv", "Spool position", "m", 0.0);
 
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
             addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
@@ -94,11 +94,7 @@ namespace hopsan {
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*mDeltah/mOmegah, 1.0/(mOmegah*mOmegah)};
 
-            double initialXv=0;
-            if (doubleToBool(*mpIn_xv))
-            {
-                initialXv = (*mpXvmax);
-            }
+            double initialXv = limit(*mpOut_xv, 0, (*mpXvmax));
             mValveSpoolPosFilter.initialize(mTimestep, num, den, initialXv, initialXv, 0, (*mpXvmax));
             simulateOneTimestep();
         }

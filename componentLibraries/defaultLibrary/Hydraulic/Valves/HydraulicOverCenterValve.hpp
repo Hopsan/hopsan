@@ -99,7 +99,7 @@ namespace hopsan {
             double wCutoff = 1 / mTao;
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
-            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0, x0max);
+            mFilterLP.initialize(mTimestep, num, den, mPrevX0, mPrevX0, 0, x0max);
         }
 
 

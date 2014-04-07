@@ -24,9 +24,6 @@
 #ifndef HYDRAULIC22VALVE_HPP_INCLUDED
 #define HYDRAULIC22VALVE_HPP_INCLUDED
 
-
-
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -66,7 +63,7 @@ namespace hopsan {
             mpPA = addPowerPort("PA", "NodeHydraulic");
 
             addInputVariable("in", "Desired spool position", "", 0.0, &mpIn_xv);
-            addOutputVariable("xv", "Spool position", "", &mpOut_xv);
+            addOutputVariable("xv", "Spool position", "", 0.0, &mpOut_xv);
 
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
             addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
@@ -96,7 +93,7 @@ namespace hopsan {
             //Initiate second order low pass filter
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*mDeltah/mOmegah, 1.0/(mOmegah*mOmegah)};
-            const double initxv = limit(*mpIn_xv,0,xvmax);
+            const double initxv = limit(*mpOut_xv,0,xvmax);
             filter.initialize(mTimestep, num, den, initxv, initxv, 0, xvmax);
             simulateOneTimestep();
         }
