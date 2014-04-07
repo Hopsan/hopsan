@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>Electric current sensor.</text>
-            <link>ElectricComponents.nb</link>
+            <link>ElectricIsensor.nb</link>
         </help>        <ports>
             <port x="0.5" y="0" a="270" name="Piout"/>
             <port x="0" y="0.5" a="180" name="Pel1"/>

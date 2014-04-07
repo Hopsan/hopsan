@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>Electric resistor.</text>
-            <link>ElectricComponents.nb</link>
+            <link>ElectricResistor.nb</link>
         </help>        <ports>
             <port x="0" y="0.5" a="180" name="Pel1"/>
             <port x="1" y="0.5" a="0" name="Pel2"/>

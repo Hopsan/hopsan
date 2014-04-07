@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>Electric motor.</text>
-            <link>ElectricComponents.nb</link>
+            <link>ElectricMotor.nb</link>
         </help>        <ports>
             <port x="0.7" y="1" a="90" name="Pin"/>
             <port x="0.9" y="1" a="90" name="Pout"/>

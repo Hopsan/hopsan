@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>Electric equivalent PWM controller.</text>
-            <link>ElectricComponents.nb</link>
+            <link>ElectricPWMdceq.nb</link>
         </help>        <ports>
             <port x="0.5" y="0" enabled="true" a="270" name="tfac" autoplaced="true"/>
             <port x="0" y="0.25" enabled="true" a="180" name="Pel1" autoplaced="true"/>

@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>Electric voltage sensor.</text>
-            <link>ElectricComponents.nb</link>
+            <link></link>
         </help>        <ports>
             <port x="0.5" y="0" a="270" name="Puout"/>
             <port x="0.5" y="1" a="90" name="Pel1"/>

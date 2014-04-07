@@ -1,0 +1,132 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      4279,        123]
+NotebookOptionsPosition[      3818,        103]
+NotebookOutlinePosition[      4161,        118]
+CellTagsIndexPosition[      4118,        115]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Usource", "Section",
+ CellChangeTimes->{3.51370852475*^9, 3.517224365292449*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Electric\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<Usource\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<An inertia load with spring and damper\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentC\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"defaultPath", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.503905077842648*^9, 3.503905079842648*^9}, {
+   3.5039103076641607`*^9, 3.5039103985397425`*^9}, {3.5039164662834997`*^9, 
+   3.5039164750178747`*^9}, {3.5039165143772497`*^9, 
+   3.5039165189397497`*^9}, {3.5041051675625*^9, 3.504105226359375*^9}, {
+   3.507570546125*^9, 3.507570569546875*^9}, {3.507570601046875*^9, 
+   3.50757067696875*^9}, 3.507796401609375*^9, {3.507887022343302*^9, 
+   3.507887057967846*^9}, {3.5078871702320337`*^9, 3.507887175028847*^9}, {
+   3.5082235454098396`*^9, 3.5082235597692146`*^9}, 3.5082237305660896`*^9, {
+   3.512921352515625*^9, 3.512921388578125*^9}, {3.513708407234375*^9, 
+   3.51370842740625*^9}, 3.513708469203125*^9, 3.515394515221967*^9, 
+   3.515775249953125*^9, 3.5757729348100567`*^9, 3.575773222080418*^9, {
+   3.605856428342783*^9, 3.6058564284557943`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", "\t", 
+    RowBox[{"ElectricCnode", "[", 
+     RowBox[{"el1", ",", "12.", ",", "\"\<port\>\""}], "]"}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{
+  3.515774065*^9, {3.515774111015625*^9, 3.5157741400625*^9}, 
+   3.515774214921875*^9, {3.522404467140625*^9, 3.522404467796875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "uin", ",", "12.", ",", "double", ",", "\"\<V\>\"", ",", 
+      "\"\<Voltage\>\""}], "}"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.51879550009375*^9, 3.51879554940625*^9}, 
+   3.519063771984375*^9, 3.519064900515625*^9, {3.5224043838125*^9, 
+   3.5224044046875*^9}, {3.522404444640625*^9, 3.522404459125*^9}, 
+   3.53327672158421*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"cel1", "==", "uin"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Zcel1", "==", "0."}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{
+  3.51577430196875*^9, 3.51603129065625*^9, {3.571927270275045*^9, 
+   3.571927297169492*^9}, {3.5757864274340715`*^9, 3.575786448073004*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+},
+WindowSize->{707, 817},
+WindowMargins->{{Automatic, 45}, {38, Automatic}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 86, 1, 71, "Section"],
+Cell[668, 25, 1746, 36, 192, "Input"],
+Cell[2417, 63, 410, 9, 72, "Input"],
+Cell[2830, 74, 478, 11, 52, "Input"],
+Cell[3311, 87, 425, 10, 92, "Input"],
+Cell[3739, 99, 63, 1, 31, "Input"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

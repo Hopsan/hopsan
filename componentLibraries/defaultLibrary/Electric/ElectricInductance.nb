@@ -1,0 +1,163 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      5072,        153]
+NotebookOptionsPosition[      4495,        130]
+NotebookOutlinePosition[      4838,        145]
+CellTagsIndexPosition[      4795,        142]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Inductance", "Section"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Electric\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<Inductance\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<Electric inductance\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"defaultPath", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.5137854905625*^9, 3.513785499984375*^9}, 
+   3.515394518221967*^9, {3.5719272242393637`*^9, 3.5719272245045643`*^9}, 
+   3.575772934014456*^9, 3.5757732066207914`*^9, {3.605856265976548*^9, 
+   3.605856269408891*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", "\t", 
+    RowBox[{
+     RowBox[{"ElectricQnode", "[", 
+      RowBox[{"el1", ",", "0.", ",", "\"\<Electric port 1\>\""}], "]"}], ",", 
+     "\[IndentingNewLine]", "\t", 
+     RowBox[{"ElectricQnode", "[", 
+      RowBox[{"el2", ",", "0.", ",", "\"\<Electric port 2\>\""}], "]"}]}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{
+  3.51577409603125*^9, {3.51577425015625*^9, 3.5157742514375*^9}, {
+   3.516033874671875*^9, 3.51603387515625*^9}, {3.5172817011678505`*^9, 
+   3.517281718680449*^9}, 3.571927218997755*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "Induct", ",", "0.1", ",", "double", ",", "\"\<A/(Vs)\>\"", ",", 
+      "\"\<Inductance\>\""}], "}"}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5160866149375*^9, 3.5160866583125*^9}, {
+  3.5172816937785025`*^9, 3.51728170999445*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDA", " ", "=", " ", 
+   RowBox[{"{", "\n", "\t", 
+    RowBox[{
+     RowBox[{"Induct", " ", 
+      RowBox[{"Der", "[", "iel2", "]"}]}], "==", 
+     RowBox[{"(", 
+      RowBox[{"uel1", " ", "-", " ", "uel2"}], ")"}]}], "\n", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.51378556925*^9, 3.51378556925*^9}, 
+   3.5172819962456045`*^9, {3.5719210419119616`*^9, 3.5719210452659674`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemBoundaryEquations", " ", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"uel1", " ", "==", " ", 
+      RowBox[{"cel1", "-", " ", 
+       RowBox[{"Zcel1", " ", "iel2"}]}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"uel2", " ", "==", " ", 
+      RowBox[{"cel2", " ", "+", " ", 
+       RowBox[{"Zcel2", " ", "iel2"}]}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.513785574015625*^9, 3.513785574015625*^9}, {
+  3.5157742835*^9, 3.515774284796875*^9}, {3.5160312885625*^9, 
+  3.51603128909375*^9}, {3.571921049789975*^9, 3.571921073143216*^9}, {
+  3.575774863120623*^9, 3.5757748651486263`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{"iel2", ",", "uel1", ",", "uel2"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.51378557834375*^9, 3.51378557834375*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"iel1", "==", 
+     RowBox[{"-", "iel2"}]}], "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.571921078618826*^9, 3.57192108645004*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+},
+WindowSize->{707, 817},
+WindowMargins->{{Automatic, 69}, {Automatic, 60}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 29, 0, 71, "Section"],
+Cell[611, 24, 1117, 27, 192, "Input"],
+Cell[1731, 53, 642, 14, 92, "Input"],
+Cell[2376, 69, 402, 10, 72, "Input"],
+Cell[2781, 81, 437, 11, 72, "Input"],
+Cell[3221, 94, 698, 15, 92, "Input"],
+Cell[3922, 111, 223, 5, 31, "Input"],
+Cell[4148, 118, 265, 6, 72, "Input"],
+Cell[4416, 126, 63, 1, 31, "Input"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

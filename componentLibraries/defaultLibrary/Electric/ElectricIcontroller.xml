@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>Electric current controller.</text>
-            <link>ElectricComponents.nb</link>
+            <link>ElectricIcontroller.nb</link>
         </help>        <ports>
             <port x="0.5" y="0" a="270" name="iref"/>
             <port x="0" y="0.2782948064" a="180" name="Pel1"/>

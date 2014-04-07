@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>Electric battery.</text>
-            <link>ElectricComponents.nb</link>
+            <link>ElectricBattery.nb</link>
         </help>        <ports>
             <port x="1" y="0.3" a="0" name="ubatt"/>
             <port x="1" y="0.1" a="0" name="soc"/>

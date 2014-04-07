@@ -7,8 +7,9 @@
         </icons>
         <help>
             <text>Electric variable resistor.</text>
-            <link>ElectricComponents.nb</link>
-        </help>        <ports>
+            <link>ElectricVarResistor.nb</link>
+        </help>        
+		<ports>
             <port x="0.5" y="0" a="90" name="Conduct"/>
             <port x="0" y="0.5" a="180" name="Pel1"/>
             <port x="1" y="0.5" a="0" name="Pel2"/>
