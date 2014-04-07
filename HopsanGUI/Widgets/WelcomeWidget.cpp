@@ -46,6 +46,7 @@
 #include "ModelHandler.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "MessageHandler.h"
+#include "version_gui.h"
 
 
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
