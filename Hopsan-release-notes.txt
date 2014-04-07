@@ -39,10 +39,12 @@
 - Feature: The message widget is back! It will receive all model messages and you are able to see old messages of any type even if they were disabled in the terminal.
 
 - New component: Rate limiter
+- New component: ElectricMotorGearScrewLink
 
 - Fixed components: HydraulicCylinderQ (Q-type Piston) velocity keep growing even if end stop reached
 - Fixed components: 2/2 On-off and Poppet valves can now start with non-zero spool position (that is you can start with an open valve)
-- Fixed components: The 3/2 3/3 and 4/3 valves will not initialize the spool position correctly according to the input signal, incorrect parameter descriptions have also been corrected
+- Fixed components: Many hydraulic valves will now initialize the spool position correctly according to the spool position start values, incorrect parameter descriptions have also been corrected.
+- Fixed components: HydraulicGasAccumulator have new description and correct parameter units
 - Fixed components: Route components now propagates start values
 - Fixed components: You can now set a start value in the UnitDelay component. This lets you avoids problems with initial values in signal loops containing a unit delay.
 - Fixed components: Electrical components regenerated with an assortment of minor fixes.
