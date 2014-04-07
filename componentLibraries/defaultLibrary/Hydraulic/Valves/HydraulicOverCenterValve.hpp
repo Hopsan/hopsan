@@ -25,8 +25,6 @@
 #ifndef HYDRAULICOVERCENTERVALVE_HPP_INCLUDED
 #define HYDRAULICOVERCENTERVALVE_HPP_INCLUDED
 
-#include <iostream>
-#include <sstream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -39,17 +37,20 @@ namespace hopsan {
     class HydraulicOverCenterValve : public ComponentQ
     {
     private:
-        double *mpPref, *mpPh, *mpArat;
-        double x0, x0max, tao, Kcs, Kcf, Cs, Cf, pnom, qnom;
-        double mPrevX0;
+        // Member variables
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderTransferFunction mFilterLP;
+        double mPrevX0, mCs, mCf;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
-               *mpND_p_control, *mpND_c_control;
+        // Port and node data pointers
+        Port *mpP1, *mpP2, *mpPControl;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc,
+               *mpPControl_p, *mpPControl_c;
+        double *mpPref, *mpPh, *mpArat;
 
-        Port *mpP1, *mpP2, *mpP_CONTROL;
+        // Constants
+        double mTao, mKcs, mKcf, mPnom, mQnom;
 
     public:
         static Component *Creator()
@@ -61,42 +62,41 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpP_CONTROL = addPowerPort("P_CONTROL", "NodeHydraulic");
+            mpPControl = addPowerPort("P_CONTROL", "NodeHydraulic");
 
             addInputVariable("p_ref", "Reference Opening Pressure", "Pa", 2000000, &mpPref);
             addInputVariable("p_h", "Hysteresis Width", "Pa", 500000, &mpPh);
             addInputVariable("a_ratio", "Area ratio", "-", 5.0, &mpArat);
 
-            addConstant("tao", "Time Constant of Spool", "s", 0.01, tao);
-            addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, Kcs);
-            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "(m^3/s)/Pa", 0.00000001, Kcf);
-            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop p_nom", "m^3/s", 0.001, qnom);
-            addConstant("p_nom", "Nominal pressure drop", "Pa", 7e6, pnom);
+            addConstant("tao", "Time Constant of Spool", "s", 0.01, mTao);
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, mKcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "(m^3/s)/Pa", 0.00000001, mKcf);
+            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop p_nom", "m^3/s", 0.001, mQnom);
+            addConstant("p_nom", "Nominal pressure drop", "Pa", 7e6, mPnom);
         }
 
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mpND_p_control = getSafeNodeDataPtr(mpP_CONTROL, NodeHydraulic::Pressure);
-            mpND_c_control = getSafeNodeDataPtr(mpP_CONTROL, NodeHydraulic::WaveVariable);
+            mpPControl_p = getSafeNodeDataPtr(mpPControl, NodeHydraulic::Pressure);
+            mpPControl_c = getSafeNodeDataPtr(mpPControl, NodeHydraulic::WaveVariable);
 
-            x0 = 0.00001;           //Why not 0.0? (probably doesnt matter though)
             mPrevX0 = 0.0;
-            Cs = sqrt(pnom)/Kcs;
-            Cf = 1/(Kcf * sqrt(pnom));
-            x0max = qnom/sqrt(pnom);
+            mCs = sqrt(mPnom)/mKcs;
+            mCf = 1/(mKcf * sqrt(mPnom));
+            double x0max = mQnom/sqrt(mPnom);
 
-            double wCutoff = 1 / tao;
+            double wCutoff = 1 / mTao;
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0, x0max);
@@ -111,27 +111,27 @@ namespace hopsan {
             bool cav = false;
 
             //Get variable values from nodes
-            p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            c1 = (*mpND_c1);
-            Zc1 = (*mpND_Zc1);
-            p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
-            c2 = (*mpND_c2);
-            Zc2 = (*mpND_Zc2);
-            p_control = (*mpND_p_control);
-            c_control = (*mpND_c_control);
+            p1 = (*mpP1_p);
+            q1 = (*mpP1_q);
+            c1 = (*mpP1_c);
+            Zc1 = (*mpP1_Zc);
+            p2 = (*mpP2_p);
+            q2 = (*mpP2_q);
+            c2 = (*mpP2_c);
+            Zc2 = (*mpP2_Zc);
+            p_control = (*mpPControl_p);
+            c_control = (*mpPControl_c);
             pref = (*mpPref);
             ph = (*mpPh);
             arat = (*mpArat);
 
             /* Equations */
 
-            b1 = Cs+Cf*(p1-p2);                                 //Help Variable, equals sqrt(p1-p2)/Kctot
-            xs = (p1 / arat - pref + p_control) / b1;                // Spool position calculation
+            b1 = mCs+mCf*(p1-p2);                               // Help Variable, equals sqrt(p1-p2)/Kctot
+            xs = (p1 / arat - pref + p_control) / b1;           // Spool position calculation
             xh = ph/b1;
-            xsh = mHyst.getValue(xs, xh, mPrevX0);              //Hysteresis
-            x0 = mFilterLP.update(xsh);                         //Dynamics
+            xsh = mHyst.getValue(xs, xh, mPrevX0);              // Hysteresis
+            double x0 = mFilterLP.update(xsh);                  // Dynamics
             mTurb.setFlowCoefficient(x0);                       // Turbulent Flow Calculation
             q2 = mTurb.getFlow(c1, c2, Zc1, Zc2);
             q1 = -q2;
@@ -154,7 +154,7 @@ namespace hopsan {
                 Zc2 = 0.0;
                 cav = true;
             }
-            if (cav)                                            //Cavitatiaon, redo calculations with new c and Zc
+            if (cav)                                            // Cavitatiaon, redo calculations with new c and Zc
             {
                 q2 = mTurb.getFlow(c1, c2, Zc1, Zc2);
                 q1 = -q2;
@@ -166,11 +166,11 @@ namespace hopsan {
 
             mPrevX0 = x0;
 
-            (*mpND_p1) = p1;                                    //Write new values to nodes
-            (*mpND_q1) = q1;
-            (*mpND_p2) = p2;
-            (*mpND_q2) = q2;
-            (*mpND_p_control) = p_control;
+            (*mpP1_p) = p1;                                    // Write new values to nodes
+            (*mpP1_q) = q1;
+            (*mpP2_p) = p2;
+            (*mpP2_q) = q2;
+            (*mpPControl_p) = p_control;
         }
     };
 }

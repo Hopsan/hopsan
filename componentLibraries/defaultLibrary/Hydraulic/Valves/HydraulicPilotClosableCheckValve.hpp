@@ -25,10 +25,8 @@
 #ifndef HYDRAULICPILOTCLOSABLECHECKVALVE_HPP_INCLUDED
 #define HYDRAULICPILOTCLOSABLECHECKVALVE_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
-#include "math.h"
 
 namespace hopsan {
 
@@ -39,16 +37,16 @@ namespace hopsan {
     class HydraulicPilotClosableCheckValve : public ComponentQ
     {
     private:
+        // Member variables
+        TurbulentFlowFunction mQTurb;
 
-        bool cav;
-        TurbulentFlowFunction qTurb_;
+        // Port and node data pointers
+        Port *mpP1, *mpP2, *mpPPilot;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc,
+        *mpPPilot_p, *mpPPilot_c;
 
+        // Constants
         double mKs;
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
-        *mpND_p_pilot, *mpND_c_pilot;
-        double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_pilot, c_pilot;
-
-        Port *mpP1, *mpP2, *mpP_PILOT;
 
     public:
         static Component *Creator()
@@ -60,7 +58,7 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpP_PILOT = addPowerPort("P_PILOT", "NodeHydraulic");
+            mpPPilot = addPowerPort("P_PILOT", "NodeHydraulic");
 
             addConstant("K_s", "Restrictor Coefficient", "", 0.000000025, mKs);
         }
@@ -68,34 +66,36 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mpND_p_pilot = getSafeNodeDataPtr(mpP_PILOT, NodeHydraulic::Pressure);
-            mpND_c_pilot = getSafeNodeDataPtr(mpP_PILOT, NodeHydraulic::WaveVariable);
+            mpPPilot_p = getSafeNodeDataPtr(mpPPilot, NodeHydraulic::Pressure);
+            mpPPilot_c = getSafeNodeDataPtr(mpPPilot, NodeHydraulic::WaveVariable);
 
-            qTurb_.setFlowCoefficient(mKs);
+            mQTurb.setFlowCoefficient(mKs);
         }
 
 
         void simulateOneTimestep()
         {
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_pilot, c_pilot;
+
             //Get variable values from nodes
-            c1 = (*mpND_c1);
-            Zc1 = (*mpND_Zc1);
-            c2 = (*mpND_c2);
-            Zc2 = (*mpND_Zc2);
-            c_pilot = (*mpND_c_pilot);
+            c1 = (*mpP1_c);
+            Zc1 = (*mpP1_Zc);
+            c2 = (*mpP2_c);
+            Zc2 = (*mpP2_Zc);
+            c_pilot = (*mpPPilot_c);
 
             //Checkvalve equations
-            if (c1 > (c2 + c_pilot)) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
+            if (c1 > (c2 + c_pilot)) { q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2); }
             else { q2 = 0.0; }
 
             q1 = -q2;
@@ -104,7 +104,7 @@ namespace hopsan {
             p_pilot = c_pilot;
 
             //Cavitation check
-            cav = false;
+            bool cav = false;
             if (p1 < 0.0)
             {
                 c1 = 0.0;
@@ -124,7 +124,7 @@ namespace hopsan {
             }
             if (cav)
             {
-                if (c1 > c2) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
+                if (c1 > c2) { q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2); }
                 else { q2 = 0.0; }
                 q1 = -q2;
                 p1 = c1 + Zc1 * q1;
@@ -135,11 +135,11 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            (*mpND_p1) = p1;
-            (*mpND_q1) = q1;
-            (*mpND_p2) = p2;
-            (*mpND_q2) = q2;
-            (*mpND_p_pilot) = p_pilot;
+            (*mpP1_p) = p1;
+            (*mpP1_q) = q1;
+            (*mpP2_p) = p2;
+            (*mpP2_q) = q2;
+            (*mpPPilot_p) = p_pilot;
         }
     };
 }

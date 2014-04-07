@@ -25,7 +25,6 @@
 #ifndef HYDRAULICPRESSUREDROPVALVE_HPP_INCLUDED
 #define HYDRAULICPRESSUREDROPVALVE_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -38,16 +37,19 @@ namespace hopsan {
     class HydraulicPressureDropValve : public ComponentQ
     {
     private:
-        double *mpPref, *mpPh;
-        double x0, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, x0max;
-        double mPrevX0;
-
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
-
+        // Member variables
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderTransferFunction mFilterLP;
+        double mPrevX0, x0;
+
+        // Port and node data pointers
         Port *mpP1, *mpP2;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc;
+        double *mpPref, *mpPh;
+
+        // Constants
+        double mTao, mKcs, mKcf, Cs, Cf, mQnom, mPnom;
 
     public:
         static Component *Creator()
@@ -63,35 +65,35 @@ namespace hopsan {
             addInputVariable("p_ref", "Reference Opening Pressure", "Pa", 2000000.0, &mpPref);
             addInputVariable("p_h", "Hysteresis Width", "Pa", 500000.0, &mpPh);
 
-            addConstant("tao", "Time Constant of Spool", "s", 0.01, tao);
-            addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, Kcs);
-            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "(m^3/s)/Pa", 0.00000001, Kcf);
-            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "m^3/s", 0.001, qnom);
+            addConstant("tao", "Time Constant of Spool", "s", 0.01, mTao);
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, mKcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "(m^3/s)/Pa", 0.00000001, mKcf);
+            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "m^3/s", 0.001, mQnom);
         }
 
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            pnom = 7e6f;
-            x0max = qnom / sqrt(pnom);
-            Cs = sqrt(pnom) / Kcs;
-            Cf = 1.0 / (Kcf*sqrt(pnom));
+            mPnom = 7e6f;
+            double x0max = mQnom / sqrt(mPnom);
+            Cs = sqrt(mPnom) / mKcs;
+            Cf = 1.0 / (mKcf*sqrt(mPnom));
 
+            //! @todo this is strange, and what about the filter
             x0 = 0.00001;
-
             mPrevX0 = 0;
 
-            double wCutoff = 1 / tao;
+            double wCutoff = 1 / mTao;
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, x0max);
@@ -105,14 +107,14 @@ namespace hopsan {
             bool cav = false;
 
             //Get variable values from nodes
-            p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            c1 = (*mpND_c1);
-            Zc1 = (*mpND_Zc1);
-            p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
-            c2 = (*mpND_c2);
-            Zc2 = (*mpND_Zc2);
+            p1 = (*mpP1_p);
+            q1 = (*mpP1_q);
+            c1 = (*mpP1_c);
+            Zc1 = (*mpP1_Zc);
+            p2 = (*mpP2_p);
+            q2 = (*mpP2_q);
+            c2 = (*mpP2_c);
+            Zc2 = (*mpP2_Zc);
             pref = (*mpPref);
             ph = (*mpPh);
 
@@ -171,7 +173,7 @@ namespace hopsan {
             xsh = mHyst.getValue(xs, xh, mPrevX0);
 
             //Filter
-            wCutoff = (1.0 + b2/b1) * 1.0/tao;                //Cutoff frequency
+            wCutoff = (1.0 + b2/b1) * 1.0/mTao;                //Cutoff frequency
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.setNumDen(num,den);
@@ -217,10 +219,10 @@ namespace hopsan {
             mPrevX0 = x0;
 
             //Write new variables to nodes
-            (*mpND_p1) = p1;
-            (*mpND_q1) = q1;
-            (*mpND_p2) = p2;
-            (*mpND_q2) = q2;
+            (*mpP1_p) = p1;
+            (*mpP1_q) = q1;
+            (*mpP2_p) = p2;
+            (*mpP2_q) = q2;
         }
     };
 }
