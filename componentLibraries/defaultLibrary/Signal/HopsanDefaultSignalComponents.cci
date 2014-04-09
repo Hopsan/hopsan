@@ -2,6 +2,7 @@
 
 // Signal Animation
     pComponentFactory->registerCreatorFunction("SignalAnimationSlider", SignalAnimationSlider::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAnimationSwitch", SignalAnimationSwitch::Creator);
     pComponentFactory->registerCreatorFunction("SignalAnimationGauge", SignalAnimationGauge::Creator);
     pComponentFactory->registerCreatorFunction("SignalDisplay", SignalDisplay::Creator);
 

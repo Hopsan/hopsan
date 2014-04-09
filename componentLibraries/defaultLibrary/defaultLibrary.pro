@@ -58,6 +58,7 @@ HEADERS += \
     Electric/ElectricBattery.hpp \
     Signal/Animation/SignalDisplay.hpp \
     Signal/Animation/SignalAnimationSlider.hpp \
+    Signal/Animation/SignalAnimationSwitch.hpp \
     Signal/Animation/SignalAnimationGauge.hpp \
     Signal/Arithmetics/SignalAbsoluteValue.hpp \
     Signal/Arithmetics/SignalSum.hpp \

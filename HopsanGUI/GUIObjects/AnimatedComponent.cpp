@@ -395,6 +395,11 @@ void AnimatedComponent::setupAnimationMovable(int m)
 
     //Set icon to be movable by mouse if it shall be adjustable
     mpMovables.at(m)->setFlag(QGraphicsItem::ItemIsMovable, mpAnimationData->isAdjustable.at(m));
+
+    if(mpAnimationData->isSwitchable.at(m))
+    {
+        mpMovables.at(m)->hide();
+    }
 }
 
 
@@ -548,6 +553,49 @@ void AnimatedIcon::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(!mpAnimatedComponent->mpMovables.isEmpty())
+    {
+
+        qDebug() << "mousePressEvent!";
+
+        int idx = mpAnimatedComponent->indexOfMovable(this);
+
+        qDebug() << "checked index = " << idx;
+
+        if(idx < 0)
+        {
+            idx = 0;
+        }
+
+        ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
+
+        qDebug() << "Got data ptr, isSwitchable.size() = " << pData->isSwitchable.size();
+
+        bool switchable = pData->isSwitchable.at(idx);      //< Crash!
+
+        qDebug() << "checked switcablility";
+
+        if(switchable)
+        {
+            qDebug() << "Clcked on a switchable!";
+
+            if(mpAnimatedComponent->mpMovables[idx]->isVisible())
+            {
+                mpAnimatedComponent->mpMovables[idx]->setVisible(false);
+                mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpAnimatedComponent->mpModelObject->getName(), pData->switchablePort.at(idx), pData->switchableDataName.at(idx), 0);
+            }
+            else
+            {
+                mpAnimatedComponent->mpMovables[idx]->setVisible(true);
+                mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpAnimatedComponent->mpModelObject->getName(), pData->switchablePort.at(idx), pData->switchableDataName.at(idx), 1);
+            }
+        }
+        else
+        {
+            qDebug() << "Clicked on something else!";
+        }
+    }
+
     QGraphicsWidget::mousePressEvent(event);
 }
 

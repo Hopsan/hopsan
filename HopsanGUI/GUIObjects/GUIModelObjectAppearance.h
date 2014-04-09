@@ -98,6 +98,11 @@ public:
     QStringList adjustableDataName;
     QVector<double> adjustableGainX;
     QVector<double> adjustableGainY;
+    QVector<bool> isSwitchable;
+    QVector<double> switchableOffValue;
+    QVector<double> switchableOnValue;
+    QStringList switchablePort;
+    QStringList switchableDataName;
     QVector<QStringList> movablePortNames;
     QVector<QList<double> > movablePortStartX;
     QVector<QList<double> > movablePortStartY;

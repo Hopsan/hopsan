@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalAnimationSwitch.hpp" typename="SignalAnimationSwitch" displayname="Switch">
+        <icons>
+            <icon scale="1" path="SignalAnimationSwitch.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+        <animation>
+            <icon userpath="SignalAnimationSwitch.svg"/>
+            <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="SignalAnimationSwitch_active.svg"/>
+                <data port="out" dataname="Value"/>
+                <movement x="0" y="0" a="0"/>
+                <switchable offvalue="0" onvalue="1" port="out" dataname="Value"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

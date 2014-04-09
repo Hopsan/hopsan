@@ -166,7 +166,7 @@ private Q_SLOTS:
         QTest::newRow("71") << HString("ElectricInterfaceQ");
         QTest::newRow("72") << HString("SignalInputInterface");
         QTest::newRow("73") << HString("SignalOutputInterface");
-
+        QTest::newRow("74") << HString("SignalAnimationSwitch");
         //! @todo Add all non-signal and non-connectivity components here
     }
 

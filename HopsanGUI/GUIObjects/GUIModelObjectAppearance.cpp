@@ -280,6 +280,20 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                     isAdjustable.append(false);
                 }
 
+                QDomElement xmlSwitchable = xmlMovable.firstChildElement("switchable");
+                if(!xmlSwitchable.isNull())
+                {
+                    isSwitchable.append(true);
+                    switchableOffValue.append(xmlSwitchable.attribute("offvalue").toDouble());
+                    switchableOnValue.append(xmlSwitchable.attribute("onvalue").toDouble());
+                    switchablePort.append(xmlSwitchable.attribute("port"));
+                    switchableDataName.append(xmlSwitchable.attribute("dataname"));
+                }
+                else
+                {
+                    isSwitchable.append(false);
+                }
+
                 QStringList portNames;
                 QList<double> portStartX;
                 QList<double> portStartY;
