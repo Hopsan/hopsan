@@ -12,14 +12,17 @@
 \maketitle{Sensitivity Analysis}
 
 \section*{Introduction}
-Känslighetsanalys används för att studera hur en eller flera parametrar påverkar systemet
-Används ofta när en parameter inte är exakt känd, utan har en osäkerhet
-Kan användas på många olika sätt
-I Hopsan används en stor uppsättning slumpmässiga parametrar mellan givna gränser
-Tillsammans blir resultaten av simuleringarna en yta i grafen
+In most simulations, it is impossible to know the exact value of all input parameters. 
+As a consequence, there will be an uncertainty in the inputs, which will cause an uncertainty in the outputs. 
+Sensitivity analysis is used to examine how the uncertainty in the output of a model is related to the uncertainty in the inputs.
+In particular, it can be used for identifying how large impact on the result the uncertainty in each input parameter will have.
+Sesitivity analysis can be performed in several ways.
+In Hopsan it is performed by simulating the model for a large number of random input parameters, within specified limits. 
+The results are then put together, and will be displayed as an area in the graph. 
+This means that as long as the uncertainty of the inputs are within the specified limits, the output will always be somewhere within this area.
 
 \section*{Step-By-Step Guide}
-Vi vill testa hur några olika parametrar påverkar stegsvaret hos ett hydrauliskt servo med positionsåterkoppling.
+In this tutorial the sensitivity analysis tool will be demonstrated on a hydraulic linear servo with position feedback. We want to examine how the uncertainty in some different parameters will affect the step response. We will examine some parameters that are normally difficult to know, such as damping, leakage and valve overlaping.uliskt servo med positionsåterkoppling.
 
 \begin{enumerate}
 

@@ -9,7 +9,7 @@
 \maketitle{Getting Started}
 
 \section*{Introduction}
-The purpose of this tutorial is to give an introduction the simulation program Hopsan, developed at the Division of Fluid and Mechatronic Systems (Flumes) at Linköping University, Sweden.
+The purpose of this tutorial is to give an introduction the Hopsan simulation program, developed at the Division of Fluid and Mechatronic Systems (Flumes) at Linköping University, Sweden.
 
 From the Hopsan webpage\footnote{\url{http://www.iei.liu.se/flumes/system-simulation/hopsan}} you can download a free version of the program.
 Hopsan is available as an installation package or portable-zip version for Windows.
@@ -17,12 +17,10 @@ Deb-packages for the latest Ubuntu-distributions (a popular GNU/Linux based oper
 If you choose the portable zip, you can try Hopsan without needing any permissions on your computer, just unzip Hopsan in a directory of your choice and then start the HopsanGUI.exe file from the \textit{bin} directory.
 
 \subsection*{The Transmission Line Element Method (TLM)}
-One thing that makes Hopsan different from other simulation tools is that it is using distributed solvers.
-Every component model solves it's own equations at every time step.
+Unlike most other simulation tools Hopsan uses distributed solvers, which means that each component solves its own equations.
 This has several advantages. 
-First of all, it becomes easier to divide the model into smaller parts that can be simulated in parallel using multi-core processors that have become common in modern computers.
-Parallel simulation can make the simulation time much shorter.
-Other advantages are that the modell becomes mathematically robust and that the relation between simulation time and model size becomes linear.
+First of all, it makes it possible to divide a model into smaller parts that can be simulated in parallel using multi-core processors. This can greatly reduce simulation time for large models.
+Other advantages are facilitated debugging, highly robust mathematical properties and a linear relation between simulation time and model size. 
 
 A requirement for being able to use distributed solvers is that the modelled components can be mathematically separated from each other. 
 In Hopsan the Transmission Line Element Method (TLM) is used.
