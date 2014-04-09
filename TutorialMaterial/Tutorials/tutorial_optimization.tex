@@ -14,8 +14,8 @@
 \section*{Using the optimization dialog}
 Numerical optimization is an important tool for automatically finding a desired parameter set for a model. Hopsan contains an optimization dialog from where optimizations can be controlled. This guide shows how to optimize control parameters for a simple hydraulic position servo using the Complex-RF algorithm. Optimization in Hopsan can either be performed from a dialog or by loading previously saved (or manually created) script files. This tutorial demonstrates both methods.
 
-\begin{enumerate}
-\item \textbf{Open the model}\\
+\begin{tutenumerate}
+\tutitem{Open the model}
 The \textit{Welcome} tab has a box with example models. Open the \textit{Position Servo} example model.
 
 \FloatBarrier
@@ -27,21 +27,21 @@ The \textit{Welcome} tab has a box with example models. Open the \textit{Positio
 
 This model describes of a hydraulic position servo, where a PI-controller is used to control the position. This consists of a proportional gain ($K_{p}$) and an integrator gain ($K_{i}$).  The values of these gains will decide the speed and stability of the servo. It is thus desirable to find as good controller parameters as possible.
 
-\item \textbf{Simulate}\\
+\tutitem{Simulate}
 Simulate the model by clicking the simulate icon.
  
 \icon{0}{gfx/Hopsan-Simulate.png}{Simulate current project (Ctrl-Shift-S)}
 
 Now double click on the \enquote{Scope} component on top of the model. Two curves will be plotted, the reference signal and the actual position. The reference signal is a step, and the position shows the corresponding step response. As you can see, it is quite oscillative. We want to adjust the control parameters to reduce its rise time, overshoot and settling time by using the \textit{optimization} feature.
 
-\item \textbf{Open the dialog} \\
+\tutitem{Open the dialog} 
 Click the optimization icon to open the dialog.
 
 \icon{0}{gfx/Hopsan-Optimize.png}{Open optimization dialog (Ctrl-Shift-Z)}
 
 \pagebreak
 
-\item \textbf{Optimization settings} \\
+\tutitem{Optimization settings} 
 The first page should look like this:
 
 \FloatBarrier
@@ -59,7 +59,7 @@ From here you can choose the general settings for the optimization.
 \end{itemize}
 Leave all other settings unchanged for now.
 
-\item \textbf{Choose optimization parameters} \\
+\tutitem{Choose optimization parameters} 
 Next page controls the parameters in the model that shall be optimized. 
 
 \FloatBarrier
@@ -87,11 +87,11 @@ GainP, k\#Value & 0 & 0.04 \\
 \end{tabularx}
 }
 
-\item \textbf{Choose objective functions} \\
+\tutitem{Choose objective functions} 
 The optimization algorithms use objective functions to calculate how good a certain point in the parameter space is. From the third page this can be chosen. In this model we want the actual position to be as close as possible to the reference signal. To do this, check the following variables in the list:
 \begin{itemize}
-\item \textbf{Position\_Sensor} $\rightarrow$ \textbf{out} $\rightarrow$ Value
-\item \textbf{Step} $\rightarrow$ \textbf{out} $\rightarrow$ Value
+\item{Position\_Sensor} $\rightarrow$ \textbf{out} $\rightarrow$ Value
+\item{Step} $\rightarrow$ \textbf{out} $\rightarrow$ Value
 \end{itemize}
 
 Then choose \enquote{Minimize} and \enquote{Absolute Average Difference} in the boxes. Click \enquote{Add Function}.
@@ -119,7 +119,7 @@ Now we have added a second objective function. The total objective function will
 \end{figure}
 \FloatBarrier
 
-\item \textbf{Start the optimization} \\
+\tutitem{Start the optimization} 
 Next page shows the generated script code. Modifications can be made if necessary, but leave it as it is for now.
 
 \FloatBarrier
@@ -147,7 +147,7 @@ Click on \enquote{Start Optimization}. During the optimization the objective fun
 \end{figure}
 \FloatBarrier
 
-\item \textbf{Evaluate the results} \\
+\tutitem{Evaluate the results} 
 Once the optimization has finished, we can evaluate the results. Parameters from a point can be written back to the original model by using the \enquote{Apply} buttons. 
 
 \FloatBarrier
@@ -163,26 +163,26 @@ Click the \enquote{Apply} button for the point with green text (the best point).
 
 Now plot the step response by double clicking the scope component on top of the model. If a desirable result has not been found, it can be necessary to change objective functions or parameters and re-run the optimization.
 
-\end{enumerate}
+\end{tutenumerate}
 
 \section*{Optimizing from script files}
 It is often necessary to re-use the settings from the optimization more than once. This can be done by saving the optimization scripts to a file, and loading them again later.
 
-\begin{enumerate}
-\item \textbf{Follow steps 1-7 above} \\
+\begin{tutenumerate}
+\tutitem{Follow steps 1-7 above}\vspace{-\baselineskip}
 
-\item \textbf{Saving a script file} \\
+\tutitem{Saving a script file} 
 Click on Save script file in the dialog.
 
-\item \textbf{Loading a script file} \\
+\tutitem{Loading a script file} 
 To load a previously saved script file, click on Load script file in the dialog. You will be taken directly to the code tab. Go to the last tab and start the optimization as before. Note that the settings on the first three pages are not updated by the script. Going back to these might re-generate the script and overwrite the loaded code.
 
-\item \textbf{Loading a script file from command terminal} \\
+\tutitem{Loading a script file from command terminal} 
 It is also possible to load a script file from the command terminal. Just write \enquote{exec} followed by the path to the file. Hopsan will automatically understand that this is an optimization script and start the dialog. You can use \enquote{pwd} to show current directory and \enquote{cd} to change directory if necessary. Example:	
 \begin{verbatim}
 >> exec ..\folder\myscript.hcom
 \end{verbatim}
 
-\end{enumerate}
+\end{tutenumerate}
 
 \end{document}

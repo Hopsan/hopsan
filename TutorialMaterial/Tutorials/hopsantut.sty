@@ -5,6 +5,7 @@
 \usepackage{booktabs}
 \usepackage[cm]{sfmath}
 \usepackage{cprotect}
+\usepackage{enumitem}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -62,3 +63,10 @@
 \newcommand{\tutitem}[1]{%
   \item\textbf{#1}\\
 }
+
+\newenvironment{tutenumerate}
+{\begin{enumerate}[label=\textbf{\arabic*}.]
+}
+{\end{enumerate}
+}
+
