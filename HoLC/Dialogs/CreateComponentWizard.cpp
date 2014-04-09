@@ -394,7 +394,7 @@ void CreateComponentWizard::generate()
         variableCode.append("\n        double ");
         for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*mpND_"+mInputsNameLineEditPtrs[p]->text()+", ");
+            variableCode.append("*mp"+mInputsNameLineEditPtrs[p]->text()+", ");
         }
         variableCode.chop(2);
         variableCode.append(";");
@@ -416,7 +416,7 @@ void CreateComponentWizard::generate()
         variableCode.append("\n        double ");
         for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*mpND_"+mOutputsNameLineEditPtrs[p]->text()+", ");
+            variableCode.append("*mp"+mOutputsNameLineEditPtrs[p]->text()+", ");
         }
         variableCode.chop(2);
         variableCode.append(";");
@@ -459,6 +459,7 @@ void CreateComponentWizard::generate()
         variableCode.append("\n        double ");
         for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
+            QString portName = mPortNameLineEditPtrs[p]->text();
             QStringList varNames;
             QString portType = mPortTypeComboBoxPtrs[p]->currentText();
             varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
@@ -467,7 +468,7 @@ void CreateComponentWizard::generate()
             numStr = QString::number(p+1);
             for(int v=0; v<varNames.size(); ++v)
             {
-                variableCode.append("*mpND_"+varNames[v]+numStr+", ");
+                variableCode.append("*mp"+portName+"_"+varNames[v]+numStr+", ");
             }
         }
         variableCode.chop(2);
@@ -503,7 +504,7 @@ void CreateComponentWizard::generate()
         QString desc = mInputsDescriptionLineEditPtrs[p]->text();
         QString unit = mInputsUnitLineEditPtrs[p]->text();
         QString value = mInputsValueLineEditPtrs[p]->text();
-        addInputsCode.append("\n            addInputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mpND_"+name+");");
+        addInputsCode.append("\n            addInputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mp"+name+");");
     }
 
     //Add output variables
@@ -513,7 +514,7 @@ void CreateComponentWizard::generate()
         QString desc = mOutputsDescriptionLineEditPtrs[p]->text();
         QString unit = mOutputsUnitLineEditPtrs[p]->text();
         QString value = mOutputsValueLineEditPtrs[p]->text();
-        addOutputsCode.append("\n            addOutputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mpND_"+name+");");
+        addOutputsCode.append("\n            addOutputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mp"+name+");");
     }
 
     //Add power ports
@@ -549,6 +550,7 @@ void CreateComponentWizard::generate()
     //Set node data pointers
     for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
     {
+        QString portName = mPortNameLineEditPtrs[p]->text();
         QStringList varNames;
         varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
 
@@ -558,7 +560,7 @@ void CreateComponentWizard::generate()
 
         for(int v=0; v<varNames.size(); ++v)
         {
-            getDataPtrsCode.append("\n            mpND_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+");");
+            getDataPtrsCode.append("\n            mp"+portName+"_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+");");
         }
     }
 
@@ -566,6 +568,7 @@ void CreateComponentWizard::generate()
     //Read from nodes
     for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
     {
+        QString portName = mPortNameLineEditPtrs[p]->text();
         QStringList varNames;
         if(cqsType == "Q")
         {
@@ -579,19 +582,20 @@ void CreateComponentWizard::generate()
 
         for(int v=0; v<varNames.size(); ++v)
         {
-            readFromNodesCode.append("\n            "+varNames[v]+numStr+" = (*mpND_"+varNames[v]+numStr+");");
+            readFromNodesCode.append("\n            "+varNames[v]+numStr+" = (*mp"+portName+"_"+varNames[v]+numStr+");");
         }
     }
     for(int i=0; i<mInputsNameLineEditPtrs.size(); ++i)
     {
         QString varName = mInputsNameLineEditPtrs[i]->text();
-        readFromNodesCode.append("\n            "+varName+" = (*mpND_"+varName+");");
+        readFromNodesCode.append("\n            "+varName+" = (*mp"+varName+");");
     }
 
 
     //Write to nodes
     for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
     {
+        QString portName = mPortNameLineEditPtrs[p]->text();
         QStringList varNames;
         if(cqsType == "C")
         {
@@ -605,13 +609,13 @@ void CreateComponentWizard::generate()
 
         for(int v=0; v<varNames.size(); ++v)
         {
-            writeToNodesCode.append("\n            (*mpND_"+varNames[v]+numStr+") = "+varNames[v]+numStr+";");
+            writeToNodesCode.append("\n            (*mp"+portName+"_"+varNames[v]+numStr+") = "+varNames[v]+numStr+";");
         }
     }
     for(int i=0; i<mOutputsNameLineEditPtrs.size(); ++i)
     {
         QString varName = mOutputsNameLineEditPtrs[i]->text();
-        writeToNodesCode.append("\n            (*mpND_"+varName+") = "+varName+";");
+        writeToNodesCode.append("\n            (*mp"+varName+") = "+varName+";");
     }
 
     code.replace("<<<headerguard>>>", headerGuard);

@@ -1,0 +1,68 @@
+\documentclass[a4paper,pdftex]{article}
+
+\usepackage{array}
+\usepackage{placeins}
+
+\usepackage{hopsantut}
+\usepackage{csquotes}
+
+\hypersetup{pdfauthor={Robert Braun}, pdftitle={Hopsan Tutorial - Running an Optimization}, pdfsubject={Hopsan Tutorial}}
+
+\begin{document}
+\maketitle{Sensitivity Analysis}
+
+\section*{Introduction}
+Känslighetsanalys används för att studera hur en eller flera parametrar påverkar systemet
+Används ofta när en parameter inte är exakt känd, utan har en osäkerhet
+Kan användas på många olika sätt
+I Hopsan används en stor uppsättning slumpmässiga parametrar mellan givna gränser
+Tillsammans blir resultaten av simuleringarna en yta i grafen
+
+\section*{Step-By-Step Guide}
+Vi vill testa hur några olika parametrar påverkar stegsvaret hos ett hydrauliskt servo med positionsåterkoppling.
+
+\begin{enumerate}
+
+\tutitem{Open the model}
+For this guide we will use the \textit{Position Servo} example model. It can be found from the welcome screen or from the help menu.
+
+\tutitem{Open the sensitivity analysis dialog}
+The sensitivity analysis dialog is opened from the icon in the toolbar:
+
+\icon{0}{gfx/Hopsan-SensitivityAnalysis.png}{Open sensitivity analysis dialog (Ctrl-Shift-A)}
+
+\tutitem{Choose settings}
+In the bottom left of the dialog, it is possible to choose between normal and uniform distribution. It is also possible to set number of iterations. Choose uniform distribution and set number of iterations to 100.
+
+\tutitem{Choose parameters}
+Now we must choose which parameters we want to investigate. This is done in the list on the left side. We want to see how damping, leakage and valve overlaping affects the step response. Choose the following parameters:
+
+{\renewcommand{\arraystretch}{1.2} 
+\begin{tabularx}{\linewidth}{l X X}
+\textbf{Parameter} & \textbf{Min} & \textbf{Max} \\
+\specialrule{1.3pt}{0pt}{0pt}
+4\_3\_Servo\_Valve, x\_at\#Value\hspace{50pt} & -1e-5 & 1e-5\\
+4\_3\_Servo\_Valve, x\_bt\#Value & -1e-5 & 1e-5 \\
+4\_3\_Servo\_Valve, x\_pa\#Value & -1e-5 & 1e-5 \\
+4\_3\_Servo\_Valve, x\_pb\#Value & -1e-5 & 1e-5 \\
+Cylinder\_C, B\_p\#Value & 0 & 1000 \\
+Cylinder\_C, c\_leak\#Value & 0 & 1e-9 \\
+Mass, B\#Value & 0 & 1000 \\
+\end{tabularx}
+}
+
+\tutitem{Choose variables}
+The selected parameters will affect the movement of the piston. To investigate this, choose the output value of the position sensor (\textit{Position\_Sensor, Out, Value}) in the right side list. If everything is correct, the dialog should look like the figure below:
+
+\includegraphics[width=\linewidth]{gfx/sensitivityanalysis/dialog.png}
+
+\tutitem{Start the analysis}
+Click on \textit{Start Analysis} to start the analysis. If your computer has a multi-core processor and if multi-threading is enabled in options dialog, parallel execution will be used to speed up the processes.
+
+\tutitem{Examine the results}
+The results show an area in the graph. This means that as long as all investigated parameters stay within their specified limits, the movement of the piston will be inside this area. It is thus for example possible to see the worst possible overshoot, rise time and settling time of the step response.
+
+\end{enumerate}
+
+
+\end{document}
