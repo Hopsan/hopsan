@@ -4,10 +4,15 @@
 \usepackage{mathtools}
 \usepackage{hopsantut}
 \usepackage{listings}
+\usepackage{todonotes}
 
 \hypersetup{pdfauthor={Robert Braun and Peter Nordin}, pdftitle={Hopsan Tutorial - Getting Started}, pdfsubject={Hopsan Tutorial}}
 
-\lstset{backgroundcolor=\color{yellow!10}}
+\lstset{ %
+  numbers			=	left,
+  numberstyle		=	\scriptsize, % the style that is used for the line-numbers
+  backgroundcolor	=\color{yellow!10}
+}
 
 \begin{document}
 \maketitle{Writing Component Libraries}
@@ -35,8 +40,13 @@ $\mathrm{Component\ Library} \begin{cases}
 Each component in the library consist of three files. The first one has the .hpp extension, and contains the source code of the component. The second is an .xml file, which contains specifications about the component and its appearance. Finally there is a .svg file, which contains the graphical icon.
 
 \subsection*{Library Description File}
-%Beksriv lib.xml
+Each component library is described by an .xml file.
+This contains general information about the library, such as name, version and source files.
+With this file it is possible to recompile libraries from inside Hopsan.
+It also works as a project file for HoLC.
+It can for example look like this:
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=xml, basicstyle=\small\ttfamily]
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsancomponentlibrary xmlversion="0.1" libversion="1" name="LibName">
@@ -48,10 +58,31 @@ Each component in the library consist of three files. The first one has the .hpp
     <caf>MyComponent2.xml</caf>
 </hopsancomponentlibrary>
 \end{lstlisting}
+\end{minipage}
 
+\noindent The first line contains general information about the XML format. It always looks the same. The remaining tags are explained below:
+
+\begin{itemize}
+\item \textbf{hopsancomponentlibrary} - Main tag for a component library
+\subitem \textbf{xmlversion} - Should always be 0.1 with this XML layout
+\subitem \textbf{libversion} - Version of the library (decided by creator)
+\subitem \textbf{LibName} - Name of the library to be shown in Hopsan
+\item \textbf{lib} - Base file name of the library file (without prefix, suffix and extension)
+\item \textbf{source} - Source file used to compile the library
+\item \textbf{component} - Source file for a component in the library
+\item \textbf{caf} - Appearance .xml file for a component in the library
+\end{itemize}
 
 \subsection*{Library Source File}
-%Beskriv lib.cc
+The library source file can be viewed as the wrapper file, that takes the source code for each component and puts them together to a library. 
+It contains code that is used to register you library components in the HopsanCore, and provides general information about the library for Hopsan.
+First of all, all component code files must be included. This is shown in lines 3 and 4 in the example below.
+Second, each component needs to be registered in the HopsanCore by the "`pComponentFactory->registerCreatorFunction()`", as shown in lines  lines 11 and 12.
+The first argument must be a unique \textit{type name} that identifies you component. 
+The second argument is the Creator() function, which must exist in each component.
+Finally, the \texttt{get\_hopsan\_info()} function must provide a unique \textit{library name}, here called "LibName" at line 17. 
+The next two lines should be left as they are.
+
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
@@ -79,11 +110,14 @@ extern "C" DLLEXPORT void get_hopsan_info(...)
 \end{minipage}
 
 \subsection*{Component Source Files}
-Beskriv comp.hpp
-Beskriv likala variabler, typename och konstruktor
+Components are written in header-only C++ files with the .hpp file extension. 
+We will now go through the fundamental pars of a component file.\\
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+#ifndef LAMINARORIFICE_H
+#define LAMINARORIFICE_H
+
 #include "ComponentEssentials.h"
 
 namespace hopsan {
@@ -91,25 +125,46 @@ namespace hopsan {
     class LaminarOrifice : public ComponentQ
     {
     private:
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1;
-        double *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_Kc;
+        double *mpP1_p1, *mpP1_q1, *mpP1_c1, *mpP1_Zc1;
+        double *mpP2_p2, *mpP2_q2, *mpP2_c2, *mpP2_Zc2, *mpKc;
         Port *mpP1, *mpP2;
-
+       
     public:
-        static Component *Creator()
-        {
-            return new LaminarOrifice();
-        }
-        
         ...
-    }
 \end{lstlisting}
 \end{minipage}
 
-Beskriv configure()
+\noindent The first two lines sets a header guard to avoid including the same code twice. 
+Technically you do not need the header guards if you can guarantee that you do not include the same file twice. 
+Then we include the essential functions for the component from \texttt{HopsanCore.h}. 
+It may be necessary to include more files, for example \texttt{ComponentUtilities.h} for accessing built-in component utilities in Hopsan. 
+You may also include other external header files if you wish to use functions from external libraries.\\
+\newline
+On line 8 the component class is declared. 
+We inherit from the \texttt{ComponentQ} class, since this is a Q-type component. 
+Similarly we would have used \texttt{ComponentC} for C-type or \texttt{ComponentSignal} for signal type.\\ 
+\newline
+The first contents in the class is the private variables (variables that should be persistent in the component). 
+In this case we have nine node data pointers and two ports.
+A pointer is a variable that points to another variable located somewhere else.
+It is used in components to improve performance.
+After the private section, the public section begins. 
+Public variables and functions can be accessed by the outside world, while private are only allowed to be accessed from functions belonging to the class.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=17, basicstyle=\footnotesize\ttfamily]
+static Component *Creator()
+{
+    return new LaminarOrifice();
+}
+\end{lstlisting}
+\end{minipage}
+
+\noindent In the public part we first define a static creator function, which is used to create instances of the component in the simulation core. 
+Nothing needs to be changed except the name of the class.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[firstnumber=21, basicstyle=\footnotesize\ttfamily]
 void configure()
 {
     mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -118,11 +173,16 @@ void configure()
 }
 \end{lstlisting}
 \end{minipage}
-
-Beskriv initialize()
+\noindent The second member function you need to define is the \texttt{configure()} function for the component. 
+This function is run every time a new instance of the component is added to the model. 
+The function is used to to register ports, input variables, output variables and constants, and to configure default values for member variables. 
+First we create the ports used for communication with the surrounding components, in this case two hydraulic power ports, see line 23 and 24. 
+Then on line 25 we register the restrictor coefficient as an input variable with name, description, unit and default value. 
+Input variables can be used either as signal inputs or as parameters.
+It is also possible to add constant parameters and output variables using the \texttt{addConstant()} and \texttt{addOutputVariable()} functions.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=27, basicstyle=\footnotesize\ttfamily]
 void initialize()
 {
     mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
@@ -138,10 +198,16 @@ void initialize()
 \end{lstlisting}
 \end{minipage}
 
-Beskriv simulateOneTimestep()
+\noindent The next member function that must be defined is the initialize function. 
+This function is run once before each simulation starts. 
+As this function is run after connections have been establish you can read or write to/from connected components. 
+If needed you can use this information to initialize your component properly. 
+This is also the place to allocate additional memory if needed. 
+In this case we initialize the component by using the \texttt{getSafeNodeDataPtr()} function to set the node data pointers to point to the variables in the node. 
+These lines are always the same for hydraulic nodes, and similar for other node types such as mechanical, pneumatic and electric.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=39, basicstyle=\footnotesize\ttfamily]
 void simulateOneTimestep()
 {
     double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
@@ -168,10 +234,18 @@ void simulateOneTimestep()
 \end{lstlisting}
 \end{minipage}
 
-Beskriv finalize() och deconfigure()
+\noindent The next function, \texttt{simulateOneTimestep()}, is the most important member function. 
+It contains the model equations that are executed each time step. 
+We begin on line 41 by creating a local variable for each node data pointer.
+The purpose of this is to make the code more readable.
+The node data pointers could have been used directly, but this would have been difficult to understand.
+Then on line 44-48 we assign all input variables with the values from their respective node data pointer.
+Line 51-54 consists of the actual equations. 
+In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighboring C-type components. 
+We then end by assigning the output node data pointers with the value of their respective local variable.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=62, basicstyle=\footnotesize\ttfamily]
 void finalize()
 {
       	//Finalize code
@@ -184,8 +258,16 @@ void deconfigure()
 \end{lstlisting}
 \end{minipage}
 
+\noindent The next member function, \texttt{finalize()}, is optional. 
+It is only useful if you want some code to be run after each simulation has finished. 
+This is usually only needed if you want to free memory that was additionally allocated in the initialize function.\\
+\newline
+The last member function, \texttt{deconfigure()}, is also optional. 
+This code is run once the component is deleted. 
+Here you can cleanup any memory allocation or similar that you have done in the configure function. 
+
 \subsection*{Component Appearance Files}
-Beskriv comp.xml
+Information about the component for the graphical interface, such as icon, port positions and component name, is stored in a .xml file. This file contains information about the component that is not part of the actual simulation code. This information can be changed without the need to recompile the actual component code. A typical appearance file looks like this:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\small\ttfamily]
@@ -194,25 +276,56 @@ Beskriv comp.xml
     <modelobject typename="LaminarOrifice" displayname="Orifice" 
                  sourcecode="LaminarOrifice.hpp">
         <icons>
-            <icon scale="1" path="orifice.svg" 
-                  iconrotation="ON" type="user"/>
+            <icon type="user" path="orifice.svg" 
+                  scale="1.0" iconrotation="ON" />
         </icons>
+        <help>
+            <text>Help Text</text>
+            <picture>helpPicture.svg</picture>
+            <link>externalHelpDocumentation.pdf</link>
+        </help>
         <ports>
-            <port x="1,0" y="0.5" a="0" name="P1"/>
-            <port x="0,0" y="0.5" a="180" name="P2"/>
-            <port x="0.5" y="0,0" a="270" name="Kc"/>
+            <port x="1,0" y="0.5" a="0" name="P1" visible="true"//>
+            <port x="0,0" y="0.5" a="180" name="P2" visible="true"//>
+            <port x="0.5" y="0,0" a="270" name="Kc" visible="false"//>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
 \end{lstlisting}
 \end{minipage}
 
+The first line contains basic information about the XML code, and should always look the same. 
+A description of the remaining tags follows:
+
+\begin{itemize}
+\item \textbf{hopsanobjectappearance} - Main tag for appearance file
+\subitem \textbf{version} - Should always be 0.3 with this XML layout
+\item \textbf{modelobject} - Main tag for the component
+\subitem \textbf{typename} - Unique type name of the component
+\subitem \textbf{subtypename} - Specific version of a type name component (optional)
+\subitem \textbf{displayname} - Name for the component shown in the graphical interface
+\item \textbf{icons} - Contains information about icons. At least one type, user or iso is required
+\subitem \textbf{type} - The icon type, user or iso (for ISO 1219 graphics)
+\subitem \textbf{path} - Relative path from the .xml file to the .svg icon
+\subitem \textbf{scale} - Lets you adjust the scale of the .svg icon (default = 1.0)
+\subitem \textbf{iconrotation} - Tells whether or not the icon rotates when the component is rotated
+\item \textbf{help} - Allows you to specify help information about the component (optional)
+\subitem \textbf{text} - The help text (optional)
+\subitem \textbf{picture} - The path to the .svg help picture (optional)
+\subitem \textbf{link} - Link to external document relative this .xml file (optional) 
+\item \textbf{ports} - Defines the positions and orientations for each port
+\subitem \textbf{name} - Name of the port as defined in the code
+\subitem \textbf{x} - X-position as fraction of component icon width (0.0 = left, 1.0 = right)
+\subitem \textbf{y} - Y-position as fraction of component icon height (0.0 = top, 1.0 = bottom)
+\subitem \textbf{a} - Angle of port, 0 = right, 90 = down, 180 = left, 270 = up
+\subitem \textbf{visible} - Default visibility state
+\end{itemize}
 
 \subsection*{Component Icon Files}
-%Beskriv att man kan göra ikoner med Inkscape
+Icons for the graphical interface are stored in the .svg (Scalable Vector Graphics) format. A good and free tool for creating and editing such files is \textit{Inkscape}. If you want to use bitmaps graphics, .jpg, .png or similar formats, such graphics can be embedded in a .svg file.
 
 \section{Example}
-%Beskriv hur man bygger ett bibliotek med en enkel aritmetisk komponent i HoLC
+\todo[inline]{Beskriv att vi ska bygga ett bibliotek med en enkel aritmetisk komponent i HoLC}
 
 \begin{tutenumerate}
 \tutitem{Open HoLC}
