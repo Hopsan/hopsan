@@ -292,6 +292,24 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                 else
                 {
                     isSwitchable.append(false);
+                    switchableOffValue.append(0);
+                    switchableOnValue.append(0);
+                    switchablePort.append(QString());
+                    switchableDataName.append(QString());
+                }
+
+                QDomElement xmlIndicaor = xmlMovable.firstChildElement("indicator");
+                if(!xmlIndicaor.isNull())
+                {
+                    isIndicator.append(true);
+                    indicatorPort.append(xmlIndicaor.attribute("port"));
+                    indicatorDataName.append(xmlIndicaor.attribute("dataname"));
+                }
+                else
+                {
+                    isIndicator.append(false);
+                    indicatorPort.append(QString());
+                    indicatorDataName.append(QString());
                 }
 
                 QStringList portNames;

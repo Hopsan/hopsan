@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalAnimationLamp.hpp" typename="SignalAnimationLamp" displayname="Lamp">
+        <icons>
+            <icon scale="1" path="SignalAnimationLamp.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.5" a="0" name="in"/>
+        </ports>
+        <animation>
+            <icon userpath="SignalAnimationLamp.svg"/>
+            <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="SignalAnimationLamp_active.svg"/>
+                <data port="out" dataname="Value"/>
+                <movement x="0" y="0" a="0"/>
+                <indicator port="in" dataname="Value"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

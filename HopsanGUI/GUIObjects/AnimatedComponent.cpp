@@ -30,6 +30,7 @@
 #include "common.h"
 #include "global.h"
 #include "AnimatedComponent.h"
+#include "CoreAccess.h"
 #include "GraphicsView.h"
 #include "GUIModelObject.h"
 #include "GUIPort.h"
@@ -279,6 +280,13 @@ void AnimatedComponent::updateAnimation()
                 pEffect->setColor(color);
                 mpMovables[m]->setGraphicsEffect(pEffect);
                 mpMovables[m]->setOpacity(double(a)/255.0);
+            }
+
+            //Indicators
+            if(mpAnimationData->isIndicator[m])
+            {
+                double data = (*mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpModelObject->getName(), mpAnimationData->indicatorPort[m], mpAnimationData->indicatorDataName[m]));
+                mpMovables[m]->setVisible(data > 0.5);
             }
 
 
@@ -555,30 +563,16 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!mpAnimatedComponent->mpMovables.isEmpty())
     {
-
-        qDebug() << "mousePressEvent!";
-
         int idx = mpAnimatedComponent->indexOfMovable(this);
-
-        qDebug() << "checked index = " << idx;
-
         if(idx < 0)
         {
             idx = 0;
         }
 
         ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
-
-        qDebug() << "Got data ptr, isSwitchable.size() = " << pData->isSwitchable.size();
-
         bool switchable = pData->isSwitchable.at(idx);      //< Crash!
-
-        qDebug() << "checked switcablility";
-
         if(switchable)
         {
-            qDebug() << "Clcked on a switchable!";
-
             if(mpAnimatedComponent->mpMovables[idx]->isVisible())
             {
                 mpAnimatedComponent->mpMovables[idx]->setVisible(false);
@@ -589,10 +583,6 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 mpAnimatedComponent->mpMovables[idx]->setVisible(true);
                 mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpAnimatedComponent->mpModelObject->getName(), pData->switchablePort.at(idx), pData->switchableDataName.at(idx), 1);
             }
-        }
-        else
-        {
-            qDebug() << "Clicked on something else!";
         }
     }
 

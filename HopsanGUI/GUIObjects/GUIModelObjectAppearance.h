@@ -103,6 +103,9 @@ public:
     QVector<double> switchableOnValue;
     QStringList switchablePort;
     QStringList switchableDataName;
+    QVector<bool> isIndicator;
+    QStringList indicatorPort;
+    QStringList indicatorDataName;
     QVector<QStringList> movablePortNames;
     QVector<QList<double> > movablePortStartX;
     QVector<QList<double> > movablePortStartY;
