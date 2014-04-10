@@ -105,8 +105,6 @@ SOURCES += \
     src/CoreUtilities/HopsanCoreMessageHandler.cc \
     src/CoreUtilities/HmfLoader.cc \
     src/ComponentUtilities/WhiteGaussianNoise.cc \
-    src/ComponentUtilities/ValveHysteresis.cc \
-    src/ComponentUtilities/TurbulentFlowFunction.cc \
     src/ComponentUtilities/SecondOrderTransferFunction.cc \
     src/ComponentUtilities/matrix.cc \
     src/ComponentUtilities/ludcmp.cc \
