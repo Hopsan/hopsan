@@ -13,7 +13,7 @@
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <icon userpath="SignalAnimationLamp_active.svg"/>
-                <data port="out" dataname="Value"/>
+                <data port="in" dataname="Value"/>
                 <movement x="0" y="0" a="0"/>
                 <indicator port="in" dataname="Value"/>
             </movable>
