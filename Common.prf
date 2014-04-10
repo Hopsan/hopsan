@@ -2,9 +2,11 @@
 CONFIG(debug, debug|release) {
     !macx:DEBUG_EXT = _d
     macx:DEBUG_EXT =
+    DEFINES *= DEBUGCOMPILING
 } else {
     DEBUG_EXT =
     DEFINES *= QT_NO_DEBUG_OUTPUT
+    DEFINES *= RELEASECOMPILING
 }
 
 #Determine the dynamic link library file extension, typically .dll for Windows, .so for UNIX and .dylib for OSX

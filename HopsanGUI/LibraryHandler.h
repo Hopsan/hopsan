@@ -64,6 +64,7 @@ class ComponentLibrary
 public:
     QString name;
     QString xmlFilePath;
+    QString debugExtension;
     QString libFilePath;
     QStringList cafFiles;
     QStringList sourceFiles;

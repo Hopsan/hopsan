@@ -26,6 +26,7 @@
 #define XML_LIBRARY "hopsancomponentlibrary"
 #define XML_LIBRARY_NAME "name"
 #define XML_LIBRARY_LIB "lib"
+#define XML_LIBRARY_LIB_DBGEXT "debug_ext"
 #define XML_LIBRARY_CAF "caf"
 #define XML_LIBRARY_SOURCE "source"
 
@@ -205,9 +206,15 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                     }
 
                     //Store library file
-                    if(!xmlRoot.firstChildElement(QString(XML_LIBRARY_LIB)).isNull())
+                    QDomElement libElement = xmlRoot.firstChildElement(XML_LIBRARY_LIB);
+                    if(!libElement.isNull())
                     {
-                        tempLib.libFilePath = QFileInfo(file).absolutePath()+"/"+QString(LIBPREFIX)+xmlRoot.firstChildElement(QString(XML_LIBRARY_LIB)).text()+QString(LIBEXT);
+                        tempLib.debugExtension = libElement.attribute(XML_LIBRARY_LIB_DBGEXT,"");
+                        tempLib.libFilePath = QFileInfo(file).absolutePath()+"/"+QString(LIBPREFIX)+libElement.text();
+#ifdef DEBUGCOMPILING
+                        tempLib.libFilePath += tempLib.debugExtension;
+#endif
+                        tempLib.libFilePath += QString(LIBEXT);
                     }
 
                     //Store source files
@@ -262,44 +269,47 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     // Determine where to store any backups of updated appearance xml files
     mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
-    //Recurse sub directories, find all dll files and load them
-    //! @todo Fallback, remove this before 0.7
-    dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-    dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
-    QDirIterator itd(dir, QDirIterator::Subdirectories);
-    while(itd.hasNext())
+    //Recurse sub directories, find all dll files and load them (FALLBACK)
+    if (!loadedSomething)
     {
-        itd.next();
-        if(loadedLibs.contains(itd.filePath()))      //Ignore libraries already loaded above
+        //! @todo Fallback, remove this before 0.7
+        dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+        dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
+        QDirIterator itd(dir, QDirIterator::Subdirectories);
+        while(itd.hasNext())
         {
-            continue;
-        }
-        if(!coreAccess.loadComponentLib(itd.filePath()))
-        {
-
-            gpMessageHandler->collectHopsanCoreMessages();
-            gpMessageHandler->addErrorMessage("Failed to load library: "+it.filePath());
-            gpMessageHandler->collectHopsanCoreMessages();
-        }
-        else
-        {
-            loadedSomething = true;
-            ComponentLibrary tempLib;
-            tempLib.name = itd.filePath().section("/",-1,-1);
-            tempLib.libFilePath = itd.filePath();
-            tempLib.type = type;
-            tempLib.xmlFilePath.append(info.filePath());
-            bool exists=false;
-            for(int l=0; l<mLoadedLibraries.size(); ++l)
+            itd.next();
+            if(loadedLibs.contains(itd.filePath()))      //Ignore libraries already loaded above
             {
-                if(mLoadedLibraries[l].libFilePath == tempLib.libFilePath)
-                {
-                    exists=true;
-                }
+                continue;
             }
-            if(!exists)
+            if(!coreAccess.loadComponentLib(itd.filePath()))
             {
-                mLoadedLibraries.append(tempLib);
+
+                gpMessageHandler->collectHopsanCoreMessages();
+                gpMessageHandler->addErrorMessage("Failed to load library: "+it.filePath());
+                gpMessageHandler->collectHopsanCoreMessages();
+            }
+            else
+            {
+                loadedSomething = true;
+                ComponentLibrary tempLib;
+                tempLib.name = itd.filePath().section("/",-1,-1);
+                tempLib.libFilePath = itd.filePath();
+                tempLib.type = type;
+                tempLib.xmlFilePath.append(info.filePath());
+                bool exists=false;
+                for(int l=0; l<mLoadedLibraries.size(); ++l)
+                {
+                    if(mLoadedLibraries[l].libFilePath == tempLib.libFilePath)
+                    {
+                        exists=true;
+                    }
+                }
+                if(!exists)
+                {
+                    mLoadedLibraries.append(tempLib);
+                }
             }
         }
     }

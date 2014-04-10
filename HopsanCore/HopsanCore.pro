@@ -35,11 +35,10 @@ INCLUDEPATH *= $${PWD}/Dependencies/boost
 # Non platform specific HopsanCore options
 # -------------------------------------------------
 CONFIG(debug, debug|release) {
-  DEFINES *= DEBUGCOMPILING
   QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 }
 CONFIG(release, debug|release) {
-  DEFINES *= RELEASECOMPILING
+
 }
 DEFINES *= MAINCORE
 

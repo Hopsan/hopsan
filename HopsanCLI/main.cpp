@@ -48,11 +48,19 @@
 #define HOPSANCLIVERSION "0.6.x_r" TO_STR(HOPSANCLISVNREVISION)
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-#ifdef WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary.dll"
-#else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary.so"
-#endif
+  #ifdef WIN32
+    #ifdef DEBUGCOMPILING
+      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary_d.dll"
+    #else
+      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary.dll"
+    #endif
+  #else
+    #ifdef DEBUGCOMPILING
+      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary_d.so"
+    #else
+      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary.so"
+    #endif
+  #endif
 #endif
 
 using namespace std;
