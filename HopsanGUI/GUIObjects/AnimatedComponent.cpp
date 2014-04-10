@@ -87,7 +87,14 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
 
                     if(!mpAnimationWidget->getPlotDataPtr()->isEmpty())
                     {
-                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyVariableDataVector(makeConcatName(componentName, portName, dataName),generation));
+                        QString tempComponentName = componentName;
+                        QString tempPortName = portName;
+                        if(mpModelObject->getPort(portName)->getPortType().contains("Multiport"))
+                        {
+                            tempComponentName = mpModelObject->getPort(portName)->getConnectedPorts().first()->getParentModelObjectName();
+                            tempPortName = mpModelObject->getPort(portName)->getConnectedPorts().first()->getName();
+                        }
+                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyVariableDataVector(makeConcatName(tempComponentName, tempPortName, dataName),generation));
                     }
                     mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
                     //qDebug() << "mpData = " << *mpData;
@@ -400,6 +407,16 @@ void AnimatedComponent::setupAnimationMovable(int m)
 
     mpMovables.at(m)->setRotation(mpAnimationData->startTheta.at(m));
     mpMovables.at(m)->setPos(mpAnimationData->startX.at(m), mpAnimationData->startY.at(m));
+
+    //Set adjustables to non-adjustable if the port is connected
+    if(mpAnimationData->isAdjustable.at(m))
+    {
+        QString port = mpAnimationData->adjustablePort.at(m);
+        if(mpModelObject->getPort(port)->isConnected())
+        {
+            mpAnimationData->isAdjustable[m] = false;
+        }
+    }
 
     //Set icon to be movable by mouse if it shall be adjustable
     mpMovables.at(m)->setFlag(QGraphicsItem::ItemIsMovable, mpAnimationData->isAdjustable.at(m));
