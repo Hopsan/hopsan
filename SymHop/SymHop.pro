@@ -23,11 +23,10 @@ INCLUDEPATH *= $${PWD}/include/
 # Non platform specific HopsanCompGen options
 # -------------------------------------------------
 CONFIG(debug, debug|release) {
-  DEFINES *= DEBUGCOMPILING
   QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 }
 CONFIG(release, debug|release) {
-  DEFINES *= RELEASECOMPILING
+
 }
 
 # -------------------------------------------------
