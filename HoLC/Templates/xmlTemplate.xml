@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsancomponentlibrary xmlversion="0.1" libversion="1" name="<<<libname>>>">
     <lib debug_ext="_d"><<<libname>>></lib>
-    <source><<<sourcefile>>></source><<<components>>><<<auxiliary>>><<<caf>>>
+    <source><<<sourcefile>>></source>
+    <<<components>>>
+    <<<auxiliary>>>
+    <<<caf>>>
 </hopsancomponentlibrary>

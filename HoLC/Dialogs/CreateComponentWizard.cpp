@@ -3,7 +3,7 @@
 #include "CreateComponentWizard.h"
 #include "Handlers/FileHandler.h"
 #include "Handlers/MessageHandler.h"
-
+#include "Utilities/StringUtilities.h"
 
 NodeInfo::NodeInfo(QString nodeType)
 {
@@ -366,7 +366,8 @@ void CreateComponentWizard::generate()
 
 
     QString headerGuard = typeName.toUpper()+"_HPP_INCLUDED";
-    QString variableCode;
+    QString memberVariableCode;
+    QString localVariableCode;
     QString addConstantsCode;
     QString addInputsCode;
     QString addOutputsCode;
@@ -379,113 +380,84 @@ void CreateComponentWizard::generate()
     //Parameter variables
     if(!mConstantsNameLineEditPtrs.isEmpty())
     {
-        variableCode.append("\n        double ");
+        memberVariableCode.append(spaces(8)+"//Constants\n");
+        memberVariableCode.append(spaces(8)+"double ");
         for(int p=0; p<mConstantsNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append(mConstantsNameLineEditPtrs[p]->text()+", ");
+            //memberVariableCode.append(mConstantsNameLineEditPtrs[p]->text()+", ");
+            memberVariableCode.append(QString("m%1, ").arg(firstCapital(mConstantsNameLineEditPtrs[p]->text())));
         }
-        variableCode.chop(2);
-        variableCode.append(";");
+        memberVariableCode.chop(2);
+        memberVariableCode.append(";\n");
     }
 
     //Input variables
     if(!mInputsNameLineEditPtrs.isEmpty())
     {
-        variableCode.append("\n        double ");
+        memberVariableCode.append(spaces(8)+"//Input variable node data pointers\n");
+        memberVariableCode.append(spaces(8)+"double ");
         for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*mp"+mInputsNameLineEditPtrs[p]->text()+", ");
+            //memberVariableCode.append("*mp"+firstCapital(mInputsNameLineEditPtrs[p]->text())+", ");
+            memberVariableCode.append(QString("*mp%1, ").arg(firstCapital(mInputsNameLineEditPtrs[p]->text())));
         }
-        variableCode.chop(2);
-        variableCode.append(";");
-    }
-    if(!mInputsNameLineEditPtrs.isEmpty())
-    {
-        variableCode.append("\n        double ");
-        for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
-        {
-            variableCode.append(mInputsNameLineEditPtrs[p]->text()+", ");
-        }
-        variableCode.chop(2);
-        variableCode.append(";");
+        memberVariableCode.chop(2);
+        memberVariableCode.append(";\n");
     }
 
     //Output variables
     if(!mOutputsNameLineEditPtrs.isEmpty())
     {
-        variableCode.append("\n        double ");
+        memberVariableCode.append(spaces(8)+"//Output variable node data pointers\n");
+        memberVariableCode.append(spaces(8)+"double ");
         for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*mp"+mOutputsNameLineEditPtrs[p]->text()+", ");
+            //memberVariableCode.append("*mp"+firstCapital(mOutputsNameLineEditPtrs[p]->text())+", ");
+            memberVariableCode.append(QString("*mp%1, ").arg(firstCapital(mOutputsNameLineEditPtrs[p]->text())));
         }
-        variableCode.chop(2);
-        variableCode.append(";");
-    }
-    if(!mOutputsNameLineEditPtrs.isEmpty())
-    {
-        variableCode.append("\n        double ");
-        for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
-        {
-            variableCode.append(mOutputsNameLineEditPtrs[p]->text()+", ");
-        }
-        variableCode.chop(2);
-        variableCode.append(";");
-    }
-
-    //Port local variables
-    if(!mPortNameLineEditPtrs.isEmpty())
-    {
-        variableCode.append("\n        double ");
-        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
-        {
-            QStringList varNames;
-            QString numStr;
-            QString portName = mPortNameLineEditPtrs[p]->text();
-            QString portType = mPortTypeComboBoxPtrs[p]->currentText();
-            varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
-            numStr = QString::number(p+1);
-            for(int v=0; v<varNames.size(); ++v)
-            {
-                variableCode.append(varNames[v]+numStr+", ");
-            }
-        }
-        variableCode.chop(2);
-        variableCode.append(";");
-    }
-
-    //Node data pointers
-    if(!mPortNameLineEditPtrs.isEmpty())
-    {
-        variableCode.append("\n        double ");
-        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
-        {
-            QString portName = mPortNameLineEditPtrs[p]->text();
-            QStringList varNames;
-            QString portType = mPortTypeComboBoxPtrs[p]->currentText();
-            varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
-            QString numStr;
-
-            numStr = QString::number(p+1);
-            for(int v=0; v<varNames.size(); ++v)
-            {
-                variableCode.append("*mp"+portName+"_"+varNames[v]+numStr+", ");
-            }
-        }
-        variableCode.chop(2);
-        variableCode.append(";");
+        memberVariableCode.chop(2);
+        memberVariableCode.append(";\n");
     }
 
     //Port pointers
     if(!mPortNameLineEditPtrs.isEmpty())
     {
-        variableCode.append("\n        Port ");
+        memberVariableCode.append(spaces(8)+"//Power port pointers\n");
+        memberVariableCode.append(spaces(8)+"Port ");
         for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
-            variableCode.append("*mp"+mPortNameLineEditPtrs[p]->text()+", ");
+            //memberVariableCode.append("*mp"+firstCapital(mPortNameLineEditPtrs[p]->text())+", ");
+            memberVariableCode.append(QString("*mp%1, ").arg(firstCapital(mPortNameLineEditPtrs[p]->text())));
         }
-        variableCode.chop(2);
-        variableCode.append(";");
+        memberVariableCode.chop(2);
+        memberVariableCode.append(";\n");
     }
+
+    //Node data pointers
+    if(!mPortNameLineEditPtrs.isEmpty())
+    {
+        memberVariableCode.append(spaces(8)+"//Power port node data pointers\n");
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            QString portName = mPortNameLineEditPtrs[p]->text();
+            QStringList varNames;
+            QString portType = mPortTypeComboBoxPtrs[p]->currentText();
+            varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
+//            QString numStr;
+//            numStr = QString::number(p+1);
+
+            memberVariableCode.append(spaces(8)+"double ");
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                //memberVariableCode.append("*mp"+portName+"_"+varNames[v]+numStr+", ");
+                memberVariableCode.append(QString("*mp%1_%2, ").arg(firstCapital(portName),varNames[v]));
+            }
+            memberVariableCode.chop(2);
+            memberVariableCode.append(";\n");
+        }
+    }
+
+
 
     //Add constants
     for(int p=0; p<mConstantsNameLineEditPtrs.size(); ++p)
@@ -494,8 +466,13 @@ void CreateComponentWizard::generate()
         QString desc = mConstantsDescriptionLineEditPtrs[p]->text();
         QString unit = mConstantsUnitLineEditPtrs[p]->text();
         QString value = mConstantsValueLineEditPtrs[p]->text();
-        addConstantsCode.append("\n            addConstant(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", "+name+");");
+        //addConstantsCode.append(QString("\n            addConstant(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", "+name+");");
+        addConstantsCode.append(spaces(12)+QString("addConstant(\"%1\", \"%2\", \"%3\", %4, m%5);\n").arg(name, desc, unit, value, firstCapital((name))));
     }
+//    if(!addConstantsCode.isEmpty())
+//    {
+//        addConstantsCode.prepend("//Register constant parameters\n");
+//    }
 
     //Add input variables
     for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
@@ -504,8 +481,13 @@ void CreateComponentWizard::generate()
         QString desc = mInputsDescriptionLineEditPtrs[p]->text();
         QString unit = mInputsUnitLineEditPtrs[p]->text();
         QString value = mInputsValueLineEditPtrs[p]->text();
-        addInputsCode.append("\n            addInputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mp"+name+");");
+        //addInputsCode.append("\n            addInputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mp"+name+");");
+        addInputsCode.append(spaces(12)+QString("addInputVariable(\"%1\", \"%2\", \"%3\", %4, &mp%5);\n").arg(name, desc, unit, value, firstCapital(name)));
     }
+//    if(!addInputsCode.isEmpty())
+//    {
+//        addInputsCode.prepend("//Register input variables\n");
+//    }
 
     //Add output variables
     for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
@@ -514,8 +496,13 @@ void CreateComponentWizard::generate()
         QString desc = mOutputsDescriptionLineEditPtrs[p]->text();
         QString unit = mOutputsUnitLineEditPtrs[p]->text();
         QString value = mOutputsValueLineEditPtrs[p]->text();
-        addOutputsCode.append("\n            addOutputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mp"+name+");");
+        //addOutputsCode.append("\n            addOutputVariable(\""+name+"\", \""+desc+"\", \""+unit+"\", "+value+", &mp"+name+");");
+        addOutputsCode.append(spaces(12)+QString("addOutputVariable(\"%1\", \"%2\", \"%3\", %4, &mp%5);\n").arg(name, desc, unit, value, firstCapital(name)));
     }
+//    if(!addOutputsCode.isEmpty())
+//    {
+//        addOutputsCode.prepend("//Register output variables\n");
+//    }
 
     //Add power ports
     QStringList portNames, nodeTypes;
@@ -530,21 +517,32 @@ void CreateComponentWizard::generate()
         if(actualNodeType.startsWith("NodeSignal"))
             actualNodeType = "NodeSignal";
 
-        addPortsCode.append("\n            mp"+portNames[p]+" = addPowerPort(\""+portNames[p]+"\", \""+actualNodeType+"\");");
+        //addPortsCode.append("\n            mp"+portNames[p]+" = addPowerPort(\""+portNames[p]+"\", \""+actualNodeType+"\");");
+        addPortsCode.append(spaces(12)+QString("mp%1 = addPowerPort(\"%2\", \"%3\");\n").arg(firstCapital(portNames[p]), portNames[p], actualNodeType));
 
         QStringList varNames;
         varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
 
         QStringList varLabels = NodeInfo(nodeTypes[p]).variableLabels;
-        QString numStr, defaultValue;
-        numStr = QString::number(p+1);
+        QString defaultValue;
+//        QString numStr;
+//        numStr = QString::number(p+1);
 
         for(int v=0; v<varNames.size(); ++v)
         {
             if(!defaultValue.isEmpty())
-                setDefaultStartValuesCode.append("\n            setDefaultStartValue(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+defaultValue+");");
+                //setDefaultStartValuesCode.append("\n            setDefaultStartValue(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+defaultValue+");");
+                setDefaultStartValuesCode.append(spaces(12)+QString("setDefaultStartValue(mp%1, %2::%3, %4);\n").arg(firstCapital(portNames[p]), nodeTypes[p], varLabels[v], defaultValue));
         }
     }
+//    if(!addPortsCode.isEmpty())
+//    {
+//        addPortsCode.prepend("//Add power ports\n");
+//    }
+//    if(!setDefaultStartValuesCode.isEmpty())
+//    {
+//        setDefaultStartValuesCode.prepend("//Set default start values\n");
+//    }
 
 
     //Set node data pointers
@@ -555,13 +553,65 @@ void CreateComponentWizard::generate()
         varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
 
         QStringList varLabels = NodeInfo(nodeTypes[p]).variableLabels;
-        QString numStr, defaultValue;
-        numStr = QString::number(p+1);
+//        QString numStr, defaultValue;
+//        numStr = QString::number(p+1);
 
         for(int v=0; v<varNames.size(); ++v)
         {
-            getDataPtrsCode.append("\n            mp"+portName+"_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+");");
+            //getDataPtrsCode.append("\n            mp"+portName+"_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+");");
+            getDataPtrsCode.append(spaces(12)+QString("mp%1_%2 = getSafeNodeDataPtr(mp%1, %3::%4);\n").arg(firstCapital(portName), varNames[v], nodeTypes[p], varLabels[v]));
         }
+    }
+    if (!getDataPtrsCode.isEmpty())
+    {
+        getDataPtrsCode.prepend(spaces(12)+"//Get node data pointers from ports\n");
+    }
+
+    // Generate local variable declaration
+    // Inputs
+    if(!mInputsNameLineEditPtrs.isEmpty())
+    {
+        localVariableCode.append(spaces(12)+"double ");
+        for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
+        {
+            localVariableCode.append(mInputsNameLineEditPtrs[p]->text()+", ");
+        }
+        localVariableCode.chop(2);
+        localVariableCode.append(";\n");
+    }
+    // Outputs
+    if(!mOutputsNameLineEditPtrs.isEmpty())
+    {
+        localVariableCode.append(spaces(12)+"double ");
+        for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
+        {
+            localVariableCode.append(mOutputsNameLineEditPtrs[p]->text()+", ");
+        }
+        localVariableCode.chop(2);
+        localVariableCode.append(";\n");
+    }
+    // PowerPort local variables
+    if(!mPortNameLineEditPtrs.isEmpty())
+    {
+        localVariableCode.append(spaces(12)+"double ");
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            QStringList varNames;
+            QString portName = mPortNameLineEditPtrs[p]->text();
+            QString portType = mPortTypeComboBoxPtrs[p]->currentText();
+            varNames << NodeInfo(portType).qVariables << NodeInfo(portType).cVariables;
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                //localVariableCode.append(varNames[v]+QString::number(p+1)+", ");
+                localVariableCode.append(QString("%1_%2, ").arg(portName,varNames[v]));
+            }
+        }
+        localVariableCode.chop(2);
+        localVariableCode.append(";\n");
+    }
+    if (!localVariableCode.isEmpty())
+    {
+        localVariableCode.prepend(spaces(12)+"//Declare local variables\n");
     }
 
 
@@ -578,19 +628,20 @@ void CreateComponentWizard::generate()
         {
             varNames << NodeInfo(nodeTypes[p]).qVariables;
         }
-        QString numStr = QString::number(p+1);
+//        QString numStr = QString::number(p+1);
 
         for(int v=0; v<varNames.size(); ++v)
         {
-            readFromNodesCode.append("\n            "+varNames[v]+numStr+" = (*mp"+portName+"_"+varNames[v]+numStr+");");
+            //readFromNodesCode.append("\n            "+varNames[v]+numStr+" = (*mp"+portName+"_"+varNames[v]+numStr+");");
+            readFromNodesCode.append(spaces(12)+QString("%1_%2 = (*mp%3_%2);\n").arg(portName, varNames[v], firstCapital(portName)));
         }
     }
     for(int i=0; i<mInputsNameLineEditPtrs.size(); ++i)
     {
         QString varName = mInputsNameLineEditPtrs[i]->text();
-        readFromNodesCode.append("\n            "+varName+" = (*mp"+varName+");");
+        //readFromNodesCode.append("\n            "+varName+" = (*mp"+varName+");");
+        readFromNodesCode.append(spaces(12)+QString("%1 = (*mp%2);\n").arg(varName, firstCapital(varName)));
     }
-
 
     //Write to nodes
     for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
@@ -605,31 +656,34 @@ void CreateComponentWizard::generate()
         {
             varNames << NodeInfo(nodeTypes[p]).qVariables;
         }
-        QString numStr = QString::number(p+1);
+//        QString numStr = QString::number(p+1);
 
         for(int v=0; v<varNames.size(); ++v)
         {
-            writeToNodesCode.append("\n            (*mp"+portName+"_"+varNames[v]+numStr+") = "+varNames[v]+numStr+";");
+            //writeToNodesCode.append("\n            (*mp"+portName+"_"+varNames[v]+numStr+") = "+varNames[v]+numStr+";");
+            writeToNodesCode.append(spaces(12)+QString("(*mp%1_%2) = %3_%2;\n").arg(firstCapital(portName),varNames[v], portName));
         }
     }
     for(int i=0; i<mOutputsNameLineEditPtrs.size(); ++i)
     {
         QString varName = mOutputsNameLineEditPtrs[i]->text();
-        writeToNodesCode.append("\n            (*mp"+varName+") = "+varName+";");
+        //writeToNodesCode.append("\n            (*mp"+varName+") = "+varName+";");
+        writeToNodesCode.append(spaces(12)+QString("(*mp%1) = %2;\n").arg(firstCapital(varName),varName));
     }
 
     code.replace("<<<headerguard>>>", headerGuard);
     code.replace("<<<typename>>>", typeName);
     code.replace("<<<cqstype>>>", cqsTypeLong);
-    code.replace("<<<variables>>>", variableCode);
-    code.replace("<<<addconstants>>>", addConstantsCode);
-    code.replace("<<<addinputs>>>", addInputsCode);
-    code.replace("<<<addoutputs>>>", addOutputsCode);
-    code.replace("<<<addports>>>", addPortsCode);
-    code.replace("<<<setdefaultstartvalues>>>", setDefaultStartValuesCode);
-    code.replace("<<<getdataptrs>>>", getDataPtrsCode);
-    code.replace("<<<readfromnodes>>>", readFromNodesCode);
-    code.replace("<<<writetonodes>>>", writeToNodesCode);
+    replacePatternLine(code, "<<<membervariables>>>", memberVariableCode);
+    replacePatternLine(code, "<<<localvariables>>>", localVariableCode);
+    replacePatternLine(code, "<<<addconstants>>>", addConstantsCode);
+    replacePatternLine(code, "<<<addinputs>>>", addInputsCode);
+    replacePatternLine(code, "<<<addoutputs>>>", addOutputsCode);
+    replacePatternLine(code, "<<<addports>>>", addPortsCode);
+    replacePatternLine(code, "<<<setdefaultstartvalues>>>", setDefaultStartValuesCode);
+    replacePatternLine(code, "<<<getdataptrs>>>", getDataPtrsCode);
+    replacePatternLine(code, "<<<readfromnodes>>>", readFromNodesCode);
+    replacePatternLine(code, "<<<writetonodes>>>", writeToNodesCode);
 
     mpFileHandler->addComponent(code, typeName);
 
@@ -655,7 +709,8 @@ void CreateComponentWizard::generate()
         QString name = mInputsNameLineEditPtrs[p]->text();
         QString x = "0.0";
         QString y = QString::number(pos);
-        portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"180\" name=\""+name+"\" hidden=\"false\"/>");
+        //portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"180\" name=\""+name+"\" hidden=\"false\"/>");
+        portsCode.append(spaces(12)+QString("<port name=\"%1\" x=\"%2\" y=\"%3\" a=\"%4\" hidden=\"false\"/>\n").arg(name, x, y).arg(180));
     }
 
     //Add output variables
@@ -668,7 +723,8 @@ void CreateComponentWizard::generate()
         QString name = mOutputsNameLineEditPtrs[p]->text();
         QString x = "1.0";
         QString y = QString::number(pos);
-        portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"0\" name=\""+name+"\" hidden=\"false\"/>");
+        //portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"0\" name=\""+name+"\" hidden=\"false\"/>");
+        portsCode.append(spaces(12)+QString("<port name=\"%1\" x=\"%2\" y=\"%3\" a=\"%4\" hidden=\"false\"/>\n").arg(name, x, y).arg(0));
     }
 
 
@@ -682,13 +738,14 @@ void CreateComponentWizard::generate()
         QString name = mPortNameLineEditPtrs[p]->text();
         QString x = QString::number(pos);
         QString y = "0.0";
-        portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"270\" name=\""+name+"\"/>");
+        //portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"270\" name=\""+name+"\"/>");
+        portsCode.append(spaces(12)+QString("<port name=\"%1\" x=\"%2\" y=\"%3\" a=\"%4\"/>\n").arg(name, x, y).arg(270));
     }
 
     cafCode.replace("<<<hppfile>>>", typeName+".hpp");
     cafCode.replace("<<<typename>>>", typeName);
     cafCode.replace("<<<displayname>>>", displayName);
-    cafCode.replace("<<<ports>>>", portsCode);
+    replacePatternLine(cafCode, "<<<ports>>>", portsCode);
 
     mpFileHandler->addAppearanceFile(cafCode, typeName+".xml");
 }

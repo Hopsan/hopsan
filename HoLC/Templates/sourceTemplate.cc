@@ -1,11 +1,20 @@
+// Include headers from HopsanCore
 #include "ComponentEssentials.h"
-#include "ComponentUtilities.h"<<<includecomponents>>>
+#include "ComponentUtilities.h"
+
+// Include component code files
+<<<includecomponents>>>
 
 using namespace hopsan;
 
 //Register components
-extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* /*pNodeFactory*/)
-{    <<<registercomponents>>>
+extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
+{
+    // Register Components
+    <<<registercomponents>>>
+
+    // Register Custom Nodes (not yet supported)
+    HOPSAN_UNUSED(pNodeFactory);
 }
 
 //Provide library information for Hopsan

@@ -1,7 +1,6 @@
 #ifndef <<<headerguard>>>
 #define <<<headerguard>>>
 
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -9,7 +8,8 @@ namespace hopsan {
 
     class <<<typename>>> : public Component<<<cqstype>>>
     {
-    private:<<<variables>>>
+    private:
+        <<<membervariables>>>
 
     public:
         static Component *Creator()
@@ -18,40 +18,59 @@ namespace hopsan {
         }
 
         void configure()
-        {<<<addconstants>>><<<addinputs>>><<<addoutputs>>><<<setdefaultstartvalues>>><<<addports>>>
+        {
+            //Register constant parameters
+            <<<addconstants>>>
+            //Register input variables
+            <<<addinputs>>>
+            //Register output variables
+            <<<addoutputs>>>
+            //Add power ports
+            <<<addports>>>
+            //Set default power port start values
+            <<<setdefaultstartvalues>>>
         }
 
 
         void initialize()
-        {<<<getdataptrs>>>
+        {
+            <<<getdataptrs>>>
 
-            //Get variable values from nodes<<<readfromnodes>>>
+            <<<localvariables>>>
 
-            //WRITE INITIALIZATION HERE
+            //Read variable values from nodes
+            <<<readfromnodes>>>
 
-            //Write new values to nodes<<<writetonodes>>>
+            //WRITE YOUR INITIALIZATION CODE HERE
+
+            //Write new values to nodes
+            <<<writetonodes>>>
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes<<<readfromnodes>>>
+            <<<localvariables>>>
 
-            //WRITE EQUATIONS HERE
+            //Read variable values from nodes
+            <<<readfromnodes>>>
 
-            //Write new values to nodes<<<writetonodes>>>
+            //WRITE YOUR EQUATIONS HERE
+
+            //Write new values to nodes
+            <<<writetonodes>>>
         }
 
 
         void finalize()
         {
-            //WRITE FINALIZE CODE HERE
+            //WRITE YOUR FINALIZE CODE HERE (OPTIONAL)
         }
 
 
         void deconfigure()
         {
-            //WRITE DECONFIGURATION CODE HERE
+            //WRITE YOUR DECONFIGURATION CODE HERE (OPTIONAL)
         }
     };
 }

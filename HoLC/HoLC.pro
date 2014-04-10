@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     Dialogs/NewProjectDialog.cpp \
     Dialogs/CreateComponentWizard.cpp \
     Configuration.cpp \
-    Utilities/XMLUtilities.cpp
+    Utilities/XMLUtilities.cpp \
+    Utilities/StringUtilities.cpp
 
 HEADERS  += MainWindow.h \
     Widgets/ProjectFilesWidget.h \
@@ -42,7 +43,8 @@ HEADERS  += MainWindow.h \
     Dialogs/NewProjectDialog.h \
     Dialogs/CreateComponentWizard.h \
     Configuration.h \
-    Utilities/XMLUtilities.h
+    Utilities/XMLUtilities.h \
+    Utilities/StringUtilities.h
 
 FORMS    +=
 

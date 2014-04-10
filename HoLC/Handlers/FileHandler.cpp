@@ -16,6 +16,7 @@
 #include "Widgets/EditorWidget.h"
 #include "MessageHandler.h"
 #include "Utilities/CompilingUtilities.h"
+#include "Utilities/StringUtilities.h"
 
 FileHandler::FileHandler(Configuration *pConfiuration, ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler) :
     QObject(0)
@@ -99,27 +100,28 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
         {
             QDir baseDir(path);
 
-            includeCompString.append("\n#include \""+baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())+"\"");
-            registerCompString.append("\n    pComponentFactory->registerCreatorFunction(\""+pFile->mFileInfo.baseName()+"\", "+pFile->mFileInfo.baseName()+"::Creator);");
-            xmlCompString.append("\n    <component>"+baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())+"</component>");
+            includeCompString.append(QString("#include \"%1\"\n").arg(baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())));
+            registerCompString.append(spaces(4)+QString("pComponentFactory->registerCreatorFunction(\"%1\", %2::Creator);\n").arg(pFile->mFileInfo.baseName(), pFile->mFileInfo.baseName()));
+            xmlCompString.append(spaces(4)+QString("<component>%1</component>\n").arg(baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())));
         }
         else if(pFile->mType == FileObject::CAF)
         {
             QDir baseDir(path);
 
-            xmlAppearanceString.append("\n    <caf>"+baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())+"</caf>");
+            xmlAppearanceString.append(spaces(4)+QString("<caf>%1</caf>").arg(baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())));
         }
     }
 
-    sourceCode.replace("<<<includecomponents>>>",includeCompString);
-    sourceCode.replace("<<<registercomponents>>>",registerCompString);
     sourceCode.replace("<<<libname>>>", mLibName);
+    replacePatternLine(sourceCode, "<<<includecomponents>>>", includeCompString);
+    replacePatternLine(sourceCode, "<<<registercomponents>>>",registerCompString);
+
 
     xmlCode.replace("<<<libname>>>", mLibName);
     xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
-    xmlCode.replace("<<<components>>>",xmlCompString);
-    xmlCode.replace("<<<auxiliary>>>","");
-    xmlCode.replace("<<<caf>>>", xmlAppearanceString);
+    replacePatternLine(xmlCode,"<<<components>>>",xmlCompString);
+    replacePatternLine(xmlCode,"<<<auxiliary>>>","");
+    replacePatternLine(xmlCode,"<<<caf>>>", xmlAppearanceString);
 
     sourceFile.write(sourceCode.toUtf8());
     xmlFile.write(xmlCode.toUtf8());
