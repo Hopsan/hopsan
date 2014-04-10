@@ -149,7 +149,7 @@ void AnimatedComponent::updateAnimation()
         if(mpAnimationWidget->isRealTimeAnimation() && mpAnimationData->isAdjustable.at(m) && mpAnimationData->adjustableGainX.size() > a)   //Adjustable icon, write node data depending on position
         {
             double value = mpMovables.at(m)->x()*mpAnimationData->adjustableGainX.at(a) + mpMovables.at(m)->y()*mpAnimationData->adjustableGainY.at(a);
-            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpModelObject->getName(), mpAnimationData->adjustablePort.at(a), mpAnimationData->adjustableDataName.at(a), value);
+            (*mpMovables.at(m)->mpAdjustableNodeDataPtr) = value;
             ++a;
         }
         else        //Not adjustable, so let's move it
@@ -494,6 +494,15 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     mIdx = idx;
 
     this->setVisible(mpAnimatedComponent->mpModelObject->isVisible());
+
+
+    if(pParent != 0 && !mpAnimatedComponent->getAnimationDataPtr()->isAdjustable.isEmpty() && mpAnimatedComponent->getAnimationDataPtr()->isAdjustable.at(0))
+    {
+        QString comp = mpAnimatedComponent->mpModelObject->getName();
+        QString port = mpAnimatedComponent->getAnimationDataPtr()->adjustablePort.at(0);
+        QString dataName = mpAnimatedComponent->getAnimationDataPtr()->adjustableDataName.at(0);
+        mpAdjustableNodeDataPtr = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(comp, port, dataName);
+    }
 }
 
 
@@ -566,22 +575,24 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
         int idx = mpAnimatedComponent->indexOfMovable(this);
         if(idx < 0)
         {
-            idx = 0;
+            idx = 0;    //Not good, we assume there is only one movable and that it is the switch
         }
 
         ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
-        bool switchable = pData->isSwitchable.at(idx);      //< Crash!
+        bool switchable = pData->isSwitchable.at(idx);
         if(switchable)
         {
+            //! @todo Don't do pointer lookup every time step!
+            double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->switchablePort.at(idx), pData->switchableDataName.at(idx));
             if(mpAnimatedComponent->mpMovables[idx]->isVisible())
             {
                 mpAnimatedComponent->mpMovables[idx]->setVisible(false);
-                mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpAnimatedComponent->mpModelObject->getName(), pData->switchablePort.at(idx), pData->switchableDataName.at(idx), 0);
+                (*pNodeData) = 0;
             }
             else
             {
                 mpAnimatedComponent->mpMovables[idx]->setVisible(true);
-                mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpAnimatedComponent->mpModelObject->getName(), pData->switchablePort.at(idx), pData->switchableDataName.at(idx), 1);
+                (*pNodeData) = 1;
             }
         }
     }

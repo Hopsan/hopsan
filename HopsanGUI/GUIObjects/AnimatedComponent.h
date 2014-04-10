@@ -86,6 +86,8 @@ class AnimatedIcon : public WorkspaceObject
 {
     Q_OBJECT
 
+    friend class AnimatedComponent;
+
 public:
     AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
 
@@ -116,6 +118,7 @@ protected:
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;
     qreal mLastIconScale;
+    double *mpAdjustableNodeDataPtr;
 };
 
 

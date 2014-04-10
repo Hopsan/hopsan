@@ -13,5 +13,16 @@
             <port x="0" y="0.73" a="180" name="Pel1"/>
             <port x="1" y="0.7" a="0" name="Pel2"/>
         </ports>
+        <animation>
+            <icon userpath="ElectricSwitch.svg"/>
+            <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="ElectricSwitch_active.svg"/>
+                <data port="state" dataname="Value"/>
+                <movement x="0" y="0" a="0"/>
+                <switchable offvalue="0" onvalue="1" port="state" dataname="Value"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
