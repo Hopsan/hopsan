@@ -14,7 +14,7 @@ NewProjectDialog::NewProjectDialog(FileHandler *pFileHandler, QWidget *parent)
     mpFileHandler = pFileHandler;
 
     this->setWindowTitle("Create New Component Library");
-    this->setFixedWidth(800);
+    this->resize(800, this->height());
     QGridLayout *pLayout = new QGridLayout(this);
 
     QLabel *pDescriptionLabel = new QLabel("Please choose a name an a directory for your new library.");

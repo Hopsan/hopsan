@@ -150,7 +150,7 @@ void OptionsWidget::setCompilerPath(const QString &path)
     filePath = path+"/gcc";
 
 #else
-    filePath = path+"/gcc.exe";
+    filePath = path+"/g++.exe";
 #endif
     //! @todo We should also check that it is the correct version of gcc!
 
