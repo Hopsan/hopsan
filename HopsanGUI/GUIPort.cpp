@@ -663,6 +663,7 @@ void Port::refreshPortLabelText()
     label.append(mPortDisplayName).append("&#160;&#160;");
 
     //! @todo should get portdescription once and store it instead of getting it every time (search in core)
+    //! @todo we should show unit here aswell (for signal ports)
     QString desc = getPortDescription();
     if (desc.isEmpty())
     {
@@ -681,7 +682,7 @@ void Port::refreshPortLabelText()
     }
     label.append("</span></p>");
 
-    // Build the variable / alias sub menue
+    // Build the variable / alias list
     QMap<QString, QString> var_alias = getParentModelObject()->getVariableAliases(this->getName());
     if (!var_alias.isEmpty())
     {

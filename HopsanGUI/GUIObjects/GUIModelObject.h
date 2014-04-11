@@ -85,6 +85,10 @@ public:
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
 
+    virtual bool registerCustomParameterUnitScale(QString name, UnitScale us);
+    virtual bool unregisterCustomParameterUnitScale(QString name);
+    virtual bool getCustomParameterUnitScale(QString name, UnitScale &rUs);
+
     // VariableAlias method
     //! @todo parameters and portvaraibles should be more similar in the future, so that we do not need handle them separately
     virtual QMap<QString, QString> getVariableAliases(const QString &rPortName="") const;
@@ -179,6 +183,7 @@ protected:
     QMap<QString, QString> mDefaultParameterValues;
     QStringList mActiveDynamicParameterPortNames;
     QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
+    QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

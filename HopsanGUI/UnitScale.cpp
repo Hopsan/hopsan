@@ -104,3 +104,37 @@ void UnitScale::setOnlyScale(const double scale)
     mUnit.clear();
     mScale = QString("%1").arg(scale);
 }
+
+//! @brief Rescale a value with this unit scale
+//! @param[in] value The value to rescale
+//! @returns The rescaled value
+double UnitScale::rescale(const double value) const
+{
+    return mScale.toDouble()*value;
+}
+
+//! @brief Rescale a value expressed as string with this unit scale
+//! @param[in] value The value to rescale
+//! @returns The rescaled value
+//! @note String conversion may truncate value
+QString UnitScale::rescale(const QString value) const
+{
+    return QString("%1").arg(rescale(value.toDouble()));
+}
+
+//! @brief Inverted rescaling of a value with this unit scale
+//! @param[in] value The value to rescale
+//! @returns The rescaled value
+double UnitScale::invRescale(const double value) const
+{
+    return value / mScale.toDouble();
+}
+
+//! @brief Inverted rescaling of a value expressed as string with this unit scale
+//! @param[in] value The value to rescale
+//! @returns The rescaled value
+//! @note String conversion may truncate value
+QString UnitScale::invRescale(const QString value) const
+{
+    return QString("%1").arg(invRescale(value.toDouble()));
+}

@@ -132,6 +132,7 @@
         <defaultunit unit="m/s" name="Velocity"/>
         <defaultunit unit="s" name="Time"/>
         <defaultunit unit="Hz" name="Frequency"/>
+        <defaultunit unit="m^2" name="Area"/>
         <customunit unit="Hz" scale="1" name="Frequency"/>
         <customunit unit="kHz" scale="1e-3" name="Frequency"/>
         <customunit unit="MHz" scale="1e-6" name="Frequency"/>
@@ -164,6 +165,15 @@
         <customunit unit="psi" scale="0.0001450326" name="Pressure"/>
         <customunit unit="Nm" scale="1" name="Torque"/>
         <customunit unit="m/s" scale="1" name="Velocity"/>
+        <customunit unit="m^2" scale="1" name="Area"/>
+        <customunit unit="cm^2" scale="1e4" name="Area"/>
+        <customunit unit="mm^2" scale="1e6" name="Area"/>
+        <customunit unit="dm^2" scale="1e2" name="Area"/>
+<!--        <customunit unit="are" scale="1e-2" name="Area"/>-->
+<!--        <customunit unit="hectare" scale="1e-4" name="Area"/>-->
+        <customunit unit="km^2" scale="1e-6" name="Area"/>
+        <customunit unit="inch^2" scale="6.4516e-04" name="Area"/>
+        <customunit unit="ft^2" scale="0.09290304" name="Area"/>
     </units>
     <python/>
 </hopsandefaults>

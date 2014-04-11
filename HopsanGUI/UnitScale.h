@@ -40,6 +40,11 @@ public:
     bool isOne() const;
     void setScale(const double scale);
     void setOnlyScale(const double scale);
+    double rescale(const double value) const;
+    QString rescale(const QString value) const;
+    double invRescale(const double value) const;
+    QString invRescale(const QString value) const;
+
     QString mUnit;
     QString mScale;
 };

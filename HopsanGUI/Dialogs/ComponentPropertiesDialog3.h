@@ -8,11 +8,14 @@
 #include <QSpinBox>
 #include <QTextEdit>
 #include <QComboBox>
+#include <QEvent>
 #include "CoreAccess.h"
+#include "UnitScale.h"
 
 class ModelObject;
 class ParameterSettingsLayout;
 class SystemParametersWidget;
+
 
 class TableWidgetTotalSize : public QTableWidget
 {
@@ -29,7 +32,7 @@ class VariableTableWidget :public TableWidgetTotalSize
     Q_OBJECT
 public:
     enum VariameterTypEnumT {InputVaraiable, OutputVariable, OtherVariable, Constant}; //!< @todo maybe not only here
-    enum ColumnEnumT {Name, Alias, Unit, Description, Value, Scale, ShowPort, NumCols};
+    enum ColumnEnumT {Name, Alias, Description, Value, Unit, Scale, ShowPort, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
     bool setCustomPlotScaleValues();
@@ -109,6 +112,30 @@ private:
     QString mVariableTypeName, mVariablePortDataName, mOriginalUnit;
 };
 
+//! @todo maybe should have eventfilters in a specific file
+class MouseWheelEventEater : public QObject
+{
+    Q_OBJECT
+public:
+    MouseWheelEventEater(QWidget *pParent) : QObject(pParent)
+    {
+        // Nothing in particular
+    }
+protected:
+    bool eventFilter(QObject *pObj, QEvent *pEvent)
+    {
+        if (pEvent->type() == QEvent::Wheel)
+        {
+            //QWheelEvent *pWheelEvent = static_cast<QKeyEvent *>(pEvent);
+            return true;
+        }
+        else
+        {
+            // standard event processing
+            return QObject::eventFilter(pObj, pEvent);
+        }
+    }
+};
 
 class ParameterValueSelectionWidget : public QWidget
 {
@@ -119,8 +146,12 @@ public:
     QString getValueText() const;
     const QString &getDataType() const;
     const QString &getName() const;
+    bool isValueDisabled() const;
 public slots:
     void refreshValueTextStyle();
+    void rescaleByUnitScale(const UnitScale &rUnitScale);
+signals:
+    void resetButtonPressed();
 private slots:
     void setValue();
     void setConditionalValue(const int idx);
@@ -132,8 +163,37 @@ private:
     QComboBox *mpConditionalValueComboBox;
     VariableTableWidget::VariameterTypEnumT mVariameterType;
     ModelObject *mpModelObject;
+    UnitScale mCustomScale;
     void setDefaultValueTextStyle();
     void decideBackgroundColor(QString &rStyleString);
+};
+
+
+class UnitSelectionWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    UnitSelectionWidget(const QString &rDefaultUnit, QWidget *pParent);
+    void setUnitScaling(const UnitScale &rUs);
+    QString getSelectedUnit() const;
+    double getSelectedUnitScale() const;
+    void getSelectedUnitScale(UnitScale &rUnitScale) const;
+    bool isDefaultSelected() const;
+
+public slots:
+    void resetDefault();
+
+signals:
+    void unitChanged(const UnitScale &rUnitScale);
+
+private slots:
+    void selectionChanged(int idx);
+
+private:
+    QComboBox *mpUnitComboBox;
+    QMap<QString, double> mUnitScales;
+    QString mDefaultUnit;
+    int mDefaultIndex;
 };
 
 class HideShowPortWidget : public QWidget

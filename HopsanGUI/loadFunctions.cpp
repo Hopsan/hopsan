@@ -376,6 +376,15 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 }
             }
 
+            // Load any custom set parameter scales
+            QDomElement paramscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PARAMETERSCALES).firstChildElement(HMF_PARAMETERSCALE);
+            while (!paramscale.isNull())
+            {
+                pObj->registerCustomParameterUnitScale(paramscale.attribute(HMF_PARAMETERSCALEPARAMNAME), UnitScale(paramscale.attribute(HMF_PARAMETERSCALEUNIT), paramscale.attribute(HMF_PARAMETERSCALESCALE)));
+                //! @todo The actual custom value is ignored here, since only scale can be registred, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
+                paramscale = paramscale.nextSiblingElement(HMF_PLOTSCALE);
+            }
+
             // Load any custom set plot scales
             QDomElement plotscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PLOTSCALES).firstChildElement(HMF_PLOTSCALE);
             while (!plotscale.isNull())
