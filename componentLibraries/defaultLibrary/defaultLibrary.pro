@@ -306,7 +306,8 @@ HEADERS += \
     Special/CombustionEngine.hpp \
     Signal/Control/SignalPID2.hpp \
     Mechanic/Rotational/MechanicBallScrew.hpp \
-    Signal/Non-Linearities/SignalRateLimiter.hpp
+    Signal/Non-Linearities/SignalRateLimiter.hpp \
+    Hydraulic/Valves/Hydraulic42DirectionalValve.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

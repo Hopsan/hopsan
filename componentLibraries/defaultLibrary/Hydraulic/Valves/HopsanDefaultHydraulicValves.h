@@ -33,6 +33,7 @@
 #include "Hydraulic33Valve.hpp"
 #include "Hydraulic33ShuttleValve.hpp"
 #include "Hydraulic42Valve.hpp"
+#include "Hydraulic42DirectionalValve.hpp"
 #include "Hydraulic43Valve.hpp"
 #include "HydraulicValve416.hpp"
 #include "Hydraulic43ValveNeutralToTank.hpp"

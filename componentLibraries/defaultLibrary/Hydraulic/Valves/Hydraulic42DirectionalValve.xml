@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Hydraulic42DirectionalValve.hpp" typename="Hydraulic42DirectionalValve" displayname="4/2 Directional Valve">
+        <icons>
+            <icon scale="1" path="Hydraulic42DirectionalValve_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="Hydraulic42DirectionalValve_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Hydraulic two way directional valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
+            <picture>Hydraulic42DirectionalValve_help.svg</picture>
+        </help>
+        <replacables>
+            <replacable typename="Hydraulic43Valve"/>
+            <replacable typename="Hydraulic43ValveNeutralSupplyToTank"/>
+            <replacable typename="Hydraulic43ValveNeutralToTank"/>
+            <replacable typename="Hydraulic42Valve"/>
+            <replacable typename="HydraulicCheckValve"/>
+            <replacable typename="HydraulicCheckValveWithOrifice"/>
+            <replacable typename="HydraulicCheckValvePreLoaded"/>
+        </replacables>
+        <ports>
+            <port x="0.415966" y="1" a="90" name="PP"/>
+            <port x="0.415966" y="0" a="270" name="PA"/>
+            <port x="0.5798" y="0" a="270" name="PB"/>
+            <port x="0.5798" y="1" a="90" name="PT"/>
+            <port x="0" y="0.7" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="xv"/>
+        </ports>
+        <animation>
+            <icon userpath="Hydraulic42DirectionalValve_user_base.svg"/>
+            <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="Hydraulic42DirectionalValve_user_base.svg"/>
+                <data port="in" dataname="Value"/>
+                <movement x="0" y="0" a="0"/>
+                <switchable offvalue="0" onvalue="1" port="in" dataname="Value"/>
+            </movable>
+            <movable idx="-2">
+                <icon userpath="Hydraulic42DirectionalValve_user_movable.svg"/>
+                <data port="xv" dataname="Value"/>
+                <movement x="4000" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

@@ -20,12 +20,19 @@
         <animation>
             <icon userpath="22directionalvalve_user_base.svg"/>
             <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="22directionalvalve_user_base.svg"/>
+                <data port="in" dataname="Value"/>
+                <movement x="0" y="0" a="0"/>
+                <switchable offvalue="0" onvalue="1" port="in" dataname="Value"/>
+            </movable>
+            <movable idx="-2">
                 <icon userpath="22directionalvalve_user.svg"/>
                 <data port="xv" dataname="Value"/>
                 <movement x="-4000" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <adjustable xgain="0.025" port="in" ygain="0" ymin="0" xmin="0" ymax="0" xmax="40" dataname="Value"/>
             </movable>
         </animation>
     </modelobject>

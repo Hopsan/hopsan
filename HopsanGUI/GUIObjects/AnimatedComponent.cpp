@@ -589,7 +589,7 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!mpAnimatedComponent->mpMovables.isEmpty())
     {
-        int idx = mpAnimatedComponent->indexOfMovable(this);
+        int idx = mIdx;//mpAnimatedComponent->indexOfMovable(this);
         if(idx < 0)
         {
             idx = 0;    //Not good, we assume there is only one movable and that it is the switch
