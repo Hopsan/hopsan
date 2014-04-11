@@ -17,11 +17,21 @@
 \begin{document}
 \maketitle{Writing Component Libraries}
 
+\section*{Introduction}
+This tutorial will show how to create your own component libraries from C++ by using the HoLC (\underline{Ho}psan \underline{L}ibrary \underline{C}reator) program. In the first section, the requirements are listed. In the second section, all files in a component library are explained. Finally, creating a library is demonstrated with a step-by-step guide in section three.
+
 \section*{Requirements}
-%Man behöver Hopsan och HoLC (Inkscape för att rita ikoner)
+It is strongly recommended to complete the \textit{Getting Started} tutorial before undertaking this one. Some basic knowledge of programming languages are also recommended. 
+
+The following tools are also required:
+\begin{itemize}
+\item Hopsan
+\item HoLC 
+\item Inkscape (optional, for creating component icons)
+\end{itemize}
 
 \section*{Hopsan Component Libraries}
-A component library consists of one or more components that can be loaded from Hopsan. It is written in C++ and then compiled to shared library file (.dll in Windows or .so in Linux). A complete Hopsan component library constists of the files listen below. First, there is a \textit{library description file} in .xml format, which contains basic information about the library. Second, there is a source code file of the library with the .cc extension.\vspace{10pt}\\
+A component library consists of one or more components that can be loaded from Hopsan. It is written in C++ and then compiled to a shared library file (.dll in Windows or .so in Linux). A complete library constists of the files listen below. First, there is a \textit{library description file} in .xml format, which contains basic information about the library. Second, there is a source code file of the library with the .cc extension.\vspace{10pt}\\
 $\mathrm{Component\ Library} \begin{cases}
 \mathtt{\textbf{MyLibrary.xml}} \mathrm{\ -\ Library\ description\ file}\\
 \mathtt{\textbf{MyLibrary.cc}} \mathrm{\ -\ Library\ source\ code}\vspace{7pt} \\ 
@@ -40,8 +50,7 @@ $\mathrm{Component\ Library} \begin{cases}
 Each component in the library consist of three files. The first one has the .hpp extension, and contains the source code of the component. The second is an .xml file, which contains specifications about the component and its appearance. Finally there is a .svg file, which contains the graphical icon.
 
 \subsection*{Library Description File}
-Each component library is described by an .xml file.
-This contains general information about the library, such as name, version and source files.
+The library description file contains general information, such as name, version and source files.
 With this file it is possible to recompile libraries from inside Hopsan.
 It also works as a project file for HoLC.
 It can for example look like this:
@@ -66,7 +75,7 @@ It can for example look like this:
 \item \textbf{hopsancomponentlibrary} - Main tag for a component library
 \subitem \textbf{xmlversion} - Should always be 0.1 with this XML layout
 \subitem \textbf{libversion} - Version of the library (decided by creator)
-\subitem \textbf{LibName} - Name of the library to be shown in Hopsan
+\subitem \textbf{name} - Name of the library to be shown in Hopsan
 \item \textbf{lib} - Base file name of the library file (without prefix, suffix and extension)
 \item \textbf{source} - Source file used to compile the library
 \item \textbf{component} - Source file for a component in the library
@@ -76,28 +85,22 @@ It can for example look like this:
 \subsection*{Library Source File}
 The library source file can be viewed as the wrapper file, that takes the source code for each component and puts them together to a library. 
 It contains code that is used to register you library components in the HopsanCore, and provides general information about the library for Hopsan.
-First of all, all component code files must be included. This is shown in lines 3 and 4 in the example below.
-Second, each component needs to be registered in the HopsanCore by the "`pComponentFactory->registerCreatorFunction()`", as shown in lines  lines 11 and 12.
-The first argument must be a unique \textit{type name} that identifies you component. 
-The second argument is the Creator() function, which must exist in each component.
-Finally, the \texttt{get\_hopsan\_info()} function must provide a unique \textit{library name}, here called "LibName" at line 17. 
-The next two lines should be left as they are.
-
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-#include "ComponentEssentials.h"
-#include "ComponentUtilities.h"
 #include "Component1.hpp"
 #include "Component2.hpp"
 
+#include "ComponentEssentials.h"
 using namespace hopsan;
 
 extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, 
-                                            NodeFactory* /*pNodeFactory*/)
+                                            NodeFactory* pNodeFactory)
 {    
     pComponentFactory->registerCreatorFunction("Component1", Component1::Creator);
     pComponentFactory->registerCreatorFunction("Component2", Component2::Creator);
+
+    HOPSAN_UNUSED(pNodeFactory)
 }
 
 extern "C" DLLEXPORT void get_hopsan_info(...)
@@ -109,8 +112,15 @@ extern "C" DLLEXPORT void get_hopsan_info(...)
 \end{lstlisting}
 \end{minipage}
 
+\noindent First of all, all component code files must be included. This is shown in lines 3 and 4 in the example below.
+Second, each component needs to be registered in the HopsanCore by the "`pComponentFactory->registerCreatorFunction()`", as shown in lines  lines 10 and 11.
+The first argument must be a unique \textit{type name} that identifies you component. 
+The second argument is the Creator() function, which must exist in each component.
+Finally, the \texttt{get\_hopsan\_info()} function must provide a unique \textit{library name}, here called "LibName" at line 18. 
+The next two lines should be left as they are.
+
 \subsection*{Component Source Files}
-Components are written in header-only C++ files with the .hpp file extension. 
+Components are written in C++ files with the .hpp file extension. 
 We will now go through the fundamental pars of a component file.\\
 
 \begin{minipage}{\linewidth}
@@ -119,6 +129,7 @@ We will now go through the fundamental pars of a component file.\\
 #define LAMINARORIFICE_H
 
 #include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -135,16 +146,14 @@ namespace hopsan {
 \end{minipage}
 
 \noindent The first two lines sets a header guard to avoid including the same code twice. 
-Technically you do not need the header guards if you can guarantee that you do not include the same file twice. 
-Then we include the essential functions for the component from \texttt{HopsanCore.h}. 
-It may be necessary to include more files, for example \texttt{ComponentUtilities.h} for accessing built-in component utilities in Hopsan. 
+Then we include the essential functions for the component from \texttt{ComponentEssentials.h}, and all built-in utilities from \texttt{ComponentUtilities.h}.
 You may also include other external header files if you wish to use functions from external libraries.\\
 \newline
-On line 8 the component class is declared. 
+On line 9 the component class is declared. 
 We inherit from the \texttt{ComponentQ} class, since this is a Q-type component. 
 Similarly we would have used \texttt{ComponentC} for C-type or \texttt{ComponentSignal} for signal type.\\ 
 \newline
-The first contents in the class is the private variables (variables that should be persistent in the component). 
+The first contents in the class is the private variables, which will be persistent in the component. 
 In this case we have nine node data pointers and two ports.
 A pointer is a variable that points to another variable located somewhere else.
 It is used in components to improve performance.
@@ -152,7 +161,7 @@ After the private section, the public section begins.
 Public variables and functions can be accessed by the outside world, while private are only allowed to be accessed from functions belonging to the class.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[firstnumber=17, basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=18, basicstyle=\footnotesize\ttfamily]
 static Component *Creator()
 {
     return new LaminarOrifice();
@@ -164,7 +173,7 @@ static Component *Creator()
 Nothing needs to be changed except the name of the class.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[firstnumber=21, basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=22, basicstyle=\footnotesize\ttfamily]
 void configure()
 {
     mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -173,16 +182,16 @@ void configure()
 }
 \end{lstlisting}
 \end{minipage}
-\noindent The second member function you need to define is the \texttt{configure()} function for the component. 
+\noindent The second function you need to define is the \texttt{configure()} function for the component. 
 This function is run every time a new instance of the component is added to the model. 
-The function is used to to register ports, input variables, output variables and constants, and to configure default values for member variables. 
-First we create the ports used for communication with the surrounding components, in this case two hydraulic power ports, see line 23 and 24. 
-Then on line 25 we register the restrictor coefficient as an input variable with name, description, unit and default value. 
+The function is used to to register ports, input variables, output variables and constants, and to configure default values for persistant variables. 
+First we create the ports used for communication with the surrounding components, in this case two hydraulic power ports, see line 24 and 25. 
+Then on line 26 we register the restrictor coefficient as an input variable with name, description, unit and default value. 
 Input variables can be used either as signal inputs or as parameters.
 It is also possible to add constant parameters and output variables using the \texttt{addConstant()} and \texttt{addOutputVariable()} functions.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[firstnumber=27, basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=28, basicstyle=\footnotesize\ttfamily]
 void initialize()
 {
     mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
@@ -207,7 +216,7 @@ In this case we initialize the component by using the \texttt{getSafeNodeDataPtr
 These lines are always the same for hydraulic nodes, and similar for other node types such as mechanical, pneumatic and electric.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[firstnumber=39, basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=40, basicstyle=\footnotesize\ttfamily]
 void simulateOneTimestep()
 {
     double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
@@ -234,18 +243,18 @@ void simulateOneTimestep()
 \end{lstlisting}
 \end{minipage}
 
-\noindent The next function, \texttt{simulateOneTimestep()}, is the most important member function. 
+\noindent The next function, \texttt{simulateOneTimestep()}, is the most important function. 
 It contains the model equations that are executed each time step. 
-We begin on line 41 by creating a local variable for each node data pointer.
+We begin on line 42 by creating a local variable for each node data pointer.
 The purpose of this is to make the code more readable.
 The node data pointers could have been used directly, but this would have been difficult to understand.
-Then on line 44-48 we assign all input variables with the values from their respective node data pointer.
-Line 51-54 consists of the actual equations. 
+Then on line 45-49 we assign all input variables with the values from their respective node data pointer.
+Line 52-55 consists of the actual equations. 
 In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighboring C-type components. 
 We then end by assigning the output node data pointers with the value of their respective local variable.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[firstnumber=62, basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[firstnumber=63, basicstyle=\footnotesize\ttfamily]
 void finalize()
 {
       	//Finalize code
@@ -258,11 +267,11 @@ void deconfigure()
 \end{lstlisting}
 \end{minipage}
 
-\noindent The next member function, \texttt{finalize()}, is optional. 
+\noindent The next function, \texttt{finalize()}, is optional. 
 It is only useful if you want some code to be run after each simulation has finished. 
 This is usually only needed if you want to free memory that was additionally allocated in the initialize function.\\
 \newline
-The last member function, \texttt{deconfigure()}, is also optional. 
+The last function, \texttt{deconfigure()}, is also optional. 
 This code is run once the component is deleted. 
 Here you can cleanup any memory allocation or similar that you have done in the configure function. 
 
@@ -324,21 +333,28 @@ A description of the remaining tags follows:
 \subsection*{Component Icon Files}
 Icons for the graphical interface are stored in the .svg (Scalable Vector Graphics) format. A good and free tool for creating and editing such files is \textit{Inkscape}. If you want to use bitmaps graphics, .jpg, .png or similar formats, such graphics can be embedded in a .svg file.
 
-\section{Example}
-\todo[inline]{Beskriv att vi ska bygga ett bibliotek med en enkel aritmetisk komponent i HoLC}
+\section*{Example}
+We shall now demonstrate how to build a simple library using HoLC. The library will contain only one simple arithmetic component.
 
 \begin{tutenumerate}
 \tutitem{Open HoLC}
-- Starta HoLC.exe (ligger i bin-mappen)
+Start HoLC by running HoLC.exe, located in the \texttt{bin} folder under the HoLC directory.
 
 \tutitem{Configure HoLC paths}
-- Klicka på options-ikonen
+First, we must configure HoLC. Click on he options icon:
 
 \icon{0}{gfx/Hopsan-Options.png}{Options}
 
-- Ett bibliotek måste byggas mot den version av Hopsan som ska användas
-- Peka ut installationsmappen för Hopsan
-- Peka ut kompilatorn (32 eller 64-bit, beroende på Hopsan-versionen)
+A component library must be compiled against the version of Hopsan where it shall be used. 
+Click on the icon to the right of the "Hopsan Path" field and select your Hopsan installation folder.
+It is also necessary to use the correct compiler, depending on if you target the 32-bit or 64-bit version of Hopsan.
+Click on the icon next to the compiler path and select the compiler path. 
+Compilers are bundled with HoLC and located under the \texttt{ThirdParty} directory.
+It should now look something like this:
+
+\frame{\includegraphics[width=0.8\textwidth]{gfx/writingcomponents/options.png}}
+
+%Bild!
 
 \tutitem{Create a new project}
 - Klicka på ikonen
