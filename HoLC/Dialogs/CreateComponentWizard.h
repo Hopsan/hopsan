@@ -59,6 +59,7 @@ private:
     QGridLayout *mpPortsLayout;
     QList<QLabel*> mPortIdPtrs;
     QList<QLineEdit*> mPortNameLineEditPtrs;
+    QList<QLineEdit*> mPortDescriptionLineEditPtrs;
     QList<QComboBox*> mPortTypeComboBoxPtrs;
     QList<QDoubleSpinBox*> mPortDefaultSpinBoxPtrs;
 

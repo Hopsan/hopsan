@@ -50,6 +50,7 @@ private:
 
     QString mLibName;
     QString mLibTarget;
+    QString mLibDebugExt;
     QVector<FileObject*> mFilePtrs;
 
     FileObject *mpCurrentFile;

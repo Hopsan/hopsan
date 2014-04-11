@@ -154,12 +154,14 @@ CreateComponentWizard::CreateComponentWizard(FileHandler *pFileHandler, MessageH
     //Power ports on page 2
     QLabel *pPortIdTitle = new QLabel("Id");
     QLabel *pPortNameTitle = new QLabel("Name");
+    QLabel *pPortDescriptionTitle = new QLabel("Description");
     QLabel *pPortTypeTitle = new QLabel("Port type");
     QLabel *pDefaultValueTitle = new QLabel("Default value");
-    mpPortsLayout->addWidget(pPortIdTitle,        0,0);
-    mpPortsLayout->addWidget(pPortNameTitle,      0,1);
-    mpPortsLayout->addWidget(pPortTypeTitle,      0,2);
-    mpPortsLayout->addWidget(pDefaultValueTitle,  0,3);
+    mpPortsLayout->addWidget(pPortIdTitle,          0,0);
+    mpPortsLayout->addWidget(pPortNameTitle,        0,1);
+    mpPortsLayout->addWidget(pPortDescriptionTitle, 0,2);
+    mpPortsLayout->addWidget(pPortTypeTitle,        0,3);
+    mpPortsLayout->addWidget(pDefaultValueTitle,    0,4);
 
     this->addPage(pFirstPage);
     connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(updatePage(int)));
@@ -280,6 +282,9 @@ void CreateComponentWizard::updatePage(int i)
             mpPortsLayout->removeWidget(mPortNameLineEditPtrs.last());
             delete(mPortNameLineEditPtrs.last());
             mPortNameLineEditPtrs.removeLast();
+            mpPortsLayout->removeWidget(mPortDescriptionLineEditPtrs.last());
+            delete(mPortDescriptionLineEditPtrs.last());
+            mPortDescriptionLineEditPtrs.removeLast();
             mpPortsLayout->removeWidget(mPortTypeComboBoxPtrs.last());
             delete(mPortTypeComboBoxPtrs.last());
             mPortTypeComboBoxPtrs.removeLast();
@@ -293,6 +298,7 @@ void CreateComponentWizard::updatePage(int i)
         {
             mPortIdPtrs.append(new QLabel(QString::number(portId), this));
             mPortNameLineEditPtrs.append(new QLineEdit("P"+QString::number(portId), this));
+            mPortDescriptionLineEditPtrs.append(new QLineEdit(this));
             mPortTypeComboBoxPtrs.append(new QComboBox(this));
             QStringList nodeTypes;
             NodeInfo::getNodeTypes(nodeTypes);
@@ -306,12 +312,14 @@ void CreateComponentWizard::updatePage(int i)
             mPortDefaultSpinBoxPtrs.append(new QDoubleSpinBox(this));
             mPortDefaultSpinBoxPtrs.last()->setValue(0);
 
-            mpPortsLayout->addWidget(mPortIdPtrs.last(),               portId,0);
-            mpPortsLayout->addWidget(mPortNameLineEditPtrs.last(),     portId,1);
-            mpPortsLayout->addWidget(mPortTypeComboBoxPtrs.last(),     portId,2);
-            mpPortsLayout->addWidget(mPortDefaultSpinBoxPtrs.last(),   portId,3);
+            mpPortsLayout->addWidget(mPortIdPtrs.last(),                    portId,0);
+            mpPortsLayout->addWidget(mPortNameLineEditPtrs.last(),          portId,1);
+            mpPortsLayout->addWidget(mPortDescriptionLineEditPtrs.last(),   portId,2);
+            mpPortsLayout->addWidget(mPortTypeComboBoxPtrs.last(),          portId,3);
+            mpPortsLayout->addWidget(mPortDefaultSpinBoxPtrs.last(),        portId,4);
             ++portId;
         }
+        //! @todo I think that it would be better if each portedid line (actaully same for constants in/out variables) would be a widget by itself then all of this code would be easier to manage
     }
 }
 
@@ -505,10 +513,11 @@ void CreateComponentWizard::generate()
 //    }
 
     //Add power ports
-    QStringList portNames, nodeTypes;
+    QStringList portNames, portDescriptions, nodeTypes;
     for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
     {
         portNames << mPortNameLineEditPtrs[p]->text();
+        portDescriptions << mPortDescriptionLineEditPtrs[p]->text();
         QString type = mPortTypeComboBoxPtrs[p]->currentText();
 
         nodeTypes << type;
@@ -518,7 +527,7 @@ void CreateComponentWizard::generate()
             actualNodeType = "NodeSignal";
 
         //addPortsCode.append("\n            mp"+portNames[p]+" = addPowerPort(\""+portNames[p]+"\", \""+actualNodeType+"\");");
-        addPortsCode.append(spaces(12)+QString("mp%1 = addPowerPort(\"%2\", \"%3\");\n").arg(firstCapital(portNames[p]), portNames[p], actualNodeType));
+        addPortsCode.append(spaces(12)+QString("mp%1 = addPowerPort(\"%2\", \"%3\", \"%4\");\n").arg(firstCapital(portNames[p]), portNames[p], actualNodeType, portDescriptions[p]));
 
         QStringList varNames;
         varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;

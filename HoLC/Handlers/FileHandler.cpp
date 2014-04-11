@@ -30,6 +30,7 @@ FileHandler::FileHandler(Configuration *pConfiuration, ProjectFilesWidget *pFile
     connect(pFilesWidget, SIGNAL(deleteRequested(QTreeWidgetItem*)), this, SLOT(removeFile(QTreeWidgetItem*)));
 
     mpCurrentFile = 0;
+    mLibDebugExt = "_d";
 }
 
 void FileHandler::generateNewXmlAndSourceFiles(const QString &libName, QString &path)
@@ -108,7 +109,7 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
         {
             QDir baseDir(path);
 
-            xmlAppearanceString.append(spaces(4)+QString("<caf>%1</caf>").arg(baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())));
+            xmlAppearanceString.append(spaces(4)+QString("<caf>%1</caf>\n").arg(baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())));
         }
     }
 
@@ -118,6 +119,7 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
 
 
     xmlCode.replace("<<<libname>>>", mLibName);
+    xmlCode.replace("<<<debugext>>>", mLibDebugExt);
     xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
     replacePatternLine(xmlCode,"<<<components>>>",xmlCompString);
     replacePatternLine(xmlCode,"<<<auxiliary>>>","");
@@ -393,6 +395,7 @@ void FileHandler::saveToXml(const QString &filePath)
     domDocument.appendChild(libRoot);
 
     QDomElement libElement = domDocument.createElement("lib");
+    libElement.setAttribute("debug_ext", mLibDebugExt);
     libElement.appendChild(domDocument.createTextNode(mLibTarget));
     libRoot.appendChild(libElement);
 
