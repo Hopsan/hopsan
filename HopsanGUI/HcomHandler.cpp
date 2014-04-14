@@ -1004,13 +1004,24 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         QStringList parameterNames;
         getParameters(splitCmd[0], parameterNames);
 
-        evaluateExpression(splitCmd[1], Scalar);
-        if(mAnsType != Scalar)
+        QString newValueStr;
+        if(mpModel->getViewContainerObject()->getParameterNames().contains(splitCmd[1]))
         {
-            HCOMERR("Could not evaluate new value for parameter.");
-            return;
+            newValueStr = splitCmd[1];  //If it is a system parameter, don't evaluate it!
+                                        //We want to assign the parameter value with the
+                                        //name of the system parameter, not the value.
         }
-        double newValue = mAnsScalar;
+        else
+        {
+            evaluateExpression(splitCmd[1], Scalar);
+            if(mAnsType != Scalar)
+            {
+                HCOMERR("Could not evaluate new value for parameter.");
+                return;
+            }
+            double newValue = mAnsScalar;
+            newValueStr = QString::number(newValue);
+        }
 
         if(parameterNames.isEmpty())
         {
@@ -1019,7 +1030,6 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         }
 
         int nChanged=0;
-        QString newValueStr = QString::number(newValue);
         for(int p=0; p<parameterNames.size(); ++p)
         {
             if(pSystem->getParameterNames().contains(parameterNames[p]))
@@ -1049,7 +1059,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                         if(newValueStr == "0") newValueStr = "false";
                         else if(newValueStr == "1") newValueStr = "true";
                     }
-                    if(pComponent->setParameterValue(parName, QString::number(newValue)))
+                    if(pComponent->setParameterValue(parName, newValueStr))
                         ++nChanged;
                 }
             }
@@ -1073,18 +1083,9 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                         getParameters(splitFirstCmd[1], components[c], parameters);
                         for(int p=0; p<parameters.size(); ++p)
                         {
-                            if(pSystem->getParameterNames().contains(QString::number(newValue))) //System parameter
-                            {
-                                if(components[c]->setParameterValue(parameters[p], QString::number(newValue)))
-                                    ++nChanged;
-                            }
-                            else
-                            {
-                                toLongDataNames(parameters[p]);
-                                evaluateExpression(QString::number(newValue), Scalar);
-                                if(mAnsType == Scalar && components[c]->setParameterValue(parameters[p], QString::number(mAnsScalar)))
-                                    ++nChanged;
-                            }
+                            toLongDataNames(parameters[p]);
+                            if(components[c]->setParameterValue(parameters[p], newValueStr))
+                                ++nChanged;
                         }
                     }
                 }
