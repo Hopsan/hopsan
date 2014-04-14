@@ -1,7 +1,8 @@
 #ifndef EDITORWIDGET_H
 #define EDITORWIDGET_H
 
-#include <QTextEdit>
+#include "Widgets/TextEditor.h"
+//#include <QTextEdit>
 
 class XmlHighlighter;
 class CppHighlighter;
@@ -20,10 +21,8 @@ public:
 signals:
     void textChanged();
 
-public slots:
-
 private:
-    QTextEdit *mpTextEdit;
+    TextEditor *mpTextEdit;
     XmlHighlighter *mpXmlHighlighter;
     CppHighlighter *mpCppHighlighter;
 };

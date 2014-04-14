@@ -1,5 +1,6 @@
-#include <QTextEdit>
 #include <QGridLayout>
+#include <QEvent>
+#include <QKeyEvent>
 
 #include "EditorWidget.h"
 #include "Handlers/FileHandler.h"
@@ -9,7 +10,7 @@ EditorWidget::EditorWidget(QWidget *parent) :
     QWidget(parent)
 {
     //Create widgets
-    mpTextEdit = new QTextEdit(this);
+    mpTextEdit = new TextEditor(this);
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     mpTextEdit->setFont(font);
@@ -58,4 +59,3 @@ void EditorWidget::clear()
 {
     mpTextEdit->clear();
 }
-

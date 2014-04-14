@@ -543,7 +543,21 @@ void FileHandler::compileLibrary()
 
     foreach(const QString &line, output)
     {
-        mpMessageHandler->addInfoMessage(line);
+        QString newLine = line;     //Chop extra newlines (if they exist)
+        if(newLine.endsWith("\r"))
+            newLine.chop(1);
+        if(newLine.contains("error:"))
+        {
+            mpMessageHandler->addErrorMessage(newLine);
+        }
+        else if(newLine.contains("warning:"))
+        {
+            mpMessageHandler->addWarningMessage(newLine);
+        }
+        else
+        {
+            mpMessageHandler->addInfoMessage(newLine);
+        }
     }
 }
 

@@ -353,11 +353,12 @@ CppHighlighter::CppHighlighter(QTextDocument *parent)
         mHighlightingRules.append(rule);
     }
 
-    mClassFormat.setFontWeight(QFont::Bold);
-    mClassFormat.setForeground(Qt::darkMagenta);
-    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
-    rule.format = mClassFormat;
-    mHighlightingRules.append(rule);
+    //Make Qt classes purple, no real point in component libraries
+//    mClassFormat.setFontWeight(QFont::Bold);
+//    mClassFormat.setForeground(Qt::darkMagenta);
+//    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+//    rule.format = mClassFormat;
+//    mHighlightingRules.append(rule);
 
     mSingleLineCommentFormat.setForeground(Qt::gray);
     rule.pattern = QRegExp("//[^\n]*");

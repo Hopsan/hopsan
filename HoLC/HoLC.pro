@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     Dialogs/CreateComponentWizard.cpp \
     Configuration.cpp \
     Utilities/XMLUtilities.cpp \
-    Utilities/StringUtilities.cpp
+    Utilities/StringUtilities.cpp \
+    Widgets/TextEditor.cpp
 
 HEADERS  += MainWindow.h \
     Widgets/ProjectFilesWidget.h \
@@ -44,7 +45,8 @@ HEADERS  += MainWindow.h \
     Dialogs/CreateComponentWizard.h \
     Configuration.h \
     Utilities/XMLUtilities.h \
-    Utilities/StringUtilities.h
+    Utilities/StringUtilities.h \
+    Widgets/TextEditor.h
 
 FORMS    +=
 
