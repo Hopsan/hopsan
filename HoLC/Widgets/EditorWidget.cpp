@@ -10,6 +10,9 @@ EditorWidget::EditorWidget(QWidget *parent) :
     QWidget(parent)
 {
     //Create widgets
+    mpNotEditableLabel = new QLabel("<font color='darkred'><h3><b>This file cannot be edited from within HoLC.</b></h3></font>", this);
+    mpNotEditableLabel->hide();
+
     mpTextEdit = new TextEditor(this);
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
@@ -17,7 +20,8 @@ EditorWidget::EditorWidget(QWidget *parent) :
 
     //Create layout
     QGridLayout *pLayout = new QGridLayout(this);
-    pLayout->addWidget(mpTextEdit,  0,0,1,2);
+    pLayout->addWidget(mpNotEditableLabel,    0,0,1,2);
+    pLayout->addWidget(mpTextEdit,          1,0,1,2);
     this->setLayout(pLayout);
 
     mpXmlHighlighter = new XmlHighlighter(0);
@@ -46,6 +50,7 @@ void EditorWidget::setText(const QString &text, HighlighterTypeEnum type, bool e
 
     mpTextEdit->setPlainText(text);
     mpTextEdit->setReadOnly(!editingEnabled);
+    mpNotEditableLabel->setVisible(!editingEnabled);
 
     connect(mpTextEdit, SIGNAL(textChanged()), this, SIGNAL(textChanged()));
 }

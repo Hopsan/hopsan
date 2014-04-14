@@ -1,8 +1,9 @@
 #ifndef EDITORWIDGET_H
 #define EDITORWIDGET_H
 
+#include <QLabel>
+
 #include "Widgets/TextEditor.h"
-//#include <QTextEdit>
 
 class XmlHighlighter;
 class CppHighlighter;
@@ -22,6 +23,7 @@ signals:
     void textChanged();
 
 private:
+    QLabel *mpNotEditableLabel;
     TextEditor *mpTextEdit;
     XmlHighlighter *mpXmlHighlighter;
     CppHighlighter *mpCppHighlighter;
