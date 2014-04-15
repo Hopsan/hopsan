@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5957" hopsancoreversion="0.6.x_r5942">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6798" hopsancoreversion="0.6.x_r6813">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>PettersComponentLibrary</componentlibrary>
   </requirements>
   <info/>
   <system typename="Subsystem" name="PneumaticOrificeVolume2Test">
@@ -12,9 +11,9 @@
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
-      <nametext position="0" visible="1"/>
+      <nametext position="0" visible="0"/>
       <animation flowspeed="100"/>
-      <viewport x="2395.65" y="2429.49" zoom="0.842152"/>
+      <viewport x="2165.29" y="2319.06" zoom="0.842152"/>
       <ports hidden="0"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -28,10 +27,9 @@
           <animation flowspeed="100"/>
         </modelobject>
       </hopsanobjectappearance>
-      <favoritevariables/>
       <optimization>
         <settings>
-          <niter>100</niter>
+          <iterations>100</iterations>
           <nsearchp>8</nsearchp>
           <refcoeff>1.3</refcoeff>
           <randfac>0.3</randfac>
@@ -45,6 +43,14 @@
         <parameters/>
         <objectives/>
       </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
     </hopsangui>
     <objects>
       <component typename="PneumaticOrifice" name="PneumaticOrifice">
@@ -57,8 +63,8 @@
         </parameters>
         <ports>
           <port nodetype="NodePneumatic" name="Pp1"/>
-          <port nodetype="NodePneumatic" name="Pp2"/>
           <port nodetype="NodeSignal" name="A0"/>
+          <port nodetype="NodePneumatic" name="Pp2"/>
         </ports>
         <hopsangui>
           <pose x="2148.251318" y="2519" flipped="false" a="0"/>
@@ -81,6 +87,8 @@
         </parameters>
         <ports>
           <port nodetype="NodePneumatic" name="Pp1"/>
+          <port nodetype="NodeSignal" name="Tinput"/>
+          <port nodetype="NodeSignal" name="qminput"/>
         </ports>
         <hopsangui>
           <pose x="2408" y="2460" flipped="false" a="0"/>
@@ -106,6 +114,8 @@
         </parameters>
         <ports>
           <port nodetype="NodePneumatic" name="Pp1"/>
+          <port nodetype="NodeSignal" name="Tinput"/>
+          <port nodetype="NodeSignal" name="pinput"/>
         </ports>
         <hopsangui>
           <pose x="2084" y="2519" flipped="false" a="0"/>
@@ -282,6 +292,7 @@
         <ports>
           <port nodetype="NodePneumatic" name="Pp1"/>
           <port nodetype="NodePneumatic" name="Pp2"/>
+          <port nodetype="NodeSignal" name="mass"/>
         </ports>
         <hopsangui>
           <pose x="2362" y="2519" flipped="false" a="0"/>
@@ -323,9 +334,9 @@
       <textboxwidget>
         <hopsangui>
           <pose x="2059.000000" y="2282.000000"/>
-          <textobject fontcolor="#556b2f" text="Test model of a pneumatic orifice and volume system" font="Calibri,16,-1,0,75,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="Test model of a pneumatic orifice and volume system" font="Calibri,16,-1,0,75,0,0,0,0,0"/>
           <size width="471.000000" height="39.000000"/>
-          <line width="2.000000" visible="0" style="solidline"/>
+          <line width="2" visible="0" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
     </objects>
@@ -381,8 +392,8 @@
       <connect endport="Pp2" endcomponent="PneumaticOrifice" startport="Pp1" startcomponent="PneumaticPsensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2199.62513180518499211757" y="2482.38743429222267877776"/>
-            <coordinate x="2199.62513180518499211757" y="2519.00000000000000000000"/>
+            <coordinate x="2199.62513200000012147939" y="2482.38743400000021210872"/>
+            <coordinate x="2199.62513200000012147939" y="2519.00000000000000000000"/>
             <coordinate x="2178.25131800000008297502" y="2519.00000000000000000000"/>
           </coordinates>
           <geometries>
@@ -425,7 +436,7 @@
           <coordinates>
             <coordinate x="2178.25131800000008297502" y="2519.00000000000000000000"/>
             <coordinate x="2245.82000000000016370905" y="2519.00000000000000000000"/>
-            <coordinate x="2245.82000000000016370905" y="2482.57486819481528073084"/>
+            <coordinate x="2245.82000000000016370905" y="2482.57486800000015136902"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -453,9 +464,9 @@
       <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="PneumaticPsensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2181.62513180518499211757" y="2446.38743429222267877776"/>
-            <coordinate x="2181.62513180518499211757" y="2446.38743429222267877776"/>
-            <coordinate x="2181.62513180518499211757" y="2369.09993419481543242000"/>
+            <coordinate x="2181.62513200000012147939" y="2446.38743400000021210872"/>
+            <coordinate x="2181.62513200000012147939" y="2446.38743400000021210872"/>
+            <coordinate x="2181.62513200000012147939" y="2369.09993399999984831084"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -467,9 +478,9 @@
       <connect endport="in_right" endcomponent="Scope_1" startport="out" startcomponent="PneumaticdEsensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="2227.82000000000016370905" y="2446.57486819481528073084"/>
-            <coordinate x="2221.62513180518499211757" y="2446.57486819481528073084"/>
-            <coordinate x="2221.62513180518499211757" y="2369.09993419481543242000"/>
+            <coordinate x="2227.82000000000016370905" y="2446.57486800000015136902"/>
+            <coordinate x="2221.62513200000012147939" y="2446.57486800000015136902"/>
+            <coordinate x="2221.62513200000012147939" y="2369.09993399999984831084"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -482,8 +493,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2268.82000000000016370905" y="2444.19999999999981810106"/>
-            <coordinate x="2283.59105514925568058970" y="2444.19999999999981810106"/>
-            <coordinate x="2283.59105514925568058970" y="2367.37151585703259115689"/>
+            <coordinate x="2283.59105499999986932380" y="2444.19999999999981810106"/>
+            <coordinate x="2283.59105499999986932380" y="2367.37151600000015605474"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -496,8 +507,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2309.82000000000016370905" y="2445.19999999999981810106"/>
-            <coordinate x="2323.59105514925568058970" y="2445.19999999999981810106"/>
-            <coordinate x="2323.59105514925568058970" y="2367.37151585703259115689"/>
+            <coordinate x="2323.59105499999986932380" y="2445.19999999999981810106"/>
+            <coordinate x="2323.59105499999986932380" y="2367.37151600000015605474"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
