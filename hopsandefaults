@@ -119,6 +119,61 @@
                         QDialog                 { background-color: rgb(226,231,237); }
             </stylesheet>
     </style>
+    <unitscales>
+        <quantity name="Position" siunit="m">
+            <unitscale unit="km">1e-3</unitscale>
+            <unitscale unit="dm">10</unitscale>
+            <unitscale unit="cm">100</unitscale>
+            <unitscale unit="mm">1000</unitscale>
+            <unitscale unit="ft">3.2808</unitscale>
+            <unitscale unit="inch">39.3700787</unitscale>
+        </quantity>
+        <quantity name="Velocity" siunit="m/s">
+        </quantity>
+        <quantity name="Voltage" siunit="V">
+        </quantity>
+        <quantity name="Current" siunit="A">
+        </quantity>
+        <quantity name="Time" siunit="s">
+            <unitscale unit="ms">1e3</unitscale>
+            <unitscale unit="us">1e6</unitscale>
+            <unitscale unit="ns">1e9</unitscale>
+        </quantity>
+        <quantity name="Frequency" siunit="Hz">
+            <unitscale unit="kHz">1e-3</unitscale>
+            <unitscale unit="MHz">1e-6</unitscale>
+            <unitscale unit="GHz">1e-9</unitscale>
+            <unitscale unit="rad/s">0.159154943091895</unitscale>
+        </quantity>
+        <quantity name="Angle" siunit="rad">
+            <unitscale unit="deg">57.296</unitscale>
+        </quantity>
+        <quantity name="AngularVelocity" siunit="rad/s">
+            <unitscale unit="deg/s">57.296</unitscale>
+            <unitscale unit="rev/s">0.159155</unitscale>
+            <unitscale unit="rpm">9.549296585</unitscale>
+        </quantity>
+        <quantity name="Flow" siunit="m^3/s">
+            <unitscale unit="l/min">60000</unitscale>
+        </quantity>
+        <quantity name="Force" siunit="N">
+            <unitscale unit="kN">0.001</unitscale>
+        </quantity>
+        <quantity name="Torque" siunit="Nm">
+        </quantity>
+        <quantity name="Pressure" siunit="Pa">
+            <unitscale unit="bar">1e-5</unitscale>
+            <unitscale unit="MPa">1e-6</unitscale>
+            <unitscale unit="psi">0.0001450326</unitscale>
+        </quantity>
+        <quantity name="Area" siunit="m^2">
+            <unitscale unit="cm^2">1e4</unitscale>
+            <unitscale unit="mm^2">1e6</unitscale>
+            <unitscale unit="dm^2">1e2</unitscale>
+            <unitscale unit="ft^2">10.7639</unitscale>
+            <unitscale unit="inch^2">1550</unitscale>
+        </quantity>
+    </unitscales>
     <units>
         <defaultunit unit="V" name="Voltage"/>
         <defaultunit unit="A" name="Current"/>
@@ -133,6 +188,7 @@
         <defaultunit unit="s" name="Time"/>
         <defaultunit unit="Hz" name="Frequency"/>
         <defaultunit unit="m^2" name="Area"/>
+<!-- Note! these customunit tags are deprecated and should no longer be used   -->
         <customunit unit="Hz" scale="1" name="Frequency"/>
         <customunit unit="kHz" scale="1e-3" name="Frequency"/>
         <customunit unit="MHz" scale="1e-6" name="Frequency"/>
@@ -165,15 +221,7 @@
         <customunit unit="psi" scale="0.0001450326" name="Pressure"/>
         <customunit unit="Nm" scale="1" name="Torque"/>
         <customunit unit="m/s" scale="1" name="Velocity"/>
-        <customunit unit="m^2" scale="1" name="Area"/>
-        <customunit unit="cm^2" scale="1e4" name="Area"/>
-        <customunit unit="mm^2" scale="1e6" name="Area"/>
-        <customunit unit="dm^2" scale="1e2" name="Area"/>
-<!--        <customunit unit="are" scale="1e-2" name="Area"/>-->
-<!--        <customunit unit="hectare" scale="1e-4" name="Area"/>-->
-        <customunit unit="km^2" scale="1e-6" name="Area"/>
-        <customunit unit="inch^2" scale="6.4516e-04" name="Area"/>
-        <customunit unit="ft^2" scale="0.09290304" name="Area"/>
+<!-- Note! these customunit tags are deprecated and should no longer be used   -->
     </units>
     <python/>
 </hopsandefaults>

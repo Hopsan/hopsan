@@ -43,78 +43,39 @@ public:
     OptionsDialog(QWidget *parent = 0);
 
 public slots:
-    void reset();
-    void openXml();
-    void updateValues();
+    void resetConfigDefaults();
+    void openConfigFile();
+    void setValues();
     void colorDialog();
     void show();
-
-private slots:
-    void addPressureUnit();
-    void addFlowUnit();
-    void addForceUnit();
-    void addPositionUnit();
-    void addVelocityUnit();
-    void addTorqueUnit();
-    void addAngleUnit();
-    void addAngularVelocityUnit();
-    void addTimeUnit();
-    void addFrequencyUnit();
-    void addCustomUnitDialog(QString physicalQuantity);
-    void addCustomUnit();
-    void updateCustomUnits();
 
 signals:
     void paletteChanged();
 
 private:
+    QWidget *mpInterfaceWidget;
+    QToolButton *mpBackgroundColorButton;
     QColor mPickedBackgroundColor;
-
     QCheckBox *mpNativeStyleSheetCheckBox;
     QCheckBox *mpShowPopupHelpCheckBox;
     QCheckBox *mpInvertWheelCheckBox;
     QCheckBox *mpAntiAliasingCheckBox;
     QCheckBox *mpSnappingCheckBox;
 
-    QToolButton *mpBackgroundColorButton;
-    QWidget *mpInterfaceWidget;
-    QGridLayout *mpInterfaceLayout;
-
+    QWidget *mpSimulationWidget;
     QCheckBox *mpUseMulticoreCheckBox;
     QCheckBox *mpEnableProgressBarCheckBox;
     QLabel *mpThreadsLabel;
     QSpinBox *mpThreadsSpinBox;
-    QLabel *mpThreadsWarningLabel;
-    QLabel *mpProgressBarLabel;
     QSpinBox *mpProgressBarSpinBox;
-    QWidget *mpSimulationWidget;
-    QGridLayout *mpSimulationLayout;
 
+    QWidget *mpUnitScaleWidget;
+
+    QWidget *mpPlottingWidget;
     QSpinBox *mpGenerationLimitSpinBox;
     QCheckBox *mpAutoLimitGenerationsCheckBox;
     QCheckBox *mpCacheLogDataCeckBox;
     QCheckBox *mpShowHiddenNodeDataVarCheckBox;
-
-
-    QComboBox *mpPressureUnitComboBox;
-    QComboBox *mpFlowUnitComboBox;
-    QComboBox *mpForceUnitComboBox;
-    QComboBox *mpPositionUnitComboBox;
-    QComboBox *mpVelocityUnitComboBox;
-    QComboBox *mpTorqueUnitComboBox;
-    QComboBox *mpAngleUnitComboBox;
-    QComboBox *mpAngularVelocityUnitComboBox;
-    QComboBox *mpTimeUnitComboBox;
-    QComboBox *mpFrequencyUnitComboBox;
-
-    QWidget *mpPlottingWidget;
-    QGridLayout *mpPlottingLayout;
-
-    QDialog *mpAddUnitDialog;
-    QLineEdit *mpUnitNameBox;
-    QLineEdit *mpScaleBox;
-
-    QString mPhysicalQuantityToModify;
 };
 
 #endif // OPTIONSDIALOG_H

@@ -41,6 +41,113 @@
 
 class CentralTabWidget;
 
+class UnitScaleSelector : public QWidget
+{
+    Q_OBJECT
+public:
+    UnitScaleSelector(const QString &rQuantity, QWidget *pParent) : QWidget(pParent)
+    {
+        mQuantity = rQuantity;
+        mpDefaultUnitComboBox = new QComboBox(this);
+        mpAddCustomUnitButton = new QPushButton("Add Custom Unit", this);
+        mpAddCustomUnitButton->setToolTip("Add Custom "+mQuantity+" Unit");
+        mpRemoveCustomUnitButton = new QPushButton("Remove Selected Unit", this);
+        mpRemoveCustomUnitButton->setToolTip("Remove Custom "+mQuantity+" Unit");
+
+        QString original = gpConfig->getSIUnit(rQuantity);
+
+        QHBoxLayout *pLayout = new QHBoxLayout(this);
+        pLayout->addWidget(new QLabel(mQuantity, this));
+        pLayout->addWidget(new QLabel(QString("[%1]").arg(original), this), 0, Qt::AlignRight);
+        pLayout->addWidget(new QLabel("Default:", this), 0, Qt::AlignRight);
+        pLayout->addWidget(mpDefaultUnitComboBox);
+        pLayout->addWidget(mpAddCustomUnitButton);
+        pLayout->addWidget(mpRemoveCustomUnitButton);
+
+        connect(mpAddCustomUnitButton, SIGNAL(clicked()), this, SLOT(execAddCustomUnitDialog()));
+        connect(mpRemoveCustomUnitButton, SIGNAL(clicked()), this, SLOT(removeSelectedUnitScale()));
+    }
+
+    void updateUnitList()
+    {
+        //! @todo The scale value should also be shown in the comboboxes
+        mpDefaultUnitComboBox->clear();
+        QString defaultUnit = gpConfig->getDefaultUnit(mQuantity);
+        QMap<QString, double> unit_scales = gpConfig->getCustomUnits(mQuantity);
+        QMap<QString, double>::iterator it;
+        for(it = unit_scales.begin(); it != unit_scales.end(); ++it)
+        {
+            mpDefaultUnitComboBox->addItem(it.key());
+        }
+        for(int i=0; i<mpDefaultUnitComboBox->count(); ++i)
+        {
+            if(mpDefaultUnitComboBox->itemText(i) == defaultUnit )
+            {
+                mpDefaultUnitComboBox->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+
+    QString getDefaultUnit() const
+    {
+        return mpDefaultUnitComboBox->currentText();
+    }
+
+    QString getQuantity() const
+    {
+        return mQuantity;
+    }
+
+
+private slots:
+    void execAddCustomUnitDialog()
+    {
+        QDialog *pDialog = new QDialog(this);
+        pDialog->setWindowTitle("Add Custom "+mQuantity+" Unit");
+
+        QLineEdit *pUnitNameBox = new QLineEdit(this);
+        QLineEdit *pScaleBox = new QLineEdit(this);
+        pScaleBox->setValidator(new QDoubleValidator(this));
+
+        QDialogButtonBox *pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, pDialog);
+        connect(pButtonBox, SIGNAL(accepted()), pDialog, SLOT(accept()));
+        connect(pButtonBox, SIGNAL(rejected()), pDialog, SLOT(reject()));
+
+        QGridLayout *pLayout = new QGridLayout(pDialog);
+        pLayout->addWidget(new QLabel("Unit Name: ", this),0,0);
+        pLayout->addWidget(pUnitNameBox,0,1);
+        pLayout->addWidget(new QLabel("Scaling from SI unit: ", this),1,0);
+        pLayout->addWidget(pScaleBox,1,1);
+        pLayout->addWidget(pButtonBox,2,0,1,2);
+
+        int rc = pDialog->exec();
+        if (rc == QDialog::Accepted)
+        {
+            gpConfig->addCustomUnit(mQuantity, pUnitNameBox->text(), pScaleBox->text().toDouble());
+            updateUnitList();
+        }
+
+        pDialog->deleteLater();
+    }
+
+    void removeSelectedUnitScale()
+    {
+        QString unit = mpDefaultUnitComboBox->currentText();
+        gpConfig->removeUnitScale(mQuantity, unit);
+        updateUnitList();
+    }
+
+
+
+private:
+    QString mQuantity;
+    QComboBox *mpDefaultUnitComboBox;
+    QPushButton *mpAddCustomUnitButton;
+    QPushButton *mpRemoveCustomUnitButton;
+};
+#include "OptionsDialog.moc"
+
 
 //! @class OptionsDialog
 //! @brief A class for displaying a dialog window where user can change global program settings
@@ -97,24 +204,24 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpSnappingCheckBox->setCheckable(true);
 
     mpInterfaceWidget = new QWidget(this);
-    mpInterfaceLayout = new QGridLayout;
-    mpInterfaceLayout->addWidget(mpNativeStyleSheetCheckBox,    0, 0);
-    mpInterfaceLayout->addWidget(mpShowPopupHelpCheckBox,       2, 0);
-    mpInterfaceLayout->addWidget(mpInvertWheelCheckBox,         3, 0);
-    mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        4, 0);
-    mpInterfaceLayout->addWidget(mpSnappingCheckBox,            5, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorLabel,        6, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorButton,       6, 1);
-    mpInterfaceLayout->addWidget(new QWidget(),                 7, 0, 1, 2);
-    mpInterfaceLayout->setRowStretch(7,1);
-    mpInterfaceWidget->setLayout(mpInterfaceLayout);
+    QGridLayout *pInterfaceLayout = new QGridLayout;
+    pInterfaceLayout->addWidget(mpNativeStyleSheetCheckBox,    0, 0);
+    pInterfaceLayout->addWidget(mpShowPopupHelpCheckBox,       2, 0);
+    pInterfaceLayout->addWidget(mpInvertWheelCheckBox,         3, 0);
+    pInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        4, 0);
+    pInterfaceLayout->addWidget(mpSnappingCheckBox,            5, 0);
+    pInterfaceLayout->addWidget(mpBackgroundColorLabel,        6, 0);
+    pInterfaceLayout->addWidget(mpBackgroundColorButton,       6, 1);
+    pInterfaceLayout->addWidget(new QWidget(),                 7, 0, 1, 2);
+    pInterfaceLayout->setRowStretch(7,1);
+    mpInterfaceWidget->setLayout(pInterfaceLayout);
 
         //Simulation Options
     mpEnableProgressBarCheckBox = new QCheckBox(tr("Enable Simulation Progress Bar"));
     mpEnableProgressBarCheckBox->setCheckable(true);
 
-    mpProgressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
-    mpProgressBarLabel->setEnabled(gpConfig->getEnableProgressBar());
+    QLabel *pProgressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
+    pProgressBarLabel->setEnabled(gpConfig->getEnableProgressBar());
     mpProgressBarSpinBox = new QSpinBox();
     mpProgressBarSpinBox->setMinimum(1);
     mpProgressBarSpinBox->setMaximum(5000);
@@ -137,17 +244,17 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     //mpThreadsWarningLabel->setPalette(palette);
 
     mpSimulationWidget = new QWidget(this);
-    mpSimulationLayout = new QGridLayout;
-    mpSimulationLayout->addWidget(mpEnableProgressBarCheckBox, 0, 0);
-    mpSimulationLayout->addWidget(mpProgressBarLabel, 1, 0);
-    mpSimulationLayout->addWidget(mpProgressBarSpinBox, 1, 1);
-    mpSimulationLayout->addWidget(mpUseMulticoreCheckBox, 2, 0, 1, 2);
-    mpSimulationLayout->addWidget(mpThreadsLabel, 3, 0);
-    mpSimulationLayout->addWidget(mpThreadsSpinBox, 3, 1);
-    mpSimulationLayout->addWidget(new QWidget(), 4, 0, 1, 2);
-    mpSimulationLayout->setRowStretch(4, 1);
+    QGridLayout *pSimulationLayout = new QGridLayout;
+    pSimulationLayout->addWidget(mpEnableProgressBarCheckBox, 0, 0);
+    pSimulationLayout->addWidget(pProgressBarLabel, 1, 0);
+    pSimulationLayout->addWidget(mpProgressBarSpinBox, 1, 1);
+    pSimulationLayout->addWidget(mpUseMulticoreCheckBox, 2, 0, 1, 2);
+    pSimulationLayout->addWidget(mpThreadsLabel, 3, 0);
+    pSimulationLayout->addWidget(mpThreadsSpinBox, 3, 1);
+    pSimulationLayout->addWidget(new QWidget(), 4, 0, 1, 2);
+    pSimulationLayout->setRowStretch(4, 1);
     //mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
-    mpSimulationWidget->setLayout(mpSimulationLayout);
+    mpSimulationWidget->setLayout(pSimulationLayout);
 
     QLabel *pGenerationLimitLabel = new QLabel(tr("Limit number of plot generations to"));
     mpGenerationLimitSpinBox = new QSpinBox();
@@ -159,94 +266,30 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpCacheLogDataCeckBox = new QCheckBox("Cache log data on hard drive");
     mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden NodeData variables");
 
-    //! @todo these should not be harcoded, should be build automatically depending on the contents from gConfigure loaded from have subtags in XML
-    QLabel *pPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
-    mpPressureUnitComboBox = new QComboBox();
-    QLabel *pFlowUnitLabel = new QLabel(tr("Default Flow Unit"));
-    mpFlowUnitComboBox = new QComboBox();
-    QLabel *pForceUnitLabel = new QLabel(tr("Default Force Unit"));
-    mpForceUnitComboBox = new QComboBox();
-    QLabel *pPositionUnitLabel = new QLabel(tr("Default Position Unit"));
-    mpPositionUnitComboBox = new QComboBox();
-    QLabel *pVelocityUnitLabel = new QLabel(tr("Default Velocity Unit"));
-    mpVelocityUnitComboBox = new QComboBox();
-    QLabel *pTorqueUnitLabel = new QLabel(tr("Default Torque Unit"));
-    mpTorqueUnitComboBox = new QComboBox();
-    QLabel *pAngleUnitLabel = new QLabel(tr("Default Angle Unit"));
-    mpAngleUnitComboBox = new QComboBox();
-    QLabel *pAngularVelocityUnitLabel = new QLabel(tr("Default Angular Velocity Unit"));
-    mpAngularVelocityUnitComboBox = new QComboBox();
-    QLabel *pTimeUnitLabel = new QLabel(tr("Default Time Unit"));
-    mpTimeUnitComboBox = new QComboBox();
-    QLabel *pFrequencyUnitLabel = new QLabel(tr("Default Frequency Unit"));
-    mpFrequencyUnitComboBox = new QComboBox();
-
-    QPushButton *pAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit", this);
-    QPushButton *pAddFlowUnitButton = new QPushButton("Add Custom Flow Unit", this);
-    QPushButton *pAddForceUnitButton = new QPushButton("Add Custom Force Unit", this);
-    QPushButton *pAddPositionUnitButton = new QPushButton("Add Custom Position Unit", this);
-    QPushButton *pAddVelocityUnitButton = new QPushButton("Add Custom Velocity Unit", this);
-    QPushButton *pAddTorqueUnitButton = new QPushButton("Add Custom Torque Unit", this);
-    QPushButton *pAddAngleUnitButton = new QPushButton("Add Custom Angle Unit", this);
-    QPushButton *pAddAngularVelocityUnitButton = new QPushButton("Add Custom Angular Velocity Unit", this);
-    QPushButton *pTimeUnitButton = new QPushButton("Add Custom Time Unit", this);
-    QPushButton *pFrequencyUnitButton = new QPushButton("Add Custom Frequency Unit", this);
+    mpUnitScaleWidget = new QWidget(this);
+    QVBoxLayout *pUnitScaleLayout = new QVBoxLayout(mpUnitScaleWidget);
+    QStringList unitQuantities = gpConfig->getUnitQuantities();
+    foreach (QString quantity, unitQuantities)
+    {
+        UnitScaleSelector *pUSS = new UnitScaleSelector(quantity, this);
+        pUSS->updateUnitList();
+        pUnitScaleLayout->addWidget(pUSS);
+    }
 
     int r=0;
     mpPlottingWidget = new QWidget(this);
-    mpPlottingLayout = new QGridLayout;
-    mpPlottingLayout->addWidget(mpCacheLogDataCeckBox,             r, 0, 1, 3);
+    QGridLayout *pPlottingLayout = new QGridLayout(mpPlottingWidget);
+    pPlottingLayout->addWidget(mpCacheLogDataCeckBox,             r, 0, 1, 3);
     ++r;
-    mpPlottingLayout->addWidget(mpAutoLimitGenerationsCheckBox,    r, 0, 1, 3);
+    pPlottingLayout->addWidget(mpAutoLimitGenerationsCheckBox,    r, 0, 1, 3);
     ++r;
-    mpPlottingLayout->addWidget(pGenerationLimitLabel,             r, 0, 1, 3);
-    mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,          r, 2, 1, 1);
+    pPlottingLayout->addWidget(pGenerationLimitLabel,             r, 0, 1, 3);
+    pPlottingLayout->addWidget(mpGenerationLimitSpinBox,          r, 2, 1, 1);
     ++r;
-    mpPlottingLayout->addWidget(mpShowHiddenNodeDataVarCheckBox,   r, 0, 1, 3);
+    pPlottingLayout->addWidget(mpShowHiddenNodeDataVarCheckBox,   r, 0, 1, 3);
     ++r;
-    mpPlottingLayout->addWidget(pPressureUnitLabel,                r, 0);
-    mpPlottingLayout->addWidget(mpPressureUnitComboBox,            r, 1);
-    mpPlottingLayout->addWidget(pAddPressureUnitButton,            r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pFlowUnitLabel,                    r, 0);
-    mpPlottingLayout->addWidget(mpFlowUnitComboBox,                r, 1);
-    mpPlottingLayout->addWidget(pAddFlowUnitButton,                r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pForceUnitLabel,                   r, 0);
-    mpPlottingLayout->addWidget(mpForceUnitComboBox,               r, 1);
-    mpPlottingLayout->addWidget(pAddForceUnitButton,               r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pPositionUnitLabel,                r, 0);
-    mpPlottingLayout->addWidget(mpPositionUnitComboBox,            r, 1);
-    mpPlottingLayout->addWidget(pAddPositionUnitButton,            r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pVelocityUnitLabel,                r, 0);
-    mpPlottingLayout->addWidget(mpVelocityUnitComboBox,            r, 1);
-    mpPlottingLayout->addWidget(pAddVelocityUnitButton,            r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pTorqueUnitLabel,                  r, 0);
-    mpPlottingLayout->addWidget(mpTorqueUnitComboBox,              r, 1);
-    mpPlottingLayout->addWidget(pAddTorqueUnitButton,              r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pAngleUnitLabel,                   r, 0);
-    mpPlottingLayout->addWidget(mpAngleUnitComboBox,               r, 1);
-    mpPlottingLayout->addWidget(pAddAngleUnitButton,               r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pAngularVelocityUnitLabel,         r, 0);
-    mpPlottingLayout->addWidget(mpAngularVelocityUnitComboBox,     r, 1);
-    mpPlottingLayout->addWidget(pAddAngularVelocityUnitButton,     r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pTimeUnitLabel,                    r, 0);
-    mpPlottingLayout->addWidget(mpTimeUnitComboBox,                r, 1);
-    mpPlottingLayout->addWidget(pTimeUnitButton,                   r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(pFrequencyUnitLabel,               r, 0);
-    mpPlottingLayout->addWidget(mpFrequencyUnitComboBox,           r, 1);
-    mpPlottingLayout->addWidget(pFrequencyUnitButton,              r, 2);
-    ++r;
-    mpPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 3);
-    mpPlottingLayout->setRowStretch(10, 1);
-    mpPlottingWidget->setLayout(mpPlottingLayout);
+    pPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 3);
+    pPlottingLayout->setRowStretch(10, 1);
 
 
     QPushButton *mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
@@ -264,24 +307,13 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pButtonBox->addButton(mpCancelButton, QDialogButtonBox::RejectRole);
     pButtonBox->addButton(mpOkButton, QDialogButtonBox::AcceptRole);
 
-    connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarLabel,     SLOT(setEnabled(bool)));
+    connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  pProgressBarLabel,     SLOT(setEnabled(bool)));
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarSpinBox,   SLOT(setEnabled(bool)));
     connect(mpBackgroundColorButton,        SIGNAL(clicked()),      this,                   SLOT(colorDialog()));
-    connect(mpResetButton,                  SIGNAL(clicked()),      this,                   SLOT(reset()));
-    connect(mpOpenXmlButton,                SIGNAL(clicked()),      this,                   SLOT(openXml()));
+    connect(mpResetButton,                  SIGNAL(clicked()),      this,                   SLOT(resetConfigDefaults()));
+    connect(mpOpenXmlButton,                SIGNAL(clicked()),      this,                   SLOT(openConfigFile()));
     connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
-    connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(updateValues()));
-
-    connect(pAddPressureUnitButton,        SIGNAL(clicked()),      this,                   SLOT(addPressureUnit()));
-    connect(pAddFlowUnitButton,            SIGNAL(clicked()),      this,                   SLOT(addFlowUnit()));
-    connect(pAddForceUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addForceUnit()));
-    connect(pAddPositionUnitButton,        SIGNAL(clicked()),      this,                   SLOT(addPositionUnit()));
-    connect(pAddVelocityUnitButton,        SIGNAL(clicked()),      this,                   SLOT(addVelocityUnit()));
-    connect(pAddTorqueUnitButton,          SIGNAL(clicked()),      this,                   SLOT(addTorqueUnit()));
-    connect(pAddAngleUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addAngleUnit()));
-    connect(pAddAngularVelocityUnitButton, SIGNAL(clicked()),      this,                   SLOT(addAngularVelocityUnit()));
-    connect(pTimeUnitButton,               SIGNAL(clicked()),      this,                   SLOT(addTimeUnit()));
-    connect(pFrequencyUnitButton,          SIGNAL(clicked()),      this,                   SLOT(addFrequencyUnit()));
+    connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(setValues()));
 
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsLabel,         SLOT(setEnabled(bool)));
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsSpinBox,       SLOT(setEnabled(bool)));
@@ -289,6 +321,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(mpInterfaceWidget, "Interface");
     pTabWidget->addTab(mpSimulationWidget, "Simulation");
+    pTabWidget->addTab(mpUnitScaleWidget, "UnitScales");
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
 
     QGridLayout *pLayout = new QGridLayout;
@@ -303,15 +336,15 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 
 
 //! @brief Resets all program settings to default values. Asks user first.
-void OptionsDialog::reset()
+void OptionsDialog::resetConfigDefaults()
 {
     QMessageBox resetWarningBox(QMessageBox::Warning, tr("Warning"),tr("This will reset ALL settings to default values. Do you want to continue?"), 0, 0);
-    resetWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
-    resetWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
+    resetWarningBox.addButton(QMessageBox::Yes);
+    resetWarningBox.addButton(QMessageBox::No);
     resetWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
-    bool doIt = (resetWarningBox.exec() == QMessageBox::AcceptRole);
 
-    if(doIt)
+    int rc = resetWarningBox.exec();
+    if(rc == QMessageBox::Yes)
     {
         gpConfig->loadDefaultsFromXml();
         gpConfig->saveToXml();
@@ -321,7 +354,7 @@ void OptionsDialog::reset()
 
 
 //! @brief Opens settings XML file outside Hopsan with default application
-void OptionsDialog::openXml()
+void OptionsDialog::openConfigFile()
 {
     qDebug() << "Opening: " << gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml");
     QDesktopServices::openUrl(QUrl("file:///"+gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml")));
@@ -329,7 +362,7 @@ void OptionsDialog::openXml()
 
 
 //! Slot that updates and saves the settings based on the choices made in the dialog box
-void OptionsDialog::updateValues()
+void OptionsDialog::setValues()
 {
     gpConfig->setShowPopupHelp(mpShowPopupHelpCheckBox->isChecked());
     gpConfig->setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
@@ -372,15 +405,18 @@ void OptionsDialog::updateValues()
     {
         gpModelHandler->getViewContainerObject(i)->getLogDataHandler()->limitPlotGenerations();
     }
-    gpConfig->setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Force", mpForceUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Position", mpPositionUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Velocity", mpVelocityUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Torque", mpTorqueUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Angle", mpAngleUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Angular Velocity", mpAngularVelocityUnitComboBox->currentText());
-    gpConfig->setDefaultUnit("Time", mpTimeUnitComboBox->currentText());
+
+    // Set default units
+    QObjectList unitselectors =  mpUnitScaleWidget->children();
+    for (int i=0; i<unitselectors.size(); ++i)
+    {
+        UnitScaleSelector *pSelector = qobject_cast<UnitScaleSelector*>(unitselectors[i]);
+        if (pSelector)
+        {
+            gpConfig->setDefaultUnit(pSelector->getQuantity(), pSelector->getDefaultUnit());
+        }
+    }
+
     gpConfig->saveToXml();
 
     this->accept();
@@ -455,247 +491,17 @@ void OptionsDialog::show()
     mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getAutoLimitLogDataGenerations());
     mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getShowHiddenNodeDataVariables());
     mpCacheLogDataCeckBox->setChecked(gpConfig->getCacheLogData());
-    updateCustomUnits();
+
+    // Update units scale lists
+    QObjectList unitselectors =  mpUnitScaleWidget->children();
+    for (int i=0; i<unitselectors.size(); ++i)
+    {
+        UnitScaleSelector *pSelector = qobject_cast<UnitScaleSelector*>(unitselectors[i]);
+        if (pSelector)
+        {
+            pSelector->updateUnitList();
+        }
+    }
 
     QDialog::show();
-}
-
-
-void OptionsDialog::addPressureUnit()
-{
-    addCustomUnitDialog("Pressure");
-}
-
-void OptionsDialog::addFlowUnit()
-{
-    addCustomUnitDialog("Flow");
-}
-
-void OptionsDialog::addForceUnit()
-{
-    addCustomUnitDialog("Force");
-}
-
-void OptionsDialog::addPositionUnit()
-{
-    addCustomUnitDialog("Position");
-}
-
-void OptionsDialog::addVelocityUnit()
-{
-    addCustomUnitDialog("Velocity");
-}
-
-void OptionsDialog::addTorqueUnit()
-{
-    addCustomUnitDialog("Torque");
-}
-
-void OptionsDialog::addAngleUnit()
-{
-    addCustomUnitDialog("Angle");
-}
-
-void OptionsDialog::addAngularVelocityUnit()
-{
-    addCustomUnitDialog("AngularVelocity");
-}
-
-void OptionsDialog::addTimeUnit()
-{
-    addCustomUnitDialog("Time");
-}
-
-void OptionsDialog::addFrequencyUnit()
-{
-    addCustomUnitDialog("Frequency");
-}
-
-
-//! @brief Slot that opens "Add Custom Unit" dialog
-void OptionsDialog::addCustomUnitDialog(QString physicalQuantity)
-{
-    mPhysicalQuantityToModify = physicalQuantity;
-    mpAddUnitDialog = new QDialog(this); //!< @todo is this ever deleted
-    mpAddUnitDialog->setWindowTitle("Add Custom " + physicalQuantity + " Unit");
-
-    QLabel *pNameLabel = new QLabel("Unit Name: ", this);
-    mpUnitNameBox = new QLineEdit(this);
-    QLabel *mpScaleLabel = new QLabel("Scaling from SI unit: ", this);
-    mpScaleBox = new QLineEdit(this);
-    mpScaleBox->setValidator(new QDoubleValidator(this));
-    QPushButton *pDoneInUnitDialogButton = new QPushButton("Done", this);
-    QPushButton *pCancelInUnitDialogButton = new QPushButton("Cancel", this);
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    pButtonBox->addButton(pDoneInUnitDialogButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(pCancelInUnitDialogButton, QDialogButtonBox::ActionRole);
-
-    QGridLayout *pDialogLayout = new QGridLayout(this);
-    pDialogLayout->addWidget(pNameLabel,0,0);
-    pDialogLayout->addWidget(mpUnitNameBox,0,1);
-    pDialogLayout->addWidget(mpScaleLabel,1,0);
-    pDialogLayout->addWidget(mpScaleBox,1,1);
-    pDialogLayout->addWidget(pButtonBox,2,0,1,2);
-    mpAddUnitDialog->setLayout(pDialogLayout);
-    mpAddUnitDialog->show();
-
-    connect(pDoneInUnitDialogButton,SIGNAL(clicked()),this,SLOT(addCustomUnit()));
-    connect(pCancelInUnitDialogButton,SIGNAL(clicked()),mpAddUnitDialog,SLOT(close()));
-}
-
-
-
-
-void OptionsDialog::addCustomUnit()
-{
-    gpConfig->addCustomUnit(mPhysicalQuantityToModify, mpUnitNameBox->text(), mpScaleBox->text().toDouble());
-    this->updateCustomUnits();
-    mpAddUnitDialog->close();
-}
-
-
-//! @todo this stuff should not be hardcoded like this, should build automatically from all existing custom units
-//! @todo The scale value should also be shown in the comboboxes
-void OptionsDialog::updateCustomUnits()
-{
-    QMap<QString, double>::iterator it;
-    mpPressureUnitComboBox->clear();
-    QMap<QString, double> customPressureUnits = gpConfig->getCustomUnits("Pressure");
-    for(it = customPressureUnits.begin(); it != customPressureUnits.end(); ++it)
-    {
-        mpPressureUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpPressureUnitComboBox->count(); ++i)
-    {
-        if(mpPressureUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Pressure"))
-        {
-            mpPressureUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpFlowUnitComboBox->clear();
-    QMap<QString, double> customFlowUnits = gpConfig->getCustomUnits("Flow");
-    for(it = customFlowUnits.begin(); it != customFlowUnits.end(); ++it)
-    {
-        mpFlowUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpFlowUnitComboBox->count(); ++i)
-    {
-        if(mpFlowUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Flow"))
-        {
-            mpFlowUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpForceUnitComboBox->clear();
-    QMap<QString, double> customForceUnits = gpConfig->getCustomUnits("Force");
-    for(it = customForceUnits.begin(); it != customForceUnits.end(); ++it)
-    {
-        mpForceUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpForceUnitComboBox->count(); ++i)
-    {
-        if(mpForceUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Force"))
-        {
-            mpForceUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpPositionUnitComboBox->clear();
-    QMap<QString, double> customPositionUnits = gpConfig->getCustomUnits("Position");
-    for(it = customPositionUnits.begin(); it != customPositionUnits.end(); ++it)
-    {
-        mpPositionUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpPositionUnitComboBox->count(); ++i)
-    {
-        if(mpPositionUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Position"))
-        {
-            mpPositionUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpVelocityUnitComboBox->clear();
-    QMap<QString, double> customVelocityUnits = gpConfig->getCustomUnits("Velocity");
-    for(it = customVelocityUnits.begin(); it != customVelocityUnits.end(); ++it)
-    {
-        mpVelocityUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpVelocityUnitComboBox->count(); ++i)
-    {
-        if(mpVelocityUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Velocity"))
-        {
-            mpVelocityUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpTorqueUnitComboBox->clear();
-    QMap<QString, double> customTorqueUnits = gpConfig->getCustomUnits("Torque");
-    for(it = customTorqueUnits.begin(); it != customTorqueUnits.end(); ++it)
-    {
-        mpTorqueUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpTorqueUnitComboBox->count(); ++i)
-    {
-        if(mpTorqueUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Torque"))
-        {
-            mpTorqueUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpAngleUnitComboBox->clear();
-    QMap<QString, double> customAngleUnits = gpConfig->getCustomUnits("Angle");
-    for(it = customAngleUnits.begin(); it != customAngleUnits.end(); ++it)
-    {
-        mpAngleUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpAngleUnitComboBox->count(); ++i)
-    {
-        if(mpAngleUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Angle"))
-        {
-            mpAngleUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpAngularVelocityUnitComboBox->clear();
-    QMap<QString, double> customAngularVelocityUnits = gpConfig->getCustomUnits("AngularVelocity");
-    for(it = customAngularVelocityUnits.begin(); it != customAngularVelocityUnits.end(); ++it)
-    {
-        mpAngularVelocityUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpAngularVelocityUnitComboBox->count(); ++i)
-    {
-        if(mpAngularVelocityUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("AngularVelocity"))
-        {
-            mpAngularVelocityUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpTimeUnitComboBox->clear();
-    QMap<QString, double> customTimeUnits = gpConfig->getCustomUnits("Time");
-    for(it = customTimeUnits.begin(); it != customTimeUnits.end(); ++it)
-    {
-        mpTimeUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpTimeUnitComboBox->count(); ++i)
-    {
-        if(mpTimeUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Time"))
-        {
-            mpTimeUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
-    mpFrequencyUnitComboBox->clear();
-    QMap<QString, double> customFrequencyUnits = gpConfig->getCustomUnits("Frequency");
-    for(it = customFrequencyUnits.begin(); it != customFrequencyUnits.end(); ++it)
-    {
-        mpFrequencyUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpFrequencyUnitComboBox->count(); ++i)
-    {
-        if(mpFrequencyUnitComboBox->itemText(i) == gpConfig->getDefaultUnit("Frequency"))
-        {
-            mpFrequencyUnitComboBox->setCurrentIndex(i);
-        }
-    }
 }

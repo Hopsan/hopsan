@@ -35,6 +35,7 @@
 #include <QDomElement>
 
 #include "common.h"
+#include "UnitScale.h"
 
 class Configuration : public QObject
 {
@@ -74,11 +75,15 @@ public:
 
     QString getLastPyScriptFile();
 
+    QStringList getUnitQuantities() const;
     QString getDefaultUnit(const QString &rPhysicalQuantity) const;
     QMap<QString, double> getCustomUnits(const QString &rPhysicalQuantity);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     QStringList getPhysicalQuantitiesForUnit(const QString &rUnit) const;
+    QString getSIUnit(const QString &rQuantity);
+    void removeUnitScale(const QString &rQuantity, const QString &rUnit);
+
     int getPLOExportVersion() const;
     bool getShowHiddenNodeDataVariables() const;
 
@@ -126,7 +131,7 @@ public:
     void addLastSessionModel(QString value);
     void clearLastSessionModels();
     void setDefaultUnit(QString key, QString value);
-    void addCustomUnit(QString dataname, QString unitname, double scale);
+    void addCustomUnit(QString quantity, QString unitname, double scale);
     void setLastPyScriptFile(QString file);
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
@@ -155,9 +160,18 @@ private:
     void loadUserSettings(QDomElement &rDomElement);
     void loadStyleSettings(QDomElement &rDomElement);
     void loadUnitSettings(QDomElement &rDomElement);
+    void loadUnitScales(QDomElement &rDomElement);
     void loadLibrarySettings(QDomElement &rDomElement);
     void loadModelSettings(QDomElement &rDomElement);
     void loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement);
+
+    class QuantityUnitScale
+    {
+    public:
+        QString siunit;
+        QString selectedDefaultUnit;
+        QMap<QString, UnitScale> customScales;
+    };
 
     int mLibraryStyle;
     bool mShowPopupHelp;
@@ -177,8 +191,8 @@ private:
     QStringList mRecentModels;
     QStringList mLastSessionModels;
     QStringList mRecentGeneratorModels;
-    QMap<QString, QString> mDefaultUnits;
-    QMap< QString, QMap<QString, double> > mCustomUnits;
+    QMap<QString, QString> mSelectedDefaultUnits;
+    QMap<QString, QuantityUnitScale> mUnitScales;
     QPalette mPalette;
     QFont mFont;
     QString mStyleSheet;

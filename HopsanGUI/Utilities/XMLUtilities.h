@@ -34,17 +34,16 @@ void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion);
 QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString element_name);
 
-//! @todo We could go back to using only appendDomNode and then overload manny different functions with same anme but different input arguments)
+QDomComment appendComment(QDomElement &rDomElement, const QString &rComment);
+
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
-void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
-void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value);
-
-void appendDomIntegerNode(QDomElement &rDomElement, const QString element_name, const int val);
-
-void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val);
-void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b);
-void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
-void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues);
+QDomElement appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
+QDomElement appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value);
+QDomElement appendDomIntegerNode(QDomElement &rDomElement, const QString element_name, const int val);
+QDomElement appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val, const char format='g', const int precision=-1);
+QDomElement appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b, const char format='g', const int precision=-1);
+QDomElement appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c, const char format='g', const int precision=-1);
+QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues, const char format='g', const int precision=6);
 
 int parseDomIntegerNode(QDomElement, const int defaultValue);
 bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue);

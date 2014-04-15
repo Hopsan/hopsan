@@ -130,31 +130,33 @@ QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString ele
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] text The text contents of the text node
-void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text)
+QDomElement appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text)
 {
     //Only write tag if both name and value is non empty
+    QDomElement subDomElement;
     if (!element_name.isEmpty() && !text.isEmpty())
     {
         QDomDocument ownerDomDocument = rDomElement.ownerDocument();
-        QDomElement subDomElement = ownerDomDocument.createElement(element_name);
+        subDomElement = ownerDomDocument.createElement(element_name);
         subDomElement.appendChild(ownerDomDocument.createTextNode(text));
         rDomElement.appendChild(subDomElement);
     }
+    return subDomElement;
 }
 
 //! @brief Function for adding Dom elements containing one boolean text node
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] value The boolen value
-void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value)
+QDomElement appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value)
 {
     if(value)
     {
-        appendDomTextNode(rDomElement, element_name, HMF_TRUETAG);
+        return appendDomTextNode(rDomElement, element_name, HMF_TRUETAG);
     }
     else
     {
-        appendDomTextNode(rDomElement, element_name, HMF_FALSETAG);
+        return appendDomTextNode(rDomElement, element_name, HMF_FALSETAG);
     }
 }
 
@@ -162,22 +164,22 @@ void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, 
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] val The double value
-void appendDomIntegerNode(QDomElement &rDomElement, const QString element_name, const int val)
+QDomElement appendDomIntegerNode(QDomElement &rDomElement, const QString element_name, const int val)
 {
     QString tmp_string;
     tmp_string.setNum(val);
-    appendDomTextNode(rDomElement, element_name, tmp_string);
+    return appendDomTextNode(rDomElement, element_name, tmp_string);
 }
 
 //! @brief Function for adding Dom elements containing one text node (based on a double value)
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] val The double value
-void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val)
+//! @param[in] format The format to use when converting the number to text
+//! @param[in] precision The precision of the converted value according to format
+QDomElement appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val, const char format, const int precision)
 {
-    QString tmp_string;
-    tmp_string.setNum(val);
-    appendDomTextNode(rDomElement, element_name, tmp_string);
+    return appendDomTextNode(rDomElement, element_name, QString("%1").arg(val, 0, format, precision));
 }
 
 //! @brief Function for adding Dom elements containing one text node (based on two double values)
@@ -185,15 +187,11 @@ void appendDomValueNode(QDomElement &rDomElement, const QString element_name, co
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] a The first double value
 //! @param[in] b The second double value
-void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const qreal a, const qreal b)
+//! @param[in] format The format to use when converting the number to text
+//! @param[in] precision The precision of the converted value according to format
+QDomElement appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const qreal a, const qreal b, const char format, const int precision)
 {
-    QString num,str;
-    num.setNum(a);
-    str.append(num);
-    str.append(" ");
-    num.setNum(b);
-    str.append(num);
-    appendDomTextNode(rDomElement, element_name, str);
+    return appendDomTextNode(rDomElement, element_name, QString("%1 %2").arg(a,0,format,precision).arg(b,0,format,precision));
 }
 
 //! @brief Function for adding Dom elements containing one text node (based on three double values)
@@ -202,35 +200,30 @@ void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, c
 //! @param[in] a The first double value
 //! @param[in] b The second double value
 //! @param[in] c The theird double value
-void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c)
+//! @param[in] format The format to use when converting the number to text
+//! @param[in] precision The precision of the converted value according to format
+QDomElement appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c, const char format, const int precision)
 {
-    QString num,str;
-    num.setNum(a);
-    str.append(num);
-    str.append(" ");
-    num.setNum(b);
-    str.append(num);
-    str.append(" ");
-    num.setNum(c);
-    str.append(num);
-    appendDomTextNode(rDomElement, element_name, str);
+    return appendDomTextNode(rDomElement, element_name, QString("%1 %2 %3").arg(a,0,format,precision).arg(b,0,format,precision).arg(c,0,format,precision));
 }
 
 //! @brief Function for adding Dom elements containing one text node (based on N double values)
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] rValues A QVector containing all of the values to add
-void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues)
+//! @param[in] format The format to use when converting the number to text
+//! @param[in] precision The precision of the converted value according to format
+QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues, const char format, const int precision)
 {
     QString num,str;
     for (int i=0; i<rValues.size(); ++i)
     {
-        num.setNum(rValues[i]);
+        num.setNum(rValues[i], format, precision);
         str.append(num);
         str.append(" ");
     }
     str.chop(1); //Remove last space
-    appendDomTextNode(rDomElement, element_name, str);
+    return appendDomTextNode(rDomElement, element_name, str);
 }
 
 //! @brief Helpfunction for adding a qreal (float or double) attribute to a Dom element while making sure that decimal point is . and not ,
@@ -703,4 +696,12 @@ int parseAttributeInt(const QDomElement domElement, const QString attributeName,
         }
     }
     return defaultValue;
+}
+
+
+QDomComment appendComment(QDomElement &rDomElement, const QString &rComment)
+{
+    QDomComment xmlcomment = rDomElement.ownerDocument().createComment(rComment);
+    rDomElement.appendChild(xmlcomment);
+    return xmlcomment;
 }

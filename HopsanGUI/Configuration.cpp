@@ -159,27 +159,52 @@ void Configuration::saveToXml()
     }
 
 
+    QDomElement xmlUnitScales = appendDomElement(configRoot, "unitscales");
+    QMap<QString, QuantityUnitScale >::iterator qit;
+    for(qit = mUnitScales.begin(); qit != mUnitScales.end(); ++qit)
+    {
+        QDomElement xmlQuantity = appendDomElement(xmlUnitScales, "quantity");
+        xmlQuantity.setAttribute(HMF_NAMETAG, qit.key());
+        QString siunit = qit.value().siunit;
+        if (!siunit.isEmpty())
+        {
+            xmlQuantity.setAttribute("siunit", siunit);
+        }
+        QMap<QString, UnitScale>::iterator cuit;
+        for(cuit = qit.value().customScales.begin(); cuit != qit.value().customScales.end(); ++cuit)
+        {
+            if (cuit.key() != siunit)
+            {
+                QDomElement xmlUS = appendDomTextNode(xmlQuantity, "unitscale", cuit.value().mScale);
+                xmlUS.setAttribute("unit", cuit.key());
+            }
+        }
+    }
 
     QDomElement units = appendDomElement(configRoot, "units");
     QMap<QString, QString>::iterator itdu;
-    for(itdu = mDefaultUnits.begin(); itdu != mDefaultUnits.end(); ++itdu)
+    for(itdu = mSelectedDefaultUnits.begin(); itdu != mSelectedDefaultUnits.end(); ++itdu)
     {
         QDomElement xmlTemp = appendDomElement(units, "defaultunit");
         xmlTemp.setAttribute("name", itdu.key());
         xmlTemp.setAttribute("unit", itdu.value());
     }
-    QMap<QString, QMap<QString, double> >::iterator itpcu;
-    QMap<QString, double>::iterator itcu;
-    for(itpcu = mCustomUnits.begin(); itpcu != mCustomUnits.end(); ++itpcu)
+
+    //! @deprecated This code should be removed in the future 20140414 /Peter
+    appendComment(units, "Note! These customunit tags are deprecated and should no longer be used! (Used for backwards compatibility)");
+    QMap<QString, QuantityUnitScale >::iterator itpcu;
+    QMap<QString, UnitScale>::iterator itcu;
+    for(itpcu = mUnitScales.begin(); itpcu != mUnitScales.end(); ++itpcu)
     {
-        for(itcu = itpcu.value().begin(); itcu != itpcu.value().end(); ++itcu)
+        for(itcu = itpcu.value().customScales.begin(); itcu != itpcu.value().customScales.end(); ++itcu)
         {
             QDomElement xmlTemp = appendDomElement(units, "customunit");
             xmlTemp.setAttribute("name", itpcu.key());
             xmlTemp.setAttribute("unit", itcu.key());
-            setQrealAttribute(xmlTemp, "scale", itcu.value());
+            setQrealAttribute(xmlTemp, "scale", itcu.value().mScale.toDouble());
         }
     }
+    appendComment(units, "Note! These customunit tags are deprecated and should no longer be used! (Used for backwards compatibility)");
 
     //Save python session
 #ifdef USEPYTHONQT
@@ -268,6 +293,8 @@ void Configuration::loadFromXml()
             loadModelSettings(modelsElement);
 
             //Load unit settings
+            QDomElement unitscalesElement = configRoot.firstChildElement("unitscales");
+            loadUnitScales(unitscalesElement);
             QDomElement unitsElement = configRoot.firstChildElement("units");
             loadUnitSettings(unitsElement);
 
@@ -326,6 +353,8 @@ void Configuration::loadDefaultsFromXml()
             loadStyleSettings(styleElement);
 
                 //Load default units
+            QDomElement unitscalesElement = configRoot.firstChildElement("unitscales");
+            loadUnitScales(unitscalesElement);
             QDomElement unitsElement = configRoot.firstChildElement("units");
             loadUnitSettings(unitsElement);
         }
@@ -470,32 +499,73 @@ void Configuration::loadStyleSettings(QDomElement &rDomElement)
 }
 
 
-//! @brief Utility  functio nthat loads default units from xml
+//! @brief Utility function that loads selected default units from xml
 void Configuration::loadUnitSettings(QDomElement &rDomElement)
 {
-    QDomElement defaultUnitElement = rDomElement.firstChildElement("defaultunit");
-    while (!defaultUnitElement.isNull())
+    QDomElement xmlDefaultUnit = rDomElement.firstChildElement("defaultunit");
+    while (!xmlDefaultUnit.isNull())
     {
-        mDefaultUnits.insert(defaultUnitElement.attribute(HMF_NAMETAG),
-                             defaultUnitElement.attribute("unit"));
-        defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
+        mSelectedDefaultUnits.insert(xmlDefaultUnit.attribute(HMF_NAMETAG), xmlDefaultUnit.attribute("unit"));
+        xmlDefaultUnit = xmlDefaultUnit.nextSiblingElement("defaultunit");
     }
 
+    //! @deprecated This code is only used for backwards compatibility, remove it in the future /Peter 20140414
     QDomElement customUnitElement = rDomElement.firstChildElement("customunit");
     while (!customUnitElement.isNull())
     {
         QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
         QString unitName = customUnitElement.attribute("unit");
-        double unitScale = customUnitElement.attribute("scale").toDouble();
-        if (!mCustomUnits.contains(physicalQuantity))
+        QString unitScale = customUnitElement.attribute("scale");
+        if (!mUnitScales.contains(physicalQuantity))
         {
-            mCustomUnits.insert(physicalQuantity, QMap<QString, double>());
+            mUnitScales.insert(physicalQuantity, QuantityUnitScale());
         }
-        if(!mCustomUnits.value(physicalQuantity).contains(unitName))
+        if(!mUnitScales.value(physicalQuantity).customScales.contains(unitName))
         {
-            mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+            mUnitScales.find(physicalQuantity).value().customScales.insert(unitName, UnitScale(unitName, unitScale));
+        }
+        else
+        {
+            // Compre with old deprected settings to make sure scale is same as already loaded from new xml format
+            QString currentVal = mUnitScales.find(physicalQuantity).value().customScales.value(unitName).mScale;
+            if (currentVal != unitScale)
+            {
+                qDebug() << "Warning unit scales unequal for: " << physicalQuantity+":"+unitName << " " << currentVal << " != " << unitScale;
+            }
         }
         customUnitElement = customUnitElement.nextSiblingElement("customunit");
+    }
+}
+
+//! @brief Utility function that loads unit scales from xml
+void Configuration::loadUnitScales(QDomElement &rDomElement)
+{
+    QDomElement xmlQuantity = rDomElement.firstChildElement("quantity");
+    while (!xmlQuantity.isNull())
+    {
+        QString quantity = xmlQuantity.attribute(HMF_NAMETAG);
+        QString siunit = xmlQuantity.attribute("siunit");
+
+        QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(quantity);
+        if (qit == mUnitScales.end())
+        {
+            qit = mUnitScales.insert(quantity, QuantityUnitScale());
+        }
+        if (!siunit.isEmpty())
+        {
+            qit.value().siunit = siunit;
+            qit.value().customScales.insert(siunit, UnitScale(siunit, "1.0"));
+        }
+
+        QDomElement xmlUnitscale = xmlQuantity.firstChildElement("unitscale");
+        while (!xmlUnitscale.isNull())
+        {
+            QString unit = xmlUnitscale.attribute("unit");
+            qit.value().customScales.insert(unit, UnitScale(unit, xmlUnitscale.text()));
+            xmlUnitscale = xmlUnitscale.nextSiblingElement("unitscale");
+        }
+
+        xmlQuantity = xmlQuantity.nextSiblingElement("quantity");
     }
 }
 
@@ -712,38 +782,37 @@ QStringList Configuration::getLastSessionModels()
 //! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
 QString Configuration::getDefaultUnit(const QString &rPhysicalQuantity) const
 {
-    if(mDefaultUnits.contains(rPhysicalQuantity))
-        return this->mDefaultUnits.find(rPhysicalQuantity).value();
+    if(mSelectedDefaultUnits.contains(rPhysicalQuantity))
+        return this->mSelectedDefaultUnits.find(rPhysicalQuantity).value();
     else
         return "";
 }
 
 
 //! @brief Returns a map with custom units (names and scale factor) for specified physical quantity
-//! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
+//! @param[in] rPhysicalQuantity Name of the physical quantity (e.g. "Pressure" or "Velocity")
+//! @todo We should rewrite the code using this function to handle unitscale objects directly instead
 QMap<QString, double> Configuration::getCustomUnits(const QString &rPhysicalQuantity)
 {
     QMap<QString, double> dummy;
-    if(mCustomUnits.contains(rPhysicalQuantity))
+    if(mUnitScales.contains(rPhysicalQuantity))
     {
-        return mCustomUnits.find(rPhysicalQuantity).value();
+        QMap<QString, UnitScale> &rMap = mUnitScales.find(rPhysicalQuantity).value().customScales;
+        QMap<QString, UnitScale>::iterator it;
+        for (it=rMap.begin(); it!=rMap.end(); ++it)
+        {
+            dummy.insert(it.value().mUnit, it.value().toDouble());
+        }
     }
-    else
-    {
-        return dummy;
-    }
+    return dummy;
 }
 
 bool Configuration::hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const
 {
-    if (mCustomUnits.contains(rPhysicalQuantity))
+    if (mUnitScales.contains(rPhysicalQuantity))
     {
-        if (mCustomUnits.value(rPhysicalQuantity).contains(rUnit))
-        {
-            return true;
-        }
+        return mUnitScales.find(rPhysicalQuantity).value().customScales.contains(rUnit);
     }
-
     return false;
 }
 
@@ -751,14 +820,10 @@ bool Configuration::hasUnitScale(const QString &rPhysicalQuantity, const QString
 //! @note Returns 0 if nothing is found
 double Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const
 {
-    if (mCustomUnits.contains(rPhysicalQuantity))
+    if (mUnitScales.contains(rPhysicalQuantity))
     {
-        if (mCustomUnits.value(rPhysicalQuantity).contains(rUnit))
-        {
-            return mCustomUnits.value(rPhysicalQuantity).value(rUnit);
-        }
+        return mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitScale("",0)).toDouble();
     }
-
     return 0;
 }
 
@@ -767,15 +832,32 @@ double Configuration::getUnitScale(const QString &rPhysicalQuantity, const QStri
 QStringList Configuration::getPhysicalQuantitiesForUnit(const QString &rUnit) const
 {
     QStringList list;
-    QMap< QString, QMap<QString, double> >::const_iterator it;
-    for (it=mCustomUnits.begin(); it!=mCustomUnits.end(); ++it)
+    QMap< QString, QuantityUnitScale >::const_iterator it;
+    for (it=mUnitScales.begin(); it!=mUnitScales.end(); ++it)
     {
-        if (it.value().contains(rUnit))
+        if (it.value().customScales.contains(rUnit))
         {
             list.append(it.key());
         }
     }
     return list;
+}
+
+QString Configuration::getSIUnit(const QString &rQuantity)
+{
+    return  mUnitScales.value(rQuantity, QuantityUnitScale()).siunit;
+}
+
+void Configuration::removeUnitScale(const QString &rQuantity, const QString &rUnit)
+{
+    QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(rQuantity);
+    if (qit != mUnitScales.end())
+    {
+        if (rUnit != qit.value().siunit)
+        {
+            qit.value().customScales.remove(rUnit);
+        }
+    }
 }
 
 int Configuration::getPLOExportVersion() const
@@ -852,6 +934,11 @@ QString Configuration::getStyleSheet()
 QString Configuration::getLastPyScriptFile()
 {
     return mLastPyScriptFile;
+}
+
+QStringList Configuration::getUnitQuantities() const
+{
+    return mUnitScales.keys();
 }
 
 
@@ -1231,19 +1318,24 @@ void Configuration::clearLastSessionModels()
 //! @param value Name of the desired default unit
 void Configuration::setDefaultUnit(QString key, QString value)
 {
-    this->mDefaultUnits.remove(key);
-    this->mDefaultUnits.insert(key, value);
+    this->mSelectedDefaultUnits.remove(key);
+    this->mSelectedDefaultUnits.insert(key, value);
     saveToXml();
 }
 
 
 //! @brief Adds a new custom unit to the specified physical quantity
-//! @param dataname Name of the physical quantity (e.g. "Pressure" or "Velocity")
+//! @param quantity Name of the physical quantity (e.g. "Pressure" or "Velocity")
 //! @param unitname Name of the new unit
 //! @param scale Scale factor from SI unit to the new unit
-void Configuration::addCustomUnit(QString dataname, QString unitname, double scale)
+void Configuration::addCustomUnit(QString quantity, QString unitname, double scale)
 {
-    this->mCustomUnits.find(dataname).value().insert(unitname, scale);
+    //! @todo what if quantity does not exist, should we add it? what about SI unit then, think its better to ahve a separat functin for that
+    QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(quantity);
+    if (qit != mUnitScales.end())
+    {
+        qit.value().customScales.insert(unitname, UnitScale(unitname, scale));
+    }
     saveToXml();
 }
 
