@@ -105,6 +105,11 @@ public:
     QMap<QString, double> mIntensityMinMap;
     QMap<QString, double> mFlowSpeedMap;
 
+    //These three variables are for improving performance (perhaps the three maps above should be deleted)
+    double mHydraulicIntensityMax;
+    double mHydraulicIntensityMin;
+    double mHydraulicSpeed;
+
 private slots:
     void openPreferencesDialog();
     void stop();

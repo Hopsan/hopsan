@@ -149,8 +149,11 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 
     mIntensityMaxMap.insert("NodeHydraulic", 2e7);
     mIntensityMinMap.insert("NodeHydraulic", 0);
-
     mFlowSpeedMap.insert("NodeHydraulic",mpAnimationData->flowSpeed);
+
+    mHydraulicIntensityMax = 2e7;
+    mHydraulicIntensityMin = 0;
+    mHydraulicSpeed = mpAnimationData->flowSpeed;
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();
@@ -319,6 +322,10 @@ void AnimationWidget::openPreferencesDialog()
         mIntensityMinMap.insert("NodeHydraulic", pLowPressureLineEdit->text().toDouble());
         mIntensityMaxMap.insert("NodeHydraulic", pHighPressureLineEdit->text().toDouble());
         mFlowSpeedMap.insert("NodeHydraulic", pFlowSpeedLineEdit->text().toDouble());
+
+        mHydraulicIntensityMin = pLowPressureLineEdit->text().toDouble();
+        mHydraulicIntensityMax = pHighPressureLineEdit->text().toDouble();
+        mHydraulicSpeed = pFlowSpeedLineEdit->text().toDouble();
     }
 
     delete(pDialog);
@@ -498,6 +505,8 @@ void AnimationWidget::updateMovables()
    {
        mAnimatedConnectorList[c]->updateAnimation();
    }
+
+   mpGraphicsView->update();
 }
 
 

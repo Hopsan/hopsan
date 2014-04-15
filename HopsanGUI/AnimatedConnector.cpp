@@ -126,6 +126,12 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
     {
         mDirectionCorrection = -1;
     }
+
+    if(mpConnector->getStartPort()->getNodeType() == "NodeHydraulic")
+    {
+        mpDataPressure = mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mComponentName, mPortName, "Pressure");
+        mpDataFlow = mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mComponentName, mPortName, "Flow");
+    }
 }
 
 
@@ -153,34 +159,34 @@ void AnimatedConnector::updateAnimation()
     y2 = endPos.y();
     mpLines.last()->setLine(x1, y1, x2, y2);
 
-    if(mpConnector->getStartPort()->getNodeType() != "NodeHydraulic")
+    if(mpConnector->getStartPort()->getNodeType() != "NodeHydraulic")   //!< @todo Bad to compare with string
     {
         return;
     }
 
-    double max = mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
-    double min = mpAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
+    double min = mpAnimationWidget->mHydraulicIntensityMin;
+    double max = mpAnimationWidget->mHydraulicIntensityMax;
 
     QPen tempPen = mpLines.first()->pen();
     tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
 
-    double data, flowData;
+    double pressureData, flowData;
     if(mpAnimationWidget->isRealTimeAnimation())    //Real-time animation
     {
-        mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Pressure", data);
-        mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Flow", flowData);
+        pressureData = *mpDataPressure;
+        flowData = *mpDataFlow;
     }
     else if(!mvIntensityData.isEmpty())             //Replay animation
     {
         int index = mpAnimationWidget->getIndex();
-        data = mvIntensityData[index];
+        pressureData = mvIntensityData[index];
         flowData = mvFlowData[index];
     }
 
-    int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
+    int red = std::min(255.0, 255*(pressureData-min)/(0.8*max-min));
     int blue = 255-red;
     tempPen.setColor(QColor(red,0,blue));
-    tempPen.setDashOffset(tempPen.dashOffset()+mDirectionCorrection*mpAnimationWidget->mFlowSpeedMap.find("NodeHydraulic").value()*flowData/* *fmod(mpAnimationWidget->getLastAnimationTime(),10.0)/10.0*/);
+    tempPen.setDashOffset(tempPen.dashOffset()+mDirectionCorrection*mpAnimationWidget->mFlowSpeedMap.find("NodeHydraulic").value()*flowData);
 
     for(int i=0; i<mpLines.size(); ++i)
     {

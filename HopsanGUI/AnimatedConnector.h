@@ -71,6 +71,8 @@ private:
 
     QString mComponentName;
     QString mPortName;
+
+    double *mpDataPressure, *mpDataFlow;
 };
 
 

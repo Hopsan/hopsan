@@ -113,6 +113,10 @@ public:
 
     //Container-specific data
     double flowSpeed;
+
+    //Calculated at initialization
+    QVector<double> multiplierValues, divisorValues;
+    QVector<bool> useMultipliers, useDivisors;
 };
 
 

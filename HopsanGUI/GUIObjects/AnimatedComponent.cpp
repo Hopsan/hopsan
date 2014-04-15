@@ -196,13 +196,13 @@ void AnimatedComponent::updateAnimation()
             }
 
             //Apply parameter multipliers/divisors
-            if(mpAnimationData->multipliers[m] != QString())    //! @todo Multipliers and divisors currently only work for first data
+            if(mpAnimationData->useMultipliers[m])    //! @todo Multipliers and divisors currently only work for first data
             {
-                data[0] = data[0]*mpModelObject->getParameterValue(mpAnimationData->multipliers[m]).toDouble();
+                data[0] = data[0]*mpAnimationData->multiplierValues[m];
             }
-            if(mpAnimationData->divisors[m] != QString())
+            if(mpAnimationData->useDivisors[m])
             {
-                data[0] = data[0]/mpModelObject->getParameterValue(mpAnimationData->divisors[m]).toDouble();
+                data[0] = data[0]/mpAnimationData->divisorValues[m];
             }
 
             //Set rotation
@@ -281,11 +281,11 @@ void AnimatedComponent::updateAnimation()
                 }
 
 
-                QGraphicsColorizeEffect *pEffect = new QGraphicsColorizeEffect();
+
                 QColor color(r,g,b,a);
              //   qDebug() << "Color: " << r << " " << g << " " << b << " " << a;
-                pEffect->setColor(color);
-                mpMovables[m]->setGraphicsEffect(pEffect);
+                mpMovables[m]->mpEffect->setColor(color);
+                mpMovables[m]->setGraphicsEffect(mpMovables[m]->mpEffect);
                 mpMovables[m]->setOpacity(double(a)/255.0);
             }
 
@@ -297,7 +297,7 @@ void AnimatedComponent::updateAnimation()
             }
 
 
-            mpMovables[m]->update();
+           // mpMovables[m]->update();
 
             //Update "port" positions, so that connectors will follow component
             for(int p=0; p<mpAnimationData->movablePortNames[m].size(); ++p)
@@ -425,6 +425,28 @@ void AnimatedComponent::setupAnimationMovable(int m)
     {
         mpMovables.at(m)->hide();
     }
+
+
+
+
+    //Get parameter multiplier (will be zero if not found)
+    QString parValue = mpModelObject->getParameterValue(mpAnimationData->multipliers[m]);
+    bool ok;
+    mpAnimationData->multiplierValues[m] = parValue.toDouble(&ok);
+    if(!ok)
+    {
+        mpAnimationData->multiplierValues[m] = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+    }
+    mpAnimationData->useMultipliers[m] = ok;
+
+    //Get parmeter divisor (will be zero if not found)
+    parValue = mpModelObject->getParameterValue(mpAnimationData->divisors[m]);
+    mpAnimationData->divisorValues[m] = parValue.toDouble(&ok);
+    if(!ok)
+    {
+        mpAnimationData->divisorValues[m] = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+    }
+    mpAnimationData->useDivisors[m] = ok;
 }
 
 
@@ -513,13 +535,16 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     this->setVisible(mpAnimatedComponent->mpModelObject->isVisible());
 
 
-    if(pParent != 0 && !mpAnimatedComponent->getAnimationDataPtr()->isAdjustable.isEmpty() && mpAnimatedComponent->getAnimationDataPtr()->isAdjustable.at(0))
+    ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
+    if(pParent != 0 && !pData->isAdjustable.isEmpty() &&pData->isAdjustable.at(0))
     {
         QString comp = mpAnimatedComponent->mpModelObject->getName();
-        QString port = mpAnimatedComponent->getAnimationDataPtr()->adjustablePort.at(0);
-        QString dataName = mpAnimatedComponent->getAnimationDataPtr()->adjustableDataName.at(0);
+        QString port = pData->adjustablePort.at(0);
+        QString dataName = pData->adjustableDataName.at(0);
         mpAdjustableNodeDataPtr = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(comp, port, dataName);
     }
+
+    mpEffect = new QGraphicsColorizeEffect();
 }
 
 

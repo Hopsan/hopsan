@@ -32,6 +32,7 @@
 #include <QPen>
 #include <cassert>
 #include <QGraphicsSvgItem>
+#include <QGraphicsColorizeEffect>
 
 #include "GUIObject.h"
 #include "GUIModelObjectAppearance.h"
@@ -119,6 +120,7 @@ protected:
     QString mLastIconPath;
     qreal mLastIconScale;
     double *mpAdjustableNodeDataPtr;
+    QGraphicsColorizeEffect *mpEffect;
 };
 
 

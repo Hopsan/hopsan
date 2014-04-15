@@ -232,7 +232,11 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                     dataElement = dataElement.nextSiblingElement("data");
                 }
                 multipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
+                multiplierValues.append(0);
+                useMultipliers.append(false);
                 divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
+                divisorValues.append(0);
+                useDivisors.append(false);
                 speedX.append(xmlMovable.firstChildElement("movement").attribute("x").toDouble());
                 speedY.append(xmlMovable.firstChildElement("movement").attribute("y").toDouble());
                 speedTheta.append(xmlMovable.firstChildElement("movement").attribute("a").toDouble());
