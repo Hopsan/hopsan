@@ -409,9 +409,13 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
     QVector<int> indexes;
     indexes.append(bestId);
     indexes.append(worstId);
+    if(bestId == worstId)
+    {
+        indexes.remove(0);
+    }
     for(int i=0; i<values.size(); ++i)
     {
-        if(i != bestId && i != worstId)
+        if(!indexes.contains(i))
         {
             indexes.append(i);
         }
