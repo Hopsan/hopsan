@@ -1467,6 +1467,7 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
     QWidget(pParent)
 {
     QHBoxLayout *pLayout = new QHBoxLayout(this);
+    pLayout->setContentsMargins(0,0,0,0);
     mpUnitComboBox = 0;
     mDefaultUnit = rDefaultUnit;
     mDefaultIndex = -1;
@@ -1570,6 +1571,7 @@ void UnitSelectionWidget::resetDefault()
 
 void UnitSelectionWidget::selectionChanged(int idx)
 {
+    Q_UNUSED(idx)
     UnitScale us;
     getSelectedUnitScale(us);
     emit unitChanged(us);

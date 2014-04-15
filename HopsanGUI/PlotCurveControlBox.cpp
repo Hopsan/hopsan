@@ -132,6 +132,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     QLabel *pDummy = new QLabel("", this);
 
     QHBoxLayout *pInfoBoxLayout = new QHBoxLayout(this);
+    pInfoBoxLayout->setContentsMargins(0,0,0,0);
     pInfoBoxLayout->addWidget(mpColorBlob);
     pInfoBoxLayout->addWidget(mpTitle);
     pInfoBoxLayout->addWidget(mpCustomXDataDrop);

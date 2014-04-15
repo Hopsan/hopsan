@@ -49,16 +49,23 @@ public:
     {
         mQuantity = rQuantity;
         mpDefaultUnitComboBox = new QComboBox(this);
-        QPushButton *pAddCustomUnitButton = new QPushButton("Add Custom Unit", this);
+        QToolButton *pAddCustomUnitButton = new QToolButton(this);
+        pAddCustomUnitButton->setIcon(QIcon("://graphics/uiicons/Hopsan-Add.png"));
+        pAddCustomUnitButton->setFixedWidth(48);
         pAddCustomUnitButton->setToolTip("Add Custom "+mQuantity+" Unit");
-        QPushButton *pRemoveCustomUnitButton = new QPushButton("Remove Selected", this);
+        QToolButton *pRemoveCustomUnitButton = new QToolButton(this);
+        pRemoveCustomUnitButton->setIcon(QIcon("://graphics/uiicons/Hopsan-Discard.png"));
+        pRemoveCustomUnitButton->setFixedWidth(48);
         pRemoveCustomUnitButton->setToolTip("Remove Custom "+mQuantity+" Unit");
-        QPushButton *pShowCustomUnitsButton = new QPushButton("Show", this);
+        QToolButton *pShowCustomUnitsButton = new QToolButton(this);
+        pShowCustomUnitsButton->setIcon(QIcon("://graphics/uiicons/Hopsan-Zoom.png"));
+        pShowCustomUnitsButton->setFixedWidth(48);
         pShowCustomUnitsButton->setToolTip("Show unit scales for "+mQuantity);
 
         QString original = gpConfig->getSIUnit(rQuantity);
 
         QHBoxLayout *pLayout = new QHBoxLayout(this);
+        pLayout->setContentsMargins(0,0,0,0);
         pLayout->addWidget(new QLabel(mQuantity, this));
         pLayout->addWidget(new QLabel(QString("[%1]").arg(original), this), 0, Qt::AlignRight);
         pLayout->addWidget(new QLabel("Default:", this), 0, Qt::AlignRight);
@@ -300,6 +307,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden NodeData variables");
 
     mpUnitScaleWidget = new QWidget(this);
+    QScrollArea *pUnitScaleScrollArea = new QScrollArea(this);
+    pUnitScaleScrollArea->setWidgetResizable(true);
+    pUnitScaleScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    pUnitScaleScrollArea->setWidget(mpUnitScaleWidget);
     QVBoxLayout *pUnitScaleLayout = new QVBoxLayout(mpUnitScaleWidget);
     QStringList unitQuantities = gpConfig->getUnitQuantities();
     foreach (QString quantity, unitQuantities)
@@ -354,7 +365,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(mpInterfaceWidget, "Interface");
     pTabWidget->addTab(mpSimulationWidget, "Simulation");
-    pTabWidget->addTab(mpUnitScaleWidget, "UnitScales");
+    pTabWidget->addTab(pUnitScaleScrollArea, "UnitScales");
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
 
     QGridLayout *pLayout = new QGridLayout;

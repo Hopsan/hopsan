@@ -2124,23 +2124,27 @@ CopyStack *ContainerObject::getDragCopyStackPtr()
 size_t ContainerObject::getNumberOfLogSamples()
 {
     //Needs to be overloaded
-    assert(false);
+    Q_ASSERT(false);
+    return 0;
 }
 
-void ContainerObject::setNumberOfLogSamples(size_t /*nSamples*/)
+void ContainerObject::setNumberOfLogSamples(size_t nSamples)
 {
+    Q_UNUSED(nSamples)
     //Needs to be overloaded
-    assert(false);
+    Q_ASSERT(false);
 }
 
 double ContainerObject::getLogStartTime() const
 {
     //Needs to be overloaded
-    assert(false);
+    Q_ASSERT(false);
+    return 0;
 }
 
-void ContainerObject::setLogStartTime(const double /*logStartT*/)
+void ContainerObject::setLogStartTime(const double logStartT)
 {
+    Q_UNUSED(logStartT)
     //Needs to be overloaded
     assert(false);
 }
