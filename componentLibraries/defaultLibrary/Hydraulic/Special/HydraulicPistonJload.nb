@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     13493,        387]
-NotebookOptionsPosition[     12171,        340]
-NotebookOutlinePosition[     12512,        355]
-CellTagsIndexPosition[     12469,        352]
+NotebookDataLength[     24471,        644]
+NotebookOptionsPosition[     22395,        578]
+NotebookOutlinePosition[     22740,        593]
+CellTagsIndexPosition[     22697,        590]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -53,7 +53,8 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
    RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
  CellChangeTimes->{{3.5137112151875*^9, 3.513711217109375*^9}, {
    3.51378596903125*^9, 3.513785980671875*^9}, 3.515394539753217*^9, {
    3.515775693875*^9, 3.5157757050625*^9}, {3.517048046727305*^9, 
@@ -63,7 +64,8 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
    3.517722236008023*^9}, {3.5209603293125*^9, 3.520960329578125*^9}, 
    3.521782180515625*^9, {3.52178222675*^9, 3.521782271609375*^9}, {
    3.521782314984375*^9, 3.52178231528125*^9}, {3.521784250453125*^9, 
-   3.521784262859375*^9}, 3.575772119236006*^9}],
+   3.521784262859375*^9}, 3.575772119236006*^9, {3.6058645641382823`*^9, 
+   3.605864567400282*^9}}],
 
 Cell[CellGroupData[{
 
@@ -212,7 +214,8 @@ Cell[BoxData[
    3.5762413821924934`*^9, 3.576241404282132*^9}, 3.576241479911065*^9, 
    3.576241557583602*^9, 3.5769213176976414`*^9, 3.577611868866741*^9, 
    3.578106853256239*^9, 3.5781111842944727`*^9, 3.5785097120697594`*^9, 
-   3.5788166198743668`*^9, 3.581405992025368*^9, 3.5814062775156975`*^9}]
+   3.5788166198743668`*^9, 3.581405992025368*^9, 3.5814062775156975`*^9, 
+   3.6057979166847634`*^9}]
 }, Open  ]],
 
 Cell["The generated piston force", "Text"],
@@ -333,13 +336,248 @@ Cell[BoxData[
   3.5217850951875*^9, 3.5217850970625*^9}, {3.5719040456319137`*^9, 
   3.5719040637591457`*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
- RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Power", "::", "infy"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Infinite expression \[NoBreak]\\!\\(1\\/0\\)\[NoBreak] \
+encountered. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/infy\\\", ButtonNote -> \
+\\\"Power::infy\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168257713`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Power", "::", "infy"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Infinite expression \[NoBreak]\\!\\(1\\/0\\)\[NoBreak] \
+encountered. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/infy\\\", ButtonNote -> \
+\\\"Power::infy\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168437724`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Power", "::", "infy"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Infinite expression \[NoBreak]\\!\\(1\\/0\\)\[NoBreak] \
+encountered. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/infy\\\", ButtonNote -> \
+\\\"Power::infy\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168457727`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Power :: \
+infy\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168477726`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part \[NoBreak]\\!\\(6\\)\[NoBreak] of \
+\[NoBreak]\\!\\(MechanicRotQnode[\\(\\(mr, 0.`, \\\"mechanical rot. \
+node\\\"\\)\\)]\\)\[NoBreak] does not exist. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partw\\\", ButtonNote -> \
+\\\"Part::partw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168497725`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part \[NoBreak]\\!\\(6\\)\[NoBreak] of \
+\[NoBreak]\\!\\(MechanicRotQnode[\\(\\(mr, 0.`, \\\"mechanical rot. \
+node\\\"\\)\\)]\\)\[NoBreak] does not exist. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partw\\\", ButtonNote -> \
+\\\"Part::partw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168517733`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part \[NoBreak]\\!\\(6\\)\[NoBreak] of \
+\[NoBreak]\\!\\(MechanicRotQnode[\\(\\(mr, 0.`, \\\"mechanical rot. \
+node\\\"\\)\\)]\\)\[NoBreak] does not exist. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partw\\\", ButtonNote -> \
+\\\"Part::partw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168547735`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Part :: \
+partw\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168567734`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "cntsList"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"modelobject\\\", \
+\\(\\({\\(\\(\\\"typename\\\" \[Rule] \\\"HydraulicPistonJload\\\"\\)\\), \\(\
+\\(\\\"displayname\\\" \[Rule] \\\"HydraulicPistonJload\\\"\\)\\)}\\)\\), \\(\
+\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \[Rule] \
+\\\"HydraulicPistonJload.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \[Rule] \\\
+\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \\\"HydraulicPistonJload.svg\\\
+\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\
+\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"hopsanobjectappearance\\\", \
+\\(\\({\\\"version\\\" \[Rule] \\\"0.1\\\"}\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"modelobject\\\", \\(\\({\\(\\(\\\"typename\\\" \
+\[Rule] \\\"HydraulicPistonJload\\\"\\)\\), \\(\\(\\\"displayname\\\" \[Rule] \
+\\\"HydraulicPistonJload\\\"\\)\\)}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
+\[Rule] \\\"HydraulicPistonJload.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \
+\[Rule] \\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \
+\\\"HydraulicPistonJload.svg\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)]\\)\\)}\\)\\)\
+\\)\\)]\\)\\)\\)\\)]\\)\[NoBreak] is not a list of contents. The third item \
+in an XMLElement must be a list of contents, even if it is an empty list. \\!\
+\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::cntsList\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.605797916872774*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168757744`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.25`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"y\\\" \[Rule] 0.25`\\)\[NoBreak] is not a valid value for \
+an attribute in an XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168767743`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168787746`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.5`\\)\[NoBreak] in \[NoBreak]\\!\\(\\\"y\
+\\\" \[Rule] 0.5`\\)\[NoBreak] is not a valid value for an attribute in an \
+XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168797746`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.605797916881775*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Export :: \
+autofix\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.605797916882775*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.75`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"y\\\" \[Rule] 0.75`\\)\[NoBreak] is not a valid value for \
+an attribute in an XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168837748`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \
+\[NoBreak]\\!\\(\\*StyleBox[\\(XMLElement :: attrhs\\), \
+\\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this calculation. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/stop\\\", \
+ButtonNote -> \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6057979168857746`*^9}]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
 WindowSize->{707, 505},
-WindowMargins->{{Automatic, 0}, {2, Automatic}},
+WindowMargins->{{Automatic, 293}, {Automatic, 200}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
 ]
@@ -357,36 +595,55 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[579, 22, 264, 8, 92, "Section",
  Evaluatable->False],
-Cell[846, 32, 1542, 33, 172, "Input"],
+Cell[846, 32, 1647, 35, 192, "Input"],
 Cell[CellGroupData[{
-Cell[2413, 69, 43, 0, 36, "Subsection"],
-Cell[2459, 71, 137, 1, 29, "Text"]
+Cell[2518, 71, 43, 0, 36, "Subsection"],
+Cell[2564, 73, 137, 1, 29, "Text"]
 }, Open  ]],
-Cell[2611, 75, 41, 0, 36, "Subsection"],
+Cell[2716, 77, 41, 0, 36, "Subsection"],
 Cell[CellGroupData[{
-Cell[2677, 79, 46, 0, 28, "Subsection"],
-Cell[2726, 81, 2195, 55, 292, "Input"],
-Cell[4924, 138, 550, 14, 92, "Input"],
-Cell[5477, 154, 711, 18, 92, "Input"]
+Cell[2782, 81, 46, 0, 28, "Subsection"],
+Cell[2831, 83, 2195, 55, 292, "Input"],
+Cell[5029, 140, 550, 14, 92, "Input"],
+Cell[5582, 156, 711, 18, 92, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6225, 177, 45, 0, 36, "Subsection"],
-Cell[6273, 179, 64, 0, 29, "Text"],
+Cell[6330, 179, 45, 0, 36, "Subsection"],
+Cell[6378, 181, 64, 0, 29, "Text"],
 Cell[CellGroupData[{
-Cell[6362, 183, 372, 9, 52, "Input"],
-Cell[6737, 194, 1337, 20, 30, "Output"]
+Cell[6467, 185, 372, 9, 52, "Input"],
+Cell[6842, 196, 1365, 21, 30, "Output"]
 }, Open  ]],
-Cell[8089, 217, 42, 0, 29, "Text"],
-Cell[8134, 219, 230, 6, 31, "Input"],
-Cell[8367, 227, 1465, 39, 132, "Input"],
-Cell[9835, 268, 29, 0, 29, "Text"],
-Cell[9867, 270, 607, 15, 88, "Input"],
-Cell[10477, 287, 116, 1, 29, "Text"],
-Cell[10596, 290, 331, 8, 31, "Input"],
-Cell[10930, 300, 387, 9, 31, "Input"],
-Cell[11320, 311, 334, 10, 31, "Input"],
-Cell[11657, 323, 420, 10, 92, "Input"],
-Cell[12080, 335, 63, 1, 31, "Input"]
+Cell[8222, 220, 42, 0, 29, "Text"],
+Cell[8267, 222, 230, 6, 31, "Input"],
+Cell[8500, 230, 1465, 39, 132, "Input"],
+Cell[9968, 271, 29, 0, 29, "Text"],
+Cell[10000, 273, 607, 15, 88, "Input"],
+Cell[10610, 290, 116, 1, 29, "Text"],
+Cell[10729, 293, 331, 8, 31, "Input"],
+Cell[11063, 303, 387, 9, 31, "Input"],
+Cell[11453, 314, 334, 10, 31, "Input"],
+Cell[11790, 326, 420, 10, 92, "Input"],
+Cell[CellGroupData[{
+Cell[12235, 340, 63, 1, 31, "Input"],
+Cell[12301, 343, 447, 10, 40, "Message"],
+Cell[12751, 355, 447, 10, 40, "Message"],
+Cell[13201, 367, 447, 10, 40, "Message"],
+Cell[13651, 379, 530, 11, 21, "Message"],
+Cell[14184, 392, 534, 11, 21, "Message"],
+Cell[14721, 405, 534, 11, 21, "Message"],
+Cell[15258, 418, 534, 11, 21, "Message"],
+Cell[15795, 431, 530, 11, 21, "Message"],
+Cell[16328, 444, 1827, 28, 158, "Message"],
+Cell[18158, 474, 460, 10, 21, "Message"],
+Cell[18621, 486, 577, 11, 39, "Message"],
+Cell[19201, 499, 460, 10, 21, "Message"],
+Cell[19664, 511, 575, 11, 39, "Message"],
+Cell[20242, 524, 458, 10, 21, "Message"],
+Cell[20703, 536, 532, 11, 21, "Message"],
+Cell[21238, 549, 577, 11, 39, "Message"],
+Cell[21818, 562, 537, 11, 21, "Message"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }

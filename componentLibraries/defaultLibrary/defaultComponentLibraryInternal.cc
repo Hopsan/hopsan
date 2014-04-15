@@ -119,6 +119,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicOpenCenterValve", HydraulicOpenCenterValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicAckumulator", HydraulicAckumulator::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPistonAckumulator", HydraulicPistonAckumulator::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureSensor", HydraulicPressureSensor::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicFlowSensor", HydraulicFlowSensor::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);

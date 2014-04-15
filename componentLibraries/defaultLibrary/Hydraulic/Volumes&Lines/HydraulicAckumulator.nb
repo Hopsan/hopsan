@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     16083,        425]
-NotebookOptionsPosition[     14421,        370]
-NotebookOutlinePosition[     14979,        391]
-CellTagsIndexPosition[     14936,        388]
+NotebookDataLength[     17169,        459]
+NotebookOptionsPosition[     15155,        393]
+NotebookOutlinePosition[     15713,        414]
+CellTagsIndexPosition[     15670,        411]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -26,6 +26,8 @@ Cell[TextData[StyleBox["Ackumulator",
  CellChangeTimes->{{3.52488616965088*^9, 3.5248861799318666`*^9}, {
    3.549457210515625*^9, 3.54945721375*^9}, {3.54964439396875*^9, 
    3.54964439896875*^9}, 3.576214739734736*^9}],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
@@ -50,7 +52,8 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
    RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
  CellChangeTimes->{{3.5137112151875*^9, 3.513711217109375*^9}, {
    3.51378596903125*^9, 3.513785980671875*^9}, 3.515394539753217*^9, {
    3.515775693875*^9, 3.5157757050625*^9}, {3.517048046727305*^9, 
@@ -62,17 +65,39 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
    3.521782314984375*^9, 3.52178231528125*^9}, 3.5248861854161005`*^9, {
    3.549457222296875*^9, 3.54945722546875*^9}, 3.575772120031607*^9, 
    3.576214746669736*^9, {3.576216089867127*^9, 3.5762161017623167`*^9}, 
-   3.576216150378739*^9}],
+   3.576216150378739*^9, {3.6058491003507786`*^9, 3.605849105558299*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "2014", ",", "4", ",", "7", ",", "11", ",", "3", ",", 
+   "14.6730303`8.919094765340208"}], "}"}]], "Output",
+ CellChangeTimes->{3.6058501946730304`*^9}]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell["Component description", "Subsection"],
 
+Cell[CellGroupData[{
+
 Cell["\<\
 A general ackumulator. This model does not have any thermodynamic losses. The \
 process is considered to be adiabatic.\
 \>", "Text",
- CellChangeTimes->{{3.6058462493056927`*^9, 3.6058462786656284`*^9}}],
+ CellGroupingRules->{GroupTogetherGrouping, 10000.},
+ CellChangeTimes->{{3.6058462493056927`*^9, 3.6058462786656284`*^9}, 
+   3.6058500540234365`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Bp", "=."}], ";", 
+  RowBox[{"Ap", "=."}], ";", 
+  RowBox[{"p0", "=."}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.},
+ CellChangeTimes->{{3.54953147675*^9, 3.549531484296875*^9}, {
+   3.6058465047642365`*^9, 3.605846513109071*^9}, 3.6058500540234365`*^9}]
+}, Closed]],
 
 Cell[BoxData[
  GraphicsBox[
@@ -130,14 +155,6 @@ A9UAVAPVAFQD1QBUA9UAVAPVAFQD1QDYe8veVJKrffeKYvM/ZEvLpQ==
 Cell[CellGroupData[{
 
 Cell["Variables and parameters", "Subsection"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"Bp", "=."}], ";", 
-  RowBox[{"Ap", "=."}], ";", 
-  RowBox[{"p0", "=."}], ";"}]], "Input",
- CellChangeTimes->{{3.54953147675*^9, 3.549531484296875*^9}, {
-  3.6058465047642365`*^9, 3.605846513109071*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -355,21 +372,27 @@ Cell[BoxData[
  CellChangeTimes->{{3.524850716875*^9, 3.524850716875*^9}, {
   3.54952696459375*^9, 3.54952699509375*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
- RowBox[{"Compgen", "[", "file", "]"}]], "Input"],
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.},
+ CellChangeTimes->{3.6058500608243685`*^9}],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"Bp", "=."}], ";", 
   RowBox[{"Ap", "=."}], ";", 
   RowBox[{"SL", "=."}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.},
  CellChangeTimes->{{3.5762171779989386`*^9, 3.5762171919883375`*^9}, 
-   3.605775706999442*^9}]
+   3.605775706999442*^9, 3.6058500608243685`*^9}]
+}, Closed]]
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{707, 505},
-WindowMargins->{{Automatic, 232}, {Automatic, 200}},
+WindowSize->{1004, 770},
+WindowMargins->{{Automatic, 304}, {67, Automatic}},
 PrintingCopies->1,
 PrintingPageRange->{32000, 32000},
 PrintingOptions->{"Magnification"->1.,
@@ -393,38 +416,49 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[579, 22, 277, 5, 77, "Section",
  Evaluatable->False],
-Cell[859, 29, 1659, 35, 193, "Input"],
 Cell[CellGroupData[{
-Cell[2543, 68, 43, 0, 40, "Subsection"],
-Cell[2589, 70, 212, 4, 49, "Text"],
-Cell[2804, 76, 2812, 50, 156, "Input"]
+Cell[881, 31, 1760, 36, 193, "Input"],
+Cell[2644, 69, 195, 5, 32, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5653, 131, 46, 0, 40, "Subsection"],
-Cell[5702, 133, 237, 6, 32, "Input"],
-Cell[5942, 141, 1613, 33, 142, "Input"],
-Cell[7558, 176, 1194, 28, 141, "Input"],
-Cell[8755, 206, 398, 10, 53, "Input"]
+Cell[2876, 79, 43, 0, 40, "Subsection"],
+Cell[CellGroupData[{
+Cell[2944, 83, 293, 6, 30, "Text",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.}],
+Cell[3240, 91, 315, 7, 32, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.}]
+}, Closed]],
+Cell[3570, 101, 2812, 50, 149, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[9190, 221, 45, 0, 40, "Subsection"],
-Cell[9238, 223, 160, 3, 30, "Text"],
-Cell[9401, 228, 134, 3, 32, "Input"],
-Cell[9538, 233, 291, 6, 32, "Input"],
-Cell[9832, 241, 220, 4, 30, "Text"],
-Cell[10055, 247, 185, 5, 50, "Input"],
-Cell[10243, 254, 123, 1, 30, "Text"],
-Cell[10369, 257, 301, 7, 32, "Input"],
-Cell[10673, 266, 1606, 37, 137, "Input"],
-Cell[12282, 305, 378, 9, 53, "Input"],
-Cell[12663, 316, 92, 1, 30, "Text"],
-Cell[12758, 319, 372, 9, 32, "Input"],
-Cell[13133, 330, 29, 0, 30, "Text"],
-Cell[13165, 332, 519, 11, 73, "Input"],
-Cell[13687, 345, 132, 1, 30, "Text"],
-Cell[13822, 348, 282, 7, 32, "Input"],
-Cell[14107, 357, 63, 1, 32, "Input"],
-Cell[14173, 360, 220, 6, 32, "Input"]
+Cell[6419, 156, 46, 0, 40, "Subsection"],
+Cell[6468, 158, 1613, 33, 142, "Input"],
+Cell[8084, 193, 1194, 28, 141, "Input"],
+Cell[9281, 223, 398, 10, 53, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9716, 238, 45, 0, 40, "Subsection"],
+Cell[9764, 240, 160, 3, 30, "Text"],
+Cell[9927, 245, 134, 3, 32, "Input"],
+Cell[10064, 250, 291, 6, 32, "Input"],
+Cell[10358, 258, 220, 4, 30, "Text"],
+Cell[10581, 264, 185, 5, 50, "Input"],
+Cell[10769, 271, 123, 1, 30, "Text"],
+Cell[10895, 274, 301, 7, 32, "Input"],
+Cell[11199, 283, 1606, 37, 137, "Input"],
+Cell[12808, 322, 378, 9, 53, "Input"],
+Cell[13189, 333, 92, 1, 30, "Text"],
+Cell[13284, 336, 372, 9, 32, "Input"],
+Cell[13659, 347, 29, 0, 30, "Text"],
+Cell[13691, 349, 519, 11, 73, "Input"],
+Cell[14213, 362, 132, 1, 30, "Text"],
+Cell[14348, 365, 282, 7, 32, "Input"],
+Cell[CellGroupData[{
+Cell[14655, 376, 160, 3, 32, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.}],
+Cell[14818, 381, 297, 7, 32, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10000.}]
+}, Closed]]
 }, Open  ]]
 }, Open  ]]
 }

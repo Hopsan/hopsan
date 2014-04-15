@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicPressureReducingValveG.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 6 Apr 2014 20:21:10
+//! @date Tue 8 Apr 2014 15:49:53
 //! @brief A hydraulic pressure relief valve based on geometry
 //! @ingroup HydraulicComponents
 //!

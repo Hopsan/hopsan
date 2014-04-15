@@ -143,6 +143,7 @@ HEADERS += \
     Hydraulic/Volumes&Lines/HydraulicTLMlossless.hpp \
     Hydraulic/Volumes&Lines/HydraulicHose.hpp \
     Hydraulic/Volumes&Lines/HydraulicAckumulator.hpp \
+    Hydraulic/Volumes&Lines/HydraulicPistonAckumulator.hpp \
     Hydraulic/Volumes&Lines/HopsanDefaulHydraulicVolumesAndLines.h \
     Hydraulic/Sensors/HydraulicPowerSensor.hpp \
     Hydraulic/Valves/HopsanDefaultHydraulicValves.h \

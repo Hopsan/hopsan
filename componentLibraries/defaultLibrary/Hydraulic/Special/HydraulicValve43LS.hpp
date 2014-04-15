@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicValve43LS.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 6 Apr 2014 20:21:14
+//! @date Tue 8 Apr 2014 15:50:19
 //! @brief A load sensing hydraulic directional valve
 //! @ingroup HydraulicComponents
 //!
