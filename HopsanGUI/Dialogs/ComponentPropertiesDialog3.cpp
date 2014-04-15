@@ -1289,6 +1289,8 @@ void ParameterValueSelectionWidget::setConditionalValue(const int idx)
 
 void ParameterValueSelectionWidget::resetDefault()
 {
+    // It is important to emit this signal before resetting the value
+    // It will cause any custom unit scale to be reset first
     emit resetButtonPressed();
     if(mpModelObject && mpValueEdit)
     {

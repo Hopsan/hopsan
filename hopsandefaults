@@ -173,6 +173,13 @@
             <unitscale unit="ft^2">10.7639</unitscale>
             <unitscale unit="inch^2">1550</unitscale>
         </quantity>
+        <quantity name="Volume" siunit="m^3">
+            <unitscale unit="cm^3">1e6</unitscale>
+            <unitscale unit="l">1000</unitscale>
+        </quantity>
+        <quantity name="Displacement" siunit="m^3/rev">
+            <unitscale unit="cm^3/rev">1e6</unitscale>
+        </quantity>
     </unitscales>
     <units>
         <defaultunit unit="V" name="Voltage"/>
