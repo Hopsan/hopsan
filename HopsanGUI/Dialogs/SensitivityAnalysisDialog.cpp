@@ -578,13 +578,17 @@ void SensitivityAnalysisDialog::run()
         {
             for(int g=nGenerations-nSteps/nThreads; g<nGenerations; ++g)
             {
-                QVector<double> temp = mModelPtrs[m]->getTopLevelSystemContainer()->getLogDataHandler()->getVectorVariable(fullName, g)->getDataVectorCopy();
-                for(int i=0; i<temp.size(); ++i)
+                SharedVectorVariableT pVector = mModelPtrs[m]->getTopLevelSystemContainer()->getLogDataHandler()->getVectorVariable(fullName, g);
+                if(!pVector.isNull())
                 {
-                    if(temp[i] > vMax[i]) vMax[i] = temp[i];
-                    if(temp[i] < vMin[i]) vMin[i] = temp[i];
-                    if(temp[i] > totalMax) totalMax = temp[i];
-                    if(temp[i] < totalMin) totalMin = temp[i];
+                    QVector<double> temp = pVector->getDataVectorCopy();
+                    for(int i=0; i<temp.size(); ++i)
+                    {
+                        if(temp[i] > vMax[i]) vMax[i] = temp[i];
+                        if(temp[i] < vMin[i]) vMin[i] = temp[i];
+                        if(temp[i] > totalMax) totalMax = temp[i];
+                        if(temp[i] < totalMin) totalMin = temp[i];
+                    }
                 }
             }
         }
