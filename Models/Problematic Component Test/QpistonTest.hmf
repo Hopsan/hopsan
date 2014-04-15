@@ -11,7 +11,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
       <animation flowspeed="100"/>
-      <viewport x="3768.93" y="2131.21" zoom="0.70922"/>
+      <viewport x="3794.31" y="2376.55" zoom="0.70922"/>
       <ports hidden="1"/>
       <names hidden="0"/>
       <graphics type="user"/>
@@ -132,7 +132,7 @@
           <port nodetype="NodeSignal" name="p"/>
         </ports>
         <hopsangui>
-          <pose x="3419.835394" y="2610.500526" flipped="false" a="0"/>
+          <pose x="3387.4054" y="2609.090526" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -154,7 +154,7 @@
           <port nodetype="NodeSignal" name="A"/>
         </ports>
         <hopsangui>
-          <pose x="3419.835394" y="2436.500526" flipped="false" a="270"/>
+          <pose x="3387.4054" y="2435.090526" flipped="false" a="270"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -212,7 +212,7 @@
           <port nodetype="NodeMechanic" name="Pmp"/>
         </ports>
         <hopsangui>
-          <pose x="3506.669299" y="2184.089563" flipped="false" a="0"/>
+          <pose x="3471.419306" y="2177.039565" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -295,7 +295,7 @@
           <port nodetype="NodeHydraulic" name="P1"/>
         </ports>
         <hopsangui>
-          <pose x="3506.789999" y="2604.8775" flipped="false" a="0"/>
+          <pose x="3464.243306" y="2604.8775" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -338,7 +338,7 @@
         </ports>
         <hopsangui>
           <pose x="3911.951135" y="2435.267452" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
+          <nametext position="1" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalRamp" displayname="Xs_SpoolPosition_2">
@@ -406,7 +406,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="3390.22924" y="2088.474571" flipped="false" a="0"/>
+          <pose x="3388.81924" y="2088.474571" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -426,7 +426,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="4160.229753" y="2087.241497" flipped="false" a="0"/>
+          <pose x="4158.819753" y="2088.651497" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -522,7 +522,7 @@
           <port nodetype="NodeHydraulic" name="P1"/>
         </ports>
         <hopsangui>
-          <pose x="4276.790512" y="2603.644426" flipped="false" a="0"/>
+          <pose x="4269.657907" y="2603.644426" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -546,7 +546,7 @@
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="4122.02271" y="2155.369652" flipped="false" a="0"/>
+          <pose x="4120.61271" y="2156.779652" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
@@ -575,7 +575,7 @@
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="3352.022197" y="2156.602726" flipped="false" a="0"/>
+          <pose x="3350.612197" y="2156.602726" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
@@ -635,7 +635,7 @@
           <port nodetype="NodeHydraulic" name="P2"/>
         </ports>
         <hopsangui>
-          <pose x="3419.835394" y="2299.063882" flipped="false" a="270"/>
+          <pose x="3387.4054" y="2297.653882" flipped="false" a="270"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
@@ -681,7 +681,7 @@
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="3208.000000" y="1946.000000"/>
+          <pose x="3162.880127" y="1946.000009"/>
           <textobject fontcolor="#ff5500" text="Q-cylindern med HydraulicPistonMload&#xa;&#xa;" font="Calibri,20,-1,0,50,0,0,0,0,0"/>
           <size width="597.093750" height="700.841710"/>
           <line width="2.000000" visible="1" style="solidline"/>
@@ -689,7 +689,7 @@
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="3978.000513" y="1944.766926"/>
+          <pose x="3975.180514" y="1946.176926"/>
           <textobject fontcolor="#ff5500" text="Q_piston Piston behaves erratic&#xa;&#xa;" font="Calibri,20,-1,0,50,0,0,0,0,0"/>
           <size width="597.093750" height="700.841710"/>
           <line width="2.000000" visible="1" style="solidline"/>
@@ -708,10 +708,10 @@
       <connect endport="P2" endcomponent="Turbulent_Orifice" startport="P1" startcomponent="C_type_Pressure_Source">
         <hopsangui>
           <coordinates>
-            <coordinate x="3419.83539400000017849379" y="2598.50052599999980884604"/>
-            <coordinate x="3419.83539400000017849379" y="2486.50052633036875704420"/>
-            <coordinate x="3419.83539400000017849379" y="2486.50052633036875704420"/>
-            <coordinate x="3419.83539400000017849379" y="2466.50052599999980884604"/>
+            <coordinate x="3387.40540048599905276205" y="2597.09052628199970058631"/>
+            <coordinate x="3387.40540048599905276205" y="2485.09052661236864878447"/>
+            <coordinate x="3387.40540048599905276205" y="2485.09052661236864878447"/>
+            <coordinate x="3387.40540048599905276205" y="2465.09052628199970058631"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -724,10 +724,10 @@
       <connect endport="P1" endcomponent="Turbulent_Orifice" startport="P1" startcomponent="Hydraulic_Volume">
         <hopsangui>
           <coordinates>
-            <coordinate x="3419.83539400000017849379" y="2324.06388199999992139055"/>
-            <coordinate x="3419.83539400000017849379" y="2386.50052633036921179155"/>
-            <coordinate x="3419.83539400000017849379" y="2386.50052633036921179155"/>
-            <coordinate x="3419.83539400000017849379" y="2406.50052599999980884604"/>
+            <coordinate x="3387.40540048599905276205" y="2322.65388228200026787817"/>
+            <coordinate x="3387.40540048599905276205" y="2385.09052661236955827917"/>
+            <coordinate x="3387.40540048599905276205" y="2385.09052661236955827917"/>
+            <coordinate x="3387.40540048599905276205" y="2405.09052628200015533366"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -740,10 +740,10 @@
       <connect endport="P2" endcomponent="Hydraulic_Volume" startport="P1" startcomponent="Flow_Rate_Transducer_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="3352.02219699999977819971" y="2174.60272600000007514609"/>
-            <coordinate x="3352.02219699999977819971" y="2254.06388161721997676068"/>
-            <coordinate x="3419.83539400000017849379" y="2254.06388161721997676068"/>
-            <coordinate x="3419.83539400000017849379" y="2274.06388199999992139055"/>
+            <coordinate x="3350.61219728199966993998" y="2174.60272600000007514609"/>
+            <coordinate x="3350.61219728199966993998" y="2254.06388161721997676068"/>
+            <coordinate x="3387.40540048599905276205" y="2254.06388161721997676068"/>
+            <coordinate x="3387.40540048599905276205" y="2272.65388228200026787817"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -756,11 +756,11 @@
       <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="Flow_Rate_Transducer_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="3352.02219699999977819971" y="2138.60272600000007514609"/>
-            <coordinate x="3352.02219699999977819971" y="2132.63183883201008939068"/>
-            <coordinate x="3352.12677117080465905019" y="2132.63183883201008939068"/>
-            <coordinate x="3352.12677117080465905019" y="2088.47457100000019636354"/>
-            <coordinate x="3370.22924000000011801603" y="2088.47457100000019636354"/>
+            <coordinate x="3350.61219728199966993998" y="2138.60272600000007514609"/>
+            <coordinate x="3350.61219728199966993998" y="2132.63183883201008939068"/>
+            <coordinate x="3350.71677145280455079046" y="2132.63183883201008939068"/>
+            <coordinate x="3350.71677145280455079046" y="2088.47457100000019636354"/>
+            <coordinate x="3368.81924028200000975630" y="2088.47457100000019636354"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -776,8 +776,8 @@
           <coordinates>
             <coordinate x="3154.45062199999983931775" y="2436.50052599999980884604"/>
             <coordinate x="3384.83539400000017849379" y="2436.50052599999980884604"/>
-            <coordinate x="3384.83539400000017849379" y="2436.50052599999980884604"/>
-            <coordinate x="3404.83539400000017849379" y="2436.50052599999980884604"/>
+            <coordinate x="3384.83539400000017849379" y="2435.09052628199970058631"/>
+            <coordinate x="3372.40540048599905276205" y="2435.09052628199970058631"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -818,26 +818,10 @@
       <connect endport="P2" endcomponent="Hydraulic_Volume" startport="P1" startcomponent="HydraulicPistonMkload">
         <hopsangui>
           <coordinates>
-            <coordinate x="3420.18929866613962076372" y="2186.96956318208640368539"/>
-            <coordinate x="3420.18929866613962076372" y="2254.06388199999992139055"/>
-            <coordinate x="3419.83539400000017849379" y="2254.06388199999992139055"/>
-            <coordinate x="3419.83539400000017849379" y="2274.06388199999992139055"/>
-          </coordinates>
-          <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P2" endcomponent="HydraulicPistonMkload" startport="P1" startcomponent="C_type_Tank">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="3506.78999900000007983181" y="2590.37750000000005456968"/>
-            <coordinate x="3506.78999900000007983181" y="2168.37956290008651194512"/>
-            <coordinate x="3499.49329866613970807521" y="2168.37956290008651194512"/>
-            <coordinate x="3499.49329866613970807521" y="2186.96956318208640368539"/>
+            <coordinate x="3384.93930571613782376517" y="2179.91956459208722662879"/>
+            <coordinate x="3384.93930571613782376517" y="2254.06388199999992139055"/>
+            <coordinate x="3387.40540048599905276205" y="2254.06388199999992139055"/>
+            <coordinate x="3387.40540048599905276205" y="2272.65388228200026787817"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -850,8 +834,8 @@
       <connect endport="P1" endcomponent="Force_Source" startport="Pmp" startcomponent="HydraulicPistonMkload">
         <hopsangui>
           <coordinates>
-            <coordinate x="3598.66929866613963895361" y="2167.52956318208634911571"/>
-            <coordinate x="3644.33539400000017849379" y="2167.52956318208634911571"/>
+            <coordinate x="3563.41930571613784195506" y="2160.47956459208717205911"/>
+            <coordinate x="3644.33539400000017849379" y="2160.47956459208717205911"/>
             <coordinate x="3644.33539400000017849379" y="2191.06388199999992139055"/>
             <coordinate x="3664.33539400000017849379" y="2191.06388199999992139055"/>
           </coordinates>
@@ -867,8 +851,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="3577.30462900000020454172" y="2122.96434200000021519372"/>
-            <coordinate x="3577.30462900000020454172" y="2167.52956318208634911571"/>
-            <coordinate x="3598.66929866613963895361" y="2167.52956318208634911571"/>
+            <coordinate x="3577.30462900000020454172" y="2160.47956459208717205911"/>
+            <coordinate x="3563.41930571613784195506" y="2160.47956459208717205911"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -881,8 +865,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="3633.33299299999998765998" y="2122.96434200000021519372"/>
-            <coordinate x="3633.33299299999998765998" y="2167.52956318208634911571"/>
-            <coordinate x="3598.66929866613963895361" y="2167.52956318208634911571"/>
+            <coordinate x="3633.33299299999998765998" y="2160.47956459208717205911"/>
+            <coordinate x="3563.41930571613784195506" y="2160.47956459208717205911"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -958,8 +942,8 @@
       <connect endport="P2" endcomponent="Q_type_Piston" startport="P1" startcomponent="C_type_Tank_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="4276.79051216817151725991" y="2589.14442578809257611283"/>
-            <coordinate x="4276.79051216817151725991" y="2229.83080740531295305118"/>
+            <coordinate x="4269.65790716817082284251" y="2589.14442578809257611283"/>
+            <coordinate x="4269.65790716817082284251" y="2229.83080740531295305118"/>
             <coordinate x="4269.65790716817082284251" y="2229.83080740531295305118"/>
             <coordinate x="4269.65790716817082284251" y="2209.83080778809244293370"/>
           </coordinates>
@@ -974,10 +958,10 @@
       <connect endport="P2" endcomponent="Hydraulic_Volume_1" startport="P1" startcomponent="Flow_Rate_Transducer_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="4122.02271016817121562781" y="2173.36965178809214194189"/>
-            <coordinate x="4122.02271016817121562781" y="2252.83080740531204355648"/>
+            <coordinate x="4120.61271045017110736808" y="2174.77965150609179545427"/>
+            <coordinate x="4120.61271045017110736808" y="2252.83080740531204355648"/>
             <coordinate x="4189.83590716817070642719" y="2252.83080740531204355648"/>
-            <coordinate x="4189.83590716817070642719" y="2272.83080778809198818635"/>
+            <coordinate x="4189.83590716817070642719" y="2272.83080778809244293370"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -990,11 +974,11 @@
       <connect endport="in" endcomponent="Scope_3" startport="out" startcomponent="Flow_Rate_Transducer_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="4122.02271016817121562781" y="2137.36965178809214194189"/>
-            <coordinate x="4122.02271016817121562781" y="2131.39876462010215618648"/>
-            <coordinate x="4122.12728433897518698359" y="2131.39876462010215618648"/>
-            <coordinate x="4122.12728433897518698359" y="2087.24149678809226315934"/>
-            <coordinate x="4140.22975316817155544413" y="2087.24149678809226315934"/>
+            <coordinate x="4120.61271045017110736808" y="2138.77965150609179545427"/>
+            <coordinate x="4120.61271045017110736808" y="2132.80876433810180969886"/>
+            <coordinate x="4120.71728462097507872386" y="2132.80876433810180969886"/>
+            <coordinate x="4120.71728462097507872386" y="2088.65149650609191667172"/>
+            <coordinate x="4138.81975345017144718440" y="2088.65149650609191667172"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1077,6 +1061,22 @@
           <geometries>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="C_type_Tank" startport="P2" startcomponent="HydraulicPistonMkload">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="3464.24330571613791107666" y="2179.91956459208722662879"/>
+            <coordinate x="3464.24330571613791107666" y="2570.37750000000005456968"/>
+            <coordinate x="3464.24330571613791107666" y="2570.37750000000005456968"/>
+            <coordinate x="3464.24330571613791107666" y="2590.37750000000005456968"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
