@@ -59,7 +59,7 @@
 #include <limits>
 const double DoubleMax = std::numeric_limits<double>::max();
 const double DoubleMin = std::numeric_limits<double>::min();
-const double Double100Min = 100*DoubleMin;
+const double Double1000Min = 1000*DoubleMin;
 
 //! @brief Rectangle painter widget, used for painting transparent rectangles when dragging things to plot tabs
 class RectanglePainterWidget : public QWidget
@@ -174,7 +174,7 @@ TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pVa
         // Populate time scale box and try to figure out current time unit
         //! @todo what if time = 0
         //! @todo would be nice if we could sort on scale size
-        QMap<QString,double> units = gpConfig->getCustomUnits(mpTimeOrFrequency->getDataName());
+        QMap<QString,double> units = gpConfig->getUnitScales(mpTimeOrFrequency->getDataName());
         QString currUnit = mpTimeOrFrequency->getPlotScaleDataUnit();
         if (currUnit.isEmpty())
         {
@@ -994,12 +994,12 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
             QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit((*itc)->getDataOriginalUnit());
             if (pqs.size() > 0)
             {
-                unitMap = gpConfig->getCustomUnits(pqs.first());
+                unitMap = gpConfig->getUnitScales(pqs.first());
             }
         }
         else
         {
-            unitMap = gpConfig->getCustomUnits((*itc)->getDataName());
+            unitMap = gpConfig->getUnitScales((*itc)->getDataName());
         }
 
         for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
@@ -1199,24 +1199,24 @@ void PlotArea::rescaleAxesToCurves()
     const double sameLimFrac = 0.1;
     bool leftSameLimitEnlargeApplied=false, rightSameLimitEnlargeApplied=false;
     // Max and min must not be same value; if they are, decrease/increase
-    if ( (ylAxisLim.width()) < Double100Min)
+    if ( (ylAxisLim.width()) < Double1000Min)
     {
-        ylAxisLim.extendMax(ylAxisLim.maxValue()+qMax(qAbs(ylAxisLim.maxValue()) * sameLimFrac, Double100Min));
-        ylAxisLim.extendMin(ylAxisLim.minValue()-qMax(qAbs(ylAxisLim.minValue()) * sameLimFrac, Double100Min));
+        ylAxisLim.extendMax(ylAxisLim.maxValue()+qMax(qAbs(ylAxisLim.maxValue()) * sameLimFrac, Double1000Min));
+        ylAxisLim.extendMin(ylAxisLim.minValue()-qMax(qAbs(ylAxisLim.minValue()) * sameLimFrac, Double1000Min));
         leftSameLimitEnlargeApplied=true;
     }
 
-    if ( (yrAxisLim.width()) < Double100Min)
+    if ( (yrAxisLim.width()) < Double1000Min)
     {
-        yrAxisLim.extendMax(yrAxisLim.maxValue()+qMax(qAbs(yrAxisLim.maxValue()) * sameLimFrac, Double100Min));
-        yrAxisLim.extendMin(yrAxisLim.minValue()-qMax(qAbs(yrAxisLim.minValue()) * sameLimFrac, Double100Min));
+        yrAxisLim.extendMax(yrAxisLim.maxValue()+qMax(qAbs(yrAxisLim.maxValue()) * sameLimFrac, Double1000Min));
+        yrAxisLim.extendMin(yrAxisLim.minValue()-qMax(qAbs(yrAxisLim.minValue()) * sameLimFrac, Double1000Min));
         rightSameLimitEnlargeApplied=true;
     }
 
-    if ( (xAxisLim.width()) < Double100Min)
+    if ( (xAxisLim.width()) < Double1000Min)
     {
-        xAxisLim.extendMax(xAxisLim.maxValue()+qMax(qAbs(xAxisLim.maxValue()) * sameLimFrac, Double100Min));
-        xAxisLim.extendMin(xAxisLim.minValue()-qMax(qAbs(xAxisLim.minValue()) * sameLimFrac, Double100Min));
+        xAxisLim.extendMax(xAxisLim.maxValue()+qMax(qAbs(xAxisLim.maxValue()) * sameLimFrac, Double1000Min));
+        xAxisLim.extendMin(xAxisLim.minValue()-qMax(qAbs(xAxisLim.minValue()) * sameLimFrac, Double1000Min));
     }
 
     // If plot has log scale, we use a different approach for calculating margins
@@ -2069,12 +2069,6 @@ void PlotArea::setLegendSymbol(const QString symStyle, PlotCurve *pCurve)
 
     // Fix legend size after possible change in style
     pCurve->resetLegendSize();
-}
-
-void PlotArea::setTabOnlyCustomXVector(HopsanVariable data)
-{
-
-
 }
 
 void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)

@@ -218,7 +218,6 @@ private:
     void constructAxisLabelDialog();
     void setLegendSymbol(const QString symStyle);
     void setLegendSymbol(const QString symStyle, PlotCurve *pCurve);
-    void setTabOnlyCustomXVector(HopsanVariable data);
     void determineAddedCurveUnitOrScale(PlotCurve *pCurve);
     void setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisLimits);
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
