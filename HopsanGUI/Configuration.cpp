@@ -190,6 +190,7 @@ void Configuration::saveToXml()
         xmlTemp.setAttribute("unit", itdu.value());
     }
 
+    //-------------------------------------------------------------------------------------
     //! @deprecated This code should be removed in the future 20140414 /Peter
     appendComment(units, "Note! These customunit tags are deprecated and should no longer be used! (Used for backwards compatibility)");
     QMap<QString, QuantityUnitScale >::iterator itpcu;
@@ -205,6 +206,7 @@ void Configuration::saveToXml()
         }
     }
     appendComment(units, "Note! These customunit tags are deprecated and should no longer be used! (Used for backwards compatibility)");
+    //-------------------------------------------------------------------------------------
 
     //Save python session
 #ifdef USEPYTHONQT
@@ -792,7 +794,7 @@ QString Configuration::getDefaultUnit(const QString &rPhysicalQuantity) const
 //! @brief Returns a map with custom units (names and scale factor) for specified physical quantity
 //! @param[in] rPhysicalQuantity Name of the physical quantity (e.g. "Pressure" or "Velocity")
 //! @todo We should rewrite the code using this function to handle unitscale objects directly instead
-QMap<QString, double> Configuration::getCustomUnits(const QString &rPhysicalQuantity)
+QMap<QString, double> Configuration::getUnitScales(const QString &rPhysicalQuantity)
 {
     QMap<QString, double> dummy;
     if(mUnitScales.contains(rPhysicalQuantity))
@@ -805,6 +807,15 @@ QMap<QString, double> Configuration::getCustomUnits(const QString &rPhysicalQuan
         }
     }
     return dummy;
+}
+
+void Configuration::getUnitScales(const QString &rQuantity, QList<UnitScale> &rUnitScales)
+{
+    QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(rQuantity);
+    if (qit != mUnitScales.end())
+    {
+        rUnitScales = qit.value().customScales.values();
+    }
 }
 
 bool Configuration::hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const

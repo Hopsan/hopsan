@@ -77,7 +77,8 @@ public:
 
     QStringList getUnitQuantities() const;
     QString getDefaultUnit(const QString &rPhysicalQuantity) const;
-    QMap<QString, double> getCustomUnits(const QString &rPhysicalQuantity);
+    QMap<QString, double> getUnitScales(const QString &rPhysicalQuantity);
+    void getUnitScales(const QString &rQuantity, QList<UnitScale> &rUnitScales);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     QStringList getPhysicalQuantitiesForUnit(const QString &rUnit) const;

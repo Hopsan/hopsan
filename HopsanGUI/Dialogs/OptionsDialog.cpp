@@ -49,10 +49,12 @@ public:
     {
         mQuantity = rQuantity;
         mpDefaultUnitComboBox = new QComboBox(this);
-        mpAddCustomUnitButton = new QPushButton("Add Custom Unit", this);
-        mpAddCustomUnitButton->setToolTip("Add Custom "+mQuantity+" Unit");
-        mpRemoveCustomUnitButton = new QPushButton("Remove Selected Unit", this);
-        mpRemoveCustomUnitButton->setToolTip("Remove Custom "+mQuantity+" Unit");
+        QPushButton *pAddCustomUnitButton = new QPushButton("Add Custom Unit", this);
+        pAddCustomUnitButton->setToolTip("Add Custom "+mQuantity+" Unit");
+        QPushButton *pRemoveCustomUnitButton = new QPushButton("Remove Selected", this);
+        pRemoveCustomUnitButton->setToolTip("Remove Custom "+mQuantity+" Unit");
+        QPushButton *pShowCustomUnitsButton = new QPushButton("Show", this);
+        pShowCustomUnitsButton->setToolTip("Show unit scales for "+mQuantity);
 
         QString original = gpConfig->getSIUnit(rQuantity);
 
@@ -61,11 +63,13 @@ public:
         pLayout->addWidget(new QLabel(QString("[%1]").arg(original), this), 0, Qt::AlignRight);
         pLayout->addWidget(new QLabel("Default:", this), 0, Qt::AlignRight);
         pLayout->addWidget(mpDefaultUnitComboBox);
-        pLayout->addWidget(mpAddCustomUnitButton);
-        pLayout->addWidget(mpRemoveCustomUnitButton);
+        pLayout->addWidget(pAddCustomUnitButton);
+        pLayout->addWidget(pRemoveCustomUnitButton);
+        pLayout->addWidget(pShowCustomUnitsButton);
 
-        connect(mpAddCustomUnitButton, SIGNAL(clicked()), this, SLOT(execAddCustomUnitDialog()));
-        connect(mpRemoveCustomUnitButton, SIGNAL(clicked()), this, SLOT(removeSelectedUnitScale()));
+        connect(pAddCustomUnitButton, SIGNAL(clicked()), this, SLOT(execAddCustomUnitDialog()));
+        connect(pRemoveCustomUnitButton, SIGNAL(clicked()), this, SLOT(removeSelectedUnitScale()));
+        connect(pShowCustomUnitsButton, SIGNAL(clicked()), this, SLOT(showScales()));
     }
 
     void updateUnitList()
@@ -73,7 +77,11 @@ public:
         //! @todo The scale value should also be shown in the comboboxes
         mpDefaultUnitComboBox->clear();
         QString defaultUnit = gpConfig->getDefaultUnit(mQuantity);
-        QMap<QString, double> unit_scales = gpConfig->getCustomUnits(mQuantity);
+        if (defaultUnit.isEmpty())
+        {
+            defaultUnit = gpConfig->getSIUnit(mQuantity);
+        }
+        QMap<QString, double> unit_scales = gpConfig->getUnitScales(mQuantity);
         QMap<QString, double>::iterator it;
         for(it = unit_scales.begin(); it != unit_scales.end(); ++it)
         {
@@ -138,13 +146,38 @@ private slots:
         updateUnitList();
     }
 
+    void showScales()
+    {
+        QDialog *pDialog = new QDialog(this);
+        pDialog->setWindowTitle("Custom "+mQuantity+" Unit Scales");
+        QGridLayout *pLayout = new QGridLayout(pDialog);
+
+        QString si = gpConfig->getSIUnit(mQuantity);
+        QList<UnitScale> scales;
+        gpConfig->getUnitScales(mQuantity, scales);
+
+        int r=0;
+        foreach(const UnitScale& scale, scales)
+        {
+            pLayout->addWidget(new QLabel("1 "+si, pDialog), r, 0);
+            pLayout->addWidget(new QLabel(" = ", pDialog), r, 1);
+            pLayout->addWidget(new QLabel(scale.mScale, pDialog), r, 2);
+            pLayout->addWidget(new QLabel(scale.mUnit, pDialog), r, 3);
+            ++r;
+        }
+
+        QDialogButtonBox *pButtonBox = new QDialogButtonBox(QDialogButtonBox::Close, Qt::Horizontal, pDialog);
+        connect(pButtonBox, SIGNAL(rejected()), pDialog, SLOT(reject()));
+        pLayout->addWidget(pButtonBox,r,3);
+
+        pDialog->exec();
+        pDialog->deleteLater();
+    }
 
 
 private:
     QString mQuantity;
     QComboBox *mpDefaultUnitComboBox;
-    QPushButton *mpAddCustomUnitButton;
-    QPushButton *mpRemoveCustomUnitButton;
 };
 #include "OptionsDialog.moc"
 

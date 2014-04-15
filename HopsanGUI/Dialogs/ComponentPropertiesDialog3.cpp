@@ -1046,12 +1046,12 @@ void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
         QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
         if (pqs.size() > 0)
         {
-            unitScales = gpConfig->getCustomUnits(pqs.first());
+            unitScales = gpConfig->getUnitScales(pqs.first());
         }
     }
     else
     {
-        unitScales = gpConfig->getCustomUnits(mVariableTypeName);
+        unitScales = gpConfig->getUnitScales(mVariableTypeName);
     }
     if (!unitScales.isEmpty())
     {
@@ -1106,12 +1106,12 @@ void PlotScaleSelectionWidget::registerCustomScale()
         QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
         if (pqs.size() > 0)
         {
-            unitScales = gpConfig->getCustomUnits(pqs.first());
+            unitScales = gpConfig->getUnitScales(pqs.first());
         }
     }
     else
     {
-        unitScales = gpConfig->getCustomUnits(mVariableTypeName);
+        unitScales = gpConfig->getUnitScales(mVariableTypeName);
     }
 
     if (unitScales.contains(val))
@@ -1475,7 +1475,7 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
     //! @todo there should only be one returned or this will not work
     if (pqs.size() > 0)
     {
-        mUnitScales = gpConfig->getCustomUnits(pqs.first());
+        mUnitScales = gpConfig->getUnitScales(pqs.first());
     }
 
     if (mUnitScales.isEmpty())
