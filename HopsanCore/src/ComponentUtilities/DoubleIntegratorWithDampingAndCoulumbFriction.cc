@@ -97,6 +97,7 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
             ue = u-mUk;
             mDelaySY = (2.0-mW0)/(2.0+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(ue+mDelayU);
             mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
+            mDelayU = ue;
         }
         break;
     case -1:     // Moving with negative velocity
@@ -115,6 +116,7 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
             ue = u+mUk;
             mDelaySY = (2.0-mW0)/(2.0+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(ue+mDelayU);
             mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
+            mDelayU = ue;
         }
         break;
 
