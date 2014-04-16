@@ -73,7 +73,7 @@ defineReplace(generateCopyDllCommand){
     unix {
         for(file, files){
             !macx:qmake_post_link += $$quote(cp -df $${file} $${dstDir}$$escape_expand(\\n\\t))
-             macx:qmake_post_link += $$quote(cp -fpr $${file} $${dstDir}$$escape_expand(\\n\\t))
+             #macx:qmake_post_link += $$quote(cp -fpr $${file} $${dstDir}$$escape_expand(\\n\\t))
         }
     }
 

@@ -29,17 +29,25 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 # Set the QWT paths and dll/so/dylib/framework post linking copy command
 d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
 isEmpty(d):error('Failed to find QWT libs, have you compiled them and put them in the expected location')
-!macx:LIBS *= $$magic_hopsan_libpath
-!macx:INCLUDEPATH *= $$magic_hopsan_includepath
+#!macx:LIBS *= $$magic_hopsan_libpath
+#!macx:INCLUDEPATH *= $$magic_hopsan_includepath
 
-macx:message(On mac using QWT framework in: $$magic_hopsan_includepath)
-macx:LIBS *= -framework qwt
-macx:QMAKE_LIBDIR *= $$magic_hopsan_libpath
-macx:QMAKE_LFLAGS *= -L$$magic_hopsan_libpath -L$$magic_hopsan_libpath/qwt.framework -F$$magic_hopsan_libpath
-macx:INCLUDEPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
-macx:DEPENDPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
-macx:message($$LIBS)
-macx:message($$INCLUDEPATH)
+LIBS *= $$magic_hopsan_libpath
+INCLUDEPATH *= $$magic_hopsan_includepath
+macx:QMAKE_LFLAGS *= -lqwt
+
+macx:message(LIBS=$$LIBS)
+macx:message(INCLUDEPATH=$$INCLUDEPATH)
+macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
+
+#macx:message(On mac using QWT framework in: $$magic_hopsan_includepath)
+#macx:LIBS *= -framework qwt
+#macx:QMAKE_LIBDIR *= $$magic_hopsan_libpath
+#macx:QMAKE_LFLAGS *= -L$$magic_hopsan_libpath -L$$magic_hopsan_libpath/qwt.framework -F$$magic_hopsan_libpath
+#macx:INCLUDEPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
+#macx:DEPENDPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
+#macx:message($$LIBS)
+#macx:message($$INCLUDEPATH)
 
 QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 #--------------------------------------------------------
@@ -176,7 +184,6 @@ SOURCES += main.cpp \
     Widgets/SystemParametersWidget.cpp \
     PlotWindow.cpp \
     PyWrapperClasses.cpp \
-    Widgets/PyDockWidget.cpp \
     GUIObjects/GUIWidgets.cpp \
     GUIObjects/GUISystem.cpp \
     GUIObjects/GUIObject.cpp \
@@ -269,7 +276,6 @@ HEADERS += MainWindow.h \
     Widgets/SystemParametersWidget.h \
     PlotWindow.h \
     PyWrapperClasses.h \
-    Widgets/PyDockWidget.h \
     GUIObjects/GUIWidgets.h \
     GUIObjects/GUISystem.h \
     GUIObjects/GUIObject.h \
@@ -339,6 +345,11 @@ HEADERS += MainWindow.h \
     Optimization/OptimizationWorkerParticleSwarm.h \
     Optimization/OptimizationWorkerParameterSweep.h \
     Widgets/FindWidget.h
+
+    contains(DEFINES, USEPYTHONQT) {
+        SOURCES +=     Widgets/PyDockWidget.cpp
+        HEADERS += Widgets/PyDockWidget.h
+    }
 
 OTHER_FILES += \
     ../hopsandefaults \
