@@ -22,14 +22,8 @@ INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 # The location of the HopsanCore .dll or .so file, needed to link against when compiling your library
 LIBS *= -L$${PWD}/../../bin
 
-# Special options for deug and release mode
 # In debug mode HopsanCore has the debug extension _d
-CONFIG(debug, debug|release) {
-    LIBS *= -lHopsanCore_d
-}
-CONFIG(release, debug|release) {
-    LIBS *= -lHopsanCore
-}
+LIBS *= -lHopsanCore$${DEBUG_EXT}
 
 # Reduce compile output clutter, but show warnings
 CONFIG += silent warn_on

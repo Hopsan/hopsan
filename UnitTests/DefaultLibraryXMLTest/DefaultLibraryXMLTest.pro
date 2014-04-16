@@ -16,11 +16,7 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 #Determine debug extension
-CONFIG(debug, debug|release) {
-  DEBUG_EXT = _d
-} else {
-  DEBUG_EXT =
-}
+include( ../../Common.prf )
 
 # Include and link to hopsan core
 INCLUDEPATH += $${PWD}/../../HopsanCore/include/

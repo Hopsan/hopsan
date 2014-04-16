@@ -45,7 +45,9 @@ CentralTabWidget::CentralTabWidget(QWidget *parent)
 
 void CentralTabWidget::setTabNotClosable(int index)
 {
+#ifndef __APPLE__
     tabBar()->tabButton(index, QTabBar::RightSide)->resize(0, 0);
+#endif
 }
 
 void CentralTabWidget::tabInserted(int index)

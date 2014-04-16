@@ -15,11 +15,7 @@ DESTDIR = $${PWD}/../../bin
 TEMPLATE = app
 
 #Determine debug extension
-CONFIG(debug, debug|release) {
-  DEBUG_EXT = _d
-} else {
-  DEBUG_EXT =
-}
+include( ../../Common.prf )
 
 INCLUDEPATH += $${PWD}/../../SymHop/include/
 LIBS += -L$${PWD}/../../bin -lSymHop$${DEBUG_EXT}
