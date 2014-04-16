@@ -1,6 +1,8 @@
 #include <QGridLayout>
 #include <QToolButton>
 #include <QFileDialog>
+#include <QDebug>
+#include <QProcessEnvironment>
 
 #include "OptionsWidget.h"
 #include "Configuration.h"
@@ -88,7 +90,7 @@ void OptionsWidget::setVisible(bool visible)
 
 void OptionsWidget::setHopsanPath()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "Set Hopsan Path:");
+    QString path = QFileDialog::getExistingDirectory(this, "Set Hopsan Path:", mpConfiguration->getHopsanPath());
 
     if(path.isEmpty()) return;
 
@@ -118,16 +120,12 @@ void OptionsWidget::setHopsanPath(const QString &path)
     mpConfiguration->setHopsanPath(path);
     if(success)
     {
-        //mpOptionsHandler->setLibPath(lib);
-        //mpOptionsHandler->setIncludePath(includeDir);
         mpLibraryLineEdit->setText(lib);
         mpIncludeLineEdit->setText(includeDir);
         mpWarningLabel->setVisible(false);
     }
     else
     {
-        //mpOptionsHandler->setLibPath(QString());
-        //mpOptionsHandler->setIncludePath(QString());
         mpLibraryLineEdit->clear();
         mpIncludeLineEdit->clear();
         mpWarningLabel->setVisible(true);
@@ -136,7 +134,7 @@ void OptionsWidget::setHopsanPath(const QString &path)
 
 void OptionsWidget::setCompilerPath()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:");
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", mpConfiguration->getCompilerPath());
 
     if(path.isEmpty()) return;
 

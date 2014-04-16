@@ -264,7 +264,16 @@ void FileHandler::addAppearanceFile(QString path)
 
 void FileHandler::loadFromXml()
 {
-    QString path = QFileDialog::getOpenFileName(0, "Open Component Library", QString(), "*.xml");
+    QString path;
+    foreach(const FileObject *file, mFilePtrs)
+    {
+        if(file->mType == FileObject::XML)
+        {
+            path = file->mFileInfo.absolutePath();
+        }
+    }
+
+    path = QFileDialog::getOpenFileName(0, "Open Component Library", path, "*.xml");
     if(!path.isEmpty())
     {
         loadFromXml(path);

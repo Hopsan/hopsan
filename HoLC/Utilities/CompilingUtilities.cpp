@@ -77,6 +77,12 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
 #ifdef WIN32
     QProcess gccProcess;
     gccProcess.setWorkingDirectory(path);
+
+    //Add gcc bin directory to PATH variable in cmd process
+    QStringList env = QProcess::systemEnvironment();
+    env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=\\1;"+QFileInfo(compilerPath).absolutePath());
+    gccProcess.setEnvironment(env);
+
     gccProcess.start("cmd.exe", QStringList() << "/c" << "compile.bat");
     gccProcess.waitForFinished();
     QByteArray gccResult = gccProcess.readAllStandardOutput();
