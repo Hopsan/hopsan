@@ -27,9 +27,8 @@
 #include <QTabWidget>
 
 //Hopsan includes
-#include "Configuration.h"
 #include "ProjectTabWidget.h"
-#include "global.h"
+
 
 //! @class CentralTabWidget
 //! @brief The CentralTabWidget class is the central tab widget in the main window
@@ -39,26 +38,34 @@
 CentralTabWidget::CentralTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
-    this->setPalette(parent->palette());
+    setPalette(parent->palette());
     setTabsClosable(true);
 }
 
 void CentralTabWidget::setTabNotClosable(int index)
 {
-#ifndef __APPLE__
-    tabBar()->tabButton(index, QTabBar::RightSide)->resize(0, 0);
-#endif
+    QWidget *pCloseButton = tabBar()->tabButton(index, QTabBar::RightSide);
+    if (!pCloseButton)
+    {
+        pCloseButton = tabBar()->tabButton(index, QTabBar::LeftSide);
+    }
+
+    if (pCloseButton)
+    {
+        pCloseButton->setDisabled(true);
+        pCloseButton->resize(0, 0);
+    }
 }
 
 void CentralTabWidget::tabInserted(int index)
 {
-    tabBar()->setVisible(this->count() > 1);
+    tabBar()->setVisible(count() > 1);
     QTabWidget::tabInserted(index);
 }
 
 void CentralTabWidget::tabRemoved(int index)
 {
-    tabBar()->setVisible(this->count() > 1);
+    tabBar()->setVisible(count() > 1);
     QTabWidget::tabRemoved(index);
 }
 
