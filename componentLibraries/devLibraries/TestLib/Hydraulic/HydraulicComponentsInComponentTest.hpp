@@ -71,7 +71,7 @@ namespace hopsan {
             mpVolume = createSafeComponent(this, "HydraulicVolume");
             addComponent(mpVolume);
             mpVolume->setName("TheVolume");
-            //mpVolume->setConstantValue("V", "V");
+            mpVolume->setConstantValue("V", "V");
 
             mpOrifice2 = createSafeComponent(this, "HydraulicLaminarOrifice");
             addComponent(mpOrifice2);
@@ -112,9 +112,9 @@ namespace hopsan {
         // otherwise the wrong function will be overloaded
         bool initialize(const double startT, const double stopT)
         {
-            // Propagate CONSTANT parameters into respective components (you can also do this in preInitialize())
             // Note! It is to late to use setDefaultStartValue() here, but setting constants will work
-            mpVolume->setConstantValue("V", mVolume);
+            // Example, you may want to calculate internal constants, you can set them like this:
+            // mpVolume->setConstantValue("V", calculatedVolume);
 
             // Get a node data pointer to the internal volume pressure,
             // We can read (and write) the pointer, but DO NOT write to it if the port is connected
