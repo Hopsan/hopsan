@@ -60,13 +60,6 @@ public:
         }
     }
 
-    //! @brief For signals allways return Value slot even if name has been changed
-    int getDataIdFromName(const HString &rName) const
-    {
-        HOPSAN_UNUSED(rName);
-        return Value;
-    }
-
 private:
     NodeSignal() : Node(DataLength)
     {

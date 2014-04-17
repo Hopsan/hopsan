@@ -92,9 +92,9 @@ public:
 class CoreParameterData
 {
 public:
-    CoreParameterData() : mIsDynamic(false), mIsEnabled(true) {}
+    CoreParameterData() : mIsDynamic(false) {}
     CoreParameterData(const QString name, const QString value, const QString type, const QString unit="", const QString desc="")
-        : mName(name), mValue(value), mType(type), mUnit(unit), mDescription(desc), mIsDynamic(false), mIsEnabled(true) {}
+        : mName(name), mValue(value), mType(type), mUnit(unit), mDescription(desc), mIsDynamic(false) {}
 
     QString mName;
     QString mAlias;
@@ -104,7 +104,6 @@ public:
     QString mDescription;
     QStringList mConditions;
     bool    mIsDynamic;
-    bool    mIsEnabled;
 };
 
 

@@ -122,8 +122,6 @@ public:
     const std::vector<VariameterDescription>* getVariameters();
 
     //! @todo clean this mess up /Peter
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
     void registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rValue);
     virtual void unRegisterParameter(const HString &rName);
     bool hasParameter(const HString &rName) const;
@@ -137,10 +135,10 @@ public:
     bool checkParameters(HString &errParName);
 
     // Start values
-    double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
-    double getDefaultStartValue(Port *pPort, const size_t idx, const size_t portIdx=0);
-    void setStartValue(Port* pPort, const size_t idx, const double value);
     void setDefaultStartValue(Port* pPort, const size_t idx, const double value);
+    void setDefaultStartValue(const HString &rPortName, const HString &rDataName, const double value);
+    double getDefaultStartValue(Port *pPort, const size_t idx, const size_t portIdx=0);
+    double getDefaultStartValue(const HString &rPortName, const HString &rDataName, const size_t portIdx=0);
     void disableStartValue(Port* pPort, const size_t idx);
     virtual void loadStartValues();
     virtual void loadStartValuesFromSimulation();
@@ -204,7 +202,7 @@ protected:
     virtual ~Component();
 
     // Virtual functions
-    virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
+    virtual void initialize(); //!< @todo Maybe we should be able to return sucess true or false from components
     virtual void simulateOneTimestep();
     virtual void finalize();
     virtual void setTimestep(const double timestep);
@@ -222,6 +220,7 @@ protected:
     void initializeAutoSignalNodeDataPtrs();
 
     // Port functions
+    //! @todo we should depracte the version without description as argument (do this in 0.7)
     Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
@@ -236,10 +235,6 @@ protected:
     bool getPort(const HString &rPortname, Port* &rpPort);
     HString renamePort(const HString &rOldname, const HString &rNewname);
     void deletePort(const HString &rName);
-
-    // NodeData ptr function
-    //! @todo clean up this mess /Peter
-    double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue);
 
     // Unique name functions
     virtual HString determineUniquePortName(const HString &rPortname);
@@ -264,9 +259,8 @@ private:
     Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection);
 
     // Parameter registration
-    //! @todo clean this up /Peter
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int);
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
 

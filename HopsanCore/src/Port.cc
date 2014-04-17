@@ -41,7 +41,6 @@ using namespace hopsan;
 //! @brief Port base class constructor
 Port::Port(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort)
 {
-    mPortType = UndefinedPortType;
     mPortName = rPortName;
     mNodeType = rNodeType;
     mpComponent = pParentComponent;
@@ -494,6 +493,11 @@ vector<vector<double> > *Port::getLogDataVectorPtr(const size_t subPortIdx)
     }
 }
 
+bool Port::isInterfacePort() const
+{
+    return getComponent()->isComponentSystem();
+}
+
 //! @param [in] subPortIdx Ignored on non multi ports
 vector<double> *Port::getDataVectorPtr(const size_t subPortIdx)
 {
@@ -620,7 +624,7 @@ size_t Port::getNumPorts()
 //! @brief Convenience functin to check if port is multiport
 bool Port::isMultiPort() const
 {
-    return (mPortType > MultiportType);
+    return false;
 }
 
 Port *Port::getParentPort() const
@@ -631,7 +635,7 @@ Port *Port::getParentPort() const
 //! @brief Get the port type
 PortTypesEnumT Port::getPortType() const
 {
-    return mPortType;
+    return UndefinedPortType;
 }
 
 //! @brief Get the External port type (virtual, should be overloaded in systemports only)
@@ -675,10 +679,15 @@ void Port::setDescription(const HString &rDescription)
 }
 
 
-//! @brief SystemPort constructor
-SystemPort::SystemPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
+SystemPort::SystemPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    mPortType = SystemPortType;
+    // Do nothing special
+}
+
+PortTypesEnumT SystemPort::getPortType() const
+{
+    return SystemPortType;
 }
 
 //! @brief Get the External port type (virtual, should be overloaded in systemports only)
@@ -719,20 +728,30 @@ PortTypesEnumT SystemPort::getInternalPortType()
 
 
 //! @brief PowerPort constructor
-PowerPort::PowerPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
+PowerPort::PowerPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    mPortType = PowerPortType;
     if(getComponent()->isComponentC())
     {
         createStartNode(mNodeType);
     }
 }
 
-
-ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
+PortTypesEnumT PowerPort::getPortType() const
 {
-    mPortType = ReadPortType;
+    return PowerPortType;
+}
+
+
+ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    Port(rNodeType, rPortName, pParentComponent, pParentPort)
+{
     createStartNode(rNodeType);
+}
+
+PortTypesEnumT ReadPort::getPortType() const
+{
+    return ReadPortType;
 }
 
 void ReadPort::writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx)
@@ -761,33 +780,47 @@ void ReadPort::loadStartValues()
     }
 }
 
-bool ReadPort::hasConnectedExternalSystemWritePort()
-{
-    // Frist figure out who my system parent is
-    Component *pSystemParent;
-    if (this->getComponent()->isComponentSystem())
-    {
-        // If my parent component is a system, then I am a kind of systemport (I am a normal port as interface port on a system)
-        pSystemParent = this->getComponent();
-    }
-    else
-    {
-        // Take my parent components systemparent
-        pSystemParent = this->getComponent()->getSystemParent();
-    }
+//bool ReadPort::hasConnectedExternalSystemWritePort()
+//{
+//    // Frist figure out who my system parent is
+//    Component *pSystemParent;
+//    if (this->getComponent()->isComponentSystem())
+//    {
+//        // If my parent component is a system, then I am a kind of systemport (I am a normal port as interface port on a system)
+//        pSystemParent = this->getComponent();
+//    }
+//    else
+//    {
+//        // Take my parent components systemparent
+//        pSystemParent = this->getComponent()->getSystemParent();
+//    }
 
-    // Now check all connected ports, find a write port
-    vector<Port*>::iterator portIt;
-    for (portIt = mConnectedPorts.begin(); portIt != mConnectedPorts.end(); ++portIt)
+//    // Now check all connected ports, find a write port
+//    vector<Port*>::iterator portIt;
+//    for (portIt = mConnectedPorts.begin(); portIt != mConnectedPorts.end(); ++portIt)
+//    {
+//        Port *pPort = (*portIt);
+//        if (pPort->getPortType() == WritePortType)
+//        {
+//            // Check if this writport belongs to a component whos parent system is the same as my system grand parent
+//            if (pPort->getComponent()->getSystemParent() == pSystemParent->getSystemParent())
+//            {
+//                return true;
+//            }
+//        }
+//    }
+//    return false;
+//}
+
+bool ReadPort::isConnectedToWriteOrPowerPort()
+{
+    vector<Port*>::iterator pit;
+    for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
     {
-        Port *pPort = (*portIt);
-        if (pPort->getPortType() == WritePortType)
+        Port *pPort = (*pit);
+        if ((pPort->getPortType() == WritePortType) || (pPort->getPortType() == PowerPortType) || (pPort->getPortType() == PowerMultiportType))
         {
-            // Check if this writport belongs to a component whos parent system is the same as my system grand parent
-            if (pPort->getComponent()->getSystemParent() == pSystemParent->getSystemParent())
-            {
-                return true;
-            }
+            return true;
         }
     }
     return false;
@@ -798,24 +831,30 @@ void ReadPort::forceLoadStartValue()
     Port::loadStartValues();
 }
 
-WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
+WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    mPortType = WritePortType;
     createStartNode(mNodeType);
 }
 
-
-double WritePort::readNode(const size_t idx, const size_t subPortIdx) const
+PortTypesEnumT WritePort::getPortType() const
 {
-    HOPSAN_UNUSED(idx)
-    HOPSAN_UNUSED(subPortIdx)
-    mpComponent->addWarningMessage("WritePort::readNode(): Could not read to port, this is a WritePort");
-    return -1;
+    return WritePortType;
 }
 
-MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
+
+//double WritePort::readNode(const size_t idx, const size_t subPortIdx) const
+//{
+//    HOPSAN_UNUSED(idx)
+//    HOPSAN_UNUSED(subPortIdx)
+//    mpComponent->addWarningMessage("WritePort::readNode(): Could not read from port, this is a WritePort");
+//    return -1;
+//}
+
+MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    mPortType = MultiportType;
+    // Do nothing special
 }
 
 MultiPort::~MultiPort()
@@ -826,6 +865,16 @@ MultiPort::~MultiPort()
     {
         getComponent()->addFatalMessage("~MultiPort(): mSubPortsVector.size() != 0 in multiport destructor (will fix later)");
     }
+}
+
+PortTypesEnumT MultiPort::getPortType() const
+{
+    return MultiportType;
+}
+
+bool MultiPort::isMultiPort() const
+{
+    return true;
 }
 
 
@@ -1091,13 +1140,18 @@ void MultiPort::setNode(Node* pNode)
     // Do nothing for multiports, only subports are interfaced with
 }
 
-PowerMultiPort::PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : MultiPort(rNodeType, rPortName, portOwner, pParentPort)
+PowerMultiPort::PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    MultiPort(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    mPortType = PowerMultiportType;
     if(getComponent()->isComponentC())
     {
         createStartNode(mNodeType);
     }
+}
+
+PortTypesEnumT PowerMultiPort::getPortType() const
+{
+    return PowerMultiportType;
 }
 
 //! @brief Adds a subport to a powermultiport
@@ -1107,9 +1161,15 @@ Port* PowerMultiPort::addSubPort()
     return mSubPortsVector.back();
 }
 
-ReadMultiPort::ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : MultiPort(rNodeType, rPortName, portOwner, pParentPort)
+ReadMultiPort::ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    MultiPort(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    mPortType = ReadMultiportType;
+    // Do nothing special
+}
+
+PortTypesEnumT ReadMultiPort::getPortType() const
+{
+    return ReadMultiportType;
 }
 
 //! @brief Adds a subport to a readmultiport

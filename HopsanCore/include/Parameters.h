@@ -45,8 +45,6 @@ public:
     bool setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit,
                       const HString &rType, ParameterEvaluator **pNeedEvaluation=0, bool force=false);
 
-    void setEnabled(const bool enabled);
-
     bool evaluate(HString &rResult, ParameterEvaluator *ignoreMe=0);
     bool evaluate();
     bool refreshParameterValueText();
@@ -60,13 +58,10 @@ public:
     const HString &getDescription() const;
     const std::vector<HString> &getConditions() const;
 
-    bool isEnabled() const;
-
 protected:
     void resolveSignPrefix(HString &rSignPrefix) const;
     void splitSignPrefix(const HString &rString, HString &rPrefix, HString &rValue);
 
-    bool mEnabled;
     HString mParameterName;
     HString mParameterValue;
     HString mDescription;
@@ -88,8 +83,6 @@ public:
                       const HString &rUnit, const HString &rType, void* pData=0, bool force=false, std::vector<HString> conditions = std::vector<HString>());
     void deleteParameter(const HString &rName);
     bool renameParameter(const HString &rOldName, const HString &rNewName);
-
-    void setParameterEnabled(const HString &rName, const bool enable);
 
     const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
     const ParameterEvaluator* getParameter(const HString &rName) const;

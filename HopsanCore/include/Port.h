@@ -101,6 +101,8 @@ namespace hopsan {
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
 
+        bool isInterfacePort() const;
+
         virtual bool isConnected();
         virtual bool isConnectedTo(Port *pOtherPort);
         bool isConnectionRequired();
@@ -108,10 +110,10 @@ namespace hopsan {
         size_t getNumConnectedPorts(const int subPortIdx=-1);
         virtual size_t getNumPorts();
 
-        bool isMultiPort() const;
+        virtual bool isMultiPort() const;
         Port *getParentPort() const;
         const HString &getNodeType() const;
-        PortTypesEnumT getPortType() const;
+        virtual PortTypesEnumT getPortType() const;
         virtual PortTypesEnumT getExternalPortType();
         virtual PortTypesEnumT getInternalPortType();
 
@@ -129,9 +131,7 @@ namespace hopsan {
         virtual Node *getNodePtr(const size_t subPortIdx=0);
 
     protected:
-        PortTypesEnumT mPortType;
         HString mNodeType;
-
         Component* mpComponent;
         Port* mpParentPort;
 
@@ -163,7 +163,7 @@ namespace hopsan {
         std::map<HString, int> mVariableAliasMap;
         bool mConnectionRequired;
 
-        HString mEmptyString;
+        const HString mEmptyString;
     };
 
 
@@ -174,8 +174,9 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructors
-        SystemPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+        SystemPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
+
+        PortTypesEnumT getPortType() const;
         PortTypesEnumT getExternalPortType();
         PortTypesEnumT getInternalPortType();
     };
@@ -188,11 +189,12 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        // Constructor, Destructor
-        MultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+        MultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         ~MultiPort();
 
         // Overloaded virtual functions
+        virtual PortTypesEnumT getPortType() const;
+        bool isMultiPort() const;
         double readNodeSafe(const size_t idx, const size_t subPortIdx) const;
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx);
 
@@ -256,7 +258,8 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        PowerPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+        PowerPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
+        PortTypesEnumT getPortType() const;
     };
 
 
@@ -267,13 +270,15 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        ReadPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+        ReadPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
+        PortTypesEnumT getPortType() const;
 
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
         void writeNode(const size_t idx, const double value, const size_t subPortIdx=0);
 
         virtual void loadStartValues();
-        virtual bool hasConnectedExternalSystemWritePort();
+        //virtual bool hasConnectedExternalSystemWritePort();
+        virtual bool isConnectedToWriteOrPowerPort();
         virtual void forceLoadStartValue();
     };
 
@@ -284,7 +289,8 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+        PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
+        PortTypesEnumT getPortType() const;
 
     protected:
         Port* addSubPort();
@@ -297,7 +303,8 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
+        ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
+        PortTypesEnumT getPortType() const;
 
     protected:
         Port* addSubPort();
@@ -311,8 +318,9 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        WritePort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
-        double readNode(const size_t idx, const size_t subPortIdx=0) const;
+        WritePort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
+        PortTypesEnumT getPortType() const;
+        //double readNode(const size_t idx, const size_t subPortIdx=0) const;
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);

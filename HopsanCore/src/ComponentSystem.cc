@@ -272,6 +272,7 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     disableLog();
 }
 
+
 ComponentSystem::~ComponentSystem()
 {
     // Clear the contents of the system
@@ -443,7 +444,7 @@ void ComponentSystem::addComponent(Component *pComponent)
 
         // Set system parent and model system depth hierarcy
         pComponent->setSystemParent(this);
-        pComponent->mModelHierarchyDepth = this->mModelHierarchyDepth+1; //Set the ModelHierarchyDepth counter
+        pComponent->mModelHierarchyDepth = mModelHierarchyDepth+1; //Set the ModelHierarchyDepth counter
 
         // Go thorugh the components ports and take ownership of any dummy nodes
         //! @todo what happens if I take ownership of an other systems components (shouldnt we take ownership of all ports nodes by default) Not sure!! especially difficult with system border nodes
@@ -991,6 +992,7 @@ void ComponentSystem::logTimeAndNodes(const size_t simStep)
     }
 }
 
+
 //! @brief Rename a system parameter
 bool ComponentSystem::renameParameter(const HString &rOldName, const HString &rNewName)
 {
@@ -1118,64 +1120,55 @@ void ComponentSystem::determineCQSType()
     PortPtrMapT::iterator ppmit;
     for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
     {
-        //all ports should be system ports in a subsystem, dont check for other port types
-        if( ppmit->second->getPortType() == SystemPortType )
+        //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
+        //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if we dont want it in some other place
+        vector<Port*> connectedPorts = (*ppmit).second->getConnectedPorts(-1); //Make a copy of connected ports
+        vector<Port*>::iterator cpit;
+        for (cpit=connectedPorts.begin(); cpit!=connectedPorts.end(); ++cpit)
         {
-            //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
-            //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if we dont want it in some other place
-            vector<Port*> connectedPorts = (*ppmit).second->getConnectedPorts(-1); //Make a copy of connected ports
-            vector<Port*>::iterator cpit;
-            for (cpit=connectedPorts.begin(); cpit!=connectedPorts.end(); ++cpit)
+            if ( (*cpit)->getComponent()->getSystemParent() == this )
             {
-                if ( (*cpit)->getComponent()->getSystemParent() == this )
+                if( (*cpit)->getPortType() == ReadPortType || (*cpit)->getPortType() == WritePortType)
                 {
-                    if( (*cpit)->getPortType() == ReadPortType || (*cpit)->getPortType() == WritePortType)
-                    {
-                        ++s_ctr;
-                        continue;
-                    }
+                    ++s_ctr;
+                    continue;
+                }
 
-                    switch ((*cpit)->getComponent()->getTypeCQS())
-                    {
-                    case CType :
-                        ++c_ctr;
-                        break;
-                    case QType :
-                        ++q_ctr;
-                        break;
-                    case SType :
-                        ++s_ctr;
-                        break;
-                    default :
-                        ;
-                        //Do nothing, (connecting a port from a system with no cqs type set yet)
-                    }
+                switch ((*cpit)->getComponent()->getTypeCQS())
+                {
+                case CType :
+                    ++c_ctr;
+                    break;
+                case QType :
+                    ++q_ctr;
+                    break;
+                case SType :
+                    ++s_ctr;
+                    break;
+                default :
+                    ;
+                    //Do nothing, (connecting a port from a system with no cqs type set yet)
                 }
             }
         }
     }
 
-    //Ok now lets determine if we have a valid CQS type or not
+    // Ok now lets determine if we have a valid CQS type or not
     if ( (c_ctr > 0) && (q_ctr == 0) )
     {
-        this->setTypeCQS(CType);
+        setTypeCQS(CType);
     }
     else if ( (q_ctr > 0) && (c_ctr == 0) )
     {
-        this->setTypeCQS(QType);
+        setTypeCQS(QType);
     }
     else if ( (s_ctr > 0) && (c_ctr==0) && (q_ctr==0) )
     {
-        this->setTypeCQS(SType);
+        setTypeCQS(SType);
     }
     else
     {
-//        //If we swap from valid type then give warning
-//        if (this->getTypeCQS() != UNDEFINEDCQSTYPE)
-//        {
-//            addWarningMessage(string("Your action has caused the CQS type to become invalid in system: ")+this->getName(), "invalidcqstype");
-//        }
-        this->setTypeCQS(UndefinedCQSType);
+        setTypeCQS(UndefinedCQSType);
     }
 }
 
@@ -1287,19 +1280,21 @@ bool ConnectionAssistant::mergeNodeConnection(Port *pPort1, Port *pPort2)
     }
 }
 
+//! @brief Find the system highest up in the model hieararcy for the ports connected to this node and store the node there
+//! @param[in] pNode The node to store
 void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 {
-    //node ptr should not be zero
+    // Node ptr should not be zero
     if(pNode == 0)
     {
         mpComponentSystem->addFatalMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): Node pointer is zero.");
         return;
     }
 
-    vector<Port*>::iterator pit;
     Component *pMinLevelComp=0;
-    //size_t min = std::numeric_limits<size_t>::max();
-    size_t min = (size_t)-1;
+    //size_t min = (size_t)-1;
+    size_t min = std::numeric_limits<size_t>::max();
+    vector<Port*>::iterator pit;
     for (pit=pNode->mConnectedPorts.begin(); pit!=pNode->mConnectedPorts.end(); ++pit)
     {
         if ((*pit)->getComponent()->getModelHierarchyDepth() < min)
@@ -1309,21 +1304,44 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
         }
     }
 
-    //Now add the node at the minimum level, if minimum is a system (we are connecting to our system parant) then dyncast the pointer
-    //! @todo what if we are connecting only subsystems within the same lavel AND they have different timesteps
-    if (pMinLevelComp==0)
+    // Now add the node to the system owning the minimum level component
+    if (pMinLevelComp)
     {
-        mpComponentSystem->addSubNode(pNode);
-    }
-    else if (pMinLevelComp->isComponentSystem())
-    {
-        ComponentSystem *pRootSys = dynamic_cast<ComponentSystem*>(pMinLevelComp);
-        pRootSys->addSubNode(pNode);
+        if (pMinLevelComp->getSystemParent())
+        {
+            pMinLevelComp->getSystemParent()->addSubNode(pNode);
+        }
+        else if (pMinLevelComp->isComponentSystem())
+        {
+            // This will trigger if we are connectiong to our parant system which happens to be the top level system
+            ComponentSystem *pRootSystem = dynamic_cast<ComponentSystem*>(pMinLevelComp);
+            pRootSystem->addSubNode(pNode);
+        }
+        else
+        {
+            mpComponentSystem->addFatalMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): No system found for node storage!");
+        }
     }
     else
     {
-        pMinLevelComp->getSystemParent()->addSubNode(pNode);
+        mpComponentSystem->addFatalMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): No system found!");
     }
+
+//    //! @todo what if we are connecting only subsystems within the same lavel AND they have different timesteps
+//    if (pMinLevelComp==0)
+//    {
+//        mpComponentSystem->addSubNode(pNode);
+//    }
+//    else if (pMinLevelComp->isComponentSystem())
+//    {
+//        // If minimum level component is a system (we are connecting to our system parant), dyncast the pointer
+//        ComponentSystem *pParentSystem = dynamic_cast<ComponentSystem*>(pMinLevelComp);
+//        pParentSystem->addSubNode(pNode);
+//    }
+//    else
+//    {
+//        pMinLevelComp->getSystemParent()->addSubNode(pNode);
+//    }
 }
 
 void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode)
@@ -1535,7 +1553,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
     if (!this->isTopLevelSystem())
     {
-        this->mpSystemParent->determineCQSType();
+        mpSystemParent->determineCQSType();
     }
 
     addDebugMessage("Connected: {"+pComp1->getName()+"::"+pPort1->getName()+"} and {"+pComp2->getName()+"::"+pPort2->getName()+"}", "succesfulconnect");
@@ -1546,71 +1564,90 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
 bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 {
-    size_t nReadPorts = 0;
-    size_t nWritePorts = 0;
-    size_t nPowerPorts = 0;
-    size_t nSystemPorts = 0;
-    size_t nOwnSystemPorts = 0; //Number of systemports that belong to the connecting system
-    //size_t n_MultiPorts = 0;
+//    size_t nReadPorts = 0;
+//    size_t nWritePorts = 0;
+//    size_t nPowerPorts = 0;
+//    size_t nSystemPorts = 0;
+//    size_t nOwnSystemPorts = 0; // Number of systemports that belong to the connecting system
+//    size_t nInterfacePorts = 0; // This can be system ports or other ports acting as interface ports in systems
+//    //size_t n_MultiPorts = 0;
 
-    size_t nCComponents = 0;
-    size_t nQComponents = 0;
-    size_t nSYScomponentCs = 0;
-    size_t nSYScomponentQs = 0;
+//    size_t nCComponents = 0;
+//    size_t nQComponents = 0;
+//    size_t nSYScomponentCs = 0;
+//    size_t nSYScomponentQs = 0;
 
-    size_t nQPowerPorts = 0;
-    size_t nCPowerPorts = 0;
+//    size_t nNonInterfaceQPowerPorts = 0;
+//    size_t nNonInterfaceCPowerPorts = 0;
+    ConnOKCounters counters;
 
     //Count the different kind of ports and C,Q components in the node
     vector<Port*>::iterator it;
     for (it=(*pNode).mConnectedPorts.begin(); it!=(*pNode).mConnectedPorts.end(); ++it)
     {
-        if ((*it)->getPortType() == ReadPortType)
+//        if ((*it)->isInterfacePort())
+//        {
+//            counters.nInterfacePorts += 1;
+//        }
+
+//        if ((*it)->getPortType() == ReadPortType)
+//        {
+//            counters.nReadPorts += 1;
+//        }
+//        else if ((*it)->getPortType() == WritePortType)
+//        {
+//            counters.nWritePorts += 1;
+//        }
+//        else if ((*it)->getPortType() == PowerPortType)
+//        {
+//            counters.nPowerPorts += 1;
+//            if ((*it)->getComponent()->isComponentC())
+//            {
+//                counters.nNonInterfaceCPowerPorts += 1;
+//            }
+//            else if ((*it)->getComponent()->isComponentQ())
+//            {
+//                counters.nNonInterfaceQPowerPorts += 1;
+//            }
+//        }
+//        else if ((*it)->getPortType() == SystemPortType)
+//        {
+//            counters.nSystemPorts += 1;
+//            if ((*it)->getComponent() == mpComponentSystem)
+//            {
+//                counters.nOwnSystemPorts += 1;
+//            }
+//        }
+////        else if((*it)->getPortType() > MULTIPORT)
+////        {
+////            counters.n_MultiPorts += 1;
+////        }
+//        if ((*it)->getComponent()->isComponentC())
+//        {
+//            counters.nCComponents += 1;
+//            if ((*it)->getComponent()->isComponentSystem())
+//            {
+//                counters.nSYScomponentCs += 1;
+//            }
+//        }
+//        else if ((*it)->getComponent()->isComponentQ())
+//        {
+//            counters.nQComponents += 1;
+//            if ((*it)->getComponent()->isComponentSystem())
+//            {
+//                counters.nSYScomponentQs += 1;
+//            }
+//        }
+
+        checkPort(*it, counters);
+
+        // Also count how many own systemports are already connected
+        //! @todo maybe this counter should always be counted in checkPort()
+        if ((*it)->getPortType() == SystemPortType)
         {
-            nReadPorts += 1;
-        }
-        else if ((*it)->getPortType() == WritePortType)
-        {
-            nWritePorts += 1;
-        }
-        else if ((*it)->getPortType() == PowerPortType)
-        {
-            nPowerPorts += 1;
-            if ((*it)->getComponent()->isComponentC())
-            {
-                nCPowerPorts += 1;
-            }
-            else if ((*it)->getComponent()->isComponentQ())
-            {
-                nQPowerPorts += 1;
-            }
-        }
-        else if ((*it)->getPortType() == SystemPortType)
-        {
-            nSystemPorts += 1;
             if ((*it)->getComponent() == mpComponentSystem)
             {
-                nOwnSystemPorts += 1;
-            }
-        }
-//        else if((*it)->getPortType() > MULTIPORT)
-//        {
-//            n_MultiPorts += 1;
-//        }
-        if ((*it)->getComponent()->isComponentC())
-        {
-            nCComponents += 1;
-            if ((*it)->getComponent()->isComponentSystem())
-            {
-                nSYScomponentCs += 1;
-            }
-        }
-        else if ((*it)->getComponent()->isComponentQ())
-        {
-            nQComponents += 1;
-            if ((*it)->getComponent()->isComponentSystem())
-            {
-                nSYScomponentQs += 1;
+                counters.nOwnSystemPorts += 1;
             }
         }
     }
@@ -1619,100 +1656,116 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort1) )
     {
-        if ( pPort1->getPortType() == ReadPortType )
-        {
-            nReadPorts += 1;
-        }
-        if ( pPort1->getPortType() == WritePortType )
-        {
-            nWritePorts += 1;
-        }
-        if ( pPort1->getPortType() == PowerPortType )
-        {
-            nPowerPorts += 1;
-            if ((*it)->getComponent()->isComponentC())
-            {
-                nCPowerPorts += 1;
-            }
-            else if ((*it)->getComponent()->isComponentQ())
-            {
-                nQPowerPorts += 1;
-            }
-        }
-        if ( pPort1->getPortType() == SystemPortType )
-        {
-            nSystemPorts += 1;
-        }
-//        if( pPort1->getPortType() > MULTIPORT)
+        checkPort(pPort1, counters);
+//        if (pPort1->isInterfacePort())
 //        {
-//            n_MultiPorts += 1;
+//            nInterfacePorts += 1;
 //        }
-        if ( pPort1->getComponent()->isComponentC() )
-        {
-            nCComponents += 1;
-            if ( pPort1->getComponent()->isComponentSystem() )
-            {
-                nSYScomponentCs += 1;
-            }
-        }
-        if ( pPort1->getComponent()->isComponentQ() )
-        {
-            nQComponents += 1;
-            if ( pPort1->getComponent()->isComponentSystem() )
-            {
-                nSYScomponentQs += 1;
-            }
-        }
+
+//        if ( pPort1->getPortType() == ReadPortType )
+//        {
+//            nReadPorts += 1;
+//        }
+//        if ( pPort1->getPortType() == WritePortType )
+//        {
+//            nWritePorts += 1;
+//        }
+//        if ( pPort1->getPortType() == PowerPortType )
+//        {
+//            nPowerPorts += 1;
+//            //if ((*it)->getComponent()->isComponentC())
+//            if (pPort1->getComponent()->isComponentC())
+//            {
+//                nNonInterfaceCPowerPorts += 1;
+//            }
+//            //else if ((*it)->getComponent()->isComponentQ())
+//            else if (pPort2->getComponent()->isComponentQ())
+//            {
+//                nNonInterfaceQPowerPorts += 1;
+//            }
+//        }
+//        if ( pPort1->getPortType() == SystemPortType )
+//        {
+//            nSystemPorts += 1;
+//        }
+////        if( pPort1->getPortType() > MULTIPORT)
+////        {
+////            n_MultiPorts += 1;
+////        }
+//        if ( pPort1->getComponent()->isComponentC() )
+//        {
+//            nCComponents += 1;
+//            if ( pPort1->getComponent()->isComponentSystem() )
+//            {
+//                nSYScomponentCs += 1;
+//            }
+//        }
+//        if ( pPort1->getComponent()->isComponentQ() )
+//        {
+//            nQComponents += 1;
+//            if ( pPort1->getComponent()->isComponentSystem() )
+//            {
+//                nSYScomponentQs += 1;
+//            }
+//        }
     }
 
     //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort2) )
     {
-        if ( pPort2->getPortType() == ReadPortType )
-        {
-            nReadPorts += 1;
-        }
-        if ( pPort2->getPortType() == WritePortType )
-        {
-            nWritePorts += 1;
-        }
-        if ( pPort2->getPortType() == PowerPortType )
-        {
-            nPowerPorts += 1;
-            if ((*it)->getComponent()->isComponentC())
-            {
-                nCPowerPorts += 1;
-            }
-            else if ((*it)->getComponent()->isComponentQ())
-            {
-                nQPowerPorts += 1;
-            }
-        }
-        if ( pPort2->getPortType() == SystemPortType )
-        {
-            nSystemPorts += 1;
-        }
-        if ( pPort2->getComponent()->isComponentC() )
-        {
-            nCComponents += 1;
-            if ( pPort2->getComponent()->isComponentSystem() )
-            {
-                nSYScomponentCs += 1;
-            }
-        }
-        if ( pPort2->getComponent()->isComponentQ() )
-        {
-            nQComponents += 1;
-            if ( pPort2->getComponent()->isComponentSystem() )
-            {
-                nSYScomponentQs += 1;
-            }
-        }
+        checkPort(pPort2, counters);
+//        if (pPort2->isInterfacePort())
+//        {
+//            nInterfacePorts += 1;
+//        }
+
+//        if ( pPort2->getPortType() == ReadPortType )
+//        {
+//            nReadPorts += 1;
+//        }
+//        if ( pPort2->getPortType() == WritePortType )
+//        {
+//            nWritePorts += 1;
+//        }
+//        if ( pPort2->getPortType() == PowerPortType )
+//        {
+//            nPowerPorts += 1;
+//            //if ((*it)->getComponent()->isComponentC())
+//            if (pPort2->getComponent()->isComponentC())
+//            {
+//                nNonInterfaceCPowerPorts += 1;
+//            }
+//            //else if ((*it)->getComponent()->isComponentQ())
+//            else if (pPort2->getComponent()->isComponentQ())
+//            {
+//                nNonInterfaceQPowerPorts += 1;
+//            }
+//        }
+//        if ( pPort2->getPortType() == SystemPortType )
+//        {
+//            nSystemPorts += 1;
+//        }
+//        if ( pPort2->getComponent()->isComponentC() )
+//        {
+//            nCComponents += 1;
+//            if ( pPort2->getComponent()->isComponentSystem() )
+//            {
+//                nSYScomponentCs += 1;
+//            }
+//        }
+//        if ( pPort2->getComponent()->isComponentQ() )
+//        {
+//            nQComponents += 1;
+//            if ( pPort2->getComponent()->isComponentSystem() )
+//            {
+//                nSYScomponentQs += 1;
+//            }
+//        }
     }
 
     //  Check if there are some problems with the connection
 
-    if ((nPowerPorts > 0) && (nOwnSystemPorts > 1))
+    if ((counters.nPowerPorts > 0) && (counters.nOwnSystemPorts > 1))
     {
         mpComponentSystem->addErrorMessage("Trying to connect one powerport to two systemports, this is not allowed");
         return false;
@@ -1722,17 +1775,17 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 //        addErrorMessage("Trying to connect two MultiPorts to each other");
 //        return false;
 //    }
-    if (nPowerPorts > 2)
+    if (counters.nPowerPorts > 2+counters.nInterfacePorts-counters.nSystemPorts)
     {
         mpComponentSystem->addErrorMessage("Trying to connect more than two PowerPorts to same node");
         return false;
     }
-    if (nWritePorts > 1)
+    if (counters.nWritePorts > 1+counters.nInterfacePorts-counters.nSystemPorts)
     {
         mpComponentSystem->addErrorMessage("Trying to connect more than one WritePort to same node");
         return false;
     }
-    if ((nPowerPorts > 0) && (nWritePorts > 0))
+    if ((counters.nPowerPorts > 0) && (counters.nWritePorts > 0))
     {
         mpComponentSystem->addErrorMessage("Trying to connect WritePort and PowerPort to same node");
         return false;
@@ -1747,26 +1800,19 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 
     //cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
 
-    // Normaly we want at most one c and one q component but if there happen to be a subsystem in the picture allow one extra
-    // This is only true if at least one powerport is connected - signal connecetions can be between any types of components
+    // We want at most one C and one Q component in a connection
     //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
-    //if ((nCComponents > 1+nSYScomponentCs) && (nPowerPorts > 1))
-    if (nCPowerPorts > 1)
+    if (counters.nNonInterfaceCPowerPorts > 1)
     {
         mpComponentSystem->addErrorMessage("You can not connect two C-Component power ports to each other");
         return false;
     }
-    //if ((nQComponents > 1+nSYScomponentQs) && (nPowerPorts > 1))
-    if (nQPowerPorts > 1)
+    if (counters.nNonInterfaceQPowerPorts > 1)
     {
         mpComponentSystem->addErrorMessage("You can not connect two Q-Component power ports to each other");
         return false;
     }
-//    if ((pPort1->getPortType() == Port::READPORT) &&  (pPort2->getPortType() == Port::READPORT))
-//    {
-//        addErrorMessage("Trying to connect ReadPort to ReadPort");
-//        return false;
-//    }
+
 //    if( ((pPort1->getPortType() == Port::READPORT) && pPort2->getPortType() == Port::POWERPORT && n_PowerPorts > 1) or
 //        ((pPort2->getPortType() == Port::READPORT) && pPort1->getPortType() == Port::POWERPORT && n_PowerPorts > 1) )
 //    {
@@ -1870,6 +1916,59 @@ void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *pMaybeMultipo
         else
         {
             //! @todo What do we need to do to handle failure, nothing maybe
+        }
+    }
+}
+
+void ConnectionAssistant::checkPort(const Port *pPort, ConnectionAssistant::ConnOKCounters &rCounters)
+{
+    if (pPort->isInterfacePort())
+    {
+        rCounters.nInterfacePorts += 1;
+    }
+
+    if ( pPort->getPortType() == ReadPortType )
+    {
+        rCounters.nReadPorts += 1;
+    }
+    if ( pPort->getPortType() == WritePortType )
+    {
+        rCounters.nWritePorts += 1;
+    }
+    if ( pPort->getPortType() == PowerPortType )
+    {
+        rCounters.nPowerPorts += 1;
+        if (pPort->getComponent()->isComponentC())
+        {
+            rCounters.nNonInterfaceCPowerPorts += 1;
+        }
+        else if (pPort->getComponent()->isComponentQ())
+        {
+            rCounters.nNonInterfaceQPowerPorts += 1;
+        }
+    }
+    if ( pPort->getPortType() == SystemPortType )
+    {
+        rCounters.nSystemPorts += 1;
+    }
+//        if( pPort->getPortType() > MULTIPORT)
+//        {
+//            rCounters.n_MultiPorts += 1;
+//        }
+    if ( pPort->getComponent()->isComponentC() )
+    {
+        rCounters.nCComponents += 1;
+        if ( pPort->getComponent()->isComponentSystem() )
+        {
+            rCounters.nSYScomponentCs += 1;
+        }
+    }
+    else if ( pPort->getComponent()->isComponentQ() )
+    {
+        rCounters.nQComponents += 1;
+        if ( pPort->getComponent()->isComponentSystem() )
+        {
+            rCounters.nSYScomponentQs += 1;
         }
     }
 }
@@ -2389,7 +2488,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
     if(parNames.size() > 0)
     {
         std::stringstream ss;
-        ss << "Following system parameters are not used:";
+        ss << "The following system parameters are not used:";
         for(size_t p=0; p<parNames.size(); ++p)
         {
             ss << "\n" << parNames.at(p).c_str();
@@ -2432,26 +2531,7 @@ bool ComponentSystem::preInitialize()
 //! @brief Load start values by telling each component to load their start values
 void ComponentSystem::loadStartValues()
 {
-    // First load startvalues for any non-systemport readports on this system (very rare occurance)
-    PortPtrMapT::iterator portIt;
-    for (portIt=mPortPtrMap.begin(); portIt!=mPortPtrMap.end(); ++portIt)
-    {
-        Port* pPort = portIt->second;
-        if (pPort->getPortType() == ReadPortType) //! @todo what about readmultiport
-        {
-            ReadPort *pReadPort = dynamic_cast<ReadPort*>(pPort);
-            if (pReadPort)
-            {
-                // Only write readport start value if it does not have an external connected port
-                if (!pReadPort->hasConnectedExternalSystemWritePort())
-                {
-                    pReadPort->forceLoadStartValue();
-                }
-            }
-        }
-    }
-
-    // Now load startvalues for all sub components
+    // First load startvalues for all sub components
     std::vector<Component*>::iterator compIt;
     for(compIt = mComponentSignalptrs.begin(); compIt != mComponentSignalptrs.end(); ++compIt)
     {
@@ -2464,6 +2544,30 @@ void ComponentSystem::loadStartValues()
     for(compIt = mComponentQptrs.begin(); compIt != mComponentQptrs.end(); ++compIt)
     {
         (*compIt)->loadStartValues();
+    }
+
+    // Now load all startvalues for the interface ports, they should override internally set startvalues
+    PortPtrMapT::iterator pit;
+    for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
+    {
+        Port* pPort = pit->second;
+        if (pPort->getPortType() == ReadPortType) //! @todo what about readmultiport
+        {
+            ReadPort *pReadPort = dynamic_cast<ReadPort*>(pPort);
+            if (pReadPort)
+            {
+                // Only write readport start value if it is connected to other readports
+                // This is the case of inputvariable ports on systems that are not externally connected
+                if (!pReadPort->isConnectedToWriteOrPowerPort())
+                {
+                    pReadPort->forceLoadStartValue();
+                }
+            }
+        }
+        else
+        {
+            pPort->loadStartValues();
+        }
     }
 }
 

@@ -57,6 +57,46 @@ namespace hopsan {
         void ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess);
 
     private:
+        class ConnOKCounters
+        {
+        public:
+            size_t nReadPorts;
+            size_t nWritePorts;
+            size_t nPowerPorts;
+            size_t nSystemPorts;
+            size_t nOwnSystemPorts; // Number of systemports that belong to the connecting system
+            size_t nInterfacePorts; // This can be system ports or other ports acting as interface ports in systems
+            //size_t nMultiPorts;
+
+            size_t nCComponents;
+            size_t nQComponents;
+            size_t nSYScomponentCs;
+            size_t nSYScomponentQs;
+
+            size_t nNonInterfaceQPowerPorts;
+            size_t nNonInterfaceCPowerPorts;
+
+            ConnOKCounters()
+            {
+                nReadPorts = 0;
+                nWritePorts = 0;
+                nPowerPorts = 0;
+                nSystemPorts = 0;
+                nOwnSystemPorts = 0;
+                nInterfacePorts = 0;
+                //nMultiPorts = 0;
+
+                nCComponents = 0;
+                nQComponents = 0;
+                nSYScomponentCs = 0;
+                nSYScomponentQs = 0;
+
+                nNonInterfaceQPowerPorts = 0;
+                nNonInterfaceCPowerPorts = 0;
+            }
+        };
+
+        void checkPort(const Port *pPort, ConnOKCounters &rCounters);
         void removeNode(Node *pNode);
         void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
         Port* findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort);

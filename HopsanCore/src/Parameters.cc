@@ -51,7 +51,6 @@ using namespace std;
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
 ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParentParameters)
 {
-    mEnabled = true;
     mParameterName = rName;
     mParameterValue = rValue;
     mDescription = rDescription;
@@ -71,12 +70,6 @@ void* ParameterEvaluator::getDataPtr()
 {
     return mpData;
 }
-
-void ParameterEvaluator::setEnabled(const bool enabled)
-{
-    mEnabled = enabled;
-}
-
 
 bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, ParameterEvaluator **pNeedEvaluation, bool force)
 {
@@ -261,7 +254,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if( (mpData!=0) && mEnabled )
+            if(mpData!=0)
             {
                 *static_cast<double*>(mpData) = tmpParameterValue;
             }
@@ -278,7 +271,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if( (mpData!=0) && mEnabled )
+            if(mpData!=0)
             {
                 *static_cast<int*>(mpData) = tmpParameterValue;
             }
@@ -295,7 +288,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         if((is >> tmpParameterValue) && (tmpParameterValue >= 0) && (tmpParameterValue < int(this->mConditions.size())))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if( (mpData!=0) && mEnabled )
+            if(mpData!=0)
             {
                 *static_cast<int*>(mpData) = tmpParameterValue;
             }
@@ -312,7 +305,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if( (mpData!=0) && mEnabled )
+            if(mpData!=0)
             {
                 *static_cast<bool*>(mpData) = tmpParameterValue;
             }
@@ -320,7 +313,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         else if((evaluatedParameterValue == "false") || (evaluatedParameterValue == "0"))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if( (mpData!=0) && mEnabled )
+            if(mpData!=0)
             {
                 *static_cast<bool*>(mpData) = false;
             }
@@ -328,7 +321,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         else if((evaluatedParameterValue == "true") || (evaluatedParameterValue == "1"))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if( (mpData!=0) && mEnabled )
+            if(mpData!=0)
             {
                 *static_cast<bool*>(mpData) = true;
             }
@@ -341,7 +334,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     else if(mType=="string")
     {
         // If a data pointer has been set, then write evaluated value to data variable
-        if( (mpData!=0) && mEnabled )
+        if(mpData!=0)
         {
             static_cast<HString*>(mpData)->setString(evaluatedParameterValue.c_str());
         }
@@ -378,11 +371,6 @@ const HString &ParameterEvaluator::getDescription() const
 const std::vector<HString> &ParameterEvaluator::getConditions() const
 {
     return mConditions;
-}
-
-bool ParameterEvaluator::isEnabled() const
-{
-    return mEnabled;
 }
 
 void ParameterEvaluator::resolveSignPrefix(HString &rSignPrefix) const
@@ -525,22 +513,6 @@ bool ParameterEvaluatorHandler::renameParameter(const HString &rOldName, const H
         }
     }
     return false;
-}
-
-
-void ParameterEvaluatorHandler::setParameterEnabled(const HString &rName, const bool enable)
-{
-    std::vector<ParameterEvaluator*>::iterator parIt;
-    for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
-    {
-        if( rName == (*parIt)->getName() )
-        {
-            (*parIt)->setEnabled(enable);
-
-            //We can return now, since there should never be multiple parameters with same name
-            return;
-        }
-    }
 }
 
 

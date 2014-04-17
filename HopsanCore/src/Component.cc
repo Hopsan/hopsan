@@ -189,20 +189,6 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     return &mVariameters;
 }
 
-//! @deprecated use addConstant() instead, used for backwards compatibility but gives error message if used
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
-{
-    addErrorMessage("registerParameter() is deprecated, use addConstant() instead");
-    registerParameter(rName, rDescription, rUnit, rValue, 0);
-}
-
-//! @deprecated use addConstant() instead, used for backwards compatibility but gives error message if used
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue)
-{
-    addErrorMessage("registerParameter() is deprecated, use addConstant() instead");
-    registerParameter(rName, rDescription, rUnit, rValue, 0);
-}
-
 
 
 ///@{
@@ -252,7 +238,7 @@ void Component::simulate(const double stopT)
 //! @ingroup ComponentSimulationFunctions
 void Component::initialize()
 {
-    addErrorMessage("You MUST! implement your own initialize method");
+    addErrorMessage("You MUST! implement your own initialize() method");
     stopSimulation();
 }
 
@@ -385,12 +371,12 @@ HopsanEssentials *Component::getHopsanEssentials()
 //! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, double &rData)
 {
-    registerParameter(rName, rDescription, rUnit, rData, 0);
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData)
 {
-    registerParameter(rName, rDescription, rUnit, rData, 0);
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData)
@@ -458,9 +444,8 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 //! @param [in] rUnit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-//! @todo remove the dummy argument once the public deprecated version of this function is removed
 //! @todo Using a reference is not that clear, we should use a ptr instead
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int /*dummy*/)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
 {
     // We allow the : exception for registring start value parameters
     if (!isNameValid(rName, "#"))
@@ -477,7 +462,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", &rValue);
 }
 
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int /*dummy*/)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue)
 {
     if (!isNameValid(rName))
     {
@@ -851,15 +836,6 @@ void Component::deletePort(const HString &rName)
     }
 }
 
-//! @todo this is a temporary function for backwards compatibility where default values are set thourh getSafeNodeDataPtr
-//! @deprecated
-double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
-{
-    addErrorMessage("In: "+this->getName()+", getSafeNodeDataPtr(pPort, dataId, defaultValue), is no longer supported. Use setStartValue() instead");
-    double *pData = getSafeNodeDataPtr(pPort, dataId);
-    *pData = defaultValue;
-    return pData;
-}
 
 //! @brief Get a pointer to the node data variable, (Port pointer version)
 //! @ingroup ComponentSimulationFunctions
@@ -1270,13 +1246,6 @@ void Component::addFatalMessage(const HString &rMessage, const HString &rTag) co
 }
 
 
-//! @deprecated Use getDefaultStartValue instead
-double Component::getStartValue(Port* pPort, const size_t idx, const size_t portIdx)
-{
-    addErrorMessage("getStartValue() is deprecated, use getDefaultStartValue() instead. Note!, it will not return the initial value!");
-    return getDefaultStartValue(pPort, idx, portIdx);
-}
-
 //! @brief Get the an actual start value of a port
 //! @param[in] pPort is the port which should be read from
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
@@ -1288,13 +1257,38 @@ double Component::getDefaultStartValue(Port* pPort, const size_t idx, const size
     return pPort->getStartValue(idx, portIdx);
 }
 
-
-//! @deprecated Use setDefaultStartValue instead
-void Component::setStartValue(Port* pPort, const size_t idx, const double value)
+//! @brief Get the an actual start value of a port
+//! @param[in] rPortName is the port which should be read from
+//! @param[in] rDataName The anme of the data in to port to read from example: "Pressure"
+//! @param[in] portIdx The index of a subport in a multiport. If pPort is not a multiport this value will be ignored
+//! @returns The default start value
+//! @ingroup ComponentSetupFunctions
+//! @details This slower version uses string names for lookup, and will report errors if names are incorrect
+double Component::getDefaultStartValue(const HString &rPortName, const HString &rDataName, const size_t portIdx)
 {
-    addErrorMessage("setStartValue() is deprecated, use setDefaultStartValue() instead. Note!, it will not set the initial value!");
-    setDefaultStartValue(pPort,idx,value);
+    Port *pPort = getPort(rPortName);
+    if (pPort)
+    {
+        if (pPort->getNodePtr())
+        {
+            int id = pPort->getNodePtr()->getDataIdFromName(rDataName);
+            if (id >= 0)
+            {
+                return getDefaultStartValue(pPort, id, portIdx);
+            }
+            else
+            {
+                addErrorMessage("setDefaultStartValue(): Data named '"+rDataName+"' was not found in Port '"+rPortName+"'!");
+            }
+        }
+    }
+    else
+    {
+        addErrorMessage("setDefaultStartValue(): Port '"+rPortName+"' not found!");
+    }
+    return -1;
 }
+
 
 //! @brief Set the default startvalue in a port
 //! @param [in] pPort is the port which should be written to
@@ -1309,6 +1303,36 @@ void Component::setDefaultStartValue(Port *pPort, const size_t idx, const double
     if (pPort->getNodeDataDescription(idx))
     {
         mpParameters->refreshParameterValueText(pPort->getName()+"#"+pPort->getNodeDataDescription(idx)->name);
+    }
+}
+
+//! @brief Set the default startvalue in a port
+//! @param[in] rPortName The name of the port that should be written to
+//! @param[in] rDataName The port varaible to be written to, Example: "Pressure"
+//! @param[in] value is the start value that should be written
+//! @ingroup ComponentSetupFunctions
+//! @details This slower version uses string names for lookup, and will report errors if names are incorrect
+void Component::setDefaultStartValue(const HString &rPortName, const HString &rDataName, const double value)
+{
+    Port *pPort = getPort(rPortName);
+    if (pPort)
+    {
+        if (pPort->getNodePtr())
+        {
+            int id = pPort->getNodePtr()->getDataIdFromName(rDataName);
+            if (id >= 0)
+            {
+                setDefaultStartValue(pPort, id, value);
+            }
+            else
+            {
+                addErrorMessage("setDefaultStartValue(): Data named '"+rDataName+"' was not found in Port '"+rPortName+"'!");
+            }
+        }
+    }
+    else
+    {
+        addErrorMessage("setDefaultStartValue(): Port '"+rPortName+"' not found!");
     }
 }
 

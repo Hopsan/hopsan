@@ -23,65 +23,21 @@
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 #include "HopsanEssentials.h"
+#include "ComponentUtilities/HopsanPowerUser.h"
 
 namespace hopsan {
 
-    //!
-    //! @brief A hydraulic laminar orifice component
-    //! @ingroup HydraulicComponents
-    //!
     class HydraulicComponentsInComponentTest : public ComponentSystem
     {
     private:
-        // Parameters
-        double Volume;
+        // Constants
+        double mVolume;
 
         // Components
-        Component *mpOrifice1, *mpVolume, *mpOrifice2;
-
-        //! @brief Helpfunction to create components and abort safely if that fails
-        //! @returns Pointer to created component or dummy
-        Component* createSafeComponent(const HString type)
-        {
-            Component* pComp = getHopsanEssentials()->createComponent(type.c_str());
-            if (pComp == 0)
-            {
-                addErrorMessage("Could not create subcomponent: " + type);
-                pComp = getHopsanEssentials()->createComponent("DummyComponent");
-                stopSimulation();
-            }
-            return pComp;
-        }
-
-        //! @brief Helpfunction to safely get the internal parameter data ptr from a subcomponent, the type needs to be known
-        //! If parameter or component NULL, then error message instead of crash
-        //! @note circumvents the ordinary parameter system, use only if you know what you are doing
-        //! @returns A pointer to the parameter or a dummy parameter (to avoid crash on further use)
-        template<typename T>
-        T* getParameterSafeDataPtr(Component *pComp, const HString paramName)
-        {
-            double* pTmp = 0;
-            HString compType = "NULL";
-
-            // First handle if component ptr is null
-            if (pComp != 0)
-            {
-                pTmp = static_cast<T*>(pComp->getParameterDataPtr(paramName));
-                compType = pComp->getTypeName();
-            }
-
-            // Now check if we found the parameter, if not return dummy, error message and stop simulation
-            if (pTmp == 0)
-            {
-                addErrorMessage("Could not get parameter data ptr from subcomponent: " + compType);
-                pTmp = new T;
-                stopSimulation();
-            }
-            return pTmp;
-        }
+        Component *mpOrifice1, *mpVolume, *mpOrifice2, *mpSinus;
 
         // External port pointers
-        Port *mpSysPort1, *mpSysPort2, *mpSysPortKc1, *mpSysPortKc2, *mpSysPortVolPressureOut;
+        Port *mpSysPort1, *mpSysPort2, *mpSysPortKc1, *mpSysPortKc2, *mpSysPortVolPressureOut, *mpSinOut;
 
         // Node data ptrs
         double *mpInternalVolumePressure;
@@ -95,73 +51,109 @@ namespace hopsan {
         void configure()
         {
             // Add Constant Parameters
-            addConstant("V", "Volume", "[m^3]", 1e-3, Volume);
+            addConstant("V", "Volume", "m^3", 1e-3, mVolume);
 
             // Add Input Variables
             mpSysPortKc1 = addInputVariable("Kc1", "", "", 1e-11);
             mpSysPortKc2 = addInputVariable("Kc2", "", "", 1e-11);
 
             // Add external ports
-            mpSysPort1 = addSystemPort("P1", "Hydraulic port 1");
-            mpSysPort2 = addSystemPort("P2", "Hydraulic port 2");
-            mpSysPortVolPressureOut = addOutputVariable("out", "Internal volume pressure", "bar");
+            mpSysPort1 = addPowerPort("P1", "NodeHydraulic", "Hydraulic port 1");
+            mpSysPort2 = addPowerPort("P2", "NodeHydraulic", "Hydraulic port 2");
+            mpSysPortVolPressureOut = addOutputVariable("out", "Internal volume pressure", "Pa");
+            mpSinOut = addOutputVariable("sinOut", "Unrelated sinus wave", "");
 
-
-            //Initialize sub components
-            mpOrifice1 = createSafeComponent("HydraulicLaminarOrifice");
+            // Create and add sub components
+            mpOrifice1 = createSafeComponent(this, "HydraulicLaminarOrifice");
             addComponent(mpOrifice1);
-            mpOrifice1->setName("TheFirstOrifice");             //Names are optional (not used yet)
+            mpOrifice1->setName("TheFirstOrifice");             //Names are not required, but recommended
 
-            mpVolume = createSafeComponent("HydraulicVolume");
+            mpVolume = createSafeComponent(this, "HydraulicVolume");
             addComponent(mpVolume);
             mpVolume->setName("TheVolume");
+            //mpVolume->setConstantValue("V", "V");
 
-            mpOrifice2 = createSafeComponent("HydraulicLaminarOrifice");
+            mpOrifice2 = createSafeComponent(this, "HydraulicLaminarOrifice");
             addComponent(mpOrifice2);
             mpOrifice2->setName("TheSecondOrifice");
 
-            //Initialize connections
-            connect(mpSysPort1, mpOrifice1->getPort("P1"));
-            connect(mpSysPortKc1, mpOrifice1->getPort("Kc"));
-            connect(mpOrifice1->getPort("P2"), mpVolume->getPort("P1"));
-            connect(mpVolume->getPort("P2"), mpOrifice2->getPort("P1"));
-            connect(mpSysPortKc2, mpOrifice2->getPort("Kc"));
-            connect(mpSysPort2, mpOrifice2->getPort("P2"));
+            mpSinus = createSafeComponent(this, "SignalSineWave");
+            addComponent(mpSinus);
+            mpSinus->setName("TheSinus");
+
+            // Create sub component connections
+            connect(mpSysPortKc1,               mpOrifice1->getPort("Kc"));
+            connect(mpSysPortKc2,               mpOrifice2->getPort("Kc"));
+
+            connect(mpSysPort1,                 mpOrifice1->getPort("P1"));
+            connect(mpOrifice1->getPort("P2"),  mpVolume->getPort("P1"));
+            connect(mpVolume->getPort("P2"),    mpOrifice2->getPort("P1"));
+            connect(mpSysPort2,                 mpOrifice2->getPort("P2"));
+
+            connect(mpSinus->getPort("out"),    mpSinOut);
+
+            // Setup default startvalues in ports
+            mpSinus->setDefaultStartValue("t_start", "Value", 0.35);
         }
 
-
-        bool initialize(const double startT, const double stopT)     //Important, initialize must have these arguments
+        // preInitialize (optional) is called in all components before initialize (in any component) begins
+        bool preInitialize()
         {
-            // Propagate constant parameters into respective components
-            mpVolume->setParameterValue("V", to_hstring(Volume), true);
+            const double v = mpSinus->getDefaultStartValue("t_start", "Value")*2.0;
+
+            // Manually set new default startvalues (you may have calculated them)
+            mpSinus->setDefaultStartValue("t_start", "Value", v);
+
+            return true;
+        }
+
+        // Overload the ComponentSystem initialize(startT, stopT) fuunction
+        // Important! initialize must have these arguments (const double startT, const double stopT),
+        // otherwise the wrong function will be overloaded
+        bool initialize(const double startT, const double stopT)
+        {
+            // Propagate CONSTANT parameters into respective components (you can also do this in preInitialize())
+            // Note! It is to late to use setDefaultStartValue() here, but setting constants will work
+            mpVolume->setConstantValue("V", mVolume);
+
+            // Get a node data pointer to the internal volume pressure,
+            // We can read (and write) the pointer, but DO NOT write to it if the port is connected
             mpInternalVolumePressure = mpVolume->getSafeNodeDataPtr("P2", NodeHydraulic::Pressure);
 
+            // We check that all submodels have been connected OK first, before we initialize the simulation
             if (checkModelBeforeSimulation())
             {
-                return ComponentSystem::initialize(startT, stopT);
-            }
-            else
-            {
-                stopSimulation();
-                return false;
+                // Here we call the actual initialize(startT, stopT) function, to initialize all submodels
+                bool isOK = ComponentSystem::initialize(startT, stopT);
+
+                // If initialization is successfull then proceeed with setting inital output values
+                if (isOK)
+                {
+                    std::cout << (*mpInternalVolumePressure) << " " << mpSysPortVolPressureOut->readNode(NodeSignal::Value) << std::endl;
+                    // Initialize the output signal value, in this case we read from the volume pressure node data pointer)
+                    mpSysPortVolPressureOut->writeNode(NodeSignal::Value, (*mpInternalVolumePressure));
+
+                    return true;
+                }
             }
 
-            // Initialize the output signal value
-            //! @todo this is not working, value from last simulation remains allways
-            mpSysPortVolPressureOut->writeNode(NodeSignal::Value, (*mpInternalVolumePressure));
+            // If there was a problem in submodel initialization then we wil lget here
+            // we must abort the simulation and return false
+            stopSimulation();
+            return false;
         }
 
 
         void simulate(const double stopTime)
         {
-            // Do some magic stuff
+            // Do some magic calculations here if you wish
             // Note! if you use mTime before the call to simulate below, mTime = previousTime
 
             // Call the ComponentSystem::simulate() function to increment mTime and simulate all subcomponents
             // Note! Will simulate from mTime to stopTime (this could include multiple timesteps (mTimestep))
             ComponentSystem::simulate(stopTime);
 
-            // Write any output variables after simulation completes
+            // Write any output variables after the simulation step when all submodels have finished
             mpSysPortVolPressureOut->writeNode(NodeSignal::Value, (*mpInternalVolumePressure));
         }
     };
