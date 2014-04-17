@@ -148,5 +148,7 @@
         <file>graphics/builtinCAF/hidden/builtin_hidden.xml</file>
         <file>graphics/builtinCAF/visible/builtin_visible.xml</file>
         <file>graphics/uiicons/Hopsan-ShowHideDockAreas.png</file>
+        <file>graphics/uiicons/Hopsan-DistributeX.png</file>
+        <file>graphics/uiicons/Hopsan-DistributeY.png</file>
     </qresource>
 </RCC>

@@ -639,6 +639,16 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpAlignYAction, "Align selected components vertically to last selected component.");
     connect(mpAlignYAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpDistributeXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-DistributeX.png"), tr("&Distribute Equidistantly Horizontally"), this);
+    mpDistributeXAction->setText("Distribute Equidistantly Horizontally");
+    mHelpPopupTextMap.insert(mpDistributeXAction, "Distributes all selected components equally (horizontally)");
+    connect(mpDistributeXAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    mpDistributeYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-DistributeY.png"), tr("&Distribute Equidistantly Vertically"), this);
+    mpDistributeYAction->setText("Distribute Equidistantly Vertically");
+    mHelpPopupTextMap.insert(mpDistributeYAction, "Distributes all selected components equally (vertically)");
+    connect(mpDistributeYAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpRotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left (Ctrl+E)"), this);
     mpRotateLeftAction->setText("Rotate Left (Ctrl+E)");
     mpRotateLeftAction->setShortcut(QKeySequence("Ctrl+E"));
@@ -1080,6 +1090,8 @@ void MainWindow::createToolbars()
     mpToolsToolBar->setAttribute(Qt::WA_MouseTracking);
     mpToolsToolBar->addAction(mpAlignXAction);
     mpToolsToolBar->addAction(mpAlignYAction);
+    mpToolsToolBar->addAction(mpDistributeXAction);
+    mpToolsToolBar->addAction(mpDistributeYAction);
     mpToolsToolBar->addAction(mpRotateRightAction);
     mpToolsToolBar->addAction(mpRotateLeftAction);
     mpToolsToolBar->addAction(mpFlipHorizontalAction);
@@ -1315,6 +1327,8 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportPNGAction->setEnabled(!noTabs);
     mpAlignXAction->setEnabled(!noTabs);
     mpAlignYAction->setEnabled(!noTabs);
+    mpDistributeXAction->setEnabled(!noTabs);
+    mpDistributeYAction->setEnabled(!noTabs);
     mpRotateLeftAction->setEnabled(!noTabs);
     mpRotateRightAction->setEnabled(!noTabs);
     mpFlipHorizontalAction->setEnabled(!noTabs);

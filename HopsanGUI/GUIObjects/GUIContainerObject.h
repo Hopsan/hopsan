@@ -196,6 +196,8 @@ public slots:
     //Alignment slots
     void alignX();
     void alignY();
+    void distributeX();
+    void distributeY();
 
     //Undo/redo slots
     void undo();

@@ -1362,53 +1362,72 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
+    QColor newConnectorColor = QColor();
     if(selectedAction == pBlueAction)
     {
-        mpParentConnector->setColor(QColor("Blue"));
+        newConnectorColor = QColor("Blue");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pRedAction)
     {
-        mpParentConnector->setColor(QColor("Red"));
+        newConnectorColor = QColor("Red");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pGreenAction)
     {
-        mpParentConnector->setColor(QColor("Green"));
+        newConnectorColor = QColor("Green");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pYellowAction)
     {
-        mpParentConnector->setColor(QColor("Yellow"));
+        newConnectorColor = QColor("Yellow");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pPurpleAction)
     {
-        mpParentConnector->setColor(QColor("Purple"));
+        newConnectorColor = QColor("Purple");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pBrownAction)
     {
-        mpParentConnector->setColor(QColor("Brown"));
+        newConnectorColor = QColor("Brown");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pOrangeAction)
     {
-        mpParentConnector->setColor(QColor("Orange"));
+        newConnectorColor = QColor("Orange");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pPinkAction)
     {
-        mpParentConnector->setColor(QColor("Pink"));
+        newConnectorColor = QColor("Pink");
         mpParentConnector->setPassive();
         mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+    }
+
+    //
+    if(newConnectorColor != QColor())
+    {
+        QList<ModelObject*> selectedModelObjectPtrs = mpParentConnector->mpParentContainerObject->getSelectedModelObjectPtrs();
+        for(int i=0; i<selectedModelObjectPtrs.size(); ++i)
+        {
+            QList<Connector*> connectorPtrs = selectedModelObjectPtrs[i]->getConnectorPtrs();
+            for(int j=0; j<connectorPtrs.size(); ++j)
+            {
+                if(connectorPtrs[j]->getStartPort()->getParentModelObject()->isSelected() && connectorPtrs[j]->getEndPort()->getParentModelObject()->isSelected())
+                {
+                    connectorPtrs[j]->setColor(newConnectorColor);
+                }
+            }
+        }
+        mpParentConnector->setColor(newConnectorColor);
     }
 }
 

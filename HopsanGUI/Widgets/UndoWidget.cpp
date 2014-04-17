@@ -238,6 +238,8 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert("modifiedtextwidget",     "Modified Text Widget");
     tagMap.insert("alignx",                 "Align Vertical");
     tagMap.insert("aligny",                 "Align Horizontal");
+    tagMap.insert("distributex",            "Disribute Horizontally");
+    tagMap.insert("distributey",            "Disribute Vertically");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

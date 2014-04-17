@@ -181,6 +181,8 @@ public:
     QAction *mpExportPNGAction;
     QAction *mpAlignXAction;
     QAction *mpAlignYAction;
+    QAction *mpDistributeXAction;
+    QAction *mpDistributeYAction;
     QAction *mpRotateLeftAction;
     QAction *mpRotateRightAction;
     QAction *mpFlipHorizontalAction;

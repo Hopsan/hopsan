@@ -149,6 +149,8 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
     connect(gpMainWindow->mpPasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
     connect(gpMainWindow->mpAlignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()), Qt::UniqueConnection);
     connect(gpMainWindow->mpAlignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpDistributeXAction,    SIGNAL(triggered()),        this,     SLOT(distributeX()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpDistributeYAction,    SIGNAL(triggered()),        this,     SLOT(distributeY()), Qt::UniqueConnection);
     connect(gpMainWindow->mpRotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateSubObjects90cw()), Qt::UniqueConnection);
     connect(gpMainWindow->mpRotateLeftAction,     SIGNAL(triggered()),        this,     SLOT(rotateSubObjects90ccw()), Qt::UniqueConnection);
     connect(gpMainWindow->mpFlipHorizontalAction, SIGNAL(triggered()),        this,     SLOT(flipSubObjectsHorizontal()), Qt::UniqueConnection);
@@ -1777,6 +1779,89 @@ void ContainerObject::alignY()
             mSelectedWidgetsList.at(i)->setCenterPos(QPointF(mSelectedWidgetsList.at(i)->getCenterPos().x(), newY));
             QPointF newPos = mSelectedWidgetsList.at(i)->pos();
             mpUndoStack->registerMovedWidget(mSelectedWidgetsList.at(i), oldPos, newPos);
+        }
+        mpModelWidget->hasChanged();
+    }
+}
+
+
+//Distributes selected model objects equally horizontally
+void ContainerObject::distributeX()
+{
+    if(!mSelectedModelObjectsList.isEmpty())
+    {
+        QList<ModelObject*> tempList;
+        tempList.append(mSelectedModelObjectsList.first());
+        for(int i=1; i<mSelectedModelObjectsList.size(); ++i)
+        {
+            int idx = 0;
+            while(idx<tempList.size() && tempList[idx]->getCenterPos().x() > mSelectedModelObjectsList[i]->getCenterPos().x())
+            {
+                ++idx;
+            }
+            tempList.insert(idx,mSelectedModelObjectsList[i]);
+        }
+
+        double min = tempList.first()->getCenterPos().x();
+        double max = tempList.last()->getCenterPos().x();
+        double diff = (max-min)/(tempList.size()-1.0);
+
+        mpUndoStack->newPost("distributex");
+        double pos = min+diff;
+        for(int i=1; i<tempList.size()-1; ++i)
+        {
+            QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
+            tempList[i]->setCenterPos(QPointF(pos, tempList[i]->getCenterPos().y()));
+            QPointF newPos = mSelectedModelObjectsList.at(i)->pos();
+            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedModelObjectsList.at(i)->getName());
+            for(int j=0; j<mSelectedModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
+            {
+                mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
+            }
+
+            pos += diff;
+        }
+        mpModelWidget->hasChanged();
+    }
+}
+
+
+//Distributes selected model objects equally vertically
+void ContainerObject::distributeY()
+{
+    if(!mSelectedModelObjectsList.isEmpty())
+    {
+        QList<ModelObject*> tempList;
+        tempList.append(mSelectedModelObjectsList.first());
+        for(int i=1; i<mSelectedModelObjectsList.size(); ++i)
+        {
+            int idx = 0;
+            while(idx<tempList.size() && tempList[idx]->getCenterPos().y() > mSelectedModelObjectsList[i]->getCenterPos().y())
+            {
+                ++idx;
+                qDebug() << "idx = " << idx;
+            }
+            tempList.insert(idx,mSelectedModelObjectsList[i]);
+        }
+
+        double min = tempList.first()->getCenterPos().y();
+        double max = tempList.last()->getCenterPos().y();
+        double diff = (max-min)/(tempList.size()-1.0);
+
+        mpUndoStack->newPost("distributey");
+        double pos = min+diff;
+        for(int i=1; i<tempList.size()-1; ++i)
+        {
+            QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
+            tempList[i]->setCenterPos(QPointF(tempList[i]->getCenterPos().x(), pos));
+            QPointF newPos = mSelectedModelObjectsList.at(i)->pos();
+            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedModelObjectsList.at(i)->getName());
+            for(int j=0; j<mSelectedModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
+            {
+                mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
+            }
+
+            pos += diff;
         }
         mpModelWidget->hasChanged();
     }
