@@ -46,7 +46,6 @@
 using namespace std;
 using namespace hopsan;
 
-
 bool SimulationHandler::initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem)
 {
     if (pSystem->checkModelBeforeSimulation())
@@ -397,7 +396,7 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
     {
         if (this->hasReservedUniqueName(rName) || !isNameValid(rName))
         {
-            addErrorMessage("The desired system parameter name: " + rName + " is invalid or already used by somthing else");
+            addErrorMessage("The desired system parameter name: "+rName+" is invalid or already used by somthing else");
             success=false;
         }
         else
@@ -2410,9 +2409,19 @@ bool ComponentSystem::checkModelBeforeSimulation()
         }
     }
 
-
-    std::vector<HString> parNames;
-    mpParameters->getParameterNames(parNames);
+    // Generate a list of all system parameters (constants), to check if any are unused
+    std::vector<HString> unusedSysParNames;
+    const std::vector<ParameterEvaluator*> *pSysParameters = getParametersVectorPtr();
+    unusedSysParNames.reserve(pSysParameters->size());
+    for (size_t sp=0; sp<pSysParameters->size(); ++sp)
+    {
+        // We want to ignore those containing # as they are most likely start values in interface ports
+        const HString& rName = pSysParameters->at(sp)->getName();
+        if (!rName.containes('#'))
+        {
+            unusedSysParNames.push_back(rName);
+        }
+    }
 
     // Check all subcomponents to make sure that all requirements for simulation are met
     // scmit = The subcomponent map iterator
@@ -2421,7 +2430,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
     {
         Component* pComp = scmit->second; //Component pointer
 
-        //Check that ALL ports that MUST be connected are connected
+        // Check that ALL ports that MUST be connected are connected
         vector<Port*> ports = pComp->getPortPtrVector();
         for (size_t i=0; i<ports.size(); ++i)
         {
@@ -2439,7 +2448,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
                 }
             }
 
-            //Check parameters in subcomponents
+            // Check parameters in subcomponents
             HString errParName;
             if(!(pComp->checkParameters(errParName)))
             {
@@ -2448,17 +2457,21 @@ bool ComponentSystem::checkModelBeforeSimulation()
             }
         }
 
-        //Check if component uses a system parameter and remove it from the unused list (if not already removed)
-        std::vector<HString> compParNames;
-        pComp->getParameterNames(compParNames);
-        for(size_t p=0; p<compParNames.size(); ++p)
+        // Check if component uses a system parameter and remove it from the unused list (if not already removed)
+        const std::vector<ParameterEvaluator*> *pCompParameters = pComp->getParametersVectorPtr();
+        for(size_t p=0; p<pCompParameters->size(); ++p)
         {
-            HString value;
-            pComp->getParameterValue(compParNames[p], value);
-            std::vector<HString>::iterator itp = std::find(parNames.begin(), parNames.end(), value);
-            if(itp != parNames.end())
+            // Break the loop if we do not have any system parameter names to check
+            if (unusedSysParNames.empty())
             {
-                parNames.erase(itp);
+                break;
+            }
+
+            // If a system parameter is used in the componente, then erase it from the list
+            std::vector<HString>::iterator itp = std::find(unusedSysParNames.begin(), unusedSysParNames.end(), pCompParameters->at(p)->getValue());
+            if(itp != unusedSysParNames.end())
+            {
+                unusedSysParNames.erase(itp);
             }
         }
 
@@ -2484,14 +2497,14 @@ bool ComponentSystem::checkModelBeforeSimulation()
         //! @todo check more stuff
     }
 
-    //Add warning message if at least one system parameter is unused
-    if(parNames.size() > 0)
+    // Add warning message if at least one system parameter is unused
+    if(unusedSysParNames.size() > 0)
     {
         std::stringstream ss;
-        ss << "The following system parameters are not used:";
-        for(size_t p=0; p<parNames.size(); ++p)
+        ss << "The following system parameters are not used by any sub component:";
+        for(size_t p=0; p<unusedSysParNames.size(); ++p)
         {
-            ss << "\n" << parNames.at(p).c_str();
+            ss << "\n" << unusedSysParNames[p].c_str();
         }
         addWarningMessage(ss.str().c_str());
     }

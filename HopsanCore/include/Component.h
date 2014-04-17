@@ -116,6 +116,7 @@ public:
     void setConstantValue(const HString &rName, const double value);
     void setConstantValue(const HString &rName, const int value);
     void setConstantValue(const HString &rName, const HString &rValue);
+    void setConstantValue(const HString &rName, const char* value);
     void setConstantValue(const HString &rName, const bool value);
 
     // Variabels and Parameters

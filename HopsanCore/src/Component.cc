@@ -211,6 +211,11 @@ void Component::setConstantValue(const HString &rName, const HString &rValue)
     setParameterValue(rName, rValue, true);
 }
 
+void Component::setConstantValue(const HString &rName, const char *value)
+{
+    setConstantValue(rName, HString(value));
+}
+
 void Component::setConstantValue(const HString &rName, const bool value)
 {
     setParameterValue(rName, to_hstring(value), true);
