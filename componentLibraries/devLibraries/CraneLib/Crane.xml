@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Crane.hpp" typename="Crane" displayname="Crane">
+        <icons>
+            <icon scale="1" path="crane.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>Mechanical crane with two arms, with one port for the actuator on each arm. It is parameterized according to the picture.</text>
+            <picture>crane_help.svg</picture>
+        </help >
+        <ports>
+            <port name="th1" x="1.0" y="0.2" a="0" hidden="false"/>
+            <port name="w1" x="1.0" y="0.4" a="0" hidden="false"/>
+            <port name="th2" x="1.0" y="0.6" a="0" hidden="false"/>
+            <port name="w2" x="1.0" y="0.8" a="0" hidden="false"/>
+            <port name="P1" x="0.4" y="0.26322044" a="270"/>
+            <port name="P2" x="0.762346492" y="0.187165775" a="270"/>
+        </ports>
+        <animation>
+            <icon userpath="crane_base.svg"/>
+            <movable idx="0">
+                <icon userpath="crane_movable1.svg"/>
+                <data port="th1" dataname="Value"/>
+                <movement x="0" y="0" a="57.3"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="39.91" y="70.61"/>
+            </movable>
+            <movable idx="2">
+                <icon userpath="crane_movable_empty.svg"/>
+                <data port="xc2" dataname="Value"/>
+                <movement x="-80" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable idx="3">
+                <icon userpath="crane_movable_empty.svg"/>
+                <data port="yc2" dataname="Value"/>
+                <movement x="0" y="80" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <relative idx="2"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable idx="0">
+                <icon userpath="crane_movable1.svg"/>
+                <data port="th2" dataname="Value"/>
+                <movement x="0" y="0" a="57.3"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="39.91" y="70.61"/>
+                <relative idx="3"/>
+            </movable>
+        </animation>
+        <animation/>
+    </modelobject>
+</hopsanobjectappearance>
