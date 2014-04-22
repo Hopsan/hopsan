@@ -62,6 +62,17 @@ public:
     QString mLabel;
 };
 
+class SymbolSelectionStruct
+{
+public:
+    SymbolSelectionStruct(const QwtSymbol::Style style, const QString &label)
+    {
+        mStyle = style;
+        mLabel = label;
+    }
+    QwtSymbol::Style mStyle;
+    QString mLabel;
+};
 
 
 //! @brief Constructor for plot curves.
@@ -1137,27 +1148,24 @@ void PlotCurve::openFrequencyAnalysisDialog()
 //! @param pCurve Pointer to curve the marker belongs to
 //! @param pPlotTab Plot tab the marker is located in
 //! @param markerSymbol The symbol the marker shall use
-PlotMarker::PlotMarker(PlotCurve *pCurve, PlotArea *pPlotTab)
-    : QwtPlotMarker()
+PlotMarker::PlotMarker(PlotCurve *pCurve, PlotArea *pPlotArea)
+    : QObject(pPlotArea), QwtPlotMarker()
 {
     mpCurve = pCurve;
-    mpPlotArea = pPlotTab;
+    mpPlotArea = pPlotArea;
     mIsBeingMoved = false;
     mIsMovable = true;
-    mMarkerSize = 12;
-    mLabelAlignment = Qt::AlignTop;
 
+    mIsHighlighted = false;
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
-    mpMarkerSymbol->setSize(mMarkerSize,mMarkerSize);
-    this->setRenderHint(QwtPlotItem::RenderAntialiased);
+    mpMarkerSymbol->setSize(12);
+    setSymbol(mpMarkerSymbol);
+    setColor("Black");
+    setLabelAlignment(Qt::AlignTop);
 
-    setSymbol(mpMarkerSymbol); //!< @todo is this symbol auto removed with PlotMarker ?
-    this->setZ(CurveMarkerZOrderType);
-
-    this->setColor(pCurve->pen().color());
-
-    connect(mpCurve, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
+    setRenderHint(QwtPlotItem::RenderAntialiased);
+    setZ(CurveMarkerZOrderType);
 }
 
 
@@ -1170,12 +1178,16 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 {
     Q_UNUSED(object);
 
-    if (event->type() == QEvent::ContextMenu)
+    // Calculate midpoint of marker in plot coordinates
+    QPointF midPoint;
+    midPoint.setX(plot()->transform(QwtPlot::xBottom, xValue()));
+    midPoint.setY(plot()->transform(QwtPlot::yLeft, yValue()));
+
+    // Determine if mouse cursor is close to the midpoint (should this marker be "selected", else we can skip some event filtering for this marker)
+    const bool cursorIsClose = (plot()->canvas()->mapToGlobal(midPoint.toPoint()) - QCursor::pos()).manhattanLength() < 35;
+    if (cursorIsClose)
     {
-        QPointF midPoint;
-        midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
-        if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - QCursor::pos()).manhattanLength() < 35)
+        if (event->type() == QEvent::ContextMenu)
         {
             QMenu *pContextMenu = new QMenu();
 
@@ -1212,6 +1224,39 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
                 alignSelectionMap.insert(pAction, &alignments[i]);
             }
 
+            // Marker symbol selection menu
+            QMenu *pSymbolMenu = new QMenu("Marker Symbol");
+            pContextMenu->addMenu(pSymbolMenu);
+            QList<SymbolSelectionStruct> symbols;
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Ellipse, "Ellipse"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Rect, "Rect"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Diamond, "Diamond"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Triangle, "Triangle"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::DTriangle, "DTriangle"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::UTriangle, "UTriangle"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::LTriangle, "LTriangle"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::RTriangle, "RTriangle"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Cross, "Cross"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::XCross, "XCross"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Star1, "Star1"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Star2, "Star2"));
+            symbols.append(SymbolSelectionStruct(QwtSymbol::Hexagon, "Hexagon"));
+            QMap<QAction*, SymbolSelectionStruct*> symbolSelectionMap;
+            for (int i=0; i<symbols.size(); ++i)
+            {
+                pAction = new QAction(symbols[i].mLabel,pContextMenu);
+                pSymbolMenu->addAction(pAction);
+                symbolSelectionMap.insert(pAction, &symbols[i]);
+            }
+
+            // Marker color selection menu
+            QMenu *pColorMenu = new QMenu("Marker Color");
+            pContextMenu->addMenu(pColorMenu);
+            QAction *pCurveColorAction = new QAction("Curve Color",pContextMenu);
+            QAction *pBlackColorAction = new QAction("Black ",pContextMenu);
+            pColorMenu->addAction(pCurveColorAction);
+            pColorMenu->addAction(pBlackColorAction);
+
             // Delete marker action
             QAction *pDeleteAction = pContextMenu->addAction("Remove Marker");
 
@@ -1238,113 +1283,96 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
             {
                 this->setLineStyle(Cross);
             }
+            else if (pAction == pCurveColorAction)
+            {
+                connect(mpCurve, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
+                setColor(mpCurve->pen().color());
+            }
+            else if (pAction == pBlackColorAction)
+            {
+                disconnect(mpCurve, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
+                setColor("Black");
+            }
             else if(alignSelectionMap.contains(pAction))
             {
-                mLabelAlignment = alignSelectionMap.value(pAction)->mAlignment;
-                this->setLabelAlignment(mLabelAlignment);
+                setLabelAlignment(alignSelectionMap.value(pAction)->mAlignment);
+            }
+            else if(symbolSelectionMap.contains(pAction))
+            {
+                mpMarkerSymbol->setStyle(symbolSelectionMap.value(pAction)->mStyle);
             }
 
             pContextMenu->deleteLater();
             return true;
+
         }
-    }
 
-    // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
-    else if (event->type() == QEvent::MouseButtonPress)
-    {
-        if(!mIsMovable)
-            return false;
-
-        if (static_cast<QMouseEvent*>(event)->button() == Qt::LeftButton)
+        // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
+        else if (event->type() == QEvent::MouseButtonPress)
         {
-            QCursor cursor;
-            QPointF midPoint;
-            midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
-            midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
+            if(!mIsMovable)
+                return false;
 
-            if(!mpPlotArea->mpQwtZoomerLeft->isEnabled() && !mpPlotArea->mpQwtPanner->isEnabled())
+            if (static_cast<QMouseEvent*>(event)->button() == Qt::LeftButton)
             {
-                if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+                //! @todo it is not very nice that this marker must go and check stuff in the parent plot area
+                if(!mpPlotArea->mpQwtZoomerLeft->isEnabled() && !mpPlotArea->mpQwtPanner->isEnabled())
                 {
                     mIsBeingMoved = true;
                     return true;
                 }
             }
         }
-    }
 
-    // Mouse move (hover) events, used to change marker color or move marker if cursor is close enough.
-    else if (event->type() == QEvent::MouseMove)
-    {
-        if(!mIsMovable)
-            return false;
-
-        bool retval = false;
-        QCursor cursor;
-        QPointF midPoint;
-        midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
-        if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+        // When mouse moves over the marker (hover, or drag move) we highlight it
+        else if ((event->type() == QEvent::MouseMove) && !mIsHighlighted)
         {
-            QColor tempColor = mpCurve->pen().color();
-            tempColor.setAlpha(150);
-            mpMarkerSymbol->setPen(tempColor.lighter(165), 3);
-            this->plot()->replot();
-            this->plot()->updateGeometry();
-            retval=true;
+            mIsHighlighted = true;
+            highlight(mIsHighlighted);
         }
-        else
+
+
+        // Keypress event, will delete marker if delete key is pressed
+        else if (event->type() == QEvent::KeyPress)
         {
-            if(!mIsBeingMoved)
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            if(keyEvent->key() == Qt::Key_Delete)
             {
-                QColor tempColor = mpCurve->pen().color();
-                tempColor.setAlpha(150);
-                mpMarkerSymbol->setPen(tempColor, 3);
-                this->plot()->replot();
-                this->plot()->updateGeometry();
+                mpPlotArea->removePlotMarker(this);
+                return true;
             }
+            return false;
         }
-
-        if(mIsBeingMoved)
-        {
-            double x = mpCurve->sample(mpCurve->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).x();
-            double y = mpCurve->sample(mpCurve->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).y();
-            setXValue(x);
-            setYValue(this->plot()->invTransform(QwtPlot::yLeft, this->plot()->transform(mpCurve->yAxis(), y)));
-
-            refreshLabel(x, y);
-        }
-        return retval;
     }
 
+    // We must check the following allways, since a quick mouse move will take us outside the "cursorIsClose range" before a move event is generated
+
+    // If we are moving the mouse, then update the position and label
+    if ((event->type() == QEvent::MouseMove) && mIsBeingMoved)
+    {
+        double x = mpCurve->sample(mpCurve->closestPoint(plot()->canvas()->mapFromGlobal(QCursor::pos()))).x();
+        double y = mpCurve->sample(mpCurve->closestPoint(plot()->canvas()->mapFromGlobal(QCursor::pos()))).y();
+        setXValue(x);
+        setYValue(plot()->invTransform(QwtPlot::yLeft, plot()->transform(mpCurve->yAxis(), y)));
+        refreshLabel(x, y);
+        return true;
+    }
     // Mouse release event, will stop moving marker
-    else if (event->type() == QEvent::MouseButtonRelease && mIsBeingMoved == true)
+    else if (event->type() == QEvent::MouseButtonRelease && (mIsBeingMoved == true))
     {
         mIsBeingMoved = false;
         return false;
     }
 
-    // Keypress event, will delete marker if delete key is pressed
-    else if (event->type() == QEvent::KeyPress)
+    // When mouse leaves hover we do not want it to be highlighted
+    if (mIsHighlighted && !mIsBeingMoved && !cursorIsClose)
     {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        if(keyEvent->key() == Qt::Key_Delete)
-        {
-            QCursor cursor;
-            QPointF midPoint;
-            midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
-            midPoint.setY(this->plot()->transform(mpCurve->yAxis(), value().y()));
-            if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
-            {
-                mpPlotArea->removePlotMarker(this);
-                return true;
-            }
-        }
-        return false;
+        mIsHighlighted = false;
+        highlight(mIsHighlighted);
     }
+
     return false;
 }
-
 
 void PlotMarker::setMovable(bool movable)
 {
@@ -1362,18 +1390,36 @@ void PlotMarker::refreshLabel(const QString &label)
     qwtlabel.setColor(Qt::black);
     qwtlabel.setBackgroundBrush(QColor(255,255,255,240));
     qwtlabel.setFont(QFont("Calibri", 14, QFont::Normal));
+
+    Qt::Alignment alignment = labelAlignment();
     setLabel(qwtlabel);
-    setLabelAlignment(mLabelAlignment);
+    setLabelAlignment(alignment);
 }
 
 
 void PlotMarker::setColor(QColor color)
 {
-    color.setAlpha(150);    //Markers should be semi-transparent
     mpMarkerSymbol->setPen(color,3);
-    this->setLinePen(color,2, Qt::DotLine);
+    setLinePen(color,2, Qt::DotLine);
+    highlight(mIsHighlighted);
 }
 
+void PlotMarker::highlight(bool tf)
+{
+    QColor color = mpMarkerSymbol->pen().color();
+    if (tf)
+    {
+        color.setAlpha(150);
+        mpMarkerSymbol->setPen(color, 5);
+        setLinePen(color, 4, Qt::DotLine);
+    }
+    else
+    {
+        color.setAlpha(255);
+        mpMarkerSymbol->setPen(color, 3);
+        setLinePen(color, 2, Qt::DotLine);
+    }
+}
 
 
 //! @brief Returns a pointer to the curve a plot marker belongs to

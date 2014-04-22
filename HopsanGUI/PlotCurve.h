@@ -204,10 +204,12 @@ class PlotMarker : public QObject, public QwtPlotMarker
 {
     Q_OBJECT
 public:
-    PlotMarker(PlotCurve *pCurve, PlotArea *pPlotTab);
+    PlotMarker(PlotCurve *pCurve, PlotArea *pPlotArea);
     PlotCurve *getCurve();
-    virtual bool eventFilter (QObject *object, QEvent *event);
     void setMovable(bool movable);
+
+    // Overkloaded virtual methods
+    virtual bool eventFilter (QObject *object, QEvent *event);
 
 public slots:
     void refreshLabel(const double x, const double y);
@@ -215,11 +217,12 @@ public slots:
     void setColor(QColor color);
 
 private:
+    void highlight(bool tf);
+
     PlotCurve *mpCurve;
     PlotArea *mpPlotArea;
     QwtSymbol *mpMarkerSymbol;
-    Qt::Alignment mLabelAlignment;
-    int mMarkerSize;
+    bool mIsHighlighted;
     bool mIsBeingMoved;
     bool mIsMovable;
 };
