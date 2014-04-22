@@ -842,15 +842,6 @@ PortTypesEnumT WritePort::getPortType() const
     return WritePortType;
 }
 
-
-//double WritePort::readNode(const size_t idx, const size_t subPortIdx) const
-//{
-//    HOPSAN_UNUSED(idx)
-//    HOPSAN_UNUSED(subPortIdx)
-//    mpComponent->addWarningMessage("WritePort::readNode(): Could not read from port, this is a WritePort");
-//    return -1;
-//}
-
 MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {

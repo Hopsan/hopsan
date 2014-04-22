@@ -247,6 +247,31 @@ private Q_SLOTS:
         QTest::newRow(" 2346346.457457")     << HString(" 2346346.457457") << false;
         QTest::newRow("2346346.457457 ")     << HString("2346346.457457 ") << false;
     }
+
+    void HString_isBool()
+    {
+        QFETCH(HString, str);
+        QFETCH(bool, isbool);
+        QVERIFY2(str.isBool() == isbool, (HString("isBool produced the wrong result for: ")+str).c_str());
+    }
+    void HString_isBool_data()
+    {
+        QTest::addColumn<HString>("str");
+        QTest::addColumn<bool>("isbool");
+
+        QTest::newRow("0")      << HString("0") << true;
+        QTest::newRow("+0")     << HString("+0") << false;
+        QTest::newRow("-0")     << HString("-0") << false;
+        QTest::newRow("1")      << HString("1") << true;
+        QTest::newRow("+1")     << HString("+1") << false;
+        QTest::newRow("-1")     << HString("-1") << false;
+        QTest::newRow("true")   << HString("true") << true;
+        QTest::newRow(" true")  << HString(" true") << false;
+        QTest::newRow("True")   << HString("True") << false;
+        QTest::newRow("false")  << HString("false") << true;
+        QTest::newRow("false ") << HString("false ") << false;
+        QTest::newRow("False")  << HString("False") << false;
+    }
 };
 
 QTEST_APPLESS_MAIN(HStringTests)

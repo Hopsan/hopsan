@@ -40,6 +40,7 @@ public:
     bool compare(const char* other) const;
     bool compare(const HString &rOther) const;
     bool isNummeric() const;
+    bool isBool() const;
 
     HString substr(const size_t pos, const size_t len=npos) const;
 

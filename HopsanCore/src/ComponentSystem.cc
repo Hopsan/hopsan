@@ -2452,7 +2452,9 @@ bool ComponentSystem::checkModelBeforeSimulation()
             HString errParName;
             if(!(pComp->checkParameters(errParName)))
             {
-                addErrorMessage("The parameter:  "+errParName+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+"  can not be evaluated, a system parameter has maybe been deleted or re-typed.");
+                HString val;
+                pComp->getParameterValue(errParName, val);
+                addErrorMessage("The parameter:  "+errParName+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+" with value:  "+val+"  could not be evaluated!");
                 return false;
             }
         }

@@ -320,7 +320,6 @@ namespace hopsan {
     public:
         WritePort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         PortTypesEnumT getPortType() const;
-        //double readNode(const size_t idx, const size_t subPortIdx=0) const;
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);

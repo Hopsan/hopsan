@@ -224,10 +224,14 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
 
     // Determine if we should look for parameter among other parameters and system parameters
     bool doCheckOthers=false;
-    //! @todo handle bool and conditional also
+    //! @todo handle conditional also
     if (mType=="double" || mType=="integer")
     {
         doCheckOthers = !strippedValue.isNummeric();
+    }
+    else if (mType=="bool")
+    {
+        doCheckOthers = !strippedValue.isBool();
     }
 
     // First check if this parameter value is in fact the name of one of the other parameters or system parameter

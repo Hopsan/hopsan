@@ -965,12 +965,12 @@ double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDat
 
 //! @brief Write node data based on port and data name, also checks so that correct data is written
 //! @note This functions is slow, do not use it during simulation
-//! @details It searches for data based on strings, this make it unsiutable for use during simualtion but its excelent for use in initialize when port pointers are not desired/availible
+//! @details It searches for data based on strings, this make it unsuitable for use during simualtion but its excelent for use in initialize when port pointers are not desired/availible
 //! This function will also check so that the desired data actually exist in the requested node, error message will be sent if it does not
 //! @ingroup ComponentSimulationFunctions
-//! @param [in] rPortName The port to write data to
-//! @param [in] rDataName The data variable name for the data to be written
-//! @param [in] value The value to write
+//! @param[in] rPortName The port to write data to
+//! @param[in] rDataName The data variable name for the data to be written
+//! @param[in] value The value to write
 void Component::writeNodeSafeSlow(const HString &rPortName, const HString &rDataName, const double value)
 {
     Port *pPort = getPort(rPortName);
@@ -980,7 +980,8 @@ void Component::writeNodeSafeSlow(const HString &rPortName, const HString &rData
         int id = pPort->getNodeDataIdFromName(rDataName);
         if (id >= 0)
         {
-            pPort->writeNode(id, value);
+            // We want to make sure we use the base class Port::writeNodeSafe function to force writing the value even if this is a ReadPort
+            pPort->Port::writeNodeSafe(id, value);
             return;
         }
         addErrorMessage("You are trying to set value for dataName: "+rDataName+" that does not exist in port: "+rPortName);

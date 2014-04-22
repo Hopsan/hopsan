@@ -187,6 +187,7 @@ bool HString::compare(const HString &rOther) const
     }
 }
 
+//! @brief Check if the string can be interpreted as a number
 bool HString::isNummeric() const
 {
     if (empty() || isspace(*mpDataBuffer))
@@ -199,6 +200,12 @@ bool HString::isNummeric() const
         strtod(mpDataBuffer, &pEnd);
         return *pEnd == '\0';
     }
+}
+
+//! @brief Check if the string can be interpreted as bool (true, false, 1, 0)
+bool HString::isBool() const
+{
+    return (compare("true") || compare("false") || compare("1") || compare("0"));
 }
 
 size_t HString::find_first_of(const char c, size_t pos) const
