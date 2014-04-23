@@ -72,7 +72,7 @@ QPointF getOffsetPointfromPort(Port *pStartPort, Port *pEndPort)
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParentGUIModelObject)
+Port::Port(QString portName, double xpos, double ypos, PortAppearance* pPortAppearance, ModelObject *pParentGUIModelObject)
     : QGraphicsWidget(pParentGUIModelObject)
 {
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
@@ -91,11 +91,11 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
     mIsMagnified = false;
 
     refreshPortMainGraphics();
-    qDebug() << "---getPos: " << this->pos();
+    //qDebug() << "---getPos: " << this->pos();
 
     //Now adjust position
     setCenterPos(xpos, ypos);
-    qDebug() << "---getPos: " << this->pos();
+    //qDebug() << "---getPos: " << this->pos();
 
     //Setup port label (ports allways have lables)
     mpPortLabel = new QGraphicsTextItem(this);
@@ -104,27 +104,27 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
     mpPortLabel->setZValue(PortLabelZValue); //High value should be on top of everything
     mpPortLabel->hide();
     //Port label must exist and be set up before we run setDisplayName
-    this->setDisplayName(mPortDisplayName);
+    setDisplayName(mPortDisplayName);
 
     //Setup overlay (if it exists)
-    this->refreshPortOverlayGraphics();
-    this->refreshPortOverlayScale(mpParentModelObject->getParentContainerObject()->mpModelWidget->getGraphicsView()->getZoomFactor());
+    refreshPortOverlayGraphics();
+    refreshPortOverlayScale(mpParentModelObject->getParentContainerObject()->mpModelWidget->getGraphicsView()->getZoomFactor());
 
     mPortAppearanceAfterLastRefresh = *mpPortAppearance; //Remember current appearance
 
-    this->setAcceptHoverEvents(true);
+    setAcceptHoverEvents(true);
 
     // Determine if the port should be shown or not
-    if( this->getParentContainerObject() != 0 )
+    if( getParentContainerObject() != 0 )
     {
-        this->showIfNotConnected( this->getParentContainerObject()->areSubComponentPortsShown() );
+        showIfNotConnected( getParentContainerObject()->areSubComponentPortsShown() );
     }
 
     // Create signal connection to the zoom change signal for port overlay scaling and port hide/show function
     GraphicsView *pView = getParentContainerObject()->mpModelWidget->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
     connect(getParentContainerObject(),  SIGNAL(showOrHideAllSubComponentPorts(bool)),   this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
     connect(mpParentModelObject,         SIGNAL(visibleChanged()),                       this,   SLOT(showIfNotConnected()),             Qt::UniqueConnection);
-    connect(pView,                          SIGNAL(zoomChange(qreal)),                      this,   SLOT(refreshPortOverlayScale(qreal)),   Qt::UniqueConnection);
+    connect(pView,                       SIGNAL(zoomChange(double)),                     this,   SLOT(refreshPortOverlayScale(double)),   Qt::UniqueConnection);
 }
 
 Port::~Port()
@@ -214,7 +214,7 @@ void Port::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 //! @brief Updates the gui port position on its parent object, taking coordinates in parent coordinate system
 //! @todo is it necessary to be able to update orientation also?
-void Port::setCenterPos(const qreal x, const qreal y)
+void Port::setCenterPos(const double x, const double y)
 {
     //Place the guiport with center in x and y, in parent local coordinates
 //    QPointF posdiff = QPointF(x,y) - this->mapToParent(this->boundingRect().center());
@@ -222,14 +222,14 @@ void Port::setCenterPos(const qreal x, const qreal y)
     setPos(x,y);
 }
 
-//! Conveniance function when fraction positions are known
-void Port::setCenterPosByFraction(qreal x, qreal y)
+//! @brief Conveniance function when fraction positions are known
+void Port::setCenterPosByFraction(double x, double y)
 {
     //! @todo for now root systems may not have an icon, if icon is empty ports will end up in zero, which is OK, maybe we should always force a default icon
     this->setCenterPos(x*mpParentModelObject->boundingRect().width(), y*mpParentModelObject->boundingRect().height());
 }
 
-//! Returns the center position in parent coordinates
+//! @brief Returns the center position in parent coordinates
 QPointF Port::getCenterPos()
 {
     //return this->mapToParent(this->boundingRect().center());
@@ -237,13 +237,13 @@ QPointF Port::getCenterPos()
 }
 
 //! @brief Overloaded setRotation to store rotation in appearance data
-void Port::setRotation(qreal angle)
+void Port::setRotation(double angle)
 {
     mpPortAppearance->rot = angle;
     QGraphicsWidget::setRotation(angle);
 }
 
-//! Defines what happens when clicking on a port.
+//! @brief Defines what happens when clicking on a port.
 //! @param *event defines the mouse event.
 void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -265,7 +265,7 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-//! Defines what happens when double clicking on a port. Nothing should happen.
+//! @brief Defines what happens when double clicking on a port. Nothing should happen.
 //! @param *event defines the mouse event.
 void Port::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
 {
@@ -436,26 +436,26 @@ void Port::moveEvent(QGraphicsSceneMoveEvent *event)
 
 void Port::refreshPortMainGraphics()
 {
-    double rotAng = this->mpPortAppearance->rot; // OK, uggly, but has to be done in case the mpMainIcon is reset below
+    double rotAng = mpPortAppearance->rot; // OK, uggly, but has to be done in case the mpMainIcon is reset below
     if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
     {
         if (mpMainIcon != 0)
         {
             // We must restore original angle and translation before deleting and applying new main graphis, i know it sucks, but we have to
-            this->setRotation(0);
-            this->setTransform(QTransform::fromTranslate(mpMainIcon->boundingRect().center().x(), mpMainIcon->boundingRect().center().y()), true);
+            setRotation(0);
+            setTransform(QTransform::fromTranslate(mpMainIcon->boundingRect().center().x(), mpMainIcon->boundingRect().center().y()), true);
             mpMainIcon->deleteLater();
         }
 
-        this->prepareGeometryChange();
+        prepareGeometryChange();
         mpMainIcon = new QGraphicsSvgItem(mpPortAppearance->mMainIconPath, this);
-        this->resize(mpMainIcon->boundingRect().width(), mpMainIcon->boundingRect().height());
-        qDebug() << "_______diff: " << -mpMainIcon->boundingRect().center();
-        this->setTransform(QTransform::fromTranslate(-mpMainIcon->boundingRect().center().x(), -mpMainIcon->boundingRect().center().y()), true);
+        resize(mpMainIcon->boundingRect().width(), mpMainIcon->boundingRect().height());
+        //qDebug() << "_______diff: " << -mpMainIcon->boundingRect().center();
+        setTransform(QTransform::fromTranslate(-mpMainIcon->boundingRect().center().x(), -mpMainIcon->boundingRect().center().y()), true);
     }
     // Always refresh rotation
-    this->setTransformOriginPoint(this->boundingRect().center()); //All rotaion and other transformation should be aplied around the port center
-    this->setRotation(rotAng); // This will also reset mpPortAppearance->rot
+    setTransformOriginPoint(boundingRect().center()); //All rotaion and other transformation should be aplied around the port center
+    setRotation(rotAng); // This will also reset mpPortAppearance->rot
 }
 
 
@@ -629,12 +629,12 @@ void Port::refreshPortGraphics()
 }
 
 //! @brief Scales the port overlay graphics and tooltip
-void Port::refreshPortOverlayScale(qreal scale)
+void Port::refreshPortOverlayScale(double scale)
 {
     mOverlaySetScale = scale;   //Remember what scale we are supposed to have
 
     //Should we add extra overlay scale when magnified
-    qreal overlayExtraScaleFactor;
+    double overlayExtraScaleFactor;
     if (mIsMagnified)
     {
         overlayExtraScaleFactor = mMag;
@@ -705,21 +705,21 @@ void Port::refreshPortLabelText()
     mpPortLabel->adjustSize();
 }
 
-//! Returns a pointer to the GraphicsView that the port belongs to.
+//! @brief Returns a pointer to the GraphicsView that the port belongs to.
 ContainerObject *Port::getParentContainerObject()
 {
     return mpParentModelObject->getParentContainerObject();
 }
 
 
-//! Returns a pointer to the GUIComponent the port belongs to.
+//! @brief Returns a pointer to the GUIComponent the port belongs to.
 ModelObject *Port::getParentModelObject()
 {
     return mpParentModelObject;
 }
 
 
-//! Plots the variable with name 'dataName' in the node the port is connected to.
+//! @brief Plots the variable with name 'dataName' in the node the port is connected to.
 //! @param dataName tells which variable to plot.
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
 PlotWindow *Port::plot(QString dataName, QString /*dataUnit*/, QColor desiredCurveColor)
@@ -729,14 +729,14 @@ PlotWindow *Port::plot(QString dataName, QString /*dataUnit*/, QColor desiredCur
     return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
 }
 
-//! Wrapper for the Core getPortTypeString() function
+//! @brief Wrapper for the Core getPortTypeString() function
 QString Port::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)
 {
     return getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getParentModelObjectName(), this->getName(), ind);
 }
 
 
-//! Wrapper for the Core getNodeType() function
+//! @brief Wrapper for the Core getNodeType() function
 QString Port::getNodeType()
 {
     return getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(getParentModelObjectName(), this->getName());
@@ -769,7 +769,7 @@ QStringList Port::getFullVariableNames()
 PortDirectionT Port::getPortDirection()
 {
     //! @todo will this work if parentguimodelobject is flipped
-    qreal scene_angle = normDeg360( this->mpParentModelObject->rotation() + this->rotation() );
+    double scene_angle = normDeg360( this->mpParentModelObject->rotation() + this->rotation() );
 
     if ( fuzzyEqual(scene_angle, 0, 1.0) || fuzzyEqual(scene_angle, 180, 1.0) )
     {
@@ -879,7 +879,7 @@ Port* Port::getRealPort()
 
 
 //! @brief Returns the rotation set by port appearance
-qreal Port::getPortRotation()
+double Port::getPortRotation()
 {
     return mpPortAppearance->rot;
 }
@@ -955,11 +955,11 @@ bool Port::getLastNodeData(QString dataName, double& rData)
 }
 
 
-//! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
+//! @brief Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
 //! @param doShow shall we show unconnected ports
 void Port::showIfNotConnected(bool doShow)
 {
-    if(!isConnected() && doShow && mpParentModelObject->isVisible())
+    if(!isConnected() && mpPortAppearance->mEnabled && doShow && mpParentModelObject->isVisible())
     {
         this->show();
     }
@@ -970,13 +970,13 @@ void Port::showIfNotConnected(bool doShow)
 }
 
 
-GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject)
+GroupPort::GroupPort(QString name, double xpos, double ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject)
     : Port(name, xpos, ypos, pPortAppearance, pParentObject)
 {
     //Nothing for now
 }
 
-//! Overloaded as groups laks core connection
+//! @brief Overloaded as groups laks core connection
 QString GroupPort::getPortType(const CoreSystemAccess::PortTypeIndicatorT /*ind*/)
 {
     //! @todo Return something smart
@@ -984,7 +984,7 @@ QString GroupPort::getPortType(const CoreSystemAccess::PortTypeIndicatorT /*ind*
 }
 
 
-//! Overloaded as groups laks core connection
+//! @brief Overloaded as groups laks core connection
 QString GroupPort::getNodeType()
 {
     //! @todo Return something smart

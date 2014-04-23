@@ -48,7 +48,7 @@ class Port :public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    Port(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParent = 0);
+    Port(QString name, double xpos, double ypos, PortAppearance* pPortAppearance, ModelObject *pParent = 0);
     ~Port();
 
     ContainerObject *getParentContainerObject();
@@ -59,11 +59,11 @@ public:
     void setDisplayName(const QString name);
 
     QPointF getCenterPos();
-    qreal getPortRotation();
+    double getPortRotation();
     PortDirectionT getPortDirection();
-    void setCenterPos(qreal x, qreal y);
-    void setCenterPosByFraction(qreal x, qreal y);
-    void setRotation(qreal angle);
+    void setCenterPos(double x, double y);
+    void setCenterPosByFraction(double x, double y);
+    void setRotation(double angle);
 
     void magnify(bool blowup);
     void show();
@@ -112,7 +112,7 @@ protected:
     QVector<Connector*> mConnectedConnectors;
 
 protected slots:
-    void refreshPortOverlayScale(qreal scale);
+    void refreshPortOverlayScale(double scale);
 
 private:
     void refreshPortMainGraphics();
@@ -122,7 +122,7 @@ private:
     void openDefineAliasDialog(const QString &rVarName, const QString &rCurrentAlias="");
 
 //    QColor myLineColor;
-//    qreal myLineWidth;
+//    double myLineWidth;
 //    QGraphicsLineItem *lineH;
 //    QGraphicsLineItem *lineV;
 
@@ -132,8 +132,8 @@ private:
     PortAppearance mPortAppearanceAfterLastRefresh;
     QString mPortDisplayName;
 
-    qreal mMag;
-    qreal mOverlaySetScale;
+    double mMag;
+    double mOverlaySetScale;
     bool mIsMagnified;
 
     QGraphicsTextItem *mpPortLabel;
@@ -156,7 +156,7 @@ typedef QSharedPointer<GroupPortCommonInfo>  SharedGroupInfoPtrT;
 class GroupPort : public Port
 {
 public:
-    GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject);
+    GroupPort(QString name, double xpos, double ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject);
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ActualPortType);
     QString getNodeType();
 
