@@ -150,5 +150,6 @@
         <file>graphics/uiicons/Hopsan-ShowHideDockAreas.png</file>
         <file>graphics/uiicons/Hopsan-DistributeX.png</file>
         <file>graphics/uiicons/Hopsan-DistributeY.png</file>
+        <file>graphics/porticons/Mechanic2dPort.svg</file>
     </qresource>
 </RCC>

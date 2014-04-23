@@ -26,6 +26,8 @@
 #include "common.h"
 #include "CoreAccess.h"
 
+#include <QDebug>
+
 PortAppearance::PortAppearance()
 {
     //Default values
@@ -86,6 +88,8 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
         }
     }
     mMainIconPath.append(".svg");
+
+    qDebug() << "mMainIconPath: " << mMainIconPath;
 
     //Check if we need to add multiport overlay
     if (porttype.contains("MultiportType"))

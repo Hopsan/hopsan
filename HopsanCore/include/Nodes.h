@@ -255,6 +255,58 @@ private:
     }
 };
 
+
+//! @brief A 2D mechanic node
+//! @ingroup NodeMechanic
+class NodeMechanic2D : public Node
+{
+public:
+    //! @brief The data variable indexes, DataLength is used internally
+    //! @ingroup NodeMechanic
+    enum DataIndexEnumT {AngleR, AngularVelocityR, TorqueR, WaveVariableR, CharImpedanceR, EquivalentInertiaR,
+                         PositionX, VelocityX, ForceX,WaveVariableX, CharImpedanceX, EquivalentMassX,
+                         PositionY, VelocityY, ForceY, WaveVariableY, CharImpedanceY, EquivalentMassY, DataLength};
+    enum DataIndexEnumOldT {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, EQMASS};
+    static Node* CreatorFunction() {return new NodeMechanic2D;}
+
+private:
+    NodeMechanic2D() : Node(DataLength)
+    {
+        setNiceName("mechanic2d");
+        setDataCharacteristics(AngularVelocityR, "AngularVelocity", "wr", "rad/s", FlowType);
+        setDataCharacteristics(VelocityX, "VelocityX", "vx", "m/s", FlowType);
+        setDataCharacteristics(VelocityY, "VelocityY", "vy", "m/s", FlowType);
+        setDataCharacteristics(TorqueR, "TorqueR", "Tr", "Nm", IntensityType);
+        setDataCharacteristics(ForceX, "ForceX", "fx", "N", IntensityType);
+        setDataCharacteristics(ForceY, "ForceY", "fy", "N", IntensityType);
+        setDataCharacteristics(AngleR, "AngleR", "a", "rad");
+        setDataCharacteristics(PositionX, "PositionX", "x", "m");
+        setDataCharacteristics(PositionY, "PositionY", "y", "m");
+        setDataCharacteristics(WaveVariableR, "WaveVariableR", "cr", "Nm", TLMType);
+        setDataCharacteristics(WaveVariableX, "WaveVariableX", "cx", "N", TLMType);
+        setDataCharacteristics(WaveVariableY, "WaveVariableY", "cy", "N", TLMType);
+        setDataCharacteristics(CharImpedanceR, "CharImpedanceR", "Zcr", "?", TLMType);
+        setDataCharacteristics(CharImpedanceX, "CharImpedanceX", "Zcx", "Ns/m", TLMType);
+        setDataCharacteristics(CharImpedanceY, "CharImpedanceY", "Zcy", "Ns/m", TLMType);
+        setDataCharacteristics(EquivalentInertiaR, "EquivalentInertiaR", "mer", "kgm^2", DefaultType);
+        setDataCharacteristics(EquivalentMassX, "EquivalentMassX", "mex", "kg", DefaultType);
+        setDataCharacteristics(EquivalentMassY, "EquivalentMassY", "mey", "kg", DefaultType);
+
+        mDataValues[EquivalentInertiaR]=1;
+        mDataValues[EquivalentMassX]=1;
+        mDataValues[EquivalentMassY]=1;
+    }
+
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
+    {
+        pOtherNode->setDataValue(WaveVariableR, mDataValues[TorqueR]);
+        pOtherNode->setDataValue(WaveVariableX, mDataValues[ForceX]);
+        pOtherNode->setDataValue(WaveVariableY, mDataValues[ForceY]);
+        //! todo Maybe also write CharImpedance?
+    }
+};
+
+
 class NodeEmpty : public Node
 {
 public:
