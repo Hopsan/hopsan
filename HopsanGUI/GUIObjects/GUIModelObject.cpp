@@ -107,7 +107,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
     if(mpParentContainerObject != 0)
     {
-        connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
+        connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setNameTextScale(double)));
 //        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
@@ -239,7 +239,7 @@ void ModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
 
 
 //! @brief Slot that scales the name text
-void ModelObject::setNameTextScale(qreal scale)
+void ModelObject::setNameTextScale(double scale)
 {
     this->mpNameText->setScale(scale);
 }
@@ -353,7 +353,7 @@ void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
         if (mpIcon != 0)
         {
             mpIcon->deleteLater(); //Shedule previous icon for deletion
-            disconnect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)));
+            disconnect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setIconZoom(double)));
         }
 
         mpIcon = new QGraphicsSvgItem(iconPath, this);
@@ -378,7 +378,7 @@ void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
             if (this->getParentContainerObject() != 0)
             {
                 mpIcon->setScale(this->getParentContainerObject()->mpModelWidget->getGraphicsView()->getZoomFactor()*iconScale);
-                connect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)), Qt::UniqueConnection);
+                connect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setIconZoom(double)), Qt::UniqueConnection);
             }
             //! @todo we need to disconnect this also at some point, when swapping between systems or groups
         }
@@ -398,7 +398,7 @@ void ModelObject::refreshIconPosition()
     }
 }
 
-void ModelObject::setIconZoom(const qreal zoom)
+void ModelObject::setIconZoom(const double zoom)
 {
     //Only scale when we have disconnected the icon from transformations
     if (!mIconRotation)
@@ -1113,17 +1113,17 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
     qDebug() << "mouseReleaseEvent()";
 
-    QList<ModelObject *>::iterator it;
-
-        //Loop through all selected objects and register changed positions in undo stack
+    //! @todo It would be better if this was handled in some other way,  one particualr object should not be repsonsible for regesteringen moves from other object
+    // Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
     QList<ModelObject *> selectedObjects = mpParentContainerObject->getSelectedModelObjectPtrs();
+    QList<ModelObject *>::iterator it;
     for(it = selectedObjects.begin(); it != selectedObjects.end(); ++it)
     {
         if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
         {
             emit objectMoved();
-                //This check makes sure that only one undo post is created when moving several objects at once
+            // This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
                 if(mpParentContainerObject->getSelectedModelObjectPtrs().size() > 1)
@@ -1154,17 +1154,6 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     WorkspaceObject::mouseReleaseEvent(event);
 }
 
-//    }
-
-//    QGraphicsWidget::mouseReleaseEvent(event);
-
-//        //Objects shall not be selectable while creating a connector
-//    if(mpParentSystem->mIsCreatingConnector)
-//    {
-//        this->setSelected(false);
-//        this->setActive(false);
-//    }
-//}
 
 QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
 {
@@ -1296,15 +1285,19 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
 
     WorkspaceObject::itemChange(change, value);   //This must be done BEFORE the snapping code to avoid an event loop. This is because snap uses "moveBy()", which triggers a new itemChange event.
 
+    // Abort if we do not have a parent container object, the code below requires it
+    if (!mpParentContainerObject)
+        return value;
+
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        if(this->isSelected() && mpParentContainerObject != 0)
+        if(this->isSelected())
         {
             mpParentContainerObject->rememberSelectedModelObject(this);
             connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
-        else if(mpParentContainerObject != 0)
+        else
         {
             mpParentContainerObject->forgetSelectedModelObject(this);
             disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
@@ -1312,49 +1305,54 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
         }
     }
 
-    //Snap if objects have moved
+    // Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
+        //! @todo maybe this should be emmited from the workspace object itemChanged() function
         emit objectMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
 
-            //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
-        if(mpParentContainerObject != 0 && gpConfig->getSnapping() &&
-           !mpParentContainerObject->isCreatingConnector() && mpParentContainerObject->getSelectedModelObjectPtrs().size() == 1)
+        // Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
+        if( mEnableSnap && gpConfig->getSnapping() && !mpParentContainerObject->isCreatingConnector() &&
+                (mpParentContainerObject->getSelectedModelObjectPtrs().size() == 1) && (mConnectorPtrs.size() == 1))
         {
-                //Vertical snap
-            if( (mConnectorPtrs.size() == 1) &&
-                (mConnectorPtrs.first()->getNumberOfLines() < 4) &&
-                !(mConnectorPtrs.first()->isFirstAndLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() == 2) &&
-                !(mConnectorPtrs.first()->isFirstOrLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() > 1) &&
-                (abs(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x()) < SNAPDISTANCE) &&
-                (abs(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x()) > 0.0) )
+            Connector *pFirstConnector = mConnectorPtrs.first();
+            const int nl = pFirstConnector->getNumberOfLines();
+            const QPointF diff = pFirstConnector->getEndPoint() - pFirstConnector->getStartPoint();
+            const bool isFALD = pFirstConnector->isFirstAndLastDiagonal();
+            const bool isFOLD = pFirstConnector->isFirstOrLastDiagonal();
+
+            // Vertical snap
+            const double dx = qAbs(diff.x());
+            if( (nl<4) && !(isFALD && nl==2) && !(isFOLD && nl>1) && (dx<SNAPDISTANCE) && (dx>0.0001) )
             {
-                if(this->mConnectorPtrs.first()->getStartPort()->getParentModelObject() == this)
+                // We turn of snapp here to avoid infinit snapping struggle if ctrl is pressed and komponent mOldPos is within snap distance
+                //! @todo should find a better solution to this snap problem
+                mEnableSnap = false;
+                if(pFirstConnector->getStartPort()->getParentModelObject() == this)
                 {
-                    this->moveBy(mConnectorPtrs.first()->getEndPoint().x() - mConnectorPtrs.first()->getStartPoint().x(), 0);
+                    this->moveBy(diff.x(), 0);
                 }
                 else
                 {
-                    this->moveBy(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x(), 0);
+                    this->moveBy(-diff.x(), 0);
                 }
+                mEnableSnap = true;
             }
 
-                //Horizontal snap
-            if( (mConnectorPtrs.size() == 1) &&
-                (mConnectorPtrs.first()->getNumberOfLines() < 4) &&
-                !(mConnectorPtrs.first()->isFirstAndLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() == 2) &&
-                !(mConnectorPtrs.first()->isFirstOrLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() > 2) &&
-                (abs(mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y()) < SNAPDISTANCE) &&
-                (abs(mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y()) > 0.0) )
+            // Horizontal snap
+            const double dy = qAbs(diff.y());
+            if( (nl < 4) && !(isFALD && nl==2) && !(isFOLD && nl>1) && (dy<SNAPDISTANCE) && (dy>0.0001) )
             {
-                if(this->mConnectorPtrs.first()->getStartPort()->getParentModelObject() == this)
+                mEnableSnap = false;
+                if(pFirstConnector->getStartPort()->getParentModelObject() == this)
                 {
-                    this->moveBy(0, mConnectorPtrs.first()->getEndPoint().y() - mConnectorPtrs.first()->getStartPoint().y());
+                    this->moveBy(0, diff.y());
                 }
                 else
                 {
-                    this->moveBy(0, mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y());
+                    this->moveBy(0, -diff.y());
                 }
+                mEnableSnap = true;
             }
         }
     }

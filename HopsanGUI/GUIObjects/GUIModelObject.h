@@ -204,8 +204,8 @@ protected:
 protected slots:
     void snapNameTextPosition(QPointF pos);
     void calcNameTextPositions(QVector<QPointF> &rPts);
-    void setNameTextScale(qreal scale);
-    void setIconZoom(const qreal zoom);
+    void setNameTextScale(double scale);
+    void setIconZoom(const double zoom);
 
 private:
     void refreshIconPosition();

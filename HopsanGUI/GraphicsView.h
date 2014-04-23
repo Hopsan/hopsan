@@ -42,7 +42,7 @@ public:
     GraphicsView(ModelWidget *parent = 0);
 
     void updateViewPort();
-    void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
+    void getViewPort(double &rX, double &rY, double &rZoom);
     void setContainerPtr(ContainerObject *pContainer);
     ContainerObject *getContainerPtr();
     bool isCtrlKeyPressed();
@@ -63,7 +63,7 @@ signals:
     void keyPressCtrlDown();
     void keyPressCtrlLeft();
     void keyPressCtrlRight();
-    void zoomChange(qreal zoomfactor);
+    void zoomChange(double zoomfactor);
     void systemPortSignal(QPointF position);
     void hovered();
     void unHighlightAll();

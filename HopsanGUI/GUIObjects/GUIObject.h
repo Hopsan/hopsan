@@ -98,6 +98,7 @@ protected:
     ContainerObject *mpParentContainerObject;
     QString mHmfTagName;
     bool mIsFlipped;
+    bool mEnableSnap;
     WorkspaceObjectSelectionBox *mpSelectionBox;
     QPointF mOldPos;
 };

@@ -40,6 +40,7 @@ WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, SelectionStatusEnumT, C
     //Initi variables
     mpParentContainerObject = 0;
     mIsFlipped = false;
+    mEnableSnap = true;
     mHmfTagName = HMF_OBJECTTAG;
 
     this->setParentContainerObject(pParentContainer);
@@ -240,39 +241,47 @@ void WorkspaceObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //! @param change Tells what it is that has changed
 QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    // If item selection changes then connect or disconnect the appropriate signals
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         if (this->isSelected() && mpParentContainerObject != 0)
         {
             mpSelectionBox->setActive();
-            connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            connect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsRight()), this, SLOT(rotate90cw()));
-            connect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
-            connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
-            connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-            connect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
+
+            connect(mpParentContainerObject,    SIGNAL(deleteSelected()),                   this, SLOT(deleteMe()));
+            connect(mpParentContainerObject,    SIGNAL(rotateSelectedObjectsRight()),       this, SLOT(rotate90cw()));
+            connect(mpParentContainerObject,    SIGNAL(rotateSelectedObjectsLeft()),        this, SLOT(rotate90ccw()));
+            connect(mpParentContainerObject,    SIGNAL(flipSelectedObjectsHorizontal()),    this, SLOT(flipHorizontal()));
+            connect(mpParentContainerObject,    SIGNAL(flipSelectedObjectsVertical()),      this, SLOT(flipVertical()));
+            connect(mpParentContainerObject,    SIGNAL(deselectAllGUIObjects()),            this, SLOT(deselect()));
+            disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()),              this, SLOT(select()));
+
+            GraphicsView *pGraphicsView = mpParentContainerObject->mpModelWidget->getGraphicsView();
+            connect(pGraphicsView,              SIGNAL(keyPressDelete()),                   this, SLOT(deleteMe()));
+            connect(pGraphicsView,              SIGNAL(keyPressCtrlUp()),                   this, SLOT(moveUp()));
+            connect(pGraphicsView,              SIGNAL(keyPressCtrlDown()),                 this, SLOT(moveDown()));
+            connect(pGraphicsView,              SIGNAL(keyPressCtrlLeft()),                 this, SLOT(moveLeft()));
+            connect(pGraphicsView,              SIGNAL(keyPressCtrlRight()),                this, SLOT(moveRight()));
+
             emit objectSelected();
         }
         else if(mpParentContainerObject != 0)
         {
-            disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsRight()), this, SLOT(rotate90cw()));
-            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
-            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
-            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
-            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-            disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
+            disconnect(mpParentContainerObject, SIGNAL(deleteSelected()),                   this, SLOT(deleteMe()));
+            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsRight()),       this, SLOT(rotate90cw()));
+            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()),        this, SLOT(rotate90ccw()));
+            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()),    this, SLOT(flipHorizontal()));
+            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()),      this, SLOT(flipVertical()));
+            disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()),            this, SLOT(deselect()));
+            connect(mpParentContainerObject,    SIGNAL(selectAllGUIObjects()),              this, SLOT(select()));
+
+            GraphicsView *pGraphicsView = mpParentContainerObject->mpModelWidget->getGraphicsView();
+            disconnect(pGraphicsView,           SIGNAL(keyPressDelete()),                   this, SLOT(deleteMe()));
+            disconnect(pGraphicsView,           SIGNAL(keyPressCtrlUp()),                   this, SLOT(moveUp()));
+            disconnect(pGraphicsView,           SIGNAL(keyPressCtrlDown()),                 this, SLOT(moveDown()));
+            disconnect(pGraphicsView,           SIGNAL(keyPressCtrlLeft()),                 this, SLOT(moveLeft()));
+            disconnect(pGraphicsView,           SIGNAL(keyPressCtrlRight()),                this, SLOT(moveRight()));
+
             mpSelectionBox->setPassive();
         }
     }
@@ -280,22 +289,23 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
     QGraphicsWidget::itemChange(change, value);
 
     // Move component only horizontal, vertical or snap to original position if Ctrl is pressed
-    if (change == QGraphicsItem::ItemPositionHasChanged)
+    if ((change == QGraphicsItem::ItemPositionHasChanged) && mEnableSnap)
     {
-        if(mpParentContainerObject != 0 && mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed() && mpParentContainerObject->mpModelWidget->getGraphicsView()->isLeftMouseButtonPressed())
+        GraphicsView *pGraphicsView = mpParentContainerObject->mpModelWidget->getGraphicsView();
+        if(mpParentContainerObject && pGraphicsView->isCtrlKeyPressed() && pGraphicsView->isLeftMouseButtonPressed())
         {
             QPointF diff = this->pos()-mOldPos;
             if( diff.manhattanLength() < SNAPDISTANCE)
             {
-                this->setPos(mOldPos);
+                setPos(mOldPos);
             }
             else if(fabs(x()-mOldPos.x()) > fabs(y()-mOldPos.y()))
             {
-                this->setPos(x(), mOldPos.y());
+                setPos(x(), mOldPos.y());
             }
             else
             {
-                this->setPos(mOldPos.x(), y());
+                setPos(mOldPos.x(), y());
             }
         }
     }
@@ -308,8 +318,9 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 //! @param angle Angle to rotate to
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @note Undo registration will not work for obejcts or widgets as they have no name
-void WorkspaceObject::rotate(qreal angle, UndoStatusEnumT /*undoSettings*/)
+void WorkspaceObject::rotate(qreal angle, UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(undoSettings)
     this->setTransformOriginPoint(this->boundingRect().center());
     if(mIsFlipped)
     {

@@ -321,10 +321,14 @@ void Connector::finishCreation()
         this->updateEndPoint(mpEndPort->mapToScene(mpEndPort->boundingRect().center()));
 
         // Snap if close to a snapping position
-        if(gpConfig->getSnapping())
+        const int nl = getNumberOfLines();
+        if(gpConfig->getSnapping() && (nl > 0))
         {
-            if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
-                    ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )
+            const QPointF diff = mPoints.first() - mPoints.last();
+            // Horizontal snapping (vertical connector)
+//            if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
+//                    ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )
+            if ( (qAbs(diff.x()) < SNAPDISTANCE) && (nl < 4) )
             {
                 if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
                 {
@@ -335,8 +339,10 @@ void Connector::finishCreation()
                     mpEndPort->getParentModelObject()->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
                 }
             }
-            else if( ((getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) ||
-                     ((getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) )
+            // Vertical snapping (horizontal conector)
+//            else if( ((getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) ||
+//                     ((getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) )
+            else if ( (qAbs(diff.y()) < SNAPDISTANCE) && (nl < 4) )
             {
                 if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
                 {

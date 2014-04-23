@@ -280,7 +280,7 @@ void GraphicsView::clearHighlights()
 
 
 //! @brief Returns the vieports center and zoom in the supplied reference variables
-void GraphicsView::getViewPort(qreal &rX, qreal &rY, qreal &rZoom)
+void GraphicsView::getViewPort(double &rX, double &rY, double &rZoom)
 {
     rX = (horizontalScrollBar()->value() + width()/2.0 - pos().x()) / mZoomFactor;
     rY = (verticalScrollBar()->value() + height()/2.0 - pos().y()) / mZoomFactor;
