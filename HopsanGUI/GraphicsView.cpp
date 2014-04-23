@@ -293,7 +293,7 @@ void GraphicsView::getViewPort(double &rX, double &rY, double &rZoom)
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
         //Get value from scroll wheel change
-    qreal wheelDelta;
+    double wheelDelta;
     if(gpConfig->getInvertWheel())
     {
         wheelDelta = event->delta();
@@ -306,7 +306,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
         //Zoom with wheel if ctrl or alt is pressed
     if (event->modifiers().testFlag(Qt::ControlModifier) ||  event->modifiers().testFlag(Qt::AltModifier))
     {
-        qreal factor = pow(1.41,(-wheelDelta/240.0));
+        double factor = pow(1.41,(-wheelDelta/240.0));
         this->scale(factor,factor);
         mZoomFactor = mZoomFactor * factor;
         emit zoomChange(mZoomFactor);
@@ -893,7 +893,7 @@ double AnimatedGraphicsView::getZoomFactor()
 
 
 //! @brief Returns the vieports center and zoom in the supplied reference variables
-void AnimatedGraphicsView::getViewPort(qreal &rX, qreal &rY, qreal &rZoom)
+void AnimatedGraphicsView::getViewPort(double &rX, double &rY, double &rZoom)
 {
     rX = (horizontalScrollBar()->value() + width()/2.0 - pos().x()) / mZoomFactor;
     rY = (verticalScrollBar()->value() + height()/2.0 - pos().y()) / mZoomFactor;
@@ -906,7 +906,7 @@ void AnimatedGraphicsView::getViewPort(qreal &rX, qreal &rY, qreal &rZoom)
 void AnimatedGraphicsView::wheelEvent(QWheelEvent *event)
 {
         //Get value from scroll wheel change
-    qreal wheelDelta;
+    double wheelDelta;
     if(gpConfig->getInvertWheel())
     {
         wheelDelta = event->delta();
@@ -919,7 +919,7 @@ void AnimatedGraphicsView::wheelEvent(QWheelEvent *event)
         //Zoom with wheel if ctrl or alt is pressed
     if (event->modifiers().testFlag(Qt::ControlModifier) ||  event->modifiers().testFlag(Qt::AltModifier))
     {
-        qreal factor = pow(1.41,(-wheelDelta/240.0));
+        double factor = pow(1.41,(-wheelDelta/240.0));
         this->scale(factor,factor);
         mZoomFactor = mZoomFactor * factor;
         emit zoomChange(mZoomFactor);

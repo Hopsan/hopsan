@@ -81,7 +81,7 @@ class AnimatedConnectorLine : public QObject, public QGraphicsLineItem
     friend class AnimatedConnector;
     Q_OBJECT
 public:
-    AnimatedConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, AnimatedConnector *pAnimatedConnector);
+    AnimatedConnectorLine(double x1, double y1, double x2, double y2, ConnectorAppearance *pConnApp, AnimatedConnector *pAnimatedConnector);
     ~AnimatedConnectorLine();
 
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
@@ -100,8 +100,8 @@ private:
 
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;
-    qreal mArrowSize;
-    qreal mArrowAngle;
+    double mArrowSize;
+    double mArrowAngle;
 
     QPointF mStartPos;
     QPointF mEndPos;

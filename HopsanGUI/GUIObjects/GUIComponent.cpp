@@ -40,7 +40,7 @@
 #include "Widgets/ModelWidget.h"
 
 
-Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     //Set the hmf save tag name
@@ -311,7 +311,7 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void ScopeComponent::rotate(qreal /*angle*/, UndoStatusEnumT /*undoSettings*/)
+void ScopeComponent::rotate(double /*angle*/, UndoStatusEnumT /*undoSettings*/)
 {
     // Overloaded to do nothing
 }
@@ -328,7 +328,7 @@ void ScopeComponent::flipHorizontal(UndoStatusEnumT /*undoSettings*/)
 
 
 
-ScopeComponent::ScopeComponent(QPointF position, qreal rotation, ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+ScopeComponent::ScopeComponent(QPointF position, double rotation, ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : Component(position, rotation, pAppearanceData, pParentContainer, startSelected, gfxType)
 {
     // Nothing special

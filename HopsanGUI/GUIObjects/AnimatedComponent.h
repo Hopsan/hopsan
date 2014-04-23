@@ -90,7 +90,7 @@ class AnimatedIcon : public WorkspaceObject
     friend class AnimatedComponent;
 
 public:
-    AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
+    AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
 
     AnimatedComponent *mpAnimatedComponent;
 
@@ -99,7 +99,7 @@ public:
     int mIdx;
 
 public slots:
-    void rotate(qreal angle);
+    void rotate(double angle);
     void flipVertical();
     void flipHorizontal();
     void refreshIconPosition();
@@ -118,7 +118,7 @@ protected:
     bool mIconRotation;
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;
-    qreal mLastIconScale;
+    double mLastIconScale;
     double *mpAdjustableNodeDataPtr;
     QGraphicsColorizeEffect *mpEffect;
 };

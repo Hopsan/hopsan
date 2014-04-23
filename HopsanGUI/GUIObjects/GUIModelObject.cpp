@@ -55,7 +55,7 @@
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
         : WorkspaceObject(position, rotation, startSelected, pParentContainer, pParent)
 {
         //Initialize variables
@@ -333,7 +333,7 @@ QList<Port*> &ModelObject::getPortListPtrs()
 void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
 {
     QString iconPath;
-    qreal iconScale;
+    double iconScale;
     if ( (gfxType == ISOGraphics) && mModelObjectAppearance.hasIcon(ISOGraphics) )
     {
         iconPath = mModelObjectAppearance.getFullAvailableIconPath(ISOGraphics);
@@ -643,8 +643,8 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
         {
             pPortApp->selectPortIcon(getTypeCQS(), portType, nodeType);
 
-            qreal x = pPortApp->x*boundingRect().width();
-            qreal y = pPortApp->y*boundingRect().height();
+            double x = pPortApp->x*boundingRect().width();
+            double y = pPortApp->y*boundingRect().height();
             qDebug() << "x,y: " << x << " " << y;
 
             if (this->type() == GroupContainerType)
@@ -1389,7 +1389,7 @@ void ModelObject::showPorts(bool visible)
 
 
 //! @todo try to reuse the code in rotate guiobject,
-void ModelObject::rotate(qreal angle, UndoStatusEnumT undoSettings)
+void ModelObject::rotate(double angle, UndoStatusEnumT undoSettings)
 {
     mpParentContainerObject->mpModelWidget->hasChanged();
 

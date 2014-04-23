@@ -94,7 +94,7 @@ public slots:
     void drawConnector(bool alignOperation=false);
     void updateStartPoint(QPointF point);
     void updateEndPoint(QPointF point);
-    void moveAllPoints(qreal offsetX, qreal offsetY);
+    void moveAllPoints(double offsetX, double offsetY);
     void updateLine(int);
     void makeDiagonal(bool diagonal);
     void doSelect(bool lineSelected, int lineNumber);
@@ -147,7 +147,7 @@ class ConnectorLine : public QObject, public QGraphicsLineItem
     friend class AnimatedConnector;
     Q_OBJECT
 public:
-    ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, int lineNumber, Connector *pParentConnector);
+    ConnectorLine(double x1, double y1, double x2, double y2, int lineNumber, Connector *pParentConnector);
     ~ConnectorLine();
 
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);

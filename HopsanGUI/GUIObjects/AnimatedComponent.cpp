@@ -489,7 +489,7 @@ void AnimatedComponent::limitMovables()
 //! @param [in] pAnimatedComponent Pointer to animated component icon belongs to
 //! @param [in] pParentContainer Pointer to container object animation is showing
 //! @param [in] pParent Parent object (QGraphicsItem), used for the coordinate system
-AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, ContainerObject *pParentContainer, int idx, QGraphicsItem *pParent)
+AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, ContainerObject *pParentContainer, int idx, QGraphicsItem *pParent)
         : WorkspaceObject(position, rotation, Deselected, pParentContainer, pParent)
 {
 
@@ -645,7 +645,7 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 //! @brief Slot that rotates the icon
 //! @param [in] angle Angle to rotate (degrees)
-void AnimatedIcon::rotate(qreal angle)
+void AnimatedIcon::rotate(double angle)
 {
     if(mIsFlipped)
     {

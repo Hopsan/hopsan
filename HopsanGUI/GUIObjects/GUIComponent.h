@@ -41,7 +41,7 @@ class Component : public ModelObject
     Q_OBJECT
 
 public:
-    Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+    Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
     void deleteInHopsanCore();
 
     bool hasPowerPorts();
@@ -71,14 +71,14 @@ class ScopeComponent : public Component
 {
     Q_OBJECT
 public:
-    ScopeComponent(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+    ScopeComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
 
     enum { Type = ScopeComponentType };
     int type() const;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void rotate(qreal angle, UndoStatusEnumT undoSettings = Undo);
+    void rotate(double angle, UndoStatusEnumT undoSettings = Undo);
     void flipVertical(UndoStatusEnumT undoSettings = Undo);
     void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
 

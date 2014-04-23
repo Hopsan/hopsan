@@ -74,7 +74,7 @@ CoreSystemAccess* GroupContainer::getCoreSystemAccessPtr()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer)
+GroupContainer::GroupContainer(QPointF position, double rotation, const ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer)
     :   ContainerObject(position, rotation, pAppearanceData, Deselected, UserGraphics, pParentContainer, pParentContainer)
 {
     qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
@@ -389,8 +389,8 @@ void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 //    for (i = mModelObjectAppearance.getPortAppearanceMap().begin(); i != mModelObjectAppearance.getPortAppearanceMap().end(); ++i)
 //    {
 //        qDebug() << "DEBUG: " << i.key();
-//        qreal x = i.value().x;
-//        qreal y = i.value().y;
+//        double x = i.value().x;
+//        double y = i.value().y;
 
 //        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 

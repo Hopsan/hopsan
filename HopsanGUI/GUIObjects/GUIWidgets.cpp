@@ -40,7 +40,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
 
-Widget::Widget(QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
+Widget::Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
     : WorkspaceObject(pos, rot, startSelected, pSystem, pParent)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -125,7 +125,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-TextBoxWidget::TextBoxWidget(QString text, QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+TextBoxWidget::TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : Widget(pos, rot, startSelected, pSystem, pParent)
 {
     mType="TextBoxWidget";
@@ -245,8 +245,8 @@ void TextBoxWidget::loadFromDomElement(const QDomElement &rDomElement)
     QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
     QPointF point( parseAttributeQreal(poseTag,"x",0), parseAttributeQreal(poseTag,"y",0));
     QDomElement sizeTag = guiData.firstChildElement("size");
-    qreal width = parseAttributeQreal(sizeTag, "width", 10);
-    qreal height = parseAttributeQreal(sizeTag, "height", 10);
+    double width = parseAttributeQreal(sizeTag, "width", 10);
+    double height = parseAttributeQreal(sizeTag, "height", 10);
     QDomElement lineTag = guiData.firstChildElement("line");
     bool lineVisible = parseAttributeBool(lineTag, "visible", true);
     int linewidth = parseAttributeInt(lineTag, "width", 1);
@@ -326,7 +326,7 @@ void TextBoxWidget::setLineColor(QColor color)
 }
 
 
-void TextBoxWidget::setSize(qreal w, qreal h)
+void TextBoxWidget::setSize(double w, double h)
 {
     QPointF posBeforeResize = pos();
     mpBorderItem->setRect(mpBorderItem->rect().x(), mpBorderItem->rect().y(), w, h);

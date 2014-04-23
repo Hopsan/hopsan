@@ -726,7 +726,7 @@ void Connector::updateLine(int lineNumber)
 //! @brief Slot that moves all points in the connector a specified distance in a specified direction.
 //! @param offsetX Distance to move in X direction
 //! @param offsetY Distance to move in Y direction
-void Connector::moveAllPoints(qreal offsetX, qreal offsetY)
+void Connector::moveAllPoints(double offsetX, double offsetY)
 {
     for(int i=0; i<mPoints.size(); ++i)
     {
@@ -887,7 +887,7 @@ void Connector::setActive()
         QPen pen = mpConnectorAppearance->getPen("Active");
         if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
         {
-            pen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            pen.setDashPattern(QVector<double>() << 1.5 << 3.5);
             pen.setStyle(Qt::CustomDashLine);
         }
 
@@ -924,7 +924,7 @@ void Connector::setPassive()
         }
         if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
         {
-            pen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            pen.setDashPattern(QVector<double>() << 1.5 << 3.5);
             pen.setStyle(Qt::CustomDashLine);
         }
 
@@ -948,7 +948,7 @@ void Connector::setHovered()
         QPen pen = mpConnectorAppearance->getPen("Hover");
         if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
         {
-            pen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            pen.setDashPattern(QVector<double>() << 1.5 << 3.5);
             pen.setStyle(Qt::CustomDashLine);
         }
 
@@ -1099,7 +1099,7 @@ void Connector::setDashed(bool value)
         QPen tempPen = mpLines.at(i)->pen();
         if(value)
         {
-            tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            tempPen.setDashPattern(QVector<double>() << 1.5 << 3.5);
             tempPen.setStyle(Qt::CustomDashLine);
         }
         else
@@ -1216,7 +1216,7 @@ void Connector::updateStartEndPositions()
 //! @param pConnApp Pointer to the connector appearance data, containing pens
 //! @param lineNumber Number of the line in the connector's line vector.
 //! @param *parent Pointer to the parent object (the connector)
-ConnectorLine::ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, int lineNumber, Connector *pParentConnector)
+ConnectorLine::ConnectorLine(double x1, double y1, double x2, double y2, int lineNumber, Connector *pParentConnector)
         : QGraphicsLineItem(x1,y1,x2,y2,pParentConnector)
 {
     mpParentConnector = pParentConnector;
@@ -1496,7 +1496,7 @@ void ConnectorLine::addEndArrow()
 {
     clearArrows();
 
-    qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
+    double angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mEndPos.x(),
                                         this->mEndPos.y(),
                                         this->mEndPos.x()-mArrowSize*cos(angle+mArrowAngle),
@@ -1516,7 +1516,7 @@ void ConnectorLine::addStartArrow()
 {
     clearArrows();
 
-    qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
+    double angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mStartPos.x(),
                                         this->mStartPos.y(),
                                         this->mStartPos.x()+mArrowSize*cos(angle+mArrowAngle),

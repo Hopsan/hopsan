@@ -902,7 +902,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 
 //! @brief Register function for rotating an object
 //! @param item Pointer to the object
-void UndoStack::registerRotatedObject(const QString objectName, const qreal angle)
+void UndoStack::registerRotatedObject(const QString objectName, const double angle)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
@@ -1059,7 +1059,7 @@ void UndoStack::registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos
 //! @param h_new New height of the box widget
 //! @param oldPos Previous position of the box widget
 //! @param newPos New position of the box widget
-void UndoStack::registerResizedTextBoxWidget(const int index, const qreal w_old, const qreal h_old, const qreal w_new, const qreal h_new, const QPointF oldPos, const QPointF newPos)
+void UndoStack::registerResizedTextBoxWidget(const int index, const double w_old, const double h_old, const double w_new, const double h_new, const QPointF oldPos, const QPointF newPos)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;

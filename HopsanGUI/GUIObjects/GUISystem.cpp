@@ -43,7 +43,7 @@
 #include "Configuration.h"
 #include "GUIContainerObject.h"
 
-SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+SystemContainer::SystemContainer(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     this->mpModelWidget = pParentContainer->mpModelWidget;
@@ -541,7 +541,7 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
         //! @todo what happens if a subsystem (embeded) is asved, then we dont want to set the current graphics view
         if (this->mpModelWidget->getGraphicsView() != 0)
         {
-            qreal x,y,zoom;
+            double x,y,zoom;
             this->mpModelWidget->getGraphicsView()->getViewPort(x,y,zoom);
             appendViewPortTag(guiStuff, x, y, zoom);
         }

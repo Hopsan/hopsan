@@ -42,7 +42,7 @@ class WorkspaceObject : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    WorkspaceObject(QPointF pos, qreal rot, SelectionStatusEnumT=Deselected, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT=Deselected, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
 
     virtual void setParentContainerObject(ContainerObject *pParentContainer);
     virtual ContainerObject *getParentContainerObject();
@@ -64,7 +64,7 @@ public:
 public slots:
     virtual void flipVertical(UndoStatusEnumT undoSettings=Undo);
     virtual void flipHorizontal(UndoStatusEnumT undoSettings=Undo);
-    virtual void rotate(qreal angle, UndoStatusEnumT undoSettings=Undo);
+    virtual void rotate(double angle, UndoStatusEnumT undoSettings=Undo);
     void rotate90cw(UndoStatusEnumT undoSettings=Undo);
     void rotate90ccw(UndoStatusEnumT undoSettings=Undo);
 
@@ -108,8 +108,8 @@ protected:
 class WorkspaceObjectSelectionBox : public QGraphicsItemGroup
 {
 public:
-    WorkspaceObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, WorkspaceObject *parent = 0);
-    void setSize(qreal x1, qreal y1, qreal x2, qreal y2);
+    WorkspaceObjectSelectionBox(double x1, double y1, double x2, double y2, QPen activePen, QPen hoverPen, WorkspaceObject *parent = 0);
+    void setSize(double x1, double y1, double x2, double y2);
 
     //Selection/active methods
     void setActive();

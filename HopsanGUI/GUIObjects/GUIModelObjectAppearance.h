@@ -49,7 +49,7 @@ public:
     QString mRelativePath;
     QString mAbsolutePath;
     QString mRotationBehaviour;
-    qreal mScale;
+    double mScale;
     bool mIsValid;
 };
 
@@ -132,7 +132,7 @@ public:
     void setHelpText(const QString text);
     void setBasePath(const QString path);
     void setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
-    void setIconScale(const qreal scale, const GraphicsTypeEnumT gfxType);
+    void setIconScale(const double scale, const GraphicsTypeEnumT gfxType);
 
     QString getTypeName() const;
     QString getSubTypeName() const;
@@ -146,7 +146,7 @@ public:
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
     QIcon &getIcon(const GraphicsTypeEnumT gfxType);
     QString getDefaultMissingIconPath() const;
-    qreal   getIconScale(const GraphicsTypeEnumT gfxType=UserGraphics);
+    double   getIconScale(const GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconRotationBehaviour(const GraphicsTypeEnumT gfxType=UserGraphics);
     QPointF getNameTextPos() const;
     QString getSourceCodeFile() const;

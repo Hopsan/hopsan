@@ -34,7 +34,7 @@
 #include <cassert>
 
 
-WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, SelectionStatusEnumT, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+WorkspaceObject::WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT, ContainerObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     //Initi variables
@@ -318,7 +318,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 //! @param angle Angle to rotate to
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @note Undo registration will not work for obejcts or widgets as they have no name
-void WorkspaceObject::rotate(qreal angle, UndoStatusEnumT undoSettings)
+void WorkspaceObject::rotate(double angle, UndoStatusEnumT undoSettings)
 {
     Q_UNUSED(undoSettings)
     this->setTransformOriginPoint(this->boundingRect().center());
@@ -332,7 +332,7 @@ void WorkspaceObject::rotate(qreal angle, UndoStatusEnumT undoSettings)
 
 //! @brief Rotates a component 90 degrees clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-//! @see rotate(qreal angle, undoStatus undoSettings)
+//! @see rotate(double angle, undoStatus undoSettings)
 void WorkspaceObject::rotate90cw(UndoStatusEnumT undoSettings)
 {
     this->rotate(90, undoSettings);
@@ -340,7 +340,7 @@ void WorkspaceObject::rotate90cw(UndoStatusEnumT undoSettings)
 
 //! @brief Rotates a component 90 degrees counter-clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-//! @see rotate(qreal angle, undoStatus undoSettings)
+//! @see rotate(double angle, undoStatus undoSettings)
 void WorkspaceObject::rotate90ccw(UndoStatusEnumT undoSettings)
 {
     this->rotate(-90, undoSettings);
@@ -424,7 +424,7 @@ bool WorkspaceObject::isFlipped()
 //! @param activePen Width and color of the box when the parent component is selected.
 //! @param hoverPen Width and color of the box when the parent component is hovered by the mouse cursor.
 //! @param *parent Pointer to the parent object.
-WorkspaceObjectSelectionBox::WorkspaceObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, WorkspaceObject *parent)
+WorkspaceObjectSelectionBox::WorkspaceObjectSelectionBox(double x1, double y1, double x2, double y2, QPen activePen, QPen hoverPen, WorkspaceObject *parent)
         : QGraphicsItemGroup(parent)
 {
     mActivePen = activePen;
@@ -442,12 +442,12 @@ WorkspaceObjectSelectionBox::WorkspaceObjectSelectionBox(qreal x1, qreal y1, qre
     this->setSize(x1,y1,x2,y2);
 }
 
-void WorkspaceObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
+void WorkspaceObjectSelectionBox::setSize(double x1, double y1, double x2, double y2)
 {
     this->prepareGeometryChange(); //dont know if this is actually necessary but lets call it anyway
 
-    qreal b = 6;
-    qreal a = 6;
+    double b = 6;
+    double a = 6;
     x1 += -4;
     y1 += -4;
     x2 += 4;

@@ -81,7 +81,7 @@ QDomElement appendOrGetCAFRootTag(QDomElement parentElement)
 //! @param[out] rY The y coordinate
 //! @param[out] rTheta The orientaion (angle)
 //! @deprecated Only use for loading old version files
-void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta)
+void parsePortPoseTag(QDomElement domElement, QString &rName, double &rX, double &rY, double &rTheta)
 {
     rName = domElement.attribute(CAF_NAME);
     bool dummy;
@@ -509,7 +509,7 @@ QString ModelObjectAppearance::getDefaultMissingIconPath() const
 }
 
 //! @todo This is a bit wrong, it will return the scale for the availiable type not necessarily the requested
-qreal ModelObjectAppearance::getIconScale(const GraphicsTypeEnumT gfxType)
+double ModelObjectAppearance::getIconScale(const GraphicsTypeEnumT gfxType)
 {
     // Determine which type to use based on aviliablity of icons
     GraphicsTypeEnumT gfxTypeI = selectAvailableGraphicsType(gfxType);
@@ -1052,7 +1052,7 @@ void ModelObjectAppearance::setIconPath(const QString path, const GraphicsTypeEn
     refreshIconValid();
 }
 
-void ModelObjectAppearance::setIconScale(const qreal scale, const GraphicsTypeEnumT gfxType)
+void ModelObjectAppearance::setIconScale(const double scale, const GraphicsTypeEnumT gfxType)
 {
     if (gfxType == UserGraphics)
     {

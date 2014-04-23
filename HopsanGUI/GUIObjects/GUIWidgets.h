@@ -45,7 +45,7 @@ class Widget : public WorkspaceObject
     Q_OBJECT
 
 public:
-    Widget(QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
+    Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
     QString mType;
     void rememberOldPos();
     int getWidgetIndex();
@@ -70,7 +70,7 @@ class TextBoxWidget : public Widget
     Q_OBJECT
 
 public:
-    TextBoxWidget(QString text, QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem);
     void saveToDomElement(QDomElement &rDomElement);
     void loadFromDomElement(const QDomElement &rDomElement);
@@ -81,7 +81,7 @@ public:
     void setLineWidth(int value);
     void setLineStyle(Qt::PenStyle style);
     void setLineColor(QColor color);
-    void setSize(qreal w, qreal h);
+    void setSize(double w, double h);
     void setBoxVisible(bool boxVisible);
 
     void makeSureBoxNotToSmallForText();
@@ -136,8 +136,8 @@ private:
     bool mResizeRight;
 
     QPointF mPosBeforeResize;
-    qreal mWidthBeforeResize;
-    qreal mHeightBeforeResize;
+    double mWidthBeforeResize;
+    double mHeightBeforeResize;
 };
 
 #endif // GUIWIDGETS_H

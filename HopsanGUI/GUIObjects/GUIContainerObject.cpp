@@ -83,7 +83,7 @@
 //! @param gfxType Tells whether the initial graphics shall be user or ISO
 //! @param pParentContainer Pointer to the parent container object (leave empty if not a sub container)
 //! @param pParent Pointer to parent object
-ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+ContainerObject::ContainerObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
         //Initialize
@@ -220,7 +220,7 @@ ContainerObject::ContainerEdgeEnumT ContainerObject::findPortEdge(QPointF center
     }
 
     //Determine on what edge the port should be placed based on the angle from the center point
-    qreal angle = normRad(qAtan2(diff.x(), diff.y()));
+    double angle = normRad(qAtan2(diff.x(), diff.y()));
     //qDebug() << "angle: " << rad2deg(angle);
     if (fabs(angle) <= M_PI_4)
     {
@@ -267,7 +267,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
     //qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
 
-    QMap<qreal, Port*> leftEdge, rightEdge, topEdge, bottomEdge;
+    QMap<double, Port*> leftEdge, rightEdge, topEdge, bottomEdge;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
         if(moit.value()->type() == ContainerPortType)
@@ -312,12 +312,12 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     }
 
     //Now disperse the port icons evenly along each edge
-    QMap<qreal, Port*>::iterator it;
-    qreal disp;  //Dispersion factor
-    qreal sdisp; //sumofdispersionfactors
+    QMap<double, Port*>::iterator it;
+    double disp;  //Dispersion factor
+    double sdisp; //sumofdispersionfactors
 
     //! @todo weird to use createfunction to refresh graphics, but ok for now
-    disp = 1.0/((qreal)(rightEdge.size()+1));
+    disp = 1.0/((double)(rightEdge.size()+1));
     sdisp=disp;
     for (it=rightEdge.begin(); it!=rightEdge.end(); ++it)
     {
@@ -327,7 +327,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
         sdisp += disp;
     }
 
-    disp = 1.0/((qreal)(bottomEdge.size()+1));
+    disp = 1.0/((double)(bottomEdge.size()+1));
     sdisp=disp;
     for (it=bottomEdge.begin(); it!=bottomEdge.end(); ++it)
     {
@@ -337,7 +337,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
         sdisp += disp;
     }
 
-    disp = 1.0/((qreal)(leftEdge.size()+1));
+    disp = 1.0/((double)(leftEdge.size()+1));
     sdisp=disp;
     for (it=leftEdge.begin(); it!=leftEdge.end(); ++it)
     {
@@ -347,7 +347,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
         sdisp += disp;
     }
 
-    disp = 1.0/((qreal)(topEdge.size()+1));
+    disp = 1.0/((double)(topEdge.size()+1));
     sdisp=disp;
     for (it=topEdge.begin(); it!=topEdge.end(); ++it)
     {
@@ -445,8 +445,8 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
         QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
-        qreal x = it.value().x;
-        qreal y = it.value().y;
+        double x = it.value().x;
+        double y = it.value().y;
         qDebug() << "x,y: " << x << " " << y;
 
         if (this->type() == GroupContainerType)
@@ -512,7 +512,7 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 
 
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
-ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, qreal rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
+ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
     ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(fullTypeName);
     if(!pAppearanceData)    //Not an existing component
@@ -528,7 +528,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, qreal rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
+ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();

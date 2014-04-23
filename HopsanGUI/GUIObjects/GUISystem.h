@@ -114,7 +114,7 @@ class SystemContainer : public ContainerObject
 {
     Q_OBJECT
 public:
-    SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+    SystemContainer(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
     SystemContainer(ModelWidget *parentModelWidget, QGraphicsItem *pParent);
     void deleteInHopsanCore();
 

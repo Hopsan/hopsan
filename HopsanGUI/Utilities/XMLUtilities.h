@@ -43,7 +43,7 @@ QDomElement appendDomIntegerNode(QDomElement &rDomElement, const QString element
 QDomElement appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val, const char format='g', const int precision=-1);
 QDomElement appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b, const char format='g', const int precision=-1);
 QDomElement appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c, const char format='g', const int precision=-1);
-QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues, const char format='g', const int precision=6);
+QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<double> &rValues, const char format='g', const int precision=6);
 
 int parseDomIntegerNode(QDomElement, const int defaultValue);
 bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue);
@@ -51,24 +51,24 @@ double parseDomValueNode(QDomElement domElement, const double defaultValue);
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
 
-void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue, const int precision=6,  const char format='f');
+void setQrealAttribute(QDomElement domElement, const QString attrName, const double attrValue, const int precision=6,  const char format='f');
 
 //Attribute help functions
-void appendPoseTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal th, const bool flipped, const int precision=6);
-void appendCoordinateTag(QDomElement &rDomElement, const qreal x, const qreal y, const int precision=20);
-void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal zoom);
-void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop, const bool inheritTs);
+void appendPoseTag(QDomElement &rDomElement, const double x, const double y, const double th, const bool flipped, const int precision=6);
+void appendCoordinateTag(QDomElement &rDomElement, const double x, const double y, const int precision=20);
+void appendViewPortTag(QDomElement &rDomElement, const double x, const double y, const double zoom);
+void appendSimulationTimeTag(QDomElement &rDomElement, const double start, const double step, const double stop, const bool inheritTs);
 void appendLogSettingsTag(QDomElement &rDomElement, const double logStartTime, const unsigned int numLogSamples);
 
-void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, bool &rFlipped);
-void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
-void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
+void parsePoseTag(QDomElement domElement, double &rX, double &rY, double &rTheta, bool &rFlipped);
+void parseCoordinateTag(QDomElement domElement, double &rX, double &rY);
+void parseViewPortTag(QDomElement domElement, double &rX, double &rY, double &rZoom);
 void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rStep, QString &rStop, bool &rInheritTs);
 void parseLogSettingsTag(QDomElement domElement, double &rLogStartTime, int &rNumLogSamples);
 
 bool parseAttributeBool(const QDomElement domElement, const QString attributeName, const bool defaultValue);
 int parseAttributeInt(const QDomElement domElement, const QString attributeName, const int defaultValue);
-qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue);
+double parseAttributeQreal(const QDomElement domElement, const QString attributeName, const double defaultValue);
 
 //Color help functions
 QString makeRgbString(QColor color);

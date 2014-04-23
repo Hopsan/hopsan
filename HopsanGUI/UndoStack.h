@@ -68,7 +68,7 @@ public:
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, Connector *item, int lineNumber);
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
-    void registerRotatedObject(const QString objectName, const qreal angle);
+    void registerRotatedObject(const QString objectName, const double angle);
     void registerVerticalFlip(QString objectName);
     void registerHorizontalFlip(QString objectName);
     void registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt);
@@ -78,7 +78,7 @@ public:
     void registerAddedWidget(Widget *item);
     void registerDeletedWidget(Widget *item);
     void registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos);
-    void registerResizedTextBoxWidget(const int index, const qreal w_old, const qreal h_old, const qreal w_new, const qreal h_new, const QPointF oldPos, const QPointF newPos);
+    void registerResizedTextBoxWidget(const int index, const double w_old, const double h_old, const double w_new, const double h_new, const QPointF oldPos, const QPointF newPos);
     void registerModifiedTextBoxWidget(Widget *pItem);
 
 private:

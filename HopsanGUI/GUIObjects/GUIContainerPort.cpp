@@ -28,7 +28,7 @@
 #include "GUIPort.h"
 #include "Dialogs/ContainerPortPropertiesDialog.h"
 
-ContainerPort::ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+ContainerPort::ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     mIsSystemPort = (pParentContainer->type() == SystemContainerType); //determine if I am a system port
@@ -68,8 +68,8 @@ void ContainerPort::createPorts()
         desiredportname = mModelObjectAppearance.getDisplayName();
     }
 
-    qreal x = i.value().x;
-    qreal y = i.value().y;
+    double x = i.value().x;
+    double y = i.value().y;
 
     //! @todo should make this function select a systemport icon not undefined
     i.value().selectPortIcon("", "", "NodeEmpty");

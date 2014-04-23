@@ -168,7 +168,7 @@ void AnimatedConnector::updateAnimation()
     double max = mpAnimationWidget->mHydraulicIntensityMax;
 
     QPen tempPen = mpLines.first()->pen();
-    tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+    tempPen.setDashPattern(QVector<double>() << 1.5 << 3.5);
 
     double pressureData, flowData;
     if(mpAnimationWidget->isRealTimeAnimation())    //Real-time animation
@@ -205,7 +205,7 @@ void AnimatedConnector::updateAnimation()
 //! @param y2 Y-coordinate of the end position of the line.
 //! @param pConnApp Pointer to the connector appearance data, containing pens
 //! @param *parent Pointer to the parent object (the animated connector)
-AnimatedConnectorLine::AnimatedConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance* pConnApp, AnimatedConnector *parent)
+AnimatedConnectorLine::AnimatedConnectorLine(double x1, double y1, double x2, double y2, ConnectorAppearance* pConnApp, AnimatedConnector *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
     mpParentConnector = parent;
@@ -245,7 +245,7 @@ void AnimatedConnectorLine::addEndArrow()
 {
     clearArrows();
 
-    qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
+    double angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mEndPos.x(),
                                         this->mEndPos.y(),
                                         this->mEndPos.x()-mArrowSize*cos(angle+mArrowAngle),
@@ -266,7 +266,7 @@ void AnimatedConnectorLine::addStartArrow()
 {
     clearArrows();
 
-    qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
+    double angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mStartPos.x(),
                                         this->mStartPos.y(),
                                         this->mStartPos.x()+mArrowSize*cos(angle+mArrowAngle),

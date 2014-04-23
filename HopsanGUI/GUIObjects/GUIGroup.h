@@ -42,7 +42,7 @@ class GroupContainer : public ContainerObject
 {
     Q_OBJECT
 public:
-    GroupContainer(QPointF position, qreal rotation, const ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer);
+    GroupContainer(QPointF position, double rotation, const ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer);
     ~GroupContainer();
 
 //    void setContents(CopyStack *pCopyStack);

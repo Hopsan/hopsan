@@ -110,7 +110,7 @@ public:
     AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pParent);
 
     void updateViewPort();
-    void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
+    void getViewPort(double &rX, double &rY, double &rZoom);
     bool isCtrlKeyPressed();
     bool isShiftKeyPressed();
     bool isLeftMouseButtonPressed();
@@ -126,7 +126,7 @@ signals:
     void keyPressCtrlDown();
     void keyPressCtrlLeft();
     void keyPressCtrlRight();
-    void zoomChange(qreal zoomfactor);
+    void zoomChange(double zoomfactor);
     void systemPortSignal(QPointF position);
     void hovered();
 

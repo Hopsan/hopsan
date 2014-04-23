@@ -64,7 +64,7 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
     santizeName(endPortName);
 
     // Read gui specific stuff
-    qreal x,y;
+    double x,y;
     QDomElement guiData         = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     QDomElement guiCoordinates  = guiData.firstChildElement(HMF_COORDINATES);
     QDomElement coordTag        = guiCoordinates.firstChildElement(HMF_COORDINATETAG);
@@ -240,7 +240,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     QString name = rDomElement.attribute(HMF_NAMETAG);
 
     //Read gui specific data
-    qreal posX, posY, target_rotation;
+    double posX, posY, target_rotation;
     bool isFlipped;
 
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);

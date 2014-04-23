@@ -41,7 +41,7 @@ class ModelObject : public WorkspaceObject
     Q_OBJECT
 
 public:
-    ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT graphics = UserGraphics, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    ModelObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT graphics = UserGraphics, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~ModelObject();
     virtual void deleteInHopsanCore();
 
@@ -130,7 +130,7 @@ public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();
     void deleteMe();
-    virtual void rotate(qreal angle, UndoStatusEnumT undoSettings = Undo);
+    virtual void rotate(double angle, UndoStatusEnumT undoSettings = Undo);
     virtual void flipVertical(UndoStatusEnumT undoSettings = Undo);
     virtual void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
     void hideName(UndoStatusEnumT undoSettings = NoUndo);
@@ -178,7 +178,7 @@ protected:
     bool mIconRotation;
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;
-    qreal mLastIconScale;
+    double mLastIconScale;
 
     QMap<QString, QString> mDefaultParameterValues;
     QStringList mActiveDynamicParameterPortNames;

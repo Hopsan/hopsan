@@ -141,14 +141,14 @@ QString relativePath(QFileInfo pathtochange, QDir basedir)
 
 
 //! @brief normalises degrees to range between -180 and 180 degrees
-qreal normDeg180(const qreal deg)
+double normDeg180(const double deg)
 {
     return rad2deg(normRad(deg2rad(deg)));
 }
 
 //! @brief normalises degrees to range between 0 and 359.999 degrees, 360.0 will be converted to 0
 //! @todo potential danger comparing floats like this
-qreal normDeg360(qreal deg)
+double normDeg360(double deg)
 {
     while (deg < 0.0)
     {
@@ -165,7 +165,7 @@ qreal normDeg360(qreal deg)
 }
 
 //! @brief normalises radinas to range between -PI and PI degrees
-qreal normRad(const qreal rad)
+double normRad(const double rad)
 {
     return qAtan2(qCos(rad),qSin(rad));
 }
@@ -181,22 +181,22 @@ double dist(const double x1, const double y1, const double x2, const double y2)
 
 //! @brief Check if first+eps is less then second, convenient to make usre float comparison works on all platforms
 //! @return True if first+eps < second
-bool fuzzyLT(const qreal first, const qreal second, const qreal eps)
+bool fuzzyLT(const double first, const double second, const double eps)
 {
     return (first+eps) < second;
 }
 
 //! @brief Calculates the 2NORM of one point, the absoulte distance from 0,0
-qreal dist(const QPointF &rPoint)
+double dist(const QPointF &rPoint)
 {
     return sqrt( rPoint.x()*rPoint.x() + rPoint.y()*rPoint.y() );
 }
 
 //! @brief Calculates the distance between two points
-qreal dist(const QPointF &rPoint1, const QPointF &rPoint2)
+double dist(const QPointF &rPoint1, const QPointF &rPoint2)
 {
-    qreal x = rPoint1.x() - rPoint2.x();
-    qreal y = rPoint1.y() - rPoint2.y();
+    double x = rPoint1.x() - rPoint2.x();
+    double y = rPoint1.y() - rPoint2.y();
     return sqrt( x*x + y*y );
 }
 

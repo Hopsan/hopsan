@@ -189,7 +189,7 @@ QDomElement appendDomValueNode(QDomElement &rDomElement, const QString element_n
 //! @param[in] b The second double value
 //! @param[in] format The format to use when converting the number to text
 //! @param[in] precision The precision of the converted value according to format
-QDomElement appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const qreal a, const qreal b, const char format, const int precision)
+QDomElement appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b, const char format, const int precision)
 {
     return appendDomTextNode(rDomElement, element_name, QString("%1 %2").arg(a,0,format,precision).arg(b,0,format,precision));
 }
@@ -213,7 +213,7 @@ QDomElement appendDomValueNode3(QDomElement &rDomElement, const QString element_
 //! @param[in] rValues A QVector containing all of the values to add
 //! @param[in] format The format to use when converting the number to text
 //! @param[in] precision The precision of the converted value according to format
-QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues, const char format, const int precision)
+QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<double> &rValues, const char format, const int precision)
 {
     QString num,str;
     for (int i=0; i<rValues.size(); ++i)
@@ -226,11 +226,11 @@ QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_
     return appendDomTextNode(rDomElement, element_name, str);
 }
 
-//! @brief Helpfunction for adding a qreal (float or double) attribute to a Dom element while making sure that decimal point is . and not ,
+//! @brief Helpfunction for adding a double (float or double) attribute to a Dom element while making sure that decimal point is . and not ,
 //! @param domElement The DOM element to add the attribute to
 //! @param[in] attrName The name of the attribute
 //! @param[in] attrValue The value of the attribute
-void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue, const int precision, const char format)
+void setQrealAttribute(QDomElement domElement, const QString attrName, const double attrValue, const int precision, const char format)
 {
     QString str;
     domElement.setAttribute(attrName, str.setNum(attrValue, format, precision));
@@ -320,7 +320,7 @@ bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue)
 //! @param[in] y The y coordinate
 //! @param[in] th The orientaion (angle)
 //! @param[in] flipped isFlipped status of the object
-void appendPoseTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal th, const bool flipped, const int precision)
+void appendPoseTag(QDomElement &rDomElement, const double x, const double y, const double th, const bool flipped, const int precision)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_POSETAG);
 
@@ -334,7 +334,7 @@ void appendPoseTag(QDomElement &rDomElement, const qreal x, const qreal y, const
 //! @param[in] rDomElement The DOM Element to append to
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
-void appendCoordinateTag(QDomElement &rDomElement, const qreal x, const qreal y, const int precision)
+void appendCoordinateTag(QDomElement &rDomElement, const double x, const double y, const int precision)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_COORDINATETAG);
     setQrealAttribute(pose, "x", x, precision);
@@ -346,7 +346,7 @@ void appendCoordinateTag(QDomElement &rDomElement, const qreal x, const qreal y,
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
 //! @param[in] zoom The zoom factor
-void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal zoom)
+void appendViewPortTag(QDomElement &rDomElement, const double x, const double y, const double zoom)
 {
     //qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << "DecimalPoint: " << QLocale().decimalPoint();
     QDomElement pose = appendDomElement(rDomElement, HMF_VIEWPORTTAG);
@@ -363,7 +363,7 @@ void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, c
 //! @param[in] start The starttime
 //! @param[in] step The timestep size
 //! @param[in] stop The stoptime
-void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop, const bool inheritTs)
+void appendSimulationTimeTag(QDomElement &rDomElement, const double start, const double step, const double stop, const bool inheritTs)
 {
     QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
     setQrealAttribute(simu, "start", start, 10, 'g');
@@ -391,7 +391,7 @@ void appendLogSettingsTag(QDomElement &rDomElement, const double logStartTime, c
 //! @param[out] rY The y coordinate
 //! @param[out] rTheta The orientaion (angle)
 //! @param[out] rFlipped isFlipped status of the object
-void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, bool &rFlipped)
+void parsePoseTag(QDomElement domElement, double &rX, double &rY, double &rTheta, bool &rFlipped)
 {
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
@@ -403,7 +403,7 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, b
 //! @param[in] domElement The DOM Element to parse
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
-void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)
+void parseCoordinateTag(QDomElement domElement, double &rX, double &rY)
 {
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
@@ -414,7 +414,7 @@ void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
 //! @param[out] rZoom The zoom factor
-void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom)
+void parseViewPortTag(QDomElement domElement, double &rX, double &rY, double &rZoom)
 {
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
@@ -434,12 +434,12 @@ void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rS
     rInheritTs = parseAttributeBool(domElement, "inherit_timestep", true);
 }
 
-qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue)
+double parseAttributeQreal(const QDomElement domElement, const QString attributeName, const double defaultValue)
 {
     if (domElement.hasAttribute(attributeName))
     {
         bool isOK=false;
-        const qreal val = domElement.attribute(attributeName).toDouble(&isOK);
+        const double val = domElement.attribute(attributeName).toDouble(&isOK);
         if (isOK)
         {
             return val;
