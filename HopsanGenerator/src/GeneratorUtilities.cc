@@ -536,8 +536,6 @@ QStringList getHopsanCoreSourceFiles()
                 "../HopsanCore/src/ComponentUtilities/ludcmp.cc" <<
                 "../HopsanCore/src/ComponentUtilities/matrix.cc" <<
                 "../HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc" <<
-                "../HopsanCore/src/ComponentUtilities/TurbulentFlowFunction.cc" <<
-                "../HopsanCore/src/ComponentUtilities/ValveHysteresis.cc" <<
                 "../HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc" <<
                 "../HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp" <<
                 "../HopsanCore/src/CoreUtilities/GeneratorHandler.cpp" <<
