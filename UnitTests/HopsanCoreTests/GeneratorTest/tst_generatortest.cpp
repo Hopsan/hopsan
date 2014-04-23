@@ -6,10 +6,10 @@
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary.dll"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" DEBUG_EXT ".dll"
 #define LIBEXT ".dll"
 #else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary.so"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" DEBUG_EXT ".so"
 #define LIBEXT ".so"
 #endif
 #endif
@@ -30,7 +30,7 @@ class GeneratorTests : public QObject
 public:
     GeneratorTests()
     {
-        mHopsanCore.loadExternalComponentLib(QString(DEFAULTCOMPONENTLIB).toStdString().c_str());
+        mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
     }
 
 private:

@@ -6,15 +6,16 @@
 QT       += testlib
 QT       -= gui
 
-TARGET = tst_hstringtest
+#Determine debug extension
+include( ../../../Common.prf )
+
+TARGET = tst_hstringtest$${DEBUG_EXT}
 CONFIG   += console
 CONFIG   -= app_bundle
 DESTDIR = $${PWD}/../../../bin
 
 TEMPLATE = app
 
-#Determine debug extension
-include( ../../../Common.prf )
 
 INCLUDEPATH += $${PWD}/../../../HopsanCore/include/
 LIBS += -L$${PWD}/../../../bin -lHopsanCore$${DEBUG_EXT}

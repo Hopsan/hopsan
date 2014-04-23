@@ -49,17 +49,9 @@
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
   #ifdef WIN32
-    #ifdef DEBUGCOMPILING
-      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary_d.dll"
-    #else
-      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary.dll"
-    #endif
+      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" DEBUG_EXT ".dll"
   #else
-    #ifdef DEBUGCOMPILING
-      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary_d.so"
-    #else
-      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary.so"
-    #endif
+      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" DEBUG_EXT ".so"
   #endif
 #endif
 

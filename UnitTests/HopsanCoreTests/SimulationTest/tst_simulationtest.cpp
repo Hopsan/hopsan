@@ -6,10 +6,10 @@
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary.dll"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" DEBUG_EXT ".dll"
 #define LIBEXT ".dll"
 #else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary.so"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" DEBUG_EXT ".so"
 #define LIBEXT ".so"
 #endif
 #endif
@@ -30,7 +30,7 @@ class SimulationTests : public QObject
 public:
     SimulationTests()
     {
-        mHopsanCore.loadExternalComponentLib(QString(DEFAULTCOMPONENTLIB).toStdString().c_str());
+        mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 "<hopsanmodelfile hmfversion=\"0.4\" hopsanguiversion=\"0.6.0\" hopsancoreversion=\"0.6.0\">"
                 "  <system logsamples=\"2048\" typename=\"Subsystem\" name=\"unittestmodel\">"

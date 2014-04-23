@@ -10,12 +10,11 @@
 #define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-#ifdef WIN32
-#define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/defaultComponentLibrary.dll"
-#else
-#define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/libdefaultComponentLibrary.so"
-
-#endif
+    #ifdef WIN32
+        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/defaultComponentLibrary" DEBUG_EXT ".dll"
+    #else
+        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/libdefaultComponentLibrary" DEBUG_EXT ".so"
+    #endif
 #endif
 
 using namespace hopsan;
@@ -112,7 +111,8 @@ void DefaultLibraryXMLTest::initTestCase()
     recurseCollectXMLFiles(libRoot);
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-    mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+    bool loadOK = mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+    QVERIFY2(loadOK, "could not load the component library");
 #endif
 }
 

@@ -6,16 +6,16 @@
 QT       += testlib
 QT       -= gui
 
-TARGET = tst_symhoptest
+#Determine debug extension
+include( ../../Common.prf )
+
+TARGET = tst_symhoptest$${DEBUG_EXT}
 CONFIG   += console
 CONFIG   -= app_bundle
 DESTDIR = $${PWD}/../../bin
 
 
 TEMPLATE = app
-
-#Determine debug extension
-include( ../../Common.prf )
 
 INCLUDEPATH += $${PWD}/../../SymHop/include/
 LIBS += -L$${PWD}/../../bin -lSymHop$${DEBUG_EXT}

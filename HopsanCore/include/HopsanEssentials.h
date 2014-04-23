@@ -55,6 +55,7 @@ public:
     const char *getCoreBuildTime() const;
     const char *getCoreCompiler() const;
     bool isCore64Bit() const;
+    bool isCoreDebugCompiled() const;
 
     // Component creation
     Component* createComponent(const HString &rTypeName);

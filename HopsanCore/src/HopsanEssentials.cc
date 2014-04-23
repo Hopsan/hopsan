@@ -75,13 +75,18 @@ HopsanEssentials::HopsanEssentials()
 
 
     // Do some other stuff
+    HString debugtext;
+    if (isCoreDebugCompiled())
+    {
+        debugtext=" (Debug)";
+    }
     if (isCore64Bit())
     {
-        mpMessageHandler->addInfoMessage("HopsanCore 64-bit, Version: " + HString(HOPSANCOREVERSION));
+        mpMessageHandler->addInfoMessage("HopsanCore 64-bit, Version: " + HString(HOPSANCOREVERSION)+debugtext);
     }
     else
     {
-        mpMessageHandler->addInfoMessage("HopsanCore 32-bit, Version: " + HString(HOPSANCOREVERSION));
+        mpMessageHandler->addInfoMessage("HopsanCore 32-bit, Version: " + HString(HOPSANCOREVERSION)+debugtext);
     }
 
     openLogFile();
@@ -127,6 +132,15 @@ const char *HopsanEssentials::getCoreCompiler() const
 bool HopsanEssentials::isCore64Bit() const
 {
 #ifdef HOPSANCOMPILED64BIT
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool HopsanEssentials::isCoreDebugCompiled() const
+{
+#ifdef DEBUGCOMPILING
     return true;
 #else
     return false;

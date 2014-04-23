@@ -7,16 +7,15 @@
 QT       += xml testlib
 QT       -= gui
 
+#Determine debug extension
+include( ../../Common.prf )
 
-TARGET = tst_defaultlibraryxmltest
+TARGET = tst_defaultlibraryxmltest$${DEBUG_EXT}
 DESTDIR = $${PWD}/../../bin
 CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
-
-#Determine debug extension
-include( ../../Common.prf )
 
 # Include and link to hopsan core
 INCLUDEPATH += $${PWD}/../../HopsanCore/include/

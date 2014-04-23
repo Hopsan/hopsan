@@ -8,6 +8,8 @@ CONFIG(debug, debug|release) {
     DEFINES *= QT_NO_DEBUG_OUTPUT
     DEFINES *= RELEASECOMPILING
 }
+#Add a defined string with the debug extension (that can be used in the code)
+DEFINES *= "DEBUG_EXT=\\\"$${DEBUG_EXT}"\\\"
 
 #Determine the dynamic link library file extension, typically .dll for Windows, .so for UNIX and .dylib for OSX
 win32:DLL_EXT = .dll
