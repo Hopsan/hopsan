@@ -1,0 +1,405 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     14875,        395]
+NotebookOptionsPosition[     13675,        351]
+NotebookOutlinePosition[     14019,        366]
+CellTagsIndexPosition[     13976,        363]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["JLink", "Section",
+ CellChangeTimes->{3.52179155325*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Mechanic\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<JLink\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<Link with inertia\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.503905077842648*^9, 3.503905079842648*^9}, {
+   3.5039103076641607`*^9, 3.5039103985397425`*^9}, {3.5039164662834997`*^9, 
+   3.5039164750178747`*^9}, {3.5039165143772497`*^9, 
+   3.5039165189397497`*^9}, {3.5041051675625*^9, 3.504105226359375*^9}, {
+   3.507570546125*^9, 3.507570569546875*^9}, {3.507570601046875*^9, 
+   3.50757067696875*^9}, 3.507796401609375*^9, {3.507887022343302*^9, 
+   3.507887057967846*^9}, {3.5078871702320337`*^9, 3.507887175028847*^9}, {
+   3.5082235454098396`*^9, 3.5082235597692146`*^9}, 3.5082237305660896`*^9, {
+   3.512921352515625*^9, 3.512921388578125*^9}, {3.513708407234375*^9, 
+   3.51370842740625*^9}, 3.513708469203125*^9, {3.5137087323125*^9, 
+   3.513708733765625*^9}, {3.513708789984375*^9, 3.5137088199375*^9}, {
+   3.513709315953125*^9, 3.5137093166875*^9}, {3.51370934803125*^9, 
+   3.513709386875*^9}, 3.515393228397682*^9, 3.515394538846967*^9, {
+   3.518675928359375*^9, 3.518675955546875*^9}, {3.518676036671875*^9, 
+   3.518676042765625*^9}, {3.5194107155625*^9, 3.519410716421875*^9}, {
+   3.521791503796875*^9, 3.521791549125*^9}, {3.52179232775*^9, 
+   3.521792329390625*^9}, 3.5762130472586737`*^9, {3.6065835703276834`*^9, 
+   3.606583576072012*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Variables and parameters", "Subsection"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "  ", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "JL", ",", "1.", ",", "double", ",", "\"\<kgm2\>\"", ",", 
+       "\"\<Equivalent inertia at node 2\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "BL", ",", "1.", ",", "double", ",", "\"\<Ns/rad\>\"", ",", 
+       "\"\<Visc friction coeff. at node 2\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "link", ",", ".1", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Link length x1/sin(thetarot2)\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "x0", ",", ".1", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<x position for zero angle\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "theta0", ",", ".1", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<link angle for zero angle\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"thetamin", ",", 
+       RowBox[{"-", "1.05"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Min angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "thetamax", ",", "1.05", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Max angle\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.521792272390625*^9, 3.52179227240625*^9}, {
+  3.5219819263125*^9, 3.521981953265625*^9}, {3.522432173046875*^9, 
+  3.52243220875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "  ", "=", " ", 
+   RowBox[{"{", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.521792276546875*^9, 3.5217922765625*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"MechanicQnode", "[", 
+      RowBox[{"m1", ",", "0.", ",", "\"\<mechanical linear node 1\>\""}], 
+      "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"MechanicRotQnode", "[", 
+      RowBox[{
+      "mr2", ",", "0.", ",", "0.", ",", 
+       "\"\<mechanical rotation node 2\>\""}], "]"}]}], "\[IndentingNewLine]",
+     "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.521792288515625*^9, 3.52179228853125*^9}, {
+   3.5217989671875*^9, 3.521798978421875*^9}, {3.52179901178125*^9, 
+   3.5217990168125*^9}, 3.521799253921875*^9, 3.521799395453125*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[StyleBox["The system of equations",
+ FontFamily->"Times"]], "Subsection",
+ Evaluatable->False,
+ PageBreakAbove->True],
+
+Cell["\<\
+The force balance equation, and integration of speed to postion\
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"D", "[", 
+  RowBox[{
+   RowBox[{"link", " ", 
+    RowBox[{"Sin", "[", 
+     RowBox[{"theta", "[", "t", "]"}], "]"}]}], ",", "t"}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"link", " ", 
+  RowBox[{"Cos", "[", 
+   RowBox[{"theta", "[", "t", "]"}], "]"}], " ", 
+  RowBox[{
+   SuperscriptBox["theta", "\[Prime]",
+    MultilineFunction->None], "[", "t", "]"}]}]], "Output",
+ CellChangeTimes->{
+  3.4681691460625*^9, 3.52179240171875*^9, 3.5217925035625*^9, 
+   3.521796445296875*^9, 3.521798214015625*^9, 3.52179902225*^9, 
+   3.521799166484375*^9, 3.52179922765625*^9, 3.521799259078125*^9, 
+   3.52179958165625*^9, {3.52180372590625*^9, 3.52180375115625*^9}, 
+   3.52182699346875*^9, 3.5219132575625*^9, 3.52191331778125*^9, 
+   3.521914143140625*^9, 3.5219150680625*^9, 3.521915123828125*^9, 
+   3.521915201234375*^9, 3.52191554896875*^9, 3.521916142296875*^9, 
+   3.52197054315625*^9, 3.522604981671875*^9, {3.522605896421875*^9, 
+   3.522605913*^9}, 3.52260614646875*^9, 3.522636866617371*^9, 
+   3.522636958124578*^9, 3.5226376384722977`*^9, 3.5331526536875*^9, 
+   3.5331535625*^9, 3.5331540455625*^9, 3.53315417121875*^9, 
+   3.53315486159375*^9, 3.5331954390625*^9, 3.533207459671875*^9, 
+   3.533221827421875*^9, 3.53322193121875*^9, 3.535556433375*^9, 
+   3.5355571883125*^9, 3.535557237953125*^9, 3.53555777975*^9, 
+   3.535557838703125*^9, 3.535608295328125*^9, 3.5356085083125*^9, 
+   3.53560996975*^9, 3.535611942015625*^9, 3.535617441109375*^9, 
+   3.53562460678125*^9, 3.535688449666119*^9, 3.535688857798521*^9, 
+   3.5356923510243835`*^9, 3.538977658505411*^9, 3.55471575538945*^9, 
+   3.5762127980607567`*^9, 3.5762130675777054`*^9, 3.5774507039314423`*^9, 
+   3.578816721321367*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"link", " ", 
+  RowBox[{"Cos", "[", 
+   RowBox[{"theta", "[", "t", "]"}], "]"}], " ", 
+  RowBox[{
+   SuperscriptBox["theta", "\[Prime]",
+    MultilineFunction->None], "[", "t", "]"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"link", " ", 
+  RowBox[{"Cos", "[", 
+   RowBox[{"theta", "[", "t", "]"}], "]"}], " ", 
+  RowBox[{
+   SuperscriptBox["theta", "\[Prime]",
+    MultilineFunction->None], "[", "t", "]"}]}]], "Output",
+ CellChangeTimes->{
+  3.468169146078125*^9, 3.521792401734375*^9, 3.52179250359375*^9, 
+   3.521796445328125*^9, 3.521798214046875*^9, 3.52179902228125*^9, 
+   3.5217991665*^9, 3.5217992276875*^9, 3.521799259109375*^9, 
+   3.5217995816875*^9, {3.521803725921875*^9, 3.5218037511875*^9}, 
+   3.5218269935*^9, 3.52191325759375*^9, 3.521913317796875*^9, 
+   3.521914143171875*^9, 3.521915068078125*^9, 3.52191512384375*^9, 
+   3.521915201265625*^9, 3.521915549*^9, 3.5219161423125*^9, 
+   3.5219705431875*^9, 3.522604981703125*^9, {3.522605896453125*^9, 
+   3.522605913015625*^9}, 3.5226061465*^9, 3.5226368676634355`*^9, 
+   3.5226369591706424`*^9, 3.5226376385973077`*^9, 3.533152653765625*^9, 
+   3.5331535625625*^9, 3.533154046375*^9, 3.533154171296875*^9, 
+   3.533154861671875*^9, 3.533195439125*^9, 3.533207459734375*^9, 
+   3.533221827484375*^9, 3.533221931296875*^9, 3.535556433453125*^9, 
+   3.535557188375*^9, 3.53555723803125*^9, 3.5355577798125*^9, 
+   3.53555783878125*^9, 3.53560829540625*^9, 3.535608508375*^9, 
+   3.535609969828125*^9, 3.535611942078125*^9, 3.5356174411875*^9, 
+   3.53562460778125*^9, 3.5356884496817436`*^9, 3.53568885782977*^9, 
+   3.5356923510400085`*^9, 3.538977658521036*^9, 3.554715755405072*^9, 
+   3.5762127980837584`*^9, 3.5762130675977073`*^9, 3.577450703968446*^9, 
+   3.578816721349367*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"vm1e", "=", 
+   RowBox[{
+    RowBox[{"-", "link"}], " ", 
+    RowBox[{"Cos", "[", "thetamr2", "]"}], " ", "wmr2"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.521792019890625*^9, 3.521792044546875*^9}, {
+   3.521916404171875*^9, 3.52191640675*^9}, {3.52198187534375*^9, 
+   3.521981907515625*^9}, 3.52198201184375*^9, {3.606583606196735*^9, 
+   3.606583606532754*^9}},
+ FontWeight->"Plain"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDA", " ", ":=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"JL", " ", 
+        RowBox[{"der", "[", " ", "wmr2", "]"}]}], " ", "+", " ", 
+       RowBox[{"BL", " ", "wmr2"}]}], " ", "==", " ", 
+      RowBox[{
+       RowBox[{"fm1", " ", 
+        RowBox[{"(", 
+         RowBox[{"link", " ", 
+          RowBox[{"Cos", "[", "thetamr2", "]"}]}], ")"}]}], " ", "-", " ", 
+       "tormr2"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"JL", " ", 
+        RowBox[{"der", "[", 
+         RowBox[{"der", "[", "thetamr2", "]"}], "]"}]}], " ", "+", " ", 
+       RowBox[{"BL", " ", "wmr2"}]}], " ", "==", " ", 
+      RowBox[{
+       RowBox[{"fm1", " ", 
+        RowBox[{"(", 
+         RowBox[{"link", " ", 
+          RowBox[{"Cos", "[", "thetamr2", "]"}]}], ")"}]}], " ", "-", " ", 
+       "tormr2"}]}]}], "\n", "\t", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.5217922995625*^9, 3.521792299578125*^9}, {
+   3.521796529671875*^9, 3.52179654959375*^9}, {3.521799128875*^9, 
+   3.521799138171875*^9}, {3.52179941965625*^9, 3.521799425078125*^9}, {
+   3.52182690634375*^9, 3.521826906796875*^9}, {3.521826940484375*^9, 
+   3.52182694090625*^9}, {3.5218279221875*^9, 3.521827938953125*^9}, {
+   3.52191376965625*^9, 3.521913787296875*^9}, {3.52191503640625*^9, 
+   3.52191504615625*^9}, 3.52191512025*^9, {3.5219154718125*^9, 
+   3.521915485875*^9}, {3.52198198196875*^9, 3.521981992953125*^9}, {
+   3.52260609496875*^9, 3.52260610153125*^9}, {3.5719330624911575`*^9, 
+   3.5719330754391804`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemBoundaryEquations", " ", "=", " ", 
+   RowBox[{"{", "\n", "\t", 
+    RowBox[{
+     RowBox[{"fm1", "==", " ", 
+      RowBox[{"cm1", " ", "+", " ", 
+       RowBox[{"Zcm1", " ", "vm1e"}]}]}], ",", "\n", "\t", 
+     RowBox[{"tormr2", " ", "==", " ", 
+      RowBox[{"cmr2", " ", "+", " ", 
+       RowBox[{"Zcmr2", " ", "wmr2"}]}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.521792304921875*^9, 3.52179231546875*^9}, {
+  3.5217991398125*^9, 3.521799144390625*^9}, {3.52179943246875*^9, 
+  3.521799447140625*^9}, {3.5719330846899967`*^9, 3.571933098683221*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", " ", "=", 
+   RowBox[{"{", 
+    RowBox[{"wmr2", ",", "thetamr2", ",", "fm1", ",", "tormr2"}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52179189903125*^9, 3.521791937546875*^9}, {
+  3.52179815940625*^9, 3.521798174921875*^9}, {3.52179914540625*^9, 
+  3.52179915371875*^9}, {3.521799448046875*^9, 3.521799449734375*^9}, {
+  3.5218037436875*^9, 3.52180374471875*^9}, {3.521915185*^9, 
+  3.521915186875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"vm1", "==", 
+      RowBox[{
+       RowBox[{"-", "link"}], " ", 
+       RowBox[{"Cos", "[", "thetamr2", "]"}], " ", "wmr2"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"xm1", "==", 
+      RowBox[{"x0", "-", 
+       RowBox[{"link", " ", 
+        RowBox[{"Sin", "[", "thetamr2", "]"}]}]}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"eqMassm1", "==", 
+      FractionBox["JL", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"link", " ", 
+          RowBox[{"Cos", "[", "thetamr2", "]"}]}], ")"}], "2"]]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"eqInertiamr2", "==", "JL"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.521791780359375*^9, 3.521791796578125*^9}, {
+  3.521791861109375*^9, 3.52179188821875*^9}, {3.521799158015625*^9, 
+  3.5217991624375*^9}, {3.52179945103125*^9, 3.52179945225*^9}, {
+  3.521827770453125*^9, 3.5218278778125*^9}, {3.521947617769854*^9, 
+  3.521947619441675*^9}, {3.571933104112031*^9, 3.5719331199148583`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"pi", "=."}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variable2Limits", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+     "thetamr2", ",", " ", "wmr2", ",", " ", "thetamin", ",", " ", 
+      "thetamax"}], "}"}], "}"}]}], ";"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{707, 505},
+WindowMargins->{{288, Automatic}, {Automatic, 60}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 62, 1, 71, "Section"],
+Cell[644, 25, 2110, 41, 192, "Input"],
+Cell[CellGroupData[{
+Cell[2779, 70, 46, 0, 36, "Subsection"],
+Cell[2828, 72, 1491, 37, 192, "Input"],
+Cell[4322, 111, 174, 4, 31, "Input"],
+Cell[4499, 117, 673, 15, 92, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5209, 137, 131, 3, 37, "Subsection",
+ Evaluatable->False,
+ PageBreakAbove->True],
+Cell[5343, 142, 87, 2, 29, "Text"],
+Cell[CellGroupData[{
+Cell[5455, 148, 171, 5, 31, "Input"],
+Cell[5629, 155, 1549, 27, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7215, 187, 218, 6, 31, "Input"],
+Cell[7436, 195, 1554, 27, 30, "Output"]
+}, Open  ]],
+Cell[9005, 225, 423, 10, 30, "Input"],
+Cell[9431, 237, 1623, 37, 92, "Input"],
+Cell[11057, 276, 630, 14, 92, "Input"],
+Cell[11690, 292, 467, 10, 31, "Input"],
+Cell[12160, 304, 1131, 28, 164, "Input"],
+Cell[13294, 334, 46, 1, 31, "Input"],
+Cell[13343, 337, 238, 7, 31, "Input"],
+Cell[13584, 346, 63, 1, 31, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
