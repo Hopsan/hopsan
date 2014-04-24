@@ -176,12 +176,18 @@ void MainWindow::createContents()
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     connect(gpMessageHandler, SIGNAL(newAnyMessage(GUIMessage)), mpMessageWidget, SLOT(receiveMessage(GUIMessage)));
 
+    // Print init messages
     gpMessageHandler->collectHopsanCoreMessages();
 #ifdef HOPSANCOMPILED64BIT
-    gpMessageHandler->addInfoMessage("HopsanGUI 64-bit, Version: " + QString(HOPSANGUIVERSION));
+    QString archtext="HopsanGUI 64-bit, ";
 #else
-    gpMessageHandler->addInfoMessage("HopsanGUI 32-bit, Version: " + QString(HOPSANGUIVERSION));
+    QString archtext="HopsanGUI 32-bit, ";
 #endif
+    QString debugtext;
+#ifdef DEBUGCOMPILING
+    debugtext=" (Compiled in debug mode)";
+#endif
+    gpMessageHandler->addInfoMessage(archtext+QString(HOPSANGUIVERSION)+debugtext);
 
     //Load configuration from settings file
     gpSplash->showMessage("Loading configuration...");

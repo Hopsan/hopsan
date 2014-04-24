@@ -31,13 +31,8 @@
 
 #include "cliFunctions.h"
 #include "HopsanEssentials.h"
+#include "HopsanCoreMacros.h"
 #include "TicToc.hpp"
-
-// Stringify Macro
-#ifndef TO_STR_2
- #define TO_STR_2(s) #s
- #define TO_STR(s) TO_STR_2(s)
-#endif
 
 // If we dont have the revision number then define UNKNOWN
 // On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
@@ -45,14 +40,20 @@
  #define HOPSANCLISVNREVISION UNKNOWN
 #endif
 
+// If debug extension has not already been defined then define it to prevent compilation error
+#ifndef DEBUG_EXT
+ #define DEBUG_EXT
+#endif
+
 #define HOPSANCLIVERSION "0.6.x_r" TO_STR(HOPSANCLISVNREVISION)
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-  #ifdef WIN32
-      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" DEBUG_EXT ".dll"
-  #else
-      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" DEBUG_EXT ".so"
-  #endif
+//  #ifdef WIN32
+//      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
+//  #else
+//      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
+//  #endif
+    #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 #endif
 
 using namespace std;
@@ -124,21 +125,27 @@ int main(int argc, char *argv[])
 
         if (testInstanciateComponentsOption.isSet())
         {
-            cout <<  "Testing to instanciate each registered component. Error and Warning messages will be shown below:" << endl;
+            cout <<  "Testing to instanciate each registered component. Any Error or Warning messages will be shown below:" << endl;
             //! @todo write as function
             vector<HString> types =  gHopsanCore.getRegisteredComponentTypes();
+            size_t nErrors=0;
             for (size_t i=0; i<types.size(); ++i)
             {
                 Component *pComp = gHopsanCore.createComponent(types[i].c_str());
+                nErrors += gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages(); + gHopsanCore.getNumWarningMessages();
                 printWaitingMessages(printDebugOption.getValue());
                 gHopsanCore.removeComponent(pComp);
-
+            }
+            if (nErrors==0)
+            {
+                returnSuccess=true;
             }
         }
 
 
         if(hmfPathOption.isSet())
         {
+            returnSuccess=false;
             printWaitingMessages(printDebugOption.getValue());
 
             if (hvcTestOption.isSet())

@@ -78,7 +78,7 @@ HopsanEssentials::HopsanEssentials()
     HString debugtext;
     if (isCoreDebugCompiled())
     {
-        debugtext=" (Debug)";
+        debugtext=" (Compiled in debug mode)";
     }
     if (isCore64Bit())
     {

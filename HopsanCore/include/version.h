@@ -18,11 +18,7 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-// Stringify Macro
-#ifndef TO_STR_2
- #define TO_STR_2(s) #s
- #define TO_STR(s) TO_STR_2(s)
-#endif
+#include "HopsanCoreMacros.h"
 
 // We need to use this include because external dependencies will need the revision of the core when it was compiled last time,
 // not the lates revision that you get when compiling the external component.

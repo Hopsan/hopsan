@@ -24,11 +24,8 @@
 #ifndef VERSION_GUI_H
 #define VERSION_GUI_H
 
-// Stringify Macro
-#ifndef TO_STR_2
- #define TO_STR_2(s) #s
- #define TO_STR(s) TO_STR_2(s)
-#endif
+// Include compiler info and hopsan core macros
+#include "compiler_info.h"
 
 // If we dont have the revision number then define UNKNOWN
 // On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
@@ -41,7 +38,6 @@
 #define HMF_REQUIREDVERSIONNUM "0.3"
 #define CAF_VERSIONNUM "0.3"
 
-// Include compiler info macros
-#include "compiler_info.h"
+
 
 #endif // VERSION_GUI_H

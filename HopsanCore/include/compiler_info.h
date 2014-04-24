@@ -10,11 +10,7 @@
 #ifndef COMPILER_INFO_H
 #define COMPILER_INFO_H
 
-// Stringify Macro
-#ifndef TO_STR_2
- #define TO_STR_2(s) #s
- #define TO_STR(s) TO_STR_2(s)
-#endif
+#include "HopsanCoreMacros.h"
 
 // Decide compiler and architecture 32 or 64 bit version information
 // Note! MinGW32 is also defined on MinGW-w64,

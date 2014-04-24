@@ -28,4 +28,11 @@
 //! @brief This macro can be used to indicate that a function argument is unused and avoids a compiler warning
 #define HOPSAN_UNUSED(x) (void)x;
 
+// Stringify Macro
+#ifndef TO_STR_2
+ #define TO_STR_2(s) #s
+ //! @brief This macro is used to turn a defined value into a string
+ #define TO_STR(s) TO_STR_2(s)
+#endif
+
 #endif // HOPSANCOREMACROS_H

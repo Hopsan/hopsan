@@ -26,7 +26,7 @@ LIBS *= -L$${PWD}/../../bin
 LIBS *= -lHopsanCore$${DEBUG_EXT}
 
 # Reduce compile output clutter, but show warnings
-CONFIG += silent warn_on
+CONFIG += silent warn_on plugin
 
 # The compiler should be pedantic to catch all errors (optional)
 QMAKE_CXXFLAGS += -pedantic -Wno-long-long

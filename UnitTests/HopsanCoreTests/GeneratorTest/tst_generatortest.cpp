@@ -1,15 +1,16 @@
 #include <QtTest>
 #include "HopsanEssentials.h"
+#include "HopsanCoreMacros.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include <assert.h>
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" DEBUG_EXT ".dll"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
 #define LIBEXT ".dll"
 #else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" DEBUG_EXT ".so"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
 #define LIBEXT ".so"
 #endif
 #endif
