@@ -16,6 +16,7 @@
 #include "MechanicThetaSource.hpp"
 #include "MechanicMotor.hpp"
 #include "MechanicRotShaft.hpp"
+#include "MechanicGearClutch.hpp"
 #include "MechanicRotationalInertiaWithCoulumbFriction.hpp"
 #include "MechanicRackAndPinion.hpp"
 #include "MechanicBallScrew.hpp"

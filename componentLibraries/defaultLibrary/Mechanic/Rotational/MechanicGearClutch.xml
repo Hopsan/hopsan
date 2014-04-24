@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="MechanicGearClutch" displayname="MechanicGearClutch">
+        <icons>
+            <icon scale="1" path="MechanicGearClutch.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="MechanicGearClutch.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.62" y="0" a="270" name="PgearRatio"/>
+            <port x="0.24" y="0" a="270" name="Ptmax"/>
+            <port x="0" y="0.5" a="180" name="Pmr1"/>
+            <port x="1" y="0.5" a="0" name="Pmr2"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
