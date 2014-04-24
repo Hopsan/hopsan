@@ -126,6 +126,7 @@ public:
 
     // Qwt overloaded function
     QList<QwtLegendData> legendData() const;
+    QRectF boundingRect() const;
 
 signals:
     void curveDataUpdated();
@@ -208,7 +209,7 @@ public:
     PlotCurve *getCurve();
     void setMovable(bool movable);
 
-    // Overkloaded virtual methods
+    // Overloaded virtual methods
     virtual bool eventFilter (QObject *object, QEvent *event);
 
 public slots:

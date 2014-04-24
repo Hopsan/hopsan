@@ -1439,6 +1439,40 @@ QList<QwtLegendData> PlotCurve::legendData() const
     return list;
 }
 
+//! @brief This function overload is requireed to avoid auto-scale problems when the data containes inf
+//! @note This is related to issue #1151
+QRectF PlotCurve::boundingRect() const
+{
+    QRectF rect = QwtPlotCurve::boundingRect();
+    if (std::isinf(rect.width()) || std::isinf(rect.height()))
+    {
+        qDebug() << "---------------- Bounding rect        : " << rect;
+        const double lim = DoubleMax*0.9;
+
+        if (std::isinf(rect.top()))
+        {
+            rect.setTop(-lim);
+        }
+
+        if (std::isinf(rect.right()))
+        {
+            rect.setRight(lim);
+        }
+
+        if (std::isinf(rect.bottom()))
+        {
+            rect.setBottom(lim);
+        }
+
+        if (std::isinf(rect.left()))
+        {
+            rect.setLeft(-lim);
+        }
+        qDebug() << "---------------- Bounding rect (fixed): " << rect;
+    }
+    return rect;
+}
+
 PlotLegend::PlotLegend(QwtPlot::Axis axisId) :
     QwtPlotLegendItem()
 {
