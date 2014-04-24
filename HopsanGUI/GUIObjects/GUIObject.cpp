@@ -289,7 +289,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
     QGraphicsWidget::itemChange(change, value);
 
     // Move component only horizontal, vertical or snap to original position if Ctrl is pressed
-    if ((change == QGraphicsItem::ItemPositionHasChanged) && mEnableSnap)
+    if (mpParentContainerObject && (change == QGraphicsItem::ItemPositionHasChanged) && mEnableSnap)
     {
         GraphicsView *pGraphicsView = mpParentContainerObject->mpModelWidget->getGraphicsView();
         if(mpParentContainerObject && pGraphicsView->isCtrlKeyPressed() && pGraphicsView->isLeftMouseButtonPressed())

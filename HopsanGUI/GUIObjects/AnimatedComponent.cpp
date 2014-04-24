@@ -412,7 +412,7 @@ void AnimatedComponent::setupAnimationMovable(int m)
     if(mpAnimationData->isAdjustable.at(m))
     {
         QString port = mpAnimationData->adjustablePort.at(m);
-        if(mpModelObject->getPort(port)->isConnected())
+        if(mpModelObject->getPort(port)->getPortType() != "WritePortType" && mpModelObject->getPort(port)->isConnected())
         {
             mpAnimationData->isAdjustable[m] = false;
         }
@@ -492,7 +492,6 @@ void AnimatedComponent::limitMovables()
 AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, ContainerObject *pParentContainer, int idx, QGraphicsItem *pParent)
         : WorkspaceObject(position, rotation, Deselected, pParentContainer, pParent)
 {
-
     //Store original position
     mOldPos = position;
 
