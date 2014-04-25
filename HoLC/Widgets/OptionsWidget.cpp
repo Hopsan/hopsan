@@ -84,6 +84,8 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     connect(pCompilerButton, SIGNAL(clicked()), this, SLOT(setCompilerPath()));
     connect(mpAlwaysSaveBeforeCompilingCheckBox, SIGNAL(toggled(bool)), mpConfiguration, SLOT(setAlwaysSaveBeforeCompiling(bool)));
     connect(mpUseTextWrappingCheckBox, SIGNAL(toggled(bool)), mpConfiguration, SLOT(setUseTextWrapping(bool)));
+    connect(mpHopsanDirLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setHopsanPath(QString)));
+    connect(mpCompilerLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompilerPath(QString)));
 
     if(!mpConfiguration->getCompilerPath().isEmpty())
     {
@@ -132,7 +134,12 @@ void OptionsWidget::setHopsanPath(const QString &path)
         success = false;
     }
 
-    mpHopsanDirLineEdit->setText(path);
+    if(!mpHopsanDirLineEdit->hasFocus())
+    {
+        disconnect(mpHopsanDirLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setHopsanPath(QString)));
+        mpHopsanDirLineEdit->setText(path);
+        connect(mpHopsanDirLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setHopsanPath(QString)));
+    }
     mpConfiguration->setHopsanPath(path);
     if(success)
     {
@@ -157,13 +164,16 @@ void OptionsWidget::setCompilerPath()
     setCompilerPath(path);
 }
 
-void OptionsWidget::setCompilerPath(const QString &path)
+void OptionsWidget::setCompilerPath(QString path)
 {
     QString filePath;
 #ifdef linux
+    if(path.endsWith("/gcc"))
+        path.chop(4);
     filePath = path+"/gcc";
-
 #else
+    if(path.endsWith("/g++.exe") || path.endsWith("\\g++.exe"))
+        path.chop(8);
     filePath = path+"/g++.exe";
 #endif
     //! @todo We should also check that it is the correct version of gcc!
@@ -172,13 +182,23 @@ void OptionsWidget::setCompilerPath(const QString &path)
     if(QFile::exists(filePath))
     {
         //mpOptionsHandler->setCompilerPath(filePath);
-        mpCompilerLineEdit->setText(filePath);
+        if(!mpCompilerLineEdit->hasFocus())
+        {
+            disconnect(mpCompilerLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompilerPath(QString)));
+            mpCompilerLineEdit->setText(filePath);
+            connect(mpCompilerLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompilerPath(QString)));
+        }
         mpCompilerWarningLabel->hide();
     }
     else
     {
         //mpOptionsHandler->setCompilerPath("");
-        mpCompilerLineEdit->clear();
+        if(!mpCompilerLineEdit->hasFocus())
+        {
+            disconnect(mpCompilerLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompilerPath(QString)));
+            mpCompilerLineEdit->setText(filePath);
+            connect(mpCompilerLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompilerPath(QString)));
+        }
         mpCompilerWarningLabel->show();
     }
 }

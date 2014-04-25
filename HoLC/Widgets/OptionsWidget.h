@@ -25,7 +25,7 @@ private slots:
     void setHopsanPath();
     void setHopsanPath(const QString &path);
     void setCompilerPath();
-    void setCompilerPath(const QString &path);
+    void setCompilerPath(QString path);
 
 private:
     QLineEdit *mpHopsanDirLineEdit;
