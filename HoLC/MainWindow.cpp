@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *pParent)
     this->addDockWidget(Qt::BottomDockWidgetArea, pMessageDockWidget);
 
     //Create widgets
-    mpEditorWidget = new EditorWidget(this);
+    mpEditorWidget = new EditorWidget(mpConfiguration, this);
     mpProjectFilesWidget = new ProjectFilesWidget(this);
     mpMessageWidget = new MessageWidget(this);
     mpOptionsWidget = new OptionsWidget(mpConfiguration, this);
@@ -127,5 +127,6 @@ MainWindow::MainWindow(QWidget *pParent)
 
 MainWindow::~MainWindow()
 {
+    //! @todo Is it really needed to save config here? It is saved every time config is changed anyway...
     mpConfiguration->saveToXml();
 }

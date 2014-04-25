@@ -17,17 +17,18 @@ class Configuration : public QObject
 public:
     Configuration(QWidget *pParent);
 
-    void saveToXml();
     void loadFromXml();
     void loadDefaultsFromXml();
 
 public slots:
+    void saveToXml();
     bool getAlwaysSaveBeforeCompiling() const;
     QString getProjectPath() const;
     QString getHopsanPath() const;
     QString getIncludePath() const;
     QString getHopsanCoreLibPath() const;
     QString getCompilerPath() const;
+    bool getUseTextWrapping() const;
     QPalette getPalette();
     QString getStyleSheet();
 
@@ -35,6 +36,10 @@ public slots:
     void setProjectPath(const QString &value);
     void setHopsanPath(const QString &value);
     void setCompilerPath(const QString &value);
+    void setUseTextWrapping(const bool &value);
+
+signals:
+    void configChanged();
 
 private:
     QWidget *mpParent;
@@ -46,6 +51,7 @@ private:
     QString mProjectPath;
     QString mHopsanPath;
     QString mCompilerPath;
+    bool mUseTextWrapping;
     QPalette mPalette;
     QString mStyleSheet;
 };

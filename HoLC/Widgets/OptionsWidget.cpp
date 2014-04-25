@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QProcessEnvironment>
-
+#include <QGroupBox>
 #include "OptionsWidget.h"
 #include "Configuration.h"
 
@@ -12,10 +12,10 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
 {
     mpConfiguration = pConfiguration;
 
-    QFont font = this->font();
-    font.setBold(true);
-    QLabel *pOptionsLabel = new QLabel("Options", this);
-    pOptionsLabel->setFont(font);
+//    QFont font = this->font();
+//    font.setBold(true);
+//    QLabel *pOptionsLabel = new QLabel("Options", this);
+//    pOptionsLabel->setFont(font);
 
     QLabel *pHopsanDirLabel = new QLabel("Hopsan Path:");
     mpHopsanDirLineEdit = new QLineEdit(this);
@@ -44,30 +44,46 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     mpAlwaysSaveBeforeCompilingCheckBox = new QCheckBox("Always save all files before compiling", this);
     mpAlwaysSaveBeforeCompilingCheckBox->setChecked(mpConfiguration->getAlwaysSaveBeforeCompiling());
 
-    //Setup layout
-    QGridLayout *pLayout = new QGridLayout(this);
+    QGroupBox *pCompilationOptionsBox = new QGroupBox("Compilation Options", this);
+    QGridLayout *pCompilationOptionsLayout = new QGridLayout(pCompilationOptionsBox);
+
+    mpUseTextWrappingCheckBox = new QCheckBox("Enable text wraping", this);
+    mpUseTextWrappingCheckBox->setChecked(mpConfiguration->getUseTextWrapping());
+
+    QGroupBox *pEditorOptionsBox = new QGroupBox("Editor Options", this);
+    QGridLayout *pEditorOptionsLayout = new QGridLayout(pEditorOptionsBox);
+
+    //Setup layouts
+
     int row=-1;
-    pLayout->addWidget(pOptionsLabel,                       ++row,0,1,3);
-    pLayout->addWidget(pHopsanDirLabel,                     ++row,0,1,1);
-    pLayout->addWidget(mpHopsanDirLineEdit,                   row,1,1,1);
-    pLayout->addWidget(pHopsanDirButton,                      row,2,1,1);
-    pLayout->addWidget(pLibraryLabel,                       ++row,0,1,1);
-    pLayout->addWidget(mpLibraryLineEdit,                     row,1,1,2);
-    pLayout->addWidget(pIncludeLabel,                       ++row,0,1,1);
-    pLayout->addWidget(mpIncludeLineEdit,                     row,1,1,2);
-    pLayout->addWidget(mpWarningLabel,                      ++row,0,1,3);
-    pLayout->addWidget(pCompilerLabel,                      ++row,0,1,1);
-    pLayout->addWidget(mpCompilerLineEdit,                    row,1,1,1);
-    pLayout->addWidget(pCompilerButton,                       row,2,1,1);
-    pLayout->addWidget(mpCompilerWarningLabel,              ++row,0,1,3);
-    pLayout->addWidget(mpAlwaysSaveBeforeCompilingCheckBox, ++row,0,1,3);
-    pLayout->addWidget(new QWidget(this),                   ++row,0,1,3);
-    pLayout->setRowStretch(9,1);
+    pCompilationOptionsLayout->addWidget(pHopsanDirLabel,                     ++row,0,1,1);
+    pCompilationOptionsLayout->addWidget(mpHopsanDirLineEdit,                   row,1,1,1);
+    pCompilationOptionsLayout->addWidget(pHopsanDirButton,                      row,2,1,1);
+    pCompilationOptionsLayout->addWidget(pLibraryLabel,                       ++row,0,1,1);
+    pCompilationOptionsLayout->addWidget(mpLibraryLineEdit,                     row,1,1,2);
+    pCompilationOptionsLayout->addWidget(pIncludeLabel,                       ++row,0,1,1);
+    pCompilationOptionsLayout->addWidget(mpIncludeLineEdit,                     row,1,1,2);
+    pCompilationOptionsLayout->addWidget(mpWarningLabel,                      ++row,0,1,3);
+    pCompilationOptionsLayout->addWidget(pCompilerLabel,                      ++row,0,1,1);
+    pCompilationOptionsLayout->addWidget(mpCompilerLineEdit,                    row,1,1,1);
+    pCompilationOptionsLayout->addWidget(pCompilerButton,                       row,2,1,1);
+    pCompilationOptionsLayout->addWidget(mpCompilerWarningLabel,              ++row,0,1,3);
+    pCompilationOptionsLayout->addWidget(mpAlwaysSaveBeforeCompilingCheckBox, ++row,0,1,3);
+
+    row=-1;
+    pEditorOptionsLayout->addWidget(mpUseTextWrappingCheckBox,                ++row,0,1,1);
+
+    QGridLayout *pLayout = new QGridLayout(this);
+    pLayout->addWidget(pCompilationOptionsBox, 0,0);
+    pLayout->addWidget(pEditorOptionsBox,       1,0);
+    pLayout->addWidget(new QWidget(this),       2,0);
+    pLayout->setRowStretch(1,1);
 
     //Setup connections
     connect(pHopsanDirButton, SIGNAL(clicked()), this, SLOT(setHopsanPath()));
     connect(pCompilerButton, SIGNAL(clicked()), this, SLOT(setCompilerPath()));
     connect(mpAlwaysSaveBeforeCompilingCheckBox, SIGNAL(toggled(bool)), mpConfiguration, SLOT(setAlwaysSaveBeforeCompiling(bool)));
+    connect(mpUseTextWrappingCheckBox, SIGNAL(toggled(bool)), mpConfiguration, SLOT(setUseTextWrapping(bool)));
 
     if(!mpConfiguration->getCompilerPath().isEmpty())
     {

@@ -7,6 +7,7 @@
 
 class XmlHighlighter;
 class CppHighlighter;
+class Configuration;
 
 class EditorWidget : public QWidget
 {
@@ -14,10 +15,13 @@ class EditorWidget : public QWidget
 public:
     enum HighlighterTypeEnum {XML, Cpp};
 
-    explicit EditorWidget(QWidget *parent = 0);
+    explicit EditorWidget(Configuration *pConfiguration, QWidget *parent = 0);
     void setText(const QString &text, HighlighterTypeEnum type, bool editingEnabled=true);
     QString getText() const;
     void clear();
+
+public slots:
+    void update();
 
 signals:
     void textChanged();
@@ -27,6 +31,7 @@ private:
     TextEditor *mpTextEdit;
     XmlHighlighter *mpXmlHighlighter;
     CppHighlighter *mpCppHighlighter;
+    Configuration *mpConfiguration;
 };
 
 #endif // EDITORWIDGET_H

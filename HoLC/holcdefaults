@@ -2,6 +2,7 @@
 <holcdefaults>
     <settings>
         <alwayssavebeforecompiling>true</alwayssavebeforecompiling>
+        <usetextwrapping>false</usetextwrapping>
         <projectpath/>
     </settings>
     <style>

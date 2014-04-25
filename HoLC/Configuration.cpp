@@ -20,6 +20,7 @@
 Configuration::Configuration(QWidget *pParent)
 {
     mpParent = pParent;
+    connect(this, SIGNAL(configChanged()), SLOT(saveToXml()));
 }
 
 
@@ -39,6 +40,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "projectpath", mProjectPath);
     appendDomTextNode(settings, "hopsanpath", mHopsanPath);
     appendDomTextNode(settings, "compilerpath", mCompilerPath);
+    appendDomBooleanNode(settings, "usetextwrapping", mUseTextWrapping);
 
     appendRootXMLProcessingInstruction(domDocument);
 
@@ -170,6 +172,7 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     mProjectPath = rDomElement.firstChildElement("projectpath").text();
     mHopsanPath = rDomElement.firstChildElement("hopsanpath").text();
     mCompilerPath = rDomElement.firstChildElement("compilerpath").text();
+    mUseTextWrapping = parseDomBooleanNode(rDomElement.firstChildElement("usetextwrapping"), false);
 
     //Default to installed gcc path in linux (if file exists and no other path specified)
     if(mCompilerPath.isEmpty())
@@ -256,22 +259,33 @@ QString Configuration::getCompilerPath() const
     return mCompilerPath;
 }
 
+bool Configuration::getUseTextWrapping() const
+{
+    return mUseTextWrapping;
+}
+
 void Configuration::setProjectPath(const QString &value)
 {
     mProjectPath = value;
-    saveToXml();
+    emit configChanged();
 }
 
 void Configuration::setHopsanPath(const QString &value)
 {
     mHopsanPath = value;
-    saveToXml();
+    emit configChanged();
 }
 
 void Configuration::setCompilerPath(const QString &value)
 {
     mCompilerPath = value;
-    saveToXml();
+    emit configChanged();
+}
+
+void Configuration::setUseTextWrapping(const bool &value)
+{
+    mUseTextWrapping = value;
+    emit configChanged();
 }
 
 
@@ -290,6 +304,6 @@ QString Configuration::getStyleSheet()
 void Configuration::setAlwaysSaveBeforeCompiling(const bool &value)
 {
     mAlwaysSaveBeforeCompiling = value;
-    saveToXml();
+    emit configChanged();
 }
 

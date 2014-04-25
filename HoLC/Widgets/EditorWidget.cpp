@@ -4,11 +4,14 @@
 
 #include "EditorWidget.h"
 #include "Handlers/FileHandler.h"
+#include "Configuration.h"
 #include "Utilities/HighlightingUtilities.h"
 
-EditorWidget::EditorWidget(QWidget *parent) :
+EditorWidget::EditorWidget(Configuration *pConfiguration, QWidget *parent) :
     QWidget(parent)
 {
+    mpConfiguration = pConfiguration;
+
     //Create widgets
     mpNotEditableLabel = new QLabel("<font color='darkred'><h3><b>This file cannot be edited from within HoLC.</b></h3></font>", this);
     mpNotEditableLabel->hide();
@@ -29,6 +32,7 @@ EditorWidget::EditorWidget(QWidget *parent) :
 
     //Create connections
     connect(mpTextEdit, SIGNAL(textChanged()), this, SIGNAL(textChanged()));
+    connect(mpConfiguration, SIGNAL(configChanged()), this, SLOT(update()));
 }
 
 void EditorWidget::setText(const QString &text, HighlighterTypeEnum type, bool editingEnabled)
@@ -63,4 +67,17 @@ QString EditorWidget::getText() const
 void EditorWidget::clear()
 {
     mpTextEdit->clear();
+}
+
+void EditorWidget::update()
+{
+    if(mpConfiguration->getUseTextWrapping())
+    {
+        mpTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+    }
+    else
+    {
+        mpTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+    }
+    QWidget::update();
 }

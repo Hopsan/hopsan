@@ -35,6 +35,7 @@ private:
     QLineEdit *mpCompilerLineEdit;
     QLabel *mpCompilerWarningLabel;
     QCheckBox* mpAlwaysSaveBeforeCompilingCheckBox;
+    QCheckBox* mpUseTextWrappingCheckBox;
 
     Configuration *mpConfiguration;
 };
