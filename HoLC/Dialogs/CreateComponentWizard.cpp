@@ -4,6 +4,7 @@
 #include "Handlers/FileHandler.h"
 #include "Handlers/MessageHandler.h"
 #include "Utilities/StringUtilities.h"
+#include <QScrollArea>
 
 NodeInfo::NodeInfo(QString nodeType)
 {
@@ -62,6 +63,8 @@ CreateComponentWizard::CreateComponentWizard(FileHandler *pFileHandler, MessageH
     mpParent = parent;
     mpFileHandler = pFileHandler;
     mpMessageHandler = pMessageHandler;
+    this->setStyleSheet(parent->styleSheet());
+    this->setPalette(parent->palette());
 
     QWizardPage *pFirstPage = new QWizardPage(this);
     pFirstPage->setTitle("General settings");
@@ -106,16 +109,31 @@ CreateComponentWizard::CreateComponentWizard(FileHandler *pFileHandler, MessageH
 
     QWizardPage *pSecondPage = new QWizardPage(this);
     pSecondPage->setTitle("Port settings");
+
+
+    QWidget *pScrollWidget = new QWidget(this);
+    QVBoxLayout *pScrollLayout = new QVBoxLayout(pScrollWidget);
+    pScrollWidget->setLayout(pScrollLayout);
+    pScrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    QScrollArea *pScrollArea = new QScrollArea(this);
+    pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    pScrollArea->setWidget(pScrollWidget);
+    pScrollArea->setWidgetResizable(true);
+
+
     QVBoxLayout *pSecondPageLayout = new QVBoxLayout(this);
+    pSecondPageLayout->addWidget(pScrollArea);
     pSecondPage->setLayout(pSecondPageLayout);
+
     QGroupBox *pConstantsBox = new QGroupBox("Constants", this);
     QGroupBox *pInputsBox = new QGroupBox("Input Variables", this);
     QGroupBox *pOutputsBox = new QGroupBox("Output Variables", this);
     QGroupBox *pPortsBox = new QGroupBox("Power Ports", this);
-    pSecondPageLayout->addWidget(pConstantsBox);
-    pSecondPageLayout->addWidget(pInputsBox);
-    pSecondPageLayout->addWidget(pOutputsBox);
-    pSecondPageLayout->addWidget(pPortsBox);
+    pScrollLayout->addWidget(pConstantsBox);
+    pScrollLayout->addWidget(pInputsBox);
+    pScrollLayout->addWidget(pOutputsBox);
+    pScrollLayout->addWidget(pPortsBox);
     mpConstantsLayout = new QGridLayout(pConstantsBox);
     mpInputsLayout = new QGridLayout(pInputsBox);
     mpOutputsLayout = new QGridLayout(pOutputsBox);
