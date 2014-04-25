@@ -1,6 +1,9 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QTextBlock>
+#include <QTextDocumentFragment>
+#include <QDebug>
+#include <math.h>
 
 #include "TextEditor.h"
 
@@ -79,9 +82,58 @@ void TextEditor::insertFromMimeData(const QMimeData *pData)
 //! @brief Intercept key press event, to handle special keys
 void TextEditor::keyPressEvent(QKeyEvent *pEvent)
 {
-    if(pEvent->key() == Qt::Key_Tab)    //Replace tabs with four whitespaces
+    //Replace tabs with four whitespaces
+    if(pEvent->key() == Qt::Key_Backtab)    //Shift+tab, remove spaces to the left until next tab stop (or as many spaces as possible)
     {
-        insertPlainText("    ");
+        QString line = this->textCursor().block().text().toAscii();
+        int pos = textCursor().positionInBlock();
+        while(pos > 0 && line.at(pos-1) == ' ')
+        {
+            this->textCursor().deletePreviousChar();
+            line = this->textCursor().block().text().toAscii();
+            pos = textCursor().positionInBlock();
+            if(pos%4 == 0)
+            {
+                break;
+            }
+        }
+    }
+    else if(pEvent->key() == Qt::Key_Tab)
+    {
+        if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
+        {
+            QString text = textCursor().selection().toPlainText();
+            text.replace("\n", "\n    ");
+            text.prepend("    ");
+            textCursor().beginEditBlock();
+            textCursor().removeSelectedText();
+            insertPlainText(text);
+            textCursor().endEditBlock();
+        }
+        else
+        {
+            QString line = this->textCursor().block().text().toAscii();
+            int pos = textCursor().positionInBlock();
+            qDebug() << line << ", position: " << pos;
+            int nSpaces = 0;
+            while(line.startsWith(" "))
+            {
+                nSpaces++;
+                line.remove(0,1);
+            }
+            int nSpacesToInsert = 4;    //Inssert four spaces by default
+            if(pos < nSpaces)           //If at beginning of line, insert until next tab stop
+            {
+                while((nSpaces+nSpacesToInsert)%4 != 0)
+                {
+                    nSpacesToInsert--;
+                }
+            }
+            for(int i=0; i<nSpacesToInsert; ++i)
+            {
+                this->insertPlainText(" ");
+            }
+        }
     }
     else
     {
