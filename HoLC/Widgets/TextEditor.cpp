@@ -100,6 +100,21 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
             }
         }
     }
+    else if(pEvent->key() == Qt::Key_Enter || pEvent->key() == Qt::Key_Return)
+    {
+        QString line = this->textCursor().block().text().toAscii();
+        QString newStr = "\n";
+        while(line.startsWith(" "))
+        {
+            line.remove(0,1);
+            newStr.append(" "); //Append one space to new line for each space on previous line, to keep indentation
+        }
+        if(line.startsWith("{"))
+        {
+            newStr.append("    ");  //Add an extra tab if previous line is a left bracket
+        }
+        insertPlainText(newStr);
+    }
     else if(pEvent->key() == Qt::Key_Tab)
     {
         if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
