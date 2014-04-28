@@ -1173,9 +1173,10 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
     }
 
     // Only set the rest if a value exist (it does not for disabled startvalues)
-    QString value = mpModelObject->getParameterValue(mVariablePortDataName);
-    if (!value.isEmpty())
+    if (mpModelObject->hasParameter(mVariablePortDataName))
     {
+        QString value = mpModelObject->getParameterValue(mVariablePortDataName);
+
         mpValueEdit = new QLineEdit(this);
         mpValueEdit->setAlignment(Qt::AlignCenter);
         mpValueEdit->setFrame(false);

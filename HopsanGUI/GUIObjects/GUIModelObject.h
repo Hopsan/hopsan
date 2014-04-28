@@ -78,6 +78,7 @@ public:
     virtual void getParameters(QVector<CoreParameterData> &rParameterDataVec);
     virtual void getParameter(const QString paramName, CoreParameterData &rData);
     virtual QString getParameterValue(const QString paramName);
+    virtual bool hasParameter(const QString &rParamName);
 
     virtual QString getDefaultParameterValue(const QString &rParamName) const;
 

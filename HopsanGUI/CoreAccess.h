@@ -168,6 +168,7 @@ public:
     QString renameSubComponent(QString componentName, QString name);
 
     // Parameters and start values
+    bool hasParameter(const QString &rComponentName, const QString &rParameterName);
     QStringList getParameterNames(QString componentName);
     void getParameters(QString componentName, QVector<CoreParameterData> &rParameterDataVec);
     void getParameter(QString componentName, QString parameterName, CoreParameterData &rData);

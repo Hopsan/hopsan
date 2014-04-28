@@ -813,6 +813,11 @@ QString ModelObject::getParameterValue(const QString paramName)
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), paramName);
 }
 
+bool ModelObject::hasParameter(const QString &rParamName)
+{
+    return mpParentContainerObject->getCoreSystemAccessPtr()->hasParameter(this->getName(), rParamName);
+}
+
 //! @brief Get a vector contain data from all parameters
 //! @param [out] rParameterDataVec A vector that will contain parameter data
 void ModelObject::getParameters(QVector<CoreParameterData> &rParameterDataVec)

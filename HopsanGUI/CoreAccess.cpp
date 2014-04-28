@@ -507,6 +507,16 @@ QString CoreSystemAccess::renameSubComponent(QString componentName, QString name
     return pTempComponent->getName().c_str();
 }
 
+bool CoreSystemAccess::hasParameter(const QString &rComponentName, const QString &rParameterName)
+{
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(rComponentName.toStdString().c_str());
+    if (pComp)
+    {
+        return pComp->hasParameter(rParameterName.toStdString().c_str());
+    }
+    return false;
+}
+
 QString CoreSystemAccess::getSystemName()
 {
    // qDebug() << "getNAme from core root: " << QString::fromStdString(mpCoreComponentSystem->getName());
