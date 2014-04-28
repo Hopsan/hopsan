@@ -1,0 +1,325 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     11218,        316]
+NotebookOptionsPosition[     10368,        284]
+NotebookOutlinePosition[     10712,        299]
+CellTagsIndexPosition[     10669,        296]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Gear", "Section",
+ CellChangeTimes->{{3.51923891821875*^9, 3.5192389314375*^9}, {
+  3.519239495390625*^9, 3.519239499625*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Component description", "Subsection"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Mechanic\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<Gear\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<This is a gear\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.5137112151875*^9, 3.513711217109375*^9}, {
+   3.51378596903125*^9, 3.513785980671875*^9}, 3.515394539753217*^9, {
+   3.515775693875*^9, 3.5157757050625*^9}, {3.517048046727305*^9, 
+   3.51704806093043*^9}, 3.51707206725*^9, {3.5176530686834764`*^9, 
+   3.51765311057437*^9}, {3.517673126703125*^9, 3.517673126796875*^9}, {
+   3.5177214423487377`*^9, 3.517721453114225*^9}, {3.5177222281793466`*^9, 
+   3.517722236008023*^9}, {3.519239243140625*^9, 3.519239249203125*^9}, {
+   3.571932631082961*^9, 3.5719326329549637`*^9}, {3.6065793745697*^9, 
+   3.6065793769918385`*^9}, 3.606580409435891*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "Jg", ",", "1.", ",", "double", ",", "\"\<kg\>\"", ",", 
+       "\"\<Equivalent inertia at port 2\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "Bg", ",", "0.", ",", "double", ",", "\"\<Ns/m\>\"", ",", 
+       "\"\<Visc friction coeff. at port 2\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "myfric", ",", ".01", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<friction. coeff. of gear (at output)\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "wc", ",", "1.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Friction speed (for numerics)\>\""}], "}"}]}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.5177223027002172`*^9, 3.5177223072630386`*^9}, 
+   3.5177223927213974`*^9, {3.5177288124589844`*^9, 3.5177288192870655`*^9}, {
+   3.519192018484375*^9, 3.5191920904375*^9}, {3.6065544856132545`*^9, 
+   3.6065544877322545`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "gearRatio", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+      "\"\<gearing wmr1/wmr2\>\""}], "}"}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.51879195675*^9, 3.51879195675*^9}, {
+   3.5188418205557637`*^9, 3.5188418228369703`*^9}, 3.5191918769375*^9, {
+   3.519191990234375*^9, 3.519191990515625*^9}, 3.51919202534375*^9, 
+   3.519237145265625*^9, {3.519239074625*^9, 3.5192390884375*^9}, 
+   3.519239290078125*^9, 3.5719326731250343`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"MechanicRotQnode", "[", 
+      RowBox[{
+      "mr1", ",", "0.", ",", "0.", ",", 
+       "\"\<mechanical rotation node 1\>\""}], "]"}], ",", 
+     RowBox[{"MechanicRotQnode", "[", 
+      RowBox[{
+      "mr2", ",", "0.", ",", "0.", ",", 
+       "\"\<mechanical rotation node 2\>\""}], "]"}]}], "\[IndentingNewLine]",
+     "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.517722088982048*^9, 3.5177221000453267`*^9}, {
+   3.5177226071005135`*^9, 3.51772269952388*^9}, {3.517728739896949*^9, 
+   3.517728741256315*^9}, {3.5177288566774516`*^9, 3.517728859177436*^9}, {
+   3.51811161153125*^9, 3.518111612828125*^9}, {3.5187902193125*^9, 
+   3.51879021984375*^9}, 3.518796081296875*^9, {3.52178083409375*^9, 
+   3.52178083515625*^9}, 3.571932675106238*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Tfr", "=", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"myfric", " ", "tormr1"}], ")"}], " ", 
+    RowBox[{"limit", "[", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"wmr1", "+", 
+         RowBox[{"gearRatio", " ", "wmr2"}]}], ")"}], "/", " ", "wc"}], ",", 
+      RowBox[{"-", "1."}], ",", "1."}], "]"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{
+  3.51911504184375*^9, {3.51911515415625*^9, 3.51911516159375*^9}, {
+   3.51911523025*^9, 3.519115245296875*^9}, 3.519115521796875*^9, {
+   3.51911561315625*^9, 3.519115638296875*^9}, 3.519115712546875*^9, 
+   3.51911581653125*^9, 3.519191794984375*^9, 3.51919189125*^9, 
+   3.519191924734375*^9, {3.6065546436792545`*^9, 3.6065546768082542`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDA", ":=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"Jg", " ", 
+        RowBox[{"Der", "[", "wmr2", "]"}]}], "+", 
+       RowBox[{"Bg", " ", "wmr2"}], "+", "Tfr"}], "==", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"gearRatio", " ", "tormr1"}], "-", "tormr2"}], ")"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Der", "[", "thetamr2", "]"}], "==", "wmr2"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Der", "[", "thetamr1", "]"}], "\[Equal]", 
+      RowBox[{
+       RowBox[{"-", "gearRatio"}], " ", "wmr2"}]}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.5177219982634974`*^9, 3.5177220614345636`*^9}, 
+   3.5177223966277223`*^9, {3.5177281220102787`*^9, 3.517728126182127*^9}, {
+   3.5191918265*^9, 3.519191848109375*^9}, {3.5719326407705774`*^9, 
+   3.5719326469793887`*^9}, 3.6065780543131857`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemBoundaryEquations", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"tormr1", "==", 
+      RowBox[{"cmr1", "-", 
+       RowBox[{"Zcmr1", " ", "gearRatio", " ", "wmr2"}]}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"tormr2", "==", 
+      RowBox[{"cmr2", "+", 
+       RowBox[{"Zcmr2", " ", "wmr2"}]}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.517721974435677*^9, 3.517721983466811*^9}, {
+   3.517738409847971*^9, 3.5177384690350924`*^9}, {3.517738575050039*^9, 
+   3.517738580612503*^9}, 3.51919185296875*^9, {3.51923930296875*^9, 
+   3.519239304890625*^9}, {3.5719326524861984`*^9, 3.571932660208212*^9}, 
+   3.606577951872326*^9, 3.606578086472025*^9, {3.606579406640534*^9, 
+   3.606579407660592*^9}, {3.6065794439586687`*^9, 3.6065794460997915`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"wmr1", "==", 
+      RowBox[{
+       RowBox[{"-", "gearRatio"}], " ", "wmr2"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"eqInertiamr1", "==", 
+      FractionBox["Jg", 
+       SuperscriptBox["gearRatio", "2"]]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"eqInertiamr2", "==", "Jg"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{
+  3.517721656955366*^9, {3.517721741704281*^9, 3.517721748547943*^9}, 
+   3.5177222002242537`*^9, 3.5191918551875*^9, {3.571932663811818*^9, 
+   3.571932668117426*^9}, 3.6065546054112544`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", "=", 
+   RowBox[{"{", 
+    RowBox[{
+    "wmr2", ",", "thetamr2", ",", "thetamr1", ",", "tormr1", ",", "tormr2"}], 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.517728154744444*^9, 3.5177282181034136`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TableForm", "[", "systemEquations", "]"}]], "Input",
+ CellChangeTimes->{{3.6065779601527996`*^9, 3.6065779830991125`*^9}, {
+  3.606578028485708*^9, 3.606578038271268*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "gearRatio"}], " ", "tormr1"}], "+", "tormr2", "+", 
+       RowBox[{"Bg", " ", "wmr2"}], "+", 
+       RowBox[{"Jg", " ", "s", " ", "wmr2"}], "+", 
+       RowBox[{"myfric", " ", "tormr1", " ", 
+        RowBox[{"limit", "[", 
+         RowBox[{
+          FractionBox[
+           RowBox[{"wmr1", "+", 
+            RowBox[{"gearRatio", " ", "wmr2"}]}], "wc"], ",", 
+          RowBox[{"-", "1.`"}], ",", "1.`"}], "]"}]}]}]},
+     {
+      RowBox[{
+       RowBox[{"s", " ", "thetamr2"}], "-", "wmr2"}]},
+     {
+      RowBox[{
+       RowBox[{"s", " ", "thetamr1"}], "+", 
+       RowBox[{"gearRatio", " ", "wmr2"}]}]},
+     {
+      RowBox[{"tormr1", "\[Equal]", 
+       RowBox[{"cmr1", "-", 
+        RowBox[{"gearRatio", " ", "wmr2", " ", "Zcmr1"}]}]}]},
+     {
+      RowBox[{"tormr2", "\[Equal]", 
+       RowBox[{"cmr2", "+", 
+        RowBox[{"wmr2", " ", "Zcmr2"}]}]}]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.606577964539051*^9, 3.606577983518136*^9}, {
+   3.60657803901031*^9, 3.6065780580073967`*^9}, 3.6065780969696255`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{707, 327},
+WindowMargins->{{Automatic, 40}, {Automatic, 115}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 132, 2, 71, "Section"],
+Cell[CellGroupData[{
+Cell[736, 28, 43, 0, 36, "Subsection"],
+Cell[782, 30, 1494, 32, 192, "Input"],
+Cell[2279, 64, 1124, 27, 132, "Input"],
+Cell[3406, 93, 612, 13, 72, "Input"],
+Cell[4021, 108, 876, 19, 92, "Input"],
+Cell[4900, 129, 755, 18, 31, "Input"],
+Cell[5658, 149, 967, 24, 92, "Input"],
+Cell[6628, 175, 862, 18, 92, "Input"],
+Cell[7493, 195, 681, 17, 144, "Input"],
+Cell[8177, 214, 265, 7, 31, "Input"],
+Cell[CellGroupData[{
+Cell[8467, 225, 195, 3, 31, "Input"],
+Cell[8665, 230, 1597, 46, 112, "Output"]
+}, Open  ]],
+Cell[10277, 279, 63, 1, 31, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

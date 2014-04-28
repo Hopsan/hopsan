@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="MechanicGear" displayname="MechanicGear">
+        <icons>
+            <icon scale="1" path="MechanicGear.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="MechanicGear.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="0" a="90" name="PgearRatio"/>
+            <port x="0" y="0.5" a="0" name="Pmr1"/>
+            <port x="1" y="0.5" a="180" name="Pmr2"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

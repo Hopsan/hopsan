@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="61.0308"
+   height="41.531479"
+   id="svg2847"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="MechanicGear.svg">
+  <defs
+     id="defs2849">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3626">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop3628" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop3630" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective2855" />
+    <inkscape:perspective
+       id="perspective2837"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3626"
+       id="linearGradient3632"
+       x1="-390.73984"
+       y1="533.10248"
+       x2="-375.40256"
+       y2="533.10248"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.7"
+     inkscape:cx="-50.073243"
+     inkscape:cy="-1.7592764"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1369"
+     inkscape:window-height="697"
+     inkscape:window-x="234"
+     inkscape:window-y="232"
+     inkscape:window-maximized="0"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       orientation="1,0"
+       position="-27.826333,59.083461"
+       id="guide3874" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata2852">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-395.21758,-512.51837)">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3595"
+       width="59.5308"
+       height="8.7175007"
+       x="-455.49838"
+       y="528.74371"
+       transform="scale(-1,1)" />
+    <rect
+       transform="scale(-1,1)"
+       y="513.26837"
+       x="-446.96893"
+       height="40.031479"
+       width="42.092625"
+       id="rect2823"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       ry="5.4054055" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot2841"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       transform="translate(337.08668,482.34459)"><flowRegion
+         id="flowRegion2843"><rect
+           id="rect2845"
+           width="54.548237"
+           height="58.083771"
+           x="74.751289"
+           y="31.814703" /></flowRegion><flowPara
+         id="flowPara2847" /></flowRoot>    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="408.90387"
+       y="544.83716"
+       id="text3631"><tspan
+         sodipodi:role="line"
+         x="408.90387"
+         y="544.83716"
+         style="font-size:16px"
+         id="tspan3633">box</tspan><tspan
+         sodipodi:role="line"
+         x="408.90387"
+         y="564.83716"
+         style="font-size:16px"
+         id="tspan3635" /></text>
+    <text
+       id="text3637"
+       y="529.4317"
+       x="408.36334"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         id="tspan3639"
+         style="font-size:16px"
+         y="529.4317"
+         x="408.36334"
+         sodipodi:role="line">Gear</tspan><tspan
+         id="tspan3641"
+         style="font-size:16px"
+         y="549.4317"
+         x="408.36334"
+         sodipodi:role="line" /></text>
+  </g>
+</svg>
