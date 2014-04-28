@@ -695,15 +695,16 @@ bool VariableTableWidget::setStartValues()
             continue;
         }
 
-        // Extract name and value from row
-        QString name = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getName();
-        QString value = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getValueText();
-
         // If startvalue is empty (disabled, then we should not atempt to change it)
-        if (value.isEmpty())
+        bool isDisabled = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->isValueDisabled();
+        if (isDisabled)
         {
             continue;
         }
+
+        // Extract name and value from row
+        QString name = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getName();
+        QString value = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getValueText();
 
         // Check if we have new custom scaling
         UnitScale customUnitScale;
@@ -738,9 +739,9 @@ bool VariableTableWidget::setStartValues()
                 // If we fail to set the parameter, then warning box and reset value
                 if(!mpModelObject->setParameterValue(name, value))
                 {
-                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'.").arg(value).arg(name));
+                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value!").arg(value).arg(name));
                     // Reset old value
-                    item(row,VariableTableWidget::Value)->setText(oldValue);
+                    qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(oldValue);
                     isOk = false;
                 }
 

@@ -611,6 +611,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
             }
             else
             {
+                // Since we have already checked the first digit we begin this loop at one to check the rest of them
                 for(int i=1; i<rValue.size(); ++i)
                 {
                     if(!rValue[i].isDigit() && (rValue[i] != 'e') && (rValue[i] != 'E') && (rValue[i] != '+') && (rValue[i] != '-') && (rValue[i] != '.'))
@@ -642,7 +643,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
     else if (type == "integer")
     {
         bool onlyNumbers=true;
-        for(int i=1; i<rValue.size(); ++i)
+        for(int i=0; i<rValue.size(); ++i)
         {
             if (!rValue[i].isNumber())
             {
@@ -662,7 +663,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
     else if (type == "conditional")
     {
         bool onlyNumbers=true;
-        for(int i=1; i<rValue.size(); ++i)
+        for(int i=0; i<rValue.size(); ++i)
         {
             if (!rValue[i].isNumber())
             {
