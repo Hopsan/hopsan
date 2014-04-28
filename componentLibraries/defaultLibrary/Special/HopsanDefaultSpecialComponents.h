@@ -2,6 +2,7 @@
 #define HOPSANDEFAULTSPECIALCOMPONENTS_H
 
 #include "AeroComponents/HopsanDefaultAerocomponents.h"
+#include "MechanicB/HopsanDefaultMechanicBComponents.h"
 #include "SignalFFB/HopsanDefaultFBBComponents.h"
 #include "Benchmarking/HopsanDefaultBenchmarkingComponents.h"
 

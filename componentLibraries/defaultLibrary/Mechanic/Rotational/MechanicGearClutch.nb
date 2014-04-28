@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     10817,        299]
-NotebookOptionsPosition[     10001,        269]
-NotebookOutlinePosition[     10345,        284]
-CellTagsIndexPosition[     10302,        281]
+NotebookDataLength[     10841,        298]
+NotebookOptionsPosition[     10025,        268]
+NotebookOutlinePosition[     10369,        283]
+CellTagsIndexPosition[     10326,        280]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -212,8 +212,7 @@ Cell[BoxData[
      "\[IndentingNewLine]", 
      RowBox[{"tormr1", "==", 
       RowBox[{"cmr1", "+", 
-       RowBox[{"Zcmr1", " ", "gearRatio", " ", "wmr1"}]}]}], ",", 
-     "\[IndentingNewLine]", 
+       RowBox[{"Zcmr1", " ", "wmr1"}]}]}], ",", "\[IndentingNewLine]", 
      RowBox[{"tormr2", "==", 
       RowBox[{"cmr2", "+", 
        RowBox[{"Zcmr2", " ", "wmr2"}]}]}]}], "\[IndentingNewLine]", "}"}]}], 
@@ -223,7 +222,7 @@ Cell[BoxData[
    3.517738580612503*^9}, 3.51919185296875*^9, {3.5505581591875*^9, 
    3.550558165390625*^9}, {3.5719327043301287`*^9, 3.5719327498042088`*^9}, {
    3.6073189342583747`*^9, 3.6073189416651154`*^9}, {3.607319256731821*^9, 
-   3.6073192707468214`*^9}}],
+   3.6073192707468214`*^9}, {3.607415415653761*^9, 3.6074154169167604`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -268,7 +267,7 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{787, 812},
-WindowMargins->{{Automatic, 100}, {42, Automatic}},
+WindowMargins->{{331, Automatic}, {Automatic, 13}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
 ]
@@ -294,11 +293,11 @@ Cell[4313, 117, 830, 19, 72, "Input"],
 Cell[5146, 138, 271, 8, 31, "Input"],
 Cell[5420, 148, 1004, 25, 92, "Input"],
 Cell[6427, 175, 1145, 26, 112, "Input"],
-Cell[7575, 203, 975, 22, 112, "Input"],
-Cell[8553, 227, 644, 14, 124, "Input"],
-Cell[9200, 243, 376, 9, 31, "Input"],
-Cell[9579, 254, 328, 8, 31, "Input"],
-Cell[9910, 264, 63, 1, 31, "Input"]
+Cell[7575, 203, 999, 21, 112, "Input"],
+Cell[8577, 226, 644, 14, 124, "Input"],
+Cell[9224, 242, 376, 9, 31, "Input"],
+Cell[9603, 253, 328, 8, 31, "Input"],
+Cell[9934, 263, 63, 1, 31, "Input"]
 }, Open  ]]
 }, Open  ]]
 }

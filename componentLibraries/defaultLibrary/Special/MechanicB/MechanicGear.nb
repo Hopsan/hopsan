@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     11218,        316]
-NotebookOptionsPosition[     10368,        284]
-NotebookOutlinePosition[     10712,        299]
-CellTagsIndexPosition[     10669,        296]
+NotebookDataLength[      9321,        257]
+NotebookOptionsPosition[      8584,        229]
+NotebookOutlinePosition[      8928,        244]
+CellTagsIndexPosition[      8885,        241]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -171,7 +171,8 @@ Cell[BoxData[
  CellChangeTimes->{{3.5177219982634974`*^9, 3.5177220614345636`*^9}, 
    3.5177223966277223`*^9, {3.5177281220102787`*^9, 3.517728126182127*^9}, {
    3.5191918265*^9, 3.519191848109375*^9}, {3.5719326407705774`*^9, 
-   3.5719326469793887`*^9}, 3.6065780543131857`*^9}],
+   3.5719326469793887`*^9}, 3.6065780543131857`*^9, 3.607429843083391*^9, 
+   3.607429980017083*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -221,69 +222,13 @@ Cell[BoxData[
     "}"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.517728154744444*^9, 3.5177282181034136`*^9}}],
 
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"TableForm", "[", "systemEquations", "]"}]], "Input",
- CellChangeTimes->{{3.6065779601527996`*^9, 3.6065779830991125`*^9}, {
-  3.606578028485708*^9, 3.606578038271268*^9}}],
-
-Cell[BoxData[
- TagBox[
-  TagBox[GridBox[{
-     {
-      RowBox[{
-       RowBox[{
-        RowBox[{"-", "gearRatio"}], " ", "tormr1"}], "+", "tormr2", "+", 
-       RowBox[{"Bg", " ", "wmr2"}], "+", 
-       RowBox[{"Jg", " ", "s", " ", "wmr2"}], "+", 
-       RowBox[{"myfric", " ", "tormr1", " ", 
-        RowBox[{"limit", "[", 
-         RowBox[{
-          FractionBox[
-           RowBox[{"wmr1", "+", 
-            RowBox[{"gearRatio", " ", "wmr2"}]}], "wc"], ",", 
-          RowBox[{"-", "1.`"}], ",", "1.`"}], "]"}]}]}]},
-     {
-      RowBox[{
-       RowBox[{"s", " ", "thetamr2"}], "-", "wmr2"}]},
-     {
-      RowBox[{
-       RowBox[{"s", " ", "thetamr1"}], "+", 
-       RowBox[{"gearRatio", " ", "wmr2"}]}]},
-     {
-      RowBox[{"tormr1", "\[Equal]", 
-       RowBox[{"cmr1", "-", 
-        RowBox[{"gearRatio", " ", "wmr2", " ", "Zcmr1"}]}]}]},
-     {
-      RowBox[{"tormr2", "\[Equal]", 
-       RowBox[{"cmr2", "+", 
-        RowBox[{"wmr2", " ", "Zcmr2"}]}]}]}
-    },
-    GridBoxAlignment->{
-     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
-      "RowsIndexed" -> {}},
-    GridBoxSpacings->{"Columns" -> {
-        Offset[0.27999999999999997`], {
-         Offset[0.5599999999999999]}, 
-        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
-        Offset[0.2], {
-         Offset[0.4]}, 
-        Offset[0.2]}, "RowsIndexed" -> {}}],
-   Column],
-  Function[BoxForm`e$, 
-   TableForm[BoxForm`e$]]]], "Output",
- CellChangeTimes->{{3.606577964539051*^9, 3.606577983518136*^9}, {
-   3.60657803901031*^9, 3.6065780580073967`*^9}, 3.6065780969696255`*^9}]
-}, Open  ]],
-
 Cell[BoxData[
  RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{707, 327},
-WindowMargins->{{Automatic, 40}, {Automatic, 115}},
+WindowSize->{729, 690},
+WindowMargins->{{419, Automatic}, {74, Automatic}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
 ]
@@ -307,15 +252,11 @@ Cell[2279, 64, 1124, 27, 132, "Input"],
 Cell[3406, 93, 612, 13, 72, "Input"],
 Cell[4021, 108, 876, 19, 92, "Input"],
 Cell[4900, 129, 755, 18, 31, "Input"],
-Cell[5658, 149, 967, 24, 92, "Input"],
-Cell[6628, 175, 862, 18, 92, "Input"],
-Cell[7493, 195, 681, 17, 144, "Input"],
-Cell[8177, 214, 265, 7, 31, "Input"],
-Cell[CellGroupData[{
-Cell[8467, 225, 195, 3, 31, "Input"],
-Cell[8665, 230, 1597, 46, 112, "Output"]
-}, Open  ]],
-Cell[10277, 279, 63, 1, 31, "Input"]
+Cell[5658, 149, 1015, 25, 92, "Input"],
+Cell[6676, 176, 862, 18, 92, "Input"],
+Cell[7541, 196, 681, 17, 144, "Input"],
+Cell[8225, 215, 265, 7, 31, "Input"],
+Cell[8493, 224, 63, 1, 31, "Input"]
 }, Open  ]]
 }, Open  ]]
 }

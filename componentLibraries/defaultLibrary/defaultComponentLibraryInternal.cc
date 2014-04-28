@@ -69,6 +69,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     // ========== Special Components ==========
     #include "Special/AeroComponents/HopsanDefaultAerocomponents.cci"
     #include "Special/SignalFFB/HopsanDefaultFBBComponents.cci"
+    #include "Special/MechanicB/HopsanDefaultMechanicBComponents.cci"
 
     // ========== Hydraulic components ==========
     // ----- Hydraulic Valves -----
@@ -79,6 +80,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("Hydraulic22PoppetValve", Hydraulic22PoppetValve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic32DirectionalValve", Hydraulic32DirectionalValve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic33Valve", Hydraulic33Valve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureControlValve33", HydraulicPressureControlValve33::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic33ShuttleValve", Hydraulic33ShuttleValve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic42DirectionalValve", Hydraulic42DirectionalValve::Creator);
@@ -169,6 +171,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotShaft", MechanicRotShaft::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicGearClutch", MechanicGearClutch::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaMultiPort", MechanicRotationalInertiaMultiPort::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithGearRatio", MechanicRotationalInertiaWithGearRatio::Creator);

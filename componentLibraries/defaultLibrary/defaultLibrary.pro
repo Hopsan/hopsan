@@ -302,7 +302,13 @@ HEADERS += \
     Signal/Control/SignalPID2.hpp \
     Mechanic/Rotational/MechanicBallScrew.hpp \
     Signal/Non-Linearities/SignalRateLimiter.hpp \
-    Hydraulic/Valves/Hydraulic42DirectionalValve.hpp
+    Hydraulic/Valves/Hydraulic42DirectionalValve.hpp \
+    Hydraulic/Valves/HydraulicPressureControlValve33.hpp \
+    Special/Mechanic/MechanicGear.hpp \
+    Special/Mechanic/HopsanDefaultMechanicBComponents.h \
+    Special/MechanicB/MechanicGear.hpp \
+    Special/MechanicB/HopsanDefaultMechanicBComponents.h.autosave \
+    Special/MechanicB/HopsanDefaultMechanicBComponents.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
@@ -312,4 +318,5 @@ OTHER_FILES += \
     Special/SignalFFB/HopsanDefaultFBBComponents.cci \
     Electric/HopsanDefaultElectricComponents.cci \
     Signal/HopsanDefaultSignalComponents.cci \
-    Special/AeroComponents/HopsanDefaultAerocomponents.cci
+    Special/AeroComponents/HopsanDefaultAerocomponents.cci \
+    Special/MechanicB/HopsanDefaultMechanicBComponents.cci

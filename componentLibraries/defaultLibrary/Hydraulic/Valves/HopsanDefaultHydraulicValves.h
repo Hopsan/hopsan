@@ -31,6 +31,7 @@
 #include "Hydraulic22PoppetValve.hpp"
 #include "Hydraulic32DirectionalValve.hpp"
 #include "Hydraulic33Valve.hpp"
+#include "HydraulicPressureControlValve33.hpp"
 #include "Hydraulic33ShuttleValve.hpp"
 #include "Hydraulic42Valve.hpp"
 #include "Hydraulic42DirectionalValve.hpp"
