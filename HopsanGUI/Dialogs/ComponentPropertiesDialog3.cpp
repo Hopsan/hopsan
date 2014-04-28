@@ -711,14 +711,19 @@ bool VariableTableWidget::setStartValues()
         UnitSelectionWidget *pUnitWidget = qobject_cast<UnitSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Unit)));
         if (pUnitWidget)
         {
-            if (!pUnitWidget->isDefaultSelected())
+            bool isDouble=false;
+            value.toDouble(&isDouble);
+
+            // Unregister unitscale if default unit has been reset or if the value is not a number (but a parameter name, (Actually a string))
+            if (pUnitWidget->isDefaultSelected() || !isDouble)
+            {
+                mpModelObject->unregisterCustomParameterUnitScale(name);
+            }
+            // Else register (remember) the new unit scale
+            else
             {
                 pUnitWidget->getSelectedUnitScale(customUnitScale);
                 mpModelObject->registerCustomParameterUnitScale(name, customUnitScale);
-            }
-            else
-            {
-                mpModelObject->unregisterCustomParameterUnitScale(name);
             }
         }
 
@@ -882,7 +887,10 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     {
         UnitSelectionWidget *pUnitSelectionWidget = new UnitSelectionWidget(rData.mUnit, this);
         connect(pValueWidget, SIGNAL(resetButtonPressed()), pUnitSelectionWidget, SLOT(resetDefault()));
+        connect(pValueWidget, SIGNAL(systemParameterEntered(bool)), pUnitSelectionWidget, SLOT(resetDefault()));
+        connect(pValueWidget, SIGNAL(systemParameterEntered(bool)), pUnitSelectionWidget, SLOT(setDisabled(bool)));
         connect(pUnitSelectionWidget, SIGNAL(unitChanged(UnitScale)), pValueWidget, SLOT(rescaleByUnitScale(UnitScale)));
+
         this->setIndexWidget(model()->index(row,Unit), pUnitSelectionWidget);
 
         UnitScale currentCustUS;
@@ -891,6 +899,9 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
             pUnitSelectionWidget->setUnitScaling(currentCustUS);
         }
     }
+
+    // Trigger signal to unitslector if syspar entered to disable the unit scorl box
+    pValueWidget->checkIfSysParEntered();
 
     // Create the custom plot unit display and selection button
     if (variametertype != Constant)
@@ -1208,6 +1219,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
                 mpValueEdit->setText(value);
             }
             connect(mpValueEdit, SIGNAL(editingFinished()), this, SLOT(setValue()));
+            connect(mpValueEdit, SIGNAL(textChanged(QString)), this, SLOT(checkIfSysParEntered()));
             refreshValueTextStyle();
         }
 
@@ -1387,6 +1399,17 @@ void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitScale &rUnitSca
             refreshValueTextStyle();
         }
     }
+}
+
+bool ParameterValueSelectionWidget::checkIfSysParEntered()
+{
+    bool syspar = false;
+    if (mpValueEdit)
+    {
+        syspar = mpModelObject->getParentContainerObject()->hasParameter(mpValueEdit->text());
+    }
+    emit systemParameterEntered(syspar);
+    return syspar;
 }
 
 void ParameterValueSelectionWidget::setDefaultValueTextStyle()

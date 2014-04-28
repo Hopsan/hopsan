@@ -172,6 +172,11 @@ QString SystemContainer::getParameterValue(const QString paramName)
     return mpCoreSystemAccess->getSystemParameterValue(paramName);
 }
 
+bool SystemContainer::hasParameter(const QString &rParamName)
+{
+    return mpCoreSystemAccess->hasSystemParameter(rParamName);
+}
+
 //! @brief Get parameter data for a specific parameter
 //! @param [out] rData The parameter data
 void SystemContainer::getParameter(const QString paramName, CoreParameterData &rData)

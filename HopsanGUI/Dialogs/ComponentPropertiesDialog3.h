@@ -150,8 +150,10 @@ public:
 public slots:
     void refreshValueTextStyle();
     void rescaleByUnitScale(const UnitScale &rUnitScale);
+    bool checkIfSysParEntered();
 signals:
     void resetButtonPressed();
+    void systemParameterEntered(bool tf);
 private slots:
     void setValue();
     void setConditionalValue(const int idx);

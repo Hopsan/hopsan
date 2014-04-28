@@ -1110,7 +1110,6 @@ QString CoreSystemAccess::getSystemParameterValue(const QString name)
 }
 
 
-//! @todo Dont know if this is actually used
 bool CoreSystemAccess::hasSystemParameter(const QString name)
 {
     return mpCoreComponentSystem->hasParameter(name.toStdString().c_str());

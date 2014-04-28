@@ -147,6 +147,7 @@ public:
     void getParameters(QVector<CoreParameterData> &rParameterDataVec);
     void getParameter(const QString paramName, CoreParameterData &rData);
     QString getParameterValue(const QString paramName);
+    bool hasParameter(const QString &rParamName);
 
     CoreSystemAccess* getCoreSystemAccessPtr();
     ContainerObject *getParentContainerObject();
