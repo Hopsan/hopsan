@@ -30,7 +30,7 @@
 OptimizationWorkerComplex::OptimizationWorkerComplex(OptimizationHandler *pHandler)
     : OptimizationWorker(pHandler)
 {
-
+    mDontChangeStartValues=false;
 }
 
 void OptimizationWorkerComplex::init()
