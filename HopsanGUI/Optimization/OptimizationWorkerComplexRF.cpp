@@ -281,6 +281,8 @@ void OptimizationWorkerComplexRF::run()
             ++mWorstCounter;
             ++i;
             execute("echo off");
+
+            updateProgressBar(i);
         }
 
         plotParameters();

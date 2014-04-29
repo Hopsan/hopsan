@@ -353,6 +353,11 @@ void OptimizationWorker::calculateBestAndWorstId()
             mBestId = i;
         }
     }
+    if(mWorstId == mBestId)
+    {
+        mWorstId = 0;
+        mBestId = 1;
+    }
 }
 
 
@@ -739,7 +744,7 @@ double OptimizationWorker::getMaxParDiff()
             if(mParameters[p][i] > maxPar) maxPar = mParameters[p][i];
             if(mParameters[p][i] < minPar) minPar = mParameters[p][i];
         }
-        if((maxPar-minPar)/(mParMax[i]-mParMin[i]) > maxDiff)
+        if(mParMax[i] != mParMin[i] && (maxPar-minPar)/(mParMax[i]-mParMin[i]) > maxDiff)
         {
             maxDiff = (maxPar-minPar)/(mParMax[i]-mParMin[i]);
         }
