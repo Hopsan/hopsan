@@ -2,7 +2,7 @@
 //! @file   MechanicRotationalInertiaWithGearRatio.hpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2011-03-15
-//!revised 2014-04-25 by Petter Krus
+//!
 //! @brief Contains a mechanic rotational gear ratio with inertia component
 //!
 //$Id$
@@ -66,14 +66,12 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
 
-            double t1, a1,a2, w1, w2, t2, gearRatio, B;
+            double t1, a1, w1, t2, gearRatio, B;
             B = (*mpB);
             gearRatio = (*mpGearRatio);
-            t1 = (*mpND_t1);
-            w1 = (*mpND_w1);
-            a1 = (*mpND_a1);
-            a2 = (*mpND_a2);
-            w2 = (*mpND_w2);
+            t1 = (*mpND_t1)*gearRatio;
+            a1 = (*mpND_a1)/gearRatio;
+            w1 = (*mpND_w1)/gearRatio;
             t2 = (*mpND_t2);
 
             mNumTheta[0] = 1.0;
@@ -94,29 +92,32 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double t1, a1, w1, w2, c1,  Zx1, t2, a2, c2, Zx2, gearRatio, B;
+            double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2, gearRatio, B;
 
             //Get variable values from nodes
             B = (*mpB);
             gearRatio = (*mpGearRatio);
-            c1  = (*mpND_c1);
-            Zx1 = (*mpND_Zx1);
+            c1  = (*mpND_c1)*gearRatio;
+            Zx1 = (*mpND_Zx1)*pow(gearRatio, 2.0);
             c2  = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 
             //Mass equations
-            mDenTheta[1] = (B+Zx1*Power(gearRatio,2)+Zx2);
-            mDenOmega[0] = (B+Zx1*Power(gearRatio,2)+Zx2);
+            mDenTheta[1] = (B+Zx1+Zx2);
+            mDenOmega[0] = (B+Zx1+Zx2);
             mFilterTheta.setDen(mDenTheta);
-            a2 = mFilterTheta.update(c1*gearRatio-c2);
-            w2 = mFilterOmega.update(c1*gearRatio-c2);
+            mFilterOmega.setDen(mDenOmega);
+
+            a2 = mFilterTheta.update(c1-c2);
+            w2 = mFilterOmega.update(c1-c2);
             t2 = c2 + Zx2*w2;
 
             w1 = -w2*gearRatio;
             a1 = -a2*gearRatio;
-            t1 = c1 + Zx1*w1;
+            t1 = (c1 + Zx1*w1)/gearRatio;
 
             //Write new values to nodes
+            (*mpND_t1) = t1;
             (*mpND_a1) = a1;
             (*mpND_w1) = w1;
             (*mpND_t2) = t2;
