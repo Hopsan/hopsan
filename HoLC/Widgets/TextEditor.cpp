@@ -115,6 +115,19 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
         }
         insertPlainText(newStr);
     }
+    else if(pEvent->key() == Qt::Key_Home)
+    {
+        if((pEvent->modifiers().testFlag(Qt::ShiftModifier)))
+        {
+            moveCursor(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor); //Shift+home = select until start of line (Excluding whitespace at beginning)
+            moveCursor(QTextCursor::NextWord, QTextCursor::KeepAnchor);
+        }
+        else
+        {
+            moveCursor(QTextCursor::StartOfBlock);      //Home = move ursor to start of line, excluding initial whitespace
+            moveCursor(QTextCursor::NextWord);
+        }
+    }
     else if(pEvent->key() == Qt::Key_Tab)
     {
         if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
