@@ -77,7 +77,7 @@ OptionsWidget::OptionsWidget(Configuration *pConfiguration, QWidget *parent) :
     pLayout->addWidget(pCompilationOptionsBox, 0,0);
     pLayout->addWidget(pEditorOptionsBox,       1,0);
     pLayout->addWidget(new QWidget(this),       2,0);
-    pLayout->setRowStretch(1,1);
+    pLayout->setRowStretch(2,1);
 
     //Setup connections
     connect(pHopsanDirButton, SIGNAL(clicked()), this, SLOT(setHopsanPath()));

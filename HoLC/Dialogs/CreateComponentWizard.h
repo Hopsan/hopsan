@@ -36,6 +36,9 @@ class CreateComponentWizard : public QWizard
 public:
     CreateComponentWizard(FileHandler *pFileHandler, MessageHandler *pMessageHandler, QWidget *parent = 0);
 
+public slots:
+    void open();
+
 private slots:
     void updatePage(int i);
     void generate();

@@ -777,3 +777,9 @@ void CreateComponentWizard::generate()
     mpFileHandler->addAppearanceFile(cafCode, typeName+".xml");
 }
 
+void CreateComponentWizard::open()
+{
+    this->restart();
+    QWizard::open();
+}
+
