@@ -13,7 +13,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
       <animation flowspeed="100"/>
-      <viewport x="2053.67" y="2735.4" zoom="0.70922"/>
+      <viewport x="2064.94" y="2985.67" zoom="0.70922"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -249,27 +249,6 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="MechanicRotationalInertia" name="Rotational_Inertia_1">
-        <parameters>
-          <parameter unit="kgm^2" value="1" type="double" name="J"/>
-          <parameter unit="Nms/rad" value="0" type="double" name="B#Value"/>
-          <parameter unit="Nm/rad" value="0" type="double" name="k#Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeMechanicRotational" name="P1"/>
-          <port nodetype="NodeMechanicRotational" name="P2"/>
-        </ports>
-        <hopsangui>
-          <pose x="2138.9608" y="3275.498463" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="MechanicRotationalInertia" displayname="Rotational_Inertia_1">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
       <component typename="MechanicTorqueSensor" name="Torque_Transducer_4">
         <parameters>
           <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
@@ -313,7 +292,7 @@
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2099.025" y="2720.701562" flipped="false" a="0"/>
+          <pose x="2096.615" y="2719.291562" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100">
             <movable>
@@ -377,6 +356,35 @@
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicRotShaft" displayname="MechanicRotShaft_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicTorqueSensor" name="Torque_Transducer_6">
+        <parameters>
+          <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="P1#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="P1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="P1#EquivalentInertia"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2254.589549" y="2724.119455" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100">
+            <movable>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" y="0.000000" a="-1.200000"/>
+            </movable>
+          </animation>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicTorqueSensor" displayname="Torque_Transducer_6">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -697,7 +705,7 @@
       </component>
       <component typename="MechanicTorqueTransformer" name="Torque_Source_1">
         <parameters>
-          <parameter unit="Nm" value="0" type="double" name="T#Value"/>
+          <parameter unit="Nm" value="100" type="double" name="T#Value"/>
           <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
           <parameter unit="rad" value="0" type="double" name="P1#Angle"/>
           <parameter unit="Nm" value="0" type="double" name="P1#WaveVariable"/>
@@ -709,7 +717,7 @@
           <port nodetype="NodeSignal" name="T"/>
         </ports>
         <hopsangui>
-          <pose x="2261.9608" y="3275.498463" flipped="true" a="0"/>
+          <pose x="2291.570794" y="3343.898463" flipped="true" a="0"/>
           <nametext position="0" visible="1"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -750,7 +758,7 @@
       </component>
       <component typename="MechanicTorqueTransformer" name="Torque_Source_2">
         <parameters>
-          <parameter unit="Nm" value="0" type="double" name="T#Value"/>
+          <parameter unit="Nm" value="100" type="double" name="T#Value"/>
           <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
           <parameter unit="rad" value="0" type="double" name="P1#Angle"/>
           <parameter unit="Nm" value="0" type="double" name="P1#WaveVariable"/>
@@ -793,7 +801,7 @@
       </component>
       <component typename="MechanicGearClutch" name="MechanicGearClutch">
         <parameters>
-          <parameter unit="" value="1" type="double" name="gearRatio#Value"/>
+          <parameter unit="" value="2" type="double" name="gearRatio#Value"/>
           <parameter unit="Nm" value="200" type="double" name="tmax#Value"/>
           <parameter unit="kg" value="1" type="double" name="Jg#Value"/>
           <parameter unit="Ns/m" value="0" type="double" name="Bg#Value"/>
@@ -868,11 +876,32 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component typename="MechanicRotationalInertiaWithGearRatio" name="Rotational_Gear_with_Inertia">
+        <parameters>
+          <parameter unit="-" value="2" type="double" name="omega#Value"/>
+          <parameter unit="Nms/rad" value="0" type="double" name="B#Value"/>
+          <parameter unit="kgm^2" value=".1" type="double" name="J"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+          <port nodetype="NodeMechanicRotational" name="P2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2158.709568" y="3325.898463" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicRotationalInertiaWithGearRatio" displayname="Rotational_Gear_with_Inertia">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <textboxwidget>
         <hopsangui>
           <pose x="1923.630000" y="2422.700000"/>
           <textobject reflow="1" fontcolor="#556b2f" text="Test model of MechanicGearClutch.&#xa;This is a model that represents a combined gearbox and clutch." font="Calibri,12,-1,0,50,0,0,0,0,0"/>
-          <size width="297.879375" height="70.570000"/>
+          <size width="299.875000" height="70.570000"/>
           <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
@@ -880,7 +909,7 @@
         <hopsangui>
           <pose x="1922.760313" y="2917.665000"/>
           <textobject reflow="1" fontcolor="#556b2f" text="Reference system. Should give the same result as above if the clutch is not activated." font="Calibri,12,-1,0,50,0,0,0,0,0"/>
-          <size width="303.875000" height="70.570000"/>
+          <size width="305.875000" height="70.570000"/>
           <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
@@ -919,8 +948,8 @@
       <connect endport="Pmr2" endcomponent="MechanicRotShaft_4" startport="P1" startcomponent="Torque_Transducer_5">
         <hopsangui>
           <coordinates>
-            <coordinate x="2099.02500000000009094947" y="2738.70156200000019453000"/>
-            <coordinate x="2099.02500000000009094947" y="2799.52656200000001263106"/>
+            <coordinate x="2096.61500028199998268974" y="2737.29156228200008627027"/>
+            <coordinate x="2096.61500028199998268974" y="2799.52656200000001263106"/>
             <coordinate x="2098.02500000000009094947" y="2799.52656200000001263106"/>
           </coordinates>
           <geometries>
@@ -961,8 +990,8 @@
       <connect endport="in" endcomponent="Scope_3" startport="out" startcomponent="Torque_Transducer_5">
         <hopsangui>
           <coordinates>
-            <coordinate x="2099.02500000000009094947" y="2702.70156200000019453000"/>
-            <coordinate x="2099.02500000000009094947" y="2656.70156200000019453000"/>
+            <coordinate x="2096.61500028199998268974" y="2701.29156228200008627027"/>
+            <coordinate x="2096.61500028199998268974" y="2656.70156200000019453000"/>
             <coordinate x="2306.07499999999981810106" y="2656.70156200000019453000"/>
           </coordinates>
           <geometries>
@@ -1141,10 +1170,10 @@
       <connect endport="Pmr1" endcomponent="MechanicRotShaft" startport="P2" startcomponent="Rotational_Inertia">
         <hopsangui>
           <coordinates>
-            <coordinate x="1956.91080000000010841177" y="3275.49846250000018699211"/>
-            <coordinate x="1976.91079999999988103809" y="3275.49846250000018699211"/>
-            <coordinate x="1976.91079999999988103809" y="3275.49846250000018699211"/>
-            <coordinate x="1996.91079999999988103809" y="3275.49846250000018699211"/>
+            <coordinate x="1956.91080000000010841177" y="3275.49846299999990151264"/>
+            <coordinate x="1976.91079999999988103809" y="3275.49846299999990151264"/>
+            <coordinate x="1976.91079999999988103809" y="3275.49846299999990151264"/>
+            <coordinate x="1996.91080000000010841177" y="3275.49846299999990151264"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -1157,9 +1186,9 @@
       <connect endport="Pmr1" endcomponent="MechanicRotShaft" startport="P1" startcomponent="Torque_Transducer">
         <hopsangui>
           <coordinates>
-            <coordinate x="1996.91080000000010841177" y="3211.67346250000036889105"/>
-            <coordinate x="1996.91080000000010841177" y="3275.49846250000018699211"/>
-            <coordinate x="1996.91079999999988103809" y="3275.49846250000018699211"/>
+            <coordinate x="1996.91080000000010841177" y="3211.67346300000008341158"/>
+            <coordinate x="1996.91080000000010841177" y="3275.49846299999990151264"/>
+            <coordinate x="1996.91080000000010841177" y="3275.49846299999990151264"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1171,9 +1200,9 @@
       <connect endport="Pmr2" endcomponent="MechanicRotShaft" startport="P1" startcomponent="Torque_Transducer_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2064.91079999999965366442" y="3213.67346250000036889105"/>
-            <coordinate x="2064.91079999999965366442" y="3275.49846250000018699211"/>
-            <coordinate x="2064.91079999999965366442" y="3275.49846250000018699211"/>
+            <coordinate x="2064.91080000000010841177" y="3213.67346300000008341158"/>
+            <coordinate x="2064.91080000000010841177" y="3275.49846299999990151264"/>
+            <coordinate x="2064.91080000000010841177" y="3275.49846299999990151264"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1185,9 +1214,9 @@
       <connect endport="P1" endcomponent="Rotational_Inertia" startport="P1" startcomponent="Torque_Transducer_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="1881.96080000000006293703" y="3212.67346250000036889105"/>
-            <coordinate x="1881.96080000000006293703" y="3275.49846250000018699211"/>
-            <coordinate x="1892.91080000000010841177" y="3275.49846250000018699211"/>
+            <coordinate x="1881.96080000000006293703" y="3212.67346300000008341158"/>
+            <coordinate x="1881.96080000000006293703" y="3275.49846299999990151264"/>
+            <coordinate x="1892.91080000000010841177" y="3275.49846299999990151264"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1199,9 +1228,9 @@
       <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Torque_Transducer_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="1881.96080000000006293703" y="3176.67346250000036889105"/>
-            <coordinate x="1881.96080000000006293703" y="3131.67346250000036889105"/>
-            <coordinate x="2271.96080000000029031071" y="3131.67346250000036889105"/>
+            <coordinate x="1881.96080000000006293703" y="3176.67346300000008341158"/>
+            <coordinate x="1881.96080000000006293703" y="3131.67346300000008341158"/>
+            <coordinate x="2271.96079999999983556336" y="3131.67346300000008341158"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1213,9 +1242,9 @@
       <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Torque_Transducer">
         <hopsangui>
           <coordinates>
-            <coordinate x="1996.91080000000010841177" y="3175.67346250000036889105"/>
-            <coordinate x="1996.91080000000010841177" y="3131.67346250000036889105"/>
-            <coordinate x="2271.96080000000029031071" y="3131.67346250000036889105"/>
+            <coordinate x="1996.91080000000010841177" y="3175.67346300000008341158"/>
+            <coordinate x="1996.91080000000010841177" y="3131.67346300000008341158"/>
+            <coordinate x="2271.96079999999983556336" y="3131.67346300000008341158"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1227,43 +1256,11 @@
       <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Torque_Transducer_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2064.91079999999965366442" y="3177.67346250000036889105"/>
-            <coordinate x="2064.91079999999965366442" y="3131.67346250000036889105"/>
-            <coordinate x="2271.96079999999983556336" y="3131.67346250000036889105"/>
+            <coordinate x="2064.91080000000010841177" y="3177.67346300000008341158"/>
+            <coordinate x="2064.91080000000010841177" y="3131.67346300000008341158"/>
+            <coordinate x="2271.96079999999983556336" y="3131.67346300000008341158"/>
           </coordinates>
           <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="Rotational_Inertia_1" startport="Pmr2" startcomponent="MechanicRotShaft">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2064.91079999999965366442" y="3275.49846250000018699211"/>
-            <coordinate x="2087.98088497499975346727" y="3275.49846250000018699211"/>
-            <coordinate x="2087.98088497499975346727" y="3275.49846250000018699211"/>
-            <coordinate x="2106.96079999999983556336" y="3275.49846250000018699211"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="Torque_Source_1" startport="P2" startcomponent="Rotational_Inertia_1">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2170.96079999999983556336" y="3275.49846250000018699211"/>
-            <coordinate x="2218.46079999999983556336" y="3275.49846250000018699211"/>
-            <coordinate x="2218.46079999999983556336" y="3275.49846250000018699211"/>
-            <coordinate x="2238.46079999999983556336" y="3275.49846250000018699211"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
           </geometries>
@@ -1273,27 +1270,13 @@
       <connect endport="P1" endcomponent="Angular_Velocity_Transducer" startport="P2" startcomponent="Rotational_Inertia">
         <hopsangui>
           <coordinates>
-            <coordinate x="1956.91080000000010841177" y="3275.49846250000018699211"/>
-            <coordinate x="1956.91080000000010841177" y="3275.49846250000018699211"/>
-            <coordinate x="1956.91080000000010841177" y="3063.67346250000036889105"/>
+            <coordinate x="1956.91080000000010841177" y="3275.49846299999990151264"/>
+            <coordinate x="1956.91080000000010841177" y="3275.49846299999990151264"/>
+            <coordinate x="1956.91080000000010841177" y="3063.67346300000008341158"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P2" endcomponent="Rotational_Inertia_1" startport="P1" startcomponent="Angular_Velocity_Transducer_1">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2170.96080000000029031071" y="3060.67346250000036889105"/>
-            <coordinate x="2170.96080000000029031071" y="3275.49846250000018699211"/>
-            <coordinate x="2170.96080000000029031071" y="3275.49846250000018699211"/>
-          </coordinates>
-          <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
@@ -1301,9 +1284,9 @@
       <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Angular_Velocity_Transducer">
         <hopsangui>
           <coordinates>
-            <coordinate x="1956.91080000000010841177" y="3027.67346250000036889105"/>
-            <coordinate x="1956.91080000000010841177" y="3006.67346250000036889105"/>
-            <coordinate x="2255.96080000000029031071" y="3006.67346250000036889105"/>
+            <coordinate x="1956.91080000000010841177" y="3027.67346300000008341158"/>
+            <coordinate x="1956.91080000000010841177" y="3006.67346300000008341158"/>
+            <coordinate x="2255.96079999999983556336" y="3006.67346300000008341158"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1315,23 +1298,9 @@
       <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Angular_Velocity_Transducer_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2170.96080000000029031071" y="3024.67346250000036889105"/>
-            <coordinate x="2170.96080000000029031071" y="3006.67346250000036889105"/>
-            <coordinate x="2255.96080000000029031071" y="3006.67346250000036889105"/>
-          </coordinates>
-          <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="P1" endcomponent="Rotational_Inertia_1" startport="P1" startcomponent="Angular_Velocity_Transducer_2">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2094.96079999999983556336" y="3107.67346250000036889105"/>
-            <coordinate x="2094.96079999999983556336" y="3275.49846250000018699211"/>
-            <coordinate x="2106.96079999999983556336" y="3275.49846250000018699211"/>
+            <coordinate x="2170.96079999999983556336" y="3024.67346300000008341158"/>
+            <coordinate x="2170.96079999999983556336" y="3006.67346300000008341158"/>
+            <coordinate x="2255.96079999999983556336" y="3006.67346300000008341158"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1343,10 +1312,10 @@
       <connect endport="out" endcomponent="Angular_Velocity_Transducer_2" startport="in" startcomponent="Gain">
         <hopsangui>
           <coordinates>
-            <coordinate x="2094.96079999999983556336" y="3047.17346250000036889105"/>
+            <coordinate x="2094.96079999999983556336" y="3047.17346300000008341158"/>
             <coordinate x="2094.96079999999983556336" y="3052.87837752500036003767"/>
             <coordinate x="2094.96079999999983556336" y="3052.87837752500036003767"/>
-            <coordinate x="2094.96079999999983556336" y="3071.67346250000036889105"/>
+            <coordinate x="2094.96079999999983556336" y="3071.67346300000008341158"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1359,9 +1328,9 @@
       <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Gain">
         <hopsangui>
           <coordinates>
-            <coordinate x="2094.96079999999983556336" y="3022.17346250000036889105"/>
-            <coordinate x="2094.96079999999983556336" y="3006.67346250000036889105"/>
-            <coordinate x="2255.96079999999983556336" y="3006.67346250000036889105"/>
+            <coordinate x="2094.96079999999983556336" y="3022.17346300000008341158"/>
+            <coordinate x="2094.96079999999983556336" y="3006.67346300000008341158"/>
+            <coordinate x="2255.96079999999983556336" y="3006.67346300000008341158"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1373,10 +1342,10 @@
       <connect endport="P1" endcomponent="Rotational_Inertia" startport="Pmr2" startcomponent="MechanicRotShaft_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="1855.96080000000006293703" y="3275.49846250000018699211"/>
-            <coordinate x="1875.98088497499998084095" y="3275.49846250000018699211"/>
-            <coordinate x="1875.98088497499998084095" y="3275.49846250000018699211"/>
-            <coordinate x="1892.91080000000010841177" y="3275.49846250000018699211"/>
+            <coordinate x="1855.96080000000006293703" y="3275.49846299999990151264"/>
+            <coordinate x="1875.98088497499998084095" y="3275.49846299999990151264"/>
+            <coordinate x="1875.98088497499998084095" y="3275.49846299999990151264"/>
+            <coordinate x="1892.91080000000010841177" y="3275.49846299999990151264"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -1389,10 +1358,10 @@
       <connect endport="Pmr1" endcomponent="MechanicRotShaft_2" startport="out" startcomponent="Angular_velocity_source">
         <hopsangui>
           <coordinates>
-            <coordinate x="1748.46080000000006293703" y="3275.49846250000018699211"/>
-            <coordinate x="1767.96080000000006293703" y="3275.49846250000018699211"/>
-            <coordinate x="1767.96080000000006293703" y="3275.49846250000018699211"/>
-            <coordinate x="1787.96080000000006293703" y="3275.49846250000018699211"/>
+            <coordinate x="1748.46080000000006293703" y="3275.49846299999990151264"/>
+            <coordinate x="1767.96080000000006293703" y="3275.49846299999990151264"/>
+            <coordinate x="1767.96080000000006293703" y="3275.49846299999990151264"/>
+            <coordinate x="1787.96080000000006293703" y="3275.49846299999990151264"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -1405,13 +1374,87 @@
       <connect endport="omega" endcomponent="Angular_velocity_source" startport="out" startcomponent="Ramp_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="1661.51080000000001746230" y="3275.49846250000018699211"/>
-            <coordinate x="1681.46080000000006293703" y="3275.49846250000018699211"/>
-            <coordinate x="1681.46080000000006293703" y="3275.49846250000018699211"/>
-            <coordinate x="1701.46080000000006293703" y="3275.49846250000018699211"/>
+            <coordinate x="1661.51080000000001746230" y="3275.49846299999990151264"/>
+            <coordinate x="1681.46080000000006293703" y="3275.49846299999990151264"/>
+            <coordinate x="1681.46080000000006293703" y="3275.49846299999990151264"/>
+            <coordinate x="1701.46080000000006293703" y="3275.49846299999990151264"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Pmr2" endcomponent="MechanicGearClutch" startport="P1" startcomponent="Torque_Transducer_6">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2254.58954908209034329047" y="2742.11945517610911338124"/>
+            <coordinate x="2254.58954908209034329047" y="2799.52656200000001263106"/>
+            <coordinate x="2224.00000000000000000000" y="2799.52656200000001263106"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_3" startport="out" startcomponent="Torque_Transducer_6">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2254.58954908209034329047" y="2706.11945517610911338124"/>
+            <coordinate x="2254.58954908209034329047" y="2656.70156200000019453000"/>
+            <coordinate x="2306.07499999999981810106" y="2656.70156200000019453000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Rotational_Gear_with_Inertia" startport="Pmr2" startcomponent="MechanicRotShaft">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2064.91080000000010841177" y="3275.49846299999990151264"/>
+            <coordinate x="2088.70956825808661960764" y="3275.49846299999990151264"/>
+            <coordinate x="2088.70956825808661960764" y="3275.49846299999990151264"/>
+            <coordinate x="2108.70956825808661960764" y="3275.49846299999990151264"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Torque_Source_1" startport="P2" startcomponent="Rotational_Gear_with_Inertia">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2208.70956825808661960764" y="3343.89846299999999246211"/>
+            <coordinate x="2248.07079407800119952299" y="3343.89846299999999246211"/>
+            <coordinate x="2248.07079407800119952299" y="3343.89846299999999246211"/>
+            <coordinate x="2268.07079407800119952299" y="3343.89846299999999246211"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P2" endcomponent="Rotational_Gear_with_Inertia" startport="P1" startcomponent="Angular_Velocity_Transducer_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2170.96079999999983556336" y="3060.67346300000008341158"/>
+            <coordinate x="2170.96079999999983556336" y="3343.89846299999999246211"/>
+            <coordinate x="2208.70956825808661960764" y="3343.89846299999999246211"/>
+          </coordinates>
+          <geometries>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
           </geometries>
