@@ -724,9 +724,9 @@ void LogDataHandler::importFromPlainColumnCsv(QString importFilePath)
 
 //! @todo this function assumes , separated format and only values,
 //! @todo what if file does not have a time vector
-void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId)
+void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> datacolumns, QStringList datanames, QVector<int> timecolumns)
 {
-    if (columns.size() == names.size())
+    if (datacolumns.size() == datanames.size() && datacolumns.size() == timecolumns.size())
     {
         //! @todo in the future use a HopsanCSV parser
         QFile csvFile(csvFilePath);
@@ -735,20 +735,40 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
         {
             QTextStream csvStream(&csvFile);
 
-            QVector<double> timeColumn;
+            // Make sure we have no time duplicates
+            QMap<int, QVector<double> > uniqueTimeColumns;
+            for (int i=0; i<timecolumns.size(); ++i)
+            {
+                uniqueTimeColumns.insert(timecolumns[i], QVector<double>() );
+            }
+            QList<int> uniqueTimeIds = uniqueTimeColumns.keys();
+
             QVector< QVector<double> > dataColumns;
-            dataColumns.resize(columns.size());
+            dataColumns.resize(datacolumns.size());
+
             while (!csvStream.atEnd())
             {
-                QStringList row = csvStream.readLine().split(",");
-                if (row.size() > 0)
+                //! @todo it fould be better here to read line by line into a large array and then extract sub vectors from that throu a smart matrix object
+                QStringList row_fields = csvStream.readLine().split(",");
+                if (row_fields.size() > 0)
                 {
-                    timeColumn.append(row[timeColumnId].toDouble());
-                    for (int i=0; i<columns.size(); ++i)
+                    // Insert unique time vectors
+                    for (int i=0; i<uniqueTimeIds.size(); ++i)
                     {
-                        if (columns[i] < row.size())
+                        const int cid = uniqueTimeIds[i];
+                        if (cid < row_fields.size())
                         {
-                            dataColumns[i].push_back(row[columns[i]].toDouble());
+                            uniqueTimeColumns[cid].push_back(row_fields[cid].toDouble());
+                        }
+                    }
+
+                    // Insert data
+                    for (int i=0; i<datacolumns.size(); ++i)
+                    {
+                        const int cid = datacolumns[i];
+                        if ( cid < row_fields.size())
+                        {
+                            dataColumns[i].push_back(row_fields[cid].toDouble());
                         }
                     }
                 }
@@ -758,15 +778,36 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
             ++mGenerationNumber;
 
             QFileInfo fileInfo(csvFilePath);
-            SharedVectorVariableT pTimeVec = insertTimeVectorVariable(timeColumn, fileInfo.absoluteFilePath());
+            QList<SharedVectorVariableT> timePtrs;
+
+            // Insert the unique time vectors
+            if (uniqueTimeIds.size() == 1)
+            {
+                SharedVectorVariableT pTimeVec = insertTimeVectorVariable(uniqueTimeColumns[uniqueTimeIds.first()], fileInfo.absoluteFilePath());
+                timePtrs.append(pTimeVec);
+            }
+            else
+            {
+                // If we have more then one we need to give each time vector a unique name
+                for (int i=0; i<uniqueTimeIds.size(); ++i)
+                {
+                    SharedVariableDescriptionT pDesc = createTimeVariableDescription();
+                    pDesc->mDataName = QString("Time%1").arg(uniqueTimeIds[i]);
+                    SharedVectorVariableT pTimeVar = insertCustomVectorVariable(uniqueTimeColumns[uniqueTimeIds[i]], pDesc, fileInfo.absoluteFilePath());
+                    timePtrs.append(pTimeVar);
+                }
+            }
 
             // Ok now we have the data lets add it as a variable
-            for (int n=0; n<names.size(); ++n)
+            for (int n=0; n<datanames.size(); ++n)
             {
                 //! @todo what if data name already exists?
                 SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-                pVarDesc->mDataName = names[n];
-                insertTimeDomainVariable(pTimeVec, dataColumns[n], pVarDesc, fileInfo.absoluteFilePath());
+                pVarDesc->mDataName = datanames[n];
+
+                // Lookup time vector to use, and insert time domain data
+                int tid = timecolumns[n];
+                insertTimeDomainVariable(timePtrs[tid], dataColumns[n], pVarDesc, fileInfo.absoluteFilePath());
             }
 
             csvFile.close();
@@ -2096,36 +2137,56 @@ void LogDataHandler::forgetImportedVariable(SharedVectorVariableT pData)
     }
 }
 
+SharedVectorVariableT LogDataHandler::insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc)
+{
+    SharedVectorVariableT pVec = SharedVectorVariableT(new VectorVariable(rVector, mGenerationNumber, pVarDesc,
+                                                                          getGenerationMultiCache(mGenerationNumber)));
+    insertVariable(pVec);
+    return pVec;
+}
+
+SharedVectorVariableT LogDataHandler::insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName)
+{
+    SharedVectorVariableT pVec = SharedVectorVariableT(new ImportedVectorVariable(rVector, mGenerationNumber, pVarDesc,
+                                                                                  rImportFileName, getGenerationMultiCache(mGenerationNumber)));
+    insertVariable(pVec);
+    return pVec;
+}
+
 SharedVectorVariableT LogDataHandler::insertTimeVectorVariable(const QVector<double> &rTimeVector)
 {
-    SharedVectorVariableT pTimeVec = SharedVectorVariableT(new VectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
-                                                                        getGenerationMultiCache(mGenerationNumber)));
-    insertVariable(pTimeVec);
-    return pTimeVec;
+    return insertCustomVectorVariable(rTimeVector, createTimeVariableDescription());
+//    SharedVectorVariableT pTimeVec = SharedVectorVariableT(new VectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
+//                                                                        getGenerationMultiCache(mGenerationNumber)));
+//    insertVariable(pTimeVec);
+//    return pTimeVec;
 }
 
 SharedVectorVariableT LogDataHandler::insertTimeVectorVariable(const QVector<double> &rTimeVector, const QString &rImportFileName)
 {
-    SharedVectorVariableT pTimeVec = SharedVectorVariableT(new ImportedVectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
-                                                                                rImportFileName, getGenerationMultiCache(mGenerationNumber)));
-    insertVariable(pTimeVec);
-    return pTimeVec;
+//    SharedVectorVariableT pTimeVec = SharedVectorVariableT(new ImportedVectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
+//                                                                                rImportFileName, getGenerationMultiCache(mGenerationNumber)));
+//    insertVariable(pTimeVec);
+//    return pTimeVec;
+    return insertCustomVectorVariable(rTimeVector, createTimeVariableDescription(), rImportFileName);
 }
 
 SharedVectorVariableT LogDataHandler::insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector)
 {
-    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new VectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
-                                                                              getGenerationMultiCache(mGenerationNumber)));
-    insertVariable(pFreqVec);
-    return pFreqVec;
+    return insertCustomVectorVariable(rFrequencyVector, createFrequencyVariableDescription());
+//    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new VectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
+//                                                                              getGenerationMultiCache(mGenerationNumber)));
+//    insertVariable(pFreqVec);
+//    return pFreqVec;
 }
 
 SharedVectorVariableT LogDataHandler::insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector, const QString &rImportFileName)
 {
-    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new ImportedVectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
-                                                                                      rImportFileName, getGenerationMultiCache(mGenerationNumber)));
-    insertVariable(pFreqVec);
-    return pFreqVec;
+    return insertCustomVectorVariable(rFrequencyVector, createFrequencyVariableDescription(), rImportFileName);
+//    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new ImportedVectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
+//                                                                                      rImportFileName, getGenerationMultiCache(mGenerationNumber)));
+//    insertVariable(pFreqVec);
+//    return pFreqVec;
 }
 
 SharedVectorVariableT LogDataHandler::insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc)

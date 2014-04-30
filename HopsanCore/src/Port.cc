@@ -284,9 +284,9 @@ void Port::eraseConnectedPort(Port* pPort, const size_t subPortIdx)
 
 //! @brief Get a vector of pointers to all other ports connected connected to this one
 //! @param [in] subPortIdx Ignored for non multi ports
-//! @returns A refernce to the internal vector of connected port pointers
+//! @returns A vector with the connected port pointers
 //! @todo maybe should return const vector so that contents my not be changed
-vector<Port*> &Port::getConnectedPorts(const int subPortIdx)
+std::vector<Port *> Port::getConnectedPorts(const int subPortIdx) const
 {
     HOPSAN_UNUSED(subPortIdx)
     return mConnectedPorts;
@@ -417,7 +417,7 @@ const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size
 //! @param [in] dataid The node data id (Such as NodeHydraulic::Pressure)
 //! @param [in] subPortIdx Ignored on non multi ports
 //! @returns A const pointer to the node data description, or 0 if no node exist
-const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t subPortIdx)
+const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t subPortIdx) const
 {
     HOPSAN_UNUSED(subPortIdx)
     // We prefere to use the startnode
@@ -579,7 +579,7 @@ void Port::disableStartValue(const size_t idx)
 
 //! @brief Check if the port is curently connected
 //! @brief Returns True or False
-bool Port::isConnected()
+bool Port::isConnected() const
 {
     return (mConnectedPorts.size() > 0);
 }
@@ -941,7 +941,7 @@ const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const
 //! @param [in] dataid The node data id (Such as NodeHydraulic::Pressure)
 //! @param [in] subPortIdx The subport idx to fetch from (range is NOT checked)
 //! @returns A const pointer to the node data description, or 0 if no node exist
-const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid, const size_t subPortIdx)
+const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid, const size_t subPortIdx) const
 {
     if (isConnected())
     {
@@ -1060,7 +1060,7 @@ bool MultiPort::isConnectedTo(Port *pOtherPort)
 }
 
 //! @brief Check if the port is curently connected
-bool MultiPort::isConnected()
+bool MultiPort::isConnected() const
 {
     //! @todo actaully we should check all subports if they are connected (but a subport should not exist if not connected)
     return (mSubPortsVector.size() > 0);
@@ -1102,22 +1102,21 @@ Node *MultiPort::getNodePtr(const size_t subPortIdx)
 //! @brief Get all the connected ports
 //! @param[in] subPortIdx The sub port to get connected ports from, Use -1 to indicate that all subports should be considered
 //! @returns A vector with port pointers to connected ports
-std::vector<Port*> &MultiPort::getConnectedPorts(const int subPortIdx)
+std::vector<Port *> MultiPort::getConnectedPorts(const int subPortIdx) const
 {
     if (subPortIdx<0)
     {
         //Ok lets return ALL connected ports
-        //! @todo since this function returns a reference to the internal vector we need a new memberVector
-        mAllConnectedPorts.clear();
+        std::vector<Port*> allConnectedPorts;
         for (size_t i=0; i<mSubPortsVector.size(); ++i)
         {
             for (size_t j=0; j<mSubPortsVector[i]->getConnectedPorts().size(); ++j)
             {
-                mAllConnectedPorts.push_back(mSubPortsVector[i]->getConnectedPorts()[j]);
+                allConnectedPorts.push_back(mSubPortsVector[i]->getConnectedPorts()[j]);
             }
         }
 
-        return mAllConnectedPorts;
+        return allConnectedPorts;
     }
     else
     {

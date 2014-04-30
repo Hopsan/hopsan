@@ -442,3 +442,34 @@ double CSVParser::interpolate(const double x, const size_t inCol, const size_t o
     }
     return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
 }
+
+//! @brief Transposes the data matrix, useful if you know that data is stored line wise instead of column wise
+void CSVParser::transpose()
+{
+    // Note! data is stored column wise in memory, so column / row is actually "transposed" compared to storage row / col
+
+    //! @todo we realy need to use smart vectors here
+    vector< vector<double> > newData;
+    newData.resize(mnDataCols);
+    for (size_t i=0; i<mnDataCols; ++i)
+    {
+        newData[i].resize(mnDataRows);
+    }
+
+    for (size_t r=0; r<mnDataRows; ++r)
+    {
+        for (size_t c=0; c<mnDataCols; ++c)
+        {
+            newData[c][r] = mData[r][c];
+        }
+    }
+
+    mData.swap(newData);
+
+    size_t tmp = mnDataCols;
+    mnDataCols = mnDataRows;
+    mnDataRows = tmp;
+
+    setFirstLastValues();
+    calcIncreasingOrDecreasing();
+}

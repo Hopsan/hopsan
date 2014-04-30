@@ -55,7 +55,7 @@ public:
     void importFromCSV_AutoFormat(QString importFilePath=QString());
     void importHopsanRowCSV(QString importFilePath=QString());
     void importFromPlainColumnCsv(QString importFilePath=QString());
-    void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
+    void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> datacolumns, QStringList datanames, QVector<int> timecolumns);
 
     void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, QList<HopsanVariable> variables, int version=-1) const;
@@ -170,6 +170,8 @@ private slots:
 private:
     typedef QMap< QString, QMultiMap<QString, HopsanVariable> > ImportedLogDataMapT;
     typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
+    SharedVectorVariableT insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc);
+    SharedVectorVariableT insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
     SharedVectorVariableT insertTimeVectorVariable(const QVector<double> &rTimeVector);
     SharedVectorVariableT insertTimeVectorVariable(const QVector<double> &rTimeVector, const QString &rImportFileName);
     SharedVectorVariableT insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector);

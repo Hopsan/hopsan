@@ -145,7 +145,7 @@ public:
     virtual void loadStartValuesFromSimulation();
 
     // Ports
-    std::vector<Port*> getPortPtrVector();
+    std::vector<Port*> getPortPtrVector() const;
     Port *getPort(const HString &rPortname) const;
     std::vector<HString> getPortNames();
 
@@ -161,8 +161,8 @@ public:
     void setInitialValue(const HString &rPortName, const HString &rDataName, const double value);
 
     // System parent
-    ComponentSystem *getSystemParent();
-    size_t getModelHierarchyDepth();
+    ComponentSystem *getSystemParent() const;
+    size_t getModelHierarchyDepth() const;
 
     //! @todo Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
     //void setTimestep(const double timestep);

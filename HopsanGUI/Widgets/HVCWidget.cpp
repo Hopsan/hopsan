@@ -41,6 +41,7 @@
 #include "PlotHandler.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/ModelWidget.h"
+#include "MessageHandler.h"
 
 
 HVCWidget::HVCWidget(QWidget *parent) :
@@ -192,11 +193,68 @@ void HVCWidget::openHvcFile()
                 //! @todo some error
             }
         }
+        else if (rootElement.attribute("hvcversion") == "0.2")
+        {
+            // Get model to load
+            QDomElement xmlValidation = rootElement.firstChildElement("validation");
+            QString modelFilePath = xmlValidation.firstChildElement("modelfile").text();
+            if (modelFilePath.isEmpty())
+            {
+                // Use same name as hvc file instead
+                modelFilePath = hvcFileInfo.absolutePath()+"/"+hvcFileInfo.baseName()+".hmf";
+            }
+            else
+            {
+                // Make sure absoulte, the loaded modelpath should be relative to the hvc file
+                modelFilePath = hvcFileInfo.absolutePath()+"/"+modelFilePath;
+            }
+            hmfFile.setFileName(modelFilePath);
+
+            if (hmfFile.exists())
+            {
+                mModelFilePath = modelFilePath;
+
+                QString dataFilePath = xmlValidation.firstChildElement("hvdfile").text();
+                if (dataFilePath.isEmpty())
+                {
+                    // Use same name as hvc file instead
+                    dataFilePath = hvcFileInfo.absolutePath()+"/"+hvcFileInfo.baseName()+".hvd";
+                }
+                else
+                {
+                    // Make sure absoulte, the loaded datafilepath should be relative to the hvc file
+                    dataFilePath = hvcFileInfo.absolutePath()+"/"+dataFilePath;
+                }
+                dataFile.setFileName(dataFilePath);
+
+                QDomElement xmlVariable = xmlValidation.firstChildElement("variable");
+                while (!xmlVariable.isNull())
+                {
+                    HvcConfig conf;
+                    conf.mDataColumn = parseDomIntegerNode(xmlVariable.firstChildElement("column"), 0);
+                    conf.mTimeColumn = parseDomIntegerNode(xmlVariable.firstChildElement("timecolumn"), 0);
+                    conf.mTolerance = parseDomValueNode(xmlVariable.firstChildElement("tolerance"), conf.mTolerance);
+                    conf.mFullVarName = xmlVariable.attribute("name");
+                    conf.mDataFile = dataFile.fileName();
+                    mDataConfigs.append(conf);
+
+                    // Populate the tree
+                    mpAllVariablesTree->addFullNameVariable(conf.mFullVarName);
+                    mpSelectedVariablesTree->addFullNameVariable(conf.mFullVarName);
+
+                    // Next variable to check
+                    xmlVariable = xmlVariable.nextSiblingElement("variable");
+                }
+            }
+            else
+            {
+                //! @todo some error
+            }
+
+        }
         else
         {
-            // Load new format
-            //! @todo
-
+            // Unsupported format
         }
 
 
@@ -226,24 +284,55 @@ void HVCWidget::runHvcTest()
     // Switch to that tab
 
     // Simulate the system
-    gpModelHandler->getCurrentModel()->simulate_blocking();
+    if (gpModelHandler->getCurrentModel())
+    {
+        gpModelHandler->getCurrentModel()->simulate_blocking();
+    }
+
 
     // Run each test
     for (int t=0; t<mDataConfigs.size(); ++t)
     {
-        LogDataHandler *pLogDataHandler = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
+        LogDataHandler *pImportLogDataHandler = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
+        LogDataHandler *pVariableLogDataHandler = pImportLogDataHandler;
+        QString variableName = mDataConfigs[t].mFullVarName;
 
-        QVector<int> columns;
+        // Handle subsystem variables
+        if (variableName.contains('$'))
+        {
+            QStringList fields = variableName.split('$');
+            fields.erase(fields.begin()); // Remove the first "top-level system" name
+            ContainerObject *pContainer=gpModelHandler->getCurrentTopLevelSystem();
+            while (!fields.front().contains('#'))
+            {
+                ModelObject *pObj = pContainer->getModelObject(fields.front());
+                if (pObj && (pObj->type() == SystemContainerType))
+                {
+                    pContainer = qobject_cast<ContainerObject*>(pObj);
+                }
+                else
+                {
+                    gpMessageHandler->addErrorMessage(QString("Could not find system: %1").arg(fields.front()));
+                    return;
+                }
+                fields.erase(fields.begin());
+            }
+            pVariableLogDataHandler = pContainer->getLogDataHandler();
+            variableName = fields.front();
+        }
+
+        QVector<int> columns, timecolumns;
         QStringList names;
         columns.append(mDataConfigs[t].mDataColumn);
+        timecolumns.append(mDataConfigs[t].mTimeColumn);
         names.append(mDataConfigs[t].mFullVarName+"_valid");
 
-        pLogDataHandler->importTimeVariablesFromCSVColumns(mDataConfigs[t].mDataFile, columns, names, 0);
+        pImportLogDataHandler->importTimeVariablesFromCSVColumns(mDataConfigs[t].mDataFile, columns, names, timecolumns);
 
         QString windowName = QString("Validation Plot %1").arg(t);
         gpPlotHandler->createNewPlotWindowIfItNotAlreadyExists(windowName);
-        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName,-1), 0);
-        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName+"_valid",-1), 0);
+        gpPlotHandler->plotDataToWindow(windowName, pVariableLogDataHandler->getVectorVariable(variableName,-1), 0);
+        gpPlotHandler->plotDataToWindow(windowName, pImportLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName+"_valid",-1), 0);
     }
 }
 

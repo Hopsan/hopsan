@@ -27,48 +27,70 @@ This feature is not implemented in the current version of Hopsan. In future rele
 
 /*!
 \page userUnitTestModelsAndComponentsPage Model and Component Unit-Testing
-When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results
-as a test model. You can later run this model again and automatically compare the simulation results. This is very important if you want to make sure that 
-your component and models do not change their behaviour when new versions of Hopsan are released.
+When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results as a test model. You can later run this model again and automatically compare the simulation results. This is very important if you want to make sure that your component and models do not change their behaviour when new versions of Hopsan are released.
 
-\section userUnitTestModelsAndComponentsPage-components_howtocreate How to Create a Validation Model
+\section userUnitTestModelsAndComponentsPage-components_howtocreateCLI How to Create a Validation Model in Hopsan CLI
+-# Use the HopsanCLI (Hopsan CommandLineInterface) with the -m and --createValidationData switches according to the following examples:\n
+   (The -d (destination directory) switch is optional
+  -# Windows: HopsanCLI.exe -m pathto\\ExampleModel.hmf --createValidationData -d outputDirectoryPath
+  -# Ubuntu:  ./HopsanCLI -m pathto/ExampleModel.hmf --createValidationData -d outputDirectoryPath
+
+\section userUnitTestModelsAndComponentsPage-components_howtocreateGUI How to Create a Validation Model in Hopsan GUI
 -# Open your model in HopsanGUI and simulate it.
   -# Add the variables (from ports) that you want to use as validation data to a plot window.
   -# Export the data as HVC (Hopsan Validation Configuration) and CSV (Comma Separated Values) files. The column order in the csv file is determined by the order you added curves.
 -# The generated hvc file contains default entries. You may want to manually edit it, see format description below.
 -# Store the model, dataset and hvc file in  a safe place. Remember that you can not make any more changes (that affect simulation results) to the model file.
 
-\section userUnitTestModelsAndComponentsPage-components_howtotest How to Test a Validation Model
+\section userUnitTestModelsAndComponentsPage-components_howtotestCLI How to Test a Validation Model in Hopsan CLI
 -# Use the HopsanCLI (Hopsan CommandLineInterface) with the -t (for test) switch according to:
   -# Windows: HopsanCLI.exe -t "MyHVCFile.hvc"
   -# Ubuntu:  ./HopsanCLI -t "MyHVCFile.hvc"
 -# If you want to automatically test multiple models, then you should write a script that goes through all of your hvc files.
 
+\section userUnitTestModelsAndComponentsPage-components_howtotestGUI How to Test a Validation Model in Hopsan GUI
+-# Open the Model Validation Widget in the <b>Tools</b> menu.
+  -# Load your Hopsan Validation Configuration <b>.hvc</b> file. The widget will show you what variables will be tested.
+  -# \e Note! The widget is not yet fully implemented but you can compare data
+  -# Click the compare button to simulate the model and generate plots comparing the data. You must manually check the data to make sure that the simulated result is the same as the validation data.
+
 \section userUnitTestModelsAndComponentsPage-components_hvc-format The HVC (Hopsan Validation Configuration) Format
-This is an example HVC File. Note that you can have multiple \<validation\> \<component\> \<port\> \<variable\> tags to perform multiple tests from the same configuration file.
+This is an example HVC File. Note that you can have multiple \<validation\> and \<variable\> tags to perform multiple tests from the same configuration file.
 
 \verbatim
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanvalidationconfiguration hvcversion="0.1">
-  <validation>
-    <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
-    <modelfile>../Example Models/Position Servo.hmf</modelfile>
-    <parameterset></parameterset>
-    <component name="Translational Mass">
-      <port name="P2">
-        <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
-        <csvfile></csvfile>
-        <variable name="Position">
-          <!-- Optional csvfile override for variable -->
-          <!-- <csvfile></csvfile> -->
-          <!--Column indexing begins at 0. Time vector is usualy at 0--> 
-          <column>1</column> 
-          <!--Tolerance, allowed deviation 0.01==1%-->
-          <tolerance>0.01</tolerance>
+<hopsanvalidationconfiguration hvcversion="0.2">
+    <validation hopsancliversion="0.6.x_r6964" time="141140" date="20140430" hopsancoreversion="0.6.x_r6964">
+        <!--Optional path to model file, if not specified the same name (excluding suffix) and path as this file will be used-->
+        <modelfile>../Example Models/Position Servo.hmf</modelfile>
+        <!--<parameterset>Not yet supported!</parameterset>-->
+        <!--Optional path to Hopsan validation data file, if not specified the same name (excluding suffix) and path as this file will be used-->
+        <hvdfile>Position Servo.hvd</hvdfile>
+        <!-- The name attribute contains the full name including subsystem hierarchy. Ex: System$Subsystem$Component#Port#Variable -->
+        <variable name="Position_Servo$Position_Sensor#out#Value">
+            <!--The time column in the hvd file for this variable. Column indexing begins at 0.-->
+            <timecolumn>0</timecolumn>
+            <!--The data column in the hvd file for this variable. Column indexing begins at 0.-->
+            <column>1</column>
+            <!--Tolerance, allowed deviation 0.01==1%-->
+            <tolerance>0.01</tolerance>
         </variable>
-      </port>
-    </component>
-  </validation>
+        <variable name="Position_Servo$Step#out#Value">
+            <timecolumn>0</timecolumn>
+            <column>2</column>
+            <tolerance>0.01</tolerance>
+        </variable>
+        <variable name="Position_Servo$4_3_Servo_Valve#xv#Value">
+            <timecolumn>0</timecolumn>
+            <column>3</column>
+            <tolerance>0.01</tolerance>
+        </variable>
+        <variable name="Position_Servo$Pressure_Relief_Valve#xv#Value">
+            <timecolumn>0</timecolumn>
+            <column>4</column>
+            <tolerance>0.01</tolerance>
+        </variable>
+    </validation>
 </hopsanvalidationconfiguration>
 \endverbatim
 

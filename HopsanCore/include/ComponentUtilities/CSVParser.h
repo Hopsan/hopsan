@@ -53,6 +53,8 @@ public:
     double interpolate(const double x, const size_t outCol) const;
     double interpolate(const double x, const size_t inCol, const size_t outCol) const;
 
+    void transpose();
+
 protected:
     size_t intervalHalfSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const;
     size_t quickSortPartition(std::vector<double> &rIndexArray, const size_t left, const size_t right, const size_t pivotIndex);

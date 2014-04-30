@@ -12,28 +12,34 @@ The HopsanCLI is located in the `\bin` folder of your Hopsan installation.
 By calling `HopsanCLI --help` you will get help output showing you all the options.
 The help text is also given here for your convenience, but be sure to check the actual help since this manual page may not always be up-to-date.
 \verbatim
-USAGE: 
-   ./HopsanCLI  [-m <Path to file>] [-e <Path to file>] ... 
-                [--externalLibsFile <Path to file>] [-s <Comma separated
-                string>] [-l <integer>] [-t <Path to .hvc file>]
-                [--parameterImport <Path to file>] [--parameterExport
-                <Path to file>] [--resultsFullCSV <Path to file>]
-                [--resultsFinalCSV <Path to file>] [--resultsCSVSort
-                <string>] [-d] [--endPause] [--testInstanciateComponents]
-                [--] [--version] [-h]
-Where: 
+USAGE:
+
+   ./HopsanCLI_d  [-m <Path to file>] [-e <Path to file>] ...
+                  [--externalLibsFile <Path to file>] [-s <Comma separated
+                  string>] [-l <integer>] [-t <Path to .hvc file>]
+                  [--parameterImport <Path to file>] [--parameterExport
+                  <Path to file>] [--resultsFullCSV <Path to file>]
+                  [--resultsFinalCSV <Path to file>] [--resultsCSVSort
+                  <string>] [-d <Path to directory>]
+                  [--createValidationData] [--printDebug] [--endPause]
+                  [--testInstanciateComponents] [--] [--version] [-h]
+
+
+Where:
 
    -m <Path to file>,  --hmf <Path to file>
      The Hopsan model file to load
 
-   -e <Path to file>,  --externalLib <Path to file>  (accepted multiple times)
+   -e <Path to file>,  --externalLib <Path to file>  (accepted multiple
+      times)
      Path to a .dll/.so externalComponentLib. Can be given multiple times
 
    --externalLibsFile <Path to file>
      A text file containing the external libs to load
 
    -s <Comma separated string>,  --simulate <Comma separated string>
-     Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]
+     Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or
+     [stop]
 
    -l <integer>,  --numLogSamples <integer>
      Set the number of log samples to store for the top-level system,
@@ -57,7 +63,14 @@ Where:
    --resultsCSVSort <string>
      Export results in columns or in rows: [rows, cols]
 
-   -d,  --printDebug
+   -d <Path to directory>,  --destination <Path to directory>
+     Destination for resulting files
+
+   --createValidationData
+     Create a model validation data set based on the variables connected to
+     scopes in the model given by option -m
+
+   --printDebug
      Show debug messages in the output
 
    --endPause

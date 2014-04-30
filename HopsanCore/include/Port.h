@@ -90,7 +90,7 @@ namespace hopsan {
 
         virtual size_t getNumDataVariables() const;
         virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0);
-        virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0);
+        virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0) const;
         virtual int getNodeDataIdFromName(const HString &rName, const size_t subPortIdx=0);
         virtual void setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription);
 
@@ -103,10 +103,10 @@ namespace hopsan {
 
         bool isInterfacePort() const;
 
-        virtual bool isConnected();
+        virtual bool isConnected() const;
         virtual bool isConnectedTo(Port *pOtherPort);
         bool isConnectionRequired();
-        virtual std::vector<Port*> &getConnectedPorts(const int subPortIdx=-1);
+        virtual std::vector<Port*> getConnectedPorts(const int subPortIdx=-1) const;
         size_t getNumConnectedPorts(const int subPortIdx=-1);
         virtual size_t getNumPorts();
 
@@ -223,7 +223,7 @@ namespace hopsan {
         std::vector<double> *getDataVectorPtr(const size_t subPortIdx=0);
 
         const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0);
-        const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0);
+        const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0) const;
         int getNodeDataIdFromName(const HString &rName, const size_t subPortIdx=0);
 
         bool haveLogData(const size_t subPortIdx=0);
@@ -236,10 +236,10 @@ namespace hopsan {
         void loadStartValuesFromSimulation();
 
         virtual bool isConnectedTo(Port *pOtherPort);
-        bool isConnected();
+        bool isConnected() const;
         size_t getNumPorts();
 
-        std::vector<Port*> &getConnectedPorts(const int subPortIdx=-1);
+        std::vector<Port*> getConnectedPorts(const int subPortIdx=-1) const;
 
     protected:
         void setNode(Node* pNode);
@@ -247,7 +247,6 @@ namespace hopsan {
         void removeSubPort(Port* ptr);
 
         std::vector<Port*> mSubPortsVector;
-        std::vector<Port*> mAllConnectedPorts;
     };
 
 

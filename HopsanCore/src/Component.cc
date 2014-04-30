@@ -1026,11 +1026,11 @@ void Component::setTypeName(const HString &rTypeName)
 
 
 //! @todo Maby not have this function, solve in some other nicer way
-vector<Port*> Component::getPortPtrVector()
+vector<Port*> Component::getPortPtrVector() const
 {
     vector<Port*> vec;
     //Copy every port pointer
-    PortPtrMapT::iterator ports_it;
+    PortPtrMapT::const_iterator ports_it;
     for (ports_it = mPortPtrMap.begin(); ports_it != mPortPtrMap.end(); ++ports_it)
     {
         vec.push_back(ports_it->second);
@@ -1349,7 +1349,7 @@ void Component::disableStartValue(Port *pPort, const size_t idx)
 }
 
 
-ComponentSystem *Component::getSystemParent()
+ComponentSystem *Component::getSystemParent() const
 {
     if(mpSystemParent)
     {
@@ -1361,7 +1361,7 @@ ComponentSystem *Component::getSystemParent()
     }
 }
 
-size_t Component::getModelHierarchyDepth()
+size_t Component::getModelHierarchyDepth() const
 {
     return mModelHierarchyDepth;
 }

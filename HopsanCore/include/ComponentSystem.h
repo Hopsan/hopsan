@@ -207,8 +207,9 @@ namespace hopsan {
         // Getting added components and component names
         Component* getSubComponentOrThisIfSysPort(const HString &rName);
         Component* getSubComponent(const HString &rName) const;
+        const std::vector<Component*> getSubComponents() const;
         ComponentSystem* getSubComponentSystem(const HString &rName) const;
-        std::vector<HString> getSubComponentNames();
+        std::vector<HString> getSubComponentNames() const;
         bool haveSubComponent(const HString &rName) const;
         bool isEmpty() const;
 

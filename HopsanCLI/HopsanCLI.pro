@@ -80,4 +80,5 @@ SOURCES += main.cpp \
     cliFunctions.cpp
 
 HEADERS += \
-    cliFunctions.h
+    cliFunctions.h \
+    version_cli.h

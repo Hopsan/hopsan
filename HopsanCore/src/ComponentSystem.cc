@@ -831,6 +831,18 @@ Component* ComponentSystem::getSubComponent(const HString &rName) const
     }
 }
 
+const std::vector<Component *> ComponentSystem::getSubComponents() const
+{
+    vector<Component *> ptrs;
+    SubComponentMapT::const_iterator it;
+    for (it = mSubComponentMap.begin(); it != mSubComponentMap.end(); ++it)
+    {
+        ptrs.push_back(it->second);
+    }
+
+    return ptrs;
+}
+
 
 ComponentSystem* ComponentSystem::getSubComponentSystem(const HString &rName) const
 {
@@ -838,11 +850,11 @@ ComponentSystem* ComponentSystem::getSubComponentSystem(const HString &rName) co
 }
 
 
-std::vector<HString> ComponentSystem::getSubComponentNames()
+std::vector<HString> ComponentSystem::getSubComponentNames() const
 {
     //! @todo for now create a vector of the component names, later maybe we should return a pointer to the real internal map
     vector<HString> names;
-    SubComponentMapT::iterator it;
+    SubComponentMapT::const_iterator it;
     for (it = mSubComponentMap.begin(); it != mSubComponentMap.end(); ++it)
     {
         names.push_back(it->first);
@@ -1347,7 +1359,8 @@ void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Nod
 {
     pPort->setNode(pNode);
     vector<Port*>::iterator pit;
-    for (pit=pPort->getConnectedPorts().begin(); pit!=pPort->getConnectedPorts().end(); ++pit)
+    vector<Port*> conn_ports = pPort->getConnectedPorts();
+    for (pit=conn_ports.begin(); pit!=conn_ports.end(); ++pit)
     {
         //dont recures back to parent will get stuck in infinate recursion
         if (*pit == pParentPort)

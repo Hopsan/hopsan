@@ -33,26 +33,14 @@
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
 #include "TicToc.hpp"
-
-// If we dont have the revision number then define UNKNOWN
-// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
-#ifndef HOPSANCLISVNREVISION
- #define HOPSANCLISVNREVISION UNKNOWN
-#endif
+#include "version_cli.h"
 
 // If debug extension has not already been defined then define it to prevent compilation error
 #ifndef DEBUG_EXT
  #define DEBUG_EXT
 #endif
 
-#define HOPSANCLIVERSION "0.6.x_r" TO_STR(HOPSANCLISVNREVISION)
-
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-//  #ifdef WIN32
-//      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
-//  #else
-//      #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
-//  #endif
     #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 #endif
 
@@ -71,7 +59,10 @@ int main(int argc, char *argv[])
         //TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
         TCLAP::SwitchArg testInstanciateComponentsOption("", "testInstanciateComponents", "Create an instace of each registered component to look for errors.", cmd);
         TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at end to let you see its output", cmd);
-        TCLAP::SwitchArg printDebugOption("d", "printDebug", "Show debug messages in the output", cmd);
+        TCLAP::SwitchArg printDebugOption("", "printDebug", "Show debug messages in the output", cmd);
+        TCLAP::SwitchArg createHvcTestOption("", "createValidationData","Create a model validation data set based on the variables connected to scopes in the model given by option -m", cmd);
+
+        TCLAP::ValueArg<std::string> destinationOption("d","destination","Destination for resulting files",false,"","Path to directory", cmd);
         TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultsFinalCSVOption("", "resultsFinalCSV", "Export the results (only final values)", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> resultsFullCSVOption("", "resultsFullCSV", "Export the results (all logged data)", false, "", "Path to file", cmd);
@@ -86,6 +77,16 @@ int main(int argc, char *argv[])
 
         // Parse the argv array.
         cmd.parse( argc, argv );
+
+        std::string destinationPath = destinationOption.getValue();
+        if (!destinationPath.empty())
+        {
+            if ( destinationPath[destinationPath.size()-1] != '/')
+            {
+                destinationPath.push_back('/');
+            }
+        }
+
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
         // Load default hopasn component lib
@@ -142,8 +143,18 @@ int main(int argc, char *argv[])
             }
         }
 
+        if (hmfPathOption.isSet() && createHvcTestOption.getValue())
+        {
+            string model = hmfPathOption.getValue();
+            string dst = destinationPath;
+            string basePath, baseName, filename, ext;
+            splitFilePath(model, basePath, filename);
+            splitFileName(filename, baseName, ext);
+            cout <<  "Creating HVC Validation Data Set from Model: " << model << endl << "Saving data to: " << dst+baseName << ".*" << endl;
+            returnSuccess =  createModelTestDataSet(model, dst+baseName);
+        }
 
-        if(hmfPathOption.isSet())
+        if(hmfPathOption.isSet() && !createHvcTestOption.getValue())
         {
             returnSuccess=false;
             printWaitingMessages(printDebugOption.getValue());
@@ -168,8 +179,8 @@ int main(int argc, char *argv[])
 
                 if (parameterExportOption.isSet())
                 {
-                    cout << "Exporting parameter values to file: " << parameterExportOption.getValue() << endl;
-                    exportParameterValuesToCSV(parameterExportOption.getValue(), pRootSystem);
+                    cout << "Exporting parameter values to file: " << destinationPath+parameterExportOption.getValue() << endl;
+                    exportParameterValuesToCSV(destinationPath+parameterExportOption.getValue(), pRootSystem);
                 }
 
                 cout << endl << "Model Hieararcy:" << endl;
@@ -258,13 +269,13 @@ int main(int argc, char *argv[])
                 // Check in what formats to export
                 if (resultsFinalCSVOption.isSet())
                 {
-                    cout << "Saving Final results to file: " << resultsFinalCSVOption.getValue() << endl;
-                    saveResults(pRootSystem, resultsFinalCSVOption.getValue(), Final);
+                    cout << "Saving Final results to file: " << destinationPath+resultsFinalCSVOption.getValue() << endl;
+                    saveResults(pRootSystem, destinationPath+resultsFinalCSVOption.getValue(), Final);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {
                         cout << "Transposing CSV file" << endl;
-                        transposeCSVresults(resultsFinalCSVOption.getValue());
+                        transposeCSVresults(destinationPath+resultsFinalCSVOption.getValue());
                     }
                     else if (resultsCSVSortOption.getValue() != "rows")
                     {
@@ -274,13 +285,13 @@ int main(int argc, char *argv[])
 
                 if (resultsFullCSVOption.isSet())
                 {
-                    cout << "Saving Full results to file: " << resultsFullCSVOption.getValue() << endl;
-                    saveResults(pRootSystem, resultsFullCSVOption.getValue(), Full);
+                    cout << "Saving Full results to file: " << destinationPath+resultsFullCSVOption.getValue() << endl;
+                    saveResults(pRootSystem, destinationPath+resultsFullCSVOption.getValue(), Full);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {
                         cout << "Transposing CSV file" << endl;
-                        transposeCSVresults(resultsFullCSVOption.getValue());
+                        transposeCSVresults(destinationPath+resultsFullCSVOption.getValue());
                     }
                     else if (resultsCSVSortOption.getValue() != "rows")
                     {

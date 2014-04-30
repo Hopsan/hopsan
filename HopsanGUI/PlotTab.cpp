@@ -421,7 +421,7 @@ void PlotTab::exportToHvc(QString fileName)
     if (fileName.isEmpty())
     {
         // Open file dialog and initialize the file stream
-        QString filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
+        QString filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To HVC and HVD"),
                                                         gpConfig->getPlotDataDir(),
                                                         tr("HopsanValidationCfg (*.hvc)"));
         if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
@@ -436,18 +436,19 @@ void PlotTab::exportToHvc(QString fileName)
     }
 
     // Save the csv data
-    QString csvFileName=fileInfo.baseName()+".csv";
-    this->exportToCsv(fileInfo.absolutePath()+"/"+csvFileName);
+    QString hvdFileName=fileInfo.baseName()+".hvd";
+    //! @todo this will only support one timevector
+    this->exportToCsv(fileInfo.absolutePath()+"/"+hvdFileName);
 
     qDebug() << fileInfo.absoluteFilePath();
-    qDebug() << fileInfo.absolutePath()+"/"+csvFileName;
+    qDebug() << fileInfo.absolutePath()+"/"+hvdFileName;
 
 
     // Save HVC xml data
     QDomDocument doc;
     QDomElement hvcroot = doc.createElement("hopsanvalidationconfiguration");
     doc.appendChild(hvcroot);
-    hvcroot.setAttribute("hvcversion", "0.1");
+    hvcroot.setAttribute("hvcversion", "0.2");
 
     QList<PlotCurve*> curves = mPlotAreas.first()->getCurves();
     QString modelPath = relativePath(curves.first()->getSharedVectorVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
@@ -458,22 +459,41 @@ void PlotTab::exportToHvc(QString fileName)
     validation.setAttribute("hopsancoreversion", gHopsanCoreVersion);
     appendDomTextNode(validation, "modelfile", modelPath);
     appendDomTextNode(validation, "parameterset", "");
+    appendDomTextNode(validation, "hvdfile", hvdFileName);
 
     // Cycle plot curves
     for (int i=0; i<curves.size(); ++i)
     {
-        QDomElement component = appendDomElement(validation, "component");
-        component.setAttribute("name", curves[i]->getComponentName());
+        QString comp = curves[i]->getComponentName();
+        QString port = curves[i]->getPortName();
+        QString data = curves[i]->getDataName();
 
-        QDomElement port = appendDomElement(component, "port");
-        port.setAttribute("name", curves[i]->getPortName());
+        // Figur out system hierarchy name
+        QString sysnames;
+        LogDataHandler *pLogDataHandler = curves[i]->getSharedVectorVariable()->getLogDataHandler();
+        if (pLogDataHandler)
+        {
+            ContainerObject *pCO = pLogDataHandler->getParentContainerObject();
+            while (pCO)
+            {
+                sysnames.prepend(pCO->getName()+"$");
+                if (pCO->isTopLevelContainer())
+                {
+                    pCO=0;
+                }
+                else
+                {
+                    pCO = pCO->getParentContainerObject();
+                }
+            }
+        }
 
-        QDomElement variable = appendDomElement(port, "variable");
-        variable.setAttribute("name", curves[i]->getDataName());
+        QDomElement variable = appendDomElement(validation, "variable");
+        variable.setAttribute("name", sysnames+makeConcatName(comp,port,data));
 
-        appendDomTextNode(variable, "csvfile", csvFileName);
+        //! @todo this will only support one timevector
+        appendDomIntegerNode(variable, "timecolumn", 0);
         appendDomIntegerNode(variable, "column", i+1);
-
         appendDomValueNode(variable, "tolerance", 0.01);
     }
 

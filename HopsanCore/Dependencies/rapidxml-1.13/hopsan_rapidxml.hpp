@@ -26,7 +26,7 @@
 #include <string>
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
-//#include "rapidxml_print.hpp"
+#include "rapidxml_print.hpp"
 
 //! @brief Reads a double value from node attribute or return default value if attribute does not exist
 double readDoubleAttribute(const rapidxml::xml_node<> *pNode, const std::string attrName, const double defaultValue)
@@ -187,3 +187,31 @@ rapidxml::xml_node<> *getGrandChild(rapidxml::xml_node<> *pNode, const std::stri
     }
     return 0;
 }
+
+rapidxml::xml_node<> *appendEmptyNode(rapidxml::xml_node<> *pParentNode, const std::string &rName)
+{
+    char *pRapidAllocatedNodeName = pParentNode->document()->allocate_string(rName.c_str());
+    rapidxml::xml_node<> *pNewNode = pParentNode->document()->allocate_node(rapidxml::node_element, pRapidAllocatedNodeName);
+    pParentNode->append_node(pNewNode);
+    return pNewNode;
+}
+
+rapidxml::xml_node<> *appendValueNode(rapidxml::xml_node<> *pParentNode, const std::string &rName, const std::string &rValue)
+{
+    char *pRapidAllocatedNodeName = pParentNode->document()->allocate_string(rName.c_str());
+    char *pRapidAllocatedNodeValue = pParentNode->document()->allocate_string(rValue.c_str());
+    rapidxml::xml_node<> *pNewNode = pParentNode->document()->allocate_node(rapidxml::node_element, pRapidAllocatedNodeName, pRapidAllocatedNodeValue);
+    pParentNode->append_node(pNewNode);
+    return pNewNode;
+}
+
+void addXmlDeclaration(rapidxml::xml_document<> *pDoc)
+{
+    rapidxml::xml_node<> *pDecl = pDoc->allocate_node(rapidxml::node_declaration);
+    pDecl->append_attribute(pDoc->allocate_attribute("version", "1.0"));
+    pDecl->append_attribute(pDoc->allocate_attribute("encoding", "UTF-8"));
+    pDoc->append_node(pDecl);
+}
+
+
+

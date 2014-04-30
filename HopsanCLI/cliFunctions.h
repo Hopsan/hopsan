@@ -37,6 +37,7 @@ class ComponentSystem;
 void splitFilePath(const std::string fullPath, std::string &rBasePath, std::string &rFileName);
 void splitFileName(const std::string fileName, std::string &rBaseName, std::string &rExt);
 void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector);
+std::string relativePath(std::string basePath, std::string fullPath);
 
 // ===== Print functions =====
 enum ColorsEnumT {Red, Green, Blue, Yellow, White, Reset};
@@ -64,7 +65,10 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
 
 // ===== compare Functions =====
 bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &rRef, const double tol);
+
+// ===== Model validation =====
 bool performModelTest(const std::string hvcFilePath);
+bool createModelTestDataSet(const std::string modelPath, const std::string hvcFilePath);
 
 
 #endif // CLIFUNCTIONS_H

@@ -241,8 +241,8 @@ HopsanCoreMessageHandler *HopsanEssentials::getCoreMessageHandler()
 
 //! @brief This function is used to load a HMF file.
 //! @param [in] filePath The name (path) of the HMF file
-//! @param [in,out] rStartTime A reference to the starttime variable
-//! @param [in,out] rStopTime A reference to the stoptime variable
+//! @param [out] rStartTime A reference to the starttime variable
+//! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
 ComponentSystem* HopsanEssentials::loadHMFModel(const char *filePath, double &rStartTime, double &rStopTime)
 {

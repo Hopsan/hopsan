@@ -52,6 +52,7 @@ public:
     QString mFullVarName;
     QString mDataFile;
     int mDataColumn;
+    int mTimeColumn;
     double mTolerance;
 };
 

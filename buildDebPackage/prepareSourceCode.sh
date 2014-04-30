@@ -47,7 +47,7 @@ sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/in
 # Set the Core Gui and CLI svn rev numbers for this release
 sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION \"$coresvnrev\"|g" -i HopsanCore/include/version.h
 sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION \"$guisvnrev\"|g" -i HopsanGUI/version_gui.h
-sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION \"$clisvnrev\"|g" -i HopsanCLI/main.cpp
+sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION \"$clisvnrev\"|g" -i HopsanCLI/version_cli.h
 
 if [ $doDevRelease = "false" ]; then
   # Set version numbers (by changing .h files) BEFORE build

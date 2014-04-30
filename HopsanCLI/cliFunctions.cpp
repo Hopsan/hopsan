@@ -26,14 +26,18 @@
 
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <cmath>
 #include <cstring>
+#include <ctime>
 
 #include "HopsanEssentials.h"
 #include "ComponentUtilities/CSVParser.h"
 
 #include "hopsan_rapidxml.hpp"
+
+#include "version_cli.h"
 
 #ifdef WIN32
 #include "windows.h"
@@ -45,6 +49,14 @@ using namespace hopsan;
 extern HopsanEssentials gHopsanCore;
 
 // ===== Help functions =====
+
+template <typename T>
+std::string to_string(T val)
+{
+    stringstream ss;
+    ss << val;
+    return ss.str();
+}
 
 //! @brief Helpfunction that splits a full path into basepath and filename
 //! @note Assumes that dir separator is forward slash /
@@ -84,6 +96,53 @@ void splitFileName(const std::string fileName, std::string &rBaseName, std::stri
     }
 }
 
+//! @brief Convert the fullpath into a path relative to basepath, both paths must be relative the same directoryo (or absolute)
+std::string relativePath(std::string basePath, std::string fullPath)
+{
+    std::string result;
+
+    if ( (basePath.size()>0) && basePath[basePath.size()-1] != '/')
+    {
+        basePath.push_back('/');
+    }
+
+    // First chew up the initial common part of the string
+    size_t pe = basePath.find('/');
+    while (pe != std::string::npos)
+    {
+        //cout << "basePath: " << basePath << endl;
+        //cout << "fullPath: " << fullPath << endl;
+        string sub = basePath.substr(0, pe+1);
+
+        size_t fe = fullPath.find(sub);
+        if (fe == 0)
+        {
+            basePath.erase(0, pe+1);
+            fullPath.erase(0, sub.size());
+            pe = basePath.find('/');
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    // Now determine the number of levels to "go up" based on remaning '/' in basePath
+    pe = basePath.find('/');
+    while (pe != std::string::npos)
+    {
+        result += "../";
+        basePath.erase(0, pe+1);
+        pe = basePath.find('/');
+    }
+    // Append what is remaning of base path
+    result += fullPath;
+
+    //cout << "Result: " << result << endl;
+
+    return result;
+}
+
 void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector)
 {
     rSplitVector.clear();
@@ -94,6 +153,156 @@ void splitStringOnDelimiter(const std::string &rString, const char delim, std::v
         rSplitVector.push_back(item);
     }
 }
+
+void generateFullSystemHierarchyName(const ComponentSystem *pSys, HString &rFullSysName)
+{
+    if (pSys->getSystemParent())
+    {
+        generateFullSystemHierarchyName(pSys->getSystemParent(), rFullSysName);
+        rFullSysName.append("$").append(pSys->getName());
+    }
+    else
+    {
+        rFullSysName.append(pSys->getName());
+    }
+}
+
+HString generateFullPortVariableName(const Port *pPort, const int dataId)
+{
+   HString fullName;
+   const NodeDataDescription *pND = pPort->getNodeDataDescription(dataId);
+   if (pND)
+   {
+       Component *pComp = pPort->getComponent();
+       ComponentSystem *pSys = pComp->getSystemParent();
+       if (pSys)
+       {
+           generateFullSystemHierarchyName(pSys, fullName);
+       }
+
+       fullName.append("$").append(pComp->getName()).append("#").append(pPort->getName()).append("#").append(pND->name);
+   }
+   return fullName;
+}
+
+bool exportHVCData(const string modelpath, const string baseFilePath, const std::vector<Port *> &rPorts, const std::vector<size_t> &rDataIds)
+{
+    std::string hvcFilePath = baseFilePath+".hvc";
+    std::string csvFilePath = baseFilePath+".hvd";
+    const double tol=0.01;
+
+    std::map< vector<double>*, size_t> savedTimeVectors;
+
+    try
+    {
+        std::ofstream hvcFile(hvcFilePath.c_str());
+        std::ofstream csvFile(csvFilePath.c_str());
+
+        if (!hvcFile.is_open())
+        {
+            printErrorMessage("Could not open file for writing: "+ hvcFilePath);
+            return false;
+        }
+
+        if (!csvFile.is_open())
+        {
+            printErrorMessage("Could not open file for writing: "+ csvFilePath);
+            return false;
+        }
+
+        rapidxml::xml_document<> doc;
+        addXmlDeclaration(&doc);
+        rapidxml::xml_node<> *pRootNode = appendEmptyNode(&doc, "hopsanvalidationconfiguration");
+        writeStringAttribute(pRootNode, "hvcversion", "0.2");
+
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        stringstream dateSS, timeSS;
+        dateSS << 1900+ltm->tm_year << std::setfill('0') << std::setw(2) << 1+ltm->tm_mon << ltm->tm_mday;
+        timeSS << std::setfill('0') << std::setw(2) << 1+ltm->tm_hour << 1+ltm->tm_min << 1+ltm->tm_sec;
+
+        rapidxml::xml_node<> *pValidationNode = appendEmptyNode(pRootNode, "validation");
+        writeStringAttribute(pValidationNode, "hopsancliversion", HOPSANCLIVERSION);
+        writeStringAttribute(pValidationNode, "time", timeSS.str());
+        writeStringAttribute(pValidationNode, "date", dateSS.str());
+        writeStringAttribute(pValidationNode, "hopsancoreversion", gHopsanCore.getCoreVersion());
+
+        // Decide paths relativ to the hvc file basepath
+        string basepath, dummy, relModelPath, relCsvPath;
+        splitFilePath(hvcFilePath, basepath, dummy);
+        relModelPath = relativePath(basepath, modelpath);
+        relCsvPath = relativePath(basepath, csvFilePath);
+
+        appendValueNode(pValidationNode, "modelfile", relModelPath);
+        appendValueNode(pValidationNode, "hvdfile", relCsvPath);
+
+        size_t csvRow = 0, csvTimeRow;
+        for (size_t p=0; p<rPorts.size(); ++p)
+        {
+            // Write variable node to hvc
+            rapidxml::xml_node<> *pVariableNode = appendEmptyNode(pValidationNode, "variable");
+            std::string fullName = generateFullPortVariableName(rPorts[p], rDataIds[p]).c_str();
+            writeStringAttribute(pVariableNode, "name", fullName );
+
+            // Lookup if timevector has already been write to file, and at what row, if not then write and remember the row
+            std::vector<double> *pLogTime = rPorts[p]->getLogTimeVectorPtr();
+            if (savedTimeVectors.count(pLogTime) == 0)
+            {
+                // Write time vector
+                for (size_t i=0; i<pLogTime->size()-1; ++i)
+                {
+                    csvFile << (*pLogTime)[i] << ", ";
+                }
+                csvFile << (*pLogTime)[pLogTime->size()-1] << std::endl;
+                csvTimeRow = csvRow;
+                savedTimeVectors.insert(std::pair<vector<double>*, size_t>(pLogTime, csvTimeRow));
+                ++csvRow;
+            }
+            else
+            {
+                csvTimeRow = savedTimeVectors.at(pLogTime);
+            }
+
+            appendValueNode(pVariableNode, "timecolumn", to_string(csvTimeRow));
+            appendValueNode(pVariableNode, "column", to_string(csvRow));
+            appendValueNode(pVariableNode, "tolerance", to_string(tol));
+
+            // Write data line to csv
+            std::vector< std::vector<double> > *pLogData = rPorts[p]->getLogDataVectorPtr();
+            if (pLogData &&  pLogData->size() > 0)
+            {
+                size_t nRows = pLogData->size();
+                size_t nCols = pLogData->front().size();
+                const size_t c = rDataIds[p];
+                if (rDataIds[p] < nCols)
+                {
+                    for (size_t r=0; r<nRows-1; ++r)
+                    {
+                        csvFile << (*pLogData)[r][c] << ", ";
+                    }
+                    csvFile << (*pLogData)[nRows-1][c] << std::endl;
+                    ++csvRow;
+                }
+            }
+        }
+
+        // Write and close hvc xml
+        hvcFile << doc;
+        hvcFile.close();
+        doc.clear();
+
+        // Write and close csv
+        csvFile.close();
+        transposeCSVresults(csvFilePath); // Turn it into a column file
+        return true;
+    }
+    catch(std::exception &e)
+    {
+        printErrorMessage(e.what());
+    }
+    return false;
+}
+
 
 // ===== Print functions =====
 //! @brief Prints all waiting messages
@@ -695,9 +904,9 @@ bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &
 
     for(size_t i=0; i<rVec.size(); ++i)
     {
-        if(fabs(1-rVec.at(i)/rRef.at(i)) > tol && !(rVec.at(i) < 1e-100 && rRef.at(i) < 1e-10))
+        if( (fabs(1-rVec.at(i)/rRef.at(i)) > tol) && !(fabs(rVec.at(i))<1e-100) && !(fabs(rRef.at(i))<1e-10) )
         {
-            //cout << "Test failed: comparing " << vec.at(i) << " with " << ref.at(i) << " at index " << i << endl;
+            //cout << "Test failed, Tol: " << tol << " comparing: " << rVec.at(i) << " with " << rRef.at(i) << " at index " << i << endl;
             return false;
         }
     }
@@ -730,6 +939,8 @@ bool performModelTest(const std::string hvcFilePath)
             return false;
         }
 
+        std::string hvcVersion = readStringAttribute(pRootNode, "hvcversion", "0");
+
         rapidxml::xml_node<> *pValidationNode = pRootNode->first_node("validation");
         if (!pValidationNode)
         {
@@ -753,180 +964,400 @@ bool performModelTest(const std::string hvcFilePath)
                 modelfile = basepath + modelfile;
             }
 
-            rapidxml::xml_node<> *pComponentNode, *pPortNode, *pVariableNode;
-            pComponentNode = pValidationNode->first_node("component");
-            if (!pComponentNode)
+            if (hvcVersion == "0.1")
             {
-                printErrorMessage("No component node found in xml");
-                return false;
-            }
-            while (pComponentNode != 0)
-            {
-                string compName = readStringAttribute(pComponentNode, "name", "_noname_");
-                pPortNode = pComponentNode->first_node("port");
-                if (!pPortNode)
+                rapidxml::xml_node<> *pComponentNode, *pPortNode, *pVariableNode;
+                pComponentNode = pValidationNode->first_node("component");
+                if (!pComponentNode)
                 {
-                    printErrorMessage("No port node found in xml");
+                    printErrorMessage("No component node found in xml");
                     return false;
                 }
-                while (pPortNode != 0)
+                while (pComponentNode != 0)
                 {
-                    string portName = readStringAttribute(pPortNode, "name", "_noname_");
-                    string csvfile = readStringNodeValue(pPortNode->first_node("csvfile"), "");
-                    pVariableNode = pPortNode->first_node("variable");
-                    if (!pVariableNode)
+                    string compName = readStringAttribute(pComponentNode, "name", "_noname_");
+                    pPortNode = pComponentNode->first_node("port");
+                    if (!pPortNode)
                     {
-                        printErrorMessage("No variable node found in xml");
+                        printErrorMessage("No port node found in xml");
                         return false;
                     }
-                    while (pVariableNode != 0)
+                    while (pPortNode != 0)
                     {
-                        string varname = readStringAttribute(pVariableNode, "name", "_noname_");
-                        csvfile = readStringNodeValue(pVariableNode->first_node("csvfile"), csvfile); //Do we have variable specific csv override
-                        if (csvfile.empty())
+                        string csvfile = readStringNodeValue(pValidationNode->first_node("csvfile"), "");
+                        string portName = readStringAttribute(pPortNode, "name", "_noname_");
+                        csvfile = readStringNodeValue(pPortNode->first_node("csvfile"), "");
+                        pVariableNode = pPortNode->first_node("variable");
+                        if (!pVariableNode)
                         {
-                            // If no csvfile was given use one with the same basename
-                            csvfile = basepath + basename + ".csv";
-                        }
-                        else
-                        {
-                            // Assumes that csvfile path was relaitve in xml
-                            csvfile = basepath + csvfile;
-                        }
-
-                        const int column = readIntNodeValue(pVariableNode->first_node("column"), 1);
-                        const double tolerance = readDoubleNodeValue(pVariableNode->first_node("tolerance"), 0.01);
-
-                        // ----- Perform test -----
-                        vector<double> vRef, vSim1, vSim2, vTime;
-
-                        // Load reference data curve
-                        //! @todo should not reload if same as already laoded
-                        bool success=false;
-                        CSVParser refData(success, csvfile.c_str(), '\n', '"');
-                        if(!success)
-                        {
-                            printErrorMessage("Unable to initialize CSV file: " + csvfile + " : " + refData.getErrorString().c_str());
+                            printErrorMessage("No variable node found in xml");
                             return false;
                         }
-
-                        double startTime=0, stopTime=1;
-                        ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile.c_str(), startTime, stopTime);
-
-                        if ( pRootSystem && ((gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages()) < 1) )
+                        while (pVariableNode != 0)
                         {
-                            if (gHopsanCore.getNumWarningMessages() > 0)
+                            string varname = readStringAttribute(pVariableNode, "name", "_noname_");
+                            csvfile = readStringNodeValue(pVariableNode->first_node("csvfile"), csvfile); //Do we have variable specific csv override
+                            if (csvfile.empty())
                             {
-                                printWaitingMessages(false);
+                                // If no csvfile was given use one with the same basename
+                                csvfile = basepath + basename + ".csv";
+                            }
+                            else
+                            {
+                                // Assumes that csvfile path was relaitve in xml
+                                csvfile = basepath + csvfile;
                             }
 
-                            //! @todo maybe use simulation handler object
-                            //First simulation
-                            if (!pRootSystem->checkModelBeforeSimulation())
+                            const int column = readIntNodeValue(pVariableNode->first_node("column"), 1);
+                            const double tolerance = readDoubleNodeValue(pVariableNode->first_node("tolerance"), 0.01);
+
+                            // ----- Perform test -----
+                            vector<double> vRef, vSim1, vSim2, vTime;
+
+                            // Load reference data curve
+                            //! @todo should not reload if same as already laoded
+                            bool success=false;
+                            CSVParser refData(success, csvfile.c_str(), '\n', '"');
+                            if(!success)
                             {
-                                printWaitingMessages(false);
-                                printErrorMessage("checkModelBeforeSimulation() failed, Simulation aborted!");
+                                printErrorMessage("Unable to initialize CSV file: " + csvfile + " : " + refData.getErrorString().c_str());
                                 return false;
                             }
 
-                            if (pRootSystem->initialize(startTime, stopTime))
+                            double startTime=0, stopTime=1;
+                            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile.c_str(), startTime, stopTime);
+
+                            if ( pRootSystem && ((gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages()) < 1) )
                             {
-                                pRootSystem->simulate(stopTime);
+                                if (gHopsanCore.getNumWarningMessages() > 0)
+                                {
+                                    printWaitingMessages(false);
+                                }
+
+                                //! @todo maybe use simulation handler object
+                                //First simulation
+                                if (!pRootSystem->checkModelBeforeSimulation())
+                                {
+                                    printWaitingMessages(false);
+                                    printErrorMessage("checkModelBeforeSimulation() failed, Simulation aborted!");
+                                    return false;
+                                }
+
+                                if (pRootSystem->initialize(startTime, stopTime))
+                                {
+                                    pRootSystem->simulate(stopTime);
+                                }
+                                else
+                                {
+                                    printWaitingMessages(false);
+                                    printErrorMessage("Initialize failed, Simulation aborted!");
+                                    return false;
+                                }
+                                pRootSystem->finalize();
+
+                                //copy the data
+                                Component* pComp = pRootSystem->getSubComponent(compName.c_str());
+                                if (!pComp)
+                                {
+                                    printErrorMessage("No such component name: " + compName);
+                                    return false;
+                                }
+                                Port *pPort = pComp->getPort(portName.c_str());
+                                if (!pPort)
+                                {
+                                    printErrorMessage("No such port name: " + portName + " in component: " + compName);
+                                    return false;
+                                }
+
+                                //! @todo with better access function in core we could avoid copying data and work directly with the data stored
+                                vTime = *pPort->getLogTimeVectorPtr();
+                                int dataId = pPort->getNodeDataIdFromName(varname.c_str());
+                                if (dataId < 0)
+                                {
+                                    printErrorMessage("No such varaiable name: " + varname + " in: " + pPort->getNodeType().c_str());
+                                    return false;
+                                }
+
+                                for(size_t i=0; i<vTime.size(); ++i)
+                                {
+                                    vSim1.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
+                                }
+
+                                //Second simulation
+                                if (pRootSystem->initialize(startTime, stopTime))
+                                {
+                                    pRootSystem->simulate(stopTime);
+                                }
+                                else
+                                {
+                                    printWaitingMessages(false);
+                                    printErrorMessage("Initialize failed, Simulation aborted!");
+                                    return false;
+                                }
+                                pRootSystem->finalize();
+
+                                for(size_t i=0; i<vTime.size(); ++i)
+                                {
+                                    vSim2.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
+                                }
+
+                                // Print the messages if there were any errors or warnings
+                                if ( (gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages() + gHopsanCore.getNumWarningMessages()) != 0)
+                                {
+                                    printWaitingMessages(false);
+                                }
                             }
                             else
                             {
                                 printWaitingMessages(false);
-                                printErrorMessage("Initialize failed, Simulation aborted!");
-                                return false;
-                            }
-                            pRootSystem->finalize();
-
-                            //copy the data
-                            Component* pComp = pRootSystem->getSubComponent(compName.c_str());
-                            if (!pComp)
-                            {
-                                printErrorMessage("No such component name: " + compName);
-                                return false;
-                            }
-                            Port *pPort = pComp->getPort(portName.c_str());
-                            if (!pPort)
-                            {
-                                printErrorMessage("No such port name: " + portName + " in component: " + compName);
+                                printErrorMessage("Could not load modelfile without errors: " + modelfile);
                                 return false;
                             }
 
-                            //! @todo with better access function in core we could avoid copying data and work directly with the data stored
-                            vTime = *pPort->getLogTimeVectorPtr();
-                            int dataId = pPort->getNodeDataIdFromName(varname.c_str());
-                            if (dataId < 0)
-                            {
-                                printErrorMessage("No such varaiable name: " + varname + " in: " + pPort->getNodeType().c_str());
-                                return false;
-                            }
 
                             for(size_t i=0; i<vTime.size(); ++i)
                             {
-                                vSim1.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
+                                vRef.push_back(refData.interpolate(vTime[i], column));
                             }
 
-                            //Second simulation
-                            if (pRootSystem->initialize(startTime, stopTime))
+                            //std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
+
+                            if(!compareVectors(vSim1, vRef, tolerance))
                             {
-                                pRootSystem->simulate(stopTime);
-                            }
-                            else
-                            {
-                                printWaitingMessages(false);
-                                printErrorMessage("Initialize failed, Simulation aborted!");
+                                printColorMessage(Red, string("Validation data test failed: ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
                                 return false;
                             }
-                            pRootSystem->finalize();
 
-                            for(size_t i=0; i<vTime.size(); ++i)
+                            if(!compareVectors(vSim1, vSim2, tolerance))
                             {
-                                vSim2.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
+                                printColorMessage(Red, string("Consistency test failed (two consecutive simulations gave different results): ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
+                                return false;
                             }
 
-                            // Print the messages if there were any errors or warnings
-                            if ( (gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages() + gHopsanCore.getNumWarningMessages()) != 0)
+                            printColorMessage(Green, string("Test successful: ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
+
+                            pVariableNode = pVariableNode->next_sibling("variable");
+                        }
+                        pPortNode = pPortNode->next_sibling("port");
+                    }
+                    pComponentNode = pComponentNode->next_sibling("component");
+                }
+            }
+            else if (hvcVersion == "0.2")
+            {
+                bool hvdsuccess=false;
+                string hvdfile = readStringNodeValue(pValidationNode->first_node("hvdfile"), "");
+                if (hvdfile.empty())
+                {
+                    // If no csvfile was given use one with the same basename
+                    hvdfile = basepath + basename + ".hvd";
+                }
+                else
+                {
+                    // Assumes that csvfile path was relaitve in xml
+                    hvdfile = basepath + hvdfile;
+                }
+                // Load reference data curves
+                CSVParser refData(hvdsuccess, hvdfile.c_str(), '\n', '"');
+                if(!hvdsuccess)
+                {
+                    printErrorMessage("Unable to initialize HVD file: " + hvdfile + " : " + refData.getErrorString().c_str());
+                    return false;
+                }
+
+                rapidxml::xml_node<> *pVariableNode = pValidationNode->first_node("variable");
+                while (pVariableNode != 0)
+                {
+                    string fullVarName = readStringAttribute(pVariableNode, "name", "_noname_");
+                    const int column = readIntNodeValue(pVariableNode->first_node("column"), -1);
+                    const int timecolumn = readIntNodeValue(pVariableNode->first_node("timecolumn"), -1);
+                    const double tolerance = readDoubleNodeValue(pVariableNode->first_node("tolerance"), 0.01);
+
+                    // ----- Perform test -----
+                    vector<double> vRef, vSim1, vSim2, vTime;
+                    string compName, portName, varName;
+                    ComponentSystem *pTestSystem = 0;
+
+                    double startTime=0, stopTime=-1;
+                    ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile.c_str(), startTime, stopTime);
+                    if ( pRootSystem && ((gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages()) < 1) )
+                    {
+                        pTestSystem = pRootSystem;
+
+                        if (gHopsanCore.getNumWarningMessages() > 0)
+                        {
+                            printWaitingMessages(false);
+                        }
+
+                        SimulationHandler simuhandler;
+                        bool ok = simuhandler.initializeSystem(startTime, stopTime, pRootSystem);
+                        if (ok)
+                        {
+                            ok = simuhandler.simulateSystem(startTime, stopTime, -1, pRootSystem);
+                            if (!ok)
                             {
                                 printWaitingMessages(false);
+                                printErrorMessage("Simulation failed, Simulation aborted!");
                             }
                         }
                         else
                         {
                             printWaitingMessages(false);
-                            printErrorMessage("Could not load modelfile without errors: " + modelfile);
+                            printErrorMessage("Initialize failed, Simulation aborted!");
+                        }
+                        simuhandler.finalizeSystem(pRootSystem);
+
+                        // Exit with failure
+                        if (!ok)
+                        {
                             return false;
                         }
 
+                        // Figure out system hierarcy and names (split name attribute)
+                        std::vector<std::string> sysfields;
+                        std::vector<std::string> namefields;
+                        splitStringOnDelimiter(fullVarName, '$', sysfields);
 
+                        if (sysfields.size() < 2)
+                        {
+                            printErrorMessage("To few system fields in: "+ fullVarName);
+                            return false;
+                        }
+
+                        string name = sysfields.back();
+
+
+                        if (sysfields.size() > 2)
+                        {
+                            for (size_t s=1; s<sysfields.size(); ++s)
+                            {
+                                ComponentSystem *pParentSystem = pTestSystem;
+                                pTestSystem = pTestSystem->getSubComponentSystem(sysfields[s].c_str());
+                                if (!pTestSystem)
+                                {
+                                    printErrorMessage("could not find system: "+sysfields[s]+" in parent system: "+pParentSystem->getName().c_str());
+                                    return false;
+                                }
+                            }
+                        }
+
+                        // If we only have one sysfiled then components lie in the top-level system
+                        splitStringOnDelimiter(name, '#', namefields);
+                        if (namefields.size() != 3)
+                        {
+                            printErrorMessage("Wrong number of name fields in: "+name);
+                            return false;
+                        }
+
+                        compName = namefields[0];
+                        portName = namefields[1];
+                        varName  = namefields[2];
+
+
+
+                        // Copy the data that we want to compare
+                        Component* pComp = pTestSystem->getSubComponent(compName.c_str());
+                        if (!pComp)
+                        {
+                            printErrorMessage("No such component name: " + compName);
+                            return false;
+                        }
+                        Port *pPort = pComp->getPort(portName.c_str());
+                        if (!pPort)
+                        {
+                            printErrorMessage("No such port name: " + portName + " in component: " + compName);
+                            return false;
+                        }
+
+                        //! @todo with better access function in core we could avoid copying data and work directly with the data stored
+                        vTime = *pPort->getLogTimeVectorPtr();
+                        int dataId = pPort->getNodeDataIdFromName(varName.c_str());
+                        if (dataId < 0)
+                        {
+                            printErrorMessage("No such varaiable name: " + varName + " in: " + pPort->getNodeType().c_str());
+                            return false;
+                        }
+
+                        vector< vector<double> > *pLogData = pTestSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr();
+                        vSim1.reserve(vTime.size());
                         for(size_t i=0; i<vTime.size(); ++i)
                         {
-                            vRef.push_back(refData.interpolate(vTime[i], column));
+                            vSim1.push_back(pLogData->at(i).at(dataId));
                         }
 
-                        //std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
-
-                        if(!compareVectors(vSim1, vRef, tolerance))
+                        // Second simulation
+                        ok = simuhandler.initializeSystem(startTime, stopTime, pRootSystem);
+                        if (ok)
                         {
-                            printColorMessage(Red, string("Validation data test failed: ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
+                            ok = simuhandler.simulateSystem(startTime, stopTime, -1, pRootSystem);
+                            if (!ok)
+                            {
+                                printWaitingMessages(false);
+                                printErrorMessage("Second Simulation failed, Simulation aborted!");
+                            }
+                        }
+                        else
+                        {
+                            printWaitingMessages(false);
+                            printErrorMessage("Second Initialize failed, Simulation aborted!");
+                        }
+                        simuhandler.finalizeSystem(pRootSystem);
+                        // Exit with failure
+                        if (!ok)
+                        {
                             return false;
                         }
 
-                        if(!compareVectors(vSim1, vSim2, tolerance))
+                        pLogData = pTestSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr();
+                        vSim2.reserve(vTime.size());
+                        for(size_t i=0; i<vTime.size(); ++i)
                         {
-                            printColorMessage(Red, string("Consistency test failed (two consecutive simulations gave different results): ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
-                            return false;
+                            vSim2.push_back(pLogData->at(i).at(dataId));
                         }
 
-                        printColorMessage(Green, string("Test successful: ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
-
-                        pVariableNode = pVariableNode->next_sibling("variable");
+                        // Print the messages if there were any errors or warnings
+                        if ( (gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages() + gHopsanCore.getNumWarningMessages()) != 0)
+                        {
+                            printWaitingMessages(false);
+                        }
                     }
-                    pPortNode = pPortNode->next_sibling("port");
+                    else
+                    {
+                        printWaitingMessages(false);
+                        printErrorMessage("Could not load modelfile without errors: " + modelfile);
+                        return false;
+                    }
+
+                    // Build the reference vector for this variable, by interpolating from reference data file
+                    // Interpolation prevents failure if nLogSamples would change (provided sample frequency is not decreased to much)
+                    vRef.reserve(vTime.size());
+                    for(size_t i=0; i<vTime.size(); ++i)
+                    {
+                        vRef.push_back(refData.interpolate(vTime[i], timecolumn, column));
+                    }
+
+                    //std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
+
+                    if(!compareVectors(vSim1, vRef, tolerance))
+                    {
+                        printColorMessage(Red, string("Validation data test failed: ") + fullVarName);
+                        return false;
+                    }
+
+                    if(!compareVectors(vSim1, vSim2, tolerance))
+                    {
+                        printColorMessage(Red, string("Consistency test failed (two consecutive simulations gave different results): ") + fullVarName);
+                        return false;
+                    }
+
+                    printColorMessage(Green, string("Test successful: ") + fullVarName);
+
+                    pVariableNode = pVariableNode->next_sibling("variable");
                 }
-                pComponentNode = pComponentNode->next_sibling("component");
+            }
+            else
+            {
+                printErrorMessage("Unsupported hvc version: "+ hvcVersion);
             }
             pValidationNode = pValidationNode->next_sibling("validation");
         }
@@ -941,3 +1372,71 @@ bool performModelTest(const std::string hvcFilePath)
     return true;
 }
 
+
+
+bool createModelTestDataSet(const string modelPath, const string hvcFilePath)
+{
+    double startT, stopT;
+    ComponentSystem *pSystem = gHopsanCore.loadHMFModel(modelPath.c_str(), startT, stopT);
+    if (!pSystem)
+    {
+        printWaitingMessages(false);
+        return false;
+    }
+
+    SimulationHandler simhandler;
+
+    bool iOk=false, sOk=false, fOk=false;
+    // Initialize
+    iOk = simhandler.initializeSystem(startT, stopT, pSystem);
+    if (iOk)
+    {
+        // Simulate
+        sOk = simhandler.simulateSystem(startT, stopT, -1, pSystem);
+        if (!sOk)
+        {
+           printErrorMessage("Simulate Failed!");
+        }
+    }
+    else
+    {
+        printErrorMessage("Initialize Failed! Aborting");
+    }
+    // Finalize
+    fOk = simhandler.simulateSystem(startT, stopT, -1, pSystem);
+    if (!fOk)
+    {
+       printErrorMessage("Finalize Failed!");
+    }
+
+    std::vector<Port*> data_ports;
+    std::vector<size_t> data_ids;
+
+    // Now find all scopes and save connected data as validation data
+    const std::vector<Component*> components =  pSystem->getSubComponents();
+    for (size_t c=0; c<components.size(); ++c)
+    {
+        const Component *pComponent = components[c];
+
+        //cout << pComponent->getTypeName().c_str() << endl;
+        if (pComponent->getTypeName() == "SignalSink")
+        {
+            //cout << " found SignalSink" << endl;
+            const std::vector<Port*> scope_ports = pComponent->getPortPtrVector();
+            for (size_t sp=0; sp<scope_ports.size(); ++sp)
+            {
+                std::vector<Port*> ports = scope_ports[sp]->getConnectedPorts();
+                data_ports.insert(data_ports.end(), ports.begin(), ports.end());
+                data_ids.push_back(0); //!< @todo here we assume that we only save signals
+            }
+        }
+        else if (pComponent->isComponentSystem())
+        {
+            printErrorMessage("Handeling subsystems is not yet supported!");
+        }
+    }
+
+    exportHVCData(modelPath, hvcFilePath, data_ports, data_ids);
+
+    return false;
+}
