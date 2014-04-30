@@ -455,6 +455,7 @@ void FileHandler::updateText()
 
 void FileHandler::compileLibrary()
 {
+    mpMessageHandler->clear();
     if(mpConfiguration->getIncludePath().isEmpty())
     {
         mpMessageHandler->addErrorMessage("Hopsan path is not setup correctly.");

@@ -22,3 +22,8 @@ void MessageHandler::addErrorMessage(const QString &msg)
 {
     mpMessageWidget->addText("Error: "+msg, Qt::red);
 }
+
+void MessageHandler::clear()
+{
+    mpMessageWidget->clear();
+}

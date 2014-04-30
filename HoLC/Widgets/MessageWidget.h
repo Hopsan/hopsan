@@ -13,8 +13,6 @@ signals:
 
 public slots:
     void addText(const QString &text, const QColor color);
-
-private slots:
     void clear();
 
 private:
