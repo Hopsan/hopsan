@@ -7,6 +7,7 @@
 
 #include "TextEditor.h"
 
+using namespace std;
 
 //! @brief Constructor for text editor that handles line numbers and replaces tabs with spaces
 TextEditor::TextEditor(QWidget *parent) : QPlainTextEdit(parent)
@@ -164,6 +165,66 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
                 this->insertPlainText(" ");
             }
         }
+    }
+    else if(pEvent->key() == Qt::Key_T)     //Ctrl-T = block comment
+    {
+        textCursor().beginEditBlock();
+        QString text = textCursor().selection().toPlainText();
+        text.replace("\n", "\n//");
+        if(textCursor().atBlockStart())
+        {
+            text.prepend("//");
+        }
+        else
+        {
+            int pos = textCursor().position();
+            int stopPos = textCursor().anchor();
+            QTextCursor c;
+            c = textCursor();
+            c.setPosition(min(pos,stopPos));
+            setTextCursor(c);
+            moveCursor(QTextCursor::StartOfBlock);
+            insertPlainText("//");
+
+            c = textCursor();
+            c.setPosition(pos+2);
+            c.setPosition(stopPos+2, QTextCursor::KeepAnchor);
+            setTextCursor(c);
+        }
+        textCursor().removeSelectedText();
+        insertPlainText(text);
+        textCursor().endEditBlock();
+    }
+    else if(pEvent->key() == Qt::Key_U)     //Ctrl-U = uncomment block
+    {
+        textCursor().beginEditBlock();
+        QString text = textCursor().selection().toPlainText();
+        text.replace("\n//", "\n");
+
+        int pos = textCursor().position();
+        int stopPos = textCursor().anchor();
+        QTextCursor c;
+        c = textCursor();
+        c.setPosition(min(pos,stopPos));
+        setTextCursor(c);
+        moveCursor(QTextCursor::StartOfBlock);
+        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        int movement = 0;
+        if(textCursor().selection().toPlainText() == "//")
+        {
+            textCursor().removeSelectedText();
+            movement = 2;
+        }
+        c = textCursor();
+        c.setPosition(pos-movement);
+        c.setPosition(stopPos-movement, QTextCursor::KeepAnchor);
+        setTextCursor(c);
+
+        textCursor().removeSelectedText();
+        insertPlainText(text);
+
+        textCursor().endEditBlock();
     }
     else
     {
