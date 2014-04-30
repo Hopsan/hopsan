@@ -38,6 +38,8 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QCheckBox>
+#include <QDialog>
+#include <QPointer>
 
 
 class Widget : public WorkspaceObject
@@ -115,7 +117,7 @@ private:
     QGraphicsTextItem *mpTextItem;
     QGraphicsRectItem *mpBorderItem;
 
-    QDialog *mpEditDialog;
+    QPointer<QDialog> mpEditDialog;
     QTextEdit *mpDialogTextBox;
     QPushButton *mpDialogFontButton;
     QToolButton *mpDialogLineColorButton;

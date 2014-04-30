@@ -384,93 +384,96 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event)
 
-    // Open a dialog where line width and color can be selected
-    mpEditDialog = new QDialog(gpMainWindowWidget);
-    mpEditDialog->setWindowTitle("Edit TextBox Widget");
-    mpEditDialog->setAttribute(Qt::WA_DeleteOnClose);
+    if (mpEditDialog.isNull())
+    {
+        // Open a dialog where line width and color can be selected
+        mpEditDialog = new QDialog(gpMainWindowWidget);
+        mpEditDialog->setWindowTitle("Edit TextBox Widget");
+        mpEditDialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    mpDialogShowBorderCheckBox = new QCheckBox("Show box rectangle");
-    mpDialogShowBorderCheckBox->setChecked(mpBorderItem->isVisible());
+        mpDialogShowBorderCheckBox = new QCheckBox("Show box rectangle");
+        mpDialogShowBorderCheckBox->setChecked(mpBorderItem->isVisible());
 
-    mpDialogLineWidth = new QSpinBox();
-    mpDialogLineWidth->setMinimum(1);
-    mpDialogLineWidth->setMaximum(100);
-    mpDialogLineWidth->setSingleStep(1);
-    mpDialogLineWidth->setValue(mpBorderItem->pen().width());
+        mpDialogLineWidth = new QSpinBox();
+        mpDialogLineWidth->setMinimum(1);
+        mpDialogLineWidth->setMaximum(100);
+        mpDialogLineWidth->setSingleStep(1);
+        mpDialogLineWidth->setValue(mpBorderItem->pen().width());
 
-    mpDialogLineColorButton = new QToolButton();
-    mpDialogLineColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3); }").arg(mpBorderItem->pen().color().red())
-                                                                                            .arg(mpBorderItem->pen().color().green())
-                                                                                            .arg(mpBorderItem->pen().color().blue()));
-    mpDialogLineStyle = new QComboBox();
-    mpDialogLineStyle->insertItem(0, "Solid Line");
-    mpDialogLineStyle->insertItem(1, "Dashes");
-    mpDialogLineStyle->insertItem(2, "Dots");
-    mpDialogLineStyle->insertItem(3, "Dashes and Dots");
-    if(mpBorderItem->pen().style() == Qt::SolidLine)
-        mpDialogLineStyle->setCurrentIndex(0);
-    if(mpBorderItem->pen().style() == Qt::DashLine)
-        mpDialogLineStyle->setCurrentIndex(1);
-    if(mpBorderItem->pen().style() == Qt::DotLine)
-        mpDialogLineStyle->setCurrentIndex(2);
-    if(mpBorderItem->pen().style() == Qt::DashDotLine)
-        mpDialogLineStyle->setCurrentIndex(3);
+        mpDialogLineColorButton = new QToolButton();
+        mpDialogLineColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3); }").arg(mpBorderItem->pen().color().red())
+                                               .arg(mpBorderItem->pen().color().green())
+                                               .arg(mpBorderItem->pen().color().blue()));
+        mpDialogLineStyle = new QComboBox();
+        mpDialogLineStyle->insertItem(0, "Solid Line");
+        mpDialogLineStyle->insertItem(1, "Dashes");
+        mpDialogLineStyle->insertItem(2, "Dots");
+        mpDialogLineStyle->insertItem(3, "Dashes and Dots");
+        if(mpBorderItem->pen().style() == Qt::SolidLine)
+            mpDialogLineStyle->setCurrentIndex(0);
+        if(mpBorderItem->pen().style() == Qt::DashLine)
+            mpDialogLineStyle->setCurrentIndex(1);
+        if(mpBorderItem->pen().style() == Qt::DotLine)
+            mpDialogLineStyle->setCurrentIndex(2);
+        if(mpBorderItem->pen().style() == Qt::DashDotLine)
+            mpDialogLineStyle->setCurrentIndex(3);
 
-    mpDialogTextBox = new QTextEdit();
-    mpDialogTextBox->setPlainText(mpTextItem->toPlainText());
-    mpDialogTextBox->setFont(mpTextItem->font());
-    mpDialogFontButton = new QPushButton("Change Text Font");
+        mpDialogTextBox = new QTextEdit();
+        mpDialogTextBox->setPlainText(mpTextItem->toPlainText());
+        mpDialogTextBox->setFont(mpTextItem->font());
+        mpDialogFontButton = new QPushButton("Change Text Font");
 
-    mpDialogTextColorButton = new QToolButton();
-    mpDialogTextColorButton->setToolTip("Change text color");
-    mpDialogTextColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3); }").arg(mpTextItem->defaultTextColor().red())
-                                                                                            .arg(mpTextItem->defaultTextColor().green())
-                                                                                            .arg(mpTextItem->defaultTextColor().blue()));
-    mpDialogReflowCheckBox = new QCheckBox(tr("Reflow text"));
-    mpDialogReflowCheckBox->setChecked(mReflowText);
+        mpDialogTextColorButton = new QToolButton();
+        mpDialogTextColorButton->setToolTip("Change text color");
+        mpDialogTextColorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3); }").arg(mpTextItem->defaultTextColor().red())
+                                               .arg(mpTextItem->defaultTextColor().green())
+                                               .arg(mpTextItem->defaultTextColor().blue()));
+        mpDialogReflowCheckBox = new QCheckBox(tr("Reflow text"));
+        mpDialogReflowCheckBox->setChecked(mReflowText);
 
-    mSelectedTextColor = mpTextItem->defaultTextColor();
-    mSelectedLineColor = mpBorderItem->pen().color();
+        mSelectedTextColor = mpTextItem->defaultTextColor();
+        mSelectedLineColor = mpBorderItem->pen().color();
 
-    QGridLayout *pEditGroupLayout = new QGridLayout();
-    pEditGroupLayout->addWidget(mpDialogTextBox,                            0,0,1,3);
-    pEditGroupLayout->addWidget(mpDialogFontButton,                         1,0);
-    pEditGroupLayout->addWidget(mpDialogTextColorButton,                    1,1);
-    pEditGroupLayout->addWidget(mpDialogReflowCheckBox,                     1,2);
-    pEditGroupLayout->addWidget(mpDialogShowBorderCheckBox,                 2,0,1,3);
-    pEditGroupLayout->addWidget(new QLabel("Line Width: ", mpEditDialog),   3,0);
-    pEditGroupLayout->addWidget(mpDialogLineWidth,                          3,1,1,2);
-    pEditGroupLayout->addWidget(new QLabel("Line Color: ", mpEditDialog),   4,0);
-    pEditGroupLayout->addWidget(mpDialogLineColorButton,                    4,1,1,2);
-    pEditGroupLayout->addWidget(new QLabel("Line Style: ", mpEditDialog),   5,0);
-    pEditGroupLayout->addWidget(mpDialogLineStyle,                          5,1,1,2);
+        QGridLayout *pEditGroupLayout = new QGridLayout();
+        pEditGroupLayout->addWidget(mpDialogTextBox,                            0,0,1,3);
+        pEditGroupLayout->addWidget(mpDialogFontButton,                         1,0);
+        pEditGroupLayout->addWidget(mpDialogTextColorButton,                    1,1);
+        pEditGroupLayout->addWidget(mpDialogReflowCheckBox,                     1,2);
+        pEditGroupLayout->addWidget(mpDialogShowBorderCheckBox,                 2,0,1,3);
+        pEditGroupLayout->addWidget(new QLabel("Line Width: ", mpEditDialog),   3,0);
+        pEditGroupLayout->addWidget(mpDialogLineWidth,                          3,1,1,2);
+        pEditGroupLayout->addWidget(new QLabel("Line Color: ", mpEditDialog),   4,0);
+        pEditGroupLayout->addWidget(mpDialogLineColorButton,                    4,1,1,2);
+        pEditGroupLayout->addWidget(new QLabel("Line Style: ", mpEditDialog),   5,0);
+        pEditGroupLayout->addWidget(mpDialogLineStyle,                          5,1,1,2);
 
-    QGroupBox *pEditGroupBox = new QGroupBox();
-    pEditGroupBox->setLayout(pEditGroupLayout);
+        QGroupBox *pEditGroupBox = new QGroupBox();
+        pEditGroupBox->setLayout(pEditGroupLayout);
 
-    QPushButton *pDialogDoneButton = new QPushButton("Done");
-    QPushButton *pDialogCancelButton = new QPushButton("Cancel");
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    pButtonBox->addButton(pDialogDoneButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(pDialogCancelButton, QDialogButtonBox::ActionRole);
+        QPushButton *pDialogDoneButton = new QPushButton("Done");
+        QPushButton *pDialogCancelButton = new QPushButton("Cancel");
+        QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+        pButtonBox->addButton(pDialogDoneButton, QDialogButtonBox::ActionRole);
+        pButtonBox->addButton(pDialogCancelButton, QDialogButtonBox::ActionRole);
 
-    QGridLayout *pDialogLayout = new QGridLayout();
-    pDialogLayout->addWidget(pEditGroupBox,0,0);
-    pDialogLayout->addWidget(pButtonBox,1,0);
-    mpEditDialog->setLayout(pDialogLayout);
-    mpEditDialog->show();
+        QGridLayout *pDialogLayout = new QGridLayout();
+        pDialogLayout->addWidget(pEditGroupBox,0,0);
+        pDialogLayout->addWidget(pButtonBox,1,0);
+        mpEditDialog->setLayout(pDialogLayout);
+        mpEditDialog->show();
 
-    this->setZValue(WidgetZValue);
-    this->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        this->setZValue(WidgetZValue);
+        this->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
-    connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineWidth,       SLOT(setEnabled(bool)));
-    connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineColorButton, SLOT(setEnabled(bool)));
-    connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineStyle,       SLOT(setEnabled(bool)));
-    connect(mpDialogFontButton,         SIGNAL(clicked()),      this,                   SLOT(openFontDialog()));
-    connect(mpDialogTextColorButton,    SIGNAL(clicked()),      this,                   SLOT(openTextColorDialog()));
-    connect(mpDialogLineColorButton,    SIGNAL(clicked()),      this,                   SLOT(openLineColorDialog()));
-    connect(pDialogDoneButton,          SIGNAL(clicked()),      this,                   SLOT(updateWidgetFromDialog()));
-    connect(pDialogCancelButton,        SIGNAL(clicked()),      mpEditDialog,           SLOT(close()));
+        connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineWidth,       SLOT(setEnabled(bool)));
+        connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineColorButton, SLOT(setEnabled(bool)));
+        connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineStyle,       SLOT(setEnabled(bool)));
+        connect(mpDialogFontButton,         SIGNAL(clicked()),      this,                   SLOT(openFontDialog()));
+        connect(mpDialogTextColorButton,    SIGNAL(clicked()),      this,                   SLOT(openTextColorDialog()));
+        connect(mpDialogLineColorButton,    SIGNAL(clicked()),      this,                   SLOT(openLineColorDialog()));
+        connect(pDialogDoneButton,          SIGNAL(clicked()),      this,                   SLOT(updateWidgetFromDialog()));
+        connect(pDialogCancelButton,        SIGNAL(clicked()),      mpEditDialog,           SLOT(close()));
+    }
 }
 
 void TextBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
