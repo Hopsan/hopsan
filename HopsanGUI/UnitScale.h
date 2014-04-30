@@ -38,6 +38,7 @@ public:
     double toDouble(const double def) const;
     bool isEmpty() const;
     bool isOne() const;
+    bool isMinusOne() const;
     void setScale(const double scale);
     void setOnlyScale(const double scale);
     double rescale(const double value) const;

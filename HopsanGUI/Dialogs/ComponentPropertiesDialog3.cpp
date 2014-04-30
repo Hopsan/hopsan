@@ -986,8 +986,8 @@ QSize TableWidgetTotalSize::sizeHint() const
         w += verticalHeader()->sizeHint().width();
     }
     w +=  + frameWidth()*2 + verticalScrollBar()->sizeHint().width();
-    qDebug() << "w: " << w << " lw: " << lineWidth() << "  mLw: " << midLineWidth() << "  frameWidth: " << frameWidth();
-    qDebug() << verticalScrollBar()->sizeHint().width();
+    //qDebug() << "w: " << w << " lw: " << lineWidth() << "  mLw: " << midLineWidth() << "  frameWidth: " << frameWidth();
+    //qDebug() << verticalScrollBar()->sizeHint().width();
 
     for (int c=0; c<columnCount(); ++c)
     {
@@ -1029,8 +1029,13 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
     pModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, currCustom);
     if (!currCustom.mScale.isEmpty()) // Check if data exists
     {
+        // If minus one scale then show -1
+        if (currCustom.isMinusOne())
+        {
+            mpPlotScaleEdit->setText(currCustom.mScale);
+        }
         // If unit not given, display the scale value
-        if (currCustom.mUnit.isEmpty())
+        else if (currCustom.mUnit.isEmpty())
         {
             mpPlotScaleEdit->setText(currCustom.mScale);
         }
@@ -1039,6 +1044,8 @@ PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescripti
         {
             mpPlotScaleEdit->setText(currCustom.mUnit);
         }
+
+        //! @todo what about showinf manually set custom units like "1 [m]"
     }
 
     QToolButton *pScaleSelectionButton =  new QToolButton(this);
@@ -1110,25 +1117,48 @@ void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
 
 void PlotScaleSelectionWidget::registerCustomScale()
 {
+    QMap<QString, double> unitScales;
+
+
     QString val = mpPlotScaleEdit->text();
 
-    QMap<QString, double> unitScales;
-    if (mVariableTypeName == "Value")
+    if (val=="-1" || val=="-1.0")
     {
-        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
-        if (pqs.size() > 0)
-        {
-            unitScales = gpConfig->getUnitScales(pqs.first());
-        }
+        val = QString("-1 [%1]").arg(mOriginalUnit);
     }
     else
     {
-        unitScales = gpConfig->getUnitScales(mVariableTypeName);
+        if (mVariableTypeName == "Value")
+        {
+            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
+            if (pqs.size() > 0)
+            {
+                unitScales = gpConfig->getUnitScales(pqs.first());
+            }
+        }
+        else
+        {
+            unitScales = gpConfig->getUnitScales(mVariableTypeName);
+        }
     }
 
     if (unitScales.contains(val))
     {
         mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, val, QString("%1").arg(unitScales.value(val)));
+    }
+    else if (val.contains('['))
+    {
+        // Ok the user want to add a custom specific scale
+        QStringList fields = val.split(' ');
+        if (fields.size() == 2)
+        {
+            //! @todo need to check if text is valid number
+            mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, fields.last().remove('[').remove(']'), fields.first());
+        }
+        else
+        {
+            //! @todo report error
+        }
     }
     else
     {

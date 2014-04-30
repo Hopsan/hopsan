@@ -90,6 +90,11 @@ bool UnitScale::isOne() const
     return mScale == "1";
 }
 
+bool UnitScale::isMinusOne() const
+{
+    return (mScale == "-1") || (mScale == "-1.0");
+}
+
 //! @brief Set the scale from a double
 //! @param [in] The scale value
 void UnitScale::setScale(const double scale)

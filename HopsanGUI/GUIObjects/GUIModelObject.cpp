@@ -776,7 +776,7 @@ void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortData
     UnitScale us(rDescription, rScaleValue);
     if (!rScaleValue.isEmpty() && us.isEmpty())
     {
-        gpMessageHandler->addErrorMessage(QString("Invalid unit-scale value: %1, ignoring!").arg(rScaleValue));
+        gpMessageHandler->addErrorMessage(QString("Invalid unit scale value: %1, ignoring!").arg(rScaleValue));
     }
 
     if (us.isEmpty())
