@@ -53,6 +53,9 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
     mStartPortName = pConnector->getStartPortName();
     mEndPortName = pConnector->getEndPortName();
 
+    mpDataPressure = 0;
+    mpDataFlow = 0;
+
     if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic" && pConnector->getStartPort()->getPortType() != "ReadPortType" && pConnector->getEndPort()->getPortType() != "ReadPortType")
     {
         if(pConnector->getStartPort()->getPortType() == "PowerMultiportType")
@@ -127,7 +130,7 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
         mDirectionCorrection = -1;
     }
 
-    if(mpConnector->getStartPort()->getNodeType() == "NodeHydraulic")
+    if(mpConnector->getStartPort()->getNodeType() == "NodeHydraulic" || mpConnector->getEndPort()->getNodeType() == "NodeHydraulic")
     {
         mpDataPressure = mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mComponentName, mPortName, "Pressure");
         mpDataFlow = mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mComponentName, mPortName, "Flow");
@@ -159,7 +162,7 @@ void AnimatedConnector::updateAnimation()
     y2 = endPos.y();
     mpLines.last()->setLine(x1, y1, x2, y2);
 
-    if(mpConnector->getStartPort()->getNodeType() != "NodeHydraulic")   //!< @todo Bad to compare with string
+    if(!mpDataPressure/*mpConnector->getStartPort()->getNodeType() != "NodeHydraulic"*/)   //!< @todo Bad to compare with string
     {
         return;
     }
