@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="HydraulicFourChamberPiston.hpp" typename="HydraulicFourChamberPiston" displayname="C-type Digital Four-Chamber Piston">
+        <icons>
+            <icon scale="1" path="HydraulicFourChamberPiston.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.026" y="1.0" a="90" name="P1"/>
+            <port x="0.49716561408723" y="1.0" a="90" name="P2"/>
+            <port x="0.749535626718181" y="0.864341085271318" a="90" name="P3"/>
+            <port x="0.0" y="0.500" a="180" name="P4"/>
+            <port x="1.0" y="0.500" a="0" name="P5"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

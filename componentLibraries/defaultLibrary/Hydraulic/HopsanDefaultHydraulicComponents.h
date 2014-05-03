@@ -8,6 +8,7 @@
 #include "Sensors/HopsanDefaultHydraulicSensors.h"
 #include "Sources&Sinks/HopsanDefaultHydraulicSourcesAndSinks.h"
 #include "Valves/HopsanDefaultHydraulicValves.h"
+#include "Valves/PressureControlled/HopsanDefaultHydraulicPressureControlledValves.h"
 #include "Volumes&Lines/HopsanDefaulHydraulicVolumesAndLines.h"
 #include "Special/HopsanDefaultHydraulicSpecial.h"
 

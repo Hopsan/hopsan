@@ -108,6 +108,8 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicPistonMkload", HydraulicPistonMkload::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCheckValvePreLoaded", HydraulicCheckValvePreLoaded::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve", HydraulicPressureControlled42Valve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve2", HydraulicPressureControlled42Valve2::Creator);
 
     // ----- Other Hydraulic Components -----
     pComponentFactory->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
@@ -126,6 +128,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicFlowSensor", HydraulicFlowSensor::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCylinderC", HydraulicCylinderC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicFourChamberPiston", HydraulicFourChamberPiston::Creator);
     //pComponentFactory->registerCreatorFunction("HydraulicCylinderCMulti", HydraulicCylinderCMulti::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCylinderQ", HydraulicCylinderQ::Creator);
 //    pComponentFactory->registerCreatorFunction("HydraulicPistonMload", HydraulicCylinderQ::Creator);

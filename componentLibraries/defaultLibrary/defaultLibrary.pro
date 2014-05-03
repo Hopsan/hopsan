@@ -303,12 +303,12 @@ HEADERS += \
     Mechanic/Rotational/MechanicBallScrew.hpp \
     Signal/Non-Linearities/SignalRateLimiter.hpp \
     Hydraulic/Valves/Hydraulic42DirectionalValve.hpp \
+    Hydraulic/LinearActuators/HydraulicFourChamberPiston.hpp \
     Hydraulic/Valves/HydraulicPressureControlValve33.hpp \
     Special/Mechanic/MechanicGear.hpp \
-    Special/Mechanic/HopsanDefaultMechanicBComponents.h \
-    Special/MechanicB/MechanicGear.hpp \
-    Special/MechanicB/HopsanDefaultMechanicBComponents.h.autosave \
-    Special/MechanicB/HopsanDefaultMechanicBComponents.h
+    Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve2.hpp \
+    Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve.hpp \
+    Hydraulic/Valves/PressureControlled/HopsanDefaultHydraulicPressureControlledValves.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
