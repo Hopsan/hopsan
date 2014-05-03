@@ -89,7 +89,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                     {
                         QString tempComponentName = componentName;
                         QString tempPortName = portName;
-                        if(mpModelObject->getPort(portName)->getPortType().contains("Multiport"))
+                        if(mpModelObject->getPort(portName) && mpModelObject->getPort(portName)->getPortType().contains("Multiport"))
                         {
                             tempComponentName = mpModelObject->getPort(portName)->getConnectedPorts().first()->getParentModelObjectName();
                             tempPortName = mpModelObject->getPort(portName)->getConnectedPorts().first()->getName();

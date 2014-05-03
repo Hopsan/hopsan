@@ -307,6 +307,22 @@ private:
 };
 
 
+class NodeModelica : public Node
+{
+public:
+    //! @brief The data variable indexes, DataLength is used internally
+    //! @ingroup NodeEmpty
+    enum DataIndexEnumT {DataLength};
+    static Node* CreatorFunction() {return new NodeModelica;}
+
+private:
+    NodeModelica() : Node(DataLength)
+    {
+        setNiceName("modelica");
+    }
+};
+
+
 class NodeEmpty : public Node
 {
 public:

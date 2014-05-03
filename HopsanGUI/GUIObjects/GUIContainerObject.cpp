@@ -1153,7 +1153,11 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                  //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
                  Port *pStartRealPort=0, *pEndRealPort=0;
                  // If no group ports, do normal disconnect
-                 if ( !startPortIsGroupPort && !endPortIsGroupPort )
+                 if(!pStartRealPort || !pEndRealPort)   //Real pors not found, so it is (probably) a Modelica connection
+                 {
+                     success = true;
+                 }
+                 else if ( !startPortIsGroupPort && !endPortIsGroupPort )
                  {
                     success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
                                                                          pStartP->getName(),
@@ -1167,7 +1171,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                      bool disconEndRealPort=false;
 
                      // If start port is group port but not end port
-                     if ( startPortIsGroupPort && !endPortIsGroupPort )
+                     if ( startPortIsGroupPort && !endPortIsGroupPort)
                      {
                         pStartRealPort = pStartP->getRealPort();
                         pEndRealPort = pEndP;
@@ -1351,6 +1355,21 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
                 else
                 {
                     //This should never happen, handled above
+                    success = false;
+                }
+            }
+            else if(pStartRealPort->getNodeType() == "NodeModelica" || pEndRealPort->getNodeType() == "NodeModelica")
+            {
+                //! @todo Also make sure that the port in the Modelica code is correct physical type
+                if((pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getNodeType() == "NodeModelica") ||
+                   (pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getParentModelObject()->getTypeCQS() == "C") ||
+                   (pEndRealPort->getNodeType() == "NodeModelica" && pStartRealPort->getParentModelObject()->getTypeCQS() == "C"))
+                {
+                    success = true;
+                }
+                else
+                {
+                    gpMessageHandler->addErrorMessage("Modelica ports can only be connected to other Modelica ports or C-type power ports.");
                     success = false;
                 }
             }

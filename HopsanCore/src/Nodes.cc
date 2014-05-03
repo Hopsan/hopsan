@@ -64,6 +64,7 @@ void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
     pNodeFactory->registerCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeElectric", NodeElectric::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeMechanic2D", NodeMechanic2D::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeModelica", NodeModelica::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeEmpty", NodeEmpty::CreatorFunction);
 }
 

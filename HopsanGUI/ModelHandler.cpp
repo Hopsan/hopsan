@@ -63,6 +63,8 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
 {
     pModelWidget->setParent(gpCentralTabWidget);    //! @todo Should probably use ModelHandler as parent
 
+    connect(gpMainWindow->mpDebug2Action, SIGNAL(triggered()), pModelWidget, SLOT(generateModelicaCode()));
+
     // If the Modelwidget should not be hidden then add it as a tab and switch to that tab
     if(!detatched)
     {

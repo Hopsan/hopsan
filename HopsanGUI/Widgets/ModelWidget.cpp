@@ -567,6 +567,157 @@ void ModelWidget::lockTab(bool locked)
     setDisabled(locked);
 }
 
+void ModelWidget::generateModelicaCode()
+{
+    QString output = "model "+mpToplevelSystem->getName()+"\n";
+
+    foreach(ModelObject* object, mpToplevelSystem->getModelObjects())
+    {
+        if(object->getTypeName() == "ModelicaComponent")
+        {
+            //Add type name for modelica component
+        }
+        else
+        {
+            output.append("    TLM_"+object->getTypeName()+" "+object->getName()+"(");
+
+            foreach(const QString &parName, object->getParameterNames())
+            {
+                output.append(parName+"="+object->getParameterValue(parName)+",");
+            }
+            output.chop(1);
+            output.append(");\n");
+        }
+    }
+
+    output.append("equation\n");
+
+    QList<Connector*> connectorPtrs;
+    foreach(ModelObject* object, mpToplevelSystem->getModelObjects())
+    {
+        foreach(Connector* connector, object->getConnectorPtrs())
+        {
+            if(!connectorPtrs.contains(connector))
+            {
+                connectorPtrs.append(connector);
+            }
+        }
+    }
+
+    foreach(const Connector* connector, connectorPtrs)
+    {
+        output.append("    connect("+connector->getStartComponentName()+"."+connector->getStartPortName()+
+                      ","+connector->getEndComponentName()+"."+connector->getEndPortName()+");\n");
+    }
+
+    output.append("end "+mpToplevelSystem->getName());
+
+    qDebug() << output;
+
+
+
+
+    QMap<QString, QString> modelicaLib;
+    modelicaLib.insert("NodeHydraulic", "connector NodeHydraulic \"Hydraulic Connector\"\n"
+                                        "Real         p \"Pressure\";\n"
+                                        "flow Real    q \"Volume flow\"\n"
+                                        "end Pin;");
+
+    modelicaLib.insert("FlowSource", "model FlowSource\n"
+                                     "    parameter Real q_ref;\n"
+                                     "    NodeHydraulic P1;\n"
+                                     "equation\n"
+                                     "    P1.q = q_ref;\n"
+                                     "end FlowSource;");
+
+    modelicaLib.insert("Tank", "model Tank\n"
+                               "    NodeHydraulic P1;\n"
+                               "equation\n"
+                               "    P1.p = 100000;\n"
+                               " end Tank;");
+
+    modelicaLib.insert("LaminarOrifice", "model LaminarOrifice\n"
+                                         "    parameter Real Kc;\n"
+                                         "    NodeHydraulic P1, P2;\n"
+                                         "equation\n"
+                                         "    P2.q = Kc*(P1.p-P2.p);\n"
+                                         "    0 = P1.q + P2.q;\n"
+                                         "end LaminarOrifice;");
+
+    modelicaLib.insert("Volume", "model Volume\n"
+                                 "    parameter Real V;\n"
+                                 "    parameter Real betae;\n"
+                                 "    NodeHydraulic P1, P2;\n"
+                                 "    Real P;\n"
+                                 "equation\n"
+                                 "    P = (P1.p+P2.p)/2;\n"
+                                 "    V/betae*der(P) = P1.q+P2.q;\n"
+                                 "end Volume;");
+
+
+    QString modelEquations = "model TestModel\n"
+                            "    FlowSource qSource;\n"
+                            "    Volume volume;\n"
+                            "    LaminarOrifice orifice;\n"
+                            "    Tank tank;\n"
+                            "equation\n"
+                            "    connect(qSource1.P1, volume.P1);\n"
+                            //"    connect(volume.P2, orifice.P1);\n"
+                            "    connect(orifice.P2, tank.P1);\n"
+                            "end TestModel;";
+
+
+
+    QList<QList<QPair<QString, QString> > > groups;
+    QStringList splitModelEquations = modelEquations.split("\n");
+    int i=1;
+    while(splitModelEquations[i] != "equation")
+    {
+        QString equation = splitModelEquations[i].remove(";").trimmed();
+        groups.append(QList<QPair<QString, QString> >());
+        groups.last().append(QPair<QString, QString>());
+        groups.last().last().first = equation.split(" ").first();
+        groups.last().last().second = equation.split(" ").last();
+        ++i;
+    }
+    ++i;
+    while(!splitModelEquations[i].startsWith("end "))
+    {
+        QString equation = splitModelEquations[i].trimmed();
+        if(equation.startsWith("connect("))
+        {
+            QString comp1 = equation.section("connect(",1,1).section(".",0,0);
+            QString comp2 = equation.section(",",1,1).section(".",0,0).trimmed();
+            int id1, id2;
+            for(int i=0; i<groups.size(); ++i)
+            {
+                for(int j=0; j<groups[i].size(); ++j)
+                {
+                    if(groups[i][j].second == comp1)
+                    {
+                        id1 = i;
+                    }
+                    else if(groups[i][j].second == comp2)
+                    {
+                        id2 = i;
+                    }
+                }
+            }
+
+            if(id1 != id2)
+            {
+                groups[min(id1,id2)].append(groups[max(id1, id2)]);
+                groups.removeAt(max(id1,id2));
+            }
+        }
+        ++i;
+    }
+
+    int apa=3;
+    int ko=apa+2;
+
+}
+
 
 void ModelWidget::closeAnimation()
 {
