@@ -83,6 +83,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicPressureControlValve33", HydraulicPressureControlValve33::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic33ShuttleValve", Hydraulic33ShuttleValve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic42Valve2", Hydraulic42Valve2::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic42DirectionalValve", Hydraulic42DirectionalValve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicValve416", HydraulicValve416::Creator);

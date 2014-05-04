@@ -13,6 +13,15 @@
             <port name="PB" x="0.738721804511278" y="0.0" a="270"/>
             <port name="PC" x="0" y="0.701" a="0"/>
         </ports>
-        <animation/>
+        <animation>
+            <icon userpath="HydraulicPressureControlled42Valve_base.svg"/>
+            <movable idx="0">
+                <icon userpath="HydraulicPressureControlled42Valve.svg"/>
+                <data port="xv" dataname="Value"/>
+                <movement x="4000" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

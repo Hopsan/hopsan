@@ -119,13 +119,6 @@ namespace hopsan {
             mpPC_c = getSafeNodeDataPtr(mpPC, NodeHydraulic::WaveVariable);
             mpPC_Zc = getSafeNodeDataPtr(mpPC, NodeHydraulic::CharImpedance);
 
-            //Declare local variables
-            double x_vmax;
-            double x_v;
-
-            //Read variable values from nodes
-            x_vmax = (*mpX_vmax);
-
              //Initiate transfer function (second order low-pass filter)
             double num[3] = {1.0, 0.0, 0.0};    //Numinator
             double den[3] = {1.0, 2.0*mDelta_h/mOmega_h, 1.0/(mOmega_h*mOmega_h)};    //Denominator
@@ -138,7 +131,7 @@ namespace hopsan {
         {
              //Declare local variables
             double xv, Kcpa, Kcbt, qpa, qbt, Fs_min, Fs_max;
-            double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pc, qc, cc, Zcc, Cq, rho, xvmax, d, f_pa, f_bt;
+            double pp, qp, cp, Zcp, pt, qt, ct, Zct, pa, qa, ca, Zca, pb, qb, cb, Zcb, pc, qc, cc, Cq, rho, xvmax, d, f_pa, f_bt;
             bool cav = false;
 
             //Get variable values from nodes
@@ -151,7 +144,6 @@ namespace hopsan {
             cb = (*mpPB_c);
             Zcb = (*mpPB_Zc);
             cc = (*mpPC_c);
-            Zcc = (*mpPC_Zc);
             Fs_min = (*mpFs_min);
             Fs_max = (*mpFs_max);
             Cq = (*mpC_q);
@@ -251,6 +243,8 @@ namespace hopsan {
             (*mpPA_q) = qa;
             (*mpPB_p) = pb;
             (*mpPB_q) = qb;
+            (*mpPC_p) = pc;
+            (*mpPC_q) = qc;
             (*mpX_v) = xv;
         }
     };

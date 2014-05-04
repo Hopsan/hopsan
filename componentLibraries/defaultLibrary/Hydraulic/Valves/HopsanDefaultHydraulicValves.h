@@ -34,6 +34,7 @@
 #include "HydraulicPressureControlValve33.hpp"
 #include "Hydraulic33ShuttleValve.hpp"
 #include "Hydraulic42Valve.hpp"
+#include "Hydraulic42Valve2.hpp"
 #include "Hydraulic42DirectionalValve.hpp"
 #include "Hydraulic43Valve.hpp"
 #include "HydraulicValve416.hpp"
