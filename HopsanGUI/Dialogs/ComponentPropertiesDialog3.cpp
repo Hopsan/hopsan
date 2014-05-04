@@ -73,7 +73,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
 {
     mpModelObject = pModelObject;
 
-    if(mpModelObject->getTypeName() == "ModelicaComponent")
+    if(mpModelObject->getTypeName() == "ModelicaComponent" && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
     {
         this->hide();
 

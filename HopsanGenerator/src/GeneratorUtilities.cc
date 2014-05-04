@@ -573,6 +573,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     //"../componentLibraries/defaultLibrary/code/defaultComponents.h" <<
                     //"../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
                     "../HopsanCore/include/Components/DummyComponent.hpp" <<
+                    "../HopsanCore/include/Components/ModelicaComponent.hpp" <<
                     "../HopsanCore/include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h" <<
                     "../HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.h" <<
                     "../HopsanCore/include/ComponentUtilities/CSVParser.h" <<

@@ -590,7 +590,13 @@ QString CoreSystemAccess::getPortDescription(QString componentName, QString port
 
 bool CoreSystemAccess::setParameterValue(QString componentName, QString parameterName, QString value, bool force)
 {
-    return mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str())->setParameterValue(parameterName.toStdString().c_str(), value.toStdString().c_str(), force);
+    hopsan::Component *pComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
+    bool retval = pComponent->setParameterValue(parameterName.toStdString().c_str(), value.toStdString().c_str(), force);
+    if(pComponent->getTypeName() == "ModelicaComponent")
+    {
+        pComponent->configure();
+    }
+    return retval;
 }
 
 void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariameterDescription> &rVariameterDescriptions)

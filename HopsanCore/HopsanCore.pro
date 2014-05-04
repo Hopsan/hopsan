@@ -169,7 +169,8 @@ HEADERS += \
     include/HopsanTypes.h \
     include/ComponentUtilities/HopsanPowerUser.h \
     include/HopsanCoreMacros.h \
-    include/compiler_info.h
+    include/compiler_info.h \
+    include/Components/ModelicaComponent.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

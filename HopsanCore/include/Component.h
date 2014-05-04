@@ -233,6 +233,8 @@ protected:
     Port* addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
+    void removePort(const HString &rPortName);
+
     bool getPort(const HString &rPortname, Port* &rpPort);
     HString renamePort(const HString &rOldname, const HString &rNewname);
     void deletePort(const HString &rName);

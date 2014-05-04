@@ -662,6 +662,20 @@ Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType
     return pPort;
 }
 
+void Component::removePort(const HString &rPortName)
+{
+    PortPtrMapT::iterator it = mPortPtrMap.find(rPortName);
+    Port *pPort = it->second;
+    std::vector<Port *> connectedPorts = pPort->getConnectedPorts();
+    for(size_t p=0; p<connectedPorts.size(); ++p)
+    {
+        mpSystemParent->disconnect(pPort, connectedPorts.at(p));
+    }
+    mPortPtrMap.erase(rPortName);
+    mPortPtrVector.erase(std::remove(mPortPtrVector.begin(), mPortPtrVector.end(), pPort), mPortPtrVector.end());
+    delete pPort;
+}
+
 //! @brief Add a PowerPort to the component
 //! @ingroup ComponentSetupFunctions
 //! @param [in] rPortName The desired name of the port (may be automatically changed)

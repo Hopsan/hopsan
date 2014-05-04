@@ -28,6 +28,7 @@
 #include "version.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include "Components/DummyComponent.hpp"
+#include "Components/ModelicaComponent.hpp"
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -60,7 +61,7 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
     mpComponentFactory->registerCreatorFunction("CppComponent", DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction("ModelicaComponent", DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction("ModelicaComponent", ModelicaComponent::Creator);
 #ifdef BUILTINDEFAULTCOMPONENTLIB
     register_default_components(mpComponentFactory);
 #endif

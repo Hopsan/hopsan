@@ -118,7 +118,46 @@ QString Component::getTypeCQS()
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
+    bool retval =  mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
+
+    //Special code for setting parameters to Modelica components. Should maybe be somewhere else.
+    if(this->getTypeName() == "ModelicaComponent")
+    {
+        QStringList portNames = value.split(",");
+
+        //Remove port appearance if port does not exist in list of new ports
+        PortAppearanceMapT::Iterator it;
+        for(it=mModelObjectAppearance.getPortAppearanceMap().begin(); it!=mModelObjectAppearance.getPortAppearanceMap().end(); ++it)
+        {
+            if(!portNames.contains(it.key()))
+            {
+                mModelObjectAppearance.erasePortAppearance(it.key());
+                this->removeExternalPort(it.key());
+                it=mModelObjectAppearance.getPortAppearanceMap().begin();
+            }
+        }
+
+        //Add new port appearance for new ports that do not already exist
+        for(int i=0; i<portNames.size(); ++i)
+        {
+            QString portName = portNames.at(i);
+            if(!mModelObjectAppearance.getPortAppearance(portName))
+            {
+                PortAppearance *pPortAppearance = new PortAppearance();
+                pPortAppearance->selectPortIcon("Q", "PowerPort", "NodeModelica");
+                mModelObjectAppearance.addPortAppearance(portName, pPortAppearance);
+                mModelObjectAppearance.getPortAppearance(portName)->x = (double)rand() / (double)RAND_MAX;
+                mModelObjectAppearance.getPortAppearance(portName)->y = (double)rand() / (double)RAND_MAX;
+                mModelObjectAppearance.getPortAppearance(portName)->rot = 0;
+                this->createRefreshExternalPort(portName);
+            }
+
+            //! @todo Remove no longer existing ports (and disconnect them if they are connected)
+        }
+        this->refreshAppearance();
+    }
+
+    return retval;
 }
 
 //! @brief Set a start value to be mapped to a System parameter
@@ -150,7 +189,7 @@ void Component::openPropertiesDialog()
     //ComponentPropertiesDialog dialog(this, gpMainWindow);
     ComponentPropertiesDialog3 dialog(this, mpDialogParentWidget);
 
-    if(getTypeName() != "ModelicaComponent" && getTypeName() != "CppComponent")
+    if(getTypeName() != "ModelicaComponent NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
     {
         connect(this, SIGNAL(objectDeleted()), &dialog, SLOT(reject()));
         //! @todo should we have delete on close
