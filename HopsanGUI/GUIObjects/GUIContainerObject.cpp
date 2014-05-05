@@ -1153,11 +1153,12 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                  //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
                  Port *pStartRealPort=0, *pEndRealPort=0;
                  // If no group ports, do normal disconnect
-                 if(!pStartRealPort || !pEndRealPort)   //Real pors not found, so it is (probably) a Modelica connection
+                 //! @todo this check prevents disconnect in core from running, so i commented it /Peter
+/*                 if(!pStartRealPort || !pEndRealPort)   //Real pors not found, so it is (probably) a Modelica connection
                  {
                      success = true;
                  }
-                 else if ( !startPortIsGroupPort && !endPortIsGroupPort )
+                 else */if ( !startPortIsGroupPort && !endPortIsGroupPort )
                  {
                     success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
                                                                          pStartP->getName(),
