@@ -575,19 +575,20 @@ void ModelWidget::generateModelicaCode()
     {
         if(object->getTypeName() == "ModelicaComponent")
         {
+            QString model = object->getParameterValue("model");
+            output.append("    "+model+" "+object->getName()+"(");
             //Add type name for modelica component
         }
         else
         {
             output.append("    TLM_"+object->getTypeName()+" "+object->getName()+"(");
-
-            foreach(const QString &parName, object->getParameterNames())
-            {
-                output.append(parName+"="+object->getParameterValue(parName)+",");
-            }
-            output.chop(1);
-            output.append(");\n");
         }
+        foreach(const QString &parName, object->getParameterNames())
+        {
+            output.append(parName+"="+object->getParameterValue(parName)+",");
+        }
+        output.chop(1);
+        output.append(");\n");
     }
 
     output.append("equation\n");
@@ -661,7 +662,7 @@ void ModelWidget::generateModelicaCode()
                             "    LaminarOrifice orifice;\n"
                             "    Tank tank;\n"
                             "equation\n"
-                            "    connect(qSource1.P1, volume.P1);\n"
+                            "    connect(qSource.P1, volume.P1);\n"
                             //"    connect(volume.P2, orifice.P1);\n"
                             "    connect(orifice.P2, tank.P1);\n"
                             "end TestModel;";
@@ -669,7 +670,7 @@ void ModelWidget::generateModelicaCode()
 
 
     QList<QList<QPair<QString, QString> > > groups;
-    QStringList splitModelEquations = modelEquations.split("\n");
+    QStringList splitModelEquations = output/*modelEquations*/.split("\n");
     int i=1;
     while(splitModelEquations[i] != "equation")
     {
@@ -688,16 +689,17 @@ void ModelWidget::generateModelicaCode()
         {
             QString comp1 = equation.section("connect(",1,1).section(".",0,0);
             QString comp2 = equation.section(",",1,1).section(".",0,0).trimmed();
+            //! @todo Ignore TLM connections!
             int id1, id2;
             for(int i=0; i<groups.size(); ++i)
             {
                 for(int j=0; j<groups[i].size(); ++j)
                 {
-                    if(groups[i][j].second == comp1)
+                    if(groups[i][j].second.section("(",0,0) == comp1)
                     {
                         id1 = i;
                     }
-                    else if(groups[i][j].second == comp2)
+                    else if(groups[i][j].second.section("(",0,0) == comp2)
                     {
                         id2 = i;
                     }

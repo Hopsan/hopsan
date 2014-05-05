@@ -48,7 +48,7 @@ namespace hopsan {
                 this->addConstant("model", "Modelica model", "-", "", mModel);
                 this->addConstant("ports", "Number of ports", "-", "", mPorts);
             }
-            else
+            else if(mPorts!="")
             {
                 //Generate list of new ports, based on string parameter
                 std::vector<HString> newPortNames;

@@ -121,7 +121,67 @@ bool Component::setParameterValue(QString name, QString value, bool force)
     bool retval =  mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
 
     //Special code for setting parameters to Modelica components. Should maybe be somewhere else.
-    if(this->getTypeName() == "ModelicaComponent")
+    if(this->getTypeName() == "ModelicaComponent" && name == "model")
+    {
+        QMap<QString, QString> modelicaConnectors;
+        modelicaConnectors.insert("NodeHydraulic", "connector NodeHydraulic \"Hydraulic Connector\"\n"
+                                            "Real         p \"Pressure\";\n"
+                                            "flow Real    q \"Volume flow\"\n"
+                                            "end Pin;");
+
+        QMap<QString, QString> modelicaModels;
+        modelicaModels.insert("FlowSource", "model FlowSource\n"
+                                         "    parameter Real q_ref;\n"
+                                         "    NodeHydraulic P1;\n"
+                                         "equation\n"
+                                         "    P1.q = q_ref;\n"
+                                         "end FlowSource;");
+
+        modelicaModels.insert("Tank", "model Tank\n"
+                                   "    NodeHydraulic P1;\n"
+                                   "equation\n"
+                                   "    P1.p = 100000;\n"
+                                   " end Tank;");
+
+        modelicaModels.insert("LaminarOrifice", "model LaminarOrifice\n"
+                                             "    parameter Real Kc;\n"
+                                             "    NodeHydraulic P1, P2;\n"
+                                             "equation\n"
+                                             "    P2.q = Kc*(P1.p-P2.p);\n"
+                                             "    0 = P1.q + P2.q;\n"
+                                             "end LaminarOrifice;");
+
+        modelicaModels.insert("Volume", "model Volume\n"
+                                     "    parameter Real V;\n"
+                                     "    parameter Real betae;\n"
+                                     "    NodeHydraulic P1, P2;\n"
+                                     "    Real P;\n"
+                                     "equation\n"
+                                     "    P = (P1.p+P2.p)/2;\n"
+                                     "    V/betae*der(P) = P1.q+P2.q;\n"
+                                     "end Volume;");
+
+        if(modelicaModels.contains(value))
+        {
+            QStringList ports;
+            QString modelCode = modelicaModels.find(value).value();
+            QStringList codeLines = modelCode.split("\n");
+            for(int l=1; codeLines[l].trimmed()!="equation" && l<codeLines.size(); ++l)
+            {
+                QString line = codeLines[l].trimmed().remove(";");
+                foreach(const QString &connector, modelicaConnectors.keys())
+                {
+                    if(codeLines[l].trimmed().startsWith(connector+" "))
+                    {
+                        ports.append(line.remove(connector+" ").remove(" ").split(","));
+                    }
+                }
+            }
+
+            this->setParameterValue("ports", ports.join(","));
+        }
+    }
+    else if(this->getTypeName() == "ModelicaComponent" && name == "ports" && !value.isEmpty())
     {
         QStringList portNames = value.split(",");
 
@@ -131,8 +191,9 @@ bool Component::setParameterValue(QString name, QString value, bool force)
         {
             if(!portNames.contains(it.key()))
             {
-                mModelObjectAppearance.erasePortAppearance(it.key());
-                this->removeExternalPort(it.key());
+                QString key = it.key();
+                mModelObjectAppearance.erasePortAppearance(key);
+                this->removeExternalPort(key);
                 it=mModelObjectAppearance.getPortAppearanceMap().begin();
             }
         }
