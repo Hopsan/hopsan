@@ -17,8 +17,8 @@
             <icon userpath="Hydraulic42DirectionalValve_base.svg"/>
             <movable idx="0">
                 <icon userpath="HydraulicPressureControlled42Valve2.svg"/>
-                <data port="xv" dataname="Value"/>
-                <movement x="4000" y="0" a="0"/>
+                <data port="x_v" dataname="Value"/>
+                <movement x="-4000" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>
