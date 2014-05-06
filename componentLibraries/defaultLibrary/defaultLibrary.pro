@@ -309,7 +309,9 @@ HEADERS += \
     Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve2.hpp \
     Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve.hpp \
     Hydraulic/Valves/PressureControlled/HopsanDefaultHydraulicPressureControlledValves.h \
-    Hydraulic/Valves/Hydraulic42Valve2.hpp
+    Hydraulic/Valves/Hydraulic42Valve2.hpp \
+    Special/MechanicB/MechanicGear.hpp \
+    Special/MechanicB/HopsanDefaultMechanicBComponents.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
