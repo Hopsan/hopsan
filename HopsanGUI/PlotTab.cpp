@@ -580,6 +580,7 @@ void PlotTab::exportToMatlab()
     }
 
     // Write plot functions
+    fileStream << "figure\n";
     nTotCurves=0;
     for (int a=0; a<mPlotAreas.size(); ++a)
     {
@@ -588,8 +589,8 @@ void PlotTab::exportToMatlab()
 
         QStringList matlabColors;
         matlabColors << "r" << "g" << "b" << "c" << "m" << "y";
+        fileStream << "subplot("<< mPlotAreas.size() << ",1," << a+1 << ")\n";
         fileStream << "hold on\n";
-        fileStream << "subplot("<< mPlotAreas.size() << ",1," << a << ")\n";
         for(int c=0; c<curves.size(); ++c)
         {
             if( (curves[c]->getAxisY() == QwtPlot::yLeft && pArea->isLeftAxisLogarithmic()) ||
@@ -609,6 +610,7 @@ void PlotTab::exportToMatlab()
             }
             fileStream << "(x" << c+nTotCurves << ",y" << c+nTotCurves << ",'-" << matlabColors[c%6] << "','linewidth'," << curves[c]->pen().width() << ")\n";
         }
+        fileStream << "hold off\n";
         // Increment number for next plot area
         nTotCurves += curves.size();
     }
