@@ -19,7 +19,7 @@
         <animation>
             <icon userpath="43valve_user_base.svg"/>
             <movable>
-                <icon userpath="43valveneutralsupplytotank_user_movable.svg"/>
+                <icon userpath="43valveneutralsupplytotank_user.svg"/>
                 <data port="xv" dataname="Value"/>
                 <movement x="-4000" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>

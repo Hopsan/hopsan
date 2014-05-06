@@ -145,10 +145,10 @@ namespace hopsan {
             xv = mSpoolPosTF.value();
 
             //Valve equations
-            xpanom = xvmax-xv;
-            xpbnom = xv;
-            xatnom = xv;
-            xbtnom = xvmax-xv;
+            xpanom = xv;
+            xpbnom = xvmax-xv;
+            xatnom = xvmax-xv;
+            xbtnom = xv;
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);

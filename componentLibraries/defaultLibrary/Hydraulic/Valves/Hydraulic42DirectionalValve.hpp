@@ -139,8 +139,14 @@ namespace hopsan {
             f_at = (*mpF_at);
             f_bt = (*mpF_bt);
 
-            limitValue(xvin, -xvmax, xvmax);
-            mSpoolPosTF.update(xvin);
+            if(doubleToBool(xvin))
+            {
+                mSpoolPosTF.update(xvmax);
+            }
+            else
+            {
+                mSpoolPosTF.update(-xvmax);
+            }
             xv = mSpoolPosTF.value();
 
             //Valve equations
