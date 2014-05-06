@@ -29,6 +29,7 @@
 #include <QString>
 #include <QWidget>
 #include <QMutex>
+#include <QMap>
 
 //Hopsan includes
 #include "common.h"
@@ -119,5 +120,52 @@ private:
     SimulationThreadHandler *mpSimulationThreadHandler;
     QMutex mSimulateMutex;
 };
+
+
+
+///
+/// \brief The ModelicaModel class
+///
+
+class ModelicaLibrary;
+
+class ModelicaModel
+{
+public:
+    ModelicaModel() {}
+    ModelicaModel(const QString &code);
+    ModelicaModel(const ModelicaModel &other);
+    void getVariables(QMap<QString, QString> &variables) const;
+    void getEquations(QStringList &equations) const;
+    void toFlatEquations(QStringList &equations, const QString &prefix="");
+private:
+    QStringList mCodeLines;
+};
+
+
+
+class ModelicaConnector
+{
+public:
+    ModelicaConnector() {}
+    ModelicaConnector(const QString &code);
+    void getIntensityVariables(QMap<QString, QString> &variables);
+    void getFlowVariables(QMap<QString, QString> &variables);
+private:
+    QStringList mCodeLines;
+};
+
+
+class ModelicaLibrary
+{
+public:
+    ModelicaLibrary();
+    ModelicaModel getModel(const QString &rModelName);
+    void getConnector(const QString &rConnectorName, ModelicaConnector &rConnector);
+private:
+    QMap<QString, ModelicaConnector> mConnectorsMap;
+    QMap<QString, ModelicaModel> mModelsMap;
+};
+
 
 #endif // MODELWIDGET_H

@@ -27,6 +27,8 @@
 #include <QSizePolicy>
 #include <QHash>
 #include <QFileDialog>
+#include <QLabel>
+#include <QHBoxLayout>
 
 
 //Hopsan includes
@@ -38,21 +40,264 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
-#include "HcomWidget.h"
+//#include "HcomWidget.h"
 #include "InitializationThread.h"
 #include "ModelHandler.h"
-#include "ProgressBarThread.h"
+//#include "ProgressBarThread.h"
 #include "ProjectTabWidget.h"
 #include "SimulationThreadHandler.h"
-#include "Utilities/XMLUtilities.h"
+//#include "Utilities/XMLUtilities.h"
 #include "version_gui.h"
 #include "Widgets/AnimationWidget.h"
-#include "Widgets/DebuggerWidget.h"
 #include "MessageHandler.h"
-#include "Widgets/LibraryWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/QuickNavigationWidget.h"
 
+
+
+
+// DEBUG
+
+ModelicaModel::ModelicaModel(const QString &code)
+{
+    mCodeLines = code.split("\n");
+}
+
+ModelicaModel::ModelicaModel(const ModelicaModel &other)
+{
+    mCodeLines = other.mCodeLines;
+}
+
+void ModelicaModel::getVariables(QMap<QString, QString> &variables) const
+{
+    foreach(const QString &constLine, mCodeLines)
+    {
+        QString line = constLine;
+        if(line.startsWith("model "))
+            continue;
+
+        if(line.trimmed() == "equation")
+            break;
+
+        //If equation is "Tank tank1,tank2;", then type="Tank" and names = ["tank1", "tank2"]
+        line = line.remove(";").trimmed();
+        while(line.contains(", "))
+            line.replace(", ", ",");
+        while(line.contains(" ,"))
+            line.replace(" ,",",");
+        QString type = line.section(" ",0,0);
+        QString nameStr = line.section(" ",1,1);
+        QStringList names;
+        while(!nameStr.isEmpty())
+        {
+            if(!nameStr.contains(",") && !nameStr.contains("("))
+            {
+                names.append(nameStr);
+                nameStr.clear();
+            }
+            else if((nameStr.indexOf(",") > -1 && nameStr.indexOf("(") == -1) ||
+                    (nameStr.indexOf(",") > -1 && nameStr.indexOf(",") < nameStr.indexOf("(")))
+            {
+                names.append(nameStr.section(",",0,0));
+                nameStr.remove(0, names.last().size()+1);
+            }
+            else
+            {
+                names.append(nameStr.section("(",0,0));
+                nameStr.remove(0,nameStr.indexOf(")")+1);
+            }
+        }
+
+        foreach(const QString &name, names)
+        {
+            variables.insert(name, type);
+        }
+    }
+}
+
+void ModelicaModel::getEquations(QStringList &equations) const
+{
+    bool inEquations=false;
+    foreach(const QString &line, mCodeLines)
+    {
+        if(!inEquations)
+        {
+            if(line.trimmed() == "equation")
+            {
+                inEquations = true;
+            }
+        }
+        else
+        {
+            if(!line.trimmed().startsWith("end "))
+            {
+                equations.append(line.trimmed());
+            }
+        }
+    }
+}
+
+void ModelicaModel::toFlatEquations(QStringList &equations, const QString &prefix)
+{
+    //! @todo Should be possible to get only equations from subset of submodels
+
+    getEquations(equations);
+    for(int i=0; i<equations.size(); ++i)
+    {
+        if(equations[i].startsWith("connect("))
+        {
+            QString compName1,compName2,portName1,portName2,compType1,compType2,portType1,portType2;
+            compName1=equations[i].section("(",1,1).section(".",0,0).trimmed();
+            compName2=equations[i].section(",",1,1).section(".",0,0).trimmed();
+            portName1=equations[i].section(".",1,1).section(",",0,0).trimmed();
+            portName2=equations[i].section(".",2,2).section(")",0,0).trimmed();
+
+            qDebug() << "Connect: " << compName1 << portName1 << compName2 << portName2;
+
+            QMap<QString,QString> variables;
+            getVariables(variables);
+            compType1 = variables.find(compName1).value();
+            compType2 = variables.find(compName2).value();
+
+            qDebug() << "Types: " << compType1 << compType2;
+
+            ModelicaLibrary library;
+            QMap<QString,QString> variables1, variables2;
+            if(!compType1.startsWith("TLM_"))
+            {
+                ModelicaModel model1 = library.getModel(compType1);
+                model1.getVariables(variables1);
+                portType1 = variables1.find(portName1).value();
+            }
+            if(!compType2.startsWith("TLM_"))
+            {
+                ModelicaModel model2 = library.getModel(compType2);
+                model2.getVariables(variables2);
+                portType2 = variables2.find(portName2).value();
+            }
+
+            if(portType1.isEmpty())
+                portType1 = portType2;
+            else if(portType2.isEmpty())
+                portType2 = portType1;
+
+            qDebug() << "Port types: " << portType1 << portType2;
+
+            //! @todo Check that both ports are of same type! (should not be allowed to connect different types though)
+
+            ModelicaConnector connector;
+            library.getConnector(portType1, connector);
+
+            QMap<QString,QString> intensityVariables, flowVariables;
+            connector.getIntensityVariables(intensityVariables);
+            connector.getFlowVariables(flowVariables);
+
+            qDebug() << "Intensity variables: " << intensityVariables;
+            qDebug() << "Flow variables: " << flowVariables;
+
+
+            if(compType1.startsWith("TLM_") || compType2.startsWith("TLM_"))
+            {
+                qDebug() << "TLM component!";
+            }
+        }
+        else
+        {
+            equations[i].prepend(prefix);
+        }
+    }
+}
+
+
+ModelicaConnector::ModelicaConnector(const QString &code)
+{
+    mCodeLines = code.split("\n");
+}
+
+void ModelicaConnector::getIntensityVariables(QMap<QString, QString> &variables)
+{
+    foreach(const QString &line, mCodeLines.mid(1,mCodeLines.size()-2))
+    {
+        if(!line.startsWith("flow "))
+        {
+            QString type = line.simplified().section(" ",0,0).trimmed();
+            QString name = line.simplified().section(" ",1,1).remove(";").trimmed();
+            variables.insert(name, type);
+        }
+    }
+}
+
+void ModelicaConnector::getFlowVariables(QMap<QString, QString> &variables)
+{
+    foreach(const QString &line, mCodeLines.mid(mCodeLines.size()-2))
+    {
+        if(line.startsWith("flow "))
+        {
+            QString type = line.simplified().section(" ",1,1).trimmed();
+            QString name = line.simplified().section(" ",2,2).remove(";").trimmed();
+            variables.insert(name, type);
+        }
+    }
+}
+
+ModelicaLibrary::ModelicaLibrary()
+{
+    //! @todo Add a connectors map (and a connector help class)
+    mConnectorsMap.insert("NodeHydraulic", ModelicaConnector("connector NodeHydraulic \"Hydraulic Connector\"\n"
+                                        "Real         p \"Pressure\";\n"
+                                        "flow Real    q \"Volume flow\"\n"
+                                        "end Pin;"));
+
+    mModelsMap.insert("FlowSource", ModelicaModel("model FlowSource\n"
+                                     "    parameter Real q_ref;\n"
+                                     "    NodeHydraulic P1;\n"
+                                     "equation\n"
+                                     "    P1.q = q_ref;\n"
+                                     "end FlowSource;"));
+
+    mModelsMap.insert("Tank", ModelicaModel("model Tank\n"
+                               "    NodeHydraulic P1;\n"
+                               "equation\n"
+                               "    P1.p = 100000;\n"
+                               " end Tank;"));
+
+    mModelsMap.insert("LaminarOrifice", ModelicaModel("model LaminarOrifice\n"
+                                         "    parameter Real Kc;\n"
+                                         "    NodeHydraulic P1, P2;\n"
+                                         "equation\n"
+                                         "    P2.q = Kc*(P1.p-P2.p);\n"
+                                         "    0 = P1.q + P2.q;\n"
+                                         "end LaminarOrifice;"));
+
+    mModelsMap.insert("Volume", ModelicaModel("model Volume\n"
+                                 "    parameter Real V;\n"
+                                 "    parameter Real betae;\n"
+                                 "    NodeHydraulic P1, P2;\n"
+                                 "    Real P;\n"
+                                 "equation\n"
+                                 "    P = (P1.p+P2.p)/2;\n"
+                                 "    V/betae*der(P) = P1.q+P2.q;\n"
+                                 "end Volume;"));
+}
+
+ModelicaModel ModelicaLibrary::getModel(const QString &rModelName)
+{
+    if(mModelsMap.contains(rModelName))
+    {
+        return mModelsMap.find(rModelName).value();
+    }
+    else
+    {
+        return ModelicaModel();
+    }
+}
+
+void ModelicaLibrary::getConnector(const QString &rConnectorName, ModelicaConnector &rConnector)
+{
+    rConnector = mConnectorsMap.find(rConnectorName).value();
+}
+
+//END DEBUG
 
 //! @class ModelWidget
 //! @brief The ModelWidget class is a Widget to contain a simulation model
@@ -569,29 +814,29 @@ void ModelWidget::lockTab(bool locked)
 
 void ModelWidget::generateModelicaCode()
 {
-    QString output = "model "+mpToplevelSystem->getName()+"\n";
+    QString modelicaCode = "model "+mpToplevelSystem->getName()+"\n";
 
     foreach(ModelObject* object, mpToplevelSystem->getModelObjects())
     {
         if(object->getTypeName() == "ModelicaComponent")
         {
             QString model = object->getParameterValue("model");
-            output.append("    "+model+" "+object->getName()+"(");
+            modelicaCode.append("    "+model+" "+object->getName()+"(");
             //Add type name for modelica component
         }
         else
         {
-            output.append("    TLM_"+object->getTypeName()+" "+object->getName()+"(");
+            modelicaCode.append("    TLM_"+object->getTypeName()+" "+object->getName()+"(");
         }
         foreach(const QString &parName, object->getParameterNames())
         {
-            output.append(parName+"="+object->getParameterValue(parName)+",");
+            modelicaCode.append(parName+"="+object->getParameterValue(parName)+",");
         }
-        output.chop(1);
-        output.append(");\n");
+        modelicaCode.chop(1);
+        modelicaCode.append(");\n");
     }
 
-    output.append("equation\n");
+    modelicaCode.append("equation\n");
 
     QList<Connector*> connectorPtrs;
     foreach(ModelObject* object, mpToplevelSystem->getModelObjects())
@@ -607,99 +852,66 @@ void ModelWidget::generateModelicaCode()
 
     foreach(const Connector* connector, connectorPtrs)
     {
-        output.append("    connect("+connector->getStartComponentName()+"."+connector->getStartPortName()+
+        modelicaCode.append("    connect("+connector->getStartComponentName()+"."+connector->getStartPortName()+
                       ","+connector->getEndComponentName()+"."+connector->getEndPortName()+");\n");
     }
 
-    output.append("end "+mpToplevelSystem->getName());
+    modelicaCode.append("end "+mpToplevelSystem->getName());
 
-    qDebug() << output;
-
-
-
-
-    QMap<QString, QString> modelicaLib;
-    modelicaLib.insert("NodeHydraulic", "connector NodeHydraulic \"Hydraulic Connector\"\n"
-                                        "Real         p \"Pressure\";\n"
-                                        "flow Real    q \"Volume flow\"\n"
-                                        "end Pin;");
-
-    modelicaLib.insert("FlowSource", "model FlowSource\n"
-                                     "    parameter Real q_ref;\n"
-                                     "    NodeHydraulic P1;\n"
-                                     "equation\n"
-                                     "    P1.q = q_ref;\n"
-                                     "end FlowSource;");
-
-    modelicaLib.insert("Tank", "model Tank\n"
-                               "    NodeHydraulic P1;\n"
-                               "equation\n"
-                               "    P1.p = 100000;\n"
-                               " end Tank;");
-
-    modelicaLib.insert("LaminarOrifice", "model LaminarOrifice\n"
-                                         "    parameter Real Kc;\n"
-                                         "    NodeHydraulic P1, P2;\n"
-                                         "equation\n"
-                                         "    P2.q = Kc*(P1.p-P2.p);\n"
-                                         "    0 = P1.q + P2.q;\n"
-                                         "end LaminarOrifice;");
-
-    modelicaLib.insert("Volume", "model Volume\n"
-                                 "    parameter Real V;\n"
-                                 "    parameter Real betae;\n"
-                                 "    NodeHydraulic P1, P2;\n"
-                                 "    Real P;\n"
-                                 "equation\n"
-                                 "    P = (P1.p+P2.p)/2;\n"
-                                 "    V/betae*der(P) = P1.q+P2.q;\n"
-                                 "end Volume;");
-
-
-    QString modelEquations = "model TestModel\n"
-                            "    FlowSource qSource;\n"
-                            "    Volume volume;\n"
-                            "    LaminarOrifice orifice;\n"
-                            "    Tank tank;\n"
-                            "equation\n"
-                            "    connect(qSource.P1, volume.P1);\n"
-                            //"    connect(volume.P2, orifice.P1);\n"
-                            "    connect(orifice.P2, tank.P1);\n"
-                            "end TestModel;";
+    qDebug() << modelicaCode;
 
 
 
+
+
+
+    ModelicaModel mainModel(modelicaCode);
+
+    QMap<QString, QString> variables;
+    mainModel.getVariables(variables);
+
+    //Add each component to one group each (except TLM components)
     QList<QList<QPair<QString, QString> > > groups;
-    QStringList splitModelEquations = output/*modelEquations*/.split("\n");
-    int i=1;
-    while(splitModelEquations[i] != "equation")
+    foreach(const QString &variable, variables.keys())
     {
-        QString equation = splitModelEquations[i].remove(";").trimmed();
-        groups.append(QList<QPair<QString, QString> >());
-        groups.last().append(QPair<QString, QString>());
-        groups.last().last().first = equation.split(" ").first();
-        groups.last().last().second = equation.split(" ").last();
-        ++i;
+        QString type = variables.find(variable).value();
+        if(type.startsWith("TLM_"))
+        {
+            variables.remove(variable);
+        }
+        else
+        {
+            groups.append(QList<QPair<QString, QString> >());
+            groups.last().append(QPair<QString, QString>(variable, type));
+        }
     }
-    ++i;
-    while(!splitModelEquations[i].startsWith("end "))
+
+    //Merge all groups of connected components
+    QStringList equations;
+    mainModel.getEquations(equations);
+    foreach(const QString &equation, equations)
     {
-        QString equation = splitModelEquations[i].trimmed();
         if(equation.startsWith("connect("))
         {
             QString comp1 = equation.section("connect(",1,1).section(".",0,0);
             QString comp2 = equation.section(",",1,1).section(".",0,0).trimmed();
-            //! @todo Ignore TLM connections!
+            if(!variables.contains(comp1) ||
+                    !variables.contains(comp2) ||
+                    variables.find(comp1).value().startsWith("TLM_") ||
+                    variables.find(comp2).value().startsWith("TLM_"))
+            {
+                continue;       //Ignore connections with TLM components
+            }
             int id1, id2;
             for(int i=0; i<groups.size(); ++i)
             {
                 for(int j=0; j<groups[i].size(); ++j)
                 {
-                    if(groups[i][j].second.section("(",0,0) == comp1)
+                    if(groups[i][j].first == comp1)
                     {
                         id1 = i;
                     }
-                    else if(groups[i][j].second.section("(",0,0) == comp2)
+                    else if(groups[i][j].first == comp2)
                     {
                         id2 = i;
                     }
@@ -712,12 +924,12 @@ void ModelWidget::generateModelicaCode()
                 groups.removeAt(max(id1,id2));
             }
         }
-        ++i;
     }
 
-    int apa=3;
-    int ko=apa+2;
+    qDebug() << "Number of groups: " << groups.size();
 
+    QStringList flatEquations;
+    mainModel.toFlatEquations(flatEquations, "");
 }
 
 
