@@ -15,26 +15,32 @@
 
 namespace hopsan {
 
-    //Verified with AMESim 2011-03-21
     //!
     //! @brief
     //! @ingroup MechanicalComponents
+    //! @details
+    //! Implements the following motion equations
+    //! \f{eqnarray*}{
+    //! J\dot{\omega}_{2} + B\omega_{2} &=& UT_{1}-T_{2} \\
+    //! \omega_{1} &=& -U\omega_{2} \\
+    //! \theta_{1} &=& -U\theta_{2}
+    //! \f}
     //!
     class MechanicRotationalInertiaWithGearRatio : public ComponentQ
     {
 
     private:
-        double *mpGearRatio, *mpB;
+        double *mpU, *mpB;
         double J, k;
         double mNumTheta[3];
         double mDenTheta[3];
         double mNumOmega[2];
         double mDenOmega[2];
-        SecondOrderTransferFunction mFilterTheta;
-        FirstOrderTransferFunction mFilterOmega;
-        //        DoubleIntegratorWithDamping mIntegrator;
-        double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1,
-               *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
+        SecondOrderTransferFunction mThetaFilter;
+        FirstOrderTransferFunction mOmegaFilter;
+
+        double *mpP1_t, *mpP1_a, *mpP1_w, *mpP1_c, *mpP1_Zx,
+               *mpP2_t, *mpP2_a, *mpP2_w, *mpP2_c, *mpP2_Zx;
         Port *mpP1, *mpP2;
 
     public:
@@ -47,32 +53,32 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
-            addInputVariable("omega", "Gear ratio", "-", 1.0, &mpGearRatio);
+            addInputVariable("omega", "Gear ratio", "-", 1.0, &mpU);
             addInputVariable("B", "Viscous Friction", "Nms/rad", 10.0, &mpB);
             addConstant("J", "Moment of Inertia", "kgm^2", 1.0, J);
         }
 
         void initialize()
         {
-            mpND_t1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
-            mpND_a1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
-            mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WaveVariable);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
+            mpP1_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
+            mpP1_a = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
+            mpP1_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WaveVariable);
+            mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
 
-            mpND_t2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Torque);
-            mpND_a2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Angle);
-            mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
+            mpP2_t = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Torque);
+            mpP2_a = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Angle);
+            mpP2_w = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
+            mpP2_Zx = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
 
-            double t1, a1, w1, t2, gearRatio, B;
+            double t1, t2, a2, w2, U, B;
             B = (*mpB);
-            gearRatio = (*mpGearRatio);
-            t1 = (*mpND_t1)*gearRatio;
-            a1 = (*mpND_a1)/gearRatio;
-            w1 = (*mpND_w1)/gearRatio;
-            t2 = (*mpND_t2);
+            U = (*mpU);
+            t1 = (*mpP1_t);
+            t2 = (*mpP2_t);
+            a2 = (*mpP2_a);
+            w2 = (*mpP2_w);
 
             mNumTheta[0] = 1.0;
             mNumTheta[1] = 0.0;
@@ -85,44 +91,46 @@ namespace hopsan {
             mDenOmega[0] = B;
             mDenOmega[1] = J;
 
-            mFilterTheta.initialize(mTimestep, mNumTheta, mDenTheta, t1-t2, -a1);
-            mFilterOmega.initialize(mTimestep, mNumOmega, mDenOmega, t1-t2, -w1);
+            mThetaFilter.initialize(mTimestep, mNumTheta, mDenTheta, U*t1-t2, a2);
+            mOmegaFilter.initialize(mTimestep, mNumOmega, mDenOmega, U*t1-t2, w2);
         }
 
 
         void simulateOneTimestep()
         {
-            double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2, gearRatio, B;
+            double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2, U, B;
 
             //Get variable values from nodes
+            U = (*mpU);
             B = (*mpB);
-            gearRatio = (*mpGearRatio);
-            c1  = (*mpND_c1)*gearRatio;
-            Zx1 = (*mpND_Zx1)*pow(gearRatio, 2.0);
-            c2  = (*mpND_c2);
-            Zx2 = (*mpND_Zx2);
+            c1  = (*mpP1_c);
+            Zx1 = (*mpP1_Zx);
+            c2  = (*mpP2_c);
+            Zx2 = (*mpP2_Zx);
 
             //Mass equations
-            mDenTheta[1] = (B+Zx1+Zx2);
-            mDenOmega[0] = (B+Zx1+Zx2);
-            mFilterTheta.setDen(mDenTheta);
-            mFilterOmega.setDen(mDenOmega);
+            const double BB = B+U*U*Zx1+Zx2;
+            mDenTheta[1] = BB;
+            mDenOmega[0] = BB;
+            mThetaFilter.setDen(mDenTheta);
+            mOmegaFilter.setDen(mDenOmega);
 
-            a2 = mFilterTheta.update(c1-c2);
-            w2 = mFilterOmega.update(c1-c2);
+            const double TT = U*c1-c2;
+            a2 = mThetaFilter.update(TT);
+            w2 = mOmegaFilter.update(TT);
             t2 = c2 + Zx2*w2;
 
-            w1 = -w2*gearRatio;
-            a1 = -a2*gearRatio;
-            t1 = (c1 + Zx1*w1)/gearRatio;
+            w1 = -w2*U;
+            a1 = -a2*U;
+            t1 = c1 + Zx1*w1;
 
             //Write new values to nodes
-            (*mpND_t1) = t1;
-            (*mpND_a1) = a1;
-            (*mpND_w1) = w1;
-            (*mpND_t2) = t2;
-            (*mpND_a2) = a2;
-            (*mpND_w2) = w2;
+            (*mpP1_t) = t1;
+            (*mpP1_a) = a1;
+            (*mpP1_w) = w1;
+            (*mpP2_t) = t2;
+            (*mpP2_a) = a2;
+            (*mpP2_w) = w2;
         }
     };
 }
