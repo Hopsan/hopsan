@@ -311,7 +311,8 @@ HEADERS += \
     Hydraulic/Valves/PressureControlled/HopsanDefaultHydraulicPressureControlledValves.h \
     Hydraulic/Valves/Hydraulic42Valve2.hpp \
     Special/MechanicB/MechanicGear.hpp \
-    Special/MechanicB/HopsanDefaultMechanicBComponents.h
+    Special/MechanicB/HopsanDefaultMechanicBComponents.h \
+    Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
