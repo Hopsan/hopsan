@@ -838,6 +838,15 @@ double Configuration::getUnitScale(const QString &rPhysicalQuantity, const QStri
     return 0;
 }
 
+void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitScale &rUnitScale) const
+{
+    rUnitScale.clear();
+    if (mUnitScales.contains(rPhysicalQuantity))
+    {
+        rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitScale("",0));
+    }
+}
+
 //! @brief Returns a list of the Physical Quantities associated with this unit (hopefully only one)
 //! @param [in] rUnit The unit to lookup
 QStringList Configuration::getPhysicalQuantitiesForUnit(const QString &rUnit) const
@@ -857,6 +866,19 @@ QStringList Configuration::getPhysicalQuantitiesForUnit(const QString &rUnit) co
 QString Configuration::getSIUnit(const QString &rQuantity)
 {
     return  mUnitScales.value(rQuantity, QuantityUnitScale()).siunit;
+}
+
+bool Configuration::isRegisteredSIUnit(const QString &rUnitName) const
+{
+    QMap< QString, QuantityUnitScale >::const_iterator it;
+    for (it=mUnitScales.begin(); it!=mUnitScales.end(); ++it)
+    {
+        if (it.value().siunit == rUnitName)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Configuration::removeUnitScale(const QString &rQuantity, const QString &rUnit)

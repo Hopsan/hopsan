@@ -81,8 +81,11 @@ public:
     void getUnitScales(const QString &rQuantity, QList<UnitScale> &rUnitScales);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
+    void getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitScale &rUnitScale) const;
     QStringList getPhysicalQuantitiesForUnit(const QString &rUnit) const;
     QString getSIUnit(const QString &rQuantity);
+    bool isRegisteredSIUnit(const QString &rUnitName) const;
+
     void removeUnitScale(const QString &rQuantity, const QString &rUnit);
 
     int getPLOExportVersion() const;

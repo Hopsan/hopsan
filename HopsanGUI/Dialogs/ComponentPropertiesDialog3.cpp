@@ -1170,6 +1170,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
     mpValueEdit = 0;
     mpConditionalValueComboBox = 0;
     mpUnitSelectionWidget = 0;
+    mDefaultUnitScale.setOnlyScale(1);
     mpModelObject = pModelObject;
     mVariameterType = type;
     mVariablePortName = rData.mPortName;
@@ -1238,6 +1239,27 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             // Set the unit field
             if (!rData.mUnit.isEmpty())
             {
+
+                mDefaultUnitScale.setOnlyScale(1);
+                if (!gpConfig->isRegisteredSIUnit(rData.mUnit))
+                {
+                    QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(rData.mUnit);
+                    if (pqs.size() > 1)
+                    {
+                        gpMessageHandler->addWarningMessage(QString("Multiple matches for custom unit scales for original unit: %1, wrong set may be shown!").arg(rData.mUnit), "WrongUSSet");
+                    }
+
+                    if (pqs.size() > 0)
+                    {
+                        UnitScale us;
+                        gpConfig->getUnitScale(pqs.front(), rData.mUnit, us);
+                        if (!us.isEmpty())
+                        {
+                            mDefaultUnitScale = us;
+                        }
+                    }
+                }
+
                 mpUnitSelectionWidget = new UnitSelectionWidget(rData.mUnit, this);
                 mpUnitSelectionWidget->setUnitScaling(currentCustomUS);
                 connect(mpUnitSelectionWidget, SIGNAL(unitChanged(UnitScale)), this, SLOT(rescaleByUnitScale(UnitScale)));
@@ -1413,19 +1435,21 @@ void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitScale &rUnitSca
     if (mpValueEdit)
     {
         bool isOK=false;
-        double val = mpValueEdit->text().toDouble(&isOK);
+        mpValueEdit->text().toDouble(&isOK);
+        QString valS = mpValueEdit->text();
         if (isOK)
         {
             // If we alreday have a custom scale then unconvert first
             if (!mCustomScale.isEmpty())
             {
-                val = val / mCustomScale.toDouble();
+                //val = val / mCustomScale.toDouble();
+                valS = mDefaultUnitScale.rescale(mCustomScale.invRescale(valS));
             }
             // Now convert based on new scale values
-            val *= rUnitScale.toDouble();
+            valS = rUnitScale.rescale(mDefaultUnitScale.invRescale(valS));
 
             // Set new value and remember new custom scale
-            mpValueEdit->setText(QString("%1").arg(val));
+            mpValueEdit->setText(QString("%1").arg(valS));
             mCustomScale = rUnitScale;
             refreshValueTextStyle();
         }

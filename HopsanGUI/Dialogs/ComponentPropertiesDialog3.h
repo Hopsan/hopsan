@@ -193,6 +193,7 @@ private:
     VariableTableWidget::VariameterTypEnumT mVariameterType;
     ModelObject *mpModelObject;
     UnitScale mCustomScale;
+    UnitScale mDefaultUnitScale;
     void setDefaultValueTextStyle();
     void decideBackgroundColor(QString &rStyleString);
 };
