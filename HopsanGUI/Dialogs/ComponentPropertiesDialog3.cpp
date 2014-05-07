@@ -53,6 +53,7 @@
 #include "Widgets/ModelWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "LibraryHandler.h"
+#include "MessageHandler.h"
 
 
 //! @class ComponentPropertiesDialog3
@@ -543,8 +544,8 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     columnHeaders.append("Name");
     columnHeaders.append("Alias");
     columnHeaders.append("Description");
-    columnHeaders.append("Value");
     columnHeaders.append("Unit");
+    columnHeaders.append("Value");
     columnHeaders.append("PlotScale");
     columnHeaders.append("Port");
     this->setHorizontalHeaderLabels(columnHeaders);
@@ -702,13 +703,14 @@ bool VariableTableWidget::setStartValues()
             continue;
         }
 
+        ParameterValueSelectionWidget *pValueWideget = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)));
         // Extract name and value from row
-        QString name = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getName();
-        QString value = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getValueText();
+        QString name = pValueWideget->getName();
+        QString value = pValueWideget->getValueText();
 
         // Check if we have new custom scaling
         UnitScale customUnitScale;
-        UnitSelectionWidget *pUnitWidget = qobject_cast<UnitSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Unit)));
+        UnitSelectionWidget *pUnitWidget = pValueWideget->getUnitSelectionWidget();
         if (pUnitWidget)
         {
             bool isDouble=false;
@@ -871,36 +873,16 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Description,pItem);
 
+    // Set the unit field
+    pItem = new QTableWidgetItem(rData.mUnit);
+    pItem->setTextAlignment(Qt::AlignCenter);
+    pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+    setItem(row,Unit,pItem);
+
     // Set the value field
     ParameterValueSelectionWidget *pValueWidget = new ParameterValueSelectionWidget(rData, variametertype, mpModelObject, this);
     this->setIndexWidget(model()->index(row,Value), pValueWidget);
-
-    // Set the unit field
-    if (rData.mUnit.isEmpty() || pValueWidget->isValueDisabled())
-    {
-        pItem = new QTableWidgetItem(rData.mUnit);
-        pItem->setTextAlignment(Qt::AlignCenter);
-        pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-        setItem(row,Unit,pItem);
-    }
-    else
-    {
-        UnitSelectionWidget *pUnitSelectionWidget = new UnitSelectionWidget(rData.mUnit, this);
-        connect(pValueWidget, SIGNAL(resetButtonPressed()), pUnitSelectionWidget, SLOT(resetDefault()));
-        connect(pValueWidget, SIGNAL(systemParameterEntered(bool)), pUnitSelectionWidget, SLOT(resetDefault()));
-        connect(pValueWidget, SIGNAL(systemParameterEntered(bool)), pUnitSelectionWidget, SLOT(setDisabled(bool)));
-        connect(pUnitSelectionWidget, SIGNAL(unitChanged(UnitScale)), pValueWidget, SLOT(rescaleByUnitScale(UnitScale)));
-
-        this->setIndexWidget(model()->index(row,Unit), pUnitSelectionWidget);
-
-        UnitScale currentCustUS;
-        if (mpModelObject->getCustomParameterUnitScale(fullName, currentCustUS))
-        {
-            pUnitSelectionWidget->setUnitScaling(currentCustUS);
-        }
-    }
-
-    // Trigger signal to unitslector if syspar entered to disable the unit scorl box
+    // Trigger signal to unit selector if syspar entered to disable the unit scrol box
     pValueWidget->checkIfSysParEntered();
 
     // Create the custom plot unit display and selection button
@@ -1187,6 +1169,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
 {
     mpValueEdit = 0;
     mpConditionalValueComboBox = 0;
+    mpUnitSelectionWidget = 0;
     mpModelObject = pModelObject;
     mVariameterType = type;
     mVariablePortName = rData.mPortName;
@@ -1238,10 +1221,10 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
         else
         {
             pLayout->addWidget(mpValueEdit);
-            UnitScale us;
-            if (mpModelObject->getCustomParameterUnitScale(mVariablePortDataName, us))
+            UnitScale currentCustomUS;
+            if (mpModelObject->getCustomParameterUnitScale(mVariablePortDataName, currentCustomUS))
             {
-                mCustomScale = us;
+                mCustomScale = currentCustomUS;
                 mpValueEdit->setText(mCustomScale.rescale(value));
             }
             else
@@ -1251,6 +1234,15 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             connect(mpValueEdit, SIGNAL(editingFinished()), this, SLOT(setValue()));
             connect(mpValueEdit, SIGNAL(textChanged(QString)), this, SLOT(checkIfSysParEntered()));
             refreshValueTextStyle();
+
+            // Set the unit field
+            if (!rData.mUnit.isEmpty())
+            {
+                mpUnitSelectionWidget = new UnitSelectionWidget(rData.mUnit, this);
+                mpUnitSelectionWidget->setUnitScaling(currentCustomUS);
+                connect(mpUnitSelectionWidget, SIGNAL(unitChanged(UnitScale)), this, SLOT(rescaleByUnitScale(UnitScale)));
+                pLayout->addWidget(mpUnitSelectionWidget);
+            }
         }
 
         QToolButton *pResetButton =  new QToolButton(this);
@@ -1312,6 +1304,11 @@ const QString &ParameterValueSelectionWidget::getName() const
     return mVariablePortDataName;
 }
 
+UnitSelectionWidget *ParameterValueSelectionWidget::getUnitSelectionWidget()
+{
+    return mpUnitSelectionWidget;
+}
+
 bool ParameterValueSelectionWidget::isValueDisabled() const
 {
     return (mpValueEdit == 0);
@@ -1333,9 +1330,13 @@ void ParameterValueSelectionWidget::setConditionalValue(const int idx)
 
 void ParameterValueSelectionWidget::resetDefault()
 {
-    // It is important to emit this signal before resetting the value
-    // It will cause any custom unit scale to be reset first
-    emit resetButtonPressed();
+    // It is important to reset the unit before resetting the value
+    // it will make any custom unit scale to be reset first
+    if (mpUnitSelectionWidget)
+    {
+        mpUnitSelectionWidget->resetDefault();
+    }
+
     if(mpModelObject && mpValueEdit)
     {
         QString defaultText = mpModelObject->getDefaultParameterValue(mVariablePortDataName);
@@ -1438,7 +1439,15 @@ bool ParameterValueSelectionWidget::checkIfSysParEntered()
     {
         syspar = mpModelObject->getParentContainerObject()->hasParameter(mpValueEdit->text());
     }
-    emit systemParameterEntered(syspar);
+
+    if (mpUnitSelectionWidget)
+    {
+        if (syspar)
+        {
+            mpUnitSelectionWidget->resetDefault();
+        }
+        mpUnitSelectionWidget->setDisabled(syspar);
+    }
     return syspar;
 }
 
@@ -1528,20 +1537,27 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
     mDefaultIndex = -1;
 
     QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mDefaultUnit);
-    //! @todo there should only be one returned or this will not work
+    //! @todo if more then one is returned both will be shown, ther could be mixups, dont know how to handle that
+//    foreach(QString pq, pqs)
+//    {
+//        QMap<QString, double> map = gpConfig->getUnitScales(pq);
+//        QMap<QString, double>::iterator it;
+//        for (it=map.begin(); it!=map.end(); ++it)
+//        {
+//            mUnitScales.insert(it.key(),it.value());
+//        }
+//    }
+    //! @todo this may show the wrong set of units
+    if (pqs.size() > 1)
+    {
+        gpMessageHandler->addWarningMessage(QString("Multiple matches for custom unit scales for original unit: %1, wrong set may be shown!").arg(mDefaultUnit), "WrongUSSet");
+    }
     if (pqs.size() > 0)
     {
-        mUnitScales = gpConfig->getUnitScales(pqs.first());
+        mUnitScales = gpConfig->getUnitScales(pqs.front());
     }
 
-    if (mUnitScales.isEmpty())
-    {
-        QLabel *pLabel = new QLabel(rDefaultUnit,this);
-        pLabel->setFrameStyle(QFrame::NoFrame | QFrame::Plain);
-        pLabel->setAlignment(Qt::AlignCenter);
-        pLayout->addWidget(pLabel);
-    }
-    else
+    if (!mUnitScales.isEmpty())
     {
         mpUnitComboBox = new QComboBox(this);
         mpUnitComboBox->setFrame(false);
@@ -1549,6 +1565,7 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
         mpUnitComboBox->lineEdit()->setAlignment(Qt::AlignCenter);
         mpUnitComboBox->lineEdit()->setReadOnly(true);
         mpUnitComboBox->installEventFilter(new MouseWheelEventEater(this));
+        mpUnitComboBox->setMinimumWidth(60);
 
         foreach(QString unit, mUnitScales.keys())
         {
@@ -1566,17 +1583,20 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
 
 void UnitSelectionWidget::setUnitScaling(const UnitScale &rUs)
 {
-    int i = mpUnitComboBox->findText(rUs.mUnit);
-    if (i >= 0)
+    if (mpUnitComboBox && !rUs.isEmpty())
     {
-        mpUnitComboBox->setCurrentIndex(i);
-    }
-    else
-    {
-        //Add to list
-        mUnitScales.insert(rUs.mUnit, rUs.toDouble());
-        mpUnitComboBox->addItem(rUs.mUnit);
-        mpUnitComboBox->setCurrentIndex(mpUnitComboBox->count()-1);
+        int i = mpUnitComboBox->findText(rUs.mUnit);
+        if (i >= 0)
+        {
+            mpUnitComboBox->setCurrentIndex(i);
+        }
+        else
+        {
+            //Add to list
+            mUnitScales.insert(rUs.mUnit, rUs.toDouble());
+            mpUnitComboBox->addItem(rUs.mUnit);
+            mpUnitComboBox->setCurrentIndex(mpUnitComboBox->count()-1);
+        }
     }
 }
 

@@ -137,8 +137,8 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_TRUETAG "true"
 #define HMF_FALSETAG "false"
 
-#define HMF_PARAMETERSCALES "customparamcales"
-#define HMF_PARAMETERSCALE "customparamscale"
+#define HMF_PARAMETERSCALES "customparamscales"
+#define HMF_PARAMETERSCALE  "customparamscale"
 #define HMF_PARAMETERSCALEPARAMNAME "parameter"
 #define HMF_PARAMETERSCALEUNIT "unit"
 #define HMF_PARAMETERSCALESCALE "scale"

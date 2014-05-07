@@ -32,7 +32,7 @@ class VariableTableWidget :public TableWidgetTotalSize
     Q_OBJECT
 public:
     enum VariameterTypEnumT {InputVaraiable, OutputVariable, OtherVariable, Constant}; //!< @todo maybe not only here
-    enum ColumnEnumT {Name, Alias, Description, Value, Unit, Scale, ShowPort, NumCols};
+    enum ColumnEnumT {Name, Alias, Description, Unit, Value, Scale, ShowPort, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
     bool setCustomPlotScaleValues();
@@ -137,40 +137,6 @@ protected:
     }
 };
 
-class ParameterValueSelectionWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent);
-    void setValueText(const QString &rText);
-    QString getValueText() const;
-    const QString &getDataType() const;
-    const QString &getName() const;
-    bool isValueDisabled() const;
-public slots:
-    void refreshValueTextStyle();
-    void rescaleByUnitScale(const UnitScale &rUnitScale);
-    bool checkIfSysParEntered();
-signals:
-    void resetButtonPressed();
-    void systemParameterEntered(bool tf);
-private slots:
-    void setValue();
-    void setConditionalValue(const int idx);
-    void resetDefault();
-    void createSysParameterSelectionMenu();
-private:
-    QString mVariableDataType, mVariablePortDataName, mVariablePortName;
-    QLineEdit *mpValueEdit;
-    QComboBox *mpConditionalValueComboBox;
-    VariableTableWidget::VariameterTypEnumT mVariameterType;
-    ModelObject *mpModelObject;
-    UnitScale mCustomScale;
-    void setDefaultValueTextStyle();
-    void decideBackgroundColor(QString &rStyleString);
-};
-
-
 class UnitSelectionWidget : public QWidget
 {
     Q_OBJECT
@@ -196,6 +162,39 @@ private:
     QMap<QString, double> mUnitScales;
     QString mDefaultUnit;
     int mDefaultIndex;
+};
+
+class ParameterValueSelectionWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent);
+    void setValueText(const QString &rText);
+    QString getValueText() const;
+    const QString &getDataType() const;
+    const QString &getName() const;
+    UnitSelectionWidget *getUnitSelectionWidget();
+    bool isValueDisabled() const;
+public slots:
+    void refreshValueTextStyle();
+    void rescaleByUnitScale(const UnitScale &rUnitScale);
+    bool checkIfSysParEntered();
+
+private slots:
+    void setValue();
+    void setConditionalValue(const int idx);
+    void resetDefault();
+    void createSysParameterSelectionMenu();
+private:
+    QString mVariableDataType, mVariablePortDataName, mVariablePortName;
+    QLineEdit *mpValueEdit;
+    QComboBox *mpConditionalValueComboBox;
+    UnitSelectionWidget *mpUnitSelectionWidget;
+    VariableTableWidget::VariameterTypEnumT mVariameterType;
+    ModelObject *mpModelObject;
+    UnitScale mCustomScale;
+    void setDefaultValueTextStyle();
+    void decideBackgroundColor(QString &rStyleString);
 };
 
 class HideShowPortWidget : public QWidget
