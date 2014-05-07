@@ -398,7 +398,7 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
             {
                 QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
                                                   getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
-                mpPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getVectorVariable(fullName, -1));
+                mpPlotWindow->getCurrentPlotTab()->setCustomXVectorForAll(getParentContainerObject()->getLogDataHandler()->getHopsanVariable(fullName, -1));
             }
         }
         mpPlotWindow->showNormal();
@@ -411,18 +411,22 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void ScopeComponent::rotate(double /*angle*/, UndoStatusEnumT /*undoSettings*/)
+void ScopeComponent::rotate(double angle, UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(angle)
+    Q_UNUSED(undoSettings)
     // Overloaded to do nothing
 }
 
-void ScopeComponent::flipVertical(UndoStatusEnumT /*undoSettings*/)
+void ScopeComponent::flipVertical(UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(undoSettings)
     // Overloaded to do nothing
 }
 
-void ScopeComponent::flipHorizontal(UndoStatusEnumT /*undoSettings*/)
+void ScopeComponent::flipHorizontal(UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(undoSettings)
     // Overloaded to do nothing
 }
 

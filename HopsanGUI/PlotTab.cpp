@@ -229,11 +229,11 @@ void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescr
     }
 }
 
-void PlotTab::setCustomXVectorForAll(SharedVectorVariableT pData, int plotID)
+void PlotTab::setCustomXVectorForAll(HopsanVariable data, int plotID)
 {
     if (plotID < mPlotAreas.size())
     {
-        mPlotAreas[plotID]->setCustomXVectorForAll(pData);
+        mPlotAreas[plotID]->setCustomXVectorForAll(data);
     }
 }
 

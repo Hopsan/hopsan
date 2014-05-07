@@ -453,17 +453,6 @@ PlotTab *PlotWindow::addPlotTab(const QString &rName, PlotTabTypeT type)
 }
 
 
-void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
-{
-    getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, 0);
-}
-
-void PlotWindow::setCustomXVector(SharedVectorVariableT pData)
-{
-    getCurrentPlotTab()->setCustomXVectorForAll(pData);
-}
-
-
 PlotTab *PlotWindow::addPlotTab()
 {
     return addPlotTab(QString());

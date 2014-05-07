@@ -85,10 +85,6 @@ public slots:
     PlotTab *addPlotTab();
     void createPlotWindowFromTab();
 
-    //! @todo these two should not be used
-    void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc);
-    void setCustomXVector(SharedVectorVariableT pData);
-
     void saveToXml();
     void loadFromXml();
 
