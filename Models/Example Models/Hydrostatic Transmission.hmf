@@ -193,16 +193,6 @@
         <hopsangui>
           <pose x="2800.127163" y="2599.533487" flipped="true" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
-              <start x="18.677000" y="6.626000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" a="-90.000000"/>
-            </movable>
-            <movable>
-              <start x="18.677000" y="6.626000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" a="-90.000000"/>
-            </movable>
-          </animation>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicVariableDisplacementMotorQ" displayname="Motor">
               <ports/>
@@ -441,16 +431,6 @@
         <hopsangui>
           <pose x="2401.653618" y="2599.533487" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
-              <start x="18.677000" y="6.626000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" a="-90.000000"/>
-            </movable>
-            <movable>
-              <start x="18.677000" y="6.626000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" a="-90.000000"/>
-            </movable>
-          </animation>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicVariableDisplacementPump" displayname="Variable_Displacement_Pump">
               <ports/>
