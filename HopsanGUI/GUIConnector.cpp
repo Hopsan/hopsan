@@ -387,8 +387,8 @@ void Connector::finishCreation()
     this->determineAppearance();    // Figure out which connector appearance to use
     this->setPassive();             // Make line passive (deselected)
 
-    if((mpStartPort->getPortType() == "PowerPortType" && mpEndPort->getPortType() == "ReadPortType") ||
-       (mpStartPort->getPortType() == "ReadPortType" && mpEndPort->getPortType() == "PowerPortType"))
+    if(mpStartPort && mpEndPort && ((mpStartPort->getPortType() == "PowerPortType" && mpEndPort->getPortType() == "ReadPortType") ||
+       (mpStartPort->getPortType() == "ReadPortType" && mpEndPort->getPortType() == "PowerPortType")))
     {
         this->setDashed(true);
     }
