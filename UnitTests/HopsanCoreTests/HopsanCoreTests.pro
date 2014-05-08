@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS = HStringTest SimulationTest HVectorTest GeneratorTest
+SUBDIRS = HStringTest HVectorTest SimulationTest

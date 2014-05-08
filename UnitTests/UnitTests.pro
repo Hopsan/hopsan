@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
 
 CONFIG += ordered
-SUBDIRS = HopsanCoreTests SymHopTest DefaultLibraryXMLTest
+SUBDIRS = HopsanCoreTests SymHopTest GeneratorTest DefaultLibraryXMLTest

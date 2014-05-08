@@ -6,13 +6,8 @@
 #include <assert.h>
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-#ifdef WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
-#define LIBEXT ".dll"
-#else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
-#define LIBEXT ".so"
-#endif
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+#define LIBEXT TO_STR(DLL_EXT)
 #endif
 
 using namespace hopsan;
