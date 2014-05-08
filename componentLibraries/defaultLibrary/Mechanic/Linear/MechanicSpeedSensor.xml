@@ -10,7 +10,7 @@
             <port x="0.5" y="0" a="270" name="out"/>
         </ports>
         <animation>
-            <icon userpath="movementsensor_user_base.svg"/>
+            <icon userpath="speedsensor_user_base.svg"/>
             <movable>
                 <icon userpath="sensor_user_movable.svg"/>
                 <data port="out" dataname="Value"/>
