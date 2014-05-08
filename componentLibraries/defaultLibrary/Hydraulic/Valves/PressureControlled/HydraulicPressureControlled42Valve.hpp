@@ -178,6 +178,8 @@ namespace hopsan {
             pt = ct + qt*Zct;
             pa = ca + qa*Zca;
             pb = cb + qb*Zcb;
+            pc = cc;
+            qc = 0;
 
             //Cavitation check
             if(pa < 0.0)
