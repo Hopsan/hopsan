@@ -406,24 +406,24 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
         }
     }
 
-    QVector<int> indexes;
-    indexes.append(bestId);
-    indexes.append(worstId);
+    mParameterOutputIndexes.clear();
+    mParameterOutputIndexes.append(bestId);
+    mParameterOutputIndexes.append(worstId);
     if(bestId == worstId)
     {
-        indexes.remove(0);
+        mParameterOutputIndexes.remove(0);
     }
     for(int i=0; i<values.size(); ++i)
     {
-        if(!indexes.contains(i))
+        if(!mParameterOutputIndexes.contains(i))
         {
-            indexes.append(i);
+            mParameterOutputIndexes.append(i);
         }
     }
 
-    for(int x=0; x<indexes.size(); ++x)
+    for(int x=0; x<mParameterOutputIndexes.size(); ++x)
     {
-        int i = indexes[x];
+        int i = mParameterOutputIndexes[x];
         QString output = "obj: ";
         QString objStr = QString::number(objectives[i], 'g', 8);
         while(objStr.size() < 12)
@@ -1910,9 +1910,13 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
 //! @brief Slot that applies the parameters in a point to the original model. Index of the point is determined by the sender of the signal.
 void OptimizationDialog::applyParameters()
 {
+    if(mParameterOutputIndexes.isEmpty())       //Just for safety, should not happen
+        return;
+
     QPushButton *pSender = qobject_cast<QPushButton*>(QObject::sender());
     if(!pSender) return;
     int idx = mParametersApplyButtonPtrs.indexOf(pSender);
+    idx = mParameterOutputIndexes.at(idx);
 
     if(gpModelHandler->count() == 0 || !gpModelHandler->getCurrentModel())
     {

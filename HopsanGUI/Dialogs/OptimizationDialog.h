@@ -190,6 +190,7 @@ private:
     QList<QToolButton*> mpParameterRemoveButtons;
     QList<QStringList> mSelectedVariables;
     bool mCoreProgressBarsRecreated;
+    QVector<int> mParameterOutputIndexes;
 };
 
 #endif // OPTIMIZATIONDIALOG_H
