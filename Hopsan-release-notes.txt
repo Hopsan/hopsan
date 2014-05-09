@@ -42,6 +42,7 @@
 - Fixed components: MechanicRotationalInertiaWithGearRatio (in/out power was not same with no viscous friction and steady state)
 - Fixed components: MechanicRotationalInertiaWithSingleGear (in/out power was not same with no viscous friction and steady state)
 - Fixed components: HydraulicTurbulentOrifice now simulates once in initialize to correctly calculate initial values
+- Fixed components: Disabled some start values that would have no effect in Hydraulic Sources&Sinks
 
 - Enhancement: Setting plot scale to "-1" will no longer result in loose unit (-1 and -1.0 is a special case)
 - Enhancement: Plot markers are now easier to see, they are black by default and you can now change the symbol (or color) from the right-click menu.
