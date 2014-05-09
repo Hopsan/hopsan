@@ -25,7 +25,6 @@
 #ifndef HYDRAULICPRESSURESOURCEQ_HPP_INCLUDED
 #define HYDRAULICPRESSURESOURCEQ_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 
 namespace hopsan {
@@ -37,7 +36,7 @@ namespace hopsan {
     class HydraulicPressureSourceQ : public ComponentQ
     {
     private:
-        double *mpP, *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
+        double *mpP, *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc;
         Port *mpP1;
 
     public:
@@ -55,10 +54,10 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
         }
 
 
@@ -69,16 +68,16 @@ namespace hopsan {
 
             //Get variable values from nodes
             in = (*mpP);
-            c = (*mpND_c);
-            Zc = (*mpND_Zc);
+            c = (*mpP1_c);
+            Zc = (*mpP1_Zc);
 
             //Equations
             q = (in - c)/Zc;
             p = in;
 
             //Write variables to nodes
-            (*mpND_p) = p;
-            (*mpND_q) = q;
+            (*mpP1_p) = p;
+            (*mpP1_q) = q;
         }
     };
 }

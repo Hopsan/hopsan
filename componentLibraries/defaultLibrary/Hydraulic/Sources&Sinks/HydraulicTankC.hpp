@@ -25,7 +25,6 @@
 #ifndef HYDRAULICTANKC_HPP_INCLUDED
 #define HYDRAULICTANKC_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 
 namespace hopsan {
@@ -37,12 +36,10 @@ namespace hopsan {
     class HydraulicTankC : public ComponentC
     {
     private:
-        double mZc;
         double mPressure;
 
-        double *mpND_p, *mpND_c, *mpND_Zc;
-
         Port *mpP1;
+        double *mpP1_p, *mpP1_c, *mpP1_Zc;
 
     public:
         static Component *Creator()
@@ -54,23 +51,24 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             addConstant("p", "Default Pressure", "Pa", 1.0e5, mPressure);
-            disableStartValue(mpP1, NodeHydraulic::Pressure);
+
             setDefaultStartValue(mpP1, NodeHydraulic::Flow, 0.0);
+            disableStartValue(mpP1, NodeHydraulic::Pressure);
+            disableStartValue(mpP1, NodeHydraulic::WaveVariable);
+            disableStartValue(mpP1, NodeHydraulic::CharImpedance);
         }
 
 
         void initialize()
         {
-            mZc = 0.0;
-
-            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
             //Override the start value
-            (*mpND_p) = mPressure;
-            (*mpND_c) = mPressure;
-            (*mpND_Zc) = mZc;
+            (*mpP1_p) = mPressure;
+            (*mpP1_c) = mPressure;
+            (*mpP1_Zc) = 0.0;
         }
 
 

@@ -37,15 +37,14 @@ namespace hopsan {
     class HydraulicMultiTankC : public ComponentC
     {
     private:
-        double Zc;
-        double p;
-        Port *mpMP;
+        double mP;
 
+        Port *mpMP;
         size_t mNumPorts;
-        std::vector<double*> mND_p_vec; //!< @todo Do we really need this, also in non multiport example
-        std::vector<double*> mND_q_vec;
-        std::vector<double*> mND_c_vec;
-        std::vector<double*> mND_Zc_vec;
+        std::vector<double*> mvpMP_p; //!< @todo Do we really need this, also in non multiport example
+        std::vector<double*> mvpMP_q;
+        std::vector<double*> mvpMP_c;
+        std::vector<double*> mvpMP_Zc;
 
     public:
         static Component *Creator()
@@ -56,33 +55,33 @@ namespace hopsan {
         void configure()
         {
             mpMP = addPowerMultiPort("MP", "NodeHydraulic");
-            addConstant("p", "Default pressure", "Pa", 1.0e5, p);
+            addConstant("p", "Default pressure", "Pa", 1.0e5, mP);
+
             disableStartValue(mpMP, NodeHydraulic::Pressure);
+            disableStartValue(mpMP, NodeHydraulic::WaveVariable);
+            disableStartValue(mpMP, NodeHydraulic::CharImpedance);
         }
 
 
         void initialize()
         {
-            Zc        = 0.0;
-
             mNumPorts = mpMP->getNumPorts();
-
             //! @todo write help function to set the size and contents of a these vectors automatically
-            mND_p_vec.resize(mNumPorts);
-            mND_q_vec.resize(mNumPorts);
-            mND_c_vec.resize(mNumPorts);
-            mND_Zc_vec.resize(mNumPorts);
+            mvpMP_p.resize(mNumPorts);
+            mvpMP_q.resize(mNumPorts);
+            mvpMP_c.resize(mNumPorts);
+            mvpMP_Zc.resize(mNumPorts);
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mND_p_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Pressure);
-                mND_q_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Flow);
-                mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WaveVariable);
-                mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CharImpedance);
+                mvpMP_p[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Pressure);
+                mvpMP_q[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Flow);
+                mvpMP_c[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WaveVariable);
+                mvpMP_Zc[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CharImpedance);
 
-                *(mND_p_vec[i]) = p;    //Override the startvalue for the pressure
-                *(mND_q_vec[i]) = getDefaultStartValue(mpMP, NodeHydraulic::Flow);
-                *(mND_c_vec[i]) = p;
-                *(mND_Zc_vec[i]) = Zc;
+                *(mvpMP_p[i]) = mP;    //Override the startvalue for the pressure
+                *(mvpMP_q[i]) = getDefaultStartValue(mpMP, NodeHydraulic::Flow);
+                *(mvpMP_c[i]) = mP;
+                *(mvpMP_Zc[i]) = 0.0;
             }
         }
 

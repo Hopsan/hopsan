@@ -25,7 +25,6 @@
 #ifndef HYDRAULICPRESSURESOURCEC_HPP_INCLUDED
 #define HYDRAULICPRESSURESOURCEC_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 
 namespace hopsan {
@@ -38,7 +37,7 @@ namespace hopsan {
     {
     private:
         Port *mpP1;
-        double *mpP, *mpND_c, *mpND_Zc;
+        double *mpP, *mpP1_c, *mpP1_Zc;
 
     public:
         static Component *Creator()
@@ -58,8 +57,8 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
             simulateOneTimestep();
         }
@@ -67,8 +66,8 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            *mpND_c = *mpP;
-            *mpND_Zc = 0.0;
+            *mpP1_c = *mpP;
+            *mpP1_Zc = 0.0;
         }
     };
 }

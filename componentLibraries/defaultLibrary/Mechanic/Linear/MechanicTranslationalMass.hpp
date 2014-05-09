@@ -33,17 +33,24 @@ namespace hopsan {
     {
 
     private:
-        double m;
-        double *mpB, *mpK, *xMin, *xMax;
-        double mLength;         //This length is not accesible by the user,
-                                //it is set from the start values by the c-components in the ends
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;  //Node data pointers
-        double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
-        double mNumX[3], mNumV[2];
-        double mDenX[3], mDenV[2];
+        // Port pointers
+        Port *mpP1, *mpP2;
+        // Node data pointers
+        double *mpP1_f, *mpP1_x, *mpP1_v, *mpP1_c, *mpP1_Zx, *mpP1_me;
+        double *mP2D_f, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zx, *mpP2_me;
+        double *mpB, *mpK, *mpXMin, *mpXMax;
+        // Constants
+        double mMass;
+
+        // Other member variables
         SecondOrderTransferFunction mFilterX;
         FirstOrderTransferFunction mFilterV;
-        Port *mpP1, *mpP2;
+        double mNumX[3], mNumV[2];
+        double mDenX[3], mDenV[2];
+
+        // This length is not accesible by the user,
+        // it is set from the start values by the c-components in the ends
+        double mLength;
 
     public:
         static Component *Creator()
@@ -58,38 +65,39 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            addConstant("m", "Mass", "kg",                      100.0, m);
+            addConstant("m", "Mass", "kg",                      100.0, mMass);
             addInputVariable("B", "Viscous Friction", "Ns/m",   10.0, &mpB);
             addInputVariable("k", "Spring Coefficient", "N/m", 0.0, &mpK);
-            addInputVariable("x_min", "Minimum Position", "m", 0.0, &xMin);
-            addInputVariable("x_max", "Maximum Position", "m", 1.0, &xMax);
+            addInputVariable("x_min", "Minimum Position", "m", 0.0, &mpXMin);
+            addInputVariable("x_max", "Maximum Position", "m", 1.0, &mpXMax);
         }
 
 
         void initialize()
         {
             //Assign node data pointers
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
-            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
+            mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+            mpP1_me = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
 
-            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
-            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
-            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
+            mP2D_f = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpP2_x = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+            mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpP2_Zx = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
+            mpP2_me = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
 
             //Initialization
-            f1 = (*mpND_f1);
-            f2 = (*mpND_f2);
-            x1 = (*mpND_x1);
-            v1 = (*mpND_v1);
-            x2 = (*mpND_x2);
-            v2 = (*mpND_v2);
+            double f1, x1, v1, f2, x2, v2;
+            f1 = (*mpP1_f);
+            f2 = (*mP2D_f);
+            x1 = (*mpP1_x);
+            v1 = (*mpP1_v);
+            x2 = (*mpP2_x);
+            v2 = (*mpP2_v);
 
             mLength = x1+x2;
 
@@ -98,20 +106,20 @@ namespace hopsan {
             mNumX[2] = 0.0;
             mDenX[0] = (*mpK);
             mDenX[1] = (*mpB);
-            mDenX[2] = m;
+            mDenX[2] = mMass;
             mNumV[0] = 1.0;
             mNumV[1] = 0.0;
             mDenV[0] = (*mpB);
-            mDenV[1] = m;
+            mDenV[1] = mMass;
 
             mFilterX.initialize(mTimestep, mNumX, mDenX, f1-f2, x2);
             mFilterV.initialize(mTimestep, mNumV, mDenV, f1-f2 - (*mpK)*x2, v2);
 
-            (*mpND_me1) = m;
-            (*mpND_me2) = m;
+            (*mpP1_me) = mMass;
+            (*mpP2_me) = mMass;
 
             //Print debug message if velocities do not match
-            if((*mpND_v1) != -(*mpND_v2))
+            if((*mpP1_v) != -(*mpP2_v))
             {
                 this->addErrorMessage("Start velocities does not match, {"+getName()+"::"+mpP1->getName()+
                                       "} and {"+getName()+"::"+mpP2->getName()+"}.");
@@ -122,11 +130,13 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;
+
             //Get variable values from nodes
-            c1 = (*mpND_c1);
-            Zx1 = (*mpND_Zx1);
-            c2 = (*mpND_c2);
-            Zx2 = (*mpND_Zx2);
+            c1 = (*mpP1_c);
+            Zx1 = (*mpP1_Zx);
+            c2 = (*mpP2_c);
+            Zx2 = (*mpP2_Zx);
             const double k = (*mpK);
             const double B = (*mpB);
 
@@ -140,24 +150,16 @@ namespace hopsan {
             x2 = mFilterX.update(c1-c2);
             v2 = mFilterV.update(c1-c2 - k*x2);
 
-//            if((mTime > 6) && (mTime < 6.01))
-//            {
-//                double apa = c1-c2;
-//                stringstream ss;
-//                ss << "t: " << mTime << "   c1-c2 = " << apa << "   v2 = " << v2;
-//                addDebugMessage(ss.str());
-//            }
-
-            if(x2<(*xMin))
+            if(x2<(*mpXMin))
             {
-                x2=(*xMin);
+                x2=(*mpXMin);
                 v2=0.0;
                 mFilterX.initializeValues(c1-c2, x2);
                 mFilterV.initializeValues(c1-c2, 0.0);
             }
-            if(x2>(*xMax))
+            if(x2>(*mpXMax))
             {
-                x2=(*xMax);
+                x2=(*mpXMax);
                 v2=0.0;
                 mFilterX.initializeValues(c1-c2, x2);
                 mFilterV.initializeValues(c1-c2, 0.0);
@@ -169,22 +171,14 @@ namespace hopsan {
             f2 = c2 + Zx2*v2;
 
             //Write new values to nodes
-            (*mpND_f1) = f1;
-            (*mpND_x1) = x1;
-            (*mpND_v1) = v1;
-            (*mpND_f2) = f2;
-            (*mpND_x2) = x2;
-            (*mpND_v2) = v2;
-            (*mpND_me1) = m;
-            (*mpND_me2) = m;
-
-
-//            if((mTime>.5) && (mTime<.5001))
-//            {
-//                std::stringstream ss;
-//                ss << "mTime: " << mTime << "     c1-c2: " << c1-c2 << "    v2: " << v2 << std::endl;
-//                addInfoMessage(ss.str());
-//            }
+            (*mpP1_f) = f1;
+            (*mpP1_x) = x1;
+            (*mpP1_v) = v1;
+            (*mP2D_f) = f2;
+            (*mpP2_x) = x2;
+            (*mpP2_v) = v2;
+            (*mpP1_me) = mMass;
+            (*mpP2_me) = mMass;
         }
     };
 }
