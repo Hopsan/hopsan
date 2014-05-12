@@ -28,6 +28,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QButtonGroup>
+#include <QLabel>
 
 //Forward Declarations
 class ContainerObject;
@@ -46,10 +47,12 @@ public slots:
     void gotoContainerAndCloseSubcontainers(int id);
 
 private:
+    void refreshCurrentLabel();
     void refreshVisible();
 
     QVector<ContainerObject*> mContainerObjectPtrs;
     QVector<QPushButton*> mPushButtonPtrs;
+    QLabel *mpCurrentSysNameLabel;
     QButtonGroup *mpButtonGroup;
 };
 

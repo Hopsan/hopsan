@@ -291,6 +291,7 @@ void HVCWidget::runHvcTest()
 
 
     // Run each test
+    gpPlotHandler->closeAllOpenWindows(); //Close all plot windows to avoid confusion if we run several tests after each other
     for (int t=0; t<mDataConfigs.size(); ++t)
     {
         LogDataHandler *pImportLogDataHandler = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
@@ -330,7 +331,7 @@ void HVCWidget::runHvcTest()
         pImportLogDataHandler->importTimeVariablesFromCSVColumns(mDataConfigs[t].mDataFile, columns, names, timecolumns);
 
         QString windowName = QString("Validation Plot %1").arg(t);
-        gpPlotHandler->createNewPlotWindowIfItNotAlreadyExists(windowName);
+        gpPlotHandler->createNewOrReplacePlotwindow(windowName);
         gpPlotHandler->plotDataToWindow(windowName, pVariableLogDataHandler->getVectorVariable(variableName,-1), 0);
         gpPlotHandler->plotDataToWindow(windowName, pImportLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName+"_valid",-1), 0);
     }

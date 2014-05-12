@@ -32,15 +32,17 @@
 QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
     QWidget(parent)
 {
+    mpCurrentSysNameLabel = 0;
+
     QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);  //Create the horizontal layout for this GroupBox
-    this->mpButtonGroup = new QButtonGroup(this);
-    connect(this->mpButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(gotoContainerAndCloseSubcontainers(int)));
+    mpButtonGroup = new QButtonGroup(this);
+    connect(mpButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(gotoContainerAndCloseSubcontainers(int)));
 
     pHBoxLayout->setContentsMargins(0,0,0,0); //Make narrow margins
     pHBoxLayout->setSpacing(0);
     pHBoxLayout->setAlignment(Qt::AlignLeft);
 
-    this->refreshVisible();
+    refreshVisible();
 }
 
 //! @brief Append a new opened container to teh navigation widget
@@ -48,16 +50,16 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
 void QuickNavigationWidget::addOpenContainer(ContainerObject* pContainer)
 {
     //! @todo we can use the button group as button storage instead of having an extra Qvector
-    this->mContainerObjectPtrs.append(pContainer);                              //Add the container object ptr from storage
-    QPushButton *tmp = new QPushButton(pContainer->getParentContainerObject()->getName()+" ::", this);   //Create new button with parent name
-    tmp->setStyleSheet("padding:0px");
-    tmp->setFlat(true);
-
-    this->mPushButtonPtrs.append(tmp);                                          //Remember the new button in storage
-    this->layout()->addWidget(tmp);                                             //Add the button to the graphics widget
-    this->mpButtonGroup->addButton(tmp,this->mContainerObjectPtrs.size()-1);    //Add the button to the buttons group with the
-                                                                                //Id that is corresponding to its container pointer
-    this->refreshVisible();
+    mContainerObjectPtrs.append(pContainer);                              //Add the container object ptr from storage
+    QPushButton *pTmp = new QPushButton(pContainer->getParentContainerObject()->getName()+" ::", this);   //Create new button with parent name
+    pTmp->setStyleSheet("padding:0px");
+    pTmp->setFlat(true);
+    layout()->addWidget(pTmp);                                             //Add the button to the graphics widget
+    mPushButtonPtrs.append(pTmp);                                          //Remember the new button in storage
+    mpButtonGroup->addButton(pTmp, mContainerObjectPtrs.size()-1);         //Add the button to the buttons group with the
+                                                                           //Id that is corresponding to its container pointer
+    refreshCurrentLabel();
+    refreshVisible();
 }
 
 //! @brief Backstep to the given container closing all bellow it on the way
@@ -65,17 +67,36 @@ void QuickNavigationWidget::addOpenContainer(ContainerObject* pContainer)
 void QuickNavigationWidget::gotoContainerAndCloseSubcontainers(int id)
 {
     //Reverse close subsystems,one at a time
-    for (int i=this->mContainerObjectPtrs.size()-1; i>=id; --i)
+    for (int i=mContainerObjectPtrs.size()-1; i>=id; --i)
     {
         mContainerObjectPtrs[i]->exitContainer();
-        this->mpButtonGroup->removeButton(this->mPushButtonPtrs.value(i));  //Remove button from button group
-        this->layout()->removeWidget(this->mPushButtonPtrs.value(i));       //Remove button from graphics box
-        delete this->mPushButtonPtrs.last();                                //Delete the actual button
-        this->mPushButtonPtrs.pop_back();                                   //Remove button ptr from storage
-        this->mContainerObjectPtrs.pop_back();                              //Remove the container object ptr from storage
+        mpButtonGroup->removeButton(this->mPushButtonPtrs.value(i));  //Remove button from button group
+        layout()->removeWidget(this->mPushButtonPtrs.value(i));       //Remove button from graphics box
+        delete mPushButtonPtrs.last();                                //Delete the actual button
+        mPushButtonPtrs.pop_back();                                   //Remove button ptr from storage
+        mContainerObjectPtrs.pop_back();                              //Remove the container object ptr from storage
     }
 
-    this->refreshVisible();
+    refreshCurrentLabel();
+    refreshVisible();
+}
+
+void QuickNavigationWidget::refreshCurrentLabel()
+{
+    if (mpCurrentSysNameLabel)
+    {
+        layout()->removeWidget(mpCurrentSysNameLabel);
+        mpCurrentSysNameLabel->hide();
+        mpCurrentSysNameLabel->deleteLater();
+        mpCurrentSysNameLabel = 0;
+    }
+
+    if (mContainerObjectPtrs.size() > 0)
+    {
+        mpCurrentSysNameLabel = new QLabel(mContainerObjectPtrs.last()->getName(), this);
+        mpCurrentSysNameLabel->setStyleSheet("padding:2px");
+        layout()->addWidget(mpCurrentSysNameLabel);
+    }
 }
 
 //! @brief Determines if the widget should be visible or not
