@@ -160,6 +160,7 @@ private slots:
 private:
     QComboBox *mpUnitComboBox;
     QMap<QString, double> mUnitScales;
+    QString mPhysicalQuantity;
     QString mDefaultUnit;
     int mDefaultIndex;
 };

@@ -5123,6 +5123,11 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
                 leftData = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->insertNewHopsanVariable(left, mAnsVector->getVariableType(), gen);
                 if (leftData)
                 {
+                    if (leftData.mpVariable->getGeneration() != mAnsVector->getGeneration())
+                    {
+                        HCOMWARN(QString("Variable generations missmatch %1 != %2 in assignment").arg(leftData.mpVariable->getGeneration()+1).arg(mAnsVector->getGeneration()+1));
+                    }
+
                     leftData.mpVariable->assignFrom(mAnsVector);
                     leftData.mpVariable->preventAutoRemoval();
                     mLocalVars.remove(left);    //Remove scalar variable with same name if it exists

@@ -955,6 +955,10 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
             plotscale.setAttribute(HMF_PARAMETERSCALEPARAMNAME, psit.key());
             plotscale.setAttribute(HMF_PARAMETERSCALEUNIT, us.mUnit);
             plotscale.setAttribute(HMF_PARAMETERSCALESCALE, us.mScale);
+            if (!us.mPhysicalQuantity.isEmpty())
+            {
+                plotscale.setAttribute(HMF_PARAMETERSCALEQUANTITY, us.mPhysicalQuantity);
+            }
             CoreParameterData data;
             getParameter(psit.key(), data);
             plotscale.setAttribute(HMF_PARAMETERSCALEVALUE, us.rescale(data.mValue));

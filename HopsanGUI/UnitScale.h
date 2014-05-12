@@ -48,5 +48,6 @@ public:
 
     QString mUnit;
     QString mScale;
+    QString mPhysicalQuantity;
 };
 #endif // UNITSCALE_H

@@ -143,6 +143,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_PARAMETERSCALEUNIT "unit"
 #define HMF_PARAMETERSCALESCALE "scale"
 #define HMF_PARAMETERSCALEVALUE "value"
+#define HMF_PARAMETERSCALEQUANTITY "quantity"
 
 #define HMF_PLOTSCALES "plotscales"
 #define HMF_PLOTSCALE "plotscale"

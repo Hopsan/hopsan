@@ -844,6 +844,7 @@ void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString
     if (mUnitScales.contains(rPhysicalQuantity))
     {
         rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitScale("",0));
+        rUnitScale.mPhysicalQuantity = rPhysicalQuantity;
     }
 }
 
