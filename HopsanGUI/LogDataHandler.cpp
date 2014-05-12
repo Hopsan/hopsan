@@ -310,6 +310,24 @@ void LogDataHandler::exportGenerationToCSV(const QString &rFilePath, const int g
     exportToCSV(rFilePath, vars);
 }
 
+HopsanVariable LogDataHandler::insertNewHopsanVariable(const QString &rDesiredname, VariableTypeT type, const int gen)
+{
+    bool ok = isNameValid(rDesiredname);
+    if (!ok)
+    {
+        gpMessageHandler->addErrorMessage(QString("Invalid variable name: %1").arg(rDesiredname));
+    }
+    if( ok )
+    {
+        SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
+        pVarDesc->mDataName = rDesiredname;
+        pVarDesc->mVariableSourceType = ScriptVariableType;
+        SharedVectorVariableT pNewData = createFreeVariable(type, pVarDesc);
+        return insertVariable(pNewData, "", gen);
+    }
+    return HopsanVariable();
+}
+
 class PLOImportData
 {
 public:
@@ -1681,7 +1699,7 @@ SharedVectorVariableT LogDataHandler::createOrphanVariable(const QString &rName,
 }
 
 
-SharedVectorVariableT LogDataHandler::defineNewVariable(const QString &rDesiredname, VariableTypeT type)
+SharedVectorVariableT LogDataHandler::defineNewVectorVariable(const QString &rDesiredname, VariableTypeT type)
 {
     bool ok = isNameValid(rDesiredname);
     if (!ok)
@@ -1690,7 +1708,12 @@ SharedVectorVariableT LogDataHandler::defineNewVariable(const QString &rDesiredn
     }
     if( ok && (mLogDataMap.find(rDesiredname) == mLogDataMap.end()) )
     {
-        return defineNewVectorVariable_NoNameCheck(rDesiredname, type);
+        SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
+        pVarDesc->mDataName = rDesiredname;
+        pVarDesc->mVariableSourceType = ScriptVariableType;
+        SharedVectorVariableT pNewData = createFreeVariable(type, pVarDesc);
+        insertVariable(pNewData);
+        return pNewData;
     }
     return SharedVectorVariableT();
 }
@@ -1946,16 +1969,6 @@ void LogDataHandler::removeGenerationCacheIfEmpty(const int gen)
     {
         mGenerationCacheMap.erase(it);
     }
-}
-
-SharedVectorVariableT LogDataHandler::defineNewVectorVariable_NoNameCheck(const QString &rName, VariableTypeT type)
-{
-    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
-    pVarDesc->mDataName = rName;
-    pVarDesc->mVariableSourceType = ScriptVariableType;
-    SharedVectorVariableT pNewData = createFreeVariable(type, pVarDesc);
-    insertVariable(pNewData);
-    return pNewData;
 }
 
 void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration)
@@ -2225,7 +2238,8 @@ SharedVectorVariableT LogDataHandler::insertFrequencyDomainVariable(SharedVector
 //! @param[in] pVariable The variable to insert
 //! @param[in] keyName An alternative keyName to use (used recursivly to set an alias, do not abuse this argument)
 //! @param[in] gen An alternative generation number (-1 = current))
-void LogDataHandler::insertVariable(SharedVectorVariableT pVariable, QString keyName, int gen)
+//! @returns A HopsanVariable object representing the inserted variable
+HopsanVariable LogDataHandler::insertVariable(SharedVectorVariableT pVariable, QString keyName, int gen)
 {
     // If keyName is empty then use fullName
     if (keyName.isEmpty())
@@ -2267,6 +2281,8 @@ void LogDataHandler::insertVariable(SharedVectorVariableT pVariable, QString key
 
     // Make the variable remember that this logdatahandler is its parent (creator)
     pVariable->mpParentLogDataHandler = this;
+
+    return HopsanVariable(pDataContainer, pVariable);
 }
 
 bool LogDataHandler::hasVariable(const QString &rFullName, const int generation)

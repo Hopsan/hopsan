@@ -815,8 +815,8 @@ void OptimizationWorkerComplexRFP::plotPoints()
         if(!parVar_x)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
-            parVar_x = pHandler->defineNewVariable(namex);
-            parVar_y = pHandler->defineNewVariable(namey);
+            parVar_x = pHandler->defineNewVectorVariable(namex);
+            parVar_y = pHandler->defineNewVectorVariable(namey);
             parVar_x->preventAutoRemoval();
             parVar_y->preventAutoRemoval();
 
@@ -847,8 +847,8 @@ void OptimizationWorkerComplexRFP::plotPoints()
         if(!parVar_x)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
-            parVar_x = pHandler->defineNewVariable(namex);
-            parVar_y = pHandler->defineNewVariable(namey);
+            parVar_x = pHandler->defineNewVectorVariable(namex);
+            parVar_y = pHandler->defineNewVectorVariable(namey);
             parVar_x->preventAutoRemoval();
             parVar_y->preventAutoRemoval();
 

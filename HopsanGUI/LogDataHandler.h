@@ -62,7 +62,8 @@ public:
     void exportToCSV(const QString &rFilePath, const QList<HopsanVariable> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
 
-    SharedVectorVariableT defineNewVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
+    HopsanVariable insertNewHopsanVariable(const QString &rDesiredname, VariableTypeT type=VectorType, const int gen=-1);
+    SharedVectorVariableT defineNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
     SharedVectorVariableT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
     bool deleteVariable(const QString &rVarName);
@@ -180,12 +181,11 @@ private:
     SharedVectorVariableT insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
     SharedVectorVariableT insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc);
     SharedVectorVariableT insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
-    void insertVariable(SharedVectorVariableT pVariable, QString keyName=QString(), int gen=-1);
+    HopsanVariable insertVariable(SharedVectorVariableT pVariable, QString keyName=QString(), int gen=-1);
 
     QString getNewCacheName();
     void rememberIfImported(HopsanVariable data);
     void removeGenerationCacheIfEmpty(const int gen);
-    SharedVectorVariableT defineNewVectorVariable_NoNameCheck(const QString &rName, VariableTypeT type=VectorType);
 
     ContainerObject *mpParentContainerObject;
 

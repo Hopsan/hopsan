@@ -979,14 +979,14 @@ void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariable
     }
 
     //! @todo this should not happen here
-    SharedVectorVariableT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodegain");
+    SharedVectorVariableT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVectorVariable("bodegain");
     if(gainVar.isNull())
     {
         gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);
     }
     gainVar.data()->assignFrom(pGain);
 
-    SharedVectorVariableT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVariable("bodephase");
+    SharedVectorVariableT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVectorVariable("bodephase");
     if(phaseVar.isNull())
     {
         phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);

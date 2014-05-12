@@ -469,21 +469,21 @@ VectorVariable *PythonHopsanInterface::getVariable(const QString &rName, const i
 
 VectorVariable *PythonHopsanInterface::addVectorVariable(const QString &rName, QVector<double> &rData)
 {
-    SharedVectorVariableT pVar = getCurrentViewcontainerObject()->getLogDataHandler()->defineNewVariable(rName);
+    SharedVectorVariableT pVar = getCurrentViewcontainerObject()->getLogDataHandler()->defineNewVectorVariable(rName);
     pVar->assignFrom(rData);
     return pVar.data();
 }
 
 VectorVariable *PythonHopsanInterface::addTimeVariable(const QString &rName, QVector<double> &rTime, QVector<double> &rData)
 {
-    SharedVectorVariableT pVar = getCurrentViewcontainerObject()->getLogDataHandler()->defineNewVariable(rName, TimeDomainType);
+    SharedVectorVariableT pVar = getCurrentViewcontainerObject()->getLogDataHandler()->defineNewVectorVariable(rName, TimeDomainType);
     pVar->assignFrom(rTime, rData);
     return pVar.data();
 }
 
 VectorVariable *PythonHopsanInterface::addFrequencyVariable(const QString &rName, QVector<double> &rFrequency, QVector<double> &rData)
 {
-    SharedVectorVariableT pVar = getCurrentViewcontainerObject()->getLogDataHandler()->defineNewVariable(rName, FrequencyDomainType);
+    SharedVectorVariableT pVar = getCurrentViewcontainerObject()->getLogDataHandler()->defineNewVectorVariable(rName, FrequencyDomainType);
     pVar->assignFrom(rFrequency, rData);
     return pVar.data();
 }

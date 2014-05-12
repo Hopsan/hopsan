@@ -252,7 +252,7 @@ void OptimizationWorker::logPoint(int idx)
         if(!parVar)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
-            parVar = pHandler->defineNewVariable(name);
+            parVar = pHandler->defineNewVectorVariable(name);
             parVar->preventAutoRemoval();
 
             parVar->assignFrom(mParameters[idx][p]);
@@ -268,7 +268,7 @@ void OptimizationWorker::logPoint(int idx)
     if(!objVar)
     {
         //! @todo we should set name and unit and maybe description (in define variable)
-        objVar = pHandler->defineNewVariable(name);
+        objVar = pHandler->defineNewVectorVariable(name);
         objVar->preventAutoRemoval();
 
         objVar->assignFrom(mObjectives[idx]);
@@ -384,8 +384,8 @@ void OptimizationWorker::plotPoints()
         if(!parVar_x)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
-            parVar_x = pHandler->defineNewVariable(namex);
-            parVar_y = pHandler->defineNewVariable(namey);
+            parVar_x = pHandler->defineNewVectorVariable(namex);
+            parVar_y = pHandler->defineNewVectorVariable(namey);
             parVar_x->preventAutoRemoval();
             parVar_y->preventAutoRemoval();
 
@@ -436,7 +436,7 @@ void OptimizationWorker::plotObjectiveFunctionValues()
     if(bestVar.isNull())
     {
         //! @todo unit and description
-        bestVar = pHandler->defineNewVariable("BestObjective");
+        bestVar = pHandler->defineNewVectorVariable("BestObjective");
         bestVar->preventAutoRemoval();
         bestVar->assignFrom(mObjectives[mBestId]);
         bestVar->setCacheDataToDisk(false);
@@ -448,7 +448,7 @@ void OptimizationWorker::plotObjectiveFunctionValues()
     SharedVectorVariableT worstVar = pHandler->getVectorVariable("WorstObjective", -1);
     if(worstVar.isNull())
     {
-        worstVar = pHandler->defineNewVariable("WorstObjective");
+        worstVar = pHandler->defineNewVectorVariable("WorstObjective");
         worstVar->preventAutoRemoval();
         worstVar->assignFrom(mObjectives[mWorstId]);
         worstVar->setCacheDataToDisk(false);
@@ -480,7 +480,7 @@ void OptimizationWorker::plotParameters()
         SharedVectorVariableT par = pHandler->getVectorVariable("NewPar"+QString::number(p), -1);
         if(par.isNull())
         {
-            par = pHandler->defineNewVariable("NewPar"+QString::number(p));
+            par = pHandler->defineNewVectorVariable("NewPar"+QString::number(p));
             par->preventAutoRemoval();
             par->assignFrom(mParameters[mLastWorstId][p]);
             par->setCacheDataToDisk(false);

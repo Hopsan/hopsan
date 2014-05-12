@@ -22,7 +22,7 @@ public:
         mGenerationNumber = genNum;
         QHBoxLayout *pHLayout = new QHBoxLayout(this);
         pHLayout->addWidget(&mChosenCheckBox);
-        pHLayout->addWidget(new QLabel(QString("Gen: %1  %2").arg(genNum).arg(rDescription), this));
+        pHLayout->addWidget(new QLabel(QString("Gen: %1  %2").arg(genNum+1).arg(rDescription), this));
         pHLayout->setSizeConstraint(QLayout::SetFixedSize);
     }
 
