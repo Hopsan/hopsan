@@ -581,8 +581,6 @@
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="MP::Flow"/>
           <parameter unit="K" value="0" type="double" name="MP::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="MP::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="MP::HeatFlow"/>
           <parameter unit="-" value="28e6" type="double" name="p::Value"/>
         </parameters>
@@ -1186,8 +1184,6 @@
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="MP::Flow"/>
           <parameter unit="K" value="0" type="double" name="MP::Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="MP::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="MP::HeatFlow"/>
           <parameter unit="-" value="100000" type="double" name="p::Value"/>
         </parameters>

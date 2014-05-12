@@ -292,7 +292,6 @@
       </component>
       <component typename="HydraulicPressureReliefValve" name="Pressure_Relief_Valve">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="xv#Value"/>
           <parameter unit="-" value="2e+07" type="double" name="p_max#Value"/>
           <parameter unit="-" value="0.01" type="double" name="tao#Value"/>
           <parameter unit="-" value="0" type="double" name="p_h#Value"/>
@@ -343,7 +342,6 @@
       </component>
       <component typename="HydraulicPressureReliefValve" name="Pressure_Relief_Valve_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="xv#Value"/>
           <parameter unit="-" value="2e+07" type="double" name="p_max#Value"/>
           <parameter unit="-" value="0.01" type="double" name="tao#Value"/>
           <parameter unit="-" value="0" type="double" name="p_h#Value"/>
@@ -442,8 +440,6 @@
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="MP#Flow"/>
           <parameter unit="K" value="293" type="double" name="MP#Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="MP#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="MP#HeatFlow"/>
           <parameter unit="-" value="3e6" type="double" name="p#Value"/>
         </parameters>
@@ -485,8 +481,6 @@
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="MP#Flow"/>
           <parameter unit="K" value="293" type="double" name="MP#Temperature"/>
-          <parameter unit="Pa" value="100000" type="double" name="MP#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="MP#HeatFlow"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>

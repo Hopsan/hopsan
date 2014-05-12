@@ -82,14 +82,10 @@
           <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
           <parameter unit="Pa" value="1e6" type="double" name="P1#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
           <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
           <parameter unit="Pa" value="1e6" type="double" name="P2#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
           <parameter unit="-" value="0.3" type="double" name="alpha#Value"/>
           <parameter unit="m^3" value="0.001" type="double" name="V"/>
@@ -120,14 +116,10 @@
           <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
           <parameter unit="Pa" value="1e6" type="double" name="P1#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
           <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
           <parameter unit="Pa" value="1e6" type="double" name="P2#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
           <parameter unit="-" value="0.3" type="double" name="alpha#Value"/>
           <parameter unit="m^3" value="0.001" type="double" name="V"/>
@@ -186,8 +178,6 @@
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="MP#Flow"/>
           <parameter unit="K" value="0" type="double" name="MP#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="MP#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="MP#HeatFlow"/>
           <parameter unit="Pa" value="0" type="double" name="p"/>
         </parameters>
@@ -210,8 +200,6 @@
           <parameter unit="rad/s" value="0" type="double" name="P1#AngularVelocity"/>
           <parameter unit="Nm" value="0" type="double" name="P1#Torque"/>
           <parameter unit="rad" value="0" type="double" name="P1#Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="P1#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
           <parameter unit="kgm^2" value="0" type="double" name="P1#EquivalentInertia"/>
         </parameters>
         <ports>
@@ -238,8 +226,6 @@
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="MP#Flow"/>
           <parameter unit="K" value="0" type="double" name="MP#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="MP#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="MP#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="MP#HeatFlow"/>
           <parameter unit="Pa" value="2e6" type="double" name="p"/>
         </parameters>
@@ -1190,7 +1176,6 @@
       </component>
       <component typename="HydraulicPressureReliefValve" name="Adjustable_Pressure_Relief_Valve">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="xv#Value"/>
           <parameter unit="-" value="2e7" type="double" name="p_max#Value"/>
           <parameter unit="-" value="0.01" type="double" name="tao#Value"/>
           <parameter unit="-" value="500000" type="double" name="p_h#Value"/>
@@ -1257,14 +1242,10 @@
           <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
           <parameter unit="Pa" value="1e6" type="double" name="P1#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
           <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
           <parameter unit="Pa" value="1e6" type="double" name="P2#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
           <parameter unit="-" value="0.1" type="double" name="alpha#Value"/>
           <parameter unit="m^3" value="0.001" type="double" name="V"/>
