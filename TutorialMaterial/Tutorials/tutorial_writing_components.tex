@@ -113,7 +113,7 @@ extern "C" DLLEXPORT void get_hopsan_info(...)
 \end{lstlisting}
 \end{minipage}
 
-\noindent First of all, all component code files must be included. This is shown in lines 3 and 4 in the example below.
+\noindent First of all, all component code files must be included. This is shown in lines 1 and 2 in the example below.
 Second, each component needs to be registered in the HopsanCore by the "`pComponentFactory->registerCreatorFunction()`", as shown in lines  lines 10 and 11.
 The first argument must be a unique \textit{type name} that identifies you component. 
 The second argument is the Creator() function, which must exist in each component.
@@ -401,7 +401,7 @@ Now it is time to implement the equation in the component.
 Open \texttt{MyComponent.hpp} from the file list.
 As you can see, all functions mentioned in the previous chapter has been generated.
 In this case we only care about the \texttt{simulateOneTimeStep()} function.
-Replace the line "\texttt{//WRITE EQUATIONS HERE}" with the following: "\texttt{y = A*x+B;}".
+Replace the line "\texttt{//WRITE EQUATIONS HERE}" with the following: "\texttt{y = mA*x+mB;}". Note that in the code, the constants \texttt{A} and \texttt{B} are renamed to \texttt{mA} and \texttt{mB}. This is to indicate that they are \textit{member} variables of the class.
 Remember the semicolon!
 C++ requires each line to end with a semicolon.\\
 \newline\noindent

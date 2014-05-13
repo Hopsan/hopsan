@@ -145,6 +145,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     init = words.at(3).section("=", 1);                             //...blabla) =x
                 else if(words.at(3) == "=")
                     init = words.at(4);                                             // ...blabla) = x
+                init.remove(";");
 
                 QString parDisplayName = lines.at(l).section("\"", -2, -2);
 
@@ -1315,7 +1316,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             }
             finalAlgorithms.prepend(Expression::fromEquation(unknowns[u], tempExpr).toString());
             systemEquations.removeAt(lastFound);
-            logStream << finalAlgorithms.last()+"\n";
+            logStream << finalAlgorithms.first()+"\n";
             unknowns.removeAt(u);
             --u;
         }

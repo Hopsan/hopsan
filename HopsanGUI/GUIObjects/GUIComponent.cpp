@@ -164,21 +164,37 @@ bool Component::setParameterValue(QString name, QString value, bool force)
         if(modelicaModels.contains(value))
         {
             QStringList ports;
+            QStringList parameters;
+            QStringList defaults;
             QString modelCode = modelicaModels.find(value).value();
             QStringList codeLines = modelCode.split("\n");
             for(int l=1; codeLines[l].trimmed()!="equation" && l<codeLines.size(); ++l)
             {
-                QString line = codeLines[l].trimmed().remove(";");
+                QString line = codeLines[l].simplified().remove(";");
                 foreach(const QString &connector, modelicaConnectors.keys())
                 {
-                    if(codeLines[l].trimmed().startsWith(connector+" "))
+                    if(line.startsWith(connector+" "))
                     {
                         ports.append(line.remove(connector+" ").remove(" ").split(","));
+                    }
+                    else if(line.startsWith("parameter "))
+                    {
+                        parameters.append(line.section(" ",2,2).section("(",0,0));
+                        if(defaults.contains("="))
+                        {
+                            defaults.append(line.section("=",1,1).simplified());
+                        }
+                        else
+                        {
+                            defaults.append("0");
+                        }
                     }
                 }
             }
 
             this->setParameterValue("ports", ports.join(","));
+            this->setParameterValue("parameters", parameters.join(","));
+            this->setParameterValue("defaults", defaults.join(","));
         }
     }
     else if(this->getTypeName() == "ModelicaComponent" && name == "ports" && !value.isEmpty())

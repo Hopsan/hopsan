@@ -40,6 +40,7 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
+#include "Utilities/GUIUtilities.h"
 //#include "HcomWidget.h"
 #include "InitializationThread.h"
 #include "ModelHandler.h"
@@ -52,6 +53,10 @@
 #include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/QuickNavigationWidget.h"
+#include "SymHop.h"
+
+//Needed for Modelica experiments, move later if necessary
+#include "LibraryHandler.h"
 
 
 
@@ -66,6 +71,22 @@ ModelicaModel::ModelicaModel(const QString &code)
 ModelicaModel::ModelicaModel(const ModelicaModel &other)
 {
     mCodeLines = other.mCodeLines;
+}
+
+void ModelicaModel::getParameters(QMap<QString, QPair<QString,QString>  > &parameters) const
+{
+    foreach(const QString constLine, mCodeLines)
+    {
+        QString line = constLine;
+        line = line.simplified();
+        if(line.startsWith("parameter "))
+        {
+            QString name = line.section(" ",2,2).section(";",0,0).section("(",0,0);
+            QString type = line.section(" ",1,1);
+            QString defaultValue = line.section("=",-1,-1).simplified().remove(";");
+            parameters.insert(name, QPair<QString,QString>(type,defaultValue));
+        }
+    }
 }
 
 void ModelicaModel::getVariables(QMap<QString, QString> &variables) const
@@ -137,12 +158,19 @@ void ModelicaModel::getEquations(QStringList &equations) const
     }
 }
 
-void ModelicaModel::toFlatEquations(QStringList &equations, const QString &prefix)
+void ModelicaModel::toFlatEquations(QStringList &equations, QMap<QString,QString> &localVars, const QString &rPrefix, const QStringList &subModels)
 {
     //! @todo Should be possible to get only equations from subset of submodels
 
+    QString prefix = rPrefix;
+    if(!prefix.isEmpty())
+    {
+        prefix = prefix+"__";
+    }
+
+    int orgSize = equations.size();
     getEquations(equations);
-    for(int i=0; i<equations.size(); ++i)
+    for(int i=orgSize; i<equations.size(); ++i)
     {
         if(equations[i].startsWith("connect("))
         {
@@ -152,14 +180,21 @@ void ModelicaModel::toFlatEquations(QStringList &equations, const QString &prefi
             portName1=equations[i].section(".",1,1).section(",",0,0).trimmed();
             portName2=equations[i].section(".",2,2).section(")",0,0).trimmed();
 
-            qDebug() << "Connect: " << compName1 << portName1 << compName2 << portName2;
+            if(!subModels.isEmpty() && !subModels.contains(compName1) && !subModels.contains(compName2))
+            {
+                equations.removeAt(i);
+                --i;
+                continue;
+            }
+
+            //qDebug() << "Connect: " << compName1 << portName1 << compName2 << portName2;
 
             QMap<QString,QString> variables;
             getVariables(variables);
             compType1 = variables.find(compName1).value();
             compType2 = variables.find(compName2).value();
 
-            qDebug() << "Types: " << compType1 << compType2;
+            //qDebug() << "Types: " << compType1 << compType2;
 
             ModelicaLibrary library;
             QMap<QString,QString> variables1, variables2;
@@ -181,7 +216,7 @@ void ModelicaModel::toFlatEquations(QStringList &equations, const QString &prefi
             else if(portType2.isEmpty())
                 portType2 = portType1;
 
-            qDebug() << "Port types: " << portType1 << portType2;
+            //qDebug() << "Port types: " << portType1 << portType2;
 
             //! @todo Check that both ports are of same type! (should not be allowed to connect different types though)
 
@@ -192,18 +227,112 @@ void ModelicaModel::toFlatEquations(QStringList &equations, const QString &prefi
             connector.getIntensityVariables(intensityVariables);
             connector.getFlowVariables(flowVariables);
 
-            qDebug() << "Intensity variables: " << intensityVariables;
-            qDebug() << "Flow variables: " << flowVariables;
+            //qDebug() << "Intensity variables: " << intensityVariables;
+            //qDebug() << "Flow variables: " << flowVariables;
 
-
-            if(compType1.startsWith("TLM_") || compType2.startsWith("TLM_"))
+            foreach(const QString &var, intensityVariables.keys())
             {
-                qDebug() << "TLM component!";
+                equations.append(prefix+compName1+"__"+portName1+"__"+var+" = "+
+                                 prefix+compName2+"__"+portName2+"__"+var);
+
+                localVars.insert(prefix+compName1+"__"+portName1+"__"+var, "Real");
+                localVars.insert(prefix+compName2+"__"+portName2+"__"+var, "Real");
             }
+            foreach(const QString &var, flowVariables.keys())
+            {
+                if(compType1.startsWith("TLM_") || compType2.startsWith("TLM_"))        //No minus sign for flow in connection to TLM component (due to convention)
+                {
+                    equations.append(prefix+compName1+"__"+portName1+"__"+var+" = "+
+                                     prefix+compName2+"__"+portName2+"__"+var);
+                }
+                else        //Modelica connection, use minus sign for flow (q1 = -q2)
+                {
+                    equations.append(prefix+compName1+"__"+portName1+"__"+var+" = -"+
+                                     prefix+compName2+"__"+portName2+"__"+var);
+
+                }
+                localVars.insert(prefix+compName1+"__"+portName1+"__"+var, "Real");
+                localVars.insert(prefix+compName2+"__"+portName2+"__"+var, "Real");
+            }
+
+            //Handle TLM connections
+            // - add the TLM equation
+            // - add the port as a local variable
+            // - remove corresponding Q variables from local variables (added due to connection above)
+            if(compType1.startsWith("TLM_"))
+            {
+                if(portType1 == "NodeHydraulic")
+                {
+                    QString portStr = prefix+compName1+"__"+portName1;
+                    equations.append(portStr+"__p = "+portStr+"__c+"+portStr+"__q*"+portStr+"__Zc");
+                    localVars.insert(prefix+compName1+"__"+portName1,"NodeHydraulic");
+                    localVars.remove(prefix+compName1+"__"+portName1+"__p");
+                    localVars.remove(prefix+compName1+"__"+portName1+"__q");
+                }
+            }
+            if(compType2.startsWith("TLM_"))
+            {
+                if(portType2 == "NodeHydraulic")
+                {
+                    QString portStr = prefix+compName2+"__"+portName2;
+                    equations.append(portStr+"__p = "+portStr+"__c+"+portStr+"__q*"+portStr+"__Zc");
+                    localVars.insert(prefix+compName2+"__"+portName2,"NodeHydraulic");
+                    localVars.remove(prefix+compName2+"__"+portName2+"__p");
+                    localVars.remove(prefix+compName2+"__"+portName2+"__q");
+                }
+            }
+
+            equations.removeAt(i);
+            --i;
         }
         else
         {
-            equations[i].prepend(prefix);
+            //qDebug() << "Equation: " << equations[i];
+            //if(!equations[i].startsWith(prefix+"."))
+            //    equations[i].prepend(prefix+".");
+            SymHop::Expression equation(equations[i].remove(";"));
+            QList<SymHop::Expression> vars = equation.getVariables();
+            for(int v=0; v<vars.size(); ++v)
+            {
+                QString var = vars[v].toString();
+                var.replace(".","__");
+                if(!var.startsWith(prefix))
+                {
+                    var = prefix+var;
+                }
+                equation.replace(vars[v], SymHop::Expression(var));
+            }
+            equations[i] = equation.toString();
+            //qDebug() << "New equation: " << equations[i];
+
+
+            //equations[i].replace(".", "__");   //Replace dots with underscores, to make variable names C++ compatible
+        }
+    }
+
+    //Add parameters to local vars
+    QMap<QString, QPair<QString,QString> > parameters;
+    getParameters(parameters);
+    foreach(const QString &name, parameters.keys())
+    {
+        QString varName = prefix+name;
+        varName.replace(".","__");
+        QString varType = "parameter "+parameters.find(name).value().first;
+        QString defaultValue = parameters.find(name).value().second;
+        localVars.insert(varName+"(unit="") = "+defaultValue, varType);
+    }
+
+
+    QMap<QString, QString> variables;
+    getVariables(variables);
+
+    foreach(const QString &var, variables.keys())
+    {
+        if(subModels.isEmpty() || subModels.contains(var))
+        {
+            ModelicaLibrary lib;
+            ModelicaModel model = lib.getModel(variables.find(var).value());
+            model.toFlatEquations(equations, localVars, prefix+var);
         }
     }
 }
@@ -244,40 +373,39 @@ ModelicaLibrary::ModelicaLibrary()
 {
     //! @todo Add a connectors map (and a connector help class)
     mConnectorsMap.insert("NodeHydraulic", ModelicaConnector("connector NodeHydraulic \"Hydraulic Connector\"\n"
-                                        "Real         p \"Pressure\";\n"
-                                        "flow Real    q \"Volume flow\"\n"
-                                        "end Pin;"));
+                                                             "Real         p \"Pressure\";\n"
+                                                             "flow Real    q \"Volume flow\"\n"
+                                                             "end Pin;"));
 
     mModelsMap.insert("FlowSource", ModelicaModel("model FlowSource\n"
-                                     "    parameter Real q_ref;\n"
-                                     "    NodeHydraulic P1;\n"
-                                     "equation\n"
-                                     "    P1.q = q_ref;\n"
-                                     "end FlowSource;"));
+                                                  "    parameter Real q_ref(unit=\"m^3/s\") = 0.001;\n"
+                                                  "    NodeHydraulic P1;\n"
+                                                  "equation\n"
+                                                  "    P1.q = q_ref;\n"
+                                                  "end FlowSource;"));
 
     mModelsMap.insert("Tank", ModelicaModel("model Tank\n"
-                               "    NodeHydraulic P1;\n"
-                               "equation\n"
-                               "    P1.p = 100000;\n"
-                               " end Tank;"));
+                                            "    NodeHydraulic P1;\n"
+                                            "equation\n"
+                                            "    P1.p = 100000;\n"
+                                            " end Tank;"));
 
     mModelsMap.insert("LaminarOrifice", ModelicaModel("model LaminarOrifice\n"
-                                         "    parameter Real Kc;\n"
-                                         "    NodeHydraulic P1, P2;\n"
-                                         "equation\n"
-                                         "    P2.q = Kc*(P1.p-P2.p);\n"
-                                         "    0 = P1.q + P2.q;\n"
-                                         "end LaminarOrifice;"));
+                                                      "    parameter Real Kc(unit=\"-\") = 1e-11;\n"
+                                                      "    NodeHydraulic P1, P2;\n"
+                                                      "equation\n"
+                                                      "    P2.q = Kc*(P1.p-P2.p);\n"
+                                                      "    0 = P1.q + P2.q;\n"
+                                                      "end LaminarOrifice;"));
 
     mModelsMap.insert("Volume", ModelicaModel("model Volume\n"
-                                 "    parameter Real V;\n"
-                                 "    parameter Real betae;\n"
-                                 "    NodeHydraulic P1, P2;\n"
-                                 "    Real P;\n"
-                                 "equation\n"
-                                 "    P = (P1.p+P2.p)/2;\n"
-                                 "    V/betae*der(P) = P1.q+P2.q;\n"
-                                 "end Volume;"));
+                                              "    parameter Real V(unit=\"m^3\") = 0.001;\n"
+                                              "    parameter Real betae(unit=\"Pa\") = 1e9;\n"
+                                              "    NodeHydraulic P1, P2;\n"
+                                              "equation\n"
+                                              "    V/betae*der(P1.p) = -P1.q-P2.q;\n"
+                                              "    P1.p = P2.p;\n"
+                                              "end Volume;"));
 }
 
 ModelicaModel ModelicaLibrary::getModel(const QString &rModelName)
@@ -926,10 +1054,219 @@ void ModelWidget::generateModelicaCode()
         }
     }
 
-    qDebug() << "Number of groups: " << groups.size();
+    gpMessageHandler->addInfoMessage("Found "+QString::number(groups.size())+" independent groups of Modelica components.");
 
-    QStringList flatEquations;
-    mainModel.toFlatEquations(flatEquations, "");
+    QList<QStringList> groupNames;
+    for(int i=0; i<groups.size(); ++i)
+    {
+        groupNames.append(QStringList());
+        for(int j=0; j<groups.at(i).size(); ++j)
+        {
+            groupNames[i].append(groups.at(i).at(j).first);
+        }
+    }
+
+    QMap<QString, QList<QStringList> > modelicaModels;
+    QStringList loadedLibs;
+
+    gpMessageHandler->addInfoMessage("Compiling Modelica code...");
+
+    for(int i=0; i<groupNames.size(); ++i)
+    {
+        qDebug() << "Group " << i << ":";
+        QStringList flatEquations;
+        QMap<QString,QString> localVars;
+        mainModel.toFlatEquations(flatEquations, localVars, "", groupNames[i]);
+
+        //Ugly hack, because HopsanGenerator assumes port variables to use point notation (e.g. P1.q) while points are replaced with "__" above
+        foreach(const QString &var, localVars.keys())
+        {
+            if(localVars.find(var).value() == "NodeHydraulic")
+            {
+                for(int i=0; i<flatEquations.size(); ++i)
+                {
+                    flatEquations[i].replace(var+"__p", var+".p");
+                    flatEquations[i].replace(var+"__q", var+".q");
+                    flatEquations[i].replace(var+"__c", var+".c");
+                    flatEquations[i].replace(var+"__Zc", var+".Zc");
+                }
+            }
+        }
+
+        //Generate file name for temporary modelica component
+        QString name = "ModelicaTemp";
+        int uid = int(rand() / (double)RAND_MAX * 1000000); //! @todo Verify that component with same uid does not exist!
+        name.append(QString::number(uid));
+
+        QString flatModel;
+        flatModel.append("model "+name+"\n");
+        flatModel.append("    annotation(hopsanCqsType = \"Q\");\n\n");
+        foreach(const QString &var, localVars.keys())
+        {
+            flatModel.append("    "+localVars.find(var).value()+" "+var+";\n");
+        }
+        flatModel.append("equation\n");
+        foreach(const QString &equation, flatEquations)
+        {
+            flatModel.append("    "+equation+";\n");
+        }
+        flatModel.append("end "+name+";\n");
+
+        //Create folder for temporary modelica component
+        QString path = gpDesktopHandler->getDataPath()+"/ModelicaTempComponents/"+name;
+        QDir().mkpath(path);
+
+        QFile moFile(path+"/"+name+".mo");
+        moFile.open(QFile::WriteOnly | QFile::Text);
+        moFile.write(flatModel.toUtf8());
+        moFile.close();
+
+        CoreGeneratorAccess coreGen;
+        coreGen.generateFromModelica(QFileInfo(moFile).absoluteFilePath(), false, 0, true);
+        qDebug() << flatModel;
+
+        gpLibraryHandler->loadLibrary(path+"/"+name+"._lib.xml");
+        if(!gpLibraryHandler->getLoadedTypeNames().contains(name))
+        {
+            gpMessageHandler->addErrorMessage("Could not load temporary Modelica library. Aborting.");
+        }
+        loadedLibs.append(name);
+
+        QList<QStringList> connections;
+        foreach(const QString &comp, groupNames[i])
+        {
+            foreach(const Connector *pConnector, mpToplevelSystem->getModelObject(comp)->getConnectorPtrs())
+            {
+                QString startComp = pConnector->getStartComponentName();
+                QString endComp = pConnector->getEndComponentName();
+                QString startPort = pConnector->getStartPortName();
+                QString endPort = pConnector->getEndPortName();
+                QString startType = mpToplevelSystem->getModelObject(startComp)->getTypeName();
+                QString endType = mpToplevelSystem->getModelObject(endComp)->getTypeName();
+
+                if(startType != "ModelicaComponent")
+                {
+                    connections.append(QStringList());
+                    connections.last().append(startComp);
+                    connections.last().append(startPort);
+                    connections.last().append(name);
+                    connections.last().append(startComp+"__"+startPort);
+                }
+                else if(endType != "ModelicaComponent")
+                {
+                    connections.append(QStringList());
+                    connections.last().append(name);
+                    connections.last().append(endComp+"__"+endPort);
+                    connections.last().append(endComp);
+                    connections.last().append(endPort);
+                }
+            }
+        }
+
+        modelicaModels.insert(name, connections);
+    }
+
+    gpMessageHandler->addInfoMessage("Creating temporary simulation model...");
+
+    //Create new hidden temporary model
+    ModelWidget *pTempModel = mpParentModelHandler->addNewModel("TempModel", true);
+    SystemContainer *pTempSys = pTempModel->getTopLevelSystemContainer();
+
+    //Add all non-Modelica components
+    for(int i=0; i<mpToplevelSystem->getModelObjectNames().size(); ++i)
+    {
+        QString name = mpToplevelSystem->getModelObjectNames().at(i);
+        QString type = mpToplevelSystem->getModelObjects().at(i)->getTypeName();
+        if(type != "ModelicaComponent")
+        {
+            ModelObject *pModelObject = pTempSys->addModelObject(type, QPointF(0,0));
+            if(!pModelObject)
+            {
+                gpMessageHandler->addErrorMessage("Failed to add model object of type: "+type+" to temporary model. Aborting.");
+                return;
+            }
+            pTempSys->renameModelObject(pModelObject->getName(), name);
+        }
+    }
+
+    //Add all connections between non-Modelica components
+    foreach(const Connector *pConnector, mpToplevelSystem->getConnectorPtrs())
+    {
+        QString startComp = pConnector->getStartComponentName();
+        QString endComp = pConnector->getEndComponentName();
+        QString startPort = pConnector->getStartPortName();
+        QString endPort = pConnector->getEndPortName();
+
+        if(!pTempSys->hasModelObject(startComp) || !pTempSys->getModelObject(startComp)->getPort(startPort) ||
+           !pTempSys->hasModelObject(endComp) || !pTempSys->getModelObject(endComp)->getPort(endPort))
+        {
+            gpMessageHandler->addErrorMessage("Failed to create connector, one object or port does not exist. Aborting.");
+            return;
+        }
+        QString startType = mpToplevelSystem->getModelObject(startComp)->getTypeName();
+        QString endType = mpToplevelSystem->getModelObject(endComp)->getTypeName();
+        if(startType != "ModelicaComponent" && endType != "ModelicaComponent")
+        {
+            pTempSys->createConnector(pTempSys->getModelObject(startComp)->getPort(startPort), pTempSys->getModelObject(endComp)->getPort(endPort));
+        }
+    }
+
+    //Add and connect the Modelica components
+    QMapIterator<QString, QList<QStringList> > it(modelicaModels);
+    while(it.hasNext())
+    {
+        it.next();
+        if(!pTempSys->addModelObject(it.key(), QPointF(0,0)))
+        {
+            gpMessageHandler->addErrorMessage("Failed to add temporary Modelica component. Aborting.");
+            return;
+        }
+
+        foreach(const QStringList &connection, it.value())
+        {
+            if(connection.size() == 4)      //Should always be 4
+            {
+                if(!pTempSys->hasModelObject(connection[0]) || !pTempSys->getModelObject(connection[0])->getPort(connection[1]) ||
+                   !pTempSys->hasModelObject(connection[2]) || !pTempSys->getModelObject(connection[2])->getPort(connection[3]))
+                {
+                    gpMessageHandler->addErrorMessage("Failed to create connector, one object or port does not exist. Aborting.");
+                    return;
+                }
+                pTempSys->createConnector(pTempSys->getModelObject(connection[0])->getPort(connection[1]), pTempSys->getModelObject(connection[2])->getPort(connection[3]));
+            }
+        }
+
+
+        //Set parameter values for Modelica components
+        foreach(const QString parameter, pTempSys->getModelObject(it.key())->getParameterNames())
+        {
+            if(parameter.contains("__"))
+            {
+                QString orgComp = parameter.section("__",0,0);
+                QString orgPar = parameter.section("__",1,1);
+                QString orgValue = mpToplevelSystem->getModelObject(orgComp)->getParameterValue(orgPar);
+                pTempSys->getModelObject(it.key())->setParameterValue(parameter, orgValue);
+            }
+        }
+    }
+
+    pTempModel->setTopLevelSimulationTime(mStartTime, QString::number(this->getTopLevelSystemContainer()->getTimeStep()), mStopTime);
+
+    pTempModel->simulate_blocking();
+
+    mpToplevelSystem->getLogDataHandler()->takeOwnershipOfData(pTempSys->getLogDataHandler());
+
+    //Cleanup
+    pTempModel->close();
+    delete(pTempModel);
+    foreach(const QString &lib, loadedLibs)
+    {
+        gpLibraryHandler->unloadLibrary(lib);
+        removeDir(gpDesktopHandler->getDataPath()+"/ModelicaTempComponents/"+lib);
+    }
+
+    //! @todo We should not recompile every time, only if model structure has changed
+
 }
 
 

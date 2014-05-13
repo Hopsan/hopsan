@@ -135,9 +135,10 @@ public:
     ModelicaModel() {}
     ModelicaModel(const QString &code);
     ModelicaModel(const ModelicaModel &other);
+    void getParameters(QMap<QString, QPair<QString, QString> > &parameters) const;
     void getVariables(QMap<QString, QString> &variables) const;
     void getEquations(QStringList &equations) const;
-    void toFlatEquations(QStringList &equations, const QString &prefix="");
+    void toFlatEquations(QStringList &equations, QMap<QString, QString> &localVars, const QString &rPrefix="", const QStringList &subModels=QStringList());
 private:
     QStringList mCodeLines;
 };

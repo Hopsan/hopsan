@@ -413,22 +413,37 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
                 break;
             }
         }
+
+        //Remove widgets from layout
         mpParametersLayout->removeWidget(mpParameterLabels.at(i));
         mpParametersLayout->removeWidget(mpParameterAverageLineEdits.at(i));
         mpParametersLayout->removeWidget(mpParameterSigmaLineEdits.at(i));
         mpParametersLayout->removeWidget(mpParameterMinLineEdits.at(i));
         mpParametersLayout->removeWidget(mpParameterMaxLineEdits.at(i));
+
+        //Store local pointers to widgets
         QLabel *pParameterLabel = mpParameterLabels.at(i);
         QLineEdit *pParameterAverageLineEdit = mpParameterAverageLineEdits.at(i);
         QLineEdit *pParameterSigmaLineEdit = mpParameterSigmaLineEdits.at(i);
+        QLineEdit *pParameterMinLineEdit = mpParameterMinLineEdits.at(i);
+        QLineEdit *pParameterMaxLineEdit = mpParameterMaxLineEdits.at(i);
+
+        //Remove widgets from widget lists
         mpParameterLabels.removeAt(i);
         mpParameterAverageLineEdits.removeAt(i);
         mpParameterSigmaLineEdits.removeAt(i);
-        mSelectedParameters.removeAt(i);
-        mSelectedComponents.removeAt(i);
+        mpParameterMinLineEdits.removeAt(i);
+        mpParameterMaxLineEdits.removeAt(i);
+
+        //Delete widgets
         delete(pParameterLabel);
         delete(pParameterAverageLineEdit);
         delete(pParameterSigmaLineEdit);
+        delete(pParameterMinLineEdit);
+        delete(pParameterMaxLineEdit);
+
+        mSelectedParameters.removeAt(i);
+        mSelectedComponents.removeAt(i);
     }
 }
 
@@ -521,6 +536,8 @@ void SensitivityAnalysisDialog::run()
         mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
     }
 
+    bool progressBarOrgSetting = gpConfig->getEnableProgressBar();
+    gpConfig->setEnableProgressBar(false);
     for(int i=0; i<nSteps/nThreads; ++i)
     {
         for(int m=0; m<mModelPtrs.size(); ++m)
@@ -552,6 +569,7 @@ void SensitivityAnalysisDialog::run()
         mpProgressBar->setValue(double(i)*double(nThreads)/double(nSteps)*100);
     }
     mpProgressBar->setValue(100);   //Just to make it look better
+    gpConfig->setEnableProgressBar(progressBarOrgSetting);
 
     for(int v=0; v<mOutputVariables.size(); ++v)
     {

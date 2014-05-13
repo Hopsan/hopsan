@@ -126,7 +126,7 @@ void LibraryHandler::createNewModelicaComponent()
     if(pEditDialog->result() == QDialog::Accepted)
     {
         CoreGeneratorAccess coreAccess;
-        QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
+        QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0).section("\n",0,0);
         QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
         QString libPath = dummy+typeName+"/";
         QDir().mkpath(libPath);
