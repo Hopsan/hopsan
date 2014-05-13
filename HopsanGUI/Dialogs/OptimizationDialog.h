@@ -74,6 +74,7 @@ private slots:
     void update(int idx);
     void run();
     void saveScriptFile();
+    void saveScriptFile(const QString &filePath);
     void loadScriptFile();
     void updateCoreProgressBars();
     void recreateCoreProgressBars();

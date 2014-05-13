@@ -1678,6 +1678,9 @@ void OptimizationDialog::update(int idx)
 //! @brief Saves the generated script code to file and executes the script
 void OptimizationDialog::run()
 {
+    //saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    saveScriptFile(gpDesktopHandler->getBackupPath()+"optimization_script"+QDateTime::currentDateTime().toString("_yyyy-MM-dd_hh_mm")+".hcom");
+
     mCoreProgressBarsRecreated = false;
 
     saveConfiguration();
@@ -1703,7 +1706,7 @@ void OptimizationDialog::run()
 }
 
 
-//! @brief Saves generated script to a script file
+//! @brief Saves generated script to path specified by user
 void OptimizationDialog::saveScriptFile()
 {
     if(mpOutputBox->toPlainText().isEmpty())
@@ -1723,6 +1726,12 @@ void OptimizationDialog::saveScriptFile()
     QFileInfo fileInfo = QFileInfo(filePath);
     gpConfig->setScriptDir(fileInfo.absolutePath());
 
+    saveScriptFile(filePath);
+}
+
+//! @brief Saves generated script to specified path
+void OptimizationDialog::saveScriptFile(const QString &filePath)
+{
     QFile file(filePath);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
@@ -1732,6 +1741,7 @@ void OptimizationDialog::saveScriptFile()
     out << mpOutputBox->toPlainText();
     file.close();
 }
+
 
 void OptimizationDialog::loadScriptFile()
 {
