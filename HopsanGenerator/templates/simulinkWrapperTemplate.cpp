@@ -104,8 +104,8 @@ static void mdlInitializeSizes(SimStruct *S)
 
 static void mdlInitializeSampleTimes(SimStruct *S)
 {
-    ssSetSampleTime(S, 0, <<<timestep>>>);
-    ssSetOffsetTime(S, 0, 0.0);
+    //ssSetSampleTime(S, 0, 0.001);
+    //ssSetOffsetTime(S, 0, 0.0);
 
     //Update tunable parameters
     const mxArray* in;
@@ -126,7 +126,7 @@ static void mdlInitializeSampleTimes(SimStruct *S)
         ssSetErrorStatus(S,"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.");
         return;
     }
-    
+
 <<<16>>>}
 
 
@@ -151,16 +151,16 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     pComponentSystem->simulate(time+timestep);
 
 <<<12>>>
-    
+
     //Output parameters
 <<<13>>>}
-     
+
 static void mdlTerminate(SimStruct *S)
 {
     pComponentSystem->finalize();
 }
-     
-     
+
+
  /* Simulink/Simulink Coder Interfaces */
  #ifdef MATLAB_MEX_FILE /* Is this file being compiled as a MEX-file? */
  #include "simulink.c" /* MEX-file interface mechanism */
@@ -168,4 +168,3 @@ static void mdlTerminate(SimStruct *S)
  #include "cg_sfun.h" /* Code generation registration function */
  #endif
 
-     
