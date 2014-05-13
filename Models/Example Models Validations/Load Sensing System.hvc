@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.2">
-  <validation hopsanguiversion="0.6.x_r7069" time="134917" date="20140513" hopsancoreversion="0.6.x_r7068">
+  <validation hopsanguiversion="0.6.x_r7069" time="135755" date="20140513" hopsancoreversion="0.6.x_r7068">
     <modelfile>../Example Models/Load Sensing System.hmf</modelfile>
     <hvdfile>Load Sensing System.hvd</hvdfile>
     <variable name="Load_Sensing_System$Position_Sensor#out#Value">
