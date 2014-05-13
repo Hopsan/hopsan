@@ -211,7 +211,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpExportToXmlAction = new QAction("Export to Extensible Markup Language File (.xml)", mpToolBar);
     mpExportToCsvAction = new QAction("Export to Comma-Separeted Values File (.csv)", mpToolBar);
-    mpExportToHvcAction = new QAction("Export to Hopsan Validation Files (.hvc and .csv)", mpToolBar);
+    mpExportToHvcAction = new QAction("Export to Hopsan Validation Files (.hvc and .hvd)", mpToolBar);
     mpExportToMatlabAction = new QAction("Export to Matlab Script File (.m)", mpToolBar);
     mpExportToGnuplotAction = new QAction("Export to gnuplot data file(.dat)", mpToolBar);
     mpExportToOldHopAction = new QAction("Export to Hopsan Classic file(.plo)", mpToolBar);
