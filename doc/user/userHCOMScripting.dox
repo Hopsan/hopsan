@@ -59,7 +59,8 @@ Changes plot variables on right axis in current plot<br>
 
 \subsection chpvx chpvx
 Changes xdata plot variable in current plot<br>
- Usage: chpvx varname Usage: chpvx -c Clear Custom x-data
+ Usage: chpvx varname<br>
+ Usage: chpvx -c Clear Custom x-data
 
 \subsection sapl sapl
 Save log variables to file<br>

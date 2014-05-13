@@ -403,7 +403,7 @@ void HcomHandler::createCommands()
     HcomCommand chpvxCmd;
     chpvxCmd.cmd = "chpvx";
     chpvxCmd.description.append("Changes xdata plot variable in current plot");
-    chpvxCmd.help.append(" Usage: chpvx varname");
+    chpvxCmd.help.append(" Usage: chpvx varname\n");
     chpvxCmd.help.append(" Usage: chpvx -c Clear Custom x-data");
     chpvxCmd.fnc = &HcomHandler::executePlotXAxisCommand;
     chpvxCmd.group = "Plot Commands";
