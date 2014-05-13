@@ -431,6 +431,10 @@ void AnimatedComponent::setupAnimationMovable(int m)
 
     //Get parameter multiplier (will be zero if not found)
     QString parValue = mpModelObject->getParameterValue(mpAnimationData->multipliers[m]);
+    if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+    {
+        parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+    }
     bool ok;
     mpAnimationData->multiplierValues[m] = parValue.toDouble(&ok);
     if(!ok)
@@ -441,6 +445,10 @@ void AnimatedComponent::setupAnimationMovable(int m)
 
     //Get parmeter divisor (will be zero if not found)
     parValue = mpModelObject->getParameterValue(mpAnimationData->divisors[m]);
+    if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+    {
+        parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+    }
     mpAnimationData->divisorValues[m] = parValue.toDouble(&ok);
     if(!ok)
     {
