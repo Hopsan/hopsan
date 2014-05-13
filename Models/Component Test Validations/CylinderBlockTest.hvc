@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.2">
-  <validation hopsanguiversion="0.6.x_r7069" time="135158" date="20140513" hopsancoreversion="0.6.x_r7068">
-    <modelfile>../Component Test/HydraulicComponent Test/HydraulicCylinderBlockTest.hmf</modelfile>
+  <validation hopsanguiversion="0.6.x_r6996" time="165704" date="20140513" hopsancoreversion="0.6.x_r7016">
+    <modelfile>../../../../../../../mnt/data/svn/hopsan/trunk/Models/Component Test/HydraulicComponent Test/HydraulicCylinderBlockTest.hmf</modelfile>
     <hvdfile>CylinderBlockTest.hvd</hvdfile>
     <variable name="HydraulicCylinderBlockTest$Position_Transducer_1#out#Value">
       <timecolumn>0</timecolumn>
