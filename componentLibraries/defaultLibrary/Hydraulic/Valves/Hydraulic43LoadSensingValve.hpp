@@ -131,7 +131,7 @@ namespace hopsan {
             //Declare local variables
             double xv, xpanom, xpbnom, xatnom, xbtnom, Kcpa, Kcpb, Kcat, Kcbt, qpa, qpb, qat, qbt;
             double Cq, rho, xvmax, d, f_pa, f_pb, f_at, f_bt, x_pa, x_pb, x_at, x_bt;
-            double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pload;
+            double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pload, cload, Zcload;
             bool cav = false;
 
             //Get variable values from nodes
@@ -144,6 +144,8 @@ namespace hopsan {
             cb = (*mpPB_c);
             Zcb = (*mpPB_Zc);
             xvin = (*mpXvIn);
+            cload = (*mpPL_c);
+            Zcload = (*mpPL_Zc);
 
             Cq = (*mpCq);
             rho = (*mpRho);
@@ -258,7 +260,7 @@ namespace hopsan {
             (*mpPB_p) = pb;
             (*mpPB_q) = qb;
             (*mpPL_p) = pload;
-            (*mpPL_q) = 0;//(pload - cload)/Zcload;
+            (*mpPL_q) = (pload - cload)/Zcload;
             (*mpXv) = xv;
         }
     };
