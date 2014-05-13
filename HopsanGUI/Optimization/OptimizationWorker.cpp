@@ -36,6 +36,7 @@
 #include "PlotWindow.h"
 #include "PlotArea.h"
 #include "PlotCurve.h"
+#include "Configuration.h"
 
 //! @brief Checkes for convergence (in either of the algorithms)
 OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
@@ -68,11 +69,11 @@ void OptimizationWorker::init()
     QFile testFile2(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optDefaultFunctions.hcom");
     if(testFile1.exists())
     {
-        execute("exec "+testFile1.fileName());
+        execute("exec \""+testFile1.fileName()+"\"");
     }
     else if(testFile2.exists())
     {
-        execute("exec "+testFile2.fileName());
+        execute("exec \""+testFile2.fileName()+"\"");
     }
     else
     {
@@ -84,6 +85,9 @@ void OptimizationWorker::init()
     mPercent = -1;
 
     mpHandler->setIsRunning(true);
+
+    mOrgProgressBarSetting = gpConfig->getEnableProgressBar();
+    gpConfig->setEnableProgressBar(false);
 }
 
 
@@ -151,6 +155,8 @@ void OptimizationWorker::finalize()
     {
         printLogFile();
     }
+
+    gpConfig->setEnableProgressBar(mOrgProgressBarSetting);
 }
 
 void OptimizationWorker::printLogFile()

@@ -105,6 +105,8 @@ protected:
     void logPoint(int idx);
     void logWorstPoint();
     void logAllPoints();
+
+    bool mOrgProgressBarSetting;
 };
 
 #endif // OPTIMIZATIONWORKER_H
