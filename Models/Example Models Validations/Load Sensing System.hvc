@@ -1,42 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanvalidationconfiguration hvcversion="0.1">
-  <validation hopsanguiversion="0.6.0" time="140037" date="20130729" hopsancoreversion="0.6.0">
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7069" time="134917" date="20140513" hopsancoreversion="0.6.x_r7068">
     <modelfile>../Example Models/Load Sensing System.hmf</modelfile>
-    <component name="Position_Sensor">
-      <port name="out">
-        <variable name="Value">
-          <csvfile>Load Sensing System.csv</csvfile>
-          <column>1</column>
-          <tolerance>0.01</tolerance>
-        </variable>
-      </port>
-    </component>
-    <component name="Position_Sensor_1">
-      <port name="out">
-        <variable name="Value">
-          <csvfile>Load Sensing System.csv</csvfile>
-          <column>2</column>
-          <tolerance>0.01</tolerance>
-        </variable>
-      </port>
-    </component>
-    <component name="Position_Sensor_2">
-      <port name="out">
-        <variable name="Value">
-          <csvfile>Load Sensing System.csv</csvfile>
-          <column>3</column>
-          <tolerance>0.01</tolerance>
-        </variable>
-      </port>
-    </component>
-    <component name="Position_Sensor_3">
-      <port name="out">
-        <variable name="Value">
-          <csvfile>Load Sensing System.csv</csvfile>
-          <column>4</column>
-          <tolerance>0.01</tolerance>
-        </variable>
-      </port>
-    </component>
+    <hvdfile>Load Sensing System.hvd</hvdfile>
+    <variable name="Load_Sensing_System$Position_Sensor#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Load_Sensing_System$Position_Sensor_1#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Load_Sensing_System$Position_Sensor_2#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Load_Sensing_System$Position_Sensor_3#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>4</column>
+      <tolerance>0.01</tolerance>
+    </variable>
   </validation>
 </hopsanvalidationconfiguration>
