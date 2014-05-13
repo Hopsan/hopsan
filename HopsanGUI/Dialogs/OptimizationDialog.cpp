@@ -342,6 +342,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     button(QWizard::FinishButton)->setHidden(true);
     button(QWizard::CustomButton3)->setHidden(true);
     button(QWizard::CustomButton3)->setDisabled(true);
+    button(QWizard::CustomButton1)->setDisabled(true);
 
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), this, SLOT(updateCoreProgressBars()));
@@ -850,6 +851,7 @@ void OptimizationDialog::generateScriptFile()
         return;
     }
 
+    bool algorithmOk=true;
     switch (mpAlgorithmBox->currentIndex())
     {
     case OptimizationHandler::ComplexRF :
@@ -867,9 +869,15 @@ void OptimizationDialog::generateScriptFile()
     case OptimizationHandler::ParameterSweep :
         generateParameterSweepScript();
         break;
-    default :
-        mpMessageHandler->addErrorMessage("Algorithm type undefined.");
+    default:
+        algorithmOk=false;
     }
+
+    if(algorithmOk)
+        button(QWizard::CustomButton1)->setEnabled(true);
+    else
+        mpMessageHandler->addErrorMessage("Algorithm type undefined.");
+
 }
 
 void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
@@ -1743,6 +1751,8 @@ void OptimizationDialog::loadScriptFile()
     setCode(script);
 
     mScript = script;
+
+    button(QWizard::CustomButton1)->setEnabled(true);
 }
 
 void OptimizationDialog::updateCoreProgressBars()
