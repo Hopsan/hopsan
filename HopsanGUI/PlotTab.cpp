@@ -417,7 +417,7 @@ void PlotTab::exportToHvc(QString fileName)
         return;
     }
 
-    QFileInfo fileInfo;
+    QFileInfo hvcFileInfo;
     if (fileName.isEmpty())
     {
         // Open file dialog and initialize the file stream
@@ -425,10 +425,10 @@ void PlotTab::exportToHvc(QString fileName)
                                                         gpConfig->getPlotDataDir(),
                                                         tr("HopsanValidationCfg (*.hvc)"));
         if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
-        fileInfo.setFile(filePath);
+        hvcFileInfo.setFile(filePath);
     }
 
-    QFile file(fileInfo.absoluteFilePath());
+    QFile file(hvcFileInfo.absoluteFilePath());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         gpMessageHandler->addErrorMessage("Failed to open file for writing: " + fileName);
@@ -436,12 +436,12 @@ void PlotTab::exportToHvc(QString fileName)
     }
 
     // Save the csv data
-    QString hvdFileName=fileInfo.baseName()+".hvd";
+    QString hvdFileName=hvcFileInfo.baseName()+".hvd";
     //! @todo this will only support one timevector
-    this->exportToCsv(fileInfo.absolutePath()+"/"+hvdFileName);
+    this->exportToCsv(hvcFileInfo.absolutePath()+"/"+hvdFileName);
 
-    qDebug() << fileInfo.absoluteFilePath();
-    qDebug() << fileInfo.absolutePath()+"/"+hvdFileName;
+    qDebug() << hvcFileInfo.absoluteFilePath();
+    qDebug() << hvcFileInfo.absolutePath()+"/"+hvdFileName;
 
 
     // Save HVC xml data
@@ -451,7 +451,8 @@ void PlotTab::exportToHvc(QString fileName)
     hvcroot.setAttribute("hvcversion", "0.2");
 
     QList<PlotCurve*> curves = mPlotAreas.first()->getCurves();
-    QString modelPath = relativePath(curves.first()->getSharedVectorVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
+    QString modelPath = relativePath(curves.first()->getSharedVectorVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(),
+                                     QDir(hvcFileInfo.canonicalPath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
     validation.setAttribute("date", QDateTime::currentDateTime().toString("yyyyMMdd"));
     validation.setAttribute("time", QDateTime::currentDateTime().toString("hhmmss"));
