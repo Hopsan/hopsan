@@ -112,6 +112,7 @@ private:
     void executePlotCommand(const QString cmd);
     void executePlotLeftAxisCommand(const QString cmd);
     void executePlotRightAxisCommand(const QString cmd);
+    void executePlotXAxisCommand(const QString cmd);
     void executeAddPlotCommand(const QString cmd);
     void executeAddPlotLeftAxisCommand(const QString cmd);
     void executeAddPlotRightAxisCommand(const QString cmd);
@@ -169,6 +170,7 @@ private:
     void createCommands();
     void generateCommandsHelpText();
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
+    void changePlotXVariable(const QString varExp);
     void addPlotCurve(QString cmd, const int axis);
     void addPlotCurve(HopsanVariable data, const int axis);
     void removePlotCurves(const int axis) const;

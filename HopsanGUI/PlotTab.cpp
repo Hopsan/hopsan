@@ -221,19 +221,19 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
 //! @param portName Name of port form which new data origins
 //! @param dataName Data name (physical quantity) of new data
 //! @param dataUnit Unit of new data
-void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, int plotID)
+void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, int plotID, bool force)
 {
     if (plotID < mPlotAreas.size())
     {
-        mPlotAreas[plotID]->setCustomXVectorForAll(xArray,rVarDesc);
+        mPlotAreas[plotID]->setCustomXVectorForAll(xArray, rVarDesc, force);
     }
 }
 
-void PlotTab::setCustomXVectorForAll(HopsanVariable data, int plotID)
+void PlotTab::setCustomXVectorForAll(HopsanVariable data, int plotID, bool force)
 {
     if (plotID < mPlotAreas.size())
     {
-        mPlotAreas[plotID]->setCustomXVectorForAll(data);
+        mPlotAreas[plotID]->setCustomXVectorForAll(data, force);
     }
 }
 

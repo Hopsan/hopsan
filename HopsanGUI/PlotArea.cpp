@@ -450,17 +450,17 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     replot();
 }
 
-void PlotArea::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc)
+void PlotArea::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, bool force)
 {
     SharedVariableDescriptionT pVarDesc(new VariableDescription(rVarDesc));
-    setCustomXVectorForAll(createFreeVectorVariable(xArray, pVarDesc));
+    setCustomXVectorForAll(createFreeVectorVariable(xArray, pVarDesc), force);
 }
 
-void PlotArea::setCustomXVectorForAll(HopsanVariable data)
+void PlotArea::setCustomXVectorForAll(HopsanVariable data, bool force)
 {
     for(int i=0; i<mPlotCurves.size(); ++i)
     {
-        if (!mPlotCurves[i]->hasCustomXData())
+        if (force || !mPlotCurves[i]->hasCustomXData())
         {
             mPlotCurves[i]->setCustomXData(data);
         }

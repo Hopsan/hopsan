@@ -55,12 +55,11 @@ public:
     PlotWindow *plotDataToWindow(QString windowName,        HopsanVariable data, int axis, QColor curveColor=QColor());
     PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor=QColor());
     PlotWindow *plotDataToWindow(QString windowName,        HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor=QColor());
+    PlotWindow *setPlotWindowXData(PlotWindow *pPlotWindow, HopsanVariable xdata, bool force=false);
 
     void closeWindow(const QString &rWindowName);
     void closeAllOpenWindows();
 
-    PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name="");
-    
 signals:
     
 protected slots:

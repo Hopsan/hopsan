@@ -110,30 +110,6 @@ void PlotHandler::forgetPlotWindow(PlotWindow *pWindow)
     mOpenPlotWindows.remove(mOpenPlotWindows.key(pWindow));
 }
 
-//! @todo write equivalent function
-//!< @todo FIXA /Peter
-PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int /*axis*/, QString /*componentName*/, QString /*portName*/, QString /*dataName*/, QString /*dataUnit*/, QString name)
-{
-    if((xVector.isEmpty()) || (yVector.isEmpty()))
-        return 0;
-
-    if(name.isEmpty())
-    {
-        name = "PlotWindow"+mOpenPlotWindows.size();
-    }
-
-    PlotWindow *plotWindow = new PlotWindow(name, gpMainWindowWidget);
-    plotWindow->show();
-
-
-
-    mOpenPlotWindows.insert(name, plotWindow);
-
-    //plotWindow->addPlotCurve(0, componentName, portName, dataName, dataUnit, axis);
-    //!< @todo FIXA /Peter
-
-    return plotWindow;
-}
 
 PlotWindow *PlotHandler::getPlotWindow(const QString &rName)
 {
@@ -160,6 +136,16 @@ PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable xda
         return pWindow;
     }
     return 0;
+}
+
+PlotWindow *PlotHandler::setPlotWindowXData(PlotWindow *pPlotWindow, HopsanVariable xdata, bool force)
+{
+    if(!pPlotWindow)
+    {
+        pPlotWindow = createNewPlotWindowOrGetCurrentOne();
+    }
+    pPlotWindow->setXData(xdata,force);
+    return pPlotWindow;
 }
 
 PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable data, int axis, QColor curveColor)

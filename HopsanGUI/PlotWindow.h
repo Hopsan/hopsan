@@ -77,6 +77,7 @@ public:
 
     PlotCurve* addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     PlotCurve* addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    void setXData(HopsanVariable xdata, bool force=false);
 
 signals:
     void windowClosed(PlotWindow *pWindow);

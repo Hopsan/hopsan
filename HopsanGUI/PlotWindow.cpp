@@ -517,6 +517,19 @@ PlotCurve *PlotWindow::addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, 
     return pCurve;
 }
 
+void PlotWindow::setXData(HopsanVariable xdata, bool force)
+{
+    PlotTab *pTab=getCurrentPlotTab();
+    // Make sure that we have a tab
+    if (!pTab)
+    {
+        pTab = addPlotTab();
+        changedTab();
+    }
+
+    pTab->setCustomXVectorForAll(xdata, 0, force);
+}
+
 
 //! @brief Imports .Plo files from Old Hopsan
 //! Imports Plot Data Only

@@ -547,6 +547,10 @@ void PlotCurve::setCustomXData(HopsanVariable data)
 
     // Disconnect any signals first, in case we are changing x-data
     disconnectCustomXDataSignals();
+
+    // Make sure generation is same
+    data.switchToGeneration(mData.mpVariable->getGeneration());
+
     // Set new data and connect signals
     mCustomXdata = data;
     connectCustomXDataSignals();
@@ -562,14 +566,15 @@ void PlotCurve::setCustomXData(const QString fullName)
     // If empty then reset time vector
     if (fullName.isEmpty())
     {
-        setCustomXData(SharedVectorVariableT());
+        setCustomXData(HopsanVariable());
     }
     else
     {
         LogDataHandler *pHandler = mData.mpVariable->getLogDataHandler();
         if (pHandler)
         {
-            HopsanVariable data = pHandler->getHopsanVariable(fullName, mData.mpVariable->getGeneration());
+            // Fetch data, generation check is don in the other version of this function
+            HopsanVariable data = pHandler->getHopsanVariable(fullName, -1);
             if (data)
             {
                 setCustomXData(data);

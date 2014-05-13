@@ -57,11 +57,15 @@ Changes plot variables on left axis in current plot<br>
 Changes plot variables on right axis in current plot<br>
  Usage: chpvr [var1 var2 ... ]
 
+\subsection chpvx chpvx
+Changes xdata plot variable in current plot<br>
+ Usage: chpvx varname Usage: chpvx -c Clear Custom x-data
+
 \subsection sapl sapl
 Save log variables to file<br>
  Usage: sapl [filepath -flags variables]
-<br><br><br>Flags:
-<br><br><br>-csv    Use CSV format (default is PLO format)
+<br>Flags:
+<br>-csv    Use CSV format (default is PLO format)
 
 \subsection repl repl
 Loads plot files from .CSV or .PLO<br>
@@ -220,24 +224,24 @@ Exits the program<br>
 \subsection print print
 Prints arguments on the screen<br>
  Usage: print [-flag "string"]
-<br><br><br> Flags (optional):
-<br><br><br> -i Info message
-<br><br><br> -w Warning message
-<br><br><br> -e Error message
-<br><br><br> Variables can be printed by putting them in dollar signs.
-<br><br><br> Example:
-<br><br><br> \>\> print -w "x=$x$"
-<br><br><br> Warning: x=12
+<br> Flags (optional):
+<br> -i Info message
+<br> -w Warning message
+<br> -e Error message
+<br> Variables can be printed by putting them in dollar signs.
+<br> Example:
+<br> \>\> print -w "x=$x$"
+<br> Warning: x=12
 
 \subsection set set
 Sets Hopsan preferences<br>
  Usage: set [preference value]
-<br><br><br> Available commands:
-<br><br><br>  multicore [on/off]
-<br><br><br>  threads [number]
-<br><br><br>  cachetodisk [on/off]
-<br><br><br>  generationlimit [number]
-<br><br><br>  samples [number]
+<br> Available commands:
+<br>  multicore [on/off]
+<br>  threads [number]
+<br>  cachetodisk [on/off]
+<br>  generationlimit [number]
+<br>  samples [number]
 
 \subsection close close
 Closes current model<br>
@@ -250,8 +254,8 @@ Exports current model to Functional Mockup Unit (FMU)<br>
 \subsection opt opt
 Initialize an optimization<br>
  Usage: opt [algorithm partype parnum parmin parmax -flags]
-<br><br><br>Algorithms:   Flags:
-<br><br><br>complex       alpha
+<br>Algorithms:   Flags:
+<br>complex       alpha
 
 \subsection call call
 Calls a pre-defined function<br>
@@ -349,7 +353,7 @@ Usage: optvar(idx)
 
 \subsection peek peek()
 Returns vector value at specified index
-Usage: peek(vector)
+Usage: peek(vector, idx)
 
 \subsection rand rand()
 Generates a random value between 0 and 1

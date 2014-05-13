@@ -400,6 +400,15 @@ void HcomHandler::createCommands()
     chpvrCmd.group = "Plot Commands";
     mCmdList << chpvrCmd;
 
+    HcomCommand chpvxCmd;
+    chpvxCmd.cmd = "chpvx";
+    chpvxCmd.description.append("Changes xdata plot variable in current plot");
+    chpvxCmd.help.append(" Usage: chpvx varname");
+    chpvxCmd.help.append(" Usage: chpvx -c Clear Custom x-data");
+    chpvxCmd.fnc = &HcomHandler::executePlotXAxisCommand;
+    chpvxCmd.group = "Plot Commands";
+    mCmdList << chpvxCmd;
+
     HcomCommand dispCmd;
     dispCmd.cmd = "disp";
     dispCmd.description.append("Shows a list of all variables matching specified name filter (using asterisks)");
@@ -897,6 +906,12 @@ void HcomHandler::executePlotLeftAxisCommand(const QString cmd)
 void HcomHandler::executePlotRightAxisCommand(const QString cmd)
 {
     changePlotVariables(cmd, 1);
+}
+
+//! @brief Execute function for "chpvx" command
+void HcomHandler::executePlotXAxisCommand(const QString cmd)
+{
+    changePlotXVariable(cmd);
 }
 
 
@@ -3117,6 +3132,51 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
     }
 }
 
+void HcomHandler::changePlotXVariable(const QString varExp)
+{
+    // Reset
+    if (varExp == "-c")
+    {
+        // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
+        // else we will just set to same
+        mpCurrentPlotWindow = gpPlotHandler->setPlotWindowXData(mpCurrentPlotWindow, HopsanVariable(), true);
+    }
+    // Else set new
+    else
+    {
+        bool found=false;
+        QStringList variables;
+        getMatchingLogVariableNames(varExp, variables);
+        if (variables.isEmpty())
+        {
+            evaluateExpression(varExp, DataVector);
+            if(mAnsType == DataVector)
+            {
+                // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
+                // else we will just set to same
+                mpCurrentPlotWindow = gpPlotHandler->setPlotWindowXData(mpCurrentPlotWindow, mAnsVector, true);
+                found = true;
+            }
+        }
+        else
+        {
+            if (variables.size() > 1)
+            {
+                HCOMWARN(QString("Multiple matches to xdata pattern: %1; %2").arg(varExp).arg(variables.join(", ")));
+            }
+            // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
+            // else we will just set to same
+            mpCurrentPlotWindow = gpPlotHandler->setPlotWindowXData(mpCurrentPlotWindow, getLogVariable(variables.first()), true);
+            found = true;
+        }
+
+        if (!found)
+        {
+            HCOMERR(QString("Could not find xdata variable or evaluate expression: %1").arg(varExp));
+        }
+    }
+}
+
 
 //! @brief Adds a plot curve to specified axis in current plot
 //! @param cmd Name of variable
@@ -3137,7 +3197,7 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis)
 
 void HcomHandler::addPlotCurve(HopsanVariable data, const int axis)
 {
-    // If mpCurrentPlotWindow is 0, then we wil lset it to the window that is actually created
+    // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
     // else we will just set to same
     mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis);
 }

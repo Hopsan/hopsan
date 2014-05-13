@@ -32,6 +32,7 @@
 - Feature: Clickable switches in animation
 - Feature: Mathematica .nb files added for the automatically generated components. (you will need a .nb reader (free version exist) to view them.
 - Feature: It is now possible to distribute components with equal distance vertically or horizontally
+- Feature: New chpvx command in HCOM to set common xdata for the current plot window (see hcom help for more details)
 
 - New component: MechanicGearClutch
 - New component: HydraulicPressureControlValve33
@@ -44,8 +45,10 @@
 - Fixed components: HydraulicTurbulentOrifice now simulates once in initialize to correctly calculate initial values
 - Fixed components: Disabled some start values that would have no effect in Hydraulic Sources&Sinks
 
-- Enhancement: Setting plot scale to "-1" will no longer result in loose unit (-1 and -1.0 is a special case)
+- Enhancement: Setting plot scale to "-1" will no longer result in loosing unit (-1 and -1.0 is a special case)
 - Enhancement: Plot markers are now easier to see, they are black by default and you can now change the symbol (or color) from the right-click menu.
+- Enhancement: Adding xdata curves for the entire plot will try to use the same generation as each y-axis curve (instead of latest available generation)
+- Enhancement: When you assign variables in HCOM, the current generation will be used if one is not specified (on the left side)
 
 - Enhancement: (For very advanced users) It is now possible to add any type of port to programmed subsystems. They will be treated as "interface ports". This make it possible to avoid using "blank system ports" and should make it possible to set startvalues and aliases on the system interface ports.
 - Enhancement: More string (name) based (safe) help functions for setting and getting defaultStartValues and initial values in components.

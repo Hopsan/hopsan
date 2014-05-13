@@ -134,8 +134,8 @@ public:
     ~PlotArea();
 
     void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor());
-    void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc);
-    void setCustomXVectorForAll(HopsanVariable data);
+    void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, bool force=false);
+    void setCustomXVectorForAll(HopsanVariable data, bool force=false);
     void removeAllCurvesOnAxis(const int axis);
 
     void removePlotMarker(PlotMarker *pMarker);
