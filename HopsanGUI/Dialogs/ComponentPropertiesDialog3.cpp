@@ -1586,10 +1586,6 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
     if (!mUnitScales.isEmpty())
     {
         mpUnitComboBox = new QComboBox(this);
-        mpUnitComboBox->setFrame(false);
-        mpUnitComboBox->setEditable(true);
-        mpUnitComboBox->lineEdit()->setAlignment(Qt::AlignCenter);
-        mpUnitComboBox->lineEdit()->setReadOnly(true);
         mpUnitComboBox->installEventFilter(new MouseWheelEventEater(this));
         mpUnitComboBox->setMinimumWidth(60);
 
