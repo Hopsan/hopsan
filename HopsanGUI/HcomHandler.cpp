@@ -2328,15 +2328,18 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
         return;
     }
 
-    QDir newDirAbs(cmd);
-    QDir newDirRel(mPwd+"/"+cmd);
-    if(newDirAbs.exists() && cmd != ".." && cmd != ".")
+    QString path = cmd;
+    path.remove("\"");
+    path.replace("\\","/");
+    QDir newDirAbs(path);
+    QDir newDirRel(mPwd+"/"+path);
+    if(newDirAbs.exists() && path != ".." && path != ".")
     {
-        mPwd = QDir().cleanPath(cmd);
+        mPwd = QDir().cleanPath(path);
     }
     else if(newDirRel.exists())
     {
-        mPwd = QDir().cleanPath(mPwd+"/"+cmd);
+        mPwd = QDir().cleanPath(mPwd+"/"+path);
     }
     else
     {
@@ -3009,9 +3012,12 @@ void HcomHandler::executeEditCommand(const QString cmd)
         return;
     }
 
-    QString path = getArgument(cmd,0);
+    QStringList args;
+    splitWithRespectToQuotations(cmd, ' ', args);
+    QString path = args[0];
+    path.remove("\"");
     path.prepend(mPwd+"/");
-    QDesktopServices::openUrl(QUrl(path));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
 
