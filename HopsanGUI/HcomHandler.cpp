@@ -5010,8 +5010,8 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
             }
             else
             {
-                return -4;
                 rOk=false;
+                return -4;
             }
         }
     }
@@ -5153,18 +5153,15 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         {
             bool ok;
             int gen = parseAndChopGenerationSpecifier(left, ok);
-            // Limit to minus one (latest) even if errors of no gen parser result
-            gen = qMax(gen, -1);
+
+            // If  < -1 then current generation should be used, try to get current from this data logdatahandler
+            if  ( (gen < -1) && mpModel)
+            {
+                gen = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGeneration();
+            }
 
             // Get log data, (generation does not matter)
             HopsanVariable leftData = getLogVariable(left);
-
-            // If -1 then current generation should be used, try to get current from this data logdatahandler
-            if ( (gen == -1) && leftData && leftData.getLogDataHandler() )
-            {
-                gen = leftData.getLogDataHandler()->getCurrentGeneration();
-            }
-
             // Now switch to the desired generation
             leftData.switchToGeneration(gen);
 
@@ -5243,25 +5240,46 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
         return HopsanVariable();
     }
 
-    int generation=-1;
-    if (fullShortName.contains(GENERATIONSPECIFIERSTR))
+    QString warningMessage;
+
+    // If no generation is specified we want to use the current generation
+    // otherwise an arithmetic expression could get mixed generations if "latest (-1)" was choosen every time
+    int generation = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGeneration();
+
+    // Now try to parse and separate the generation  number from the name
+    bool parseGenOK;
+    int genRC = parseAndChopGenerationSpecifier(fullShortName, parseGenOK);
+    if (!parseGenOK)
     {
-        bool parseOK;
-        generation = parseAndChopGenerationSpecifier(fullShortName, parseOK);
-        if (!parseOK)
+        warningMessage = QString("Could not parse generation specifier in: %2, choosing current").arg(fullShortName);
+    }
+    else if (genRC != -3)
+    {
+        if (genRC < -1)
         {
-            HCOMERR("Could not parse generation specifier");
+            warningMessage = "Could not parse a unique generation number, choosing current";
         }
-        else if (generation < -1)
+        else
         {
-            HCOMWARN("Could not parse unique generation number, choosing highest");
-            generation = -1;
+            generation = genRC;
         }
     }
 
     // Convert to long name
     toLongDataNames(fullShortName);
-    return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHopsanVariable(fullShortName, generation);
+
+    // Try to retrieve data
+    HopsanVariable data = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHopsanVariable(fullShortName, generation);
+
+    // If data was found then also print any warnings from the generation parser, otherwise do not print anything and
+    // let a higher level function deal with printing warnings or errors ragarding data that was not found
+    if (data && !warningMessage.isEmpty())
+    {
+        HCOMWARN(warningMessage);
+    }
+
+    // Now return the data
+    return data;
 }
 
 
