@@ -27,20 +27,25 @@ This feature is not implemented in the current version of Hopsan. In future rele
 
 /*!
 \page userUnitTestModelsAndComponentsPage Model and Component Unit-Testing
-When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results as a test model. You can later run this model again and automatically compare the simulation results. This is very important if you want to make sure that your component and models do not change their behaviour when new versions of Hopsan are released.
+When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results as a test model.
+You can later run this model again and automatically compare the simulation results.
+This is very important if you want to make sure that your component and models do not change their behaviour when new versions of Hopsan are released.
+<b>Remember<b> that you can not make any more changes (that affect simulation results) to the model file if you want the validation to match.
 
 \section userUnitTestModelsAndComponentsPage-components_howtocreateCLI How to Create a Validation Model in Hopsan CLI
+The HopsanCLI can automatically create a validation data set based on all scopes in your model. If no scopes are available no data set will be created.
 -# Use the HopsanCLI (Hopsan CommandLineInterface) with the -m and --createValidationData switches according to the following examples:\n
-   (The -d (destination directory) switch is optional
+   The -d (destination directory) switch is optional
   -# Windows: HopsanCLI.exe -m pathto\\ExampleModel.hmf --createValidationData -d outputDirectoryPath
   -# Ubuntu:  ./HopsanCLI -m pathto/ExampleModel.hmf --createValidationData -d outputDirectoryPath
+-# Store the model, dataset and hvc file in a safe place. 
 
 \section userUnitTestModelsAndComponentsPage-components_howtocreateGUI How to Create a Validation Model in Hopsan GUI
 -# Open your model in HopsanGUI and simulate it.
   -# Add the variables (from ports) that you want to use as validation data to a plot window.
-  -# Export the data as HVC (Hopsan Validation Configuration) and CSV (Comma Separated Values) files. The column order in the csv file is determined by the order you added curves.
--# The generated hvc file contains default entries. You may want to manually edit it, see format description below.
--# Store the model, dataset and hvc file in  a safe place. Remember that you can not make any more changes (that affect simulation results) to the model file.
+  -# Export the data as <b>hvc<b>, <b>hvd<b> (Hopsan Validation Configuration and Data) files.
+-# The generated <b>hvc<b> file contains default entries. You may want to manually edit it, see format description below.
+-# Store the model, dataset and hvc file in a safe place. 
 
 \section userUnitTestModelsAndComponentsPage-components_howtotestCLI How to Test a Validation Model in Hopsan CLI
 -# Use the HopsanCLI (Hopsan CommandLineInterface) with the -t (for test) switch according to:
@@ -68,9 +73,9 @@ This is an example HVC File. Note that you can have multiple \<validation\> and 
         <hvdfile>Position Servo.hvd</hvdfile>
         <!-- The name attribute contains the full name including subsystem hierarchy. Ex: System$Subsystem$Component#Port#Variable -->
         <variable name="Position_Servo$Position_Sensor#out#Value">
-            <!--The time column in the hvd file for this variable. Column indexing begins at 0.-->
+            <!--The time column in the hvd file for this variable. Column indexing begins at 0-->
             <timecolumn>0</timecolumn>
-            <!--The data column in the hvd file for this variable. Column indexing begins at 0.-->
+            <!--The data column in the hvd file for this variable. Column indexing begins at 0-->
             <column>1</column>
             <!--Tolerance, allowed deviation 0.01==1%-->
             <tolerance>0.01</tolerance>
