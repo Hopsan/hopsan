@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7033" hopsancoreversion="0.6.x_r7022">
-  <requirements>
-    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-  </requirements>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.7test1" hopsancoreversion="0.6.7test1">
+  <requirements/>
   <info/>
   <system typename="Subsystem" name="SignalWhiteNoiseGenerator">
     <simulationtime stop="100" timestep="0.01" start="0" inherit_timestep="true"/>
-    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <simulationlogsettings numsamples="10000" starttime="0"/>
     <parameters/>
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
       <animation flowspeed="100"/>
-      <viewport x="2499.5" y="2352.5" zoom="1"/>
+      <viewport x="2499.5" y="2339" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -55,60 +53,18 @@
     <objects>
       <component typename="SignalNoiseGenerator" name="White_Noise_Generator">
         <parameters>
-          <parameter unit="-" value="1" type="double" name="std_dev#Value"/>
+          <parameter unit="-" value="5" type="double" name="std_dev#Value"/>
           <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2167" y="2356" flipped="false" a="0"/>
+          <pose x="2167" y="2358" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalNoiseGenerator" displayname="White_Noise_Generator">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component typename="SignalMultiply" name="Multiply_1">
-        <parameters>
-          <parameter unit="" value="1" type="double" name="in1#Value"/>
-          <parameter unit="" value="1" type="double" name="in2#Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="out"/>
-          <port nodetype="NodeSignal" name="in1"/>
-          <port nodetype="NodeSignal" name="in2"/>
-        </ports>
-        <hopsangui>
-          <pose x="2460" y="2358" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalMultiply" displayname="Multiply_1">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component typename="SignalSubtract" name="Subtract">
-        <parameters>
-          <parameter unit="" value="10000" type="double" name="in1#Value"/>
-          <parameter unit="" value="1" type="double" name="in2#Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="out"/>
-          <port nodetype="NodeSignal" name="in1"/>
-          <port nodetype="NodeSignal" name="in2"/>
-        </ports>
-        <hopsangui>
-          <pose x="2368" y="2231" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalSubtract" displayname="Subtract">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -137,7 +93,7 @@
       <component typename="SignalDivide" name="Divide">
         <parameters>
           <parameter unit="" value="1" type="double" name="in1#Value"/>
-          <parameter unit="" value="0" type="double" name="in2#Value"/>
+          <parameter unit="" value="10000" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -145,7 +101,7 @@
           <port nodetype="NodeSignal" name="in2"/>
         </ports>
         <hopsangui>
-          <pose x="2436" y="2279" flipped="false" a="0"/>
+          <pose x="2434" y="2358" flipped="true" a="180"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -167,7 +123,7 @@
         </ports>
         <hopsangui>
           <pose x="2361" y="2358" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
+          <nametext position="1" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalMultiply" displayname="Multiply">
@@ -215,19 +171,47 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component typename="SignalPower" name="Power">
+        <parameters>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0.5" type="double" name="x#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2475" y="2358" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalPower" displayname="Power">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="2196.000000" y="2155.000000"/>
+          <pose x="2231.000000" y="2174.000000"/>
           <textobject reflow="1" fontcolor="#556b2f" text="White Noise Generator Test" font="Ubuntu,14,-1,5,50,0,0,0,0,0"/>
-          <size width="656.000000" height="74.000000"/>
+          <size width="658.000000" height="74.000000"/>
           <line width="2" visible="0" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="2490.000000" y="2301.000000"/>
+          <pose x="2490.000000" y="2302.000000"/>
           <textobject reflow="1" fontcolor="#556b2f" text="Final value should equal standard deviation" font="Calibri,10,-1,0,50,0,0,0,0,0"/>
-          <size width="146.000000" height="85.000000"/>
+          <size width="148.000000" height="85.000000"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2262.000000" y="2308.500000"/>
+          <textobject reflow="1" fontcolor="#556b2f" text="sum all elements" font="Calibri,10,-1,0,50,0,0,0,0,0"/>
+          <size width="121.000000" height="85.000000"/>
           <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
@@ -248,7 +232,7 @@
       <connect endport="in" endcomponent="Square" startport="out" startcomponent="White_Noise_Generator">
         <hopsangui>
           <coordinates>
-            <coordinate x="2179.50000000000000000000" y="2356.00000000000000000000"/>
+            <coordinate x="2179.50000000000000000000" y="2358.00000000000000000000"/>
             <coordinate x="2224.50000000000000000000" y="2356.00000000000000000000"/>
           </coordinates>
           <geometries>
@@ -269,10 +253,10 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="out" endcomponent="Multiply" startport="in1" startcomponent="Multiply_1">
+      <connect endport="out" endcomponent="Multiply" startport="in1" startcomponent="Divide">
         <hopsangui>
           <coordinates>
-            <coordinate x="2447.50000000000000000000" y="2358.00000000000000000000"/>
+            <coordinate x="2421.50000000000000000000" y="2358.00000000000000000000"/>
             <coordinate x="2373.50000000000000000000" y="2358.00000000000000000000"/>
           </coordinates>
           <geometries>
@@ -281,11 +265,11 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="out" endcomponent="Subtract" startport="in2" startcomponent="Divide">
+      <connect endport="out" endcomponent="Divide" startport="in" startcomponent="Power">
         <hopsangui>
           <coordinates>
-            <coordinate x="2436.00000000000000000000" y="2266.50000000000000000000"/>
-            <coordinate x="2380.50000000000000000000" y="2231.00000000000000000000"/>
+            <coordinate x="2462.50000000000000000000" y="2358.00000000000000000000"/>
+            <coordinate x="2446.50000000000000000000" y="2358.00000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -293,25 +277,11 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="in2" endcomponent="Multiply_1" startport="out" startcomponent="Divide">
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Power">
         <hopsangui>
           <coordinates>
-            <coordinate x="2448.50000000000000000000" y="2279.00000000000000000000"/>
-            <coordinate x="2460.00000000000000000000" y="2279.00000000000000000000"/>
-            <coordinate x="2460.00000000000000000000" y="2345.50000000000000000000"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="out" endcomponent="Multiply_1" startport="in" startcomponent="Scope">
-        <hopsangui>
-          <coordinates>
+            <coordinate x="2487.50000000000000000000" y="2358.00000000000000000000"/>
             <coordinate x="2522.00000000000000000000" y="2358.00000000000000000000"/>
-            <coordinate x="2472.50000000000000000000" y="2358.00000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
