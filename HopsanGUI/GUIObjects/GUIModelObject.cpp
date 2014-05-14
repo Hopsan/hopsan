@@ -1167,8 +1167,8 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
 {
     rMenu.addSeparator();
-    QAction *groupAction;
 
+    QAction *groupAction=0;
     if (!this->scene()->selectedItems().empty())
     {
 #ifdef DEVELOPMENT
@@ -1176,15 +1176,10 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         groupAction = rMenu.addAction(tr("Group components"));
 #endif
     }
-    else
-    {
-        groupAction = new QAction(this);
-    }
 
-    QAction *pShowNameAction=0, *pExportComponentParam=0;
+    QAction *pShowNameAction = rMenu.addAction(tr("Always show name"));
+    QAction *pExportComponentParam = 0;//rMenu.addAction(tr("Export Component Parameters"));
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
-    pShowNameAction = rMenu.addAction(tr("Always show name"));
-    pExportComponentParam = rMenu.addAction(tr("Export Component Parameters"));
     if (type() != ScopeComponentType)
     {
         pRotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
@@ -1215,7 +1210,13 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
 
+    // If the selected action is 0 then we abort before comparison, (some disabled actions could be 0 so do not want to comare as they may trigger)
+    if (selectedAction == 0)
+    {
+        return 0;
+    }
 
+    // Now select which action was triggered
     if (selectedAction == parameterAction)
     {
         openPropertiesDialog();
@@ -1265,7 +1266,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
     else if (selectedAction == groupAction)
     {
-        this->mpParentContainerObject->groupSelected(pEvent->scenePos());
+        mpParentContainerObject->groupSelected(pEvent->scenePos());
     }
     else
     {
@@ -1273,12 +1274,16 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         {
             if(selectedAction == replaceActionList.at(i))
             {
-                this->mpParentContainerObject->replaceComponent(this->getName(), replacements.at(i));
+                mpParentContainerObject->replaceComponent(this->getName(), replacements.at(i));
                 return 0;
             }
         }
+
+        // If non of the above actions were triggered then we get here and should return the one that was
+        // The menu may contain enteries that were added one level up in the menu construction
         return selectedAction;
     }
+
     //Return 0 action if any of the above actions were triggered
     return 0;
 }
