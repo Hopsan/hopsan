@@ -9,10 +9,13 @@ qwtzipfile="qwt-6.1.0.zip"
 qwtname="qwt-6.1.0"
 basepwd=`pwd`
 
-# Abort if dir already exist. When running release build script we dont want to build twice
-if [ -d $qwtname ]; then
-  echo "Directory $qwtname already exist. Remove it if you want (re)build using this script."
-  exit 0
+# If arg 1 is --force then override regardless
+if [ "$1" != "--force" ]; then
+    # Abort if dir already exist. When running release build script we dont want to build twice
+    if [ -d $qwtname ]; then
+        echo "Directory $qwtname already exist. Remove it if you want (re)build using this script."
+        exit 0
+    fi
 fi
 
 # Clean old files
