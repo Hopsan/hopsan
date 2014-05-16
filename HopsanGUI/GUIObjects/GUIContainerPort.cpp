@@ -31,16 +31,14 @@
 ContainerPort::ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    mIsSystemPort = (pParentContainer->type() == SystemContainerType); //determine if I am a system port
-    this->mHmfTagName = HMF_SYSTEMPORTTAG;
-    //Sets the ports
+    // Sets the ports
     createPorts();
     refreshDisplayName();
 }
 
 void ContainerPort::deleteInHopsanCore()
 {
-    if (mIsSystemPort)
+    if (isSystemPort())
     {
         mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
     }
@@ -75,7 +73,7 @@ void ContainerPort::createPorts()
     i.value().selectPortIcon("", "", "NodeEmpty");
 
 
-    if (mIsSystemPort)
+    if (isSystemPort())
     {
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
         mName = mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname);
@@ -113,7 +111,7 @@ void ContainerPort::refreshDisplayName(QString overrideName)
 //! @brief ContainerPorts shal only save their port name if they are systemports, if they are group ports no core data should be saved
 void ContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    if (mIsSystemPort)
+    if (isSystemPort())
     {
         rDomElement.setAttribute(HMF_NAMETAG, getName());
     }
@@ -139,4 +137,15 @@ void ContainerPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 int ContainerPort::type() const
 {
     return Type;
+}
+
+QString ContainerPort::getHmfTypeName() const
+{
+    return HMF_SYSTEMPORTTAG;
+}
+
+//! @brief Check if this is a system port (a container port belonging to a system)
+bool ContainerPort::isSystemPort() const
+{
+    return (mpParentContainerObject->type() == SystemContainerType);
 }

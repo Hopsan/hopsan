@@ -35,7 +35,7 @@ class QDomElement;
 class WorkspaceObjectSelectionBox;
 class ContainerObject;
 
-enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, ModelObjectType, ContainerObjectType, SystemContainerType, ComponentType, ScopeComponentType, ContainerPortType, GroupContainerType, AnimatedObjectType};
+enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, ContainerObjectType, SystemContainerType, ComponentType, ScopeComponentType, ContainerPortType, GroupContainerType, AnimatedObjectType};
 
 class WorkspaceObject : public QGraphicsWidget
 {
@@ -50,23 +50,28 @@ public:
     // Position methods
     QPointF getCenterPos();
     void setCenterPos(const QPointF cpos);
+    QPointF getPreviousPos() const;
 
     // Load and save methods
-    virtual void saveToDomElement(QDomElement &rDomElement);
-    virtual void loadFromHMF(QString modelFilePath=QString());
+    virtual void loadFromDomElement(QDomElement domElement) = 0;
+    virtual void saveToDomElement(QDomElement &rDomElement) = 0;
 
     // Other methods
     bool isFlipped();
 
+    // Type info
     enum { Type = WorkspaceObjectType };
     int type() const;
+    virtual QString getHmfTagName() const = 0;
 
 public slots:
-    virtual void flipVertical(UndoStatusEnumT undoSettings=Undo);
-    virtual void flipHorizontal(UndoStatusEnumT undoSettings=Undo);
+    virtual void flipVertical(UndoStatusEnumT undoSettings=Undo) = 0;
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings=Undo) = 0;
     virtual void rotate(double angle, UndoStatusEnumT undoSettings=Undo);
     void rotate90cw(UndoStatusEnumT undoSettings=Undo);
     void rotate90ccw(UndoStatusEnumT undoSettings=Undo);
+
+    void rememberPos();
 
     void moveUp();
     void moveDown();
@@ -75,9 +80,8 @@ public slots:
     void deselect();
     void select();
 
-    virtual void deleteMe();
-
-    void updateOldPos();
+    //! @brief Tell the parent container to delete this object
+    virtual void deleteMe(UndoStatusEnumT undoSettings=Undo) = 0;
 
 signals:
     void objectMoved();
@@ -96,11 +100,10 @@ protected:
 
     // Protected members
     ContainerObject *mpParentContainerObject;
-    QString mHmfTagName;
     bool mIsFlipped;
     bool mEnableSnap;
     WorkspaceObjectSelectionBox *mpSelectionBox;
-    QPointF mOldPos;
+    QPointF mPreviousPos;
 };
 
 

@@ -57,6 +57,10 @@ int GroupContainer::type() const
     return Type;
 }
 
+QString GroupContainer::getHmfTagName() const
+{
+    return HMF_GROUPTAG;
+}
 
 QString GroupContainer::getTypeName() const
 {
@@ -78,8 +82,6 @@ GroupContainer::GroupContainer(QPointF position, double rotation, const ModelObj
     :   ContainerObject(position, rotation, pAppearanceData, Deselected, UserGraphics, pParentContainer, pParentContainer)
 {
     qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
-    //Set the hmf save tag name
-    mHmfTagName = HMF_GROUPTAG;
 
     QString newname = this->getCoreSystemAccessPtr()->reserveUniqueName("Grupp_test"); //Dont forget to unreserve this later when renaming or deleting
     this->setName(newname);

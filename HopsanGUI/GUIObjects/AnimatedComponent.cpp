@@ -501,7 +501,7 @@ AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectA
         : WorkspaceObject(position, rotation, Deselected, pParentContainer, pParent)
 {
     //Store original position
-    mOldPos = position;
+    mPreviousPos = position;
 
     //Initialize member pointer variables
     mpAnimatedComponent = pAnimatedComponent;
@@ -554,11 +554,35 @@ AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectA
     mpEffect = new QGraphicsColorizeEffect();
 }
 
+void AnimatedIcon::loadFromDomElement(QDomElement domElement)
+{
+    Q_UNUSED(domElement)
+    // Nothing
+}
+
+void AnimatedIcon::saveToDomElement(QDomElement &rDomElement)
+{
+    Q_UNUSED(rDomElement)
+    // Nothing
+}
+
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
 int AnimatedIcon::type() const
 {
     return Type;
+}
+
+QString AnimatedIcon::getHmfTagName() const
+{
+    // These objeects are not present in hmf files, so nothing
+    return QString();
+}
+
+void AnimatedIcon::deleteMe(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings)
+    // Does nothing
 }
 
 
@@ -652,8 +676,9 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 //! @brief Slot that rotates the icon
 //! @param [in] angle Angle to rotate (degrees)
-void AnimatedIcon::rotate(double angle)
+void AnimatedIcon::rotate(double angle, UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(undoSettings)
     if(mIsFlipped)
     {
         angle *= -1;
@@ -666,8 +691,9 @@ void AnimatedIcon::rotate(double angle)
 
 //! @brief Slot that flips the object vertically
 //! @see flipHorizontal()
-void AnimatedIcon::flipVertical()
+void AnimatedIcon::flipVertical(UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(undoSettings)
     this->flipHorizontal();
     this->rotate(180);
 }
@@ -675,8 +701,10 @@ void AnimatedIcon::flipVertical()
 
 //! @brief Slot that flips the object horizontally
 //! @see flipVertical()
-void AnimatedIcon::flipHorizontal()
+void AnimatedIcon::flipHorizontal(UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(undoSettings)
+
     QTransform transf;
     transf.scale(-1.0, 1.0);
 

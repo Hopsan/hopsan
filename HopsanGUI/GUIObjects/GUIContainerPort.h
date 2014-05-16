@@ -36,8 +36,11 @@ public:
     QString getTypeName() const;
     void refreshDisplayName(QString overrideName="");
 
+    // Type info
     enum { Type = ContainerPortType };
     int type() const;
+    virtual QString getHmfTypeName() const;
+    bool isSystemPort() const;
 
 protected:
     void createPorts();
@@ -46,7 +49,6 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    bool mIsSystemPort;
     Port *mpPort;
 };
 

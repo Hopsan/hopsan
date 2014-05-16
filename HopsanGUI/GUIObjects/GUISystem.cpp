@@ -82,9 +82,6 @@ void SystemContainer::deleteInHopsanCore()
 //! @brief This code is common among the two constructors, we use one function to avoid code duplication
 void SystemContainer::commonConstructorCode()
 {
-    // Set the hmf save tag name
-    mHmfTagName = HMF_SYSTEMTAG;
-
     // Set default values
     mLoadType = "EMBEDED";
     mNumberOfLogSamples = 2048;
@@ -207,6 +204,11 @@ ContainerObject *SystemContainer::getParentContainerObject()
 int SystemContainer::type() const
 {
     return Type;
+}
+
+QString SystemContainer::getHmfTagName() const
+{
+    return HMF_SYSTEMTAG;
 }
 
 
@@ -604,7 +606,7 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
     }
 
     //qDebug() << "Saving to dom node in: " << this->mModelObjectAppearance.getName();
-    QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
+    QDomElement xmlSubsystem = appendDomElement(rDomElement, getHmfTagName());
 
     //! @todo maybe use enums instead of strings
     //! @todo should not need to set this here
@@ -666,14 +668,14 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
 
 //! @brief Loads a System from an XML DOM Element
 //! @param[in] rDomElement The element to load from
-void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
+void SystemContainer::loadFromDomElement(QDomElement domElement)
 {
     // Loop back up to root level to get version numbers
-    QString hmfFormatVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_VERSIONTAG, "0");
-    QString coreHmfVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_HOPSANCOREVERSIONTAG, "0");
+    QString hmfFormatVersion = domElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_VERSIONTAG, "0");
+    QString coreHmfVersion = domElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_HOPSANCOREVERSIONTAG, "0");
 
     // Load model info
-    QDomElement infoElement = rDomElement.parentNode().firstChildElement(HMF_INFOTAG);
+    QDomElement infoElement = domElement.parentNode().firstChildElement(HMF_INFOTAG);
     if(!infoElement.isNull())
     {
         QString author, email, affiliation, description;
@@ -702,17 +704,17 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
     }
 
     //Check if the subsystem is external or internal, and load appropriately
-    QString external_path = rDomElement.attribute(HMF_EXTERNALPATHTAG);
+    QString external_path = domElement.attribute(HMF_EXTERNALPATHTAG);
     if (external_path.isEmpty())
     {
         //Load embedded subsystem
         //0. Load core and gui stuff
         //! @todo might need some error checking here incase some fields are missing
         //Now load the core specific data, might need inherited function for this
-        this->setName(rDomElement.attribute(HMF_NAMETAG));
+        this->setName(domElement.attribute(HMF_NAMETAG));
 
         //Load the GUI stuff like appearance data and viewport
-        QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+        QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         this->refreshDisplayName(); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
         this->mShowSubComponentNames = !parseAttributeBool(guiStuff.firstChildElement(HMF_NAMESTAG),"hidden",true);
@@ -746,16 +748,16 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         //Load simulation time
         QString startT,stepT,stopT;
         bool inheritTs;
-        parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT, inheritTs);
+        parseSimulationTimeTag(domElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT, inheritTs);
         this->setTimeStep(stepT.toDouble());
         mpCoreSystemAccess->setInheritTimeStep(inheritTs);
 
         // Load number of log samples
-        parseLogSettingsTag(rDomElement.firstChildElement(HMF_SIMULATIONLOGSETTINGS), mLogStartTime, mNumberOfLogSamples);
+        parseLogSettingsTag(domElement.firstChildElement(HMF_SIMULATIONLOGSETTINGS), mLogStartTime, mNumberOfLogSamples);
         //! @deprecated 20131002 we keep this below for backwards compatibility for a while
-        if(rDomElement.hasAttribute(HMF_LOGSAMPLES))
+        if(domElement.hasAttribute(HMF_LOGSAMPLES))
         {
-            mNumberOfLogSamples = rDomElement.attribute(HMF_LOGSAMPLES).toInt();
+            mNumberOfLogSamples = domElement.attribute(HMF_LOGSAMPLES).toInt();
         }
 
         // Only set start stop time for the top level system
@@ -765,7 +767,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         }
 
         //1. Load global parameters
-        QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
+        QDomElement xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
         QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
         while (!xmlSubObject.isNull())
         {
@@ -774,7 +776,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         }
 
         //2. Load all sub-components
-        QDomElement xmlSubObjects = rDomElement.firstChildElement(HMF_OBJECTS);
+        QDomElement xmlSubObjects = domElement.firstChildElement(HMF_OBJECTS);
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
@@ -838,7 +840,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         }
 
         //7. Load all connectors
-        QDomElement xmlConnections = rDomElement.firstChildElement(HMF_CONNECTIONS);
+        QDomElement xmlConnections = domElement.firstChildElement(HMF_CONNECTIONS);
         xmlSubObject = xmlConnections.firstChildElement(HMF_CONNECTORTAG);
         QList<QDomElement> failedConnections;
         while (!xmlSubObject.isNull())
@@ -875,7 +877,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 //        }
 
         //9. Load plot variable aliases
-        QDomElement xmlAliases = rDomElement.firstChildElement(HMF_ALIASES);
+        QDomElement xmlAliases = domElement.firstChildElement(HMF_ALIASES);
         QDomElement xmlAlias = xmlAliases.firstChildElement(HMF_ALIAS);
         while (!xmlAlias.isNull())
         {

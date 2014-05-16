@@ -30,7 +30,6 @@
 #include "GUIContainerObject.h"
 #include "GUIPort.h"
 #include "common.h"
-#include <assert.h>
 
 class CentralTabWidget;
 class GraphicsView;
@@ -50,9 +49,10 @@ public:
 
     void setName(QString newName);
 
+    // Type info
     enum { Type = GroupContainerType };
     int type() const;
-
+    virtual QString getHmfTagName() const;
     QString getTypeName() const;
 
     CoreSystemAccess* getCoreSystemAccessPtr();

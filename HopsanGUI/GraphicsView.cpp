@@ -617,7 +617,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
     Q_FOREACH(ModelObject* object, mpContainerObject->getSelectedModelObjectPtrs())
     {
-        if(object->getOldPos() != object->pos())
+        if(object->getPreviousPos() != object->pos())
         {
             mpParentModelWidget->hasChanged();
             if(!createdUndoPost)
@@ -625,8 +625,8 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
                 mpContainerObject->getUndoStackPtr()->newPost("movedmultiple");
                 createdUndoPost = true;
             }
-            mpContainerObject->getUndoStackPtr()->registerMovedObject(object->getOldPos(), object->pos(), object->getName());
-            object->updateOldPos();
+            mpContainerObject->getUndoStackPtr()->registerMovedObject(object->getPreviousPos(), object->pos(), object->getName());
+            object->rememberPos();
         }
     }
     mLeftMouseButtonPressed = false;
@@ -740,7 +740,7 @@ void GraphicsView::exportToPNG()
 {
     //Ask user for resolution scaling
     bool ok;
-    int res = QInputDialog::getDouble(gpMainWindowWidget, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1, &ok);
+    double res = QInputDialog::getDouble(gpMainWindowWidget, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1, &ok);
 
     //Abort if user pressed cancel
     if(!ok)

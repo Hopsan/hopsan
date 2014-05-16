@@ -43,19 +43,16 @@
 Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    //Set the hmf save tag name
-    mHmfTagName = HMF_COMPONENTTAG;
-
-    //Create the object in core, and get its default core name
+    // Create the object in core, and get its default core name
     mName = mpParentContainerObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getDisplayName());
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
-    //Sets the ports
+    // Sets the ports
     createPorts();
 
-    //Component shall be hidden when toggle signals is deactivated, if it is of signal type and has no power ports (= is a sensor)
+    // Component shall be hidden when toggle signals is deactivated, if it is of signal type and has no power ports (= is a sensor)
     //! @todo not hardcoded Sensor check for typename
-    if(this->getTypeCQS() == "S")
+    if(getTypeCQS() == "S")
     {
         connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)));
     }
@@ -247,19 +244,6 @@ bool Component::setStartValue(QString portName, QString /*variable*/, QString sy
 }
 
 
-////! @brief Set a start value to be mapped to a System parameter
-//QString Component::getStartValueTxt(QString portName, QString variable)
-//{
-//    QVector<QString> vVariable, vSysParName, vUnit;
-//    this->getPort(portName)->getStartValueDataNamesValuesAndUnits(vVariable, vSysParName, vUnit);
-//    int idx = vVariable.indexOf(variable);
-//    if(idx < 0)
-//        return "";
-//    else
-//        return vSysParName[idx];
-//}
-
-
 //! @brief Slot that opens the parameter dialog for the component
 void Component::openPropertiesDialog()
 {
@@ -292,6 +276,11 @@ void Component::createPorts()
 int Component::type() const
 {
     return Type;
+}
+
+QString Component::getHmfTagName() const
+{
+    return HMF_COMPONENTTAG;
 }
 
 

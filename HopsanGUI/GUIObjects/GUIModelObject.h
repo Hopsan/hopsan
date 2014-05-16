@@ -103,8 +103,9 @@ public:
     void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
 
     // Load and save methods
-    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
-    virtual void loadFromDomElement(QDomElement &rDomElement);
+    virtual void loadFromDomElement(QDomElement domElement);
+    virtual void saveToDomElement(QDomElement &rDomElement);
+    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents);
     virtual void setModelFileInfo(QFile &rFile);
 
     // Connector methods
@@ -120,17 +121,18 @@ public:
     virtual void hideExternalDynamicParameterPort(QString portName);
     virtual void removeExternalPort(QString portName);
 
+    // Type info
     enum { Type = ModelObjectType };
     int type() const;
+    virtual QString getHmfTagName() const;
 
     void getLosses(double &total, QMap<QString, double> domainSpecificLosses);
     bool isLossesDisplayVisible();
 
-    QPointF getOldPos() const;
 public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();
-    void deleteMe();
+    void deleteMe(UndoStatusEnumT undoSettings=Undo);
     virtual void rotate(double angle, UndoStatusEnumT undoSettings = Undo);
     virtual void flipVertical(UndoStatusEnumT undoSettings = Undo);
     virtual void flipHorizontal(UndoStatusEnumT undoSettings = Undo);

@@ -229,7 +229,7 @@ void UndoStack::undoOneStep()
                 return;
             }
             mpParentContainerObject->getModelObject(name)->setPos(x, y);
-            mpParentContainerObject->getModelObject(name)->updateOldPos();
+            mpParentContainerObject->getModelObject(name)->rememberPos();
             movedObjects.append(name);
             dx = x_new - x;
             dy = y_new - y;
@@ -589,7 +589,7 @@ void UndoStack::redoOneStep()
                 return;
             }
             mpParentContainerObject->getModelObject(name)->setPos(x, y);
-            mpParentContainerObject->getModelObject(name)->updateOldPos();
+            mpParentContainerObject->getModelObject(name)->rememberPos();
             movedObjects.append(name);
             dx = x - x_old;
             dy = y - y_old;
@@ -1008,7 +1008,7 @@ void UndoStack::registerAddedWidget(Widget *item)
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    if(item->mType == "TextBoxWidget")
+    if(item->getWidgetType() == TextBoxWidgetType)
         stuffElement.setAttribute("what", "addedtextboxwidget");
     stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
@@ -1022,7 +1022,7 @@ void UndoStack::registerDeletedWidget(Widget *item)
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    if(item->mType == "TextBoxWidget")
+    if(item->getWidgetType() == TextBoxWidgetType)
         stuffElement.setAttribute("what", "deletedtextboxwidget");
     stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);

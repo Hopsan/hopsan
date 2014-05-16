@@ -34,6 +34,7 @@
 #include <QInputDialog>
 #include <QHeaderView>
 #include <QDialogButtonBox>
+#include <cassert>
 
 //Hopsan includes
 #include "global.h"
@@ -415,7 +416,7 @@ CoreSystemAccess *ContainerObject::getCoreSystemAccessPtr()
 //! @brief Retunrs a pointer to the contained scene
 QGraphicsScene *ContainerObject::getContainedScenePtr()
 {
-    return this->mpScene;
+    return mpScene;
 }
 
 

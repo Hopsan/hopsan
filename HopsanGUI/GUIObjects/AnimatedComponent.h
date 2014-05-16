@@ -30,7 +30,6 @@
 #include <QList>
 #include <QObject>
 #include <QPen>
-#include <cassert>
 #include <QGraphicsSvgItem>
 #include <QGraphicsColorizeEffect>
 
@@ -92,16 +91,22 @@ class AnimatedIcon : public WorkspaceObject
 public:
     AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
 
-    AnimatedComponent *mpAnimatedComponent;
+    virtual void loadFromDomElement(QDomElement domElement);
+    virtual void saveToDomElement(QDomElement &rDomElement);
 
-    enum { Type = AnimatedObjectType };
-    int type() const;
+    AnimatedComponent *mpAnimatedComponent;
     int mIdx;
 
+    // Type info
+    enum { Type = AnimatedObjectType };
+    int type() const;
+    virtual QString getHmfTagName() const;
+
 public slots:
-    void rotate(double angle);
-    void flipVertical();
-    void flipHorizontal();
+    virtual void deleteMe(UndoStatusEnumT undoSettings=Undo);
+    virtual void rotate(double angle, UndoStatusEnumT undoSettings=Undo);
+    virtual void flipVertical(UndoStatusEnumT undoSettings=Undo);
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings=Undo);
     void refreshIconPosition();
 
 protected:

@@ -41,6 +41,7 @@
 #include <QDialog>
 #include <QPointer>
 
+enum WidgetTypesEnumT {UndefinedWidgetType, TextBoxWidgetType};
 
 class Widget : public WorkspaceObject
 {
@@ -48,18 +49,18 @@ class Widget : public WorkspaceObject
 
 public:
     Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
-    QString mType;
-    void rememberOldPos();
+    virtual WidgetTypesEnumT getWidgetType() const = 0;
     int getWidgetIndex();
+
+    // Type info
+    enum { Type = WidgetType };
+    int type() const;
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 public slots:
-    virtual void deleteMe(UndoStatusEnumT undoSettings=Undo);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void flipVertical(UndoStatusEnumT /*undoSettings = UNDO*/){}
-    virtual void flipHorizontal(UndoStatusEnumT /*undoSettings = UNDO*/){}
 
 protected:
     int mWidgetIndex;
@@ -74,8 +75,14 @@ class TextBoxWidget : public Widget
 public:
     TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem);
+
+    // Type info
+    virtual WidgetTypesEnumT getWidgetType() const;
+    virtual QString getHmfTagName() const;
+
+    // Save and load
     void saveToDomElement(QDomElement &rDomElement);
-    void loadFromDomElement(const QDomElement &rDomElement);
+    void loadFromDomElement(QDomElement domElement);
 
     void setText(QString text);
     void setFont(QFont font);

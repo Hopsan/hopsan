@@ -58,7 +58,7 @@
 ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
         : WorkspaceObject(position, rotation, startSelected, pParentContainer, pParent)
 {
-        //Initialize variables
+    // Initialize variables
     mName="no_name_set_yet";
     mpIcon = 0;
     mpNameText = 0;
@@ -68,39 +68,36 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
     mNameTextVisible = false;
     mpDialogParentWidget = new QWidget(gpMainWindowWidget);
 
-        //Set the hmf save tag name
-    mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
-
-        //Make a local copy of the appearance data (that can safely be modified if needed)
+    // Make a local copy of the appearance data (that can safely be modified if needed)
     if (pAppearanceData != 0)
     {
         mModelObjectAppearance = *pAppearanceData;
         mName = mModelObjectAppearance.getDisplayName(); //Default name to the appearance data display name
     }
 
-        //Setup appearance
-    this->setIcon(gfxType);
-    this->refreshAppearance();
-    this->setCenterPos(position);
-    updateOldPos();
-    this->setZValue(ModelobjectZValue);
-    this->setSelected(startSelected);
+    // Setup appearance
+    setIcon(gfxType);
+    refreshAppearance();
+    setCenterPos(position);
+    rememberPos();
+    setZValue(ModelobjectZValue);
+    setSelected(startSelected);
 
         //Create the textbox containing the name
     mpNameText = new ModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
-    if(this->mpParentContainerObject != 0)
+    if(mpParentContainerObject)
     {
-        this->setNameTextScale(mpParentContainerObject->mpModelWidget->mpGraphicsView->getZoomFactor());
+        setNameTextScale(mpParentContainerObject->mpModelWidget->mpGraphicsView->getZoomFactor());
     }
-    this->setNameTextPos(0); //Set initial name text position
+    setNameTextPos(0); //Set initial name text position
     if(pParentContainer && pParentContainer->areSubComponentNamesShown())
     {
-        this->showName(NoUndo);
+        showName(NoUndo);
     }
     else
     {
-        this->hideName(NoUndo);
+        hideName(NoUndo);
     }
 
         //Create connections
@@ -154,6 +151,11 @@ void ModelObject::setParentContainerObject(ContainerObject *pParentContainer)
 int ModelObject::type() const
 {
     return Type;
+}
+
+QString ModelObject::getHmfTagName() const
+{
+    return HMF_OBJECTTAG; //!< @todo change this
 }
 
 
@@ -304,12 +306,6 @@ void ModelObject::refreshDisplayName(const QString overrideName)
 QString ModelObject::getName() const
 {
     return mName;
-}
-
-
-QPointF ModelObject::getOldPos() const
-{
-    return mOldPos;
 }
 
 
@@ -802,9 +798,14 @@ const QMap<QString, UnitScale> &ModelObject::getCustomPlotUnitsOrScales() const
 void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales)
 {
     // Empty stringlist to indicate, no data
-     rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
+    rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
 }
 
+void ModelObject::loadFromDomElement(QDomElement domElement)
+{
+    Q_UNUSED(domElement)
+    //! @todo we use separate lode functions right now, but maybe the objects should be able to load themselves
+}
 
 //! @brief Function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
@@ -895,24 +896,30 @@ bool ModelObject::getCustomParameterUnitScale(QString name, UnitScale &rUs)
     return false;
 }
 
-void ModelObject::setModelFileInfo(QFile &/*rFile*/)
+void ModelObject::saveToDomElement(QDomElement &rDomElement)
 {
-    //Only available in GUISystem for now
-    assert(false);
-}
-
-void ModelObject::loadFromDomElement(QDomElement &/*rDomElement*/)
-{
-    //Only available in GUISystem for now
-    assert(false);
+    QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
+    saveCoreDataToDomElement(xmlObject);
+    saveGuiDataToDomElement(xmlObject);
 }
 
 void ModelObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
-    saveCoreDataToDomElement(xmlObject, contents);
-    if(contents==FullModel)
-        saveGuiDataToDomElement(xmlObject);
+    if (contents == FullModel)
+    {
+        saveToDomElement(rDomElement);
+    }
+    else
+    {
+        QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
+        saveCoreDataToDomElement(xmlObject, contents);
+    }
+}
+
+void ModelObject::setModelFileInfo(QFile &rFile)
+{
+    Q_UNUSED(rFile)
+    // Does nothing by default, should be overloaded
 }
 
 void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
@@ -1129,7 +1136,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QList<ModelObject *>::iterator it;
     for(it = selectedObjects.begin(); it != selectedObjects.end(); ++it)
     {
-        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
+        if(((*it)->mPreviousPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
         {
             emit objectMoved();
             // This check makes sure that only one undo post is created when moving several objects at once
@@ -1146,7 +1153,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 mpParentContainerObject->mpModelWidget->hasChanged();
                 alreadyClearedRedo = true;
             }
-            mpParentContainerObject->getUndoStackPtr()->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+            mpParentContainerObject->getUndoStackPtr()->registerMovedObject((*it)->mPreviousPos, (*it)->pos(), (*it)->getName());
         }
     }
 
@@ -1588,10 +1595,9 @@ void ModelObject::setSubTypeName(const QString subTypeName)
 }
 
 
-void ModelObject::deleteMe()
+void ModelObject::deleteMe(UndoStatusEnumT undoSettings)
 {
-    //qDebug() << "deleteMe in " << this->getName();
-    mpParentContainerObject->deleteModelObject(this->getName());
+    mpParentContainerObject->deleteModelObject(getName(), undoSettings);
 }
 
 //! @brief Sets or updates the appearance data specific base path to which all icon paths should be relative
@@ -1674,7 +1680,6 @@ void ModelObject::setNameTextAlwaysVisible(const bool isVisible)
         hideName();
     }
 }
-
 
 const QString &ModelObject::getHelpText() const
 {

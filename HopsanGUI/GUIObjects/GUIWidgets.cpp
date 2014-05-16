@@ -54,15 +54,14 @@ Widget::Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, Cont
 }
 
 
-void Widget::rememberOldPos()
-{
-    mOldPos = this->pos();
-}
-
-
 int Widget::getWidgetIndex()
 {
     return mWidgetIndex;
+}
+
+int Widget::type() const
+{
+    return Type;
 }
 
 QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -83,13 +82,6 @@ QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 
-void Widget::deleteMe(UndoStatusEnumT /*undoSettings*/)
-{
-    // Should be overloaded
-    qFatal("This function must be overloaded");
-}
-
-
 void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QList<Widget *>::iterator it;
@@ -99,7 +91,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QList<Widget *> selectedWidgets = mpParentContainerObject->getSelectedGUIWidgetPtrs();
     for(int i=0; i<selectedWidgets.size(); ++i)
     {
-        if((selectedWidgets[i]->mOldPos != selectedWidgets[i]->pos()) && (event->button() == Qt::LeftButton) && !selectedWidgets[i]->mIsResizing)
+        if((selectedWidgets[i]->mPreviousPos != selectedWidgets[i]->pos()) && (event->button() == Qt::LeftButton) && !selectedWidgets[i]->mIsResizing)
         {
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
@@ -116,7 +108,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 alreadyClearedRedo = true;
             }
 
-            mpParentContainerObject->getUndoStackPtr()->registerMovedWidget(selectedWidgets[i], selectedWidgets[i]->mOldPos, selectedWidgets[i]->pos());
+            mpParentContainerObject->getUndoStackPtr()->registerMovedWidget(selectedWidgets[i], selectedWidgets[i]->mPreviousPos, selectedWidgets[i]->pos());
         }
         selectedWidgets[i]->mIsResizing = false;
     }
@@ -128,8 +120,6 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 TextBoxWidget::TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : Widget(pos, rot, startSelected, pSystem, pParent)
 {
-    mType="TextBoxWidget";
-    mHmfTagName = HMF_TEXTBOXWIDGETTAG;
     mWidgetIndex = widgetIndex;
 
     mpBorderItem = new QGraphicsRectItem(0, 0, 200, 100, this);
@@ -169,7 +159,6 @@ TextBoxWidget::TextBoxWidget(QString text, QPointF pos, double rot, SelectionSta
 TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem)
     : Widget(other.pos(), other.rotation(), Deselected, pSystem, 0)
 {
-    mType = other.mType;
     mpBorderItem = new QGraphicsRectItem(other.mpBorderItem->rect(), this);
     if(other.mpBorderItem->isVisible())
     {
@@ -185,10 +174,20 @@ TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSyste
     setLineColor(other.mpTextItem->defaultTextColor());
 }
 
+WidgetTypesEnumT TextBoxWidget::getWidgetType() const
+{
+    return TextBoxWidgetType;
+}
+
+QString TextBoxWidget::getHmfTagName() const
+{
+    return HMF_TEXTBOXWIDGETTAG;
+}
+
 
 void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
 {
-    QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
+    QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
 
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
@@ -226,13 +225,13 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     xmlLine.setAttribute(HMF_STYLETAG, style);
 }
 
-void TextBoxWidget::loadFromDomElement(const QDomElement &rDomElement)
+void TextBoxWidget::loadFromDomElement(QDomElement domElement)
 {
     QFont font;
     QColor textColor, lineColor;
 
     // Read gui specific stuff
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement guiData = domElement.firstChildElement(HMF_HOPSANGUITAG);
 
     // Text
     QDomElement textObject = guiData.firstChildElement("textobject");

@@ -131,7 +131,7 @@ public:
     QString getTypeCQS();
 
     void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents = FullModel);
-    void loadFromDomElement(QDomElement &rDomElement);
+    void loadFromDomElement(QDomElement domElement);
     void setModelFileInfo(QFile &rFile);
     void loadParameterFile(const QString &path="");
 
@@ -158,8 +158,10 @@ public:
     void getOptimizationSettings(OptimizationSettings &optSettings);
     void setOptimizationSettings(OptimizationSettings &optSettings);
 
+    // Type info
     enum { Type = SystemContainerType };
     int type() const;
+    virtual QString getHmfTagName() const;
 
 
 public slots:

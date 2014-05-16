@@ -28,7 +28,6 @@
 #include "GUIModelObject.h"
 #include "common.h"
 #include "Utilities/XMLUtilities.h"
-#include <assert.h>
 
 //Forward declarations
 class Connector;
@@ -47,14 +46,15 @@ public:
     bool hasPowerPorts();
 
     bool setParameterValue(QString name, QString value, bool force=0);
-    //QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 
     QString getTypeName() const;
     QString getTypeCQS();
 
+    // Type info
     enum { Type = ComponentType };
     int type() const;
+    virtual QString getHmfTagName() const;
 
 private slots:
     virtual void setVisible(bool visible);
