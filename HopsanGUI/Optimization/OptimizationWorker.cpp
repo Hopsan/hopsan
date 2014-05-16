@@ -469,8 +469,8 @@ void OptimizationWorker::plotObjectiveFunctionValues()
     if(bestVar.data()->getDataSize() == 1)
     {
         PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("ObjectiveFunction");
-        gpPlotHandler->plotDataToWindow(pPW, bestVar, 0, QColor("Green"));
-        gpPlotHandler->plotDataToWindow(pPW, worstVar, 0, QColor("Red"));
+        gpPlotHandler->plotDataToWindow(pPW, bestVar, 0, true, QColor("Green"));
+        gpPlotHandler->plotDataToWindow(pPW, worstVar, 0, true, QColor("Red"));
     }
 }
 
@@ -501,7 +501,7 @@ void OptimizationWorker::plotParameters()
         if(par.data()->getDataSize() == 1)
         {
             PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");
-            gpPlotHandler->plotDataToWindow(pPW, par, 0, QColor("blue"));
+            gpPlotHandler->plotDataToWindow(pPW, par, 0, true, QColor("blue"));
         }
     }
 }

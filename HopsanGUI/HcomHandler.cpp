@@ -3126,7 +3126,6 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
                 for(int v=0; v<variables.size(); ++v)
                 {
                     addPlotCurve(variables[v], axisId);
-
                 }
             }
 
@@ -3187,25 +3186,33 @@ void HcomHandler::changePlotXVariable(const QString varExp)
 //! @brief Adds a plot curve to specified axis in current plot
 //! @param cmd Name of variable
 //! @param axis Axis to add curve to
-void HcomHandler::addPlotCurve(QString cmd, const int axis)
+void HcomHandler::addPlotCurve(QString var, const int axis)
 {
-    HopsanVariable data = getLogVariable(cmd);
+    HopsanVariable data = getLogVariable(var);
     if(!data)
     {
-        HCOMERR(QString("Variable not found: %1").arg(cmd));
+        HCOMERR(QString("Variable not found: %1").arg(var));
         return;
     }
     else
     {
-        addPlotCurve(data, axis);
+        // If plot curve contains gen specifier, then we want that generation to remain in the plot and not auto refresh
+        if (var.contains(GENERATIONSPECIFIERCHAR))
+        {
+            addPlotCurve(data, axis, false);
+        }
+        else
+        {
+            addPlotCurve(data, axis);
+        }
     }
 }
 
-void HcomHandler::addPlotCurve(HopsanVariable data, const int axis)
+void HcomHandler::addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh)
 {
     // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
     // else we will just set to same
-    mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis);
+    mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis, autoRefresh);
 }
 
 

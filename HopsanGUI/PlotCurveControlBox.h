@@ -31,6 +31,7 @@
 #include <QToolButton>
 #include <QLineEdit>
 #include <QLabel>
+#include <QCheckBox>
 
 // Forward declarations
 class PlotArea;
@@ -85,6 +86,7 @@ private:
     PlotCurve *mpPlotCurve;
     PlotArea *mpPlotArea;
     QLabel *mpTitle, *mpGenerationLabel, *mpSourceLable;
+    QCheckBox *mpAutoUpdateCheckBox;
     QToolButton *mpColorBlob;
     QSpinBox *mpGenerationSpinBox;
     CustomXDataControl *mpCustomXDataDrop;

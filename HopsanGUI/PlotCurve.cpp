@@ -613,7 +613,7 @@ void PlotCurve::gotoPreviousGeneration()
     // We do not want to switch generations automatically for curves representing imported data.
     // That would make it very difficult to compare imported data with a model variable of the same name
     // This was decided based on how AC is using the program
-    if (!mData.mpVariable->isImported())
+    if (!mData.mpVariable->isImported() && mAutoUpdate)
     {
         // Loop until we find next lower generation, abort if gen<0
         if (mData.mpContainer)
@@ -634,7 +634,7 @@ void PlotCurve::gotoNextGeneration()
     // We do not want to switch generations automatically for curves representing imported data.
     // That would make it very difficult to compare imported data with a model variable of the same name
     // This was decided based on how AC is using the program
-    if (!mData.mpVariable->isImported())
+    if (!mData.mpVariable->isImported() && mAutoUpdate)
     {
         // Loop until we find next higher generation, abort if we reach the highest
         if (mData.mpContainer)
@@ -1139,6 +1139,7 @@ void PlotCurve::disconnectCustomXDataSignals()
 void PlotCurve::setAutoUpdate(bool value)
 {
     mAutoUpdate = value;
+    emit curveInfoUpdated();
 }
 
 

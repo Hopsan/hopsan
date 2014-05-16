@@ -51,11 +51,13 @@ public:
     PlotWindow *createNewOrReplacePlotwindow(const QString &rName="");
     PlotWindow *getPlotWindow(const QString &rName);
 
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   HopsanVariable data, int axis, QColor curveColor=QColor());
-    PlotWindow *plotDataToWindow(QString windowName,        HopsanVariable data, int axis, QColor curveColor=QColor());
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor=QColor());
-    PlotWindow *plotDataToWindow(QString windowName,        HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   HopsanVariable data,  int axis, bool autoRefresh=true, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   HopsanVariable xdata, HopsanVariable ydata, int axis, bool autoRefresh=true, QColor curveColor=QColor());
     PlotWindow *setPlotWindowXData(PlotWindow *pPlotWindow, HopsanVariable xdata, bool force=false);
+
+    PlotWindow *plotDataToWindow(QString windowName,        HopsanVariable data,  int axis, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(QString windowName,        HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor=QColor());
+
 
     void closeWindow(const QString &rWindowName);
     void closeAllOpenWindows();

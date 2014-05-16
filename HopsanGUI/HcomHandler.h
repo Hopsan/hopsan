@@ -169,32 +169,41 @@ private:
     // Help functions
     void createCommands();
     void generateCommandsHelpText();
+    void registerInternalFunction(const QString &funcName, const QString &description, const QString &help="");
+    void registerFunctionoid(const QString &funcName, SymHopFunctionoid *pFunctinoid, const QString &description, const QString &help);
+
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void changePlotXVariable(const QString varExp);
-    void addPlotCurve(QString cmd, const int axis);
-    void addPlotCurve(HopsanVariable data, const int axis);
+    void addPlotCurve(QString var, const int axis);
+    void addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh=true);
     void removePlotCurves(const int axis) const;
+
     void removeLogVariable(QString fullShortVarNameWithGen) const;
+
+    QString getfullNameFromAlias(const QString &rAlias) const;
+    void getMatchingLogVariableNamesWithoutLogDataHandler(QString pattern, QStringList &rVariables) const;
+    void getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const;
+    void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
+    int parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const;
+
     void getComponents(const QString &rStr, QList<ModelObject *> &rComponents) const;
     void getPorts(const QString &rStr, QList<Port *> &rPorts) const;
-    QString getfullNameFromAlias(const QString &rAlias) const;
+
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
     QString getParameterValue(QString parameter) const;
-    void getMatchingLogVariableNamesWithoutLogDataHandler(QString pattern, QStringList &rVariables) const;
-    void getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const;
-    int parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const;
-    void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
+
     bool evaluateArithmeticExpression(QString cmd);
-    void splitAtFirst(QString str, QString c, QString &left, QString &right);
-    bool containsOutsideParentheses(QString str, QString c);
-    double getNumber(const QString &rStr, bool *pOk);
+
     QString getDirectory(const QString &cmd) const;
+    double getNumber(const QString &rStr, bool *pOk);
+
     QStringList getArguments(const QString &cmd) const;
     int getNumberOfArguments(const QString &cmd) const;
     QString getArgument(const QString &cmd, const int idx) const;
-    void registerInternalFunction(const QString &funcName, const QString &description, const QString &help="");
-    void registerFunctionoid(const QString &funcName, SymHopFunctionoid *pFunctinoid, const QString &description, const QString &help);
+
+    bool containsOutsideParentheses(QString str, QString c);
+    void splitAtFirst(QString str, QString c, QString &left, QString &right);
 
     //Current model pointer
     ModelWidget *mpModel;

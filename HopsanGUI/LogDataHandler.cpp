@@ -1765,7 +1765,7 @@ PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString 
     HopsanVariable data = getHopsanVariable(fullVarName, gen);
     if(data)
     {
-        return gpPlotHandler->plotDataToWindow(pPlotWindow, data, axis, color);
+        return gpPlotHandler->plotDataToWindow(pPlotWindow, data, axis, true, color);
     }
     return 0;
 }

@@ -72,8 +72,8 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     mpSourceLable->setText("U");
     mpSourceLable->setToolTip(variableSourceTypeAsShortString(UndefinedVariableSourceType));
 
-    QCheckBox *pAutoUpdateCheckBox = new QCheckBox("Auto Update");
-    pAutoUpdateCheckBox->setChecked(mpPlotCurve->isAutoUpdating());
+    mpAutoUpdateCheckBox = new QCheckBox("Auto Update");
+    mpAutoUpdateCheckBox->setChecked(mpPlotCurve->isAutoUpdating());
 
     QToolButton *pColorButton = new QToolButton(this);
     pColorButton->setToolTip("Select Line Color");
@@ -139,7 +139,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     pInfoBoxLayout->addWidget(mpGenerationSpinBox);
     pInfoBoxLayout->addWidget(mpGenerationLabel);
     pInfoBoxLayout->addWidget(mpSourceLable);
-    pInfoBoxLayout->addWidget(pAutoUpdateCheckBox);
+    pInfoBoxLayout->addWidget(mpAutoUpdateCheckBox);
     pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
     pInfoBoxLayout->addWidget(pScaleButton);
     pInfoBoxLayout->addWidget(pSizeSpinBox);
@@ -156,7 +156,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     connect(mpCustomXDataDrop,         SIGNAL(resetXData()),        this,               SLOT(resetXData()));
     connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
     connect(pCloseButton,              SIGNAL(clicked()),           this,               SLOT(removeTheCurve()));
-    connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
+    connect(mpAutoUpdateCheckBox,      SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
     connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpPlotCurve,  SLOT(openFrequencyAnalysisDialog())); //!< @todo this should probably be in the plot area, and signaled directly with curve
     connect(pColorButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(setLineColor()));
     connect(pScaleButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(openScaleDialog()));
@@ -169,7 +169,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     if(mpPlotCurve->getCurveType() != PortVariableType)
     {
-        pAutoUpdateCheckBox->setDisabled(true);
+        mpAutoUpdateCheckBox->setDisabled(true);
         mpGenerationSpinBox->setDisabled(true);
         pFrequencyAnalysisButton->setDisabled(true);
     }
@@ -218,10 +218,10 @@ void PlotCurveControlBox::updateInfo()
         lowGen = highGen = gen;
         nGen = 1;
     }
-    disconnect(mpGenerationSpinBox,         SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int))); //Need to temporarily disconnect to avoid loop
+    mpGenerationSpinBox->blockSignals(true);    // Need to temporarily disconnect to avoid loop
     mpGenerationSpinBox->setRange(lowGen+1, highGen+1);
     mpGenerationSpinBox->setValue(gen+1);
-    connect(mpGenerationSpinBox,            SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int)));
+    mpGenerationSpinBox->blockSignals(false);   // Unblock
     mpGenerationSpinBox->setEnabled(nGen > 1);
 
 
@@ -255,6 +255,11 @@ void PlotCurveControlBox::updateInfo()
     {
         mpCustomXDataDrop->updateInfo(0);
     }
+
+    // Update auto refresh
+    mpAutoUpdateCheckBox->blockSignals(true);
+    mpAutoUpdateCheckBox->setChecked(mpPlotCurve->isAutoUpdating());
+    mpAutoUpdateCheckBox->blockSignals(false);
 }
 
 void PlotCurveControlBox::refreshTitle()
