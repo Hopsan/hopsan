@@ -3219,33 +3219,47 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
 
     bool allGens=false;
     bool parseOK;
-    int generation = parseAndChopGenerationSpecifier(fullShortVarNameWithGen, parseOK);
+
+    QString name = fullShortVarNameWithGen;
+    int generation = parseAndChopGenerationSpecifier(name, parseOK);
     if (generation < -1)
     {
         allGens = true;
     }
+    else
+    {
+        // Restor the name
+        name = fullShortVarNameWithGen;
+    }
 
     if (parseOK)
     {
-        HopsanVariable data = getLogVariable(fullShortVarNameWithGen);
-        if(!data)
-        {
-            HCOMERR("Variable not found: "+fullShortVarNameWithGen);
-            return;
-        }
-
         if( allGens )
         {
-            if (data.getLogDataHandler())
+            // Get the latest availible (we actually want the container)
+            HopsanVariable data = getLogVariable(name+GENERATIONSPECIFIERSTR+"-1");
+            if (data && data.mpContainer && data.getLogDataHandler())
             {
-                data.getLogDataHandler()->deleteVariable(data.mpVariable->getFullVariableName());
+                bool rc = data.getLogDataHandler()->deleteVariable(data.mpContainer->getName());
+                if (!rc)
+                {
+                    HCOMERR(QString("Variable %1 could not be deleted").arg(name));
+                }
             }
         }
         else
         {
-            if (data.mpContainer)
+            HopsanVariable data = getLogVariable(name);
+            if(data)
             {
-                data.mpContainer->removeDataGeneration(generation, true);
+                if (data.mpContainer)
+                {
+                    data.mpContainer->removeDataGeneration(generation, true);
+                }
+            }
+            else
+            {
+                HCOMERR("Variable not found: "+name);
             }
         }
     }
@@ -5261,6 +5275,7 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
         }
         else
         {
+            // Generation = -1 (latest availible) or higher is accepted
             generation = genRC;
         }
     }

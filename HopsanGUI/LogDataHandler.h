@@ -192,6 +192,7 @@ private:
     LogDataMapT mLogDataMap;
     ImportedLogDataMapT mImportedLogDataMap;
     GenerationCacheMapT mGenerationCacheMap;
+    QList<SharedVectorVariableContainerT> mCurrentlyDeletingContainers;
 
     int mNumPlotCurves;
     int mGenerationNumber;

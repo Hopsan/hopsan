@@ -1546,25 +1546,30 @@ SharedVectorVariableT LogDataHandler::lowPassFilterVariable(const SharedVectorVa
 
 bool LogDataHandler::deleteVariable(const QString &rVarName)
 {
+    // Find the container with given name, but only try to remove it if it is not already being removed
     LogDataMapT::iterator it = mLogDataMap.find(rVarName);
-    if(it != mLogDataMap.end())
+    if( (it != mLogDataMap.end()) && !mCurrentlyDeletingContainers.contains(it.value()) )
     {
+        // Remember that this one is being deleted to avoid deleting the iterator agin if any subfunction results in a call back to this one
+        mCurrentlyDeletingContainers.push_back(it.value());
+
         // Handle alias removal
         if (it.value()->isStoringAlias())
         {
             unregisterAlias(rVarName);
-            //! @todo should we delete the actual variable also?
         }
 
         // Explicitly remove all generations, if you trigger a delete then you expect the data to be removed (otherwise it would remin untill all shared pointers dies)
+        // Note! Anyone using a data vector shared pointer will still hang on to that as long as they wish
         it.value()->removeAllGenerations();
 
-        // Remove data ptr from map, the actual container will be deleted automatically when nowone is using it any longer
+        // Remove data ptr from map, the actual container will be deleted automatically when is is no longer being used by anyone
         mLogDataMap.erase(it);
+        mCurrentlyDeletingContainers.pop_back();
+
         emit dataRemoved();
         return true;
     }
-    gpMessageHandler->addErrorMessage("In Delete, No such variable: " + rVarName);
     return false;
 }
 

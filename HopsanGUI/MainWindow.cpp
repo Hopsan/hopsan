@@ -187,7 +187,7 @@ void MainWindow::createContents()
 #ifdef DEBUGCOMPILING
     debugtext=" (Compiled in debug mode)";
 #endif
-    gpMessageHandler->addInfoMessage(archtext+QString(HOPSANGUIVERSION)+debugtext);
+    gpMessageHandler->addInfoMessage(archtext+"Version: "+QString(HOPSANGUIVERSION)+debugtext);
 
     //Load configuration from settings file
     gpSplash->showMessage("Loading configuration...");
