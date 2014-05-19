@@ -75,6 +75,8 @@ private:
     QMap<QString, QPointF> mPortPositions;
 
     ModelObjectAnimationData *mpAnimationData;
+
+    bool mIsDisplay;
 };
 
 

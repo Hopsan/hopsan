@@ -116,6 +116,8 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
         mpBase->setZValue(mpBase->zValue()+1);
     }
 
+    mIsDisplay = (mpModelObject->getTypeName() == "SignalDisplay");
+
     //Draw itself to the scene
     draw();
 }
@@ -143,11 +145,13 @@ void AnimatedComponent::updateAnimation()
 {
     int a=0;    //Adjustables use a different indexing, because all movables are not adjustable
 
-    if(mpModelObject->getTypeName() == "SignalDisplay")
+    if(mIsDisplay)
     {
         double textData;
         mpModelObject->getPort("in")->getLastNodeData("Value", textData);
-        mpText->setPlainText(QString::number(textData,'g', 4));
+        QString text = QString::number(textData,'g', 4);
+        text = text.left(6);
+        mpText->setPlainText(text);
     }
 
     //Loop through all movable icons
