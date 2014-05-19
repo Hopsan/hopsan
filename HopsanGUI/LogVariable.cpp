@@ -1229,8 +1229,16 @@ bool VectorVariableContainer::hasDataGeneration(const int gen)
 }
 
 //! @brief Adds or replaces a data generation
-void VectorVariableContainer::addDataGeneration(const int generation, SharedVectorVariableT pData)
+void VectorVariableContainer::insertDataGeneration(const int generation, SharedVectorVariableT pData)
 {
+    // If the generation already exists then we must remove the old one first
+    // Note! we do not want to call removeDataGeneration as that could trigger removal of the container as-well (if last gen i s removed)
+    GenerationMapT::iterator git = mDataGenerations.find(generation);
+    if (git != mDataGenerations.end())
+    {
+        actuallyRemoveDataGen(git);
+    }
+
     // Set generation that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
     pData->mGeneration = generation;
     // Insert into generation storage
@@ -1259,11 +1267,26 @@ void VectorVariableContainer::addDataGeneration(const int generation, SharedVect
     emit generationAdded();
 }
 
-//! @brief Removes a generation of the variable
+//! @brief Removes a generation of the variable, and the varaiable itself if it becomes empty
 //! @note If last generation the container itself will be deletet from parent log data handler, so DO NOT CALL this while itterating through the log data map
 //! @todo this functions should not call delete in parent if empty, it causes difficult to debugg problems while calling it during itteration, need to come up with a smarter solution
 //! @returns True if the generation was removed, otherwise false (if generation was not present or taged as keep (when not forcing)
 bool VectorVariableContainer::removeDataGeneration(const int generation, const bool force)
+{
+    // Remove a data generation
+    bool didRemove = removeDataGenerationOnly(generation, force);
+
+    // If last data generation removed then ask my parent to delete me
+    if (mDataGenerations.isEmpty())
+    {
+        mpParentLogDataHandler->deleteVariable(mName);
+    }
+    return didRemove;
+}
+
+//! @brief Removes a generation of the variable
+//! @returns True if the generation was removed, otherwise false (if generation was not present or taged as keep (when not forcing)
+bool VectorVariableContainer::removeDataGenerationOnly(const int generation, const bool force)
 {
     bool didRemove=false;
     // Skip removal of generations that should be kept
@@ -1290,13 +1313,6 @@ bool VectorVariableContainer::removeDataGeneration(const int generation, const b
             actuallyRemoveDataGen(git);
             didRemove=true;
         }
-    }
-
-    // If last data generation removed then ask my parent to delete me
-    // NOTE! The parent must use deleteLater, else this will crash
-    if (mDataGenerations.isEmpty())
-    {
-        mpParentLogDataHandler->deleteVariable(mName);
     }
     return didRemove;
 }

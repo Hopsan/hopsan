@@ -2072,7 +2072,6 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
                     // Remove the alias, here we assume that the alias name at this generation is actually an alias for the fullName (the registration should have taken care of that)
                     if (pAliasContainer)
                     {
-                        //! @todo will this not trigger additional remove code for the actual variable also
                         pAliasContainer->removeDataGeneration(fullGens[i]);
                     }
                     pFullData->mpVariableDescription->mAliasName = rAlias;
@@ -2087,16 +2086,17 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
         else
         {
             QList<int> fullGens = pFullContainer->getGenerations();
-            SharedVectorVariableContainerT pAliasContainer = getVariableContainer(rAlias);             // Check if alias already exist
+            SharedVectorVariableContainerT pExistingAliasContainer = getVariableContainer(rAlias);             // Check if alias already exist
             for(int i=fullGens.size()-1; i>=0; --i)
             {
-                SharedVectorVariableT pAliasData;
-                if (pAliasContainer)
+                SharedVectorVariableT pExistingAliasData;
+                if (pExistingAliasContainer)
                 {
-                    pAliasData = pAliasContainer->getDataGeneration(fullGens[i]);
+                    pExistingAliasData = pExistingAliasContainer->getDataGeneration(fullGens[i]);
                 }
+
                 // Check so that there will be no colision when merging alias
-                if ( pAliasData && (pAliasData->getFullVariableName() != rFullName) )
+                if ( pExistingAliasData && (pExistingAliasData->getFullVariableName() != rFullName) )
                 {
                     // Abort if we reach a generation that already exist and does not match
                     //! @todo we could keep going and try every gen (but then we do not want to duplicate this warning message)
@@ -2106,14 +2106,22 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
                 else
                 {
                     // If we get here then we can merge (any previous data with alias name will be overwritten if fullname was same)
-                    SharedVectorVariableT pData = pFullContainer->getDataGeneration(fullGens[i]);
-                    // First unregister the old alias
-                    if (pData->hasAliasName())
+                    SharedVectorVariableT pFullData = pFullContainer->getDataGeneration(fullGens[i]);
+
+                    // First remove the old alias from the previous alias container (and maybe the alias container itself)
+                    if (pFullData->hasAliasName())
                     {
-                        unregisterAlias(pData->getAliasName());
+                        SharedVectorVariableContainerT pPreviousAliasContainer = getVariableContainer(pFullData->getAliasName());
+                        if (pPreviousAliasContainer != pExistingAliasContainer)
+                        {
+                            unregisterAlias(pFullData->getAliasName());
+                        }
                     }
-                    pData->mpVariableDescription->mAliasName = rAlias;
-                    insertVariable(pData, rAlias, fullGens[i]);
+
+                    // Now insert the full data as new alias into existing or new alias container
+                    // existing data generations will be replaced (removed)
+                    pFullData->mpVariableDescription->mAliasName = rAlias;
+                    insertVariable(pFullData, rAlias, fullGens[i]);
                 }
             }
             emit aliasChanged();
@@ -2265,13 +2273,13 @@ HopsanVariable LogDataHandler::insertVariable(SharedVectorVariableT pVariable, Q
     {
         // Insert it into the generations map
         pDataContainer = it.value();
-        pDataContainer->addDataGeneration(gen, pVariable);
+        pDataContainer->insertDataGeneration(gen, pVariable);
     }
     else
     {
         // Create a new toplevel map item and insert data into the generations map
         pDataContainer = SharedVectorVariableContainerT(new VectorVariableContainer(keyName, this));
-        pDataContainer->addDataGeneration(gen, pVariable);
+        pDataContainer->insertDataGeneration(gen, pVariable);
         mLogDataMap.insert(keyName, pDataContainer);
     }
 

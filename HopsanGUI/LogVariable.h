@@ -132,8 +132,9 @@ public:
 
     const QString &getName() const;
 
-    void addDataGeneration(const int generation, SharedVectorVariableT pData);
+    void insertDataGeneration(const int generation, SharedVectorVariableT pData);
     bool removeDataGeneration(const int generation, const bool force=false);
+    bool removeDataGenerationOnly(const int generation, const bool force=false);
     void removeAllGenerations();
     bool removeAllImportedGenerations();
     bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
