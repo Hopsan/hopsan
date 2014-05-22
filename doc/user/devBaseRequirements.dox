@@ -16,7 +16,7 @@ You do not need the Qt Development Environment if you only want to use the built
 A specially patched MinGW version and a special debugger version is needed, for your convenience we have put the needed files here:
 https://www.dropbox.com/sh/3ve9b7oqsdnwta2/7XdjHUBkrp
 
-Installation:
+<b>Installation:</b>
 1. Unzip the Qt specific MinGW_4.4 (MinGW-gcc440_1.zip)
    Recommended: Extract to `C:\Qt\MinGW-gcc440_1`
 2. Download and install Qt libraries for windows 4.8.5 (MinGW) from http://qt-project.org/downloads \n
@@ -24,7 +24,7 @@ Installation:
 3. Download and install \b Qt \b Creator version of your choice from http://qt-project.org/downloads, (latest version is recommended) \n
    \b Note! Scroll down on the download page until you find Qt Creator only installers. (Do \b NOT install Qt 5.*)
 
-Configure QtCreator:
+<b>Configure QtCreator:</b>
 1. In QtCreator, go to Tools->Options->Build&Run
 2. Add your "Qt Version" (if it does not exist) by pointing to `C:\Qt\4.8.5\bin\qmake.exe` or similar
 3. Make sure compilers are found under "Compilers", add it manually if not found, (point to `MinGW-gcc440_1\mingw32-make.exe`)
@@ -43,7 +43,7 @@ If you want to compile 64-bit component libraries YOU MUST compile against a 64-
 
 You do not need the Qt Development Environment if you only want to use the built in compilation feature in Hopsan, then you only need MinGW64
 
-Installation:
+<b>Installation:</b>
 1. Download "x64-Qt-4.8.5+qtcreator-2.8.0-RC-(gcc-4.8.1-seh-rev1).7z" from http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/
 2. Unzip the file (with 7-Zip), copy the directories mingw64 and Qt64-4.8.5 to your desired location. \n
    Recommended: `c:\Qt\mingw64`  and  `c:\Qt\Qt64-4.8.5`
@@ -54,7 +54,7 @@ Installation:
    \b Note! When new releases are published the old ones can be found from http://download.qt-project.org/official_releases/qtcreator/ \n
    \b Note! A 32-bit version of Qt Creator will work fine, it is just the code editor
 
-Configure QtCreator:
+<b>Configure QtCreator:</b>
 1. In QtCreator, go to Tools->Options->Build&Run
 2. Add your "Qt Version" (if it does not exist) by pointing to `C:\Qt\Qt64-4.8.5\bin\qmake.exe` or similar \n
    Select a clever name so that you know which Qt version is which (if you multiple versions installed)
@@ -64,9 +64,14 @@ Configure QtCreator:
 4. Configure a "Kit" (Combination of Qt version, Compiler and Debugger), use GDB (`C:\Qt\mingw64\bin\gdb.exe`) as debugger. \n
    Again! Choose a clever name. \n
    Set Qt mkspec: win32-g++-4.6 \n
-   YES! "win32-g++-4.6" is correct! \n
+   YES! "win32-g++-4.6" is correct!
 
 For examples of how the configuration \b could look, see these \b screen \b shots \ref devBaseRequirementsPageQtCreatorSettingsPage
+
+<b>Additional steps:</b>
+1. If you want to build and run HopsanGUI yourself, you may need to copy additional files from `C:\Qt\mingw64\opt\bin` into your `Hopsan/bin` directory. \n
+   You will find this directory in the same place as HopsanNG.pro. \n
+   You must at least copy the file <b>zlib1.dll</b>, or you will not be able to start HopsanGUI after it has been built.
    
 Open HopsanNG.pro or your "ComponentLibrary".pro file and configure your project (Select your Kit)
 If you have an old HopsanNG.pro.user file <b>DO NOT LOAD IT</b> \n
