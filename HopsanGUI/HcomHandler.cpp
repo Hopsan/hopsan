@@ -4013,35 +4013,41 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 else if (pArgVec1 && a2Scalar)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d));
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d), pArgVec1->getVariableType());
                     QVector<double> v = pArgVec1->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
                     {
                         r[i] = qMax(v[i],arg2d);
                     }
-                    mAnsVector->assignFrom(r);
+                    mAnsVector->assignFrom(pArgVec1->getSharedTimeOrFrequencyVector(), r);
                     return;
                 }
                 // Handle a1 scalar
                 else if (a1Scalar && pArgVec2)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()));
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()), pArgVec2->getVariableType());
                     QVector<double> v = pArgVec2->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
                     {
                         r[i] = qMax(arg1d, v[i]);
                     }
-                    mAnsVector->assignFrom(r);
+                    mAnsVector->assignFrom(pArgVec2->getSharedTimeOrFrequencyVector(), r);
                     return;
                 }
                 // Handle both vectors
                 else if (pArgVec1 && pArgVec2)
                 {
+                    VariableTypeT type = pArgVec1->getVariableType();
+                    if ( type != pArgVec2->getVariableType())
+                    {
+                        HCOMWARN(QString("Comparing different types %1!=%2 returning %1").arg(variableTypeAsString(type)).arg(variableTypeAsString(pArgVec2->getVariableType())));
+                    }
+
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()));
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()), pArgVec1->getVariableType());
                     QVector<double> a = pArgVec1->getDataVectorCopy();
                     QVector<double> b = pArgVec2->getDataVectorCopy();
                     QVector<double> c(qMin(a.size(), b.size()));
@@ -4049,40 +4055,13 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                     {
                         c[i] = qMax(a[i],b[i]);
                     }
-                    mAnsVector->assignFrom(c);
+                    mAnsVector->assignFrom(pArgVec1->getSharedTimeOrFrequencyVector(), c);
                     return;
                 }
                 else
                 {
                     HCOMERR("Scalars or vectors could not be found");
                 }
-//                HopsanVariable var1 = getLogVariable(arg1str);
-//                if (var1)
-//                {
-//                    HopsanVariable var2 = getLogVariable(arg2str);
-//                    if (var2)
-//                    {
-//                        mAnsType = DataVector;
-//                        mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(var1.mpVariable->getSmartName()).arg(var2.mpVariable->getSmartName()));
-//                        QVector<double> a = var1.mpVariable->getDataVectorCopy();
-//                        QVector<double> b = var2.mpVariable->getDataVectorCopy();
-//                        QVector<double> c(qMin(a.size(), b.size()));
-//                        for (int i=0; i<c.size(); ++i)
-//                        {
-//                            c[i] = qMax(a[i],b[i]);
-//                        }
-//                        mAnsVector->assignFrom(c);
-//                        return;
-//                    }
-//                    else
-//                    {
-//                        HCOMERR(QString("Variable %1 could not be found").arg(arg2str));
-//                    }
-//                }
-//                else
-//                {
-//                    HCOMERR(QString("Variable %1 could not be found").arg(arg1str));
-//                }
             }
             else
             {
@@ -4105,47 +4084,6 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     }
     else if(desiredType != Scalar && expr.startsWith("minof(") && expr.endsWith(")"))
     {
-//        QString args = expr.mid(6, expr.size()-7);
-//        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
-//        if(splitArgs.size() == 2)
-//        {
-//            const QString varName1 = splitArgs.first().trimmed();
-//            const QString varName2 = splitArgs.last().trimmed();
-
-//            HopsanVariable var1 = getLogVariable(varName1);
-//            if (var1)
-//            {
-//                HopsanVariable var2 = getLogVariable(varName2);
-//                if (var2)
-//                {
-//                    mAnsType = DataVector;
-//                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(var1.mpVariable->getSmartName()).arg(var2.mpVariable->getSmartName()));
-//                    QVector<double> a = var1.mpVariable->getDataVectorCopy();
-//                    QVector<double> b = var2.mpVariable->getDataVectorCopy();
-//                    QVector<double> c(qMin(a.size(), b.size()));
-//                    for (int i=0; i<c.size(); ++i)
-//                    {
-//                        c[i] = qMin(a[i],b[i]);
-//                    }
-//                    mAnsVector->assignFrom(c);
-//                    return;
-//                }
-//                else
-//                {
-//                    HCOMERR(QString("Variable %1 could not be found").arg(varName2));
-//                }
-//            }
-//            else
-//            {
-//                HCOMERR(QString("Variable %1 could not be found").arg(varName1));
-//            }
-//        }
-//        else
-//        {
-//            HCOMERR("Wrong number of arguments provided for minof function.\n"+mLocalFunctionDescriptions.find("minof").value().second);
-//        }
-//        mAnsType = Undefined;
-//        return;
         QString args = expr.mid(6, expr.size()-7);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
         if(splitArgs.size() == 2)
@@ -4202,35 +4140,41 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 else if (pArgVec1 && a2Scalar)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d));
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d), pArgVec1->getVariableType());
                     QVector<double> v = pArgVec1->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
                     {
                         r[i] = qMin(v[i],arg2d);
                     }
-                    mAnsVector->assignFrom(r);
+                    mAnsVector->assignFrom(pArgVec1->getSharedTimeOrFrequencyVector(), r);
                     return;
                 }
                 // Handle a1 scalar
                 else if (a1Scalar && pArgVec2)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()));
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()), pArgVec2->getVariableType());
                     QVector<double> v = pArgVec2->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
                     {
                         r[i] = qMin(arg1d, v[i]);
                     }
-                    mAnsVector->assignFrom(r);
+                    mAnsVector->assignFrom(pArgVec2->getSharedTimeOrFrequencyVector(), r);
                     return;
                 }
                 // Handle both vectors
                 else if (pArgVec1 && pArgVec2)
                 {
+                    VariableTypeT type = pArgVec1->getVariableType();
+                    if ( type != pArgVec2->getVariableType())
+                    {
+                        HCOMWARN(QString("Comparing different types %1!=%2 returning %1").arg(variableTypeAsString(type)).arg(variableTypeAsString(pArgVec2->getVariableType())));
+                    }
+
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()));
+                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()), pArgVec1->getVariableType());
                     QVector<double> a = pArgVec1->getDataVectorCopy();
                     QVector<double> b = pArgVec2->getDataVectorCopy();
                     QVector<double> c(qMin(a.size(), b.size()));
@@ -4238,7 +4182,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                     {
                         c[i] = qMin(a[i],b[i]);
                     }
-                    mAnsVector->assignFrom(c);
+                    mAnsVector->assignFrom(pArgVec1->getSharedTimeOrFrequencyVector(), c);
                     return;
                 }
                 else

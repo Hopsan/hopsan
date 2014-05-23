@@ -677,7 +677,6 @@ void VectorVariable::assignFrom(SharedVectorVariableT time, const QVector<double
 {
     Q_UNUSED(time);
     // By default we do not have a time vector so lets just assign the data
-    //! @todo maybe should give error or warnign
     assignFrom(rData);
 }
 
@@ -685,7 +684,6 @@ void VectorVariable::assignFrom(const QVector<double> &rTime, const QVector<doub
 {
     Q_UNUSED(rTime);
     // By default we do not have a time vector so lets just assign the data
-    //! @todo maybe should give error or warnign
     assignFrom(rData);
 }
 
