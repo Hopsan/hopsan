@@ -30,6 +30,7 @@
 
 #include <cstring>
 #include <stdlib.h>
+#include <math.h>
 
 using namespace hopsan;
 
@@ -177,6 +178,7 @@ const std::vector<HString> NumericalIntegrationSolver::getAvailableSolverTypes()
     availableSolvers.push_back(HString("Midpoint Method"));
     availableSolvers.push_back(HString("Runge-Kutta"));
     availableSolvers.push_back(HString("Dormand-Prince"));
+    availableSolvers.push_back(HString("Backward Euler"));
     return availableSolvers;
 }
 
@@ -196,6 +198,9 @@ void NumericalIntegrationSolver::solve(const int solverType)
         break;
     case 3:
         solveDormandPrince();
+        break;
+    case 4:
+        solveBackwardEuler();
         break;
     default:
         mpParentComponent->addErrorMessage("Unknown solver type!");
@@ -251,27 +256,70 @@ void NumericalIntegrationSolver::solveMidpointMethod()
 
 void NumericalIntegrationSolver::solveBackwardEuler()
 {
-    std::vector<double> orgStateVars;
-    orgStateVars= *mpStateVars;
+    std::vector<double> yorg;
+    yorg.resize(mnStateVars);
+    yorg= *mpStateVars;
 
-    double tol = 1e-5;
-    bool stop=false;
-    while(!stop)
+    std::vector<double> y0;
+    y0.resize(mnStateVars);
+
+    std::vector<double> y1;
+    y1.resize(mnStateVars);
+
+    for(int i=0; i<mnStateVars; ++i)
     {
-        stop=true;
+       y0[i] = yorg[i] + mTimeStep*mpParentComponent->getStateVariableDerivative(i);
+    }
+    mpParentComponent->reInitializeValuesFromNodes();
+    mpParentComponent->solveSystem();
+
+    while(true)
+    {
+        (*mpStateVars) = y0;
         for(int i=0; i<mnStateVars; ++i)
         {
-            (*mpStateVars)[i] = (*mpStateVars)[i] - ((*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i))/(1-mTimeStep*mpParentComponent->getStateVariableSecondDerivative(i));
+            y1[i] = yorg[i] + mTimeStep*mpParentComponent->getStateVariableDerivative(i);
         }
+        mpParentComponent->reInitializeValuesFromNodes();
+        mpParentComponent->solveSystem();
+
+        bool doBreak = true;
         for(int i=0; i<mnStateVars; ++i)
         {
-            double error = (*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i);
-            if(error > tol)
+            if(fabs( fabs(y1[i]-y0[i])/y0[i] ) > 1e-6)
             {
-                stop=false;
+                doBreak = false;
             }
         }
+
+        if(doBreak) break;
+
+        y0 = y1;
     }
+
+    (*mpStateVars) = y1;
+
+//    std::vector<double> orgStateVars;
+//    orgStateVars= *mpStateVars;
+
+//    double tol = 1e-5;
+//    bool stop=false;
+//    while(!stop)
+//    {
+//        stop=true;
+//        for(int i=0; i<mnStateVars; ++i)
+//        {
+//            (*mpStateVars)[i] = (*mpStateVars)[i] - ((*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i))/(1-mTimeStep*mpParentComponent->getStateVariableSecondDerivative(i));
+//        }
+//        for(int i=0; i<mnStateVars; ++i)
+//        {
+//            double error = (*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i);
+//            if(error > tol)
+//            {
+//                stop=false;
+//            }
+//        }
+//    }
 }
 
 
