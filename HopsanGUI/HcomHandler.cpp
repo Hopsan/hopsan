@@ -3889,9 +3889,21 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     }
     else if(desiredType != Scalar && (expr.startsWith("ones(") && expr.endsWith(")")))
     {
-        QString arg = expr.mid(5, expr.size()-6);
+        QString argStr = expr.mid(5, expr.size()-6);
+
         bool parseOK;
-        int nElem = int(arg.toDouble(&parseOK)+0.5);
+        int nElem = int(argStr.toDouble(&parseOK)+0.5);
+        // Ok this is not a number lets evaluate the expression instead
+        if (!parseOK)
+        {
+            evaluateExpression(argStr, Scalar);
+            if (mAnsType == Scalar)
+            {
+                nElem = int(mAnsScalar+0.5*(mAnsScalar/qAbs(mAnsScalar))); // Round to nearest int through truncation (also to avoid numerical problem like 2.9999999999 should be 3)
+                parseOK=true;
+            }
+        }
+
         if (parseOK)
         {
             if (nElem > 0)
@@ -3923,9 +3935,20 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     }
     else if(desiredType != Scalar && (expr.startsWith("zeros(") && expr.endsWith(")")))
     {
-        QString arg = expr.mid(6, expr.size()-7);
+        QString argStr = expr.mid(6, expr.size()-7);
         bool parseOK;
-        int nElem = int(arg.toDouble(&parseOK)+0.5);
+        int nElem = int(argStr.toDouble(&parseOK)+0.5);
+        // Ok this is not a number lets evaluate the expression instead
+        if (!parseOK)
+        {
+            evaluateExpression(argStr, Scalar);
+            if (mAnsType == Scalar)
+            {
+                nElem = int(mAnsScalar+0.5*(mAnsScalar/qAbs(mAnsScalar))); // Round to nearest int through truncation (also to avoid numerical problem like 2.9999999999 should be 3)
+                parseOK=true;
+            }
+        }
+
         if (parseOK)
         {
             if (nElem > 0)
