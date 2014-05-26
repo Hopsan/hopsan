@@ -1519,7 +1519,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     Q_FOREACH(const Expression &equation, beforeSolverEquations)
     {
         QString equationStr = equation.toString();
-        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
         {
             equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
         }
@@ -1572,7 +1572,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     Q_FOREACH(const Expression &equation, afterSolverEquations)
     {
         QString equationStr = equation.toString();
-        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
         {
             equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
         }
@@ -1634,7 +1634,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         //! @todo Convert everything to C++ syntax
         QString initEq = initAlgorithms[i];
-        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+        for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
         {
             initEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
         }
@@ -1657,7 +1657,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         for(int i=0; i<systemEquations.size(); ++i)
         {
             QString equationStr = systemEquations[i].toString();
-            for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+             for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
             {
                 equationStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
             }
@@ -1671,7 +1671,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             for(int j=0; j<systemVars.size(); ++j)
             {
                 QString elementStr = jacobian[i][j].toString();
-                for(int s=0; s<systemEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+                for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
                 {
                     elementStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
                 }
@@ -1699,7 +1699,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         //! @todo Convert everything to C++ syntax
         QString finalEq = finalAlgorithms[i];
-        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+         for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
         {
             finalEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
         }
@@ -1717,7 +1717,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         comp.auxiliaryFunctions.append("        case "+QString::number(e)+" :");
         QString stateEqStr = stateEquations[e].toString();
-        for(int s=0; s<stateEquations.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+         for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
         {
             stateEqStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
         }
@@ -1735,7 +1735,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         comp.auxiliaryFunctions.append("        case "+QString::number(e)+" :");
         QString stateEqStr = stateEquationsDerivatives[e].toString();
-        for(int s=0; s<stateEquationsDerivatives.size(); ++s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+         for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
         {
             stateEqStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
         }

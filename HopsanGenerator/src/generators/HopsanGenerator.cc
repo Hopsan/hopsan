@@ -170,6 +170,8 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     for(int i=0; i<comp.varNames.size(); ++i)
     {
         varDeclarations.append("        "+comp.varTypes[i]+" "+comp.varNames[i]+";\n");
+        if(comp.varTypes[i] == "double" && !comp.varNames[i].contains("]"))
+            varDeclarations.append("        "+comp.varTypes[i]+" *mpOUTPUT_"+comp.varNames[i]+";\n");
     }
     for(int i=0; i<comp.utilities.size(); ++i)
     {
@@ -298,6 +300,11 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
             }
         }
     }
+    for(int i=0; i<comp.varNames.size(); ++i)
+    {
+        if(comp.varTypes[i] == "double" && !comp.varNames[i].contains("]"))
+            addPorts.append("            addOutputVariable(\""+comp.varNames[i]+"\", \"\", \"\", 0, &mpOUTPUT_"+comp.varNames[i]+");\n");
+    }
 
 
     //Initialize variables
@@ -412,6 +419,11 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
             writeOutputs.append("            (*mpND_"+varName+") = "+varName+";\n");
         }
         ++portId;
+    }
+    for(int i=0; i<comp.varNames.size(); ++i)
+    {
+        if(comp.varTypes[i] == "double" && !comp.varNames[i].contains("]"))
+            writeOutputs.append("            (*mpOUTPUT_"+comp.varNames[i]+") = "+comp.varNames[i]+";\n");
     }
 
     QString writeStartValues = "";
