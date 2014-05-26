@@ -16,6 +16,26 @@
 //! Use loadFromXml or saveToXml functions to read or write to holcconfig.xml. Use get, set, add and clear functions to access the data.
 //!
 
+#if QT_VERSION >= 0x050000
+#include <QStandardPaths>
+QString getStandardLocation(QStandardPaths::StandardLocation type)
+{
+    QString location;
+    QStringList locations = QStandardPaths::standardLocations(type);
+    if (!locations.isEmpty())
+    {
+        // Take first reported location
+        location = locations.first();
+        // Append '/' to end if not already present
+        if (location[location.size()-1] != '/')
+        {
+            location.append('/');
+        }
+    }
+    return location;
+}
+#endif
+
 
 Configuration::Configuration(QWidget *pParent)
 {
@@ -27,9 +47,13 @@ Configuration::Configuration(QWidget *pParent)
 //! @brief Saves the current settings to holcconfig.xml
 void Configuration::saveToXml()
 {
+#if QT_VERSION >= 0x050000
+    QString configPath = getStandardLocation(QStandardPaths::DataLocation);
+#else
     QString configPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
+#endif
 
-        //Write to holcconfig.xml
+    // Write to holcconfig.xml
     QDomDocument domDocument;
     QDomElement configRoot = domDocument.createElement("holcconfig");
     configRoot.setAttribute("version", "1.0");
@@ -49,7 +73,7 @@ void Configuration::saveToXml()
     {
         QDir().mkpath(configPath);
     }
-    QFile xmlsettings(configPath + QString("holcconfig.xml"));
+    QFile xmlsettings(configPath + "holcconfig.xml");
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         QMessageBox::critical(mpParent, "Error", "Failed to open config file for writing: "+configPath+"holcconfig.xml");
@@ -67,7 +91,11 @@ void Configuration::loadFromXml()
     loadDefaultsFromXml();
 
     //Read from holcconfig.xml
+#if QT_VERSION >= 0x050000
+    QFile file(getStandardLocation(QStandardPaths::DataLocation) +"holcconfig.xml");
+#else
     QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/" + QString("holcconfig.xml"));
+#endif
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {

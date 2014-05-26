@@ -3,6 +3,7 @@
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 #include <QDebug>
+#include <QMimeData>
 #include <math.h>
 
 #include "TextEditor.h"
@@ -88,12 +89,12 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
     //Replace tabs with four whitespaces
     if(pEvent->key() == Qt::Key_Backtab)    //Shift+tab, remove spaces to the left until next tab stop (or as many spaces as possible)
     {
-        QString line = this->textCursor().block().text().toAscii();
+        QString line = this->textCursor().block().text().toLatin1();
         int pos = textCursor().positionInBlock();
         while(pos > 0 && line.at(pos-1) == ' ')
         {
             this->textCursor().deletePreviousChar();
-            line = this->textCursor().block().text().toAscii();
+            line = this->textCursor().block().text().toLatin1();
             pos = textCursor().positionInBlock();
             if(pos%4 == 0)
             {
@@ -103,7 +104,7 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
     }
     else if(pEvent->key() == Qt::Key_Enter || pEvent->key() == Qt::Key_Return)
     {
-        QString line = this->textCursor().block().text().toAscii();
+        QString line = this->textCursor().block().text().toLatin1();
         QString newStr = "\n";
         while(line.startsWith(" "))
         {
@@ -143,7 +144,7 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
         }
         else
         {
-            QString line = this->textCursor().block().text().toAscii();
+            QString line = this->textCursor().block().text().toLatin1();
             int pos = textCursor().positionInBlock();
             qDebug() << line << ", position: " << pos;
             int nSpaces = 0;

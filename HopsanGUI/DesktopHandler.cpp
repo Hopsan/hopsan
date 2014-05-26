@@ -38,15 +38,19 @@
 #include <QStandardPaths>
 QString getStandardLocation(QStandardPaths::StandardLocation type)
 {
+    QString location;
     QStringList locations = QStandardPaths::standardLocations(type);
-    if (locations.isEmpty())
+    if (!locations.isEmpty())
     {
-        return "";
+        // Take first reported location
+        location = locations.first();
+        // Append '/' to end if not already present
+        if (location[location.size()-1] != '/')
+        {
+            location.append('/');
+        }
     }
-    else
-    {
-        return locations.first();
-    }
+    return location;
 }
 #endif
 

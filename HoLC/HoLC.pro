@@ -12,6 +12,9 @@ TARGET = HoLC
 TEMPLATE = app
 DESTDIR = $${PWD}/bin
 
+#Make compile output clean
+CONFIG += silent warn_on
+
 INCLUDEPATH *= $${PWD}/
 LIBS *= -L$${PWD}/../bin
 
