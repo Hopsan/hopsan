@@ -328,6 +328,11 @@ HopsanVariable LogDataHandler::insertNewHopsanVariable(const QString &rDesiredna
     return HopsanVariable();
 }
 
+HopsanVariable LogDataHandler::insertNewHopsanVariable(SharedVectorVariableT pVariable, const int gen)
+{
+    return insertVariable(pVariable, "", gen);
+}
+
 class PLOImportData
 {
 public:
