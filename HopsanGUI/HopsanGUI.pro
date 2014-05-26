@@ -252,7 +252,8 @@ SOURCES += main.cpp \
     Optimization/OptimizationWorkerComplexRFP.cpp \
     Optimization/OptimizationWorkerParticleSwarm.cpp \
     Optimization/OptimizationWorkerParameterSweep.cpp \
-    Widgets/FindWidget.cpp
+    Widgets/FindWidget.cpp \
+    ModelicaLibrary.cpp
 
 
 
@@ -344,7 +345,8 @@ HEADERS += MainWindow.h \
     Optimization/OptimizationWorkerComplexRFP.h \
     Optimization/OptimizationWorkerParticleSwarm.h \
     Optimization/OptimizationWorkerParameterSweep.h \
-    Widgets/FindWidget.h
+    Widgets/FindWidget.h \
+    ModelicaLibrary.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

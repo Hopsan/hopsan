@@ -162,7 +162,7 @@ void AnimatedConnector::updateAnimation()
     y2 = endPos.y();
     mpLines.last()->setLine(x1, y1, x2, y2);
 
-    if(!mpDataPressure/*mpConnector->getStartPort()->getNodeType() != "NodeHydraulic"*/)   //!< @todo Bad to compare with string
+    if(!mpDataPressure || !mpDataFlow/*mpConnector->getStartPort()->getNodeType() != "NodeHydraulic"*/)   //!< @todo Bad to compare with string
     {
         return;
     }
@@ -184,6 +184,11 @@ void AnimatedConnector::updateAnimation()
         int index = mpAnimationWidget->getIndex();
         pressureData = mvIntensityData[index];
         flowData = mvFlowData[index];
+    }
+    else
+    {
+        pressureData = 0;
+        flowData = 0;
     }
 
     int red = std::min(255.0, 255*(pressureData-min)/(0.8*max-min));

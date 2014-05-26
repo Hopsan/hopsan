@@ -54,6 +54,7 @@
 #include "UndoStack.h"
 #include "version_gui.h"
 #include "HcomHandler.h"
+#include "ModelicaLibrary.h"
 
 #include "Widgets/DebuggerWidget.h"
 #include "Widgets/PlotWidget.h"
@@ -103,6 +104,7 @@ QAction *gpTogglePortsAction = 0;
 OptionsDialog *gpOptionsDialog = 0;
 QGridLayout *gpCentralGridLayout = 0;
 FindWidget *gpFindWidget = 0;
+ModelicaLibrary *gpModelicaLibrary = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -216,6 +218,9 @@ void MainWindow::createContents()
 
     //Create the library handler
     gpLibraryHandler = new LibraryHandler();
+
+    //Create the Modelica handler
+    gpModelicaLibrary = new ModelicaLibrary();
 
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);
@@ -1401,7 +1406,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << "Mainwindow caught keypress: " << event->key();
+    //qDebug() << "Mainwindow caught keypress: " << event->key();
     QMainWindow::keyPressEvent(event);
 }
 

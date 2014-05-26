@@ -34,6 +34,7 @@
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"
+#include "ModelicaLibrary.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotWindow.h"
@@ -120,78 +121,75 @@ bool Component::setParameterValue(QString name, QString value, bool force)
     //Special code for setting parameters to Modelica components. Should maybe be somewhere else.
     if(this->getTypeName() == "ModelicaComponent" && name == "model")
     {
-        QMap<QString, QString> modelicaConnectors;
-        modelicaConnectors.insert("NodeHydraulic", "connector NodeHydraulic \"Hydraulic Connector\"\n"
-                                            "Real         p \"Pressure\";\n"
-                                            "flow Real    q \"Volume flow\"\n"
-                                            "end Pin;");
-
-        QMap<QString, QString> modelicaModels;
-        modelicaModels.insert("FlowSource", "model FlowSource\n"
-                                         "    parameter Real q_ref;\n"
-                                         "    NodeHydraulic P1;\n"
-                                         "equation\n"
-                                         "    P1.q = q_ref;\n"
-                                         "end FlowSource;");
-
-        modelicaModels.insert("Tank", "model Tank\n"
-                                   "    NodeHydraulic P1;\n"
-                                   "equation\n"
-                                   "    P1.p = 100000;\n"
-                                   " end Tank;");
-
-        modelicaModels.insert("LaminarOrifice", "model LaminarOrifice\n"
-                                             "    parameter Real Kc;\n"
-                                             "    NodeHydraulic P1, P2;\n"
-                                             "equation\n"
-                                             "    P2.q = Kc*(P1.p-P2.p);\n"
-                                             "    0 = P1.q + P2.q;\n"
-                                             "end LaminarOrifice;");
-
-        modelicaModels.insert("Volume", "model Volume\n"
-                                     "    parameter Real V;\n"
-                                     "    parameter Real betae;\n"
-                                     "    NodeHydraulic P1, P2;\n"
-                                     "    Real P;\n"
-                                     "equation\n"
-                                     "    P = (P1.p+P2.p)/2;\n"
-                                     "    V/betae*der(P) = P1.q+P2.q;\n"
-                                     "end Volume;");
-
-        if(modelicaModels.contains(value))
+        if(gpModelicaLibrary->hasModel(value))
         {
+            QStringList alreadyExistingParameters = this->getParameterNames();  //Remember existing parameters for later
+
             QStringList ports;
-            QStringList parameters;
-            QStringList defaults;
-            QString modelCode = modelicaModels.find(value).value();
-            QStringList codeLines = modelCode.split("\n");
-            for(int l=1; codeLines[l].trimmed()!="equation" && l<codeLines.size(); ++l)
+            QStringList parameterNames;
+            QStringList parameterDefaults;
+            QString icon;
+            QStringList portPosNames;
+            QList<QList<double> > portPos;
+            ModelicaModel model = gpModelicaLibrary->getModel(value);
+            QList<ModelicaVariable> variables = model.getVariables();
+            foreach(const ModelicaVariable &var, variables)
             {
-                QString line = codeLines[l].simplified().remove(";");
-                foreach(const QString &connector, modelicaConnectors.keys())
+                foreach(const QString &connector, gpModelicaLibrary->getConnectorNames())
                 {
-                    if(line.startsWith(connector+" "))
+                    if(var.getType() == connector)
                     {
-                        ports.append(line.remove(connector+" ").remove(" ").split(","));
-                    }
-                    else if(line.startsWith("parameter "))
-                    {
-                        parameters.append(line.section(" ",2,2).section("(",0,0));
-                        if(defaults.contains("="))
-                        {
-                            defaults.append(line.section("=",1,1).simplified());
-                        }
-                        else
-                        {
-                            defaults.append("0");
-                        }
+                        ports.append(var.getName());
                     }
                 }
             }
 
+            QList<ModelicaVariable> parameters = model.getParameters();
+            foreach(const ModelicaVariable &par, parameters)
+            {
+
+                parameterNames.append(par.getName());
+                parameterDefaults.append(QString::number(par.getDefaultValue()));
+            }
+
+            QString annotations = model.getAnnotations();
+            if(!annotations.isEmpty())
+            {
+                icon = annotations.section("hopsanIcon",1,1).section("\"",1,1).section("\"",0,0);
+                int nPorts=annotations.count("portPos");
+                for(int i=0; i<nPorts; ++i)
+                {
+                    QStringList portPosStr = annotations.section("portPos",i+1,i+1).section("\"",1,1).section("\"",0,0).split(",");
+                    if(portPosStr.size() != 4)
+                        continue;
+                    portPosNames.append(portPosStr.first());
+                    portPos.append(QList<double>() << portPosStr[1].toDouble() << portPosStr[2].toDouble() << portPosStr[3].toDouble());
+                }
+            }
+
             this->setParameterValue("ports", ports.join(","));
-            this->setParameterValue("parameters", parameters.join(","));
-            this->setParameterValue("defaults", defaults.join(","));
+            this->setParameterValue("parameters", parameterNames.join(","));
+            this->setParameterValue("defaults", parameterDefaults.join(","));
+
+            qDebug() << "Setting icon: " << icon;
+
+            mModelObjectAppearance.setIconPath(icon, UserGraphics, Absolute);
+            for(int i=0; i<portPosNames.size(); ++i)
+            {
+                PortAppearance *pPortAppearance = &mModelObjectAppearance.getPortAppearanceMap().find(portPosNames[i]).value();
+                pPortAppearance->x = portPos[i][0];
+                pPortAppearance->y = portPos[i][1];
+                pPortAppearance->rot = portPos[i][2];
+
+            }
+            this->refreshAppearance();
+
+            //Set default parameter values (for new parameters only)
+            foreach(const ModelicaVariable &par, parameters)
+            {
+                if(!alreadyExistingParameters.contains(par.getName()))
+                    this->setParameterValue(par.getName(), QString::number(par.getDefaultValue()));
+            }
         }
     }
     else if(this->getTypeName() == "ModelicaComponent" && name == "ports" && !value.isEmpty())

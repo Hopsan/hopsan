@@ -246,6 +246,8 @@ public slots:
     bool isAncestorOfExternalSubsystem();
     bool isExternal();
 
+    QList<Connector*> getSubConnectorPtrs();
+
 signals:
 
     //Selection signals

@@ -42,6 +42,7 @@
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotCurve.h"
+#include "MessageHandler.h"
 
 #ifndef WIN32
 #include <unistd.h> //Needed for sysctl
@@ -560,7 +561,12 @@ void SensitivityAnalysisDialog::run()
         }
         if(gpConfig->getUseMulticore())
         {
-            gpModelHandler->simulateMultipleModels_blocking(mModelPtrs);
+            if(!gpModelHandler->simulateMultipleModels_blocking(mModelPtrs))
+            {
+                gpMessageHandler->addErrorMessage("Unable to perform sensitivity analysis: Failed to simulate model.");
+                gpConfig->setEnableProgressBar(progressBarOrgSetting);
+                return;
+            }
         }
         else
         {

@@ -34,9 +34,10 @@ namespace hopsan {
     private:
         HString mModel;
         HString mPorts;
-        HString mParameters;
-        HString mDefaults;
-        std::vector<double> mParametersValues;
+        HString mParameterNames;
+        HString mParameterDefaults;
+        double mParametersValues[100];  //!< @todo Horrible! But for some reason it crashes when using std::vector...
+        //! @note This can be solved by using a vector and reserving the size instead of using push_back; push_back moves the whole vector to a new adress which ruins the previous references...
 
     public:
         static Component *Creator()
@@ -50,8 +51,8 @@ namespace hopsan {
             {
                 this->addConstant("model", "Modelica model", "-", "", mModel);
                 this->addConstant("ports", "Number of ports", "-", "", mPorts);
-                this->addConstant("parameters", "Parameter names", "-", "", mParameters);
-                this->addConstant("defaults", "Default parameter values", "-", "", mDefaults);
+                this->addConstant("parameters", "Parameter names", "-", "", mParameterNames);
+                this->addConstant("defaults", "Default parameter values", "-", "", mParameterDefaults);
             }
             else if(mPorts!="")
             {
@@ -78,7 +79,7 @@ namespace hopsan {
                     {
                         if(newPortNames.at(j) == getPortNames().at(p))
                         {
-                            found = true;       //Old pöort exists in list of new ports, so keep it
+                            found = true;       //Old port exists in list of new ports, so keep it
                         }
                     }
                     if(!found)
@@ -100,11 +101,11 @@ namespace hopsan {
                 //Generate list of constants
                 std::vector<HString> newConstants;
                 newConstants.push_back("");
-                for(size_t i=0; i<mParameters.size(); ++i)
+                for(size_t i=0; i<mParameterNames.size(); ++i)
                 {
-                    if(mParameters.at(i) != ',')
+                    if(mParameterNames.at(i) != ',')
                     {
-                        newConstants[newConstants.size()-1].append(mParameters.at(i));
+                        newConstants[newConstants.size()-1].append(mParameterNames.at(i));
                     }
                     else
                     {
@@ -113,38 +114,39 @@ namespace hopsan {
                 }
 
                 //Geerate list of constants default values
-                std::vector<double> newDefaults;
+                //std::vector<double> newDefaults;
                 //! @todo Implement default value support (need to parse CSV string to vector of doubles somehow)
 
 
                 //Unregister old constants if they do not exist in list of new constants
                 std::vector<HString> oldConstants;
                 getParameterNames(oldConstants);
+                size_t numOldConstants = 0;
                 for(size_t c=0; c<oldConstants.size(); ++c)
                 {
                     bool found=false;
                     for(size_t j=0; j<newConstants.size(); ++j)
                     {
-                        if(newConstants.at(j) == oldConstants.at(c) || oldConstants.at(c) == "model" || oldConstants.at(c) == "ports" ||
+                        if(newConstants[j] == oldConstants.at(c) || oldConstants.at(c) == "model" || oldConstants.at(c) == "ports" ||
                                 oldConstants.at(c) == "parameters" || oldConstants.at(c) == "defaults")
                         {
-                            found = true;       //Old pöort exists in list of new ports, so keep it
+                            found = true;       //Old port exists in list of new ports, so keep it
+                            ++numOldConstants;
                         }
                     }
                     if(!found)
                     {
                         unRegisterParameter(oldConstants.at(c));
-                        --c;
                     }
                 }
 
                 //Add new ports if they do not already exist
                 for(size_t p=0; p<newConstants.size(); ++p)
                 {
-                    if(!getParameter(newConstants.at(p)))
+                    if(!newConstants[p].empty() && !getParameter(newConstants[p]))
                     {
-                        mParametersValues.push_back(0);
-                        addConstant(newConstants.at(p), "", "-", 0, mParametersValues.at(mParametersValues.size()-1));
+                        mParametersValues[numOldConstants+p] = 0.0;
+                        addConstant(newConstants[p], "-", "-", 0.0, mParametersValues[numOldConstants+p]);
                     }
                 }
             }

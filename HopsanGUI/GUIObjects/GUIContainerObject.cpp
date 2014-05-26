@@ -3321,6 +3321,13 @@ bool ContainerObject::isExternal()
 }
 
 
+//! @brief Returns a list with pointers to all sub-connectors in container
+QList<Connector *> ContainerObject::getSubConnectorPtrs()
+{
+    return mSubConnectorList;
+}
+
+
 
 LogDataHandler *ContainerObject::getLogDataHandler()
 {
