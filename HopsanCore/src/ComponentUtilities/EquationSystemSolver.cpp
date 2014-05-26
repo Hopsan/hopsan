@@ -273,20 +273,20 @@ void NumericalIntegrationSolver::solveBackwardEuler()
     mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
 
-    while(true)
+    for(int i=0; i<1000; ++i)
     {
         (*mpStateVars) = y0;
-        for(int i=0; i<mnStateVars; ++i)
+        for(int j=0; j<mnStateVars; ++j)
         {
-            y1[i] = yorg[i] + mTimeStep*mpParentComponent->getStateVariableDerivative(i);
+            y1[j] = yorg[j] + mTimeStep*mpParentComponent->getStateVariableDerivative(j);
         }
         mpParentComponent->reInitializeValuesFromNodes();
         mpParentComponent->solveSystem();
 
         bool doBreak = true;
-        for(int i=0; i<mnStateVars; ++i)
+        for(int j=0; j<mnStateVars; ++j)
         {
-            if(fabs( fabs(y1[i]-y0[i])/y0[i] ) > 1e-6)
+            if(fabs( fabs(y1[j]-y0[j])/y0[j] ) > 1e-6)
             {
                 doBreak = false;
             }
