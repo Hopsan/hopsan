@@ -188,6 +188,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("zeros", "Create a vector of zeros","Usage: zeros(size)");
     registerInternalFunction("maxof", "Returns the element-wise maximum values of x and y vectors","Usage: maxof(x,y)");
     registerInternalFunction("minof", "Returns the element-wise minimum values of x and y vectors","Usage: minof(x,y)");
+    registerInternalFunction("abs", "The absolute value of each vector element", "Usage: abs(vector)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
@@ -3395,12 +3396,44 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
     // Vector functions
     //timer.tic();
-    LogDataHandler *pLogData=0;
+    LogDataHandler *pLogDataHandler=0;
     if(mpModel && mpModel->getTopLevelSystemContainer())
     {
-        pLogData = mpModel->getTopLevelSystemContainer()->getLogDataHandler();
+        pLogDataHandler = mpModel->getTopLevelSystemContainer()->getLogDataHandler();
     }
-    if(desiredType != Scalar && expr.startsWith("ddt(") && expr.endsWith(")"))
+
+    if(expr.startsWith("abs(") && expr.endsWith(")"))
+    {
+        QString argStr = expr.mid(4, expr.size()-5);
+        SharedVectorVariableT pData = getLogVariable(argStr).mpVariable;
+        if(!pData)
+        {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector)
+            {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar)
+            {
+                mAnsScalar = qAbs(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Abs%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->absOfData());
+            return;
+        }
+
+        HCOMERR(QString("Failed to find variable/evaluate %1").arg(argStr));
+        mAnsType = Undefined;
+        return;
+    }
+    else if(desiredType != Scalar && expr.startsWith("ddt(") && expr.endsWith(")"))
     {
         QString args = expr.mid(4, expr.size()-5);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
@@ -3411,7 +3444,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             if (mAnsType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->diffVariables(pVar, pVar->getSharedTimeOrFrequencyVector());
+                mAnsVector = pLogDataHandler->diffVariables(pVar, pVar->getSharedTimeOrFrequencyVector());
                 return;
             }
             else
@@ -3434,7 +3467,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = pLogData->diffVariables(pVar1, pVar2);
+                    mAnsVector = pLogDataHandler->diffVariables(pVar1, pVar2);
                     return;
                 }
                 else
@@ -3475,7 +3508,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 if (mAnsType == DataVector)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = pLogData->lowPassFilterVariable(pVar, pVar->getSharedTimeOrFrequencyVector(), freq);
+                    mAnsVector = pLogDataHandler->lowPassFilterVariable(pVar, pVar->getSharedTimeOrFrequencyVector(), freq);
                     return;
                 }
                 else
@@ -3510,7 +3543,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                     if (mAnsType == DataVector)
                     {
                         mAnsType = DataVector;
-                        mAnsVector = pLogData->lowPassFilterVariable(pVar, pTimeVar, freq);
+                        mAnsVector = pLogDataHandler->lowPassFilterVariable(pVar, pTimeVar, freq);
                         return;
                     }
                     else
@@ -3551,7 +3584,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             if(mAnsType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->integrateVariables(mAnsVector, mAnsVector->getSharedTimeOrFrequencyVector());
+                mAnsVector = pLogDataHandler->integrateVariables(mAnsVector, mAnsVector->getSharedTimeOrFrequencyVector());
                 return;
             }
             else
@@ -3585,7 +3618,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             else
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->integrateVariables(pVar1, pVar2);
+                mAnsVector = pLogDataHandler->integrateVariables(pVar1, pVar2);
                 return;
             }
         }
@@ -3715,7 +3748,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
                 if (pVar)
                 {
-                    SharedVectorVariableT pTemp = pLogData->elementWiseGT(pVar, limit);
+                    SharedVectorVariableT pTemp = pLogDataHandler->elementWiseGT(pVar, limit);
                     if (pTemp)
                     {
                         mAnsType = DataVector;
@@ -3760,7 +3793,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
                 if (pVar)
                 {
-                    SharedVectorVariableT pTemp = pLogData->elementWiseLT(pVar, limit);
+                    SharedVectorVariableT pTemp = pLogDataHandler->elementWiseLT(pVar, limit);
                     if (pTemp)
                     {
                         mAnsType = DataVector;
@@ -4036,7 +4069,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 else if (pArgVec1 && a2Scalar)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d), pArgVec1->getVariableType());
+                    mAnsVector = pLogDataHandler->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d), pArgVec1->getVariableType());
                     QVector<double> v = pArgVec1->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
@@ -4050,7 +4083,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 else if (a1Scalar && pArgVec2)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()), pArgVec2->getVariableType());
+                    mAnsVector = pLogDataHandler->createOrphanVariable(QString("maxof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()), pArgVec2->getVariableType());
                     QVector<double> v = pArgVec2->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
@@ -4070,7 +4103,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                     }
 
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()), pArgVec1->getVariableType());
+                    mAnsVector = pLogDataHandler->createOrphanVariable(QString("maxof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()), pArgVec1->getVariableType());
                     QVector<double> a = pArgVec1->getDataVectorCopy();
                     QVector<double> b = pArgVec2->getDataVectorCopy();
                     QVector<double> c(qMin(a.size(), b.size()));
@@ -4163,7 +4196,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 else if (pArgVec1 && a2Scalar)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d), pArgVec1->getVariableType());
+                    mAnsVector = pLogDataHandler->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(arg2d), pArgVec1->getVariableType());
                     QVector<double> v = pArgVec1->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
@@ -4177,7 +4210,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 else if (a1Scalar && pArgVec2)
                 {
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()), pArgVec2->getVariableType());
+                    mAnsVector = pLogDataHandler->createOrphanVariable(QString("minof%1%2").arg(arg1d).arg(pArgVec2->getSmartName()), pArgVec2->getVariableType());
                     QVector<double> v = pArgVec2->getDataVectorCopy();
                     QVector<double> r(v.size());
                     for (int i=0; i<v.size(); ++i)
@@ -4197,7 +4230,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                     }
 
                     mAnsType = DataVector;
-                    mAnsVector = mpModel->getTopLevelSystemContainer()->getLogDataHandler()->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()), pArgVec1->getVariableType());
+                    mAnsVector = pLogDataHandler->createOrphanVariable(QString("minof%1%2").arg(pArgVec1->getSmartName()).arg(pArgVec2->getSmartName()), pArgVec1->getVariableType());
                     QVector<double> a = pArgVec1->getDataVectorCopy();
                     QVector<double> b = pArgVec2->getDataVectorCopy();
                     QVector<double> c(qMin(a.size(), b.size()));
@@ -4244,7 +4277,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
             if (pVar)
             {
-                SharedVectorVariableT pTemp = pLogData->elementWiseLT(pVar, limit);
+                SharedVectorVariableT pTemp = pLogDataHandler->elementWiseLT(pVar, limit);
                 if (pTemp)
                 {
                     mAnsType = DataVector;
@@ -4278,7 +4311,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
             if (pVar)
             {
-                SharedVectorVariableT pTemp = pLogData->elementWiseGT(pVar, limit);
+                SharedVectorVariableT pTemp = pLogDataHandler->elementWiseGT(pVar, limit);
                 if (pTemp)
                 {
                     mAnsType = DataVector;
@@ -4309,7 +4342,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     //timer.tic();
     //! @todo this code does pointer lookup, then does it again, and then get names to use string versions of logdatahandler functions, it could lookup once and then use the pointer versions instead
     //! @todo If SymHop simplifies expression to a constant, the code below won't find it
-    if(desiredType != Scalar && symHopExpr.isMultiplyOrDivide() && (symHopExpr.getDivisors().isEmpty() || symHopExpr.getFactors().size() > 1) && pLogData)
+    if(desiredType != Scalar && symHopExpr.isMultiplyOrDivide() && (symHopExpr.getDivisors().isEmpty() || symHopExpr.getFactors().size() > 1) && pLogDataHandler)
     {
         SymHop::Expression f0 = symHopExpr.getFactors()[0];
         SymHop::Expression f1 = symHopExpr;
@@ -4352,23 +4385,23 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         if(varType0 == Scalar && varType1 == DataVector)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->mulVariableWithScalar(vec1, scalar0);
+            mAnsVector = pLogDataHandler->mulVariableWithScalar(vec1, scalar0);
             return;
         }
         else if(varType0 == DataVector && varType1 == Scalar)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->mulVariableWithScalar(vec0, scalar1);
+            mAnsVector = pLogDataHandler->mulVariableWithScalar(vec0, scalar1);
             return;
         }
         else if(varType0 == DataVector && varType1 == DataVector)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->multVariables(vec0, vec1);
+            mAnsVector = pLogDataHandler->multVariables(vec0, vec1);
             return;
         }
     }
-    if(desiredType != Scalar && pLogData && symHopExpr.isPower())
+    if(desiredType != Scalar && pLogDataHandler && symHopExpr.isPower())
     {
         SymHop::Expression b = *symHopExpr.getBase();
         SymHop::Expression p = *symHopExpr.getPower();
@@ -4378,11 +4411,11 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         if(mAnsType == DataVector && p.toDouble() == 2.0)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->multVariables(mAnsVector, getLogVariable(b.toString()).mpVariable);
+            mAnsVector = pLogDataHandler->multVariables(mAnsVector, getLogVariable(b.toString()).mpVariable);
             return;
         }
     }
-    if(desiredType != Scalar && pLogData && symHopExpr.isMultiplyOrDivide() && symHopExpr.getFactors().size() == 1)
+    if(desiredType != Scalar && pLogDataHandler && symHopExpr.isMultiplyOrDivide() && symHopExpr.getFactors().size() == 1)
     {
         SymHop::Expression f = symHopExpr.getFactors()[0];
         SymHop::Expression d = SymHop::Expression::fromFactorsDivisors(symHopExpr.getDivisors(), QList<SymHop::Expression>());
@@ -4415,18 +4448,18 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             if(varType0 == DataVector && varType1 == Scalar)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->divVariableWithScalar(vec0, scalar1);
+                mAnsVector = pLogDataHandler->divVariableWithScalar(vec0, scalar1);
                 return;
             }
             else if(varType0 == DataVector && varType1 == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogData->divVariables(vec0, vec1);
+                mAnsVector = pLogDataHandler->divVariables(vec0, vec1);
                 return;
             }
         }
     }
-    if(desiredType != Scalar && pLogData && symHopExpr.isAdd())
+    if(desiredType != Scalar && pLogDataHandler && symHopExpr.isAdd())
     {
         SymHop::Expression t0 = symHopExpr.getTerms()[0];
         SymHop::Expression t1 = symHopExpr;
@@ -4471,19 +4504,19 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         if(varType0 == DataVector && varType1 == Scalar)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->addVariableWithScalar(vec0, scalar1);
+            mAnsVector = pLogDataHandler->addVariableWithScalar(vec0, scalar1);
             return;
         }
         else if(varType0 == Scalar && varType1 == DataVector)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->addVariableWithScalar(vec1, scalar0);
+            mAnsVector = pLogDataHandler->addVariableWithScalar(vec1, scalar0);
             return;
         }
         else if(varType0 == DataVector && varType1 == DataVector)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogData->addVariables(vec0, vec1);
+            mAnsVector = pLogDataHandler->addVariables(vec0, vec1);
             return;
         }
     }

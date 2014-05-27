@@ -1419,6 +1419,18 @@ double VectorVariable::peekData(const int idx) const
     return val;
 }
 
+QVector<double> VectorVariable::absOfData() const
+{
+    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> absdata(pData->size());
+    for (int i=0; i<pData->size(); ++i)
+    {
+        absdata[i] = qAbs((*pData)[i]);
+    }
+    mpCachedDataVector->endFullVectorOperation(pData);
+    return absdata;
+}
+
 //! @brief Returns the custom plot scale or 1 if not plotscale set.
 double VectorVariable::getPlotScale() const
 {

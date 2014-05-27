@@ -231,6 +231,7 @@ public:
     bool indexInRange(const int idx) const;
     double peekData(const int index, QString &rErr) const;
     double peekData(const int idx) const;
+    QVector<double> absOfData() const;
     double averageOfData() const;
     double minOfData(int &rIdx) const;
     double minOfData() const;
