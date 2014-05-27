@@ -80,12 +80,15 @@ QVector<double> PyPortClassWrapper::data(Port* o, const QString& rDataName)
 QVector<double> PyPortClassWrapper::time(Port* o)
 {
     QStringList vars = variableNames(o);
-    SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->getVectorVariable(makeConcatName(o->getParentModelObjectName(), o->getName(), vars.first()), -1);
-    if (pVar)
+    if (!vars.empty())
     {
-        if (pVar->getSharedTimeOrFrequencyVector())
+        SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->getVectorVariable(makeConcatName(o->getParentModelObjectName(), o->getName(), vars.first()), -1);
+        if (pVar)
         {
-            return pVar->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+            if (pVar->getSharedTimeOrFrequencyVector())
+            {
+                return pVar->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+            }
         }
     }
     return QVector<double>();
