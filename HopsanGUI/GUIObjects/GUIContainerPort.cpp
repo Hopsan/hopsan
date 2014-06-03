@@ -139,7 +139,7 @@ int ContainerPort::type() const
     return Type;
 }
 
-QString ContainerPort::getHmfTypeName() const
+QString ContainerPort::getHmfTagName() const
 {
     return HMF_SYSTEMPORTTAG;
 }

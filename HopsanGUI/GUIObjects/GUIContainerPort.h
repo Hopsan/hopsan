@@ -39,7 +39,7 @@ public:
     // Type info
     enum { Type = ContainerPortType };
     int type() const;
-    virtual QString getHmfTypeName() const;
+    virtual QString getHmfTagName() const;
     bool isSystemPort() const;
 
 protected:
