@@ -730,6 +730,25 @@ void PlotArea::setAxisLimits(QwtPlot::Axis axis, const double min, const double 
     }
 }
 
+void PlotArea::setAxisLocked(QwtPlot::Axis axis, bool lockAxis)
+{
+    switch (axis)
+    {
+    case QwtPlot::xBottom:
+        mpXLockCheckBox->setChecked(lockAxis);
+        break;
+    case QwtPlot::yLeft:
+        mpYLLockCheckBox->setChecked(lockAxis);
+        break;
+    case QwtPlot::yRight:
+        mpYRLockCheckBox->setChecked(lockAxis);
+        break;
+    default:
+        break;
+        //Nothing for the other axis
+    }
+}
+
 void PlotArea::setAxisLabel(QwtPlot::Axis axis, const QString &rLabel)
 {
     mpUserDefinedLabelsCheckBox->setChecked(true);

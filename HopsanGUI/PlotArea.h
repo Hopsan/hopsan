@@ -166,6 +166,7 @@ public:
     bool isAxisLogarithmic(const QwtPlot::Axis axis) const;
 
     void setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis=true);
+    void setAxisLocked(QwtPlot::Axis axis, bool lockAxis);
     void setAxisLabel(QwtPlot::Axis axis, const QString &rLabel);
 
     HopQwtInterval getAxisCurveLimits(const QwtPlot::Axis axis) const;

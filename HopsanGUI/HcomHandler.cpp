@@ -39,6 +39,7 @@
 #include "PlotCurve.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
+#include "PlotArea.h"
 #include "PlotWindow.h"
 #include "SimulationThreadHandler.h"
 #include "UndoStack.h"
@@ -298,6 +299,35 @@ void HcomHandler::createCommands()
     adpvrCmd.fnc = &HcomHandler::executeAddPlotRightAxisCommand;
     adpvrCmd.group = "Plot Commands";
     mCmdList << adpvrCmd;
+
+    HcomCommand chdlCmd;
+    chdlCmd.cmd = "chdl";
+    chdlCmd.description.append("Change (and lock) diagram limits in the current plot");
+    chdlCmd.help.append(" Usage: chdl xLow xHigh xTicks \n");
+    chdlCmd.help.append(" Usage: chdl xLow xHigh xTicks ylLow ylHigh ylTicks \n");
+    chdlCmd.help.append(" Usage: chdl xLow xHigh xTicks ylLow ylHigh ylTicks yrLow yrHigh yrTicks \n");
+    chdlCmd.help.append(" Usage: chdl reset");
+    chdlCmd.fnc = &HcomHandler::executeChangeDiagramLimitsCommand;
+    chdlCmd.group = "Plot Commands";
+    mCmdList << chdlCmd;
+
+    HcomCommand chdlylCmd;
+    chdlylCmd.cmd = "chdlyl";
+    chdlylCmd.description.append("Change (and lock) diagram left y-axis limits in the current plot");
+    chdlylCmd.help.append(" Usage: chdlyl ylLow ylHigh ylTicks \n");
+    chdlylCmd.help.append(" Usage: chdlyl reset");
+    chdlylCmd.fnc = &HcomHandler::executeChangeDiagramLimitsYLCommand;
+    chdlylCmd.group = "Plot Commands";
+    mCmdList << chdlylCmd;
+
+    HcomCommand chdlyrCmd;
+    chdlyrCmd.cmd = "chdlyr";
+    chdlyrCmd.description.append("Change (and lock) diagram right y-axis limits in the current plot");
+    chdlyrCmd.help.append(" Usage: chdlyr yrLow yrHigh yrTicks \n");
+    chdlyrCmd.help.append(" Usage: chdlyr reset");
+    chdlyrCmd.fnc = &HcomHandler::executeChangeDiagramLimitsYRCommand;
+    chdlyrCmd.group = "Plot Commands";
+    mCmdList << chdlyrCmd;
 
     HcomCommand exitCmd;
     exitCmd.cmd = "exit";
@@ -934,6 +964,221 @@ void HcomHandler::executeAddPlotLeftAxisCommand(const QString cmd)
 void HcomHandler::executeAddPlotRightAxisCommand(const QString cmd)
 {
     changePlotVariables(cmd, 1, true);
+}
+
+//! @brief Execute function for "chdl" command
+void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
+{
+    QStringList args = getArguments(cmd);
+
+    if (args.size() == 1 && args.front() != "reset")
+    {
+        HCOMERR("Single argument must be 'reset' in chdl command");
+        return;
+    }
+    else if (args.size() != 1 && args.size() != 3 && args.size() != 6 && args.size() != 9)
+    {
+        HCOMERR("Wrong number of arguments in chdl, should be 1, 3, 6 or 9");
+        return;
+    }
+    else
+    {
+        //All OK
+    }
+
+    PlotArea *pArea=0;
+    if (mpCurrentPlotWindow)
+    {
+        PlotTab *pTab = mpCurrentPlotWindow->getCurrentPlotTab();
+        if (pTab)
+        {
+            pArea = pTab->getPlotArea();
+        }
+    }
+    if (!pArea)
+    {
+        HCOMERR("Unable to find current plot window plot area");
+        return;
+    }
+
+    if (args.size() == 1)
+    {
+        pArea->setAxisLocked(QwtPlot::xBottom, false);
+        pArea->setAxisLocked(QwtPlot::yLeft, false);
+        pArea->setAxisLocked(QwtPlot::yRight, false);
+        pArea->rescaleAxesToCurves();
+    }
+    else
+    {
+        bool minOK,maxOK,ticksOK;
+        // Set x-values
+        if (args.size() >= 3)
+        {
+            double min = args[0].toDouble(&minOK);
+            double max = args[1].toDouble(&maxOK);
+            double ticks = args[2].toDouble(&ticksOK);
+            if (minOK && maxOK && ticksOK)
+            {
+                pArea->setAxisLimits(QwtPlot::xBottom, min, max);
+            }
+            else
+            {
+                HCOMERR("Failed to parse double argument for x-axis in chdl");
+                return;
+            }
+        }
+
+        // Set yl-values
+        if (args.size() >= 6)
+        {
+            double min = args[3].toDouble(&minOK);
+            double max = args[4].toDouble(&maxOK);
+            double ticks = args[5].toDouble(&ticksOK);
+            if (minOK && maxOK && ticksOK)
+            {
+                pArea->setAxisLimits(QwtPlot::yLeft, min, max);
+            }
+            else
+            {
+                HCOMERR("Failed to parse double argument for the left y-axis in chdl");
+                return;
+            }
+        }
+
+        // Set yr-values
+        if (args.size() == 9)
+        {
+            double min = args[6].toDouble(&minOK);
+            double max = args[7].toDouble(&maxOK);
+            double ticks = args[8].toDouble(&ticksOK);
+            if (minOK && maxOK && ticksOK)
+            {
+                pArea->setAxisLimits(QwtPlot::yRight, min, max);
+            }
+            else
+            {
+                HCOMERR("Failed to parse double argument for the right y-axis in chdl");
+                return;
+            }
+        }
+    }
+}
+
+void HcomHandler::executeChangeDiagramLimitsYLCommand(const QString cmd)
+{
+    QStringList args = getArguments(cmd);
+
+    if (args.size() == 1 && args.front() != "reset")
+    {
+        HCOMERR("Single argument must be 'reset' in chdlyl command");
+        return;
+    }
+    else if (args.size() != 1 && args.size() != 3)
+    {
+        HCOMERR("Wrong number of arguments in chdlyl, should be 1 or 3");
+        return;
+    }
+    else
+    {
+        //All OK
+    }
+
+
+    PlotArea *pArea=0;
+    if (mpCurrentPlotWindow)
+    {
+        PlotTab *pTab = mpCurrentPlotWindow->getCurrentPlotTab();
+        if (pTab)
+        {
+            pArea = pTab->getPlotArea();
+        }
+    }
+    if (!pArea)
+    {
+        HCOMERR("Unable to find current plot window plot area");
+        return;
+    }
+
+    if (args.size() == 1)
+    {
+        pArea->setAxisLocked(QwtPlot::yLeft, false);
+        pArea->rescaleAxesToCurves();
+    }
+    else
+    {
+        // Set yl-values
+        bool minOK,maxOK,ticksOK;
+        double min = args[0].toDouble(&minOK);
+        double max = args[1].toDouble(&maxOK);
+        double ticks = args[2].toDouble(&ticksOK);
+        if (minOK && maxOK && ticksOK)
+        {
+            pArea->setAxisLimits(QwtPlot::yLeft, min, max);
+        }
+        else
+        {
+            HCOMERR("Failed to parse double argument for yl-axis in chdlyl");
+            return;
+        }
+    }
+}
+
+void HcomHandler::executeChangeDiagramLimitsYRCommand(const QString cmd)
+{
+    QStringList args = getArguments(cmd);
+
+    if (args.size() == 1 && args.front() != "reset")
+    {
+        HCOMERR("Single argument must be 'reset' in chdlyr command");
+        return;
+    }
+    else if (args.size() != 1 && args.size() != 3)
+    {
+        HCOMERR("Wrong number of arguments in chdlyr, should be 1 or 3");
+        return;
+    }
+    else
+    {
+        //All OK
+    }
+
+    PlotArea *pArea=0;
+    if (mpCurrentPlotWindow)
+    {
+        PlotTab *pTab = mpCurrentPlotWindow->getCurrentPlotTab();
+        if (pTab)
+        {
+            pArea = pTab->getPlotArea();
+        }
+    }
+    if (!pArea)
+    {
+        HCOMERR("Unable to find current plot window plot area");
+        return;
+    }
+
+    if (args.size() == 1)
+    {
+        pArea->setAxisLocked(QwtPlot::yRight, false);
+        pArea->rescaleAxesToCurves();
+    }
+    else
+    {
+        // Set yr-values
+        bool minOK,maxOK,ticksOK;
+        double min = args[0].toDouble(&minOK);
+        double max = args[1].toDouble(&maxOK);
+        double ticks = args[2].toDouble(&ticksOK);
+        if (minOK && maxOK && ticksOK)
+        {
+            pArea->setAxisLimits(QwtPlot::yRight, min, max);
+        }
+        else
+        {
+            HCOMERR("Failed to parse double argument for yr-axis in chdlyr");
+            return;
+        }
+    }
 }
 
 

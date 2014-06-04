@@ -717,7 +717,7 @@ double findSmallestValueGreaterThanZero(QVector<double> data)
 
 
 
-//! @brief Splits a string at specified character, but does not split inside parentheses
+//! @brief Splits a string at specified character, but does not split inside quotations
 //! @param str String to split
 //! @param c Character to split at
 //! @param split Referens to list with split strings
