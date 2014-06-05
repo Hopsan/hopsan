@@ -303,6 +303,7 @@ void HcomHandler::createCommands()
     HcomCommand chdlCmd;
     chdlCmd.cmd = "chdl";
     chdlCmd.description.append("Change (and lock) diagram limits in the current plot");
+    chdlCmd.help.append(" Usage: chdl xLow xHigh \n");
     chdlCmd.help.append(" Usage: chdl xLow xHigh xTicks \n");
     chdlCmd.help.append(" Usage: chdl xLow xHigh xTicks ylLow ylHigh ylTicks \n");
     chdlCmd.help.append(" Usage: chdl xLow xHigh xTicks ylLow ylHigh ylTicks yrLow yrHigh yrTicks \n");
@@ -314,6 +315,7 @@ void HcomHandler::createCommands()
     HcomCommand chdlylCmd;
     chdlylCmd.cmd = "chdlyl";
     chdlylCmd.description.append("Change (and lock) diagram left y-axis limits in the current plot");
+    chdlylCmd.help.append(" Usage: chdlyl ylLow ylHigh \n");
     chdlylCmd.help.append(" Usage: chdlyl ylLow ylHigh ylTicks \n");
     chdlylCmd.help.append(" Usage: chdlyl reset");
     chdlylCmd.fnc = &HcomHandler::executeChangeDiagramLimitsYLCommand;
@@ -323,6 +325,7 @@ void HcomHandler::createCommands()
     HcomCommand chdlyrCmd;
     chdlyrCmd.cmd = "chdlyr";
     chdlyrCmd.description.append("Change (and lock) diagram right y-axis limits in the current plot");
+    chdlyrCmd.help.append(" Usage: chdlyr yrLow yrHigh \n");
     chdlyrCmd.help.append(" Usage: chdlyr yrLow yrHigh yrTicks \n");
     chdlyrCmd.help.append(" Usage: chdlyr reset");
     chdlyrCmd.fnc = &HcomHandler::executeChangeDiagramLimitsYRCommand;
@@ -976,9 +979,9 @@ void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
         HCOMERR("Single argument must be 'reset' in chdl command");
         return;
     }
-    else if (args.size() != 1 && args.size() != 3 && args.size() != 6 && args.size() != 9)
+    else if (args.size() != 1 && args.size() != 2 && args.size() != 3 && args.size() != 6 && args.size() != 9)
     {
-        HCOMERR("Wrong number of arguments in chdl, should be 1, 3, 6 or 9");
+        HCOMERR("Wrong number of arguments in chdl, should be 1, 2, 3, 6 or 9");
         return;
     }
     else
@@ -1010,13 +1013,16 @@ void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
     }
     else
     {
-        bool minOK,maxOK,ticksOK;
+        bool minOK,maxOK,ticksOK=true;
         // Set x-values
-        if (args.size() >= 3)
+        if (args.size() >= 2)
         {
             double min = args[0].toDouble(&minOK);
             double max = args[1].toDouble(&maxOK);
-            double ticks = args[2].toDouble(&ticksOK);
+            if (args.size() >= 3)
+            {
+                double ticks = args[2].toDouble(&ticksOK);
+            }
             if (minOK && maxOK && ticksOK)
             {
                 pArea->setAxisLimits(QwtPlot::xBottom, min, max);
@@ -1073,9 +1079,9 @@ void HcomHandler::executeChangeDiagramLimitsYLCommand(const QString cmd)
         HCOMERR("Single argument must be 'reset' in chdlyl command");
         return;
     }
-    else if (args.size() != 1 && args.size() != 3)
+    else if (args.size() > 3)
     {
-        HCOMERR("Wrong number of arguments in chdlyl, should be 1 or 3");
+        HCOMERR("Wrong number of arguments in chdlyl, should be 1, 2 or 3");
         return;
     }
     else
@@ -1107,10 +1113,13 @@ void HcomHandler::executeChangeDiagramLimitsYLCommand(const QString cmd)
     else
     {
         // Set yl-values
-        bool minOK,maxOK,ticksOK;
+        bool minOK,maxOK,ticksOK=true;
         double min = args[0].toDouble(&minOK);
         double max = args[1].toDouble(&maxOK);
-        double ticks = args[2].toDouble(&ticksOK);
+        if (args.size() == 3)
+        {
+            double ticks = args[2].toDouble(&ticksOK);
+        }
         if (minOK && maxOK && ticksOK)
         {
             pArea->setAxisLimits(QwtPlot::yLeft, min, max);
@@ -1132,9 +1141,9 @@ void HcomHandler::executeChangeDiagramLimitsYRCommand(const QString cmd)
         HCOMERR("Single argument must be 'reset' in chdlyr command");
         return;
     }
-    else if (args.size() != 1 && args.size() != 3)
+    else if (args.size() > 3)
     {
-        HCOMERR("Wrong number of arguments in chdlyr, should be 1 or 3");
+        HCOMERR("Wrong number of arguments in chdlyr, should be 1, 2 or 3");
         return;
     }
     else
@@ -1165,10 +1174,13 @@ void HcomHandler::executeChangeDiagramLimitsYRCommand(const QString cmd)
     else
     {
         // Set yr-values
-        bool minOK,maxOK,ticksOK;
+        bool minOK,maxOK,ticksOK=true;
         double min = args[0].toDouble(&minOK);
         double max = args[1].toDouble(&maxOK);
-        double ticks = args[2].toDouble(&ticksOK);
+        if (args.size() == 3)
+        {
+            double ticks = args[2].toDouble(&ticksOK);
+        }
         if (minOK && maxOK && ticksOK)
         {
             pArea->setAxisLimits(QwtPlot::yRight, min, max);
