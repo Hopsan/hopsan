@@ -108,8 +108,12 @@ private:
 
     // Private command functions (to be accessed by public executeCommand function)
     void executeExitCommand(const QString cmd);
+
+    void executeChangeSimulationSettingsCommand(const QString cmd);
     void executeSimulateCommand(const QString cmd);
 
+    void executeChangePlotWindowCommand(const QString cmd);
+    void executeDisplayPlotWindowCommand(const QString cmd);
     void executePlotCommand(const QString cmd);
     void executePlotLeftAxisCommand(const QString cmd);
     void executePlotRightAxisCommand(const QString cmd);
@@ -123,26 +127,29 @@ private:
     void executeChangeLogarithmicAxisX(const QString cmd);
     void executeChangeLogarithmicAxisYL(const QString cmd);
     void executeChangeLogarithmicAxisYR(const QString cmd);
+    void executeChangePlotScaleCommand(const QString cmd);
+    void executeDisplayPlotScaleCommand(const QString cmd);
+
+    void executeDisplayVariablesCommand(const QString cmd);
+    void executeRemoveVariableCommand(const QString cmd);
+    void executeChangeDefaultPlotScaleCommand(const QString cmd);
+    void executeDisplayDefaultPlotScaleCommand(const QString cmd);
+    void executeVariableInfoCommand(const QString cmd);
 
     void executeDisplayParameterCommand(const QString cmd);
     void executeAddParameterCommand(const QString cmd);
     void executeChangeParameterCommand(const QString cmd);
-    void executeChangeSimulationSettingsCommand(const QString cmd);
+
+
     void executeHelpCommand(const QString cmd);
     void executeRunScriptCommand(const QString cmd);
     void executeWriteHistoryToFileCommand(const QString cmd);
     void executePrintCommand(const QString cmd);
-    void executeChangePlotWindowCommand(const QString cmd);
-    void executeDisplayPlotWindowCommand(const QString cmd);
-    void executeDisplayVariablesCommand(const QString cmd);
+
     void executePeekCommand(const QString cmd);
     void executePokeCommand(const QString cmd);
     void executeDefineAliasCommand(const QString cmd);
-    void executeRemoveVariableCommand(const QString cmd);
-    void executeChangeDefaultPlotScaleCommand(const QString cmd);
-    void executeDisplayDefaultPlotScaleCommand(const QString cmd);
-    void executeChangePlotScaleCommand(const QString cmd);
-    void executeDisplayPlotScaleCommand(const QString cmd);
+
     void executeDisableLoggingCommand(const QString cmd);
     void executeEnableLoggingCommand(const QString cmd);
     void executeSetCommand(const QString cmd);

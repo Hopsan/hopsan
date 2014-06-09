@@ -359,6 +359,14 @@ void HcomHandler::createCommands()
     logyr.group = "Plot Commands";
     mCmdList << logyr;
 
+    HcomCommand infoCmd;
+    infoCmd.cmd = "info";
+    infoCmd.description.append("Show info about a variable");
+    infoCmd.help.append("Usage: info variable");
+    infoCmd.fnc = &HcomHandler::executeVariableInfoCommand;
+    mCmdList << infoCmd;
+
+
     HcomCommand exitCmd;
     exitCmd.cmd = "exit";
     exitCmd.description.append("Exits the program");
@@ -2203,6 +2211,31 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
             HCOMERR(QString("Unknown variable: %1").arg(var));
             mAnsType = Undefined;
         }
+    }
+}
+
+void HcomHandler::executeVariableInfoCommand(const QString cmd)
+{
+    HopsanVariable pVar = getLogVariable(cmd);
+    if (pVar)
+    {
+        QString type = variableTypeAsString(pVar.mpVariable->getVariableType());
+        QString plotscale = QString("%1 (%2)").arg(pVar.mpVariable->getCustomUnitScale().mUnit).arg(pVar.mpVariable->getCustomUnitScale().mScale);
+        QString numGens = QString("%1").arg(pVar.mpContainer->getNumGenerations());
+        QString length = QString("%1").arg(pVar.mpVariable->getDataSize());
+
+        QString infotext("\n");
+        infotext.append("       Name: ").append(pVar.mpVariable->getFullVariableName()).append("\n");
+        infotext.append("       Type: ").append(type).append("\n");
+        infotext.append("  PlotScale: ").append(plotscale).append("\n");
+        infotext.append("     Length: ").append(length).append("\n");
+        infotext.append("Generations: ").append(numGens);
+
+        HCOMPRINT(infotext);
+    }
+    else
+    {
+        HCOMERR(QString("Could not find a variable matching: %1").arg(cmd));
     }
 }
 
