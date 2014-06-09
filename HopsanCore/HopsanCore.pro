@@ -123,7 +123,8 @@ SOURCES += \
     src/CoreUtilities/CoSimulationUtilities.cpp \
     src/CoreUtilities/StringUtilities.cpp \
     src/HopsanTypes.cc \
-    src/ComponentUtilities/HopsanPowerUser.cc
+    src/ComponentUtilities/HopsanPowerUser.cc \
+    src/ComponentUtilities/LookupTable.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -170,7 +171,8 @@ HEADERS += \
     include/ComponentUtilities/HopsanPowerUser.h \
     include/HopsanCoreMacros.h \
     include/compiler_info.h \
-    include/Components/ModelicaComponent.hpp
+    include/Components/ModelicaComponent.hpp \
+    include/ComponentUtilities/LookupTable.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

@@ -29,6 +29,9 @@
 #include <vector>
 #include "HopsanTypes.h"
 
+// Forward declaration
+class csv_parser;
+
 namespace hopsan {
 
 //! @ingroup ComponentUtilityClasses
@@ -69,6 +72,45 @@ protected:
     std::vector< int > mIncDec;
     HString mErrorString;
 };
+
+class DLLIMPORTEXPORT CSVParserNG
+{
+public:
+    CSVParserNG(const char line_terminator = '\n', const char enclosure_char = '"');
+    ~CSVParserNG();
+
+    void clearData();
+    bool isEmpty() const;
+
+    void setLineTerminator(const char lt);
+    void setFieldEnclosureChar(const char fec);
+
+    bool setFile(const HString &rFilepath);
+
+    bool parseWholeFile();
+    //bool parseRowAsDouble(std::vector<double> &rRowD);
+    bool eof() const;
+
+    HString getErrorString() const;
+    size_t getNumDataRows() const;
+    size_t getNumDataCols() const;
+
+    void copyRow(const size_t rowIdx, std::vector<double> &rRow);
+    void copyColumn(const size_t columnIdx, std::vector<double> &rColumn);
+
+protected:
+    std::vector<HString> mData;
+    size_t mNumDataRows, mNumDataCols;
+
+    char mLineTerminator, mFieldEnclosureChar, mFieldSeparator;
+    size_t mNumLinesToSkip;
+    csv_parser *mpCsvParser;
+
+    HString mErrorString;
+    bool mConvertDecimalSeparator;
+};
+
+
 
 }
 

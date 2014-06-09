@@ -208,6 +208,22 @@ bool HString::isBool() const
     return (compare("true") || compare("false") || compare("1") || compare("0"));
 }
 
+double HString::toDouble(bool *isOK) const
+{
+    if (mSize > 0)
+    {
+        char *pEnd;
+        double d = strtod(mpDataBuffer, &pEnd);
+        *isOK = (*pEnd == '\0');
+        return d;
+    }
+    else
+    {
+        *isOK = false;
+        return 0;
+    }
+}
+
 size_t HString::find_first_of(const char c, size_t pos) const
 {
     return find(c,pos);

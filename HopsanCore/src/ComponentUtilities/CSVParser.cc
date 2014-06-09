@@ -22,8 +22,9 @@
 //!
 //$Id$
 
-#include "ComponentUtilities/CSVParser.h"
 #include "csv_parser.hpp"
+
+#include "ComponentUtilities/CSVParser.h"
 #include "ComponentUtilities/num2string.hpp"
 #include <algorithm>
 #include <sstream>
@@ -443,6 +444,7 @@ double CSVParser::interpolate(const double x, const size_t inCol, const size_t o
     return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
 }
 
+
 //! @brief Transposes the data matrix, useful if you know that data is stored line wise instead of column wise
 void CSVParser::transpose()
 {
@@ -472,4 +474,278 @@ void CSVParser::transpose()
 
     setFirstLastValues();
     calcIncreasingOrDecreasing();
+}
+
+
+CSVParserNG::CSVParserNG(const char line_terminator, const char enclosure_char)
+{
+    setLineTerminator(line_terminator);
+    setFieldEnclosureChar(enclosure_char);
+    mFieldSeparator = ',';
+    mNumLinesToSkip = 0;
+    mConvertDecimalSeparator = false;
+
+    mpCsvParser = new csv_parser();
+}
+
+CSVParserNG::~CSVParserNG()
+{
+    delete mpCsvParser;
+}
+
+void CSVParserNG::clearData()
+{
+    mData.clear();
+    mNumDataRows=0;
+    mNumDataCols=0;
+}
+
+bool CSVParserNG::isEmpty() const
+{
+    return mData.empty();
+}
+
+void CSVParserNG::setLineTerminator(const char lt)
+{
+    mLineTerminator = lt;
+}
+
+void CSVParserNG::setFieldEnclosureChar(const char fec)
+{
+    mFieldEnclosureChar = fec;
+}
+
+bool CSVParserNG::setFile(const HString &rFilepath)
+{
+    // Figure out field terminator and number of lines to skip
+    std::ifstream myfile(rFilepath.c_str());
+    if (myfile.is_open())
+    {
+        // Check that last char is a newline
+        //! @todo it would be better if the parser lib could handle this
+        char lastChar;
+        myfile.seekg(-1, ios::end);
+        myfile.get(lastChar);
+        myfile.seekg(0, ios::beg);
+        if (lastChar != '\n')
+        {
+            mErrorString = "No newline at end of file";
+            myfile.close();
+            return false;
+        }
+
+        // Figure out how many lines to skip
+        std::string line;
+        getline(myfile,line); // Get first line
+        // If we have not already specified how many lines to skip, then find out automatically
+        if (mNumLinesToSkip == 0)
+        {
+            // Find first row with field separator, skip the preceding lines
+            while( (line.find(',')==string::npos) && (line.find(';')==string::npos) )
+            {
+                ++mNumLinesToSkip;
+                getline(myfile,line);
+
+                if (myfile.eof())
+                {
+                    // We have reach the end lets give up
+                    mErrorString = "Could not find any separator signs";
+                    myfile.close();
+                    return false;
+                }
+            }
+        }
+
+        // Close the file, (it will be reopened by the parser lib)
+        myfile.close();
+
+        // Select field separator ',' or ';'
+        if( line.find(';') != string::npos )
+        {
+            mFieldSeparator = ';';     //Use semicolon
+            mConvertDecimalSeparator = true;
+        }
+        else if ( line.find(',') != string::npos )
+        {
+            mFieldSeparator = ',';     //Use comma
+        }
+        else
+        {
+            mErrorString = "Could not determine filed seeparator, (must be , or ;)";
+            return false;
+        }
+
+        // Now setup the csv_parser and init the file
+        mpCsvParser->set_skip_lines(mNumLinesToSkip);
+        mpCsvParser->set_enclosed_char(mFieldEnclosureChar, ENCLOSURE_OPTIONAL);
+        mpCsvParser->set_field_term_char(mFieldSeparator);
+        mpCsvParser->set_line_term_char(mLineTerminator);
+
+        // Specify the file to parse
+        bool initOk = mpCsvParser->init(rFilepath.c_str());
+        if (!initOk)
+        {
+            mErrorString="csv_parser utility failed to initialize";
+            return false;
+        }
+
+        // If we get here the file was sucessfully initialized
+        return true;
+    }
+    else
+    {
+        mErrorString = "Could not open file";
+        return false;
+    }
+}
+
+bool CSVParserNG::parseWholeFile()
+{
+    bool status=true;
+    mData.clear();
+    mNumDataRows=0;
+    mNumDataCols=0;
+    size_t rowCtr=mNumLinesToSkip;
+    // Check to see if there are more records, then grab each row one at a time
+    while( mpCsvParser->has_more_rows() )
+    {
+        // Get the record
+        csv_row row = mpCsvParser->get_row();
+        ++mNumDataRows;
+
+        if(mData.empty())
+        {
+            // Init data matrix, data will be stored column row wise (not row column as usual), this is for easier column access
+            mNumDataCols = row.size();
+        }
+        else if (row.size() != mNumDataCols)
+        {
+                status = false;
+                mErrorString = "Row: "+to_hstring(rowCtr)+" does not have the same number of columns as the previous rows";
+                break;
+        }
+
+        // Allocate more memory
+        try
+        {
+            mData.reserve(mNumDataRows*mNumDataCols);
+        }
+        catch (exception& e)
+        {
+            mErrorString = e.what();
+            status = false;
+            break;
+        }
+
+//        // Convert each column in the row
+//        for (size_t col=0; col<row.size(); ++col)
+//        {
+//            // Extract a field string from row
+//            string str = row[col];
+//            // Replace decimal , with decimal .
+//            replace(str.begin(), str.end(), ',', '.');
+//            // Use a stream to stream value into double
+//            double d;
+//            std::istringstream is;
+//            is.str(str);
+//            is >> d;
+
+//            // Append to each column
+//            mData[col].push_back(d);
+//        }
+
+        // Append each "value"
+        for (size_t col=0; col<row.size(); ++col)
+        {
+            mData.push_back(row[col].c_str());
+        }
+    }
+
+//    if (!mData.empty())
+//    {
+//        //mNumDataRows = mData[0].size();
+//        setFirstLastValues();
+//        calcIncreasingOrDecreasing();
+//    }
+
+    if (status && mData.empty())
+    {
+        status = false;
+        mErrorString = "No data read from file";
+    }
+
+    return status;
+}
+
+bool CSVParserNG::eof() const
+{
+    return !mpCsvParser->has_more_rows();
+}
+
+HString CSVParserNG::getErrorString() const
+{
+    return mErrorString;
+}
+
+size_t CSVParserNG::getNumDataRows() const
+{
+    return mNumDataRows;
+}
+
+size_t CSVParserNG::getNumDataCols() const
+{
+    return mNumDataCols;
+}
+
+void CSVParserNG::copyRow(const size_t rowIdx, std::vector<double> &rRow)
+{
+    rRow.clear();
+    if (rowIdx < mNumDataRows)
+    {
+        rRow.reserve(mNumDataCols);
+
+        for (size_t c=0; c<mNumDataCols; ++c)
+        {
+            // Extract a field string from row
+            HString &str = mData[rowIdx*mNumDataCols+c];
+            if (mConvertDecimalSeparator)
+            {
+                // Replace decimal , with decimal .
+                str.replace(",", ".");
+            }
+            bool parseOK;
+            rRow.push_back(str.toDouble(&parseOK));
+            //! @todo check if error
+        }
+    }
+    else
+    {
+        mErrorString = "rowIdx out of range";
+    }
+}
+
+void CSVParserNG::copyColumn(const size_t columnIdx, std::vector<double> &rColumn)
+{
+    rColumn.clear();
+    if (columnIdx < mNumDataCols)
+    {
+        rColumn.reserve(mNumDataRows);
+        for (size_t r=0; r<mNumDataRows; ++r)
+        {
+            // Extract a field string from row
+            HString &str = mData[r*mNumDataCols+columnIdx];
+            if (mConvertDecimalSeparator)
+            {
+                // Replace decimal , with decimal .
+                str.replace(",", ".");
+            }
+            bool isOK;
+            rColumn.push_back(str.toDouble(&isOK));
+            //! @todo check if error
+        }
+    }
+    else
+    {
+        mErrorString = "columnIdx out of range";
+    }
 }

@@ -41,6 +41,7 @@ public:
     bool compare(const HString &rOther) const;
     bool isNummeric() const;
     bool isBool() const;
+    double toDouble(bool *isOK) const;
 
     HString substr(const size_t pos, const size_t len=npos) const;
 
