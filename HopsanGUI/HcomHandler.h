@@ -109,6 +109,7 @@ private:
     // Private command functions (to be accessed by public executeCommand function)
     void executeExitCommand(const QString cmd);
     void executeSimulateCommand(const QString cmd);
+
     void executePlotCommand(const QString cmd);
     void executePlotLeftAxisCommand(const QString cmd);
     void executePlotRightAxisCommand(const QString cmd);
@@ -119,6 +120,10 @@ private:
     void executeChangeDiagramLimitsCommand(const QString cmd);
     void executeChangeDiagramLimitsYLCommand(const QString cmd);
     void executeChangeDiagramLimitsYRCommand(const QString cmd);
+    void executeChangeLogarithmicAxisX(const QString cmd);
+    void executeChangeLogarithmicAxisYL(const QString cmd);
+    void executeChangeLogarithmicAxisYR(const QString cmd);
+
     void executeDisplayParameterCommand(const QString cmd);
     void executeAddParameterCommand(const QString cmd);
     void executeChangeParameterCommand(const QString cmd);

@@ -332,6 +332,33 @@ void HcomHandler::createCommands()
     chdlyrCmd.group = "Plot Commands";
     mCmdList << chdlyrCmd;
 
+    HcomCommand logx;
+    logx.cmd = "logx";
+    logx.description.append("Turn on and off logarithmic x-axis scale");
+    logx.help.append(" Usage: logx on \n");
+    logx.help.append(" Usage: logx off");
+    logx.fnc = &HcomHandler::executeChangeLogarithmicAxisX;
+    logx.group = "Plot Commands";
+    mCmdList << logx;
+
+    HcomCommand logyl;
+    logyl.cmd = "logyl";
+    logyl.description.append("Turn on and off logarithmic left y-axis scale");
+    logyl.help.append(" Usage: logyl on \n");
+    logyl.help.append(" Usage: logyl off");
+    logyl.fnc = &HcomHandler::executeChangeLogarithmicAxisYL;
+    logyl.group = "Plot Commands";
+    mCmdList << logyl;
+
+    HcomCommand logyr;
+    logyr.cmd = "logyr";
+    logyr.description.append("Turn on and off logarithmic right y-axis scale");
+    logyr.help.append(" Usage: logyr on \n");
+    logyr.help.append(" Usage: logyr off");
+    logyr.fnc = &HcomHandler::executeChangeLogarithmicAxisYR;
+    logyr.group = "Plot Commands";
+    mCmdList << logyr;
+
     HcomCommand exitCmd;
     exitCmd.cmd = "exit";
     exitCmd.description.append("Exits the program");
@@ -1189,6 +1216,99 @@ void HcomHandler::executeChangeDiagramLimitsYRCommand(const QString cmd)
         {
             HCOMERR("Failed to parse double argument for yr-axis in chdlyr");
             return;
+        }
+    }
+}
+
+void HcomHandler::executeChangeLogarithmicAxisX(const QString cmd)
+{
+    bool isLog;
+    if (cmd.trimmed() == "on")
+    {
+        isLog = true;
+    }
+    else if (cmd.trimmed() == "off")
+    {
+        isLog = false;
+    }
+    else
+    {
+        HCOMERR(QString("Wrong argument %1, must be 'on' or 'off'").arg(cmd));
+    }
+
+
+    if (mpCurrentPlotWindow)
+    {
+        PlotTab *pTab = mpCurrentPlotWindow->getCurrentPlotTab();
+        if (pTab)
+        {
+            PlotArea *pArea = pTab->getPlotArea();
+            if (pArea)
+            {
+                pArea->setBottomAxisLogarithmic(isLog);
+            }
+        }
+    }
+}
+
+void HcomHandler::executeChangeLogarithmicAxisYL(const QString cmd)
+{
+    bool isLog;
+    if (cmd.trimmed() == "on")
+    {
+        isLog = true;
+    }
+    else if (cmd.trimmed() == "off")
+    {
+        isLog = false;
+    }
+    else
+    {
+        HCOMERR(QString("Wrong argument %1, must be 'on' or 'off'").arg(cmd));
+    }
+
+
+    if (mpCurrentPlotWindow)
+    {
+        PlotTab *pTab = mpCurrentPlotWindow->getCurrentPlotTab();
+        if (pTab)
+        {
+            PlotArea *pArea = pTab->getPlotArea();
+            if (pArea)
+            {
+                pArea->setLeftAxisLogarithmic(isLog);
+            }
+        }
+    }
+}
+
+void HcomHandler::executeChangeLogarithmicAxisYR(const QString cmd)
+{
+    bool isLog;
+    if (cmd.trimmed() == "on")
+    {
+        isLog = true;
+    }
+    else if (cmd.trimmed() == "off")
+    {
+        isLog = false;
+    }
+    else
+    {
+        HCOMERR(QString("Wrong argument %1, must be 'on' or 'off'").arg(cmd));
+    }
+
+
+    if (mpCurrentPlotWindow)
+    {
+        PlotTab *pTab = mpCurrentPlotWindow->getCurrentPlotTab();
+        if (pTab)
+        {
+            PlotArea *pArea = pTab->getPlotArea();
+            if (pArea)
+            {
+                pArea->setRightAxisLogarithmic(isLog);
+            }
         }
     }
 }
