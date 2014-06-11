@@ -3927,11 +3927,10 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     }
     else if(desiredType != Scalar && expr.startsWith("ddt(") && expr.endsWith(")"))
     {
-        QString args = expr.mid(4, expr.size()-5);
-        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
-        if(splitArgs.size() == 1)
+        QStringList args = extractFunctionCallExpressionArguments(expr);
+        if(args.size() == 1)
         {
-            evaluateExpression(args.trimmed(),DataVector);
+            evaluateExpression(args[0],DataVector);
             SharedVectorVariableT pVar = mAnsVector;
             if (mAnsType == DataVector)
             {
@@ -3941,19 +3940,19 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
             else
             {
-                HCOMERR(QString("Variable: %1 was not found!").arg(args.trimmed()));
+                HCOMERR(QString("Variable: %1 was not found!").arg(args[0]));
                 mAnsType = Undefined;
                 return;
             }
         }
-        else if(splitArgs.size() == 2)
+        else if(args.size() == 2)
         {
-            const QString var1 = splitArgs[0];
+            const QString var1 = args[0];
             evaluateExpression(var1, DataVector);
             SharedVectorVariableT pVar1 = mAnsVector;
             if (mAnsType == DataVector)
             {
-                const QString var2 = splitArgs[1];
+                const QString var2 = args[1];
                 evaluateExpression(var2, DataVector);
                 SharedVectorVariableT pVar2 = mAnsVector;
                 if (mAnsType == DataVector)

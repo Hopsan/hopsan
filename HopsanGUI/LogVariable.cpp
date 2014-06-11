@@ -465,7 +465,11 @@ void VectorVariable::diffBy(SharedVectorVariableT pOther)
         {
             (*pThisData)[i] = ((*pThisData)[i+1]-(*pThisData)[i])/((*pOtherData)[i+1]-(*pOtherData)[i]);
         }
-        pThisData->resize(pThisData->size()-1);
+        if (pThisData->size() > 1)
+        {
+            (*pThisData)[pThisData->size()-1] = (*pThisData)[pThisData->size()-2];
+        }
+
 
         // Return data vectors
         pOther->endFullVectorOperation(pOtherData);
