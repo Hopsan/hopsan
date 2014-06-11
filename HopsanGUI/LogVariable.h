@@ -240,7 +240,11 @@ public:
     void minMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const;
     bool positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const;
     void elementWiseGt(QVector<double> &rResult, const double threshold) const;
+    void elementWiseGt(QVector<double> &rResult, const SharedVectorVariableT pOther) const;
     void elementWiseLt(QVector<double> &rResult, const double threshold) const;
+    void elementWiseLt(QVector<double> &rResult, const SharedVectorVariableT pOther) const;
+    void elementWiseEq(QVector<double> &rResult, const double value, const double eps) const;
+    void elementWiseEq(QVector<double> &rResult, const SharedVectorVariableT pOther, const double eps) const;
     bool compare(SharedVectorVariableT pOther, const double eps) const;
 
     // Check out and return pointers to data (move to ram if necessary)

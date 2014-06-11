@@ -780,6 +780,27 @@ void VectorVariable::elementWiseGt(QVector<double> &rResult, const double thresh
     mpCachedDataVector->endFullVectorOperation(pVector);
 }
 
+void VectorVariable::elementWiseGt(QVector<double> &rResult, const SharedVectorVariableT pOther) const
+{
+    QVector<double> *pThisData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> *pOtherData = pOther->beginFullVectorOperation();
+    const int size = qMin(pThisData->size(), pOtherData->size());
+    rResult.resize(size);
+    for(int i=0; i<size; ++i)
+    {
+        if ((*pThisData)[i] > (*pOtherData)[i])
+        {
+            rResult[i] = 1;
+        }
+        else
+        {
+            rResult[i] = 0;
+        }
+    }
+    pOther->endFullVectorOperation(pOtherData);
+    mpCachedDataVector->endFullVectorOperation(pThisData);
+}
+
 void VectorVariable::elementWiseLt(QVector<double> &rResult, const double threshold) const
 {
     QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
@@ -796,6 +817,66 @@ void VectorVariable::elementWiseLt(QVector<double> &rResult, const double thresh
         }
     }
     mpCachedDataVector->endFullVectorOperation(pVector);
+}
+
+void VectorVariable::elementWiseLt(QVector<double> &rResult, const SharedVectorVariableT pOther) const
+{
+    QVector<double> *pThisData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> *pOtherData = pOther->beginFullVectorOperation();
+    const int size = qMin(pThisData->size(), pOtherData->size());
+    rResult.resize(size);
+    for(int i=0; i<size; ++i)
+    {
+        if ((*pThisData)[i] < (*pOtherData)[i])
+        {
+            rResult[i] = 1;
+        }
+        else
+        {
+            rResult[i] = 0;
+        }
+    }
+    pOther->endFullVectorOperation(pOtherData);
+    mpCachedDataVector->endFullVectorOperation(pThisData);
+}
+
+void VectorVariable::elementWiseEq(QVector<double> &rResult, const double value, const double eps) const
+{
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    rResult.resize(pVector->size());
+    for(int i=0; i<pVector->size(); ++i)
+    {
+        if (fuzzyEqual((*pVector)[i], value, eps))
+        {
+            rResult[i] = 1;
+        }
+        else
+        {
+            rResult[i] = 0;
+        }
+    }
+    mpCachedDataVector->endFullVectorOperation(pVector);
+}
+
+void VectorVariable::elementWiseEq(QVector<double> &rResult, const SharedVectorVariableT pOther, const double eps) const
+{
+    QVector<double> *pThisData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> *pOtherData = pOther->beginFullVectorOperation();
+    const int size = qMin(pThisData->size(), pOtherData->size());
+    rResult.resize(size);
+    for(int i=0; i<size; ++i)
+    {
+        if (fuzzyEqual((*pThisData)[i], (*pOtherData)[i], eps))
+        {
+            rResult[i] = 1;
+        }
+        else
+        {
+            rResult[i] = 0;
+        }
+    }
+    pOther->endFullVectorOperation(pOtherData);
+    mpCachedDataVector->endFullVectorOperation(pThisData);
 }
 
 bool VectorVariable::compare(SharedVectorVariableT pOther, const double eps) const

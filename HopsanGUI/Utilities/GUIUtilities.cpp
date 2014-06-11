@@ -743,6 +743,42 @@ void splitWithRespectToQuotations(const QString str, const QChar c, QStringList 
     split.append(str.mid(start,len));
 }
 
+//! @brief Splits a string at specified character, but does not split inside quotations and paranthesis
+//! @param str String to split
+//! @param c Character to split at
+//! @param split Referens to list with split strings
+void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit)
+{
+    bool withinQuotations=false;
+    int withinNumParanthesis=0;
+    int start=0;
+    int len=0;
+    for(int i=0; i<str.size(); ++i)
+    {
+        if(str[i] == '"')
+        {
+            withinQuotations=!withinQuotations;
+        }
+        // This code assumes that paranthesis are correctly ordered (some other code should check that)
+        else if (str[i] == '(')
+        {
+            ++withinNumParanthesis;
+        }
+        else if (str[i] == ')')
+        {
+            --withinNumParanthesis;
+        }
+        else if(str[i] == c && !withinQuotations && (withinNumParanthesis==0))
+        {
+            rSplit.append(str.mid(start,len));
+            start=start+len+1;
+            len=-1;
+        }
+        ++len;
+    }
+    rSplit.append(str.mid(start,len));
+}
+
 //! @brief Reimplementation of the core function santize name
 //! @todo this one may not be needed in the future when all loading of core data, and name checking, is moved to core
 void santizeName(QString &rString)

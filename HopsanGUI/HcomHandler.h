@@ -210,12 +210,12 @@ private:
 
     bool evaluateArithmeticExpression(QString cmd);
 
+    void executeGtBuiltInFunction(QString fnc_call);
+    void executeLtBuiltInFunction(QString fnc_call);
+    void executeEqBuiltInFunction(QString fnc_call);
+
     QString getDirectory(const QString &cmd) const;
     double getNumber(const QString &rStr, bool *pOk);
-
-    QStringList getArguments(const QString &cmd) const;
-    int getNumberOfArguments(const QString &cmd) const;
-    QString getArgument(const QString &cmd, const int idx) const;
 
     bool containsOutsideParentheses(QString str, QString c);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);

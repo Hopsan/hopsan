@@ -70,6 +70,65 @@
 #define GENERATIONSPECIFIERSTR "@"
 #define GENERATIONSPECIFIERCHAR '@'
 
+//----------------------------------------------------------------------------------
+//! @brief Make a list from a space separated argument string, respecting (not splitting within) quotation marks
+QStringList splitCommandArguments(const QString &rArgs)
+{
+    //! @todo maybe use splitWithRespectToQuotations here instead
+    QStringList splitCmd;
+    bool withinQuotations = false;
+    int start=0;
+    for(int i=0; i<rArgs.size(); ++i)
+    {
+        if(rArgs[i] == '\"')
+        {
+            withinQuotations = !withinQuotations;
+        }
+        if(rArgs[i] == ' ' && !withinQuotations)
+        {
+            splitCmd.append(rArgs.mid(start, i-start));
+            start = i+1;
+        }
+    }
+    splitCmd.append(rArgs.right(rArgs.size()-start));
+    //splitCmd.removeFirst();
+    splitCmd.removeAll("");
+
+    return splitCmd;
+}
+
+
+//! @brief Returns the number of arguments in a space separated argument string, respecting (not splitting within) quotation marks
+int getNumberOfCommandArguments(const QString &rArgs)
+{
+    return splitCommandArguments(rArgs).size();
+}
+
+QStringList extractFunctionCallExpressionArguments(QString call)
+{
+    QStringList args;
+    int s = call.indexOf('(');
+    if (s>=0)
+    {
+        int e = call.lastIndexOf(')');
+        if (e>=0)
+        {
+            // This assumes that last ) is in the end
+            QString argString = call.mid(s+1, call.size()-(s+2));
+            splitRespectingQuotationsAndParanthesis(argString, ',', args);
+        }
+    }
+
+    // Make sure we remove unnecessary leading and trailing spaces
+    for(int i=0; i<args.size(); ++i)
+    {
+        args[i] = args[i].trimmed();
+    }
+
+    return args;
+}
+
+//----------------------------------------------------------------------------------
 
 class LongShortNameConverter
 {
@@ -181,8 +240,9 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)","Usage: ddt(vector) or ddt(vector, timevector)");
     registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)", "Usage: int(vector) or int(vector, timevector)");
     registerInternalFunction("fft", "Generates frequency spectrum plot from vector","Usage: fft(vector), fft(vector, power[true/false]), fft(vector, timevector) or fft(vector, timevector, power[true/false])");
-    registerInternalFunction("gt", "Index-wise greater than check between vector and scalar (equivalent to \">\" operator)","Usage: gt(varName, threshold)");
-    registerInternalFunction("lt", "Index-wise less than check between vector and scalar  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)");
+    registerInternalFunction("gt", "Index-wise greater than check between vectors and/or scalars (equivalent to \">\" operator)","Usage: gt(varName, threshold)\n       gt(var1, var2)");
+    registerInternalFunction("lt", "Index-wise less than check between vectors and/or scalars  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)\n       lt(var1,var2)");
+    registerInternalFunction("eq", "Index-wise fuzzy equal check between vectors and/or scalars  (equivalent to \"==\" operator)","Usage: eq(varName, threshold)\n       eq(var1, var2)");
     registerInternalFunction("linspace", "Linearly spaced vector","Usage: linspace(min, max, numSamples)");
     registerInternalFunction("logspace", "Logarithmicly spaced vector","Usage: logspace(min, max, numSamples)");
     registerInternalFunction("ones", "Create a vector of ones","Usage: ones(size)");
@@ -1007,7 +1067,7 @@ void HcomHandler::executeAddPlotRightAxisCommand(const QString cmd)
 //! @brief Execute function for "chdl" command
 void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
 
     if (args.size() == 1 && args.front() != "reset")
     {
@@ -1107,7 +1167,7 @@ void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
 
 void HcomHandler::executeChangeDiagramLimitsYLCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
 
     if (args.size() == 1 && args.front() != "reset")
     {
@@ -1169,7 +1229,7 @@ void HcomHandler::executeChangeDiagramLimitsYLCommand(const QString cmd)
 
 void HcomHandler::executeChangeDiagramLimitsYRCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
 
     if (args.size() == 1 && args.front() != "reset")
     {
@@ -1691,7 +1751,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 //! @brief Execute function for "exec" command
 void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
     if(args.size() < 1)
     {
         HCOMERR("Too few arguments.");
@@ -1790,13 +1850,14 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 {
     if(!mpConsole) return;
 
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString path = getArgument(cmd,0);
+    QString path = args[0];
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -1826,7 +1887,9 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 //! @brief Execute function for "print" command
 void HcomHandler::executePrintCommand(const QString cmd)
 {
-    if(cmd.isEmpty())
+    QStringList args = splitCommandArguments(cmd);
+
+    if(args.isEmpty())
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -1834,7 +1897,7 @@ void HcomHandler::executePrintCommand(const QString cmd)
 
     QString str = cmd;
 
-    QString arg = getArgument(str,0);
+    QString &arg = args[0];
     if(arg == "-e" || arg == "-w" || arg == "-i")
     {
         str.remove(0,3);
@@ -1920,7 +1983,7 @@ void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
 //! @brief Execute function for "disp" command
 void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) < 2)
+    if(getNumberOfCommandArguments(cmd) < 2)
     {
         QStringList output;
         if(cmd.isEmpty())
@@ -2058,7 +2121,7 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
 
 void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
     for(int s=0; s<args.size(); ++s)
     {
         QStringList variables;
@@ -2073,22 +2136,24 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 
 void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 2)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 2)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString scale = getArgument(cmd,1);
+    const QString &name = args[0];
+    const QString &scale = args[1];
 
     QStringList vars;
-    getMatchingLogVariableNames(getArgument(cmd,0),vars);
+    getMatchingLogVariableNames(name,vars);
     if(vars.isEmpty())
     {
-        getMatchingLogVariableNamesWithoutLogDataHandler(getArgument(cmd,0),vars);
+        getMatchingLogVariableNamesWithoutLogDataHandler(name,vars);
     }
     int nChanged=0;
-    Q_FOREACH(const QString var, vars)
+    foreach(const QString var, vars)
     {
         QStringList fields = var.split(".");
         // Handle alias
@@ -2134,14 +2199,15 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
 
 void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
     QStringList vars;
-    getMatchingLogVariableNames(cmd,vars);
+    getMatchingLogVariableNames(args[0],vars);
     if(vars.isEmpty())
     {
         getMatchingLogVariableNamesWithoutLogDataHandler(cmd, vars);
@@ -2152,7 +2218,7 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
         mAnsType = Undefined;
         return;
     }
-    Q_FOREACH(const QString var, vars)
+    foreach(const QString var, vars)
     {
         QString dispName;
         QStringList fields = var.split(".");
@@ -2242,14 +2308,15 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
 
 void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 2)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 2)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString varName = getArgument(cmd,0);
-    double scale = getArgument(cmd,1).toDouble();
+    const QString &varName = args[0];
+    double scale = args[1].toDouble(); //!< @todo check if ok
 
     QStringList vars;
     getMatchingLogVariableNames(varName,vars);
@@ -2268,7 +2335,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
 
 void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    if(getNumberOfCommandArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -2331,7 +2398,7 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
 
 void HcomHandler::executeDisableLoggingCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    if(getNumberOfCommandArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -2348,7 +2415,7 @@ void HcomHandler::executeDisableLoggingCommand(const QString cmd)
 
 void HcomHandler::executeEnableLoggingCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    if(getNumberOfCommandArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -2447,7 +2514,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
 //! @brief Execute function for "sapl" command
 void HcomHandler::executeSaveToPloCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
     if(args.size() < 2)
     {
         HCOMERR("Too few arguments.");
@@ -2543,13 +2610,14 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
 
 void HcomHandler::executeLoadVariableCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(getNumberOfCommandArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString path = getArgument(cmd,0);
+    QString path = args[0];
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -2594,12 +2662,13 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
 
 void HcomHandler::executeSaveParametersCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) > 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() > 1)
     {
         HCOMERR("Wrong numer of arguments.");
         return;
     }
-    QString path = getArgument(cmd, 0);
+    QString path = args[0];
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -2615,12 +2684,13 @@ void HcomHandler::executeSaveParametersCommand(const QString cmd)
 
 void HcomHandler::executeLoadParametersCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) > 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() > 1)
     {
         HCOMERR("Wrong numer of arguments.");
         return;
     }
-    QString path = getArgument(cmd, 0);
+    QString path = args[0];
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -2638,7 +2708,14 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
 //! @brief Execute function for "load" command
 void HcomHandler::executeLoadModelCommand(const QString cmd)
 {
-    QString path = getArgument(cmd,0);
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
+    {
+        HCOMERR("Wrong numer of arguments.");
+        return;
+    }
+
+    QString path = args[0];
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -2678,14 +2755,15 @@ void HcomHandler::executeRenameComponentCommand(const QString cmd)
 
 void HcomHandler::executeRemoveComponentCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments");
         return;
     }
 
     QList<ModelObject*> components;
-    getComponents(getArgument(cmd, 0), components);
+    getComponents(args[0], components);
 
     ContainerObject *pContainer = mpModel->getViewContainerObject();
     for(int c=0; c<components.size(); ++c)
@@ -2722,7 +2800,7 @@ void HcomHandler::executeMwdCommand(const QString /*cmd*/)
 //! @brief Execute function for "cd" command
 void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    if(getNumberOfCommandArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments");
         return;
@@ -2765,7 +2843,7 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
 //! @brief Execute function for "ls" command
 void HcomHandler::executeListFilesCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 0)
+    if(getNumberOfCommandArguments(cmd) != 0)
     {
         HCOMERR("Wrong number of arguments");
         return;
@@ -2790,7 +2868,7 @@ void HcomHandler::executeListFilesCommand(const QString cmd)
 //! @brief Execute function for "close" command
 void HcomHandler::executeCloseModelCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 0)
+    if(getNumberOfCommandArguments(cmd) != 0)
     {
         HCOMERR("Wrong number of arguments");
         return;
@@ -2806,7 +2884,7 @@ void HcomHandler::executeCloseModelCommand(const QString cmd)
 //! @brief Execute function for "chtab" command
 void HcomHandler::executeChangeTabCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    if(getNumberOfCommandArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments");
         return;
@@ -2819,12 +2897,12 @@ void HcomHandler::executeChangeTabCommand(const QString cmd)
 //! @brief Execute function for "adco" command
 void HcomHandler::executeAddComponentCommand(const QString cmd)
 {
-    if(!mpModel || getNumberOfArguments(cmd) < 5)
+    if(!mpModel || getNumberOfCommandArguments(cmd) < 5)
     {
         HCOMERR("Wrong number of arguments");
         return;
     }
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
 
     QString typeName = args[0];
     QString name = args[1];
@@ -2958,7 +3036,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
 //! @brief Execute function for "coco" command
 void HcomHandler::executeConnectCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
     if(args.size() != 4)
     {
         HCOMERR("Wrong number of arguments");
@@ -2988,7 +3066,7 @@ void HcomHandler::executeConnectCommand(const QString cmd)
 //! @brief Execute function for "crmo" command
 void HcomHandler::executeCreateModelCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 0)
+    if(getNumberOfCommandArguments(cmd) != 0)
     {
         HCOMERR("Wrong number of arguments");
         return;
@@ -3000,13 +3078,14 @@ void HcomHandler::executeCreateModelCommand(const QString cmd)
 //! @brief Execute function for "fmu" command
 void HcomHandler::executeExportToFMUCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments.");
     }
 
     //! @todo Add argument for me or cs
-    mpModel->getTopLevelSystemContainer()->exportToFMU(getArgument(cmd, 0), false);
+    mpModel->getTopLevelSystemContainer()->exportToFMU(args[0], false);
 }
 
 
@@ -3077,15 +3156,15 @@ void HcomHandler::executeInheritTimestepCommand(const QString cmd)
 //! @brief Execute function for "bode" command
 void HcomHandler::executeBodeCommand(const QString cmd)
 {
-    int nArgs = getNumberOfArguments(cmd);
-    if(nArgs < 2 || nArgs > 4)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() < 2 || args.size() > 4)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString var1 = getArgument(cmd,0);
-    QString var2 = getArgument(cmd,1);
+    QString var1 = args[0];
+    QString var2 = args[1];
     SharedVectorVariableT pData1 = getLogVariable(var1).mpVariable;
     SharedVectorVariableT pData2 = getLogVariable(var2).mpVariable;
     if(!pData1 || !pData2)
@@ -3094,9 +3173,9 @@ void HcomHandler::executeBodeCommand(const QString cmd)
         return;
     }
     int fMax = 500;
-    if(nArgs > 2)
+    if(args.size() > 2)
     {
-        fMax = getArgument(cmd,2).toInt();
+        fMax = args[2].toInt(); //!< @todo parse check needed
     }
 
     PlotWindow *pWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot");
@@ -3108,12 +3187,13 @@ void HcomHandler::executeBodeCommand(const QString cmd)
 //! @brief Execute function for "abs" command
 void HcomHandler::executeAbsCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
-    QString varName = getArgument(cmd,0);
+    const QString &varName = args[0];
 
     SharedVectorVariableT var = getLogVariable(varName).mpVariable;
     if(var)
@@ -3155,7 +3235,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         HCOMERR("No model is open.");
         return;
     }
-    QStringList split = getArguments(cmd);
+    QStringList split = splitCommandArguments(cmd);
 
     if(split[0] == "set")
     {
@@ -3357,12 +3437,13 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 //! @brief Execute function for "call" command
 void HcomHandler::executeCallFunctionCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
-    QString funcName = getArgument(cmd,0);
+    QString funcName = args[0];
 
     if(!mFunctions.contains(funcName))
     {
@@ -3391,12 +3472,13 @@ void HcomHandler::executeEchoCommand(const QString cmd)
 {
     if(!mpConsole) return;
 
-    if(getNumberOfArguments(cmd) != 1)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
-    QString arg = getArgument(cmd,0);
+    const QString &arg = args[0];
 
 
     if(arg == "on")
@@ -3417,7 +3499,7 @@ void HcomHandler::executeEchoCommand(const QString cmd)
 //! @brief Execute function for "edit" command
 void HcomHandler::executeEditCommand(const QString cmd)
 {
-    if(getNumberOfArguments(cmd) != 1)
+    if(getNumberOfCommandArguments(cmd) != 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -3434,7 +3516,7 @@ void HcomHandler::executeEditCommand(const QString cmd)
 
 void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
 {
-    QStringList args = getArguments(cmd);
+    QStringList args = splitCommandArguments(cmd);
     int nArgs = args.size();
     if(nArgs < 1 || nArgs > 3)
     {
@@ -3491,7 +3573,7 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
 //! @param axis Axis specification (0=left, 1=right, -1=both, separeted by "-r")
 void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool hold)
 {
-    QStringList varNames = getArguments(cmd);
+    QStringList varNames = splitCommandArguments(cmd);
 
     if((axis == -1 || axis == 0) && !hold)
     {
@@ -4145,92 +4227,18 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     }
     else if(desiredType != Scalar && (expr.startsWith("greaterThan(") || expr.startsWith("gt(")) && expr.endsWith(")"))
     {
-        int funcSize = expr.section("(",0,0).size()+1;
-        QString args = expr.mid(funcSize, expr.size()-funcSize-1);
-        if(args.count(",")==1)
-        {
-            const QString arg1 = args.section(",",0,0).trimmed();
-            const QString arg2 = args.section(",",1,1).trimmed();
-            bool success;
-            double limit = arg2.toDouble(&success);
-            if (success)
-            {
-                SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
-                if (pVar)
-                {
-                    SharedVectorVariableT pTemp = pLogDataHandler->elementWiseGT(pVar, limit);
-                    if (pTemp)
-                    {
-                        mAnsType = DataVector;
-                        mAnsVector = pTemp;
-                        return;
-                    }
-                }
-                else
-                {
-                    HCOMERR(QString("Variable: %1 was not found!").arg(arg1));
-                    mAnsType = Undefined;
-                    return;
-                }
-            }
-            else
-            {
-                HCOMERR(QString("Failed to parse threshold: %1").arg(arg2));
-                mAnsType = Undefined;
-                return;
-            }
-        }
-        else
-        {
-            HCOMERR(QString("Wrong number of arguments provided to gt function.\n"+mLocalFunctionDescriptions.find("gt").value().second));
-            mAnsType = Undefined;
-            return;
-        }
+        executeGtBuiltInFunction(expr);
+        return;
     }
     else if(desiredType != Scalar && (expr.startsWith("smallerThan(") || expr.startsWith("lt(")) && expr.endsWith(")"))
     {
-        int funcSize = expr.section("(",0,0).size()+1;
-        QString args = expr.mid(funcSize, expr.size()-funcSize-1);
-        if(args.count(",")==1)
-        {
-            const QString arg1 = args.section(",",0,0).trimmed();
-            const QString arg2 = args.section(",",1,1).trimmed();
-            bool success;
-            double limit = arg2.toDouble(&success);
-
-            if (success)
-            {
-                SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
-                if (pVar)
-                {
-                    SharedVectorVariableT pTemp = pLogDataHandler->elementWiseLT(pVar, limit);
-                    if (pTemp)
-                    {
-                        mAnsType = DataVector;
-                        mAnsVector = pTemp;
-                        return;
-                    }
-                }
-                else
-                {
-                    HCOMERR(QString("Variable: %1 was not found!").arg(arg1));
-                    mAnsType = Undefined;
-                    return;
-                }
-            }
-            else
-            {
-                HCOMERR(QString("Failed to parse threshold: %1").arg(arg2));
-                mAnsType = Undefined;
-                return;
-            }
-        }
-        else
-        {
-            HCOMERR(QString("Wrong number of arguments provided for lt function.\n"+mLocalFunctionDescriptions.find("lt").value().second));
-            mAnsType = Undefined;
-            return;
-        }
+        executeLtBuiltInFunction(expr);
+        return;
+    }
+    else if(desiredType != Scalar && (expr.startsWith("eq(") && expr.endsWith(")")))
+    {
+        executeEqBuiltInFunction(expr);
+        return;
     }
     else if(desiredType != Scalar && (expr.startsWith("linspace(") && expr.endsWith(")")))
     {
@@ -4675,71 +4683,25 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         mAnsType = Undefined;
         return;
     }
-    else if(desiredType != Scalar && expr.count("<")==1 && getLogVariable(expr.section("<",0,0)))
+    else if(desiredType != Scalar && expr.count("<")==1 /*&& getLogVariable(expr.section("<",0,0))*/)
     {
-        const QString arg1 = expr.section("<",0,0).trimmed();
-        const QString arg2 = expr.section("<",1,1).trimmed();
-        bool success;
-        double limit = arg2.toDouble(&success);
-
-        if (success)
+        QStringList args = expr.split('<');
+        if (args.size() == 2)
         {
-            SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
-            if (pVar)
-            {
-                SharedVectorVariableT pTemp = pLogDataHandler->elementWiseLT(pVar, limit);
-                if (pTemp)
-                {
-                    mAnsType = DataVector;
-                    mAnsVector = pTemp;
-                    return;
-                }
-            }
-            else
-            {
-                HCOMERR(QString("Variable: %1 was not found!").arg(arg1));
-                mAnsType = Undefined;
-                return;
-            }
-        }
-        else
-        {
-            HCOMERR(QString("Failed to parse threshold: %1").arg(arg2));
-            mAnsType = Undefined;
+            //Reshape to look like a function call
+            QString call = QString("lt(%1,%2)").arg(args[0]).arg(args[1]);
+            executeLtBuiltInFunction(call);
             return;
         }
     }
-    else if(desiredType != Scalar && expr.count(">")==1 && getLogVariable(expr.section(">",0,0)))
+    else if(desiredType != Scalar && expr.count(">")==1 /*&& getLogVariable(expr.section(">",0,0))*/)
     {
-        const QString arg1 = expr.section(">",0,0).trimmed();
-        const QString arg2 = expr.section(">",1,1).trimmed();
-        bool success;
-        double limit = arg2.toDouble(&success);
-
-        if (success)
+        QStringList args = expr.split('>');
+        if (args.size() == 2)
         {
-            SharedVectorVariableT pVar = getLogVariable(arg1).mpVariable;
-            if (pVar)
-            {
-                SharedVectorVariableT pTemp = pLogDataHandler->elementWiseGT(pVar, limit);
-                if (pTemp)
-                {
-                    mAnsType = DataVector;
-                    mAnsVector = pTemp;
-                    return;
-                }
-            }
-            else
-            {
-                HCOMERR(QString("Variable: %1 was not found!").arg(arg1));
-                mAnsType = Undefined;
-                return;
-            }
-        }
-        else
-        {
-            HCOMERR(QString("Failed to parse threshold: %1").arg(arg2));
-            mAnsType = Undefined;
+            //Reshape to look like a function call
+            QString call = QString("gt(%1,%2)").arg(args[0]).arg(args[1]);
+            executeGtBuiltInFunction(call);
             return;
         }
     }
@@ -5881,6 +5843,338 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     return false;
 }
 
+void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
+{
+    QStringList args = extractFunctionCallExpressionArguments(fnc_call);
+    if(args.size()==2)
+    {
+        const QString &arg1 = args[0];
+        const QString &arg2 = args[1];
+
+        bool arg1IsDouble=false, arg2IsDouble=false;
+        double arg1AsDouble, arg2AsDouble;
+        SharedVectorVariableT pVar1, pVar2;
+
+        // Evaluate argument 1
+        evaluateExpression(arg1);
+        if (mAnsType == Scalar)
+        {
+            arg1AsDouble = mAnsScalar;
+            arg1IsDouble = true;
+        }
+        else if (mAnsType == DataVector)
+        {
+            pVar1 = mAnsVector;
+        }
+
+        // Evaluate argument 2
+        evaluateExpression(arg2);
+        if (mAnsType == Scalar)
+        {
+            arg2AsDouble = mAnsScalar;
+            arg2IsDouble = true;
+        }
+        else if (mAnsType == DataVector)
+        {
+            pVar2 = mAnsVector;
+        }
+
+        LogDataHandler *pLogDataHandler = mpModel->getTopLevelSystemContainer()->getLogDataHandler();
+
+        // Handle both scalars
+        if (arg1IsDouble && arg2IsDouble)
+        {
+            mAnsType = Scalar;
+            if (arg1AsDouble > arg2AsDouble)
+            {
+                mAnsScalar = 1;
+            }
+            else
+            {
+                mAnsScalar = 0;
+            }
+            return;
+        }
+        // Handle arg1 is double
+        else if (arg1IsDouble && pVar2)
+        {
+            QVector<double> res;
+            pVar2->elementWiseLt(res, arg1AsDouble);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar2->getSmartName()+QString("gt%1").arg(arg1AsDouble), pVar2->getVariableType());
+            mAnsVector->assignFrom(pVar2->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        // Handle arg2 is double
+        else if (arg2IsDouble && pVar1)
+        {
+            QVector<double> res;
+            pVar1->elementWiseGt(res, arg2AsDouble);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar1->getSmartName()+QString("gt%1").arg(arg2AsDouble), pVar1->getVariableType());
+            mAnsVector->assignFrom(pVar1->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        // Handle both vectors
+        else if (pVar1 && pVar2)
+        {
+            //! @todo this assumes that both vectors have the same type
+            if (pVar1->getDataSize() != pVar2->getDataSize())
+            {
+                HCOMERR("The vectors do not have the same length!");
+                mAnsType = Undefined;
+                return;
+            }
+
+            QVector<double> res;
+            pVar1->elementWiseGt(res, pVar2);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar1->getSmartName()+"gt"+pVar2->getSmartName(), pVar1->getVariableType());
+            mAnsVector->assignFrom(pVar1->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        else
+        {
+            HCOMERR("Could not find or evaluate one or both variable names");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else
+    {
+        HCOMERR(QString("Wrong number of arguments provided to gt function.\n"+mLocalFunctionDescriptions.find("gt").value().second));
+        mAnsType = Undefined;
+        return;
+    }
+}
+
+void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
+{
+    QStringList args = extractFunctionCallExpressionArguments(fnc_call);
+    if(args.size()==2)
+    {
+        const QString &arg1 = args[0];
+        const QString &arg2 = args[1];
+
+        bool arg1IsDouble=false, arg2IsDouble=false;
+        double arg1AsDouble, arg2AsDouble;
+        SharedVectorVariableT pVar1, pVar2;
+
+        // Evaluate argument 1
+        evaluateExpression(arg1);
+        if (mAnsType == Scalar)
+        {
+            arg1AsDouble = mAnsScalar;
+            arg1IsDouble = true;
+        }
+        else if (mAnsType == DataVector)
+        {
+            pVar1 = mAnsVector;
+        }
+
+        // Evaluate argument 2
+        evaluateExpression(arg2);
+        if (mAnsType == Scalar)
+        {
+            arg2AsDouble = mAnsScalar;
+            arg2IsDouble = true;
+        }
+        else if (mAnsType == DataVector)
+        {
+            pVar2 = mAnsVector;
+        }
+
+        LogDataHandler *pLogDataHandler = mpModel->getTopLevelSystemContainer()->getLogDataHandler();
+
+        // Handle both scalars
+        if (arg1IsDouble && arg2IsDouble)
+        {
+            mAnsType = Scalar;
+            if (arg1AsDouble > arg2AsDouble)
+            {
+                mAnsScalar = 1;
+            }
+            else
+            {
+                mAnsScalar = 0;
+            }
+            return;
+        }
+        // Handle arg1 is double
+        else if (arg1IsDouble && pVar2)
+        {
+            QVector<double> res;
+            pVar2->elementWiseGt(res, arg1AsDouble);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar2->getSmartName()+QString("lt%1").arg(arg1AsDouble), pVar2->getVariableType());
+            mAnsVector->assignFrom(pVar2->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        // Handle arg2 is double
+        else if (arg2IsDouble && pVar1)
+        {
+            QVector<double> res;
+            pVar1->elementWiseLt(res, arg2AsDouble);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar1->getSmartName()+QString("lt%1").arg(arg2AsDouble), pVar1->getVariableType());
+            mAnsVector->assignFrom(pVar1->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        // Handle both vectors
+        else if (pVar1 && pVar2)
+        {
+            //! @todo this assumes that both vectors have the same type
+            if (pVar1->getDataSize() != pVar2->getDataSize())
+            {
+                HCOMERR("The vectors do not have the same length!");
+                mAnsType = Undefined;
+                return;
+            }
+
+            QVector<double> res;
+            pVar1->elementWiseLt(res, pVar2);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar1->getSmartName()+"lt"+pVar2->getSmartName(), pVar1->getVariableType());
+            mAnsVector->assignFrom(pVar1->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        else
+        {
+            HCOMERR("Could not find or evaluate one or both variable names");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else
+    {
+        HCOMERR(QString("Wrong number of arguments provided for lt function.\n"+mLocalFunctionDescriptions.find("lt").value().second));
+        mAnsType = Undefined;
+        return;
+    }
+}
+
+void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
+{
+    double eps = 1e-3;
+    QStringList args = extractFunctionCallExpressionArguments(fnc_call);
+
+    if (args.size() == 3)
+    {
+        evaluateExpression(args[2]);
+        if (mAnsType == Scalar)
+        {
+            eps = mAnsScalar;
+        }
+        else
+        {
+            HCOMERR("Could not parse eps argument");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+
+    if(args.size()>=2)
+    {
+        const QString &arg1 = args[0];
+        const QString &arg2 = args[1];
+
+        bool arg1IsDouble=false, arg2IsDouble=false;
+        double arg1AsDouble, arg2AsDouble;
+        SharedVectorVariableT pVar1, pVar2;
+
+        // Evaluate argument 1
+        evaluateExpression(arg1);
+        if (mAnsType == Scalar)
+        {
+            arg1AsDouble = mAnsScalar;
+            arg1IsDouble = true;
+        }
+        else if (mAnsType == DataVector)
+        {
+            pVar1 = mAnsVector;
+        }
+
+        // Evaluate argument 2
+        evaluateExpression(arg2);
+        if (mAnsType == Scalar)
+        {
+            arg2AsDouble = mAnsScalar;
+            arg2IsDouble = true;
+        }
+        else if (mAnsType == DataVector)
+        {
+            pVar2 = mAnsVector;
+        }
+
+        LogDataHandler *pLogDataHandler = mpModel->getTopLevelSystemContainer()->getLogDataHandler();
+
+        // Handle both scalars
+        if (arg1IsDouble && arg2IsDouble)
+        {
+            mAnsType = Scalar;
+            if (fuzzyEqual(arg1AsDouble, arg2AsDouble, eps))
+            {
+                mAnsScalar = 1;
+            }
+            else
+            {
+                mAnsScalar = 0;
+            }
+            return;
+        }
+        // Handle arg1 is double
+        else if (arg1IsDouble && pVar2)
+        {
+            QVector<double> res;
+            pVar2->elementWiseEq(res, arg1AsDouble, eps);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar2->getSmartName()+QString("eq%1").arg(arg1AsDouble), pVar2->getVariableType());
+            mAnsVector->assignFrom(pVar2->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        // Handle arg2 is double
+        else if (arg2IsDouble && pVar1)
+        {
+            QVector<double> res;
+            pVar1->elementWiseEq(res, arg2AsDouble, eps);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar1->getSmartName()+QString("eq%1").arg(arg2AsDouble), pVar1->getVariableType());
+            mAnsVector->assignFrom(pVar1->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        // Handle both vectors
+        else if (pVar1 && pVar2)
+        {
+            //! @todo this assumes that both vectors have the same type
+            if (pVar1->getDataSize() != pVar2->getDataSize())
+            {
+                HCOMERR("The vectors do not have the same length!");
+                mAnsType = Undefined;
+                return;
+            }
+
+            QVector<double> res;
+            pVar1->elementWiseEq(res, pVar2, eps);
+            mAnsVector = pLogDataHandler->createOrphanVariable(pVar1->getSmartName()+"eq"+pVar2->getSmartName(), pVar1->getVariableType());
+            mAnsVector->assignFrom(pVar1->getSharedTimeOrFrequencyVector(), res);
+            mAnsType = DataVector;
+            return;
+        }
+        else
+        {
+            HCOMERR("Could not find or evaluate one or both variable names");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else
+    {
+        HCOMERR(QString("Wrong number of arguments provided for lt function.\n"+mLocalFunctionDescriptions.find("lt").value().second));
+        mAnsType = Undefined;
+        return;
+    }
+}
+
 
 
 //! @brief Returns data pointers for the variable with given full short name format (may include generation)
@@ -6168,48 +6462,6 @@ QString HcomHandler::getDirectory(const QString &cmd) const
     {
         return "";
     }
-}
-
-
-//! @brief Returns a list of arguments in a command with respect to quotation marks
-QStringList HcomHandler::getArguments(const QString &cmd) const
-{
-    QStringList splitCmd;
-    bool withinQuotations = false;
-    int start=0;
-    for(int i=0; i<cmd.size(); ++i)
-    {
-        if(cmd[i] == '\"')
-        {
-            withinQuotations = !withinQuotations;
-        }
-        if(cmd[i] == ' ' && !withinQuotations)
-        {
-            splitCmd.append(cmd.mid(start, i-start));
-            start = i+1;
-        }
-    }
-    splitCmd.append(cmd.right(cmd.size()-start));
-    //splitCmd.removeFirst();
-    splitCmd.removeAll("");
-
-    return splitCmd;
-}
-
-
-//! @brief Returns number of arguments in command with respect to quotation marks
-int HcomHandler::getNumberOfArguments(const QString &cmd) const
-{
-    return getArguments(cmd).size();
-}
-
-
-//! @brief Returns argument in command at specified index with respect to quotation marks
-//! @param cmd Command
-//! @param idx Index
-QString HcomHandler::getArgument(const QString &cmd, const int idx) const
-{
-    return getArguments(cmd).at(idx);
 }
 
 

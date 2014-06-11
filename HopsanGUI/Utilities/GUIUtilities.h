@@ -62,6 +62,7 @@ double uniformDistribution(double min, double max);
 bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString);
 double findSmallestValueGreaterThanZero(QVector<double> data);
 void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split);
+void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit);
 void santizeName(QString &rString);
 bool isNameValid(const QString &rString);
 QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, const QChar &rLast);
