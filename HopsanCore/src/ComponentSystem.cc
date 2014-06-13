@@ -256,6 +256,7 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mTypeName = "ComponentSystem";
     mTypeCQS = Component::UndefinedCQSType;
     mName = mTypeName; //Make sure intial name is same as typename
+    mWarnIfUnusedSystemParameters = true;
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
     mKeepStartValues = false;
@@ -2454,7 +2455,16 @@ bool ComponentSystem::checkModelBeforeSimulation()
             }
             else if( ports[i]->isConnected() )
             {
-                if(ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType) == 1)
+                size_t numPP = ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType);
+                if (ports[i]->isInterfacePort())
+                {
+                    if( numPP > 0 && numPP < 3)
+                    {
+                        addErrorMessage("InterfacePort:  "+ports[i]->getName()+"  on Component:  "+ports[i]->getComponentName()+"  is connected to a node with only two power ports!");
+                        return false;
+                    }
+                }
+                else if(numPP == 1)
                 {
                     addErrorMessage("Port:  "+ports[i]->getName()+"  on Component:  "+ports[i]->getComponentName()+"  is connected to a node with only one power port!");
                     return false;
@@ -2513,7 +2523,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
     }
 
     // Add warning message if at least one system parameter is unused
-    if(unusedSysParNames.size() > 0)
+    if(mWarnIfUnusedSystemParameters && (unusedSysParNames.size() > 0))
     {
         std::stringstream ss;
         ss << "The following system parameters are not used by any sub component:";

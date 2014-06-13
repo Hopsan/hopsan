@@ -94,6 +94,9 @@ namespace hopsan {
 
             // Setup default startvalues in ports
             mpSinus->setDefaultStartValue("t_start", "Value", 0.35);
+
+            // Turn off warnings for system parameters (since they may not be directly used in sub components)
+            mWarnIfUnusedSystemParameters = false;
         }
 
         // preInitialize (optional) is called in all components before initialize (in any component) begins

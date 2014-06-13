@@ -286,6 +286,11 @@ namespace hopsan {
         // Constructor - Destructor- Creator
         ComponentSystem();
 
+        // Internal Flags
+        //! @brief This bool can be toggled off in programmed subsystems to avoid anoying warnings
+        //! @ingroup ComponentPowerAuthorFunctions
+        bool mWarnIfUnusedSystemParameters;
+
     private:
         //==========Private functions==========
         // Time specific functions
