@@ -62,6 +62,7 @@ namespace hopsan {
         {
             if(doubleToBool(*mpND_in))
             {
+                this->addWarningMessage("The simulation has been stop by a StopSimulation component.", "StopSimulation");
                 this->stopSimulation();
             }
         }
