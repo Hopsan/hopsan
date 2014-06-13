@@ -36,5 +36,6 @@
 #include "ComponentUtilities/WhiteGaussianNoise.h"
 #include "ComponentUtilities/num2string.hpp"
 #include "ComponentUtilities/EquationSystemSolver.h"
+#include "ComponentUtilities/LookupTable.h"
 
 #endif // COMPONENTUTILITIES_H_INCLUDED

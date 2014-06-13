@@ -312,7 +312,8 @@ HEADERS += \
     Hydraulic/Valves/Hydraulic42Valve2.hpp \
     Special/MechanicB/MechanicGear.hpp \
     Special/MechanicB/HopsanDefaultMechanicBComponents.h \
-    Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp
+    Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \
+    Experimental/Signal1DLookupTable.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

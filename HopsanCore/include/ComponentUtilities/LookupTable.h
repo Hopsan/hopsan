@@ -28,15 +28,19 @@
 #include <vector>
 #include <cstring>
 
+inline double interp1(const double x, const double i1, const double i2, const double v1, const double v2)
+{
+    return v1 + (x-i1)*(v2-v1)/(i2-i1);
+}
 
-template <typename T, size_t numDim>
-class LookupTableND
+template <size_t numDims>
+class LookupTableNDBase
 {
 
 public:
     enum IncreasingEnumT {StrictlyIncreasing, StrictlyDecreasing, NotStrictlyIncOrDec, Unknown};
 
-    LookupTableND()
+    LookupTableNDBase()
     {
         clear();
     }
@@ -44,16 +48,21 @@ public:
     void clear()
     {
         mValueData.clear();
-        for (size_t d=0; d<numDim; ++d)
+        for (size_t d=0; d<numDims; ++d)
         {
             mIndexData[d].clear();
             mIndexIncreasingOrDecreasing[d] = Unknown;
         }
-        memset(&mNumSubDimDataElements, 0, sizeof(T)*numDim);
+        memset(&mNumSubDimDataElements, 0, sizeof(double)*numDims);
         resetFirstLast();
     }
 
-    std::vector<double> &getIndexDataRef(size_t d)
+    bool isEmpty() const
+    {
+        return mValueData.empty();
+    }
+
+    std::vector<double> &getIndexDataRef(const size_t d)
     {
         return mIndexData[d];
     }
@@ -63,42 +72,53 @@ public:
         return mValueData;
     }
 
-    bool isDataOK()
+    bool isDataSizeOK()
     {
-        size_t num_index=0;
-        for (size_t i=0; i<numDim; ++i)
+        size_t num_index=1;
+        for (size_t d=0; d<numDims; ++d)
         {
-            const size_t sz = mIndexData[i].size();
+            const size_t sz = mIndexData[d].size();
             if (sz < 2)
             {
                 resetFirstLast();
                 return false;
             }
-            num_index += sz;
-            mIndexFirst[i] = mIndexData[i][0];
-            mIndexLast[i] = mIndexData[i][sz-1];
+            num_index *= sz;
+            mIndexFirst[d] = mIndexData[d][0];
+            mIndexLast[d] = mIndexData[d][sz-1];
         }
 
-        if (num_index == mValueData.size())
+        return (num_index == mValueData.size());
+    }
+
+    bool isDataOK()
+    {
+        if (isDataSizeOK())
         {
             // mNumSubDimDataElements = the number of elements belonging to this dimension and sub dimensions
             // Example: if dim = 0 (row) then numSubDimDataElements in a 3D case will be nCols*nPlanes
             // Example: if dim = 1 (col) then numSubDimDataElements in a 3D case will be nPlanes
             // Example: if dim = 2 (plane) then numSubDimDataElements in a 3D case will be 1
-            for (size_t dim=0; dim<numDim; ++dim)
+            for (size_t dim=0; dim<numDims; ++dim)
             {
-                size_t mNumSubDimDataElements[dim] = 1;
-                for (size_t sd=dim+1; sd<mIndexData.size(); ++sd )
+                mNumSubDimDataElements[dim] = 1;
+                for (size_t sd=dim+1; sd<numDims; ++sd )
                 {
                     mNumSubDimDataElements[dim] *= mIndexData[sd].size();
                 }
             }
 
-            if (mIndexIncreasingOrDecreasing == Unknown)
+            bool isStrictlyInc=true;
+            for (size_t d=0; d<numDims; ++d)
             {
-                calcIncreasingOrDecreasing();
+                if (mIndexIncreasingOrDecreasing[d] == Unknown)
+                {
+                    calcIncreasingOrDecreasing(d);
+                }
+
+                isStrictlyInc = isStrictlyInc && (mIndexIncreasingOrDecreasing[d] == StrictlyIncreasing);
             }
-            return (mIndexIncreasingOrDecreasing == StrictlyIncreasing);
+            return isStrictlyInc;
         }
         else
         {
@@ -112,52 +132,61 @@ public:
         return mIndexIncreasingOrDecreasing[d];
     }
 
-    void calcIncreasingOrDecreasing(int d=-1)
+    void calcIncreasingOrDecreasing(int dim=-1)
     {
         size_t start, end;
-        if (d<0)
+        if (dim<0)
         {
             start = 0;
-            end = numDim;
+            end = numDims;
         }
         else
         {
-            start = size_t(d);
+            start = size_t(dim);
             end = start+1;
         }
 
-        for (size_t i=start; i<end; ++i)
+        for (size_t d=start; d<end; ++d)
         {
-            mIndexIncreasingOrDecreasing[i] = NotStrictlyIncOrDec;
-            const std::vector<T> &indexdata = mIndexData[i]; //Create reference
+            mIndexIncreasingOrDecreasing[d] = NotStrictlyIncOrDec;
+            const std::vector<double> &rIndexData = mIndexData[d]; //Create reference
 
-            if(!mIndexData[i].empty())
+            if(!rIndexData.empty())
             {
                 bool increasing=true;
                 bool decreasing=true;
-                for(size_t row=1; row<indexdata.size(); ++row)
+                for(size_t row=1; row<rIndexData.size(); ++row)
                 {
-                    if (indexdata[row] > indexdata[row-1])
+                    if (rIndexData[row] > rIndexData[row-1])
                     {
                         increasing = increasing && true;
                         decreasing = false;
                     }
 
-                    if (indexdata[row] < indexdata[row-1])
+                    if (rIndexData[row] < rIndexData[row-1])
                     {
                         decreasing = decreasing && true;
                         increasing = false;
+                    }
+
+                    if (rIndexData[row] == rIndexData[row-1])
+                    {
+                        increasing = false;
+                        decreasing = false;
                     }
                 }
 
                 if(increasing)
                 {
-                    mIndexIncreasingOrDecreasing[i] = StrictlyIncreasing;
+                    mIndexIncreasingOrDecreasing[d] = StrictlyIncreasing;
                 }
-
-                if(decreasing)
+                else if(decreasing)
                 {
-                    mIndexIncreasingOrDecreasing[i] = StrictlyDecreasing;
+                    mIndexIncreasingOrDecreasing[d] = StrictlyDecreasing;
+                }
+                else
+                {
+                    mIndexIncreasingOrDecreasing[d] = NotStrictlyIncOrDec;
                 }
             }
         }
@@ -165,23 +194,25 @@ public:
 
     void sortIncreasing()
     {
-        for (size_t i=0; i<numDim; ++i)
+        for (size_t d=0; d<numDims; ++d)
         {
-            if (mIndexIncreasingOrDecreasing[i] == Unknown)
+            if (mIndexIncreasingOrDecreasing[d] == Unknown)
             {
-                calcIncreasingOrDecreasing(i);
+                calcIncreasingOrDecreasing(d);
             }
 
             // If row is strictly decreasing the swap row order, else run quicksort and hope for the best
-            if (mIndexIncreasingOrDecreasing == StrictlyDecreasing)
+            if (mIndexIncreasingOrDecreasing[d] == StrictlyDecreasing)
             {
-                reverseAlongDim();
+                reverseAlongDim(d);
+                mIndexIncreasingOrDecreasing[d] = Unknown;
                 isDataOK();
             }
             // Else if not already strictly increasing then sort it
-            else if (mIndexIncreasingOrDecreasing == NotStrictlyIncOrDec)
+            else if (mIndexIncreasingOrDecreasing[d] == NotStrictlyIncOrDec)
             {
-                quickSort(mIndexData, 0, mIndexData.size()-1);
+                quickSort(d, mIndexData[d], 0, mIndexData[d].size()-1);
+                mIndexIncreasingOrDecreasing[d] = Unknown;
                 isDataOK();
             }
             // Else we are already OK
@@ -189,7 +220,7 @@ public:
     }
 
     //! @brief Get a "slice" of data at idx at given dimension
-    void getDimDataAt(const size_t dim, const size_t idx, std::vector<T> &rData)
+    void getDimDataAt(const size_t dim, const size_t idx, std::vector<double> &rData)
     {
         // mNumSubDimDataElements = the number of elements belonging to this dimension and sub dimensions
 
@@ -198,7 +229,7 @@ public:
         // Example: if dim = 1 (col)   then in a 3D case sizeOfOneSlice = numSubDimDataElements*nRows (nPlanes*nRows)
         // Example: if dim = 3 (plane) then in a 3D case sizeOfOneSlice = numSubDimDataElements*nCols*nRows (1*nCols*nRows)
         size_t sizeOfOneSlice = mNumSubDimDataElements[dim];
-        for (size_t d=dim-1; d>=0; --d)
+        for (int d=int(dim)-1; d>=0; --d)
         {
             sizeOfOneSlice *= mIndexData[d].size();
         }
@@ -229,7 +260,7 @@ public:
         }
     }
 
-    void insertDimDataAt(const size_t dim, const size_t idx, const std::vector<T> &rData)
+    void insertDimDataAt(const size_t dim, const size_t idx, const std::vector<double> &rData)
     {
         // mNumSubDimDataElements = the number of elements belonging to this dimension and sub dimensions
 
@@ -238,11 +269,10 @@ public:
         // Example: if dim = 1 (col)   then in a 3D case sizeOfOneSlice = numSubDimDataElements*nRows (nPlanes*nRows)
         // Example: if dim = 3 (plane) then in a 3D case sizeOfOneSlice = numSubDimDataElements*nCols*nRows (1*nCols*nRows)
         size_t sizeOfOneSlice = mNumSubDimDataElements[dim];
-        for (size_t d=dim-1; d>=0; --d)
+        for (int d=int(dim)-1; d>=0; --d)
         {
             sizeOfOneSlice *= mIndexData[d].size();
         }
-        rData.resize(sizeOfOneSlice);
 
         // stepBetweenSlicePartsStarts = The step size between the start of each "part" of a slice
         // Example: if dim = 0 (row)   then in a 3d case step =  numSubDimDataElements * nRows (nCols*nPlanes * nRows) (but not relevant, since will go out of range)
@@ -269,42 +299,15 @@ public:
         }
     }
 
-    double interpolate1d(const double x, const size_t dim) const
-    {
-        std::vector<T> &rIndexData = mIndexData[dim];
-        size_t idx = findIndexAlongDim(x, dim);
-        if(rIndexData[idx+1] ==  rIndexData[idx])       //Check for division by zero (this means that if several X values have the same value, we will always pick the first one since we cannot interpolate between them)
-        {
-            return mValueData[idx];
-        }
-        else
-        {
-            return mValueData[idx] + (x - mIndexData[idx])*(mValueData[idx+1] -  mValueData[idx])/(rIndexData[idx+1] -  rIndexData[idx]);
-        }
-    }
-
     size_t getDimSize(const size_t dim) const
     {
         return mIndexData[dim].size();
     }
 
-    size_t findIndexAlongDim(const T x, const size_t dim)
+    //! @note Assumes that x is within index range
+    size_t findIndexAlongDim(const double x, const size_t dim) const
     {
-        // Handle outside index range
-        if( x<mIndexFirst[dim] )
-        {
-            return 0;
-        }
-        // Handle outside index range
-        else if( x>=mIndexLast[dim] )
-        {
-            return mIndexData[dim].size()-1;
-        }
-        // Handle within range
-        else
-        {
-            return intervalHalfSubDiv(x, 0, mIndexData[dim].size()-1, dim);
-        }
+        return intervalHalfSubDiv(x, 0, mIndexData[dim].size()-1, dim);
     }
 
 protected:
@@ -333,7 +336,7 @@ protected:
         }
     }
 
-    size_t quickSortPartition( const size_t dim, const std::vector<T> &rIndexArray, const size_t left, const size_t right, const size_t pivotIndex)
+    size_t quickSortPartition( const size_t dim, const std::vector<double> &rIndexArray, const size_t left, const size_t right, const size_t pivotIndex)
     {
         // left is the index of the leftmost element of the array
         // right is the index of the rightmost element of the array (inclusive)
@@ -354,7 +357,7 @@ protected:
         return storeIndex;
     }
 
-    void quickSort(const size_t dim,  const std::vector<T> &rIndexArray, const size_t left, const size_t right)
+    void quickSort(const size_t dim, const std::vector<double> &rIndexArray, const size_t left, const size_t right)
     {
         // If the list has 2 or more items
         if (left < right)
@@ -380,15 +383,15 @@ protected:
 
     void swapDataSliceInDim(const size_t r1, const size_t r2, const size_t dim)
     {
-        std::vector<T> &rIndexdata = mIndexData[dim]; // Get reference to desired index vector
+        std::vector<double> &rIndexdata = mIndexData[dim]; // Get reference to desired index vector
 
         // Swap index
-        T tmp = rIndexdata[r1];
+        double tmp = rIndexdata[r1];
         rIndexdata[r1] = rIndexdata[r2];
         rIndexdata[r2] = tmp;
 
         // Swap data
-        if (numDim == 1)
+        if (numDims == 1)
         {
             tmp = mValueData[r1];
             mValueData[r1] = mValueData[r2];
@@ -396,7 +399,7 @@ protected:
         }
         else
         {
-            std::vector<T> slice1, slice2;
+            std::vector<double> slice1, slice2;
             getDimDataAt(dim, r1, slice1);
             getDimDataAt(dim, r2, slice2);
 
@@ -409,12 +412,12 @@ protected:
     void reverseAlongDim(size_t d)
     {
         //! @todo does not yet work for dim >1
-        if (numDim < 2)
+        if (numDims < 2)
         {
-            typename std::vector<T>::reverse_iterator rit;
-            std::vector<T> tempData;
+            typename std::vector<double>::reverse_iterator rit;
+            std::vector<double> tempData;
 
-            std::vector<T> &rIndexdata = mIndexData[d]; // Get reference to desired index vector
+            std::vector<double> &rIndexdata = mIndexData[d]; // Get reference to desired index vector
 
             // Reverse the index data
             tempData.reserve(rIndexdata.size());
@@ -425,29 +428,39 @@ protected:
             rIndexdata.swap(tempData);
 
             // Reverse the value data
-            //! @todo does not yet work for dim >=3
             tempData.clear();
             tempData.reserve(mValueData.size());
-            if (numDim == 1)
+            for (rit=mValueData.rbegin(); rit!=mValueData.rend(); ++rit)
             {
-                for (rit=mValueData.rbegin(); rit!=mValueData.rend(); ++rit)
-                {
-                    tempData.push_back(*rit);
-                }
-                mValueData.swap(tempData);
+                tempData.push_back(*rit);
             }
-            else
-            {
-
-            }
+            mValueData.swap(tempData);
+        }
+        else
+        {
+            quickSort(d, mIndexData[d], 0, mIndexData[d].size()-1);
         }
     }
 
     void resetFirstLast()
     {
-        memset(&mIndexFirst, 0, sizeof(T)*numDim);
-        memset(&mIndexLast, 1, sizeof(T)*numDim);
+        memset(&mIndexFirst, 0, sizeof(double)*numDims);
+        memset(&mIndexLast, 1, sizeof(double)*numDims);
     }
+
+    inline double limitToRange(const size_t dim, const double val) const
+    {
+        if (val < mIndexFirst[dim])
+        {
+            return mIndexFirst[dim];
+        }
+        else if(val > mIndexLast[dim])
+        {
+            return mIndexLast[dim];
+        }
+        return val;
+    }
+
 
     inline size_t calcDataIndex(const std::vector<size_t> coordinates)
     {
@@ -459,88 +472,154 @@ protected:
         return ind;
     }
 
-    T mNumSubDimDataElements[numDim];
-    T mIndexFirst[numDim];
-    T mIndexLast[numDim];
-    IncreasingEnumT mIndexIncreasingOrDecreasing[numDim];
 
-    std::vector<T> mIndexData[numDim];
-    std::vector<T> mValueData;
+    inline size_t calcDataIndex(const size_t r, const size_t c, const size_t p) const
+    {
+        return r*LookupTableNDBase<3>::mNumSubDimDataElements[0] + c*LookupTableNDBase<3>::mNumSubDimDataElements[1] + p;
+    }
+
+    double mNumSubDimDataElements[numDims];
+    double mIndexFirst[numDims];
+    double mIndexLast[numDims];
+    IncreasingEnumT mIndexIncreasingOrDecreasing[numDims];
+
+    std::vector<double> mIndexData[numDims];
+    std::vector<double> mValueData;
 
 };
 
-template<typename T>
-class LookupTableND<T,1>
+template<size_t numDims>
+class LookupTableND : public LookupTableNDBase<numDims> {};
+
+template<>
+class LookupTableND<1> : public LookupTableNDBase<1>
 {
 public:
     inline size_t calcDataIndex(const size_t r) const
     {
         return r;
     }
+
+    std::vector<double> &getIndexDataRef()
+    {
+        return mIndexData[0];
+    }
+
+    LookupTableNDBase::IncreasingEnumT isIndexIncreasingOrDecresing()
+    {
+        return mIndexIncreasingOrDecreasing[0];
+    }
+
+    double interpolate(const double x) const
+    {
+        // Handle outside minimum index range
+        if( x<mIndexFirst[0] )
+        {
+            return mValueData[0];
+        }
+        // Handle outside maximum index range
+        else if( x>=mIndexLast[0] )
+        {
+            return mValueData[mValueData.size()-1];
+        }
+        // Handle in range
+        {
+            const std::vector<double> &rIndexData = mIndexData[0];
+            const size_t idx = findIndexAlongDim(x, 0);
+
+            // Note, assumes that index data is strictly increasing (two values can not be the same). That will lead to division by zero here
+            return mValueData[idx] + (x - rIndexData[idx])*(mValueData[idx+1] -  mValueData[idx])/(rIndexData[idx+1] -  rIndexData[idx]);
+        }
+    }
 };
 
-
-template<typename T>
-class LookupTableND<T,2>
+template<>
+class LookupTableND<2> : public LookupTableNDBase<2>
 {
 public:
     inline size_t calcDataIndex(const size_t r, const size_t c) const
     {
-        return r*LookupTableND<T,2>::mNumSubDimDataElements[0] + c;
+        return r*LookupTableND<2>::mNumSubDimDataElements[0] + c;
     }
-};
 
-template<typename T>
-class LookupTableND<T,3>
-{
-public:
-    inline size_t calcDataIndex(const size_t r, const size_t c, const size_t p) const
+    double interpolate(double r, double c) const
     {
-        return r*LookupTableND<T,3>::mNumSubDimDataElements[0] + c*LookupTableND<T,3>::mNumSubDimDataElements[1] + p;
+        // Handle outside index range
+        r = limitToRange(0, r);
+        c = limitToRange(1, c);
+
+        const size_t tl_r = findIndexAlongDim(r, 0);
+        const size_t tr_r = tl_r;
+        const size_t tl_c = findIndexAlongDim(c, 1);
+        const size_t bl_c = tl_c;
+
+        const size_t tr_c = tl_c+1;
+        const size_t br_c = tr_c;
+        const size_t bl_r = tl_r+1;
+        const size_t br_r = bl_r;
+
+        const double tl_v = mValueData[calcDataIndex(tl_r, tl_c)];
+        const double tr_v = mValueData[calcDataIndex(tr_r, tr_c)];
+        const double bl_v = mValueData[calcDataIndex(bl_r, bl_c)];
+        const double br_v = mValueData[calcDataIndex(br_r, br_c)];
+
+        // Note, interp1 assumes that index data is strictly increasing (two values can not be the same). That will lead to division by zero here
+        const double val_l = interp1(r, mIndexData[0][tl_r], mIndexData[0][bl_r], tl_v, bl_v);
+        const double val_r = interp1(r, mIndexData[0][tr_r], mIndexData[0][br_r], tr_v, br_v);
+
+        return interp1(c, mIndexData[1][tl_c], mIndexData[1][tr_c], val_l, val_r);
     }
 };
 
 
-class LookupTable1DNonTemplate
-{
-public:
-    enum IncreasingEnumT {StrictlyIncreasing, StrictlyDecreasing, NotStrictlyIncOrDec, Unknown};
+//template<typename T>
+//class LookupTableND<T,3>
+//{
+//public:
 
-    LookupTable1DNonTemplate();
-    void clear();
+//};
 
-    std::vector<double> &getIndexDataRef();
-    std::vector<double> &getValueDataRef();
 
-    bool isDataOK();
+//class LookupTable1DNonTemplate
+//{
+//public:
+//    enum IncreasingEnumT {StrictlyIncreasing, StrictlyDecreasing, NotStrictlyIncOrDec, Unknown};
 
-    IncreasingEnumT isIndexIncreasingOrDecresing() const;
-    IncreasingEnumT calcIncreasingOrDecreasing();
-    void sortIncreasing();
+//    LookupTable1DNonTemplate();
+//    void clear();
 
-    double interpolate(const double x) const;
+//    std::vector<double> &getIndexDataRef();
+//    std::vector<double> &getValueDataRef();
 
-protected:
-    size_t intervalHalfSubDiv(const double x, const size_t i1, const size_t iend) const;
-    size_t quickSortPartition(const std::vector<double> &rIndexArray, const size_t left, const size_t right, const size_t pivotIndex);
-    void quickSort(const std::vector<double> &rIndexArray, const size_t left, const size_t right);
-    void swapRows(const size_t r1, const size_t r2);
-    void reverseRows();
+//    bool isDataOK();
 
-    std::vector<double> mIndexData;
-    std::vector<double> mValueData;
-    double mFirstIndex, mFirstValue, mLastIndex, mLastValue;
-    IncreasingEnumT mIndexIncreasingOrDecreasing;
-};
+//    IncreasingEnumT isIndexIncreasingOrDecresing() const;
+//    IncreasingEnumT calcIncreasingOrDecreasing();
+//    void sortIncreasing();
 
-class LookupTable2DNonTemplate : public LookupTable1DNonTemplate
-{
-public:
-    LookupTable2DNonTemplate();
+//    double interpolate(const double x) const;
 
-    double interpolate2D(const double x1, const double x2) const;
+//protected:
+//    size_t intervalHalfSubDiv(const double x, const size_t i1, const size_t iend) const;
+//    size_t quickSortPartition(const std::vector<double> &rIndexArray, const size_t left, const size_t right, const size_t pivotIndex);
+//    void quickSort(const std::vector<double> &rIndexArray, const size_t left, const size_t right);
+//    void swapRows(const size_t r1, const size_t r2);
+//    void reverseRows();
 
-};
+//    std::vector<double> mIndexData;
+//    std::vector<double> mValueData;
+//    double mFirstIndex, mFirstValue, mLastIndex, mLastValue;
+//    IncreasingEnumT mIndexIncreasingOrDecreasing;
+//};
+
+//class LookupTable2DNonTemplate : public LookupTable1DNonTemplate
+//{
+//public:
+//    LookupTable2DNonTemplate();
+
+//    double interpolate2D(const double x1, const double x2) const;
+
+//};
 
 
 
