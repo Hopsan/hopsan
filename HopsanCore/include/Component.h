@@ -182,7 +182,7 @@ public:
     void addFatalMessage(const HString &rMessage, const HString &rTag="") const;
 
     // Stop a running simulation
-    void stopSimulation();
+    void stopSimulation(const HString &rReason="");
 
     // HopsanEssentials
     HopsanEssentials *getHopsanEssentials();

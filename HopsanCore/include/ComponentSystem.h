@@ -269,7 +269,7 @@ namespace hopsan {
         size_t getNumActuallyLoggedSamples() const;
 
         // Stop a running init or simulation
-        void stopSimulation();
+        void stopSimulation(const HString &rReason="");
         bool wasSimulationAborted();
 
         // System parameters

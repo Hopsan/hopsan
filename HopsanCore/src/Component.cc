@@ -354,11 +354,12 @@ void Component::setSubTypeName(const HString &rSubTypeName)
 
 
 //! @brief Terminate/stop a running initialization or simulation
+//! @param[in] rReason An optional HString describing the reason for the stop
 //! @details Typically used inside components simulateOneTimestep method
 //! @ingroup ComponentSimulationFunctions
-void Component::stopSimulation()
+void Component::stopSimulation(const HString &rReason)
 {
-    mpSystemParent->stopSimulation();
+    mpSystemParent->stopSimulation(rReason);
 }
 
 HopsanEssentials *Component::getHopsanEssentials()

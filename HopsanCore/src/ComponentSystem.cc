@@ -329,8 +329,9 @@ size_t ComponentSystem::getNumActuallyLoggedSamples() const
 
 
 //! @brief Sets a bool which is looked at in initialization and simulation loops.
+//! @param[in] rReason An optional HString describing the reason for the stop
 //! This method can be used by users e.g. GUIs to stop an start a initialization/simulation process
-void ComponentSystem::stopSimulation()
+void ComponentSystem::stopSimulation(const HString &rReason)
 {
 #ifdef USETBB
     mpStopMutex->lock();
@@ -343,6 +344,11 @@ void ComponentSystem::stopSimulation()
     if (mpSystemParent != 0)
     {
         mpSystemParent->stopSimulation();
+    }
+    // Send reason message
+    if (!rReason.empty())
+    {
+        addInfoMessage(rReason);
     }
 }
 
