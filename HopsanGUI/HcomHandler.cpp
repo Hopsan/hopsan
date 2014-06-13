@@ -1290,7 +1290,7 @@ void HcomHandler::executeChangeDiagramLimitsYRCommand(const QString cmd)
 
 void HcomHandler::executeChangeLogarithmicAxisX(const QString cmd)
 {
-    bool isLog;
+    bool isLog=false;
     if (cmd.trimmed() == "on")
     {
         isLog = true;
@@ -1302,6 +1302,7 @@ void HcomHandler::executeChangeLogarithmicAxisX(const QString cmd)
     else
     {
         HCOMERR(QString("Wrong argument %1, must be 'on' or 'off'").arg(cmd));
+        return;
     }
 
 
@@ -1321,7 +1322,7 @@ void HcomHandler::executeChangeLogarithmicAxisX(const QString cmd)
 
 void HcomHandler::executeChangeLogarithmicAxisYL(const QString cmd)
 {
-    bool isLog;
+    bool isLog=false;
     if (cmd.trimmed() == "on")
     {
         isLog = true;
@@ -1333,6 +1334,7 @@ void HcomHandler::executeChangeLogarithmicAxisYL(const QString cmd)
     else
     {
         HCOMERR(QString("Wrong argument %1, must be 'on' or 'off'").arg(cmd));
+        return;
     }
 
 
@@ -1352,7 +1354,7 @@ void HcomHandler::executeChangeLogarithmicAxisYL(const QString cmd)
 
 void HcomHandler::executeChangeLogarithmicAxisYR(const QString cmd)
 {
-    bool isLog;
+    bool isLog=false;
     if (cmd.trimmed() == "on")
     {
         isLog = true;
@@ -1364,6 +1366,7 @@ void HcomHandler::executeChangeLogarithmicAxisYR(const QString cmd)
     else
     {
         HCOMERR(QString("Wrong argument %1, must be 'on' or 'off'").arg(cmd));
+        return;
     }
 
 
@@ -4720,7 +4723,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         f1.removeFactor(f0);
 
         VariableType varType0, varType1;
-        double scalar0, scalar1;
+        double scalar0=0, scalar1=0;
         SharedVectorVariableT vec0, vec1;
         evaluateExpression(f0.toString());
         if(mAnsType != DataVector && mAnsType != Scalar)
@@ -4839,7 +4842,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         t1._simplify(SymHop::Expression::FullSimplification);
 
         VariableType varType0, varType1;
-        double scalar0, scalar1;
+        double scalar0=0, scalar1=0;
         SharedVectorVariableT vec0, vec1;
         evaluateExpression(t0.toString());
         if(mAnsType != DataVector && mAnsType != Scalar)
@@ -5851,7 +5854,7 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
         const QString &arg2 = args[1];
 
         bool arg1IsDouble=false, arg2IsDouble=false;
-        double arg1AsDouble, arg2AsDouble;
+        double arg1AsDouble=0, arg2AsDouble=0;
         SharedVectorVariableT pVar1, pVar2;
 
         // Evaluate argument 1
@@ -5956,7 +5959,7 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
         const QString &arg2 = args[1];
 
         bool arg1IsDouble=false, arg2IsDouble=false;
-        double arg1AsDouble, arg2AsDouble;
+        double arg1AsDouble=0, arg2AsDouble=0;
         SharedVectorVariableT pVar1, pVar2;
 
         // Evaluate argument 1
@@ -6078,7 +6081,7 @@ void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
         const QString &arg2 = args[1];
 
         bool arg1IsDouble=false, arg2IsDouble=false;
-        double arg1AsDouble, arg2AsDouble;
+        double arg1AsDouble=0, arg2AsDouble=0;
         SharedVectorVariableT pVar1, pVar2;
 
         // Evaluate argument 1
@@ -6806,7 +6809,7 @@ double HcomFunctionoidFC::operator()(QString &str, bool &ok)
     ok=true;
 
     bool isScalar1=false, isScalar2=false;
-    double scalar1, scalar2;
+    double scalar1=0, scalar2=0;
     SharedVectorVariableT pData1 = mpHandler->getLogVariable(args.first()).mpVariable;
     if(!pData1)
     {
