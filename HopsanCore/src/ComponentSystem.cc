@@ -2456,7 +2456,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
             else if( ports[i]->isConnected() )
             {
                 size_t numPP = ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType);
-                if (ports[i]->isInterfacePort())
+                if (ports[i]->isInterfacePort() && ports[i]->getPortType()==PowerPortType)
                 {
                     if( numPP > 0 && numPP < 3)
                     {

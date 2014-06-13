@@ -101,8 +101,6 @@ namespace hopsan {
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
 
-        bool isInterfacePort() const;
-
         virtual bool isConnected() const;
         virtual bool isConnectedTo(Port *pOtherPort);
         bool isConnectionRequired();
@@ -110,6 +108,7 @@ namespace hopsan {
         size_t getNumConnectedPorts(const int subPortIdx=-1);
         virtual size_t getNumPorts();
 
+        bool isInterfacePort() const;
         virtual bool isMultiPort() const;
         Port *getParentPort() const;
         const HString &getNodeType() const;
