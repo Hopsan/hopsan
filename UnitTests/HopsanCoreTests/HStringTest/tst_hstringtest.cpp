@@ -279,8 +279,9 @@ private Q_SLOTS:
         QFETCH(HString, str);
         QFETCH(double, val);
         QFETCH(bool, isok);
-        QVERIFY2( str.toDouble(&isOK) == val, (HString("toDouble produced the wrong result for: ")+str).c_str());
-        QVERIFY2( isOK == isok, (HString("toDouble produced the wrong isOK result for: ")+str).c_str());
+        const double rv = str.toDouble(&isOK);
+        QVERIFY2( rv == val, QString("toDouble produced the wrong result (%1) for: '%2'").arg(rv).arg(str.c_str()).toLatin1());
+        QVERIFY2( isOK == isok, QString("toDouble produced the wrong isOK result (%1) for: '%2'").arg(isOK).arg(str.c_str()).toLatin1());
     }
     void HString_toDouble_data()
     {
@@ -288,13 +289,13 @@ private Q_SLOTS:
         QTest::addColumn<double>("val");
         QTest::addColumn<bool>("isok");
 
-        QTest::newRow("0")      << HString("0")  << 0 << true;
-        QTest::newRow("+0")     << HString("+0") << 0 << true;
-        QTest::newRow("-0")     << HString("-0") << 0 << true;
-        QTest::newRow("1")      << HString("1")  << 1 << true;
-        QTest::newRow("+1")     << HString("+1") << 1 << true;
-        QTest::newRow("-1")     << HString("-1") << -1 << true;
-        QTest::newRow("-3467")  << HString("-3467") << -3467 << true;
+        QTest::newRow("0")      << HString("0")  << 0.d << true;
+        QTest::newRow("+0")     << HString("+0") << 0.d << true;
+        QTest::newRow("-0")     << HString("-0") << 0.d << true;
+        QTest::newRow("1")      << HString("1")  << 1.d << true;
+        QTest::newRow("+1")     << HString("+1") << 1.d << true;
+        QTest::newRow("-1")     << HString("-1") << -1.d << true;
+        QTest::newRow("-3467")  << HString("-3467") << -3467.d << true;
         QTest::newRow("0.056")  << HString("0.056") << 0.056 << true;
         QTest::newRow("+0.056") << HString("+0.056") << 0.056 << true;
         QTest::newRow("-0.056") << HString("-0.056") << -0.056 << true;
@@ -305,15 +306,52 @@ private Q_SLOTS:
         QTest::newRow("+0.056E-12") << HString("+0.056E-12") << 0.056e-12 << true;
         QTest::newRow("-0.056E-12") << HString("-0.056E-12") << -0.056e-12 << true;
         QTest::newRow("2346346.457457")     << HString("2346346.457457") << 2346346.457457 << true;
+        QTest::newRow(" 2346346.457457")     << HString(" 2346346.457457") << 2346346.457457 << true;
 
-        QTest::newRow("0.056d-12")  << HString("0.056d-12") << 0 << false;
-        QTest::newRow("apa")        << HString("apa") << 0 << false;
-        QTest::newRow("1234f")      << HString("1234f") << 0 << false;
-        QTest::newRow("AB10F")      << HString("AB10F") << 0 << false;
-        QTest::newRow("0.056e")     << HString("0.056e") << 0 << false;
-        QTest::newRow("234634 6.457457")     << HString("234634 6.457457") << 0 << false;
-        QTest::newRow(" 2346346.457457")     << HString(" 2346346.457457") << 0 << false;
-        QTest::newRow("2346346.457457 ")     << HString("2346346.457457 ") << 0 << false;
+        QTest::newRow("0.056d-12")  << HString("0.056d-12") << 0.056 << false;
+        QTest::newRow("apa")        << HString("apa") << 0.d << false;
+        QTest::newRow("1234f")      << HString("1234f") << 1234.d << false;
+        QTest::newRow("AB10F")      << HString("AB10F") << 0.d << false;
+        QTest::newRow("0.056e")     << HString("0.056e") << 0.056 << false;
+        QTest::newRow("234634 6.457457")     << HString("234634 6.457457") << 234634.d << false;
+        QTest::newRow("2346346.457457 ")     << HString("2346346.457457 ") << 2346346.457457 << false;
+    }
+
+    void HString_toLongInt()
+    {
+        bool isOK;
+        QFETCH(HString, str);
+        QFETCH(int, val);
+        QFETCH(bool, isok);
+        const long int rv = str.toLongInt(&isOK);
+        QVERIFY2( rv == val, QString("toLongInt produced the wrong result (%1) for: '%2'").arg(rv).arg(str.c_str()).toLatin1());
+        QVERIFY2( isOK == isok, QString("toLongInt produced the wrong isOK result (%1) for: '%2'").arg(isOK).arg(str.c_str()).toLatin1());
+    }
+    void HString_toLongInt_data()
+    {
+        QTest::addColumn<HString>("str");
+        QTest::addColumn<int>("val");
+        QTest::addColumn<bool>("isok");
+
+        QTest::newRow("0")      << HString("0")  << 0 << true;
+        QTest::newRow("+0")     << HString("+0") << 0 << true;
+        QTest::newRow("-0")     << HString("-0") << 0 << true;
+        QTest::newRow("1")      << HString("1")  << 1 << true;
+        QTest::newRow("+1")     << HString("+1") << 1 << true;
+        QTest::newRow("-1")     << HString("-1") << -1 << true;
+        QTest::newRow("-3467")  << HString("-3467") << -3467 << true;
+        QTest::newRow(" 2346346")   << HString(" 2346346") << 2346346 << true;
+
+        QTest::newRow("2e10")   << HString("2e10") << 2 << false;
+        QTest::newRow("-2E10")  << HString("-2E10") << -2 << false;
+        QTest::newRow("1.16")   << HString("1.16") << 1 << false;
+        QTest::newRow("0.056")  << HString("0.056") << 0 << false;
+        QTest::newRow("+0.056") << HString("+0.056") << 0 << false;
+        QTest::newRow("-0.056") << HString("-0.056") << 0 << false;
+        QTest::newRow("apa")    << HString("apa") << 0 << false;
+        QTest::newRow("AB10F")  << HString("AB10F") << 0 << false;
+        QTest::newRow("234634 64")  << HString("234634 64") << 234634 << false;
+        QTest::newRow("2346346 ")   << HString("2346346 ") << 2346346 << false;
     }
 };
 

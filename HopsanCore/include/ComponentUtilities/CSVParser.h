@@ -87,16 +87,19 @@ public:
 
     bool setFile(const HString &rFilepath);
 
-    bool parseWholeFile();
-    //bool parseRowAsDouble(std::vector<double> &rRowD);
+    bool parseEntireFile();
+
     bool eof() const;
 
     HString getErrorString() const;
     size_t getNumDataRows() const;
     size_t getNumDataCols() const;
 
-    void copyRow(const size_t rowIdx, std::vector<double> &rRow);
-    void copyColumn(const size_t columnIdx, std::vector<double> &rColumn);
+    bool copyRow(const size_t rowIdx, std::vector<double> &rRow);
+    bool copyRow(const size_t rowIdx, std::vector<long int> &rRow);
+    bool copyColumn(const size_t columnIdx, std::vector<double> &rColumn);
+    bool copyRangeFromColumn(const size_t columnIdx, const size_t startRow, const size_t numRows, std::vector<double> &rColumn);
+    bool copyEveryNthFromColumn(const size_t columnIdx, const size_t stepSize, std::vector<double> &rColumn);
 
 protected:
     std::vector<HString> mData;

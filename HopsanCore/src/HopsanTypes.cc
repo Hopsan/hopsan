@@ -224,6 +224,23 @@ double HString::toDouble(bool *isOK) const
     }
 }
 
+long int HString::toLongInt(bool *isOK) const
+{
+    if (mSize > 0)
+    {
+        char *pEnd;
+        //! @todo maybe support other bases then 10, sett strtol documentation
+        long int i = strtol(mpDataBuffer, &pEnd, 10);
+        *isOK = (*pEnd == '\0');
+        return i;
+    }
+    else
+    {
+        *isOK = false;
+        return 0;
+    }
+}
+
 size_t HString::find_first_of(const char c, size_t pos) const
 {
     return find(c,pos);

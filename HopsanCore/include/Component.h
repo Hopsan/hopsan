@@ -101,6 +101,8 @@ public:
     virtual bool isComponentQ() const;
     virtual bool isComponentSystem() const;
     virtual bool isComponentSignal() const;
+    virtual bool isExperimental() const;
+    virtual bool isObsolete() const;
 
     // Constants
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, double &rData);

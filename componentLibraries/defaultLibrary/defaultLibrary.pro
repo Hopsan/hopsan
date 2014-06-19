@@ -313,7 +313,9 @@ HEADERS += \
     Special/MechanicB/MechanicGear.hpp \
     Special/MechanicB/HopsanDefaultMechanicBComponents.h \
     Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \
-    Experimental/Signal1DLookupTable.hpp
+    Experimental/Signal1DLookupTable.hpp \
+    Experimental/Signal2DLookupTable.hpp \
+    Experimental/Experimental.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
@@ -324,4 +326,5 @@ OTHER_FILES += \
     Electric/HopsanDefaultElectricComponents.cci \
     Signal/HopsanDefaultSignalComponents.cci \
     Special/AeroComponents/HopsanDefaultAerocomponents.cci \
-    Special/MechanicB/HopsanDefaultMechanicBComponents.cci
+    Special/MechanicB/HopsanDefaultMechanicBComponents.cci \
+    Experimental/Experimental.cci

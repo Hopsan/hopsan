@@ -45,4 +45,7 @@
 /* Electric Components */
 #include "Electric/HopsanDefaultElectricComponents.h"
 
+/* Experimental Components */
+#include "Experimental/Experimental.h"
+
 #endif // DEFAULTCOMPONENTS_H_INCLUDED

@@ -22,8 +22,8 @@
 //!
 //$Id$
 
-#ifndef SIGNAL1DLOOKUPTABLE_HPP_INCLUDED
-#define SIGNAL1DLOOKUPTABLE_HPP_INCLUDED
+#ifndef SIGNAL2DLOOKUPTABLE_HPP_INCLUDED
+#define SIGNAL2DLOOKUPTABLE_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
@@ -36,32 +36,30 @@ namespace hopsan {
     //!
     //! @ingroup SignalComponents
     //!
-    class Signal1DLookupTable : public ComponentSignal
+    class Signal2DLookupTable : public ComponentSignal
     {
 
     private:
-        double *mpIn, *mpOut;
+        double *mpInRow, *mpInCol, *mpOut;
 
-        int mInDataId, mOutDataId;
         bool mReloadCSV;
         HString mDataCurveFileName;
         CSVParserNG mDataFile;
-        LookupTableND<1> mLookupTable;
+        LookupTableND<2> mLookupTable;
 
     public:
         static Component *Creator()
         {
-            return new Signal1DLookupTable();
+            return new Signal2DLookupTable();
         }
 
         void configure()
         {
-            addInputVariable("in", "", "", 0.0, &mpIn);
+            addInputVariable("row", "", "", 0.0, &mpInRow);
+            addInputVariable("col", "", "", 0.0, &mpInCol);
             addOutputVariable("out", "", "", &mpOut);
 
             addConstant("filename", "Data file (absolute or relativ to model path)", "", "FilePath", mDataCurveFileName);
-            addConstant("inid", "csv file index column (0-based index)", "", 0, mInDataId);
-            addConstant("outid", "csv file value column (0-based index)", "", 1, mOutDataId);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
         }
 
@@ -87,18 +85,50 @@ namespace hopsan {
                 {
                     // Make sure that selected data vector is in range
                     const int nDataCols = mDataFile.getNumDataCols();
-                    if ( mInDataId >= nDataCols || mOutDataId >= nDataCols )
+                    if ( nDataCols != 3 )
                     {
-                        HString ss;
-                        ss = "inid: "+to_hstring(mInDataId)+" or outid:"+to_hstring(mOutDataId)+" is out of range!";
-                        addErrorMessage(ss);
+                        addErrorMessage(HString("Wrong number of data columns: ")+to_hstring(nDataCols)+" != 3");
                         stopSimulation();
                         return;
                     }
 
-                    mDataFile.copyColumn(mInDataId, mLookupTable.getIndexDataRef());
-                    mDataFile.copyColumn(mOutDataId, mLookupTable.getValueDataRef());
-                    // Now the data is in the lookuptable and we can throw away the csv data to conservev memory
+                    std::vector<long int> rowscols;
+                    isOK = mDataFile.copyRow(mDataFile.getNumDataRows()-1,rowscols);
+                    if (!isOK)
+                    {
+                        addErrorMessage("Could not parse the number of rows and columns (last line) from CSV file: "+mDataCurveFileName);
+                        stopSimulation();
+                        return;
+                    }
+
+                    size_t nRows = rowscols[0];
+                    size_t nCols = rowscols[1];
+
+                    // Copy row and column index vectors (ignoring the final row with nRows and nCols)
+                    mDataFile.copyEveryNthFromColumn(0, nCols, mLookupTable.getIndexDataRef(0));
+                    mDataFile.copyRangeFromColumn(1, 0, nCols, mLookupTable.getIndexDataRef(1));
+
+                    // Remove "extra element (num rows)" from row index column
+                    if (mLookupTable.getDimSize(0) == nRows+1)
+                    {
+                        mLookupTable.getIndexDataRef(0).pop_back();
+                    }
+
+                    // Copy values
+                    mDataFile.copyRangeFromColumn(2, 0, mDataFile.getNumDataRows()-1, mLookupTable.getValueDataRef());
+
+                    // Make sure the correct number of rows and columns are available
+                    if ( (nRows != mLookupTable.getDimSize(0)) || (nCols != mLookupTable.getDimSize(1)) )
+                    {
+                        addErrorMessage(HString("Wrong number of rows: "+to_hstring(mLookupTable.getDimSize(0))+
+                                                " "+to_hstring(mLookupTable.getDimSize(1))+
+                                                " Should have been: "+to_hstring(nRows)+
+                                                " "+to_hstring(nCols)));
+                        stopSimulation();
+                        return;
+                    }
+
+                    // Now the data is in the lookuptable and we can throw away the csv data to conserve memory
                     mDataFile.clearData();
 
                     // Make sure strictly increasing (no sorting will be done if that is already the case)
@@ -115,7 +145,7 @@ namespace hopsan {
                         }
                         if (!mLookupTable.allIndexStrictlyIncreasing())
                         {
-                            addErrorMessage("Even after sorting, the index column is still not strictly increasing");
+                            addErrorMessage("Even after sorting, one or more index columns are still not strictly increasing");
                         }
                         stopSimulation();
                     }
@@ -127,7 +157,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpOut) = mLookupTable.interpolate(*mpIn);
+            (*mpOut) = mLookupTable.interpolate(*mpInRow, *mpInCol);
         }
 
         bool isExperimental() const

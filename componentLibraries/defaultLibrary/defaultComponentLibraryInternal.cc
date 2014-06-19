@@ -161,11 +161,11 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicFuelTankG", HydraulicFuelTankG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPlugQ", HydraulicPlugQ::Creator);
 
-    //Signal components
+    // Signal components
     #include "Signal/HopsanDefaultSignalComponents.cci"
 
 
-    //Mechanical components
+    // Mechanical components
     pComponentFactory->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
     pComponentFactory->registerCreatorFunction("MechanicVelocityTransformer", MechanicVelocityTransformer::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTorqueTransformer", MechanicTorqueTransformer::Creator);
@@ -207,16 +207,19 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("CombustionEngine", CombustionEngine::Creator);
 
 
-    //Electric components
+    // Electric components
     #include "Electric/HopsanDefaultElectricComponents.cci"
 
-    //Pneumatic components
+    // Pneumatic components
     #include "Pneumatic/HopsanDefaultPneumaticComponents.cci"
 
-    //Connectivity components
+    // Connectivity components
     #include "Connectivity/HopsanDefaultConnectivityComponents.cci"
 
-    // Special component
+    // Experimental components
+    #include "Experimental/Experimental.cci"
+
+    // Additional component
 
 
 }

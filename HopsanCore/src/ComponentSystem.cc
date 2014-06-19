@@ -467,6 +467,15 @@ void ComponentSystem::addComponent(Component *pComponent)
                 }
             }
         }
+
+        if (pComponent->isExperimental())
+        {
+            pComponent->addWarningMessage("This component is experimental!", "ExperimentalTag");
+        }
+        if (pComponent->isObsolete())
+        {
+            pComponent->addWarningMessage("This component is obsolete and will be removed in the future!", "ObsoleteTag");
+        }
     }
     else
     {

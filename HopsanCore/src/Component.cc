@@ -605,6 +605,20 @@ bool Component::isComponentSignal() const
     return false;
 }
 
+//! @brief Check if component is tagged as experimental
+//! @returns true or false
+bool Component::isExperimental() const
+{
+    return false;
+}
+
+//! @brief Check if component is tagged as obsolete
+//! @returns true or false
+bool Component::isObsolete() const
+{
+    return false;
+}
+
 //! @brief Returns a pointer to the simulation time variable in the component
 //! @returns pointer to time variable
 double *Component::getTimePtr()

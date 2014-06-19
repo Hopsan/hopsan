@@ -127,6 +127,18 @@ public:
         }
     }
 
+    bool allIndexStrictlyIncreasing() const
+    {
+        for (size_t d=0; d<numDims; ++d)
+        {
+            if (mIndexIncreasingOrDecreasing[d] != StrictlyIncreasing)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     IncreasingEnumT isIndexIncreasingOrDecresing(size_t d) const
     {
         return mIndexIncreasingOrDecreasing[d];

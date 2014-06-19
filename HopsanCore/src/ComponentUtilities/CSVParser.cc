@@ -599,7 +599,7 @@ bool CSVParserNG::setFile(const HString &rFilepath)
     }
 }
 
-bool CSVParserNG::parseWholeFile()
+bool CSVParserNG::parseEntireFile()
 {
     bool status=true;
     mData.clear();
@@ -609,6 +609,8 @@ bool CSVParserNG::parseWholeFile()
     // Check to see if there are more records, then grab each row one at a time
     while( mpCsvParser->has_more_rows() )
     {
+        cout << "rowCtr: " << rowCtr << " numRecs: " << mpCsvParser->get_record_count() << endl;
+
         // Get the record
         csv_row row = mpCsvParser->get_row();
         ++mNumDataRows;
@@ -659,6 +661,8 @@ bool CSVParserNG::parseWholeFile()
         {
             mData.push_back(row[col].c_str());
         }
+
+        ++rowCtr;
     }
 
 //    if (!mData.empty())
@@ -676,6 +680,53 @@ bool CSVParserNG::parseWholeFile()
 
     return status;
 }
+
+//bool CSVParserNG::copyRowAsInt(std::vector<long int> &rRowI)
+//{
+//    bool status=true;
+//    size_t rowCtr=mNumLinesToSkip;
+//    // Check to see if there are more records, then grab each row one at a time
+//    while( mpCsvParser->has_more_rows() )
+//    {
+//        cout << "rowCtr: " << rowCtr << " numRecs: " << mpCsvParser->get_record_count() << endl;
+
+//        // Get the record
+//        csv_row row = mpCsvParser->get_row();
+//        ++mNumDataRows;
+
+//        if(mData.empty())
+//        {
+//            mNumDataCols = row.size();
+//        }
+//        else if (row.size() != mNumDataCols)
+//        {
+//                status = false;
+//                mErrorString = "Row: "+to_hstring(rowCtr)+" does not have the same number of columns as the previous rows";
+//                break;
+//        }
+
+//        rRowI.resize(row.size());
+//        // Append each "value"
+//        for (size_t c=0; c<row.size(); ++c)
+//        {
+//            HString col = row[c].c_str();
+//            col.replace(",", ".");
+//            bool isOK;
+//            rRowI[c] = col.toLongInt(&isOK);
+//            status = status && isOK;
+//        }
+
+//        ++rowCtr;
+//    }
+
+//    if (status && rRowI.empty())
+//    {
+//        status = false;
+//        mErrorString = "No data read from file";
+//    }
+
+//    return status;
+//}
 
 bool CSVParserNG::eof() const
 {
@@ -697,12 +748,40 @@ size_t CSVParserNG::getNumDataCols() const
     return mNumDataCols;
 }
 
-void CSVParserNG::copyRow(const size_t rowIdx, std::vector<double> &rRow)
+bool CSVParserNG::copyRow(const size_t rowIdx, std::vector<double> &rRow)
 {
-    rRow.clear();
+    bool status=true;
     if (rowIdx < mNumDataRows)
     {
-        rRow.reserve(mNumDataCols);
+        rRow.resize(mNumDataCols);
+        for (size_t c=0; c<mNumDataCols; ++c)
+        {
+            // Extract a field string from row
+            HString &str = mData[rowIdx*mNumDataCols+c];
+            if (mConvertDecimalSeparator)
+            {
+                // Replace decimal , with decimal .
+                str.replace(",", ".");
+            }
+            bool parseOK;
+            rRow[c] = str.toDouble(&parseOK);
+            status = status && parseOK;
+        }
+    }
+    else
+    {
+        mErrorString = "rowIdx out of range";
+        status = false;
+    }
+    return status;
+}
+
+bool CSVParserNG::copyRow(const size_t rowIdx, std::vector<long int> &rRow)
+{
+    bool status=true;
+    if (rowIdx < mNumDataRows)
+    {
+        rRow.resize(mNumDataCols);
 
         for (size_t c=0; c<mNumDataCols; ++c)
         {
@@ -714,23 +793,39 @@ void CSVParserNG::copyRow(const size_t rowIdx, std::vector<double> &rRow)
                 str.replace(",", ".");
             }
             bool parseOK;
-            rRow.push_back(str.toDouble(&parseOK));
-            //! @todo check if error
+            rRow[c] = str.toLongInt(&parseOK);
+            status = status && parseOK;
         }
     }
     else
     {
         mErrorString = "rowIdx out of range";
+        status = false;
+    }
+    return status;
+}
+
+bool CSVParserNG::copyColumn(const size_t columnIdx, std::vector<double> &rColumn)
+{
+    if (mNumDataRows > 0)
+    {
+        return copyRangeFromColumn(columnIdx, 0, mNumDataRows, rColumn);
+    }
+    else
+    {
+        mErrorString = "To few rows < 1";
+        return false;
     }
 }
 
-void CSVParserNG::copyColumn(const size_t columnIdx, std::vector<double> &rColumn)
+bool CSVParserNG::copyRangeFromColumn(const size_t columnIdx, const size_t startRow, const size_t numRows, std::vector<double> &rColumn)
 {
+    bool status=true;
     rColumn.clear();
     if (columnIdx < mNumDataCols)
     {
-        rColumn.reserve(mNumDataRows);
-        for (size_t r=0; r<mNumDataRows; ++r)
+        rColumn.reserve(numRows);
+        for (size_t r=startRow; r<startRow+numRows; ++r)
         {
             // Extract a field string from row
             HString &str = mData[r*mNumDataCols+columnIdx];
@@ -741,11 +836,42 @@ void CSVParserNG::copyColumn(const size_t columnIdx, std::vector<double> &rColum
             }
             bool isOK;
             rColumn.push_back(str.toDouble(&isOK));
-            //! @todo check if error
+            status = status && isOK;
         }
     }
     else
     {
         mErrorString = "columnIdx out of range";
+        status = false;
     }
+    return status;
+}
+
+bool CSVParserNG::copyEveryNthFromColumn(const size_t columnIdx, const size_t stepSize, std::vector<double> &rColumn)
+{
+    bool status=true;
+    rColumn.clear();
+    if (columnIdx < mNumDataCols)
+    {
+        rColumn.reserve(mNumDataRows/stepSize);
+        for (size_t r=0; r<mNumDataRows; r+=stepSize)
+        {
+            // Extract a field string from row
+            HString &str = mData[r*mNumDataCols+columnIdx];
+            if (mConvertDecimalSeparator)
+            {
+                // Replace decimal , with decimal .
+                str.replace(",", ".");
+            }
+            bool isOK;
+            rColumn.push_back(str.toDouble(&isOK));
+            status = status && isOK;
+        }
+    }
+    else
+    {
+        mErrorString = "columnIdx out of range";
+        status = false;
+    }
+    return status;
 }
