@@ -142,7 +142,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mRealTime=true;
     mCurrentAnimationTime = 0;
     mLastAnimationTime = 0;
-    mSimulationSpeed = 0;
+    mSimulationSpeed = 100;
     mTimeStep = gpModelHandler->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
     mFps=60;   //Frames per second
     mSpeedSliderSensitivity=100;
@@ -337,7 +337,7 @@ void AnimationWidget::stop()
 {
     mLastAnimationTime = 0.0;
     mRealTime=false;
-    updateAnimationSpeed(0);
+    mpTimer->stop();
 }
 
 
@@ -352,7 +352,7 @@ void AnimationWidget::rewind()
 //! @brief Slot that pauses the animation
 void AnimationWidget::pause()
 {
-    updateAnimationSpeed(0);
+    mpTimer->stop();
 }
 
 
@@ -360,7 +360,24 @@ void AnimationWidget::pause()
 void AnimationWidget::play()
 {
     mRealTime=false;
-    updateAnimationSpeed(1);
+    if(mSimulationSpeed == 0)
+    {
+        //Stop animation timer if speed is zero (it sholdn't be running for no reason)
+        mpTimer->stop();
+    }
+    else
+    {
+        //Start the timer with correct FPS, if it is not already started
+        if(!mpTimer->isActive())
+        {
+            mFps = 60;
+            mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000;
+            mpTimer->start(1000.0/double(mFps));  //Timer object uses milliseconds
+            mpTime->start();
+            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
+        }
+    }
+    //updateAnimationSpeed(1);
 }
 
 
@@ -374,7 +391,25 @@ void AnimationWidget::playRT()
     mRealTime = true;
     mpTimeSlider->setValue(1);
     changeIndex(0);
-    updateAnimationSpeed(1);
+
+    if(mSimulationSpeed == 0)
+    {
+        //Stop animation timer if speed is zero (it sholdn't be running for no reason)
+        mpTimer->stop();
+    }
+    else
+    {
+        //Start the timer with correct FPS, if it is not already started
+        if(!mpTimer->isActive())
+        {
+            mFps = 60;
+            mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000;
+            mpTimer->start(1000.0/double(mFps));  //Timer object uses milliseconds
+            mpTime->start();
+            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
+        }
+    }
+    //updateAnimationSpeed(1);
 }
 
 
@@ -414,18 +449,18 @@ void AnimationWidget::updateAnimationSpeed(double speed)
         //Stop animation timer if speed is zero (it sholdn't be running for no reason)
         mpTimer->stop();
     }
-    else
-    {
-        //Start the timer with correct FPS, if it is not already started
-        if(!mpTimer->isActive())
-        {
-            mFps = 60;
-            mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000;
-            mpTimer->start(1000.0/double(mFps));  //Timer object uses milliseconds
-            mpTime->start();
-            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
-        }
-    }
+//    else
+//    {
+//        //Start the timer with correct FPS, if it is not already started
+//        if(!mpTimer->isActive())
+//        {
+//            mFps = 60;
+//            mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000;
+//            mpTimer->start(1000.0/double(mFps));  //Timer object uses milliseconds
+//            mpTime->start();
+//            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
+//        }
+//    }
 }
 
 
