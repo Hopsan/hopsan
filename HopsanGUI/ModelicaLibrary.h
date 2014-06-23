@@ -53,9 +53,11 @@ public:
     ModelicaModel(const ModelicaModel &rOther);
     QList<ModelicaVariable> getParameters() const;
     QList<ModelicaVariable> getVariables() const;
+    void getInitAlgorithms(QStringList &rAlgorithms) const;
+    void getPreAlgorithms(QStringList &rAlgorithms) const;
     void getEquations(QStringList &rEquations) const;
     QString getAnnotations() const;
-    void toFlatEquations(QStringList &rEquations, QMap<QString, QString> &rLocalVars, const QString &rPrefix="", const QStringList &rSubModels=QStringList());
+    void toFlatEquations(QStringList &rInitAlgorithms, QStringList &rPreAlgorighms, QStringList &rEquations, QMap<QString, QString> &rLocalVars, const QString &rPrefix="", const QStringList &rSubModels=QStringList());
 private:
     QStringList mCodeLines;
 };
@@ -78,6 +80,7 @@ class ModelicaLibrary
 {
 public:
     ModelicaLibrary();
+    void loadFile(const QString &code);
     QStringList getModelNames() const;
     QStringList getConnectorNames() const;
     bool hasModel(const QString &rModelName);

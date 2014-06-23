@@ -708,6 +708,11 @@ bool VariableTableWidget::setStartValues()
         QString name = pValueWideget->getName();
         QString value = pValueWideget->getValueText();
 
+        if(mpModelObject->getTypeName() == "ModelicaComponent" && name != "model")
+        {
+            continue;
+        }
+
         // Check if we have new custom scaling
         UnitScale customUnitScale;
         UnitSelectionWidget *pUnitWidget = pValueWideget->getUnitSelectionWidget();

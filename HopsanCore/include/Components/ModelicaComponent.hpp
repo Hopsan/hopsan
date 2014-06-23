@@ -54,7 +54,7 @@ namespace hopsan {
                 this->addConstant("parameters", "Parameter names", "-", "", mParameterNames);
                 this->addConstant("defaults", "Default parameter values", "-", "", mParameterDefaults);
             }
-            else if(mPorts!="")
+            else
             {
                 //Generate list of new ports, based on string parameter
                 std::vector<HString> newPortNames;

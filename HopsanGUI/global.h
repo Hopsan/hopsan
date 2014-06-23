@@ -55,6 +55,7 @@ class OptionsDialog;
 class QGridLayout;
 class FindWidget;
 class ModelicaLibrary;
+class ModelicaEditor;
 
 // Global pointer to the main window and QWidget cast version
 extern MainWindow* gpMainWindow;
@@ -86,6 +87,7 @@ extern OptionsDialog *gpOptionsDialog;
 extern QGridLayout *gpCentralGridLayout;
 extern FindWidget *gpFindWidget;
 extern ModelicaLibrary *gpModelicaLibrary;
+extern ModelicaEditor *gpModelicaEditor;
 
 //Global actions
 extern QAction *gpTogglePortsAction;

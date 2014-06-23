@@ -27,7 +27,7 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     moFile.close();
 
     QString typeName, displayName, cqsType;
-    QStringList initAlgorithms, equations, finalAlgorithms;
+    QStringList initAlgorithms, preAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
     QList<ParameterSpecification> parametersList;
     QList<VariableSpecification> variablesList;
@@ -37,7 +37,7 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     printMessage("Parsing Modelica code...");
 
     //Parse Modelica code and generate equation system
-    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
+    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
 
     //qDebug() << "Transforming!";
     printMessage("Transforming...");
@@ -50,12 +50,12 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     if(solver == BilinearTransform)
     {
         //Transform equation system using Bilinear Transform method
-        generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+        generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
     else /*if(solver == NumericalIntegration)*/
     {
         //Transform equation system using numerical integration methods
-        generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+        generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
 
     logFile.close();
@@ -92,19 +92,20 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
 //! @param portList List of port specifications for new component
 //! @param parametersList List of parameter specifications for new component
 void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType,
-                                                 QStringList &initAlgorithms, QStringList &equations,
+                                                 QStringList &initAlgorithms, QStringList &preAlgorithms, QStringList &equations,
                                                  QStringList &finalAlgorithms, QList<PortSpecification> &portList,
                                                  QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList)
 {
     QStringList lines = code.split("\n");
     QStringList portNames;
-    bool initialAlgorithmPart = false;  //Are we in the intial "algorithms" part?
+    bool initAlgorithmPart = false;
+    bool preAlgorithmPart = false;  //Are we in the intial "algorithms" part?
     bool equationPart = false;          //Are we in the "equations" part?
     bool finalAlgorithmPart = false;    //Are we in the final "algorithms" part?
     for(int l=0; l<lines.size(); ++l)
     {
         if(lines[l].startsWith("//")) continue;
-        if(!initialAlgorithmPart && !equationPart && !finalAlgorithmPart)
+        if(!initAlgorithmPart && !preAlgorithmPart && !equationPart && !finalAlgorithmPart)
         {
             //qDebug() << l << " - not in algorithms or equations";
             QStringList words = lines.at(l).trimmed().split(" ");
@@ -192,13 +193,17 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     portNames << name;
                 }
             }
-            else if(words.at(0) == "algorithm" && !equationPart)    //Initial algorithm part begins!
+            else if(words.at(0) == "initial" && words.at(1) == "algorithm")
             {
-                initialAlgorithmPart = true;
+                initAlgorithmPart = true;
+            }
+            else if(words.at(0) == "algorithm" && !equationPart)    //Pre-simulation algorithm part begins!
+            {
+                preAlgorithmPart = true;
             }
             else if(words.at(0) == "equation")                      //Equation part begins!
             {
-                initialAlgorithmPart = false;
+                preAlgorithmPart = false;
                 equationPart = true;
             }
             else if(words.at(0) == "algorithm" && equationPart)     //Final algorithm part begins!
@@ -206,7 +211,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 equationPart = false;
                 finalAlgorithmPart = true;
             }
-            else if(words.at(0) == "end" && (initialAlgorithmPart || equationPart || finalAlgorithmPart))       //We are finished
+            else if(words.at(0) == "end" && (preAlgorithmPart || equationPart || finalAlgorithmPart))       //We are finished
             {
                 break;
             }
@@ -229,17 +234,22 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 }
             }
         }
-        else if(initialAlgorithmPart)
+        else if(initAlgorithmPart)
         {
-            //qDebug() << l << " - in algorithms";
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
             {
                 break;
             }
-            if(words.at(0) == "equation")       //Equation part begings, end of algorithm section
+            else if(words.at(0) == "algorithm") //Pre-simulation algorithm part begins, end of initial algorithm section
             {
-                initialAlgorithmPart = false;
+                initAlgorithmPart = false;
+                preAlgorithmPart = true;
+                continue;
+            }
+            else if(words.at(0) == "equation")       //Equation part begings, end of initial algorithm section
+            {
+                initAlgorithmPart = false;
                 equationPart = true;
                 continue;
             }
@@ -260,12 +270,12 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                         }
                         else if(portList.at(i).porttype == "ReadPort")
                         {
-                            initAlgorithms.last().remove(idx, 3);
+                           initAlgorithms.last().remove(idx, 3);
                         }
                     }
                     else
                     {
-                        int idx = initAlgorithms.last().indexOf(temp);
+                        int idx = preAlgorithms.last().indexOf(temp);
                         int idx2=idx+temp.size()+1;
                         while(idx2 < initAlgorithms.last().size()+1 && initAlgorithms.last().at(idx2).isLetterOrNumber())
                             ++idx2;
@@ -275,6 +285,53 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 }
             }
             initAlgorithms.last().chop(1);
+        }
+        else if(preAlgorithmPart)
+        {
+            //qDebug() << l << " - in algorithms";
+            QStringList words = lines.at(l).trimmed().split(" ");
+            if(words.at(0) == "end")       //We are finished
+            {
+                break;
+            }
+            if(words.at(0) == "equation")       //Equation part begings, end of algorithm section
+            {
+                preAlgorithmPart = false;
+                equationPart = true;
+                continue;
+            }
+            preAlgorithms << lines.at(l).trimmed();
+            preAlgorithms.last().replace(":=", "=");
+            //Replace variables with Hopsan syntax, i.e. P2.q => q2
+            for(int i=0; i<portNames.size(); ++i)
+            {
+                QString temp = portNames.at(i)+".";
+                while(preAlgorithms.last().contains(temp))
+                {
+                    if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
+                    {
+                        int idx = preAlgorithms.last().indexOf(temp)+temp.size()-1;
+                        if(portList.at(i).porttype == "WritePort")
+                        {
+                            preAlgorithms.last().remove(idx, 4);
+                        }
+                        else if(portList.at(i).porttype == "ReadPort")
+                        {
+                            preAlgorithms.last().remove(idx, 3);
+                        }
+                    }
+                    else
+                    {
+                        int idx = preAlgorithms.last().indexOf(temp);
+                        int idx2=idx+temp.size()+1;
+                        while(idx2 < preAlgorithms.last().size()+1 && preAlgorithms.last().at(idx2).isLetterOrNumber())
+                            ++idx2;
+                        preAlgorithms.last().insert(idx2, QString::number(i+1));
+                        preAlgorithms.last().remove(idx, temp.size());
+                    }
+                }
+            }
+            preAlgorithms.last().chop(1);
         }
         else if(equationPart)
         {
@@ -299,15 +356,16 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 {
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
-                        int idx = equations.last().indexOf(temp)+temp.size()-1;
-                        if(portList.at(i).porttype == "WritePort")
-                        {
-                            equations.last().remove(idx, 4);
-                        }
-                        else if(portList.at(i).porttype == "ReadPort")
-                        {
-                            equations.last().remove(idx, 3);
-                        }
+//                        int idx = equations.last().indexOf(temp)+temp.size()-1;
+//                        if(portList.at(i).porttype == "WritePort")
+//                        {
+//                            equations.last().remove(idx, 4);
+//                        }
+//                        else if(portList.at(i).porttype == "ReadPort")
+//                        {
+//                            equations.last().remove(idx, 3);
+//                        }
+                        equations.last().replace(".","__");
                     }
                     else
                     {
@@ -341,14 +399,15 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
                         int idx = finalAlgorithms.last().indexOf(temp)+temp.size()-1;
-                        if(portList.at(i).porttype == "WritePortType")
-                        {
-                            finalAlgorithms.last().remove(idx, 4);
-                        }
-                        else if(portList.at(i).porttype == "ReadPortType")
-                        {
-                            finalAlgorithms.last().remove(idx, 3);
-                        }
+//                        if(portList.at(i).porttype == "WritePortType")
+//                        {
+//                            finalAlgorithms.last().remove(idx, 4);
+//                        }
+//                        else if(portList.at(i).porttype == "ReadPortType")
+//                        {
+//                            finalAlgorithms.last().remove(idx, 3);
+//                        }
+                        finalAlgorithms.last().replace(".","__");
                     }
                     else
                     {
@@ -367,6 +426,8 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
     initAlgorithms.removeAll("\n");
     initAlgorithms.removeAll("");
+    preAlgorithms.removeAll("\n");
+    preAlgorithms.removeAll("");
     equations.removeAll("\n");
     equations.removeAll("");
     finalAlgorithms.removeAll("\n");
@@ -378,16 +439,16 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
 
 //! @brief Generates XML and compiles the new component
-void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     logStream << "Initializing Modelica generator for bilinear transform.\n";
     logStream << "Date and time: " << QDateTime::currentDateTime().toString() << "\n";
 
 
     logStream << "\n--- Initial Algorithms ---\n";
-    for(int i=0; i<initAlgorithms.size(); ++i)
+    for(int i=0; i<preAlgorithms.size(); ++i)
     {
-        logStream << initAlgorithms[i] << "\n";
+        logStream << preAlgorithms[i] << "\n";
     }
 
     //Create list of equqtions
@@ -483,11 +544,11 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     }
 
     QList<Expression> knowns;
-    for(int i=0; i<initAlgorithms.size(); ++i)
+    for(int i=0; i<preAlgorithms.size(); ++i)
     {
-        if(initAlgorithms[i].contains("="))
+        if(preAlgorithms[i].contains("="))
         {
-            QString var = initAlgorithms[i].section("=",0,0).trimmed();
+            QString var = preAlgorithms[i].section("=",0,0).trimmed();
             knowns.append(var);
         }
     }
@@ -699,7 +760,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             }
             if(!tempExpr.contains(usedUnknowns[0]))
             {
-                initAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
+                preAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
                 systemEquations.removeAt(e);
                 --e;
                 unknowns.removeAll(usedUnknowns[0]);
@@ -759,7 +820,12 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         gTempExpr = systemEquations[e];
         gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
 
-        QList<Expression> result = QtConcurrent::blockingMapped(unknowns, concurrentDiff);
+        QList<Expression> result;
+        for(int u=0; u<unknowns.size(); ++u)
+        {
+            result.append(concurrentDiff(unknowns[u]));
+        }
+        //QList<Expression> result = QtConcurrent::blockingMapped(unknowns, concurrentDiff);
 
         jacobian.append(result);
     }
@@ -852,9 +918,9 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     }
 
     comp.simEquations << "//Initial algorithm section";
-    for(int i=0; i<initAlgorithms.size(); ++i)
+    for(int i=0; i<preAlgorithms.size(); ++i)
     {
-        comp.simEquations << initAlgorithms[i]+";";
+        comp.simEquations << preAlgorithms[i]+";";
     }
     comp.simEquations << "";
 
@@ -936,7 +1002,10 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 }
 
 
-void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType,
+                                                                          QStringList  &initAlgorithms, QStringList &preAlgorithms, QStringList &plainEquations,
+                                                                          QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters,
+                                                                          QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     //Q_UNUSED(initAlgorithms);
     //Q_UNUSED(finalAlgorithms);
@@ -949,6 +1018,12 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     for(int i=0; i<initAlgorithms.size(); ++i)
     {
         logStream << initAlgorithms[i] << "\n";
+    }
+
+    logStream << "\n--- Pre-Simulation Algorithms ---\n";
+    for(int i=0; i<preAlgorithms.size(); ++i)
+    {
+        logStream << preAlgorithms[i] << "\n";
     }
 
     //Create list of equqtions
@@ -1108,9 +1183,17 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
 
 
+    logStream << "\n--- State Equations ---\n";
     for(int e=0; e<stateEquations.size(); ++e)
     {
-        Expression equation = stateEquations[e];
+        logStream << stateEquations[e].toString() << "\n";
+    }
+
+
+    for(int e=0; e<stateEquations.size(); ++e)
+    {
+        Expression equation;
+        equation.replaceBy(stateEquations[e]);
 
         QMap<Expression*, Expression*> renameMap;
         for(int v=0; v<resolvedDependencies.size(); ++v)
@@ -1164,7 +1247,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         QString num = QString::number(i+1);
         if(ports[i].porttype == "ReadPort")
         {
-            knowns.append(Expression(ports[i].name));
+            knowns.append(Expression(ports[i].name+"__y"));
             logStream << knowns.last().toString() << "\n";
         }
         else if(ports[i].porttype == "PowerPort" && cqsType == "C")
@@ -1189,11 +1272,11 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         }
     }
     logStream << "\n--- Variables Defined By Initial Algorithms (considered known) ---\n";
-    for(int i=0; i<initAlgorithms.size(); ++i)
+    for(int i=0; i<preAlgorithms.size(); ++i)
     {
-        if(initAlgorithms[i].contains("="))
+        if(preAlgorithms[i].contains("="))
         {
-            QString var = initAlgorithms[i].section("=",0,0).trimmed();
+            QString var = preAlgorithms[i].section("=",0,0).trimmed();
             logStream << var << "\n";
             knowns.append(var);
         }
@@ -1273,10 +1356,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
                 tempExpr.changeSign();
                 tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
             }
-            initAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
+            preAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
             systemEquations.removeAt(e);
             --e;
-            logStream << initAlgorithms.last()+"\n";
+            logStream << preAlgorithms.last()+"\n";
             unknowns.removeAll(usedUnknowns[0]);
         }
     }
@@ -1299,7 +1382,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         {
             //Found the unknown if only one equation, try to break it out and prepend on final algorithms
             Expression tempExpr = systemEquations[lastFound];
+            qDebug() << "Unknown = " << unknowns[u].toString();
+            qDebug() << "tempExpr = " << tempExpr.toString();
             tempExpr.factor(unknowns[u]);
+            qDebug() << "tempExpr = " << tempExpr.toString();
             if(tempExpr.getTerms().size() == 1)
             {
                 tempExpr = Expression(0);   //Only one term, state var must equal zero
@@ -1307,12 +1393,19 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             else
             {
                 Expression term = tempExpr.getTerms()[0];
+                qDebug() << "term = " << term.toString();
                 tempExpr.removeTerm(term);
+                qDebug() << "tempExpr = " << tempExpr.toString();
                 term.replace(unknowns[u], Expression(1));
+                qDebug() << "term = " << term.toString();
                 term._simplify(Expression::FullSimplification, Expression::Recursive);
+                qDebug() << "term = " << term.toString();
                 tempExpr.divideBy(term);
+                qDebug() << "tempExpr = " << tempExpr.toString();
                 tempExpr.changeSign();
+                qDebug() << "tempExpr = " << tempExpr.toString();
                 tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+                qDebug() << "tempExpr = " << tempExpr.toString();
             }
             finalAlgorithms.prepend(Expression::fromEquation(unknowns[u], tempExpr).toString());
             systemEquations.removeAt(lastFound);
@@ -1335,6 +1428,12 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         logStream << unknowns[u].toString() << "\n";
     }
 
+    logStream << "\n--- System Equations ---\n";
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+        logStream << systemEquations[e].toString() << "\n";
+    }
+
     if(systemEquations.size() != unknowns.size())
     {
         logStream << "\nNumber of system equations does not equal number of unknown variables. Aborting.";
@@ -1352,7 +1451,12 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         gTempExpr = systemEquations[e];
         gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
 
-        QList<Expression> result = QtConcurrent::blockingMapped(unknowns, concurrentDiff);
+        QList<Expression> result;
+        for(int u=0; u<unknowns.size(); ++u)
+        {
+            result.append(concurrentDiff(unknowns[u]));
+        }
+        //QList<Expression> result = QtConcurrent::blockingMapped(unknowns, concurrentDiff);
 
         jacobian.append(result);
     }
@@ -1597,7 +1701,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         QStringList varNames;
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
-            varNames << comp.portNames[i];
+            varNames << comp.portNames[i]+"__y";
         }
         else
         {
@@ -1625,15 +1729,15 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.auxiliaryFunctions.append("");
     comp.auxiliaryFunctions.append("void solveSystem()");
     comp.auxiliaryFunctions.append("{");
-    if(!initAlgorithms.isEmpty())
+    if(!preAlgorithms.isEmpty())
     {
         comp.auxiliaryFunctions.append("");
-        comp.auxiliaryFunctions.append("    //Initial algorithm section");
+        comp.auxiliaryFunctions.append("    //Pre-simulation algorithm section");
     }
-    for(int i=0; i<initAlgorithms.size(); ++i)
+    for(int i=0; i<preAlgorithms.size(); ++i)
     {
         //! @todo Convert everything to C++ syntax
-        QString initEq = initAlgorithms[i];
+        QString initEq = preAlgorithms[i];
         for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
         {
             initEq.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
@@ -1647,7 +1751,12 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     {
         for(int i=0; i<systemVars.size(); ++i)
         {
-            comp.auxiliaryFunctions << "    stateVariables["+QString::number(i)+"] = "+systemVars[i].toString()+";";
+            QString varStr = systemVars[i].toString();
+            for(int s=stateEquations.size()-1; s>=0; --s)      //State vars must be renamed, because SymHop does not consider "STATEVARS[i]" an acceptable variable name
+            {
+                varStr.replace("STATEVAR"+QString::number(s), "STATEVARS["+QString::number(s)+"]");
+            }
+            comp.auxiliaryFunctions << "    stateVariables["+QString::number(i)+"] = "+varStr+";";
         }
 
         comp.auxiliaryFunctions << "";
@@ -1748,6 +1857,10 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     comp.utilityNames.append("mpSolver");
     comp.utilities.append("NumericalIntegrationSolver*");
 
+    for(int a=0; a<initAlgorithms.size(); ++a)
+    {
+        comp.initEquations.append(initAlgorithms[a].replace(":=", "=")+";");
+    }
 
     //comp.simEquations.append(stateEquations);
 

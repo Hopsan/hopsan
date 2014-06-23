@@ -39,6 +39,7 @@
 #include "PlotTab.h"
 #include "PlotWindow.h"
 #include "Widgets/ModelWidget.h"
+#include "MessageHandler.h"
 
 
 Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
@@ -128,7 +129,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             QStringList ports;
             QStringList parameterNames;
             QStringList parameterDefaults;
-            QString icon;
+            QString cafFilePath, icon;
             QStringList portPosNames;
             QList<QList<double> > portPos;
             ModelicaModel model = gpModelicaLibrary->getModel(value);
@@ -155,6 +156,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             QString annotations = model.getAnnotations();
             if(!annotations.isEmpty())
             {
+                cafFilePath = annotations.section("cafFile",1,1).section("\"",1,1).section("\"",0,0);
                 icon = annotations.section("hopsanIcon",1,1).section("\"",1,1).section("\"",0,0);
                 int nPorts=annotations.count("portPos");
                 for(int i=0; i<nPorts; ++i)
@@ -181,6 +183,28 @@ bool Component::setParameterValue(QString name, QString value, bool force)
                 pPortAppearance->y = portPos[i][1];
                 pPortAppearance->rot = portPos[i][2];
 
+            }
+            if(!cafFilePath.isEmpty())
+            {
+                QFile cafFile(cafFilePath);
+                if (!cafFile.open(QIODevice::ReadOnly | QIODevice::Text))
+                {
+                    gpMessageHandler->addErrorMessage("Failed to open file or not a text file: " + cafFilePath);
+                }
+                else
+                {
+                    QDomDocument domDocument;
+                    QDomElement cafRoot = loadXMLDomDocument(cafFile, domDocument, CAF_ROOT);
+                    cafFile.close();
+                    if(!cafRoot.isNull())
+                    {
+                        //Read appearance data from the caf xml file
+                        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+                        mModelObjectAppearance.setBasePath(QFileInfo(cafFile).absolutePath()+"/");
+                        mModelObjectAppearance.readFromDomElement(xmlModelObjectAppearance);
+                        mModelObjectAppearance.cacheIcons();
+                    }
+                }
             }
             this->refreshAppearance();
 

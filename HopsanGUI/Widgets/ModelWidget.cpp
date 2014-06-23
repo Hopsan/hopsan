@@ -321,6 +321,16 @@ bool ModelWidget::simulate_nonblocking()
 
     if(!mSimulateMutex.tryLock()) return false;
 
+    //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+    foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+    {
+        if(comp->getTypeName() == "ModelicaComponent")
+        {
+            simulateModelica();
+            return true;        //! @todo Should use return value from simulateModelica() function instead
+        }
+    }
+
     qDebug() << "Calling simulate_nonblocking()";
     //QVector<SystemContainer*> vec;
     //vec.push_back(mpSystem);
@@ -344,6 +354,16 @@ bool ModelWidget::simulate_blocking()
     }
 
     if(!mSimulateMutex.tryLock()) return false;
+
+    //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+    foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+    {
+        if(comp->getTypeName() == "ModelicaComponent")
+        {
+            simulateModelica();
+            return true;        //! @todo Should use return value from simulateModelica() function instead
+        }
+    }
 
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
@@ -575,7 +595,7 @@ void ModelWidget::lockTab(bool locked)
     setDisabled(locked);
 }
 
-void ModelWidget::generateModelicaCode()
+void ModelWidget::simulateModelica()
 {
     QString modelicaCode = "model "+mpToplevelSystem->getName()+"\n";
 
@@ -723,15 +743,42 @@ void ModelWidget::generateModelicaCode()
     for(int i=0; i<groupNames.size(); ++i)
     {
         qDebug() << "Group " << i << ":";
+        QStringList flatInitAlgorithms;
+        QStringList flatPreAlgorithms;
         QStringList flatEquations;
         QMap<QString,QString> localVars;
-        mainModel.toFlatEquations(flatEquations, localVars, "", groupNames[i]);
+        mainModel.toFlatEquations(flatInitAlgorithms, flatPreAlgorithms, flatEquations, localVars, "", groupNames[i]);
 
         //Ugly hack, because HopsanGenerator assumes port variables to use point notation (e.g. P1.q) while points are replaced with "__" above
         foreach(const QString &var, localVars.keys())
         {
-            if(localVars.find(var).value() == "NodeHydraulic")
+            if(localVars.find(var).value() == "NodeSignalIn")
             {
+                for(int i=0; i<flatInitAlgorithms.size(); ++i)
+                {
+                    flatInitAlgorithms[i].replace(var+"__y", var+".y");
+                }
+                for(int i=0; i<flatEquations.size(); ++i)
+                {
+                    flatEquations[i].replace(var+"__y", var+".y");
+                }
+            }
+            else if(localVars.find(var).value() == "NodeHydraulic")
+            {
+                for(int i=0; i<flatInitAlgorithms.size(); ++i)
+                {
+                    flatInitAlgorithms[i].replace(var+"__p", var+".p");
+                    flatInitAlgorithms[i].replace(var+"__q", var+".q");
+                    flatInitAlgorithms[i].replace(var+"__c", var+".c");
+                    flatInitAlgorithms[i].replace(var+"__Zc", var+".Zc");
+                }
+                for(int i=0; i<flatPreAlgorithms.size(); ++i)
+                {
+                    flatPreAlgorithms[i].replace(var+"__p", var+".p");
+                    flatPreAlgorithms[i].replace(var+"__q", var+".q");
+                    flatPreAlgorithms[i].replace(var+"__c", var+".c");
+                    flatPreAlgorithms[i].replace(var+"__Zc", var+".Zc");
+                }
                 for(int i=0; i<flatEquations.size(); ++i)
                 {
                     flatEquations[i].replace(var+"__p", var+".p");
@@ -742,6 +789,22 @@ void ModelWidget::generateModelicaCode()
             }
             else if(localVars.find(var).value() == "NodeMechanic")
             {
+                for(int i=0; i<flatInitAlgorithms.size(); ++i)
+                {
+                    flatInitAlgorithms[i].replace(var+"__f", var+".f");
+                    flatInitAlgorithms[i].replace(var+"__x", var+".x");
+                    flatInitAlgorithms[i].replace(var+"__v", var+".v");
+                    flatInitAlgorithms[i].replace(var+"__c", var+".c");
+                    flatInitAlgorithms[i].replace(var+"__Zc", var+".Zc");
+                }
+                for(int i=0; i<flatPreAlgorithms.size(); ++i)
+                {
+                    flatPreAlgorithms[i].replace(var+"__f", var+".f");
+                    flatPreAlgorithms[i].replace(var+"__x", var+".x");
+                    flatPreAlgorithms[i].replace(var+"__v", var+".v");
+                    flatPreAlgorithms[i].replace(var+"__c", var+".c");
+                    flatPreAlgorithms[i].replace(var+"__Zc", var+".Zc");
+                }
                 for(int i=0; i<flatEquations.size(); ++i)
                 {
                     flatEquations[i].replace(var+"__f", var+".f");
@@ -764,6 +827,16 @@ void ModelWidget::generateModelicaCode()
         foreach(const QString &var, localVars.keys())
         {
             flatModel.append("    "+localVars.find(var).value()+" "+var+";\n");
+        }
+        flatModel.append("initial algorithm\n");
+        foreach(const QString &algorithm, flatInitAlgorithms)
+        {
+            flatModel.append("    "+algorithm+";\n");
+        }
+        flatModel.append("algorithm\n");
+        foreach(const QString &algorithm, flatPreAlgorithms)
+        {
+            flatModel.append("    "+algorithm+";\n");
         }
         flatModel.append("equation\n");
         foreach(const QString &equation, flatEquations)
@@ -846,6 +919,12 @@ void ModelWidget::generateModelicaCode()
                 return;
             }
             pTempSys->renameModelObject(pModelObject->getName(), name);
+
+            //Set parameters in added component
+            foreach(const QString par, pModelObject->getParameterNames())
+            {
+                pModelObject->setParameterValue(par, mpToplevelSystem->getModelObject(name)->getParameterValue(par));
+            }
         }
     }
 
@@ -905,13 +984,14 @@ void ModelWidget::generateModelicaCode()
 
         //Set parameter values for Modelica components
         pTempSys->getModelObject(it.key())->setParameterValue("solverType", "4", true);
+        pTempSys->getModelObject(it.key())->setParameterValue("nIter","2", true);
         foreach(const QString parameter, pTempSys->getModelObject(it.key())->getParameterNames())
         {
             if(parameter.contains("__"))
             {
                 //! @todo Check that original value exists first!
 
-                QString orgComp = parameter.section("__",0,0);
+               QString orgComp = parameter.section("__",0,0);
                 QString orgPar = parameter.section("__",1,1);
                 if(mpToplevelSystem->hasModelObject(orgComp) &&
                    mpToplevelSystem->getModelObject(orgComp)->hasParameter(orgPar))
@@ -924,7 +1004,7 @@ void ModelWidget::generateModelicaCode()
     }
 
     pTempModel->setTopLevelSimulationTime(mStartTime, QString::number(this->getTopLevelSystemContainer()->getTimeStep()), mStopTime);
-
+    pTempModel->getTopLevelSystemContainer()->setNumberOfLogSamples(mpToplevelSystem->getNumberOfLogSamples());
     pTempModel->simulate_blocking();
 
     //Move all data from temporary model to actual model
@@ -943,12 +1023,15 @@ void ModelWidget::generateModelicaCode()
             {
                 QString newName = pVar.mpContainer->getName();
                 newName.remove(it2.key()+"#");
+                newName.remove("#Value");
                 if(!newName.startsWith("_"))    //Ignore all internal variables (will be removed)
                 {
                     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
                     pVarDesc->mComponentName = newName.section("__",0,0);
                     pVarDesc->mPortName = newName.section("__",1,1);
                     pVarDesc->mDataName = newName.section("__",2,2);
+                    if(pVarDesc->mDataName.isEmpty())
+                        pVarDesc->mDataName = "Value";
                     SharedVectorVariableT pNewVar = createFreeVariable(pVar.mpVariable->getVariableType(), pVarDesc);
                     pNewVar->assignFrom(pVar.mpVariable);
                     mpToplevelSystem->getLogDataHandler()->insertNewHopsanVariable(pNewVar);

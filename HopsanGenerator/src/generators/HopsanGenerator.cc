@@ -183,7 +183,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         QStringList varNames;
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
-            varNames << comp.portNames[i];
+            varNames << comp.portNames[i]+"__y";
         }
         else
         {
@@ -211,7 +211,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         QString id = QString::number(portId);
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
-            allVarNames << comp.portNames[i];
+            allVarNames << comp.portNames[i]+"__y";
         }
         else
         {
@@ -279,11 +279,11 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
             }
             if(comp.portTypes[i] == "ReadPort")
             {
-                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+");\n");
+                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
             }
             else if(comp.portTypes[i] == "WritePort")
             {
-                addPorts.append("            addOutputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+");\n");
+                addPorts.append("            addOutputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
             }
         }
         else
@@ -356,7 +356,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         QStringList varNames;
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
-            varNames << comp.portNames[i];
+            varNames << comp.portNames[i]+"__y";
         }
         else
         {

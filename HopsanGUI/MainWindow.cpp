@@ -70,6 +70,7 @@
 #include "Widgets/HVCWidget.h"
 #include "Widgets/DataExplorer.h"
 #include "Widgets/FindWidget.h"
+#include "Widgets/ModelicaEditor.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -105,6 +106,7 @@ OptionsDialog *gpOptionsDialog = 0;
 QGridLayout *gpCentralGridLayout = 0;
 FindWidget *gpFindWidget = 0;
 ModelicaLibrary *gpModelicaLibrary = 0;
+ModelicaEditor *gpModelicaEditor = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -222,6 +224,10 @@ void MainWindow::createContents()
     //Create the Modelica handler
     gpModelicaLibrary = new ModelicaLibrary();
 
+    //Create the Modelica editor
+    gpModelicaEditor = new ModelicaEditor(this);
+    gpModelicaEditor->hide();
+
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -266,7 +272,6 @@ void MainWindow::createContents()
     gpCentralTabWidget = mpCentralTabs;
     mpCentralTabs->setObjectName("centralTabs");
     mpCentralTabs->setMouseTracking(true);
-    mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
 
     connect(mpCentralTabs, SIGNAL(currentChanged(int)),         this,           SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
     connect(mpCentralTabs, SIGNAL(currentChanged(int)),         this,           SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
@@ -320,6 +325,8 @@ void MainWindow::createContents()
     gpHelpPopupWidget = mpHelpPopup;
 
     // Set the correct position of the help popup message in the central widget
+    mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
+    mpCentralGridLayout->addWidget(gpModelicaEditor,0,0,4,4);
     mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
     mpCentralGridLayout->setColumnMinimumWidth(0,5);
     mpCentralGridLayout->setColumnStretch(0,0);
@@ -817,9 +824,12 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpToggleSignalsAction, "Toggle signal components visibility.");
 
     mpDebug1Action = new QAction(this);
+    mpDebug1Action->setCheckable(true);
     mpDebug1Action->setShortcut(QKeySequence("Ctrl+D+1"));
     this->addAction(mpDebug1Action);
-    connect(mpDebug1Action, SIGNAL(triggered()), mpModelHandler, SLOT(launchDebugger()));
+    //connect(mpDebug1Action, SIGNAL(triggered()), mpModelHandler, SLOT(launchDebugger()));
+    connect(mpDebug1Action, SIGNAL(toggled(bool)), gpModelicaEditor, SLOT(setVisible(bool)));
+    connect(mpDebug1Action, SIGNAL(toggled(bool)), mpCentralTabs, SLOT(setHidden(bool)));
 
     mpDebug2Action = new QAction(this);
     mpDebug2Action->setShortcut(QKeySequence("Ctrl+D+2"));

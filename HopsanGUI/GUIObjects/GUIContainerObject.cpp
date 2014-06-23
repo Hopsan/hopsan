@@ -1365,7 +1365,9 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
                 //! @todo Also make sure that the port in the Modelica code is correct physical type
                 if((pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getNodeType() == "NodeModelica") ||
                    (pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getParentModelObject()->getTypeCQS() == "C") ||
-                   (pEndRealPort->getNodeType() == "NodeModelica" && pStartRealPort->getParentModelObject()->getTypeCQS() == "C"))
+                   (pEndRealPort->getNodeType() == "NodeModelica" && pStartRealPort->getParentModelObject()->getTypeCQS() == "C") ||
+                   (pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getParentModelObject()->getTypeCQS() == "S") ||
+                   (pEndRealPort->getNodeType() == "NodeModelica" && pStartRealPort->getParentModelObject()->getTypeCQS() == "S"))
                 {
                     success = true;
                 }

@@ -32,6 +32,10 @@
 #include "ModelicaLibrary.h"
 #include "SymHop.h"
 #include "DesktopHandler.h"
+#include "ModelHandler.h"
+#include "Widgets/ModelWidget.h"
+#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIModelObject.h"
 
 
 //! @class ModelicaModel
@@ -150,6 +154,63 @@ QList<ModelicaVariable> ModelicaModel::getVariables() const
 }
 
 
+//! @brief Returns all initial algorithms in the model
+//! @param rAlgorithms Reference to list of all initial algorithm lines
+void ModelicaModel::getInitAlgorithms(QStringList &rAlgorithms) const
+{
+    bool inInitAlgs=false;
+    foreach(const QString &line, mCodeLines)
+    {
+        if(!inInitAlgs)
+        {
+            if(line.simplified() == "initial algorithm")
+            {
+                inInitAlgs = true;
+            }
+        }
+        else
+        {
+            if(line.simplified().startsWith("end ") || line.simplified().startsWith("equation") || line.simplified().startsWith("algorithm"))
+            {
+                break;
+            }
+            else
+            {
+                rAlgorithms.append(line.trimmed());
+            }
+        }
+    }
+}
+
+//! @brief Returns all pre-simulation algorithms in the model
+//! @param rAlgorithms Reference to list of all pre-simulation algorithm lines
+void ModelicaModel::getPreAlgorithms(QStringList &rAlgorithms) const
+{
+    bool inPreAlgs=false;
+    foreach(const QString &line, mCodeLines)
+    {
+        if(!inPreAlgs)
+        {
+            if(line.simplified() == "algorithm")
+            {
+                inPreAlgs = true;
+            }
+        }
+        else
+        {
+            if(line.simplified().startsWith("end ") || line.simplified().startsWith("equation"))
+            {
+                break;
+            }
+            else
+            {
+                rAlgorithms.append(line.trimmed());
+            }
+        }
+    }
+}
+
+
 //! @brief Returns all equations in the model
 //! @param rEquations Reference to list of all equation lines
 void ModelicaModel::getEquations(QStringList &rEquations) const
@@ -178,6 +239,7 @@ QString ModelicaModel::getAnnotations() const
 {
     QString retval;
     bool inAnnotations=false;
+    int parbal=0;
     foreach(const QString &line, mCodeLines)
     {
         if(line.simplified().startsWith("annotation("))
@@ -186,7 +248,7 @@ QString ModelicaModel::getAnnotations() const
         }
         if(inAnnotations)
         {
-            int parbal=line.count("(")-line.count(")");
+            parbal += line.count("(")-line.count(")");
             retval.append(line);
             if(parbal == 0)
             {
@@ -203,7 +265,7 @@ QString ModelicaModel::getAnnotations() const
 //! @param rLocalVars Reference to a map between name and type of local variables
 //! @param rPrefix Used to prepend a prefix to the equations (to be used for recursive calls to this function)
 //! @param rSubModels Used to generate equations for only a subset of submodels. Empty means use all submodels.
-void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QString> &rLocalVars, const QString &rPrefix, const QStringList &rSubModels)
+void ModelicaModel::toFlatEquations(QStringList &rInitAlgorithms, QStringList &rPreAlgorithms, QStringList &rEquations, QMap<QString,QString> &rLocalVars, const QString &rPrefix, const QStringList &rSubModels)
 {
     //! @todo Should be possible to get only equations from subset of submodels
 
@@ -213,7 +275,46 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
         prefix = prefix+"__";
     }
 
-    int orgSize = rEquations.size();
+
+    int orgSize = rInitAlgorithms.size();
+    getInitAlgorithms(rInitAlgorithms);
+    for(int i=orgSize; i<rInitAlgorithms.size(); ++i)
+    {
+        SymHop::Expression algorithm(rInitAlgorithms[i].remove(";"));
+        QList<SymHop::Expression> vars = algorithm.getVariables();
+        for(int v=0; v<vars.size(); ++v)
+        {
+            QString var = vars[v].toString();
+            var.replace(".","__");
+            if(!var.startsWith(prefix))
+            {
+                var = prefix+var;
+            }
+            algorithm.replace(vars[v], SymHop::Expression(var));
+        }
+        rInitAlgorithms[i] = algorithm.toString();
+    }
+
+    orgSize = rPreAlgorithms.size();
+    getPreAlgorithms(rPreAlgorithms);
+    for(int i=orgSize; i<rPreAlgorithms.size(); ++i)
+    {
+        SymHop::Expression algorithm(rPreAlgorithms[i].remove(";"));
+        QList<SymHop::Expression> vars = algorithm.getVariables();
+        for(int v=0; v<vars.size(); ++v)
+        {
+            QString var = vars[v].toString();
+            var.replace(".","__");
+            if(!var.startsWith(prefix))
+            {
+                var = prefix+var;
+            }
+            algorithm.replace(vars[v], SymHop::Expression(var));
+        }
+        rPreAlgorithms[i] = algorithm.toString();
+    }
+
+    orgSize = rEquations.size();
     getEquations(rEquations);
     for(int i=orgSize; i<rEquations.size(); ++i)
     {
@@ -286,7 +387,7 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
             //qDebug() << "Intensity variables: " << intensityVariables;
             //qDebug() << "Flow variables: " << flowVariables;
 
-            foreach(const QString &var, intensityVariables.keys())
+            foreach(const QString &var, flowVariables.keys())
             {
                 rEquations.append(prefix+compName1+"__"+portName1+"__"+var+" = "+
                                  prefix+compName2+"__"+portName2+"__"+var);
@@ -294,7 +395,7 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
                 rLocalVars.insert(prefix+compName1+"__"+portName1+"__"+var, "Real");
                 rLocalVars.insert(prefix+compName2+"__"+portName2+"__"+var, "Real");
             }
-            foreach(const QString &var, flowVariables.keys())
+            foreach(const QString &var, intensityVariables.keys())
             {
                 if(compType1.startsWith("TLM_") || compType2.startsWith("TLM_"))        //No minus sign for flow in connection to TLM component (due to convention)
                 {
@@ -317,7 +418,12 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
             // - remove corresponding Q variables from local variables (added due to connection above)
             if(compType1.startsWith("TLM_"))
             {
-                if(portType1 == "NodeHydraulic")
+                if(portType1 == "NodeSignalIn")
+                {
+                    rLocalVars.insert(prefix+compName1+"__"+portName1, "NodeSignalIn");
+                    rLocalVars.remove(prefix+compName1+"__"+portName1+"__y");
+                }
+                else if(portType1 == "NodeHydraulic")
                 {
                     QString portStr = prefix+compName1+"__"+portName1;
                     rEquations.append(portStr+"__p = "+portStr+"__c+"+portStr+"__q*"+portStr+"__Zc");
@@ -329,7 +435,7 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
                 {
                     QString portStr = prefix+compName1+"__"+portName1;
                     rEquations.append(portStr+"__f = "+portStr+"__c+"+portStr+"__v*"+portStr+"__Zc");
-                    rLocalVars.insert(prefix+compName1+"__"+portName1,"NodeHydraulic");
+                    rLocalVars.insert(prefix+compName1+"__"+portName1,"NodeMechanic");
                     rLocalVars.remove(prefix+compName1+"__"+portName1+"__f");
                     rLocalVars.remove(prefix+compName1+"__"+portName1+"__x");
                     rLocalVars.remove(prefix+compName1+"__"+portName1+"__v");
@@ -337,7 +443,12 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
             }
             if(compType2.startsWith("TLM_"))
             {
-                if(portType2 == "NodeHydraulic")
+                if(portType2 == "NodeSignalIn")
+                {
+                    rLocalVars.insert(prefix+compName2+"__"+portName2, "NodeSignalIn");
+                    rLocalVars.remove(prefix+compName2+"__"+portName2+"__y");
+                }
+                else if(portType2 == "NodeHydraulic")
                 {
                     QString portStr = prefix+compName2+"__"+portName2;
                     rEquations.append(portStr+"__p = "+portStr+"__c+"+portStr+"__q*"+portStr+"__Zc");
@@ -349,7 +460,7 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
                 {
                     QString portStr = prefix+compName2+"__"+portName2;
                     rEquations.append(portStr+"__f = "+portStr+"__c+"+portStr+"__v*"+portStr+"__Zc");
-                    rLocalVars.insert(prefix+compName2+"__"+portName2,"NodeHydraulic");
+                    rLocalVars.insert(prefix+compName2+"__"+portName2,"NodeMechanic");
                     rLocalVars.remove(prefix+compName2+"__"+portName2+"__f");
                     rLocalVars.remove(prefix+compName2+"__"+portName2+"__x");
                     rLocalVars.remove(prefix+compName2+"__"+portName2+"__v");
@@ -361,9 +472,6 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
         }
         else
         {
-            //qDebug() << "Equation: " << equations[i];
-            //if(!equations[i].startsWith(prefix+"."))
-            //    equations[i].prepend(prefix+".");
             SymHop::Expression equation(rEquations[i].remove(";"));
             QList<SymHop::Expression> vars = equation.getVariables();
             for(int v=0; v<vars.size(); ++v)
@@ -377,10 +485,6 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
                 equation.replace(vars[v], SymHop::Expression(var));
             }
             rEquations[i] = equation.toString();
-            //qDebug() << "New equation: " << equations[i];
-
-
-            //equations[i].replace(".", "__");   //Replace dots with underscores, to make variable names C++ compatible
         }
     }
 
@@ -413,14 +517,14 @@ void ModelicaModel::toFlatEquations(QStringList &rEquations, QMap<QString,QStrin
         if(rSubModels.contains(var.getName()))
         {
             ModelicaModel model = gpModelicaLibrary->getModel(var.getType());
-            model.toFlatEquations(rEquations, rLocalVars, prefix+var.getName());
+            model.toFlatEquations(rInitAlgorithms, rPreAlgorithms, rEquations, rLocalVars, prefix+var.getName());
         }
         else
         {
             QString varName = prefix+var.getName();
             varName.replace(".","__");
             QString varType = var.getType();
-            if(!rLocalVars.contains(varName))
+            if(!rLocalVars.contains(varName) && varType != "NodeMechanic" && varType != "NodeHydraulic" && varType != "NodeMechanicRotational" && varType != "NodeSignalIn")
             {
                 rLocalVars.insert(varName, varType);
             }
@@ -485,12 +589,24 @@ void ModelicaConnector::getFlowVariables(QMap<QString, QString> &rVariables)
 //! @brief Constructor
 ModelicaLibrary::ModelicaLibrary()
 {
-    QFile moFile(gpDesktopHandler->getDocumentsPath()+"/Models/modelica.mo");   //Hard-coded for now, should not be like this at all
-    moFile.open(QFile::ReadOnly | QFile::Text);
+    //QFile moFile(gpDesktopHandler->getDocumentsPath()+"/Models/modelica.mo");   //Hard-coded for now, should not be like this at all
+    QFile moFile("/home/robbr48/Documents/Subversion/robbr48/Konferenser/2014/EOOLT2014/models/modelica.mo");   //Hard-coded for now, should not be like this at all
+    if(!moFile.open(QFile::ReadOnly | QFile::Text))
+    {
+        return;
+    }
     QString moCode = moFile.readAll();
     moFile.close();
 
-    QStringList moLines = moCode.split("\n");
+    loadFile(moCode);
+}
+
+
+void ModelicaLibrary::loadFile(const QString &code)
+{
+    //! @todo We must check that the code is ok!
+
+    QStringList moLines = code.split("\n");
     bool inConnector = false;
     bool inModel = false;
     QString temp, name;
@@ -527,55 +643,19 @@ ModelicaLibrary::ModelicaLibrary()
         }
     }
 
-
-
-//    mConnectorsMap.insert("NodeHydraulic", ModelicaConnector("connector NodeHydraulic \"Hydraulic Connector\"\n"
-//                                                             "Real         p \"Pressure\";\n"
-//                                                             "flow Real    q \"Volume flow\"\n"
-//                                                             "end Pin;"));
-
-//    mModelsMap.insert("FlowSource", ModelicaModel("model FlowSource\n"
-//                                                  "    annotation("
-//                                                  "hopsanIcon = \"/home/robbr48/Documents/Subversion/HOPSAN++/componentLibraries/defaultLibrary/Hydraulic/Sources&Sinks/flowsource_user.svg\""
-//                                                  ","
-//                                                  "portPos = \"P1,1,0.5,0\""
-//                                                  ");\n"
-//                                                  "    parameter Real q_ref(unit=\"m^3/s\") = 0.001;\n"
-//                                                  "    NodeHydraulic P1;\n"
-//                                                  "equation\n"
-//                                                  "    P1.q = q_ref;\n"
-//                                                  "end FlowSource;"));
-
-//    mModelsMap.insert("Tank", ModelicaModel("model Tank\n"
-//                                            "    NodeHydraulic P1;\n"
-//                                            "equation\n"
-//                                            "    P1.p = 100000;\n"
-//                                            " end Tank;"));
-
-//    mModelsMap.insert("LaminarOrifice", ModelicaModel("model LaminarOrifice\n"
-//                       "    annotation("
-//                       "hopsanIcon = \"/home/robbr48/Documents/Subversion/HOPSAN++/componentLibraries/defaultLibrary/Hydraulic/Restrictors/laminarorifice_user.svg\""
-//                       ","
-//                       "portPos = \"P1,0,0.5,0\""
-//                       ","
-//                       "portPos = \"P2,1,0.5,0\""
-//                       ");\n"
-//                       "    parameter Real Kc = 1e-11;\n"
-//                       "    NodeHydraulic P1, P2;\n"
-//                       "equation\n"
-//                       "    P2.q = Kc*(P1.p-P2.p);\n"
-//                       "    0 = P1.q + P2.q;\n"
-//                       "end LaminarOrifice;"));
-
-//    mModelsMap.insert("Volume", ModelicaModel("model Volume\n"
-//                      "    parameter Real V(unit=\"m^3\") = 0.001;\n"
-//                      "    parameter Real betae(unit=\"Pa\") = 1e9;\n"
-//                      "    NodeHydraulic P1, P2;\n"
-//                      "equation\n"
-//                      "    -V/betae*der(P1.p) = P1.q+P2.q;\n"
-//                      "    P1.p = P2.p;\n"
-//                      "end Volume;"));
-
+    //Update all existing modelica components
+    for(int m=0; gpModelHandler && m<gpModelHandler->count(); ++m)
+    {
+        SystemContainer *pSystem = gpModelHandler->getModel(m)->getTopLevelSystemContainer();
+        for(int c=0; c<pSystem->getModelObjects().size(); ++c)
+        {
+            ModelObject *pComp = pSystem->getModelObjects().at(c);
+            if(pComp->getTypeName() == "ModelicaComponent")
+            {
+                pComp->setParameterValue("model", pComp->getParameterValue("model"));
+            }
+        }
+    }
 }
 
 QStringList ModelicaLibrary::getModelNames() const

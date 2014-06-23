@@ -90,7 +90,7 @@ public slots:
     void setEditingEnabled(bool value);
     void openAnimation();
     void lockTab(bool locked);
-    void generateModelicaCode();
+    void simulateModelica();
 
 private slots:
     void collectPlotData();

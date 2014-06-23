@@ -2249,7 +2249,7 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
 
                 //If a subsystem's timestep is larger than this sytem's
                 //timestep change it to this system's timestep
-                if ((subTs > mTimestep) || (subTs < -0.0))
+                if (/*(subTs > mTimestep) || */(subTs < -0.0))
                 {
                     subTs = mTimestep;
                 }

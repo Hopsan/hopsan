@@ -453,7 +453,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkRed);
     keywordFormat.setFontWeight(QFont::Bold);
     keywordPatterns.clear();
-    keywordPatterns  << "\\bmodel\\b" << "\\bequation\\b" << "\\balgorithm\\b" << "\\bend\\b" << "\\bannotation\\b";
+    keywordPatterns  << "\\bmodel\\b" << "\\bequation\\b" << "\\balgorithm\\b" << "\\bend\\b" << "\\bannotation\\b" << "\\bconnector\\b";
 
     foreach (const QString &pattern, keywordPatterns)
     {
@@ -494,7 +494,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
 //! @todo Duplicated with HopsanGenerator
 QStringList ModelicaHighlighter::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "nonZero";
 }
 
 void ModelicaHighlighter::highlightBlock(const QString &text)
