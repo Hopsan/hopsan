@@ -27,6 +27,7 @@
 #define AUXILIARYSIMULATIONFUNCTIONS_H
 
 #include "win32dll.h"
+#include <float.h>
 
 namespace hopsan {
 
@@ -256,6 +257,23 @@ inline double greaterThanOrEqual(const double x, const double y)
 {
     if(x>=y) return 1;
     else return 0;
+}
+
+
+//! @brief Prevents a value from becoming exactly equal to zero
+//! @param Value to check
+//! @returns Limited value
+inline double nonZero(const double x)
+{
+    double limit = DBL_MIN*10;
+    if(x > 0.0 && x < limit)
+    {
+        return limit;
+    }
+    else if(x < 0.0 && x > -limit)
+    {
+        return -limit;
+    }
 }
 
 }
