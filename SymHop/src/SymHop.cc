@@ -64,7 +64,7 @@ void hAssert(const bool cond)
 //! "div", "rem", "mod", "tan", "cos", "sin", "atan", "acos", "asin", "atan2",
 //! "sinh", "cosh", "tanh", "log", "exp", "sqrt", "sign", "abs", "der", "onPositive", "onNegative",
 //! "signedSquareL", "limit", "integer", "floor", "ceil", "hopsanLimit", "hopsanDxLimit", "onPositive",
-//! "onNegative", "signedSquareL", "limit"
+//! "onNegative", "signedSquareL", "limit", "nonZero"
 
 
 //! @brief Constructor for Expression class using QString
@@ -527,6 +527,14 @@ void Expression::operator=(const Expression &other)
 }
 
 
+//! @brief Assignment operator for expressions
+//! @param other Expression to assign from
+void Expression::operator=(Expression &other)
+{
+    this->replaceBy(other);
+}
+
+
 //! @brief Combines to expressions to an addition expression
 //! @param term1 First term
 //! @param term2 Second term
@@ -906,10 +914,34 @@ void Expression::replaceBy(const Expression expr)
 {
     mString = expr.mString;
     mFunction = expr.mFunction;
-    mFactors = expr.mFactors;
-    mArguments = expr.mArguments;
-    mDivisors = expr.mDivisors;
-    mTerms = expr.mTerms;
+    mFactors.clear();
+    for(int f=0; f<expr.mFactors.size(); ++f)
+    {
+        Expression temp;
+        temp.replaceBy(expr.mFactors[f]);
+        mFactors.append(temp);
+    }
+    mArguments.clear();
+    for(int a=0; a<expr.mArguments.size(); ++a)
+    {
+        Expression temp;
+        temp.replaceBy(expr.mArguments[a]);
+        mArguments.append(temp);
+    }
+    mDivisors.clear();
+    for(int d=0; d<expr.mDivisors.size(); ++d)
+    {
+        Expression temp;
+        temp.replaceBy(expr.mDivisors[d]);
+        mDivisors.append(temp);
+    }
+    mTerms.clear();
+    for(int t=0; t<expr.mTerms.size(); ++t)
+    {
+        Expression temp;
+        temp.replaceBy(expr.mTerms[t]);
+        mTerms.append(temp);
+    }
     mpBase = 0;
     mpPower = 0;
     mpLeft = 0;
@@ -1327,7 +1359,7 @@ void Expression::changeSign()
     if(this->isNegative())
     {
         mFactors.removeOne(Expression("-1"));
-        if(mFactors.size() == 1)
+        if(mFactors.size() == 1 && mDivisors.isEmpty())
         {
             this->replaceBy(mFactors.first());
         }
@@ -1412,8 +1444,17 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             Expression divisor = fromTwoTerms(funcExpr, Expression(1));
             ret = fromFactorDivisor(factor, divisor);
         }
-        else if(func == "atan" || func == "atan2")
+        else if(func == "atan")
         {
+            Expression divisor = fromTwoTerms(fromTwoFactors(g, g), Expression(1));
+            ret = fromFactorDivisor(dg, divisor);
+        }
+        else if(func == "atan2")
+        {
+            Expression g = fromFactorDivisor(mArguments[0],mArguments[1]);
+            bool success;
+            dg = g.derivative(x, success);
+            if(!success) { return false; }
             Expression divisor = fromTwoTerms(fromTwoFactors(g, g), Expression(1));
             ret = fromFactorDivisor(dg, divisor);
         }
@@ -1480,6 +1521,10 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         else if(func.startsWith("mDelay"))
         {
             ret = Expression(0);
+        }
+        else if(func.startsWith("nonZero"))
+        {
+            ret = dg;
         }
         else if(func == "pow")
         {
@@ -2573,6 +2618,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
 
         if(removedFactorOrDivisor && mFactors.isEmpty() && mDivisors.isEmpty()) { replaceBy(Expression(1)); }
+        else if(removedFactorOrDivisor && mFactors.isEmpty()) { mFactors.append(Expression(1)); }
 
         //Join multiple factors to powers
         restart2:
@@ -2601,6 +2647,11 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
                 goto restart3;
             }
         }
+    }
+
+    if(mFactors.isEmpty() && !mDivisors.isEmpty())
+    {
+        mFactors.append(Expression(1));
     }
 }
 
@@ -3120,7 +3171,7 @@ QString SymHop::getFunctionDerivative(const QString &key)
 //FIXED
 QStringList SymHop::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero";
 }
 
 
@@ -3128,7 +3179,7 @@ QStringList SymHop::getSupportedFunctionsList()
 //FIXED
 QStringList SymHop::getCustomFunctionList()
 {
-    return QStringList() << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit";
+    return QStringList() << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "nonZero";
 }
 
 

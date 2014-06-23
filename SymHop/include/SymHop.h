@@ -66,7 +66,8 @@ public:
     void commonConstructorCode(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification);
 
     bool operator==(const Expression &other) const;
-    void operator=( const Expression &other);
+    void operator=(const Expression &other);
+    void operator=(Expression &other);
 
     static Expression fromTwoTerms(const Expression term1, const Expression term2);
     static Expression fromTerms(const QList<Expression> terms);
