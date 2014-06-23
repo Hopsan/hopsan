@@ -16,7 +16,7 @@
 //!
 //! @file   Signal1DLookUpTable.hpp
 //! @author Peter Nordin <peter.nordin@liue.se>
-//! @date   2010-11-03
+//! @date   2014-06-19
 //!
 //! @brief Contains a one dimensional lookup table
 //!

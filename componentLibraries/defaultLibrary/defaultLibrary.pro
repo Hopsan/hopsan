@@ -315,7 +315,8 @@ HEADERS += \
     Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \
     Experimental/Signal1DLookupTable.hpp \
     Experimental/Signal2DLookupTable.hpp \
-    Experimental/Experimental.h
+    Experimental/Experimental.h \
+    Experimental/Signal3DLookupTable.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

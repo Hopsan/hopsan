@@ -51,11 +51,11 @@ function checkCodeFiles()
     done
 }
 
-function checkScriptFiles()
+function checkExecScriptFiles()
 {
     for fpat in "$@"; do
         while IFS= read -r -d $'\0' file; do
-            #echo "Checking Script file: $file"
+            #echo "Checking Executable Script file: $file"
             checkExactSvnProperty "$file" "svn:eol-style" "native"
             checkExactSvnProperty "$file" "svn:keywords" "Id"
             checkExactSvnProperty "$file" "svn:executable" "*"
@@ -72,7 +72,7 @@ if [ "$2" == "set" ]; then
 fi
 
 checkEOLStyleFiles "*.hmf" "*.xml" "*.txt" "*.pro" "*.pri" "*.prf" "*.dox"
-checkCodeFiles "*.cc" "*.cpp" "*.cci" "*.h" "*.hpp" "*.hcom" "*.py"
-checkScriptFiles "*.bat" "*.sh"
+checkCodeFiles "*.cc" "*.cpp" "*.cci" "*.h" "*.hpp" "*.hcom" "*.py" "*.m" "*.bat"
+checkExecScriptFiles "*.sh"
 
 echo "Done!"

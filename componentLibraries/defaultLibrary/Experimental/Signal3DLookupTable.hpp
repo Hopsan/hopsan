@@ -14,16 +14,16 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Signal2DLookUpTable.hpp
+//! @file   Signal3DLookUpTable.hpp
 //! @author Peter Nordin <peter.nordin@liue.se>
-//! @date   2014-06-19
+//! @date   2014-06-23
 //!
-//! @brief Contains a two dimensional lookup table
+//! @brief Contains a three dimensional lookup table
 //!
 //$Id$
 
-#ifndef SIGNAL2DLOOKUPTABLE_HPP_INCLUDED
-#define SIGNAL2DLOOKUPTABLE_HPP_INCLUDED
+#ifndef SIGNAL3DLOOKUPTABLE_HPP_INCLUDED
+#define SIGNAL3DLOOKUPTABLE_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
@@ -36,27 +36,28 @@ namespace hopsan {
     //!
     //! @ingroup SignalComponents
     //!
-    class Signal2DLookupTable : public ComponentSignal
+    class Signal3DLookupTable : public ComponentSignal
     {
 
     private:
-        double *mpInRow, *mpInCol, *mpOut;
+        double *mpInRow, *mpInCol, *mpInPlane, *mpOut;
 
         bool mReloadCSV;
         HString mDataCurveFileName;
         CSVParserNG mDataFile;
-        LookupTableND<2> mLookupTable;
+        LookupTableND<3> mLookupTable;
 
     public:
         static Component *Creator()
         {
-            return new Signal2DLookupTable();
+            return new Signal3DLookupTable();
         }
 
         void configure()
         {
             addInputVariable("row", "", "", 0.0, &mpInRow);
             addInputVariable("col", "", "", 0.0, &mpInCol);
+            addInputVariable("plane", "", "", 0.0, &mpInPlane);
             addOutputVariable("out", "", "", &mpOut);
 
             addConstant("filename", "Data file (absolute or relativ to model path)", "", "FilePath", mDataCurveFileName);
@@ -85,9 +86,9 @@ namespace hopsan {
                 {
                     // Make sure that selected data vector is in range
                     const int nDataCols = mDataFile.getNumDataCols();
-                    if ( nDataCols != 3 )
+                    if ( nDataCols != 4 )
                     {
-                        addErrorMessage(HString("Wrong number of data columns: ")+to_hstring(nDataCols)+" != 3");
+                        addErrorMessage(HString("Wrong number of data columns: ")+to_hstring(nDataCols)+" != 4");
                         stopSimulation();
                         return;
                     }
@@ -103,27 +104,33 @@ namespace hopsan {
 
                     size_t nRows = rowscols[0];
                     size_t nCols = rowscols[1];
+                    size_t nPlanes = rowscols[2];
 
                     // Copy row and column index vectors (ignoring the final row with nRows and nCols)
-                    mDataFile.copyEveryNthFromColumn(0, nCols, mLookupTable.getIndexDataRef(0));
-                    mDataFile.copyRangeFromColumn(1, 0, nCols, mLookupTable.getIndexDataRef(1));
+                    mDataFile.copyEveryNthFromColumn(0, nCols*nPlanes, mLookupTable.getIndexDataRef(0));
+                    mDataFile.copyEveryNthFromColumnRange(1, 0, nCols*nPlanes, nPlanes, mLookupTable.getIndexDataRef(1));
+                    mDataFile.copyRangeFromColumn(2, 0, nPlanes, mLookupTable.getIndexDataRef(2));
 
-                    // Remove "extra element (num rows)" from row index column, cols not needed since we did not even fetch all values
+                    // Remove "extra element (num rows)" from row index column, cols and planes not needed since we did not fetch all values
                     if (mLookupTable.getDimSize(0) == nRows+1)
                     {
                         mLookupTable.getIndexDataRef(0).pop_back();
                     }
 
                     // Copy values
-                    mDataFile.copyRangeFromColumn(2, 0, mDataFile.getNumDataRows()-1, mLookupTable.getValueDataRef());
+                    mDataFile.copyRangeFromColumn(3, 0, mDataFile.getNumDataRows()-1, mLookupTable.getValueDataRef());
 
                     // Make sure the correct number of rows and columns are available
-                    if ( (nRows != mLookupTable.getDimSize(0)) || (nCols != mLookupTable.getDimSize(1)) )
+                    if ( (nRows != mLookupTable.getDimSize(0)) ||
+                         (nCols != mLookupTable.getDimSize(1)) ||
+                         (nPlanes != mLookupTable.getDimSize(2)))
                     {
                         addErrorMessage(HString("Wrong number of rows: "+to_hstring(mLookupTable.getDimSize(0))+
                                                 " "+to_hstring(mLookupTable.getDimSize(1))+
+                                                " "+to_hstring(mLookupTable.getDimSize(2))+
                                                 " Should have been: "+to_hstring(nRows)+
-                                                " "+to_hstring(nCols)));
+                                                " "+to_hstring(nCols)+
+                                                " "+to_hstring(nPlanes)));
                         stopSimulation();
                         return;
                     }
@@ -157,7 +164,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpOut) = mLookupTable.interpolate(*mpInRow, *mpInCol);
+            (*mpOut) = mLookupTable.interpolate(*mpInRow, *mpInCol, *mpInPlane);
         }
 
         bool isExperimental() const

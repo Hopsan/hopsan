@@ -317,7 +317,7 @@ public:
     }
 
     //! @note Assumes that x is within index range
-    size_t findIndexAlongDim(const double x, const size_t dim) const
+    size_t findIndexAlongDim(const size_t dim, const double x) const
     {
         return intervalHalfSubDiv(x, 0, mIndexData[dim].size()-1, dim);
     }
@@ -537,7 +537,7 @@ public:
         // Handle in range
         {
             const std::vector<double> &rIndexData = mIndexData[0];
-            const size_t idx = findIndexAlongDim(x, 0);
+            const size_t idx = findIndexAlongDim(0, x);
 
             // Note, assumes that index data is strictly increasing (two values can not be the same). That will lead to division by zero here
             return mValueData[idx] + (x - rIndexData[idx])*(mValueData[idx+1] -  mValueData[idx])/(rIndexData[idx+1] -  rIndexData[idx]);
@@ -560,9 +560,9 @@ public:
         r = limitToRange(0, r);
         c = limitToRange(1, c);
 
-        const size_t tl_r = findIndexAlongDim(r, 0);
+        const size_t tl_r = findIndexAlongDim(0, r);
         const size_t tr_r = tl_r;
-        const size_t tl_c = findIndexAlongDim(c, 1);
+        const size_t tl_c = findIndexAlongDim(1, c);
         const size_t bl_c = tl_c;
 
         const size_t tr_c = tl_c+1;
@@ -584,57 +584,57 @@ public:
 };
 
 
-//template<typename T>
-//class LookupTableND<T,3>
-//{
-//public:
+template<>
+class LookupTableND<3> : public LookupTableNDBase<3>
+{
+public:
+    inline size_t calcDataIndex(const size_t r, const size_t c, const size_t p) const
+    {
+        return r*LookupTableND<3>::mNumSubDimDataElements[0] + c*LookupTableND<3>::mNumSubDimDataElements[1] + p;
+    }
 
-//};
+    double interpolate(double r, double c, double p) const
+    {
+        // Handle outside index range
+        r = limitToRange(0, r);
+        c = limitToRange(1, c);
+        p = limitToRange(2, p);
 
+        // Find planes, lower an higher
+        const size_t pl = findIndexAlongDim(2, p);
 
-//class LookupTable1DNonTemplate
-//{
-//public:
-//    enum IncreasingEnumT {StrictlyIncreasing, StrictlyDecreasing, NotStrictlyIncOrDec, Unknown};
+        // Now do 2d interpolation in each plane
+        const size_t tl_r = findIndexAlongDim(0, r);
+        const size_t tl_c = findIndexAlongDim(1, c);
+        const double vpl = interp2d(tl_r, tl_c, pl, r, c);
+        const double vph = interp2d(tl_r, tl_c, pl+1, r, c);
 
-//    LookupTable1DNonTemplate();
-//    void clear();
+        // Return the 1d interpolation between the planes
+        return interp1(p, mIndexData[2][pl], mIndexData[2][pl+1], vpl, vph);
+    }
 
-//    std::vector<double> &getIndexDataRef();
-//    std::vector<double> &getValueDataRef();
+private:
+    double interp2d(const size_t tl_r, const size_t tl_c, const size_t plane, const double r, const double c) const
+    {
+        const size_t tr_r = tl_r;
+        const size_t bl_c = tl_c;
+        const size_t tr_c = tl_c+1;
+        const size_t br_c = tr_c;
+        const size_t bl_r = tl_r+1;
+        const size_t br_r = bl_r;
 
-//    bool isDataOK();
+        const double tl_v = mValueData[calcDataIndex(tl_r, tl_c, plane)];
+        const double tr_v = mValueData[calcDataIndex(tr_r, tr_c, plane)];
+        const double bl_v = mValueData[calcDataIndex(bl_r, bl_c, plane)];
+        const double br_v = mValueData[calcDataIndex(br_r, br_c, plane)];
 
-//    IncreasingEnumT isIndexIncreasingOrDecresing() const;
-//    IncreasingEnumT calcIncreasingOrDecreasing();
-//    void sortIncreasing();
+        // Note, interp1 assumes that index data is strictly increasing (two values can not be the same). That will lead to division by zero here
+        const double val_l = interp1(r, mIndexData[0][tl_r], mIndexData[0][bl_r], tl_v, bl_v);
+        const double val_r = interp1(r, mIndexData[0][tr_r], mIndexData[0][br_r], tr_v, br_v);
 
-//    double interpolate(const double x) const;
+        return interp1(c, mIndexData[1][tl_c], mIndexData[1][tr_c], val_l, val_r);
+    }
 
-//protected:
-//    size_t intervalHalfSubDiv(const double x, const size_t i1, const size_t iend) const;
-//    size_t quickSortPartition(const std::vector<double> &rIndexArray, const size_t left, const size_t right, const size_t pivotIndex);
-//    void quickSort(const std::vector<double> &rIndexArray, const size_t left, const size_t right);
-//    void swapRows(const size_t r1, const size_t r2);
-//    void reverseRows();
-
-//    std::vector<double> mIndexData;
-//    std::vector<double> mValueData;
-//    double mFirstIndex, mFirstValue, mLastIndex, mLastValue;
-//    IncreasingEnumT mIndexIncreasingOrDecreasing;
-//};
-
-//class LookupTable2DNonTemplate : public LookupTable1DNonTemplate
-//{
-//public:
-//    LookupTable2DNonTemplate();
-
-//    double interpolate2D(const double x1, const double x2) const;
-
-//};
-
-
-
-
+};
 
 #endif // LOOKUPTABLE_H

@@ -100,6 +100,7 @@ public:
     bool copyColumn(const size_t columnIdx, std::vector<double> &rColumn);
     bool copyRangeFromColumn(const size_t columnIdx, const size_t startRow, const size_t numRows, std::vector<double> &rColumn);
     bool copyEveryNthFromColumn(const size_t columnIdx, const size_t stepSize, std::vector<double> &rColumn);
+    bool copyEveryNthFromColumnRange(const size_t columnIdx, const size_t startRow, const size_t numRows, const size_t stepSize, std::vector<double> &rColumn);
 
 protected:
     std::vector<HString> mData;

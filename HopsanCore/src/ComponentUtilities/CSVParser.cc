@@ -849,12 +849,17 @@ bool CSVParserNG::copyRangeFromColumn(const size_t columnIdx, const size_t start
 
 bool CSVParserNG::copyEveryNthFromColumn(const size_t columnIdx, const size_t stepSize, std::vector<double> &rColumn)
 {
+    return copyEveryNthFromColumnRange(columnIdx, 0, mNumDataRows, stepSize, rColumn);
+}
+
+bool CSVParserNG::copyEveryNthFromColumnRange(const size_t columnIdx, const size_t startRow, const size_t numRows, const size_t stepSize, std::vector<double> &rColumn)
+{
     bool status=true;
     rColumn.clear();
     if (columnIdx < mNumDataCols)
     {
-        rColumn.reserve(mNumDataRows/stepSize);
-        for (size_t r=0; r<mNumDataRows; r+=stepSize)
+        rColumn.reserve(numRows/stepSize);
+        for (size_t r=startRow; r<numRows; r+=stepSize)
         {
             // Extract a field string from row
             HString &str = mData[r*mNumDataCols+columnIdx];
@@ -873,5 +878,4 @@ bool CSVParserNG::copyEveryNthFromColumn(const size_t columnIdx, const size_t st
         mErrorString = "columnIdx out of range";
         status = false;
     }
-    return status;
 }

@@ -2,11 +2,32 @@
 #include <QVector>
 #include <QPointF>
 #include <QtTest>
+#include <QTextStream>
 
 
 #include "ComponentUtilities/LookupTable.h"
 
+const QString relpath = "../UnitTests/HopsanCoreTests/LookupTableTest/";
+
+class Point3DF
+{
+public:
+    Point3DF()
+    {
+        r=0; c=0; p=0;
+    }
+
+    Point3DF(double x, double y, double z)
+    {
+        r = x; c = y; p = z;
+    }
+    double r;
+    double c;
+    double p;
+};
+
 Q_DECLARE_METATYPE(QVector<double>);
+Q_DECLARE_METATYPE(Point3DF);
 
 inline double fc(const double a, const double b, const double eps=1e-9)
 {
@@ -63,6 +84,8 @@ private Q_SLOTS:
     void lookup1D_data();
     void lookup2D();
     void lookup2D_data();
+    void lookup3D();
+    void lookup3D_data();
 };
 
 LookupTableTest::LookupTableTest()
@@ -117,6 +140,7 @@ void LookupTableTest::lookup2D()
     QFETCH(QVector<double>, colIndexData);
     QFETCH(QVector<double>, valueData);
     QFETCH(bool, shouldBeOK);
+    QFETCH(double, eps);
     QFETCH(QPointF, in);
     QFETCH(double, out);
 
@@ -141,7 +165,53 @@ void LookupTableTest::lookup2D()
         if (dataIsOk)
         {
             const double val = lookup2d.interpolate(in.x(), in.y());
-            QVERIFY2(fc(val, out), QString("Interpolate returned the wrong result: %1!=%2").arg(val).arg(out).toLatin1());
+            QVERIFY2(fc(val, out, eps), QString("Interpolate returned the wrong result: %1!=%2").arg(val).arg(out).toLatin1());
+        }
+        else
+        {
+            QVERIFY2(dataIsOk, "Failed: Data is NOT OK");
+        }
+    }
+    else
+    {
+        QVERIFY2(!dataIsOk, "isValid() should have failed but did not!");
+    }
+}
+
+void LookupTableTest::lookup3D()
+{
+    QFETCH(QVector<double>, rowIndexData);
+    QFETCH(QVector<double>, colIndexData);
+    QFETCH(QVector<double>, planeIndexData);
+    QFETCH(QVector<double>, valueData);
+    QFETCH(bool, shouldBeOK);
+    QFETCH(double, eps);
+    QFETCH(Point3DF, in);
+    QFETCH(double, out);
+
+    LookupTableND<3> lookup3d;
+
+    // Set the index and value vectors
+    lookup3d.getIndexDataRef(0) = rowIndexData.toStdVector();
+    lookup3d.getIndexDataRef(1) = colIndexData.toStdVector();
+    lookup3d.getIndexDataRef(2) = planeIndexData.toStdVector();
+    lookup3d.getValueDataRef() = valueData.toStdVector();
+
+    // Check if data is OK, try sort if not
+    bool dataIsOk = lookup3d.isDataOK();
+    if (!dataIsOk)
+    {
+        lookup3d.sortIncreasing();
+    }
+    dataIsOk = lookup3d.isDataOK();
+
+    // Lookup values and check results
+    if (shouldBeOK)
+    {
+        if (dataIsOk)
+        {
+            const double val = lookup3d.interpolate(in.r, in.c, in.p);
+            QVERIFY2(fc(val, out, eps), QString("Interpolate returned the wrong result: %1!=%2, diff:%3").arg(val).arg(out).arg(val-out).toLatin1());
         }
         else
         {
@@ -225,6 +295,7 @@ void LookupTableTest::lookup2D_data()
     QTest::addColumn< QVector<double> >("colIndexData");
     QTest::addColumn< QVector<double> >("valueData");
     QTest::addColumn< bool >("shouldBeOK");
+    QTest::addColumn< double >("eps");
     QTest::addColumn< QPointF >("in");
     QTest::addColumn< double >("out");
 
@@ -242,20 +313,139 @@ void LookupTableTest::lookup2D_data()
     }
 
     // Lookup exact values
-    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << QPointF(0,0) << 0.0;
-    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << QPointF(1,1) << 0.0;
-    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << QPointF(2,2) << 6.0;
-    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << QPointF(3,5) << 14.0;
-    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << QPointF(5,5) << 24.0;
-    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << QPointF(6,8) << 24.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(0,0) << 0.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(1,1) << 0.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(2,2) << 6.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(3,5) << 14.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(5,5) << 24.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(6,8) << 24.0;
 
     // Lookup interpolated values
-    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << QPointF(2.5,2.5) << 9.0;
-    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << QPointF(2.5,3.8) << 10.3;
-    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << QPointF(4.67789,1.8345) << 19.22395;
-    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << QPointF(4.9,5.0) << 23.5;
-    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << QPointF(4.9,6.0) << 23.5;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(2.5,2.5) << 9.0;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(2.5,3.8) << 10.3;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(4.67789,1.8345) << 19.22395;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(4.9,5.0) << 23.5;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(4.9,6.0) << 23.5;
 
+    // ========== Read testdata from file ==========
+    QStringList files;
+    files << "2DTestData0_UT.dat" << "2DTestData1_UT.dat";
+    foreach (QString filename, files)
+    {
+        QFile file(relpath+filename);
+        file.open(QIODevice::ReadOnly);
+        QTextStream testData(&file);
+        rowIndexVec.clear(); colIndexVec.clear(); valueVec.clear();
+        QStringList rows = testData.readLine().split(' ', QString::SkipEmptyParts);
+        QStringList cols = testData.readLine().split(' ', QString::SkipEmptyParts);
+        QStringList datas = testData.readLine().split(' ', QString::SkipEmptyParts);
+        for (int r=0; r<rows.size(); ++r)
+        {
+            rowIndexVec << rows[r].toDouble();
+        }
+        for (int c=0; c<cols.size(); ++c)
+        {
+            colIndexVec << cols[c].toDouble();
+        }
+        for (int d=0; d<datas.size(); ++d)
+        {
+            valueVec << datas[d].toDouble();
+        }
+
+        // read test points and expected value
+        ctr=0;
+        while (!testData.atEnd())
+        {
+            QStringList line = testData.readLine().split(' ', QString::SkipEmptyParts);
+            QTest::newRow((filename+QString("_%1").arg(ctr)).toLatin1()) << rowIndexVec << colIndexVec << valueVec << true << 1e-6 << QPointF(line[0].toDouble(),line[1].toDouble()) << line[2].toDouble();
+            ++ctr;
+        }
+        file.close();
+    }
+}
+
+void LookupTableTest::lookup3D_data()
+{
+    QTest::addColumn< QVector<double> >("rowIndexData");
+    QTest::addColumn< QVector<double> >("colIndexData");
+    QTest::addColumn< QVector<double> >("planeIndexData");
+    QTest::addColumn< QVector<double> >("valueData");
+    QTest::addColumn< bool >("shouldBeOK");
+    QTest::addColumn< double >("eps");
+    QTest::addColumn< Point3DF >("in");
+    QTest::addColumn< double >("out");
+
+    QVector<double> rowIndexVec, colIndexVec, planeIndexVec, valueVec;
+    rowIndexVec << 1 << 2 << 3;
+    colIndexVec << 1 << 2 << 3 << 4;
+    planeIndexVec << 1 << 2;
+    double ctr=-8;
+    for (int ri=0; ri<rowIndexVec.size(); ++ri)
+    {
+        for (int ci=0; ci<colIndexVec.size(); ++ci)
+        {
+            for (int pi=0; pi<planeIndexVec.size(); ++pi)
+            {
+                valueVec << ctr;
+                ++ctr;
+            }
+        }
+    }
+
+    // Lookup exact values
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(1,1,1) << -8.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(1,1,2) << -7.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(1,4,2) << -1.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(2,1,1) << 0.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(3,2,1) << 10.0;
+    QTest::newRow("test1") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(3,4,2) << 15.0;
+
+    // Out of range values
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(0,0,0) << -8.0;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(0,0,2) << -7.0;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(1,4,3) << -1.0;
+    QTest::newRow("test2") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(3,4,3) << 15.0;
+
+    // ========== Read testdata from file ==========
+    QStringList files;
+    files << "3DTestData0_UT.dat" << "3DTestData1_UT.dat";
+    foreach (QString filename, files)
+    {
+        QFile file(relpath+filename);
+        file.open(QIODevice::ReadOnly);
+        QTextStream testData(&file);
+        rowIndexVec.clear(); colIndexVec.clear(); planeIndexVec.clear(); valueVec.clear();
+        QStringList rows = testData.readLine().split(' ', QString::SkipEmptyParts);
+        QStringList cols = testData.readLine().split(' ', QString::SkipEmptyParts);
+        QStringList planes = testData.readLine().split(' ', QString::SkipEmptyParts);
+        QStringList datas = testData.readLine().split(' ', QString::SkipEmptyParts);
+        for (int r=0; r<rows.size(); ++r)
+        {
+            rowIndexVec << rows[r].toDouble();
+        }
+        for (int c=0; c<cols.size(); ++c)
+        {
+            colIndexVec << cols[c].toDouble();
+        }
+        for (int p=0; p<planes.size(); ++p)
+        {
+            planeIndexVec << planes[p].toDouble();
+        }
+        for (int d=0; d<datas.size(); ++d)
+        {
+            valueVec << datas[d].toDouble();
+        }
+
+        // read test points and expected value
+        ctr=0;
+        while (!testData.atEnd())
+        {
+            QStringList line = testData.readLine().split(' ', QString::SkipEmptyParts);
+            QTest::newRow((filename+QString("_%1").arg(ctr)).toLatin1()) << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-5 << Point3DF(line[0].toDouble(),line[1].toDouble(),line[2].toDouble()) << line[3].toDouble();
+            ++ctr;
+        }
+        file.close();
+    }
 
 
 }
