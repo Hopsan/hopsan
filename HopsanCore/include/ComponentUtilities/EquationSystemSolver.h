@@ -62,7 +62,7 @@ class DLLIMPORTEXPORT NumericalIntegrationSolver
 public:
     typedef double (NumericalIntegrationSolver::*callback_function)(int);
 
-    NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars);
+    NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars, double tolerance=1e-6, size_t maxIter=1000);
     static const std::vector<HString> getAvailableSolverTypes();
 
     void solve(int solver);
@@ -81,6 +81,10 @@ private:
     double mTimeStep;
     std::vector<double> *mpStateVars;
     int mnStateVars;
+
+    //Implicit methods members
+    double mTolerance;
+    size_t mMaxIter;
 };
 
 

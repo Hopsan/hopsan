@@ -31,6 +31,7 @@
 #include <cstring>
 #include <stdlib.h>
 #include <math.h>
+#include <sstream>
 
 using namespace hopsan;
 
@@ -162,12 +163,14 @@ void EquationSystemSolver::solve()
 
 
 
-NumericalIntegrationSolver::NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars)
+NumericalIntegrationSolver::NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars, double tolerance, size_t maxIter)
 {
     mpParentComponent = pParentComponent;
     mTimeStep = mpParentComponent->getTimestep();
     mpStateVars = pStateVars;
     mnStateVars = pStateVars->size();
+    mTolerance = tolerance;
+    mMaxIter = maxIter;
 }
 
 
@@ -273,7 +276,9 @@ void NumericalIntegrationSolver::solveBackwardEuler()
     mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
 
-    for(int i=0; i<1000; ++i)
+    bool doBreak;
+    int i;
+    for(i=0; i<mMaxIter; ++i)
     {
         (*mpStateVars) = y0;
         for(int j=0; j<mnStateVars; ++j)
@@ -283,10 +288,10 @@ void NumericalIntegrationSolver::solveBackwardEuler()
         mpParentComponent->reInitializeValuesFromNodes();
         mpParentComponent->solveSystem();
 
-        bool doBreak = true;
+        doBreak = true;
         for(int j=0; j<mnStateVars; ++j)
         {
-            if(fabs( fabs(y1[j]-y0[j])/y0[j] ) > 1e-6)
+            if(fabs( fabs(y1[j]-y0[j])/y0[j] ) > mTolerance)
             {
                 doBreak = false;
             }
@@ -295,6 +300,12 @@ void NumericalIntegrationSolver::solveBackwardEuler()
         if(doBreak) break;
 
         y0 = y1;
+    }
+    if(!doBreak)
+    {
+        std::stringstream ss;
+        ss << "Backward Euler solver failed to converge after " << i << " iterations.";
+        mpParentComponent->addWarningMessage(ss.str().c_str());
     }
 
     (*mpStateVars) = y1;
