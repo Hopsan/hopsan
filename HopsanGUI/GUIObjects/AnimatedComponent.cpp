@@ -564,9 +564,10 @@ void AnimatedIcon::loadFromDomElement(QDomElement domElement)
     // Nothing
 }
 
-void AnimatedIcon::saveToDomElement(QDomElement &rDomElement)
+void AnimatedIcon::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
     Q_UNUSED(rDomElement)
+    Q_UNUSED(contents)
     // Nothing
 }
 

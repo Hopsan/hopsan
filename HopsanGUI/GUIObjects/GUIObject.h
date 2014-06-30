@@ -54,7 +54,7 @@ public:
 
     // Load and save methods
     virtual void loadFromDomElement(QDomElement domElement) = 0;
-    virtual void saveToDomElement(QDomElement &rDomElement) = 0;
+    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel) = 0;
 
     // Other methods
     bool isFlipped();

@@ -81,7 +81,7 @@ public:
     virtual QString getHmfTagName() const;
 
     // Save and load
-    void saveToDomElement(QDomElement &rDomElement);
+    void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
     void loadFromDomElement(QDomElement domElement);
 
     void setText(QString text);

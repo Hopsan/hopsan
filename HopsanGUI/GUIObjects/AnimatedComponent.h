@@ -94,7 +94,7 @@ public:
     AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
 
     virtual void loadFromDomElement(QDomElement domElement);
-    virtual void saveToDomElement(QDomElement &rDomElement);
+    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
 
     AnimatedComponent *mpAnimatedComponent;
     int mIdx;

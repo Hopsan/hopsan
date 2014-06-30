@@ -185,8 +185,10 @@ QString TextBoxWidget::getHmfTagName() const
 }
 
 
-void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
+void TextBoxWidget::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
+    Q_UNUSED(contents);
+
     QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
 
     //Save GUI realted stuff

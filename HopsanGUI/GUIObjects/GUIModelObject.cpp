@@ -896,18 +896,13 @@ bool ModelObject::getCustomParameterUnitScale(QString name, UnitScale &rUs)
     return false;
 }
 
-void ModelObject::saveToDomElement(QDomElement &rDomElement)
-{
-    QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
-    saveCoreDataToDomElement(xmlObject);
-    saveGuiDataToDomElement(xmlObject);
-}
-
 void ModelObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
     if (contents == FullModel)
     {
-        saveToDomElement(rDomElement);
+        QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
+        saveCoreDataToDomElement(xmlObject);
+        saveGuiDataToDomElement(xmlObject);
     }
     else
     {
