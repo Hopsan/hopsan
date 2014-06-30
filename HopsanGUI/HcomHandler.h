@@ -129,6 +129,7 @@ private:
     void executeChangeLogarithmicAxisYR(const QString cmd);
     void executeChangePlotScaleCommand(const QString cmd);
     void executeDisplayPlotScaleCommand(const QString cmd);
+    void executeSavePlotCommand(const QString cmd);
 
     void executeDisplayVariablesCommand(const QString cmd);
     void executeRemoveVariableCommand(const QString cmd);

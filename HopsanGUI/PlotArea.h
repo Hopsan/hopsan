@@ -82,6 +82,10 @@ public slots:
     void replot();
 signals:
     void afterReplot();
+    void sizeChanged(int width, int height);
+
+protected:
+     virtual void resizeEvent( QResizeEvent *e );
 };
 
 class TimeOrFrequencyScaleWidget : public QWidget
@@ -143,7 +147,7 @@ public:
     QList<PlotCurve*> &getCurves();
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
-    QwtPlot *getQwtPlot();
+    HopQwtPlot *getQwtPlot();
 
     const QStringList &getModelPaths() const;
 

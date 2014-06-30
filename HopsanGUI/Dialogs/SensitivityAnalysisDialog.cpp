@@ -41,6 +41,7 @@
 #include "ModelHandler.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
+#include "PlotArea.h"
 #include "PlotCurve.h"
 #include "MessageHandler.h"
 
@@ -648,7 +649,7 @@ void SensitivityAnalysisDialog::run()
         pCurve->setPen(QColor(0,0,255,150), 1.0);
         pCurve->setBrush(QColor(0,0,255,150));
 
-        pCurve->attach(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getQwtPlot());
+        pCurve->attach(static_cast<QwtPlot*>(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getQwtPlot()));
 //        pPlotWindow->getCurrentPlotTab()->toggleAxisLock();
 //        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::yLeft, totalMin, totalMax);
 //        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::xBottom, time.first(), time.last());

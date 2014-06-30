@@ -419,6 +419,26 @@ void HcomHandler::createCommands()
     logyr.group = "Plot Commands";
     mCmdList << logyr;
 
+    HcomCommand sapw;
+    sapw.cmd = "sapw";
+    sapw.description.append("Save the current plotwinow as an image");
+    sapw.help.append(" Usage: sapw fileName.ext width height dimUnit dpi \n");
+    sapw.help.append("        Where: ext:     png\n");
+    sapw.help.append("                        pdf\n");
+    sapw.help.append("                        svg\n");
+    sapw.help.append("                        ps\n");
+    sapw.help.append("                        jpeg\n");
+    sapw.help.append("        Where: dimUnit: px\n");
+    sapw.help.append("                        mm\n");
+    sapw.help.append("                        cm\n");
+    sapw.help.append("                        in\n");
+    sapw.help.append(" 'width & height', 'dimUnit', 'dpi' arguments are optional\n");
+    sapw.help.append(" 'dpi' (actually pixels/inch) is not used for vector formats or when size is given in dimunit pixels\n");
+    sapw.help.append(" If Only the filename.ext argument is given, on-screen resolution will be used\n");
+    sapw.fnc = &HcomHandler::executeSavePlotCommand;
+    sapw.group = "Plot Commands";
+    mCmdList << sapw;
+
     HcomCommand infoCmd;
     infoCmd.cmd = "info";
     infoCmd.description.append("Show info about a variable");
@@ -2397,6 +2417,61 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
     }
 
     return;
+}
+
+void HcomHandler::executeSavePlotCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    if (args.size() > 0)
+    {
+        QString dpi;
+        QString dim = "px";
+        QString filename = args.front();
+        QString ext = extractFilenameExtension(filename);
+
+        // Read dpi argument if spcified
+        if (args.size() > 4)
+        {
+            dpi = args[4];
+        }
+
+        // Read dim unit argument if speecified
+        if (args.size() > 3)
+        {
+            dim = args[3];
+        }
+
+        QString width, height;
+        // If both width and height specified then use both
+        if (args.size() > 2)
+        {
+            width = args[1];
+            height = args[2];
+        }
+        else if (args.size() == 2)
+        {
+            HCOMERR("You must specify both width and height");
+            return;
+        }
+
+        if (mpCurrentPlotWindow && mpCurrentPlotWindow->getCurrentPlotTab())
+        {
+            if (width.isEmpty() && mpCurrentPlotWindow->getCurrentPlotTab()->getQwtPlot(0))
+            {
+                width = QString("%1").arg(mpCurrentPlotWindow->getCurrentPlotTab()->getQwtPlot(0)->width());
+                height = QString("%1").arg(mpCurrentPlotWindow->getCurrentPlotTab()->getQwtPlot(0)->height());
+            }
+            mpCurrentPlotWindow->getCurrentPlotTab()->exportAsImage(filename, ext, width, height, dim, dpi);
+        }
+        else
+        {
+            HCOMERR("No current plotwindow to plot");
+        }
+    }
+    else
+    {
+        HCOMERR("At least one argumetn rewquired (filename)");
+    }
 }
 
 void HcomHandler::executeDisableLoggingCommand(const QString cmd)

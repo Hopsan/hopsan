@@ -48,10 +48,75 @@ class PlotCurve;
 class PlotMarker;
 class PlotLegend;
 class PlotArea;
-class QwtPlot;
+class HopQwtPlot;
 namespace QSint{
 class BarChartPlotter;
 }
+
+
+
+class PlotGraphicsExporter : public QObject
+{
+    Q_OBJECT
+
+public:
+    PlotGraphicsExporter();
+    void openExportDialog();
+    QString selectExportFilename();
+
+    bool supportsImageFormat(QString format);
+
+    QString imageFormat() const;
+    QString imageFilename() const;
+    double dpi() const;
+
+    void setImageFilename(const QString &rFilename);
+    void setImageFormat(QString suffix);
+    void setImageSize(QString dimension, QString width, QString height);
+    void setImageSize(QString dimension, double width, double height);
+    void setImageDPI(QString dpi);
+    void setImageDPI(double dpi);
+
+    QSizeF calcSizeMM() const;
+
+public slots:
+    void setScreenSize(int width, int height);
+
+signals:
+    void exportImage();
+
+protected:
+    QPointer<QDialog> mpDialog;
+    QStringList mSupportedFormats;
+    QString mImageFilename;
+    QString mImageFormat;
+    QString mDimensionsUnit;
+    double mDPI;
+    QSizeF mSetSize;
+
+protected slots:
+    void changedDialogSettings();
+
+private:
+    QComboBox *mpSetImageFormat;
+    QComboBox *mpSetDimensionsUnit;
+    QDoubleSpinBox *mpDPISpinBox;
+    QDoubleSpinBox *mpSetWidthSpinBox;
+    QDoubleSpinBox *mpSetHeightSpinBox;
+    QCheckBox *mpKeepAspectRatioCheckBox;
+    QCheckBox *mpUseScreenSizeCheckBox;
+
+    QLabel *mpPixelSizeLabel;
+    QSizeF mPixelSize;
+    QSizeF mScreenSize;
+
+    QString mPreviousDimensionsUnit;
+
+
+    QSizeF calcSizePX(QString unit=QString()) const;
+    void updateDialogSizeEdits();
+    void rememberDialogValues();
+};
 
 //! @brief Plot tab types
 enum PlotTabTypeT {XYPlotType, BodePlotType, BarchartPlotType};
@@ -75,7 +140,7 @@ public:
 
     PlotArea *getPlotArea(const int subPlotId=0);
     int getNumPlotAreas() const;
-    QwtPlot *getQwtPlot(const int subPlotId=0);
+    HopQwtPlot *getQwtPlot(const int subPlotId=0);
 
     void addCurve(PlotCurve *pCurve, const int subPlotId=0);
     void addCurve(PlotCurve *pCurve, QColor desiredColor, const int subPlotId=0);
@@ -105,6 +170,7 @@ public:
 
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     void exportToCsv(QString fileName);
+    void exportAsImage(const QString fileName, const QString fileType, const QString width, const QString height, const QString dim, const QString dpi);
 
     void showHelpPopupMessage(const QString &rMessage);
 
@@ -149,7 +215,7 @@ protected slots:
     QString updateXmlOutputTextInDialog();
     void saveToXml();
     void exportImage();
-    void changedGraphicsExportSettings();
+    void exportImageSelectFile();
 
 protected:
     PlotArea *addPlotArea();
@@ -171,18 +237,7 @@ protected:
     QTextEdit *mpXmlOutputTextBox;
 
     // Export graphics settings
-    QCheckBox *mpKeepAspectRatio;
-    QComboBox *mpImageDimUnit;
-    QDoubleSpinBox *mpImageSetWidth;
-    QDoubleSpinBox *mpImageSetHeight;
-    QLabel *mpPixelSizeLabel;
-    QSizeF mImagePixelSize;
-    QDoubleSpinBox *mpImageDPI;
-    QComboBox *mpImageFormat;
-    QString mPreviousImageUnit;
-    QSizeF calcMMSize() const;
-    QSizeF calcPXSize(QString unit=QString()) const;
-    void updateGraphicsExportSizeEdits();
+    PlotGraphicsExporter mGraphicsExporter;
 };
 
 class BodePlotTab : public PlotTab

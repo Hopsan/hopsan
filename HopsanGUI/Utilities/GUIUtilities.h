@@ -67,6 +67,7 @@ void santizeName(QString &rString);
 bool isNameValid(const QString &rString);
 QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, const QChar &rLast);
 QVector<int> linspace(const int start, const int stop, const int step=1);
+QString extractFilenameExtension(const QString &rFilename);
 
 // Inline utility functions
 //! @brief Compare two doubles with given tolerance

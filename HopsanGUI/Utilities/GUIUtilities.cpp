@@ -882,3 +882,17 @@ QVector<int> linspace(const int start, const int stop, const int step)
     }
     return vec;
 }
+
+
+QString extractFilenameExtension(const QString &rFilename)
+{
+    int i = rFilename.lastIndexOf('.');
+    if (i < 0)
+    {
+        return "";
+    }
+    else
+    {
+        return rFilename.right(rFilename.size()-1-i);
+    }
+}

@@ -90,6 +90,8 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     addPlotArea();
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+    connect(&mGraphicsExporter, SIGNAL(exportImage()), this, SLOT(exportImageSelectFile()));
 }
 
 
@@ -399,6 +401,26 @@ void PlotTab::exportToCsv(QString fileName)
     file.close();
 }
 
+void PlotTab::exportAsImage(const QString fileName, const QString fileType, const QString width, const QString height, const QString dim, const QString dpi)
+{
+    if (!mGraphicsExporter.supportsImageFormat(fileType))
+    {
+        gpMessageHandler->addErrorMessage(QString("Filetype: %1 not supported!").arg(fileType));
+        return;
+    }
+    mGraphicsExporter.setImageFilename(fileName);
+    mGraphicsExporter.setImageFormat(fileType);
+    if (!width.isEmpty() && !height.isEmpty())
+    {
+        mGraphicsExporter.setImageSize(dim, width, height);
+    }
+    if (!dpi.isEmpty())
+    {
+        mGraphicsExporter.setImageDPI(dpi);
+    }
+    exportImage();
+}
+
 void PlotTab::showHelpPopupMessage(const QString &rMessage)
 {
     mpParentPlotWindow->showHelpPopupMessage(rMessage);
@@ -687,88 +709,15 @@ void PlotTab::exportToGnuplot()
 
 void PlotTab::exportToGraphics()
 {
-    QDialog *pGraphicsSettingsDialog = new QDialog(mpParentPlotWindow);
-    pGraphicsSettingsDialog->setWindowTitle("Graphic Export");
-    pGraphicsSettingsDialog->setWindowModality(Qt::WindowModal);
-
-    mpImageDimUnit = new QComboBox();
-    mpImageDimUnit->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    mpImageDimUnit->addItem("px");
-    mPreviousImageUnit = mpImageDimUnit->currentText();
-    mpImageDimUnit->addItem("mm");
-    mpImageDimUnit->addItem("cm");
-    mpImageDimUnit->addItem("in");
-    connect(mpImageDimUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(changedGraphicsExportSettings()));
-
-    mpImageSetWidth = new QDoubleSpinBox(this);
-    mpImageSetWidth->setDecimals(0);
-    mpImageSetWidth->setRange(1,10000);
-    mpImageSetWidth->setSingleStep(1);
-    mpImageSetWidth->setValue(getQwtPlot(0)->width());
-    connect(mpImageSetWidth, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
-
-    mpImageSetHeight = new QDoubleSpinBox(this);
-    mpImageSetHeight->setDecimals(0);
-    mpImageSetHeight->setRange(1,10000);
-    mpImageSetHeight->setSingleStep(1);
-    mpImageSetHeight->setValue(getQwtPlot(0)->height());
-    connect(mpImageSetHeight, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
-
-    mpPixelSizeLabel = new QLabel(QString("%1X%2").arg(getQwtPlot(0)->width()).arg(getQwtPlot(0)->height()));
-    mImagePixelSize = QSize(getQwtPlot(0)->width(), getQwtPlot(0)->height());
-
-
-    mpImageDPI = new QDoubleSpinBox(this);
-    mpImageDPI->setDecimals(0);
-    mpImageDPI->setRange(1,10000);
-    mpImageDPI->setSingleStep(1);
-    mpImageDPI->setValue(96);
-    connect(mpImageDPI, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
-
-    // Vector
-    mpImageFormat = new QComboBox();
-    mpImageFormat->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    mpImageFormat->addItem("png");
-    mpImageFormat->addItem("pdf");
-    mpImageFormat->addItem("svg");
-    mpImageFormat->addItem("ps");
-    mpImageFormat->addItem("jpeg");
-
-    mpKeepAspectRatio = new QCheckBox("Keep Aspect Ratio");
-    mpKeepAspectRatio->setChecked(true);
-
-    int r=0;
-    QGridLayout *pLayout = new QGridLayout();
-    pLayout->addWidget(new QLabel("Format:"),r,0, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageFormat,r,1);
-    pLayout->addWidget(new QLabel("Px:"),r,2, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpPixelSizeLabel,r,3);
-    ++r;
-    pLayout->addWidget(new QLabel("Dimension Unit:"),r,0, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageDimUnit,r,1);
-    pLayout->addWidget(new QLabel("Width:"),r,2, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageSetWidth,r,3);
-    pLayout->addWidget(new QLabel("Height:"),r+1,2, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageSetHeight,r+1,3);
-    ++r;
-    pLayout->addWidget(new QLabel("DPI:"),r,0, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageDPI,r,1);
-    mpImageDPI->setDisabled(true);
-    ++r;
-    pLayout->addWidget(mpKeepAspectRatio,r,1);
-    ++r;
-
-    QPushButton *pExportButton = new QPushButton("Export");
-    pExportButton->setAutoDefault(false);
-    pLayout->addWidget(pExportButton,r,0);
-    connect(pExportButton, SIGNAL(clicked()), this, SLOT(exportImage()));
-    QPushButton *pCloseButton = new QPushButton("Close");
-    pCloseButton->setAutoDefault(false);
-    pLayout->addWidget(pCloseButton,r,5);
-    connect(pCloseButton, SIGNAL(clicked()), pGraphicsSettingsDialog, SLOT(close()));
-
-    pGraphicsSettingsDialog->setLayout(pLayout);
-    pGraphicsSettingsDialog->exec();
+    //! @todo this only works with one plot area in plot (sam problem in export (render) code
+    HopQwtPlot *pPlot = getQwtPlot(0);
+    if (pPlot)
+    {
+        mGraphicsExporter.setScreenSize(pPlot->width(), pPlot->height());
+        connect( pPlot, SIGNAL(sizeChanged(int,int)), &mGraphicsExporter, SLOT(setScreenSize(int,int)));
+        mGraphicsExporter.openExportDialog();
+        disconnect( pPlot, SIGNAL(sizeChanged(int,int)), &mGraphicsExporter, SLOT(setScreenSize(int,int)));
+    }
 }
 
 
@@ -914,7 +863,7 @@ QList<PlotCurve*> &PlotTab::getCurves(int plotID)
 
 
 
-QwtPlot *PlotTab::getQwtPlot(const int subPlotId)
+HopQwtPlot *PlotTab::getQwtPlot(const int subPlotId)
 {
     return mPlotAreas[subPlotId]->getQwtPlot();
 }
@@ -1201,74 +1150,17 @@ void PlotTab::saveToXml()
 
 void PlotTab::exportImage()
 {
-    QString fileName, fileFilter;
-    if (mpImageFormat->currentText() == "pdf")
-    {
-        fileFilter = "Portable Document Format (*.pdf)";
-    }
-    else if (mpImageFormat->currentText() == "ps")
-    {
-        fileFilter = "PostScript Format (*.ps)";
-    }
-    else if (mpImageFormat->currentText() == "svg")
-    {
-        fileFilter = "Scalable Vector Graphics (*.svg)";
-    }
-    else if (mpImageFormat->currentText() == "png")
-    {
-        fileFilter = "Portable Network Graphics (*.png)";
-    }
-    else if (mpImageFormat->currentText() == "jpeg")
-    {
-        fileFilter = "Joint Photographic Experts Group (*.jpg)";
-    }
-
-    fileName = QFileDialog::getSaveFileName(this, "Export File Name", gpConfig->getPlotGfxDir(), fileFilter);
-
     QwtPlotRenderer renderer;
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground,true);
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasFrame,true);
-    renderer.renderDocument(getQwtPlot(0),fileName,calcMMSize(),mpImageDPI->value());
+    renderer.renderDocument(getQwtPlot(0), mGraphicsExporter.imageFilename(), mGraphicsExporter.calcSizeMM(), mGraphicsExporter.dpi());
     //! @todo should work for all subplots in plot
 }
 
-void PlotTab::changedGraphicsExportSettings()
+void PlotTab::exportImageSelectFile()
 {
-
-    // Recalculate values for setSize boxes if unit changes
-    if (mPreviousImageUnit != mpImageDimUnit->currentText())
-    {
-        updateGraphicsExportSizeEdits();
-        mPreviousImageUnit = mpImageDimUnit->currentText();
-
-        mImagePixelSize = calcPXSize(); // Set new pxSize
-    }
-    else if (mpKeepAspectRatio->isChecked())
-    {
-        // Calc new actual pixel resolution
-         QSizeF pxSize = calcPXSize();
-
-        // Adjust size according to AR
-        double ar = mImagePixelSize.width() / mImagePixelSize.height();
-        // See which one changed
-        if ( fabs(pxSize.width() - mImagePixelSize.width()) > fabs(pxSize.height() - mImagePixelSize.height()) )
-        {
-            pxSize.rheight() = pxSize.width() * 1/ar;
-        }
-        else
-        {
-            pxSize.rwidth() = pxSize.height() * ar;
-        }
-        mImagePixelSize = pxSize; // Set new pxSize
-
-        updateGraphicsExportSizeEdits();
-    }
-    else
-    {
-        mImagePixelSize = calcPXSize(); // Set new pxSize
-    }
-
-    mpPixelSizeLabel->setText(QString("%1X%2").arg(round(mImagePixelSize.width())).arg(round(mImagePixelSize.height())));
+    mGraphicsExporter.selectExportFilename();
+    exportImage();
 }
 
 PlotArea *PlotTab::addPlotArea()
@@ -1305,83 +1197,6 @@ int PlotTab::getPlotIDForCurve(PlotCurve *pCurve)
     Q_ASSERT(false);
     return -1;
 }
-
-QSizeF PlotTab::calcMMSize() const
-{
-    QSizeF pxSize = calcPXSize();
-    const double pxToMM = 1.0/mpImageDPI->value()*in2mm ;
-    return QSizeF(pxSize.width()*pxToMM,pxSize.height()*pxToMM);
-}
-
-QSizeF PlotTab::calcPXSize(QString unit) const
-{
-    if (unit.isEmpty())
-    {
-        unit = mpImageDimUnit->currentText();
-    }
-
-    QSizeF pxSize;
-    if ( unit == "px")
-    {
-        pxSize = QSizeF(mpImageSetWidth->value(), mpImageSetHeight->value());
-    }
-    else if (unit == "mm")
-    {
-        const double mmToPx = 1.0/in2mm * mpImageDPI->value();
-        pxSize = QSizeF(mpImageSetWidth->value()*mmToPx,mpImageSetHeight->value()*mmToPx);
-    }
-    else if (unit == "cm")
-    {
-        const double cmToPx = 10.0/in2mm * mpImageDPI->value();
-        pxSize = QSizeF(mpImageSetWidth->value()*cmToPx,mpImageSetHeight->value()*cmToPx);
-    }
-    else if (unit == "in")
-    {
-        pxSize = QSizeF(mpImageSetWidth->value()*mpImageDPI->value(), mpImageSetHeight->value()*mpImageDPI->value());
-    }
-
-    //! @todo round to int, ceil or floor, handle truncation
-    return pxSize;
-}
-
-void PlotTab::updateGraphicsExportSizeEdits()
-{
-    QSizeF newSize;
-    mpImageDPI->setDisabled(false);
-    if (mpImageDimUnit->currentText() == "px")
-    {
-        newSize.setWidth(round(mImagePixelSize.width()));
-        newSize.setHeight(round(mImagePixelSize.height()));
-        mpImageSetWidth->setDecimals(0);
-        mpImageSetHeight->setDecimals(0);
-        mpImageDPI->setDisabled(true);
-    }
-    else if (mpImageDimUnit->currentText() == "mm")
-    {
-        const double px2mm = 1.0/mpImageDPI->value()*in2mm;
-        newSize = mImagePixelSize*px2mm;
-        mpImageSetWidth->setDecimals(2);
-        mpImageSetHeight->setDecimals(2);
-    }
-    else if (mpImageDimUnit->currentText() == "cm")
-    {
-        const double px2cm = 1.0/(10*mpImageDPI->value())*in2mm;
-        newSize = mImagePixelSize*px2cm;
-        mpImageSetWidth->setDecimals(3);
-        mpImageSetHeight->setDecimals(3);
-    }
-    else if (mpImageDimUnit->currentText() == "in")
-    {
-        const double px2in = 1.0/(mpImageDPI->value());
-        newSize = mImagePixelSize*px2in;
-        mpImageSetWidth->setDecimals(3);
-        mpImageSetHeight->setDecimals(3);
-    }
-
-    mpImageSetWidth->setValue(newSize.width());
-    mpImageSetHeight->setValue(newSize.height());
-}
-
 
 BodePlotTab::BodePlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWindow)
     : PlotTab(pParentPlotTabWidget, pParentPlotWindow)
@@ -1670,3 +1485,353 @@ void PlotTab::openCreateBodePlotDialog()
 }
 
 
+
+
+void PlotGraphicsExporter::changedDialogSettings()
+{
+    // Save dialog values
+    rememberDialogValues();
+
+    mpSetWidthSpinBox->setDisabled(mpUseScreenSizeCheckBox->isChecked());
+    mpSetHeightSpinBox->setDisabled(mpUseScreenSizeCheckBox->isChecked());
+
+    // Recalculate values for setSize boxes if unit changes
+    if (mPreviousDimensionsUnit != mpSetDimensionsUnit->currentText())
+    {
+        updateDialogSizeEdits();
+        mPreviousDimensionsUnit = mpSetDimensionsUnit->currentText();
+        mPixelSize = calcSizePX(); // Set new pxSize
+    }
+    else if (mpUseScreenSizeCheckBox->isChecked())
+    {
+        mpSetDimensionsUnit->setCurrentIndex(0);
+        mPixelSize = mScreenSize;
+    }
+    else if (mpKeepAspectRatioCheckBox->isChecked())
+    {
+        // Calc new actual pixel resolution
+        QSizeF pxSize = calcSizePX();
+
+        // Adjust size according to AR
+        double ar = mPixelSize.width() / mPixelSize.height();
+        // See which one changed
+        if ( fabs(pxSize.width() - mPixelSize.width()) > fabs(pxSize.height() - mPixelSize.height()) )
+        {
+            pxSize.rheight() = pxSize.width() * 1.0/ar;
+        }
+        else
+        {
+            pxSize.rwidth() = pxSize.height() * ar;
+        }
+        mPixelSize = pxSize; // Set new pxSize
+        updateDialogSizeEdits();
+    }
+    else
+    {
+        mPixelSize = calcSizePX(); // Set new pxSize
+    }
+
+    // Update the pixel size label
+    mpPixelSizeLabel->setText(QString("%1X%2").arg(round(mPixelSize.width())).arg(round(mPixelSize.height())));
+}
+
+PlotGraphicsExporter::PlotGraphicsExporter()
+{
+    mSupportedFormats << "png" << "pdf" << "svg" << "ps" << "jpeg";
+
+    mImageFormat = "png";
+    mDimensionsUnit = "px";
+    mDPI = 96;
+    mSetSize = QSizeF(800,600);
+}
+
+void PlotGraphicsExporter::openExportDialog()
+{
+    //QDialog *pDialog = new QDialog(mpParentPlotWindow);
+    mpDialog = new QDialog();
+    mpDialog->setWindowTitle("Plot Graphics Export");
+    mpDialog->setWindowModality(Qt::WindowModal);
+    //pDialog->setWindowFlags();
+
+    mpSetImageFormat = new QComboBox(mpDialog);
+    mpSetImageFormat->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    foreach(QString format, mSupportedFormats)
+    {
+        mpSetImageFormat->addItem(format);
+    }
+    mpSetImageFormat->setCurrentIndex(mpSetImageFormat->findText(mImageFormat, Qt::MatchExactly));
+    connect(mpSetImageFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(changedDialogSettings()));
+
+    mpSetDimensionsUnit = new QComboBox(mpDialog);
+    mpSetDimensionsUnit->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    mpSetDimensionsUnit->addItem("px");
+    mpSetDimensionsUnit->addItem("mm");
+    mpSetDimensionsUnit->addItem("cm");
+    mpSetDimensionsUnit->addItem("in");
+    mpSetDimensionsUnit->setCurrentIndex(mpSetDimensionsUnit->findText(mDimensionsUnit, Qt::MatchExactly));
+    mPreviousDimensionsUnit = mpSetDimensionsUnit->currentText();
+    connect(mpSetDimensionsUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(changedDialogSettings()));
+
+    mpSetWidthSpinBox = new QDoubleSpinBox(mpDialog);
+    mpSetWidthSpinBox->setDecimals(0);
+    mpSetWidthSpinBox->setRange(1,10000);
+    mpSetWidthSpinBox->setSingleStep(1);
+    mpSetWidthSpinBox->setValue(mSetSize.width());
+    connect(mpSetWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(changedDialogSettings()));
+
+    mpSetHeightSpinBox = new QDoubleSpinBox(mpDialog);
+    mpSetHeightSpinBox->setDecimals(0);
+    mpSetHeightSpinBox->setRange(1,10000);
+    mpSetHeightSpinBox->setSingleStep(1);
+    mpSetHeightSpinBox->setValue(mSetSize.height());
+    connect(mpSetHeightSpinBox, SIGNAL(valueChanged(double)), this, SLOT(changedDialogSettings()));
+
+    mpDPISpinBox = new QDoubleSpinBox(mpDialog);
+    mpDPISpinBox->setDecimals(0);
+    mpDPISpinBox->setRange(1,10000);
+    mpDPISpinBox->setSingleStep(1);
+    mpDPISpinBox->setValue(mDPI);
+    connect(mpDPISpinBox, SIGNAL(valueChanged(double)), this, SLOT(changedDialogSettings()));
+
+    mpKeepAspectRatioCheckBox = new QCheckBox("Keep Aspect Ratio",mpDialog);
+    mpKeepAspectRatioCheckBox->setChecked(true);
+
+    mpUseScreenSizeCheckBox = new QCheckBox("Use Screen Size",mpDialog);
+    connect(mpUseScreenSizeCheckBox, SIGNAL(toggled(bool)), this, SLOT(changedDialogSettings()));
+
+    mPixelSize = calcSizePX();
+    mpPixelSizeLabel = new QLabel(QString("%1X%2").arg(mPixelSize.width()).arg(mPixelSize.height()),mpDialog);
+
+    int r=0;
+    QGridLayout *pLayout = new QGridLayout();
+    pLayout->addWidget(new QLabel("Format:"),r,0, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpSetImageFormat,r,1);
+    pLayout->addWidget(new QLabel("Px:"),r,2, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpPixelSizeLabel,r,3);
+    ++r;
+    pLayout->addWidget(new QLabel("Dimension Unit:"),r,0, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpSetDimensionsUnit,r,1);
+    pLayout->addWidget(new QLabel("Width:"),r,2, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpSetWidthSpinBox,r,3);
+    pLayout->addWidget(new QLabel("Height:"),r+1,2, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpSetHeightSpinBox,r+1,3);
+    ++r;
+    pLayout->addWidget(new QLabel("DPI:"),r,0, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpDPISpinBox,r,1);
+    mpDPISpinBox->setDisabled(true);
+    ++r;
+    pLayout->addWidget(mpKeepAspectRatioCheckBox,r,1);
+    pLayout->addWidget(mpUseScreenSizeCheckBox,r,2,1,2);
+    ++r;
+
+    QPushButton *pExportButton = new QPushButton("Export");
+    pExportButton->setAutoDefault(false);
+    pLayout->addWidget(pExportButton,r,0);
+    connect(pExportButton, SIGNAL(clicked()), this, SIGNAL(exportImage()));
+    QPushButton *pCloseButton = new QPushButton("Close");
+    pCloseButton->setAutoDefault(false);
+    pLayout->addWidget(pCloseButton,r,5);
+    connect(pCloseButton, SIGNAL(clicked()), mpDialog, SLOT(close()));
+
+    mpDialog->setLayout(pLayout);
+    mpDialog->exec();
+    mpDialog->deleteLater();
+    mpDialog = 0;
+}
+
+QString PlotGraphicsExporter::selectExportFilename()
+{
+    QString fileFilter;
+    if (mImageFormat == "pdf")
+    {
+        fileFilter = "Portable Document Format (*.pdf)";
+    }
+    else if (mImageFormat == "ps")
+    {
+        fileFilter = "PostScript Format (*.ps)";
+    }
+    else if (mImageFormat == "svg")
+    {
+        fileFilter = "Scalable Vector Graphics (*.svg)";
+    }
+    else if (mImageFormat == "png")
+    {
+        fileFilter = "Portable Network Graphics (*.png)";
+    }
+    else if (mImageFormat == "jpeg")
+    {
+        fileFilter = "Joint Photographic Experts Group (*.jpg)";
+    }
+
+    fileFilter.append(";;all (*.*)");
+
+    QString path = gpConfig->getPlotGfxDir();
+    if (!mImageFilename.isEmpty())
+    {
+        QFileInfo file(mImageFilename);
+        path = file.canonicalPath();
+    }
+
+    mImageFilename = QFileDialog::getSaveFileName(0, "Choose Export Filename", path, fileFilter);
+    return mImageFilename;
+}
+
+bool PlotGraphicsExporter::supportsImageFormat(QString format)
+{
+    return mSupportedFormats.contains(format.toLower());
+}
+
+QString PlotGraphicsExporter::imageFormat() const
+{
+    return mImageFormat;
+}
+
+QString PlotGraphicsExporter::imageFilename() const
+{
+    return mImageFilename;
+}
+
+double PlotGraphicsExporter::dpi() const
+{
+    return mDPI;
+}
+
+void PlotGraphicsExporter::setImageFilename(const QString &rFilename)
+{
+    mImageFilename = rFilename;
+}
+
+void PlotGraphicsExporter::setImageFormat(QString suffix)
+{
+    suffix = suffix.toLower();
+    if (supportsImageFormat(suffix))
+    {
+        mImageFormat = suffix;
+    }
+}
+
+void PlotGraphicsExporter::setImageSize(QString dimension, QString width, QString height)
+{
+   setImageSize(dimension, width.toDouble(), height.toDouble());
+}
+
+void PlotGraphicsExporter::setImageSize(QString dimension, double width, double height)
+{
+    dimension = dimension.toLower();
+    if (dimension == "px" || dimension == "mm" || dimension == "cm" || dimension == "in")
+    {
+        mDimensionsUnit = dimension;
+        mSetSize = QSizeF(qMax(width,1.0), qMax(height,1.0));
+        //! @todo what about keep aspect ratio
+    }
+}
+
+void PlotGraphicsExporter::setImageDPI(QString dpi)
+{
+    setImageDPI(dpi.toDouble());
+}
+
+void PlotGraphicsExporter::setImageDPI(double dpi)
+{
+    // make sure dpi wont be to low (like zero) which would lead to div by 0
+    mDPI = qMax(dpi, 1.0);
+}
+
+QSizeF PlotGraphicsExporter::calcSizeMM() const
+{
+    QSizeF pxSize = calcSizePX();
+    const double pxToMM = 1.0/mDPI*in2mm ;
+    return QSizeF(pxSize.width()*pxToMM,pxSize.height()*pxToMM);
+}
+
+void PlotGraphicsExporter::setScreenSize(int width, int height)
+{
+    mScreenSize.setWidth(width);
+    mScreenSize.setHeight(height);
+    if (mpDialog)
+    {
+        changedDialogSettings();
+    }
+}
+
+QSizeF PlotGraphicsExporter::calcSizePX(QString unit) const
+{
+    if (unit.isEmpty())
+    {
+        unit = mDimensionsUnit;
+    }
+
+    QSizeF pxSize;
+    if ( unit == "px")
+    {
+        pxSize = mSetSize;
+    }
+    else if (unit == "mm")
+    {
+        const double mmToPx = 1.0/in2mm * mDPI;
+        pxSize = QSizeF(mSetSize.width()*mmToPx, mSetSize.height()*mmToPx);
+    }
+    else if (unit == "cm")
+    {
+        const double cmToPx = 10.0/in2mm * mDPI;
+        pxSize = QSizeF(mSetSize.width()*cmToPx, mSetSize.height()*cmToPx);
+    }
+    else if (unit == "in")
+    {
+        pxSize = QSizeF(mSetSize.width()*mDPI, mSetSize.height()*mDPI);
+    }
+
+    //! @todo round to int, ceil or floor, handle truncation
+    return pxSize;
+}
+
+void PlotGraphicsExporter::updateDialogSizeEdits()
+{
+    QSizeF newSize;
+    mpDPISpinBox->setDisabled(false);
+    if (mpSetDimensionsUnit->currentText() == "px")
+    {
+        newSize.setWidth(round(mPixelSize.width()));
+        newSize.setHeight(round(mPixelSize.height()));
+        mpSetWidthSpinBox->setDecimals(0);
+        mpSetHeightSpinBox->setDecimals(0);
+        mpDPISpinBox->setDisabled(true);
+    }
+    else if (mpSetDimensionsUnit->currentText() == "mm")
+    {
+        const double px2mm = 1.0/mDPI*in2mm;
+        newSize = mPixelSize*px2mm;
+        mpSetWidthSpinBox->setDecimals(2);
+        mpSetHeightSpinBox->setDecimals(2);
+    }
+    else if (mpSetDimensionsUnit->currentText() == "cm")
+    {
+        const double px2cm = 1.0/(10*mDPI)*in2mm;
+        newSize = mPixelSize*px2cm;
+        mpSetWidthSpinBox->setDecimals(3);
+        mpSetHeightSpinBox->setDecimals(3);
+    }
+    else if (mpSetDimensionsUnit->currentText() == "in")
+    {
+        const double px2in = 1.0/mDPI;
+        newSize = mPixelSize*px2in;
+        mpSetWidthSpinBox->setDecimals(3);
+        mpSetHeightSpinBox->setDecimals(3);
+    }
+
+    mpSetWidthSpinBox->blockSignals(true);
+    mpSetHeightSpinBox->blockSignals(true);
+    mpSetWidthSpinBox->setValue(newSize.width());
+    mpSetHeightSpinBox->setValue(newSize.height());
+    mpSetWidthSpinBox->blockSignals(false);
+    mpSetHeightSpinBox->blockSignals(false);
+    rememberDialogValues();
+}
+
+void PlotGraphicsExporter::rememberDialogValues()
+{
+    mImageFormat = mpSetImageFormat->currentText();
+    mDimensionsUnit = mpSetDimensionsUnit->currentText();
+    mSetSize = QSizeF(mpSetWidthSpinBox->value(), mpSetHeightSpinBox->value());
+    mDPI = mpDPISpinBox->value();
+}

@@ -139,6 +139,12 @@ void HopQwtPlot::replot()
     emit afterReplot();
 }
 
+void HopQwtPlot::resizeEvent(QResizeEvent *e)
+{
+    QwtPlot::resizeEvent(e);
+    emit sizeChanged(width(), height());
+}
+
 
 TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pVariable, QWidget *pParent) :
     QWidget(pParent)
@@ -584,7 +590,7 @@ PlotCurve *PlotArea::getActivePlotCurve()
     return mpActivePlotCurve;
 }
 
-QwtPlot *PlotArea::getQwtPlot()
+HopQwtPlot *PlotArea::getQwtPlot()
 {
     return mpQwtPlot;
 }
