@@ -745,31 +745,33 @@ bool VariableTableWidget::setStartValues()
             }
 
             // Parameter has changed, add to undo stack and set the parameter
-            bool isOk = cleanAndVerifyParameterValue(value, qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getDataType());
-            if(isOk)
+            if( cleanAndVerifyParameterValue(value, qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getDataType()) )
             {
                 // If we fail to set the parameter, then warning box and reset value
                 if(!mpModelObject->setParameterValue(name, value))
                 {
-                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value!").arg(value).arg(name));
+                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(oldValue));
                     // Reset old value
                     qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(oldValue);
-                    isOk = false;
+                    allok = false;
+                    break;
                 }
-
-                // Add an undo post (but only one for all values changed this time
-                if(!addedUndoPost)
+                else
                 {
-                    mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost("changedparameters");
-                    addedUndoPost = true;
+                    // Add an undo post (but only one for all values changed this time
+                    if(!addedUndoPost)
+                    {
+                        mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost("changedparameters");
+                        addedUndoPost = true;
+                    }
+                    // Register the change in undo stack
+                    mpModelObject->getParentContainerObject()->getUndoStackPtr()->registerChangedParameter(mpModelObject->getName(),
+                                                                                                           name,
+                                                                                                           oldValue,
+                                                                                                           value);
+                    // Mark project tab as changed
+                    mpModelObject->getParentContainerObject()->hasChanged();
                 }
-                // Register the change in undo stack
-                mpModelObject->getParentContainerObject()->getUndoStackPtr()->registerChangedParameter(mpModelObject->getName(),
-                                                                                                       name,
-                                                                                                       oldValue,
-                                                                                                       value);
-                // Mark project tab as changed
-                mpModelObject->getParentContainerObject()->hasChanged();
             }
             else
             {
@@ -1220,6 +1222,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
                 mpConditionalValueComboBox->addItem(rData.mConditions[i]);
             }
             mpConditionalValueComboBox->setCurrentIndex(value.toInt());
+            mpValueEdit->setText(value);
             pLayout->addWidget(mpConditionalValueComboBox);
             connect(mpConditionalValueComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setConditionalValue(int)));
             mpValueEdit->hide();
