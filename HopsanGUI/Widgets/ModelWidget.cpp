@@ -983,7 +983,7 @@ void ModelWidget::simulateModelica()
 
 
         //Set parameter values for Modelica components
-        pTempSys->getModelObject(it.key())->setParameterValue("solverType", "5", true);
+        pTempSys->getModelObject(it.key())->setParameterValue("solverType", "4", true);
         pTempSys->getModelObject(it.key())->setParameterValue("nIter","2", true);
         foreach(const QString parameter, pTempSys->getModelObject(it.key())->getParameterNames())
         {
