@@ -7,6 +7,7 @@
 #include "MechanicTranslationalMassWithLever.hpp"
 #include "MechanicTranslationalMassWithCoulombFriction.hpp"
 #include "MechanicTranslationalSpring.hpp"
+#include "MechanicTranslationalSpringWithSlack.hpp"
 #include "MechanicSpeedSensor.hpp"
 #include "MechanicForceSensor.hpp"
 #include "MechanicPositionSensor.hpp"

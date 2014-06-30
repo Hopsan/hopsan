@@ -316,7 +316,8 @@ HEADERS += \
     Experimental/Signal1DLookupTable.hpp \
     Experimental/Signal2DLookupTable.hpp \
     Experimental/Experimental.h \
-    Experimental/Signal3DLookupTable.hpp
+    Experimental/Signal3DLookupTable.hpp \
+    Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
