@@ -60,6 +60,7 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory->registerCreatorFunction("DummyComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
+    mpComponentFactory->registerCreatorFunction("ConditionalSubsystem", ConditionalComponentSystem::Creator);
     mpComponentFactory->registerCreatorFunction("CppComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("ModelicaComponent", ModelicaComponent::Creator);
 #ifdef BUILTINDEFAULTCOMPONENTLIB
@@ -197,6 +198,14 @@ const std::vector<HString> HopsanEssentials::getRegisteredComponentTypes() const
 ComponentSystem* HopsanEssentials::createComponentSystem()
 {
     return static_cast<ComponentSystem*>(createComponent("Subsystem"));
+}
+
+
+//! @brief Creates a ConditionalComponentSystem
+//! @returns A pointer to the ComponentSystem created
+ConditionalComponentSystem *HopsanEssentials::createConditionalComponentSystem()
+{
+    return static_cast<ConditionalComponentSystem*>(createComponent("ConditionalSubsystem"));
 }
 
 void HopsanEssentials::removeComponent(Component *pComponent)

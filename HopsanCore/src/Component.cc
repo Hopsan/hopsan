@@ -235,6 +235,14 @@ void Component::simulate(const double stopT)
                             //mTime is the current time during the simulateOneTimestep
         simulateOneTimestep();
     }
+
+    //DEBUG
+//    while(mTime < stopT)
+//    {
+//        mTime += mTimestep;
+//        simulateOneTimestep();
+//    }
+    //END DEBUG
 }
 
 //! @brief The initialize function must be overloaded in each component, it is used to initialize the component just before simulation begins

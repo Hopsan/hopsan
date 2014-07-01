@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <sstream>
+#include <iostream>
 
 using namespace hopsan;
 
@@ -182,12 +183,18 @@ const std::vector<HString> NumericalIntegrationSolver::getAvailableSolverTypes()
     availableSolvers.push_back(HString("Runge-Kutta"));
     availableSolvers.push_back(HString("Dormand-Prince"));
     availableSolvers.push_back(HString("Backward Euler"));
+    availableSolvers.push_back(HString("Trapezoid Rule"));
     return availableSolvers;
 }
 
 
 void NumericalIntegrationSolver::solve(const int solverType)
 {
+    //DEBUG
+    //solvevariableTimeStep();
+    //return;
+    //END DEBUG
+
     switch(solverType)
     {
     case 0:
@@ -204,6 +211,9 @@ void NumericalIntegrationSolver::solve(const int solverType)
         break;
     case 4:
         solveBackwardEuler();
+        break;
+    case 5:
+        solveTrapezoidRule();
         break;
     default:
         mpParentComponent->addErrorMessage("Unknown solver type!");
@@ -309,28 +319,73 @@ void NumericalIntegrationSolver::solveBackwardEuler()
     }
 
     (*mpStateVars) = y1;
+}
 
-//    std::vector<double> orgStateVars;
-//    orgStateVars= *mpStateVars;
 
-//    double tol = 1e-5;
-//    bool stop=false;
-//    while(!stop)
-//    {
-//        stop=true;
-//        for(int i=0; i<mnStateVars; ++i)
-//        {
-//            (*mpStateVars)[i] = (*mpStateVars)[i] - ((*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i))/(1-mTimeStep*mpParentComponent->getStateVariableSecondDerivative(i));
-//        }
-//        for(int i=0; i<mnStateVars; ++i)
-//        {
-//            double error = (*mpStateVars)[i] - orgStateVars[i] - mTimeStep*mpParentComponent->getStateVariableDerivative(i);
-//            if(error > tol)
-//            {
-//                stop=false;
-//            }
-//        }
-//    }
+
+
+
+void NumericalIntegrationSolver::solveTrapezoidRule()
+{
+    //Store original state variables = y(t)
+    std::vector<double> yorg;
+    yorg.resize(mnStateVars);
+    yorg= *mpStateVars;
+
+    //Store original state variable derivatives = f(t,y(t))
+    std::vector<double> dorg;
+    dorg.resize(mnStateVars);
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        dorg[i] = mpParentComponent->getStateVariableDerivative(i);
+    }
+
+    std::vector<double> y0;
+    y0.resize(mnStateVars);
+
+    std::vector<double> y1;
+    y1.resize(mnStateVars);
+
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        y0[i] = yorg[i] + 0.5*mTimeStep*(dorg[i] + mpParentComponent->getStateVariableDerivative(i));
+    }
+    mpParentComponent->reInitializeValuesFromNodes();
+    mpParentComponent->solveSystem();
+
+    bool doBreak;
+    int i;
+    for(i=0; i<mMaxIter; ++i)
+    {
+        (*mpStateVars) = y0;
+        for(int j=0; j<mnStateVars; ++j)
+        {
+            y1[j] = yorg[j] + 0.5*mTimeStep*(dorg[j] + mpParentComponent->getStateVariableDerivative(j));
+        }
+        mpParentComponent->reInitializeValuesFromNodes();
+        mpParentComponent->solveSystem();
+
+        doBreak = true;
+        for(int j=0; j<mnStateVars; ++j)
+        {
+            if(fabs( fabs(y1[j]-y0[j])/y0[j] ) > mTolerance)
+            {
+                doBreak = false;
+            }
+        }
+
+        if(doBreak) break;
+
+        y0 = y1;
+    }
+    if(!doBreak)
+    {
+        std::stringstream ss;
+        ss << "Trapezoid Rule solver failed to converge after " << i << " iterations.";
+        mpParentComponent->addWarningMessage(ss.str().c_str());
+    }
+
+    (*mpStateVars) = y1;
 }
 
 
@@ -478,5 +533,45 @@ void NumericalIntegrationSolver::solveDormandPrince()
         (*mpStateVars)[i] = (*mpStateVars)[i] + mTimeStep*(35.0/384.0*k1[i] + 500.0/1113.0*k3[i] + 125.0/192.0*k4[i] - 2187.0/6784.0*k5[i] + 11.0/84.0*k6[i]);
     }
     mpParentComponent->solveSystem();
+}
+
+
+
+void NumericalIntegrationSolver::solvevariableTimeStep()
+{
+    //Store original state variables = y(t)
+    std::vector<double> yorg;
+    yorg.resize(mnStateVars);
+    yorg= *mpStateVars;
+
+    solveBackwardEuler();
+
+    std::vector<double> eulerStateVars = *mpStateVars;
+    *mpStateVars = yorg;
+
+    solveTrapezoidRule();
+
+    double maxErr = 0;
+    for(int i=0; i<mnStateVars; ++i)
+    {
+        maxErr = std::max(maxErr, fabs(eulerStateVars[i] - (*mpStateVars)[i]));
+    }
+
+    if(maxErr == 0)
+        return;
+
+    double h = mpParentComponent->getTimestep();
+    double h_new = std::max(1e-5, std::min(1e-2, 0.9*h*1e-8/maxErr));
+    mpParentComponent->setTimestep(h_new);
+
+    if(h_new < h)
+    {
+        *mpStateVars = yorg;
+        solveTrapezoidRule();
+    }
+
+    //DEBUG
+    std::cout << "maxErr = " << maxErr << ", timestep = " << mpParentComponent->getTimestep() << "\n";
+    //END DEBUG
 }
 

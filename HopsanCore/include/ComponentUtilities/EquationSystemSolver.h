@@ -69,8 +69,11 @@ public:
     void solveForwardEuler();
     void solveMidpointMethod();
     void solveBackwardEuler();
+    void solveTrapezoidRule();
     void solveRungeKutta();
     void solveDormandPrince();
+
+    void solvevariableTimeStep();
 
     double findRoot(int i);
 

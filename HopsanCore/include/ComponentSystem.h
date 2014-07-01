@@ -240,7 +240,7 @@ namespace hopsan {
         virtual bool preInitialize();
         bool initialize(const double startT, const double stopT);
         void simulate(const double stopT);
-        void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, const bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
+        virtual void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, const bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
         void finalize();
 
         bool simulateAndMeasureTime(const size_t nSteps);
@@ -291,6 +291,13 @@ namespace hopsan {
         //! @ingroup ComponentPowerAuthorFunctions
         bool mWarnIfUnusedSystemParameters;
 
+        // Log and timestep
+        std::vector<size_t> mLogTheseTimeSteps;
+        size_t mTotalTakenSimulationSteps;
+
+        typedef std::map<HString, Component*> SubComponentMapT;
+        SubComponentMapT mSubComponentMap;
+
     private:
         //==========Private functions==========
         // Time specific functions
@@ -322,8 +329,6 @@ namespace hopsan {
         //==========Private member variables==========
         CQSEnumT mTypeCQS;
 
-        typedef std::map<HString, Component*> SubComponentMapT;
-        SubComponentMapT mSubComponentMap;
         std::vector<Component*> mComponentSignalptrs;
         std::vector<Component*> mComponentQptrs;
         std::vector<Component*> mComponentCptrs;
@@ -356,11 +361,20 @@ namespace hopsan {
         bool mEnableLogData;
         std::vector<double> mTimeStorage;
 
-        // Log and timestep
-        std::vector<size_t> mLogTheseTimeSteps;
-        size_t mTotalTakenSimulationSteps;
-
         //Finns i Component        Parameters *mSystemParameters;
+    };
+
+
+    class ConditionalComponentSystem : public ComponentSystem
+    {
+    public:
+        static Component* Creator(){ return new ConditionalComponentSystem(); }
+        void configure();
+        void simulate(const double stopT);
+        void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges, ParallelAlgorithmT algorithm);
+    private:
+        double *mpCondition;
+        bool mAsleep;
     };
 }
 

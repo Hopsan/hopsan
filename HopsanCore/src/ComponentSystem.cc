@@ -4320,3 +4320,51 @@ void AliasHandler::getParameterFromAlias(const HString & /*alias*/, HString &/*r
 {
     mpSystem->addErrorMessage("AliasHandler::getParameterFromAlias has not been implemented");
 }
+
+
+void ConditionalComponentSystem::configure()
+{
+    addInputVariable("on", "On/off condition, 1=on, 0=off", "", 0, &mpCondition);
+
+    mAsleep = false;
+}
+
+void ConditionalComponentSystem::simulate(const double stopT)
+{
+    if((*mpCondition)>0)
+    {
+        if(mAsleep)
+        {
+            for(SubComponentMapT::iterator it = mSubComponentMap.begin(); it != mSubComponentMap.end(); ++it)
+            {
+                it->second->mTime = this->mTime;
+            }
+            mAsleep = false;
+        }
+
+        ComponentSystem::simulate(stopT);
+    }
+    else
+    {
+        // Round to nearest, we may not get exactly the stop time that we want
+        size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
+
+        //Simulate
+        for (size_t i=0; i<numSimulationSteps; ++i)
+        {
+            mTime += mTimestep; //mTime is updated here before the simulation,
+                                //mTime is the current time during the simulateOneTimestep
+
+            ++mTotalTakenSimulationSteps;
+
+            logTimeAndNodes(mTotalTakenSimulationSteps);
+        }
+
+        mAsleep = true;
+    }
+}
+
+void ConditionalComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges, ParallelAlgorithmT algorithm)
+{
+    ComponentSystem::simulateMultiThreaded(startT,  stopT, nDesiredThreads, noChanges, algorithm);
+}

@@ -46,6 +46,7 @@ typedef struct HopsanExternalLibInfo
 class ComponentSystem;
 class HopsanEssentials;
 class HopsanCoreMessageHandler;
+class NumericalIntegrationSolver;
 
 enum VariameterTypeEnumT {InputVariable, OutputVariable, OtherVariable};
 
@@ -67,7 +68,9 @@ public:
 class DLLIMPORTEXPORT Component
 {
     friend class ComponentSystem;
+    friend class ConditionalComponentSystem;
     friend class HopsanEssentials; //Need to be able to set typename
+    friend class NumericalIntegrationSolver;
 
 public:
     //! @brief Enum type for all CQS types

@@ -60,6 +60,7 @@ public:
     // Component creation
     Component* createComponent(const HString &rTypeName);
     ComponentSystem* createComponentSystem();
+    ConditionalComponentSystem* createConditionalComponentSystem();
     void removeComponent(Component *pComponent);
     void removeNode(Node *pNode);
     bool hasComponent(const HString &rType) const;
