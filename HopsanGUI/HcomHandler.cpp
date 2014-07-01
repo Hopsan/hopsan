@@ -236,13 +236,13 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mPwd.chop(1);
 
     //Register internal function descriptions
-    registerInternalFunction("lp1", "Applies low-pass filter of first degree to vector","Usage: lp1(vector, frequency) or lp1(vector, timevector, frequency)");
-    registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)","Usage: ddt(vector) or ddt(vector, timevector)");
-    registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)", "Usage: int(vector) or int(vector, timevector)");
-    registerInternalFunction("fft", "Generates frequency spectrum plot from vector","Usage: fft(vector), fft(vector, power[true/false]), fft(vector, timevector) or fft(vector, timevector, power[true/false])");
-    registerInternalFunction("gt", "Index-wise greater than check between vectors and/or scalars (equivalent to \">\" operator)","Usage: gt(varName, threshold)\n       gt(var1, var2)");
-    registerInternalFunction("lt", "Index-wise less than check between vectors and/or scalars  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)\n       lt(var1,var2)");
-    registerInternalFunction("eq", "Index-wise fuzzy equal check between vectors and/or scalars  (equivalent to \"==\" operator)","Usage: eq(varName, threshold)\n       eq(var1, var2)");
+    registerInternalFunction("lp1", "Applies low-pass filter of first degree to vector","Usage: lp1(vector, frequency)\nUsage: lp1(vector, timevector, frequency)");
+    registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)","Usage: ddt(vector)\nUsage: ddt(vector, timevector)");
+    registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)", "Usage: int(vector)\nUsage: int(vector, timevector)");
+    registerInternalFunction("fft", "Generates frequency spectrum plot from vector","Usage: fft(vector)\nUsage: fft(vector, power[true/false])\nUsage: fft(vector, timevector)\nUsage: fft(vector, timevector, power[true/false])");
+    registerInternalFunction("gt", "Index-wise greater than check between vectors and/or scalars (equivalent to \">\" operator)","Usage: gt(varName, threshold)\nUsage: gt(var1, var2)");
+    registerInternalFunction("lt", "Index-wise less than check between vectors and/or scalars  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)\nUsage: lt(var1,var2)");
+    registerInternalFunction("eq", "Index-wise fuzzy equal check between vectors and/or scalars  (equivalent to \"==\" operator)","Usage: eq(varName, threshold, eps)\nUsage: eq(var1, var2, eps)");
     registerInternalFunction("linspace", "Linearly spaced vector","Usage: linspace(min, max, numSamples)");
     registerInternalFunction("logspace", "Logarithmicly spaced vector","Usage: logspace(min, max, numSamples)");
     registerInternalFunction("ones", "Create a vector of ones","Usage: ones(size)");
@@ -911,8 +911,10 @@ void HcomHandler::generateCommandsHelpText()
             if(mCmdList[c].group == groups[g])
             {
                 output.append("\\subsection "+mCmdList[c].cmd+" "+mCmdList[c].cmd+"\n");
-                output.append(mCmdList[c].description.replace(">>", "\\>\\>")+"<br>\n");
-                output.append(mCmdList[c].help.replace(">>", "\\>\\>").replace("\n","<br>\n"));
+                QString desc = mCmdList[c].description;
+                QString help = mCmdList[c].help;
+                output.append(desc.replace(">>", "\\>\\>")).append("<br>\n");
+                output.append(help.replace(">>", "\\>\\>").replace("\n","<br>\n"));
                 output.append("\n\n");
             }
         }

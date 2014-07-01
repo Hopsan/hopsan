@@ -343,12 +343,13 @@ Usage: aver(vector)
 
 \subsection ddt ddt()
 Differentiates vector with respect to time (or to custom vector)<br>
-Usage: ddt(vector) or ddt(vector, timevector)
+Usage: ddt(vector)<br>
+Usage: ddt(vector, timevector)
 
 \subsection eq eq()
 Index-wise fuzzy equal check between vectors and/or scalars  (equivalent to "==" operator)<br>
-Usage: eq(varName, threshold)<br>
-       eq(var1, var2)
+Usage: eq(varName, threshold, eps)<br>
+Usage: eq(var1, var2, eps)
 
 \subsection fc fc()
 Fuzzy compare, returns 1 if the values of the arguments are almost the same<br>
@@ -356,12 +357,15 @@ Usage: fc(expr, expr, tolerance)
 
 \subsection fft fft()
 Generates frequency spectrum plot from vector<br>
-Usage: fft(vector), fft(vector, power[true/false]), fft(vector, timevector) or fft(vector, timevector, power[true/false])
+Usage: fft(vector)<br>
+Usage: fft(vector, power[true/false])<br>
+Usage: fft(vector, timevector)<br>
+Usage: fft(vector, timevector, power[true/false])
 
 \subsection gt gt()
 Index-wise greater than check between vectors and/or scalars (equivalent to ">" operator)<br>
 Usage: gt(varName, threshold)<br>
-       gt(var1, var2)
+Usage: gt(var1, var2)
 
 \subsection imax imax()
 Calculate index of maximum value of vector<br>
@@ -373,7 +377,8 @@ Usage: imin(vector)
 
 \subsection int int()
 Integrates vector with respect to time (or to custom vector)<br>
-Usage: int(vector) or int(vector, timevector)
+Usage: int(vector)<br>
+Usage: int(vector, timevector)
 
 \subsection linspace linspace()
 Linearly spaced vector<br>
@@ -385,12 +390,13 @@ Usage: logspace(min, max, numSamples)
 
 \subsection lp1 lp1()
 Applies low-pass filter of first degree to vector<br>
-Usage: lp1(vector, frequency) or lp1(vector, timevector, frequency)
+Usage: lp1(vector, frequency)<br>
+Usage: lp1(vector, timevector, frequency)
 
 \subsection lt lt()
 Index-wise less than check between vectors and/or scalars  (equivalent to "<" operator)<br>
 Usage: lt(varName, threshold)<br>
-       lt(var1,var2)
+Usage: lt(var1,var2)
 
 \subsection max max()
 Calculate maximum value of vector<br>
