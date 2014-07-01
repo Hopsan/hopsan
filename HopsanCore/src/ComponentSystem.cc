@@ -2231,42 +2231,28 @@ void ComponentSystem::setTimestep(const double timestep)
 }
 
 
-//! @brief Figure out which timestep to use for all sub systems
+//! @brief Figure out which timestep to use for all sub components
 //! @param componentPtrs Vector with pointers to all sub components
 void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
 {
     for (size_t c=0; c < componentPtrs.size(); ++c)
     {
-  //      if (componentPtrs[c]->isComponentSystem())
-  //      {
-            if(componentPtrs[c]->doesInheritTimestep()) //Inherit timestep from parent system
+        // Check if component should inherit timestep from its parent system (this system)
+        if(componentPtrs[c]->doesInheritTimestep())
+        {
+            componentPtrs[c]->setTimestep(mTimestep);
+        }
+        // Else use the desired timestep, and adjust it if necessary
+        else
+        {
+            // Prevent negative or zero timesteps
+            double subTs = componentPtrs[c]->mDesiredTimestep;
+            if (subTs <= 0.0)
             {
-                componentPtrs[c]->setTimestep(mTimestep);
+                subTs = mTimestep;
             }
-            else    //Use desired timestep, and adjust it if necessary
-            {
-                double subTs = componentPtrs[c]->mDesiredTimestep;
-
-                //If a subsystem's timestep is larger than this sytem's
-                //timestep change it to this system's timestep
-                if (/*(subTs > mTimestep) || */(subTs < -0.0))
-                {
-                    subTs = mTimestep;
-                }
-                //Check that subRs is a multiple of timestep
-                else// if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
-                {
-                    //subTs should get the nearest multiple of timestep as possible,
-                    //subTs = mTimestep/floor(mTimestep/subTs+0.5);
-                    //! @note There is no reason for only allowing multiples of master time step, with the new simulate to stop time method
-                }
-                componentPtrs[c]->setTimestep(subTs);
-            }
-//        }
-//        else
-//        {
-//            componentPtrs[c]->setTimestep(mTimestep);
-//        }
+            componentPtrs[c]->setTimestep(subTs);
+        }
     }
 }
 

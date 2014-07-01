@@ -878,4 +878,5 @@ bool CSVParserNG::copyEveryNthFromColumnRange(const size_t columnIdx, const size
         mErrorString = "columnIdx out of range";
         status = false;
     }
+    return status;
 }

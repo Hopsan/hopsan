@@ -896,8 +896,9 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
 
     //UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;
-    bool timeVectorObtained = false;
-    SharedVectorVariableT pTimeVec;
+    //bool timeVectorObtained = false;
+    std::vector<double> *pCoreSysTimeVector=0, *pPrevInsertedCoreVarTimeVector=0;
+    SharedVectorVariableT pSysTimeVec, pVarTimeVec;
 
     //! @todo why not run multiappend when overwriting generation ? Baecouse tehn we are not appending, need som common open mode
     if(!overWriteLastGeneration)
@@ -923,28 +924,28 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                 {
                     // Fetch variable data
                     QVector<double> dataVec;
-                    std::vector<double> *pTimeVector;
+                    std::vector<double> *pCoreVarTimeVector=0;
                     mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getName(), varDescs[i].mName,
-                                                                                   pTimeVector, dataVec);
+                                                                                   pCoreVarTimeVector, dataVec);
 
                     // Prevent adding data if time or data vector was empty
-                    if (!pTimeVector->empty() && !dataVec.isEmpty())
+                    if (!pCoreVarTimeVector->empty() && !dataVec.isEmpty())
                     {
                         //! @todo Should be possible to have multiple timevectors per generation
                         // Store time data (only once)
-                        if(!timeVectorObtained)
+                        if(!pCoreSysTimeVector)
                         {
+                            pCoreSysTimeVector = mpParentContainerObject->getCoreSystemAccessPtr()->getLogTimeData();
+
                             // Make sure we use the same time vector
-                            pTimeVec = insertTimeVectorVariable(QVector<double>::fromStdVector(*pTimeVector)); //!< @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
+                            pSysTimeVec = insertTimeVectorVariable(QVector<double>::fromStdVector(*pCoreSysTimeVector)); //!< @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
 
                             // Set the custom unit scaling to the default
                             QString defaultTimeUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
-                            if (defaultTimeUnit != pTimeVec->getDataUnit())
+                            if (defaultTimeUnit != pSysTimeVec->getDataUnit())
                             {
-                                pTimeVec->setCustomUnitScale(UnitScale(defaultTimeUnit, gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                                pSysTimeVec->setCustomUnitScale(UnitScale(defaultTimeUnit, gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
                             }
-
-                            timeVectorObtained = true;
                         }
 
                         foundData=true;
@@ -958,7 +959,35 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                         pVarDesc->mAliasName  = varDescs[i].mAlias;
                         pVarDesc->mVariableSourceType = ModelVariableType;
 
-                        SharedVectorVariableT pNewData = insertTimeDomainVariable(pTimeVec, dataVec, pVarDesc);
+                        SharedVectorVariableT pNewData;
+                        //! @todo here we should be able to communicate between logdatahanlders to get data from parent, htis must be solved in a better way
+                        // Insert system internal timevector unless a variable has a different timevector (like those connected to interface componets)
+                        if (pCoreVarTimeVector == pCoreSysTimeVector)
+                        {
+                            pNewData = insertTimeDomainVariable(pSysTimeVec, dataVec, pVarDesc);
+                        }
+                        // Else insert the other time vector, this should only happen at most once per subsystem, otherwse something is wrong (but we do not check that)
+                        else if (pPrevInsertedCoreVarTimeVector != pCoreVarTimeVector)
+                        {
+                            // Make sure we use the same time vector
+                            SharedVariableDescriptionT pTimeVarDesc = createTimeVariableDescription();
+                            pTimeVarDesc->mDataName = "Time_Parent_"; //!< @todo wery bad hardcoded name
+                            pVarTimeVec = insertCustomVectorVariable(QVector<double>::fromStdVector(*pCoreVarTimeVector), pTimeVarDesc); //!< @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
+
+                            // Set the custom unit scaling to the default
+                            QString defaultTimeUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
+                            if (defaultTimeUnit != pVarTimeVec->getDataUnit())
+                            {
+                                pVarTimeVec->setCustomUnitScale(UnitScale(defaultTimeUnit, gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                            }
+
+                            pNewData = insertTimeDomainVariable(pVarTimeVec, dataVec, pVarDesc);
+                            pPrevInsertedCoreVarTimeVector = pCoreVarTimeVector;
+                        }
+                        else
+                        {
+                            pNewData = insertTimeDomainVariable(pVarTimeVec, dataVec, pVarDesc);
+                        }
 
                         UnitScale us;
                         pModelObject->getCustomPlotUnitOrScale(pVarDesc->mPortName+"#"+pVarDesc->mDataName, us);
@@ -2187,37 +2216,21 @@ SharedVectorVariableT LogDataHandler::insertCustomVectorVariable(const QVector<d
 SharedVectorVariableT LogDataHandler::insertTimeVectorVariable(const QVector<double> &rTimeVector)
 {
     return insertCustomVectorVariable(rTimeVector, createTimeVariableDescription());
-//    SharedVectorVariableT pTimeVec = SharedVectorVariableT(new VectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
-//                                                                        getGenerationMultiCache(mGenerationNumber)));
-//    insertVariable(pTimeVec);
-//    return pTimeVec;
 }
 
 SharedVectorVariableT LogDataHandler::insertTimeVectorVariable(const QVector<double> &rTimeVector, const QString &rImportFileName)
 {
-//    SharedVectorVariableT pTimeVec = SharedVectorVariableT(new ImportedVectorVariable(rTimeVector, mGenerationNumber, createTimeVariableDescription(),
-//                                                                                rImportFileName, getGenerationMultiCache(mGenerationNumber)));
-//    insertVariable(pTimeVec);
-//    return pTimeVec;
     return insertCustomVectorVariable(rTimeVector, createTimeVariableDescription(), rImportFileName);
 }
 
 SharedVectorVariableT LogDataHandler::insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector)
 {
     return insertCustomVectorVariable(rFrequencyVector, createFrequencyVariableDescription());
-//    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new VectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
-//                                                                              getGenerationMultiCache(mGenerationNumber)));
-//    insertVariable(pFreqVec);
-//    return pFreqVec;
 }
 
 SharedVectorVariableT LogDataHandler::insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector, const QString &rImportFileName)
 {
     return insertCustomVectorVariable(rFrequencyVector, createFrequencyVariableDescription(), rImportFileName);
-//    SharedVectorVariableT pFreqVec = SharedVectorVariableT(new ImportedVectorVariable(rFrequencyVector, mGenerationNumber, createFrequencyVariableDescription(),
-//                                                                                      rImportFileName, getGenerationMultiCache(mGenerationNumber)));
-//    insertVariable(pFreqVec);
-//    return pFreqVec;
 }
 
 SharedVectorVariableT LogDataHandler::insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc)

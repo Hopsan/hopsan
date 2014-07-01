@@ -918,7 +918,17 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
 
             // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
             // This is usefull when a simulation has been aborted
-            size_t nElements = min(pPort->getComponent()->getSystemParent()->getNumActuallyLoggedSamples(), pData->size());
+            size_t nElements;
+            if (pPort->getNodePtr())
+            {
+                nElements = min(pPort->getNodePtr()->getOwnerSystem()->getNumActuallyLoggedSamples(), pData->size());
+            }
+            else
+            {
+                // this should never happen i think
+                nElements = min(pData->size(), rpTimeVector->size());
+            }
+            //size_t nElements = min(pPort->getNodegetComponent()->getSystemParent()->getNumActuallyLoggedSamples(), pData->size());
             //qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
 
             //Ok lets copy all of the data to a Qt vector
@@ -929,6 +939,11 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
             }
         }
     }
+}
+
+std::vector<double> *CoreSystemAccess::getLogTimeData() const
+{
+    return mpCoreComponentSystem->getLogTimeVector();
 }
 
 bool CoreSystemAccess::havePlotData(const QString compname, const QString portname, const QString dataname)
