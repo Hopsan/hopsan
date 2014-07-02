@@ -423,7 +423,7 @@ protected:
         //! @todo does not yet work for dim >1
         if (mNumDims < 2)
         {
-            typename std::vector<double>::reverse_iterator rit;
+            std::vector<double>::reverse_iterator rit;
             std::vector<double> tempData;
 
             std::vector<double> &rIndexdata = mIndexData[d]; // Get reference to desired index vector
@@ -483,7 +483,7 @@ protected:
 
     size_t mNumDims;
 
-    std::vector<double> mNumSubDimDataElements;
+    std::vector<size_t> mNumSubDimDataElements;
     std::vector<double> mIndexFirst;
     std::vector<double> mIndexLast;
     std::vector<IncreasingEnumT> mIndexIncreasingOrDecreasing;
