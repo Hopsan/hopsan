@@ -230,9 +230,13 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
 
     if (mLoadType == "EXTERNAL" && contents == FullModel)
     {
-        //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
-        //If it would be, the load function will fail
-        rDomElement.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
+        // Determine the realitive path
+        QFileInfo parentModelPath(mpParentContainerObject->getModelFilePath());
+        QString relPath = relativePath(getModelFilePath(), parentModelPath.absolutePath());
+
+        // This information should ONLY be used to indicate that a subsystem is external, it SHOULD NOT be included in the actual external system
+        // If it would be, the load function will fail
+        rDomElement.setAttribute( HMF_EXTERNALPATHTAG, relPath );
     }
 
     if (mLoadType != "EXTERNAL" && contents == FullModel)

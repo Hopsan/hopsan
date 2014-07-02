@@ -297,8 +297,8 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
         if (rDomElement.tagName() == HMF_SYSTEMTAG)
         {
             //Check if we should load an embeded or external system
-            QString externalfilepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
-            if (externalfilepath.isEmpty())
+            QString externalFilePath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
+            if (externalFilePath.isEmpty())
             {
                 //Load embeded system
                 pObj->getAppearanceData()->setBasePath(pContainer->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
@@ -307,36 +307,43 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
             else
             {
                 //Now read the external file to change appearance and populate the system
-                //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
-                QString path = pContainer->getModelFileInfo().absolutePath() + "/" + externalfilepath;
-                QFile file(path);
-                if (!(file.exists()))
+                QFileInfo extFileInfo(externalFilePath);
+                if (!extFileInfo.isAbsolute())
                 {
-                    qDebug() << "file: " << path << " does not exist";
-                }
-                //! @todo need error handling if file does not exist
-                QDomDocument domDocument;
-                QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-                QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
-                //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
-                pObj->setModelFileInfo(file);
-                pObj->loadFromDomElement(externalSystemRoot);
-                //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
-
-                //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
-                if (!name.isEmpty())
-                {
-                    pObj->setName(name);
+                    externalFilePath = pContainer->getModelPath() + "/" + externalFilePath;
                 }
 
-                // Now load all overwriten parameters
-                QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
-                QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
-                while (!xmlParameter.isNull())
+                QFile externalModelFile(externalFilePath);
+                if (externalModelFile.exists())
                 {
-                    ContainerObject* pCont = dynamic_cast<ContainerObject*>(pObj);
-                    loadSystemParameter(xmlParameter, "1000", pCont);
-                    xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+                    QDomDocument domDocument;
+                    QDomElement externalRoot = loadXMLDomDocument(externalModelFile, domDocument, HMF_ROOTTAG);
+                    QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
+                    //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
+                    pObj->setModelFileInfo(externalModelFile);
+                    pObj->loadFromDomElement(externalSystemRoot);
+                    //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
+
+                    //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
+                    if (!name.isEmpty())
+                    {
+                        pObj->setName(name);
+                    }
+
+                    // Now load all overwriten parameters
+                    QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
+                    QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+                    while (!xmlParameter.isNull())
+                    {
+                        ContainerObject* pCont = dynamic_cast<ContainerObject*>(pObj);
+                        loadSystemParameter(xmlParameter, "1000", pCont);
+                        xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+                    }
+                }
+                else
+                {
+                    gpMessageHandler->addErrorMessage(QString("The file: %1 does not exist!").arg(externalFilePath));
+                    return 0;
                 }
             }
         }
@@ -415,8 +422,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     }
     else
     {
-        qDebug() << "loadGUIObj Some error happend pAppearanceData == 0";
-        //! @todo Some error message
+        gpMessageHandler->addDebugMessage(QString("In loadModelObject Some error happend, pAppearanceData == 0, for type: %1 subtype: %2").arg(type).arg(subtype));
         return 0;
     }
 }

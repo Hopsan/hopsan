@@ -2288,6 +2288,32 @@ const QFileInfo &ContainerObject::getModelFileInfo() const
     return mModelFileInfo;
 }
 
+//! @brief Returns the file path to the model that this container belongs to
+//! @details Will ask the parent if the container is an embedded container else returns the path to the external system model
+QString ContainerObject::getModelFilePath() const
+{
+    if (mModelFileInfo.isFile())
+    {
+        return mModelFileInfo.canonicalFilePath();
+    }
+    else if (mpParentContainerObject)
+    {
+        return mpParentContainerObject->getModelFilePath();
+    }
+    else
+    {
+        return "";
+    }
+}
+
+//! @brief Returns the path to the directory where the model that this container belongs to resides
+//! @details Will ask the parent if the container is an embedded container else returns the path to the external system model
+QString ContainerObject::getModelPath() const
+{
+    QFileInfo fi(getModelFilePath());
+    return fi.absolutePath();
+}
+
 
 //! @brief Specifies a script file to be executed when model is loaded
 //! @todo Shall we have this?
