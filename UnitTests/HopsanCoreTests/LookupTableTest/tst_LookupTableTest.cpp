@@ -100,7 +100,7 @@ void LookupTableTest::lookup1D()
     QFETCH(double, in);
     QFETCH(double, out);
 
-    LookupTableND<1> lookup1d;
+    LookupTable1D lookup1d;
 
     // Set the index and value vectors
     lookup1d.getIndexDataRef() = indexData.toStdVector();
@@ -108,7 +108,7 @@ void LookupTableTest::lookup1D()
 
     // Check if data is OK, triggering sort if needed
     bool dataIsOk = lookup1d.isDataOK();
-    if (!dataIsOk && lookup1d.isIndexIncreasingOrDecresing() != LookupTableND<1>::StrictlyIncreasing)
+    if (!dataIsOk && !lookup1d.allIndexStrictlyIncreasing())
     {
         lookup1d.sortIncreasing();
     }
@@ -144,7 +144,7 @@ void LookupTableTest::lookup2D()
     QFETCH(QPointF, in);
     QFETCH(double, out);
 
-    LookupTableND<2> lookup2d;
+    LookupTable2D lookup2d;
 
     // Set the index and value vectors
     lookup2d.getIndexDataRef(0) = rowIndexData.toStdVector();
@@ -189,7 +189,7 @@ void LookupTableTest::lookup3D()
     QFETCH(Point3DF, in);
     QFETCH(double, out);
 
-    LookupTableND<3> lookup3d;
+    LookupTable3D lookup3d;
 
     // Set the index and value vectors
     lookup3d.getIndexDataRef(0) = rowIndexData.toStdVector();

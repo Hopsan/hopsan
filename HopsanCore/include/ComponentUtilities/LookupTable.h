@@ -33,27 +33,24 @@ inline double interp1(const double x, const double i1, const double i2, const do
     return v1 + (x-i1)*(v2-v1)/(i2-i1);
 }
 
-template <size_t numDims>
 class LookupTableNDBase
 {
 
 public:
     enum IncreasingEnumT {StrictlyIncreasing, StrictlyDecreasing, NotStrictlyIncOrDec, Unknown};
 
-    LookupTableNDBase()
+    LookupTableNDBase(const size_t nDims)
     {
+        mNumDims = nDims;
         clear();
     }
 
     void clear()
     {
         mValueData.clear();
-        for (size_t d=0; d<numDims; ++d)
-        {
-            mIndexData[d].clear();
-            mIndexIncreasingOrDecreasing[d] = Unknown;
-        }
-        memset(&mNumSubDimDataElements, 0, sizeof(double)*numDims);
+        mIndexData.clear(); mIndexData.resize(mNumDims);
+        mNumSubDimDataElements.clear(); mNumSubDimDataElements.resize(mNumDims, 0);
+        mIndexIncreasingOrDecreasing.clear(); mIndexIncreasingOrDecreasing.resize(mNumDims, Unknown);
         resetFirstLast();
     }
 
@@ -75,7 +72,7 @@ public:
     bool isDataSizeOK()
     {
         size_t num_index=1;
-        for (size_t d=0; d<numDims; ++d)
+        for (size_t d=0; d<mNumDims; ++d)
         {
             const size_t sz = mIndexData[d].size();
             if (sz < 2)
@@ -99,17 +96,17 @@ public:
             // Example: if dim = 0 (row) then numSubDimDataElements in a 3D case will be nCols*nPlanes
             // Example: if dim = 1 (col) then numSubDimDataElements in a 3D case will be nPlanes
             // Example: if dim = 2 (plane) then numSubDimDataElements in a 3D case will be 1
-            for (size_t dim=0; dim<numDims; ++dim)
+            for (size_t dim=0; dim<mNumDims; ++dim)
             {
                 mNumSubDimDataElements[dim] = 1;
-                for (size_t sd=dim+1; sd<numDims; ++sd )
+                for (size_t sd=dim+1; sd<mNumDims; ++sd )
                 {
                     mNumSubDimDataElements[dim] *= mIndexData[sd].size();
                 }
             }
 
             bool isStrictlyInc=true;
-            for (size_t d=0; d<numDims; ++d)
+            for (size_t d=0; d<mNumDims; ++d)
             {
                 if (mIndexIncreasingOrDecreasing[d] == Unknown)
                 {
@@ -129,7 +126,7 @@ public:
 
     bool allIndexStrictlyIncreasing() const
     {
-        for (size_t d=0; d<numDims; ++d)
+        for (size_t d=0; d<mNumDims; ++d)
         {
             if (mIndexIncreasingOrDecreasing[d] != StrictlyIncreasing)
             {
@@ -150,7 +147,7 @@ public:
         if (dim<0)
         {
             start = 0;
-            end = numDims;
+            end = mNumDims;
         }
         else
         {
@@ -206,7 +203,7 @@ public:
 
     void sortIncreasing()
     {
-        for (size_t d=0; d<numDims; ++d)
+        for (size_t d=0; d<mNumDims; ++d)
         {
             if (mIndexIncreasingOrDecreasing[d] == Unknown)
             {
@@ -403,7 +400,7 @@ protected:
         rIndexdata[r2] = tmp;
 
         // Swap data
-        if (numDims == 1)
+        if (mNumDims == 1)
         {
             tmp = mValueData[r1];
             mValueData[r1] = mValueData[r2];
@@ -424,7 +421,7 @@ protected:
     void reverseAlongDim(size_t d)
     {
         //! @todo does not yet work for dim >1
-        if (numDims < 2)
+        if (mNumDims < 2)
         {
             typename std::vector<double>::reverse_iterator rit;
             std::vector<double> tempData;
@@ -456,8 +453,8 @@ protected:
 
     void resetFirstLast()
     {
-        memset(&mIndexFirst, 0, sizeof(double)*numDims);
-        memset(&mIndexLast, 1, sizeof(double)*numDims);
+        mIndexFirst.clear(); mIndexFirst.resize(mNumDims, 0);
+        mIndexLast.clear(); mIndexLast.resize(mNumDims, 1);
     }
 
     inline double limitToRange(const size_t dim, const double val) const
@@ -484,29 +481,22 @@ protected:
         return ind;
     }
 
+    size_t mNumDims;
 
-    inline size_t calcDataIndex(const size_t r, const size_t c, const size_t p) const
-    {
-        return r*LookupTableNDBase<3>::mNumSubDimDataElements[0] + c*LookupTableNDBase<3>::mNumSubDimDataElements[1] + p;
-    }
+    std::vector<double> mNumSubDimDataElements;
+    std::vector<double> mIndexFirst;
+    std::vector<double> mIndexLast;
+    std::vector<IncreasingEnumT> mIndexIncreasingOrDecreasing;
 
-    double mNumSubDimDataElements[numDims];
-    double mIndexFirst[numDims];
-    double mIndexLast[numDims];
-    IncreasingEnumT mIndexIncreasingOrDecreasing[numDims];
-
-    std::vector<double> mIndexData[numDims];
+    std::vector< std::vector<double> > mIndexData;
     std::vector<double> mValueData;
-
 };
 
-template<size_t numDims>
-class LookupTableND : public LookupTableNDBase<numDims> {};
-
-template<>
-class LookupTableND<1> : public LookupTableNDBase<1>
+class LookupTable1D : public LookupTableNDBase
 {
 public:
+    LookupTable1D() : LookupTableNDBase(1) {}
+
     inline size_t calcDataIndex(const size_t r) const
     {
         return r;
@@ -515,11 +505,6 @@ public:
     std::vector<double> &getIndexDataRef()
     {
         return mIndexData[0];
-    }
-
-    LookupTableNDBase::IncreasingEnumT isIndexIncreasingOrDecresing()
-    {
-        return mIndexIncreasingOrDecreasing[0];
     }
 
     double interpolate(const double x) const
@@ -545,13 +530,15 @@ public:
     }
 };
 
-template<>
-class LookupTableND<2> : public LookupTableNDBase<2>
+
+class LookupTable2D : public LookupTableNDBase
 {
 public:
+    LookupTable2D() : LookupTableNDBase(2) {}
+
     inline size_t calcDataIndex(const size_t r, const size_t c) const
     {
-        return r*LookupTableND<2>::mNumSubDimDataElements[0] + c;
+        return r*mNumSubDimDataElements[0] + c;
     }
 
     double interpolate(double r, double c) const
@@ -584,13 +571,14 @@ public:
 };
 
 
-template<>
-class LookupTableND<3> : public LookupTableNDBase<3>
+class LookupTable3D : public LookupTableNDBase
 {
 public:
+    LookupTable3D() : LookupTableNDBase(3) {}
+
     inline size_t calcDataIndex(const size_t r, const size_t c, const size_t p) const
     {
-        return r*LookupTableND<3>::mNumSubDimDataElements[0] + c*LookupTableND<3>::mNumSubDimDataElements[1] + p;
+        return r*mNumSubDimDataElements[0] + c*mNumSubDimDataElements[1] + p;
     }
 
     double interpolate(double r, double c, double p) const
@@ -634,7 +622,6 @@ private:
 
         return interp1(c, mIndexData[1][tl_c], mIndexData[1][tr_c], val_l, val_r);
     }
-
 };
 
 #endif // LOOKUPTABLE_H

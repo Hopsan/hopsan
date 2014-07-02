@@ -45,7 +45,7 @@ namespace hopsan {
         bool mReloadCSV;
         HString mDataCurveFileName;
         CSVParserNG mDataFile;
-        LookupTableND<2> mLookupTable;
+        LookupTable2D mLookupTable;
 
     public:
         static Component *Creator()
@@ -80,6 +80,7 @@ namespace hopsan {
                 {
                     addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mDataFile.getErrorString());
                     stopSimulation();
+                    return;
                 }
                 else
                 {
