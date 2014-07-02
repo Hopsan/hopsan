@@ -289,13 +289,13 @@ private Q_SLOTS:
         QTest::addColumn<double>("val");
         QTest::addColumn<bool>("isok");
 
-        QTest::newRow("0")      << HString("0")  << 0.d << true;
-        QTest::newRow("+0")     << HString("+0") << 0.d << true;
-        QTest::newRow("-0")     << HString("-0") << 0.d << true;
-        QTest::newRow("1")      << HString("1")  << 1.d << true;
-        QTest::newRow("+1")     << HString("+1") << 1.d << true;
-        QTest::newRow("-1")     << HString("-1") << -1.d << true;
-        QTest::newRow("-3467")  << HString("-3467") << -3467.d << true;
+        QTest::newRow("0")      << HString("0")  << 0.0 << true;
+        QTest::newRow("+0")     << HString("+0") << 0.0 << true;
+        QTest::newRow("-0")     << HString("-0") << 0.0 << true;
+        QTest::newRow("1")      << HString("1")  << 1.0 << true;
+        QTest::newRow("+1")     << HString("+1") << 1.0 << true;
+        QTest::newRow("-1")     << HString("-1") << -1.0 << true;
+        QTest::newRow("-3467")  << HString("-3467") << -3467.0 << true;
         QTest::newRow("0.056")  << HString("0.056") << 0.056 << true;
         QTest::newRow("+0.056") << HString("+0.056") << 0.056 << true;
         QTest::newRow("-0.056") << HString("-0.056") << -0.056 << true;
@@ -309,11 +309,11 @@ private Q_SLOTS:
         QTest::newRow(" 2346346.457457")     << HString(" 2346346.457457") << 2346346.457457 << true;
 
         QTest::newRow("0.056d-12")  << HString("0.056d-12") << 0.056 << false;
-        QTest::newRow("apa")        << HString("apa") << 0.d << false;
-        QTest::newRow("1234f")      << HString("1234f") << 1234.d << false;
-        QTest::newRow("AB10F")      << HString("AB10F") << 0.d << false;
+        QTest::newRow("apa")        << HString("apa") << 0.0 << false;
+        QTest::newRow("1234f")      << HString("1234f") << 1234.0 << false;
+        QTest::newRow("AB10F")      << HString("AB10F") << 0.0 << false;
         QTest::newRow("0.056e")     << HString("0.056e") << 0.056 << false;
-        QTest::newRow("234634 6.457457")     << HString("234634 6.457457") << 234634.d << false;
+        QTest::newRow("234634 6.457457")     << HString("234634 6.457457") << 234634.0 << false;
         QTest::newRow("2346346.457457 ")     << HString("2346346.457457 ") << 2346346.457457 << false;
     }
 
