@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalNumericalInput.hpp" typename="SignalNumericalInput" displayname="Numerical Input">
+        <icons>
+            <icon scale="1.0" path="SignalNumericalInput.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <ports>
+            <port x="1.0" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

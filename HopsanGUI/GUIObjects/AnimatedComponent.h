@@ -59,6 +59,9 @@ public:
    // ModelObject* getOriginal();
     ModelObject *mpModelObject;
 
+private slots:
+    void textEdited();
+
 private:
     void setupAnimationBase(QString basePath);
     void setupAnimationMovable(int m);
@@ -77,6 +80,7 @@ private:
     ModelObjectAnimationData *mpAnimationData;
 
     bool mIsDisplay;
+    bool mIsNumericalInput;
 };
 
 

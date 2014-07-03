@@ -6,5 +6,6 @@
 #include "SignalAnimationSlider.hpp"
 #include "SignalAnimationSwitch.hpp"
 #include "SignalAnimationLamp.hpp"
+#include "SignalNumericalInput.hpp"
 
 #endif // HOPSANDEFAULTSIGNALANIMATIONCOMPONENTS_H

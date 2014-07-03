@@ -116,8 +116,6 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
         mpBase->setZValue(mpBase->zValue()+1);
     }
 
-    mIsDisplay = (mpModelObject->getTypeName() == "SignalDisplay");
-
     //Draw itself to the scene
     draw();
 }
@@ -340,6 +338,44 @@ QPointF AnimatedComponent::getPortPos(QString portName)
     return mPortPositions.find(portName).value();
 }
 
+void AnimatedComponent::textEdited()
+{
+    disconnect(mpText->document(), SIGNAL(contentsChanged()), this, SLOT(textEdited()));
+
+    QTextCursor cursor = mpText->textCursor();
+
+    QString text = mpText->toPlainText();
+    text.remove("\n");
+
+    if(text.size() > 10)  //Limit value to box size
+    {
+        text.chop(1);
+        mpText->setPlainText(text);
+//        QTextCursor cursor = mpText->textCursor();
+//        cursor.movePosition(QTextCursor::EndOfLine);
+//        mpText->setTextCursor(cursor);
+    }
+
+    mpText->setPlainText(text);
+    if(text.toDouble())
+    {
+        qDebug() << "Double value: " << text.toDouble();
+        if(mpModelObject->getPort("out"))
+        {
+            mpModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->writeNodeData(mpModelObject->getName(), "out", "Value", text.toDouble());
+        }
+    }
+    else
+    {
+        qDebug() << "Illegal value: " << text;
+    }
+
+    //cursor.movePosition(QTextCursor::EndOfLine);
+    mpText->setTextCursor(cursor);
+
+    connect(mpText->document(), SIGNAL(contentsChanged()), this, SLOT(textEdited()));
+}
+
 
 //! @brief Creates the animation base icon
 //! @param [in] basePath Path to the icon file
@@ -381,9 +417,20 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
     mpText->setPlainText("0");
     mpText->setFont(QFont("Arial", 16));
     mpText->setPos(7,0);
-    if(mpModelObject->getTypeName() != "SignalDisplay")
+    mpText->hide();
+
+    mIsDisplay = (mpModelObject->getTypeName() == "SignalDisplay");
+    mIsNumericalInput = (mpModelObject->getTypeName() == "SignalNumericalInput");
+    if(mIsNumericalInput)
     {
-        mpText->hide();
+        mpText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        mpText->show();
+        connect(mpText->document(), SIGNAL(contentsChanged()), this, SLOT(textEdited()));
+    }
+    if(mIsDisplay)
+    {
+        mpText->setDefaultTextColor(Qt::green);
+        mpText->show();
     }
 }
 

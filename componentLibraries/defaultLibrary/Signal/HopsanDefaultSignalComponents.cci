@@ -6,6 +6,7 @@
     pComponentFactory->registerCreatorFunction("SignalAnimationLamp", SignalAnimationLamp::Creator);
     pComponentFactory->registerCreatorFunction("SignalAnimationGauge", SignalAnimationGauge::Creator);
     pComponentFactory->registerCreatorFunction("SignalDisplay", SignalDisplay::Creator);
+    pComponentFactory->registerCreatorFunction("SignalNumericalInput", SignalNumericalInput::Creator);
 
 // Signal Arithmetics
     pComponentFactory->registerCreatorFunction("SignalAbsoluteValue", SignalAbsoluteValue::Creator);
