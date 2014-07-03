@@ -170,8 +170,9 @@ void FindWidget::findSystemParameter(const QString &rName, const bool centerView
             foreach(CoreParameterData par, pars)
             {
                 QRegExp re(rName, Qt::CaseInsensitive, QRegExp::Wildcard);
+                QRegExp reNeg("-"+rName, Qt::CaseInsensitive, QRegExp::Wildcard);
                 //if(par.mValue == rName)
-                if (re.exactMatch(par.mValue))
+                if (re.exactMatch(par.mValue) || reNeg.exactMatch(par.mValue))
                 {
                     hasPar = true;
                 }

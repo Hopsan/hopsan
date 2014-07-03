@@ -473,6 +473,10 @@ void SystemParametersWidget::openAddParameterDialog()
 
 void SystemParametersWidget::highlightComponents(QModelIndex index)
 {
+    if(index.column() != 0)
+    {
+        return;
+    }
     QString parName = index.model()->data(index, Qt::EditRole).toString();
     gpFindWidget->findSystemParameter(parName, false);
 }
