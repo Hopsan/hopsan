@@ -19,6 +19,7 @@
 #define SOCKETIOTESTCOMPONENT_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 #include "socketutility.h"
 #include <iostream>
 
@@ -32,8 +33,35 @@ namespace hopsan {
     private:
         HString mOtherIp, mOtherPort, mThisPort;
         SocketUtility mSocketUtility;
-        int mMasterSlave, mRequireACK, mInitTimout, mSimTimout, mSleepUS;
+        int mMasterSlave, mRequireACK, mInitTimout, mSimAckTimout, mSimReciveTimout, mSleepUS;
         double *mpInput, *mpOutput;
+        Port *pInPort, *pOutPort;
+
+        bool readACK(int timeout)
+        {
+            char ack;
+            if (mSocketUtility.readSocket(ack, timeout) == 0)
+            {
+                addErrorMessage(HString("Failed to read ACK message before timeout! ")+mSocketUtility.getErrorString().c_str());
+                return false;
+            }
+            if (ack != ACK)
+            {
+                addWarningMessage(HString("Did not receive ACK got: ")+to_hstring(ack));
+                return false;
+            }
+            return true;
+        }
+
+        bool sendACKmsg(char msg)
+        {
+            if (mSocketUtility.writeSocket(msg) == 0)
+            {
+                addErrorMessage(mSocketUtility.getErrorString().c_str());
+                return false;
+            }
+            return true;
+        }
 
     public:
         static Component *Creator()
@@ -55,11 +83,12 @@ namespace hopsan {
             conds.push_back("False");
             addConditionalConstant("requireAck", "Require or Send ACK", conds, mRequireACK);
             addConstant("initTimeout", "The timeout during initialization", "ms", 5000, mInitTimout);
-            addConstant("simTimeout", "The timeout during simulation", "ms", 1000, mSimTimout);
+            addConstant("simAckTimeout", "The ack timeout during simulation", "ms", 1000, mSimAckTimout);
+            addConstant("simRecTimeout", "The receive timeout during simulation", "ms", 1000, mSimReciveTimout);
             addConstant("timeoutSleep", "The timeout wait sleep", "us", -1, mSleepUS);
 
-            addInputVariable("in", "Value input", "", 0, &mpInput);
-            addOutputVariable("out", "Value input", "", &mpOutput);
+            pInPort = addInputVariable("in", "Value input", "", 0, &mpInput);
+            pOutPort = addOutputVariable("out", "Value input", "", &mpOutput);
 
             addReadPort("sortIn", "NodeSignal", "Sorting port, value has no effect", Port::NotRequired);
             addWritePort("sortOut", "NodeSignal", "Sorting port, value has no effect", Port::NotRequired);
@@ -88,17 +117,14 @@ namespace hopsan {
                 }
 
                 // Wait for ACK or NACK
-                char ack;
-                if (mSocketUtility.readSocket(ack, mInitTimout) == 0)
+                if (mRequireACK == 0)
                 {
-                    addWarningMessage(HString("Failed to read ACK! ")+mSocketUtility.getErrorString().c_str());
+                    if (!readACK(mInitTimout))
+                    {
+                        stopSimulation();
+                        return;
+                    }
                 }
-                if ( (mRequireACK == 0) && (ack != ACK) )
-                {
-                    stopSimulation();
-                    return;
-                }
-
             }
             // Slave
             else if (mMasterSlave == 1)
@@ -111,11 +137,23 @@ namespace hopsan {
                 }
 
                 // Send ACK or NACK
-                if (input == "Initialize" && mRequireACK == 0 )
+                if (mRequireACK == 0)
                 {
-                    if (mSocketUtility.writeSocket(char(ACK)) == 0)
+                    if (input == "Initialize")
                     {
-                        addErrorMessage(mSocketUtility.getErrorString().c_str());
+                        if (!sendACKmsg(ACK))
+                        {
+                            stopSimulation();
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        if (!sendACKmsg(NACK))
+                        {
+                            stopSimulation();
+                            return;
+                        }
                     }
                 }
             }
@@ -136,20 +174,25 @@ namespace hopsan {
                 // Wait for ack
                 if (mRequireACK == 0)
                 {
-                    char ack;
-                    if (mSocketUtility.readSocket(ack, mSimTimout) == 0 || ack != ACK )
+                    if (!readACK(mSimAckTimout))
                     {
-                        addErrorMessage(HString("Failed to read ACK message! ")+mSocketUtility.getErrorString().c_str());
                         stopSimulation();
                         return;
                     }
+                }
+
+                // Wait for return message
+                double tmp;
+                if (mSocketUtility.readSocket(tmp, mSimReciveTimout))
+                {
+                    *mpOutput = tmp;
                 }
             }
             // Slave
             else if (mMasterSlave == 1)
             {
                 // Read input from socket
-                if (mSocketUtility.readSocket(*mpOutput, mSimTimout) == 0)
+                if (mSocketUtility.readSocket(*mpOutput, mSimReciveTimout) == 0)
                 {
                     addWarningMessage(HString("Failed to read double from socket before timeout!"));
                     stopSimulation();
@@ -159,10 +202,17 @@ namespace hopsan {
                 // Send ACK or NACK
                 if (mRequireACK == 0)
                 {
-                    if (mSocketUtility.writeSocket(char(ACK)) == 0)
+                    if (!sendACKmsg(ACK))
                     {
-                        addErrorMessage(mSocketUtility.getErrorString().c_str());
+                        stopSimulation();
+                        return;
                     }
+                }
+
+                // Write to socket
+                if (mSocketUtility.writeSocket(*mpInput) == 0)
+                {
+                    addErrorMessage(mSocketUtility.getErrorString().c_str());
                 }
             }
         }
