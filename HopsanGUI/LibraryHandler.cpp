@@ -67,6 +67,8 @@ LibraryHandler::LibraryHandler(QObject *parent)
     : QObject(parent)
 {
     mUpConvertAllCAF = UndecidedToAll;
+
+
 }
 
 void LibraryHandler::loadLibrary()
@@ -404,7 +406,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 
         //Verify appearance data loaded from caf file
         bool success = true;
-        if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
+        if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
         {
             //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
             success = coreAccess.hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core

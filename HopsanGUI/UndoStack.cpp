@@ -151,8 +151,8 @@ void UndoStack::undoOneStep()
         }
         else if(stuffElement.attribute("what") == "deletedsubsystem")
         {
-            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            loadModelObject(systemPortElement, mpParentContainerObject, NoUndo);
+            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            loadModelObject(systemElement, mpParentContainerObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == "addedobject")
         {
@@ -777,7 +777,7 @@ void UndoStack::registerDeletedObject(ModelObject *item)
     {
         stuffElement.setAttribute("what", "deletedcontainerport");
     }
-    else if(item->getTypeName() == "Subsystem")
+    else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
     {
         stuffElement.setAttribute("what", "deletedsubsystem");
     }
@@ -818,7 +818,7 @@ void UndoStack::registerAddedObject(ModelObject *item)
     {
         stuffElement.setAttribute("what", "addedcontainerport");
     }
-    else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME)
+    else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
     {
         stuffElement.setAttribute("what", "addedsubsystem");
     }

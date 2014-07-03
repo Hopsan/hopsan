@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="ConditionalSubsystem" displayname="">
+        <icons>
+            <icon path="conditionalSubsystemDefault.svg" type="defaultmissing"/>
+        </icons>
+        <ports>
+            <port name="on" x="0" y="0.1" a="180"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

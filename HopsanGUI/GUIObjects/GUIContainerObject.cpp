@@ -357,6 +357,14 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
         this->createRefreshExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
+
+
+    PortAppearanceMapT::Iterator itp;
+    for(itp=mModelObjectAppearance.getPortAppearanceMap().begin(); itp != mModelObjectAppearance.getPortAppearanceMap().end(); ++itp)
+    {
+        createRefreshExternalPort(itp.key());
+    }
+    redrawConnectors();
 }
 
 //! @brief Overloaded refreshAppearance for containers, to make sure that port positions are updeted if graphics size is changed
@@ -536,10 +544,14 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
     emit deselectAllConnectors();
 
     QString componentTypeName = pAppearanceData->getTypeName();
-    if (componentTypeName == HOPSANGUISYSTEMTYPENAME)
+    if (componentTypeName == HOPSANGUISYSTEMTYPENAME || componentTypeName == HOPSANGUICONDITIONALSYSTEMTYPENAME)
     {
         mpTempGUIModelObject= new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
+//    else if (componentTypeName == HOPSANGUICONDITIONALSYSTEMTYPENAME)
+//    {
+//        mpTempGUIModelObject= new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType, true);
+//    }
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
         // We must create internal port FIRST before external one
@@ -1525,7 +1537,7 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
     for(it = mSelectedModelObjectsList.begin(); it!=mSelectedModelObjectsList.end(); ++it)
     {
         qDebug() << "Copying " << (*it)->getName();
-        (*it)->saveToDomElement(*copyRoot);
+        (*it)->saveToDomElement(*copyRoot, FullModel);
 
         QStringList parNames = (*it)->getParameterNames();
         for(int n=0; n<parNames.size(); ++n)

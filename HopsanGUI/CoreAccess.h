@@ -198,6 +198,7 @@ public:
     // Component creation and removal
     QString createComponent(QString type, QString name="");
     QString createSubSystem(QString name="");
+    QString createConditionalSubSystem(QString name="");
     void removeSubComponent(QString componentName, bool doDelete);
     QString reserveUniqueName(QString desiredName);
     void unReserveUniqueName(QString name);
@@ -269,6 +270,7 @@ private:
 
     hopsan::ComponentSystem *mpCoreComponentSystem;
 };
+
 
 // Version functions
 QString getHopsanCoreVersion();

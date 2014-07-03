@@ -197,5 +197,4 @@ private:
     SensitivityAnalysisSettings mSensSettings;
 };
 
-
 #endif // GUISYSTEM_H

@@ -362,7 +362,6 @@ CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSy
     //Create new Core system component
     if (pParentCoreSystemAccess == 0)
     {
-        //Create new root system
         mpCoreComponentSystem = gHopsanCore.createComponentSystem();
     }
     else
@@ -759,7 +758,21 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
 
 QString CoreSystemAccess::createSubSystem(QString name)
 {
-    hopsan::ComponentSystem *pTempComponentSystem = gHopsanCore.createComponentSystem();
+    hopsan::ComponentSystem *pTempComponentSystem;
+    pTempComponentSystem = gHopsanCore.createComponentSystem();
+    mpCoreComponentSystem->addComponent(pTempComponentSystem);
+    if (!name.isEmpty())
+    {
+        pTempComponentSystem->setName(name.toStdString().c_str());
+    }
+    return pTempComponentSystem->getName().c_str();
+}
+
+QString CoreSystemAccess::createConditionalSubSystem(QString name)
+{
+    hopsan::ComponentSystem *pTempComponentSystem;
+
+    pTempComponentSystem = gHopsanCore.createConditionalComponentSystem();
     mpCoreComponentSystem->addComponent(pTempComponentSystem);
     if (!name.isEmpty())
     {

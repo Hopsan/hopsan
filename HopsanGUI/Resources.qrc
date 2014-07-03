@@ -152,5 +152,7 @@
         <file>graphics/uiicons/Hopsan-DistributeY.png</file>
         <file>graphics/porticons/Mechanic2dPort.svg</file>
         <file>graphics/porticons/ModelicaPort.svg</file>
+        <file>graphics/builtinCAF/visible/Subsystem/conditionalSubSystem.xml</file>
+        <file>graphics/objecticons/conditionalSubsystemDefault.svg</file>
     </qresource>
 </RCC>

@@ -101,13 +101,25 @@ void SystemContainer::commonConstructorCode()
     {
         //Create subsystem
         qDebug() << "creating subsystem and setting name in " << mpParentContainerObject->getCoreSystemAccessPtr()->getSystemName();
-        mName = mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName());
+        if(this->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
+        {
+            mName = mpParentContainerObject->getCoreSystemAccessPtr()->createConditionalSubSystem(this->getName());
+        }
+        else
+        {
+            mName = mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName());
+        }
         refreshDisplayName();
         qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentContainerObject->getName();
         mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentContainerObject->getCoreSystemAccessPtr());
     }
 
-    refreshDisplayName(); //Make sure name window is correct size for center positioning
+    if(!isTopLevelContainer())
+    {
+        refreshAppearance();
+        refreshExternalPortsAppearanceAndPosition();
+        refreshDisplayName(); //Make sure name window is correct size for center positioning
+    }
 
     if(mpParentContainerObject)
     {
@@ -137,8 +149,7 @@ void SystemContainer::setName(QString newName)
 //! Returns a string with the sub system type.
 QString SystemContainer::getTypeName() const
 {
-    //! @todo is this OK should really ask the subsystem but result should be subsystem i think
-    return HOPSANGUISYSTEMTYPENAME;
+     return mModelObjectAppearance.getTypeName();
 }
 
 //! @brief Get the system cqs type
