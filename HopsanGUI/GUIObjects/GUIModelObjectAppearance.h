@@ -113,6 +113,8 @@ public:
 
     //Container-specific data
     double flowSpeed;
+    double hydraulicMinPressure;
+    double hydraulicMaxPressure;
 
     //Calculated at initialization
     QVector<double> multiplierValues, divisorValues;

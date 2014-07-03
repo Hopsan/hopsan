@@ -193,6 +193,24 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             flowSpeed = 100;
         }
 
+        if(rDomElement.hasAttribute("hydraulicminpressure"))
+        {
+            hydraulicMinPressure = rDomElement.attribute("hydraulicminpressure").toDouble();
+        }
+        else
+        {
+            hydraulicMinPressure = 0;
+        }
+
+        if(rDomElement.hasAttribute("hydraulicmaxpressure"))
+        {
+            hydraulicMaxPressure = rDomElement.attribute("hydraulicmaxpressure").toDouble();
+        }
+        else
+        {
+            hydraulicMaxPressure = 2e7;
+        }
+
         QDomElement xmlMovable = rDomElement.firstChildElement("movable");
         int idx=0;
         while(!xmlMovable.isNull())
@@ -352,6 +370,8 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
 void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
 {
     rDomElement.setAttribute("flowspeed", flowSpeed);
+    rDomElement.setAttribute("hydraulicminpressure", hydraulicMinPressure);
+    rDomElement.setAttribute("hydraulicmaxpressure", hydraulicMaxPressure);
     for(int i=0; i<movableIdx.size(); ++i)
     {
         QDomElement movableElement = appendDomElement(rDomElement, "movable");
@@ -375,6 +395,8 @@ ModelObjectAppearance::ModelObjectAppearance()
     //Defaults for animation
     //! @todo This should maybe be somewhere else...
     mAnimationData.flowSpeed = 100;
+    mAnimationData.hydraulicMinPressure = 0;
+    mAnimationData.hydraulicMaxPressure = 2e7;
 }
 
 void ModelObjectAppearance::cacheIcons()

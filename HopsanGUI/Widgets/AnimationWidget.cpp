@@ -147,12 +147,12 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mFps=60;   //Frames per second
     mSpeedSliderSensitivity=100;
 
-    mIntensityMaxMap.insert("NodeHydraulic", 2e7);
-    mIntensityMinMap.insert("NodeHydraulic", 0);
+    mIntensityMaxMap.insert("NodeHydraulic", mpAnimationData->hydraulicMaxPressure);
+    mIntensityMinMap.insert("NodeHydraulic", mpAnimationData->hydraulicMinPressure);
     mFlowSpeedMap.insert("NodeHydraulic",mpAnimationData->flowSpeed);
 
-    mHydraulicIntensityMax = 2e7;
-    mHydraulicIntensityMin = 0;
+    mHydraulicIntensityMax = mpAnimationData->hydraulicMaxPressure;
+    mHydraulicIntensityMin = mpAnimationData->hydraulicMinPressure;
     mHydraulicSpeed = mpAnimationData->flowSpeed;
 
     //Collect plot data from container (for non-realtime animations)
@@ -261,6 +261,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 //! @brief Destructor for animation widget class
 AnimationWidget::~AnimationWidget()
 {
+
     mpTimer->stop();
     delete(mpTimer);
 }
@@ -316,6 +317,16 @@ void AnimationWidget::openPreferencesDialog()
         {
             mpContainer->mpModelWidget->hasChanged();
             mpAnimationData->flowSpeed = pFlowSpeedLineEdit->text().toDouble();
+        }
+        if(pLowPressureLineEdit->text().toDouble() != mpAnimationData->hydraulicMinPressure)
+        {
+            mpContainer->mpModelWidget->hasChanged();
+            mpAnimationData->hydraulicMinPressure = pLowPressureLineEdit->text().toDouble();
+        }
+        if(pHighPressureLineEdit->text().toDouble() != mpAnimationData->hydraulicMaxPressure)
+        {
+            mpContainer->mpModelWidget->hasChanged();
+            mpAnimationData->hydraulicMaxPressure = pHighPressureLineEdit->text().toDouble();
         }
 
         mFps = pFpsLineEdit->text().toInt();
