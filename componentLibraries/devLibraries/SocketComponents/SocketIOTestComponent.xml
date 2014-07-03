@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SocketIOTestComponent" displayname="SocketIOTestComponent" sourcecode="SocketIOTestComponent.hpp">
+        <icons>
+            <icon scale="1" path="socketio.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="0" y="1" a="180" name="sortIn"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+            <port x="1" y="1" a="0" name="sortOut"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
