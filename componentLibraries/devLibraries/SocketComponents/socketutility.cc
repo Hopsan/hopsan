@@ -189,6 +189,7 @@
 //    return mErrorString;
 //}
 
+#include "unistd.h"
 #include <QtNetwork/QUdpSocket>
 #include <QTime>
 

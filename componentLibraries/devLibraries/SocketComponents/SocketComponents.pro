@@ -16,11 +16,11 @@ DESTDIR = $${PWD}/
 # *= Means append unique
 INCLUDEPATH *= $${PWD}/../../../HopsanCore/include/
 #INCLUDEPATH *= "C:/SomeDirectoryPath/Hopsan/HopsanCore/include/"
-INCLUDEPATH *= $${PWD}/boost_1_55_0/
+#INCLUDEPATH *= $${PWD}/boost_1_55_0/
 
 # The location of the HopsanCore .dll or .so file, needed to link against when compiling your library
 LIBS *= -L$${PWD}/../../../bin
-LIBS *= -L$${PWD} -lboost_system
+#LIBS *= -L$${PWD} -lboost_system
 #LIBS *= -L"C:/SomeDirectoryPath/Hopsan/HopsanCore/include/"
 
 # Special options for deug and release mode. This will link the correct HopsanCore .dll or .so
