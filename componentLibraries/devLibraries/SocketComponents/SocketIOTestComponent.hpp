@@ -62,6 +62,8 @@ namespace hopsan {
 
             addReadPort("sortIn", "NodeSignal", "Sorting port, value has no effect", Port::NotRequired);
             addWritePort("sortOut", "NodeSignal", "Sorting port, value has no effect", Port::NotRequired);
+
+            mSocketUtility.setSleepUS(2);
         }
 
         bool preInitialize()

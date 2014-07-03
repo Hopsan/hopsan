@@ -228,6 +228,7 @@ public:
 SocketUtility::SocketUtility()
 {
     _d = new SocketUtility_d;
+    mSleepUS = 100;
 }
 
 SocketUtility::~SocketUtility()
@@ -325,7 +326,7 @@ bool SocketUtility::readSocket(char &rValue, const int timeoutMS)
     size_t nPending = numWaitingBytes();
     while ( (nPending < sizeof(char)) && (timer.elapsed() < timeoutMS))
     {
-        usleep(100);
+        usleep(mSleepUS);
         nPending = numWaitingBytes();
     }
     return readSocket(rValue);
@@ -344,7 +345,7 @@ bool SocketUtility::readSocket(double &rValue, const int timeoutMS)
     size_t nPending = numWaitingBytes();
     while ( (nPending < sizeof(double)) && (timer.elapsed() < timeoutMS))
     {
-        usleep(100);
+        usleep(mSleepUS);
         nPending = numWaitingBytes();
     }
     return readSocket(rValue);
@@ -378,7 +379,7 @@ bool SocketUtility::readSocket(std::string &rString, const size_t nElements, con
     size_t nPending = numWaitingBytes();
     while ( (nPending < nElements) && (timer.elapsed() < timeoutMS))
     {
-        usleep(100);
+        usleep(mSleepUS);
         poll(); // We need to poll here to make sure new datagrams are processed (since we don read in a separate thread)
         nPending = numWaitingBytes();
     }
@@ -416,6 +417,11 @@ size_t SocketUtility::numWaitingBytes() const
         num += _d->mUdpSocket.pendingDatagramSize();
     }
     return  size_t(num);
+}
+
+void SocketUtility::setSleepUS(size_t us)
+{
+    mSleepUS = us;
 }
 
 size_t SocketUtility::readBytes(char *pTargetBuffer, size_t nBytes)
