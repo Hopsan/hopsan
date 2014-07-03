@@ -525,6 +525,7 @@ void SensitivityAnalysisDialog::run()
     mpModel->saveTo(savePath);
     mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
 
+    //Load correct number of models depending on number of cores
     mModelPtrs.clear();
     if(gpConfig->getUseMulticore())
     {
@@ -536,6 +537,12 @@ void SensitivityAnalysisDialog::run()
     else
     {
         mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+    }
+
+    //Add base path from original model as search path, for components that load files with relative paths
+    for(int m=0; m<mModelPtrs.size(); ++m)
+    {
+        mModelPtrs.at(m)->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
     }
 
     bool progressBarOrgSetting = gpConfig->getEnableProgressBar();
