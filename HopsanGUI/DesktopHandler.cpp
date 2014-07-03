@@ -65,17 +65,17 @@ DesktopHandler::DesktopHandler()
 #if QT_VERSION >= 0x050000
     mDefaultConfigPath = getStandardLocation(QStandardPaths::ConfigLocation);
     mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation);
-    mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "/Hopsan/";
-    mDefaultDocumentsPath = getStandardLocation(QStandardPaths::DocumentsLocation) + "/Hopsan/";
+    mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "Hopsan/";
+    mDefaultDocumentsPath = getStandardLocation(QStandardPaths::DocumentsLocation) + "Hopsan/";
 #else
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
     mDefaultConfigPath = mDefaultDataPath;
     mDefaultTempPath = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/";
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
 #endif
-    mBackupPath = mDefaultDocumentsPath+"/Backup/";
-    mModelsPath = mDefaultDocumentsPath+"/Models/";
-    mScriptsPath = mDefaultDocumentsPath+"/Scripts";
+    mBackupPath = mDefaultDocumentsPath+"Backup/";
+    mModelsPath = mDefaultDocumentsPath+"Models/";
+    mScriptsPath = mDefaultDocumentsPath+"Scripts/";
     mMainPath = mExecPath+"../";
     mHelpPath = mExecPath+"../doc/user/html/";
     mComponentsPath = mExecPath+"../componentLibraries/defaultLibrary/";
@@ -85,7 +85,7 @@ DesktopHandler::DesktopHandler()
     mMSVC2008X64Path = mExecPath+"MSVC2008_x64/";
     mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
     mFMUPath = mDefaultDocumentsPath+"import/FMU/";
-    mLogDataPath = mDefaultDocumentsPath + "/LogData";
+    mLogDataPath = mDefaultDocumentsPath + "LogData/";
 }
 
 
@@ -97,7 +97,7 @@ void DesktopHandler::setupPaths()
     {
         dataDir.mkpath(mDefaultDataPath);
     }
-    QFile dummyFile1(mDefaultDataPath+"/HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
+    QFile dummyFile1(mDefaultDataPath+"HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
     if(dummyFile1.exists())
     {
         dummyFile1.remove();
@@ -130,7 +130,7 @@ void DesktopHandler::setupPaths()
     {
         documentsDir.mkpath(mDefaultDocumentsPath);
     }
-    QFile dummyFile2(mDefaultDocumentsPath+"/HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
+    QFile dummyFile2(mDefaultDocumentsPath+"HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
     if(dummyFile2.exists())
     {
         dummyFile2.remove();
@@ -150,6 +150,7 @@ void DesktopHandler::setupPaths()
                                 mExecPath,
                                 QFileDialog::ShowDirsOnly
                                 | QFileDialog::DontResolveSymlinks);
+        mCustomDocumentsPath.append('/');
         delete(pDialog);
         delete(pWidget);
         mUseCustomDocumentsPath = true;
@@ -158,11 +159,11 @@ void DesktopHandler::setupPaths()
 
 
     //Update paths depending on data, temp and documents paths
-    mBackupPath = getDocumentsPath()+"/Backup/";
-    mModelsPath = getDocumentsPath()+"/Models/";
-    mScriptsPath = getDocumentsPath()+"/Scripts/";
-    mLogDataPath = getDocumentsPath() + "/LogData/";
-    mFMUPath = getDocumentsPath() +"/import/FMU/";
+    mBackupPath = getDocumentsPath()+"Backup/";
+    mModelsPath = getDocumentsPath()+"Models/";
+    mScriptsPath = getDocumentsPath()+"Scripts/";
+    mLogDataPath = getDocumentsPath()+"LogData/";
+    mFMUPath = getDocumentsPath()+"import/FMU/";
 
      // Make sure backup folder exists, create it if not
     if (!QDir().exists(getBackupPath()))

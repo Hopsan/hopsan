@@ -269,7 +269,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     }
 
     // Determine where to store any backups of updated appearance xml files
-    mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
+    mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
     //Recurse sub directories, find all dll files and load them (FALLBACK)
     if (!loadedSomething)

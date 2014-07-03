@@ -63,7 +63,7 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
     QDir tmp;
     do
     {
-        tmp = QDir(gpDesktopHandler->getLogDataPath() + QString("/handler%1").arg(ctr));
+        tmp = QDir(gpDesktopHandler->getLogDataPath() + QString("handler%1").arg(ctr));
         ++ctr;
     }while(tmp.exists());
     tmp.mkpath(tmp.absolutePath());

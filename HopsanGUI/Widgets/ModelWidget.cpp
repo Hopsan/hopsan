@@ -846,7 +846,7 @@ void ModelWidget::simulateModelica()
         flatModel.append("end "+name+";\n");
 
         //Create folder for temporary modelica component
-        QString path = gpDesktopHandler->getDataPath()+"/ModelicaTempComponents/"+name;
+        QString path = gpDesktopHandler->getDataPath()+"ModelicaTempComponents/"+name;
         QDir().mkpath(path);
 
         QFile moFile(path+"/"+name+".mo");

@@ -1994,7 +1994,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
     // Look in both local and global scripts directory in case they are different
 
     //QDir scriptsDir(gDesktopHandler.getExecPath()+"../Scripts/HCOM/objFuncTemplates");
-    QDir scriptsDir(gpDesktopHandler->getScriptsPath()+"/HCOM/objFuncTemplates");
+    QDir scriptsDir(gpDesktopHandler->getScriptsPath()+"HCOM/objFuncTemplates");
     QStringList files = scriptsDir.entryList(QStringList() << "*.hcom");
     int f=0;
     for(; f<files.size(); ++f)

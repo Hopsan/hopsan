@@ -3452,8 +3452,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         //Load hidden copy of model to run optimization against
         QString name = mpModel->getTopLevelSystemContainer()->getName();
         QString appearanceDataBasePath = mpModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
-        QDir().mkpath(gpDesktopHandler->getDataPath()+"/optimization/");
-        QString savePath = gpDesktopHandler->getDataPath()+"/optimization/"+name+".hmf";
+        QDir().mkpath(gpDesktopHandler->getDataPath()+"optimization/");
+        QString savePath = gpDesktopHandler->getDataPath()+"optimization/"+name+".hmf";
         mpModel->saveTo(savePath);
         mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
 

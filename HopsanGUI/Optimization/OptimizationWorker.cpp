@@ -65,7 +65,7 @@ void OptimizationWorker::init()
     QString oldPath = mpHandler->mpHcomHandler->getWorkingDirectory();
     mpHandler->mpHcomHandler->setWorkingDirectory(gpDesktopHandler->getExecPath());
     //executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
-    QFile testFile1(gpDesktopHandler->getScriptsPath()+"/HCOM/optDefaultFunctions.hcom");
+    QFile testFile1(gpDesktopHandler->getScriptsPath()+"HCOM/optDefaultFunctions.hcom");
     QFile testFile2(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optDefaultFunctions.hcom");
     if(testFile1.exists())
     {
@@ -130,7 +130,7 @@ void OptimizationWorker::finalize()
 
 
 
-    QFile resultFile(gpDesktopHandler->getDocumentsPath()+"/optimization_results_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
+    QFile resultFile(gpDesktopHandler->getDocumentsPath()+"optimization_results_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
     resultFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
     QString output = QString::number(mpHandler->getAlgorithm())+",";
     output.append(QString::number(mIterations)+",");
@@ -238,7 +238,7 @@ void OptimizationWorker::printLogFile()
     //End body
     htmlCode.append("</body>\n");
 
-    QFile logFile(gpDesktopHandler->getDocumentsPath()+"/OptLog"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".html");
+    QFile logFile(gpDesktopHandler->getDocumentsPath()+"OptLog"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".html");
     logFile.open(QFile::WriteOnly | QFile::Text);
     logFile.write(htmlCode.toUtf8());
     logFile.close();

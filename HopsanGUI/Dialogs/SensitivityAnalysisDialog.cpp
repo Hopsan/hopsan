@@ -520,8 +520,8 @@ void SensitivityAnalysisDialog::run()
     //Save hidden copy of model to load multiple copies of and run sensitivity analysis against
     QString name = mpModel->getTopLevelSystemContainer()->getName();
     QString appearanceDataBasePath = mpModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
-    QDir().mkpath(gpDesktopHandler->getDataPath()+"/sensitivity/");
-    QString savePath = gpDesktopHandler->getDataPath()+"/sensitivity/"+name+".hmf";
+    QDir().mkpath(gpDesktopHandler->getDataPath()+"sensitivity/");
+    QString savePath = gpDesktopHandler->getDataPath()+"sensitivity/"+name+".hmf";
     mpModel->saveTo(savePath);
     mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
 

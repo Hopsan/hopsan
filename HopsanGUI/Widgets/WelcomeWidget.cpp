@@ -634,7 +634,7 @@ void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
     }
     else
     {
-        QFile file(gpDesktopHandler->getDataPath()+"/update.exe");
+        QFile file(gpDesktopHandler->getDataPath()+"update.exe");
         if (!file.open(QIODevice::WriteOnly)) {
             gpMessageHandler->addErrorMessage("Could not open update.exe for writing.");
             return;
@@ -651,7 +651,7 @@ void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
     // Note Do NOT add "dir" quotes to dir here, then QProcess or innosetup will somehow messup the dir argument and add C:\ twice.
     // QProcess::start will add " " automatically if needed (on windows)
     arguments << QString("/dir=%1").arg(dir);
-    pProcess->start(gpDesktopHandler->getDataPath()+"/update.exe", arguments);
+    pProcess->start(gpDesktopHandler->getDataPath()+"update.exe", arguments);
     pProcess->waitForStarted();
     QApplication::quit();
 }

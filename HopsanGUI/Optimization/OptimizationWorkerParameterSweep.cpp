@@ -198,7 +198,7 @@ void OptimizationWorkerParameterSweep::evaluateAllPoints()
 
 void OptimizationWorkerParameterSweep::printLogFile()
 {
-    QFile outputFile(gpDesktopHandler->getDocumentsPath()+"/parameter_sweep_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
+    QFile outputFile(gpDesktopHandler->getDocumentsPath()+"parameter_sweep_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
     outputFile.open(QFile::WriteOnly | QFile::Text);
     QString output;
     for(int i=0; i<mAllObjectives.size(); ++i)
