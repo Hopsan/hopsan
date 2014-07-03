@@ -36,13 +36,13 @@ public:
     const std::string &getErrorString();
     size_t numWaitingBytes() const;
 
-    void setSleepUS(size_t us);
+    void setSleepUS(int us);
 
 
 private:
     size_t readBytes(char *pTargetBuffer, size_t nBytes);
 
-    size_t mSleepUS;
+    int mSleepUS;
     SocketUtility_d *_d;
     std::string mErrorString;
 };

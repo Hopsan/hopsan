@@ -32,7 +32,7 @@ namespace hopsan {
     private:
         HString mOtherIp, mOtherPort, mThisPort;
         SocketUtility mSocketUtility;
-        int mMasterSlave, mRequireACK, mInitTimout, mSimTimout;
+        int mMasterSlave, mRequireACK, mInitTimout, mSimTimout, mSleepUS;
         double *mpInput, *mpOutput;
 
     public:
@@ -56,18 +56,18 @@ namespace hopsan {
             addConditionalConstant("requireAck", "Require or Send ACK", conds, mRequireACK);
             addConstant("initTimeout", "The timeout during initialization", "ms", 5000, mInitTimout);
             addConstant("simTimeout", "The timeout during simulation", "ms", 1000, mSimTimout);
+            addConstant("timeoutSleep", "The timeout wait sleep", "us", -1, mSleepUS);
 
             addInputVariable("in", "Value input", "", 0, &mpInput);
             addOutputVariable("out", "Value input", "", &mpOutput);
 
             addReadPort("sortIn", "NodeSignal", "Sorting port, value has no effect", Port::NotRequired);
             addWritePort("sortOut", "NodeSignal", "Sorting port, value has no effect", Port::NotRequired);
-
-            mSocketUtility.setSleepUS(2);
         }
 
         bool preInitialize()
         {
+            mSocketUtility.setSleepUS(mSleepUS);
             if (!mSocketUtility.openSocket(mOtherIp.c_str(), mOtherPort.c_str(), mThisPort.c_str()))
             {
                 addErrorMessage(mSocketUtility.getErrorString().c_str());
