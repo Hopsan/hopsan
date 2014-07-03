@@ -193,21 +193,6 @@
 #include <QtNetwork/QUdpSocket>
 #include <QTime>
 
-class dummy : public QObject
-{
-    Q_OBJECT
-public slots:
-    double readReady()
-    {
-        double a = 1;
-        a = a+14;
-        return a;
-    }
-};
-
-dummy gDummy;
-
-
 class SocketUtility_d
 {
 public:
@@ -255,10 +240,8 @@ bool SocketUtility::openSocket(const std::string &rOtherAddress, const std::stri
     _d->mOtherAddress.setAddress(QString::fromStdString(rOtherAddress));
     _d->mOtherListenPort = QString::fromStdString(rOtherPort).toUShort();
     _d->mThisListenPort = QString::fromStdString(rThisPort).toUShort();
-    bool rc = _d->mUdpSocket.bind(QHostAddress::Any, _d->mThisListenPort);
-    QObject::connect(&_d->mUdpSocket, SIGNAL(readyRead()), &gDummy, SLOT(readReady()));
-    _d->mReadBuffer.reserve(1000);
-    return rc;
+    _d->mReadBuffer.reserve(10000);
+    return _d->mUdpSocket.bind(QHostAddress::Any, _d->mThisListenPort);
 }
 
 void SocketUtility::closeSocket()
@@ -483,4 +466,4 @@ size_t SocketUtility::readBytes(char *pTargetBuffer, size_t nBytes)
     return 0;
 }
 
-#include "socketutility.moc"
+//#include "socketutility.moc"
