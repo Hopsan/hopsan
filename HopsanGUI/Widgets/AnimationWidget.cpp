@@ -346,6 +346,7 @@ void AnimationWidget::openPreferencesDialog()
 //! @brief Slot that stops the animation
 void AnimationWidget::stop()
 {
+    mpTimeSlider->setValue(0);
     mLastAnimationTime = 0.0;
     mRealTime=false;
     mpTimer->stop();
@@ -489,17 +490,17 @@ void AnimationWidget::updateAnimation()
         mIndex = mCurrentAnimationTime/mTotalTime*mnSamples;
         mIndex = round(std::min(mTimeValues.size()-1, std::max(0, mIndex)));
         mpTimeSlider->setValue(mIndex);
+        if(mIndex == mTimeValues.size()-1)
+        {
+            mLastAnimationTime = 0.0;
+            mRealTime=false;
+            mpTimer->stop();
+        }
         //! @todo Crash on next line when mIndex = -1, this should not happen
         mpTimeDisplay->setText(QString::number(mTimeValues.at(mIndex)));
 
         //Update animated connectors and components
         updateMovables();
-
-        //Stop playback if maximum time is reached
-        if(mIndex==mTimeValues.size()-1)
-        {
-            updateAnimationSpeed(0);
-        }
     }
     else    //Real-time simualtion
     {
