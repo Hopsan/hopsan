@@ -761,7 +761,7 @@ bool VariableTableWidget::setStartValues()
                     // Add an undo post (but only one for all values changed this time
                     if(!addedUndoPost)
                     {
-                        mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost("changedparameters");
+                        mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost(UNDO_CHANGEDPARAMETERS);
                         addedUndoPost = true;
                     }
                     // Register the change in undo stack

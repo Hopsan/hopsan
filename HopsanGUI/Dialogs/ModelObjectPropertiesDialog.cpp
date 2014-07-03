@@ -73,7 +73,7 @@ bool ModelObjectPropertiesDialog::setParameterValues(QVector<ParameterSettingsLa
             {
                 if(!addedUndoPost)
                 {
-                    mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost("changedparameters");
+                    mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost(UNDO_CHANGEDPARAMETERS);
                     addedUndoPost = true;
                 }
 

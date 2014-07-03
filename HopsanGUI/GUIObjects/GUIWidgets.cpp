@@ -98,7 +98,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             {
                 if(mpParentContainerObject->getSelectedGUIWidgetPtrs().size() > 1)
                 {
-                    mpParentContainerObject->getUndoStackPtr()->newPost("movedmultiplewidgets");
+                    mpParentContainerObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLEWIDGETS);
                 }
                 else
                 {

@@ -1494,7 +1494,7 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
 void ContainerObject::cutSelected(CopyStack *xmlStack)
 {
     this->copySelected(xmlStack);
-    this->mpUndoStack->newPost("cut");
+    this->mpUndoStack->newPost(UNDO_CUT);
     emit deleteSelected();
     mpModelWidget->getGraphicsView()->updateViewPort();
 }
@@ -1589,7 +1589,7 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
 //! @see copySelected()
 void ContainerObject::paste(CopyStack *xmlStack)
 {
-    mpUndoStack->newPost("paste");
+    mpUndoStack->newPost(UNDO_PASTE);
     mpModelWidget->hasChanged();
 
     QDomElement *copyRoot;
@@ -1753,7 +1753,7 @@ void ContainerObject::alignX()
 
     if(mSelectedModelObjectsList.size()+mSelectedWidgetsList.size() > 1)
     {
-        mpUndoStack->newPost("alignx");
+        mpUndoStack->newPost(UNDO_ALIGNX);
         for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
@@ -1796,7 +1796,7 @@ void ContainerObject::alignY()
 
     if(mSelectedModelObjectsList.size()+mSelectedWidgetsList.size() > 1)
     {
-        mpUndoStack->newPost("aligny");
+        mpUndoStack->newPost(UNDO_ALIGNY);
         for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
@@ -1841,7 +1841,7 @@ void ContainerObject::distributeX()
         double max = tempList.last()->getCenterPos().x();
         double diff = (max-min)/(tempList.size()-1.0);
 
-        mpUndoStack->newPost("distributex");
+        mpUndoStack->newPost(UNDO_DISTRIBUTEX);
         double pos = min+diff;
         for(int i=1; i<tempList.size()-1; ++i)
         {
@@ -1883,7 +1883,7 @@ void ContainerObject::distributeY()
         double max = tempList.last()->getCenterPos().y();
         double diff = (max-min)/(tempList.size()-1.0);
 
-        mpUndoStack->newPost("distributey");
+        mpUndoStack->newPost(UNDO_DISTRIBUTEY);
         double pos = min+diff;
         for(int i=1; i<tempList.size()-1; ++i)
         {
@@ -2111,7 +2111,7 @@ void ContainerObject::deselectAll()
 //! @see showNames()
 void ContainerObject::hideNames()
 {
-    mpUndoStack->newPost("hideallnames");
+    mpUndoStack->newPost(UNDO_HIDEALLNAMES);
     emit deselectAllNameText();
     emit hideAllNameText();
 }
@@ -2121,7 +2121,7 @@ void ContainerObject::hideNames()
 //! @see hideNames()
 void ContainerObject::showNames()
 {
-    mpUndoStack->newPost("showallnames");
+    mpUndoStack->newPost(UNDO_SHOWALLNAMES);
     emit showAllNameText();
 }
 
