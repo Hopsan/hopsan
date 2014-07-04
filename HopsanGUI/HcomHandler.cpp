@@ -4850,7 +4850,16 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     //timer.toc("Vector functions", 1);
 
     //Evaluate expression using SymHop
-    SymHop::Expression symHopExpr = SymHop::Expression(expr, SymHop::Expression::NoSimplifications);
+    bool ok;
+    SymHop::Expression symHopExpr = SymHop::Expression(expr, &ok, SymHop::Expression::NoSimplifications);
+
+    if(!ok)
+    {
+        HCOMERR("Could not evaluate expression: "+expr);
+        mAnsType = Wildcard;
+        mAnsWildcard = expr;
+        return;
+    }
 
     //Multiplication between data vector and scalar
     //timer.tic();
@@ -5860,7 +5869,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
     if(cmd.endsWith("*")) { return false; }
 
-    SymHop::Expression expr = SymHop::Expression(cmd, SymHop::Expression::NoSimplifications);
+    SymHop::Expression expr = SymHop::Expression(cmd, 0, SymHop::Expression::NoSimplifications);
 
     //Assignment  (handle separately to update local variables not known to SymHop)
     if(expr.isAssignment())
