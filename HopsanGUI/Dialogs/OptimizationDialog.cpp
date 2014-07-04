@@ -841,13 +841,15 @@ void OptimizationDialog::generateScriptFile()
 
     if(mSelectedParameters.isEmpty())
     {
-        mpMessageHandler->addErrorMessage("No parameters specified for optimization.");
+        //This error makes no sense, since it is showed on the last page only, so user will see it too late
+        //mpMessageHandler->addErrorMessage("No parameters specified for optimization.");
         return;
     }
 
     if(mSelectedFunctions.isEmpty())
     {
-        mpMessageHandler->addErrorMessage("No objective functions specified for optimization.");
+        //This error makes no sense, since it is showed on the last page only, so user will see it too late
+        //mpMessageHandler->addErrorMessage("No objective functions specified for optimization.");
         return;
     }
 
@@ -1637,7 +1639,8 @@ void OptimizationDialog::update(int idx)
     {
         if(mSelectedParameters.isEmpty())
         {
-            mpMessageHandler->addWarningMessage("No parameters specified for optimization.");
+            //This error makes no sense, since it is showed on the last page only, so user will see it too late
+            //mpMessageHandler->addWarningMessage("No parameters specified for optimization.");
 //            this->back();
             return;
         }
@@ -1651,7 +1654,8 @@ void OptimizationDialog::update(int idx)
 
         if(mSelectedFunctions.isEmpty())
         {
-            mpMessageHandler->addWarningMessage("No objective functions specified for optimization.");
+            //This error message makes no sense anymore, since it is only showed on last tab, after user has probably fixed the errors already
+            //mpMessageHandler->addWarningMessage("No objective functions specified for optimization.");
            // this->back();
             return;
         }
@@ -1971,12 +1975,14 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
     if(nSelVar > nVar)
     {
-        mpMessageHandler->addErrorMessage("Too many variables selected for this function.");
+        //This error makes no sense, since it is showed on the last page only, so user will see it too late
+        //mpMessageHandler->addErrorMessage("Too many variables selected for this function.");
         return false;
     }
     else if(nSelVar < nVar)
     {
-        mpMessageHandler->addErrorMessage("Too few variables selected for this function.");
+        //This error makes no sense, since it is showed on the last page only, so user will see it too late
+        //mpMessageHandler->addErrorMessage("Too few variables selected for this function.");
         return false;
     }
     return true;
