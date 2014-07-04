@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="60"
+   width="30"
    height="16"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="losslessconnector_user.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -86,22 +86,26 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.9999998"
-     inkscape:cx="25.815677"
-     inkscape:cy="2.7928736"
+     inkscape:zoom="2.828427"
+     inkscape:cx="-55.060144"
+     inkscape:cy="-10.996238"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1676"
-     inkscape:window-height="954"
+     inkscape:window-width="1600"
+     inkscape:window-height="876"
      inkscape:window-x="0"
-     inkscape:window-y="29"
-     inkscape:window-maximized="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
     <sodipodi:guide
        orientation="0,1"
-       position="-6.1704553,20.002087"
+       position="107.25001,14.749998"
        id="guide3178" />
   </sodipodi:namedview>
   <metadata
@@ -119,33 +123,31 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-463.74993,-517.54593)">
-    <rect
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect4085"
-       width="58.91589"
-       height="5.3622265"
-       x="464.02704"
-       y="522.72211" />
+     transform="translate(-463.74993,-512.04593)">
     <path
        inkscape:connector-curvature="0"
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 464.49994,522.29593 58.3993,0"
+       d="m 465.49383,520.04593 25.94979,0"
        id="path2385" />
     <path
-       inkscape:connector-curvature="0"
-       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 464.60063,528.79593 58.39931,0"
-       id="path2385-7" />
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.43750012;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path2998"
+       sodipodi:cx="-19.375002"
+       sodipodi:cy="7.8749995"
+       sodipodi:rx="2.8750002"
+       sodipodi:ry="2.8750002"
+       d="m -16.500002,7.8749995 a 2.8750002,2.8750002 0 1 1 -5.75,0 2.8750002,2.8750002 0 1 1 5.75,0 z"
+       transform="matrix(0.69565212,0,0,0.69565212,479.72819,514.56767)" />
     <path
-       inkscape:connector-curvature="0"
-       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 464.49995,522.60424 0,5.93015"
-       id="path2385-5" />
-    <path
-       inkscape:connector-curvature="0"
-       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 522.89922,522.5339 0,5.93015"
-       id="path2385-5-5" />
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.43750012;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path2998-5"
+       sodipodi:cx="-19.375002"
+       sodipodi:cy="7.8749995"
+       sodipodi:rx="2.8750002"
+       sodipodi:ry="2.8750002"
+       d="m -16.500002,7.8749995 a 2.8750002,2.8750002 0 1 1 -5.75,0 2.8750002,2.8750002 0 1 1 5.75,0 z"
+       transform="matrix(0.69565212,0,0,0.69565212,504.72819,514.56767)" />
   </g>
 </svg>
