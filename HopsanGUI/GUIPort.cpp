@@ -278,11 +278,11 @@ void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if (mpPortAppearance->mEnabled)
     {
         // Prevent the user from plotting MULTIPORTS.
-        if(getPortType() == QString("PowerMultiportType"))
+        if(getPortType() == QString("PowerMultiportType") && getConnectedPorts().size() != 1)
         {
             QMenu menu;
             QAction *action;
-            action = menu.addAction(QString("Cannot plot MultiPorts"));
+            action = menu.addAction(QString("Cannot plot ports with multiple connections."));
             action->setDisabled(true);
             menu.exec(event->screenPos());
         }
@@ -328,7 +328,20 @@ void Port::openRightClickMenu(QPoint screenPos)
     // Now build plot menue
     QMap<QAction*, int> plotActions;
 
-    QVector<SharedVectorVariableT> logVars = mpParentModelObject->getParentContainerObject()->getLogDataHandler()->getMatchingVariablesAtGeneration(QRegExp(makeConcatName(mpParentModelObject->getName(),this->getName(),".*")));
+    LogDataHandler *pLogHandler = mpParentModelObject->getParentContainerObject()->getLogDataHandler();
+    QVector<SharedVectorVariableT> logVars;
+    QString comp, port;
+    if(getPortType() == QString("PowerMultiportType"))
+    {
+        comp = getConnectedPorts().first()->getParentModelObjectName();
+        port = getConnectedPorts().first()->getName();
+    }
+    else
+    {
+        comp = mpParentModelObject->getName();
+        port = this->getName();
+    }
+    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeConcatName(comp,port,".*")));
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;
@@ -402,6 +415,10 @@ void Port::openRightClickMenu(QPoint screenPos)
         it = plotActions.find(selectedAction);
         if (it != plotActions.end())
         {
+            if(getPortType() == QString("PowerMultiportType"))
+            {
+                getConnectedPorts().first()->plot(logVars[it.value()]->getDataName(), "");
+            }
             plot(logVars[it.value()]->getDataName(), "");
         }
     }
