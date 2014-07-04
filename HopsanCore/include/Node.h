@@ -126,8 +126,7 @@ private:
     void addConnectedPort(Port *pPort);
     void removeConnectedPort(const Port *pPort);
 
-    void enableLog();
-    void disableLog();
+    void setLoggingEnabled(bool enable=true);
 
     // Private member variables
     HString mNodeType;

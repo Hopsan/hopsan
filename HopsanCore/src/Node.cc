@@ -60,7 +60,7 @@ Node::Node(const size_t datalength)
     mForceDisableLog = false;
 
     // Default dissabled logging
-    disableLog();
+    setLoggingEnabled(false);
 }
 
 Node::~Node()
@@ -292,22 +292,18 @@ bool Node::isConnectedToPort(const Port *pPort) const
 
 
 //! @brief Enable node data logging
-void Node::enableLog()
+void Node::setLoggingEnabled(bool enable)
 {
-    if(!mForceDisableLog)
+    if(!mForceDisableLog && enable)
     {
         mDoLog = true;
     }
+    else
+    {
+        mDoLog = false;
+        mDataStorage.clear();
+    }
 }
-
-
-//! @brief Disable node data logging
-void Node::disableLog()
-{
-    mDoLog = false;
-    mDataStorage.clear();
-}
-
 
 void Node::setForceDisableLog(bool value)
 {

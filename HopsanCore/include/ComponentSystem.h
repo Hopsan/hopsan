@@ -309,7 +309,7 @@ namespace hopsan {
 //        void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
 //        void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
         void setupLogSlotsAndTs(const double simStartT, const double simStopT, const double simTs);
-        void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
+        void preAllocateLogSpace();
 
         // Add and Remove subcomponent ptrs from storage vectors
         void addSubComponentPtrToStorage(Component* pComponent);

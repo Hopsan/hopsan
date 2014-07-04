@@ -2503,23 +2503,57 @@ void HcomHandler::executeSavePlotWindowCommand(const QString cmd)
     }
 }
 
+
+
+//! @brief Execute function for "dlog" command
 void HcomHandler::executeDisableLoggingCommand(const QString cmd)
 {
-    if(getNumberOfCommandArguments(cmd) != 1)
+    int nArgs = getNumberOfCommandArguments(cmd);
+    if(nArgs < 1 || nArgs > 2)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
+    //Parse second argument (if existing)
+    bool noAlias = false;
+    if(getNumberOfCommandArguments(cmd) == 2)
+    {
+        if(splitCommandArguments(cmd).at(1) == "-noalias")
+        {
+            noAlias = true;
+        }
+        else
+        {
+            HCOMERR("Unknown argument.");   //Two arguments, but second one is not "-noalias", which is the only allowed one
+            return;
+        }
+    }
+
+    //Disable all nodes matching specified port name wildcard
     QList<Port*> vPortPtrs;
     getPorts(cmd, vPortPtrs);
-
     for(int p=0; p<vPortPtrs.size(); ++p)
     {
         mpModel->getViewContainerObject()->getCoreSystemAccessPtr()->setLoggingEnabled(vPortPtrs.at(p)->getParentModelObjectName(), vPortPtrs.at(p)->getName(), false);
     }
+
+
+    //If alias shall be ignored, we must enable all nodes with alias variables again
+    if(noAlias)
+    {
+        foreach(const QString &aliasName, mpModel->getViewContainerObject()->getAliasNames())
+        {
+            QString var = mpModel->getViewContainerObject()->getFullNameFromAlias(aliasName);
+            QString comp = var.section("#",0,0);
+            QString port = var.section("#",1,1);
+            mpModel->getViewContainerObject()->getCoreSystemAccessPtr()->setLoggingEnabled(comp, port, true);
+        }
+    }
 }
 
+
+//! @brief Execute function for "elog" command
 void HcomHandler::executeEnableLoggingCommand(const QString cmd)
 {
     if(getNumberOfCommandArguments(cmd) != 1)
@@ -5386,7 +5420,13 @@ void HcomHandler::getPorts(const QString &rStr, QList<Port*> &rPorts) const
     {
         QString compName = rStr.split(".").first();
         QString portName = rStr.split(".").last();
-        rPorts.append(pCurrentSystem->getModelObject(compName)->getPort(portName));
+        if(pCurrentSystem->hasModelObject(compName))
+        {
+            if(pCurrentSystem->getModelObject(compName)->getPort(portName))
+            {
+                rPorts.append(pCurrentSystem->getModelObject(compName)->getPort(portName));
+            }
+        }
     }
 }
 

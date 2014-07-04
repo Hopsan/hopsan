@@ -928,14 +928,8 @@ void ComponentSystem::removeSubNode(Node* pNode)
 
 
 //! @brief preAllocates log space (to speed up later access for log writing)
-void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples)
+void ComponentSystem::preAllocateLogSpace()
 {
-    //Suppress unused variable warnings
-    //! @todo Shall we keep these parameters?
-    (void)startT;
-    (void)stopT;
-    (void)nSamples;
-
     bool success = true;
 //    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 //    this->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
@@ -966,11 +960,11 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
                     // Then we should disable logging for that node as loging the startvalue does not make sense
                     if ( ((*it)->getNumConnectedPorts() < 2) && ((*it)->getNumberOfPortsByType(ReadPortType) == 1) )
                     {
-                        (*it)->disableLog();
+                        (*it)->setLoggingEnabled(false);
                     }
                     else
                     {
-                        (*it)->enableLog();
+                        (*it)->setLoggingEnabled(true);
                         (*it)->preAllocateLogSpace(mnLogSlots);
                     }
                     success = true;
@@ -979,7 +973,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
                 {
                     //cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
                     addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
-                    (*it)->disableLog();
+                    (*it)->setLoggingEnabled(false);
                     success = false;
                 }
             }
@@ -2353,14 +2347,14 @@ void ComponentSystem::setAllNodesDoLogData(const bool logornot)
 
         for (size_t i=0; i<mSubNodePtrs.size(); ++i)
         {
-            mSubNodePtrs[i]->enableLog();
+            mSubNodePtrs[i]->setLoggingEnabled(true);
         }
     }
     else
     {
         for (size_t i=0; i<mSubNodePtrs.size(); ++i)
         {
-            mSubNodePtrs[i]->disableLog();
+            mSubNodePtrs[i]->setLoggingEnabled(false);
         }
     }
 
@@ -2696,7 +2690,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     //! @todo make it possible to use other logtimestep methods then nLogSamples
 
     // preAllocate local logspace based on necessary number of logslots
-    this->preAllocateLogSpace(startT, stopT, mnLogSlots);
+    this->preAllocateLogSpace();
 
     // If we failed allocation then abort
     if (mStopSimulation)

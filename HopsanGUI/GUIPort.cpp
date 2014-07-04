@@ -760,7 +760,7 @@ QStringList Port::getFullVariableNames()
     QStringList names2;
     Q_FOREACH(QString name, names)
     {
-        names2.append(name.prepend(makeConcatName(getParentModelObjectName(), getName(), name)));
+        names2.append(makeConcatName(getParentModelObjectName(), getName(), name));
     }
     return names2;
 }
