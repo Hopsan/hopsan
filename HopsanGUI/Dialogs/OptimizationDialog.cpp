@@ -136,7 +136,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpEpsilonXLineEdit = new QLineEdit("0.0001", this);
     mpEpsilonXLineEdit->setValidator(new QDoubleValidator());
 
-    mpPlotBestWorstCheckBox = new QCheckBox("Plot best and worst objective values", this);
+    mpPlotBestWorstCheckBox = new QCheckBox("Plot objective function values", this);
     mpPlotBestWorstCheckBox->setChecked(false);
 
     mpPlotParticlesCheckBox = new QCheckBox("Plot particles", this);

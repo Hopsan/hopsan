@@ -438,6 +438,8 @@ void OptimizationWorker::plotObjectiveFunctionValues()
     if(!mPlotObjectiveFunctionValues) { return; }
 
     LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+
+    //Best objective value
     SharedVectorVariableT bestVar = pHandler->getVectorVariable("BestObjective", -1);
     if(bestVar.isNull())
     {
@@ -451,6 +453,8 @@ void OptimizationWorker::plotObjectiveFunctionValues()
     {
         bestVar->append(mObjectives[mBestId]);
     }
+
+    //Worst objective value
     SharedVectorVariableT worstVar = pHandler->getVectorVariable("WorstObjective", -1);
     if(worstVar.isNull())
     {
@@ -464,6 +468,20 @@ void OptimizationWorker::plotObjectiveFunctionValues()
         worstVar->append(mObjectives[mWorstId]);
     }
 
+    //Newest objective value
+    SharedVectorVariableT newestVar = pHandler->getVectorVariable("NewestObjective", -1);
+    if(newestVar.isNull())
+    {
+        newestVar = pHandler->defineNewVectorVariable("NewestObjective");
+        newestVar->preventAutoRemoval();
+        newestVar->assignFrom(mObjectives[mLastWorstId]);
+        newestVar->setCacheDataToDisk(false);
+    }
+    else
+    {
+        newestVar->append(mObjectives[mLastWorstId]);
+    }
+
     // If this is the first time, then recreate the plotwindows
     // Note! plots will autoupdate when new data is appended, so there is no need to call plotab->update()
     if(bestVar.data()->getDataSize() == 1)
@@ -471,6 +489,7 @@ void OptimizationWorker::plotObjectiveFunctionValues()
         PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("ObjectiveFunction");
         gpPlotHandler->plotDataToWindow(pPW, bestVar, 0, true, QColor("Green"));
         gpPlotHandler->plotDataToWindow(pPW, worstVar, 0, true, QColor("Red"));
+        gpPlotHandler->plotDataToWindow(pPW, newestVar, 0, true, QColor("Orange"));
     }
 }
 
