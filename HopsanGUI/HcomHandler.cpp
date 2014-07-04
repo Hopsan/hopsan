@@ -2008,6 +2008,8 @@ void HcomHandler::executeChangePlotWindowCommand(const QString cmd)
     }
 
     mpCurrentPlotWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne(cmd);
+    gpMainWindowWidget->activateWindow();
+    mpCurrentPlotWindow->raise();
 }
 
 
@@ -3859,6 +3861,7 @@ void HcomHandler::addPlotCurve(HopsanVariable data, const int axis, bool autoRef
     // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
     // else we will just set to same
     mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis, autoRefresh);
+    mpCurrentPlotWindow->raise();
     gpMainWindowWidget->activateWindow();
 }
 
