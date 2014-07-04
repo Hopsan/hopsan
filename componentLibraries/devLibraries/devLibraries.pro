@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = TestLib SocketComponents
+SUBDIRS = TestLib
