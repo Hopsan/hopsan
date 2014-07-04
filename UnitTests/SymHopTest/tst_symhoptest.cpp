@@ -826,6 +826,28 @@ private Q_SLOTS:
         QTest::newRow("33") << Expression("x^2-y^2") << variables << x*x-y*y << true;
         QTest::newRow("33") << Expression("(x-y)^2-(2*y+23)^2") << variables << (x-y)*(x-y)-(2*y+23)*(2*y+23) << true;
     }
+
+
+
+    void SymHop_Creator_Verification()
+    {
+        QFETCH(QString, str);
+        QFETCH(bool, ok);
+
+        QString failmsg("Failure! Expression verification check returned wrong value.");
+        bool wasOk;
+        Expression(str, &wasOk);
+        QVERIFY2(wasOk == ok, failmsg.toStdString().c_str());
+    }
+
+    void SymHop_Creator_Verification_data()
+    {
+        QTest::addColumn<QString>("str");
+        QTest::addColumn<bool>("ok");
+        QTest::newRow("0") << "5*(3-1)" << true;
+        QTest::newRow("1") << "5*(3-1))" << false;
+        QTest::newRow("2") << "" << false;
+    }
 };
 
 QTEST_APPLESS_MAIN(SymHopTests)

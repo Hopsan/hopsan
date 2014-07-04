@@ -71,20 +71,25 @@ void hAssert(const bool cond)
 //! @param indata String containg a numerical expression
 //! @param simplifications Specifies the degree of simplification
 //FIXED
-Expression::Expression(const QString indata, const ExpressionSimplificationT simplifications)
+Expression::Expression(const QString indata, bool *ok, const ExpressionSimplificationT simplifications)
 {
-    bool ok;
-    QString temp = QString::number(indata.toDouble(&ok), 'f', 20);
+    bool isDouble;
+    QString temp = QString::number(indata.toDouble(&isDouble), 'f', 20);
+
+    if(!ok)
+    {
+        ok = new bool;
+    }
 
     //If it is a number, make sure it has correct precision and remove extra zeros at end. Otherwise use original string.
-    if(ok)
+    if(isDouble)
     {
         while(temp.endsWith("00")) { temp.chop(1); }
-        commonConstructorCode(QStringList() << temp, simplifications);
+        commonConstructorCode(QStringList() << temp, *ok, simplifications);
     }
     else
     {
-        commonConstructorCode(QStringList() << indata, simplifications);
+        commonConstructorCode(QStringList() << indata, *ok, simplifications);
     }
 }
 
@@ -97,7 +102,8 @@ Expression::Expression(const QString indata, const ExpressionSimplificationT sim
 //FIXED
 Expression::Expression(QStringList symbols, const ExpressionSimplificationT simplifications)
 {
-    commonConstructorCode(symbols, simplifications);
+    bool dummy;
+    commonConstructorCode(symbols, dummy, simplifications);
 }
 
 
@@ -178,8 +184,10 @@ Expression::Expression(const double value)
 //! @param simplifications Specifies the degree of simplification
 //! @param parentSeparator Used when recursively creating the tree
 //FIXED
-void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimplificationT simplifications)
+void Expression::commonConstructorCode(QStringList symbols, bool &ok, const ExpressionSimplificationT simplifications)
 {
+    ok = true;
+
     mpLeft = 0;
     mpRight = 0;
     mpBase = 0;
@@ -192,8 +200,18 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         QString str = symbols.first();
         symbols.clear();
 
+        if(str.count("(") != str.count(")"))
+        {
+            ok = false;
+            return;
+        }
+
         //Don't create empty expressions
-        if(str.isEmpty()) { return; }
+        if(str.isEmpty())
+        {
+            ok = false;
+            return;
+        }
 
         if(str.startsWith("-(") && str.endsWith(")"))
         {

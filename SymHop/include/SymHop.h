@@ -57,13 +57,13 @@ public:
     enum ExpressionTypeT {Null, Equality,Symbol,Operator,Function};
     enum ExpressionSimplificationT {FullSimplification, TrivialSimplifications, NoSimplifications};
     enum ExpressionRecursiveT {Recursive, NonRecursive};
-    Expression(QString const indata=QString(), const ExpressionSimplificationT simplifications=FullSimplification);
+    Expression(QString const indata=QString(), bool *ok=0, const ExpressionSimplificationT simplifications=FullSimplification);
     Expression(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification);
     //Expression(const Expression left, const QString mid, const Expression right, const ExpressionSimplificationT simplifications=FullSimplification);
     //Expression(const QList<Expression> children, const QString separator);
     Expression(const double value);
 
-    void commonConstructorCode(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification);
+    void commonConstructorCode(QStringList symbols, bool &ok, const ExpressionSimplificationT simplifications=FullSimplification);
 
     bool operator==(const Expression &other) const;
     void operator=(const Expression &other);
