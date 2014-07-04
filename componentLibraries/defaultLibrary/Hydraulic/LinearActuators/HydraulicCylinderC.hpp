@@ -53,11 +53,12 @@ class HydraulicCylinderC : public ComponentC
         std::vector<double*> mvpND_p2, mvpND_q2, mvpND_c2, mvpND_Zc2;
         double *mpA1, *mpA2, *mpSl, *mpV01, *mpV02, *mpBp, *mpBetae, *mpCLeak;
 
-        double *mpf3, *mpx3, *mpv3, *mpc3, *mpZx3, *mpme;
+        double *mpF3, *mpx3, *mpv3, *mpc3, *mpZx3, *mpMe3;
+        double *mpF4, *mpx4, *mpv4, *mpc4, *mpZx4, *mpMe4;
         size_t mNumPorts1, mNumPorts2;
 
         //Ports
-        Port *mpP1, *mpP2, *mpP3;
+        Port *mpP1, *mpP2, *mpP3, *mpP4;
 
     public:
         static Component *Creator()
@@ -75,6 +76,7 @@ class HydraulicCylinderC : public ComponentC
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
             mpP2 = addPowerMultiPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
+            mpP4 = addPowerPort("P4", "NodeMechanic", Port::NotRequired);
 
 
 
@@ -138,16 +140,23 @@ class HydraulicCylinderC : public ComponentC
                 *mvpND_q2[i] = getDefaultStartValue(mpP2, NodeHydraulic::Flow)/double(mNumPorts2);
                 *mvpND_c2[i] = getDefaultStartValue(mpP2, NodeHydraulic::Pressure);
             }
-            mpf3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
+            mpF3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
             mpx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
             mpv3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
             mpc3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
             mpZx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
-            mpme = getSafeNodeDataPtr(mpP3, NodeMechanic::EquivalentMass);
+            mpMe3 = getSafeNodeDataPtr(mpP3, NodeMechanic::EquivalentMass);
+
+            mpF4 = getSafeNodeDataPtr(mpP4, NodeMechanic::Force);
+            mpx4 = getSafeNodeDataPtr(mpP4, NodeMechanic::Position);
+            mpv4 = getSafeNodeDataPtr(mpP4, NodeMechanic::Velocity);
+            mpc4 = getSafeNodeDataPtr(mpP4, NodeMechanic::WaveVariable);
+            mpZx4 = getSafeNodeDataPtr(mpP4, NodeMechanic::CharImpedance);
+            mpMe4 = getSafeNodeDataPtr(mpP4, NodeMechanic::EquivalentMass);
 
             //Declare local variables;
-            double p1, p2, x3, v3;
-            double Zc1, Zc2, c3, Zx3;
+            double p1, p2, x3, v3, x4, v4;
+            double Zc1, Zc2, c3, Zx3, c4, Zx4;
             double qi1, qi2, V1, V2, qLeak, V1min, V2min;
 
             //Read variables from nodes
@@ -155,10 +164,12 @@ class HydraulicCylinderC : public ComponentC
             p2 = (*mvpND_p2[0]);
             x3 = (*mpx3);
             v3 = (*mpv3);
+            x4 = (*mpx4);
+            v4 = (*mpv4);
 
             //Size of volumes
-            V1 = V01+A1*(-x3);
-            V2 = V02+A2*(sl+x3);
+            V1 = V01+A1*(x4-x3);
+            V2 = V02+A2*(sl+x3-x4);
             V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*1.0); //me is not written to node yet.
             V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*1.0);
             if(V1<V1min) V1 = V1min;
@@ -167,10 +178,11 @@ class HydraulicCylinderC : public ComponentC
             Zc1 = (double(mNumPorts1)+2.0) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
             Zc2 = (double(mNumPorts2)+2.0) / 2.0 * betae/V2*mTimestep/(1.0-alpha);
             Zx3 = A1*A1*Zc1 +A2*A2*Zc2 + bp;
+            Zx4 = A1*A1*Zc1 +A2*A2*Zc2 + bp;
 
             //Internal flows
-            qi1 = v3*A1;
-            qi2 = -v3*A2;
+            qi1 = v3*A1-v4*A1;
+            qi2 = v4*A2-v3*A2;
 
             ci1 = p1 + Zc1*qi1;
             ci2 = p2 + Zc2*qi2;
@@ -182,6 +194,7 @@ class HydraulicCylinderC : public ComponentC
             cl2 = p2 + Zc2*qLeak;
 
             c3 = A1*ci1 - A2*ci2;
+            c4 = -A1*ci1 + A2*ci2;
 
             //Write to nodes
             for(size_t i=0; i<mNumPorts1; ++i)
@@ -196,6 +209,8 @@ class HydraulicCylinderC : public ComponentC
             }
             (*mpc3) = c3;
             (*mpZx3) = Zx3;
+            (*mpc3) = c4;
+            (*mpZx4) = Zx4;
         }
 
         void simulateOneTimestep()
@@ -208,7 +223,10 @@ class HydraulicCylinderC : public ComponentC
             double Zc2 = (*mvpND_Zc2[0]);          //never touch them, so let's just use first value
             double x3 = (*mpx3);
             double v3 = (*mpv3);
-            double me = (*mpme);
+            double me3 = (*mpMe3);
+            double x4 = (*mpx4);
+            double v4 = (*mpv4);
+            double me4 = (*mpMe4);
 
             double A1 = (*mpA1);
             double A2 = (*mpA2);
@@ -223,15 +241,15 @@ class HydraulicCylinderC : public ComponentC
             qLeak = cLeak*(cl1-cl2)/(1.0+cLeak*(Zc1+Zc2));
 
             //Internal flows
-            qi1 = v3*A1;
-            qi2 = -v3*A2;
+            qi1 = v3*A1-v4*A1;
+            qi2 = -v3*A2+v4*A1;
 
             //Size of volumes
-            V1 = V01+A1*(-x3);
-            V2 = V02+A2*(sl+x3);
-            if(me <= 0)        //Me must be bigger than zero
+            V1 = V01+A1*(x4-x3);
+            V2 = V02+A2*(sl+x3-x4);
+            if(me3+me4 <= 0)        //Me must be bigger than zero
             {
-                addDebugMessage("Me = "+to_hstring(me));
+                addDebugMessage("Me = "+to_hstring(me3+me4));
 
                 //! @todo what the heck is this all about?
                 if(mTime > mTimestep*1.5)
@@ -242,12 +260,13 @@ class HydraulicCylinderC : public ComponentC
                 else        //Don't check first time step, because C is executed before Q and Q may not have written me durint initalization
                 {
                     addWarningMessage("Equivalent mass 'me' not initialized to a value greater than 0.");
-                    me = 1;
+                    me3 = 1;
+                    me4 = 0;
                 }
             }
 
-            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
-            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
+            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*(me3+me4));
+            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*(me3+me4));
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
@@ -284,6 +303,10 @@ class HydraulicCylinderC : public ComponentC
             //Internal mechanical port
             double c3 = A1*ci1 - A2*ci2;// + CxLim;
             double Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp;// + ZxLim;
+
+            double c4 = -A1*ci1 + A2*ci2;
+            double Zx4 = A1*A1*Zc1 + A2*A2*Zc2 + bp;// + ZxLim;
+
             //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
             //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
 
@@ -300,6 +323,8 @@ class HydraulicCylinderC : public ComponentC
             }
             (*mpc3) = c3;
             (*mpZx3) = Zx3;
+            (*mpc4) = c4;
+            (*mpZx4) = Zx4;
         }
 
 

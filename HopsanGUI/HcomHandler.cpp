@@ -970,6 +970,16 @@ QMap<QString, SymHopFunctionoid*> HcomHandler::getLocalFunctionoidPointers() con
 //! @param cmd The command entered by user
 void HcomHandler::executeCommand(QString cmd)
 {
+    //Allow several commands on one line, separated by semicolon
+    if(cmd.contains(";"))
+    {
+        QStringList cmdList = cmd.split(";");
+        foreach(const QString &tempCmd, cmdList)
+        {
+            executeCommand(tempCmd);
+        }
+    }
+
     cmd = cmd.simplified();
 
     QString majorCmd = cmd.split(" ").first();

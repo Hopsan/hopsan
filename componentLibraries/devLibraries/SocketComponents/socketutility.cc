@@ -1,5 +1,7 @@
 #include "socketutility.h"
 
+#include <unistd.h>
+
 //#include "boost/asio.hpp"
 
 //using namespace boost::asio::ip;
