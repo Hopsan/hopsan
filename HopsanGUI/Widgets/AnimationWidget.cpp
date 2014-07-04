@@ -44,7 +44,7 @@
 #include "ModelWidget.h"
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/LibraryWidget.h"
-
+#include "MainWindow.h"
 
 //! @brief Constructor for the animation widget class
 //! @param [in] parent Pointer to parent widget
@@ -64,6 +64,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpGraphicsScene->setSceneRect(0,0,5000,5000);
 
     //Create graphics view
+    GraphicsView *pOrgView = mpContainer->mpModelWidget->getGraphicsView();
     mpGraphicsView = new AnimatedGraphicsView(mpGraphicsScene,0);
     mpGraphicsView->setGeometry(0,0,500,500);
     mpGraphicsView->setInteractive(true);
@@ -74,9 +75,17 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpGraphicsView->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     mpGraphicsView->setCacheMode(QGraphicsView::CacheBackground);
     mpGraphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
-    mpGraphicsView->centerOn(mpGraphicsView->sceneRect().topLeft());
+    //mpGraphicsView->centerOn(mpGraphicsView->sceneRect().topLeft());
+    mpGraphicsView->setZoomFactor(pOrgView->getZoomFactor());
     mpGraphicsView->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
-    mpGraphicsView->centerOn(2500,2500);
+    double X,Y,Z;
+    pOrgView->getViewPort(X,Y,Z);
+    mpGraphicsView->centerOn(X,Y+3/Z);
+
+    connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),    mpGraphicsView,    SLOT(resetZoom()),   Qt::UniqueConnection);
+    connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),    mpGraphicsView,    SLOT(zoomIn()),      Qt::UniqueConnection);
+    connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    mpGraphicsView,    SLOT(zoomOut()),     Qt::UniqueConnection);
+    connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),    mpGraphicsView,    SLOT(centerView()),  Qt::UniqueConnection);
 
     //Create control panel widgets
     mpTimeDisplay = new QLineEdit(this);
@@ -261,9 +270,15 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 //! @brief Destructor for animation widget class
 AnimationWidget::~AnimationWidget()
 {
-
     mpTimer->stop();
     delete(mpTimer);
+
+    //Make sure any changes made in zoom and position are transfered back to original graphics view
+    GraphicsView *pOrgView = mpContainer->mpModelWidget->getGraphicsView();
+    pOrgView->setZoomFactor(mpGraphicsView->getZoomFactor());
+    double X,Y,Z;
+    mpGraphicsView->getViewPort(X,Y,Z);
+    pOrgView->centerOn(X,Y+33/Z);
 }
 
 
