@@ -83,7 +83,7 @@ namespace hopsan {
             mDenV[0] = B;
             mDenV[1] = J;
 
-            mFilterX.initialize(mTimestep, mNumX, mDenX, t1-t2, -a1);
+            mFilterX.initialize(mTimestep, mNumX, mDenX, t1-t2, -a1, -1.5e300, 1.5e300, -w1);
             mFilterV.initialize(mTimestep, mNumV, mDenV, t1-t2 - k*a2, -w1);
         }
 

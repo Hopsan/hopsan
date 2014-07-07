@@ -112,7 +112,7 @@ namespace hopsan {
             mDenV[0] = (*mpB);
             mDenV[1] = mMass;
 
-            mFilterX.initialize(mTimestep, mNumX, mDenX, f1-f2, x2);
+            mFilterX.initialize(mTimestep, mNumX, mDenX, f1-f2, x2, -1.5e300, 1.5e300, v2);
             mFilterV.initialize(mTimestep, mNumV, mDenV, f1-f2 - (*mpK)*x2, v2);
 
             (*mpP1_me) = mMass;

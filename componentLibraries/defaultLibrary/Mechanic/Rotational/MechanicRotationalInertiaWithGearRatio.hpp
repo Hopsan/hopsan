@@ -91,7 +91,7 @@ namespace hopsan {
             mDenOmega[0] = B;
             mDenOmega[1] = J;
 
-            mThetaFilter.initialize(mTimestep, mNumTheta, mDenTheta, U*t1-t2, a2);
+            mThetaFilter.initialize(mTimestep, mNumTheta, mDenTheta, U*t1-t2, a2, -1.5e300, 1.5e300, w2);
             mOmegaFilter.initialize(mTimestep, mNumOmega, mDenOmega, U*t1-t2, w2);
         }
 

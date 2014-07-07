@@ -39,7 +39,17 @@ using namespace hopsan;
 //! and \f$den[0]=b_0\f$, \f$den[1]=b_1\f$, \f$den[2]=b_2\f$,
 //!
 
-void SecondOrderTransferFunction::initialize(double timestep, double num[3], double den[3], double u0, double y0, double min, double max)
+
+//! @brief Constructor
+//! @param timestep Time step
+//! @param num Numinator
+//! @param den Denominator
+//! @param u0 Initial input value
+//! @param y0 Initial output value
+//! @param min Minimum limit of output value
+//! @param max Maximum limit of output value
+//! @param sy0 Initial derivative of output value
+void SecondOrderTransferFunction::initialize(double timestep, double num[3], double den[3], double u0, double y0, double min, double max, double sy0)
 {
     mIsSaturated = false;
     mMin = min;
@@ -47,7 +57,7 @@ void SecondOrderTransferFunction::initialize(double timestep, double num[3], dou
     mDelayedU = u0;
     mDelayed2U = u0;
     mDelayedY = std::max(std::min(y0, mMax), mMin);
-    mDelayed2Y = mDelayedY;
+    mDelayed2Y = mDelayedY-sy0*mTimeStep;
     mTimeStep = timestep;
     setNumDen(num, den);
 }
