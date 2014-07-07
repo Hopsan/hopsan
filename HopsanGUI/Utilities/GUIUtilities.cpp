@@ -896,3 +896,9 @@ QString extractFilenameExtension(const QString &rFilename)
         return rFilename.right(rFilename.size()-1-i);
     }
 }
+
+
+bool isVersionGreaterThan(QString v1, QString v2)
+{
+    return v1.remove(".").toInt() > v2.remove(".").toInt();
+}

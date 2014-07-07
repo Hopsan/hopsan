@@ -37,6 +37,13 @@ using namespace std;
 using namespace hopsan;
 
 // vvvvvvvvvv Help Functions vvvvvvvvvv
+bool isVersionGreaterThan(HString version1, HString version2)
+{
+    bool dummy;
+    return version1.replace(".","").toLongInt(&dummy) > version2.replace(".","").toLongInt(&dummy);
+}
+
+
 //! @brief Helpfunction to strip filename from path
 //! @note Assumes that dir separator is forward slash /
 HString stripFilenameFromPath(HString filePath)
@@ -92,7 +99,9 @@ void splitFullName(const HString &rFullName, HString &rCompName, HString &rPortN
 
 void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const HString &rHmfCoreVersion)
 {
-    if (rHmfCoreVersion < "0.6.0" || rHmfCoreVersion.containes("0.6.x_r") )
+    bool dummy;
+
+    if (isVersionGreaterThan("0.6.0", rHmfCoreVersion) || rHmfCoreVersion.containes("0.6.x_r") )
     {
         if (pParameterNode)
         {
@@ -459,7 +468,7 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
             // Check version
             HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
             pHopsanEssentials->getCoreMessageHandler()->addDebugMessage("Model saved with core version: " + savedwithcoreversion);
-            if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5500"))
+            if (isVersionGreaterThan("0.6.0", savedwithcoreversion) || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5500"))
             {
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
                 return 0;

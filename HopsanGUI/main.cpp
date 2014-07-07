@@ -31,6 +31,7 @@
 
 #include "common.h"
 #include "global.h"
+#include "version_gui.h"
 #include "MainWindow.h"
 #include "Configuration.h"
 #include "CopyStack.h"
@@ -106,4 +107,10 @@ int main(int argc, char *argv[])
 const char* getHopsanGUIBuildTime()
 {
     return __DATE__" "__TIME__;
+}
+
+
+bool isHospanGUIVersionHigherThan(const char *version)
+{
+    return (QString(version).remove(".").toInt() > QString(HOPSANGUIVERSION).remove(".").toInt());
 }

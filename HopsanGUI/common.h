@@ -80,5 +80,6 @@ enum LibraryTypeEnumT {InternalLib, ExternalLib, FmuLib};
 enum HiddenVisibleEnumT {Hidden, Visible};
 
 extern const char* getHopsanGUIBuildTime();
+extern bool isHospanGUIVersionHigherThan(const char*);
 
 #endif // COMMON_H

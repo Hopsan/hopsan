@@ -492,7 +492,7 @@ bool verifyHmfFormatVersion(const QString hmfVersion)
 void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVersion*/, QString coreVersion)
 {
     // For all versions older then 0.6.0 and all 0.6.x DEV versions run the following
-    if (coreVersion < "0.6.0" || (coreVersion.contains("0.6.x_r")))
+    if (isVersionGreaterThan("0.6.0", coreVersion) || (coreVersion.contains("0.6.x_r")))
     {
         // Typos
         updateRenamedComponentType(element, "MechanicTranslationalMassWithCoulumbFriction", "MechanicTranslationalMassWithCoulombFriction");

@@ -564,8 +564,8 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 #ifdef DEVELOPMENT
             mpNewVersionButton->setVisible(true);
 #else
-            const QString thisVersionString = QString(HOPSANGUIVERSION);
-            mpNewVersionButton->setVisible(webVersionString>thisVersionString);
+            //const QString thisVersionString = QString(HOPSANGUIVERSION);
+            mpNewVersionButton->setVisible(isHospanGUIVersionHigherThan(webVersionString.toStdString().c_str()));
 #endif
 #ifdef HOPSANCOMPILED64BIT
             mAUFileLink = metadata.value("hopsanupdatelink64");
