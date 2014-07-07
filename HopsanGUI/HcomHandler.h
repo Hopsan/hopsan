@@ -181,6 +181,10 @@ private:
     void executeEchoCommand(const QString cmd);
     void executeEditCommand(const QString cmd);
     void executeSetMultiThreadingCommand(const QString cmd);
+    void executeLockAllAxesCommand(const QString cmd);
+    void executeLockLeftAxisCommand(const QString cmd);
+    void executeLockRightAxisCommand(const QString cmd);
+    void executeLockXAxisCommand(const QString cmd);
 
     // Help functions
     void createCommands();

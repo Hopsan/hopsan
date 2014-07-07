@@ -880,6 +880,42 @@ void HcomHandler::createCommands()
     semtCmd.help.append(" Usage: semt [on/off] [numThreads]");
     semtCmd.fnc = &HcomHandler::executeSetMultiThreadingCommand;
     mCmdList << semtCmd;
+
+    HcomCommand lockCmd;
+    lockCmd.cmd = "lock";
+    lockCmd.description.append("Locks or unlocks all axes in current plot window");
+    lockCmd.help.append(" Usage: lock [flag] [on/off]\n");
+    lockCmd.help.append(" See also: lockyl, lockyr, lockr");
+    lockCmd.fnc = &HcomHandler::executeLockAllAxesCommand;
+    lockCmd.group = "Plot Commands";
+    mCmdList << lockCmd;
+
+    HcomCommand lockylCmd;
+    lockylCmd.cmd = "lockyl";
+    lockylCmd.description.append("Locks or unlocks left y-axis in current plot window");
+    lockylCmd.help.append(" Usage: lockyl [on/off]\n");
+    lockylCmd.help.append(" See also: lock, lockyr, lockr");
+    lockylCmd.fnc = &HcomHandler::executeLockLeftAxisCommand;
+    lockylCmd.group = "Plot Commands";
+    mCmdList << lockylCmd;
+
+    HcomCommand lockyrCmd;
+    lockyrCmd.cmd = "lockyr";
+    lockyrCmd.description.append("Locks or unlocks right y-axis in current plot window");
+    lockyrCmd.help.append(" Usage: lockyr [on/off]\n");
+    lockyrCmd.help.append(" See also: lock, lockyl, lockr");
+    lockyrCmd.fnc = &HcomHandler::executeLockRightAxisCommand;
+    lockyrCmd.group = "Plot Commands";
+    mCmdList << lockyrCmd;
+
+    HcomCommand lockxCmd;
+    lockxCmd.cmd = "lockx";
+    lockxCmd.description.append("Locks or unlocks x-axis in current plot window");
+    lockxCmd.help.append(" Usage: lockx [on/off]\n");
+    lockxCmd.help.append(" See also: lock, lockyl, lockyr");
+    lockxCmd.fnc = &HcomHandler::executeLockXAxisCommand;
+    lockxCmd.group = "Plot Commands";
+    mCmdList << lockxCmd;
 }
 
 void HcomHandler::generateCommandsHelpText()
@@ -3693,6 +3729,7 @@ void HcomHandler::executeEditCommand(const QString cmd)
 }
 
 
+//! @brief Execute function for "semt" command
 void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
@@ -3744,6 +3781,76 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
     getConfigPtr()->setUseMultiCore(useMultiThreading);
     if(nArgs > 1) getConfigPtr()->setNumberOfThreads(nThreads);
     if(nArgs > 2) getConfigPtr()->setParallelAlgorithm(algorithm);
+}
+
+
+//! @brief Execute function for "lock" command
+void HcomHandler::executeLockAllAxesCommand(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    else if(cmd != "on" && cmd != "off")
+    {
+        HCOMERR("Unknown argument. Use \"on\" or \"off\".");
+        return;
+    }
+    mpCurrentPlotWindow->getCurrentPlotTab()->getPlotArea()->setAxisLocked(QwtPlot::yLeft, cmd=="on");
+    mpCurrentPlotWindow->getCurrentPlotTab()->getPlotArea()->setAxisLocked(QwtPlot::yRight, cmd=="on");
+    mpCurrentPlotWindow->getCurrentPlotTab()->getPlotArea()->setAxisLocked(QwtPlot::xBottom, cmd=="on");
+}
+
+
+//! @brief Execute function for "lockyl" command
+void HcomHandler::executeLockLeftAxisCommand(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    else if(cmd != "on" && cmd != "off")
+    {
+        HCOMERR("Unknown argument. Use \"on\" or \"off\".");
+        return;
+    }
+    mpCurrentPlotWindow->getCurrentPlotTab()->getPlotArea()->setAxisLocked(QwtPlot::yLeft, cmd=="on");
+}
+
+
+//! @brief Execute function for "lockyr" command
+void HcomHandler::executeLockRightAxisCommand(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    else if(cmd != "on" && cmd != "off")
+    {
+        HCOMERR("Unknown argument. Use \"on\" or \"off\".");
+        return;
+    }
+    mpCurrentPlotWindow->getCurrentPlotTab()->getPlotArea()->setAxisLocked(QwtPlot::yRight, cmd=="on");
+}
+
+
+//! @brief Execute function for "lockx" command
+void HcomHandler::executeLockXAxisCommand(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    else if(cmd != "on" && cmd != "off")
+    {
+        HCOMERR("Unknown argument. Use \"on\" or \"off\".");
+        return;
+    }
+    mpCurrentPlotWindow->getCurrentPlotTab()->getPlotArea()->setAxisLocked(QwtPlot::xBottom, cmd=="on");
 }
 
 
