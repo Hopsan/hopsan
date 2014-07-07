@@ -99,8 +99,6 @@ void splitFullName(const HString &rFullName, HString &rCompName, HString &rPortN
 
 void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const HString &rHmfCoreVersion)
 {
-    bool dummy;
-
     if (isVersionGreaterThan("0.6.0", rHmfCoreVersion) || rHmfCoreVersion.containes("0.6.x_r") )
     {
         if (pParameterNode)

@@ -440,7 +440,7 @@ void HcomHandler::createCommands()
 
     HcomCommand infoCmd;
     infoCmd.cmd = "info";
-    infoCmd.description.append("Show info about a variable");
+    infoCmd.description.append("Show information about specified variable");
     infoCmd.help.append("Usage: info [variable]");
     infoCmd.fnc = &HcomHandler::executeVariableInfoCommand;
     mCmdList << infoCmd;
@@ -2166,6 +2166,8 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
     }
 }
 
+
+//! @brief Execute function for "rmvar" command
 void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
@@ -2181,6 +2183,8 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
     }
 }
 
+
+//! @brief Execute function for "chdfsc" command
 void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
@@ -2244,6 +2248,8 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
     }
 }
 
+
+//! @brief Execute function for "didfsc" command
 void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
@@ -2327,6 +2333,8 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
     }
 }
 
+
+//! @brief Execute function for "info" command
 void HcomHandler::executeVariableInfoCommand(const QString cmd)
 {
     HopsanVariable pVar = getLogVariable(cmd);
@@ -2340,9 +2348,20 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
         QString infotext("\n");
         infotext.append("       Name: ").append(pVar.mpVariable->getFullVariableName()).append("\n");
         infotext.append("       Type: ").append(type).append("\n");
-        infotext.append("  PlotScale: ").append(plotscale).append("\n");
+        infotext.append(" Plot Scale: ").append(plotscale.trimmed()).append("\n");
         infotext.append("     Length: ").append(length).append("\n");
         infotext.append("Generations: ").append(numGens);
+
+        HCOMPRINT(infotext);
+    }
+    else if(mLocalVars.contains(cmd))
+    {
+        QString type = "Scalar";
+
+        QString infotext("\n");
+        infotext.append("       Name: ").append(cmd).append("\n");
+        infotext.append("       Type: ").append(type).append("\n");
+        infotext.append("      Value: ").append(QString::number(mLocalVars.find(cmd).value()));
 
         HCOMPRINT(infotext);
     }
@@ -2353,6 +2372,8 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
 }
 
 
+
+//! @brief Execute function for "chsc" command
 void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
@@ -2380,6 +2401,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
 }
 
 
+//! @brief Execute function for "disc" command
 void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
 {
     if(getNumberOfCommandArguments(cmd) != 1)
@@ -2443,6 +2465,8 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
     return;
 }
 
+
+//! @brief Execute function for "sapw" command
 void HcomHandler::executeSavePlotWindowCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
@@ -2514,7 +2538,6 @@ void HcomHandler::executeSavePlotWindowCommand(const QString cmd)
         HCOMERR("At least one argumetn rewquired (filename)");
     }
 }
-
 
 
 //! @brief Execute function for "dlog" command
