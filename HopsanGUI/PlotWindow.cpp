@@ -483,7 +483,7 @@ QString PlotWindow::getName() const
 //! @param[in] pData Shared pointer to data that you want to plot
 //! @param[in] axisY  0=left 1=right
 //! @param[in] desiredColor The desired color
-PlotCurve* PlotWindow::addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, QColor desiredColor)
+PlotCurve* PlotWindow::addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
 {
     if (data)
     {
@@ -503,15 +503,15 @@ PlotCurve* PlotWindow::addPlotCurve(HopsanVariable data, const QwtPlot::Axis axi
 
         // Create and add a curve
         PlotCurve *pTempCurve = new PlotCurve(data, axisY);
-        getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
+        getCurrentPlotTab()->addCurve(pTempCurve, desiredColor, thickness, type);
         return pTempCurve;
     }
     return 0;
 }
 
-PlotCurve *PlotWindow::addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY, QColor desiredColor)
+PlotCurve *PlotWindow::addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
 {
-    PlotCurve *pCurve = addPlotCurve(ydata, axisY, desiredColor);
+    PlotCurve *pCurve = addPlotCurve(ydata, axisY, desiredColor, thickness, type);
     if (pCurve)
     {
         pCurve->setCustomXData(xdata);

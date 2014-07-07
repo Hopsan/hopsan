@@ -3889,13 +3889,17 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
         {
             bool found=false;
             QStringList variables;
+            int type, thickness;
+            QColor color;
+            extractCurveStyle(varNames[s], type, color, thickness);
+
             getMatchingLogVariableNames(varNames[s], variables);
             if (variables.isEmpty())
             {
                 evaluateExpression(varNames[s], DataVector);
                 if(mAnsType == DataVector)
                 {
-                    addPlotCurve(mAnsVector, axisId);
+                    addPlotCurve(mAnsVector, axisId, true, 0, color);
                     found = true;
                 }
             }
@@ -3904,7 +3908,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
                 found = true;
                 for(int v=0; v<variables.size(); ++v)
                 {
-                    addPlotCurve(variables[v], axisId);
+                    addPlotCurve(variables[v], axisId, type, color, thickness);
                 }
             }
 
@@ -3965,7 +3969,7 @@ void HcomHandler::changePlotXVariable(const QString varExp)
 //! @brief Adds a plot curve to specified axis in current plot
 //! @param cmd Name of variable
 //! @param axis Axis to add curve to
-void HcomHandler::addPlotCurve(QString var, const int axis)
+void HcomHandler::addPlotCurve(QString var, const int axis, int type, QColor color, int thickness)
 {
     HopsanVariable data = getLogVariable(var);
     if(!data)
@@ -3978,20 +3982,20 @@ void HcomHandler::addPlotCurve(QString var, const int axis)
         // If plot curve contains gen specifier, then we want that generation to remain in the plot and not auto refresh
         if (var.contains(GENERATIONSPECIFIERCHAR))
         {
-            addPlotCurve(data, axis, false);
+            addPlotCurve(data, axis, false, type, color, thickness);
         }
         else
         {
-            addPlotCurve(data, axis);
+            addPlotCurve(data, axis, true, type, color, thickness);
         }
     }
 }
 
-void HcomHandler::addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh)
+void HcomHandler::addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh, int type, QColor color, int thickness)
 {
     // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
     // else we will just set to same
-    mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis, autoRefresh);
+    mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis, autoRefresh,color,type,thickness);
     mpCurrentPlotWindow->raise();
     gpMainWindowWidget->activateWindow();
 }
@@ -4066,6 +4070,31 @@ void HcomHandler::removePlotCurves(const int axis) const
     {
         mpCurrentPlotWindow->getCurrentPlotTab()->removeAllCurvesOnAxis(axis);
     }
+}
+
+void HcomHandler::extractCurveStyle(QString &value, int &type, QColor &color, int &thickness)
+{
+    if(!value.contains("{")) return;
+
+    QString style = value.section("{",1,1).section("}",0,0);
+    value.remove("{"+style+"}");
+    qDebug() << "Style: " << style;
+
+    QString typeStr= style.section(",",0,0);
+    if(typeStr == "solid")
+        type = 1;
+    else if(typeStr == "dashed")
+        type = 2;
+    else if(typeStr == "dotted")
+        type = 3;
+    else
+        type = typeStr.toInt();
+
+    QString colorStr = style.section(",",1,1);
+    color = QColor(colorStr);
+
+    QString thicknessStr = style.section(",",2,2);
+    thickness = thicknessStr.toInt();
 }
 
 

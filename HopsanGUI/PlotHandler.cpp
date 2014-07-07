@@ -120,19 +120,19 @@ PlotWindow *PlotHandler::getPlotWindow(const QString &rName)
     return 0;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable data, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable data, int axis, QColor curveColor, int type, int thickness)
 {
     PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
-    plotDataToWindow(pWindow, data, axis, true, curveColor);
+    plotDataToWindow(pWindow, data, axis, true, curveColor, type, thickness);
     return pWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor, int type, int thickness)
 {
     if (xdata && ydata)
     {
         PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
-        plotDataToWindow(pWindow, xdata, ydata, axis, true, curveColor);
+        plotDataToWindow(pWindow, xdata, ydata, axis, true, curveColor,type, thickness);
         return pWindow;
     }
     return 0;
@@ -148,29 +148,27 @@ PlotWindow *PlotHandler::setPlotWindowXData(PlotWindow *pPlotWindow, HopsanVaria
     return pPlotWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable data, int axis, bool autoRefresh, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable data, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
 {
     if(!pPlotWindow)
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    PlotCurve *pCurve = pPlotWindow->addPlotCurve(data, QwtPlot::Axis(axis), curveColor);
+    PlotCurve *pCurve = pPlotWindow->addPlotCurve(data, QwtPlot::Axis(axis), curveColor, thickness, type);
     // We want to preserve the internal autoupdate setting from the curve if it is off, so we can actually only turn it off here
     pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
-
     return pPlotWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable xdata, HopsanVariable ydata, int axis, bool autoRefresh, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable xdata, HopsanVariable ydata, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
 {
     if(!pPlotWindow)
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-     PlotCurve *pCurve = pPlotWindow->addPlotCurve(xdata, ydata, QwtPlot::Axis(axis), curveColor);
-     // We want to preserve the internal autoupdate setting from the curve if it is off, so we can actually only turn it off here
-     pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
-
+    PlotCurve *pCurve = pPlotWindow->addPlotCurve(xdata, ydata, QwtPlot::Axis(axis), curveColor, thickness, type);
+    // We want to preserve the internal autoupdate setting from the curve if it is off, so we can actually only turn it off here
+    pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
     return pPlotWindow;
 }
 

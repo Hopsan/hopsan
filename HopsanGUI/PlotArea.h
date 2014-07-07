@@ -137,7 +137,7 @@ public:
     PlotArea(PlotTab *pParentPlotTab);
     ~PlotArea();
 
-    void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor());
+    void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor(), int thickness=2, int type=1);
     void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, bool force=false);
     void setCustomXVectorForAll(HopsanVariable data, bool force=false);
     void removeAllCurvesOnAxis(const int axis);

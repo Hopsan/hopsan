@@ -876,11 +876,11 @@ void PlotTab::addCurve(PlotCurve *pCurve, const int subPlotId)
     }
 }
 
-void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, const int subPlotId)
+void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, int type, const int subPlotId)
 {
     if (subPlotId < mPlotAreas.size())
     {
-        mPlotAreas[subPlotId]->addCurve(pCurve, desiredColor);
+        mPlotAreas[subPlotId]->addCurve(pCurve, desiredColor, thickness, type);
     }
 }
 

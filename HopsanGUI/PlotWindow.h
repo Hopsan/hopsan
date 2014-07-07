@@ -75,8 +75,8 @@ public:
 
     void showHelpPopupMessage(const QString &rMessage);
 
-    PlotCurve* addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
-    PlotCurve* addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor(), int thickness=2, int type=1);
+    PlotCurve* addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor(), int thickness=2, int type=1);
     void setXData(HopsanVariable xdata, bool force=false);
 
 signals:

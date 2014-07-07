@@ -143,7 +143,7 @@ public:
     HopQwtPlot *getQwtPlot(const int subPlotId=0);
 
     void addCurve(PlotCurve *pCurve, const int subPlotId=0);
-    void addCurve(PlotCurve *pCurve, QColor desiredColor, const int subPlotId=0);
+    void addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness=2, int type=1, const int subPlotId=0);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
     void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, int plotID=0, bool force=false);

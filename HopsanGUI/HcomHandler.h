@@ -194,9 +194,10 @@ private:
 
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void changePlotXVariable(const QString varExp);
-    void addPlotCurve(QString var, const int axis);
-    void addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh=true);
+    void addPlotCurve(QString var, const int axis, int type=0, QColor color=QColor(), int thickness=2);
+    void addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh=true, int type=0, QColor color=QColor(), int thickness=2);
     void removePlotCurves(const int axis) const;
+    void extractCurveStyle(QString &value, int &style, QColor &color, int &thickness);
 
     void removeLogVariable(QString fullShortVarNameWithGen) const;
 

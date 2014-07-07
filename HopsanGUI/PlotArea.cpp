@@ -358,7 +358,7 @@ PlotArea::~PlotArea()
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
 //! @param desiredColor Desired color for curve (will override default colors)
-void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
+void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, int type)
 {
     // Attach the curve to this plot area
     pCurve->attach(mpQwtPlot);
@@ -369,7 +369,10 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor)
     pCurve->mIncludeGenInTitle = mpIncludeGenInCurveTitle->isChecked();
     pCurve->mIncludeSourceInTitle = mpIncludeSourceInCurveTitle->isChecked();
     pCurve->setZ(CurveZOrderType);
-    pCurve->setLineWidth(2);
+    pCurve->setLineWidth(thickness);
+    QPen pen = pCurve->pen();
+    pen.setStyle(Qt::PenStyle(type));
+    pCurve->setPen(pen);
     pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     setLegendSymbol(mpLegendSymbolType->currentText(), pCurve);
 
