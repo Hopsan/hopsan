@@ -5808,6 +5808,17 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
             rStr.chop(2);
             return -2;
         }
+        else if(genStr.startsWith("(") && genStr.endsWith(")"))
+        {
+            QString str = genStr.toString();
+            rStr.chop(str.size()+1);
+            str.replace("h", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber()));
+            str.replace("H", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber()));
+            str.replace("l", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber()));
+            str.replace("L", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber()));
+            SymHop::Expression expr(str);
+            return expr.evaluate(mLocalVars, &mLocalFunctionoidPtrs)-1;
+        }
         else
         {
             int g;

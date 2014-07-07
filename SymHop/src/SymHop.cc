@@ -676,6 +676,9 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 //! @returns Evaluated value of expression
 double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHopFunctionoid*> *functions, bool *ok) const
 {
+    if(!ok)
+        ok = new bool;
+
     *ok=true;
 
     if(isAdd())
