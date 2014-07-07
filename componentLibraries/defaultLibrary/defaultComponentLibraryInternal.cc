@@ -173,6 +173,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicTranslationalMass", MechanicTranslationalMass::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithLever", MechanicTranslationalMassWithLever::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulombFriction", MechanicTranslationalMassWithCoulombFriction::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulombFrictionAndMultiPorts", MechanicTranslationalMassWithCoulombFrictionAndMultiPorts::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalSpringWithSlack", MechanicTranslationalSpringWithSlack::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);

@@ -318,7 +318,8 @@ HEADERS += \
     Experimental/Experimental.h \
     Experimental/Signal3DLookupTable.hpp \
     Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp \
-    Signal/Animation/SignalNumericalInput.hpp
+    Signal/Animation/SignalNumericalInput.hpp \
+    Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

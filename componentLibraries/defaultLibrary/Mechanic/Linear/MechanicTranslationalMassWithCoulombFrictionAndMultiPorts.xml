@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp" typename="MechanicTranslationalMassWithCoulombFrictionAndMultiPorts" displayname="Translational Mass With Coulomb Friction And Multi-Ports">
+        <icons>
+            <icon scale="1" path="massc_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="massc_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <picture>masschelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0.1016875" y="0.4166666667" a="0" name="P1"/>
+            <port x="0.8983125" y="0.4166666667" a="0" name="P2"/>
+        </ports>
+        <animation>
+            <icon userpath="massc_user_base.svg"/>
+            <movable>
+                <icon userpath="massc_user_movable.svg"/>
+                <data port="P1" dataname="Position"/>
+                <movement x="77.5" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+		<movingport portname="P1" startx="7.5" starty="20"/>
+		<movingport portname="P2" startx="72.5" starty="20"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>
