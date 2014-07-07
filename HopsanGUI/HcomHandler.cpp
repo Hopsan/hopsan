@@ -1156,13 +1156,14 @@ void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
         {
             double min = args[0].toDouble(&minOK);
             double max = args[1].toDouble(&maxOK);
+            double ticks = 0;
             if (args.size() >= 3)
             {
-                double ticks = args[2].toDouble(&ticksOK);
+                ticks = args[2].toDouble(&ticksOK);
             }
             if (minOK && maxOK && ticksOK)
             {
-                pArea->setAxisLimits(QwtPlot::xBottom, min, max);
+                pArea->setAxisLimits(QwtPlot::xBottom, min, max, ticks);
             }
             else
             {
@@ -1179,7 +1180,7 @@ void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
             double ticks = args[5].toDouble(&ticksOK);
             if (minOK && maxOK && ticksOK)
             {
-                pArea->setAxisLimits(QwtPlot::yLeft, min, max);
+                pArea->setAxisLimits(QwtPlot::yLeft, min, max, ticks);
             }
             else
             {
@@ -1196,7 +1197,7 @@ void HcomHandler::executeChangeDiagramLimitsCommand(const QString cmd)
             double ticks = args[8].toDouble(&ticksOK);
             if (minOK && maxOK && ticksOK)
             {
-                pArea->setAxisLimits(QwtPlot::yRight, min, max);
+                pArea->setAxisLimits(QwtPlot::yRight, min, max, ticks);
             }
             else
             {

@@ -169,7 +169,7 @@ public:
     bool isRightAxisLogarithmic() const;
     bool isAxisLogarithmic(const QwtPlot::Axis axis) const;
 
-    void setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis=true);
+    void setAxisLimits(QwtPlot::Axis axis, const double min, const double max, const double step=0, bool lockAxis=true);
     void setAxisLocked(QwtPlot::Axis axis, bool lockAxis);
     void setAxisLabel(QwtPlot::Axis axis, const QString &rLabel);
 

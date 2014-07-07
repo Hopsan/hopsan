@@ -711,9 +711,9 @@ bool PlotArea::isAxisLogarithmic(const QwtPlot::Axis axis) const
     }
 }
 
-void PlotArea::setAxisLimits(QwtPlot::Axis axis, const double min, const double max, bool lockAxis)
+void PlotArea::setAxisLimits(QwtPlot::Axis axis, const double min, const double max, const double step, bool lockAxis)
 {
-    mpQwtPlot->setAxisScale(axis, min, max);
+    mpQwtPlot->setAxisScale(axis, min, max, step);
 
     // Lock the axis if desired, but do not unlock it if not
     //! @todo maybe we should
