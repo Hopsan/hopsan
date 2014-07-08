@@ -93,6 +93,12 @@ static void mdlInitializeSizes(SimStruct *S)
     pComponentSystem = gHopsanCore.loadHMFModel(hmfFilePath, startT, stopT);
     if (pComponentSystem==0)
     {
+        while(gHopsanCore.checkMessage())
+        {
+            HString msg, type, tag;
+            gHopsanCore.getMessage(msg, type, tag);
+            std::cout << msg.c_str() << "\n";
+        }
         ssSetErrorStatus(S,"Error could not open model: <<<4>>>");
         return;
     }
@@ -123,6 +129,12 @@ static void mdlInitializeSampleTimes(SimStruct *S)
     }
     else
     {
+        while(gHopsanCore.checkMessage())
+        {
+            HString msg, type, tag;
+            gHopsanCore.getMessage(msg, type, tag);
+            std::cout << msg.c_str() << "\n";
+        }
         ssSetErrorStatus(S,"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.");
         return;
     }
@@ -153,7 +165,14 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 <<<12>>>
 
     //Output parameters
-<<<13>>>}
+<<<13>>>
+    while(gHopsanCore.checkMessage())
+    {
+        HString msg, type, tag;
+        gHopsanCore.getMessage(msg, type, tag);
+        std::cout << msg.c_str() << "\n";
+    }
+}
 
 static void mdlTerminate(SimStruct *S)
 {
