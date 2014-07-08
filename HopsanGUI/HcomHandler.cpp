@@ -5938,12 +5938,14 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
         if( (genStr == "l") || (genStr == "L") )
         {
             rStr.chop(2);
-            return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber();
+            return getLogVariable(rStr.section("{",0,0)).mpContainer->getLowestGeneration();
+            //return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber();
         }
         else if( (genStr == "h") || (genStr == "H") )
         {
             rStr.chop(2);
-            return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber();
+            return getLogVariable(rStr.section("{",0,0)).mpContainer->getHighestGeneration();
+            //return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber();
         }
         else if( (genStr == "*") || (genStr == "a") || (genStr == "A") )
         {
@@ -5954,10 +5956,12 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
         {
             QString str = genStr.toString();
             rStr.chop(str.size()+1);
-            str.replace("h", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber()));
-            str.replace("H", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber()));
-            str.replace("l", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber()));
-            str.replace("L", QString::number(mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber()));
+            int h = getLogVariable(rStr.section("{",0,0)).mpContainer->getHighestGeneration()+1;
+            int l = getLogVariable(rStr.section("{",0,0)).mpContainer->getLowestGeneration()+1;
+            str.replace("h", QString::number(h));
+            str.replace("H", QString::number(h));
+            str.replace("l", QString::number(l));
+            str.replace("L", QString::number(l));
             SymHop::Expression expr(str);
             return expr.evaluate(mLocalVars, &mLocalFunctionoidPtrs)-1;
         }
