@@ -586,6 +586,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/ComponentUtilities/Integrator.h" <<
                     "../HopsanCore/include/ComponentUtilities/IntegratorLimited.h" <<
                     "../HopsanCore/include/ComponentUtilities/ludcmp.h" <<
+                    "../HopsanCore/include/ComponentUtilities/LookupTable.h" <<
                     "../HopsanCore/include/ComponentUtilities/matrix.h" <<
                     "../HopsanCore/include/ComponentUtilities/num2string.hpp" <<
                     "../HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.h" <<
