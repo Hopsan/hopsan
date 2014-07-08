@@ -191,7 +191,87 @@ else
   call testFailed
 endif 
 
+# Vector function tests
+print ""
+print "*** Vector function tests ***"
 
+call startNewTest
+if (aver(abs(ddt(sin)/(2*3.141592653589793)-cos)) < 0.01)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(abs(sin-int(cos)*2*3.141592653589793)) < 1e-4)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(zeros(100)) == 0)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (max(zeros(100)) == 0)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (min(zeros(100)) == 0)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (aver(ones(100)) == 1)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (max(ones(100)) == 1)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (min(ones(100)) == 1)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (size(ones(100)) == 100)
+  call testOk
+else
+  call testFailed
+endif
+
+linVec = linspace(0,10,100)
+call startNewTest
+if (peek(linVec,0) == 0)
+  call testOk
+else
+  call testFailed
+endif
+
+call startNewTest
+if (peek(linVec,99) == 10)
+  call testOk
+else
+  call testFailed
+endif
 
 # Check if successful
 print ""

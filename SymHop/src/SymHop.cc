@@ -801,7 +801,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             else if(mFunction == "div") { retval = mArguments[0].evaluate(variables, functions, &ok1)/mArguments[1].evaluate(variables, functions, &ok2); }
             else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
             else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables, functions, &ok1), mArguments[1].evaluate(variables, functions, &ok2)); }
-            else if(mFunction == "equal")
+            else if(mFunction == "equal" || mFunction == "eq")
             {
                 if(mArguments[0].evaluate(variables, functions, &ok1) == mArguments[1].evaluate(variables, functions, &ok2))
                     retval=1;

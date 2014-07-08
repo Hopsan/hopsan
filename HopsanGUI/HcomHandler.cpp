@@ -5161,8 +5161,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         SymHop::Expression t0 = symHopExpr.getTerms()[0];
         SymHop::Expression t1 = symHopExpr;
         t1.subtractBy(t0);
-        t0._simplify(SymHop::Expression::FullSimplification);
-        t1._simplify(SymHop::Expression::FullSimplification);
+        t0._simplify(SymHop::Expression::FullSimplification, SymHop::Expression::Recursive);
+        t1._simplify(SymHop::Expression::FullSimplification, SymHop::Expression::Recursive);
 
         VariableType varType0, varType1;
         double scalar0=0, scalar1=0;
@@ -6332,7 +6332,7 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
         if (arg1IsDouble && arg2IsDouble)
         {
             mAnsType = Scalar;
-            if (arg1AsDouble > arg2AsDouble)
+            if (arg1AsDouble < arg2AsDouble)
             {
                 mAnsScalar = 1;
             }
@@ -6865,8 +6865,17 @@ double HcomFunctionoidAver::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "peek" functionoid
 double HcomFunctionoidPeek::operator()(QString &str, bool &ok)
 {
-    QString var = str.section(",",0,0);
-    SharedVectorVariableT pData = mpHandler->getLogVariable(var).mpVariable;
+    QStringList splitStr;
+    splitRespectingQuotationsAndParanthesis(str, ',', splitStr);
+
+    if(splitStr.size() != 2)
+    {
+        mpHandler->mpConsole->printErrorMessage(QString("Wrong number of arguments for peek function!"), "", false);
+        ok = false;
+        return 0;
+    }
+
+    SharedVectorVariableT pData = mpHandler->getLogVariable(splitStr[0]).mpVariable;
 
     if(!pData)
     {
@@ -6883,7 +6892,7 @@ double HcomFunctionoidPeek::operator()(QString &str, bool &ok)
         }
     }
 
-    QString idxStr = str.section(",",1,1);
+    QString idxStr = splitStr[1];
 
     SymHop::Expression idxExpr = SymHop::Expression(idxStr);
     QMap<QString, double> localVars = mpHandler->getLocalVariables();
