@@ -4074,7 +4074,13 @@ void HcomHandler::removePlotCurves(const int axis) const
 
 void HcomHandler::extractCurveStyle(QString &value, int &type, QColor &color, int &thickness)
 {
-    if(!value.contains("{")) return;
+    if(!value.contains("{"))
+    {
+        type = 1;
+        color = QColor();
+        thickness = 2;
+        return;
+    }
 
     QString style = value.section("{",1,1).section("}",0,0);
     value.remove("{"+style+"}");
