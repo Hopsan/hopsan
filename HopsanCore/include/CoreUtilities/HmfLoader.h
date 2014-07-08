@@ -36,6 +36,106 @@ class ComponentSystem;
 class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
+inline int getGenerationVersion(const HString &version)
+{
+    HString tempStr;
+    for(size_t i=0; i<version.size() && version.at(i) != '.'; ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    return tempStr.toLongInt(&dummy);
+}
+
+inline int getMajorVersion(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != '.'; ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    return tempStr.toLongInt(&dummy);
+}
+
+inline int getMinorVersion(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != 'x'; ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    if(tempStr == "")
+        return -1;
+
+    return tempStr.toLongInt(&dummy);
+}
+
+inline int getRevisionNumber(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=0; i<version.size() && version.at(i) != 'r'; ++i) {}
+    for(++i; i<version.size(); ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    if(tempStr == "")
+        return -1;
+
+    return tempStr.toLongInt(&dummy);
+}
+
+
+inline bool isVersionGreaterThan(HString version1, HString version2)
+{
+    int gen1 = getGenerationVersion(version1);
+    int gen2 = getGenerationVersion(version2);
+    int maj1 = getMajorVersion(version1);
+    int maj2 = getMajorVersion(version2);
+    int min1 = getMinorVersion(version1);
+    int min2 = getMinorVersion(version2);
+    int rev1 = getRevisionNumber(version1);
+    int rev2 = getRevisionNumber(version2);
+
+    if(gen1 > gen2)
+        return true;
+    if(gen1 < gen2)
+        return false;
+
+    if(maj1 > maj2)
+        return true;
+    if(maj1 < maj2)
+        return false;
+
+    if(min1 > -1 && min2 == -1)
+        return false;               //Assume that revision build is higher generation than release builds
+    if(min1 == -1 && min2 > -1)
+        return true;
+
+    if(min1 > min2)
+        return true;
+    if(min1 < min2)
+        return false;
+
+    if(rev1 > rev2)
+        return true;
+    if(rev1 < rev2)
+        return false;
+
+    return false;
+}
 
 ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModelFile(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);

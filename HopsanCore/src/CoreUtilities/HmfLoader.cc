@@ -37,11 +37,7 @@ using namespace std;
 using namespace hopsan;
 
 // vvvvvvvvvv Help Functions vvvvvvvvvv
-bool isVersionGreaterThan(HString version1, HString version2)
-{
-    bool dummy;
-    return version1.replace(".","").toLongInt(&dummy) > version2.replace(".","").toLongInt(&dummy);
-}
+
 
 
 //! @brief Helpfunction to strip filename from path
