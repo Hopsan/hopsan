@@ -257,6 +257,7 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB)
 {
     QStringList poseList = domElement.text().split(" ");
+    if(poseList.size() < 2) return;
     rA = poseList[0].toDouble();
     rB = poseList[1].toDouble();
 }

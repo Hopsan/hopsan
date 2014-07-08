@@ -99,6 +99,13 @@ public:
 
     bool getAutoLimitLogDataGenerations();
 
+    QString getPlotGfxImageFormat();
+    QString getPlotGfxDimensionsUnit();
+    double getPlotGfxDPI();
+    QSizeF getPlotGfxSize();
+    bool getPlotGfxKeepAspect();
+    bool getPlotGfxUseScreenSize();
+
     QString getLoadModelDir();
     QString getModelGfxDir();
     QString getPlotDataDir();
@@ -157,6 +164,13 @@ public:
     void setFmuImportDir(QString value);
     void setFmuExportDir(QString value);
     void setLabViewExportDir(QString value);
+    void setPlotGfxImageFormat(QString value);
+    void setPlotGfxDimensionsUnit(QString value);
+    void setPlotGfxDPI(double value);
+    void setPlotGfxSize(QSizeF value);
+    void setPlotGfxKeepAspect(bool value);
+    void setPlotGfxUseScreenSize(bool value);
+
 
     void setParallelAlgorithm(int value);
 
@@ -222,6 +236,12 @@ private:
     QString mLabViewExportDir;
     int mPLOExportVersion;
     bool mShowHiddenNodeDataVariables;
+    QString mPlotGfxImageFormat;
+    QString mPlotGfxDimensionsUnit;
+    double mPlotGfxDPI;
+    QSizeF mPlotGfxSize;
+    bool mPlotGfxKeepAspect;
+    bool mPlotGfxUseScreenSize;
 
     int mParallelAlgorighm;
 

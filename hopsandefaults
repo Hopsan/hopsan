@@ -21,6 +21,12 @@
         <ploexportversion>1</ploexportversion>
 	<showhiddennodedatavariables>false</showhiddennodedatavariables>
         <loadmodeldir/>
+        <plotgfximageformat>png</plotgfximageformat>
+        <plotgfxdimensionsunit>px</plotgfxdimensionsunit>
+        <plotgfxdpi>96</plotgfxdpi>
+        <plotgfxsize>800 600</plotgfxsize>
+        <plotgfxkeepaspect>true</plotgfxkeepaspect>
+        <plotgfxusescreensize>false</plotgfxusescreensize>
     </settings>
     <style>
         <penstyle width="1" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="Iso"/>

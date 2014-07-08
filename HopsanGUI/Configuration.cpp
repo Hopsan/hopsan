@@ -92,6 +92,12 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "labviewexportdir", mLabViewExportDir);
     appendDomIntegerNode(settings, "ploexportversion", mPLOExportVersion);
     appendDomBooleanNode(settings, "showhiddennodedatavariables", mShowHiddenNodeDataVariables);
+    appendDomTextNode(settings, "plotgfximageformat", mPlotGfxImageFormat);
+    appendDomTextNode(settings, "plotgfxdimensionsunit", mPlotGfxDimensionsUnit);
+    appendDomIntegerNode(settings, "plotgfxdpi", mPlotGfxDPI);
+    appendDomValueNode2(settings, "plotgfxsize", mPlotGfxSize.width(), mPlotGfxSize.height());
+    appendDomBooleanNode(settings, "plotgfxkeepaspect", mPlotGfxKeepAspect);
+    appendDomBooleanNode(settings, "plotgfxusescreensize", mPlotGfxUseScreenSize);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -374,22 +380,56 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     mLibraryStyle = parseDomIntegerNode(rDomElement.firstChildElement("librarystyle"), mLibraryStyle);
     mPLOExportVersion = parseDomIntegerNode(rDomElement.firstChildElement("ploexportversion"), mPLOExportVersion);
 
-    mShowHiddenNodeDataVariables = parseDomBooleanNode(rDomElement.firstChildElement("showhiddennodedatavariables"), mShowHiddenNodeDataVariables);
-    mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement("showpopuphelp"), mShowPopupHelp);
-    mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement("nativestylesheet"), mUseNativeStyleSheet);
-    mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement("antialiasing"), mAntiAliasing);
-    mInvertWheel = parseDomBooleanNode(rDomElement.firstChildElement("invertwheel"), mInvertWheel);
-    mSnapping = parseDomBooleanNode(rDomElement.firstChildElement("snapping"), mSnapping);
-    mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement("progressbar"), mEnableProgressBar);
-    mProgressBarStep = parseDomIntegerNode(rDomElement.firstChildElement("progressbar_step"), mProgressBarStep);
-    mUseMulticore = parseDomBooleanNode(rDomElement.firstChildElement("multicore"), mUseMulticore);
-    mNumberOfThreads = parseDomIntegerNode(rDomElement.firstChildElement("numberofthreads"), mNumberOfThreads);
-    mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("togglenamesbuttonchecked"), mToggleNamesButtonCheckedLastSession);
-    mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("toggleportsbuttonchecked"), mTogglePortsButtonCheckedLastSession);
-    mGroupMessagesByTag = parseDomBooleanNode(rDomElement.firstChildElement("groupmessagesbytag"), mGroupMessagesByTag);
-    mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"), mGenerationLimit);
-    mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement("cachelogdata"), mCacheLogData);
-    mAutoLimitLogDataGenerations = parseDomBooleanNode(rDomElement.firstChildElement("autolimitgenerations"), mAutoLimitLogDataGenerations);
+    if(!rDomElement.firstChildElement("showhiddennodedatavariables").isNull())
+        mShowHiddenNodeDataVariables = parseDomBooleanNode(rDomElement.firstChildElement("showhiddennodedatavariables"), mShowHiddenNodeDataVariables);
+    if(!rDomElement.firstChildElement("showpopuphelp").isNull())
+        mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement("showpopuphelp"), mShowPopupHelp);
+    if(!rDomElement.firstChildElement("nativestylesheet").isNull())
+        mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement("nativestylesheet"), mUseNativeStyleSheet);
+    if(!rDomElement.firstChildElement("antialiasing").isNull())
+        mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement("antialiasing"), mAntiAliasing);
+    if(!rDomElement.firstChildElement("invertwheel").isNull())
+        mInvertWheel = parseDomBooleanNode(rDomElement.firstChildElement("invertwheel"), mInvertWheel);
+    if(!rDomElement.firstChildElement("snapping").isNull())
+        mSnapping = parseDomBooleanNode(rDomElement.firstChildElement("snapping"), mSnapping);
+    if(!rDomElement.firstChildElement("progressbar").isNull())
+        mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement("progressbar"), mEnableProgressBar);
+    if(!rDomElement.firstChildElement("progressbar_step").isNull())
+        mProgressBarStep = parseDomIntegerNode(rDomElement.firstChildElement("progressbar_step"), mProgressBarStep);
+    if(!rDomElement.firstChildElement("multicore").isNull())
+        mUseMulticore = parseDomBooleanNode(rDomElement.firstChildElement("multicore"), mUseMulticore);
+    if(!rDomElement.firstChildElement("numberofthreads").isNull())
+        mNumberOfThreads = parseDomIntegerNode(rDomElement.firstChildElement("numberofthreads"), mNumberOfThreads);
+    if(!rDomElement.firstChildElement("togglenamesbuttonchecked").isNull())
+        mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("togglenamesbuttonchecked"), mToggleNamesButtonCheckedLastSession);
+    if(!rDomElement.firstChildElement("toggleportsbuttonchecked").isNull())
+        mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("toggleportsbuttonchecked"), mTogglePortsButtonCheckedLastSession);
+    if(!rDomElement.firstChildElement("groupmessagesbytag").isNull())
+        mGroupMessagesByTag = parseDomBooleanNode(rDomElement.firstChildElement("groupmessagesbytag"), mGroupMessagesByTag);
+    if(!rDomElement.firstChildElement("generationlimit").isNull())
+        mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"), mGenerationLimit);
+    if(!rDomElement.firstChildElement("cachelogdata").isNull())
+        mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement("cachelogdata"), mCacheLogData);
+    if(!rDomElement.firstChildElement("autolimitgenerations").isNull())
+        mAutoLimitLogDataGenerations = parseDomBooleanNode(rDomElement.firstChildElement("autolimitgenerations"), mAutoLimitLogDataGenerations);
+    if(!rDomElement.firstChildElement("plotgfximageformat").isNull())
+        mPlotGfxImageFormat = rDomElement.firstChildElement("plotgfximageformat").text();
+    if(!rDomElement.firstChildElement("plotgfxdimensionsunit").isNull())
+        mPlotGfxDimensionsUnit = rDomElement.firstChildElement("plotgfxdimensionsunit").text();
+    if(!rDomElement.firstChildElement("plotgfxdpi").isNull())
+        mPlotGfxDPI = parseDomIntegerNode(rDomElement.firstChildElement("plotgfxdpi"), mPlotGfxDPI);
+    if(!rDomElement.firstChildElement("plotgfxsize").isNull())
+    {
+        double width = mPlotGfxSize.width();
+        double height = mPlotGfxSize.height();
+        parseDomValueNode2(rDomElement.firstChildElement("plotgfxsize"), width, height);
+        mPlotGfxSize.setWidth(width);
+        mPlotGfxSize.setHeight(height);
+    }
+    if(!rDomElement.firstChildElement("plotgfxkeepaspect").isNull())
+        mPlotGfxKeepAspect = parseDomBooleanNode(rDomElement.firstChildElement("plotgfxkeepaspect"),mPlotGfxKeepAspect);
+    if(!rDomElement.firstChildElement("plotgfxusescreensize").isNull())
+        mPlotGfxUseScreenSize = parseDomBooleanNode(rDomElement.firstChildElement("plotgfxusescreensize"),mPlotGfxUseScreenSize);
 
     if(!rDomElement.firstChildElement("backgroundcolor").isNull())
         mBackgroundColor.setNamedColor(rDomElement.firstChildElement("backgroundcolor").text());
@@ -988,15 +1028,55 @@ int Configuration::getGenerationLimit() const
     return mGenerationLimit;
 }
 
+//! @brief Returns the cache log data setting
 bool Configuration::getCacheLogData() const
 {
     return mCacheLogData;
 }
 
+//! @brief Returns the auto limit log data generations setting
 bool Configuration::getAutoLimitLogDataGenerations()
 {
     return mAutoLimitLogDataGenerations;
 }
+
+//! @brief Returns the plot graphics export image format setting
+QString Configuration::getPlotGfxImageFormat()
+{
+    return mPlotGfxImageFormat;
+}
+
+//! @brief Returns the plot graphics export dimension unit setting
+QString Configuration::getPlotGfxDimensionsUnit()
+{
+    return mPlotGfxDimensionsUnit;
+}
+
+//! @brief Returns the plot graphics export DPI setting
+double Configuration::getPlotGfxDPI()
+{
+    return mPlotGfxDPI;
+}
+
+//! @brief Returns the plot graphics export size setting
+QSizeF Configuration::getPlotGfxSize()
+{
+    return mPlotGfxSize;
+}
+
+//! @brief Returns the plot graphics export keep aspect ratio setting
+bool Configuration::getPlotGfxKeepAspect()
+{
+    return mPlotGfxKeepAspect;
+}
+
+//! @brief Returns the plot graphics export use screen size setting
+bool Configuration::getPlotGfxUseScreenSize()
+{
+    return mPlotGfxUseScreenSize;
+}
+
+
 
 
 //! @brief Returns the last used model directory
@@ -1489,6 +1569,36 @@ void Configuration::setFmuExportDir(QString value)
 void Configuration::setLabViewExportDir(QString value)
 {
     mLabViewExportDir = value;
+}
+
+void Configuration::setPlotGfxImageFormat(QString value)
+{
+    mPlotGfxImageFormat = value;
+}
+
+void Configuration::setPlotGfxDimensionsUnit(QString value)
+{
+    mPlotGfxDimensionsUnit = value;
+}
+
+void Configuration::setPlotGfxDPI(double value)
+{
+    mPlotGfxDPI = value;
+}
+
+void Configuration::setPlotGfxSize(QSizeF value)
+{
+    mPlotGfxSize = value;
+}
+
+void Configuration::setPlotGfxKeepAspect(bool value)
+{
+    mPlotGfxKeepAspect = value;
+}
+
+void Configuration::setPlotGfxUseScreenSize(bool value)
+{
+    mPlotGfxUseScreenSize = value;
 }
 
 void Configuration::setParallelAlgorithm(int value)

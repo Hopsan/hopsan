@@ -1539,18 +1539,27 @@ PlotGraphicsExporter::PlotGraphicsExporter()
 {
     mSupportedFormats << "png" << "pdf" << "svg" << "ps" << "jpeg";
 
-    mImageFormat = "png";
-    mDimensionsUnit = "px";
-    mDPI = 96;
-    mSetSize = QSizeF(800,600);
+    mImageFormat = gpConfig->getPlotGfxImageFormat();
+    mDimensionsUnit = gpConfig->getPlotGfxDimensionsUnit();
+    mDPI = gpConfig->getPlotGfxDPI();
+    mSetSize = gpConfig->getPlotGfxSize();
+    mKeepAspect = gpConfig->getPlotGfxKeepAspect();
+    mUseScreenSize = gpConfig->getPlotGfxUseScreenSize();
 }
 
 void PlotGraphicsExporter::openExportDialog()
 {
+    if(mpDialog && mpDialog->isVisible())
+    {
+        mpDialog->activateWindow();
+        return;
+    }
+
     //QDialog *pDialog = new QDialog(mpParentPlotWindow);
     mpDialog = new QDialog();
     mpDialog->setWindowTitle("Plot Graphics Export");
     mpDialog->setWindowModality(Qt::WindowModal);
+    mpDialog->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
     //pDialog->setWindowFlags();
 
     mpSetImageFormat = new QComboBox(mpDialog);
@@ -1594,9 +1603,11 @@ void PlotGraphicsExporter::openExportDialog()
     connect(mpDPISpinBox, SIGNAL(valueChanged(double)), this, SLOT(changedDialogSettings()));
 
     mpKeepAspectRatioCheckBox = new QCheckBox("Keep Aspect Ratio",mpDialog);
-    mpKeepAspectRatioCheckBox->setChecked(true);
+    mpKeepAspectRatioCheckBox->setChecked(mKeepAspect);
+    connect(mpKeepAspectRatioCheckBox, SIGNAL(toggled(bool)), this, SLOT(changedDialogSettings()));
 
     mpUseScreenSizeCheckBox = new QCheckBox("Use Screen Size",mpDialog);
+    mpUseScreenSizeCheckBox->setChecked(mUseScreenSize);
     connect(mpUseScreenSizeCheckBox, SIGNAL(toggled(bool)), this, SLOT(changedDialogSettings()));
 
     mPixelSize = calcSizePX();
@@ -1834,4 +1845,13 @@ void PlotGraphicsExporter::rememberDialogValues()
     mDimensionsUnit = mpSetDimensionsUnit->currentText();
     mSetSize = QSizeF(mpSetWidthSpinBox->value(), mpSetHeightSpinBox->value());
     mDPI = mpDPISpinBox->value();
+    mUseScreenSize = mpUseScreenSizeCheckBox->isChecked();
+    mKeepAspect = mpKeepAspectRatioCheckBox->isChecked();
+
+    gpConfig->setPlotGfxImageFormat(mImageFormat);
+    gpConfig->setPlotGfxDimensionsUnit(mDimensionsUnit);
+    gpConfig->setPlotGfxSize(mSetSize);
+    gpConfig->setPlotGfxDPI(mDPI);
+    gpConfig->setPlotGfxUseScreenSize(mUseScreenSize);
+    gpConfig->setPlotGfxKeepAspect(mKeepAspect);
 }

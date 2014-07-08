@@ -93,6 +93,8 @@ protected:
     QString mDimensionsUnit;
     double mDPI;
     QSizeF mSetSize;
+    bool mKeepAspect;
+    bool mUseScreenSize;
 
 protected slots:
     void changedDialogSettings();
