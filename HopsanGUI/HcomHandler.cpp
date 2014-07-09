@@ -2604,7 +2604,7 @@ void HcomHandler::executeDisableLoggingCommand(const QString cmd)
 
     //Disable all nodes matching specified port name wildcard
     QList<Port*> vPortPtrs;
-    getPorts(cmd, vPortPtrs);
+    getPorts(splitCommandArguments(cmd).at(0), vPortPtrs);
     for(int p=0; p<vPortPtrs.size(); ++p)
     {
         mpModel->getViewContainerObject()->getCoreSystemAccessPtr()->setLoggingEnabled(vPortPtrs.at(p)->getParentModelObjectName(), vPortPtrs.at(p)->getName(), false);
