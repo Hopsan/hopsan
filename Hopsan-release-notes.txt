@@ -25,6 +25,56 @@
 ******************************
     Version History
 ******************************
+0.6.8   (2014-07-11)
+- Feature: Made it possible to use expressions when specifying plot generations from HCOM
+- Feature: Writing multiple HCOM commands on the same line separated by semicolons
+- Feature: Controlling curve color, type and thickness from HCOM
+- Feature: Numerical input component for animation
+- Feature: Lookup table components for 1D, 2D and 3D
+- Feature: HCOM command for displaying information about a variable
+- Feature: HCOM command for making axes logarithmic in plot windows
+- Feature: HCOM command for locking or unlocking axes in plot windows
+- Feature: HCOM command for changing diagram limits
+- Feature: HCOM command for exporting plot window to graphics
+- Feature: HCOM function for absolute value (intended to replace command with same function)
+- Feature: It is not possible to disable logging in all nodes except alias variables
+
+- New component: Translational mass with coulomb friction and multi-ports
+
+- Fixed components: Mismatch between position and velocity in translational mass components
+- Fixed components: Pressure controlled pump can now be used without reference pressure port connected
+
+- Enhancement: It is not possible to right-click and plot multi-ports if they have only one connection
+- Enhancement: No specified generation in HCOM now assume globally highest generation
+- Enhancement: Generations now become locked when plotting spcified generations for a variable from HCOM
+- Enhancement: Change plot window command in HCOM now makes new plot window appear on top of other ones
+- Enhancement: New plot windows no longer steal focus from HCOM widget
+- Enhancement: The maxof() and minof() functions in HCOM can now compare vectors with scalars
+- Enhancement: Optimization dialog now plots newest objective value as well as best and worst
+- Enhancement: Most functions and commands in HCOM now evaluates their arguments properly
+- Enhancement: Animation now stops correctly when stop time is reached
+- Enhancement: Settings for plot graphics export are now saved between sessions
+- Enhancement: Generation number of imported variables are now shown in plot widget
+- Enhancement: Lossless connector icons have been changed so that they are not confused with pipes
+- Enhancement: Exported Simulink S-functions now print messages from HopsanCore
+
+- Fixed: Made it possible to use lookup tables with relative pahs in sensitivity analysis widget
+- Fixed: Disabling logging in a node now works also after it has been previously simulated
+- Fixed: Wrong relative paths for components in embedded subsystems
+- Fixed: Mixup of time vectors in interface ports on subsystems
+- Fixed: The ddt command in HCOM returns a vector of wrong size
+- Fixed: Highlighting function in system parameters widget now also highlights negative instances of the parameter
+- Fixed: Highlighting function in system parameters widget now only highlights by name, not by value
+- Fixed: Added missing number of parentheses check in HCOM expressions
+- Fixed: HCOM operators for greater than and smaller than now work for vectors
+- Fixed: Animation data for pressure, levels and flow speed are now remembered when leaving animation mode
+- Fixed: Zoom and center view actions now work in animation mode
+- Fixed: Crash when removing variables with rmvar from HCOM
+- Fixed: Multiplying a vector with zero in HCOM now returns a vector of zeros and not a scalar
+- Fixed: Removed errors and warnings in optimization dialog that made no sense
+- Fixed: Animation display component no longer shows numbers outside its icon
+- Fixed: Aliases no longer lose their connection to plot curves when clicking "ok" in component properties dialog
+
 0.6.7    (2014-05-14)
 - Feature: It is now possible to change the unit for constants and start values in the component properties dialog.
            Only registered unit scales will be available
