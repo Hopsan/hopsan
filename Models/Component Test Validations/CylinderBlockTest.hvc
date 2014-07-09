@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.2">
-  <validation hopsanguiversion="0.6.x_r6996" time="171357" date="20140513" hopsancoreversion="0.6.x_r7016">
+  <validation hopsanguiversion="0.6.x_r7220" time="091538" date="20140709" hopsancoreversion="0.6.x_r7219">
     <modelfile>../Component Test/HydraulicComponent Test/HydraulicCylinderBlockTest.hmf</modelfile>
     <hvdfile>CylinderBlockTest.hvd</hvdfile>
     <variable name="HydraulicCylinderBlockTest$Position_Transducer_1#out#Value">
