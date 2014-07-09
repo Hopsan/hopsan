@@ -3899,7 +3899,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
                 evaluateExpression(varNames[s], DataVector);
                 if(mAnsType == DataVector)
                 {
-                    addPlotCurve(mAnsVector, axisId, true, 0, color);
+                    addPlotCurve(mAnsVector, axisId, true, type, color, thickness);
                     found = true;
                 }
             }
