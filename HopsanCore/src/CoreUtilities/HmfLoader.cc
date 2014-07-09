@@ -462,7 +462,7 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
             // Check version
             HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
             pHopsanEssentials->getCoreMessageHandler()->addDebugMessage("Model saved with core version: " + savedwithcoreversion);
-            if (isVersionGreaterThan("0.6.0", savedwithcoreversion) || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5500"))
+            if (isVersionGreaterThan("0.6.0", savedwithcoreversion) || (isVersionGreaterThan(savedwithcoreversion, "0.6.x") && isVersionGreaterThan("0.6.x_r5500", savedwithcoreversion)))
             {
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
                 return 0;
