@@ -510,10 +510,14 @@ def copyFiles():
 
     #Export defaultLibrary" SVN directory to temporary directory
     svnExport(r'componentLibraries\defaultLibrary', tempDir+r'\componentLibraries\defaultLibrary')
-
+    
+    #Remove xml file for default component library (will be compiled into HopsanCore.dll)
+    callDel(tempDir+r'\componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
+    raw_input('Blabla')
+    
     #Export "exampleComponentLib" SVN directory to temporary directory
     svnExport(r'componentLibraries\exampleComponentLib', tempDir+r'\componentLibraries\exampleComponentLib')
-
+   
     #Export "Scripts" folder to temporary directory
     svnExport(r'Scripts\HopsanOptimization.py', tempDirScripts)
     svnExport(r'Scripts\OptimizationObjectiveFunctions.py', tempDirScripts)
