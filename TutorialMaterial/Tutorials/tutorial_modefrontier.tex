@@ -16,26 +16,26 @@
 %modeFRONTIER is the property of ESTECO SpA. Hopsan development team is not affiliated with modeFRONTIER.
 
 \section*{Introduction}
-This tutorial will demonstrate how to execute Hopsan simulations from modeFRONTIER, a multi-objective optimization environment. This makes it possible to use powerful optimization algorithms and data analysis tools on a Hopsan model. It is possible to connect other programs to modeFRONTIER simultaneously and run multi-disciplinary optimizations. The latter is, however, not covered by this tutorial.
+This tutorial will demonstrate how to run Hopsan simulations from modeFRONTIER\footnote{modeFRONTIER is the property of ESTECO SpA. The Hopsan developers are not affiliated with modeFRONTIER or ESTECO SpA.}, a multi-objective optimization environment. This makes it possible to use powerful optimization algorithms and data analysis tools on a Hopsan model. It is also possible to connect other programs to modeFRONTIER simultaneously and run multi-disciplinary optimizations. This is, however, not covered by this tutorial.
 
 \section*{Requirements}
-This tutorial is written using modeFRONTIER version 4.5.3 and Hopsan version 0.6.7 on the Windows operating system. It should, however, work on Linux systems with some minor modifications. Some basic knowledge of design optimization is also required. It is recommended to do the "Getting Started", "Advanced Usage" and "Optimization" tutorials before this one.
+In this tutorial modeFRONTIER version 4.5.3 and Hopsan version 0.6.8 on a Windows operating system are used. It should, however, work on Linux systems with some minor modifications. Some basic knowledge of Hopsan and design optimization is also required. It is recommended to do the "Getting Started", "Advanced Usage" and "Optimization" tutorials before this one.
 %\icon{0}{gfx/Hopsan-ExportSimulink.png}{Export model to Simulink S-function}
 
 \section*{Optimize using final values only}
-An optimization basically consists of three parts: A simulation model, objective function(s), and an optimization algorithm. In this case Hopsan will be responsible for the simulation, and modeFRONTIER will take care of the algorithm. The evaluation of the objective function can, however, be placed in either one of the programs. We will demonstrate both methods.
+An optimization basically consists of three parts: A simulation model, one or more objective function(s), and an optimization algorithm. In this case Hopsan will be responsible for the simulation, while modeFRONTIER will take care of the algorithm. The evaluation of the objective function(s) can, however, be placed in either one of the programs. We will demonstrate both methods.
 
-Calculating objective function values requires access to the resulting data variables from the simulation. Letting Hopsan do the calculation can therefore be easier, since the amount of data that must be send between the programs can be reduced. We will now show how to run an optimization by only sending the final simulation values from Hopsan.
+Calculating objective function values requires access to the resulting data variables from the simulation. Letting Hopsan do the calculation can therefore be easier, since the amount of data that must be send between the programs can be reduced. We will first show how to run an optimization by only sending the final simulation values from Hopsan.
 
 \begin{tutenumerate}
 \tutitem{Preparations}
 For this example we will use the position servo example model. The objective is to optimize the parameters of the PI-controller by analyzing a step response. First we must modify the model so that it also calculates the objective function value.
 
 \begin{itemize}
-\item Create a new empty folder
 \item Open the position servo example
 \item Add an absolute value operaetor and an integrator
 \item Connect them after the error signal and name the integrator "totalError"
+\item Create a new empty folder
 \item Save the model as "PositionServo.hmf" in the folder you created
 \end{itemize}
 
@@ -49,13 +49,14 @@ Hopsan and modeFRONTIER will communicate by using comma-separated files (.csv). 
 \begin{itemize}
 \item Open a command prompt in Windows
 \item Go to the folder you created
-\item Execute HopsanCLI with the following command (with your Hopsan installation path):
+\item Execute HopsanCLI with the following command (change the Hopsan installation path to the one you have):
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, breaklines=true]
-c:\"Program Files (x86)"\hopsan\bin\HopsanCLI --hmf PositionServo.hmf    --simulate hmf --resultsFinalCSV resultsFinal.csv --parameterExport parameters.csv
+c:\"Program Files (x86)"\hopsan\bin\HopsanCLI --hmf PositionServo.hmf    --simulate hmf --resultsFinalCSV resultsFinal.csv 
+    --parameterExport parameters.csv
 \end{lstlisting}
 \end{itemize}
 
-This will open the model, simulate it and generate .csv files for parameters and resulting data variables.
+This will open the model, simulate it and generate .csv files for parameters and final values of the data variables.
 
 
 \tutitem{Build the modeFRONTIER project}
@@ -190,6 +191,7 @@ C:\"Program Files (x86)"\Hopsan\bin\HopsanCLI --hmf PositionServo.hmf
     --simulate hmf --resultsFinalCSV resultsFinal.csv 
     --parameterImport parameters.csv
 \end{lstlisting}
+This will tell HopsanCLI to load the specified model, load parameters from \texttt{parameters.csv}, simulate the model and then write the final values of all data variables to \texttt{resultsFinal.csv}.
 \item Click \textit{"Ok"} twice
 \end{itemize}
 
@@ -226,7 +228,7 @@ Now everything is prepared for starting the optimization!
 
 
 \section*{Optimizing using full variable export}
-Putting the objective function in Hopsan is not always possible (or desirable). In this case it is necessary to export the data to modeFRONTIER instead, so that the calculation can be made there.
+Putting the objective function in Hopsan is not always possible (or desirable). Another method is to export the data to modeFRONTIER instead, so that the calculation can be made there.
 
 \begin{enumerate}
 \tutitem{Save a copy of the model}
@@ -348,7 +350,7 @@ totalError = sum(abs(subtract(x_actual,x_reference)))
 \end{itemize}
   
 \tutitem{Save the model and run an optimization}
-If everything was successful, the optimization should work and give reasonable results. It should, however, be slower with this method, due to the large amount of data being exchanged between the programs.
+If everything was successful, the optimization should work and give reasonable results. This method should, however, be less time-efficient, due to the large amount of data being exchanged between the programs.
 \end{tutenumerate}
 
 \end{document}
