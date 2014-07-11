@@ -79,9 +79,8 @@ bool hopsan::fuzzyEqual(const double x, const double y, const double epsilon)
     }
     // a or b is zero or both are extremely close to it
     // relative error is less meaningful here
-    else if (x == 0 || y == 0 || diff < std::numeric_limits<double>::epsilon() )
+    else if (x == 0 || y == 0 || diff < epsilon * std::numeric_limits<double>::epsilon() ) //! @todo Added multiplication with epsilon here, otherwise it may return false without ever reaching the second comparison
     {
-
         return diff < (epsilon * std::numeric_limits<double>::epsilon() );
     }
     // use relative error
@@ -155,14 +154,14 @@ double hopsan::equalSigns(const double x, const double y)
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::ArcSinL(const double x)
 {
-    return asin(limit(x,-0.999,0.999));
+    return asin(limit(x,-0.9999999999,0.9999999999));
 }
 
 //! @brief derivative of AsinL
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::dxArcSinL(const double x)
 {
-    return 1.0/sqrt(1 - pow(limit(x,-0.999,0.999),2));
+    return 1.0/sqrt(1 - pow(limit(x,-0.9999999999,0.9999999999),2));
 }
 
 //! @brief difference between two angles, fi1-fi2
