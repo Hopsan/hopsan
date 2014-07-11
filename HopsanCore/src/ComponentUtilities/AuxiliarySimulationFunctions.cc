@@ -81,6 +81,7 @@ bool hopsan::fuzzyEqual(const double x, const double y, const double epsilon)
     // relative error is less meaningful here
     else if (x == 0 || y == 0 || diff < epsilon * std::numeric_limits<double>::epsilon() ) //! @todo Added multiplication with epsilon here, otherwise it may return false without ever reaching the second comparison
     {
+        double debug = epsilon * std::numeric_limits<double>::epsilon();
         return diff < (epsilon * std::numeric_limits<double>::epsilon() );
     }
     // use relative error
@@ -258,7 +259,7 @@ double hopsan::dxLimit(const double x, const double xmin, const double xmax)
 //! @returns Limited derivative of x
 double hopsan::dxLowLimit(const double x,const double xmin)
 {
-    if (x <= xmin) { return 0.0000001; }
+    if (x <= xmin) { return 0.000000001; }
     return 1.0;
 }
 //! @brief Sets the derivative of x to zero if x is outside of limits.
@@ -269,7 +270,7 @@ double hopsan::dxLowLimit(const double x,const double xmin)
 //! @returns Limited derivative of x
 double hopsan::dxLowLimit2(const double x, const double sx, const double xmin)
 {
-    if (x <= xmin && sx <= 0.0) { return 0.0000001; }
+    if (x <= xmin && sx <= 0.0) { return 0.000000001; }
     return 1.0;
 }
 
@@ -282,8 +283,8 @@ double hopsan::dxLowLimit2(const double x, const double sx, const double xmin)
 //! @returns Limited derivative of x
 double hopsan::dxLimit2(const double x, const double sx, const double xmin, const double xmax)
 {
-    if (x >= xmax && sx >= 0.0) { return 0.0000001; }
-    if (x <= xmin && sx <= 0.0) { return 0.0000001; }
+    if (x >= xmax && sx >= 0.0) { return 0.000000001; }
+    if (x <= xmin && sx <= 0.0) { return 0.000000001; }
     return 1.0;
 }
 
@@ -293,7 +294,7 @@ double hopsan::dxLimit2(const double x, const double sx, const double xmin, cons
 //! @param x Numinator
 //! @param y Denominator
 //! @returns Algebraic quotient with any fracrional parts discarded
-double div(const double x, const double y)
+double hopsan::div(const double x, const double y)
 {
     if(x/y > 0)
     {

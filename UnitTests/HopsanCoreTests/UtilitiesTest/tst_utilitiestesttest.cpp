@@ -4,6 +4,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/StringUtilities.h"
+#include "CoreUtilities/MultiThreadingUtilities.h"
 
 using namespace hopsan;
 
@@ -167,6 +168,27 @@ private Q_SLOTS:
         QTest::newRow("4") << HString("ko") << HString("ko_3");
     }
 
+    void Determine_Actual_Number_Of_Threads()
+    {
+        QFETCH(int,desired);
+
+        QVERIFY2(determineActualNumberOfThreads(size_t(desired)) == (size_t)min(desired, QThread::idealThreadCount()), "determineActualNumberOfThreads() returned wrong value!");
+    }
+
+    void Determine_Actual_Number_Of_Threads_data()
+    {
+        QTest::addColumn<int>("desired");
+
+        QTest::newRow("0") << 1;
+        QTest::newRow("1") << 2;
+        QTest::newRow("2") << 3;
+        QTest::newRow("3") << 4;
+        QTest::newRow("4") << 5;
+        QTest::newRow("5") << 6;
+        QTest::newRow("6") << 7;
+        QTest::newRow("7") << 8;
+        QTest::newRow("8") << 9;
+    }
 };
 QTEST_APPLESS_MAIN(UtilitiesTestTest)
 
