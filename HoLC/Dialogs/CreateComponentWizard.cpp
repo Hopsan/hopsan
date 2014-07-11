@@ -737,7 +737,7 @@ void CreateComponentWizard::generate()
         QString x = "0.0";
         QString y = QString::number(pos);
         //portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"180\" name=\""+name+"\" hidden=\"false\"/>");
-        portsCode.append(spaces(12)+QString("<port name=\"%1\" x=\"%2\" y=\"%3\" a=\"%4\" hidden=\"false\"/>\n").arg(name, x, y).arg(180));
+        portsCode.append(spaces(12)+QString("<port name=\"%1\" x=\"%2\" y=\"%3\" a=\"%4\" visible=\"true\"/>\n").arg(name, x, y).arg(180));
     }
 
     //Add output variables
@@ -751,7 +751,7 @@ void CreateComponentWizard::generate()
         QString x = "1.0";
         QString y = QString::number(pos);
         //portsCode.append("\n            <port x=\""+x+"\" y=\""+y+"\" a=\"0\" name=\""+name+"\" hidden=\"false\"/>");
-        portsCode.append(spaces(12)+QString("<port name=\"%1\" x=\"%2\" y=\"%3\" a=\"%4\" hidden=\"false\"/>\n").arg(name, x, y).arg(0));
+        portsCode.append(spaces(12)+QString("<port name=\"%1\" x=\"%2\" y=\"%3\" a=\"%4\" visible=\"true\"/>\n").arg(name, x, y).arg(0));
     }
 
 
