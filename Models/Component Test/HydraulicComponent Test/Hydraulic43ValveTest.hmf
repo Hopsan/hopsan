@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6964" hopsancoreversion="0.6.x_r6964">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7224" hopsancoreversion="0.6.x_r7219">
   <requirements>
+    <componentlibrary>ModelicaTemp931739</componentlibrary>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
   </requirements>
   <info/>
@@ -12,8 +13,8 @@
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
-      <animation flowspeed="100"/>
-      <viewport x="2570.2" y="2512.61" zoom="0.842152"/>
+      <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+      <viewport x="2567.83" y="2510.24" zoom="0.842152"/>
       <ports hidden="0"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -24,7 +25,7 @@
             <icon path="subsystemDefault.svg" type="defaultmissing"/>
           </icons>
           <ports/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
         </modelobject>
       </hopsanobjectappearance>
       <optimization>
@@ -69,7 +70,7 @@
         <hopsangui>
           <pose x="2678" y="2453" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="45.000000"/>
               <movement x="0.000000" y="0.000000" a="90.000000"/>
@@ -95,7 +96,7 @@
         <hopsangui>
           <pose x="2274" y="2546" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalRamp" displayname="Ramp">
               <ports/>
@@ -105,7 +106,7 @@
       </component>
       <component typename="Hydraulic43Valve" name="4_3_Servo_Valve">
         <parameters>
-          <parameter unit="" value="0" type="double" name="xv#Value"/>
+          <parameter unit="" value="-0.001" type="double" name="xv#Value"/>
           <parameter unit="m" value="0" type="double" name="in#Value"/>
           <parameter unit="-" value="0.67" type="double" name="C_q#Value"/>
           <parameter unit="kg/m^3" value="890" type="double" name="rho#Value"/>
@@ -133,7 +134,7 @@
         <hopsangui>
           <pose x="2508" y="2536" flipped="false" a="0"/>
           <nametext position="1" visible="1"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="0.000000"/>
               <movement x="-4000.000000" y="0.000000" a="0.000000"/>
@@ -162,7 +163,7 @@
         <hopsangui>
           <pose x="2729" y="2454" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="45.000000"/>
               <movement x="0.000000" y="0.000000" a="90.000000"/>
@@ -178,7 +179,7 @@
       <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source_1">
         <parameters>
           <parameter unit="Pa" value="1e+007" type="double" name="p#Value"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="m^3/s" value="0.00347" type="double" name="P1#Flow"/>
           <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
           <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
@@ -191,7 +192,7 @@
         <hopsangui>
           <pose x="2598" y="2459" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source_1">
               <ports/>
@@ -202,7 +203,7 @@
       <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source">
         <parameters>
           <parameter unit="Pa" value="1e+007" type="double" name="p#Value"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="m^3/s" value="-0.00347" type="double" name="P1#Flow"/>
           <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
           <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
@@ -215,7 +216,7 @@
         <hopsangui>
           <pose x="2453" y="2459" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source">
               <ports/>
@@ -239,7 +240,7 @@
         <hopsangui>
           <pose x="2777" y="2455" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="45.000000"/>
               <movement x="0.000000" y="0.000000" a="90.000000"/>
@@ -268,7 +269,7 @@
         <hopsangui>
           <pose x="2820" y="2455" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="45.000000"/>
               <movement x="0.000000" y="0.000000" a="90.000000"/>
@@ -284,7 +285,7 @@
       <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source_2">
         <parameters>
           <parameter unit="Pa" value="2e+007" type="double" name="p#Value"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="m^3/s" value="-0.00347" type="double" name="P1#Flow"/>
           <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
           <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
@@ -297,7 +298,7 @@
         <hopsangui>
           <pose x="2447" y="2640" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source_2">
               <ports/>
@@ -308,7 +309,7 @@
       <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source_3">
         <parameters>
           <parameter unit="Pa" value="1e5" type="double" name="p#Value"/>
-          <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
+          <parameter unit="m^3/s" value="0.00347" type="double" name="P1#Flow"/>
           <parameter unit="K" value="293" type="double" name="P1#Temperature"/>
           <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
@@ -321,7 +322,7 @@
         <hopsangui>
           <pose x="2591" y="2639" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source_3">
               <ports/>
@@ -341,7 +342,7 @@
         <hopsangui>
           <pose x="2853" y="2367" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Scope">
               <ports/>
@@ -563,20 +564,6 @@
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="in_bottom" endcomponent="Scope" startport="xv" startcomponent="4_3_Servo_Valve">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2587.50000000000000000000" y="2536.00000000000000000000"/>
-            <coordinate x="2853.00000000000000000000" y="2536.00000000000000000000"/>
-            <coordinate x="2853.00000000000000000000" y="2382.00000000000000000000"/>
-          </coordinates>
-          <geometries>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
           </geometries>

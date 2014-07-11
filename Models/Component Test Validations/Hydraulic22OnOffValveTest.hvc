@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7224" time="143113" date="20140711" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Component Test/HydraulicComponent Test/Hydraulic22OnOffValveTest.hmf</modelfile>
+    <hvdfile>Hydraulic22OnOffValveTest.hvd</hvdfile>
+    <variable name="Hydraulic22OnOffValveTest$2_2_On_Off_Valve#xv#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Hydraulic22OnOffValveTest$Rate_limiter_2#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Hydraulic22OnOffValveTest$Flow_Rate_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>

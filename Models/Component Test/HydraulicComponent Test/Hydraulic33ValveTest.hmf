@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6964" hopsancoreversion="0.6.x_r6964">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7224" hopsancoreversion="0.6.x_r7219">
   <requirements>
+    <componentlibrary>ModelicaTemp931739</componentlibrary>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
   </requirements>
   <info/>
   <system typename="Subsystem" name="Hydraulic33ValveTest">
     <simulationtime stop="1" timestep="0.001" start="0" inherit_timestep="true"/>
-    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <simulationlogsettings numsamples="1000" starttime="0"/>
     <parameters/>
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
-      <animation flowspeed="100"/>
+      <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
       <viewport x="2552.39" y="2443.74" zoom="0.842152"/>
       <ports hidden="0"/>
       <names hidden="0"/>
@@ -24,7 +25,7 @@
             <icon path="subsystemDefault.svg" type="defaultmissing"/>
           </icons>
           <ports/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
         </modelobject>
       </hopsanobjectappearance>
       <optimization>
@@ -69,7 +70,7 @@
         <hopsangui>
           <pose x="2678" y="2453" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="45.000000"/>
               <movement x="0.000000" y="0.000000" a="90.000000"/>
@@ -95,7 +96,7 @@
         <hopsangui>
           <pose x="2271.625132" y="2543.984364" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalRamp" displayname="Ramp">
               <ports/>
@@ -115,7 +116,7 @@
         <hopsangui>
           <pose x="2853" y="2367" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Sink">
               <ports/>
@@ -139,7 +140,7 @@
         <hopsangui>
           <pose x="2453" y="2459" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source">
               <ports/>
@@ -163,7 +164,7 @@
         <hopsangui>
           <pose x="2777" y="2455" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="45.000000"/>
               <movement x="0.000000" y="0.000000" a="90.000000"/>
@@ -192,7 +193,7 @@
         <hopsangui>
           <pose x="2820" y="2455" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="45.000000"/>
               <movement x="0.000000" y="0.000000" a="90.000000"/>
@@ -221,7 +222,7 @@
         <hopsangui>
           <pose x="2447" y="2642.374868" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source_2">
               <ports/>
@@ -245,7 +246,7 @@
         <hopsangui>
           <pose x="2572.001054" y="2641.374868" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source_3">
               <ports/>
@@ -255,7 +256,7 @@
       </component>
       <component typename="Hydraulic33Valve" name="3_3_Directional_Valve">
         <parameters>
-          <parameter unit="" value="0" type="double" name="xv#Value"/>
+          <parameter unit="" value="-0.001" type="double" name="xv#Value"/>
           <parameter unit="m" value="0" type="double" name="in#Value"/>
           <parameter unit="-" value="0.67" type="double" name="C_q#Value"/>
           <parameter unit="kg/m^3" value="890" type="double" name="rho#Value"/>
@@ -278,7 +279,7 @@
         <hopsangui>
           <pose x="2491.236736" y="2533.984364" flipped="false" a="0"/>
           <nametext position="0" visible="1"/>
-          <animation flowspeed="100">
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable>
               <start x="0.000000" y="0.000000" a="0.000000"/>
               <movement x="-4000.000000" y="0.000000" a="0.000000"/>
@@ -295,7 +296,7 @@
         <hopsangui>
           <pose x="2151.000000" y="2325.501582"/>
           <textobject reflow="0" fontcolor="#556b2f" text="Issus: Start value cannot be set other &#xa;than zero xv due to inputsignal set zero during initialisation.&#xa;&#xa;underlap is not functioning properly" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-          <size width="407.940000" height="84.000000"/>
+          <size width="491.062500" height="84.000000"/>
           <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
@@ -303,7 +304,7 @@
         <hopsangui>
           <pose x="2409.000000" y="2248.000000"/>
           <textobject reflow="0" fontcolor="#556b2f" text="Test example of a 3/3 directional valve." font="Calibri,16,-1,5,75,0,0,0,0,0"/>
-          <size width="351.000000" height="53.000000"/>
+          <size width="480.140625" height="53.000000"/>
           <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
@@ -315,7 +316,7 @@
             <coordinate x="2777.00000000000000000000" y="2473.00000000000000000000"/>
             <coordinate x="2777.00000000000000000000" y="2598.87434097407594890683"/>
             <coordinate x="2447.00000000000000000000" y="2598.87434097407594890683"/>
-            <coordinate x="2447.00000000000000000000" y="2630.37486819481500788243"/>
+            <coordinate x="2447.00000000000000000000" y="2630.37486799999987852061"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -328,8 +329,8 @@
       <connect endport="P1" endcomponent="Flow_Sensor_3" startport="P1" startcomponent="C_type_Pressure_Source_3">
         <hopsangui>
           <coordinates>
-            <coordinate x="2572.00105444147857269854" y="2629.37486819481546262978"/>
-            <coordinate x="2572.00105444147857269854" y="2599.00000000000000000000"/>
+            <coordinate x="2572.00105399999984001624" y="2629.37486799999987852061"/>
+            <coordinate x="2572.00105399999984001624" y="2599.00000000000000000000"/>
             <coordinate x="2820.00000000000000000000" y="2599.00000000000000000000"/>
             <coordinate x="2820.00000000000000000000" y="2473.00000000000000000000"/>
           </coordinates>
@@ -388,7 +389,7 @@
       <connect endport="PP" endcomponent="3_3_Directional_Valve" startport="P1" startcomponent="C_type_Pressure_Source_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2447.00000000000000000000" y="2630.37486819481500788243"/>
+            <coordinate x="2447.00000000000000000000" y="2630.37486799999987852061"/>
             <coordinate x="2447.00000000000000000000" y="2578.98436386780485918280"/>
             <coordinate x="2501.15833599999996295082" y="2578.98436386780485918280"/>
             <coordinate x="2501.15833599999996295082" y="2558.98436399999991408549"/>
@@ -404,8 +405,8 @@
       <connect endport="PT" endcomponent="3_3_Directional_Valve" startport="P1" startcomponent="C_type_Pressure_Source_3">
         <hopsangui>
           <coordinates>
-            <coordinate x="2572.00105444147857269854" y="2629.37486819481546262978"/>
-            <coordinate x="2572.00105444147857269854" y="2578.98436386780485918280"/>
+            <coordinate x="2572.00105399999984001624" y="2629.37486799999987852061"/>
+            <coordinate x="2572.00105399999984001624" y="2578.98436386780485918280"/>
             <coordinate x="2521.20823599999994257814" y="2578.98436386780485918280"/>
             <coordinate x="2521.20823599999994257814" y="2558.98436399999991408549"/>
           </coordinates>

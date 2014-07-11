@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7224" time="154606" date="20140711" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicCylinderQTest.hmf</modelfile>
+    <hvdfile>HydraulicCylinderQTest.hvd</hvdfile>
+    <variable name="HydraulicCylinderQTest$Position_Transducer_4#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicCylinderQTest$Position_Transducer_3#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicCylinderQTest$Position_Transducer_5#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicCylinderQTest$Velocity_Transducer_1#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>4</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicCylinderQTest$Velocity_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>5</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicCylinderQTest$Velocity_Transducer_5#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>6</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>

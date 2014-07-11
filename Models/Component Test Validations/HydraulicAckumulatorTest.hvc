@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.2">
-  <validation hopsanguiversion="0.6.x_r7220" time="091718" date="20140709" hopsancoreversion="0.6.x_r7219">
-    <modelfile>../Example Models/Load Sensing System.hmf</modelfile>
-    <hvdfile>Load Sensing System.hvd</hvdfile>
-    <variable name="Load_Sensing_System$Position_Sensor#out#Value">
+  <validation hopsanguiversion="0.6.x_r7224" time="154235" date="20140711" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicAckumulatorTest.hmf</modelfile>
+    <hvdfile>HydraulicAckumulatorTest.hvd</hvdfile>
+    <variable name="HydraulicAckumulatorTest$Gas_Accumulator#Va#Value">
       <timecolumn>0</timecolumn>
       <column>1</column>
       <tolerance>0.01</tolerance>
     </variable>
-    <variable name="Load_Sensing_System$Position_Sensor_1#out#Value">
+    <variable name="HydraulicAckumulatorTest$Gas_Accumulator#pa#Value">
       <timecolumn>0</timecolumn>
       <column>2</column>
       <tolerance>0.01</tolerance>
     </variable>
-    <variable name="Load_Sensing_System$Position_Sensor_2#out#Value">
+    <variable name="HydraulicAckumulatorTest$Pressure_Transducer#out#Value">
       <timecolumn>0</timecolumn>
       <column>3</column>
       <tolerance>0.01</tolerance>
     </variable>
-    <variable name="Load_Sensing_System$Position_Sensor_3#out#Value">
+    <variable name="HydraulicAckumulatorTest$Integrator#out#Value">
       <timecolumn>0</timecolumn>
       <column>4</column>
       <tolerance>0.01</tolerance>

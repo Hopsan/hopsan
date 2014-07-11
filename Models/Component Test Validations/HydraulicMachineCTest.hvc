@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7224" time="155818" date="20140711" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicMachineCTest.hmf</modelfile>
+    <hvdfile>HydraulicMachineCTest.hvd</hvdfile>
+    <variable name="HydraulicMachineCTest$Flow_Rate_Transducer_1#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicMachineCTest$Angular_Velocity_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>
