@@ -655,30 +655,6 @@ private Q_SLOTS:
         QTest::newRow("6") << getMinorVersion("0.6.x_r7236") << -1;
         QTest::newRow("7") << getRevisionNumber("0.6.x_r7236") << 7236;
     }
-
-    void Version_Check()
-    {
-        QFETCH(QString, version1);
-        QFETCH(QString, version2);
-        QFETCH(bool, ans);
-        QVERIFY2(isVersionGreaterThan(version1.toStdString().c_str(), version2.toStdString().c_str()) == ans, "Version check returned wrong answer.");
-    }
-
-    void Version_Check_data()
-    {
-        QTest::addColumn<QString>("version1");
-        QTest::addColumn<QString>("version2");
-        QTest::addColumn<bool>("ans");
-        QTest::newRow("0") << "0.6.7" << "0.6.6" << true;
-        QTest::newRow("1") << "0.6.7" << "0.6.8" << false;
-        QTest::newRow("2") << "0.7.7" << "0.6.7" << true;
-        QTest::newRow("3") << "0.7.7" << "0.8.7" << false;
-        QTest::newRow("4") << "0.6.x_r7236" << "0.6.6" << false;
-        QTest::newRow("5") << "0.6.6" << "0.6.x_r7236" << true;
-        QTest::newRow("6") << "0.6.7" << "0.6.7" << false;
-        QTest::newRow("7") << "0.6.x_r7236" << "0.6.x_r7236" << false;
-
-    }
 };
 
 QTEST_APPLESS_MAIN(SimulationTests)
