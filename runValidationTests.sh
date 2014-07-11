@@ -23,13 +23,14 @@ echo "Using $cmd for evaluation"
 
 # Now run HopsanCLI model unit test on all  hopsanvalidationconfig files found
 while read line; do
-  echo "Evaluating $line"
-  $cmd -t "$line"
+  #echo "Evaluating $line"
+  $cmd -t "$line" | grep "Test successful: \|failed\|Failed\|Error: " 
   if [ $? -ne 0 ]; then
     failed=1
   fi
 done < <(find "$startDir/$searchdir" -name "*.hvc")
 cd $startDir
 
+setterm -default
 exit $failed
 

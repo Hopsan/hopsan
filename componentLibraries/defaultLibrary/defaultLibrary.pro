@@ -319,7 +319,8 @@ HEADERS += \
     Experimental/Signal3DLookupTable.hpp \
     Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp \
     Signal/Animation/SignalNumericalInput.hpp \
-    Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp
+    Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp \
+    Hydraulic/Valves/Hydraulic22DirectionalCheckValve.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

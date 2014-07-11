@@ -176,7 +176,7 @@ namespace hopsan {
             xpbnom = std::max(-xv-x_pb,0.0);
             xatnom = std::max(-xv-x_at,0.0);
             xbtnom = std::max(xv-x_bt,0.0);
-            xccnom = xvmax - std::max(fabs(xv-x_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
+            xccnom = xvmax - std::max(min(xvmax,fabs(xv)-x_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);
@@ -199,20 +199,11 @@ namespace hopsan {
 
             qc1 = -qcc;
             qc2 = qcc;
-            if (xv >= 0.0)
-            {
-                qp = -qpa;
-                qa = qpa;
-                qb = -qbt;
-                qt = qbt;
-            }
-            else
-            {
-                qp = -qpb;
-                qa = -qat;
-                qb = qpb;
-                qt = qat;
-            }
+
+            qp = -qpa-qpb;
+            qa = qpa-qat;
+            qb = -qbt+qpb;
+            qt = qat+qbt;
 
             pp = cp + qp*Zcp;
             pt = ct + qt*Zct;
@@ -267,20 +258,13 @@ namespace hopsan {
                 qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
                 qcc = qTurb_cc.getFlow(cc1, cc2, Zcc1, Zcc2);
 
-                if (xv >= 0.0)
-                {
-                    qp = -qpa;
-                    qa = qpa;
-                    qb = -qbt;
-                    qt = qbt;
-                }
-                else
-                {
-                    qp = -qpb;
-                    qa = -qat;
-                    qb = qpb;
-                    qt = qat;
-                }
+                qc1 = -qcc;
+                qc2 = qcc;
+
+                qp = -qpa-qpb;
+                qa = qpa-qat;
+                qb = -qbt+qpb;
+                qt = qat+qbt;
 
                 pp = cp + qp*Zcp;
                 pt = ct + qt*Zct;

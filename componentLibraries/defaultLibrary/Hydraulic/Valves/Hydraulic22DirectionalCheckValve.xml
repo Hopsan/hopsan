@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Hydraulic22DirectionalCheckValve.hpp" typename="Hydraulic22DirectionalCheckValve" displayname="2/2 Directional Check Valve">
+        <icons>
+            <icon scale="1" path="Hydraulic22DirectionalCheckValve_user.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port name="Kv_open" x="0.0" y="0.5" a="180" visible="false"/>
+            <port name="Kv_check" x="0.0" y="0.75" a="180" visible="false"/>
+            <port x="0.827731092436975" y="1" a="90" name="P1"/>
+            <port x="0.827731092436975" y="0" a="270" name="P2"/>
+            <port x="0" y="0.7" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+        <animation>
+            <icon userpath="Hydraulic22DirectionalCheckValve_user_base.svg"/>
+            <movable>
+                <icon userpath="Hydraulic22DirectionalCheckValve_user.svg"/>
+                <data port="xv" dataname="Value"/>
+                <movement x="-4000" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <adjustable xgain="0.025" port="in" ygain="0" ymin="0" xmin="0" ymax="0" xmax="40" dataname="Value"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

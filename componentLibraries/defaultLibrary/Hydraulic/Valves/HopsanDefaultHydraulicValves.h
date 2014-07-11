@@ -27,6 +27,7 @@
 #include "HydraulicCheckValve.hpp"
 #include "HydraulicCheckValveWithOrifice.hpp"
 #include "Hydraulic22DirectionalValve.hpp"
+#include "Hydraulic22DirectionalCheckValve.hpp"
 #include "Hydraulic22Valve.hpp"
 #include "Hydraulic22PoppetValve.hpp"
 #include "Hydraulic32DirectionalValve.hpp"
