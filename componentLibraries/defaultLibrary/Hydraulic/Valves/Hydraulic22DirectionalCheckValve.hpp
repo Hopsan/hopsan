@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 //!
 //! @file                  Hydraulic22DirectionalCheckValve.hpp
-//! @combination author    Paulo Teixeira
+//! @author                Paulo Teixeira
 //! @date                  2014-07-01
 //!
 //! @brief This code is a combination of Hydraulic22DirectionalValve.hpp and HydraulicCheckValvePreLoaded.hpp. Contains a hydraulic on/off check valve of Q-type
