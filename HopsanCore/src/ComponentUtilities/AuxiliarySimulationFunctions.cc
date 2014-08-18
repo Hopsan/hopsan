@@ -125,10 +125,14 @@ double hopsan::dxSquareAbsL(const double x, const double x0)
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::Atan2L(const double y, const double x)
 {
-    if (x >0. || x<0.)
-    { return atan2(y,x);}
-        else
-    {return 0.;}
+    if (x!=0 || y!=0)
+    {
+        return atan2(y,x);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 //! @brief Returns 1.0 if input variables have same sign, else returns 0.0
