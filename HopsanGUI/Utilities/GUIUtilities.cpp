@@ -39,6 +39,7 @@
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
+#include "CoreUtilities/HmfLoader.h"
 #include "Widgets/LibraryWidget.h"
 
 #define UNDERSCORE 95
@@ -900,5 +901,5 @@ QString extractFilenameExtension(const QString &rFilename)
 
 bool isVersionGreaterThan(QString v1, QString v2)
 {
-    return v1.remove(".").toInt() > v2.remove(".").toInt();
+    return hopsan::isVersionGreaterThan(v1.toStdString().c_str(), v2.toStdString().c_str());
 }

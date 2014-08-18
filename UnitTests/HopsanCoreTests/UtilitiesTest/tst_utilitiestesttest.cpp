@@ -30,6 +30,7 @@ private Q_SLOTS:
         QFETCH(QString, version1);
         QFETCH(QString, version2);
         QFETCH(bool, ans);
+        bool test = isVersionGreaterThan(version1.toStdString().c_str(), version2.toStdString().c_str());
         QVERIFY2(isVersionGreaterThan(version1.toStdString().c_str(), version2.toStdString().c_str()) == ans, "Version check returned wrong answer.");
     }
 
@@ -46,6 +47,14 @@ private Q_SLOTS:
         QTest::newRow("5") << "0.6.6" << "0.6.x_r7236" << false;
         QTest::newRow("6") << "0.6.7" << "0.6.7" << false;
         QTest::newRow("7") << "0.6.x_r7236" << "0.6.x_r7236" << false;
+        QTest::newRow("8") << "0.6.7a" << "0.6.7" << true;
+        QTest::newRow("9") << "0.6.7b" << "0.6.7a" << true;
+        QTest::newRow("10") << "0.6.7a" << "0.6.6" << true;
+        QTest::newRow("11") << "0.6.7a" << "0.6.8" << false;
+        QTest::newRow("12") << "0.7.0" << "0.6.10" << true;
+        QTest::newRow("13") << "0.7.10" << "0.6.10" << true;
+        QTest::newRow("14") << "0.6.11" << "0.6.9" << true;
+
     }
 
 

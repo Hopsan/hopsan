@@ -27,6 +27,7 @@
 
 
 #include <vector>
+#include <ctype.h>
 #include "HopsanTypes.h"
 
 namespace hopsan {
@@ -80,11 +81,32 @@ inline int getMinorVersion(const HString &version)
     return tempStr.toLongInt(&dummy);
 }
 
+
+inline char getHotfixLetter(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != 'x'; ++i)
+    {
+        if(!isdigit(version.at(i)))
+            tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    if(tempStr.size() > 1)
+        return ' ';
+
+    return tempStr.at(0);
+}
+
+
 inline int getRevisionNumber(const HString &version)
 {
     HString tempStr;
     size_t i;
-    for(i=0; i<version.size() && version.at(i) != 'r'; ++i) {}
+    for(i=1; i<version.size() && version.at(i-1) != '_' && version.at(i) != 'r'; ++i) {}
     for(++i; i<version.size(); ++i)
     {
         tempStr.append(version.at(i));
@@ -106,6 +128,8 @@ inline bool isVersionGreaterThan(HString version1, HString version2)
     int maj2 = getMajorVersion(version2);
     int min1 = getMinorVersion(version1);
     int min2 = getMinorVersion(version2);
+    char letter1 = getHotfixLetter(version1);
+    char letter2 = getHotfixLetter(version2);
     int rev1 = getRevisionNumber(version1);
     int rev2 = getRevisionNumber(version2);
 
@@ -127,6 +151,11 @@ inline bool isVersionGreaterThan(HString version1, HString version2)
     if(min1 > min2)
         return true;
     if(min1 < min2)
+        return false;
+
+    if(letter1 > letter2)
+        return true;
+    if(letter1 < letter2)
         return false;
 
     if(rev1 > rev2)

@@ -37,6 +37,7 @@
 #include "CopyStack.h"
 #include "DesktopHandler.h"
 #include "MessageHandler.h"
+#include "CoreUtilities/HmfLoader.h"
 
 // Declare global pointers
 MainWindow* gpMainWindow = 0;
@@ -112,6 +113,5 @@ const char* getHopsanGUIBuildTime()
 
 bool isHospanGUIVersionHigherThan(const char *version)
 {
-    //Only to be used with release version (snapshots are unsupported)
-    return (QString(version).remove(".").toInt() > QString(HOPSANGUIVERSION).remove(".").toInt());
+    return hopsan::isVersionGreaterThan(QString(HOPSANGUIVERSION).toStdString().c_str(), QString(version).toStdString().c_str());
 }
