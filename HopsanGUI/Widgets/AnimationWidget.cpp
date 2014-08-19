@@ -275,10 +275,13 @@ AnimationWidget::~AnimationWidget()
 
     //Make sure any changes made in zoom and position are transfered back to original graphics view
     GraphicsView *pOrgView = mpContainer->mpModelWidget->getGraphicsView();
-    pOrgView->setZoomFactor(mpGraphicsView->getZoomFactor());
-    double X,Y,Z;
-    mpGraphicsView->getViewPort(X,Y,Z);
-    pOrgView->centerOn(X,Y+33/Z);
+    if(pOrgView)
+    {
+        pOrgView->setZoomFactor(mpGraphicsView->getZoomFactor());
+        double X,Y,Z;
+        mpGraphicsView->getViewPort(X,Y,Z);
+        pOrgView->centerOn(X,Y+33/Z);
+    }
 }
 
 

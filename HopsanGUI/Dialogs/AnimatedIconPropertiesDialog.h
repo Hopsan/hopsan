@@ -56,36 +56,70 @@ private:
     int mIdx;
     ModelObjectAnimationData *mpData;
 
-    //Adjustable
-    QCheckBox *mpAdjustableCheckBox;
+    //Data ports
+    QList<QLineEdit*> mpDataPortsLineEdits;
+    QList<QLineEdit*> mpDataNamesLineEdits;
 
-    //Multiplier
-    QLabel *mpMultplierLabel;
-    QLineEdit *mpMultiplierLineEdit;
+    //Multipliers and divisors
+    QList<QLineEdit*> mpMultipliersLineEdits;
+    QList<QLineEdit*> mpDivisorsLineEdits;
 
-    //Divisor
-    QLabel *mpDivisorLabel;
-    QLineEdit *mpDivisorLineEdit;
+    //Movement
+    QList<QLineEdit*> mpStartXLineEdits;
+    QList<QLineEdit*> mpStartYLineEdits;
+    QList<QLineEdit*> mpStartThetaLineEdits;
+    QList<QLineEdit*> mpMovementXLineEdits;
+    QList<QLineEdit*> mpMovementYLineEdits;
+    QList<QLineEdit*> mpMovementThetaLineEdits;
+    QList<QLineEdit*> mpMovementDataIdxLineEdits;
 
-    //Speed
-    QLabel *mpSpeedXLabel;
-    QLabel *mpSpeedYLabel;
-    QLabel *mpSpeedThetaLabel;
-    QLabel *mpResizeXLabel;
-    QLabel *mpResizeYLabel;
-    QLineEdit *mpSpeedXLineEdit;
-    QLineEdit *mpSpeedYLineEdit;
-    QLineEdit *mpSpeedThetaLineEdit;
-    QLineEdit *mpResizeXLineEdit;
-    QLineEdit *mpResizeYLineEdit;
+    //Resize
+    QList<QLineEdit*> mpInitScaleXLineEdits;
+    QList<QLineEdit*> mpInitScaleYLineEdits;
+    QList<QLineEdit*> mpResizeXLineEdits;
+    QList<QLineEdit*> mpResizeYLineEdits;
+    QList<QLineEdit*> mpScaleDataIdx1LineEdits;
+    QList<QLineEdit*> mpScaleDataIdx2LineEdits;
 
-    //Buttons
-    QDialogButtonBox *mpButtonBox;
-    QPushButton *mpOkButton;
-    QPushButton *mpCancelButton;
+    //Color
+    QList<QLineEdit*> mpInitColorLineEdits;
+    QList<QLineEdit*> mpColorModifiersLineEdits;
+    QList<QLineEdit*> mpColorDataIdxLineEdits;
 
-    //Layout
-    QGridLayout *mpLayout;
+    //Transform origin
+    QList<QLineEdit*> mpTransformOriginXLineEdits;
+    QList<QLineEdit*> mpTransformOriginYLineEdits;
+
+    //Relative movable
+    QList<QLineEdit*> mpMovableRelativeLineEdits;
+
+//    //Movable ports
+//    QStringList movablePortNames;
+//    QList<double> movablePortStartX;
+//    QList<double> movablePortStartY;
+
+//    //Adjustable
+//    bool isAdjustable;
+//    double adjustableMinX;
+//    double adjustableMaxX;
+//    double adjustableMinY;
+//    double adjustableMaxY;
+//    QString adjustablePort;
+//    QString adjustableDataName;
+//    double adjustableGainX;
+//    double adjustableGainY;
+
+//    //Switchable
+//    bool isSwitchable;
+//    double switchableOffValue;
+//    double switchableOnValue;
+//    QString switchablePort;
+//    QString switchableDataName;
+
+//    //Indicator
+//    bool isIndicator;
+//    QString indicatorPort;
+//    QString indicatorDataName;
 };
 
 #endif // ANIMATEDICONPROPERTIESDIALOG_H
