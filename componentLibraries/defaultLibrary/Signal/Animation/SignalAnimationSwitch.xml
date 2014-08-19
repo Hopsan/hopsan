@@ -13,8 +13,8 @@
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <icon userpath="SignalAnimationSwitch_active.svg"/>
-                <data port="out" dataname="Value"/>
-                <movement x="0" y="0" a="0"/>
+                <data port="out" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
                 <switchable offvalue="0" onvalue="1" port="out" dataname="Value"/>
             </movable>
         </animation>

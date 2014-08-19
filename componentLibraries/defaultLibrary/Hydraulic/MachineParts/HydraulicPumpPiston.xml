@@ -12,10 +12,10 @@
             <icon userpath="svg/piston_base.svg"/>
             <movable>
                 <icon userpath="svg/piston_movable_2.svg"/>
-                <data port="P3" dataname="Position"/>
-                <data port="P1" dataname="Pressure"/>
+                <data port="P3" dataname="Position" idx="0"/>
+                <data port="P1" dataname="Pressure" idx="1"/>
                 <divisor name="s_l#Value"/>
-                <movement x="0" y="0" a="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
                 <start x="1" y="21" a="0"/>
                 <initscale x="1" y="1"/>
                 <initcolor g="0" r="0" b="255"/>
@@ -25,17 +25,17 @@
             </movable>
             <movable>
                 <icon userpath="svg/piston_movable.svg"/>
-                <data port="P3" dataname="Position"/>
+                <data port="P3" dataname="Position" idx="0"/>
                 <divisor name="s_l#Value"/>
-                <movement x="0" y="-250" a="0"/>
+                <movement x="0" y="-250" a="0" idx="0"/>
                 <start x="0" y="-15" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <movingport startx="10" portname="P3" starty="10"/>
             </movable>
             <movable>
                 <icon userpath="svg/piston_base.svg"/>
-                <data port="P3" dataname="Position"/>
-                <movement x="0" y="0" a="0"/>
+                <data port="P3" dataname="Position" idx="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>

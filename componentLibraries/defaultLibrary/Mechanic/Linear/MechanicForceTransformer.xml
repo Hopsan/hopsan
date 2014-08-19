@@ -12,8 +12,8 @@
             <icon userpath="forcetransformer_base.svg"/>
             <movable>
                 <icon userpath="MechanicForceTransformer.svg"/>
-                <data port="P1" dataname="Position"/>
-                <movement x="77.5" y="0" a="0"/>
+                <data port="P1" dataname="Position" idx="0"/>
+                <movement x="77.5" y="0" a="0" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <movingport startx="39.566" portname="P1" starty="6.946"/>

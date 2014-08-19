@@ -18,8 +18,8 @@
             <icon userpath="prv_user_base.svg"/>
             <movable>
                 <icon userpath="prv_user_movable.svg"/>
-                <data port="xv" dataname="Value"/>
-                <movement x="-5e6" y="0" a="0"/>
+                <data port="xv" dataname="Value" idx="0"/>
+                <movement x="-5e6" y="0" a="0" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>

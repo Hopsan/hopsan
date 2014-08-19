@@ -15,10 +15,10 @@
             <icon userpath="svg/swashplate_base.svg"/>
             <movable>
                 <icon userpath="svg/swashplate_movable.svg"/>
-                <data port="angle" dataname="Value#Value"/>
-                <movement x="0" y="0" a="57.3"/>
+                <data port="angle" dataname="Value#Value" idx="0"/>
+                <movement x="0" y="0" a="57.3" idx="0"/>
                 <start x="0" y="0" a="0"/>
-                <resize x="0" y="0"/>
+                <resize x="0" y="0" idx="0"/>
                 <initscale x="1" y="1"/>
                 <transformorigin x="53.783" y="28.521"/>
             </movable>

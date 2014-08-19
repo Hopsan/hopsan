@@ -19,8 +19,8 @@
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <icon userpath="ElectricSwitch_active.svg"/>
-                <data port="state" dataname="Value"/>
-                <movement x="0" y="0" a="0"/>
+                <data port="state" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
                 <switchable offvalue="0" onvalue="1" port="state" dataname="Value"/>
             </movable>
         </animation>

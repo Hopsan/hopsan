@@ -19,19 +19,19 @@
             <icon userpath="22poppetvalve_user_base.svg"/>
             <movable>
                 <icon userpath="22poppetvalve_user_movable1.svg"/>
-                <data port="xv_out" dataname="Value"/>
+                <data port="xv_out" dataname="Value" idx="0"/>
                 <divisor name="x_vmax"/>
-                <movement x="0" y="28.5" a="0"/>
+                <movement x="0" y="28.5" a="0" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>
             <movable>
                 <icon userpath="22poppetvalve_user_movable2.svg"/>
-                <data port="xv_out" dataname="Value"/>
+                <data port="xv_out" dataname="Value" idx="0"/>
                 <divisor name="x_vmax"/>
-                <movement x="0" y="0" a="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
                 <start x="10" y="30" a="0"/>
-                <resize x="0" y="1"/>
+                <resize x="0" y="1" idx="0"/>
                 <initscale x="1" y="1"/>
                 <transformorigin x="0" y="0"/>
             </movable>

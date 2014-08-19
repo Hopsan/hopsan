@@ -16,8 +16,8 @@
             <icon userpath="flowsensor_user_base.svg"/>
             <movable>
                 <icon userpath="sensor_user_movable.svg"/>
-                <data port="out" dataname="Value"/>
-                <movement x="0" y="0" a="90"/>
+                <data port="out" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="90" idx="0"/>
                 <start x="0" y="0" a="45"/>
                 <transformorigin x="18" y="18"/>
             </movable>

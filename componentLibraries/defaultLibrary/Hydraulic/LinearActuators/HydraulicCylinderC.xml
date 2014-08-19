@@ -18,23 +18,22 @@
             <icon userpath="cylinderc_user_base.svg"/>
             <movable>
                 <icon userpath="cylinderc_user_movable_2.svg"/>
-                <data port="P3" dataname="Position"/>
-                <data port="P1" dataname="Pressure"/>
+                <data port="P1" dataname="Pressure" idx="0"/>
                 <divisor name="s_l#Value"/>
                 <start x="1.5" y="1.5" a="0"/>
                 <initcolor g="0" r="0" b="255"/>
-                <color g="0" idx="1" r="-0.00001275" b="0.00001275"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
                 <transformorigin x="0" y="0"/>
                 <movingport startx="100" portname="P3" starty="20"/>
             </movable>
             <movable>
                 <icon userpath="cylinderc_user_movable_2.svg"/>
-                <data port="P3" dataname="Position"/>
-                <data port="P2" dataname="Pressure"/>
+                <data port="P3" dataname="Position" idx="0"/>
+                <data port="P2" dataname="Pressure" idx="1"/>
                 <divisor name="s_l#Value"/>
-                <movement x="77" y="0" a="0"/>
+                <movement x="77" y="0" a="0" idx="0"/>
                 <start x="11" y="1.5" a="0"/>
-                <resize x="-1" y="0"/>
+                <resize x="-1" y="0" idx="0"/>
                 <initscale x="1" y="1"/>
                 <initcolor g="0" r="0" b="255"/>
                 <color g="0" idx="1" r="-0.00001275" b="0.00001275"/>
@@ -43,9 +42,9 @@
             </movable>
             <movable>
                 <icon userpath="cylinderc_user_movable.svg"/>
-                <data port="P3" dataname="Position"/>
+                <data port="P3" dataname="Position" idx="0"/>
                 <divisor name="s_l#Value"/>
-                <movement x="77.5" y="0" a="0"/>
+                <movement x="77.5" y="0" a="0" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <movingport startx="100" portname="P3" starty="20"/>

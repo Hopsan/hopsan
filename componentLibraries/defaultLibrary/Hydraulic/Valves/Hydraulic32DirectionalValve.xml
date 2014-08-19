@@ -24,14 +24,14 @@
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <icon userpath="22directionalvalve_user_base.svg"/>
-                <data port="in" dataname="Value"/>
-                <movement x="0" y="0" a="0"/>
+                <data port="in" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
                 <switchable offvalue="0" onvalue="1" port="in" dataname="Value"/>
             </movable>
             <movable idx="-2">
                 <icon userpath="32directionalvalve_user.svg"/>
-                <data port="xv" dataname="Value"/>
-                <movement x="-2000" y="0" a="0"/>
+                <data port="xv" dataname="Value" idx="0"/>
+                <movement x="-2000" y="0" a="0" idx="0"/>
                 <start x="-20" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>
