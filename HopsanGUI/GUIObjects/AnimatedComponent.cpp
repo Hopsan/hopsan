@@ -68,22 +68,22 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
     setupAnimationBase(mpAnimationData->baseIconPath);
 
     //Setup the movable icons
-    if(mpAnimationData->movableIconPaths.size() > 0)
+    if(!mpAnimationData->movables.isEmpty())
     {
-        for(int i=0; i<mpAnimationData->movableIconPaths.size(); ++i)
+        for(int i=0; i<mpAnimationData->movables.size(); ++i)
         {
             setupAnimationMovable(i);
-            if(!mpAnimationData->dataPorts.at(i).isEmpty()/* && unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i).first())->isConnected()*/)
+            if(!mpAnimationData->movables[i].dataPorts.isEmpty()/* && unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i).first())->isConnected()*/)
             {
                 mpData->append(QList<QVector<double> >());
                 mpNodeDataPtrs->append(QList<double*>());
                 //! @todo generation info should be some kind of "propertie" for alla of the animation code sp that if you change it it should change everywhere, to make it possible to animate different generations
                 int generation = mpAnimationWidget->mpContainer->getLogDataHandler()->getCurrentGeneration();
                 QString componentName = unanimatedComponent->getName();
-                for(int j=0; j<mpAnimationData->dataPorts.at(i).size(); ++j)
+                for(int j=0; j<mpAnimationData->movables[i].dataPorts.size(); ++j)
                 {
-                    QString portName = mpAnimationData->dataPorts.at(i).at(j);
-                    QString dataName = mpAnimationData->dataNames.at(i).at(j);
+                    QString portName = mpAnimationData->movables[i].dataPorts.at(j);
+                    QString dataName = mpAnimationData->movables[i].dataNames.at(j);
 
                     if(!mpAnimationWidget->getPlotDataPtr()->isEmpty())
                     {
@@ -155,9 +155,9 @@ void AnimatedComponent::updateAnimation()
     //Loop through all movable icons
     for(int m=0; m<mpMovables.size(); ++m)
     {
-        if(mpAnimationWidget->isRealTimeAnimation() && mpAnimationData->isAdjustable.at(m) && mpAnimationData->adjustableGainX.size() > a)   //Adjustable icon, write node data depending on position
+        if(mpAnimationWidget->isRealTimeAnimation() && mpAnimationData->movables[m].isAdjustable)
         {
-            double value = mpMovables.at(m)->x()*mpAnimationData->adjustableGainX.at(a) + mpMovables.at(m)->y()*mpAnimationData->adjustableGainY.at(a);
+            double value = mpMovables.at(m)->x()*mpAnimationData->movables[m].adjustableGainX + mpMovables.at(m)->y()*mpAnimationData->movables[m].adjustableGainY;
             (*mpMovables.at(m)->mpAdjustableNodeDataPtr) = value;
             ++a;
         }
@@ -197,36 +197,38 @@ void AnimatedComponent::updateAnimation()
                 continue;
             }
 
+            int idx = mpAnimationData->movables[m].movementDataIdx;
+
             //Apply parameter multipliers/divisors
-            if(mpAnimationData->useMultipliers[m])    //! @todo Multipliers and divisors currently only work for first data
+            if(mpAnimationData->movables[m].useMultipliers)    //! @todo Multipliers and divisors currently only work for first data
             {
-                data[0] = data[0]*mpAnimationData->multiplierValues[m];
+                data[idx] = data[idx]*mpAnimationData->movables[m].multiplierValue;
             }
-            if(mpAnimationData->useDivisors[m])
+            if(mpAnimationData->movables[m].useDivisors)
             {
-                data[0] = data[0]/mpAnimationData->divisorValues[m];
+                data[idx] = data[idx]/mpAnimationData->movables[m].divisorValue;
             }
 
             //Set rotation
-            if(mpAnimationData->speedTheta[m] != 0.0)
+            if(mpAnimationData->movables[m].movementTheta != 0.0)
             {
-                double rot = mpAnimationData->startTheta[m] - data[0]*mpAnimationData->speedTheta[m];
+                double rot = mpAnimationData->movables[m].startTheta - data[idx]*mpAnimationData->movables[m].movementTheta;
                 mpMovables[m]->setRotation(rot);
             }
 
             //Set position
-            if(mpAnimationData->speedX[m] != 0.0 || mpAnimationData->speedY[m] != 0.0)
+            if(mpAnimationData->movables[m].movementX != 0.0 || mpAnimationData->movables[m].movementY != 0.0)
             {
-                double x = mpAnimationData->startX[m] - data[0]*mpAnimationData->speedX[m];
-                double y = mpAnimationData->startY[m] - data[0]*mpAnimationData->speedY[m];
+                double x = mpAnimationData->movables[m].startX - data[idx]*mpAnimationData->movables[m].movementX;
+                double y = mpAnimationData->movables[m].startY - data[idx]*mpAnimationData->movables[m].movementY;
                 mpMovables[m]->setPos(x, y);
             }
 
             //Set scale
-            if(mpAnimationData->resizeX[m] != 0.0 || mpAnimationData->resizeY[m] != 0.0)
+            if(mpAnimationData->movables[m].resizeX != 0.0 || mpAnimationData->movables[m].resizeY != 0.0)
             {
-                int idx1 = mpAnimationData->scaleDataIdx1[m];
-                int idx2 = mpAnimationData->scaleDataIdx2[m];
+                int idx1 = mpAnimationData->movables[m].scaleDataIdx1;
+                int idx2 = mpAnimationData->movables[m].scaleDataIdx2;
                 double scaleData;
                 if(idx1 != idx2)
                 {
@@ -236,50 +238,50 @@ void AnimatedComponent::updateAnimation()
                 {
                     scaleData = data[idx1];
                 }
-                double scaleX = mpAnimationData->resizeX[m]*scaleData;
-                double scaleY = mpAnimationData->resizeY[m]*scaleData;
-                double initX = mpAnimationData->initScaleX[m];
-                double initY = mpAnimationData->initScaleY[m];
+                double scaleX = mpAnimationData->movables[m].resizeX*scaleData;
+                double scaleY = mpAnimationData->movables[m].resizeY*scaleData;
+                double initX = mpAnimationData->movables[m].initScaleX;
+                double initY = mpAnimationData->movables[m].initScaleY;
                 mpMovables[m]->resetTransform();
                 //mpMovables[m]->scale(initX-scaleX, initY-scaleY);
                 mpMovables[m]->setTransform(QTransform::fromScale(initX-scaleX, initY-scaleY), true);
             }
 
             //Set color
-            if(mpAnimationData->colorR[m] != 0.0 || mpAnimationData->colorG[m] != 0.0 || mpAnimationData->colorB[m] != 0.0 || mpAnimationData->colorA[m] != 0.0)
+            if(mpAnimationData->movables[m].colorR != 0.0 || mpAnimationData->movables[m].colorG != 0.0 || mpAnimationData->movables[m].colorB != 0.0 || mpAnimationData->movables[m].colorA != 0.0)
             {
-                int idx = mpAnimationData->colorDataIdx[m];
+                int idx = mpAnimationData->movables[m].colorDataIdx;
 
-                int ir = mpAnimationData->initColorR[m];
+                int ir = mpAnimationData->movables[m].initColorR;
                 int r=ir;
-                if(mpAnimationData->colorR[m] != 0)
+                if(mpAnimationData->movables[m].colorR != 0)
                 {
-                    r = std::max(0, std::min(255, ir-int(mpAnimationData->colorR[m]*data[idx])));
+                    r = std::max(0, std::min(255, ir-int(mpAnimationData->movables[m].colorR*data[idx])));
                 }
 
-                int ig = mpAnimationData->initColorG[m];
+                int ig = mpAnimationData->movables[m].initColorG;
                 int g = ig;
-                if(mpAnimationData->colorG[m] != 0)
+                if(mpAnimationData->movables[m].colorG != 0)
                 {
-                    g = std::max(0, std::min(255, ig-int(mpAnimationData->colorG[m]*data[idx])));
+                    g = std::max(0, std::min(255, ig-int(mpAnimationData->movables[m].colorG*data[idx])));
                 }
 
-                int ib = mpAnimationData->initColorB[m];
+                int ib = mpAnimationData->movables[m].initColorB;
                 int b = ib;
-                if(mpAnimationData->colorB[m] != 0)
+                if(mpAnimationData->movables[m].colorB != 0)
                 {
-                    b = std::max(0, std::min(255, ib-int(mpAnimationData->colorB[m]*data[idx])));
+                    b = std::max(0, std::min(255, ib-int(mpAnimationData->movables[m].colorB*data[idx])));
                 }
 
-                int ia = mpAnimationData->initColorA[m];
+                int ia = mpAnimationData->movables[m].initColorA;
                 if(ia == 0)
                 {
                     ia = 255;
                 }
                 int a = ia;
-                if(mpAnimationData->colorA[m] != 0)
+                if(mpAnimationData->movables[m].colorA != 0)
                 {
-                    a = std::max(0, std::min(255, ia-int(mpAnimationData->colorA[m]*data[idx])));
+                    a = std::max(0, std::min(255, ia-int(mpAnimationData->movables[m].colorA*data[idx])));
                 }
 
 
@@ -292,9 +294,9 @@ void AnimatedComponent::updateAnimation()
             }
 
             //Indicators
-            if(mpAnimationData->isIndicator[m])
+            if(mpAnimationData->movables[m].isIndicator)
             {
-                double data = (*mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpModelObject->getName(), mpAnimationData->indicatorPort[m], mpAnimationData->indicatorDataName[m]));
+                double data = (*mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpModelObject->getName(), mpAnimationData->movables[m].indicatorPort, mpAnimationData->movables[m].indicatorDataName));
                 mpMovables[m]->setVisible(data > 0.5);
             }
 
@@ -302,15 +304,15 @@ void AnimatedComponent::updateAnimation()
            // mpMovables[m]->update();
 
             //Update "port" positions, so that connectors will follow component
-            for(int p=0; p<mpAnimationData->movablePortNames[m].size(); ++p)
+            for(int p=0; p<mpAnimationData->movables[m].movablePortNames.size(); ++p)
             {
-                QString portName = mpAnimationData->movablePortNames[m][p];
-                double portStartX = mpAnimationData->movablePortStartX[m][p];
-                double portStartY = mpAnimationData->movablePortStartY[m][p];
+                QString portName = mpAnimationData->movables[m].movablePortNames[p];
+                double portStartX = mpAnimationData->movables[m].movablePortStartX[p];
+                double portStartY = mpAnimationData->movables[m].movablePortStartY[p];
 
                 QPointF pos;
-                pos.setX(portStartX-data[0]*mpAnimationData->speedX[m]);
-                pos.setY(portStartY-data[0]*mpAnimationData->speedY[m]);
+                pos.setX(portStartX-data[0]*mpAnimationData->movables[m].movementX);
+                pos.setY(portStartY-data[0]*mpAnimationData->movables[m].movementY);
                 mPortPositions.insert(portName, pos);
             }
         }
@@ -440,39 +442,39 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
 void AnimatedComponent::setupAnimationMovable(int m)
 {
     ModelObjectAppearance* pAppearance = new ModelObjectAppearance();
-    pAppearance->setIconPath(mpAnimationData->movableIconPaths[m],UserGraphics, Relative);
-    int idx = mpAnimationData->movableIdx[m];
+    pAppearance->setIconPath(mpAnimationData->movables[m].iconPath,UserGraphics, Relative);
+    int idx = mpAnimationData->movables[m].idx;
     QGraphicsItem *pBase = mpBase;
-    if(mpAnimationData->movableRelatives[m] > -1)
+    if(mpAnimationData->movables[m].movableRelative > -1)
     {
         for(int r=0; r<mpMovables.size(); ++r)
         {
-            if(mpMovables[r]->mIdx == mpAnimationData->movableRelatives[m])
+            if(mpMovables[r]->mIdx == mpAnimationData->movables[m].movableRelative)
             {
                 pBase = mpMovables[r];
             }
         }
     }
     this->mpMovables.append(new AnimatedIcon(QPoint(0,0),0, pAppearance,this, 0, idx, pBase));
-    this->mpMovables.at(m)->setTransformOriginPoint(mpAnimationData->transformOriginX[m],mpAnimationData->transformOriginY[m]);
+    this->mpMovables.at(m)->setTransformOriginPoint(mpAnimationData->movables[m].transformOriginX,mpAnimationData->movables[m].transformOriginY);
 
-    mpMovables.at(m)->setRotation(mpAnimationData->startTheta.at(m));
-    mpMovables.at(m)->setPos(mpAnimationData->startX.at(m), mpAnimationData->startY.at(m));
+    mpMovables.at(m)->setRotation(mpAnimationData->movables[m].startTheta);
+    mpMovables.at(m)->setPos(mpAnimationData->movables[m].startX, mpAnimationData->movables[m].startY);
 
     //Set adjustables to non-adjustable if the port is connected
-    if(mpAnimationData->isAdjustable.at(m))
+    if(mpAnimationData->movables[m].isAdjustable)
     {
-        QString port = mpAnimationData->adjustablePort.at(m);
+        QString port = mpAnimationData->movables[m].adjustablePort;
         if(mpModelObject->getPort(port)->getPortType() != "WritePortType" && mpModelObject->getPort(port)->isConnected())
         {
-            mpAnimationData->isAdjustable[m] = false;
+            mpAnimationData->movables[m].isAdjustable = false;
         }
     }
 
     //Set icon to be movable by mouse if it shall be adjustable
-    mpMovables.at(m)->setFlag(QGraphicsItem::ItemIsMovable, mpAnimationData->isAdjustable.at(m));
+    mpMovables.at(m)->setFlag(QGraphicsItem::ItemIsMovable, mpAnimationData->movables[m].isAdjustable);
 
-    if(mpAnimationData->isSwitchable.at(m))
+    if(mpAnimationData->movables[m].isSwitchable)
     {
         mpMovables.at(m)->hide();
     }
@@ -480,62 +482,79 @@ void AnimatedComponent::setupAnimationMovable(int m)
 
 
 
-    //Get parameter multiplier (will be zero if not found)
-    QString parValue = mpModelObject->getParameterValue(mpAnimationData->multipliers[m]);
-    if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+    //Get parameter multiplier (will be 1 if not found)
+    double multiplierValue = 1;
+    for(int p=0; p<mpAnimationData->movables[m].multipliers.size(); ++p)
     {
-        parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
-    }
-    bool ok;
-    mpAnimationData->multiplierValues[m] = parValue.toDouble(&ok);
-    if(!ok)
-    {
-        mpAnimationData->multiplierValues[m] = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
-    }
-    mpAnimationData->useMultipliers[m] = ok;
+        if(mpAnimationData->movables[m].multipliers[p].isEmpty())
+            continue;
 
-    //Get parmeter divisor (will be zero if not found)
-    parValue = mpModelObject->getParameterValue(mpAnimationData->divisors[m]);
-    if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
-    {
-        parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+        QString parValue = mpModelObject->getParameterValue(mpAnimationData->movables[m].multipliers[p]);
+        if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+        {
+            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+        }
+        bool ok;
+        double temp = parValue.toDouble(&ok);
+        if(!ok)
+        {
+            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+        }
+        multiplierValue *= temp;
     }
-    mpAnimationData->divisorValues[m] = parValue.toDouble(&ok);
-    if(!ok)
+    mpAnimationData->movables[m].multiplierValue = multiplierValue;
+    mpAnimationData->movables[m].useMultipliers = !mpAnimationData->movables[m].multipliers.isEmpty();
+
+
+    //Get parmeter divisor (will be 1 if not found)
+    double divisorValue = 1;
+    for(int p=0; p<mpAnimationData->movables[m].divisors.size(); ++p)
     {
-        mpAnimationData->divisorValues[m] = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+        if(mpAnimationData->movables[m].divisors[p].isEmpty())
+            continue;
+
+        QString parValue = mpModelObject->getParameterValue(mpAnimationData->movables[m].divisors[p]);
+        if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+        {
+            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+        }
+        bool ok;
+        double temp = parValue.toDouble(&ok);
+        if(!ok)
+        {
+            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+        }
+        divisorValue *= temp;
     }
-    mpAnimationData->useDivisors[m] = ok;
+    mpAnimationData->movables[m].divisorValue = divisorValue;
+    mpAnimationData->movables[m].useDivisors = !mpAnimationData->movables[m].divisors.isEmpty();
 }
 
 
 //! @brief Limits the position of movables that are adjustable (can be moved by mouse)
 void AnimatedComponent::limitMovables()
 {
-    int a=0;
     for(int m=0; m<mpMovables.size(); ++m)
     {
-        if(mpAnimationData->isAdjustable.at(m) && mpAnimationData->adjustableGainX.size() > a)
+        if(mpAnimationData->movables[m].isAdjustable)
         {
-            if(mpMovables.at(m)->x() > mpAnimationData->adjustableMaxX.at(a))
+            if(mpMovables.at(m)->x() > mpAnimationData->movables[m].adjustableMaxX)
             {
-                mpMovables.at(m)->setX(mpAnimationData->adjustableMaxX.at(a));
+                mpMovables.at(m)->setX(mpAnimationData->movables[m].adjustableMaxX);
             }
-            else if(mpMovables.at(m)->x() < mpAnimationData->adjustableMinX.at(a))
+            else if(mpMovables.at(m)->x() < mpAnimationData->movables[m].adjustableMinX)
             {
-                mpMovables.at(m)->setX(mpAnimationData->adjustableMinX.at(a));
+                mpMovables.at(m)->setX(mpAnimationData->movables[m].adjustableMinX);
             }
-            else if(mpMovables.at(m)->y() > mpAnimationData->adjustableMaxY.at(a))
+            else if(mpMovables.at(m)->y() > mpAnimationData->movables[m].adjustableMaxY)
             {
-                mpMovables.at(m)->setY(mpAnimationData->adjustableMaxY.at(a));
+                mpMovables.at(m)->setY(mpAnimationData->movables[m].adjustableMaxY);
             }
-            else if(mpMovables.at(m)->y() < mpAnimationData->adjustableMinY.at(a))
+            else if(mpMovables.at(m)->y() < mpAnimationData->movables[m].adjustableMinY)
             {
-                mpMovables.at(m)->setY(mpAnimationData->adjustableMinY.at(a));
+                mpMovables.at(m)->setY(mpAnimationData->movables[m].adjustableMinY);
             }
         }
-
-        ++a;
     }
 }
 
@@ -594,11 +613,11 @@ AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectA
 
 
     ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
-    if(pParent != 0 && !pData->isAdjustable.isEmpty() &&pData->isAdjustable.at(0))
+    if(pParent != 0 && pData->movables[0].isAdjustable)
     {
         QString comp = mpAnimatedComponent->mpModelObject->getName();
-        QString port = pData->adjustablePort.at(0);
-        QString dataName = pData->adjustableDataName.at(0);
+        QString port = pData->movables[0].adjustablePort;
+        QString dataName = pData->movables[0].adjustableDataName;
         mpAdjustableNodeDataPtr = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(comp, port, dataName);
     }
 
@@ -676,7 +695,7 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void AnimatedIcon::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     int idx = mpAnimatedComponent->indexOfMovable(this);
-    if(idx >= 0 && mpAnimatedComponent->getAnimationDataPtr()->isAdjustable.at(idx))
+    if(idx >= 0 && mpAnimatedComponent->getAnimationDataPtr()->movables[idx].isAdjustable)
     {
         mpSelectionBox->setHovered();
     }
@@ -704,11 +723,11 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
 
         ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
-        bool switchable = pData->isSwitchable.at(idx);
+        bool switchable = pData->movables[mIdx].isSwitchable;
         if(switchable)
         {
             //! @todo Don't do pointer lookup every time step!
-            double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->switchablePort.at(idx), pData->switchableDataName.at(idx));
+            double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->movables[mIdx].switchablePort, pData->movables[mIdx].switchableDataName);
             if(mpAnimatedComponent->mpMovables[idx]->isVisible())
             {
                 mpAnimatedComponent->mpMovables[idx]->setVisible(false);

@@ -169,6 +169,11 @@ ModelObjectIconAppearance::ModelObjectIconAppearance()
 //! @param [in] basePath Absolute path for the CAF (xml) file location
 void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QString basePath, bool settingsOnly)
 {
+    if(!settingsOnly)
+    {
+        //movables.clear();
+    }
+
     if(!rDomElement.isNull())
     {
         QDomElement iconElement = rDomElement.firstChildElement("icon");
@@ -217,147 +222,167 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
         {
             if(settingsOnly)
             {
-                if(startX.size() < idx+1)
-                {
-                    break;
-                }
-                startX[idx] = xmlMovable.firstChildElement("start").attribute("x").toDouble();
-                startY[idx] = xmlMovable.firstChildElement("start").attribute("y").toDouble();
-                startTheta[idx] = xmlMovable.firstChildElement("start").attribute("a").toDouble();
-                speedX[idx] = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
-                speedY[idx] = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
-                speedTheta[idx] = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
-                ++idx;
+                //! @todo Reimplement
+//                if(startX.size() < idx+1)
+//                {
+//                    break;
+//                }
+//                startX[idx] = xmlMovable.firstChildElement("start").attribute("x").toDouble();
+//                startY[idx] = xmlMovable.firstChildElement("start").attribute("y").toDouble();
+//                startTheta[idx] = xmlMovable.firstChildElement("start").attribute("a").toDouble();
+//                speedX[idx] = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
+//                speedY[idx] = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
+//                speedTheta[idx] = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
+//                ++idx;
             }
             else
             {
+                movables.append(ModelObjectAnimationMovableData());
+                ModelObjectAnimationMovableData &m = movables.last();
+
                 if(xmlMovable.hasAttribute("idx"))
                 {
-                    movableIdx.append(xmlMovable.attribute("idx").toInt());
+                    m.idx = xmlMovable.attribute("idx").toInt();
                 }
                 else
                 {
-                    movableIdx.append(-1);
+                    m.idx = -1;
                 }
-                movableIconPaths.append(xmlMovable.firstChildElement("icon").attribute("userpath"));
-                dataPorts.append(QStringList());
-                dataNames.append(QStringList());
+                m.iconPath = xmlMovable.firstChildElement("icon").attribute("userpath");
                 QDomElement dataElement = xmlMovable.firstChildElement("data");
                 while(!dataElement.isNull())
                 {
-                    dataPorts.last().append(dataElement.attribute("port"));
-                    dataNames.last().append(dataElement.attribute("dataname"));
+                    int idx = dataElement.attribute("idx").toInt();
+                    while(m.dataPorts.size() < idx+1)
+                    {
+                        m.dataPorts.append("");
+                        m.dataNames.append(""); //Assume names and ports always have same size
+                    }
+                    m.dataPorts[idx] = dataElement.attribute("port");
+                    m.dataNames[idx] = dataElement.attribute("dataname");
                     dataElement = dataElement.nextSiblingElement("data");
                 }
-                multipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
-                multiplierValues.append(0);
-                useMultipliers.append(false);
-                divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
-                divisorValues.append(0);
-                useDivisors.append(false);
-                speedX.append(xmlMovable.firstChildElement("movement").attribute("x").toDouble());
-                speedY.append(xmlMovable.firstChildElement("movement").attribute("y").toDouble());
-                speedTheta.append(xmlMovable.firstChildElement("movement").attribute("a").toDouble());
-                resizeX.append(xmlMovable.firstChildElement("resize").attribute("x").toDouble());
-                resizeY.append(xmlMovable.firstChildElement("resize").attribute("y").toDouble());
-                initScaleX.append(xmlMovable.firstChildElement("initscale").attribute("x").toDouble());
-                initScaleY.append(xmlMovable.firstChildElement("initscale").attribute("y").toDouble());
-                scaleDataIdx1.append(xmlMovable.firstChildElement("resize").attribute("idx1").toInt());
-                scaleDataIdx2.append(xmlMovable.firstChildElement("resize").attribute("idx2").toInt());
-                startX.append(xmlMovable.firstChildElement("start").attribute("x").toDouble());
-                startY.append(xmlMovable.firstChildElement("start").attribute("y").toDouble());
-                startTheta.append(xmlMovable.firstChildElement("start").attribute("a").toDouble());
-                initColorR.append(xmlMovable.firstChildElement("initcolor").attribute("r").toDouble());
-                initColorG.append(xmlMovable.firstChildElement("initcolor").attribute("g").toDouble());
-                initColorB.append(xmlMovable.firstChildElement("initcolor").attribute("b").toDouble());
-                initColorA.append(xmlMovable.firstChildElement("initcolor").attribute("a").toDouble());
-                colorR.append(xmlMovable.firstChildElement("color").attribute("r").toDouble());
-                colorG.append(xmlMovable.firstChildElement("color").attribute("g").toDouble());
-                colorB.append(xmlMovable.firstChildElement("color").attribute("b").toDouble());
-                colorA.append(xmlMovable.firstChildElement("color").attribute("a").toDouble());
-                colorDataIdx.append(xmlMovable.firstChildElement("color").attribute("idx").toInt());
-                transformOriginX.append(xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble());
-                transformOriginY.append(xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble());
-                QFileInfo movableIconFileInfo(movableIconPaths.last());
-                if (movableIconFileInfo.isRelative() && !movableIconPaths.last().isEmpty())
+
+                if(xmlMovable.firstChildElement("multiplier").isNull())
                 {
-                    movableIconFileInfo.setFile(QDir(basePath), movableIconPaths.last());
-                    movableIconPaths.last() = movableIconFileInfo.absoluteFilePath();
+                    m.multipliers.append("");
+                }
+                else
+                {
+                    m.multipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
+                }
+
+                if(xmlMovable.firstChildElement("divisor").isNull())
+                {
+                    m.divisors.append("");
+                }
+                else
+                {
+                    m.divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
+                }
+
+                m.movementDataIdx = xmlMovable.firstChildElement("idx").attribute("x").toDouble();
+                m.startX = xmlMovable.firstChildElement("start").attribute("x").toDouble();
+                m.startY = xmlMovable.firstChildElement("start").attribute("y").toDouble();
+                m.startTheta = xmlMovable.firstChildElement("start").attribute("a").toDouble();
+                m.movementX = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
+                m.movementY = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
+                m.movementTheta = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
+
+                m.initScaleX = xmlMovable.firstChildElement("initscale").attribute("x").toDouble();
+                m.initScaleY = xmlMovable.firstChildElement("initscale").attribute("y").toDouble();
+                m.resizeX = xmlMovable.firstChildElement("resize").attribute("x").toDouble();
+                m.resizeY = xmlMovable.firstChildElement("resize").attribute("y").toDouble();
+                m.scaleDataIdx1 = xmlMovable.firstChildElement("resize").attribute("idx1").toInt();
+                m.scaleDataIdx2 = xmlMovable.firstChildElement("resize").attribute("idx2").toInt();
+
+                m.colorDataIdx = xmlMovable.firstChildElement("color").attribute("idx").toInt();
+                m.initColorR = xmlMovable.firstChildElement("initcolor").attribute("r").toDouble();
+                m.initColorG = xmlMovable.firstChildElement("initcolor").attribute("g").toDouble();
+                m.initColorB = xmlMovable.firstChildElement("initcolor").attribute("b").toDouble();
+                m.initColorA = xmlMovable.firstChildElement("initcolor").attribute("a").toDouble();
+                m.colorR = xmlMovable.firstChildElement("color").attribute("r").toDouble();
+                m.colorG = xmlMovable.firstChildElement("color").attribute("g").toDouble();
+                m.colorB = xmlMovable.firstChildElement("color").attribute("b").toDouble();
+                m.colorA = xmlMovable.firstChildElement("color").attribute("a").toDouble();
+
+                m.transformOriginX = xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble();
+                m.transformOriginY = xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble();
+
+                QFileInfo movableIconFileInfo(movables.last().iconPath);
+                if (movableIconFileInfo.isRelative() && !movables.last().iconPath.isEmpty())
+                {
+                    movableIconFileInfo.setFile(QDir(basePath), movables.last().iconPath);
+                    m.iconPath = movableIconFileInfo.absoluteFilePath();
                 }
                 QDomElement xmlAdjustable = xmlMovable.firstChildElement("adjustable");
                 if(!xmlAdjustable.isNull())
                 {
-                    isAdjustable.append(true);
-                    adjustableMinX.append(xmlAdjustable.attribute("xmin").toDouble());
-                    adjustableMaxX.append(xmlAdjustable.attribute("xmax").toDouble());
-                    adjustableMinY.append(xmlAdjustable.attribute("ymin").toDouble());
-                    adjustableMaxY.append(xmlAdjustable.attribute("ymax").toDouble());
-                    adjustablePort.append(xmlAdjustable.attribute("port"));
-                    adjustableDataName.append(xmlAdjustable.attribute("dataname"));
-                    adjustableGainX.append(xmlAdjustable.attribute("xgain").toDouble());
-                    adjustableGainY.append(xmlAdjustable.attribute("ygain").toDouble());
+                    m.isAdjustable = true;
+                    m.adjustableMinX = xmlAdjustable.attribute("xmin").toDouble();
+                    m.adjustableMaxX = xmlAdjustable.attribute("xmax").toDouble();
+                    m.adjustableMinY = xmlAdjustable.attribute("ymin").toDouble();
+                    m.adjustableMaxY = xmlAdjustable.attribute("ymax").toDouble();
+                    m.adjustablePort = xmlAdjustable.attribute("port");
+                    m.adjustableDataName = xmlAdjustable.attribute("dataname");
+                    m.adjustableGainX = xmlAdjustable.attribute("xgain").toDouble();
+                    m.adjustableGainY = xmlAdjustable.attribute("ygain").toDouble();
                 }
                 else
                 {
-                    isAdjustable.append(false);
+                    m.isAdjustable = false;
                 }
 
                 QDomElement xmlSwitchable = xmlMovable.firstChildElement("switchable");
                 if(!xmlSwitchable.isNull())
                 {
-                    isSwitchable.append(true);
-                    switchableOffValue.append(xmlSwitchable.attribute("offvalue").toDouble());
-                    switchableOnValue.append(xmlSwitchable.attribute("onvalue").toDouble());
-                    switchablePort.append(xmlSwitchable.attribute("port"));
-                    switchableDataName.append(xmlSwitchable.attribute("dataname"));
+                    m.isSwitchable = true;
+                    m.switchableOffValue = xmlSwitchable.attribute("offvalue").toDouble();
+                    m.switchableOnValue = xmlSwitchable.attribute("onvalue").toDouble();
+                    m.switchablePort = xmlSwitchable.attribute("port");
+                    m.switchableDataName = xmlSwitchable.attribute("dataname");
                 }
                 else
                 {
-                    isSwitchable.append(false);
-                    switchableOffValue.append(0);
-                    switchableOnValue.append(0);
-                    switchablePort.append(QString());
-                    switchableDataName.append(QString());
+                    m.isSwitchable = false;
+                    m.switchableOffValue = 0;
+                    m.switchableOnValue = 0;
+                    m.switchablePort = QString();
+                    m.switchableDataName = QString();
                 }
 
                 QDomElement xmlIndicaor = xmlMovable.firstChildElement("indicator");
                 if(!xmlIndicaor.isNull())
                 {
-                    isIndicator.append(true);
-                    indicatorPort.append(xmlIndicaor.attribute("port"));
-                    indicatorDataName.append(xmlIndicaor.attribute("dataname"));
+                    m.isIndicator = true;
+                    m.indicatorPort = xmlIndicaor.attribute("port");
+                    m.indicatorDataName = xmlIndicaor.attribute("dataname");
                 }
                 else
                 {
-                    isIndicator.append(false);
-                    indicatorPort.append(QString());
-                    indicatorDataName.append(QString());
+                    m.isIndicator = false;
+                    m.indicatorPort = QString();
+                    m.indicatorDataName = QString();
                 }
 
-                QStringList portNames;
-                QList<double> portStartX;
-                QList<double> portStartY;
 
                 QDomElement xmlMovingPorts = xmlMovable.firstChildElement("movingport");
                 while(!xmlMovingPorts.isNull())
                 {
-                    portNames.append(xmlMovingPorts.attribute("portname"));
-                    portStartX.append(xmlMovingPorts.attribute("startx").toDouble());
-                    portStartY.append(xmlMovingPorts.attribute("starty").toDouble());
+                    m.movablePortNames.append(xmlMovingPorts.attribute("portname"));
+                    m.movablePortStartX.append(xmlMovingPorts.attribute("startx").toDouble());
+                    m.movablePortStartY.append(xmlMovingPorts.attribute("starty").toDouble());
                     xmlMovingPorts = xmlMovingPorts.nextSiblingElement("movingport");
                 }
-                movablePortNames.append(portNames);
-                movablePortStartX.append(portStartX);
-                movablePortStartY.append(portStartY);
 
                 QDomElement xmlRelative = xmlMovable.firstChildElement("relative");
                 if(!xmlRelative.isNull())
                 {
-                    movableRelatives.append(xmlRelative.attribute("idx").toInt());
+                    m.movableRelative = xmlRelative.attribute("idx").toInt();
                 }
                 else
                 {
-                    movableRelatives.append(-1);
+                    m.movableRelative = -1;
                 }
             }
 
@@ -372,17 +397,17 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
     rDomElement.setAttribute("flowspeed", flowSpeed);
     rDomElement.setAttribute("hydraulicminpressure", hydraulicMinPressure);
     rDomElement.setAttribute("hydraulicmaxpressure", hydraulicMaxPressure);
-    for(int i=0; i<movableIdx.size(); ++i)
+    foreach(const ModelObjectAnimationMovableData &m, movables)
     {
         QDomElement movableElement = appendDomElement(rDomElement, "movable");
         QDomElement startElement = appendDomElement(movableElement, "start");
-        setQrealAttribute(startElement, "x", startX[i]);
-        setQrealAttribute(startElement, "y", startY[i]);
-        setQrealAttribute(startElement, "a", startTheta[i]);
+        setQrealAttribute(startElement, "x", m.startX);
+        setQrealAttribute(startElement, "y", m.startY);
+        setQrealAttribute(startElement, "a", m.startTheta);
         QDomElement movementElement = appendDomElement(movableElement, "movement");
-        setQrealAttribute(movementElement, "x", speedX[i]);
-        setQrealAttribute(movementElement, "y", speedY[i]);
-        setQrealAttribute(movementElement, "a", speedTheta[i]);
+        setQrealAttribute(movementElement, "x", m.movementX);
+        setQrealAttribute(movementElement, "y", m.movementY);
+        setQrealAttribute(movementElement, "a", m.movementTheta);
     }
 }
 

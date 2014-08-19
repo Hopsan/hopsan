@@ -56,44 +56,44 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
 
     //Adjustable
     mpAdjustableCheckBox = new QCheckBox("Adjustable");
-    mpAdjustableCheckBox->setChecked(mpData->isAdjustable[mIdx]);
+    mpAdjustableCheckBox->setChecked(mpData->movables[mIdx].isAdjustable);
 
     //Multiplier
     mpMultplierLabel = new QLabel("Parameter multiplier: ", this);
-    mpMultiplierLineEdit = new QLineEdit(mpData->multipliers[mIdx], this);
+    mpMultiplierLineEdit = new QLineEdit(mpData->movables[mIdx].multipliers[0], this);  //! @todo Support more than 1 multiplier
 
     //Divisor
     mpDivisorLabel = new QLabel("Paramter divisor: ", this);
-    mpDivisorLineEdit = new QLineEdit(mpData->divisors[mIdx], this);
+    mpDivisorLineEdit = new QLineEdit(mpData->movables[mIdx].divisors[0], this);       //! @todo Support more than 1 divisor
 
     //Speed X
     mpSpeedXLabel = new QLabel("Horizontal Speed: ", this);
     mpSpeedXLineEdit = new QLineEdit(this);
-    mpSpeedXLineEdit->setText(QString::number(mpData->speedX[mIdx]));
+    mpSpeedXLineEdit->setText(QString::number(mpData->movables[mIdx].movementX));
     mpSpeedXLineEdit->setValidator(new QDoubleValidator(this));
 
     //Speed Y
     mpSpeedYLabel = new QLabel("Vertical Speed: ", this);
     mpSpeedYLineEdit = new QLineEdit(this);
-    mpSpeedYLineEdit->setText(QString::number(mpData->speedY[mIdx]));
+    mpSpeedYLineEdit->setText(QString::number(mpData->movables[mIdx].movementY));
     mpSpeedYLineEdit->setValidator(new QDoubleValidator(this));
 
     //Speed Theta
     mpSpeedThetaLabel = new QLabel("Rotational Speed: ", this);
     mpSpeedThetaLineEdit = new QLineEdit(this);
-    mpSpeedThetaLineEdit->setText(QString::number(mpData->speedTheta[mIdx]));
+    mpSpeedThetaLineEdit->setText(QString::number(mpData->movables[mIdx].movementTheta));
     mpSpeedThetaLineEdit->setValidator(new QDoubleValidator(this));
 
     //Resize X
     mpResizeXLabel = new QLabel("Horizontal Resize Factor: ", this);
     mpResizeXLineEdit = new QLineEdit(this);
-    mpResizeXLineEdit->setText(QString::number(mpData->resizeX[mIdx]));
+    mpResizeXLineEdit->setText(QString::number(mpData->movables[mIdx].resizeX));
     mpResizeXLineEdit->setValidator(new QDoubleValidator(this));
 
     //Resize Y
     mpResizeYLabel = new QLabel("Vertical Resize Factor: ", this);
     mpResizeYLineEdit = new QLineEdit(this);
-    mpResizeYLineEdit->setText(QString::number(mpData->resizeY[mIdx]));
+    mpResizeYLineEdit->setText(QString::number(mpData->movables[mIdx].resizeY));
     mpResizeYLineEdit->setValidator(new QDoubleValidator(this));
 
     //Buttons
@@ -135,14 +135,14 @@ void AnimatedIconPropertiesDialog::setValues()
 {
     //! todo Store new values in container object and save to HMF
 
-    mpData->isAdjustable[mIdx] = mpAdjustableCheckBox->isChecked();
-    mpData->multipliers[mIdx] = mpMultiplierLineEdit->text();
-    mpData->divisors[mIdx] = mpDivisorLineEdit->text();
-    mpData->speedX[mIdx] = mpSpeedXLineEdit->text().toDouble();
-    mpData->speedY[mIdx] = mpSpeedYLineEdit->text().toDouble();
-    mpData->speedTheta[mIdx] = mpSpeedThetaLineEdit->text().toDouble();
-    mpData->resizeX[mIdx] = mpResizeXLineEdit->text().toDouble();
-    mpData->resizeY[mIdx] = mpResizeYLineEdit->text().toDouble();
+    mpData->movables[mIdx].isAdjustable = mpAdjustableCheckBox->isChecked();
+    mpData->movables[mIdx].multipliers[0] = mpMultiplierLineEdit->text();
+    mpData->movables[mIdx].divisors[0] = mpDivisorLineEdit->text();
+    mpData->movables[mIdx].movementX = mpSpeedXLineEdit->text().toDouble();
+    mpData->movables[mIdx].movementY = mpSpeedYLineEdit->text().toDouble();
+    mpData->movables[mIdx].movementTheta = mpSpeedThetaLineEdit->text().toDouble();
+    mpData->movables[mIdx].resizeX = mpResizeXLineEdit->text().toDouble();
+    mpData->movables[mIdx].resizeY = mpResizeYLineEdit->text().toDouble();
 
     this->accept();
 }

@@ -53,73 +53,159 @@ public:
     bool mIsValid;
 };
 
+
+
+class ModelObjectAnimationMovableData
+{
+public:
+    QString iconPath;
+    int idx;
+
+    //Data
+    QStringList dataPorts;
+    QStringList dataNames;
+    QStringList multipliers;
+    QStringList divisors;
+
+    //Movement
+    double startX;
+    double startY;
+    double startTheta;
+    double movementX;
+    double movementY;
+    double movementTheta;
+    int movementDataIdx;
+
+    //Resize
+    double initScaleX;
+    double initScaleY;
+    double resizeX;
+    double resizeY;
+    int scaleDataIdx1;
+    int scaleDataIdx2;
+
+    //Color
+    double initColorR;
+    double initColorG;
+    double initColorB;
+    double initColorA;
+    double colorR;
+    double colorG;
+    double colorB;
+    double colorA;
+    int colorDataIdx;
+
+    //Transform origin
+    double transformOriginX;
+    double transformOriginY;
+
+    //Movable ports
+    QStringList movablePortNames;
+    QList<double> movablePortStartX;
+    QList<double> movablePortStartY;
+
+    //Relative movable
+    int movableRelative;
+
+    //Adjustable
+    bool isAdjustable;
+    double adjustableMinX;
+    double adjustableMaxX;
+    double adjustableMinY;
+    double adjustableMaxY;
+    QString adjustablePort;
+    QString adjustableDataName;
+    double adjustableGainX;
+    double adjustableGainY;
+
+    //Switchable
+    bool isSwitchable;
+    double switchableOffValue;
+    double switchableOnValue;
+    QString switchablePort;
+    QString switchableDataName;
+
+    //Indicator
+    bool isIndicator;
+    QString indicatorPort;
+    QString indicatorDataName;
+
+    //Calculated at initialization
+    double multiplierValue, divisorValue;
+    bool useMultipliers, useDivisors;
+};
+
+
 class ModelObjectAnimationData
 {
 public:
     void readFromDomElement(QDomElement &rDomElement, QString basePath, bool settingsOnly=false);
     void saveToDomElement(QDomElement &rDomElement);
 
+    QList<ModelObjectAnimationMovableData> movables;
     QString baseIconPath;
-    QList<int> movableIdx;
-    QStringList movableIconPaths;
-    QVector<QStringList> dataPorts;
-    QVector<QStringList> dataNames;
-    QStringList multipliers;
-    QStringList divisors;
-    QVector<double> speedX;
-    QVector<double> speedY;
-    QVector<double> speedTheta;
-    QVector<double> resizeX;
-    QVector<double> resizeY;
-    QVector<double> initScaleX;
-    QVector<double> initScaleY;
-    QVector<int> scaleDataIdx1;
-    QVector<int> scaleDataIdx2;
-    QVector<double> startX;
-    QVector<double> startY;
-    QVector<double> startTheta;
-    QVector<double> initColorR;
-    QVector<double> initColorG;
-    QVector<double> initColorB;
-    QVector<double> initColorA;
-    QVector<double> colorR;
-    QVector<double> colorG;
-    QVector<double> colorB;
-    QVector<double> colorA;
-    QVector<int> colorDataIdx;
-    QVector<double> transformOriginX;
-    QVector<double> transformOriginY;
-    QVector<bool> isAdjustable;
-    QVector<double> adjustableMinX;
-    QVector<double> adjustableMaxX;
-    QVector<double> adjustableMinY;
-    QVector<double> adjustableMaxY;
-    QStringList adjustablePort;
-    QStringList adjustableDataName;
-    QVector<double> adjustableGainX;
-    QVector<double> adjustableGainY;
-    QVector<bool> isSwitchable;
-    QVector<double> switchableOffValue;
-    QVector<double> switchableOnValue;
-    QStringList switchablePort;
-    QStringList switchableDataName;
-    QVector<bool> isIndicator;
-    QStringList indicatorPort;
-    QStringList indicatorDataName;
-    QVector<QStringList> movablePortNames;
-    QVector<QList<double> > movablePortStartX;
-    QVector<QList<double> > movablePortStartY;
-    QList<int> movableRelatives;
+//    QList<int> movableIdx;
+//    QStringList movableIconPaths;
+//    QVector<QStringList> dataPorts;
+//    QVector<QStringList> dataNames;
+//    QStringList multipliers;
+//    QStringList divisors;
+//    QVector<double> speedX;
+//    QVector<double> speedY;
+//    QVector<double> speedTheta;
+//    QVector<double> resizeX;
+//    QVector<double> resizeY;
+//    QVector<double> initScaleX;
+//    QVector<double> initScaleY;
+//    QVector<int> scaleDataIdx1;
+//    QVector<int> scaleDataIdx2;
+//    QVector<double> startX;
+//    QVector<double> startY;
+//    QVector<double> startTheta;
+//    QVector<double> initColorR;
+//    QVector<double> initColorG;
+//    QVector<double> initColorB;
+//    QVector<double> initColorA;
+//    QVector<double> colorR;
+//    QVector<double> colorG;
+//    QVector<double> colorB;
+//    QVector<double> colorA;
+//    QVector<int> colorDataIdx;
+//    QVector<double> transformOriginX;
+//    QVector<double> transformOriginY;
+//    QVector<bool> isAdjustable;
+//    QVector<double> adjustableMinX;
+//    QVector<double> adjustableMaxX;
+//    QVector<double> adjustableMinY;
+//    QVector<double> adjustableMaxY;
+//    QStringList adjustablePort;
+//    QStringList adjustableDataName;
+//    QVector<double> adjustableGainX;
+//    QVector<double> adjustableGainY;
+//    QVector<bool> isSwitchable;
+//    QVector<double> switchableOffValue;
+//    QVector<double> switchableOnValue;
+//    QStringList switchablePort;
+//    QStringList switchableDataName;
+//    QVector<bool> isIndicator;
+//    QStringList indicatorPort;
+//    QStringList indicatorDataName;
+//    QVector<QStringList> movablePortNames;
+//    QVector<QList<double> > movablePortStartX;
+//    QVector<QList<double> > movablePortStartY;
+//    QList<int> movableRelatives;
 
     //Container-specific data
     double flowSpeed;
     double hydraulicMinPressure;
     double hydraulicMaxPressure;
 
-    //Calculated at initialization
-    QVector<double> multiplierValues, divisorValues;
-    QVector<bool> useMultipliers, useDivisors;
+//    //Calculated at initialization
+//    QVector<double> multiplierValues, divisorValues;
+//    QVector<bool> useMultipliers, useDivisors;
 };
+
+
 
 
 class ModelObjectAppearance
