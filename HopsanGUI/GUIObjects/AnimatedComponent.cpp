@@ -723,7 +723,7 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
 
         ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
-        bool switchable = pData->movables[mIdx].isSwitchable;
+        bool switchable = pData->movables[idx].isSwitchable;
         if(switchable)
         {
             //! @todo Don't do pointer lookup every time step!

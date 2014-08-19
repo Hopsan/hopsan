@@ -222,18 +222,17 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
         {
             if(settingsOnly)
             {
-                //! @todo Reimplement
-//                if(startX.size() < idx+1)
-//                {
-//                    break;
-//                }
-//                startX[idx] = xmlMovable.firstChildElement("start").attribute("x").toDouble();
-//                startY[idx] = xmlMovable.firstChildElement("start").attribute("y").toDouble();
-//                startTheta[idx] = xmlMovable.firstChildElement("start").attribute("a").toDouble();
-//                speedX[idx] = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
-//                speedY[idx] = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
-//                speedTheta[idx] = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
-//                ++idx;
+                if(movables.size() > idx)
+                {
+                    ModelObjectAnimationMovableData &m = movables[idx];
+                    m.startX = xmlMovable.firstChildElement("start").attribute("x").toDouble();
+                    m.startY = xmlMovable.firstChildElement("start").attribute("y").toDouble();
+                    m.startTheta = xmlMovable.firstChildElement("start").attribute("a").toDouble();
+                    m.movementX = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
+                    m.movementY = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
+                    m.movementTheta = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
+                }
+                ++idx;
             }
             else
             {
