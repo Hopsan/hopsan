@@ -94,7 +94,6 @@ inline char getHotfixLetter(const HString &version)
             tempStr.append(version.at(i));
     }
 
-    bool dummy;
     if(tempStr.size() > 1)
         return ' ';
 
