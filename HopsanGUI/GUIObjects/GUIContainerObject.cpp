@@ -1979,12 +1979,20 @@ void ContainerObject::groupSelected(QPointF pt)
 
 void ContainerObject::replaceComponent(QString name, QString newType)
 {
+    if(!gpLibraryHandler->getLoadedTypeNames().contains(newType))
+    {
+        gpMessageHandler->addErrorMessage("Replacement type name not found: \""+newType+"\". Check the XML code.");
+        return;
+    }
+
     this->deselectAll();
     mSelectedModelObjectsList.clear();
 
     ModelObject *obj = getModelObject(name);
 
-    qDebug() << "Replacing " << obj->getTypeName() << " with " << newType;
+    QString oldType = obj->getTypeName();
+
+    qDebug() << "Replacing " << oldType << " with " << newType;
 
 
     CopyStack *xmlStack = new CopyStack();
@@ -2015,9 +2023,13 @@ void ContainerObject::replaceComponent(QString name, QString newType)
     qDebug() << "Name = " << name;
 
     ModelObject *newObj = addModelObject(newType, pos, rot);
+
+    if(!newObj)
+    {
+        return; // Should never happen due to check above, but keep it just in case
+    }
+
     renameModelObject(newObj->getName(), name);
-
-
 
         //Paste connectors
     QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
