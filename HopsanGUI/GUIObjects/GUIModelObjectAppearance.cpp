@@ -236,17 +236,30 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             }
             else
             {
-                movables.append(ModelObjectAnimationMovableData());
-                ModelObjectAnimationMovableData &m = movables.last();
+                int movableIdx;
+                if(xmlMovable.hasAttribute("idx"))
+                {
+                    movableIdx = xmlMovable.attribute("idx").toInt();
+                    while(movables.size() < movableIdx+1)
+                        movables.append(ModelObjectAnimationMovableData());
+                }
+                else
+                {
+                    movables.append(ModelObjectAnimationMovableData());
+                    movableIdx = movables.size()-1;
+                }
+
+                ModelObjectAnimationMovableData &m = movables[movableIdx];
 
                 if(xmlMovable.hasAttribute("idx"))
                 {
-                    m.idx = xmlMovable.attribute("idx").toInt();
+                    m.idx = movableIdx;
                 }
                 else
                 {
                     m.idx = -1;
                 }
+
                 m.iconPath = xmlMovable.firstChildElement("icon").attribute("userpath");
                 QDomElement dataElement = xmlMovable.firstChildElement("data");
                 while(!dataElement.isNull())

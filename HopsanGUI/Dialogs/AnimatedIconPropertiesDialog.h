@@ -93,10 +93,10 @@ private:
     //Relative movable
     QList<QLineEdit*> mpMovableRelativeLineEdits;
 
-//    //Movable ports
-//    QStringList movablePortNames;
-//    QList<double> movablePortStartX;
-//    QList<double> movablePortStartY;
+    //Movable ports
+    QList<QLineEdit*> mpMovablePortNamesLineEdits;
+    QList<QLineEdit*> mpMovablePortStartXLineEdits;
+    QList<QLineEdit*> mpMovablePortStartYLineEdits;
 
 //    //Adjustable
 //    bool isAdjustable;

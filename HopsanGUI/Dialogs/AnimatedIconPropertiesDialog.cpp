@@ -68,6 +68,7 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         QWidget *pScrollWidget = new QWidget(this);
         QGridLayout *pMovableLayout = new QGridLayout(this);
         QGridLayout *pScrollLayout = new QGridLayout(this);
+        pScrollWidget->setPalette(this->palette());
 
         int row = 0;
 
@@ -349,6 +350,54 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         pScrollLayout->addWidget(mpMovableRelativeLineEdits.last(), row, 1);
         ++row;
 
+        //Movable Ports
+        QLabel *pMovablePortsLabel = new QLabel("Movable Ports");
+        pMovablePortsLabel->setFont(boldFont);
+        pScrollLayout->addWidget(pMovablePortsLabel, row, 0, 1, 2);
+        ++row;
+
+        //Movable Port Names
+        QLabel *pMovablePortNamesLabel = new QLabel("Port Names: ", this);
+        mpMovablePortNamesLineEdits.append(new QLineEdit(this));
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].movablePortNames.size(); ++m)
+        {
+            tempStr.append(mpData->movables[i].movablePortNames[m]+",");
+        }
+        tempStr.chop(1);
+        mpMovablePortNamesLineEdits.last()->setText(tempStr);
+        pScrollLayout->addWidget(pMovablePortNamesLabel,          row, 0);
+        pScrollLayout->addWidget(mpMovablePortNamesLineEdits.last(), row, 1);
+        ++row;
+
+        //Movable Port Start X
+        QLabel *pMovablePortStartXLabel = new QLabel("Start Position X: ", this);
+        mpMovablePortStartXLineEdits.append(new QLineEdit(this));
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].movablePortStartX.size(); ++m)
+        {
+            tempStr.append(QString::number(mpData->movables[i].movablePortStartX[m])+",");
+        }
+        tempStr.chop(1);
+        mpMovablePortStartXLineEdits.last()->setText(tempStr);
+        pScrollLayout->addWidget(pMovablePortStartXLabel,          row, 0);
+        pScrollLayout->addWidget(mpMovablePortStartXLineEdits.last(), row, 1);
+        ++row;
+
+        //Movable Port Start Y
+        QLabel *pMovablePortStartYLabel = new QLabel("Start Position Y: ", this);
+        mpMovablePortStartYLineEdits.append(new QLineEdit(this));
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].movablePortStartY.size(); ++m)
+        {
+            tempStr.append(QString::number(mpData->movables[i].movablePortStartY[m])+",");
+        }
+        tempStr.chop(1);
+        mpMovablePortStartYLineEdits.last()->setText(tempStr);
+        pScrollLayout->addWidget(pMovablePortStartYLabel,          row, 0);
+        pScrollLayout->addWidget(mpMovablePortStartYLineEdits.last(), row, 1);
+        ++row;
+
         pScrollWidget->setLayout(pScrollLayout);
         pScrollArea->setWidget(pScrollWidget);
         pMovableLayout->addWidget(pScrollArea);
@@ -394,7 +443,8 @@ void AnimatedIconPropertiesDialog::setValues()
         QStringList namesSplit = mpDataNamesLineEdits[i]->text().split(",");
         if(portsSplit.size() != namesSplit.size())
         {
-            gpMessageHandler->addErrorMessage("Number of port names does not match number of data names. Ignoring data source fields.");
+            gpMessageHandler->addErrorMessage("Number of port names does not match number of data names.");
+            gpMessageHandler->addInfoMessage("Ignoring data source fields.");
         }
         else
         {
@@ -437,7 +487,8 @@ void AnimatedIconPropertiesDialog::setValues()
         }
         else if(splitInitColor.size() > 0)
         {
-            gpMessageHandler->addErrorMessage("Initial color field must contain 3 or 4 values. Ignoring initial colors.");
+            gpMessageHandler->addErrorMessage("Initial color field must contain 3 or 4 values.");
+            gpMessageHandler->addInfoMessage("Ignoring initial colors.");
         }
 
         QStringList splitColors = mpColorModifiersLineEdits[i]->text().split(",");
@@ -457,7 +508,8 @@ void AnimatedIconPropertiesDialog::setValues()
         }
         else if(splitColors.size() > 0)
         {
-            gpMessageHandler->addErrorMessage("Color modifiers field must contain 3 or 4 values. Ignoring colors modifiers.");
+            gpMessageHandler->addErrorMessage("Color modifiers field must contain 3 or 4 values.");
+            gpMessageHandler->addInfoMessage("Ignoring colors modifiers.");
         }
 
         m.colorDataIdx = mpColorDataIdxLineEdits[i]->text().toInt();
@@ -466,6 +518,27 @@ void AnimatedIconPropertiesDialog::setValues()
         m.transformOriginY = mpTransformOriginYLineEdits[i]->text().toDouble();
 
         m.movableRelative = mpMovableRelativeLineEdits[i]->text().toInt();
+
+        QStringList splitMovablePortNames = mpMovablePortNamesLineEdits[i]->text().split(",");
+        QStringList splitMovablePortStartX = mpMovablePortStartXLineEdits[i]->text().split(",");
+        QStringList splitMovablePortStartY = mpMovablePortStartYLineEdits[i]->text().split(",");
+        if(splitMovablePortNames.size() == splitMovablePortStartX.size() && splitMovablePortNames.size() == splitMovablePortStartY.size())
+        {
+            m.movablePortNames.clear();
+            m.movablePortStartX.clear();
+            m.movablePortStartY.clear();
+            for(int p=0; p<splitMovablePortNames.size(); ++p)
+            {
+                m.movablePortNames.append(splitMovablePortNames[p]);
+                m.movablePortStartX.append(splitMovablePortStartX[p].toDouble());
+                m.movablePortStartY.append(splitMovablePortStartY[p].toDouble());
+            }
+        }
+        else
+        {
+            gpMessageHandler->addErrorMessage("Number of movable port names does not match number of initial positions.");
+            gpMessageHandler->addInfoMessage("Ignoring movable port fields.");
+        }
     }
 
     this->accept();
