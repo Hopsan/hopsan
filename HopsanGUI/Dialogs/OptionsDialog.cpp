@@ -304,9 +304,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 
     mpAutoLimitGenerationsCheckBox = new QCheckBox("Autoremove last generation when limit is reached");
     mpCacheLogDataCeckBox = new QCheckBox("Cache log data on hard drive");
-    mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden NodeData variables");
+    mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden node data variables");
 
     mpUnitScaleWidget = new QWidget(this);
+    mpUnitScaleWidget->setPalette(this->palette());
     QScrollArea *pUnitScaleScrollArea = new QScrollArea(this);
     pUnitScaleScrollArea->setWidgetResizable(true);
     pUnitScaleScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -365,7 +366,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(mpInterfaceWidget, "Interface");
     pTabWidget->addTab(mpSimulationWidget, "Simulation");
-    pTabWidget->addTab(pUnitScaleScrollArea, "UnitScales");
+    pTabWidget->addTab(pUnitScaleScrollArea, "Unit Scaling");
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
 
     QGridLayout *pLayout = new QGridLayout;
