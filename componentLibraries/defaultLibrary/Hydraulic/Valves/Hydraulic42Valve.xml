@@ -10,12 +10,13 @@
             <picture>42valvehelp.svg</picture>
         </help>
         <replacables>
-            <replacable typename="Hydraulic43Valve"/>
-            <replacable typename="Hydraulic43ValveNeutralSupplyToTank"/>
+            <replacable typename="Hydraulic42DirectionalValve"/>
+            <replacable typename="Hydraulic42Valve2"/>
             <replacable typename="Hydraulic43ValveNeutralToTank"/>
-            <replacable typename="HydraulicCheckValve"/>
-            <replacable typename="HydraulicCheckValveWithOrifice"/>
-            <replacable typename="HydraulicCheckValvePreLoaded"/>
+            <replacable typename="Hydraulic43ValveNeutralSupplyToTank"/>
+            <replacable typename="Hydraulic43LoadSensingValve"/>
+            <replacable typename="HydraulicOpenCenterValve"/>
+            <replacable typename="Hydraulic43Valve"/>
         </replacables>
         <ports>
             <port x="0.415966" y="1" a="90" name="PP"/>

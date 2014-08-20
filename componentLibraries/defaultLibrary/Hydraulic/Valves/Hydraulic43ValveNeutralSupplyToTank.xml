@@ -16,6 +16,15 @@
             <port x="0" y="0.7" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="xv"/>
         </ports>
+        <replacables>
+            <replacable typename="Hydraulic42DirectionalValve"/>
+            <replacable typename="Hydraulic42Valve"/>
+            <replacable typename="Hydraulic42Valve2"/>
+            <replacable typename="Hydraulic43ValveNeutralToTank"/>
+            <replacable typename="Hydraulic43LoadSensingValve"/>
+            <replacable typename="HydraulicOpenCenterValve"/>
+            <replacable typename="Hydraulic43Valve"/>
+        </replacables>
         <animation>
             <icon userpath="43valve_user_base.svg"/>
             <movable>

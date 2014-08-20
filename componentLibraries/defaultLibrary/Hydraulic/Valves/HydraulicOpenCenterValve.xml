@@ -18,6 +18,15 @@
             <port x="0.5878" y="0" a="270" name="PC2"/>
             <port x="1" y="0.5" a="0" name="xv"/>
         </ports>
+        <replacables>
+            <replacable typename="Hydraulic42DirectionalValve"/>
+            <replacable typename="Hydraulic42Valve"/>
+            <replacable typename="Hydraulic42Valve2"/>
+            <replacable typename="Hydraulic43ValveNeutralToTank"/>
+            <replacable typename="Hydraulic43ValveNeutralSupplyToTank"/>
+            <replacable typename="Hydraulic43LoadSensingValve"/>
+            <replacable typename="Hydraulic43Valve"/>
+        </replacables>
         <animation>
             <icon userpath="ocvalve_user_base.svg"/>
             <movable>

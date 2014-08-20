@@ -68,7 +68,7 @@ class HydraulicSpringLoadedPistonC : public ComponentC
 
             //Add ports to the component
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
-            mpP2 = addPowerMultiPort("P2", "NodeHydraulic");
+            mpP2 = addPowerMultiPort("P2", "NodeHydraulic", "");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
 

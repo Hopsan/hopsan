@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="Hydraulic22DirectionalCheckValve_user.svg" iconrotation="ON" type="user"/>
         </icons>
+        <replacables>
+            <replacable typename="Hydraulic22DirectionalValve"/>
+        </replacables>
         <ports>
             <port name="Kv_open" x="0.0" y="0.5" a="180" visible="false"/>
             <port name="Kv_check" x="0.0" y="0.75" a="180" visible="false"/>
