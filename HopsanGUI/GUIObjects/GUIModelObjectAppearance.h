@@ -142,67 +142,16 @@ public:
     void readFromDomElement(QDomElement &rDomElement, QString basePath, bool settingsOnly=false);
     void saveToDomElement(QDomElement &rDomElement);
 
+    //Movabels
     QList<ModelObjectAnimationMovableData> movables;
+
+    //Icon path
     QString baseIconPath;
-//    QList<int> movableIdx;
-//    QStringList movableIconPaths;
-//    QVector<QStringList> dataPorts;
-//    QVector<QStringList> dataNames;
-//    QStringList multipliers;
-//    QStringList divisors;
-//    QVector<double> speedX;
-//    QVector<double> speedY;
-//    QVector<double> speedTheta;
-//    QVector<double> resizeX;
-//    QVector<double> resizeY;
-//    QVector<double> initScaleX;
-//    QVector<double> initScaleY;
-//    QVector<int> scaleDataIdx1;
-//    QVector<int> scaleDataIdx2;
-//    QVector<double> startX;
-//    QVector<double> startY;
-//    QVector<double> startTheta;
-//    QVector<double> initColorR;
-//    QVector<double> initColorG;
-//    QVector<double> initColorB;
-//    QVector<double> initColorA;
-//    QVector<double> colorR;
-//    QVector<double> colorG;
-//    QVector<double> colorB;
-//    QVector<double> colorA;
-//    QVector<int> colorDataIdx;
-//    QVector<double> transformOriginX;
-//    QVector<double> transformOriginY;
-//    QVector<bool> isAdjustable;
-//    QVector<double> adjustableMinX;
-//    QVector<double> adjustableMaxX;
-//    QVector<double> adjustableMinY;
-//    QVector<double> adjustableMaxY;
-//    QStringList adjustablePort;
-//    QStringList adjustableDataName;
-//    QVector<double> adjustableGainX;
-//    QVector<double> adjustableGainY;
-//    QVector<bool> isSwitchable;
-//    QVector<double> switchableOffValue;
-//    QVector<double> switchableOnValue;
-//    QStringList switchablePort;
-//    QStringList switchableDataName;
-//    QVector<bool> isIndicator;
-//    QStringList indicatorPort;
-//    QStringList indicatorDataName;
-//    QVector<QStringList> movablePortNames;
-//    QVector<QList<double> > movablePortStartX;
-//    QVector<QList<double> > movablePortStartY;
-//    QList<int> movableRelatives;
 
     //Container-specific data
     double flowSpeed;
     double hydraulicMinPressure;
     double hydraulicMaxPressure;
-
-//    //Calculated at initialization
-//    QVector<double> multiplierValues, divisorValues;
-//    QVector<bool> useMultipliers, useDivisors;
 };
 
 

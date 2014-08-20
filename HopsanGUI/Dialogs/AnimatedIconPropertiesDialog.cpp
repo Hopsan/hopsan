@@ -34,7 +34,9 @@
 
 #include "global.h"
 #include "MessageHandler.h"
+#include "LibraryHandler.h"
 #include "GUIObjects/AnimatedComponent.h"
+#include "GUIObjects/GUIModelObject.h"
 #include "AnimatedIconPropertiesDialog.h"
 #include "Configuration.h"
 
@@ -84,13 +86,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Data Ports
         QLabel *pDataPortsLabel = new QLabel("Data Ports: ", this);
         mpDataPortsLineEdits.append(new QLineEdit(this));
-        QString tempStr;
-        for(int p=0; p<mpData->movables[i].dataPorts.size(); ++p)
-        {
-            tempStr.append(mpData->movables[i].dataPorts[p]+",");
-        }
-        tempStr.chop(1);
-        mpDataPortsLineEdits.last()->setText(tempStr);
         pScrollLayout->addWidget(pDataPortsLabel,             row, 0);
         pScrollLayout->addWidget(mpDataPortsLineEdits.last(), row, 1);
         ++row;
@@ -98,13 +93,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Data Names
         QLabel *pDataNamesLabel = new QLabel("Data Names: ", this);
         mpDataNamesLineEdits.append(new QLineEdit(this));
-        tempStr.clear();
-        for(int p=0; p<mpData->movables[i].dataNames.size(); ++p)
-        {
-            tempStr.append(mpData->movables[i].dataNames[p]+",");
-        }
-        tempStr.chop(1);
-        mpDataNamesLineEdits.last()->setText(tempStr);
         pScrollLayout->addWidget(pDataNamesLabel,             row, 0);
         pScrollLayout->addWidget(mpDataNamesLineEdits.last(), row, 1);
         ++row;
@@ -118,13 +106,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Multipliers
         QLabel *pMultipliersLabel = new QLabel("Multipliers: ", this);
         mpMultipliersLineEdits.append(new QLineEdit(this));
-        tempStr.clear();
-        for(int m=0; m<mpData->movables[i].multipliers.size(); ++m)
-        {
-            tempStr.append(mpData->movables[i].multipliers[m]+",");
-        }
-        tempStr.chop(1);
-        mpMultipliersLineEdits.last()->setText(tempStr);
         pScrollLayout->addWidget(pMultipliersLabel,             row, 0);
         pScrollLayout->addWidget(mpMultipliersLineEdits.last(), row, 1);
         ++row;
@@ -132,13 +113,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Divisors
         QLabel *pDivisorsLabel = new QLabel("Divisors: ", this);
         mpDivisorsLineEdits.append(new QLineEdit(this));
-        tempStr.clear();
-        for(int m=0; m<mpData->movables[i].divisors.size(); ++m)
-        {
-            tempStr.append(mpData->movables[i].divisors[m]+",");
-        }
-        tempStr.chop(1);
-        mpDivisorsLineEdits.last()->setText(tempStr);
         pScrollLayout->addWidget(pDivisorsLabel,             row, 0);
         pScrollLayout->addWidget(mpDivisorsLineEdits.last(), row, 1);
         ++row;
@@ -152,7 +126,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Start X
         QLabel *pStartXLabel = new QLabel("Initial Horizontal Position: ", this);
         mpStartXLineEdits.append(new QLineEdit(this));
-        mpStartXLineEdits.last()->setText(QString::number(mpData->movables[i].startX));
         mpStartXLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pStartXLabel,             row, 0);
         pScrollLayout->addWidget(mpStartXLineEdits.last(), row, 1);
@@ -161,7 +134,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Start Y
         QLabel *pStartYLabel = new QLabel("Initial Vertical Position: ", this);
         mpStartYLineEdits.append(new QLineEdit(this));
-        mpStartYLineEdits.last()->setText(QString::number(mpData->movables[i].startY));
         mpStartYLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pStartYLabel,             row, 0);
         pScrollLayout->addWidget(mpStartYLineEdits.last(), row, 1);
@@ -170,7 +142,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Start Theta
         QLabel *pStartThetaLabel = new QLabel("Initial Angle: ", this);
         mpStartThetaLineEdits.append(new QLineEdit(this));
-        mpStartThetaLineEdits.last()->setText(QString::number(mpData->movables[i].startTheta));
         mpStartThetaLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pStartThetaLabel,             row, 0);
         pScrollLayout->addWidget(mpStartThetaLineEdits.last(), row, 1);
@@ -179,7 +150,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Movement X
         QLabel *pMovementXLabel = new QLabel("Horizontal Movement: ", this);
         mpMovementXLineEdits.append(new QLineEdit(this));
-        mpMovementXLineEdits.last()->setText(QString::number(mpData->movables[i].movementX));
         mpMovementXLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pMovementXLabel,             row, 0);
         pScrollLayout->addWidget(mpMovementXLineEdits.last(), row, 1);
@@ -188,7 +158,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Movement Y
         QLabel *pMovementYLabel = new QLabel("Vertical Movement: ", this);
         mpMovementYLineEdits.append(new QLineEdit(this));
-        mpMovementYLineEdits.last()->setText(QString::number(mpData->movables[i].movementY));
         mpMovementYLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pMovementYLabel,             row, 0);
         pScrollLayout->addWidget(mpMovementYLineEdits.last(), row, 1);
@@ -197,7 +166,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Movement Theta
         QLabel *pMovementThetaLabel = new QLabel("Rotational Movement: ", this);
         mpMovementThetaLineEdits.append(new QLineEdit(this));
-        mpMovementThetaLineEdits.last()->setText(QString::number(mpData->movables[i].movementTheta));
         mpMovementThetaLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pMovementThetaLabel,             row, 0);
         pScrollLayout->addWidget(mpMovementThetaLineEdits.last(), row, 1);
@@ -206,7 +174,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Movement Data Index
         QLabel *pMovementDataIdxLabel = new QLabel("Movement Data Index: ", this);
         mpMovementDataIdxLineEdits.append(new QLineEdit(this));
-        mpMovementDataIdxLineEdits.last()->setText(QString::number(mpData->movables[i].movementDataIdx));
         mpMovementDataIdxLineEdits.last()->setValidator(new QIntValidator(this));
         pScrollLayout->addWidget(pMovementDataIdxLabel,       row, 0);
         pScrollLayout->addWidget(mpMovementDataIdxLineEdits.last(), row, 1);
@@ -221,7 +188,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Init Scale X
         QLabel *pInitScaleXLabel = new QLabel("Initial Horizontal Stretch: ", this);
         mpInitScaleXLineEdits.append(new QLineEdit(this));
-        mpInitScaleXLineEdits.last()->setText(QString::number(mpData->movables[i].initScaleX));
         mpInitScaleXLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pInitScaleXLabel,             row, 0);
         pScrollLayout->addWidget(mpInitScaleXLineEdits.last(), row, 1);
@@ -230,7 +196,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Init Scale Y
         QLabel *pInitScaleYLabel = new QLabel("Initial Vertical Stretch: ", this);
         mpInitScaleYLineEdits.append(new QLineEdit(this));
-        mpInitScaleYLineEdits.last()->setText(QString::number(mpData->movables[i].initScaleY));
         mpInitScaleYLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pInitScaleYLabel,             row, 0);
         pScrollLayout->addWidget(mpInitScaleYLineEdits.last(), row, 1);
@@ -239,7 +204,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Resize X
         QLabel *pResizeXLabel = new QLabel("Horizontal Stretch: ", this);
         mpResizeXLineEdits.append(new QLineEdit(this));
-        mpResizeXLineEdits.last()->setText(QString::number(mpData->movables[i].resizeX));
         mpResizeXLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pResizeXLabel,             row, 0);
         pScrollLayout->addWidget(mpResizeXLineEdits.last(), row, 1);
@@ -248,7 +212,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Resize Y
         QLabel *pResizeYLabel = new QLabel("Vertical Stretch: ", this);
         mpResizeYLineEdits.append(new QLineEdit(this));
-        mpResizeYLineEdits.last()->setText(QString::number(mpData->movables[i].resizeY));
         mpResizeYLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pResizeYLabel,             row, 0);
         pScrollLayout->addWidget(mpResizeYLineEdits.last(), row, 1);
@@ -257,7 +220,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Scale Data Index 1
         QLabel *pScaleData1Label = new QLabel("Scale Data Index 1: ", this);
         mpScaleDataIdx1LineEdits.append(new QLineEdit(this));
-        mpScaleDataIdx1LineEdits.last()->setText(QString::number(mpData->movables[i].scaleDataIdx1));
         mpScaleDataIdx1LineEdits.last()->setValidator(new QIntValidator(this));
         pScrollLayout->addWidget(pScaleData1Label,               row, 0);
         pScrollLayout->addWidget(mpScaleDataIdx1LineEdits.last(), row, 1);
@@ -266,7 +228,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Scale Data Index 2
         QLabel *pScaleData2Label = new QLabel("Scale Data Index 2: ", this);
         mpScaleDataIdx2LineEdits.append(new QLineEdit(this));
-        mpScaleDataIdx2LineEdits.last()->setText(QString::number(mpData->movables[i].scaleDataIdx2));
         mpScaleDataIdx2LineEdits.last()->setValidator(new QIntValidator(this));
         pScrollLayout->addWidget(pScaleData2Label,               row, 0);
         pScrollLayout->addWidget(mpScaleDataIdx2LineEdits.last(), row, 1);
@@ -281,11 +242,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Init Color (R,G,B,A)
         QLabel *pInitColorLabel = new QLabel("Initial Color (R,G,B,A): ", this);
         mpInitColorLineEdits.append(new QLineEdit(this));
-        QString r = QString::number(mpData->movables[i].initColorR);
-        QString g = QString::number(mpData->movables[i].initColorG);
-        QString b = QString::number(mpData->movables[i].initColorB);
-        QString a = QString::number(mpData->movables[i].initColorA);
-        mpInitColorLineEdits.last()->setText(r+","+g+","+b+","+a);
         pScrollLayout->addWidget(pInitColorLabel,             row, 0);
         pScrollLayout->addWidget(mpInitColorLineEdits.last(), row, 1);
         ++row;
@@ -293,11 +249,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Color Modifiers (R,G,B,A)
         QLabel *pColorModifiersLabel = new QLabel("Color Modifiers (R,G,B,A): ", this);
         mpColorModifiersLineEdits.append(new QLineEdit(this));
-        r = QString::number(mpData->movables[i].colorR);
-        g = QString::number(mpData->movables[i].colorG);
-        b = QString::number(mpData->movables[i].colorB);
-        a = QString::number(mpData->movables[i].colorA);
-        mpColorModifiersLineEdits.last()->setText(r+","+g+","+b+","+a);
         pScrollLayout->addWidget(pColorModifiersLabel,             row, 0);
         pScrollLayout->addWidget(mpColorModifiersLineEdits.last(), row, 1);
         ++row;
@@ -305,7 +256,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Color Data Index
         QLabel *pColorDataIdxLabel = new QLabel("Color Data Index: ", this);
         mpColorDataIdxLineEdits.append(new QLineEdit(this));
-        mpColorDataIdxLineEdits.last()->setText(QString::number(mpData->movables[i].colorDataIdx));
         mpColorDataIdxLineEdits.last()->setValidator(new QIntValidator(this));
         pScrollLayout->addWidget(pColorDataIdxLabel,               row, 0);
         pScrollLayout->addWidget(mpColorDataIdxLineEdits.last(), row, 1);
@@ -320,7 +270,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Transform Origin X
         QLabel *pTransformOriginXLabel = new QLabel("Transform Origin X: ", this);
         mpTransformOriginXLineEdits.append(new QLineEdit(this));
-        mpTransformOriginXLineEdits.last()->setText(QString::number(mpData->movables[i].transformOriginX));
         mpTransformOriginXLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pTransformOriginXLabel,             row, 0);
         pScrollLayout->addWidget(mpTransformOriginXLineEdits.last(), row, 1);
@@ -329,7 +278,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Transform Origin Y
         QLabel *pTransformOriginYLabel = new QLabel("Transform Origin Y: ", this);
         mpTransformOriginYLineEdits.append(new QLineEdit(this));
-        mpTransformOriginYLineEdits.last()->setText(QString::number(mpData->movables[i].transformOriginY));
         mpTransformOriginYLineEdits.last()->setValidator(new QDoubleValidator(this));
         pScrollLayout->addWidget(pTransformOriginYLabel,             row, 0);
         pScrollLayout->addWidget(mpTransformOriginYLineEdits.last(), row, 1);
@@ -344,7 +292,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Relative Movable Index
         QLabel *pRelativeMovableIdxLabel = new QLabel("Movable Index: ", this);
         mpMovableRelativeLineEdits.append(new QLineEdit(this));
-        mpMovableRelativeLineEdits.last()->setText(QString::number(mpData->movables[i].movableRelative));
         mpMovableRelativeLineEdits.last()->setValidator(new QIntValidator(this));
         pScrollLayout->addWidget(pRelativeMovableIdxLabel,          row, 0);
         pScrollLayout->addWidget(mpMovableRelativeLineEdits.last(), row, 1);
@@ -359,13 +306,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Movable Port Names
         QLabel *pMovablePortNamesLabel = new QLabel("Port Names: ", this);
         mpMovablePortNamesLineEdits.append(new QLineEdit(this));
-        tempStr.clear();
-        for(int m=0; m<mpData->movables[i].movablePortNames.size(); ++m)
-        {
-            tempStr.append(mpData->movables[i].movablePortNames[m]+",");
-        }
-        tempStr.chop(1);
-        mpMovablePortNamesLineEdits.last()->setText(tempStr);
         pScrollLayout->addWidget(pMovablePortNamesLabel,          row, 0);
         pScrollLayout->addWidget(mpMovablePortNamesLineEdits.last(), row, 1);
         ++row;
@@ -373,13 +313,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Movable Port Start X
         QLabel *pMovablePortStartXLabel = new QLabel("Start Position X: ", this);
         mpMovablePortStartXLineEdits.append(new QLineEdit(this));
-        tempStr.clear();
-        for(int m=0; m<mpData->movables[i].movablePortStartX.size(); ++m)
-        {
-            tempStr.append(QString::number(mpData->movables[i].movablePortStartX[m])+",");
-        }
-        tempStr.chop(1);
-        mpMovablePortStartXLineEdits.last()->setText(tempStr);
         pScrollLayout->addWidget(pMovablePortStartXLabel,          row, 0);
         pScrollLayout->addWidget(mpMovablePortStartXLineEdits.last(), row, 1);
         ++row;
@@ -387,13 +320,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         //Movable Port Start Y
         QLabel *pMovablePortStartYLabel = new QLabel("Start Position Y: ", this);
         mpMovablePortStartYLineEdits.append(new QLineEdit(this));
-        tempStr.clear();
-        for(int m=0; m<mpData->movables[i].movablePortStartY.size(); ++m)
-        {
-            tempStr.append(QString::number(mpData->movables[i].movablePortStartY[m])+",");
-        }
-        tempStr.chop(1);
-        mpMovablePortStartYLineEdits.last()->setText(tempStr);
         pScrollLayout->addWidget(pMovablePortStartYLabel,          row, 0);
         pScrollLayout->addWidget(mpMovablePortStartYLineEdits.last(), row, 1);
         ++row;
@@ -413,10 +339,12 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
     //Buttons
     QPushButton *pOkButton = new QPushButton("Ok", this);
     pOkButton->setDefault(true);
+    QPushButton *pResetButton = new QPushButton("Reset Default Values", this);
     QPushButton *pCancelButton = new QPushButton("Cancel", this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::AcceptRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::RejectRole);
+    pButtonBox->addButton(pResetButton, QDialogButtonBox::ResetRole);
 
     //Layout
     QVBoxLayout *pDialogLayout = new QVBoxLayout(this);
@@ -425,8 +353,94 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
 
     this->setLayout(pDialogLayout);
 
-    connect(pOkButton,     SIGNAL(pressed()), this, SLOT(setValues()));
-    connect(pCancelButton, SIGNAL(pressed()), this, SLOT(reject()));
+    connect(pOkButton,      SIGNAL(pressed()), this, SLOT(setValues()));
+    connect(pResetButton,   SIGNAL(pressed()), this, SLOT(resetValues()));
+    connect(pCancelButton,  SIGNAL(pressed()), this, SLOT(reject()));
+
+    updateValues();
+}
+
+void AnimatedIconPropertiesDialog::updateValues()
+{
+    for(int i=0; i<mpData->movables.size(); ++i)
+    {
+        QString tempStr;
+        for(int p=0; p<mpData->movables[i].dataPorts.size(); ++p)
+        {
+            tempStr.append(mpData->movables[i].dataPorts[p]+",");
+        }
+        tempStr.chop(1);
+        mpDataPortsLineEdits[i]->setText(tempStr);
+        tempStr.clear();
+        for(int p=0; p<mpData->movables[i].dataNames.size(); ++p)
+        {
+            tempStr.append(mpData->movables[i].dataNames[p]+",");
+        }
+        tempStr.chop(1);
+        mpDataNamesLineEdits[i]->setText(tempStr);
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].multipliers.size(); ++m)
+        {
+            tempStr.append(mpData->movables[i].multipliers[m]+",");
+        }
+        tempStr.chop(1);
+        mpMultipliersLineEdits[i]->setText(tempStr);
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].divisors.size(); ++m)
+        {
+            tempStr.append(mpData->movables[i].divisors[m]+",");
+        }
+        tempStr.chop(1);
+        mpDivisorsLineEdits[i]->setText(tempStr);
+        mpStartXLineEdits[i]->setText(QString::number(mpData->movables[i].startX));
+        mpStartYLineEdits[i]->setText(QString::number(mpData->movables[i].startY));
+        mpStartThetaLineEdits[i]->setText(QString::number(mpData->movables[i].startTheta));
+        mpMovementXLineEdits[i]->setText(QString::number(mpData->movables[i].movementX));
+        mpMovementYLineEdits[i]->setText(QString::number(mpData->movables[i].movementY));
+        mpMovementThetaLineEdits[i]->setText(QString::number(mpData->movables[i].movementTheta));
+        mpMovementDataIdxLineEdits[i]->setText(QString::number(mpData->movables[i].movementDataIdx));
+        mpInitScaleXLineEdits[i]->setText(QString::number(mpData->movables[i].initScaleX));
+        mpInitScaleYLineEdits[i]->setText(QString::number(mpData->movables[i].initScaleY));
+        mpResizeXLineEdits[i]->setText(QString::number(mpData->movables[i].resizeX));
+        mpResizeYLineEdits[i]->setText(QString::number(mpData->movables[i].resizeY));
+        mpScaleDataIdx1LineEdits[i]->setText(QString::number(mpData->movables[i].scaleDataIdx1));
+        mpScaleDataIdx2LineEdits[i]->setText(QString::number(mpData->movables[i].scaleDataIdx2));
+        QString r = QString::number(mpData->movables[i].initColorR);
+        QString g = QString::number(mpData->movables[i].initColorG);
+        QString b = QString::number(mpData->movables[i].initColorB);
+        QString a = QString::number(mpData->movables[i].initColorA);
+        mpInitColorLineEdits[i]->setText(r+","+g+","+b+","+a);
+        r = QString::number(mpData->movables[i].colorR);
+        g = QString::number(mpData->movables[i].colorG);
+        b = QString::number(mpData->movables[i].colorB);
+        a = QString::number(mpData->movables[i].colorA);
+        mpColorModifiersLineEdits[i]->setText(r+","+g+","+b+","+a);
+        mpColorDataIdxLineEdits[i]->setText(QString::number(mpData->movables[i].colorDataIdx));
+        mpTransformOriginXLineEdits[i]->setText(QString::number(mpData->movables[i].transformOriginX));
+        mpTransformOriginYLineEdits[i]->setText(QString::number(mpData->movables[i].transformOriginY));
+        mpMovableRelativeLineEdits[i]->setText(QString::number(mpData->movables[i].movableRelative));
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].movablePortNames.size(); ++m)
+        {
+            tempStr.append(mpData->movables[i].movablePortNames[m]+",");
+        }
+        tempStr.chop(1);
+        mpMovablePortNamesLineEdits[i]->setText(tempStr);
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].movablePortStartX.size(); ++m)
+        {
+            tempStr.append(QString::number(mpData->movables[i].movablePortStartX[m])+",");
+        }
+        tempStr.chop(1);
+        mpMovablePortStartXLineEdits[i]->setText(tempStr);
+        tempStr.clear();
+        for(int m=0; m<mpData->movables[i].movablePortStartY.size(); ++m)
+        {
+            tempStr.append(QString::number(mpData->movables[i].movablePortStartY[m])+",");
+        }
+        tempStr.chop(1);
+        mpMovablePortStartYLineEdits[i]->setText(tempStr);
+    }
 }
 
 
@@ -542,4 +556,19 @@ void AnimatedIconPropertiesDialog::setValues()
     }
 
     this->accept();
+}
+
+void AnimatedIconPropertiesDialog::resetValues()
+{
+    QDomDocument domDocument;
+    QDomElement animationRoot = domDocument.createElement("animation");
+    domDocument.appendChild(animationRoot);
+
+    gpLibraryHandler->getModelObjectAppearancePtr(mpAnimatedComponent->mpModelObject->getTypeName())->getAnimationDataPtr()->saveToDomElement(animationRoot);
+    QString baseIconPath = gpLibraryHandler->getModelObjectAppearancePtr(mpAnimatedComponent->mpModelObject->getTypeName())->getAnimationDataPtr()->baseIconPath;
+
+    mpData->movables.clear();
+    mpData->readFromDomElement(animationRoot,baseIconPath);
+
+    updateValues();
 }

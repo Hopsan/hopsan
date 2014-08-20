@@ -48,7 +48,9 @@ public:
     AnimatedIconPropertiesDialog(AnimatedComponent *pAnimatedComponent, int index, QWidget *parent = 0);
 
 private slots:
+    void updateValues();
     void setValues();
+    void resetValues();
 
 private:
     //Member pointers

@@ -169,11 +169,6 @@ ModelObjectIconAppearance::ModelObjectIconAppearance()
 //! @param [in] basePath Absolute path for the CAF (xml) file location
 void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QString basePath, bool settingsOnly)
 {
-    if(!settingsOnly)
-    {
-        //movables.clear();
-    }
-
     if(!rDomElement.isNull())
     {
         QDomElement iconElement = rDomElement.firstChildElement("icon");
@@ -412,14 +407,86 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
     foreach(const ModelObjectAnimationMovableData &m, movables)
     {
         QDomElement movableElement = appendDomElement(rDomElement, "movable");
+
+        QDomElement iconElement = appendDomElement(movableElement, "icon");
+        iconElement.setAttribute("userpath", baseIconPath);
+
+        if(m.idx >= 0)
+        {
+            movableElement.setAttribute("idx", m.idx);
+        }
+
+        for(int i=0; i<m.dataNames.size(); ++i)
+        {
+            if(!m.dataNames[i].isEmpty())
+            {
+                QDomElement dataElement = appendDomElement(movableElement, "data");
+                dataElement.setAttribute("port", m.dataPorts[i]);
+                dataElement.setAttribute("dataname", m.dataNames[i]);
+                dataElement.setAttribute("idx", i);
+            }
+        }
+
+        for(int i=0; i<m.multipliers.size(); ++i)
+        {
+            QDomElement multiplierElement = appendDomElement(movableElement, "multiplier");
+            multiplierElement.setAttribute("name", m.multipliers[i]);
+        }
+
+        for(int i=0; i<m.divisors.size(); ++i)
+        {
+            QDomElement divisorElement = appendDomElement(movableElement, "divisor");
+            divisorElement.setAttribute("name", m.divisors[i]);
+        }
+
         QDomElement startElement = appendDomElement(movableElement, "start");
         setQrealAttribute(startElement, "x", m.startX);
         setQrealAttribute(startElement, "y", m.startY);
         setQrealAttribute(startElement, "a", m.startTheta);
+
         QDomElement movementElement = appendDomElement(movableElement, "movement");
         setQrealAttribute(movementElement, "x", m.movementX);
         setQrealAttribute(movementElement, "y", m.movementY);
         setQrealAttribute(movementElement, "a", m.movementTheta);
+        movementElement.setAttribute("idx", m.movementDataIdx);
+
+        QDomElement initScaleElement = appendDomElement(movableElement, "initscale");
+        setQrealAttribute(initScaleElement, "x", m.initScaleX);
+        setQrealAttribute(initScaleElement, "y", m.initScaleY);
+
+        QDomElement resizeElement = appendDomElement(movableElement, "resize");
+        setQrealAttribute(resizeElement, "x", m.resizeX);
+        setQrealAttribute(resizeElement, "y", m.resizeY);
+        movementElement.setAttribute("idx1", m.scaleDataIdx1);
+        movementElement.setAttribute("idx2", m.scaleDataIdx2);
+
+        QDomElement initColorElement = appendDomElement(movableElement, "initcolor");
+        setQrealAttribute(initColorElement, "r", m.initColorR);
+        setQrealAttribute(initColorElement, "g", m.initColorG);
+        setQrealAttribute(initColorElement, "b", m.initColorB);
+        setQrealAttribute(initColorElement, "a", m.initColorA);
+
+        QDomElement colorElement = appendDomElement(movableElement, "color");
+        setQrealAttribute(colorElement, "r", m.colorR);
+        setQrealAttribute(colorElement, "g", m.colorG);
+        setQrealAttribute(colorElement, "b", m.colorB);
+        setQrealAttribute(colorElement, "a", m.colorA);
+        colorElement.setAttribute("idx", m.colorDataIdx);
+
+        QDomElement transformOriginElement = appendDomElement(movableElement, "transformorigin");
+        setQrealAttribute(transformOriginElement, "x", m.transformOriginX);
+        setQrealAttribute(transformOriginElement, "y", m.transformOriginY);
+
+        for(int i=0; i<m.movablePortNames.size(); ++i)
+        {
+            QDomElement movingPortElement = appendDomElement(movableElement, "movingport");
+            movingPortElement.setAttribute("portname", m.movablePortNames[i]);
+            setQrealAttribute(movingPortElement, "startx", m.movablePortStartX[i]);
+            setQrealAttribute(movingPortElement, "starty", m.movablePortStartY[i]);
+        }
+
+        QDomElement relativeElement = appendDomElement(movableElement, "relative");
+        relativeElement.setAttribute("idx", m.movableRelative);
     }
 }
 
