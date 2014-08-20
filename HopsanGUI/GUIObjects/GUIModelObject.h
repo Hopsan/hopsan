@@ -203,11 +203,14 @@ protected:
     bool mDragCopying;
     QWidget *mpDialogParentWidget;
 
+    QTimer mDragCopyTimer;
+
 protected slots:
     void snapNameTextPosition(QPointF pos);
     void calcNameTextPositions(QVector<QPointF> &rPts);
     void setNameTextScale(double scale);
     void setIconZoom(const double zoom);
+    void setDragCopying();
 
 private:
     void refreshIconPosition();

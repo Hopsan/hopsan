@@ -1063,7 +1063,9 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if(event->button() == Qt::RightButton)
     {
-        mDragCopying = true;
+        connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()));
+        mDragCopyTimer.setSingleShot(true);
+        mDragCopyTimer.start(100);
     }
 
 //    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentModelWidget->getGraphicsView()->isShiftKeyPressed())
@@ -1083,6 +1085,14 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //    }
 
 }
+
+
+
+void ModelObject::setDragCopying()
+{
+    mDragCopying = true;
+}
+
 
 
 void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -1115,6 +1125,8 @@ void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //! @brief Defines what happens if a mouse key is released while hovering an object
 void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    mDragCopyTimer.stop();
+
     if(mpParentContainerObject == 0)
     {
         return;
