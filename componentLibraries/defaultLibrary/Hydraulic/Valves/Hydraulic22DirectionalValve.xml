@@ -27,7 +27,7 @@
                 <movement x="0" y="0" a="0" idx="0"/>
                 <switchable offvalue="0" onvalue="1" port="in" dataname="Value"/>
             </movable>
-            <movable idx="-2">
+            <movable>
                 <icon userpath="22directionalvalve_user.svg"/>
                 <data port="xv" dataname="Value" idx="0"/>
                 <movement x="-4000" y="0" a="0" idx="0"/>
