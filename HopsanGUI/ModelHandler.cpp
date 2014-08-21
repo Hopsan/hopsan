@@ -104,6 +104,7 @@ void ModelHandler::setCurrentModel(int idx)
         // Also switch tab if it is visible among the tabs
         if(gpCentralTabWidget->indexOf(mModelPtrs[idx]) != -1)
             gpCentralTabWidget->setCurrentWidget(mModelPtrs[idx]);
+        refreshMainWindowConnections();
     }
 }
 
