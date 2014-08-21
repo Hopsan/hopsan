@@ -327,6 +327,7 @@ bool ModelWidget::simulate_nonblocking()
         if(comp->getTypeName() == "ModelicaComponent")
         {
             simulateModelica();
+            unlockSimulateMutex();
             return true;        //! @todo Should use return value from simulateModelica() function instead
         }
     }
@@ -1052,6 +1053,9 @@ void ModelWidget::simulateModelica()
     //Cleanup
     pTempModel->close();
     delete(pTempModel);
+
+    mpParentModelHandler->setCurrentModel(this);
+
 //    foreach(const QString &lib, loadedLibs)
 //    {
 //        gpLibraryHandler->unloadLibrary(lib);
@@ -1059,7 +1063,6 @@ void ModelWidget::simulateModelica()
 //    }
 
     //! @todo We should not recompile every time, only if model structure has changed
-
 }
 
 
