@@ -260,7 +260,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
         QDomElement animationElement = guiData.firstChildElement("animation");
         if(!animationElement.isNull() && pAppearanceData->getTypeName() == type)
         {
-            pAppearanceData->getAnimationDataPtr()->readFromDomElement(animationElement, pAppearanceData->getBasePath(), true);
+            pAppearanceData->getAnimationDataPtr()->readFromDomElement(animationElement, pAppearanceData->getBasePath());
         }
 
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy

@@ -167,7 +167,7 @@ ModelObjectIconAppearance::ModelObjectIconAppearance()
 //! @brief Loads animation data from XML element
 //! @param [in] element Element to read from
 //! @param [in] basePath Absolute path for the CAF (xml) file location
-void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QString basePath, bool settingsOnly)
+void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QString basePath)
 {
     if(!rDomElement.isNull())
     {
@@ -215,40 +215,15 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
         int idx=0;
         while(!xmlMovable.isNull())
         {
-            if(settingsOnly)
             {
-                if(movables.size() > idx)
-                {
-                    ModelObjectAnimationMovableData &m = movables[idx];
-                    m.startX = xmlMovable.firstChildElement("start").attribute("x").toDouble();
-                    m.startY = xmlMovable.firstChildElement("start").attribute("y").toDouble();
-                    m.startTheta = xmlMovable.firstChildElement("start").attribute("a").toDouble();
-                    m.movementX = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
-                    m.movementY = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
-                    m.movementTheta = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
-                }
-                ++idx;
-            }
-            else
-            {
-                int movableIdx;
-                if(xmlMovable.hasAttribute("idx"))
-                {
-                    movableIdx = xmlMovable.attribute("idx").toInt();
-                    while(movables.size() < movableIdx+1)
-                        movables.append(ModelObjectAnimationMovableData());
-                }
-                else
-                {
+                while(movables.size() < idx+1)
                     movables.append(ModelObjectAnimationMovableData());
-                    movableIdx = movables.size()-1;
-                }
 
-                ModelObjectAnimationMovableData &m = movables[movableIdx];
+                ModelObjectAnimationMovableData &m = movables[idx];
 
                 if(xmlMovable.hasAttribute("idx"))
                 {
-                    m.idx = movableIdx;
+                    m.idx = xmlMovable.attribute("idx").toInt();
                 }
                 else
                 {
@@ -392,8 +367,24 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                     m.movableRelative = -1;
                 }
             }
-
+            ++idx;
             xmlMovable = xmlMovable.nextSiblingElement("movable");
+        }
+
+        //Sort movables by indexes (no index = leave at bottom)
+        QList<ModelObjectAnimationMovableData> tempList = movables;
+        movables.clear();
+        for(int i=0; i<tempList.size(); ++i)
+        {
+            int m=0;
+            for(m=0; m<movables.size(); ++m)
+            {
+                if(movables[m].idx >= tempList[i].idx && m == 0)
+                    break;
+                if(movables[m].idx >= tempList[i].idx && m>0 && movables[m-1].idx <= tempList[i].idx)
+                    break;
+            }
+            movables.insert(m, tempList[i]);
         }
     }
 }
@@ -409,7 +400,7 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
         QDomElement movableElement = appendDomElement(rDomElement, "movable");
 
         QDomElement iconElement = appendDomElement(movableElement, "icon");
-        iconElement.setAttribute("userpath", baseIconPath);
+        iconElement.setAttribute("userpath", m.iconPath);
 
         if(m.idx >= 0)
         {

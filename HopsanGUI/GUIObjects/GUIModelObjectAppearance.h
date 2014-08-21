@@ -139,7 +139,7 @@ public:
 class ModelObjectAnimationData
 {
 public:
-    void readFromDomElement(QDomElement &rDomElement, QString basePath, bool settingsOnly=false);
+    void readFromDomElement(QDomElement &rDomElement, QString basePath);
     void saveToDomElement(QDomElement &rDomElement);
 
     //Movabels
