@@ -1014,6 +1014,7 @@ void HcomHandler::executeCommand(QString cmd)
         {
             executeCommand(tempCmd);
         }
+        return;
     }
 
     cmd = cmd.simplified();
