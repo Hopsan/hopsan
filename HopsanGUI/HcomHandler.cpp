@@ -594,7 +594,10 @@ void HcomHandler::createCommands()
     HcomCommand rmvarCmd;
     rmvarCmd.cmd = "rmvar";
     rmvarCmd.description.append("Removes specified variable");
-    rmvarCmd.help.append(" Usage: rmvar [variable]");
+    rmvarCmd.help.append(" Usage: rmvar [variables]\n");
+    rmvarCmd.help.append(" Usage: rmvar [variables] -n [variables]\n");
+    rmvarCmd.help.append("  Flags (optional):\n");
+    rmvarCmd.help.append("   -n Exclude specified variables");
     rmvarCmd.fnc = &HcomHandler::executeRemoveVariableCommand;
     rmvarCmd.group = "Variable Commands";
     mCmdList << rmvarCmd;
@@ -2209,6 +2212,18 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
 void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
+
+    QStringList excludes;
+    if(args.contains("-n"))
+    {
+        for(int i=args.indexOf("-n")+1; i<args.size(); ++i)
+        {
+            QStringList temp;
+            getMatchingLogVariableNames(args[i], temp);
+            excludes.append(temp);
+        }
+    }
+
     for(int s=0; s<args.size(); ++s)
     {
         QStringList variables;
@@ -2216,7 +2231,8 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
         for(int v=0; v<variables.size(); ++v)
         {
             //! @todo it would be  nice if we could remove a variable directly if no generation information is specified
-            removeLogVariable(variables[v]);
+            if(!excludes.contains(variables[v]))
+                removeLogVariable(variables[v]);
         }
     }
 }
