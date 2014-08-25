@@ -598,6 +598,7 @@ void HcomHandler::createCommands()
     rmvarCmd.help.append(" Usage: rmvar [variables] -n [variables]\n");
     rmvarCmd.help.append("  Flags (optional):\n");
     rmvarCmd.help.append("   -n Exclude specified variables");
+    rmvarCmd.help.append("   -noalias Exclude all alias variables");
     rmvarCmd.fnc = &HcomHandler::executeRemoveVariableCommand;
     rmvarCmd.group = "Variable Commands";
     mCmdList << rmvarCmd;
@@ -2213,6 +2214,13 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
 
+    bool excludeAliases = args.contains("-noalias");
+    QStringList aliasNames;
+    if(excludeAliases)
+    {
+        aliasNames = mpModel->getViewContainerObject()->getAliasNames();
+    }
+
     QStringList excludes;
     if(args.contains("-n"))
     {
@@ -2232,7 +2240,10 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
         {
             //! @todo it would be  nice if we could remove a variable directly if no generation information is specified
             if(!excludes.contains(variables[v]))
-                removeLogVariable(variables[v]);
+            {
+                if(!excludeAliases || !aliasNames.contains(variables[v]))
+                    removeLogVariable(variables[v]);
+            }
         }
     }
 }
