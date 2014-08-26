@@ -225,12 +225,12 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                 {
                     m.idx = xmlMovable.attribute("idx").toInt();
                 }
-                else
+
+                if(!xmlMovable.firstChildElement("icon").isNull() && !xmlMovable.firstChildElement("icon").attribute("userpath").isEmpty())
                 {
-                    m.idx = -1;
+                    m.iconPath = xmlMovable.firstChildElement("icon").attribute("userpath");
                 }
 
-                m.iconPath = xmlMovable.firstChildElement("icon").attribute("userpath");
                 QDomElement dataElement = xmlMovable.firstChildElement("data");
                 while(!dataElement.isNull())
                 {
@@ -263,33 +263,54 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                     m.divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
                 }
 
-                m.movementDataIdx = xmlMovable.firstChildElement("idx").attribute("x").toDouble();
-                m.startX = xmlMovable.firstChildElement("start").attribute("x").toDouble();
-                m.startY = xmlMovable.firstChildElement("start").attribute("y").toDouble();
-                m.startTheta = xmlMovable.firstChildElement("start").attribute("a").toDouble();
-                m.movementX = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
-                m.movementY = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
-                m.movementTheta = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
+                if(!xmlMovable.firstChildElement("movement").isNull())
+                {
+                    m.movementDataIdx = xmlMovable.firstChildElement("movement").attribute("idx").toDouble();
+                    m.movementX = xmlMovable.firstChildElement("movement").attribute("x").toDouble();
+                    m.movementY = xmlMovable.firstChildElement("movement").attribute("y").toDouble();
+                    m.movementTheta = xmlMovable.firstChildElement("movement").attribute("a").toDouble();
+                }
+                if(!xmlMovable.firstChildElement("start").isNull())
+                {
+                    m.startX = xmlMovable.firstChildElement("start").attribute("x").toDouble();
+                    m.startY = xmlMovable.firstChildElement("start").attribute("y").toDouble();
+                    m.startTheta = xmlMovable.firstChildElement("start").attribute("a").toDouble();
+                }
 
-                m.initScaleX = xmlMovable.firstChildElement("initscale").attribute("x").toDouble();
-                m.initScaleY = xmlMovable.firstChildElement("initscale").attribute("y").toDouble();
-                m.resizeX = xmlMovable.firstChildElement("resize").attribute("x").toDouble();
-                m.resizeY = xmlMovable.firstChildElement("resize").attribute("y").toDouble();
-                m.scaleDataIdx1 = xmlMovable.firstChildElement("resize").attribute("idx1").toInt();
-                m.scaleDataIdx2 = xmlMovable.firstChildElement("resize").attribute("idx2").toInt();
+                if(!xmlMovable.firstChildElement("initscale").isNull())
+                {
+                    m.initScaleX = xmlMovable.firstChildElement("initscale").attribute("x").toDouble();
+                    m.initScaleY = xmlMovable.firstChildElement("initscale").attribute("y").toDouble();
+                }
+                if(!xmlMovable.firstChildElement("resize").isNull())
+                {
+                    m.resizeX = xmlMovable.firstChildElement("resize").attribute("x").toDouble();
+                    m.resizeY = xmlMovable.firstChildElement("resize").attribute("y").toDouble();
+                    m.scaleDataIdx1 = xmlMovable.firstChildElement("resize").attribute("idx1").toInt();
+                    m.scaleDataIdx2 = xmlMovable.firstChildElement("resize").attribute("idx2").toInt();
+                }
 
-                m.colorDataIdx = xmlMovable.firstChildElement("color").attribute("idx").toInt();
-                m.initColorR = xmlMovable.firstChildElement("initcolor").attribute("r").toDouble();
-                m.initColorG = xmlMovable.firstChildElement("initcolor").attribute("g").toDouble();
-                m.initColorB = xmlMovable.firstChildElement("initcolor").attribute("b").toDouble();
-                m.initColorA = xmlMovable.firstChildElement("initcolor").attribute("a").toDouble();
-                m.colorR = xmlMovable.firstChildElement("color").attribute("r").toDouble();
-                m.colorG = xmlMovable.firstChildElement("color").attribute("g").toDouble();
-                m.colorB = xmlMovable.firstChildElement("color").attribute("b").toDouble();
-                m.colorA = xmlMovable.firstChildElement("color").attribute("a").toDouble();
+                if(!xmlMovable.firstChildElement("color").isNull())
+                {
+                    m.colorDataIdx = xmlMovable.firstChildElement("color").attribute("idx").toInt();
+                    m.colorR = xmlMovable.firstChildElement("color").attribute("r").toDouble();
+                    m.colorG = xmlMovable.firstChildElement("color").attribute("g").toDouble();
+                    m.colorB = xmlMovable.firstChildElement("color").attribute("b").toDouble();
+                    m.colorA = xmlMovable.firstChildElement("color").attribute("a").toDouble();
+                }
+                if(!xmlMovable.firstChildElement("initcolor").isNull())
+                {
+                    m.initColorR = xmlMovable.firstChildElement("initcolor").attribute("r").toDouble();
+                    m.initColorG = xmlMovable.firstChildElement("initcolor").attribute("g").toDouble();
+                    m.initColorB = xmlMovable.firstChildElement("initcolor").attribute("b").toDouble();
+                    m.initColorA = xmlMovable.firstChildElement("initcolor").attribute("a").toDouble();
+                }
 
-                m.transformOriginX = xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble();
-                m.transformOriginY = xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble();
+                if(!xmlMovable.firstChildElement("transformorigin").isNull())
+                {
+                    m.transformOriginX = xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble();
+                    m.transformOriginY = xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble();
+                }
 
                 QFileInfo movableIconFileInfo(movables.last().iconPath);
                 if (movableIconFileInfo.isRelative() && !movables.last().iconPath.isEmpty())
@@ -478,6 +499,35 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
 
         QDomElement relativeElement = appendDomElement(movableElement, "relative");
         relativeElement.setAttribute("idx", m.movableRelative);
+
+        if(m.isAdjustable)
+        {
+            QDomElement adjustableElement = appendDomElement(movableElement, "adjustable");
+            adjustableElement.setAttribute("xmin", m.adjustableMinX);
+            adjustableElement.setAttribute("xmax", m.adjustableMaxX);
+            adjustableElement.setAttribute("ymin", m.adjustableMinY);
+            adjustableElement.setAttribute("ymax", m.adjustableMaxY);
+            adjustableElement.setAttribute("dataname", m.adjustableDataName);
+            adjustableElement.setAttribute("port", m.adjustablePort);
+            adjustableElement.setAttribute("xgain", m.adjustableGainX);
+            adjustableElement.setAttribute("ygain", m.adjustableGainY);
+        }
+
+        if(m.isSwitchable)
+        {
+            QDomElement switchableElement = appendDomElement(movableElement, "switchable");
+            switchableElement.setAttribute("dataname", m.switchableDataName);
+            switchableElement.setAttribute("port", m.switchablePort);
+            switchableElement.setAttribute("onvalue", m.switchableOnValue);
+            switchableElement.setAttribute("offvalue", m.switchableOffValue);
+        }
+
+        if(m.isIndicator)
+        {
+            QDomElement indicatorElement = appendDomElement(movableElement, "indicator");
+            indicatorElement.setAttribute("dataname", m.indicatorDataName);
+            indicatorElement.setAttribute("port", m.indicatorPort);
+        }
     }
 }
 
