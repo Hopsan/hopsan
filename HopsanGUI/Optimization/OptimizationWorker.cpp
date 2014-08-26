@@ -117,6 +117,9 @@ void OptimizationWorker::finalize()
     }
     execute("echo on");
 
+    print("Optimization finished!");
+    updateProgressBar(mMaxEvals);
+
     mpHandler->setIsRunning(false);
 
     if(mDisconnectedFromModelHandler)
@@ -754,6 +757,7 @@ void OptimizationWorker::updateProgressBar(int i)
         mPercent = dummy;
         gpOptimizationDialog->updateTotalProgressBar(dummy);
     }
+    qApp->processEvents();
 }
 
 //! @brief Returns the maximum difference between smallest and largest parameter

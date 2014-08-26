@@ -203,6 +203,9 @@ void OptimizationWorkerComplexRF::run()
 
         //Evaluate new point
         execute("call evalworst");
+        execute("echo on");
+        print("Evaluating, i = "+QString::number(i));
+        execute("echo off");
 
         ++mEvaluations;
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
@@ -239,7 +242,12 @@ void OptimizationWorkerComplexRF::run()
                 return;
             }
 
-            if(i>mMaxEvals) break;
+            ++i;
+            if(i>=mMaxEvals)
+            {
+                --i;    //Needed because for-loop will increase it by one anyway
+                break;
+            }
 
             double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
 
@@ -258,6 +266,9 @@ void OptimizationWorkerComplexRF::run()
 
             //Evaluate new point
             execute("call evalworst");
+            execute("echo on");
+            print("Re-evaluating, i = "+QString::number(i));
+            execute("echo off");
 
             ++mEvaluations;
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
@@ -279,7 +290,6 @@ void OptimizationWorkerComplexRF::run()
             }
 
             ++mWorstCounter;
-            ++i;
             execute("echo off");
 
             updateProgressBar(i);
