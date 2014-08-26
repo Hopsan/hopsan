@@ -287,7 +287,7 @@ void NumericalIntegrationSolver::solveBackwardEuler()
     mpParentComponent->solveSystem();
 
     bool doBreak;
-    int i;
+    size_t i;
     for(i=0; i<mMaxIter; ++i)
     {
         (*mpStateVars) = y0;
@@ -354,7 +354,7 @@ void NumericalIntegrationSolver::solveTrapezoidRule()
     mpParentComponent->solveSystem();
 
     bool doBreak;
-    int i;
+    size_t i;
     for(i=0; i<mMaxIter; ++i)
     {
         (*mpStateVars) = y0;
