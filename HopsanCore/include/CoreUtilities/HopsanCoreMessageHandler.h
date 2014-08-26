@@ -63,7 +63,7 @@ public:
     HString mTag;
 };
 
-class HopsanCoreMessageHandler
+class DLLIMPORTEXPORT HopsanCoreMessageHandler
 {
 private:
     std::queue<HopsanCoreMessage*> mMessageQueue;

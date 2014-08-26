@@ -30,11 +30,11 @@
 
 namespace hopsan {
 
-void santizeName(HString &rName);
-HString santizeName(const HString &rName);
+void DLLIMPORTEXPORT santizeName(HString &rName);
+HString DLLIMPORTEXPORT santizeName(const HString &rName);
 
-bool isNameValid(const HString &rString);
-bool isNameValid(const HString &rString, const HString &rExceptions);
+bool DLLIMPORTEXPORT isNameValid(const HString &rString);
+bool DLLIMPORTEXPORT isNameValid(const HString &rString, const HString &rExceptions);
 
 //! @brief Help function for create a unique name among names from one STL Container
 template<typename ContainerT>

@@ -81,7 +81,6 @@ bool hopsan::fuzzyEqual(const double x, const double y, const double epsilon)
     // relative error is less meaningful here
     else if (x == 0 || y == 0 || diff < epsilon * std::numeric_limits<double>::epsilon() ) //! @todo Added multiplication with epsilon here, otherwise it may return false without ever reaching the second comparison
     {
-        double debug = epsilon * std::numeric_limits<double>::epsilon();
         return diff < (epsilon * std::numeric_limits<double>::epsilon() );
     }
     // use relative error

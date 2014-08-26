@@ -25,7 +25,7 @@
 using namespace std;
 using namespace hopsan;
 
-size_t determineActualNumberOfThreads(const size_t nDesiredThreads);
+size_t DLLIMPORTEXPORT determineActualNumberOfThreads(const size_t nDesiredThreads);
 
 //! @brief Class for barrier locks in multi-threaded simulations.
 class BarrierLock
