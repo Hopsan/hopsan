@@ -172,6 +172,8 @@ private:
     QList<QProgressBar*> mCoreProgressBarPtrs;
     QProgressBar *mpTotalProgressBar;
     QPushButton *mpStartButton;
+    QLabel *mpModelNameLabel;
+    QLabel *mpScriptFileLabel;
 
     //Member variables
     QTimer *mpTimer;

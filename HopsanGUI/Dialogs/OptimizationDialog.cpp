@@ -293,16 +293,21 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     //Run tab
     mpStartButton = new QPushButton("Start Optimization", this);
+    mpModelNameLabel = new QLabel("Model name: ", this);
+    mpScriptFileLabel = new QLabel("Script File:", this);
     mpTotalProgressBar = new QProgressBar(this);
     mpTotalProgressBar->hide();
+    mpTotalProgressBar->setPalette(gpConfig->getPalette());
     mpCoreProgressBarsLayout = new QGridLayout();
     QWidget *pScrollAreaWidget = new QWidget(this);
+    pScrollAreaWidget->setPalette(gpConfig->getPalette());
     pScrollAreaWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QHBoxLayout *pScrollAreaLayout = new QHBoxLayout(pScrollAreaWidget);
     mpParametersOutputTextEditsLayout = new QGridLayout();
     pScrollAreaLayout->addLayout(mpParametersOutputTextEditsLayout);
     pScrollAreaLayout->addLayout(mpCoreProgressBarsLayout);
     QScrollArea *pParametersOutputScrollArea = new QScrollArea(this);
+    pParametersOutputScrollArea->setPalette(gpConfig->getPalette());
     pParametersOutputScrollArea->setWidget(pScrollAreaWidget);
     pParametersOutputScrollArea->setWidgetResizable(true);
     pParametersOutputScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -311,17 +316,20 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpTerminal->mpHandler->setAcceptsOptimizationCommands(true);
     mpMessageHandler = mpTerminal->mpHandler->mpOptHandler->getMessageHandler();
     QGridLayout *pRunLayout = new QGridLayout(this);
-    pRunLayout->addWidget(mpStartButton,                        0,0,1,1);
-    pRunLayout->addWidget(pParametersOutputScrollArea,    1,0,1,2);
+    pRunLayout->addWidget(mpModelNameLabel,               0,0,1,1);
+    pRunLayout->addWidget(mpScriptFileLabel,              1,0,1,1);
+    pRunLayout->addWidget(mpStartButton,                  2,0,1,1);
+    pRunLayout->addWidget(pParametersOutputScrollArea,    3,0,1,2);
     //pRunLayout->addLayout(mpCoreProgressBarsLayout,             1,1,1,1);
-    pRunLayout->addWidget(mpTerminal,                           2,0,1,2);
-    pRunLayout->setRowStretch(1,0.4);
-    pRunLayout->setRowStretch(2,0.6);
+    pRunLayout->addWidget(mpTerminal,                           4,0,1,2);
+    pRunLayout->setRowStretch(3,2.4);
+    pRunLayout->setRowStretch(4,2.6);
     pRunLayout->setColumnStretch(0,1);
     pRunLayout->setColumnMinimumWidth(1,400);
-    pRunLayout->addWidget(mpTotalProgressBar,           3,0,1,2);
+    pRunLayout->addWidget(mpTotalProgressBar,           5,1,1,2);
     QWizardPage *pRunWidget = new QWizardPage(this);
     pRunWidget->setLayout(pRunLayout);
+    pRunWidget->setPalette(gpConfig->getPalette());
 
     this->addPage(pSettingsWidget);
     this->addPage(pParametersWidget);
@@ -876,7 +884,10 @@ void OptimizationDialog::generateScriptFile()
     }
 
     if(algorithmOk)
+    {
         button(QWizard::CustomButton1)->setEnabled(true);
+        mpScriptFileLabel->setText("Script File: Generated");
+    }
     else
         mpMessageHandler->addErrorMessage("Algorithm type undefined.");
 
@@ -1674,6 +1685,7 @@ void OptimizationDialog::update(int idx)
     if(idx == 4)
     {
         mpTerminal->mpHandler->setModelPtr(gpModelHandler->getCurrentModel());
+        mpModelNameLabel->setText("Model name: "+gpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getName());
     }
 }
 
@@ -1731,6 +1743,8 @@ void OptimizationDialog::saveScriptFile()
     gpConfig->setScriptDir(fileInfo.absolutePath());
 
     saveScriptFile(filePath);
+
+    mpScriptFileLabel->setText("Script file: "+fileInfo.fileName());
 }
 
 //! @brief Saves generated script to specified path
@@ -1765,6 +1779,8 @@ void OptimizationDialog::loadScriptFile()
     setCode(script);
 
     mScript = script;
+
+    mpScriptFileLabel->setText("Script file: "+QFileInfo(file).fileName());
 
     button(QWizard::CustomButton1)->setEnabled(true);
 }

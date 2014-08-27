@@ -5972,8 +5972,14 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
         else if( (genStr == "h") || (genStr == "H") )
         {
             rStr.chop(2);
-            return getLogVariable(rStr.section("{",0,0)).mpContainer->getHighestGeneration();
-            //return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getHighestGenerationNumber();
+            QStringList tempList;
+            getMatchingLogVariableNames(rStr.section("{",0,0),tempList);
+            int retVal = -10;
+            for(int j=0; j<tempList.size(); ++j)
+            {
+                retVal = max(retVal, getLogVariable(tempList[j]).mpContainer->getHighestGeneration());
+            }
+            return retVal;
         }
         else if( (genStr == "*") || (genStr == "a") || (genStr == "A") )
         {
