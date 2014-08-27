@@ -5971,20 +5971,13 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
         if( (genStr == "l") || (genStr == "L") )
         {
             rStr.chop(2);
-            return getLogVariable(rStr.section("{",0,0)).mpContainer->getLowestGeneration();
-            //return mpModel->getTopLevelSystemContainer()->getLogDataHandler()->getLowestGenerationNumber();
+            //return getLogVariable(rStr.section("{",0,0)).mpContainer->getLowestGeneration();
+            return getModelPtr()->getViewContainerObject()->getLogDataHandler()->getLowestGenerationNumber();
         }
         else if( (genStr == "h") || (genStr == "H") )
         {
             rStr.chop(2);
-            QStringList tempList;
-            getMatchingLogVariableNames(rStr.section("{",0,0),tempList);
-            int retVal = -10;
-            for(int j=0; j<tempList.size(); ++j)
-            {
-                retVal = max(retVal, getLogVariable(tempList[j]).mpContainer->getHighestGeneration());
-            }
-            return retVal;
+            return getModelPtr()->getViewContainerObject()->getLogDataHandler()->getHighestGenerationNumber();
         }
         else if( (genStr == "*") || (genStr == "a") || (genStr == "A") )
         {
@@ -6590,6 +6583,10 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
     if (!parseGenOK)
     {
         warningMessage = QString("Could not parse generation specifier in: %2, choosing current").arg(fullShortName);
+    }
+    else if(genRC == -3)
+    {
+        generation = -1;
     }
     else if (genRC != -3)
     {
