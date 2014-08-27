@@ -23,6 +23,7 @@
 
 // Qt includes
 #include <QDesktopServices>
+#include <QApplication>
 
 //HopsanGUI includes
 #include "common.h"
@@ -4025,7 +4026,11 @@ void HcomHandler::addPlotCurve(HopsanVariable data, const int axis, bool autoRef
     // else we will just set to same
     mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis, autoRefresh,color,type,thickness);
     mpCurrentPlotWindow->raise();
-    gpMainWindowWidget->activateWindow();
+
+    if(qApp->activeWindow() || qApp->focusWidget())
+    {
+        gpMainWindowWidget->activateWindow();
+    }
 }
 
 
