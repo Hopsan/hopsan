@@ -97,13 +97,16 @@ namespace hopsan {
             x1 = (*mpND_x1);
             v1 = (*mpND_v1);
             c1 = (*mpND_c1);
+
+            f2 = (*mpND_f2);
             x2 = (*mpND_x2);
+            v2 = (*mpND_v2);
             c2 = (*mpND_c2);
 
             mLength = x1+x2;
 
             //Initialize integrator
-            mIntegrator.initialize(mTimestep, 0, (*mpFs)/m, (*mpFk)/m, 0, 0, 0);
+            mIntegrator.initialize(mTimestep, 0, (*mpFs)/m, (*mpFk)/m, f1-f2, x2, v2);
 
             (*mpND_me1) = m;
             (*mpND_me2) = m;
