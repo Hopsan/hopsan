@@ -807,15 +807,57 @@ void OptimizationDialog::open()
 }
 
 
-//! @brief Slot that handles closing the dialog
-void OptimizationDialog::close()
+//! @brief Slot that handles accept event (clicking "Close" button)
+void OptimizationDialog::accept()
 {
-    if(!mpTerminal->mpHandler->mpOptHandler->isRunning())
+    //! @todo Duplicated code with reject() function
+    if(mpTerminal->mpHandler->mpOptHandler->isRunning())    //Optimization is running, ask user about it
     {
-        this->mpTerminal->mpHandler->mpOptHandler->clearModels();
+        QMessageBox closeWarningBox(QMessageBox::Warning, tr("Warning"),tr("An optimization is still running. Do you wish to abort it?\n\nHint: Optimzations can be aborted without closing the dialog with the \"Abort Script\" button."), 0, 0);
+        closeWarningBox.addButton(QMessageBox::Yes);
+        closeWarningBox.addButton(QMessageBox::No);
+        closeWarningBox.addButton(QMessageBox::Cancel);
+        closeWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+
+        int rc = closeWarningBox.exec();
+        if(rc == QMessageBox::Yes)
+        {
+            this->mpTerminal->mpHandler->abortHCOM();
+        }
+        else if(rc == QMessageBox::Cancel)
+        {
+            return;
+        }
     }
 
-    QDialog::close();
+    QDialog::accept();
+}
+
+
+//! @brief Slot that ahndles reject event (clicking "Cancel" button)
+void OptimizationDialog::reject()
+{
+    //! @todo Duplicated code with accept() function
+    if(mpTerminal->mpHandler->mpOptHandler->isRunning())    //Optimization is running, ask user about it
+    {
+        QMessageBox closeWarningBox(QMessageBox::Warning, tr("Warning"),tr("An optimization is still running. Do you wish to abort it?\n\nHint: Optimzations can be aborted without closing the dialog with the \"Abort Script\" button."), 0, 0);
+        closeWarningBox.addButton(QMessageBox::Yes);
+        closeWarningBox.addButton(QMessageBox::No);
+        closeWarningBox.addButton(QMessageBox::Cancel);
+        closeWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+
+        int rc = closeWarningBox.exec();
+        if(rc == QMessageBox::Yes)
+        {
+            this->mpTerminal->mpHandler->abortHCOM();
+        }
+        else if(rc == QMessageBox::Cancel)
+        {
+            return;
+        }
+    }
+
+    QDialog::reject();
 }
 
 

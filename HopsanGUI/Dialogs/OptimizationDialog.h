@@ -61,7 +61,8 @@ protected:
 
 public slots:
     virtual void open();
-    virtual void close();
+    virtual void accept();
+    virtual void reject();
     virtual void okPressed();
 
 private slots:

@@ -203,9 +203,6 @@ void OptimizationWorkerComplexRF::run()
 
         //Evaluate new point
         execute("call evalworst");
-        execute("echo on");
-        print("Evaluating, i = "+QString::number(i));
-        execute("echo off");
 
         ++mEvaluations;
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
@@ -266,9 +263,6 @@ void OptimizationWorkerComplexRF::run()
 
             //Evaluate new point
             execute("call evalworst");
-            execute("echo on");
-            print("Re-evaluating, i = "+QString::number(i));
-            execute("echo off");
 
             ++mEvaluations;
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
