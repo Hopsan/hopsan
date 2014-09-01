@@ -171,6 +171,7 @@ public:
     void setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
     void setIconScale(const double scale, const GraphicsTypeEnumT gfxType);
 
+    QString getHmfFile() const;
     QString getTypeName() const;
     QString getSubTypeName() const;
     QString getDisplayName() const;
@@ -207,6 +208,7 @@ public:
     void saveToXMLFile(QString filename);
 
 private:
+    QString mHmfFile;
     QString mTypeName;
     QString mSubTypeName;
     QString mDisplayName;

@@ -524,10 +524,36 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
     ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(fullTypeName);
+
     if(!pAppearanceData)    //Not an existing component
+    {
         return 0;       //No error message here, it depends on from where this function is called
+    }
+    else if(!pAppearanceData->getHmfFile().isEmpty())
+    {
+        QString hmfFile = pAppearanceData->getHmfFile();
+        ContainerObject *pObj = dynamic_cast<ContainerObject*>(addModelObject("Subsystem", position, rotation, startSelected, nameStatus, undoSettings));
+        //pObj->clearContents();
+
+        QFile file(pAppearanceData->getBasePath()+hmfFile);
+
+        QDomDocument domDocument;
+        QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+        if (!hmfRoot.isNull())
+        {
+            //! @todo Check version numbers
+            //! @todo check if we could load else give error message and dont attempt to load
+            QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+            pObj->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+            QFileInfo fileInfo(file);
+            pObj->setAppearanceDataBasePath(fileInfo.absolutePath());
+            pObj->loadFromDomElement(systemElement);
+        }
+    }
     else
+    {
         return addModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
+    }
 }
 
 

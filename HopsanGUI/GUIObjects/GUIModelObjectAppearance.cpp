@@ -44,6 +44,8 @@
 #define CAF_RECOMPILABLE "recompilable"
 #define CAF_NAME "name"
 
+#define CAF_HMFFILE "hmffile"
+
 #define CAF_ICON "icon"
 #define CAF_ICONS "icons"
 #define CAF_PATH "path"
@@ -852,6 +854,7 @@ QString ModelObjectAppearance::getBasePath() const
 //! @brief Read the ModelObjectAppearance contents from an XML DOM Element
 void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
+    mHmfFile        = domElement.attribute(CAF_HMFFILE, mHmfFile);
     mTypeName       = domElement.attribute(CAF_TYPENAME, mTypeName);
     mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, "");
     mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
@@ -1230,6 +1233,11 @@ void ModelObjectAppearance::setIconScale(const double scale, const GraphicsTypeE
         mIsoIconAppearance.mScale = scale;
     }
     //else dont do anything
+}
+
+QString ModelObjectAppearance::getHmfFile() const
+{
+    return mHmfFile;
 }
 
 
