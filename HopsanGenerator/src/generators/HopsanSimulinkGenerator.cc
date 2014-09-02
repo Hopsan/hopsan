@@ -36,6 +36,11 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         name = "UnsavedHopsanModel";
     }
 
+    if(modelFile.isEmpty())
+    {
+        modelFile = "untitled.hmf";
+    }
+
     std::vector<HString> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
@@ -259,7 +264,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     j=nTotalOutputs-1;
     portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG'')'); \n";
     portLabelsStream << "set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n";
-    portLabelsStream << "set_param(gcb,'Name','" << pSystem->getName().c_str() << "')\n";
+    portLabelsStream << "set_param(gcb,'Name','" << name << "')\n";
     portLabelsStream << "set_param(gcb,'MaskPrompts',{";
     for(int p=0; p<tunableParameters.size(); ++p)
     {
@@ -878,7 +883,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     j=nTotalOutputs-1;
     portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG'')'); \n";
     portLabelsStream << "set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n";
-    portLabelsStream << "set_param(gcb,'Name','" << pSystem->getName().c_str() << "')\n";
+    portLabelsStream << "set_param(gcb,'Name','" << name << "')\n";
     portLabelsStream << "set_param(gcb,'MaskPrompts',{";
     for(int p=0; p<tunableParameters.size(); ++p)
     {
