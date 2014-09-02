@@ -696,7 +696,20 @@ void Component::removePort(const HString &rPortName)
     }
     mPortPtrMap.erase(rPortName);
     mPortPtrVector.erase(std::remove(mPortPtrVector.begin(), mPortPtrVector.end(), pPort), mPortPtrVector.end());
-    delete pPort;
+    mAutoSignalNodeDataPtrPorts.erase(pPort);
+
+    if(pPort->getStartNodePtr())
+    {
+        for(size_t i=0; i<pPort->getStartNodePtr()->getNumDataVariables(); ++i)
+        {
+            const NodeDataDescription* pDesc = pPort->getStartNodePtr()->getDataDescription(0);
+            const HString name = getName()+"#"+pDesc->name;
+            mpParameters->deleteParameter(name);
+        }
+    }
+
+    //! @todo Deleting port like this seem to cause cowboy-writing. Figure out why...
+    //delete pPort;
 }
 
 //! @brief Add a PowerPort to the component
