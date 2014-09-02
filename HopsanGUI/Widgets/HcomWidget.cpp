@@ -455,6 +455,11 @@ bool TerminalConsole::isOnLastLine()
 
 void TerminalConsole::keyPressEvent(QKeyEvent *event)
 {
+    if(event->key() != Qt::Key_Up && event->key() != Qt::Key_Down)
+    {
+        mHistoryFilter.clear();     //Clear history filter when pressing other keys than up and down
+    }
+
     if(event->key() == Qt::Key_Home)
     {
         handleHomeKeyPress();
@@ -560,6 +565,7 @@ void TerminalConsole::handleEnterKeyPress()
     //Insert new command line
     this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
     this->setOutputColor(UndefinedMessageType);
+    mHistoryFilter.clear();
     this->insertPlainText(">> ");
     this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
 
@@ -572,18 +578,27 @@ void TerminalConsole::handleUpKeyPress()
 {
     if(mHistory.isEmpty()) { return; }
 
+    if(mHistoryFilter.isEmpty())
+    {
+        mHistoryFilter = this->document()->lastBlock().text().remove(">> ");
+    }
+    if(mHistoryFilter.isEmpty())
+    {
+        mHistoryFilter = "?";
+    }
+
     this->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
     this->moveCursor( QTextCursor::StartOfLine, QTextCursor::MoveAnchor );
     this->moveCursor( QTextCursor::End, QTextCursor::KeepAnchor );
     this->textCursor().removeSelectedText();
 
     ++mCurrentHistoryItem;
-    if(mCurrentHistoryItem > mHistory.size()-1)
+    if(mCurrentHistoryItem > mHistory.filter(QRegExp("^"+mHistoryFilter)).size()-1)
     {
-        mCurrentHistoryItem = mHistory.size()-1;
+        mCurrentHistoryItem = mHistory.filter(QRegExp("^"+mHistoryFilter)).size()-1;
     }
     setOutputColor(UndefinedMessageType);
-    this->insertPlainText(">> " + mHistory.at(mCurrentHistoryItem));
+    this->insertPlainText(">> " + mHistory.filter(QRegExp("^"+mHistoryFilter)).at(mCurrentHistoryItem));
 
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
 }
@@ -603,6 +618,7 @@ void TerminalConsole::handleDownKeyPress()
     if(mCurrentHistoryItem == -1)
     {
         this->insertPlainText(">> ");
+        mHistoryFilter.clear();
     }
     else
     {
@@ -796,6 +812,8 @@ void TerminalConsole::handleHomeKeyPress()
 
 void TerminalConsole::handleEscapeKeyPress()
 {
+    mHistoryFilter.clear();
+
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     this->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
     this->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);

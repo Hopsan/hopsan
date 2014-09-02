@@ -120,6 +120,7 @@ private:
     //Recent history (up and down keys)
     QStringList mHistory;
     int mCurrentHistoryItem;
+    QString mHistoryFilter;
 
     //Autocomplete
     QString mAutoCompleteFilter;
