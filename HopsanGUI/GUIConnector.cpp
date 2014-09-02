@@ -382,6 +382,7 @@ void Connector::finishCreation()
     if (!(mpStartPort && mpEndPort))
     {
         mIsBroken = true;
+        setZValue(BrokenConnectorZValue);
     }
 
     this->determineAppearance();    // Figure out which connector appearance to use
@@ -906,6 +907,10 @@ void Connector::setActive()
         mIsActive = true;
     }
     this->setZValue(ConnectorZValue);
+    if(mIsBroken)
+    {
+        this->setZValue(BrokenConnectorZValue);
+    }
 }
 
 
@@ -942,6 +947,10 @@ void Connector::setPassive()
         }
     }
     this->setZValue(ConnectorZValue);
+    if(mIsBroken)
+    {
+        this->setZValue(BrokenConnectorZValue);
+    }
 }
 
 
@@ -1313,6 +1322,10 @@ void ConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent */*event*/)
         mpParentConnector->setZValue(ConnectorZValue);
     }
     this->mpParentConnector->setZValue(ConnectorZValue);
+    if(mpParentConnector->mIsBroken)
+    {
+        mpParentConnector->setZValue(BrokenConnectorZValue);
+    }
     emit lineHoverLeave();
 }
 
