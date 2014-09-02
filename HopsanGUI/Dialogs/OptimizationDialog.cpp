@@ -194,6 +194,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->setRowStretch(row++, 1);
     QWizardPage *pSettingsWidget = new QWizardPage(this);
     pSettingsWidget->setLayout(pSettingsLayout);
+    pSettingsWidget->setPalette(gpConfig->getPalette());
     setAlgorithm(0);
 
     //Parameter tab
@@ -1009,6 +1010,10 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
     setMinMax.chop(1);
 
     QString extraPlots;
+    if(mpExport2CSVBox->isChecked())
+    {
+        extraPlots.append("opt set log on\n");
+    }
     if(mpPlotParticlesCheckBox->isChecked())
     {
         extraPlots.append("opt set plotpoints on\n");

@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QFile>
 
 class OptimizationHandler;
 class ModelWidget;
@@ -84,6 +85,7 @@ protected:
     int mNumPoints;
     QVector<int> mvIdx;
     bool mDoLog;
+    QFile mLogFile;
     int mEvalId;
     int mNumParameters;
     QVector<double> mParMin, mParMax;

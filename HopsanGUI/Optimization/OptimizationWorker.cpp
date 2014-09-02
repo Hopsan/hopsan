@@ -22,6 +22,8 @@
 //! @brief Contains a base class for optimization worker objects
 //!
 
+#include <QFile>
+
 #include "OptimizationHandler.h"
 #include "OptimizationWorker.h"
 #include "Dialogs/OptimizationDialog.h"
@@ -88,6 +90,17 @@ void OptimizationWorker::init()
 
     mOrgProgressBarSetting = gpConfig->getEnableProgressBar();
     gpConfig->setEnableProgressBar(false);
+
+    mLogFile.setFileName(gpDesktopHandler->getDocumentsPath()+"OptLog"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".csv");
+
+    if(mDoLog)
+    {
+        if(!mLogFile.open(QFile::WriteOnly | QFile::Text | QFile::Append))
+        {
+            mDoLog = false;
+            printError("Cannot write to log file. Logging will be disabled.");
+        }
+    }
 }
 
 
@@ -154,9 +167,11 @@ void OptimizationWorker::finalize()
     resultFile.write(output.toUtf8());
     resultFile.close();
 
+    printLogFile();
+
     if(mDoLog)
     {
-        printLogFile();
+        mLogFile.close();
     }
 
     gpConfig->setEnableProgressBar(mOrgProgressBarSetting);
@@ -285,6 +300,19 @@ void OptimizationWorker::logPoint(int idx)
     else
     {
         objVar->append(mObjectives[idx]);
+    }
+
+    if(mDoLog)
+    {
+        QString logLine;
+        logLine.append(QString::number(mObjectives[idx])+",");
+        for(int p=0; p<mNumParameters; ++p)
+        {
+            logLine.append(QString::number(mParameters[idx][p])+",");
+        }
+        logLine.chop(1);
+        logLine.append("\n");
+        mLogFile.write(logLine.toUtf8());
     }
 }
 
