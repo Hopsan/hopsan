@@ -51,13 +51,16 @@ class HydraulicCylinderC : public ComponentC
         //Node data pointers
         std::vector<double*> mvpND_p1, mvpND_q1, mvpND_c1, mvpND_Zc1;
         std::vector<double*> mvpND_p2, mvpND_q2, mvpND_c2, mvpND_Zc2;
-        double *mpA1, *mpA2, *mpSl, *mpV01, *mpV02, *mpBp, *mpBetae, *mpCLeak;
+        double *mpSl, *mpV01, *mpV02, *mpBp, *mpBetae, *mpCLeak;
 
         double *mpf3, *mpx3, *mpv3, *mpc3, *mpZx3, *mpme;
         size_t mNumPorts1, mNumPorts2;
 
         //Ports
         Port *mpP1, *mpP2, *mpP3;
+
+    protected:
+        double *mpA1, *mpA2;
 
     public:
         static Component *Creator()

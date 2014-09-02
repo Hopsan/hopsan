@@ -320,7 +320,8 @@ HEADERS += \
     Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp \
     Signal/Animation/SignalNumericalInput.hpp \
     Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp \
-    Hydraulic/Valves/Hydraulic22DirectionalCheckValve.hpp
+    Hydraulic/Valves/Hydraulic22DirectionalCheckValve.hpp \
+    Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

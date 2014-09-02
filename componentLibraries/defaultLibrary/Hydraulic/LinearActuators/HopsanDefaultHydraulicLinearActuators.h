@@ -2,6 +2,7 @@
 #define HOPSANDEFAULTHYDRAULICLINEARACTUATORS_H
 
 #include "HydraulicCylinderC.hpp"
+#include "HydraulicSymmetricCylinderC.hpp"
 //#include "HydraulicCylinderCMultiports.hpp"
 #include "HydraulicCylinderQ.hpp"
 #include "HydraulicFourChamberPiston.hpp"
