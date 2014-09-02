@@ -2032,19 +2032,19 @@ void HcomHandler::executePrintCommand(const QString cmd)
     str = str.mid(1,str.size()-2);
     if(arg == "-e")
     {
-        HCOMERR(str);
+        mpConsole->printErrorMessage(str,"",false,true);
     }
     else if(arg == "-w")
     {
-        HCOMWARN(str);
+        mpConsole->printWarningMessage(str,"",false,true);
     }
     else if(arg == "-i")
     {
-        HCOMINFO(str);
+        mpConsole->printInfoMessage(str,"",false,true);
     }
     else
     {
-        HCOMPRINT(str);
+        mpConsole->print(str,true);
     }
 }
 

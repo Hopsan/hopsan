@@ -76,17 +76,17 @@ public:
     void printFirstInfo();
     HcomHandler *getHandler();
 
-    void printInfoMessage(QString message,      QString tag="", bool timeStamp=true);
-    void printWarningMessage(QString message,   QString tag="", bool timeStamp=true);
-    void printErrorMessage(QString message,     QString tag="", bool timeStamp=true);
-    void printFatalMessage(QString message);
-    void printDebugMessage(QString message,     QString tag="", bool timeStamp=true);
-    void print(QString message);
+    void printInfoMessage(QString message,      QString tag="", bool timeStamp=true, bool force=false);
+    void printWarningMessage(QString message,   QString tag="", bool timeStamp=true, bool force=false);
+    void printErrorMessage(QString message,     QString tag="", bool timeStamp=true, bool force=false);
+    void printFatalMessage(QString message, bool force=false);
+    void printDebugMessage(QString message,     QString tag="", bool timeStamp=true, bool force=false);
+    void print(QString message, bool force=false);
 
     TerminalWidget *mpTerminal;
 
 public slots:
-    void printMessage(const GUIMessage &rMessage, bool timeStamp=true);
+    void printMessage(const GUIMessage &rMessage, bool timeStamp=true, bool force=false);
     void clear();
     void abortHCOM();
     void setGroupByTag(bool value);

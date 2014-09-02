@@ -268,46 +268,46 @@ HcomHandler *TerminalConsole::getHandler()
 //}
 
 
-void TerminalConsole::printFatalMessage(QString message)
+void TerminalConsole::printFatalMessage(QString message, bool force)
 {
-    printMessage(GUIMessage(message.prepend("Error: "), "", Fatal), true);
+    printMessage(GUIMessage(message.prepend("Error: "), "", Fatal), true, force);
     QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");
 }
 
 
-void TerminalConsole::printErrorMessage(QString message, QString tag, bool timeStamp)
+void TerminalConsole::printErrorMessage(QString message, QString tag, bool timeStamp, bool force)
 {
-    printMessage(GUIMessage(message.prepend("Error: "), tag, Error), timeStamp);
+    printMessage(GUIMessage(message.prepend("Error: "), tag, Error), timeStamp, force);
 }
 
 
-void TerminalConsole::printWarningMessage(QString message, QString tag, bool timeStamp)
+void TerminalConsole::printWarningMessage(QString message, QString tag, bool timeStamp, bool force)
 {
-    printMessage(GUIMessage(message.prepend("Warning: "), tag, Warning), timeStamp);
+    printMessage(GUIMessage(message.prepend("Warning: "), tag, Warning), timeStamp, force);
 }
 
 
-void TerminalConsole::printInfoMessage(QString message, QString tag, bool timeStamp)
+void TerminalConsole::printInfoMessage(QString message, QString tag, bool timeStamp, bool force)
 {
-    printMessage(GUIMessage(message.prepend("Info: "), tag, Info), timeStamp);
+    printMessage(GUIMessage(message.prepend("Info: "), tag, Info), timeStamp, force);
 }
 
 
-void TerminalConsole::print(QString message)
+void TerminalConsole::print(QString message, bool force)
 {
-    printMessage(GUIMessage(message, "", UndefinedMessageType), false);
+    printMessage(GUIMessage(message, "", UndefinedMessageType), false, force);
 }
 
 
-void TerminalConsole::printDebugMessage(QString message, QString tag, bool timeStamp)
+void TerminalConsole::printDebugMessage(QString message, QString tag, bool timeStamp, bool force)
 {
-    printMessage(GUIMessage(message.prepend("Debug: "), tag, Debug), timeStamp);
+    printMessage(GUIMessage(message.prepend("Debug: "), tag, Debug), timeStamp, force);
 }
 
 
-void TerminalConsole::printMessage(const GUIMessage &rMessage, bool timeStamp)
+void TerminalConsole::printMessage(const GUIMessage &rMessage, bool timeStamp, bool force)
 {
-    if(mDontPrint) return;
+    if(mDontPrint && !force) return;
 
     // Only show message if its type shall be shown
     if( (rMessage.mType == Info    && mShowInfoMessages)     ||
