@@ -72,6 +72,7 @@ public:
     double mPartol;
     bool mPlot;
     bool mSavecsv;
+    bool mFinalEval;
     bool mlogPar;
 
     //Paramters

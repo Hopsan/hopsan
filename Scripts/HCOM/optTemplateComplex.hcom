@@ -22,6 +22,11 @@ opt set partol <<<partol>>>
 opt set alpha <<<alpha>>>
 opt set rfak <<<rfak>>>
 opt set gamma <<<gamma>>>
+opt set finaleval <<<finaleval>>>
+opt set log <<<log>>>
+opt set plotpoints <<<plotpoints>>>
+opt set plotbestworst <<<plotbestworst>>>
+
 <<<extravars>>>
 <<<extraplots>>>
 <<<setminmax>>>

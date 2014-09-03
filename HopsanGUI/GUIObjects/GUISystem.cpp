@@ -392,6 +392,7 @@ void SystemContainer::saveOptimizationSettingsToDomElement(QDomElement &rDomElem
     appendDomValueNode(XMLsetting, HMF_PARTOL, mOptSettings.mPartol);
     appendDomBooleanNode(XMLsetting, HMF_PLOT, mOptSettings.mPlot);
     appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mSavecsv);
+    appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mFinalEval);
 
     //Parameters
     appendDomBooleanNode(XMLsetting, HMF_LOGPAR, mOptSettings.mlogPar);
@@ -455,6 +456,7 @@ void SystemContainer::loadOptimizationSettingsFromDomElement(QDomElement &rDomEl
         mOptSettings.mPartol = parseDomValueNode(settingsElement.firstChildElement(HMF_PARTOL), mOptSettings.mPartol);
         mOptSettings.mPlot = parseDomBooleanNode(settingsElement.firstChildElement(HMF_PLOT), mOptSettings.mPlot);
         mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(HMF_SAVECSV), mOptSettings.mSavecsv);
+        mOptSettings.mFinalEval = parseDomBooleanNode(settingsElement.firstChildElement(HMF_FINALEVAL), mOptSettings.mFinalEval);
         mOptSettings.mlogPar = parseDomBooleanNode(settingsElement.firstChildElement(HMF_LOGPAR), mOptSettings.mlogPar);
     }
 
@@ -472,8 +474,6 @@ void SystemContainer::loadOptimizationSettingsFromDomElement(QDomElement &rDomEl
 
             parameterElement = parameterElement.nextSiblingElement(HMF_PARAMETERTAG);
         }
-
-        mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(HMF_SAVECSV), mOptSettings.mSavecsv);
     }
 
     QDomElement objectivesElement = rDomElement.firstChildElement(HMF_OBJECTIVES);
@@ -1826,6 +1826,7 @@ OptimizationSettings::OptimizationSettings()
     mPartol=.0001;
     mPlot=true;
     mSavecsv=false;
+    mFinalEval=true;
     mlogPar = false;
 }
 

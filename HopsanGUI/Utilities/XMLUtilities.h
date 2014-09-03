@@ -189,6 +189,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_PARTOL "partol"
 #define HMF_PLOT "plot"
 #define HMF_SAVECSV "savecsv"
+#define HMF_FINALEVAL "finaleval"
 #define HMF_LOGPAR "logpar"
 #define HMF_OBJECTIVES "objectives"
 #define HMF_OBJECTIVE "objective"

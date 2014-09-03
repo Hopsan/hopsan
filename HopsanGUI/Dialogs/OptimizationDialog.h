@@ -133,6 +133,7 @@ private:
     QCheckBox *mpPlottingCheckBox;
     QCheckBox *mpPlotBestWorstCheckBox;
     QCheckBox *mpExport2CSVBox;
+    QCheckBox *mpFinalEvalCheckBox;
 
     //Parameters page
     QCheckBox *mpParametersLogCheckBox;

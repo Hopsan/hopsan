@@ -49,6 +49,7 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mPlotObjectiveFunctionValues = false;
     mPlotParameters = false;
     mDoLog = true;
+    mFinalEval = true;
 }
 
 
@@ -114,9 +115,13 @@ void OptimizationWorker::run()
 //! @brief Finalie function for optimization worker base class (should never be called directly)
 void OptimizationWorker::finalize()
 {
+
     //Re-evaluate all points (to remove any effect from forgetting factor before logging)
     execute("echo off");
-    execute("call evalall");
+    if(mFinalEval)
+    {
+        execute("call evalall");
+    }
     calculateBestAndWorstId();
     double secondBestObj = mObjectives[mWorstId];
     mSecondBestId = mWorstId;
@@ -129,6 +134,7 @@ void OptimizationWorker::finalize()
         }
     }
     execute("echo on");
+
 
     print("Optimization finished!");
     updateProgressBar(mMaxEvals);
@@ -207,7 +213,7 @@ void OptimizationWorker::printLogFile()
         algStr = "Complex-RF";
         break;
     case OptimizationHandler::ComplexRFM:
-            algStr = "Complex-RFM";
+        algStr = "Complex-RFM";
         break;
     case OptimizationHandler::ComplexRFP:
         algStr = "Complex-RFP";
@@ -611,6 +617,10 @@ void OptimizationWorker::setOptVar(const QString &var, const QString &value)
     else if(var == "log")
     {
         mDoLog = (value == "on");
+    }
+    else if(var == "finaleval")
+    {
+        mFinalEval = (value == "on");
     }
 }
 

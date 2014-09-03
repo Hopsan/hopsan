@@ -85,6 +85,7 @@ protected:
     int mNumPoints;
     QVector<int> mvIdx;
     bool mDoLog;
+    bool mFinalEval;
     QFile mLogFile;
     int mEvalId;
     int mNumParameters;

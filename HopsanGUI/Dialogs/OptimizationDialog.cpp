@@ -148,6 +148,9 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpExport2CSVBox= new QCheckBox("Export trace data to CSV file", this);
     mpExport2CSVBox->setChecked(false);
 
+    mpFinalEvalCheckBox= new QCheckBox("Evaluate all points again after optimization (removes forgetting factor artifacts)", this);
+    mpFinalEvalCheckBox->setChecked(false);
+
     int row=0;
     QGridLayout *pSettingsLayout = new QGridLayout(this);
     pSettingsLayout->addWidget(pSettingsLabel,         row++, 0);
@@ -190,6 +193,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpPlotBestWorstCheckBox,row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpPlotParticlesCheckBox,row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpExport2CSVBox,        row++, 0, 1, 2);
+    pSettingsLayout->addWidget(mpFinalEvalCheckBox,    row++, 0, 1, 2);
     pSettingsLayout->addWidget(new QWidget(this),      row++, 0, 1, 2);    //Dummy widget for stretching the layout
     pSettingsLayout->setRowStretch(row++, 1);
     QWizardPage *pSettingsWidget = new QWizardPage(this);
@@ -507,6 +511,7 @@ void OptimizationDialog::loadConfiguration()
     mpEpsilonXLineEdit->setText(QString().setNum(optSettings.mPartol));
     mpPlottingCheckBox->setChecked(optSettings.mPlot);
     mpExport2CSVBox->setChecked(optSettings.mSavecsv);
+    mpFinalEvalCheckBox->setChecked(optSettings.mFinalEval);
     mpParametersLogCheckBox->setChecked(optSettings.mlogPar);
 
     //Parameters
@@ -557,6 +562,7 @@ void OptimizationDialog::saveConfiguration()
     optSettings.mPartol = mpEpsilonXLineEdit->text().toDouble();
     optSettings.mPlot = mpPlottingCheckBox->isChecked();
     optSettings.mSavecsv = mpExport2CSVBox->isChecked();
+    optSettings.mFinalEval = mpFinalEvalCheckBox->isChecked();
     optSettings.mlogPar = mpParametersLogCheckBox->isChecked();
 
     //Parameters
@@ -1010,19 +1016,40 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
     setMinMax.chop(1);
 
     QString extraPlots;
+    extraPlots.chop(1);
+
     if(mpExport2CSVBox->isChecked())
     {
-        extraPlots.append("opt set log on\n");
+        templateCode.replace("<<<log>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<log>>>","off");
+    }
+    if(mpFinalEvalCheckBox->isChecked())
+    {
+        templateCode.replace("<<<finaleval>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<finaleval>>>","off");
     }
     if(mpPlotParticlesCheckBox->isChecked())
     {
-        extraPlots.append("opt set plotpoints on\n");
+        templateCode.replace("<<<plotpoints>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotpoints>>>","off");
     }
     if(mpPlotBestWorstCheckBox->isChecked())
     {
-        extraPlots.append("opt set plotbestworst on\n");
+        templateCode.replace("<<<plotbestworst>>>","on");
     }
-    extraPlots.chop(1);
+    else
+    {
+        templateCode.replace("<<<plotbestworst>>>","off");
+    }
 
     QString extraVars;
     if(subAlgorithm == "complexrfm")
