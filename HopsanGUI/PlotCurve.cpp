@@ -310,6 +310,11 @@ int PlotCurve::getAxisY()
     return mAxisY;
 }
 
+PlotArea *PlotCurve::getParentPlotArea() const
+{
+    return mpParentPlotArea;
+}
+
 
 //! @brief Returns the (unscaled) data vector of a plot curve
 QVector<double> PlotCurve::getVariableDataCopy() const
@@ -1356,11 +1361,15 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
     // If we are moving the mouse, then update the position and label
     if ((event->type() == QEvent::MouseMove) && mIsBeingMoved)
     {
-        double x = mpCurve->sample(mpCurve->closestPoint(plot()->canvas()->mapFromGlobal(QCursor::pos()))).x();
-        double y = mpCurve->sample(mpCurve->closestPoint(plot()->canvas()->mapFromGlobal(QCursor::pos()))).y();
+        int idx = mpCurve->closestPoint(plot()->canvas()->mapFromGlobal(QCursor::pos()));
+        double x = mpCurve->sample(idx).x();
+        double y = mpCurve->sample(idx).y();
         setXValue(x);
         setYValue(plot()->invTransform(QwtPlot::yLeft, plot()->transform(mpCurve->yAxis(), y)));
         refreshLabel(x, y);
+
+        emit idxChanged(idx);
+
         return true;
     }
     // Mouse release event, will stop moving marker
@@ -1425,6 +1434,7 @@ void PlotMarker::highlight(bool tf)
         mpMarkerSymbol->setPen(color, 3);
         setLinePen(color, 2, Qt::DotLine);
     }
+    emit highlighted(tf);
 }
 
 
@@ -1512,3 +1522,133 @@ void PlotLegend::updateLegend(const QwtPlotItem *plotItem, const QList<QwtLegend
     QwtPlotLegendItem::updateLegend( plotItem, myData );
 }
 
+
+//! @brief Constructor
+//! @param pos Position where user clicked
+//! @param pPlotArea Pointer to parent plot area
+MultiPlotMarker::MultiPlotMarker(QPoint pos, PlotArea *pPlotArea)
+{
+    QList<PlotCurve*> curves = pPlotArea->getCurves();
+
+    if(curves.isEmpty()) return;    //No curves, then nothing can be done
+
+    int idx = curves[0]->closestPoint(pos);     //Index where to insert multi-marker
+
+    //Create one marker per curve
+    for(int i=0; i<curves.size(); ++i)
+    {
+        double x = curves[i]->sample(idx).x();
+        double y = curves[i]->sample(idx).y();
+
+        PlotMarker *pMarker = new PlotMarker(curves[i], pPlotArea);
+        mPlotMarkerPtrs.append(pMarker);
+
+        pMarker->attach(pPlotArea->getQwtPlot());
+        pMarker->setXValue(x);
+        pMarker->setYValue(y);
+        pMarker->refreshLabel(x, y);
+        pMarker->setLabelAlignment(Qt::AlignLeft);
+
+        pPlotArea->getQwtPlot()->canvas()->installEventFilter(pMarker);
+        pPlotArea->getQwtPlot()->canvas()->setMouseTracking(true);
+        pMarker->setMovable(true);
+
+        connect(pMarker, SIGNAL(idxChanged(int)), this, SLOT(moveAll(int)));
+        connect(pMarker, SIGNAL(highlighted(bool)), this, SLOT(highlight(bool)));
+    }
+
+    //Create the dummy plot marker, it is never visible itself but is used to display the vertical line
+    mpDummyMarker = new QwtPlotMarker();
+    mpDummyMarker->attach(pPlotArea->getQwtPlot());
+    mpDummyMarker->setXValue(curves[0]->sample(idx).x());
+    mpDummyMarker->setLineStyle(QwtPlotMarker::VLine);
+    mpDummyMarker->setSymbol(new QwtSymbol(QwtSymbol::NoSymbol));
+    mpDummyMarker->setLinePen(QColor("black"),2, Qt::DotLine);
+}
+
+
+//! @brief Adds a marker to the specified curve, used when adding curves to plot
+//! @param pCurve Curve to insert marker at
+void MultiPlotMarker::addMarker(PlotCurve *pCurve)
+{
+    //Calculate index where to insert marker
+    QwtPlot *pPlot = mPlotMarkerPtrs.first()->getCurve()->plot();
+    PlotCurve *pFirstCurve = mPlotMarkerPtrs.first()->getCurve();
+    double x_pos = pPlot->transform(mPlotMarkerPtrs.first()->xAxis(), mPlotMarkerPtrs.first()->xValue());
+    double y_pos = pPlot->transform(mPlotMarkerPtrs.first()->yAxis(), mPlotMarkerPtrs.first()->yValue());
+    int idx = pFirstCurve->closestPoint(QPoint(x_pos,y_pos));
+
+    //Calculate position on line
+    double x = pCurve->sample(idx).x();
+    double y = pCurve->sample(idx).y();
+
+    //Create the marker
+    PlotMarker *pMarker = new PlotMarker(pCurve, pCurve->getParentPlotArea());
+    mPlotMarkerPtrs.append(pMarker);
+    pMarker->attach(pCurve->plot());
+    pMarker->setXValue(x);
+    pMarker->setYValue(pCurve->plot()->invTransform(QwtPlot::yLeft, pCurve->plot()->transform(pCurve->yAxis(), y)));
+    pMarker->refreshLabel(x, y);
+    pMarker->setMovable(true);
+    pMarker->setLineStyle(QwtPlotMarker::VLine);
+
+    pCurve->getParentPlotArea()->getQwtPlot()->canvas()->installEventFilter(pMarker);
+    pCurve->getParentPlotArea()->getQwtPlot()->canvas()->setMouseTracking(true);
+
+    connect(pMarker, SIGNAL(idxChanged(int)), this, SLOT(moveAll(int)));
+    connect(pCurve, SIGNAL(destroyed()), this, SLOT(update()));
+
+    //Update position of all points (just in case)
+    moveAll(idx);
+}
+
+
+//! @brief Removes marker from specified curve (used when removing curves from plot)
+//! @param pCurve Pointer to curve from where the marker shall be removed
+void MultiPlotMarker::removeMarker(PlotCurve *pCurve)
+{
+    //Loop through all markers
+    for(int i=0; i<mPlotMarkerPtrs.size(); ++i)
+    {
+        //Find marker with specified curve
+        if(mPlotMarkerPtrs[i]->getCurve() == pCurve)
+        {
+            //Delete and remove it
+            delete(mPlotMarkerPtrs[i]);
+            mPlotMarkerPtrs.removeAt(i);
+            --i;
+        }
+    }
+}
+
+
+//! @brief Slot that highlights the vertical line
+//! @param tf Tells whether to highlight or not
+void MultiPlotMarker::highlight(bool tf)
+{
+    if(tf)
+        mpDummyMarker->setLinePen(QColor("black"), 4, Qt::DotLine);
+    else
+        mpDummyMarker->setLinePen(QColor("black"), 2, Qt::DotLine);
+}
+
+
+//! @brief Moves all markers to specified index position
+//! @param idx Index to move marker sto
+void MultiPlotMarker::moveAll(int idx)
+{
+    //Move each marker
+    for(int i=0; i<mPlotMarkerPtrs.size(); ++i)
+    {
+        double x = mPlotMarkerPtrs[i]->getCurve()->sample(idx).x();
+        double y = mPlotMarkerPtrs[i]->getCurve()->sample(idx).y();
+
+        PlotCurve *pCurve = mPlotMarkerPtrs[i]->getCurve();
+        mPlotMarkerPtrs[i]->setXValue(x);
+        mPlotMarkerPtrs[i]->setYValue(pCurve->plot()->invTransform(QwtPlot::yLeft, pCurve->plot()->transform(pCurve->yAxis(), y)));
+        mPlotMarkerPtrs[i]->refreshLabel(x, y);
+    }
+
+    //Move the vertical line
+    mpDummyMarker->setXValue(mPlotMarkerPtrs[0]->getCurve()->sample(idx).x());
+}

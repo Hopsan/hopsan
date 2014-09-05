@@ -52,6 +52,7 @@
 // Forward Declaration
 class PlotCurve;
 class PlotMarker;
+class MultiPlotMarker;
 class PlotTab;
 class PlotLegend;
 class PlotCurveControlBox;
@@ -206,6 +207,8 @@ public slots:
 
     void removeCurve(PlotCurve *pCurve);
 
+    void insertMultiMarker(QPoint pos);
+
     void insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel=QString(), bool movable=true);
     void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
 
@@ -238,6 +241,7 @@ private:
     QwtPlotPanner *mpQwtPanner;
 
     QList<PlotMarker*> mPlotMarkers;
+    QList<MultiPlotMarker*> mMultiPlotMarkers;
     QList<PlotCurve*> mPlotCurves;
     PlotCurve *mpActivePlotCurve;
     quint32 mNumYlCurves, mNumYrCurves;

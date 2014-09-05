@@ -82,6 +82,8 @@ public:
     HopsanPlotCurveTypeEnumT getCurveType();
     int getAxisY();
 
+    PlotArea *getParentPlotArea() const;
+
     QVector<double> getVariableDataCopy() const;
     const HopsanVariable getHopsanVariable() const;
     const HopsanVariable getCustomXHopsanVariable() const;
@@ -200,7 +202,7 @@ private:
 };
 
 
-
+//! @brief Class for plot markers
 class PlotMarker : public QObject, public QwtPlotMarker
 {
     Q_OBJECT
@@ -211,6 +213,10 @@ public:
 
     // Overloaded virtual methods
     virtual bool eventFilter (QObject *object, QEvent *event);
+
+signals:
+    void idxChanged(int);
+    void highlighted(bool);
 
 public slots:
     void refreshLabel(const double x, const double y);
@@ -226,6 +232,24 @@ private:
     bool mIsHighlighted;
     bool mIsBeingMoved;
     bool mIsMovable;
+};
+
+
+//! @brief Class for vertical line with one plot marker per curve
+class MultiPlotMarker : public QObject
+{
+    Q_OBJECT
+public:
+    MultiPlotMarker(QPoint pos, PlotArea *pPlotArea);
+    void addMarker(PlotCurve* pCurve);
+    void removeMarker(PlotCurve* pCurve);
+public slots:
+    void highlight(bool tf);
+private slots:
+    void moveAll(int idx);
+private:
+    QList<PlotMarker*> mPlotMarkerPtrs;
+    QwtPlotMarker *mpDummyMarker;       //Used to display the vertical line
 };
 
 #endif // PLOTCURVE_H

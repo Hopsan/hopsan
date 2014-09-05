@@ -457,6 +457,12 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     updateAxisLabels();
     updateWindowtitleModelName();
     replot();
+
+    //Update multi plot markers
+    for(int i=0; i<mMultiPlotMarkers.size(); ++i)
+    {
+        mMultiPlotMarkers[i]->addMarker(pCurve);
+    }
 }
 
 void PlotArea::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, bool force)
@@ -513,6 +519,13 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
         --mNumYrCurves;
     }
 
+
+    //Update multi plot markers
+    for(int i=0; i<mMultiPlotMarkers.size(); ++i)
+    {
+        mMultiPlotMarkers[i]->removeMarker(pCurve);
+    }
+
     pCurve->detach();
     mPlotCurves.removeAll(pCurve);
     pCurve->mpParentPlotArea = 0;
@@ -535,6 +548,11 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
     updateAxisLabels();
     updateWindowtitleModelName();
     replot();
+}
+
+void PlotArea::insertMultiMarker(QPoint pos)
+{
+    mMultiPlotMarkers.append(new MultiPlotMarker(pos, this));
 }
 
 void PlotArea::removeAllCurvesOnAxis(const int axis)
@@ -1061,6 +1079,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         pSetBottomAxisShowSamples->setChecked(mBottomAxisShowOnlySamples);
     }
 
+    QAction *pInsertMultiMarkerAction = menu.addAction("Insert multi-marker");
 
     // Create menu for inserting curve markers
     pInsertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
@@ -1170,6 +1189,13 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     if(pSelectedAction->parentWidget() == pInsertMarkerMenu)
     {
         insertMarker(actionToCurveMap.find(pSelectedAction).value(), event->pos());
+    }
+
+
+    // Insert multi-curve marker
+    if(pSelectedAction == pInsertMultiMarkerAction)
+    {
+        insertMultiMarker(event->pos());
     }
 }
 
@@ -1687,6 +1713,10 @@ void PlotArea::shiftAllGenerationsUp()
         pCurve->gotoNextGeneration();
     }
 }
+
+
+
+
 
 //! @brief Inserts a curve marker at the specified curve
 //! @param pCurve is a pointer to the specified curve
