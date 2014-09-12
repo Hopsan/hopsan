@@ -286,7 +286,7 @@ void NumericalIntegrationSolver::solveBackwardEuler()
     mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
 
-    bool doBreak;
+    bool doBreak = false;
     size_t i;
     for(i=0; i<mMaxIter; ++i)
     {
