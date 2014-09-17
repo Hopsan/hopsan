@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicAckumulator.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 8 Apr 2014 15:49:43
+//! @date Wed 17 Sep 2014 09:18:00
 //! @brief This is piston with an inertia load
 //! @ingroup HydraulicComponents
 //!
@@ -212,8 +212,8 @@ delayedPart[1][1],0.,1);
 pa)*dxLimit(limit((Kca*mTimestep*(p1 - pa))/(2.*V0) - \
 delayedPart[1][1],0.,1),0.,1))/V0;
           systemEquations[2] =q1 + V0*vmp;
-          systemEquations[3] =pa - (p0*Power(V0,kappa))/Power(V0 - \
-V0*xmp,kappa);
+          systemEquations[3] =pa - (p0*Power(V0,kappa))/Power(V0*limit(1 - \
+xmp,0.001,1),kappa);
           systemEquations[4] =p1 - (c1 + q1*Zc1)*onPositive(p1);
 
           //Jacobian matrix
@@ -236,8 +236,8 @@ pa))/(2.*V0) - delayedPart[1][1],0.,1),0.,1))/V0);
           jacobianMatrix[2][2] = 1;
           jacobianMatrix[2][3] = 0;
           jacobianMatrix[2][4] = 0;
-          jacobianMatrix[3][0] = -(kappa*p0*Power(V0,1 + kappa)*Power(V0 - \
-V0*xmp,-1 - kappa));
+          jacobianMatrix[3][0] = -(kappa*p0*Power(V0,1 + kappa)*dxLimit(1 - \
+xmp,0.001,1)*Power(V0*limit(1 - xmp,0.001,1),-1 - kappa));
           jacobianMatrix[3][1] = 0;
           jacobianMatrix[3][2] = 0;
           jacobianMatrix[3][3] = 1;
