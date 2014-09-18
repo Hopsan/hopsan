@@ -29,6 +29,7 @@
 #include "LogVariable.h"
 #include "SymHop.h"
 
+class ContainerObject;
 class TerminalWidget;
 class TerminalConsole;
 class ModelObject;
@@ -208,11 +209,12 @@ private:
     void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     int parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const;
 
-    void getComponents(const QString &rStr, QList<ModelObject *> &rComponents) const;
+    void getComponents(const QString &rStr, QList<ModelObject *> &rComponents, ContainerObject *pSystem=0) const;
     void getPorts(const QString &rStr, QList<Port *> &rPorts) const;
 
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
+    void getParametersFromContainer(QStringList &parameters, ContainerObject *pSystem);
     QString getParameterValue(QString parameter) const;
 
     bool evaluateArithmeticExpression(QString cmd);
