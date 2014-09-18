@@ -13,9 +13,9 @@
    height="80.000061"
    id="svg3464"
    sodipodi:version="0.32"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.48+devel r13149"
    version="1.0"
-   sodipodi:docname="prv_iso.svg"
+   sodipodi:docname="pred_iso.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs3466">
@@ -107,16 +107,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="265.30089"
-     inkscape:cy="-72.915219"
+     inkscape:zoom="5.6568543"
+     inkscape:cx="3.0741049"
+     inkscape:cy="61.568331"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="982"
+     inkscape:window-width="1440"
+     inkscape:window-height="838"
      inkscape:window-x="-8"
-     inkscape:window-y="38"
+     inkscape:window-y="-8"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-maximized="1">
@@ -178,17 +178,19 @@
        id="path3650" />
     <g
        id="g5055"
-       transform="translate(0,0.5919324)">
+       transform="translate(9.5225735,0.5919324)">
       <path
-         d="M 236.71194,318.19449 C 236.71194,284.10341 236.71194,284.10341 236.71194,284.10341"
+         d="m 236.68848,318.19449 c 0,-34.09108 0,-34.09108 0,-34.09108"
          class="st3"
          id="path206"
-         style="stroke:#000000;stroke-width:1.01620483;stroke-miterlimit:3;stroke-dasharray:none" />
+         style="stroke:#000000;stroke-width:1.01620483;stroke-miterlimit:3;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
       <path
-         d="M 234.03245,312.36037 L 236.7329,322.3537 L 239.39142,312.34706 L 234.03245,312.36046 L 234.03245,312.36037 z"
+         d="m 234.03245,312.36037 2.70045,9.99333 2.65852,-10.00664 -5.35897,0.0134 0,-9e-5 z"
          class="st5"
          id="path229-7"
-         style="fill:#000000;fill-opacity:1;stroke:none" />
+         style="fill:#000000;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
     </g>
     <g
        id="g5046"
