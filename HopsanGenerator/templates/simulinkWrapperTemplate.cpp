@@ -158,9 +158,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     output<<<10>>> = 0;		//Error code 0: Nothing is wrong
 
 <<<11>>>
-    double timestep = pComponentSystem->getDesiredTimeStep();
     double time = ssGetT(S);
-    pComponentSystem->simulate(time+timestep);
+    pComponentSystem->simulate(time);
 
 <<<12>>>
 
