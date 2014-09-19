@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="ForkLifterLib">
+    <lib debug_ext="_d">ForkLifterLib</lib>
+    <source>ForkLifterLib.cc</source>
+    <component>code/Forks.hpp</component>
+    <caf>Components/Forks.xml</caf>
+</hopsancomponentlibrary>

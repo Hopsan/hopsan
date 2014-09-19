@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = TestLib
+SUBDIRS = TestLib ForkLifterLib
