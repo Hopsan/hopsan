@@ -69,6 +69,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     // ========== Special Components ==========
     #include "Special/AeroComponents/HopsanDefaultAerocomponents.cci"
     #include "Special/SignalFFB/HopsanDefaultFBBComponents.cci"
+    #include "Special/TMMS04/HopsanDefaultTMMS04Components.cci"
     #include "Special/MechanicB/HopsanDefaultMechanicBComponents.cci"
 
     // ========== Hydraulic components ==========

@@ -215,6 +215,8 @@ HEADERS += \
     Special/SignalFFB/SignalFFB.hpp \
     Special/Benchmarking/HopsanDefaultBenchmarkingComponents.h \
     Special/SignalFFB/HopsanDefaultFBBComponents.h \
+    Special/TMMS04/Forks.hpp \
+    Special/TMMS04/HopsanDefaultTMMS04Components.h \
     Special/HopsanDefaultSpecialComponents.h \
     Special/MechanicVehicle1D.hpp \
     Hydraulic/MachineParts/MechanicSwashPlate.hpp \
@@ -329,6 +331,7 @@ SOURCES += \
 
 OTHER_FILES += \
     Special/SignalFFB/HopsanDefaultFBBComponents.cci \
+    Special/TMMS04/HopsanDefaultTMMS04Components.cci \
     Electric/HopsanDefaultElectricComponents.cci \
     Signal/HopsanDefaultSignalComponents.cci \
     Special/AeroComponents/HopsanDefaultAerocomponents.cci \
