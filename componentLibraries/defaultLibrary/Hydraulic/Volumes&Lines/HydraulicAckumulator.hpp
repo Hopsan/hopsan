@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicAckumulator.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 17 Sep 2014 09:18:00
+//! @date Tue 23 Sep 2014 11:29:20
 //! @brief This is piston with an inertia load
 //! @ingroup HydraulicComponents
 //!
@@ -78,8 +78,8 @@ private:
      double *mpxmp;
      double *mpvmp;
      Delay mDelayedPart10;
-     Delay mDelayedPart11;
      Delay mDelayedPart20;
+     Delay mDelayedPart21;
      Delay mDelayedPart30;
      Delay mDelayedPart40;
      EquationSystemSolver *mpSolver;
@@ -166,9 +166,9 @@ pressure","Pa",1.e7,&mppa);
 
 
         //Initialize delays
-        delayParts1[1] = (-(Kca*mTimestep*p1*V0) + Kca*mTimestep*pa*V0 - \
+        delayParts2[1] = (-(Kca*mTimestep*p1*V0) + Kca*mTimestep*pa*V0 - \
 2*Power(V0,2)*xmp)/(2.*Power(V0,2));
-        mDelayedPart11.initialize(mNstep,delayParts1[1]);
+        mDelayedPart21.initialize(mNstep,delayParts2[1]);
 
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
@@ -193,8 +193,8 @@ pressure","Pa",1.e7,&mppa);
         //LocalExpressions
 
         //Initializing variable vector for Newton-Raphson
-        stateVark[0] = xmp;
-        stateVark[1] = vmp;
+        stateVark[0] = vmp;
+        stateVark[1] = xmp;
         stateVark[2] = q1;
         stateVark[3] = pa;
         stateVark[4] = p1;
@@ -206,39 +206,39 @@ pressure","Pa",1.e7,&mppa);
          //Differential-algebraic system of equation parts
 
           //Assemble differential-algebraic equations
-          systemEquations[0] =xmp - limit((Kca*mTimestep*(p1 - pa))/(2.*V0) - \
-delayedPart[1][1],0.,1);
-          systemEquations[1] =vmp + (Kca*(-p1 + \
+          systemEquations[0] =vmp + (Kca*(-p1 + \
 pa)*dxLimit(limit((Kca*mTimestep*(p1 - pa))/(2.*V0) - \
-delayedPart[1][1],0.,1),0.,1))/V0;
+delayedPart[2][1],0.,1),0.,1))/V0;
+          systemEquations[1] =xmp - limit((Kca*mTimestep*(p1 - pa))/(2.*V0) - \
+delayedPart[2][1],0.,1);
           systemEquations[2] =q1 + V0*vmp;
           systemEquations[3] =pa - (p0*Power(V0,kappa))/Power(V0*limit(1 - \
-xmp,0.001,1),kappa);
+xmp,0.1,1),kappa);
           systemEquations[4] =p1 - (c1 + q1*Zc1)*onPositive(p1);
 
           //Jacobian matrix
           jacobianMatrix[0][0] = 1;
           jacobianMatrix[0][1] = 0;
           jacobianMatrix[0][2] = 0;
-          jacobianMatrix[0][3] = (Kca*mTimestep*dxLimit((Kca*mTimestep*(p1 - \
-pa))/(2.*V0) - delayedPart[1][1],0.,1))/(2.*V0);
-          jacobianMatrix[0][4] = -(Kca*mTimestep*dxLimit((Kca*mTimestep*(p1 - \
-pa))/(2.*V0) - delayedPart[1][1],0.,1))/(2.*V0);
+          jacobianMatrix[0][3] = (Kca*dxLimit(limit((Kca*mTimestep*(p1 - \
+pa))/(2.*V0) - delayedPart[2][1],0.,1),0.,1))/V0;
+          jacobianMatrix[0][4] = -((Kca*dxLimit(limit((Kca*mTimestep*(p1 - \
+pa))/(2.*V0) - delayedPart[2][1],0.,1),0.,1))/V0);
           jacobianMatrix[1][0] = 0;
           jacobianMatrix[1][1] = 1;
           jacobianMatrix[1][2] = 0;
-          jacobianMatrix[1][3] = (Kca*dxLimit(limit((Kca*mTimestep*(p1 - \
-pa))/(2.*V0) - delayedPart[1][1],0.,1),0.,1))/V0;
-          jacobianMatrix[1][4] = -((Kca*dxLimit(limit((Kca*mTimestep*(p1 - \
-pa))/(2.*V0) - delayedPart[1][1],0.,1),0.,1))/V0);
-          jacobianMatrix[2][0] = 0;
-          jacobianMatrix[2][1] = V0;
+          jacobianMatrix[1][3] = (Kca*mTimestep*dxLimit((Kca*mTimestep*(p1 - \
+pa))/(2.*V0) - delayedPart[2][1],0.,1))/(2.*V0);
+          jacobianMatrix[1][4] = -(Kca*mTimestep*dxLimit((Kca*mTimestep*(p1 - \
+pa))/(2.*V0) - delayedPart[2][1],0.,1))/(2.*V0);
+          jacobianMatrix[2][0] = V0;
+          jacobianMatrix[2][1] = 0;
           jacobianMatrix[2][2] = 1;
           jacobianMatrix[2][3] = 0;
           jacobianMatrix[2][4] = 0;
-          jacobianMatrix[3][0] = -(kappa*p0*Power(V0,1 + kappa)*dxLimit(1 - \
-xmp,0.001,1)*Power(V0*limit(1 - xmp,0.001,1),-1 - kappa));
-          jacobianMatrix[3][1] = 0;
+          jacobianMatrix[3][0] = 0;
+          jacobianMatrix[3][1] = -(kappa*p0*Power(V0,1 + kappa)*dxLimit(1 - \
+xmp,0.1,1)*Power(V0*limit(1 - xmp,0.1,1),-1 - kappa));
           jacobianMatrix[3][2] = 0;
           jacobianMatrix[3][3] = 1;
           jacobianMatrix[3][4] = 0;
@@ -251,8 +251,8 @@ xmp,0.001,1)*Power(V0*limit(1 - xmp,0.001,1),-1 - kappa));
 
           //Solving equation using LU-faktorisation
           mpSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
-          xmp=stateVark[0];
-          vmp=stateVark[1];
+          vmp=stateVark[0];
+          xmp=stateVark[1];
           q1=stateVark[2];
           pa=stateVark[3];
           p1=stateVark[4];
@@ -261,7 +261,7 @@ xmp,0.001,1)*Power(V0*limit(1 - xmp,0.001,1),-1 - kappa));
         }
 
         //Calculate the delayed parts
-        delayParts1[1] = (-(Kca*mTimestep*p1*V0) + Kca*mTimestep*pa*V0 - \
+        delayParts2[1] = (-(Kca*mTimestep*p1*V0) + Kca*mTimestep*pa*V0 - \
 2*Power(V0,2)*xmp)/(2.*Power(V0,2));
 
         delayedPart[1][1] = delayParts1[1];
@@ -282,7 +282,7 @@ xmp,0.001,1)*Power(V0*limit(1 - xmp,0.001,1),-1 - kappa));
         (*mpvmp)=vmp;
 
         //Update the delayed variabels
-        mDelayedPart11.update(delayParts1[1]);
+        mDelayedPart21.update(delayParts2[1]);
 
      }
     void deconfigure()

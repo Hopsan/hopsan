@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     25504,        624]
-NotebookOptionsPosition[     23232,        552]
-NotebookOutlinePosition[     23789,        573]
-CellTagsIndexPosition[     23746,        570]
+NotebookDataLength[     23545,        595]
+NotebookOptionsPosition[     21233,        523]
+NotebookOutlinePosition[     21790,        544]
+CellTagsIndexPosition[     21747,        541]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -26,6 +26,30 @@ Cell[TextData[StyleBox["Ackumulator",
  CellChangeTimes->{{3.52488616965088*^9, 3.5248861799318666`*^9}, {
    3.549457210515625*^9, 3.54945721375*^9}, {3.54964439396875*^9, 
    3.54964439896875*^9}, 3.576214739734736*^9}],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG.mx"}]], "Input",
+ CellChangeTimes->{{3.5772037650720577`*^9, 3.5772037650780582`*^9}, {
+  3.611474457184202*^9, 3.611474523938877*^9}, {3.6114745588913717`*^9, 
+  3.61147456057154*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"docpath", "=", 
+   RowBox[{"ToFileName", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", 
+      "\"\<ComponentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
+      "\"\<Hydraulic\>\""}], "}"}], "]"}]}], ";"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"path", "=", 
+   RowBox[{"ToFileName", "[", 
+    RowBox[{"{", 
+     RowBox[{"docpath", ",", "\"\<Volumes&Lines\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input"],
 
 Cell[CellGroupData[{
 
@@ -100,60 +124,6 @@ Cell[BoxData[
    3.6058465047642365`*^9, 3.605846513109071*^9}, 3.6058500540234365`*^9}]
 }, Closed]],
 
-Cell[CellGroupData[{
-
-Cell[BoxData[
- GraphicsBox[
-  TagBox[RasterBox[CompressedData["
-1:eJztnT9ILEccxwcMRwTBgIjRxhcQDViYQjCF6AsoCPHlSRDfAwXlKWghnIqF
-jRhQsLRIYWlpaWlpmmCRwlIIgSOksAmYQEIsQjb7Ofanc+vq/fF2Z+/294FB
-7rzbm/nOzG9+Mzv7m88+5L/90GKMOfHTV376yCRDPp9/tbi4+Hp6+uu1sbGx
-70h9fX3nvb29F5JGR0cPeX92dvY9n11fX/88oezFxsrKypeUq6Oj49p/6dWS
-+O7IyMiRf60vXJShFqi/wcHB01wud2ueKVtXV5c3Pj5eknjvue+0trbeDA8P
-H/MbDopWFvJFezahfPtaeDMzM97x8bF3eXnpVcLNzY13cXHhnZyceO/fvSte
-I3zdnp6ey7RoQRvt7+8/M6E6Xltb887Pzysqcznu7u68s7Mzb2lpyWtvby/R
-gt92ZTf29vY+HhoaOrHzQ/4ODw+LeY4Lrn10dPRIC/qIb3c/Sar82PjOzs4r
-Y7V3XxPv9vY2trKH4bd2dnZK+omvSyEJ2zk3Nzdj2zvaJ/3XFfw2eZD8tLS0
-/MPYGlf5GbuNVffYubRwenpa0iYYk+tdfvqbsWxepTY+Sa6urjx/bCqxl9it
-epR/YmJiR67r+ytO2345sBP4GsaylS8tf9C3itfzx4FYbX49wSeRfE9OTm7U
-Wn58EGwM16GNpbn+w1BX1JnosLCwMFVt+fE7xP4zFl9fX7suVtUUCoV7/5uy
-VOtLie+HrcVvbVSw3TJeBD5NRQTtpvg9fLJGh3mHlOft22+WKtFAfEBsQKPY
-wHKIbWDuWW68DGxo8fPMU5oF+oSpYJxgzoFOJvADmg0ZLxnrtre3P43SwPaF
-8LmaDcpkHny9oygNWJfg/1NTU66zGxsyv2KOGdEPXolG2NFmBRsn5WS9M6of
-MJYmuQ6QNIxz4i8E8+BM9QOBMppgzTpr/UCwfaag7CZYny2+10jzolqhjNIf
-xG8M/hbfywqy1hLYwfs1Mt7PCviAtp8g62Ssv2QF8Rm5J4YG3Ps0wRpxVhBf
-Kbg3dj9PZL0+K3A/xPYX29rafuX1wcHBz4VC4YcspN3d3V8Cn/APNPD//s56
-2f7+vuvqSQx/LJQ55F3gJmXGPxKkL/h94DfVQDVQDVQD1UA1UA1UA3ClAfc5
-uHdZTYoLFxrY67nVpLjud7rQQNYsqk3cO48DFxpQn3bdPtf+7c9ubGzEkh8X
-GrCuL/shWMN5DlnjYd0zrjVeVzbRrt+n9vHa9wTjagPgSgO7LbAfIIok2gC4
-9A/YSym/F97fYLcB9j3HiWsfSfaEhNuCtAHaStz7X1xrYPsK0hawD3H7BDau
-NQBpC1Ln4ddxkwYN7LYg94GTagOQBg3A3keaZBuAtGiAT2hrkOTvp0UDkLHg
-KX8hLp7SgPsO/C8LKZ/PR2qQpbS4uBipwcDAwKPnLps1ra6upsYeuCJNNtEV
-qoFqAKqBagCqgWoAqoFqAKqBagCqgWoAqoFqAKqBagCqgWoAqoFqAE9psLW1
-5TpriTE/P18scy6X+9vWYHl52XXWEmNzc1Put/xna8C9tqwgfcFP/9oajI6O
-us5aYsjzjeFnurjXlhWs2Cgl9iCufbFpROLK+TbxL1sDXxPXWUsMee7d1+BP
-BHjzZvpQdGjmOCACZZR4rBOTE9+jgR0Hgz2UzY69T9SOvyrxUIhn3OxQRsoa
-jg9kx8VplhhpUVA26QfhOFFZ6Q/2XrioON1Z6A/E/w7a++1eRPw8uz80YtzM
-ctjxcIIY4Y8glpzETy33rEkjIm2AMkpcpCjs2Hn1ihmfBiqJmSfQRySGYtJ7
-R+NE5geU7anYiTbEVBfN0hRPvFbsPfLVxFqWMYKxtJHjSRJfWPwBfKKoseAp
-8CHt+NJcq9FgXsB6gAnsYDheYiXYfaKR4owLdrxxzgOqtvyCHWe3kWIrEu/K
-VDgOVEJwjeL10DbN82vaqvgBxjzEAqsH9rkz9LE0+pHhcweIgVbPM1qwp/Y5
-FNjaNMWgjjp/Iq4zarAtMl6QWKN2bSt5Fs4+hyQcKzYOGGPElzTBWqyL+3S0
-Q7vu4z6PJgz+pvhR5sH+JLL2wBpA+LlA+r6rM93wIeyzmkzgS9A+62k38dG4
-ZjieBr5fknX/HOQjWJ8rySNtgzgGtcxB0RB7E65zE8x9XnLOSpwQozfcR8KJ
-MsmzVfKsHWtXvC4XN4VrU/YkzyWrFfKIHpWcY1guMc4xHlUy500zjCVyfid+
-J/6bX6c/yjjb3d39E++xxiWfY82zEer7Jdhr2Wk5izFpVAPVAFQD1QBUA9UA
-VAPVAFQD1QBUA9UAVAPVAFQD1QBUA9UAVAPVAFQD1QBUA9UAVAPVAFQD1QBU
-A9UAVAPVAFQD1QBUA9UAVAPVAFQD1QDYe8veVJKrffeKYvM/ZEvLpQ==
-    "], {{0, 159}, {65, 0}}, {0, 255},
-    ColorFunction->RGBColor],
-   BoxForm`ImageTag["Byte", ColorSpace -> "RGB", Interleaving -> True],
-   Selectable->False],
-  BaseStyle->"ImageGraphics",
-  ImageSize->{52.14285582912117, Automatic},
-  ImageSizeRaw->{65, 159},
-  PlotRange->{{0, 65}, {0, 159}}]], "Input"],
-
 Cell[BoxData[
  GraphicsBox[
   TagBox[RasterBox[CompressedData["
@@ -210,7 +180,6 @@ qgGoBqoBqAaqAbD3lr2pJFv77hXF5H+ldNGc
   PlotRange->{{0, 65}, {0, 159}}]], "Output",
  CellChangeTimes->{3.619926845995178*^9, 3.6199269941009874`*^9, 
   3.6199270800385804`*^9}]
-}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -348,11 +317,11 @@ Cell[BoxData[
   RowBox[{"{", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
-     RowBox[{"Bp", " ", 
-      RowBox[{"der", "[", "xmp", "]"}]}], " ", "==", " ", "fg"}], " ", ",", 
+     RowBox[{"Bp", " ", "vmp"}], "  ", "==", " ", "fg"}], ",", 
     "\[IndentingNewLine]", 
     RowBox[{
-     RowBox[{"Bp", " ", "vmp"}], "  ", "==", " ", "fg"}], ",", 
+     RowBox[{"Bp", " ", 
+      RowBox[{"der", "[", "xmp", "]"}]}], " ", "==", " ", "fg"}], " ", ",", 
     "\[IndentingNewLine]", 
     RowBox[{"q1", " ", "\[Equal]", 
      RowBox[{
@@ -384,7 +353,8 @@ Cell[BoxData[
    3.549548692421875*^9}, {3.5719033502092543`*^9, 3.571903383796113*^9}, {
    3.5762147596047363`*^9, 3.576214789346736*^9}, 3.576214838815736*^9, 
    3.5762149233297358`*^9, {3.619926327818366*^9, 3.6199263453261166`*^9}, {
-   3.6199264105686398`*^9, 3.619926433744958*^9}, 3.61992699032561*^9}],
+   3.6199264105686398`*^9, 3.619926433744958*^9}, 3.61992699032561*^9, {
+   3.6204511896243567`*^9, 3.620451192149871*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -405,11 +375,12 @@ Cell[BoxData[
   RowBox[{"variable2Limits", "=", 
    RowBox[{"{", 
     RowBox[{"{", 
-     RowBox[{"xmp", ",", "vmp", ",", "0.", ",", "SL"}], "}"}], "}"}]}], 
+     RowBox[{"vmp", ",", "xmp", ",", "0.", ",", "SL"}], "}"}], "}"}]}], 
   ";"}]], "Input",
  CellChangeTimes->{{3.521781710359375*^9, 3.521781715921875*^9}, 
    3.521781911703125*^9, {3.521782089203125*^9, 3.521782090109375*^9}, {
-   3.549457539921875*^9, 3.54945754465625*^9}}],
+   3.549457539921875*^9, 3.54945754465625*^9}, {3.6204511996503687`*^9, 
+   3.620451201998777*^9}}],
 
 Cell["The boundarys", "Text"],
 
@@ -550,8 +521,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{1004, 770},
-WindowMargins->{{385, Automatic}, {7, Automatic}},
+WindowSize->{938, 742},
+WindowMargins->{{130, Automatic}, {Automatic, 42}},
 PrintingCopies->1,
 PrintingPageRange->{32000, 32000},
 PrintingOptions->{"Magnification"->1.,
@@ -575,54 +546,54 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[579, 22, 277, 5, 77, "Section",
  Evaluatable->False],
+Cell[859, 29, 248, 4, 32, "Input"],
+Cell[1110, 35, 301, 8, 32, "Input"],
+Cell[1414, 45, 188, 6, 32, "Input"],
 Cell[CellGroupData[{
-Cell[881, 31, 1760, 36, 193, "Input"],
-Cell[2644, 69, 267, 6, 32, "Output"]
+Cell[1627, 55, 1760, 36, 193, "Input"],
+Cell[3390, 93, 267, 6, 32, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2948, 80, 43, 0, 40, "Subsection"],
+Cell[3694, 104, 43, 0, 40, "Subsection"],
 Cell[CellGroupData[{
-Cell[3016, 84, 293, 6, 30, "Text",
+Cell[3762, 108, 293, 6, 30, "Text",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[3312, 92, 315, 7, 35, "Input",
+Cell[4058, 116, 315, 7, 35, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Closed]],
-Cell[CellGroupData[{
-Cell[3664, 104, 2812, 50, 149, "Input"],
-Cell[6479, 156, 3001, 55, 156, "Output"]
-}, Open  ]]
+Cell[4388, 126, 3001, 55, 155, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[9529, 217, 46, 0, 40, "Subsection"],
-Cell[9578, 219, 1613, 33, 142, "Input"],
-Cell[11194, 254, 1194, 28, 141, "Input"],
-Cell[12391, 284, 398, 10, 53, "Input"]
+Cell[7426, 186, 46, 0, 40, "Subsection"],
+Cell[7475, 188, 1613, 33, 142, "Input"],
+Cell[9091, 223, 1194, 28, 141, "Input"],
+Cell[10288, 253, 398, 10, 53, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[12826, 299, 45, 0, 40, "Subsection"],
-Cell[12874, 301, 160, 3, 30, "Text"],
-Cell[13037, 306, 184, 4, 32, "Input"],
-Cell[13224, 312, 291, 6, 32, "Input"],
-Cell[13518, 320, 220, 4, 30, "Text"],
-Cell[13741, 326, 185, 5, 50, "Input"],
-Cell[13929, 333, 123, 1, 30, "Text"],
-Cell[14055, 336, 301, 7, 32, "Input"],
-Cell[14359, 345, 1824, 41, 137, "Input"],
-Cell[16186, 388, 378, 9, 53, "Input"],
-Cell[16567, 399, 92, 1, 30, "Text"],
-Cell[16662, 402, 372, 9, 32, "Input"],
-Cell[17037, 413, 29, 0, 30, "Text"],
-Cell[17069, 415, 519, 11, 73, "Input"],
-Cell[17591, 428, 132, 1, 30, "Text"],
-Cell[17726, 431, 282, 7, 32, "Input"],
-Cell[18011, 440, 160, 3, 32, "Input",
+Cell[10723, 268, 45, 0, 40, "Subsection"],
+Cell[10771, 270, 160, 3, 30, "Text"],
+Cell[10934, 275, 184, 4, 32, "Input"],
+Cell[11121, 281, 291, 6, 32, "Input"],
+Cell[11415, 289, 220, 4, 30, "Text"],
+Cell[11638, 295, 185, 5, 50, "Input"],
+Cell[11826, 302, 123, 1, 30, "Text"],
+Cell[11952, 305, 301, 7, 32, "Input"],
+Cell[12256, 314, 1876, 42, 137, "Input"],
+Cell[14135, 358, 378, 9, 53, "Input"],
+Cell[14516, 369, 92, 1, 30, "Text"],
+Cell[14611, 372, 424, 10, 32, "Input"],
+Cell[15038, 384, 29, 0, 30, "Text"],
+Cell[15070, 386, 519, 11, 73, "Input"],
+Cell[15592, 399, 132, 1, 30, "Text"],
+Cell[15727, 402, 282, 7, 32, "Input"],
+Cell[16012, 411, 160, 3, 32, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[18174, 445, 583, 12, 23, "Message"],
-Cell[18760, 459, 2497, 40, 157, "Message"],
-Cell[21260, 501, 507, 11, 23, "Message"],
-Cell[21770, 514, 624, 12, 23, "Message"],
-Cell[22397, 528, 507, 11, 23, "Message"],
-Cell[22907, 541, 297, 7, 32, "Input",
+Cell[16175, 416, 583, 12, 23, "Message"],
+Cell[16761, 430, 2497, 40, 157, "Message"],
+Cell[19261, 472, 507, 11, 23, "Message"],
+Cell[19771, 485, 624, 12, 23, "Message"],
+Cell[20398, 499, 507, 11, 23, "Message"],
+Cell[20908, 512, 297, 7, 32, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Open  ]]
 }, Open  ]]
