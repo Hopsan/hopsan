@@ -234,6 +234,11 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                 }
 
                 QDomElement dataElement = xmlMovable.firstChildElement("data");
+                if(!dataElement.isNull())
+                {
+                    m.dataPorts.clear();
+                    m.dataNames.clear();
+                }
                 while(!dataElement.isNull())
                 {
                     int idx = dataElement.attribute("idx").toInt();
@@ -247,22 +252,26 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                     dataElement = dataElement.nextSiblingElement("data");
                 }
 
-                if(xmlMovable.firstChildElement("multiplier").isNull())
+                QDomElement multiplierElement = xmlMovable.firstChildElement("multiplier");
+                if(!multiplierElement.isNull())
                 {
-                    m.multipliers.append("");
+                    m.multipliers.clear();
                 }
-                else
+                while(!multiplierElement.isNull())
                 {
-                    m.multipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
+                    m.multipliers.append(multiplierElement.attribute("name"));
+                    multiplierElement = multiplierElement.nextSiblingElement("multiplier");
                 }
 
-                if(xmlMovable.firstChildElement("divisor").isNull())
+                QDomElement divisorElement = xmlMovable.firstChildElement("divisor");
+                if(!divisorElement.isNull())
                 {
-                    m.divisors.append("");
+                    m.divisors.clear();
                 }
-                else
+                while(!divisorElement.isNull())
                 {
-                    m.divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
+                    m.divisors.append(divisorElement.attribute("name"));
+                    divisorElement = divisorElement.nextSiblingElement("divisor");
                 }
 
                 if(!xmlMovable.firstChildElement("movement").isNull())
@@ -372,6 +381,12 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
 
 
                 QDomElement xmlMovingPorts = xmlMovable.firstChildElement("movingport");
+                if(!xmlMovingPorts.isNull())
+                {
+                    m.movablePortNames.clear();
+                    m.movablePortStartX.clear();
+                    m.movablePortStartY.clear();
+                }
                 while(!xmlMovingPorts.isNull())
                 {
                     m.movablePortNames.append(xmlMovingPorts.attribute("portname"));
@@ -422,8 +437,9 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
     {
         QDomElement movableElement = appendDomElement(rDomElement, "movable");
 
-        QDomElement iconElement = appendDomElement(movableElement, "icon");
-        iconElement.setAttribute("userpath", m.iconPath);
+        //! @note Saving icons is disabled, because it probably makes no sense (paths will not work if moving hmf to other location)
+        //QDomElement iconElement = appendDomElement(movableElement, "icon");
+        //iconElement.setAttribute("userpath", m.iconPath);
 
         if(m.idx >= 0)
         {
