@@ -228,7 +228,7 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                     m.idx = xmlMovable.attribute("idx").toInt();
                 }
 
-                if(!xmlMovable.firstChildElement("icon").isNull() && !xmlMovable.firstChildElement("icon").attribute("userpath").isEmpty())
+                if(m.iconPath.isEmpty() && !xmlMovable.firstChildElement("icon").isNull() && !xmlMovable.firstChildElement("icon").attribute("userpath").isEmpty())
                 {
                     m.iconPath = xmlMovable.firstChildElement("icon").attribute("userpath");
                 }

@@ -255,15 +255,17 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
 
     ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(type, subtype);
+
     if (pAppearanceData != 0)
     {
+        ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
+
         QDomElement animationElement = guiData.firstChildElement("animation");
-        if(!animationElement.isNull() && pAppearanceData->getTypeName() == type)
+        if(!animationElement.isNull() && appearanceData.getTypeName() == type)
         {
-            pAppearanceData->getAnimationDataPtr()->readFromDomElement(animationElement, pAppearanceData->getBasePath());
+            appearanceData.getAnimationDataPtr()->readFromDomElement(animationElement, appearanceData.getBasePath());
         }
 
-        ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setDisplayName(name);
 
         NameVisibilityEnumT nameStatus;
