@@ -17,7 +17,7 @@
               <icon userpath="ForkLifter_blank.svg"/>
               <data port="x" idx="0" dataname="Value"/>
               <start x="0" y="0" a="0.000000"/>
-              <movement x="86.908" y="0" idx="0" a="0.000000"/>
+              <movement x="144.847" y="0" idx="0" a="0.000000"/>
             </movable>
             <movable idx="1">
               <icon userpath="ForkLifter_forks.svg"/>
@@ -31,7 +31,7 @@
               <icon userpath="ForkLifter_carrier.svg"/>
               <data port="x" idx="0" dataname="Value"/>
               <start x="0" y="0" a="0.000000"/>
-              <movement x="86.908" y="0" idx="0" a="0.000000"/>
+              <movement x="144.847" y="0" idx="0" a="0.000000"/>
             </movable>
           </animation>
     </modelobject>
