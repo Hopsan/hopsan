@@ -918,6 +918,14 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
         xmlCode.replace("<<<implementation>>>","<Implementation>\n  <CoSimulation_StandAlone>\n    <Capabilities\n      canHandleVariableCommunicationStepSize=\"false\"\n      canHandleEvents=\"false\"/>\n  </CoSimulation_StandAlone>\n</Implementation>");
     }
 
+    if(me)
+    {
+        xmlCode.replace("<<<nstates>>>",QString::number(inputVariables.size()+outputVariables.size()));
+    }
+    else
+    {
+        xmlCode.replace("<<<nstates>>>","0");
+    }
 
 
     QTextStream modelDescriptionStream(&modelDescriptionFile);
@@ -1259,9 +1267,9 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
         return;
 
     //Clean up temporary files
-    //cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
-    //        "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
-    //        "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
+    cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
+            "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
+            "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
 
     printMessage("Finished.");
 }

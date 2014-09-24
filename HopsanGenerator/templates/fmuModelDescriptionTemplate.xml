@@ -4,7 +4,7 @@
   modelName="<<<modelname>>>"
   modelIdentifier="<<<modelname>>>"
   guid="<<<guid>>>"
-  numberOfContinuousStates="0"
+  numberOfContinuousStates="<<<nstates>>>"
   numberOfEventIndicators="0">
 <ModelVariables>
 >>>variables>>><ScalarVariable name="<<<varname>>>" valueReference="<<<varref>>>" description="input variable" causality="<<<causality>>>">
