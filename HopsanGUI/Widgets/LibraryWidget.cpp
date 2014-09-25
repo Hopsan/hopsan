@@ -308,6 +308,16 @@ void LibraryWidget::update()
     }
 
     //Sort trees, and make sure external libraries are shown at the bottom
+    QTreeWidgetItemIterator itt(mpTree);
+    while(*itt)
+    {
+
+        if((*itt)->childCount() > 0)
+        {
+            (*itt)->setText(0, "0000000000"+(*itt)->text(0));       //Prepend a lot of zeros to subfolders, to make sure they are sorted on top (REALLY ugly, but it works)
+        }
+        ++itt;
+    }
     QTreeWidgetItem *pExternalItem = 0;
     for(int t=0; t<mpTree->topLevelItemCount(); ++t)
     {
@@ -335,6 +345,15 @@ void LibraryWidget::update()
     if(pExternalItem)
     {
         mpDualTree->insertTopLevelItem(mpDualTree->topLevelItemCount(),pExternalItem);
+    }
+    QTreeWidgetItemIterator itt2(mpTree);
+    while(*itt2)
+    {
+        if((*itt2)->childCount() > 0)
+        {
+            (*itt2)->setText(0, (*itt2)->text(0).remove(0,10)); //Remove the extra zeros from subfolders (see above)
+        }
+        ++itt2;
     }
 
     if(filter.isEmpty())
