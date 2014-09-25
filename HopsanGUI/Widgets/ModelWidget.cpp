@@ -151,6 +151,8 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent)
 
 ModelWidget::~ModelWidget()
 {
+    delete mpAnimationWidget;
+
     //First make sure that we go to the top level system, we dont want to be inside a subsystem while it is beeing deleted
     this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
     //Now delete the root system, first remove in core (will also trigger delete for all sub modelobjects)
