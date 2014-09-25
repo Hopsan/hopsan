@@ -61,8 +61,8 @@ namespace hopsan {
             addInputVariable("B", "Viscous Friction", "Ns/m",  10.0,  &B);
             //addInputVariable("k", "Spring Coefficient", "N/m", 0.0,   &k);
             //! @todo what about k
-            addInputVariable("x_min", "Minimum Position", "m", 0.0,   &xMin);
-            addInputVariable("x_max", "Maximum Position", "m", 1.0,   &xMax);
+            addInputVariable("x_min", "Minimum Position of Port P2", "m", 0.0,   &xMin);
+            addInputVariable("x_max", "Maximum Position of Port P2", "m", 1.0,   &xMax);
         }
 
 

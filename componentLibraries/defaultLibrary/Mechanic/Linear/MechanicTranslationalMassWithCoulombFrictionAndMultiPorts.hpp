@@ -72,8 +72,8 @@ namespace hopsan {
             addInputVariable("b", "Viscous Friction Coefficient", "Ns/m", 10, &mpB);
             addInputVariable("f_s", "Static Friction Force", "N", 50,  &mpFs);
             addInputVariable("f_k", "Kinetic Friction Force", "N", 45,  &mpFk);
-            addInputVariable("x_min", "Lower Limit of Position", "m", 0,  &xMin);
-            addInputVariable("x_max", "Upper Limit of Position", "m", 1,  &xMax);
+            addInputVariable("x_min", "Lower Limit of Position of Port P2", "m", 0,  &xMin);
+            addInputVariable("x_max", "Upper Limit of Position of Port P2   ", "m", 1,  &xMax);
         }
 
 

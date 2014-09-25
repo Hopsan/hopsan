@@ -16,6 +16,7 @@ namespace hopsan {
         
         //Output variable node data pointers
         double *mpX, *mpA;
+        double *mpDebug;
         
         //Input Variable node data pointers
         double *mpB, *mpK, *mpXMin, *mpXMax;
@@ -68,6 +69,7 @@ namespace hopsan {
             addInputVariable("a_min", "Minimum Angle (rotation)", "rad", -1.5707963267949, &mpAMin);
             addInputVariable("a_max", "Maximum Angle (rotation)", "rad", 1.5707963267949, &mpAMax);
             addOutputVariable("a", "Angle (rotation)", "rad", 1.5707963267949, &mpA);
+            addOutputVariable("debug", "Debug", "", 0, &mpDebug);
             
             //Add power ports
             mpP1 = addPowerPort("P1", "NodeMechanicRotational", "");
@@ -100,12 +102,7 @@ namespace hopsan {
             mpP3_c = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
             mpP3_Zc = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
 
-            //Declare local variables
-            double P1_a, P1_w, P1_T, P1_Je, P1_c, P1_Zc;
-
             //Read variable values from nodes
-            const double a1 = (*mpP1_a);
-            const double w1 = (*mpP1_a);
             const double t1 = (*mpP1_a);
             const double r = mR;
             
@@ -175,6 +172,9 @@ namespace hopsan {
             const double Brot = (*mpBrot);
             const double Kfrot = (*mpKfrot);
 
+            a1 = (*mpP1_a);
+            w1 = (*mpP1_a);
+
             //Traverse equations
             mDenX[0] = k;
             mDenX[1] = B+Zx1;
@@ -205,7 +205,8 @@ namespace hopsan {
             t1 = c1 + Zx1*w1;
             
             //Rotation equations
-            double F_dry = Kfrot*tanh((*mpP2_v)/r2);
+            double F_dry = std::max(Kfrot*tanh(100*(*mpP2_v)/r2),(c2-c3)*r2);
+            (*mpDebug) = F_dry;
 
             mDenA[0] = krot;
             mDenA[1] = Brot+Zx2+Zx3;

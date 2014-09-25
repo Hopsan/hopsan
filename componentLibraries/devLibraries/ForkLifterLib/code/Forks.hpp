@@ -163,7 +163,7 @@ namespace hopsan {
             const double Zx1 = (*mpP1_Zc);
             const double k = (*mpK);
             const double B = (*mpB);
-            
+
             const double r2 = mRrot;
             const double c2 = (*mpP2_c);
             const double Zx2 = (*mpP2_Zc);
@@ -171,6 +171,9 @@ namespace hopsan {
             const double Zx3 = (*mpP3_Zc);
             const double krot = (*mpKrot);
             const double Brot = (*mpBrot);
+
+            a1 = (*mpP1_a);
+            x3 = (*mpP3_x);
 
             //Traverse equations
             mDenX[0] = k;

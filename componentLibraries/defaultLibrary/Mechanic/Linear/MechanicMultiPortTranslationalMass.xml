@@ -6,7 +6,7 @@
             <icon scale="1" path="mass_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>This is a translational mass component that allows an arbitrary number of connections. Start positions can be different, but start velocities must be the same for all connections. Maximum and minimum positions are relative to the first connection on port P2. Keep in mind that it is slightly slower than the standard mass component.</text>
+            <text>A translational inertia modelled according to Euler's first law of motion. Maximum and minimum positions are relative to the first connection on port P2. This version allows an arbitrary number of connections. Start positions can be different, but start velocities must be the same for all connections. Keep in mind that it is slightly slower than the standard mass component.</text>
             <picture>multimasshelp.svg</picture>
         </help>
         <ports>
