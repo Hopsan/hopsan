@@ -118,7 +118,7 @@ void OptimizationWorker::finalize()
 
     //Re-evaluate all points (to remove any effect from forgetting factor before logging)
     execute("echo off");
-    if(mFinalEval)
+    if(mFinalEval && !mpHandler->mpHcomHandler->isAborted())
     {
         execute("call evalall");
     }
