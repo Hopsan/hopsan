@@ -64,6 +64,7 @@ public:
     double getParameter(const int pointIdx, const int parIdx) const;
     void setIsRunning(bool value);
     bool isRunning();
+    QStringList *getOptParNamesPtr();
 
 
     const QVector<ModelWidget *> *getModelPtrs() const;

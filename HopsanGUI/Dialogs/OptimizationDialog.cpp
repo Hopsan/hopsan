@@ -435,9 +435,12 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
         }
     }
 
+    QStringList *pParNames = mpTerminal->mpHandler->mpOptHandler->getOptParNamesPtr();
+
     for(int x=0; x<mParameterOutputIndexes.size(); ++x)
     {
         int i = mParameterOutputIndexes[x];
+
         QString output = "obj: ";
         QString objStr = QString::number(objectives[i], 'g', 8);
         while(objStr.size() < 12)

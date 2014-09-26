@@ -238,6 +238,11 @@ bool OptimizationHandler::isRunning()
     return mIsRunning;
 }
 
+QStringList *OptimizationHandler::getOptParNamesPtr()
+{
+    return mpWorker->getParNamesPtr();
+}
+
 
 const QVector<ModelWidget *> *OptimizationHandler::getModelPtrs() const
 {

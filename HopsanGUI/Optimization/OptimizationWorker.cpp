@@ -597,6 +597,10 @@ void OptimizationWorker::setOptVar(const QString &var, const QString &value)
         mParMin.resize(n);
         mParMax.resize(n);
     }
+    else if(var == "parnames")
+    {
+        mParNames = value.split(",");
+    }
     else if(var == "functol")
     {
         mFuncTol = value.toDouble();
@@ -837,4 +841,9 @@ double OptimizationWorker::getMaxParDiff(QVector<QVector<double> > &points)
         }
     }
     return maxDiff;
+}
+
+QStringList *OptimizationWorker::getParNamesPtr()
+{
+    return &mParNames;
 }

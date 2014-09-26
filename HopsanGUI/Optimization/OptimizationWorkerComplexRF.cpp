@@ -109,6 +109,7 @@ void OptimizationWorkerComplexRF::run()
 {
     //Plot optimization points
     plotPoints();
+    qDebug() << "Parnames: " << mParNames;
 
     mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(true);
 
@@ -314,7 +315,10 @@ void OptimizationWorkerComplexRF::run()
     print("\nBest point:");
     for(int i=0; i<mNumParameters; ++i)
     {
-        print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
+        if(mParNames.size() < i+1)
+            print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
+        else
+            print(mParNames[i]+": "+QString::number(mParameters[mBestId][i]));
     }
 
     // Clean up

@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QVector>
 #include <QFile>
+#include <QStringList>
 
 class OptimizationHandler;
 class ModelWidget;
@@ -65,6 +66,8 @@ public:
     double getMaxParDiff();
     double getMaxParDiff(QVector<QVector<double> > &points);
 
+    QStringList *getParNamesPtr();
+
     //Public members
     //! @todo These should not be required
     QVector<ModelWidget *> mModelPtrs;
@@ -89,6 +92,7 @@ protected:
     QFile mLogFile;
     int mEvalId;
     int mNumParameters;
+    QStringList mParNames;
     QVector<double> mParMin, mParMax;
     QVector< QVector<double> > mParameters;
     QVector<double> mObjectives;
