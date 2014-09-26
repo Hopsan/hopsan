@@ -63,7 +63,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = pow((*mpND_in), (*mpX));
+            (*mpND_out) = pow(abs(*mpND_in), (*mpX));
         }
     };
 }

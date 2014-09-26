@@ -60,6 +60,11 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            if(*mpND_in2 == 0)
+            {
+                addErrorMessage("Division by zero.");
+                stopSimulation();
+            }
             (*mpND_out) = (*mpND_in1) / (*mpND_in2);
         }
     };
