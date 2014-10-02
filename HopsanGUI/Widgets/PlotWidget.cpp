@@ -279,7 +279,7 @@ void VariableTree::addImportedVariable(HopsanVariable data)
     // If this file was not alrady added then create it
     if (!pFileItem)
     {
-        pFileItem = new ImportedFileTreeItem(fName + " ("+QString::number(data.mpVariable->getGeneration())+")",0);
+        pFileItem = new ImportedFileTreeItem(QString("%1 (%2)").arg(fName).arg(data.mpVariable->getGeneration()+1),0);
 
         // Also remember that we created it
         mImportedFileItemMap.insert(fName, pFileItem);
