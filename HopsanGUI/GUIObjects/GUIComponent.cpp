@@ -401,7 +401,8 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     // If this is a sink component that has plot data, plot it instead of showing the dialog
     // Not very nice code, but a nice feature...
-    if( !mpParentContainerObject->getLogDataHandler()->isEmpty() && !mpParentContainerObject->isCreatingConnector() )
+    if( !mpParentContainerObject->getLogDataHandler()->isEmpty() && !mpParentContainerObject->isCreatingConnector() &&
+            (getPort("in")->isConnected() || getPort("in_right")->isConnected()) )
     {
         // If we dont have valid plotwindow then create one
         if (mpPlotWindow.isNull())
@@ -421,7 +422,7 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                 getParentContainerObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 1);
             }
 
-            if(this->getPort("in_bottom")->isConnected() && mpPlotWindow)
+            if(this->getPort("in_bottom")->isConnected() && mpPlotWindow && mpPlotWindow->getCurrentPlotTab())
             {
                 QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
                                                   getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
