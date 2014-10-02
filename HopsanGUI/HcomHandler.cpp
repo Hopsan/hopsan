@@ -251,6 +251,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("maxof", "Returns the element-wise maximum values of x and y vectors","Usage: maxof(x,y)");
     registerInternalFunction("minof", "Returns the element-wise minimum values of x and y vectors","Usage: minof(x,y)");
     registerInternalFunction("abs", "The absolute value of each vector element", "Usage: abs(vector)");
+    registerInternalFunction("x", "Returns the X-vector of the specified variable.","Usage: x(vector)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
@@ -4550,6 +4551,22 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             mAnsType = Undefined;
             return;
         }
+    }
+    else if(desiredType != Scalar && expr.startsWith("x(") && expr.endsWith(")"))
+    {
+        QString arg = expr.mid(2, expr.size()-3);
+        evaluateExpression(arg, DataVector);
+        if(mAnsType == DataVector)
+        {
+            SharedVectorVariableT pVar = mAnsVector;
+            if(!mAnsVector->getSharedTimeOrFrequencyVector().isNull())
+            {
+                mAnsVector = pVar->getSharedTimeOrFrequencyVector();
+                mAnsType = DataVector;
+                return;
+            }
+        }
+        mAnsType = Undefined;
     }
     else if(desiredType != Scalar && expr.startsWith("fft(") && expr.endsWith(")"))
     {
