@@ -9,6 +9,7 @@
 #include <QTextEdit>
 #include <QComboBox>
 #include <QEvent>
+#include <QCheckBox>
 #include "CoreAccess.h"
 #include "UnitScale.h"
 
@@ -37,6 +38,9 @@ public:
     bool setStartValues();
     bool setCustomPlotScaleValues();
     bool setAliasNames();
+
+protected:
+    virtual bool focusNextPrevChild(bool next);
 
 private:
     void createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype);
@@ -102,6 +106,7 @@ public:
     PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
     void registerCustomScale();
     bool hasChanged() const;
+    QLineEdit *getPlotScaleEditPtr() const;
 
 private slots:
     void createPlotScaleSelectionMenu();
@@ -176,6 +181,8 @@ public:
     const QString &getName() const;
     UnitSelectionWidget *getUnitSelectionWidget();
     bool isValueDisabled() const;
+    QLineEdit *getValueEditPtr() const;
+
 public slots:
     void refreshValueTextStyle();
     void rescaleByUnitScale(const UnitScale &rUnitScale);
@@ -204,11 +211,13 @@ class HideShowPortWidget : public QWidget
     Q_OBJECT
 public:
     HideShowPortWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+    QCheckBox *getCheckBoxPtr() const;
 signals:
     void toggled(bool);
 private slots:
     void hideShowPort(const bool doShow);
 private:
+    QCheckBox *mpCheckBox;
     QString mPortName;
     ModelObject *mpModelObject;
 };

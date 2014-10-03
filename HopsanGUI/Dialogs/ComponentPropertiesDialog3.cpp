@@ -826,6 +826,65 @@ bool VariableTableWidget::setAliasNames()
     return true;
 }
 
+bool VariableTableWidget::focusNextPrevChild(bool next)
+{
+    bool retval = QTableWidget::focusNextPrevChild(next);
+
+    int col = currentColumn();
+    int row = currentRow();
+
+    //Skip non-editable columns and separator rows
+    if(columnSpan(row,0)>2 && next && row != rowCount()-1)
+    {
+        ++row;
+        setCurrentCell(row,col);
+    }
+    else if(columnSpan(row,0)>2 && !next && row != 0)
+    {
+        --row;
+        setCurrentCell(row,col);
+    }
+
+    while(!columnSpan(row,0)>2 && (col == Description || col == Unit || col == NumCols))
+    {
+        retval = focusNextPrevChild(next);
+        col = currentColumn();
+        row = currentRow();
+    }
+
+    QModelIndex idx = currentIndex();
+    QWidget *pIndexWidget = this->indexWidget(idx);
+
+    if(row == 0)
+    {
+        return retval;
+    }
+    else if(currentColumn() == Value)
+    {
+        ParameterValueSelectionWidget *pParWidget = qobject_cast<ParameterValueSelectionWidget*>(pIndexWidget);
+        if(pParWidget)
+        {
+            pParWidget->getValueEditPtr()->setFocus();
+        }
+    }
+    else if(currentColumn() == Scale)
+    {
+        PlotScaleSelectionWidget *pScaleWidget = qobject_cast<PlotScaleSelectionWidget*>(pIndexWidget);
+        pScaleWidget->getPlotScaleEditPtr()->setFocus();
+    }
+    else if(currentColumn() == ShowPort)
+    {
+        HideShowPortWidget *pPortWidget = qobject_cast<HideShowPortWidget*>(pIndexWidget);
+        pPortWidget->getCheckBoxPtr()->setFocus();
+    }
+    else
+    {
+        this->setFocus();
+    }
+
+    return retval;
+}
+
 void VariableTableWidget::createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype)
 {
     QString fullName, name;
@@ -1170,6 +1229,11 @@ bool PlotScaleSelectionWidget::hasChanged() const
     }
 }
 
+QLineEdit *PlotScaleSelectionWidget::getPlotScaleEditPtr() const
+{
+    return mpPlotScaleEdit;
+}
+
 
 ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent) :
     QWidget(pParent)
@@ -1342,6 +1406,11 @@ UnitSelectionWidget *ParameterValueSelectionWidget::getUnitSelectionWidget()
 bool ParameterValueSelectionWidget::isValueDisabled() const
 {
     return (mpValueEdit == 0);
+}
+
+QLineEdit *ParameterValueSelectionWidget::getValueEditPtr() const
+{
+    return mpValueEdit;
 }
 
 void ParameterValueSelectionWidget::setValue()
@@ -1520,14 +1589,19 @@ HideShowPortWidget::HideShowPortWidget(const CoreVariameterDescription &rData, M
     QHBoxLayout *pLayout = new QHBoxLayout(this);
     QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
     pLayout->setContentsMargins(margins);
-    QCheckBox *pCheckBox = new QCheckBox(this);
-    pLayout->addWidget(pCheckBox,Qt::AlignRight);
+    mpCheckBox = new QCheckBox(this);
+    pLayout->addWidget(mpCheckBox,Qt::AlignRight);
 
-    pCheckBox->setToolTip("Show/hide port");
+    mpCheckBox->setToolTip("Show/hide port");
     Port *pPort = mpModelObject->getPort(mPortName);
-    pCheckBox->setChecked((pPort && pPort->getPortAppearance()->mEnabled));
-    connect(pCheckBox, SIGNAL(toggled(bool)), this, SLOT(hideShowPort(bool)));
-    connect(pCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(toggled(bool)));
+    mpCheckBox->setChecked((pPort && pPort->getPortAppearance()->mEnabled));
+    connect(mpCheckBox, SIGNAL(toggled(bool)), this, SLOT(hideShowPort(bool)));
+    connect(mpCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(toggled(bool)));
+}
+
+QCheckBox *HideShowPortWidget::getCheckBoxPtr() const
+{
+    return mpCheckBox;
 }
 
 void HideShowPortWidget::hideShowPort(const bool doShow)
