@@ -243,13 +243,13 @@ public:
     MultiPlotMarker(QPoint pos, PlotArea *pPlotArea);
     void addMarker(PlotCurve* pCurve);
     void removeMarker(PlotCurve* pCurve);
+    QList<PlotMarker*> mPlotMarkerPtrs;
+    QwtPlotMarker *mpDummyMarker;       //Used to display the vertical line
 public slots:
     void highlight(bool tf);
 private slots:
     void moveAll(int idx);
-private:
-    QList<PlotMarker*> mPlotMarkerPtrs;
-    QwtPlotMarker *mpDummyMarker;       //Used to display the vertical line
+
 };
 
 #endif // PLOTCURVE_H

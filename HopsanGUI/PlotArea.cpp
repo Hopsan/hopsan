@@ -572,6 +572,31 @@ void PlotArea::removePlotMarker(PlotMarker *pMarker)
 {
     if (pMarker)
     {
+        for(int i=0; i<mMultiPlotMarkers.size(); ++i)
+        {
+            MultiPlotMarker *mm = mMultiPlotMarkers[i];
+            if(mm->mPlotMarkerPtrs.contains(pMarker))
+            {
+                while(!mm->mPlotMarkerPtrs.isEmpty())
+                {
+                    pMarker = mm->mPlotMarkerPtrs.first();
+                    mpQwtPlot->canvas()->removeEventFilter(pMarker);
+                    pMarker->hide();
+                    pMarker->detach();
+                    pMarker->deleteLater();
+                    mm->mPlotMarkerPtrs.removeAll(pMarker);
+                    mPlotMarkers.removeAll(pMarker);
+                }
+
+                mm->mpDummyMarker->hide();
+                mm->mpDummyMarker->detach();
+                delete(mm->mpDummyMarker);
+
+                mMultiPlotMarkers.removeAll(mm);
+                mm->deleteLater();
+                return;
+            }
+        }
         mpQwtPlot->canvas()->removeEventFilter(pMarker);
         pMarker->hide();
         pMarker->detach();
