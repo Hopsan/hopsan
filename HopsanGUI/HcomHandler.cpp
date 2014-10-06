@@ -504,6 +504,19 @@ void HcomHandler::createCommands()
     wrhiCmd.group = "File Commands";
     mCmdList << wrhiCmd;
 
+    HcomCommand wrtfCmd;
+    wrtfCmd.cmd = "wrtf";
+    wrtfCmd.description.append("Writes text string to file");
+    wrtfCmd.help.append(" Usage: wrtf [-flag] [filepath] [\"string\"]\n");
+    wrtfCmd.help.append("  Flags (optional):\n");
+    wrtfCmd.help.append("   -a Append at end of file\n");
+    wrtfCmd.help.append("   -e Erase existing contents before writing\n");
+    wrtfCmd.help.append("  Variables can be written by putting them in dollar signs.\n");
+    wrtfCmd.help.append("  Example:\n");
+    wrtfCmd.help.append("   >> wrtf -a output.txt \"x=$x$\"\n");
+    wrtfCmd.fnc = &HcomHandler::executeWriteToFileCommand;
+    mCmdList << wrtfCmd;
+
     HcomCommand printCmd;
     printCmd.cmd = "print";
     printCmd.description.append("Prints arguments on the screen");
@@ -2000,6 +2013,122 @@ void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 }
 
 
+//! @brief Execute function for "wrtf" command
+void HcomHandler::executeWriteToFileCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+
+    if(args.size() < 2 || args.size() > 3)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    //Parse the arguments, use flags i 3 arguments, else only filename and string
+    QString flag;
+    QString filePath;
+    QString str;
+    if(args.size() > 2)
+    {
+        flag = args[0];
+        if(flag != "-a" && flag != "-e")
+        {
+            HCOMERR("Unknown flag: "+flag+", only \"-a\" or \"-e\" are allowed.");
+            return;
+        }
+        filePath = args[1];
+        str = args[2];
+    }
+    else
+    {
+        filePath = args[0];
+        str = args[1];
+    }
+
+    //Convert filepath to absolute path (if relative is used)
+    filePath.remove("\"");
+    if(!filePath.contains("/"))
+    {
+        filePath.prepend("./");
+    }
+    QString dir = filePath.left(filePath.lastIndexOf("/"));
+    dir = getDirectory(dir);
+    filePath = dir+filePath.right(filePath.size()-filePath.lastIndexOf("/"));
+
+    //Make sure string is enclosed in quotation marks
+    if(!str.startsWith("\"") || !str.endsWith("\""))
+    {
+        HCOMERR("Expected a string enclosed in \" \".");
+        return;
+    }
+
+    //Replace variables in string with their values (if enclosed in dollar signs)
+    //! @todo This replace variable code is duplicated from print command, make a common function of it?
+    int failed=0;
+    while(str.count("$") > 1+failed*2)
+    {
+        QString varName = str.section("$",1+failed,1+failed);
+        evaluateExpression(varName);
+        if(mAnsType == Scalar)
+        {
+            str.replace("$"+varName+"$", QString::number(mAnsScalar));
+        }
+        else if (mAnsType == DataVector)
+        {
+            QString array;
+            QTextStream ts(&array);
+            mAnsVector->sendDataToStream(ts," ");
+            str.replace("$"+varName+"$", array);
+        }
+        else
+        {
+            ++failed;
+        }
+    }
+
+    //Remove quotation marks from string
+    str = str.mid(1,str.size()-2);
+
+    //Open file, depending on flags
+    QFile file(filePath);
+    if(file.exists() && flag != "-e" && flag != "-a")
+    {
+        HCOMERR("File already exist. Use \"-e\" flag to erase it or \"-a\" flag to append.");
+        return;
+    }
+    if(flag == "-a")
+    {
+        if(!file.open(QFile::WriteOnly | QFile::Text | QFile::Append))
+        {
+            HCOMERR("Unable to open file: \""+filePath+"\".");
+            return;
+        }
+    }
+    else if(flag == "-e")
+    {
+        if(!file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate))
+        {
+            HCOMERR("Unable to open file: \""+filePath+"\".");
+            return;
+        }
+    }
+    else
+    {
+        if(!file.open(QFile::WriteOnly | QFile::Text))
+        {
+            HCOMERR("Unable to open file: \""+filePath+"\".");
+            return;
+        }
+    }
+
+    //Write to file
+    file.write(QString(str+"\n").toLocal8Bit());
+
+    //Close file
+    file.close();
+}
+
+
 //! @brief Execute function for "print" command
 void HcomHandler::executePrintCommand(const QString cmd)
 {
@@ -3242,9 +3371,39 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
                 HCOMERR("Wrong number of arguments.");
                 return;
             }
-            xPos = args[1].toDouble();
-            yPos = args[2].toDouble();
-            rot = args[3].toDouble();
+
+            evaluateExpression(args[1]);
+            if(mAnsType == Scalar)
+            {
+                xPos = mAnsScalar;
+            }
+            else
+            {
+                HCOMERR("Argument is not a scalar.");
+                return;
+            }
+
+            evaluateExpression(args[2]);
+            if(mAnsType == Scalar)
+            {
+                yPos = mAnsScalar;
+            }
+            else
+            {
+                HCOMERR("Argument is not a scalar.");
+                return;
+            }
+
+            evaluateExpression(args[3]);
+            if(mAnsType == Scalar)
+            {
+                rot = mAnsScalar;
+            }
+            else
+            {
+                HCOMERR("Argument is not a scalar.");
+                return;
+            }
         }
         else if(args.first() == "-e")
         {

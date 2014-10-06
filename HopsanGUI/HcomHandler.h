@@ -146,6 +146,7 @@ private:
     void executeHelpCommand(const QString cmd);
     void executeRunScriptCommand(const QString cmd);
     void executeWriteHistoryToFileCommand(const QString cmd);
+    void executeWriteToFileCommand(const QString cmd);
     void executePrintCommand(const QString cmd);
 
     void executePeekCommand(const QString cmd);
