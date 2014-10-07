@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Signal1DPLOLookupTable.hpp" typename="Signal1DPLOLookupTable" displayname="1DPLOLookupTable">
+        <icons>
+            <icon scale="1" path="Signal1DPLOLookupTable.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>The input is a PLO v1 or v2 file.
+The index value vector has to be strictly increasing, if this is not the case, it will be automatically sorted. Duplicate values in the input data vectors are not allowed.</text>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

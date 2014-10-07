@@ -124,7 +124,8 @@ SOURCES += \
     src/CoreUtilities/StringUtilities.cpp \
     src/HopsanTypes.cc \
     src/ComponentUtilities/HopsanPowerUser.cc \
-    src/ComponentUtilities/LookupTable.cc
+    src/ComponentUtilities/LookupTable.cc \
+    src/ComponentUtilities/PLOParser.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -172,7 +173,8 @@ HEADERS += \
     include/HopsanCoreMacros.h \
     include/compiler_info.h \
     include/Components/ModelicaComponent.hpp \
-    include/ComponentUtilities/LookupTable.h
+    include/ComponentUtilities/LookupTable.h \
+    include/ComponentUtilities/PLOParser.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

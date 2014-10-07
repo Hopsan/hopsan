@@ -25,6 +25,9 @@
 ******************************
     Version History
 ******************************
+0.6.9   ( ??????? )
+- Feature: New LookupTable1D component for PLO v1 and v2 format files
+
 0.6.8   (2014-07-11)
 - Feature: Made it possible to use expressions when specifying plot generations from HCOM
 - Feature: Writing multiple HCOM commands on the same line separated by semicolons

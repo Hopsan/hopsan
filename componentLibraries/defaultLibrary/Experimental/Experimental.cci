@@ -1,5 +1,6 @@
 // This is a "cc include file" do not attempt to compile this file, it should be included inside an other cc file.
 
+pComponentFactory->registerCreatorFunction("Signal1DPLOLookupTable", Signal1DPLOLookupTable::Creator);
 pComponentFactory->registerCreatorFunction("Signal1DLookupTable", Signal1DLookupTable::Creator);
 pComponentFactory->registerCreatorFunction("Signal2DLookupTable", Signal2DLookupTable::Creator);
 pComponentFactory->registerCreatorFunction("Signal3DLookupTable", Signal3DLookupTable::Creator);

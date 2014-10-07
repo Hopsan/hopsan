@@ -323,7 +323,8 @@ HEADERS += \
     Signal/Animation/SignalNumericalInput.hpp \
     Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp \
     Hydraulic/Valves/Hydraulic22DirectionalCheckValve.hpp \
-    Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp
+    Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp \
+    Experimental/Signal1DPLOLookupTable.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

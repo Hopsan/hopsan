@@ -213,7 +213,7 @@ void LogDataHandler::exportToPlo(const QString &rFilePath, QList<HopsanVariable>
     {
         fileStream << "    'VERSION'\n";
         fileStream << "    2\n";
-        fileStream << "    '"<<ploFileInfo.baseName()<<".PLO' " << "'" << modelFileInfo.fileName() << "' " << "'GUIVERSION " << QString(HOPSANGUIVERSION) << "' 'DATE "<<dateTimeString<<"'\n";
+        fileStream << "    '"<<ploFileInfo.baseName()<<".PLO' " << "'" << modelFileInfo.fileName() << "' '" << dateTimeString << "' 'HopsanGUI " << QString(HOPSANGUIVERSION) << "'\n";
         fileStream << "    " << nDataCols  <<"    "<< nDataRows <<"\n";
         if (nDataCols > 0)
         {

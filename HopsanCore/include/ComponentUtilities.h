@@ -31,6 +31,7 @@
 #include "ComponentUtilities/ludcmp.h"
 #include "ComponentUtilities/matrix.h"
 #include "ComponentUtilities/CSVParser.h"
+#include "ComponentUtilities/PLOParser.h"
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 #include "ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h"
 #include "ComponentUtilities/WhiteGaussianNoise.h"
