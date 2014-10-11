@@ -201,7 +201,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         return;
     }
 
-    if(!(pObject->getTypeName() == "ModelicaComponent" &&
+    if(!(pObject->getTypeName() == MODELICATYPENAME &&
        (parameterName == "ports" || parameterName == "parameters" || parameterName == "defaults")))
     {
         pObject->setParameterValue(parameterName, parameterValue, true);

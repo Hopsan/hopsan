@@ -326,7 +326,7 @@ bool ModelWidget::simulate_nonblocking()
     //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
     foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
     {
-        if(comp->getTypeName() == "ModelicaComponent")
+        if(comp->getTypeName() == MODELICATYPENAME)
         {
             simulateModelica();
             unlockSimulateMutex();
@@ -361,7 +361,7 @@ bool ModelWidget::simulate_blocking()
     //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
     foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
     {
-        if(comp->getTypeName() == "ModelicaComponent")
+        if(comp->getTypeName() == MODELICATYPENAME)
         {
             simulateModelica();
             return true;        //! @todo Should use return value from simulateModelica() function instead
@@ -600,11 +600,16 @@ void ModelWidget::lockTab(bool locked)
 
 void ModelWidget::simulateModelica()
 {
-    QString modelicaCode = "model "+mpToplevelSystem->getName()+"\n";
+    QString modelName = mpToplevelSystem->getName();
+    if(modelName.isEmpty())
+    {
+        modelName = "Unsaved";
+    }
+    QString modelicaCode = "model "+modelName+"\n";
 
     foreach(ModelObject* object, mpToplevelSystem->getModelObjects())
     {
-        if(object->getTypeName() == "ModelicaComponent")
+        if(object->getTypeName() == MODELICATYPENAME)
         {
             QString model = object->getParameterValue("model");
             modelicaCode.append("    "+model+" "+object->getName()+"(");
@@ -642,7 +647,7 @@ void ModelWidget::simulateModelica()
                       ","+connector->getEndComponentName()+"."+connector->getEndPortName()+");\n");
     }
 
-    modelicaCode.append("end "+mpToplevelSystem->getName());
+    modelicaCode.append("end "+modelName);
 
     qDebug() << modelicaCode;
 
@@ -880,7 +885,7 @@ void ModelWidget::simulateModelica()
                 QString startType = mpToplevelSystem->getModelObject(startComp)->getTypeName();
                 QString endType = mpToplevelSystem->getModelObject(endComp)->getTypeName();
 
-                if(startType != "ModelicaComponent")
+                if(startType != MODELICATYPENAME)
                 {
                     connections.append(QStringList());
                     connections.last().append(startComp);
@@ -888,7 +893,7 @@ void ModelWidget::simulateModelica()
                     connections.last().append(name);
                     connections.last().append(startComp+"__"+startPort);
                 }
-                else if(endType != "ModelicaComponent")
+                else if(endType != MODELICATYPENAME)
                 {
                     connections.append(QStringList());
                     connections.last().append(name);
@@ -913,7 +918,7 @@ void ModelWidget::simulateModelica()
     {
         QString name = mpToplevelSystem->getModelObjectNames().at(i);
         QString type = mpToplevelSystem->getModelObjects().at(i)->getTypeName();
-        if(type != "ModelicaComponent")
+        if(type != MODELICATYPENAME)
         {
             ModelObject *pModelObject = pTempSys->addModelObject(type, QPointF(0,0));
             if(!pModelObject)

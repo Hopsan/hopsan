@@ -25,6 +25,13 @@
 #ifndef HopsanEssentials_H
 #define HopsanEssentials_H
 
+#define DUMMYTYPENAME "DummyComponent"
+#define MISSINGTYPENAME "MissingComponent"
+#define SUBSYSTEMTYPENAME "Subsystem"
+#define CONDITIONALTYPENAME "ConditionalSubsystem"
+#define CPPTYPENAME "CppComponent"
+#define MODELICATYPENAME "ModelicaComponent"
+
 #include "Node.h"
 #include "Component.h"
 #include "ComponentSystem.h"

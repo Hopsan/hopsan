@@ -42,6 +42,7 @@
 #include "MessageHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
+#include "LibraryHandler.h"
 
 //Maybe we can remove these to when some cleanup has happend in the code later on (maybe even GUIPort.h)
 #include "GUIPort.h"
@@ -190,7 +191,15 @@ void GraphicsView::dropEvent(QDropEvent *event)
         mpContainerObject->getUndoStackPtr()->newPost();
         event->accept();
         QPointF position = event->pos();
-        mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()));
+        if(text.startsWith(QString(MODELICATYPENAME)+"_"))
+        {
+            ModelObject* pObj = mpContainerObject->addModelObject(MODELICATYPENAME, this->mapToScene(position.toPoint()));
+            pObj->setParameterValue("model",text.section("_",1,1));
+        }
+        else
+        {
+            mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()));
+        }
         this->setFocus();
     }
 

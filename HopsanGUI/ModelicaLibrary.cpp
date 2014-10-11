@@ -36,6 +36,8 @@
 #include "Widgets/ModelWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIModelObject.h"
+#include "Widgets/LibraryWidget.h"
+#include "LibraryHandler.h"
 
 
 //! @class ModelicaModel
@@ -650,12 +652,15 @@ void ModelicaLibrary::loadFile(const QString &code)
         for(int c=0; c<pSystem->getModelObjects().size(); ++c)
         {
             ModelObject *pComp = pSystem->getModelObjects().at(c);
-            if(pComp->getTypeName() == "ModelicaComponent")
+            if(pComp->getTypeName() == MODELICATYPENAME)
             {
                 pComp->setParameterValue("model", pComp->getParameterValue("model"));
             }
         }
     }
+
+    if(gpLibraryWidget)
+        gpLibraryWidget->update();
 }
 
 QStringList ModelicaLibrary::getModelNames() const

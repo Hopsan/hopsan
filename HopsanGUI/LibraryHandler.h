@@ -2,7 +2,10 @@
 #define LIBRARYHANDLER_H
 
 #define EXTLIBSTR "External Libraries"
+#define MODELICALIBSTR "Modelica Components"
 #define FMULIBSTR "FMU"
+#define MODELICATYPENAME "ModelicaComponent"
+
 
 //Qt includes
 #include <QObject>

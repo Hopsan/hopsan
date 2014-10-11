@@ -63,7 +63,7 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, QWid
     {
         createCppEditStuff();
     }
-    else if(mpComponent->getTypeName().startsWith("ModelicaComponent") && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
+    else if(mpComponent->getTypeName().startsWith(MODELICATYPENAME) && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
     {
         createModelicaEditStuff();
     }

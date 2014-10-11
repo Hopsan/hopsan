@@ -38,6 +38,8 @@
 #include "LibraryHandler.h"
 #include "CoreAccess.h"
 #include "Utilities/HelpPopUpWidget.h"
+#include "ModelicaLibrary.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
 
 //! @todo Ok dont know where I should put this, putting it here for now /Peter
 QString gHopsanCoreVersion = getHopsanCoreVersion();
@@ -158,6 +160,31 @@ void LibraryWidget::setGfxType(GraphicsTypeEnumT gfxType)
 
 void LibraryWidget::update()
 {
+    //Remember opened folders
+    QTreeWidgetItemIterator it(mpTree);
+
+    QList<QStringList> expandedItems;
+    while(*it)
+    {
+        QTreeWidgetItem *pItem = (*it);
+        if(pItem->isExpanded())
+        {
+            QStringList list;
+            list << pItem->text(0);
+            QTreeWidgetItem *pParent = pItem->parent();
+            while(pParent)
+            {
+                list.prepend(pParent->text(0));
+                pParent = pParent->parent();
+            }
+            expandedItems.append(list);
+            qDebug() << "List: " << list;
+
+        }
+        ++it;
+    }
+
+
     QString filter = mpFilterEdit->text();
 
     mpList->clear();
@@ -208,7 +235,14 @@ void LibraryWidget::update()
                     //Add top-level folder to tree view
                     pItem = new QTreeWidgetItem();
                     pItem->setFont(0,boldFont);
-                    pItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
+                    if(folder == EXTLIBSTR)
+                    {
+                        pItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
+                    }
+                    else
+                    {
+                        pItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
+                    }
                     pItem->setText(0, folder);
                     pItem->setToolTip(0, folder);
                     mpTree->addTopLevelItem(pItem);
@@ -236,7 +270,13 @@ void LibraryWidget::update()
                     //Add folder to tree view
                     QTreeWidgetItem *pNewItem = new QTreeWidgetItem();
                     pNewItem->setFont(0, boldFont);
-                    pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
+                    QTreeWidgetItem *pTopItem = pItem;
+                    while(pTopItem->parent())
+                        pTopItem = pTopItem->parent();
+                    if( pTopItem->text(0) == EXTLIBSTR)
+                        pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
+                    else
+                        pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                     pNewItem->setText(0, folder);
                     pNewItem->setToolTip(0, folder);
                     pItem->addChild(pNewItem);
@@ -252,9 +292,6 @@ void LibraryWidget::update()
 
         //Add component to tree view
         QTreeWidgetItem *pComponentItem = new QTreeWidgetItem();
-        QIcon icon;
-//        QString iconPath = entry.pAppearance->getFullAvailableIconPath(mGfxType);
-//        icon.addFile(iconPath,QSize(55,55));
         pComponentItem->setIcon(0, entry.pAppearance->getIcon(mGfxType));
         pComponentItem->setText(0, entry.pAppearance->getDisplayName());
         pComponentItem->setToolTip(0, entry.pAppearance->getDisplayName());
@@ -312,7 +349,7 @@ void LibraryWidget::update()
     while(*itt)
     {
 
-        if((*itt)->childCount() > 0)
+        if((*itt)->childCount() > 0 && (*itt)->text(0) != EXTLIBSTR)
         {
             (*itt)->setText(0, "0000000000"+(*itt)->text(0));       //Prepend a lot of zeros to subfolders, to make sure they are sorted on top (REALLY ugly, but it works)
         }
@@ -349,11 +386,57 @@ void LibraryWidget::update()
     QTreeWidgetItemIterator itt2(mpTree);
     while(*itt2)
     {
-        if((*itt2)->childCount() > 0)
+        if((*itt2)->childCount() > 0 && (*itt2)->text(0) != EXTLIBSTR)
         {
             (*itt2)->setText(0, (*itt2)->text(0).remove(0,10)); //Remove the extra zeros from subfolders (see above)
         }
         ++itt2;
+    }
+
+    QTreeWidgetItem *pModelicaComponentsItem = new QTreeWidgetItem();
+    pModelicaComponentsItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-FolderModelica.png"));
+    pModelicaComponentsItem->setText(0, MODELICALIBSTR);
+    pModelicaComponentsItem->setFont(0,boldFont);
+    mpTree->addTopLevelItem(pModelicaComponentsItem);
+    foreach(const QString &model, gpModelicaLibrary->getModelNames())
+    {
+        QTreeWidgetItem *pModelicaComponentItem = new QTreeWidgetItem();
+        pModelicaComponentItem->setText(0,model);
+
+        QString annotations = gpModelicaLibrary->getModel(model).getAnnotations();
+        if(!annotations.isEmpty())
+        {
+            QString cafFilePath = annotations.section("cafFile",1,1).section("\"",1,1).section("\"",0,0);
+            QString icon = annotations.section("hopsanIcon",1,1).section("\"",1,1).section("\"",0,0);
+            if(!icon.isEmpty())
+            {
+                pModelicaComponentItem->setIcon(0, QIcon(icon));
+            }
+            else if(!cafFilePath.isEmpty())
+            {
+                ModelObjectAppearance appearane;
+                QFile cafFile(cafFilePath);
+                if (cafFile.open(QIODevice::ReadOnly | QIODevice::Text))
+                {
+                    QDomDocument domDocument;
+                    QDomElement cafRoot = loadXMLDomDocument(cafFile, domDocument, CAF_ROOT);
+                    cafFile.close();
+                    if(!cafRoot.isNull())
+                    {
+                        //Read appearance data from the caf xml file
+                        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+                        appearane.setBasePath(QFileInfo(cafFile).absolutePath()+"/");
+                        appearane.readFromDomElement(xmlModelObjectAppearance);
+                        appearane.cacheIcons();
+                        pModelicaComponentItem->setIcon(0, QIcon(appearane.getIconPath(UserGraphics,Absolute)));
+                    }
+                }
+            }
+        }
+
+        //! @todo Fix icon!
+        mItemToTypeNameMap.insert(pModelicaComponentItem, QString(MODELICATYPENAME)+"_"+model);
+        pModelicaComponentsItem->addChild(pModelicaComponentItem);
     }
 
     if(filter.isEmpty())
@@ -407,6 +490,32 @@ void LibraryWidget::update()
         mpDualTree->setMaximumSize(5000,5000);
         mpDualTree->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     }
+
+
+    //Expand preiously expanded folders
+    foreach(const QStringList &list, expandedItems)
+    {
+        for(int i=0; i<mpTree->topLevelItemCount(); ++i)
+        {
+            if(mpTree->topLevelItem(i)->text(0) == list[0])
+            {
+                QTreeWidgetItem *pItem = mpTree->topLevelItem(i);
+                pItem->setExpanded(true);
+                for(int j=1; j<list.size(); ++j)
+                {
+                    for(int k=0; k<pItem->childCount(); ++k)
+                    {
+                        if(pItem->child(k)->text(0) == list[j])
+                        {
+                            pItem = pItem->child(k);
+                            pItem->setExpanded(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -415,10 +524,19 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
     if(mItemToTypeNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
-        ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
-        QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
+
+        ModelObjectAppearance *pAppearance;
         QIcon icon;
-        icon.addFile(iconPath,QSize(55,55));
+        if(typeName.startsWith(QString(MODELICATYPENAME)+"_"))
+        {
+            icon = item->icon(0);
+        }
+        else
+        {
+            pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+            QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
+            icon.addFile(iconPath,QSize(55,55));
+        }
 
         //Create the mimedata (text with type name)
         QMimeData *mimeData = new QMimeData;
@@ -655,3 +773,4 @@ void LibraryWidget::getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTree
         getAllSubTreeItems(pParentItem->child(c), rSubItems);
     }
 }
+

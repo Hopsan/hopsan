@@ -74,7 +74,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
 {
     mpModelObject = pModelObject;
 
-    if(mpModelObject->getTypeName() == "ModelicaComponent" && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
+    if(mpModelObject->getTypeName() == MODELICATYPENAME && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
     {
         this->hide();
 
@@ -708,7 +708,7 @@ bool VariableTableWidget::setStartValues()
         QString name = pValueWideget->getName();
         QString value = pValueWideget->getValueText();
 
-        if(mpModelObject->getTypeName() == "ModelicaComponent" && name != "model")
+        if(mpModelObject->getTypeName() == MODELICATYPENAME && name != "model")
         {
             continue;
         }

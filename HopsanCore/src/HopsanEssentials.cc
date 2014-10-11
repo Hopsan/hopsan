@@ -57,12 +57,12 @@ HopsanEssentials::HopsanEssentials()
 
     // Make sure that internal Nodes and Components register
     register_default_nodes(mpNodeFactory);
-    mpComponentFactory->registerCreatorFunction("DummyComponent", DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
-    mpComponentFactory->registerCreatorFunction("ConditionalSubsystem", ConditionalComponentSystem::Creator);
-    mpComponentFactory->registerCreatorFunction("CppComponent", DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction("ModelicaComponent", ModelicaComponent::Creator);
+    mpComponentFactory->registerCreatorFunction(DUMMYTYPENAME, DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction(MISSINGTYPENAME, DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction(SUBSYSTEMTYPENAME, ComponentSystem::Creator);
+    mpComponentFactory->registerCreatorFunction(CONDITIONALTYPENAME, ConditionalComponentSystem::Creator);
+    mpComponentFactory->registerCreatorFunction(CPPTYPENAME, DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction(MODELICATYPENAME, ModelicaComponent::Creator);
 #ifdef BUILTINDEFAULTCOMPONENTLIB
     register_default_components(mpComponentFactory);
 #endif

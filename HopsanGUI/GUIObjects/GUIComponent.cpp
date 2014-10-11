@@ -40,6 +40,7 @@
 #include "PlotWindow.h"
 #include "Widgets/ModelWidget.h"
 #include "MessageHandler.h"
+#include "LibraryHandler.h"
 
 
 Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
@@ -120,7 +121,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
     bool retval =  mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
 
     //Special code for setting parameters to Modelica components. Should maybe be somewhere else.
-    if(this->getTypeName() == "ModelicaComponent" && name == "model")
+    if(this->getTypeName() == MODELICATYPENAME && name == "model")
     {
         if(gpModelicaLibrary->hasModel(value))
         {
@@ -202,6 +203,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
                         QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
                         mModelObjectAppearance.setBasePath(QFileInfo(cafFile).absolutePath()+"/");
                         mModelObjectAppearance.readFromDomElement(xmlModelObjectAppearance);
+                        mModelObjectAppearance.setTypeName(MODELICATYPENAME);
                         mModelObjectAppearance.cacheIcons();
                     }
                 }
@@ -216,7 +218,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             }
         }
     }
-    else if(this->getTypeName() == "ModelicaComponent" && name == "ports" && !value.isEmpty())
+    else if(this->getTypeName() == MODELICATYPENAME && name == "ports" && !value.isEmpty())
     {
         QStringList portNames = value.split(",");
 
@@ -272,7 +274,7 @@ void Component::openPropertiesDialog()
     //ComponentPropertiesDialog dialog(this, gpMainWindow);
     ComponentPropertiesDialog3 dialog(this, mpDialogParentWidget);
 
-    if(getTypeName() != "ModelicaComponent NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
+    if(getTypeName() != QString(MODELICATYPENAME)+" NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
     {
         connect(this, SIGNAL(objectDeleted()), &dialog, SLOT(reject()));
         //! @todo should we have delete on close

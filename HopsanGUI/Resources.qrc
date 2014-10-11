@@ -154,5 +154,7 @@
         <file>graphics/porticons/ModelicaPort.svg</file>
         <file>graphics/builtinCAF/visible/Subsystem/conditionalSubSystem.xml</file>
         <file>graphics/objecticons/conditionalSubsystemDefault.svg</file>
+        <file>graphics/uiicons/Hopsan-FolderExternal.png</file>
+        <file>graphics/uiicons/Hopsan-FolderModelica.png</file>
     </qresource>
 </RCC>

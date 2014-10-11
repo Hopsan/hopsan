@@ -1192,8 +1192,8 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                  //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
                  Port *pStartRealPort=0, *pEndRealPort=0;
                  // If no group ports, do normal disconnect
-                 if(pStartP->getParentModelObject()->getTypeName() == "ModelicaComponent" ||
-                    pEndP->getParentModelObject()->getTypeName() == "ModelicaComponent")
+                 if(pStartP->getParentModelObject()->getTypeName() == MODELICATYPENAME ||
+                    pEndP->getParentModelObject()->getTypeName() == MODELICATYPENAME)
                  {
                      success = true;
                  }

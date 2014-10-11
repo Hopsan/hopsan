@@ -591,7 +591,7 @@ bool CoreSystemAccess::setParameterValue(QString componentName, QString paramete
 {
     hopsan::Component *pComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     bool retval = pComponent->setParameterValue(parameterName.toStdString().c_str(), value.toStdString().c_str(), force);
-    if(pComponent->getTypeName() == "ModelicaComponent")
+    if(pComponent->getTypeName() == MODELICATYPENAME)
     {
         pComponent->configure();
     }
