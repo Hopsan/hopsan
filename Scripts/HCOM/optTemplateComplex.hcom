@@ -31,6 +31,10 @@ opt set plotbestworst <<<plotbestworst>>>
 <<<extraplots>>>
 <<<setminmax>>>
 
+set backup off
+
 opt run
+
+set backup on
 
 <<<plotvars>>>

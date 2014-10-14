@@ -19,6 +19,10 @@ opt set length <<<length>>>
 
 <<<setminmax>>>
 
+set backup off
+
 opt run
+
+set backup on
 
 <<<plotvars>>>

@@ -314,7 +314,7 @@ void ModelWidget::setSaved(bool value)
 bool ModelWidget::simulate_nonblocking()
 {
     // Save backup copy (if needed)
-    if (!isSaved())
+    if (!isSaved() && gpConfig->getAutoBackup())
     {
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
@@ -348,7 +348,7 @@ bool ModelWidget::simulate_nonblocking()
 bool ModelWidget::simulate_blocking()
 {
     // Save backup copy
-    if (!isSaved())
+    if (!isSaved() && gpConfig->getAutoBackup())
     {
         //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -1126,7 +1126,7 @@ void ModelWidget::openCurrentContainerInNewTab()
 void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents)
 {
     // Backup old save file before saving (if old file exists)
-    if(saveAsFlag == ExistingFile)
+    if(saveAsFlag == ExistingFile && gpConfig->getAutoBackup())
     {
         QFile backupFile(mpToplevelSystem->getModelFileInfo().filePath());
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();

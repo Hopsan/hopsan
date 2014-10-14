@@ -25,6 +25,79 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
+#define CFG_HOPSANCONFIG "hopsanconfig"
+#define CFG_SETTINGS "settings"
+
+#define CFG_LIBRARYSTYLE "librarystyle"
+#define CFG_PLOEXPORTVERSION "ploexportversion"
+
+#define CFG_SHOWHIDDENNODEDATAVARIABLES "showhiddennodedatavariables"
+#define CFG_SHOWPOPUPHELP "showpopuphelp"
+#define CFG_NATIVESTYLESHEET "nativestylesheet"
+#define CFG_ANTIALIASING "antialiasing"
+#define CFG_INVERTWHEEL "invertwheel"
+#define CFG_SNAPPING "snapping"
+#define CFG_PROGRESSBAR "progressbar"
+#define CFG_PROGRESSBARSTEP "progressbar_step"
+#define CFG_MULTICORE "multicore"
+#define CFG_NUMBEROFTHREADS"numberofthreads"
+#define CFG_TOGGLENAMESBUTTONCHECKED "togglenamesbuttonchecked"
+#define CFG_TOGGLEPORTSBUTTONCHECKED "toggleportsbuttonchecked"
+#define CFG_GROUPMESSAGESBYTAG "groupmessagesbytag"
+#define CFG_GENERATIONLIMIT "generationlimit"
+#define CFG_CACHELOGDATA "cachelogdata"
+#define CFG_AUTOBACKUP "autobackup"
+#define CFG_AUTOLIMITGENERATIONS "autolimitgenerations"
+
+#define CFG_PLOTGFXIMAGEFORMAT "plotgfximageformat"
+#define CFG_PLOTGFXDIMENSIONSUNIT "plotgfxdimensionsunit"
+#define CFG_PLOTGFXDPI "plotgfxdpi"
+#define CFG_PLOTGFXSIZE "plotgfxsize"
+#define CFG_PLOTGFXKEEPASPECT "plotgfxkeepaspect"
+#define CFG_PLOTGFXUSESCREENSIZE "plotgfxusescreensize"
+#define CFG_BACKGROUNDCOLOR "backgroundcolor"
+
+#define CFG_LOADMODELDIR "loadmodeldir"
+#define CFG_MODELGFXDIR "modelgfxdir"
+#define CFG_PLOTDATADIR "plotdatadir"
+#define CFG_PLOTGFXDIR "plotgfxdir"
+#define CFG_SIMULINKEXPORTDIR "simulinkexportdir"
+#define CFG_SUBSYSTEMDIR "subsystemdir"
+#define CFG_MODELICAMODELSDIR "modelicamodelsdir"
+#define CFG_EXTERNALLIBDIR "externallibdir"
+#define CFG_SCRIPTDIR "scriptdir"
+#define CFG_PLOTWINDOWDIR "plotwindowdir"
+#define CFG_FMUDIR "fmudir"
+#define CFG_FMUIMPORTDIR "fmuimportdir"
+#define CFG_FMUEXPORTDIR "fmuexportdir"
+#define CFG_LABVIEWEXPORTDIR "labviewexportdir"
+
+#define CFG_PENSTYLE "penstyle"
+#define CFG_TYPE "type"
+#define CFG_GFXTYPE "gfxtype"
+#define CFG_SITUATION "situation"
+#define CFG_COLOR "color"
+#define CFG_WIDTH "width"
+#define CFG_CAPSTYLE "capstyle"
+
+#define CFG_UNITSCALES "unitscales"
+#define CFG_QUANTITY "quantity"
+
+#define CFG_SIUNIT "siunit"
+#define CFG_UNITSCALE "unitscale"
+#define CFG_UNIT "unit"
+#define CFG_UNITS "units"
+#define CFG_DEFAULTUNIT "defaultunit"
+#define CFG_NAME "name"
+#define CFG_UNIT "unit"
+#define CFG_CUSTOMUNIT "customunit"
+#define CFG_SCALE "scale"
+
+#define CFG_PYTHON "python"
+#define CFG_HCOM "hcom"
+#define CFG_PWD "pwd"
+#define CFG_COMMAND "command"
+
 #include <QMap>
 #include <QColor>
 #include <QList>
@@ -96,6 +169,7 @@ public:
     QString getHcomWorkingDirectory() const;
     int getGenerationLimit() const;
     bool getCacheLogData() const;
+    bool getAutoBackup() const;
 
     bool getAutoLimitLogDataGenerations();
 
@@ -147,6 +221,7 @@ public:
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
     void setCacheLogData(const bool value);
+    void setAutoBackup(const bool value);
     void setAutoLimitLogDataGenerations(const bool value);
     void setShowHiddenNodeDataVariables(const bool value);
     void setLoadModelDir(QString value);
@@ -218,6 +293,7 @@ private:
     bool mGroupMessagesByTag;
     int mGenerationLimit;
     bool mCacheLogData;
+    bool mAutoBackup;
     bool mAutoLimitLogDataGenerations;
     QString mLoadModelDir;
     QString mModelGfxDir;

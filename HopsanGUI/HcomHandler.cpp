@@ -2903,6 +2903,14 @@ void HcomHandler::executeSetCommand(const QString cmd)
         }
         mpModel->getViewContainerObject()->setNumberOfLogSamples(samples);
     }
+    else if(pref == "backup")
+    {
+        if(value != "on" && value != "off")
+        {
+            HCOMERR("Unknown value.");
+        }
+        getConfigPtr()->setAutoBackup(value=="on");
+    }
     else
     {
         HCOMERR("Unknown command.");
@@ -7319,7 +7327,7 @@ double HcomFunctionoidMin::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->minOfData());
     }
-    mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
+    //mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
     ok=false;
     return 0;
 }
@@ -7348,7 +7356,7 @@ double HcomFunctionoidMax::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->maxOfData());
     }
-    mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
+    //mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
     ok=false;
     return 0;
 }
