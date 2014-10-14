@@ -57,6 +57,11 @@
 #define CAF_HELPPICTURE "picture"
 #define CAF_HELPLINK "link"
 
+
+#define CAF_PARAMETERS "defaultparameters"
+#define CAF_PARAMETER "parameter"
+#define CAF_NAME "name"
+
 #define CAF_PORTS "ports"
 #define CAF_PORT "port"
 #define CAF_DESCRIPTION "description"
@@ -622,6 +627,11 @@ const QString &ModelObjectAppearance::getHelpLink() const
     return mHelpLink;
 }
 
+const QMap<QString, QString> &ModelObjectAppearance::getOverridedDefaultParameters() const
+{
+    return mOverridedDefaultParameters;
+}
+
 //! @brief Get the full Icon path for specified graphics type
 //! @param [in] gfxType The graphics type enum (ISO or USER)
 //! If the specified type is missing, return the other type.
@@ -907,6 +917,18 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         if (!xmlHelpLink.isNull())
         {
             mHelpLink = xmlHelpLink.text();
+        }
+    }
+
+    QDomElement xmlParameters = domElement.firstChildElement(CAF_PARAMETERS);
+    if(!xmlParameters.isNull())
+    {
+        QDomElement xmlParameter = xmlParameters.firstChildElement(CAF_PARAMETER);
+        if(!xmlParameter.isNull())
+        {
+            QString name = xmlParameter.attribute(CAF_NAME);
+            QString value = xmlParameter.text();
+            mOverridedDefaultParameters.insert(name, value);
         }
     }
 

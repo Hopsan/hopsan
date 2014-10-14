@@ -179,6 +179,7 @@ public:
     const QString &getHelpPicture() const;
     const QString &getHelpText() const;
     const QString &getHelpLink() const;
+    const QMap<QString, QString> &getOverridedDefaultParameters() const;
     QString getBasePath() const;
     QString getFullAvailableIconPath(GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
@@ -216,6 +217,7 @@ private:
     QString mLibPath;
     bool mIsRecompilable;
     QString mHelpText,mHelpPicture,mHelpLink;
+    QMap<QString,QString> mOverridedDefaultParameters;
     ModelObjectIconAppearance mIsoIconAppearance;
     ModelObjectIconAppearance mUserIconAppearance;
     QIcon mIsoIcon;

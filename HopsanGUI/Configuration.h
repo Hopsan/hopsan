@@ -40,7 +40,7 @@
 #define CFG_PROGRESSBAR "progressbar"
 #define CFG_PROGRESSBARSTEP "progressbar_step"
 #define CFG_MULTICORE "multicore"
-#define CFG_NUMBEROFTHREADS"numberofthreads"
+#define CFG_NUMBEROFTHREADS "numberofthreads"
 #define CFG_TOGGLENAMESBUTTONCHECKED "togglenamesbuttonchecked"
 #define CFG_TOGGLEPORTSBUTTONCHECKED "toggleportsbuttonchecked"
 #define CFG_GROUPMESSAGESBYTAG "groupmessagesbytag"

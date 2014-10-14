@@ -66,6 +66,18 @@ Component::Component(QPointF position, double rotation, ModelObjectAppearance* p
     {
         mDefaultParameterValues.insert(defaultParameterNames.at(i), getParameterValue(defaultParameterNames.at(i)));
     }
+
+
+    if(pAppearanceData)
+    {
+        QMapIterator<QString,QString> it(pAppearanceData->getOverridedDefaultParameters());
+        while(it.hasNext())
+        {
+            it.next();
+            mDefaultParameterValues.insert(it.key(),it.value());
+            setParameterValue(it.key(),it.value(),true);
+        }
+    }
 }
 
 void Component::deleteInHopsanCore()
