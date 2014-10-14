@@ -573,6 +573,11 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     {
         CoreVariameterDescription variameter;
         variameter.mName = parameters[constantsIds[i]].mName;
+
+        //Don't add ports, parameters and defaults constants for modelica components
+        if(mpModelObject->getTypeName() == MODELICATYPENAME && (variameter.mName == "ports" || variameter.mName == "parameters" || variameter.mName == "defaults"))
+            continue;
+
         variameter.mDescription = parameters[constantsIds[i]].mDescription;
         variameter.mUnit = parameters[constantsIds[i]].mUnit;
         variameter.mDataType = parameters[constantsIds[i]].mType;
