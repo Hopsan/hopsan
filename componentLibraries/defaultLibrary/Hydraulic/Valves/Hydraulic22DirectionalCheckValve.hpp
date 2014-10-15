@@ -58,8 +58,8 @@ namespace hopsan {
             addConstant("delta_h", "Damping Factor", "-", 1, mDelta_h);
             //Register input variables
             addInputVariable("in", "<0.5 (check), >0.5 (open)", "-", 0, &mpIn);
-            addInputVariable("Kv_open", "Pressure-Flow Coefficient in opened position", "(m^3/s)/sqrt(Pa)", 0.000000025, &mpKv_open);
-            addInputVariable("Kv_check", "Pressure-Flow Coefficient in checked position", "(m^3/s)/sqrt(Pa)", 0.000000025, &mpKv_check);
+            addInputVariable("Kv_open", "Pressure-Flow Coefficient in opened position", "(m^3/s)/sqrt(Pa)", 5e-7, &mpKv_open);
+            addInputVariable("Kv_check", "Pressure-Flow Coefficient in checked position", "(m^3/s)/sqrt(Pa)", 5e-7, &mpKv_check);
             addInputVariable("F_s", "Spring Pre-Load Tension", "Pa", 0.0, &mpF_s);
             //Register output variables
             addOutputVariable("out", "<0.5 (check), >0.5 (open)", "-", 0, &mpOut);

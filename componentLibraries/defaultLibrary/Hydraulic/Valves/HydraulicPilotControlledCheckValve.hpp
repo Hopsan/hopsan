@@ -65,7 +65,7 @@ namespace hopsan {
             addInputVariable("phi", "Pilot Ratio","-", 3.5, &mpPhi);
             addInputVariable("p_f", "Cracking Pressure", "Pa", 1e+5, &mpPf);
 
-            addConstant("K_s", "Restrictor Coefficient", "-", 0.000000025, mKs);
+            addConstant("K_s", "Restrictor Coefficient", "-", 5e-7, mKs);
         }
 
 

@@ -60,7 +60,7 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPPilot = addPowerPort("P_PILOT", "NodeHydraulic");
 
-            addConstant("K_s", "Restrictor Coefficient", "", 0.000000025, mKs);
+            addConstant("K_s", "Restrictor Coefficient", "", 5e-7, mKs);
         }
 
 
