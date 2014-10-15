@@ -2681,6 +2681,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QMenu menu;
     QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
     QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
+    QAction *saveAsComponentAction = menu.addAction(tr("Save As Component"));
     if(!mModelFileInfo.filePath().isEmpty())
     {
         loadAction->setDisabled(true);
@@ -2688,6 +2689,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(isExternal())
     {
         saveAction->setDisabled(true);
+        saveAsComponentAction->setDisabled(true);
     }
     QAction *pAction = this->buildBaseContextMenu(menu, event);
     if (pAction == loadAction)
@@ -2787,6 +2789,94 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         xmlFile.close();
 
        // mpModelWidget->saveTo(modelFilePath, FullModel);
+    }
+    else if(pAction == saveAsComponentAction)
+    {
+        //Get file name
+        QString cafFilePath;
+        cafFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
+                                                     gpConfig->getLoadModelDir(),
+                                                     gpMainWindow->tr("Hopsan Component Appearance Files (*.xml)"));
+
+        if(cafFilePath.isEmpty())     //Don't save anything if user presses cancel
+        {
+            return;
+        }
+
+        QString iconFileName = QFileInfo(getIconPath(UserGraphics, Absolute)).fileName();
+        QString modelFileName = QFileInfo(cafFilePath).baseName()+".hmf";
+
+        QFile::copy(getIconPath(UserGraphics, Absolute), QFileInfo(cafFilePath).path()+"/"+iconFileName);
+        QFile::copy(getIconPath(UserGraphics, Absolute), getAppearanceData()->getBasePath()+"/"+iconFileName);
+
+
+        QString cafStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        cafStr.append("<hopsanobjectappearance version=\"0.3\">\n");
+        cafStr.append("    <modelobject hmffile=\""+modelFileName+"\" displayname=\""+getName()+"\" typename=\""+getName()+"\">\n");
+        cafStr.append("        <icons>\n");
+        cafStr.append("            <icon scale=\"1\" path=\""+iconFileName+"\" iconrotation=\"ON\" type=\"user\"/>\n");
+        cafStr.append("        </icons>\n");
+        cafStr.append("    </modelobject>\n");
+        cafStr.append("</hopsanobjectappearance>\n");
+
+        QFile cafFile(cafFilePath);
+        if(!cafFile.open(QFile::Text | QFile::WriteOnly))
+        {
+            gpMessageHandler->addErrorMessage("Could not open the file: "+cafFile.fileName()+" for writing.");
+            return;
+        }
+        cafFile.write(cafStr.toUtf8());
+        cafFile.close();
+
+        QString modelFilePath = QFileInfo(cafFilePath).path()+"/"+QFileInfo(cafFilePath).baseName()+".hmf";
+
+        QString orgIconPath = this->getIconPath(UserGraphics, Relative);
+        this->setIconPath(iconFileName, UserGraphics, Relative);
+
+        //! @todo Duplicated code, but we cannot use code from ModelWidget, because it can only save top level system...
+        QFile file(modelFilePath);   //Create a QFile object
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+            return;
+        }
+
+        //Save xml document
+        QDomDocument domDocument;
+        QDomElement rootElement;
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+
+        // Save the required external lib names
+        QVector<QString> extLibNames;
+        CoreLibraryAccess coreLibAccess;
+        coreLibAccess.getLoadedLibNames(extLibNames);
+
+        QDomElement reqDom = appendDomElement(rootElement, "requirements");
+        for (int i=0; i<extLibNames.size(); ++i)
+        {
+            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+        }
+
+        //Save the model component hierarcy
+        this->saveToDomElement(rootElement, FullModel);
+
+        //Save to file
+        QFile xmlFile(modelFilePath);
+        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
+            return;
+        }
+        QTextStream out(&xmlFile);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        domDocument.save(out, XMLINDENTATION);
+
+        //Close the file
+        xmlFile.close();
+
+        this->setIconPath(orgIconPath, UserGraphics, Relative);
+
+        QFile::remove(getModelFilePath()+"/"+iconFileName);
     }
 
     //Dont call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed

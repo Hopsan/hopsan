@@ -316,6 +316,8 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         }
     }
 
+    ComponentLibrary *pTempLibrary = 0; //Used in case we are loading components without dll files
+
     // Load Component XML (CAF Files)
     for (int i = 0; i<cafFiles.size(); ++i)        //Iterate over the file names
     {
@@ -431,10 +433,23 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             entry.pLibrary = 0;
             for(int l=0; l<mLoadedLibraries.size(); ++l)
             {
-                if(mLoadedLibraries[l].libFilePath == libPath)
+                if(mLoadedLibraries[l].libFilePath == libPath && !libPath.isEmpty())
                 {
                     entry.pLibrary = &mLoadedLibraries[l];
                     break;
+                }
+                else if(libPath.isEmpty())
+                {
+                    if(!pTempLibrary)
+                    {
+                        mLoadedLibraries.append(ComponentLibrary());
+                        pTempLibrary = &mLoadedLibraries.last();
+                        pTempLibrary->name = info.absoluteDir().dirName();
+                        pTempLibrary->type = ExternalLib;
+                        pTempLibrary->xmlFilePath = info.filePath();
+                    }
+                    entry.pLibrary = pTempLibrary;
+                    pTempLibrary->guiOnlyComponents.append(entry.pAppearance->getTypeName());
                 }
             }
 
@@ -497,14 +512,16 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 //! @param typeName Type name of any component in the library
 void LibraryHandler::unloadLibrary(QString typeName)
 {
+    QStringList components, nodes;  //Components and nodes to remove
+
     //Find the library that the component belongs to
-    LibraryEntry entry = getEntry(typeName);
+    LibraryEntry selectedEntry = getEntry(typeName);
     if(!getLoadedTypeNames().contains(typeName))
     {
         qDebug() << "Component: " << typeName << " not found.";
         return; //No component found, probably already unloaded
     }
-    ComponentLibrary *pLib = entry.pLibrary;
+    ComponentLibrary *pLib = selectedEntry.pLibrary;
     if(!pLib)
     {
         qDebug() << "Library with component: " << typeName << " not found.";
@@ -512,10 +529,11 @@ void LibraryHandler::unloadLibrary(QString typeName)
     }
     qDebug() << "Unloading component: " << typeName << ".";
 
+    components.append(pLib->guiOnlyComponents);
+
     CoreLibraryAccess core;
 
     //Generate list of all components and nodes in library
-    QStringList components, nodes;
     core.getLibraryContents(pLib->libFilePath, components, nodes);
 
     //Unload the library from HopsanCore

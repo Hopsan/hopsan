@@ -268,14 +268,14 @@ void CoreLibraryAccess::getLibraryContents(QString libPath, QStringList &rCompon
     std::vector<hopsan::HString> components, nodes;
     gHopsanCore.getExternalLibraryContents(libPath.toStdString().c_str(), components, nodes);
 
-    rComponents.clear();
+    //rComponents.clear();
     rComponents.reserve(components.size());
     for (unsigned int i=0; i<components.size(); ++i)
     {
         rComponents.push_back(components[i].c_str());
     }
 
-    rNodes.clear();
+    //rNodes.clear();
     rNodes.reserve(nodes.size());
     for (unsigned int i=0; i<nodes.size(); ++i)
     {

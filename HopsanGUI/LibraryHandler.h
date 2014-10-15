@@ -72,6 +72,7 @@ public:
     QStringList cafFiles;
     QStringList sourceFiles;
     LibraryTypeEnumT type;
+    QStringList guiOnlyComponents;
 };
 
 
