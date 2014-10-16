@@ -146,6 +146,12 @@ void Configuration::saveToXml()
         libs.lastChildElement(XML_USERLIB).setAttribute(XML_LIBTYPE, typeStr);
     }
 
+    QDomElement modelicaFilesXml = appendDomElement(configRoot, XML_MODELICAFILES);
+    for(int i=0; i<mModelicaFiles.size(); ++i)
+    {
+        appendDomTextNode(modelicaFilesXml, XML_MODELICAFILE, mModelicaFiles.at(i).absoluteFilePath());
+    }
+
     QDomElement models = appendDomElement(configRoot, XML_MODELS);
     for(int i=0; i<mLastSessionModels.size(); ++i)
     {
@@ -295,6 +301,10 @@ void Configuration::loadFromXml()
             //Load library settings
             QDomElement libsElement = configRoot.firstChildElement(XML_LIBS);
             loadLibrarySettings(libsElement);
+
+            //Load Modelica files settings
+            QDomElement modelicaFilesElement = configRoot.firstChildElement(XML_MODELICAFILES);
+            loadModelicaFilesSettings(modelicaFilesElement);
 
             //Load model settings
             QDomElement modelsElement = configRoot.firstChildElement(XML_MODELS);
@@ -638,6 +648,16 @@ void Configuration::loadLibrarySettings(QDomElement &rDomElement)
     }
 }
 
+void Configuration::loadModelicaFilesSettings(QDomElement &rDomElement)
+{
+    QDomElement modelicaFileElement = rDomElement.firstChildElement(XML_MODELICAFILE);
+    while(!modelicaFileElement.isNull())
+    {
+        mModelicaFiles.append(QFileInfo(modelicaFileElement.text()));
+        modelicaFileElement = modelicaFileElement.nextSiblingElement(XML_MODELICAFILE);
+    }
+}
+
 
 //! @brief Utility function that loads model settings
 void Configuration::loadModelSettings(QDomElement &rDomElement)
@@ -790,6 +810,19 @@ QStringList Configuration::getUserLibs()
 QList<LibraryTypeEnumT> Configuration::getUserLibTypes()
 {
     return mUserLibTypes;
+}
+
+
+//! @brief Returns a list of all loaded Modelica files
+QStringList Configuration::getModelicaFiles()
+{
+    QStringList ret;
+    Q_FOREACH(const QFileInfo &file, mModelicaFiles)
+    {
+        ret << file.absoluteFilePath();
+    }
+
+    return ret;
 }
 
 
@@ -1367,6 +1400,18 @@ bool Configuration::hasUserLib(QString value) const
 {
     QFileInfo file(value);
     return mUserLibs.contains(file);
+}
+
+
+//! @brief Adds a new Modelica file to the configuration
+void Configuration::addModelicaFile(QString value)
+{
+    QFileInfo file(value);
+    if(!mModelicaFiles.contains(file))
+    {
+        mModelicaFiles.append(file);
+    }
+    saveToXml();
 }
 
 

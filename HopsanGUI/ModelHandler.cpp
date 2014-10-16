@@ -334,6 +334,8 @@ bool ModelHandler::closeModelByTabIndex(int tabIdx)
             return closeModel(i);
         }
     }
+
+    gpCentralTabWidget->removeTab(tabIdx);
     return false;
 }
 

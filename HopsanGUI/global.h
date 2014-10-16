@@ -87,7 +87,6 @@ extern OptionsDialog *gpOptionsDialog;
 extern QGridLayout *gpCentralGridLayout;
 extern FindWidget *gpFindWidget;
 extern ModelicaLibrary *gpModelicaLibrary;
-extern ModelicaEditor *gpModelicaEditor;
 
 //Global actions
 extern QAction *gpTogglePortsAction;

@@ -27,6 +27,7 @@
 #include <QStringList>
 #include <QPair>
 #include <QFile>
+#include <QFileDialog>
 
 #include "global.h"
 #include "ModelicaLibrary.h"
@@ -38,7 +39,8 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "Widgets/LibraryWidget.h"
 #include "LibraryHandler.h"
-
+#include "MessageHandler.h"
+#include "Configuration.h"
 
 //! @class ModelicaModel
 //! @brief A class representing a model in the Modelica language
@@ -591,76 +593,119 @@ void ModelicaConnector::getFlowVariables(QMap<QString, QString> &rVariables)
 //! @brief Constructor
 ModelicaLibrary::ModelicaLibrary()
 {
-    //QFile moFile(gpDesktopHandler->getDocumentsPath()+"/Models/modelica.mo");   //Hard-coded for now, should not be like this at all
-    QFile moFile("/home/robbr48/Documents/Subversion/robbr48/Konferenser/2014/EOOLT2014/models/modelica.mo");   //Hard-coded for now, should not be like this at all
-    if(!moFile.open(QFile::ReadOnly | QFile::Text))
-    {
-        return;
-    }
-    QString moCode = moFile.readAll();
-    moFile.close();
-
-    loadFile(moCode);
+    mModelicaFiles = gpConfig->getModelicaFiles();
+    reload();
 }
 
 
-void ModelicaLibrary::loadFile(const QString &code)
+void ModelicaLibrary::reload()
 {
     //! @todo We must check that the code is ok!
 
-    QStringList moLines = code.split("\n");
-    bool inConnector = false;
-    bool inModel = false;
-    QString temp, name;
-    foreach(const QString &line, moLines)
-    {
-        if(line.simplified().startsWith("connector "))
-        {
-            inConnector = true;
-            name = line.simplified().section(" ",1,1).section(" ",0,0);
-        }
-        else if(line.simplified().startsWith("model "))
-        {
-            inModel = true;
-            name = line.simplified().section(" ",1,1).section(" ",0,0);
-        }
-        else if(line.simplified().startsWith("end ") && inConnector)
-        {
-            inConnector = false;
-            temp.append(line);
-            mConnectorsMap.insert(name, temp);
-            temp.clear();
-        }
-        else if(line.simplified().startsWith("end ") && inModel)
-        {
-            inModel = false;
-            temp.append(line);
-            mModelsMap.insert(name, temp);
-            temp.clear();
-        }
+    //Clear all contents first
+    mModelsMap.clear();
+    mConnectorsMap.clear();
 
-        if(inConnector || inModel)
-        {
-            temp.append(line+"\n");
-        }
-    }
-
-    //Update all existing modelica components
-    for(int m=0; gpModelHandler && m<gpModelHandler->count(); ++m)
+    foreach(const QString &file, mModelicaFiles)
     {
-        SystemContainer *pSystem = gpModelHandler->getModel(m)->getTopLevelSystemContainer();
-        for(int c=0; c<pSystem->getModelObjects().size(); ++c)
+        QFile moFile(file);
+        if(!moFile.open(QFile::Text | QFile::ReadOnly))
         {
-            ModelObject *pComp = pSystem->getModelObjects().at(c);
-            if(pComp->getTypeName() == MODELICATYPENAME)
+            gpMessageHandler->addErrorMessage("Unable to read Modelica file: "+file);
+            continue;
+        }
+        QString code = moFile.readAll();
+        moFile.close();
+
+        qDebug() << "Code: " << code;
+
+        QStringList moLines = code.split("\n");
+        bool inConnector = false;
+        bool inModel = false;
+        QString temp, name;
+        foreach(const QString &line, moLines)
+        {
+            if(line.simplified().startsWith("connector "))
             {
-                pComp->setParameterValue("model", pComp->getParameterValue("model"));
+                inConnector = true;
+                name = line.simplified().section(" ",1,1).section(" ",0,0);
+            }
+            else if(line.simplified().startsWith("model "))
+            {
+                inModel = true;
+                name = line.simplified().section(" ",1,1).section(" ",0,0);
+            }
+            else if(line.simplified().startsWith("end ") && inConnector)
+            {
+                inConnector = false;
+                temp.append(line);
+                mConnectorsMap.insert(name, temp);
+                temp.clear();
+            }
+            else if(line.simplified().startsWith("end ") && inModel)
+            {
+                inModel = false;
+                temp.append(line);
+                mModelsMap.insert(name, temp);
+                temp.clear();
+            }
+
+            if(inConnector || inModel)
+            {
+                temp.append(line+"\n");
+            }
+        }
+
+        //Update all existing modelica components
+        for(int m=0; gpModelHandler && m<gpModelHandler->count(); ++m)
+        {
+            SystemContainer *pSystem = gpModelHandler->getModel(m)->getTopLevelSystemContainer();
+            for(int c=0; c<pSystem->getModelObjects().size(); ++c)
+            {
+                ModelObject *pComp = pSystem->getModelObjects().at(c);
+                if(pComp->getTypeName() == MODELICATYPENAME)
+                {
+                    pComp->setParameterValue("model", pComp->getParameterValue("model"));
+                }
             }
         }
     }
 
+
+
+
     if(gpLibraryWidget)
         gpLibraryWidget->update();
+}
+
+void ModelicaLibrary::loadModelicaFile()
+{
+    //Load .fmu file and create paths
+    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, gpMainWindowWidget->tr("Load Modelica File"),
+                                                    gpConfig->getModelicaModelsDir(),
+                                                    gpMainWindowWidget->tr("Modelica files (*.mo)"));
+    if(filePath.isEmpty())      //Cancelled by user
+        return;
+
+    gpConfig->setModelicaModelsDir(QFileInfo(filePath).absoluteFilePath());
+
+    if(!mModelicaFiles.contains(filePath))
+    {
+        mModelicaFiles.append(filePath);
+        gpConfig->addModelicaFile(filePath);
+        reload();
+    }
+}
+
+void ModelicaLibrary::loadModelicaFile(const QString &fileName)
+{
+
+}
+
+void ModelicaLibrary::unloadModelicaFile(const QString &fileName)
+{
+    mModelicaFiles.removeAll(fileName);
+    reload();
 }
 
 QStringList ModelicaLibrary::getModelNames() const
@@ -706,6 +751,11 @@ ModelicaModel ModelicaLibrary::getModel(const QString &rModelName)
 void ModelicaLibrary::getConnector(const QString &rConnectorName, ModelicaConnector &rConnector)
 {
     rConnector = mConnectorsMap.find(rConnectorName).value();
+}
+
+void ModelicaLibrary::getModelicaFiles(QStringList &files) const
+{
+    files = mModelicaFiles;
 }
 
 

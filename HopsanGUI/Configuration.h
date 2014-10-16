@@ -142,6 +142,8 @@ public:
     QStringList getUserLibs();
     QList<LibraryTypeEnumT> getUserLibTypes();
 
+    QStringList getModelicaFiles();
+
     QStringList getRecentModels();
     QStringList getRecentGeneratorModels();
     QStringList getLastSessionModels();
@@ -209,6 +211,7 @@ public:
     void addUserLib(QString value, LibraryTypeEnumT type);
     void removeUserLib(QString value);
     bool hasUserLib(QString value) const;
+    void addModelicaFile(QString value);
     void setSnapping(bool value);
     void addRecentModel(QString value);
     void removeRecentModel(QString value);
@@ -255,6 +258,7 @@ private:
     void loadUnitSettings(QDomElement &rDomElement);
     void loadUnitScales(QDomElement &rDomElement);
     void loadLibrarySettings(QDomElement &rDomElement);
+    void loadModelicaFilesSettings(QDomElement &rDomElement);
     void loadModelSettings(QDomElement &rDomElement);
     void loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement);
 
@@ -280,6 +284,7 @@ private:
     bool mAntiAliasing;
     QList<QFileInfo> mUserLibs;
     QList<LibraryTypeEnumT> mUserLibTypes;
+    QList<QFileInfo> mModelicaFiles;
     bool mSnapping;
     QStringList mRecentModels;
     QStringList mLastSessionModels;

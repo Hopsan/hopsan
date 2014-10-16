@@ -8,7 +8,7 @@ class ModelicaEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ModelicaEditor(QWidget *parent = 0);
+    explicit ModelicaEditor(QString file, QWidget *parent = 0);
 
 signals:
 
@@ -19,6 +19,7 @@ private slots:
 
 private:
     QTextEdit *mpEditor;
+    QString mFileName;
 };
 
 #endif // MODELICAEDITOR_H

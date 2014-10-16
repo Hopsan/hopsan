@@ -8,17 +8,20 @@
 #include "Utilities/HighlightingUtilities.h"
 #include "global.h"
 #include "DesktopHandler.h"
+#include "MessageHandler.h"
 
-ModelicaEditor::ModelicaEditor(QWidget *parent) :
+ModelicaEditor::ModelicaEditor(QString fileName, QWidget *parent) :
     QWidget(parent)
 {
+    mFileName = fileName;
+
     mpEditor = new QTextEdit(this);
     ModelicaHighlighter *pHighlighter = new ModelicaHighlighter(mpEditor->document());
 
-    //QFile moFile(gpDesktopHandler->getDocumentsPath()+"/Models/modelica.mo");   //Hard-coded for now, should not be like this at all
-    QFile moFile("/home/robbr48/Documents/Subversion/robbr48/Konferenser/2014/EOOLT2014/models/modelica.mo");   //Hard-coded for now, should not be like this at all
+    QFile moFile(mFileName);
     if(!moFile.open(QFile::ReadOnly | QFile::Text))
     {
+        gpMessageHandler->addErrorMessage("Unable to read from Modelica file: "+mFileName);
         return;
     }
     mpEditor->setText(moFile.readAll());
@@ -35,7 +38,16 @@ ModelicaEditor::ModelicaEditor(QWidget *parent) :
 
 void ModelicaEditor::reloadFile()
 {
-    gpModelicaLibrary->loadFile(mpEditor->toPlainText());
+    QFile moFile(mFileName);
+    if(!moFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate))
+    {
+        gpMessageHandler->addErrorMessage("Unable to write to Modelica file: "+mFileName);
+        return;
+    }
+    moFile.write(mpEditor->toPlainText().toUtf8());
+    moFile.close();
+
+    gpModelicaLibrary->reload();
 }
 
 

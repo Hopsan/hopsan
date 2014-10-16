@@ -40,6 +40,8 @@
 #include "Utilities/HelpPopUpWidget.h"
 #include "ModelicaLibrary.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
+#include "ModelicaEditor.h"
+#include "ProjectTabWidget.h"
 
 //! @todo Ok dont know where I should put this, putting it here for now /Peter
 QString gHopsanCoreVersion = getHopsanCoreVersion();
@@ -448,17 +450,11 @@ void LibraryWidget::update()
         mpLoadLibraryItem->setToolTip(0, "Load external library");
         mpTree->addTopLevelItem(mpLoadLibraryItem);
 
-        mpAddModelicaComponentItem = new QTreeWidgetItem();
-        mpAddModelicaComponentItem->setText(0, "Add Modelica component");
-        mpAddModelicaComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-        mpAddModelicaComponentItem->setToolTip(0, "Add Modelica component");
-        mpTree->addTopLevelItem(mpAddModelicaComponentItem);
-
-        mpAddCppComponentItem = new QTreeWidgetItem();
-        mpAddCppComponentItem->setText(0, "Add C++ component");
-        mpAddCppComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-        mpAddCppComponentItem->setToolTip(0, "Add C++ component");
-        mpTree->addTopLevelItem(mpAddCppComponentItem);
+        mpAddModelicaFileItem = new QTreeWidgetItem();
+        mpAddModelicaFileItem->setText(0, "Load Modelica file");
+        mpAddModelicaFileItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaFileItem->setToolTip(0, "Load Modelica file");
+        mpTree->addTopLevelItem(mpAddModelicaFileItem);
 
         mpLoadLibraryItemDual = new QTreeWidgetItem();
         mpLoadLibraryItemDual->setText(0, "Load external library");
@@ -466,17 +462,25 @@ void LibraryWidget::update()
         mpLoadLibraryItemDual->setToolTip(0, "Load external library");
         mpDualTree->addTopLevelItem(mpLoadLibraryItemDual);
 
-        mpAddModelicaComponentItemDual = new QTreeWidgetItem();
-        mpAddModelicaComponentItemDual->setText(0, "Add Modelica component");
-        mpAddModelicaComponentItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-        mpAddModelicaComponentItemDual->setToolTip(0, "Add Modelica component");
-        mpDualTree->addTopLevelItem(mpAddModelicaComponentItemDual);
+        mpAddModelicaFileItemDual = new QTreeWidgetItem();
+        mpAddModelicaFileItemDual->setText(0, "Load Modelica file");
+        mpAddModelicaFileItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaFileItemDual->setToolTip(0, "Load Modelica file");
+        mpDualTree->addTopLevelItem(mpAddModelicaFileItemDual);
+    }
 
-        mpAddCppComponentItemDual = new QTreeWidgetItem();
-        mpAddCppComponentItemDual->setText(0, "Add C++ component");
-        mpAddCppComponentItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
-        mpAddCppComponentItemDual->setToolTip(0, "Add C++ component");
-        mpDualTree->addTopLevelItem(mpAddCppComponentItemDual);
+    //Append Modelica files
+    QStringList paths;
+    gpModelicaLibrary->getModelicaFiles(paths);
+
+    foreach(const QString &path, paths)
+    {
+        QTreeWidgetItem *pModelicaItem = new QTreeWidgetItem();
+        pModelicaItem->setText(0, QFileInfo(path).fileName());
+        pModelicaItem->setToolTip(0, path);
+        pModelicaItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-New.png"));
+        mItemToModelicaFileNameMap.insert(pModelicaItem, path);
+        mpTree->addTopLevelItem(pModelicaItem);
     }
 
     if(!filter.isEmpty())
@@ -551,6 +555,16 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
 
         gpHelpPopupWidget->hide();
     }
+    else if(mItemToModelicaFileNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
+    {
+        QString filePath = mItemToModelicaFileNameMap.find(item).value();
+        qDebug() << "Opening: " << filePath;
+
+        ModelicaEditor *pEditor = new ModelicaEditor(filePath, gpCentralTabWidget);
+        gpCentralTabWidget->setCurrentIndex(gpCentralTabWidget->addTab(pEditor, QFileInfo(filePath).fileName()));
+
+
+    }
     else if(mFolderToContentsMap.contains(item))
     {
         QStringList typeNames = mFolderToContentsMap.find(item).value();
@@ -575,22 +589,34 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
         gpLibraryHandler->loadLibrary();
         return;
     }
-    else if((item == mpAddModelicaComponentItem || item == mpAddModelicaComponentItemDual) && qApp->mouseButtons() == Qt::LeftButton)
+    else if((item == mpAddModelicaFileItem || item == mpAddModelicaFileItemDual) && qApp->mouseButtons() == Qt::LeftButton)
     {
-        gpLibraryHandler->createNewModelicaComponent();
-        return;
-    }
-    else if((item == mpAddCppComponentItem || item == mpAddCppComponentItemDual) && qApp->mouseButtons() == Qt::LeftButton)
-    {
-        gpLibraryHandler->createNewCppComponent();
+        //gpLibraryHandler->createNewModelicaComponent();
+        gpModelicaLibrary->loadModelicaFile();
         return;
     }
 
     if(qApp->mouseButtons() == Qt::RightButton)
     {
-        if(item == mpLoadLibraryItem || item == mpLoadLibraryItemDual || item == mpAddCppComponentItem ||
-           item == mpAddCppComponentItemDual || item == mpAddModelicaComponentItem || item == mpAddModelicaComponentItemDual)
+        //Ignore right-click for load library and add modelica file items
+        if(item == mpLoadLibraryItem || item == mpLoadLibraryItemDual ||
+           item == mpAddModelicaFileItem || item == mpAddModelicaFileItemDual)
         {
+            return;
+        }
+
+        //Context menu for Modelica file items
+        if(mItemToModelicaFileNameMap.keys().contains(item))
+        {
+            QMenu contextMenu;
+            QAction *pUnloadAction = contextMenu.addAction("Unload Modelica File");
+
+            QAction *pSelectedAction = contextMenu.exec(QCursor::pos());
+
+            if(pSelectedAction == pUnloadAction)
+            {
+                gpModelicaLibrary->unloadModelicaFile(mItemToModelicaFileNameMap.find(item).value());
+            }
             return;
         }
 

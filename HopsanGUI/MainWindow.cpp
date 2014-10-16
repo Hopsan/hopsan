@@ -224,10 +224,6 @@ void MainWindow::createContents()
     //Create the Modelica handler
     gpModelicaLibrary = new ModelicaLibrary();
 
-    //Create the Modelica editor
-    gpModelicaEditor = new ModelicaEditor(this);
-    gpModelicaEditor->hide();
-
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -326,7 +322,6 @@ void MainWindow::createContents()
 
     // Set the correct position of the help popup message in the central widget
     mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
-    mpCentralGridLayout->addWidget(gpModelicaEditor,0,0,4,4);
     mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
     mpCentralGridLayout->setColumnMinimumWidth(0,5);
     mpCentralGridLayout->setColumnStretch(0,0);
@@ -827,9 +822,6 @@ void MainWindow::createActions()
     mpDebug1Action->setCheckable(true);
     mpDebug1Action->setShortcut(QKeySequence("Ctrl+D+1"));
     this->addAction(mpDebug1Action);
-    //connect(mpDebug1Action, SIGNAL(triggered()), mpModelHandler, SLOT(launchDebugger()));
-    connect(mpDebug1Action, SIGNAL(toggled(bool)), gpModelicaEditor, SLOT(setVisible(bool)));
-    connect(mpDebug1Action, SIGNAL(toggled(bool)), mpCentralTabs, SLOT(setHidden(bool)));
 
     mpDebug2Action = new QAction(this);
     mpDebug2Action->setShortcut(QKeySequence("Ctrl+D+2"));

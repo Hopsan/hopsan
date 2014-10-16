@@ -80,15 +80,20 @@ class ModelicaLibrary
 {
 public:
     ModelicaLibrary();
-    void loadFile(const QString &code);
+    void reload();
+    void loadModelicaFile();
+    void loadModelicaFile(const QString &fileName);
+    void unloadModelicaFile(const QString &fileName);
     QStringList getModelNames() const;
     QStringList getConnectorNames() const;
     bool hasModel(const QString &rModelName);
     ModelicaModel getModel(const QString &rModelName);
     void getConnector(const QString &rConnectorName, ModelicaConnector &rConnector);
+    void getModelicaFiles(QStringList &files) const;
 private:
     QMap<QString, ModelicaConnector> mConnectorsMap;
     QMap<QString, ModelicaModel> mModelsMap;
+    QStringList mModelicaFiles;
 };
 
 #endif // MODELICAHANDLER_H
