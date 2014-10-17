@@ -537,6 +537,7 @@ QStringList getHopsanCoreSourceFiles()
                 "../HopsanCore/src/ComponentUtilities/matrix.cc" <<
                 "../HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc" <<
                 "../HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc" <<
+                "../HopsanCore/src/ComponentUtilities/PLOParser.cc" <<
                 "../HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp" <<
                 "../HopsanCore/src/CoreUtilities/GeneratorHandler.cpp" <<
                 "../HopsanCore/src/CoreUtilities/HmfLoader.cc" <<
