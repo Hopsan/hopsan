@@ -924,11 +924,12 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     if(!xmlParameters.isNull())
     {
         QDomElement xmlParameter = xmlParameters.firstChildElement(CAF_PARAMETER);
-        if(!xmlParameter.isNull())
+        while(!xmlParameter.isNull())
         {
             QString name = xmlParameter.attribute(CAF_NAME);
             QString value = xmlParameter.text();
             mOverridedDefaultParameters.insert(name, value);
+            xmlParameter = xmlParameter.nextSiblingElement(CAF_PARAMETER);
         }
     }
 
