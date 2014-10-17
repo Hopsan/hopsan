@@ -593,6 +593,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.h" <<
                     "../HopsanCore/include/ComponentUtilities/ValveHysteresis.h" <<
                     "../HopsanCore/include/ComponentUtilities/WhiteGaussianNoise.h" <<
+                    "../HopsanCore/include/ComponentUtilities/PLOParser.h" <<
                     "../HopsanCore/include/CoreUtilities/ClassFactory.hpp" <<
                     "../HopsanCore/include/CoreUtilities/ClassFactoryStatusCheck.hpp" <<
                     "../HopsanCore/include/CoreUtilities/CoSimulationUtilities.h" <<
