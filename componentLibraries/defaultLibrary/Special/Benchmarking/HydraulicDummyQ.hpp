@@ -38,7 +38,7 @@ namespace hopsan {
         void configure()
         {
             addInputVariable("in", "", "", 0.0, &mpIn);
-            mpP2 = addPowerPort("P1", "NodeHydraulic");
+            mpP2 = addPowerPort("P1", "NodeHydraulic","",Port::NotRequired);
         }
 
 

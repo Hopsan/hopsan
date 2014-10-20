@@ -168,7 +168,7 @@ namespace hopsan {
             }
 
             //Print debug output
-            (*mpND_Debug1) = xva[0];
+            (*mpND_Debug1) = a1;
             (*mpND_Debug2) = xvb[0];
             (*mpND_Debug3) = xva[2];
 
@@ -258,7 +258,14 @@ namespace hopsan {
 
             double ret=0;
 
-            x = fmod(x-start-min_angle, 360);
+            if(x<0)
+            {
+                x = 360-fmod(abs(x)-start-min_angle, 360);
+            }
+            else
+            {
+                x = fmod(x-start-min_angle, 360);
+            }
             double temp = 1.0/360.0*2*Rf*pi;
             x = x*temp;
             phi = phi*temp;
