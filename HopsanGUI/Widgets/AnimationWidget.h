@@ -171,12 +171,11 @@ private:
     //Private animation variables
     double mCurrentAnimationTime;
     double mLastAnimationTime;
-    int mSimulationSpeed;
+    double mSimulationSpeed;
     double mTimeStep;
     int mIndex;
     bool mRealTime;
     int mFps;
-    int mSpeedSliderSensitivity;
     double mTotalTime;
     double mnSamples;
 

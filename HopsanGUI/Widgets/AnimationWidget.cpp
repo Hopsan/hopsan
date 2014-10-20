@@ -120,7 +120,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpSpeedSpinBox = new QDoubleSpinBox(this);
     mpSpeedSpinBox->setMinimum(-10.0);
     mpSpeedSpinBox->setMaximum(10.0);
-    mpSpeedSpinBox->setDecimals(2);
+    mpSpeedSpinBox->setDecimals(10);
     mpSpeedSpinBox->setSingleStep(0.01);
 
     //Create the layout and add widgets
@@ -151,10 +151,9 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mRealTime=true;
     mCurrentAnimationTime = 0;
     mLastAnimationTime = 0;
-    mSimulationSpeed = 100;
+    mSimulationSpeed = 1;
     mTimeStep = gpModelHandler->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
     mFps=60;   //Frames per second
-    mSpeedSliderSensitivity=100;
 
     mIntensityMaxMap.insert("NodeHydraulic", mpAnimationData->hydraulicMaxPressure);
     mIntensityMinMap.insert("NodeHydraulic", mpAnimationData->hydraulicMinPressure);
@@ -473,7 +472,7 @@ void AnimationWidget::changeIndex(int newIndex)
 void AnimationWidget::updateAnimationSpeed(double speed)
 {
     //Speed slider sensitivity must be multiplied, because of int->double resolution
-    mSimulationSpeed = speed*mSpeedSliderSensitivity;
+    mSimulationSpeed = speed;
     if(mSimulationSpeed == 0)
     {
         //Stop animation timer if speed is zero (it sholdn't be running for no reason)
@@ -500,7 +499,7 @@ void AnimationWidget::updateAnimation()
     if(!mRealTime && !mTimeValues.isEmpty())      //Not real-time simulation
     {
         //Calculate animation time (with limitations)
-        mCurrentAnimationTime = mLastAnimationTime+double(mSimulationSpeed)/mSpeedSliderSensitivity/mFps;
+        mCurrentAnimationTime = mLastAnimationTime+double(mSimulationSpeed)/mFps;
         mCurrentAnimationTime = std::min(mTotalTime, std::max(0.0, mCurrentAnimationTime));
         mLastAnimationTime = mCurrentAnimationTime;
 
@@ -523,7 +522,7 @@ void AnimationWidget::updateAnimation()
     else    //Real-time simualtion
     {
         //Calculate time to simulate (equals interval of animation timer)
-        double dT = double(mSimulationSpeed)/double(mSpeedSliderSensitivity)/double(mFps);
+        double dT = mSimulationSpeed/double(mFps);
 
         //Simulate one interval (does NOT equal one time step, time step is usually much smaller)
         mpContainer->getCoreSystemAccessPtr()->simulate(mLastAnimationTime, mLastAnimationTime+dT, -1, true);
