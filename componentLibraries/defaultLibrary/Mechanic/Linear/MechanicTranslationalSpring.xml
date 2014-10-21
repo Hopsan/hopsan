@@ -27,7 +27,7 @@
                 <data port="P2" dataname="Position" idx="1"/>
                 <start x="0" y="0" a="0"/>
                 <movement x="-8.3333333" y="0" a="0" idx="0"/>
-                <resize x="0.5" y="0" idx1="0" idx2="1"/>
+                <resize x="-0.5" y="0" idx1="0" idx2="1"/>
                 <initscale x="1" y="1"/>
                 <movingport startx="0" portname="P1" starty="10"/>
             </movable>

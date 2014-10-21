@@ -71,18 +71,18 @@ public:
     double startX;
     double startY;
     double startTheta;
-    double movementX;
-    double movementY;
-    double movementTheta;
-    int movementDataIdx;
+    QList<double> movementX;
+    QList<double> movementY;
+    QList<double> movementTheta;
+    QList<int> movementDataIdx;
 
     //Resize
     double initScaleX;
     double initScaleY;
-    double resizeX;
-    double resizeY;
-    int scaleDataIdx1;
-    int scaleDataIdx2;
+    QList<double> resizeX;
+    QList<double> resizeY;
+    QList<int> scaleDataIdx1;
+    QList<int> scaleDataIdx2;
 
     //Color
     double initColorR;

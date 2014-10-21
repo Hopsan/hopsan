@@ -395,16 +395,39 @@ void AnimatedIconPropertiesDialog::updateValues()
         mpStartXLineEdits[i]->setText(QString::number(mpData->movables[i].startX));
         mpStartYLineEdits[i]->setText(QString::number(mpData->movables[i].startY));
         mpStartThetaLineEdits[i]->setText(QString::number(mpData->movables[i].startTheta));
-        mpMovementXLineEdits[i]->setText(QString::number(mpData->movables[i].movementX));
-        mpMovementYLineEdits[i]->setText(QString::number(mpData->movables[i].movementY));
-        mpMovementThetaLineEdits[i]->setText(QString::number(mpData->movables[i].movementTheta));
-        mpMovementDataIdxLineEdits[i]->setText(QString::number(mpData->movables[i].movementDataIdx));
+
+        QStringList tempStr1,tempStr2,tempStr3,tempStr4;
+        for(int r=0; r<mpData->movables[i].movementX.size(); ++r)
+        {
+            tempStr1.append(QString::number(mpData->movables[i].movementX[r]));
+            tempStr2.append(QString::number(mpData->movables[i].movementY[r]));
+            tempStr3.append(QString::number(mpData->movables[i].movementTheta[r]));
+            tempStr4.append(QString::number(mpData->movables[i].movementDataIdx[r]));
+        }
+        mpMovementXLineEdits[i]->setText(tempStr1.join(","));
+        mpMovementYLineEdits[i]->setText(tempStr2.join(","));
+        mpMovementThetaLineEdits[i]->setText(tempStr3.join(","));
+        mpMovementDataIdxLineEdits[i]->setText(tempStr4.join(","));
+
         mpInitScaleXLineEdits[i]->setText(QString::number(mpData->movables[i].initScaleX));
         mpInitScaleYLineEdits[i]->setText(QString::number(mpData->movables[i].initScaleY));
-        mpResizeXLineEdits[i]->setText(QString::number(mpData->movables[i].resizeX));
-        mpResizeYLineEdits[i]->setText(QString::number(mpData->movables[i].resizeY));
-        mpScaleDataIdx1LineEdits[i]->setText(QString::number(mpData->movables[i].scaleDataIdx1));
-        mpScaleDataIdx2LineEdits[i]->setText(QString::number(mpData->movables[i].scaleDataIdx2));
+
+        tempStr1.clear();
+        tempStr2.clear();
+        tempStr3.clear();
+        tempStr4.clear();
+        for(int r=0; r<mpData->movables[i].resizeX.size(); ++r)
+        {
+            tempStr1.append(QString::number(mpData->movables[i].resizeX[r]));
+            tempStr2.append(QString::number(mpData->movables[i].resizeY[r]));
+            tempStr3.append(QString::number(mpData->movables[i].scaleDataIdx1[r]));
+            tempStr4.append(QString::number(mpData->movables[i].scaleDataIdx2[r]));
+        }
+        mpResizeXLineEdits[i]->setText(tempStr1.join(","));
+        mpResizeYLineEdits[i]->setText(tempStr2.join(","));
+        mpScaleDataIdx1LineEdits[i]->setText(tempStr3.join(","));
+        mpScaleDataIdx2LineEdits[i]->setText(tempStr4.join(","));
+
         QString r = QString::number(mpData->movables[i].initColorR);
         QString g = QString::number(mpData->movables[i].initColorG);
         QString b = QString::number(mpData->movables[i].initColorB);
@@ -472,17 +495,43 @@ void AnimatedIconPropertiesDialog::setValues()
         m.startX = mpStartXLineEdits[i]->text().toDouble();
         m.startY = mpStartYLineEdits[i]->text().toDouble();
         m.startTheta = mpStartThetaLineEdits[i]->text().toDouble();
-        m.movementX = mpMovementXLineEdits[i]->text().toDouble();
-        m.movementY = mpMovementYLineEdits[i]->text().toDouble();
-        m.movementTheta = mpMovementThetaLineEdits[i]->text().toDouble();
-        m.movementDataIdx = mpMovementDataIdxLineEdits[i]->text().toInt();
+
+        QStringList tempStr1 = mpMovementXLineEdits[i]->text().split(",");
+        QStringList tempStr2 = mpMovementYLineEdits[i]->text().split(",");
+        QStringList tempStr3 = mpMovementDataIdxLineEdits[i]->text().split(",");
+        QStringList tempStr4 = mpScaleDataIdx2LineEdits[i]->text().split(",");
+
+        m.movementX.clear();
+        m.movementY.clear();
+        m.movementTheta.clear();
+        m.movementDataIdx.clear();
+        for(int r=0; r<tempStr1.size(); ++r)
+        {
+            m.movementX.append(tempStr1[r].toDouble());
+            m.movementY.append(tempStr2[r].toDouble());
+            m.scaleDataIdx1.append(tempStr3[r].toDouble());
+            m.movementDataIdx.append(tempStr4[r].toInt());
+        }
 
         m.initScaleX = mpInitScaleXLineEdits[i]->text().toDouble();
         m.initScaleY = mpInitScaleYLineEdits[i]->text().toDouble();
-        m.resizeX = mpResizeXLineEdits[i]->text().toDouble();
-        m.resizeY = mpResizeYLineEdits[i]->text().toDouble();
-        m.scaleDataIdx1 = mpScaleDataIdx1LineEdits[i]->text().toInt();
-        m.scaleDataIdx2 = mpScaleDataIdx2LineEdits[i]->text().toInt();
+
+        tempStr1 = mpResizeXLineEdits[i]->text().split(",");
+        tempStr2 = mpResizeYLineEdits[i]->text().split(",");
+        tempStr3 = mpScaleDataIdx1LineEdits[i]->text().split(",");
+        tempStr4 = mpScaleDataIdx2LineEdits[i]->text().split(",");
+
+        m.resizeX.clear();
+        m.resizeY.clear();
+        m.scaleDataIdx1.clear();
+        m.scaleDataIdx2.clear();
+        for(int r=0; r<tempStr1.size(); ++r)
+        {
+            m.resizeX.append(tempStr1[r].toDouble());
+            m.resizeY.append(tempStr2[r].toDouble());
+            m.scaleDataIdx1.append(tempStr3[r].toInt());
+            m.scaleDataIdx2.append(tempStr4[r].toInt());
+        }
 
         QStringList splitInitColor = mpInitColorLineEdits[i]->text().split(",");
         if(splitInitColor.size() == 4)

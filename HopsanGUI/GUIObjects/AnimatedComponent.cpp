@@ -97,6 +97,10 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                         mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyVariableDataVector(makeConcatName(tempComponentName, tempPortName, dataName),generation));
                     }
                     mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
+                    if(!mpNodeDataPtrs->last().last())
+                    {
+                        mpNodeDataPtrs->last().last() = new double(0);
+                    }
                     //qDebug() << "mpData = " << *mpData;
                 }
             }
@@ -171,7 +175,7 @@ void AnimatedComponent::updateAnimation()
                 {
                     for(int i=0; i<mpNodeDataPtrs->at(m).size(); ++i)
                     {
-                        data.append(*mpNodeDataPtrs->at(m).at(i));
+                            data.append(*mpNodeDataPtrs->at(m).at(i));
                     }
                     data.append(0);
                     //mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);
@@ -189,6 +193,10 @@ void AnimatedComponent::updateAnimation()
                     {
                         data.append(mpData->at(m).at(i).at(mpAnimationWidget->getIndex()));
                     }
+                    else
+                    {
+                        data.append(0);
+                    }
                 }
             }
 
@@ -197,54 +205,69 @@ void AnimatedComponent::updateAnimation()
                 continue;
             }
 
-            int idx = mpAnimationData->movables[m].movementDataIdx;
+            //Set position and rotation
+            double x = mpAnimationData->movables[m].startX;
+            double y = mpAnimationData->movables[m].startY;
+            double rot = mpAnimationData->movables[m].startTheta;
+            for(int j=0; j<mpAnimationData->movables[m].movementX.size(); ++j)
+            {
+                int idx = mpAnimationData->movables[m].movementDataIdx[j];
+                x -= data[idx]*mpAnimationData->movables[m].movementX[j];
+                y -= data[idx]*mpAnimationData->movables[m].movementY[j];
+                rot -= data[idx]*mpAnimationData->movables[m].movementTheta[j];
+            }
 
             //Apply parameter multipliers/divisors
             if(mpAnimationData->movables[m].useMultipliers)    //! @todo Multipliers and divisors currently only work for first data
             {
-                data[idx] = data[idx]*mpAnimationData->movables[m].multiplierValue;
+                x *= mpAnimationData->movables[m].multiplierValue;
+                y *= mpAnimationData->movables[m].multiplierValue;
+                rot *= mpAnimationData->movables[m].multiplierValue;
             }
             if(mpAnimationData->movables[m].useDivisors)
             {
-                data[idx] = data[idx]/mpAnimationData->movables[m].divisorValue;
+                x /= mpAnimationData->movables[m].divisorValue;
+                y /= mpAnimationData->movables[m].divisorValue;
+                rot /= mpAnimationData->movables[m].divisorValue;
             }
 
-            //Set rotation
-            if(mpAnimationData->movables[m].movementTheta != 0.0)
-            {
-                double rot = mpAnimationData->movables[m].startTheta - data[idx]*mpAnimationData->movables[m].movementTheta;
-                mpMovables[m]->setRotation(rot);
-            }
-
-            //Set position
-            if(mpAnimationData->movables[m].movementX != 0.0 || mpAnimationData->movables[m].movementY != 0.0)
-            {
-                double x = mpAnimationData->movables[m].startX - data[idx]*mpAnimationData->movables[m].movementX;
-                double y = mpAnimationData->movables[m].startY - data[idx]*mpAnimationData->movables[m].movementY;
-                mpMovables[m]->setPos(x, y);
-            }
+            //Apply new position
+            mpMovables[m]->setPos(x, y);
+            mpMovables[m]->setRotation(rot);
 
             //Set scale
-            if(mpAnimationData->movables[m].resizeX != 0.0 || mpAnimationData->movables[m].resizeY != 0.0)
+            if(!mpAnimationData->movables[m].resizeX.isEmpty())
             {
-                int idx1 = mpAnimationData->movables[m].scaleDataIdx1;
-                int idx2 = mpAnimationData->movables[m].scaleDataIdx2;
-                double scaleData;
-                if(idx1 != idx2)
+                double totalScaleX = 1;
+                double totalScaleY = 1;
+
+                for(int r=0; r<mpAnimationData->movables[m].resizeX.size(); ++r)
                 {
-                    scaleData = data[idx1]-data[idx2];
+                    int idx1 = mpAnimationData->movables[m].scaleDataIdx1[r];
+                    int idx2 = mpAnimationData->movables[m].scaleDataIdx2[r];
+                    double scaleData;
+                    if(idx1 != idx2 && idx2 > 0)
+                    {
+                        scaleData = data[idx1]-data[idx2];
+                    }
+                    else
+                    {
+                        scaleData = data[idx1];
+                    }
+                    double scaleX = mpAnimationData->movables[m].resizeX[r]*scaleData;
+                    double scaleY = mpAnimationData->movables[m].resizeY[r]*scaleData;
+
+                    totalScaleX *= scaleX;
+                    totalScaleY *= scaleY;
                 }
-                else
-                {
-                    scaleData = data[idx1];
-                }
-                double scaleX = mpAnimationData->movables[m].resizeX*scaleData;
-                double scaleY = mpAnimationData->movables[m].resizeY*scaleData;
                 double initX = mpAnimationData->movables[m].initScaleX;
                 double initY = mpAnimationData->movables[m].initScaleY;
+                totalScaleX = initX - totalScaleX;
+                totalScaleY = initY - totalScaleY;
+
                 mpMovables[m]->resetTransform();
                 //mpMovables[m]->scale(initX-scaleX, initY-scaleY);
-                mpMovables[m]->setTransform(QTransform::fromScale(initX-scaleX, initY-scaleY), true);
+                mpMovables[m]->setTransform(QTransform::fromScale(totalScaleX, totalScaleY), true);
             }
 
             //Set color
@@ -311,8 +334,8 @@ void AnimatedComponent::updateAnimation()
                 double portStartY = mpAnimationData->movables[m].movablePortStartY[p];
 
                 QPointF pos;
-                pos.setX(portStartX-data[0]*mpAnimationData->movables[m].movementX);
-                pos.setY(portStartY-data[0]*mpAnimationData->movables[m].movementY);
+                pos.setX(portStartX+x);
+                pos.setY(portStartY+y);
                 mPortPositions.insert(portName, pos);
             }
         }

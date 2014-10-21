@@ -37,7 +37,7 @@ namespace hopsan {
         Port *mpP1, *mpP2;
         // Node data pointers
         double *mpP1_f, *mpP1_x, *mpP1_v, *mpP1_c, *mpP1_Zx, *mpP1_me;
-        double *mP2D_f, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zx, *mpP2_me;
+        double *mpP2_f, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zx, *mpP2_me;
         double *mpB, *mpK, *mpXMin, *mpXMax;
         // Constants
         double mMass;
@@ -83,7 +83,7 @@ namespace hopsan {
             mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
             mpP1_me = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
 
-            mP2D_f = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpP2_f = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
             mpP2_x = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
             mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
             mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
@@ -93,7 +93,7 @@ namespace hopsan {
             //Initialization
             double f1, x1, v1, f2, x2, v2;
             f1 = (*mpP1_f);
-            f2 = (*mP2D_f);
+            f2 = (*mpP2_f);
             x1 = (*mpP1_x);
             v1 = (*mpP1_v);
             x2 = (*mpP2_x);
@@ -174,7 +174,7 @@ namespace hopsan {
             (*mpP1_f) = f1;
             (*mpP1_x) = x1;
             (*mpP1_v) = v1;
-            (*mP2D_f) = f2;
+            (*mpP2_f) = f2;
             (*mpP2_x) = x2;
             (*mpP2_v) = v2;
             (*mpP1_me) = mMass;
