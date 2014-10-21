@@ -498,8 +498,8 @@ void AnimatedIconPropertiesDialog::setValues()
 
         QStringList tempStr1 = mpMovementXLineEdits[i]->text().split(",");
         QStringList tempStr2 = mpMovementYLineEdits[i]->text().split(",");
-        QStringList tempStr3 = mpMovementDataIdxLineEdits[i]->text().split(",");
-        QStringList tempStr4 = mpScaleDataIdx2LineEdits[i]->text().split(",");
+        QStringList tempStr3 = mpMovementThetaLineEdits[i]->text().split(",");
+        QStringList tempStr4 = mpMovementDataIdxLineEdits[i]->text().split(",");
 
         m.movementX.clear();
         m.movementY.clear();
@@ -509,7 +509,7 @@ void AnimatedIconPropertiesDialog::setValues()
         {
             m.movementX.append(tempStr1[r].toDouble());
             m.movementY.append(tempStr2[r].toDouble());
-            m.scaleDataIdx1.append(tempStr3[r].toDouble());
+            m.movementTheta.append(tempStr3[r].toDouble());
             m.movementDataIdx.append(tempStr4[r].toInt());
         }
 
@@ -616,8 +616,23 @@ void AnimatedIconPropertiesDialog::resetValues()
     gpLibraryHandler->getModelObjectAppearancePtr(mpAnimatedComponent->mpModelObject->getTypeName())->getAnimationDataPtr()->saveToDomElement(animationRoot);
     QString baseIconPath = gpLibraryHandler->getModelObjectAppearancePtr(mpAnimatedComponent->mpModelObject->getTypeName())->getAnimationDataPtr()->baseIconPath;
 
+    //Store icon paths (they are not included in saveToDomElement() )
+    QStringList iconPaths;
+    foreach(const ModelObjectAnimationMovableData &m, mpData->movables)
+    {
+        iconPaths << m.iconPath;
+    }
+
+    //! @todo Maybe more things are not included in saveToDomElement(), make sure they are added here...
+
     mpData->movables.clear();
     mpData->readFromDomElement(animationRoot,baseIconPath);
+
+    //Restore icon paths
+    for(int m=0; m<iconPaths.size(); ++m)
+    {
+        mpData->movables[m].iconPath = iconPaths[m];
+    }
 
     updateValues();
 }

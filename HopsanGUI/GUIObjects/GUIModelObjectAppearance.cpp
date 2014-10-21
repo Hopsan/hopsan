@@ -463,9 +463,13 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                 }
                 while(!xmlMovingPorts.isNull())
                 {
-                    m.movablePortNames.append(xmlMovingPorts.attribute(CAF_PORTNAME));
-                    m.movablePortStartX.append(xmlMovingPorts.attribute(CAF_STARTX).toDouble());
-                    m.movablePortStartY.append(xmlMovingPorts.attribute(CAF_STARTY).toDouble());
+                    QString portName = xmlMovingPorts.attribute(CAF_PORTNAME);
+                    if(!portName.isEmpty() && !m.movablePortNames.contains(portName))   //Don't load tags without a port name, and tags that has already been loaded
+                    {
+                        m.movablePortNames.append(xmlMovingPorts.attribute(CAF_PORTNAME));
+                        m.movablePortStartX.append(xmlMovingPorts.attribute(CAF_STARTX).toDouble());
+                        m.movablePortStartY.append(xmlMovingPorts.attribute(CAF_STARTY).toDouble());
+                    }
                     xmlMovingPorts = xmlMovingPorts.nextSiblingElement(CAF_MOVINGPORT);
                 }
 
