@@ -1153,9 +1153,14 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             filter = tr("Hopsan Parameter Files (*.hpf)");
         }
 
+        QString modelPath = getTopLevelSystemContainer()->getModelFileInfo().absolutePath();
+        if(modelPath.isEmpty())
+        {
+            modelPath = gpConfig->getLoadModelDir();
+        }
 
         modelFilePathToSave = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                     gpConfig->getLoadModelDir(),
+                                                     modelPath,
                                                      filter);
 
         if(modelFilePathToSave.isEmpty())     //Don't save anything if user presses cancel
