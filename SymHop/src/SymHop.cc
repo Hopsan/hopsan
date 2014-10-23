@@ -429,7 +429,7 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
         mString.replace("e+-", "e-");
 
         //Replace negative symbols with multiplication with -1
-        if(mString.startsWith("-") && mString != "-1.0" && int(mString.toDouble()) != -1)
+        if(mString.startsWith("-") && mString != "-1.0")
         {
             mString = mString.right(mString.size()-1);
             this->replaceBy(Expression::fromFactorsDivisors(QList<Expression>() << Expression("-1") << (*this), QList<Expression>()));

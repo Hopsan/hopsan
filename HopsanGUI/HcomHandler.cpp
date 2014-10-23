@@ -6556,7 +6556,9 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
             pVar2 = mAnsVector;
         }
 
-        LogDataHandler *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+        LogDataHandler *pLogDataHandler = 0;
+        if(mpModel)
+             pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
 
         // Handle both scalars
         if (arg1IsDouble && arg2IsDouble)
@@ -6573,7 +6575,7 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
             return;
         }
         // Handle arg1 is double
-        else if (arg1IsDouble && pVar2)
+        else if (arg1IsDouble && pVar2 && pLogDataHandler)
         {
             QVector<double> res;
             pVar2->elementWiseLt(res, arg1AsDouble);
@@ -6583,7 +6585,7 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
             return;
         }
         // Handle arg2 is double
-        else if (arg2IsDouble && pVar1)
+        else if (arg2IsDouble && pVar1 && pLogDataHandler)
         {
             QVector<double> res;
             pVar1->elementWiseGt(res, arg2AsDouble);
@@ -6593,7 +6595,7 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
             return;
         }
         // Handle both vectors
-        else if (pVar1 && pVar2)
+        else if (pVar1 && pVar2 && pLogDataHandler)
         {
             //! @todo this assumes that both vectors have the same type
             if (pVar1->getDataSize() != pVar2->getDataSize())
