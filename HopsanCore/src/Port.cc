@@ -146,6 +146,23 @@ void Port::registerStartValueParameters()
 }
 
 
+//! @brief Unregisters all startvalue parameters from the start node
+void Port::unRegisterStartValueParameters()
+{
+    if (mpStartNode && !mpParentPort)
+    {
+        for(size_t i=0; i<mpStartNode->getNumDataVariables(); ++i)
+        {
+            const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
+            const HString name = getName()+"#"+pDesc->name;
+            getComponent()->unRegisterParameter(name);
+        }
+    }
+}
+
+
+
+
 //! @brief Load start values by copying the start values from the port to the node
 void Port::loadStartValues()
 {
@@ -312,6 +329,13 @@ void Port::createStartNode(const HString &rNodeType)
     {
         registerStartValueParameters();
     }
+}
+
+//! @brief Removes the start node in the port and unregisters all start value parameters
+void Port::eraseStartNode()
+{
+    unRegisterStartValueParameters();
+    mpStartNode = 0;
 }
 
 //! @note This one should be called by system, do not call this manually (that will create a mess)
@@ -683,6 +707,8 @@ SystemPort::SystemPort(const HString &rNodeType, const HString &rPortName, Compo
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
     // Do nothing special
+
+    createStartNode(mNodeType);
 }
 
 PortTypesEnumT SystemPort::getPortType() const

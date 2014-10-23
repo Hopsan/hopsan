@@ -146,11 +146,13 @@ namespace hopsan {
         virtual void removeSubPort(Port* pPort);
 
         void registerStartValueParameters();
+        void unRegisterStartValueParameters();
 
         void addConnectedPort(Port* pPort, const size_t subPortIdx=0);
         void eraseConnectedPort(Port* pPort, const size_t subPortIdx=0);
 
         void createStartNode(const HString &rNodeType);
+        void eraseStartNode();
 
         void setVariableAlias(const HString &rAlias, const int id);
 

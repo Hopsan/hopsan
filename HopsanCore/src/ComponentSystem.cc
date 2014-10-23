@@ -1071,8 +1071,8 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
     //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
 
     //If type same as before do nothing
-    if (cqs_type !=  mTypeCQS)
-    {
+    //if (cqs_type !=  mTypeCQS)
+    //{
         //Do we have a system parent
         if ( !this->isTopLevelSystem() && !doOnlyLocalSet )
         {
@@ -1085,10 +1085,20 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
             {
             case Component::CType :
                 mTypeCQS = Component::CType;
+                for(size_t i=0; i<mPortPtrVector.size(); ++i)       //C-type, create start node for all power ports
+                {
+                    if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
+                        mPortPtrVector[i]->createStartNode(mPortPtrVector[i]->getNodeType());
+                }
                 break;
 
             case Component::QType :
                 mTypeCQS = Component::QType;
+                for(size_t i=0; i<mPortPtrVector.size(); ++i)   //Q-type, remove start node for all powerports
+                {
+                    if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
+                        mPortPtrVector[i]->eraseStartNode();
+                }
                 break;
 
             case Component::SType :
@@ -1103,7 +1113,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
                 addWarningMessage("Specified type: "+getTypeCQSString()+" does not exist!, System CQStype unchanged");
             }
         }
-    }
+   //}
 }
 
 //! @brief Change the cqs type of a stored subsystem component
@@ -1114,8 +1124,8 @@ bool ComponentSystem::changeSubComponentSystemTypeCQS(const HString &rName, cons
     if (tmpptr != 0)
     {
         // If the ptr was not = 0 then we have found a subsystem, lets change the type
-        if (newType != tmpptr->getTypeCQS())
-        {
+        //if (newType != tmpptr->getTypeCQS())
+        //{
             //Remove old version
             this->removeSubComponentPtrFromStorage(tmpptr);
 
@@ -1124,7 +1134,7 @@ bool ComponentSystem::changeSubComponentSystemTypeCQS(const HString &rName, cons
 
             //readd to system
             this->addSubComponentPtrToStorage(tmpptr);
-        }
+        //}
         return true;
     }
     return false;
