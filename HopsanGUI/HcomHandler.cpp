@@ -676,6 +676,8 @@ void HcomHandler::createCommands()
     setCmd.help.append("   cachetodisk     [on/off]\n");
     setCmd.help.append("   generationlimit [number]\n");
     setCmd.help.append("   samples         [number]");
+    setCmd.help.append("   undo            [on/off]");
+    setCmd.help.append("   backup          [on/off]");
     setCmd.fnc = &HcomHandler::executeSetCommand;
     mCmdList << setCmd;
 
@@ -2902,6 +2904,14 @@ void HcomHandler::executeSetCommand(const QString cmd)
             return;
         }
         mpModel->getViewContainerObject()->setNumberOfLogSamples(samples);
+    }
+    else if(pref == "undo")
+    {
+        if(value != "on" && value != "off")
+        {
+            HCOMERR("Unknown value.");
+        }
+        mpModel->getViewContainerObject()->setUndoEnabled(value == "on", true);
     }
     else if(pref == "backup")
     {
