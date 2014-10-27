@@ -710,6 +710,7 @@ class ThreadSafeVector
 public:
     ThreadSafeVector(std::vector<Component*> data, size_t maxSize)
     {
+        mSize = maxSize;
         mVector.resize(maxSize);
         for(size_t i=0; i<data.size(); ++i)
         {
@@ -725,56 +726,78 @@ public:
     {
         Component *ret;
         mpMutex->lock();
+
+        int idx = (firstIdx%mSize+mSize)%mSize;
+        ret = mVector[idx];
+        mVector[idx] = 0;
+
         if(firstIdx != lastIdx)
-        {
-            ret = mVector[firstIdx];
-            mVector[firstIdx++] = 0;
-        }
-        else
-        {
-            ret = mVector[firstIdx];
-            mVector[firstIdx] = 0;
-        }
+            ++firstIdx;
+
         mpMutex->unlock();
         return ret;
     }
 
     Component *tryAndTakeLast()
     {
-        Component *ret;
-        mpMutex->lock();
+        Component *ret = 0;
+        if(!mpMutex->try_lock())
+            return 0;
         if(lastIdx != firstIdx)
         {
-            ret = mVector[lastIdx];
-            mVector[lastIdx--] = 0;
-        }
-        else
-        {
-            ret = mVector[lastIdx];
-            mVector[lastIdx] = 0;
-
+            int idx = (lastIdx%mSize+mSize)%mSize;
+            ret = mVector[idx];
+            mVector[idx] = 0;
+            --lastIdx;
         }
         mpMutex->unlock();
         return ret;
     }
 
-    void insert(Component* comp)
+    size_t size()       //WARNING! NOT THREAD-SAFE!
+    {
+        return mVector.size();
+    }
+
+    void insertFirst(Component* comp)
     {
         mpMutex->lock();
-        if(firstIdx > 0)
+        int idx = (firstIdx%mSize+mSize)%mSize;
+        if(firstIdx == lastIdx && mVector[idx] == 0)
         {
-            mVector[--firstIdx] = comp;
+            mVector[idx] = comp;
         }
         else
         {
-            mVector[++lastIdx] = comp;
+            --firstIdx;
+            idx = (firstIdx%mSize+mSize)%mSize;
+            mVector[idx] = comp;
+        }
+        mpMutex->unlock();
+    }
+
+
+    void insertLast(Component* comp)
+    {
+        mpMutex->lock();
+        int idx = (firstIdx%mSize+mSize)%mSize;
+        if(firstIdx == lastIdx && mVector[idx] == 0)
+        {
+            mVector[idx] = comp;
+        }
+        else
+        {
+            ++lastIdx;
+            int idx = (lastIdx%mSize+mSize)%mSize;
+            mVector[idx] = comp;
         }
         mpMutex->unlock();
     }
 
 private:
+    int mSize;
     std::vector<Component*> mVector;
-    size_t firstIdx, lastIdx;
+    int firstIdx, lastIdx;
     tbb::mutex *mpMutex;
 };
 
@@ -848,20 +871,23 @@ public:
             while(pComp)
             {
                 pComp->simulate(mTime);
-                mpFinishedVectorC->insert(pComp);
+                mpFinishedVectorC->insertFirst(pComp);
                 pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
             }
 
             //Steal components
-            for(size_t i=0; i<mnThreads; ++i)
+            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
             {
-                if(i == mThreadID) continue;
-                pComp = mpUnFinishedVectorsC->at(i)->tryAndTakeLast();
-                while(pComp)
+                for(size_t i=0; i<mnThreads-1; ++i)
                 {
-                    pComp->simulate(mTime);
-                    mpFinishedVectorC->insert(pComp);
-                    pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeLast();
+                    int j = (mThreadID+1+i)%mnThreads;
+                    pComp = mpUnFinishedVectorsC->at(j)->tryAndTakeLast();
+                    if(pComp)
+                    {
+                        pComp->simulate(mTime);
+                        mpFinishedVectorC->insertLast(pComp);
+                        break;
+                    }
                 }
             }
 
@@ -883,25 +909,28 @@ public:
             while(pComp)
             {
                 pComp->simulate(mTime);
-                mpFinishedVectorQ->insert(pComp);
+                mpFinishedVectorQ->insertFirst(pComp);
                 pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
             }
 
             //Steal components
-            for(size_t i=0; i<mnThreads; ++i)
+            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
             {
-                if(i == mThreadID) continue;
-                pComp = mpUnFinishedVectorsQ->at(i)->tryAndTakeLast();
-                while(pComp)
+                for(size_t i=0; i<mnThreads-1; ++i)
                 {
-                    pComp->simulate(mTime);
-                    mpFinishedVectorQ->insert(pComp);
-                    pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeLast();
+                    int j = (mThreadID+1+i)%mnThreads;
+                    pComp = mpUnFinishedVectorsQ->at(j)->tryAndTakeLast();
+                    if(pComp)
+                    {
+                        pComp->simulate(mTime);
+                        mpFinishedVectorQ->insertLast(pComp);
+                        break;
+                    }
                 }
             }
 
             for(size_t i=0; i<mpSimTimes.size(); ++i)
-                *mpSimTimes[i] = mTime;
+            *mpSimTimes[i] = mTime;
 
             //! Log Nodes !//
 
@@ -991,20 +1020,23 @@ public:
             while(pComp)
             {
                 pComp->simulate(mTime);
-                mpFinishedVectorC->insert(pComp);
+                mpFinishedVectorC->insertFirst(pComp);
                 pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
             }
 
             //Steal components
-            for(size_t i=0; i<mnThreads; ++i)
+            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
             {
-                if(i == mThreadID) continue;
-                pComp = mpUnFinishedVectorsC->at(i)->tryAndTakeLast();
-                while(pComp)
+                for(size_t i=0; i<mnThreads-1; ++i)
                 {
-                    pComp->simulate(mTime);
-                    mpFinishedVectorC->insert(pComp);
-                    pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeLast();
+                    int j = (mThreadID+1+i)%mnThreads;
+                    pComp = mpUnFinishedVectorsC->at(j)->tryAndTakeLast();
+                    if(pComp)
+                    {
+                        pComp->simulate(mTime);
+                        mpFinishedVectorC->insertLast(pComp);
+                        break;
+                    }
                 }
             }
 
@@ -1025,20 +1057,23 @@ public:
             while(pComp)
             {
                 pComp->simulate(mTime);
-                mpFinishedVectorQ->insert(pComp);
+                mpFinishedVectorQ->insertFirst(pComp);
                 pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
             }
 
             //Steal components
-            for(size_t i=0; i<mnThreads; ++i)
+            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
             {
-                if(i == mThreadID) continue;
-                pComp = mpUnFinishedVectorsQ->at(i)->tryAndTakeLast();
-                while(pComp)
+                for(size_t i=0; i<mnThreads-1; ++i)
                 {
-                    pComp->simulate(mTime);
-                    mpFinishedVectorQ->insert(pComp);
-                    pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeLast();
+                    int j = (mThreadID+1+i)%mnThreads;
+                    pComp = mpUnFinishedVectorsQ->at(j)->tryAndTakeLast();
+                    if(pComp)
+                    {
+                        pComp->simulate(mTime);
+                        mpFinishedVectorQ->insertLast(pComp);
+                        break;
+                    }
                 }
             }
 

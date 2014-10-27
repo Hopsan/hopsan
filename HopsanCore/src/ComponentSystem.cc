@@ -2952,35 +2952,71 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     if(!noChanges)
     {
-        mSplitCVector.clear();
-        mSplitQVector.clear();
-        mSplitSignalVector.clear();
-        mSplitNodeVector.clear();
-
-        simulateAndMeasureTime(100);                                //Measure time
-        sortComponentVectorsByMeasuredTime();                       //Sort component vectors
-
-        for(size_t q=0; q<mComponentQptrs.size(); ++q)
+        if(algorithm != WorkStealingAlgorithm)
         {
-            addDebugMessage("Time for "+mComponentQptrs.at(q)->getName()+": "+ to_hstring(mComponentQptrs.at(q)->getMeasuredTime()));
-        }
-        for(size_t c=0; c<mComponentCptrs.size(); ++c)
-        {
-            addDebugMessage("Time for "+mComponentCptrs.at(c)->getName()+": "+to_hstring(mComponentCptrs.at(c)->getMeasuredTime()));
-        }
-        for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-        {
-            addDebugMessage("Time for "+mComponentSignalptrs.at(s)->getName()+": "+to_hstring(mComponentSignalptrs.at(s)->getMeasuredTime()));
-        }
+            mSplitCVector.clear();
+            mSplitQVector.clear();
+            mSplitSignalVector.clear();
+            mSplitNodeVector.clear();
 
-        distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
-        distributeQcomponents(mSplitQVector, nThreads);
-        distributeSignalcomponents(mSplitSignalVector, nThreads);
-        distributeNodePointers(mSplitNodeVector, nThreads);
+            simulateAndMeasureTime(100);                                //Measure time
+            sortComponentVectorsByMeasuredTime();                       //Sort component vectors
 
-        // Re-initialize the system to reset values and timers
-        //! @note This only work for top level systems where the simulateMultiThreaded will not be called nmore than once
-        this->initialize(startT, stopT);
+            for(size_t q=0; q<mComponentQptrs.size(); ++q)
+            {
+                addDebugMessage("Time for "+mComponentQptrs.at(q)->getName()+": "+ to_hstring(mComponentQptrs.at(q)->getMeasuredTime()));
+            }
+            for(size_t c=0; c<mComponentCptrs.size(); ++c)
+            {
+                addDebugMessage("Time for "+mComponentCptrs.at(c)->getName()+": "+to_hstring(mComponentCptrs.at(c)->getMeasuredTime()));
+            }
+            for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+            {
+                addDebugMessage("Time for "+mComponentSignalptrs.at(s)->getName()+": "+to_hstring(mComponentSignalptrs.at(s)->getMeasuredTime()));
+            }
+
+            distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
+            distributeQcomponents(mSplitQVector, nThreads);
+            distributeSignalcomponents(mSplitSignalVector, nThreads);
+            distributeNodePointers(mSplitNodeVector, nThreads);
+
+            // Re-initialize the system to reset values and timers
+            //! @note This only work for top level systems where the simulateMultiThreaded will not be called nmore than once
+            this->initialize(startT, stopT);
+        }
+        else
+        {
+            mSplitCVector.clear();
+            mSplitQVector.clear();
+
+            mSplitCVector.resize(nThreads);
+            mSplitQVector.resize(nThreads);
+
+            for(size_t c=0; c<mComponentCptrs.size();)
+            {
+                for(size_t t=0; t<nThreads; ++t)
+                {
+                    if(c>mComponentCptrs.size()-1)
+                        break;
+                    mSplitCVector[t].push_back(mComponentCptrs[c]);
+                    ++c;
+                }
+            }
+
+            for(size_t q=0; q<mComponentQptrs.size();)
+            {
+                for(size_t t=0; t<nThreads; ++t)
+                {
+                    if(q>mComponentQptrs.size()-1)
+                        break;
+                    mSplitQVector[t].push_back(mComponentQptrs[q]);
+                    ++q;
+                }
+            }
+
+            distributeSignalcomponents(mSplitSignalVector, nThreads);
+           // distributeNodePointers(mSplitNodeVector. nThreads);
+        }
     }
 
 
@@ -3011,6 +3047,51 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         }
 
         simTasks->wait();                                           //Wait for all tasks to finish
+
+        delete(simTasks);                                           //Clean up
+        delete(pBarrierLock_S);
+        delete(pBarrierLock_C);
+        delete(pBarrierLock_Q);
+        delete(pBarrierLock_N);
+    }
+    else if(algorithm == OfflineReschedulingAlgorithm)
+    {
+        addInfoMessage("Using offline rescheduling algorithm with "+threadStr+" threads.");
+
+        mvTimePtrs.push_back(&mTime);
+        BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
+        BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
+        BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
+        BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
+
+        simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
+                                    mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, 1100, nThreads, 0,
+                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+
+        for(size_t t=1; t < nThreads; ++t)
+        {
+            simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
+                                       mSplitNodeVector[t], mTime, mTimestep, 1100, nThreads, t,
+                                       pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+        }
+
+        simTasks->wait();                                           //Wait for all tasks to finish
+
+        reschedule(nThreads);
+
+        simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
+                                    mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, nSteps-1100, nThreads, 0,
+                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+
+        for(size_t t=1; t < nThreads; ++t)
+        {
+            simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
+                                       mSplitNodeVector[t], mTime, mTimestep, nSteps-1100, nThreads, t,
+                                       pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+        }
+
+        simTasks->wait();
+
 
         delete(simTasks);                                           //Clean up
         delete(pBarrierLock_S);
@@ -3329,11 +3410,8 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
     {
         time = mTime; // Init time
         tbb::tick_count comp_start = tbb::tick_count::now();
-        for(size_t t=0; t<nSteps; ++t)
-        {
-            time += mTimestep;
-            mComponentSignalptrs[s]->simulate(time);
-        }
+        time += mTimestep*nSteps;
+        mComponentSignalptrs[s]->simulate(time);
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentSignalptrs[s]->setMeasuredTime((comp_end-comp_start).seconds());
     }
@@ -3342,11 +3420,8 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
     {
         time=mTime; // Reset time
         tbb::tick_count comp_start = tbb::tick_count::now();
-        for(size_t t=0; t<nSteps; ++t)
-        {
-            time += mTimestep;
-            mComponentCptrs[c]->simulate(time);
-        }
+        time += mTimestep*nSteps;
+        mComponentCptrs[c]->simulate(time);
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentCptrs[c]->setMeasuredTime((comp_end-comp_start).seconds());
     }
@@ -3355,11 +3430,8 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
     {
         time=mTime; // Reset time
         tbb::tick_count comp_start = tbb::tick_count::now();
-        for(size_t t=0; t<nSteps; ++t)
-        {
-            time += mTimestep;
-            mComponentQptrs[q]->simulate(time);
-        }
+        time += mTimestep*nSteps;
+        mComponentQptrs[q]->simulate(time);
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentQptrs[q]->setMeasuredTime((comp_end-comp_start).seconds());
     }
@@ -3738,6 +3810,22 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
         if(thread>nThreads-1)
             thread = 0;
     }
+}
+
+void ComponentSystem::reschedule(size_t nThreads)
+{
+    mSplitCVector.clear();
+    mSplitQVector.clear();
+    mSplitSignalVector.clear();
+    mSplitNodeVector.clear();
+
+    simulateAndMeasureTime(10);                                //Measure time
+    sortComponentVectorsByMeasuredTime();                       //Sort component vectors
+
+    distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
+    distributeQcomponents(mSplitQVector, nThreads);
+    distributeSignalcomponents(mSplitSignalVector, nThreads);
+    distributeNodePointers(mSplitNodeVector, nThreads);
 }
 
 #else

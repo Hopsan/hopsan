@@ -33,7 +33,7 @@ namespace tbb {
 
 namespace hopsan {
 
-    enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm, WorkStealingAlgorithm, ParallelForAlgorithm, ParallelForTbbAlgorithm, RandomTaskPoolAlgorithm};
+    enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm, WorkStealingAlgorithm, ParallelForAlgorithm, ParallelForTbbAlgorithm, RandomTaskPoolAlgorithm, OfflineReschedulingAlgorithm};
 
     class ConnectionAssistant
     {
@@ -250,6 +250,7 @@ namespace hopsan {
         void distributeQcomponents(std::vector< std::vector<Component*> > &rSplitQVector, size_t nThreads);
         void distributeSignalcomponents(std::vector< std::vector<Component*> > &rSplitSignalVector, size_t nThreads);
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
+        void reschedule(size_t nThreads);
 
         // Set and get desired timestep
         void setDesiredTimestep(const double timestep);
