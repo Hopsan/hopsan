@@ -66,6 +66,7 @@
 #define CAF_PARAMETERS "defaultparameters"
 #define CAF_PARAMETER "parameter"
 #define CAF_NAME "name"
+#define CAF_HIDDEN "hidden"
 
 #define CAF_PORTS "ports"
 #define CAF_PORT "port"
@@ -711,6 +712,11 @@ const QMap<QString, QString> &ModelObjectAppearance::getOverridedDefaultParamete
     return mOverridedDefaultParameters;
 }
 
+bool ModelObjectAppearance::isParameterHidden(const QString &name) const
+{
+    return mHiddenParameters.contains(name);
+}
+
 //! @brief Get the full Icon path for specified graphics type
 //! @param [in] gfxType The graphics type enum (ISO or USER)
 //! If the specified type is missing, return the other type.
@@ -1008,6 +1014,10 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             QString name = xmlParameter.attribute(CAF_NAME);
             QString value = xmlParameter.text();
             mOverridedDefaultParameters.insert(name, value);
+            if(parseAttributeBool(xmlParameter, CAF_HIDDEN, false))
+            {
+                mHiddenParameters.append(name);
+            }
             xmlParameter = xmlParameter.nextSiblingElement(CAF_PARAMETER);
         }
     }

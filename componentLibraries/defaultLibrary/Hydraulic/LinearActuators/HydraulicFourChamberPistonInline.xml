@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="HydraulicFourChamberPiston.hpp" typename="HydraulicFourChamberPiston" subtypename="HydraulicFourChamberPistonInline" displayname="C-type Digital Four-Chamber Piston">
+        <icons>
+            <icon scale="1" path="HydraulicFourChamberPistonInline.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.02398047" y="1.0" a="90" name="P1"/>
+            <port x="0.407667995" y="1.0" a="90" name="P2"/>
+            <port x="0.448434795" y="0.9" a="90" name="P3"/>
+            <port x="0.83212232" y="0.9" a="180" name="P4"/>
+            <port x="1.0" y="0.500" a="0" name="P5"/>
+        </ports>
+        <defaultparameters>
+            <parameter name="c_leak13#Value" hidden="true">0</parameter>
+            <parameter name="c_leak14#Value" hidden="true">0</parameter>
+            <parameter name="c_leak23#Value">1e-11</parameter>
+            <parameter name="c_leak24#Value" hidden="true">0</parameter>
+        </defaultparameters>
+    </modelobject>
+</hopsanobjectappearance>

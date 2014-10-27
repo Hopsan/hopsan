@@ -574,6 +574,9 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         CoreVariameterDescription variameter;
         variameter.mName = parameters[constantsIds[i]].mName;
 
+        if(mpModelObject->getAppearanceData()->isParameterHidden(variameter.mName))
+            continue;
+
         //Don't add ports, parameters and defaults constants for modelica components
         if(mpModelObject->getTypeName() == MODELICATYPENAME && (variameter.mName == "ports" || variameter.mName == "parameters" || variameter.mName == "defaults"))
             continue;
@@ -594,6 +597,9 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     const int inputVarSeparatorRow = r;
     for (int i=0; i<variameters.size(); ++i)
     {
+        if(mpModelObject->getAppearanceData()->isParameterHidden(variameters[i].mPortName+"#"+variameters[i].mName))
+            continue;
+
         if (variameters[i].mVariameterType == InputVaraiable)
         {
             createTableRow(r, variameters[i], InputVaraiable);

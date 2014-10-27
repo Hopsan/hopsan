@@ -11,5 +11,10 @@
             <port x="0.0" y="0.500" a="180" name="P4"/>
             <port x="1.0" y="0.500" a="0" name="P5"/>
         </ports>
+        <defaultparameters>
+            <parameter name="c_leak13#Value" hidden="true">0</parameter>
+            <parameter name="c_leak23#Value" hidden="true">0</parameter>
+            <parameter name="c_leak24#Value" hidden="true">0</parameter>
+        </defaultparameters>
     </modelobject>
 </hopsanobjectappearance>

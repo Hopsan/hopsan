@@ -45,7 +45,7 @@ class HydraulicFourChamberPiston : public ComponentC
         std::vector<double*> mvpND_p2, mvpND_q2, mvpND_c2, mvpND_Zc2;
         std::vector<double*> mvpND_p3, mvpND_q3, mvpND_c3, mvpND_Zc3;
         std::vector<double*> mvpND_p4, mvpND_q4, mvpND_c4, mvpND_Zc4;
-        double *mpA1, *mpA2, *mpA3, *mpA4, *mpSl, *mpV01, *mpV02, *mpV03, *mpV04, *mpBp, *mpBetae, *mpCLeak;
+        double *mpA1, *mpA2, *mpA3, *mpA4, *mpSl, *mpV01, *mpV02, *mpV03, *mpV04, *mpBp, *mpBetae, *mpCLeak12, *mpCLeak13, *mpCLeak14, *mpCLeak23, *mpCLeak24, *mpCLeak34;
 
         double *mpf5, *mpx5, *mpv5, *mpc5, *mpZx5, *mpme5;
         size_t mNumPorts1, mNumPorts2, mNumPorts3, mNumPorts4;
@@ -84,9 +84,13 @@ class HydraulicFourChamberPiston : public ComponentC
             addInputVariable("V_4", "Dead Volume in Chamber 4", "m^3", 0.0003, &mpV04);
             addInputVariable("B_p", "Viscous Friction", "Ns/m", 1000.0, &mpBp);
             addInputVariable("Beta_e", "Bulk Modulus", "Pa", 1000000000.0, &mpBetae);
-            addInputVariable("c_leak", "Leakage Coefficient", "", 0.00000000001, &mpCLeak);
+            addInputVariable("c_leak12", "Leakage Coefficient Between Chamber 1 and 2", "", 0.00000000001, &mpCLeak12);
+            addInputVariable("c_leak13", "Leakage Coefficient Between Chamber 1 and 3", "", 0, &mpCLeak13);
+            addInputVariable("c_leak14", "Leakage Coefficient Between Chamber 1 and 4", "", 0.00000000001, &mpCLeak14);
+            addInputVariable("c_leak23", "Leakage Coefficient Between Chamber 2 and 3", "", 0, &mpCLeak23);
+            addInputVariable("c_leak24", "Leakage Coefficient Between Chamber 2 and 4", "", 0, &mpCLeak24);
+            addInputVariable("c_leak34", "Leakage Coefficient Between Chamber 3 and 4", "", 0.00000000001, &mpCLeak34);
         }
-
 
         void initialize()
         {
@@ -126,7 +130,12 @@ class HydraulicFourChamberPiston : public ComponentC
             double V04 = (*mpV04);
             double bp = (*mpBp);
             double betae = (*mpBetae);
-            double cLeak = (*mpCLeak);
+            double cLeak12 = (*mpCLeak12);
+            double cLeak13 = (*mpCLeak13);
+            double cLeak14 = (*mpCLeak14);
+            double cLeak23 = (*mpCLeak23);
+            double cLeak24 = (*mpCLeak24);
+            double cLeak34 = (*mpCLeak34);
 
             //Assign node data pointers
             for (size_t i=0; i<mNumPorts1; ++i)
@@ -184,7 +193,7 @@ class HydraulicFourChamberPiston : public ComponentC
             //Declare local variables;
             double p1, p2, p3, p4, x5, v5;
             double Zc1, Zc2, Zc3, Zc4, c5, Zx5;
-            double qi1, qi2, qi3, qi4, V1, V2, V3, V4, qLeak12, qLeak14, qLeak34, V1min, V2min, V3min, V4min;
+            double qi1, qi2, qi3, qi4, V1, V2, V3, V4, qLeak12, qLeak13, qLeak14, qLeak23, qLeak24, qLeak34, V1min, V2min, V3min, V4min;
 
             //Read variables from nodes
             p1 = (*mvpND_p1[0]);
@@ -226,14 +235,17 @@ class HydraulicFourChamberPiston : public ComponentC
             ci4 = p4 + Zc4*qi4;
 
             //Leakage flow
-            qLeak12 = cLeak*(p1-p2);
-            qLeak14 = cLeak*(p1-p4);
-            qLeak34 = cLeak*(p3-p4);
+            qLeak12 = cLeak12*(p1-p2);
+            qLeak13 = cLeak13*(p1-p3);
+            qLeak14 = cLeak14*(p1-p4);
+            qLeak23 = cLeak23*(p2-p3);
+            qLeak24 = cLeak24*(p2-p4);
+            qLeak34 = cLeak34*(p3-p4);
 
-            cl1 = p1 + Zc1*(-qLeak12) +Zc1*(-qLeak14);
-            cl2 = p2 + Zc2*qLeak12;
-            cl3 = p3 + Zc3*(-qLeak34);
-            cl4 = p4 + Zc3*qLeak14 + Zc4*qLeak34;
+            cl1 = p1 + Zc1*(-qLeak12) + Zc1*(-qLeak13) + Zc1*(-qLeak14);
+            cl2 = p2 + Zc2*qLeak12    + Zc2*(-qLeak23) + Zc2*(-qLeak24);
+            cl3 = p3 + Zc3*qLeak13    + Zc3*qLeak23    + Zc3*(-qLeak34);
+            cl4 = p4 + Zc3*qLeak14    + Zc4*qLeak24    + Zc3*qLeak34;
 
             c5 = A1*ci1 - A2*ci2 + A3*ci3 - A4*ci4;
 
@@ -265,7 +277,7 @@ class HydraulicFourChamberPiston : public ComponentC
         void simulateOneTimestep()
         {
             //Declare local variables;
-            double V1, V2, V3, V4, qLeak12, qLeak14, qLeak34, qi1, qi2, qi3, qi4, p1mean, p2mean, p3mean, p4mean, V1min, V2min, V3min, V4min;
+            double V1, V2, V3, V4, qLeak12, qLeak13, qLeak14, qLeak23, qLeak24, qLeak34, qi1, qi2, qi3, qi4, p1mean, p2mean, p3mean, p4mean, V1min, V2min, V3min, V4min;
 
             //Read variables from nodes
             double Zc1 = (*mvpND_Zc1[0]);          //All Zc should be the same and Q components shall
@@ -287,12 +299,20 @@ class HydraulicFourChamberPiston : public ComponentC
             double V04 = (*mpV04);
             double bp = (*mpBp);
             double betae = (*mpBetae);
-            double cLeak = (*mpCLeak);
+            double cLeak12 = (*mpCLeak12);
+            double cLeak13 = (*mpCLeak13);
+            double cLeak14 = (*mpCLeak14);
+            double cLeak23 = (*mpCLeak23);
+            double cLeak24 = (*mpCLeak24);
+            double cLeak34 = (*mpCLeak34);
             
             //Leakage flow
-            qLeak12 = cLeak*(cl1-cl2)/(1.0+cLeak*(Zc1+Zc2));
-            qLeak14 = cLeak*(cl1-cl4)/(1.0+cLeak*(Zc1+Zc4));
-            qLeak34 = cLeak*(cl3-cl4)/(1.0+cLeak*(Zc3+Zc4));
+            qLeak12 = cLeak12*(cl1-cl2)/(1.0+cLeak12*(Zc1+Zc2));
+            qLeak13 = cLeak13*(cl1-cl3)/(1.0+cLeak13*(Zc1+Zc3));
+            qLeak14 = cLeak14*(cl1-cl4)/(1.0+cLeak14*(Zc1+Zc4));
+            qLeak23 = cLeak23*(cl2-cl3)/(1.0+cLeak23*(Zc2+Zc3));
+            qLeak24 = cLeak24*(cl2-cl4)/(1.0+cLeak24*(Zc2+Zc4));
+            qLeak34 = cLeak34*(cl3-cl4)/(1.0+cLeak34*(Zc3+Zc4));
 
             //Internal flows
             qi1 = v5*A1;
@@ -333,47 +353,47 @@ class HydraulicFourChamberPiston : public ComponentC
 
             //Volume 1
             Zc1 = (double(mNumPorts1)+2.0) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
-            p1mean = (ci1 + Zc1*2.0*qi1) + (cl1 + Zc1*2.0*(-qLeak12) + Zc1*2.0*(-qLeak14));
+            p1mean = (ci1 + Zc1*2.0*qi1) + (cl1 + Zc1*2.0*(-qLeak12) + Zc1*2.0*(-qLeak13)+ Zc1*2.0*(-qLeak14));
             for(size_t i=0; i<mNumPorts1; ++i)
             {
                 p1mean += (*mvpND_c1[i]) + 2.0*Zc1*(*mvpND_q1[i]);
             }
             p1mean = p1mean/(double(mNumPorts1)+2.0);
             ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2.0 - ci1 - 2.0*Zc1*qi1));
-            cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak12) - 2.0*Zc1*(-qLeak14)));
+            cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak12) - 2.0*Zc1*(-qLeak13) - 2.0*Zc1*(-qLeak14)));
 
             //Volume 2
             Zc2 = ((double(mNumPorts2)+2.0) / 2.0) * betae/V2*mTimestep/(1.0-alpha);
-            p2mean = (ci2 + Zc2*2.0*qi2) + (cl2 + Zc2*2.0*qLeak12);
+            p2mean = (ci2 + Zc2*2.0*qi2) + (cl2 + Zc2*2.0*qLeak12 + Zc2*2.0*(-qLeak23) + Zc2*2.0*(-qLeak24));
             for(size_t i=0; i<mNumPorts2; ++i)
             {
                 p2mean += (*mvpND_c2[i]) + 2.0*Zc2*(*mvpND_q2[i]);
             }
             p2mean = p2mean/(double(mNumPorts2)+2.0);
             ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2.0 - ci2 - 2.0*Zc2*qi2));
-            cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2.0 - cl2 - 2.0*Zc2*qLeak12));
+            cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2.0 - cl2 - 2.0*Zc2*qLeak12 - 2.0*Zc2*(-qLeak23) - 2.0*Zc2*(-qLeak24)));
 
             //Volume 3
             Zc3 = ((double(mNumPorts3)+2.0) / 2.0) * betae/V3*mTimestep/(1.0-alpha);
-            p3mean = (ci3 + Zc3*2.0*qi3) + (cl3 + Zc3*2.0*(-qLeak34));
+            p3mean = (ci3 + Zc3*2.0*qi3) + (cl3 + Zc3*2.0*qLeak13 + Zc3*2.0*qLeak23 + Zc3*2.0*(-qLeak34));
             for(size_t i=0; i<mNumPorts3; ++i)
             {
                 p3mean += (*mvpND_c3[i]) + 2.0*Zc3*(*mvpND_q3[i]);
             }
             p3mean = p3mean/(double(mNumPorts3)+2.0);
             ci3 = std::max(0.0, alpha * ci3 + (1.0 - alpha)*(p3mean*2.0 - ci3 - 2.0*Zc3*qi3));
-            cl3 = std::max(0.0, alpha * cl3 + (1.0 - alpha)*(p3mean*2.0 - cl3 - 2.0*Zc3*(-qLeak34)));
+            cl3 = std::max(0.0, alpha * cl3 + (1.0 - alpha)*(p3mean*2.0 - cl3 - 2.0*Zc3*qLeak13 - 2.0*Zc3*qLeak23 - 2.0*Zc3*(-qLeak34)));
             
             //Volume 2
             Zc4 = ((double(mNumPorts4)+2.0) / 2.0) * betae/V4*mTimestep/(1.0-alpha);
-            p4mean = (ci4 + Zc4*2.0*qi4) + (cl4 + Zc4*2.0*qLeak14);
+            p4mean = (ci4 + Zc4*2.0*qi4) + (cl4 + Zc4*2.0*qLeak14 + Zc4*2.0*qLeak24 + Zc4*2.0*qLeak34);
             for(size_t i=0; i<mNumPorts4; ++i)
             {
                 p4mean += (*mvpND_c4[i]) + 2.0*Zc4*(*mvpND_q4[i]);
             }
             p4mean = p4mean/(double(mNumPorts4)+2.0);
             ci4 = std::max(0.0, alpha * ci4 + (1.0 - alpha)*(p4mean*2.0 - ci4 - 2.0*Zc4*qi4));
-            cl4 = std::max(0.0, alpha * cl4 + (1.0 - alpha)*(p4mean*2.0 - cl4 - 2.0*Zc4*qLeak14));
+            cl4 = std::max(0.0, alpha * cl4 + (1.0 - alpha)*(p4mean*2.0 - cl4 - 2.0*Zc4*qLeak14 - 2.0*Zc4*qLeak24 - 2.0*Zc4*qLeak34));
 
             //limitStroke(CxLim, ZxLim, x3, v3, me, sl);
 
