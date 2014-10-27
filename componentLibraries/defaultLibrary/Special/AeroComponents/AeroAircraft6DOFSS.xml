@@ -6,7 +6,7 @@
             <icon scale="1" path="AeroAircraft6DOFSS.svg" iconrotation="ON" type="iso"/>
         </icons>
          <help>
-            <text>Six degree of freedom flight dynamic model of an aircraft with modelling of supersonic characteristics.</text>
+            <text>Six degree of freedom flight dynamic model of an aircraft with modelling of supersonic characteristics. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
             <link>AeroAircraft6DOFSS.nb</link>
         </help>       
         <ports>

@@ -1,0 +1,317 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     11504,        308]
+NotebookOptionsPosition[     10685,        280]
+NotebookOutlinePosition[     11104,        296]
+CellTagsIndexPosition[     11061,        293]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Jet Engine", "Section",
+ CellChangeTimes->{{3.522430442609375*^9, 3.522430450578125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG.mx"}]], "Input",
+ CellChangeTimes->{{3.5772037650720577`*^9, 3.5772037650780582`*^9}, {
+  3.611474457184202*^9, 3.611474523938877*^9}, {3.6114745588913717`*^9, 
+  3.61147456057154*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"path", "=", 
+   RowBox[{"ToFileName", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", 
+      "\"\<ComponentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
+      "\"\<Special\>\"", ",", "\"\<AeroComponents\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{
+  3.5812370486543765`*^9, {3.58123709880517*^9, 3.5812371004744773`*^9}, {
+   3.6058542560025706`*^9, 3.605854267307701*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Aero\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<JetEngine\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "brief", "=", "\"\<Calulates the mass of remaining fuel in tank\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ResetComponentVariables", "[", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.52243043575*^9, 3.522430437953125*^9}, 
+   3.575787976591017*^9, 3.5769427107766676`*^9, 3.605872048968047*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "uin", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Throttle setting 0-1\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "rho", ",", "1.25", ",", "double", ",", "\"\<kg/m3\>\"", ",", 
+       "\"\<The density at altitude h\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "T", ",", "273.", ",", "double", ",", "\"\<K\>\"", ",", 
+       "\"\<Temperature at altitude h\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "p0", ",", "100000.", ",", "double", ",", "\"\<Pa\>\"", ",", 
+       "\"\<Pressure at altitude h\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "Vsound", ",", "340.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+       "\"\<Speed of sound at altitude h\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "speed", ",", "100.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+       "\"\<Air speed\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5224305394375*^9, 3.5224305394375*^9}, {
+   3.52243058465625*^9, 3.5224305981875*^9}, 3.52328822021875*^9, {
+   3.5232883535*^9, 3.523288359328125*^9}, {3.531855769421875*^9, 
+   3.531855790125*^9}, {3.531855974453125*^9, 3.53185600171875*^9}, {
+   3.531856163125*^9, 3.531856187796875*^9}, {3.5411602367910447`*^9, 
+   3.5411602434471664`*^9}, 3.5908145788559313`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "thrustmax", ",", "38167.", ",", "double", ",", "\"\<N\>\"", ",", 
+       "\"\<Max thrust at Mach 1.2\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "SFC", ",", "0.0000266", ",", "double", ",", "\"\<kg/(N s)\>\"", ",", 
+       "\"\<Nominal thrust specific fuel, at M=1,2\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "BR", ",", "2", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Bypass ratio\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "thau", ",", "5.", ",", "double", ",", "\"\<s\>\"", ",", 
+       "\"\<Engine time constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Cspeed", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<thrust-speed coefficient\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Ctm", ",", "0.315", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<mach-thrust coefficient\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Csfct", ",", "0.66", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<thrust-SFC coefficient\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Csfcm", ",", "0.697", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<mach-SFC coefficient\>\""}], "}"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.522430544015625*^9, 3.522430601609375*^9}, {
+   3.522431017015625*^9, 3.5224310198125*^9}, 3.52328822196875*^9, {
+   3.52328833575*^9, 3.5232883406875*^9}, {3.531855796109375*^9, 
+   3.5318558308125*^9}, {3.531856011921875*^9, 3.531856035125*^9}, {
+   3.541161713191944*^9, 3.54116171961386*^9}, {3.5411621661130204`*^9, 
+   3.541162205831262*^9}, {3.5411623055956097`*^9, 3.5411623262047215`*^9}, {
+   3.5877449371013727`*^9, 3.5877450349599695`*^9}, {3.5877465371368895`*^9, 
+   3.587746559790185*^9}, {3.587746650897396*^9, 3.5877467406425295`*^9}, 
+   3.5908145751742845`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "thrust", ",", "5000.", ",", "double", ",", "\"\<N\>\"", ",", 
+       "\"\<Thrust\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "mfuel", ",", "0.", ",", "double", ",", "\"\<kg\>\"", ",", 
+       "\"\<Burnt fuel amount\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Shspeed", ",", "1.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Engine shaft speed\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "qmfuel", ",", "1.", ",", "double", ",", "\"\<kg/s\>\"", ",", 
+       "\"\<Fuel, mass flow\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5224305513125*^9, 3.522430551328125*^9}, {
+   3.5224305858125*^9, 3.522430586890625*^9}, {3.522430995046875*^9, 
+   3.522431007625*^9}, 3.523288224421875*^9, 3.523288345421875*^9, {
+   3.53185590446875*^9, 3.531855936828125*^9}, {3.53185605765625*^9, 
+   3.5318560964375*^9}, {3.5908145768747063`*^9, 3.59081458186677*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"rho0", "=", "1.25"}], ";"}]], "Input",
+ CellChangeTimes->{{3.541161597265424*^9, 3.541161599546805*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"localExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"mach", "\[Equal]", 
+      RowBox[{"speed", "/", "Vsound"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"thrustmaxe", "==", 
+      RowBox[{"thrustmax", " ", 
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         RowBox[{"Ctm", " ", "mach"}]}], ")"}]}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"SFCe", "==", 
+       RowBox[{"SFC", " ", 
+        RowBox[{"(", 
+         RowBox[{"1", " ", "+", " ", 
+          RowBox[{"Csfct", " ", 
+           RowBox[{"(", 
+            RowBox[{"1", "-", 
+             FractionBox["thrust", "thrustmax"]}], ")"}]}], "+", " ", 
+          RowBox[{"Csfcm", " ", 
+           RowBox[{"(", 
+            RowBox[{"1", "-", "mach"}], ")"}]}]}], ")"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"qmfuele", "=", 
+       RowBox[{"SFC", "*", "thrust"}]}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.587744265983987*^9, 3.587744320913129*^9}, {
+   3.5877443616254573`*^9, 3.58774440660903*^9}, {3.587744456979911*^9, 
+   3.587744483502428*^9}, {3.5877445264548845`*^9, 3.5877446116717587`*^9}, {
+   3.587744645729707*^9, 3.5877447193669186`*^9}, 3.5877447829945583`*^9, {
+   3.5877448169184985`*^9, 3.587744824688943*^9}, 3.587744912163946*^9, 
+   3.587745080345566*^9, {3.5877451519126587`*^9, 3.5877452031995926`*^9}, 
+   3.5877468496437635`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDA", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"thrust", "==", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"thrustmaxe", "*", "uin"}], ")"}], "/", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"thau", " ", "s"}], "+", "1"}], ")"}]}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"mfuel", "==", 
+      RowBox[{"qmfuele", "/", "s"}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52243075090625*^9, 3.522430787703125*^9}, {
+   3.5411615752641563`*^9, 3.5411615792800126`*^9}, {3.5718614338692064`*^9, 
+   3.5718614389860153`*^9}, {3.571975732554068*^9, 3.5719757376082735`*^9}, {
+   3.587744061346282*^9, 3.587744082238477*^9}, 3.5877447212370257`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", "=", 
+   RowBox[{"{", 
+    RowBox[{"thrust", ",", "mfuel"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.522430812890625*^9, 3.5224308593125*^9}, 
+   3.571861468236067*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Shspeed", "==", 
+      RowBox[{"Cspeed", "*", "thrust"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"qmfuel", "==", "qmfuele"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52243073240625*^9, 3.52243073240625*^9}, {
+   3.5224309366875*^9, 3.522430975828125*^9}, 3.52328836871875*^9, {
+   3.571861445974828*^9, 3.5718614548980436`*^9}, {3.5877447873398066`*^9, 
+   3.5877447900979643`*^9}, {3.587744821417756*^9, 3.587744827351095*^9}, 
+   3.5877448576218266`*^9}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+},
+WindowSize->{806, 665},
+WindowMargins->{{49, Automatic}, {Automatic, 25}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
+  CharacterEncoding -> "WindowsANSI"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 95, 1, 75, "Section"],
+Cell[677, 25, 248, 4, 41, "Input"],
+Cell[928, 31, 476, 12, 62, "Input"],
+Cell[1407, 45, 1012, 26, 202, "Input"],
+Cell[2422, 73, 1569, 37, 182, "Input"],
+Cell[3994, 112, 2176, 48, 222, "Input"],
+Cell[6173, 162, 1177, 26, 142, "Input"],
+Cell[7353, 190, 139, 3, 41, "Input"],
+Cell[7495, 195, 1465, 35, 171, "Input"],
+Cell[8963, 232, 786, 19, 102, "Input"],
+Cell[9752, 253, 229, 6, 41, "Input"],
+Cell[9984, 261, 619, 13, 102, "Input"],
+Cell[10606, 276, 63, 1, 41, "Input"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,211 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      7682,        202]
+NotebookOptionsPosition[      6456,        167]
+NotebookOutlinePosition[      6875,        183]
+CellTagsIndexPosition[      6832,        180]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Fuel Tank", "Section",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{{3.522430363453125*^9, 3.522430369625*^9}, 
+   3.53189964671875*^9, 3.5411602015417213`*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", " ", "=", " ", "\"\<Aero\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", " ", "=", " ", "\"\<FuelTank\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "brief", " ", "=", " ", 
+   "\"\<Calulates the mass of remaining fuel in tank\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", " ", "=", " ", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "author", " ", "=", " ", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{{3.522429929546875*^9, 3.522429972765625*^9}, {
+   3.5224301489375*^9, 3.522430155421875*^9}, 3.53189964671875*^9, 
+   3.5411602015417213`*^9, 3.571975867182767*^9, {3.575644851217208*^9, 
+   3.5756448512202077`*^9}, 3.5757879449382105`*^9, 3.5769427345870295`*^9, {
+   3.605871406432297*^9, 3.6058714108232975`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "  ", "=", " ", 
+   RowBox[{"{", "\n", "   ", 
+    RowBox[{"{", 
+     RowBox[{
+     "massfuel0", ",", " ", "0.", ",", " ", "double", ",", " ", 
+      "\"\<kg/s\>\"", ",", " ", "\"\<The intitial fuel mass\>\""}], "}"}], 
+    "\n", "   ", "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{{3.522430004390625*^9, 3.522430004390625*^9}, 
+   3.5224300528125*^9, 3.53189964671875*^9, 3.5411602015417213`*^9, {
+   3.5719757769499607`*^9, 3.5719757815985813`*^9}, 3.571975867182767*^9, {
+   3.575644851222208*^9, 3.575644851227208*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "  ", "=", " ", 
+   RowBox[{"{", "\n", "   ", 
+    RowBox[{"{", 
+     RowBox[{
+     "massflow", ",", " ", "0.", ",", " ", "double", ",", " ", "\"\<kg/s\>\"",
+       ",", " ", "\"\<Mass flow rate\>\""}], "}"}], "\n", "   ", "}"}]}], 
+  ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{{3.52242999471875*^9, 3.52242999471875*^9}, 
+   3.522430053078125*^9, 3.53189964671875*^9, 3.5411602015417213`*^9, {
+   3.571975775904801*^9, 3.5719757848900986`*^9}, 3.571975867182767*^9, {
+   3.5756448512292085`*^9, 3.5756448512312083`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "  ", "=", " ", 
+   RowBox[{"{", "\n", "   ", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "massfuel", ",", " ", "0.", ",", " ", "double", ",", " ", "\"\<kg\>\"", 
+       ",", " ", "\"\<Fuel mass\>\""}], "}"}], ",", "\n", "   ", 
+     RowBox[{"{", 
+      RowBox[{
+      "consfuel", ",", " ", "0.", ",", " ", "double", ",", " ", "\"\<kg\>\"", 
+       ",", " ", "\"\<Consumed fuel mass\>\""}], "}"}]}], "\n", "   ", 
+    "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{{3.522429987234375*^9, 3.522429987234375*^9}, {
+   3.522430053296875*^9, 3.522430053515625*^9}, 3.53189964671875*^9, 
+   3.5411602015417213`*^9, {3.5719757878696795`*^9, 3.571975793750842*^9}, 
+   3.571975867182767*^9, {3.5756448512322083`*^9, 3.5756448512352085`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDA", " ", "=", " ", 
+   RowBox[{"{", "\n", "   ", 
+    RowBox[{
+     RowBox[{"Der", "[", "consfuel", "]"}], " ", "==", " ", "massflow"}], 
+    "\n", "   ", "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{
+  3.52328838171875*^9, 3.53189964671875*^9, 3.5411602015417213`*^9, {
+   3.554784526954604*^9, 3.5547845283608723`*^9}, {3.5718615028911376`*^9, 
+   3.5718615137643566`*^9}, {3.571975761724946*^9, 3.571975763503278*^9}, 
+   3.571975867182767*^9, {3.575644851236209*^9, 3.575644851238209*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", " ", "=", " ", 
+   RowBox[{"{", "consfuel", "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{{3.52243007746875*^9, 3.522430082921875*^9}, 
+   3.53189964671875*^9, 3.5411602015417213`*^9, 3.571975867182767*^9, {
+   3.575644851238209*^9, 3.575644851241209*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", " ", "=", " ", 
+   RowBox[{"{", "\n", "  \t\t", 
+    RowBox[{"massfuel", " ", "==", " ", 
+     RowBox[{"limit", "[", 
+      RowBox[{
+       RowBox[{"massfuel0", " ", "-", " ", "consfuel"}], ",", " ", "0.", ",", 
+       " ", "massfuel0"}], "]"}]}], "\n", "  \t\t", "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{{3.531857777953125*^9, 3.531857802140625*^9}, 
+   3.53189964671875*^9, 3.5411602015417213`*^9, {3.571861494529523*^9, 
+   3.57186149860113*^9}, 3.571975867182767*^9, {3.575644851242209*^9, 
+   3.5756448512442093`*^9}, 3.577451003591405*^9}],
+
+Cell[BoxData[
+ RowBox[{"variableLimits", " ", "=", " ", 
+  RowBox[{"{", 
+   RowBox[{"{", 
+    RowBox[{"consfuel", ",", " ", "0", ",", " ", "massfuel0"}], "}"}], 
+   "}"}]}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{
+  3.53189964671875*^9, 3.5411602015417213`*^9, 3.571975867182767*^9, {
+   3.5756448512482095`*^9, 3.57564485125021*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.},
+ CellChangeTimes->{
+  3.53189964671875*^9, 3.5411602015417213`*^9, 3.571975867182767*^9, {
+   3.5756448512542095`*^9, 3.57564485125621*^9}}]
+}, Open  ]]
+},
+WindowSize->{707, 817},
+WindowMargins->{{480, Automatic}, {Automatic, 0}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
+  CharacterEncoding -> "WindowsANSI"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 193, 3, 75, "Section",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[775, 27, 1302, 31, 222, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[2080, 60, 629, 13, 82, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[2712, 75, 619, 13, 82, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[3334, 90, 848, 18, 102, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[4185, 110, 597, 12, 82, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[4785, 124, 361, 7, 41, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[5149, 133, 651, 13, 82, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[5803, 148, 377, 9, 41, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}],
+Cell[6183, 159, 257, 5, 41, "Input",
+ CellGroupingRules->{GroupTogetherGrouping, 10001.}]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

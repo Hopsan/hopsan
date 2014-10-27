@@ -1,0 +1,297 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      9752,        288]
+NotebookOptionsPosition[      9010,        262]
+NotebookOutlinePosition[      9431,        278]
+CellTagsIndexPosition[      9388,        275]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Atmosphere", "Section",
+ CellChangeTimes->{{3.519403038390625*^9, 3.51940305140625*^9}, 
+   3.5194031728125*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Aero\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<Atmosphere\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<model of standard atmosphere\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentSignal\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.51940313565625*^9, 3.51940317146875*^9}, {
+   3.5233289372998676`*^9, 3.523328937534253*^9}, {3.523329037851247*^9, 
+   3.5233290388981686`*^9}, 3.5757879805534678`*^9, 3.577207200533555*^9, 
+   3.605872044880638*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+     "ha", ",", "0.", ",", "double", ",", "\"\<m\>\"", ",", 
+      "\"\<Altitude\>\""}], "}"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{3.51940354403125*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "g0", ",", "9.81", ",", "double", ",", "\"\<m/s^2\>\"", ",", 
+       "\"\<Gravitation acceleration\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "rhos", ",", "1.225", ",", "double", ",", "\"\<kg/m3\>\"", ",", 
+       "\"\<Density at sea level\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"a", ",", 
+       RowBox[{"-", "0.0065"}], ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "R", ",", "287", ",", "double", ",", "\"\<\>\"", ",", "\"\<\>\""}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "gamma", ",", "1.4", ",", "double", ",", "\"\<\>\"", ",", "\"\<\>\""}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Ts", ",", "288.16", ",", "double", ",", "\"\<K\>\"", ",", 
+       "\"\<Temperature at sea level\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "p0s", ",", "101300.", ",", "double", ",", "\"\<Pa\>\"", ",", 
+       "\"\<\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "htp", ",", "11000.", ",", "double", ",", "\"\<m\>\"", ",", 
+       "\"\<Onset of tropopaus\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Ttp", ",", "216.66", ",", "double", ",", "\"\<K\>\"", ",", 
+       "\"\<\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "ptp", ",", "22610.", ",", "double", ",", "\"\<Pa\>\"", ",", 
+       "\"\<\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "rhotp", ",", "0.363649", ",", "double", ",", "\"\<kg/m3\>\"", ",", 
+       "\"\<\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"e", ",", 
+       RowBox[{"N", "[", 
+        RowBox[{"E", ",", "6"}], "]"}], ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<e\>\""}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.519403373171875*^9, 3.519403523078125*^9}, {
+  3.519403695984375*^9, 3.519403709171875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "rhoa", ",", "1.25", ",", "double", ",", "\"\<kg/m3\>\"", ",", 
+       "\"\<The average density at altitude h\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Ta", ",", "273.", ",", "double", ",", "\"\<K\>\"", ",", 
+       "\"\<Average temperature at altitude h\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "p0", ",", "100000.", ",", "double", ",", "\"\<Pa\>\"", ",", 
+       "\"\<The average ressure at altitude h\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Vsound", ",", "340.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+       "\"\<Speed of sound at altitude h\>\""}], "}"}]}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.519403376546875*^9, 3.519403377359375*^9}, {
+  3.5756288284113035`*^9, 3.575628835670029*^9}, {3.5907262729633417`*^9, 
+  3.5907262901293416`*^9}, {3.5907264583513412`*^9, 3.5907265034523416`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Taexp", ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"onNegative", "[", 
+     RowBox[{"ha", "-", "htp"}], "]"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"Ts", "+", 
+      RowBox[{"a", " ", "ha"}]}], ")"}]}], "+", 
+   RowBox[{
+    RowBox[{"onPositive", "[", 
+     RowBox[{"ha", "-", "htp"}], "]"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"Ts", "+", 
+      RowBox[{"a", " ", "htp"}]}], ")"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.5907263878723416`*^9, 3.5907263887603416`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"p0exp", ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"onNegative", "[", 
+     RowBox[{"ha", "-", "htp"}], "]"}], " ", "p0s", "*", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"Ta", "/", "Ts"}], ")"}], "^", 
+     RowBox[{"(", 
+      RowBox[{"-", 
+       RowBox[{"(", 
+        RowBox[{"g0", "/", 
+         RowBox[{"(", 
+          RowBox[{"a", " ", "R"}], ")"}]}], ")"}]}], ")"}]}]}], "+", 
+   RowBox[{
+    RowBox[{"onPositive", "[", 
+     RowBox[{"ha", "-", "htp"}], "]"}], " ", "ptp", "*", 
+    RowBox[{"e", "^", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"(", 
+         RowBox[{"g0", "/", 
+          RowBox[{"(", 
+           RowBox[{"R", " ", "Ttp"}], ")"}]}], ")"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{"ha", "-", "htp"}], ")"}]}], ")"}]}]}]}]}]], "Input",
+ CellChangeTimes->{
+  3.554787466577104*^9, 3.579115424396299*^9, {3.5907264439533415`*^9, 
+   3.5907264447263412`*^9}, 3.590728329360135*^9}],
+
+Cell[BoxData[
+ RowBox[{"rhoaexp", ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"onNegative", "[", 
+     RowBox[{"ha", "-", "htp"}], "]"}], " ", "rhos", "*", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"Ta", "/", "Ts"}], ")"}], "^", 
+     RowBox[{"(", 
+      RowBox[{"-", 
+       RowBox[{"(", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"g0", "/", 
+           RowBox[{"(", 
+            RowBox[{"a", " ", "R"}], ")"}]}], "+", "1"}], ")"}], ")"}]}], 
+      ")"}]}]}], "+", 
+   RowBox[{
+    RowBox[{"onPositive", "[", 
+     RowBox[{"ha", "-", "htp"}], "]"}], " ", "rhotp", "*", 
+    RowBox[{"e", "^", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"(", 
+         RowBox[{"g0", "/", 
+          RowBox[{"(", 
+           RowBox[{"R", " ", "Ttp"}], ")"}]}], ")"}]}], 
+       RowBox[{"(", 
+        RowBox[{"ha", "-", "htp"}], ")"}]}], ")"}]}]}]}]}]], "Input",
+ CellChangeTimes->{{3.519403334328125*^9, 3.519403334328125*^9}, 
+   3.554787470280182*^9, 3.5791154259443874`*^9, {3.5907264101943417`*^9, 
+   3.5907264109133415`*^9}, 3.590728344070135*^9}],
+
+Cell[BoxData[
+ RowBox[{"Vsoundexp", ":=", 
+  RowBox[{"Sqrt", "[", 
+   RowBox[{"gamma", " ", "R", " ", "Ta"}], "]"}]}]], "Input",
+ CellChangeTimes->{
+  3.51940299775*^9, 3.5791154361819725`*^9, {3.590728365145135*^9, 
+   3.590728365976135*^9}, 3.590728417039135*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Ta", "==", "Taexp"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"rhoa", "==", "rhoaexp"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"p0", "==", "p0exp"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Vsound", "==", "Vsoundexp"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5756287610145645`*^9, 3.575628817553218*^9}, {
+  3.579115438047079*^9, 3.5791154421793156`*^9}, {3.5907262177643414`*^9, 
+  3.5907262524963417`*^9}, {3.5907263959443417`*^9, 3.5907264397643414`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+},
+WindowSize->{707, 817},
+WindowMargins->{{Automatic, 62}, {-372, Automatic}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
+  CharacterEncoding -> "WindowsANSI"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 118, 2, 75, "Section"],
+Cell[700, 26, 1137, 27, 222, "Input"],
+Cell[1840, 55, 269, 8, 41, "Input"],
+Cell[2112, 65, 2233, 56, 262, "Input"],
+Cell[4348, 123, 1139, 27, 142, "Input"],
+Cell[5490, 152, 492, 15, 41, "Input"],
+Cell[5985, 169, 961, 30, 62, "Input"],
+Cell[6949, 201, 1082, 33, 62, "Input"],
+Cell[8034, 236, 265, 6, 41, "Input"],
+Cell[8302, 244, 626, 12, 142, "Input"],
+Cell[8931, 258, 63, 1, 31, "Input"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
