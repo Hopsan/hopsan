@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicPressureReducingValveG.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 8 Apr 2014 15:49:53
+//! @date Wed 1 Oct 2014 09:54:51
 //! @brief A hydraulic pressure relief valve based on geometry
 //! @ingroup HydraulicComponents
 //!
@@ -137,15 +137,15 @@ public:
         //Add inputParammeters to the component
             addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
             addInputVariable("visc", "viscosity ", "Ns/m2", 0.03,&mpvisc);
-            addInputVariable("Dv", "Spool diameter", "m", 0.03,&mpDv);
+            addInputVariable("Dv", "Spool diameter", "m", 0.01,&mpDv);
             addInputVariable("frac", "Fraction of spool opening", "", \
 0.1,&mpfrac);
             addInputVariable("Bv", "Damping", "N/(m s)", 1000.,&mpBv);
             addInputVariable("Xvmax", "Max spool displacement", "m", \
-0.03,&mpXvmax);
+0.002,&mpXvmax);
             addInputVariable("Cq", "Flow coefficient", " ", 0.67,&mpCq);
-            addInputVariable("phi", "Stream angle", "rad", 0.03,&mpphi);
-            addInputVariable("ks", "Spring constant", "N/m", 100.,&mpks);
+            addInputVariable("phi", "Stream angle", "rad", 1.17,&mpphi);
+            addInputVariable("ks", "Spring constant", "N/m", 10000.,&mpks);
             addInputVariable("p0", "Turbulent pressure trans.", "Pa", \
 100000.,&mpp0);
         //Add outputVariables to the component

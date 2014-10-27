@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     13832,        357]
-NotebookOptionsPosition[     12842,        323]
-NotebookOutlinePosition[     13185,        338]
-CellTagsIndexPosition[     13142,        335]
+NotebookDataLength[     14014,        357]
+NotebookOptionsPosition[     13061,        324]
+NotebookOutlinePosition[     13404,        339]
+CellTagsIndexPosition[     13361,        336]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -135,7 +135,7 @@ Cell[BoxData[
        "\"\<viscosity \>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Dv", ",", "0.03", ",", "double", ",", "\"\<m\>\"", ",", 
+      "Dv", ",", "0.01", ",", "double", ",", "\"\<m\>\"", ",", 
        "\"\<Spool diameter\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -144,11 +144,11 @@ Cell[BoxData[
      "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Bv", ",", "10", ",", "double", ",", "\"\<N/(m s)\>\"", ",", 
+      "Bv", ",", "1000", ",", "double", ",", "\"\<N/(m s)\>\"", ",", 
        "\"\<Damping\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Xvmax", ",", "0.03", ",", "double", ",", "\"\<m\>\"", ",", 
+      "Xvmax", ",", "0.002", ",", "double", ",", "\"\<m\>\"", ",", 
        "\"\<Max spool displacement\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -156,11 +156,11 @@ Cell[BoxData[
        "\"\<Flow coefficient\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "phi", ",", "0.03", ",", "double", ",", "\"\<rad\>\"", ",", 
+      "phi", ",", "1.17", ",", "double", ",", "\"\<rad\>\"", ",", 
        "\"\<Stream angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "ks", ",", "100.", ",", "double", ",", "\"\<N/m\>\"", ",", 
+      "ks", ",", "10000.", ",", "double", ",", "\"\<N/m\>\"", ",", 
        "\"\<Spring constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -192,10 +192,10 @@ Cell[BoxData[
    3.507795944828125*^9}, {3.51568580440625*^9, 3.51568581115625*^9}, 
    3.5159285657593565`*^9, {3.5777285575019393`*^9, 3.577728570179664*^9}, {
    3.577728621645608*^9, 3.577728621882622*^9}, {3.5777286760287185`*^9, 
-   3.5777286844211984`*^9}}],
-
-Cell[BoxData["\[IndentingNewLine]"], "Input",
- CellChangeTimes->{3.5757131721235323`*^9}],
+   3.5777286844211984`*^9}, {3.617966093251641*^9, 3.6179661109516535`*^9}, {
+   3.6179664074596124`*^9, 3.6179664125139017`*^9}, {3.6179761620575438`*^9, 
+   3.617976178503484*^9}, {3.6180818664879627`*^9, 3.6180818668099813`*^9}, {
+   3.6180821242577066`*^9, 3.618082141135672*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -255,7 +255,8 @@ Cell[BoxData[
    3.507570214015625*^9}, {3.5075703420625*^9, 3.507570342109375*^9}, 
    3.5076079715712585`*^9, {3.507796204234375*^9, 3.50779621396875*^9}, {
    3.507887076139488*^9, 3.5078870785613317`*^9}, {3.5719046338649464`*^9, 
-   3.571904651898578*^9}, 3.571904682880233*^9}],
+   3.571904651898578*^9}, 3.571904682880233*^9, {3.617966020475478*^9, 
+   3.617966032485165*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -321,8 +322,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{707, 505},
-WindowMargins->{{Automatic, 283}, {Automatic, 0}},
+WindowSize->{911, 710},
+WindowMargins->{{Automatic, 48}, {Automatic, 59}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
 ]
@@ -346,17 +347,16 @@ Cell[1109, 38, 1473, 34, 172, "Input"],
 Cell[2585, 74, 1015, 21, 92, "Input"],
 Cell[3603, 97, 410, 10, 72, "Input"],
 Cell[4016, 109, 427, 11, 72, "Input"],
-Cell[4446, 122, 3699, 72, 252, "Input",
+Cell[4446, 122, 3960, 75, 252, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[8148, 196, 89, 1, 52, "Input"],
-Cell[8240, 199, 1219, 26, 164, "Input"],
-Cell[9462, 227, 1303, 30, 102, "Input"],
-Cell[10768, 259, 765, 18, 92, "Input"],
-Cell[11536, 279, 386, 8, 31, "Input"],
-Cell[11925, 289, 224, 6, 31, "Input"],
-Cell[12152, 297, 215, 6, 31, "Input"],
-Cell[12370, 305, 334, 10, 31, "Input"],
-Cell[12707, 317, 107, 2, 31, "Input"]
+Cell[8409, 199, 1219, 26, 164, "Input"],
+Cell[9631, 227, 1353, 31, 102, "Input"],
+Cell[10987, 260, 765, 18, 92, "Input"],
+Cell[11755, 280, 386, 8, 31, "Input"],
+Cell[12144, 290, 224, 6, 31, "Input"],
+Cell[12371, 298, 215, 6, 31, "Input"],
+Cell[12589, 306, 334, 10, 31, "Input"],
+Cell[12926, 318, 107, 2, 31, "Input"]
 }, Open  ]]
 }, Open  ]]
 }
@@ -364,4 +364,3 @@ Cell[12707, 317, 107, 2, 31, "Input"]
 *)
 
 (* End of internal cache information *)
-

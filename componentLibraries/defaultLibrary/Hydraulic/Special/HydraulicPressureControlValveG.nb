@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     15753,        391]
-NotebookOptionsPosition[     14754,        357]
-NotebookOutlinePosition[     15097,        372]
-CellTagsIndexPosition[     15054,        369]
+NotebookDataLength[     15815,        391]
+NotebookOptionsPosition[     14815,        357]
+NotebookOutlinePosition[     15159,        372]
+CellTagsIndexPosition[     15116,        369]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -147,7 +147,7 @@ Cell[BoxData[
        "\"\<viscosity \>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Dv", ",", "0.03", ",", "double", ",", "\"\<m\>\"", ",", 
+      "Dv", ",", "0.01", ",", "double", ",", "\"\<m\>\"", ",", 
        "\"\<Spool diameter\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -156,11 +156,11 @@ Cell[BoxData[
      "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Bv", ",", "100.", ",", "double", ",", "\"\<N/(m s)\>\"", ",", 
+      "Bv", ",", "1000.", ",", "double", ",", "\"\<N/(m s)\>\"", ",", 
        "\"\<Damping\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Xvmax", ",", "0.03", ",", "double", ",", "\"\<m\>\"", ",", 
+      "Xvmax", ",", "0.002", ",", "double", ",", "\"\<m\>\"", ",", 
        "\"\<Max spool displacement\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -168,11 +168,11 @@ Cell[BoxData[
        "\"\<Flow coefficient\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "phi", ",", "0.03", ",", "double", ",", "\"\<rad\>\"", ",", 
+      "phi", ",", "1.17", ",", "double", ",", "\"\<rad\>\"", ",", 
        "\"\<Stream angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "ks", ",", "100.", ",", "double", ",", "\"\<N/m\>\"", ",", 
+      "ks", ",", "10000.", ",", "double", ",", "\"\<N/m\>\"", ",", 
        "\"\<Spring constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -202,9 +202,9 @@ Cell[BoxData[
    3.503996993616342*^9}, {3.507574582234375*^9, 3.507574588828125*^9}, {
    3.507576286109375*^9, 3.507576354453125*^9}, {3.5077959019375*^9, 
    3.507795944828125*^9}, {3.51568580440625*^9, 3.51568581115625*^9}, 
-   3.5159285657593565`*^9, {3.5731473886508317`*^9, 3.57314740313966*^9}, 
-   3.573147686398862*^9, {3.573148170711563*^9, 3.5731482286948795`*^9}, 
-   3.577606706438896*^9}],
+   3.5159285657593565`*^9, {3.573147641136273*^9, 3.5731476559331193`*^9}, {
+   3.5731482493080587`*^9, 3.5731482508341455`*^9}, {3.6180818304459014`*^9, 
+   3.6180818626187415`*^9}, {3.618082164371001*^9, 3.6180821690472684`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -356,7 +356,7 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{707, 505},
-WindowMargins->{{Automatic, 163}, {Automatic, 0}},
+WindowMargins->{{Automatic, -5}, {-49, Automatic}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
 ]
@@ -379,18 +379,18 @@ Cell[1175, 35, 1632, 36, 172, "Input"],
 Cell[2810, 73, 1565, 33, 132, "Input"],
 Cell[4378, 108, 438, 11, 72, "Input"],
 Cell[4819, 121, 407, 11, 72, "Input"],
-Cell[5229, 134, 3696, 72, 252, "Input",
+Cell[5229, 134, 3757, 72, 252, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[8928, 208, 162, 4, 31, "Input"],
-Cell[9093, 214, 1179, 23, 164, "Input"],
-Cell[10275, 239, 373, 10, 52, "Input"],
-Cell[10651, 251, 1524, 33, 130, "Input"],
-Cell[12178, 286, 952, 19, 92, "Input"],
-Cell[13133, 307, 440, 9, 31, "Input"],
-Cell[13576, 318, 485, 11, 31, "Input"],
-Cell[14064, 331, 215, 6, 31, "Input"],
-Cell[14282, 339, 334, 10, 31, "Input"],
-Cell[14619, 351, 107, 2, 31, "Input"]
+Cell[8989, 208, 162, 4, 31, "Input"],
+Cell[9154, 214, 1179, 23, 164, "Input"],
+Cell[10336, 239, 373, 10, 52, "Input"],
+Cell[10712, 251, 1524, 33, 130, "Input"],
+Cell[12239, 286, 952, 19, 92, "Input"],
+Cell[13194, 307, 440, 9, 31, "Input"],
+Cell[13637, 318, 485, 11, 31, "Input"],
+Cell[14125, 331, 215, 6, 31, "Input"],
+Cell[14343, 339, 334, 10, 31, "Input"],
+Cell[14680, 351, 107, 2, 31, "Input"]
 }, Open  ]]
 }, Open  ]]
 }

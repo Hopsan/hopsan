@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     14339,        374]
-NotebookOptionsPosition[     13348,        340]
-NotebookOutlinePosition[     13691,        355]
-CellTagsIndexPosition[     13648,        352]
+NotebookDataLength[     14391,        374]
+NotebookOptionsPosition[     13400,        340]
+NotebookOutlinePosition[     13743,        355]
+CellTagsIndexPosition[     13700,        352]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -135,11 +135,11 @@ Cell[BoxData[
        "\"\<viscosity \>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Dv", ",", "0.03", ",", "double", ",", "\"\<m\>\"", ",", 
+      "Dv", ",", "0.01", ",", "double", ",", "\"\<m\>\"", ",", 
        "\"\<Spool diameter\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Bv", ",", "0.03", ",", "double", ",", "\"\<N/(m s)\>\"", ",", 
+      "Bv", ",", "1000", ",", "double", ",", "\"\<N/(m s)\>\"", ",", 
        "\"\<Damping\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -155,11 +155,11 @@ Cell[BoxData[
        "\"\<Flow coefficient\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "phi", ",", "0.03", ",", "double", ",", "\"\<rad\>\"", ",", 
+      "phi", ",", "1.17", ",", "double", ",", "\"\<rad\>\"", ",", 
        "\"\<Stream angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "ks", ",", "100.", ",", "double", ",", "\"\<N/m\>\"", ",", 
+      "ks", ",", "10000.", ",", "double", ",", "\"\<N/m\>\"", ",", 
        "\"\<Spring constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -188,7 +188,7 @@ Cell[BoxData[
    3.5039967133130913`*^9, 3.5039967163764143`*^9}, {3.5039969681607733`*^9, 
    3.503996993616342*^9}, {3.507574582234375*^9, 3.507574588828125*^9}, {
    3.507576286109375*^9, 3.507576354453125*^9}, {3.5077959019375*^9, 
-   3.507795944828125*^9}}],
+   3.507795944828125*^9}, {3.6180822931493664`*^9, 3.6180823115274177`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -362,18 +362,18 @@ Cell[998, 33, 1444, 33, 172, "Input"],
 Cell[2445, 68, 1015, 21, 92, "Input"],
 Cell[3463, 91, 410, 10, 72, "Input"],
 Cell[3876, 103, 674, 17, 92, "Input"],
-Cell[4553, 122, 3457, 68, 252, "Input",
+Cell[4553, 122, 3509, 68, 252, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[8013, 192, 162, 4, 31, "Input"],
-Cell[8178, 198, 1090, 24, 144, "Input"],
-Cell[9271, 224, 166, 2, 31, "Input"],
-Cell[9440, 228, 1776, 43, 150, "Input"],
-Cell[11219, 273, 765, 18, 92, "Input"],
-Cell[11987, 293, 381, 9, 31, "Input"],
-Cell[12371, 304, 224, 6, 31, "Input"],
-Cell[12598, 312, 275, 8, 31, "Input"],
-Cell[12876, 322, 334, 10, 31, "Input"],
-Cell[13213, 334, 107, 2, 31, "Input"]
+Cell[8065, 192, 162, 4, 31, "Input"],
+Cell[8230, 198, 1090, 24, 144, "Input"],
+Cell[9323, 224, 166, 2, 31, "Input"],
+Cell[9492, 228, 1776, 43, 150, "Input"],
+Cell[11271, 273, 765, 18, 92, "Input"],
+Cell[12039, 293, 381, 9, 31, "Input"],
+Cell[12423, 304, 224, 6, 31, "Input"],
+Cell[12650, 312, 275, 8, 31, "Input"],
+Cell[12928, 322, 334, 10, 31, "Input"],
+Cell[13265, 334, 107, 2, 31, "Input"]
 }, Open  ]]
 }, Open  ]]
 }

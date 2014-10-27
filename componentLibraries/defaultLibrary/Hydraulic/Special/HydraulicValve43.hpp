@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicValve43.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 8 Apr 2014 15:50:09
+//! @date Tue 10 Jun 2014 16:03:32
 //! @brief A hydraulic directional valve
 //! @ingroup HydraulicComponents
 //!

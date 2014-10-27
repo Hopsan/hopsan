@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicMotorJload.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 8 Apr 2014 15:50:45
+//! @date Tue 10 Jun 2014 16:03:36
 //! @brief This is a motor with an inertia load
 //! @ingroup HydraulicComponents
 //!
