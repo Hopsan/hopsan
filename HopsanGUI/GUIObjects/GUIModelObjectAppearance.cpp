@@ -368,11 +368,8 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                 {
                     m.resizeX.append(xmlResize.attribute("x").toDouble());
                     m.resizeY.append(xmlResize.attribute("y").toDouble());
-                    m.scaleDataIdx1.append(xmlResize.attribute("idx1").toInt());
-                    if(xmlResize.hasAttribute("idx2"))
-                        m.scaleDataIdx2.append(xmlResize.attribute("idx2").toInt());
-                    else
-                        m.scaleDataIdx2.append(-1);
+                    m.scaleDataIdx1.append(parseAttributeInt(xmlResize, "idx1", -1));
+                    m.scaleDataIdx2.append(parseAttributeInt(xmlResize, "idx2", -1));
                     xmlResize = xmlResize.nextSiblingElement(CAF_RESIZE);
                 }
 

@@ -254,11 +254,18 @@ void AnimatedComponent::updateAnimation()
                     {
                         scaleData = data[idx1];
                     }
-                    double scaleX = mpAnimationData->movables[m].resizeX[r]*scaleData;
-                    double scaleY = mpAnimationData->movables[m].resizeY[r]*scaleData;
 
-                    totalScaleX *= scaleX;
-                    totalScaleY *= scaleY;
+                    if(mpAnimationData->movables[m].resizeX[r] != 0)
+                    {
+                        double scaleX = mpAnimationData->movables[m].resizeX[r]*scaleData;
+                        totalScaleX *= scaleX;
+                    }
+
+                    if(mpAnimationData->movables[m].resizeY[r] != 0)
+                    {
+                        double scaleY = mpAnimationData->movables[m].resizeY[r]*scaleData;
+                        totalScaleY *= scaleY;
+                    }
                 }
                 double initX = mpAnimationData->movables[m].initScaleX;
                 double initY = mpAnimationData->movables[m].initScaleY;
