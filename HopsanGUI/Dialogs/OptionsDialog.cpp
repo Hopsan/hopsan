@@ -243,6 +243,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpSnappingCheckBox = new QCheckBox(tr("Auto Snap Components"));
     mpSnappingCheckBox->setCheckable(true);
 
+    mpAutoSetPwdToMwdCheckBox = new QCheckBox(tr("Automtaically set HCOM working directory to model diretory"));
+    mpAutoSetPwdToMwdCheckBox->setCheckable(true);
+
     mpInterfaceWidget = new QWidget(this);
     QGridLayout *pInterfaceLayout = new QGridLayout;
     pInterfaceLayout->addWidget(mpNativeStyleSheetCheckBox,    0, 0);
@@ -250,10 +253,11 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pInterfaceLayout->addWidget(mpInvertWheelCheckBox,         3, 0);
     pInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        4, 0);
     pInterfaceLayout->addWidget(mpSnappingCheckBox,            5, 0);
-    pInterfaceLayout->addWidget(mpBackgroundColorLabel,        6, 0);
-    pInterfaceLayout->addWidget(mpBackgroundColorButton,       6, 1);
-    pInterfaceLayout->addWidget(new QWidget(),                 7, 0, 1, 2);
-    pInterfaceLayout->setRowStretch(7,1);
+    pInterfaceLayout->addWidget(mpAutoSetPwdToMwdCheckBox,     6, 0);
+    pInterfaceLayout->addWidget(mpBackgroundColorLabel,        7, 0);
+    pInterfaceLayout->addWidget(mpBackgroundColorButton,       7, 1);
+    pInterfaceLayout->addWidget(new QWidget(),                 8, 0, 1, 2);
+    pInterfaceLayout->setRowStretch(8,1);
     mpInterfaceWidget->setLayout(pInterfaceLayout);
 
         //Simulation Options
@@ -429,6 +433,7 @@ void OptionsDialog::setValues()
     gpConfig->setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gpConfig->setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gpConfig->setSnapping(mpSnappingCheckBox->isChecked());
+    gpConfig->setAutoSetPwdToMwd(mpAutoSetPwdToMwdCheckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
         gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
@@ -525,6 +530,7 @@ void OptionsDialog::show()
     mpAntiAliasingCheckBox->setChecked(gpConfig->getAntiAliasing());
     mpInvertWheelCheckBox->setChecked(gpConfig->getInvertWheel());
     mpSnappingCheckBox->setChecked(gpConfig->getSnapping());
+    mpAutoSetPwdToMwdCheckBox->setChecked(gpConfig->getAutoSetPwdToMwd());
     mpEnableProgressBarCheckBox->setChecked(gpConfig->getEnableProgressBar());
     mpProgressBarSpinBox->setValue(gpConfig->getProgressBarStep());
     mpProgressBarSpinBox->setEnabled(gpConfig->getEnableProgressBar());

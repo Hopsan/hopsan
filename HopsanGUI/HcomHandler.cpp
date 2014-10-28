@@ -286,6 +286,8 @@ HcomHandler::~HcomHandler()
 void HcomHandler::setModelPtr(ModelWidget *pModel)
 {
     mpModel = pModel;
+
+    updatePwd();
 }
 
 ModelWidget *HcomHandler::getModelPtr() const
@@ -5582,6 +5584,14 @@ void HcomHandler::splitAtFirst(QString str, QString c, QString &left, QString &r
     left = str.left(idx);
     right = str.right(str.size()-idx-c.size());
     return;
+}
+
+void HcomHandler::updatePwd()
+{
+    if(mpModel && mpModel->isSaved() && gpConfig->getAutoSetPwdToMwd())
+    {
+        mPwd = mpModel->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path();
+    }
 }
 
 

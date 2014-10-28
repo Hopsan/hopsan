@@ -261,6 +261,8 @@ private:
     QMap<QString, QStringList> mFunctions;
 
     //Private get functions
+
+    void updatePwd();
 };
 
 

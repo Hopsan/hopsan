@@ -72,6 +72,7 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
         mCurrentIdx = mModelPtrs.size()-1;
         gpCentralTabWidget->setCurrentIndex(gpCentralTabWidget->addTab(pModelWidget, name));
         emit newModelWidgetAdded();
+        emit modelChanged(pModelWidget);
     }
 }
 
@@ -311,6 +312,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
         pNewModel->setSaved(true);
         pNewModel->getTopLevelSystemContainer()->setUndoEnabled(true, true);
         emit newModelWidgetAdded();
+        emit modelChanged(pNewModel);
     }
     else
     {
@@ -531,6 +533,8 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
     disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
+
+    connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }
 
 void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
@@ -552,6 +556,8 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
     connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
     connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            pModel,    SLOT(exportModelParameters()), Qt::UniqueConnection);
+
+    connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }
 
 //! @brief Help function to update the toolbar simulation time parameters from a tab

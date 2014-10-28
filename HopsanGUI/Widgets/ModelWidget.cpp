@@ -1193,6 +1193,8 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         mpMessageHandler->addInfoMessage("Saved model: " + modelFilePathToSave);
 
         mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
+
+        emit modelSaved(this);
     }
 }
 

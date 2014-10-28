@@ -61,6 +61,7 @@ private:
     QCheckBox *mpInvertWheelCheckBox;
     QCheckBox *mpAntiAliasingCheckBox;
     QCheckBox *mpSnappingCheckBox;
+    QCheckBox *mpAutoSetPwdToMwdCheckBox;
 
     QWidget *mpSimulationWidget;
     QCheckBox *mpUseMulticoreCheckBox;

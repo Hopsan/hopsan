@@ -78,6 +78,7 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, CFG_AUTOLIMITGENERATIONS, mAutoLimitLogDataGenerations);
     appendDomBooleanNode(settings, CFG_CACHELOGDATA, mCacheLogData);
     appendDomBooleanNode(settings, CFG_AUTOBACKUP, mAutoBackup);
+    appendDomBooleanNode(settings, CFG_SETPWDTOMWD, mSetPwdToMwd);
     appendDomTextNode(settings, CFG_LOADMODELDIR, mLoadModelDir);
     appendDomTextNode(settings, CFG_MODELGFXDIR, mModelGfxDir);
     appendDomTextNode(settings, CFG_PLOTDATADIR, mPlotDataDir);
@@ -403,6 +404,8 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mInvertWheel = parseDomBooleanNode(rDomElement.firstChildElement(CFG_INVERTWHEEL), mInvertWheel);
     if(!rDomElement.firstChildElement(CFG_SNAPPING).isNull())
         mSnapping = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SNAPPING), mSnapping);
+    if(!rDomElement.firstChildElement(CFG_SETPWDTOMWD).isNull())
+        mSetPwdToMwd = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SETPWDTOMWD), mSetPwdToMwd);
     if(!rDomElement.firstChildElement(CFG_PROGRESSBAR).isNull())
         mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement(CFG_PROGRESSBAR), mEnableProgressBar);
     if(!rDomElement.firstChildElement(CFG_PROGRESSBARSTEP).isNull())
@@ -710,91 +713,91 @@ void Configuration::loadScriptSettings(QDomElement &rPythonElement, QDomElement 
 
 
 //! @brief Returns which library style to use
-int Configuration::getLibraryStyle()
+int Configuration::getLibraryStyle() const
 {
     return this->mLibraryStyle;
 }
 
 
 //! @brief Returns whether or not the popup help shall be shown
-bool Configuration::getShowPopupHelp()
+bool Configuration::getShowPopupHelp() const
 {
     return this->mShowPopupHelp;
 }
 
 
 //! @brief Returns whether or not the welcome dialog shall be shown
-bool Configuration::getUseNativeStyleSheet()
+bool Configuration::getUseNativeStyleSheet() const
 {
     return this->mUseNativeStyleSheet;
 }
 
 
 //! @brief Returns whether or not invert wheel shall be used
-bool Configuration::getInvertWheel()
+bool Configuration::getInvertWheel() const
 {
     return this->mInvertWheel;
 }
 
 
 //! @brief Returns whether or not multi-threading shall be used
-bool Configuration::getUseMulticore()
+bool Configuration::getUseMulticore() const
 {
     return this->mUseMulticore;
 }
 
 
 //! @brief Returns number of simulation threads that shall be used
-int Configuration::getNumberOfThreads()
+int Configuration::getNumberOfThreads() const
 {
     return this->mNumberOfThreads;
 }
 
 
 //! @brief Returns whether or not the toggle names button was checked at the end of last session
-bool Configuration::getToggleNamesButtonCheckedLastSession()
+bool Configuration::getToggleNamesButtonCheckedLastSession() const
 {
     return this->mToggleNamesButtonCheckedLastSession;
 }
 
 
 //! @brief Returns whether or not the toggle ports button was checked at the end of last session
-bool Configuration::getTogglePortsButtonCheckedLastSession()
+bool Configuration::getTogglePortsButtonCheckedLastSession() const
 {
     return this->mTogglePortsButtonCheckedLastSession;
 }
 
 
 //! @brief Returns the step size that shall be used in progress bar
-int Configuration::getProgressBarStep()
+int Configuration::getProgressBarStep() const
 {
     return this->mProgressBarStep;
 }
 
 
 //! @brief Returns whether or not the progress bar shall be displayed during simulation
-bool Configuration::getEnableProgressBar()
+bool Configuration::getEnableProgressBar() const
 {
     return this->mEnableProgressBar;
 }
 
 
 //! @brief Returns the background color
-QColor Configuration::getBackgroundColor()
+QColor Configuration::getBackgroundColor() const
 {
     return this->mBackgroundColor;
 }
 
 
 //! @brief Returns whether or not anti-aliasing shall be used
-bool Configuration::getAntiAliasing()
+bool Configuration::getAntiAliasing() const
 {
     return this->mAntiAliasing;
 }
 
 
 //! @brief Returns a list of paths to the user libraries that shall be loaded
-QStringList Configuration::getUserLibs()
+QStringList Configuration::getUserLibs() const
 {
     QStringList ret;
     Q_FOREACH(const QFileInfo &file, mUserLibs)
@@ -807,14 +810,14 @@ QStringList Configuration::getUserLibs()
 
 
 //! @brief Returns a list of the library types for all loaded libraries
-QList<LibraryTypeEnumT> Configuration::getUserLibTypes()
+QList<LibraryTypeEnumT> Configuration::getUserLibTypes() const
 {
     return mUserLibTypes;
 }
 
 
 //! @brief Returns a list of all loaded Modelica files
-QStringList Configuration::getModelicaFiles()
+QStringList Configuration::getModelicaFiles() const
 {
     QStringList ret;
     Q_FOREACH(const QFileInfo &file, mModelicaFiles)
@@ -827,21 +830,27 @@ QStringList Configuration::getModelicaFiles()
 
 
 //! @brief Returns whether or not connector snapping shall be used
-bool Configuration::getSnapping()
+bool Configuration::getSnapping() const
 {
     return this->mSnapping;
 }
 
+//! @brief Returns whether ot not PWD should automatically be set to MWD in HCOM
+bool Configuration::getAutoSetPwdToMwd() const
+{
+    return mSetPwdToMwd;
+}
+
 
 //! @brief Returns a list of paths to recently opened models
-QStringList Configuration::getRecentModels()
+QStringList Configuration::getRecentModels() const
 {
     return this->mRecentModels;
 }
 
 
 //! @brief Returns a list of paths to recently opened models in component generator
-QStringList Configuration::getRecentGeneratorModels()
+QStringList Configuration::getRecentGeneratorModels() const
 {
     return this->mRecentGeneratorModels;
 }
@@ -849,7 +858,7 @@ QStringList Configuration::getRecentGeneratorModels()
 
 
 //! @brief Returns a list of paths to models that were open last time program was closed
-QStringList Configuration::getLastSessionModels()
+QStringList Configuration::getLastSessionModels() const
 {
     return this->mLastSessionModels;
 }
@@ -984,7 +993,7 @@ bool Configuration::getShowHiddenNodeDataVariables() const
 //! @param style Style of connector (POWERCONNECTOR, SIGNALCONNECTOR or UNDEFINEDCONNECTOR)
 //! @param gfxType Graphics type (User or Iso)
 //! @param situation Defines when connector is used (Primary, Hovered, Active)
-QPen Configuration::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation)
+QPen Configuration::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation) const
 {
     QString gfxString;
     if(gfxType == ISOGraphics) { gfxString = "Iso"; }
@@ -1004,7 +1013,7 @@ QPen Configuration::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType,
 }
 
 
-QPalette Configuration::getPalette()
+QPalette Configuration::getPalette() const
 {
     if(this->mUseNativeStyleSheet)
     {
@@ -1018,7 +1027,7 @@ QPalette Configuration::getPalette()
 }
 
 
-QFont Configuration::getFont()
+QFont Configuration::getFont() const
 {
     //! @note Embedded truetype fonts does not seem to work in Linux, so ignore them
 #ifdef WIN32
@@ -1030,7 +1039,7 @@ QFont Configuration::getFont()
 
 
 //! @brief Returns the current style sheet
-QString Configuration::getStyleSheet()
+QString Configuration::getStyleSheet() const
 {
     if(mUseNativeStyleSheet)
         return QString();
@@ -1040,7 +1049,7 @@ QString Configuration::getStyleSheet()
 
 
 //! @brief Returns the last used script file
-QString Configuration::getLastPyScriptFile()
+QString Configuration::getLastPyScriptFile() const
 {
     return mLastPyScriptFile;
 }
@@ -1345,7 +1354,7 @@ void Configuration::setEnableProgressBar(bool value)
 
 //! @brief Set function for background color setting
 //! @param value Desired color
-void Configuration::setBackgroundColor(QColor value)
+void Configuration::setBackgroundColor(const QColor &value)
 {
     this->mBackgroundColor = value;
     saveToXml();
@@ -1354,7 +1363,7 @@ void Configuration::setBackgroundColor(QColor value)
 
 //! @brief Set function for anti-aliasing setting
 //! @param value Desired setting
-void Configuration::setAntiAliasing(bool value)
+void Configuration::setAntiAliasing(const bool &value)
 {
     this->mAntiAliasing = value;
     saveToXml();
@@ -1364,7 +1373,7 @@ void Configuration::setAntiAliasing(bool value)
 //! @brief Adds a user library to the library list
 //! @param value Path to the new library
 //! @param type Type of library
-void Configuration::addUserLib(QString value, LibraryTypeEnumT type)
+void Configuration::addUserLib(const QString &value, LibraryTypeEnumT type)
 {
     QFileInfo file(value);
     if(!mUserLibs.contains(file))
@@ -1378,7 +1387,7 @@ void Configuration::addUserLib(QString value, LibraryTypeEnumT type)
 
 //! @brief Removes a user library from the library list
 //! @param value Path to the library that is to be removed
-void Configuration::removeUserLib(QString value)
+void Configuration::removeUserLib(const QString &value)
 {
     QFileInfo file(value);
     for(int i=0; i<mUserLibs.size(); ++i)
@@ -1396,7 +1405,7 @@ void Configuration::removeUserLib(QString value)
 
 //! @brief Tells whether or not a specified user library exist in the library list
 //! @param value Path to the library
-bool Configuration::hasUserLib(QString value) const
+bool Configuration::hasUserLib(const QString &value) const
 {
     QFileInfo file(value);
     return mUserLibs.contains(file);
@@ -1404,7 +1413,7 @@ bool Configuration::hasUserLib(QString value) const
 
 
 //! @brief Adds a new Modelica file to the configuration
-void Configuration::addModelicaFile(QString value)
+void Configuration::addModelicaFile(const QString &value)
 {
     QFileInfo file(value);
     if(!mModelicaFiles.contains(file))
@@ -1420,6 +1429,14 @@ void Configuration::addModelicaFile(QString value)
 void Configuration::setSnapping(bool value)
 {
     this->mSnapping = value;
+    saveToXml();
+}
+
+
+//! @brief Set function for automatically setting PWD to MWD in HCOM
+void Configuration::setAutoSetPwdToMwd(const bool value)
+{
+    mSetPwdToMwd = value;
     saveToXml();
 }
 

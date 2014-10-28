@@ -102,6 +102,7 @@ signals:
     void simulationTimeChanged(QString start, QString ts, QString stop);
     void checkMessages();
     void simulationFinished();
+    void modelSaved(ModelWidget*);
 
 private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);

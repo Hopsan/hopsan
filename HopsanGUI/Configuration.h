@@ -48,6 +48,7 @@
 #define CFG_CACHELOGDATA "cachelogdata"
 #define CFG_AUTOBACKUP "autobackup"
 #define CFG_AUTOLIMITGENERATIONS "autolimitgenerations"
+#define CFG_SETPWDTOMWD "setpwdtomwd"
 
 #define CFG_PLOTGFXIMAGEFORMAT "plotgfximageformat"
 #define CFG_PLOTGFXDIMENSIONSUNIT "plotgfxdimensionsunit"
@@ -119,36 +120,37 @@ public:
     void loadFromXml();
     void loadDefaultsFromXml();
 
-    bool getShowPopupHelp();
-    bool getInvertWheel();
-    bool getToggleNamesButtonCheckedLastSession();
-    bool getTogglePortsButtonCheckedLastSession();
-    int getProgressBarStep();
-    bool getEnableProgressBar();
-    bool getSnapping();
+    bool getShowPopupHelp() const;
+    bool getInvertWheel() const;
+    bool getToggleNamesButtonCheckedLastSession() const;
+    bool getTogglePortsButtonCheckedLastSession() const;
+    int getProgressBarStep() const;
+    bool getEnableProgressBar() const;
+    bool getSnapping() const;
+    bool getAutoSetPwdToMwd() const;
 
-    bool getUseMulticore();
-    int getNumberOfThreads();
+    bool getUseMulticore() const;
+    int getNumberOfThreads() const;
 
-    int getLibraryStyle();
-    bool getUseNativeStyleSheet();
-    QColor getBackgroundColor();
-    QPalette getPalette();
-    QFont getFont();
-    QString getStyleSheet();
-    QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation);
-    bool getAntiAliasing();
+    int getLibraryStyle() const;
+    bool getUseNativeStyleSheet() const;
+    QColor getBackgroundColor() const;
+    QPalette getPalette() const;
+    QFont getFont() const;
+    QString getStyleSheet() const;
+    QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation) const;
+    bool getAntiAliasing() const;
 
-    QStringList getUserLibs();
-    QList<LibraryTypeEnumT> getUserLibTypes();
+    QStringList getUserLibs() const;
+    QList<LibraryTypeEnumT> getUserLibTypes() const;
 
-    QStringList getModelicaFiles();
+    QStringList getModelicaFiles() const;
 
-    QStringList getRecentModels();
-    QStringList getRecentGeneratorModels();
-    QStringList getLastSessionModels();
+    QStringList getRecentModels() const;
+    QStringList getRecentGeneratorModels() const;
+    QStringList getLastSessionModels() const;
 
-    QString getLastPyScriptFile();
+    QString getLastPyScriptFile() const;
 
     QStringList getUnitQuantities() const;
     QString getDefaultUnit(const QString &rPhysicalQuantity) const;
@@ -206,13 +208,14 @@ public:
     void setNumberOfThreads(size_t value);
     void setProgressBarStep(int value);
     void setEnableProgressBar(bool value);
-    void setBackgroundColor(QColor value);
-    void setAntiAliasing(bool value);
-    void addUserLib(QString value, LibraryTypeEnumT type);
-    void removeUserLib(QString value);
-    bool hasUserLib(QString value) const;
-    void addModelicaFile(QString value);
-    void setSnapping(bool value);
+    void setBackgroundColor(const QColor &value);
+    void setAntiAliasing(const bool &value);
+    void addUserLib(const QString &value, LibraryTypeEnumT type);
+    void removeUserLib(const QString &value);
+    bool hasUserLib(const QString &value) const;
+    void addModelicaFile(const QString &value);
+    void setSnapping(const bool value);
+    void setAutoSetPwdToMwd(const bool value);
     void addRecentModel(QString value);
     void removeRecentModel(QString value);
     void addRecentGeneratorModel(QString value);
@@ -286,6 +289,7 @@ private:
     QList<LibraryTypeEnumT> mUserLibTypes;
     QList<QFileInfo> mModelicaFiles;
     bool mSnapping;
+    bool mSetPwdToMwd;
     QStringList mRecentModels;
     QStringList mLastSessionModels;
     QStringList mRecentGeneratorModels;

@@ -259,6 +259,7 @@ void MainWindow::createContents()
     gpModelHandler = mpModelHandler;
     connect(mpModelHandler, SIGNAL(modelChanged(ModelWidget*)), gpTerminalWidget->mpHandler, SLOT(setModelPtr(ModelWidget*)));
 
+
     //Create the sensitivity analysis dialog
     mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
     gpSensitivityAnalysisDialog = mpSensitivityAnalysisDialog;
