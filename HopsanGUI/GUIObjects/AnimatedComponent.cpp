@@ -73,8 +73,8 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
         for(int i=0; i<mpAnimationData->movables.size(); ++i)
         {
             setupAnimationMovable(i);
-            if(!mpAnimationData->movables[i].dataPorts.isEmpty()/* && unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i).first())->isConnected()*/)
-            {
+            //if(!mpAnimationData->movables[i].dataPorts.isEmpty()/* && unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i).first())->isConnected()*/)
+            //{
                 mpData->append(QList<QVector<double> >());
                 mpNodeDataPtrs->append(QList<double*>());
                 //! @todo generation info should be some kind of "propertie" for alla of the animation code sp that if you change it it should change everywhere, to make it possible to animate different generations
@@ -103,7 +103,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                     }
                     //qDebug() << "mpData = " << *mpData;
                 }
-            }
+            //}
         }
     }
 
@@ -241,6 +241,8 @@ void AnimatedComponent::updateAnimation()
                 double totalScaleX = 1;
                 double totalScaleY = 1;
 
+                bool xChanged = false;
+                bool yChanged = false;
                 for(int r=0; r<mpAnimationData->movables[m].resizeX.size(); ++r)
                 {
                     int idx1 = mpAnimationData->movables[m].scaleDataIdx1[r];
@@ -259,14 +261,20 @@ void AnimatedComponent::updateAnimation()
                     {
                         double scaleX = mpAnimationData->movables[m].resizeX[r]*scaleData;
                         totalScaleX *= scaleX;
+                        xChanged = true;
                     }
 
                     if(mpAnimationData->movables[m].resizeY[r] != 0)
                     {
                         double scaleY = mpAnimationData->movables[m].resizeY[r]*scaleData;
                         totalScaleY *= scaleY;
+                        yChanged = true;
                     }
                 }
+                if(!xChanged)
+                    totalScaleX = 0;
+                if(!yChanged)
+                    totalScaleY = 0;
                 double initX = mpAnimationData->movables[m].initScaleX;
                 double initY = mpAnimationData->movables[m].initScaleY;
                 totalScaleX = initX - totalScaleX;

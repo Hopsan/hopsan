@@ -352,18 +352,17 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                 }
                 else
                 {
-                    m.initScaleX = 1;
-                    m.initScaleY = 1;
+                    m.initScaleX = 0;
+                    m.initScaleY = 0;
                 }
 
                 QDomElement xmlResize = xmlMovable.firstChildElement(CAF_RESIZE);
-                if(!xmlResize.isNull())
-                {
-                    m.resizeX.clear();
-                    m.resizeY.clear();
-                    m.scaleDataIdx1.clear();
-                    m.scaleDataIdx2.clear();
-                }
+
+                m.resizeX.clear();
+                m.resizeY.clear();
+                m.scaleDataIdx1.clear();
+                m.scaleDataIdx2.clear();
+
                 while(!xmlResize.isNull())
                 {
                     m.resizeX.append(xmlResize.attribute("x").toDouble());

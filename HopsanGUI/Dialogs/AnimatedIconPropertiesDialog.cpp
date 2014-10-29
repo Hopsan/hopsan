@@ -527,10 +527,14 @@ void AnimatedIconPropertiesDialog::setValues()
         m.scaleDataIdx2.clear();
         for(int r=0; r<tempStr1.size(); ++r)
         {
-            m.resizeX.append(tempStr1[r].toDouble());
-            m.resizeY.append(tempStr2[r].toDouble());
-            m.scaleDataIdx1.append(tempStr3[r].toInt());
-            m.scaleDataIdx2.append(tempStr4[r].toInt());
+            if(!tempStr1[r].isEmpty())
+                m.resizeX.append(tempStr1[r].toDouble());
+            if(!tempStr2[r].isEmpty())
+                m.resizeY.append(tempStr2[r].toDouble());
+            if(!tempStr3[r].isEmpty())
+                m.scaleDataIdx1.append(tempStr3[r].toInt());
+            if(!tempStr4[r].isEmpty())
+                m.scaleDataIdx2.append(tempStr4[r].toInt());
         }
 
         QStringList splitInitColor = mpInitColorLineEdits[i]->text().split(",");
@@ -613,7 +617,10 @@ void AnimatedIconPropertiesDialog::resetValues()
     QDomElement animationRoot = domDocument.createElement("animation");
     domDocument.appendChild(animationRoot);
 
-    gpLibraryHandler->getModelObjectAppearancePtr(mpAnimatedComponent->mpModelObject->getTypeName())->getAnimationDataPtr()->saveToDomElement(animationRoot);
+    QString subTypeName = mpAnimatedComponent->mpModelObject->getSubTypeName();
+    QString typeName = mpAnimatedComponent->mpModelObject->getTypeName();
+    ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(typeName, subTypeName);
+    pAppearanceData->getAnimationDataPtr()->saveToDomElement(animationRoot);
     QString baseIconPath = gpLibraryHandler->getModelObjectAppearancePtr(mpAnimatedComponent->mpModelObject->getTypeName())->getAnimationDataPtr()->baseIconPath;
 
     //Store icon paths (they are not included in saveToDomElement() )
