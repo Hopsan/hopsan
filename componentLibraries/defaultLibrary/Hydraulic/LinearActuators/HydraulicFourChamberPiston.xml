@@ -11,6 +11,54 @@
             <port x="0.0" y="0.500" a="180" name="P4"/>
             <port x="1.0" y="0.500" a="0" name="P5"/>
         </ports>
+        <animation>
+            <icon userpath="HydraulicFourChamberPiston_base.svg"/>
+            <movable idx="0">
+                <icon userpath="HydraulicFourChamberPiston_chamber2.svg"/>
+                <data port="P2" dataname="Pressure" idx="0"/>
+                <start x="8" y="0" a="0"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
+            </movable>
+            <movable idx="1">
+                <icon userpath="HydraulicFourChamberPiston_chamber4.svg"/>
+                <data port="P4" dataname="Pressure" idx="0"/>
+                <start x="0" y="0" a="0"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
+            </movable>
+            <movable idx="2">
+                <icon userpath="HydraulicFourChamberPiston_chamber1.svg"/>
+                <data port="P1" dataname="Pressure" idx="0"/>
+                <data port="P5" dataname="Position" idx="1"/>
+                <start x="0" y="0" a="0"/>
+                <initcolor g="0" r="0" b="255"/>
+                <resize x="1" y="0" idx1="1"/>
+                <initscale x="0" y="1"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
+            </movable>
+            <movable idx="3">
+                <icon userpath="HydraulicFourChamberPiston_chamber3.svg"/>
+                <data port="P3" dataname="Pressure" idx="0"/>
+                <data port="P5" dataname="Position" idx="1"/>
+                <start x="69" y="0" a="0"/>
+                <initscale x="0.5" y="1"/>
+                <resize x="0.5" y="0" idx1="1"/>
+                <initcolor g="0" r="0" b="255"/>
+                <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
+            </movable>
+
+            <movable idx="4">
+                <icon userpath="HydraulicFourChamberPiston_base.svg"/>
+            </movable>
+            <movable idx="5">
+                <icon userpath="HydraulicFourChamberPiston_piston.svg"/>
+                <data port="P5" dataname="Position" idx="0"/>
+                <divisor name="s_l#Value"/>
+                <movement x="57.5" y="0" a="0" idx="0"/>
+                <start x="0" y="0" a="0"/>
+            </movable>
+        </animation>
         <defaultparameters>
             <parameter name="c_leak13#Value" hidden="true">0</parameter>
             <parameter name="c_leak23#Value" hidden="true">0</parameter>
