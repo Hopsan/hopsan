@@ -702,7 +702,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                 pUnloadAction->setEnabled(true);
             }
 
-            if(item != 0 && mItemToTypeNameMap.contains(item))
+            if(item != 0 && mItemToTypeNameMap.contains(pFirstSubComponentItem))
             {
                 pOpenFolderAction->setEnabled(true);
             }
@@ -742,7 +742,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
             }
             else if(pReply == pOpenFolderAction)
             {
-                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(item).value())->getBasePath()));
+                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath()));
             }
         }
     }
