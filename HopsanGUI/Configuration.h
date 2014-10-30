@@ -49,6 +49,7 @@
 #define CFG_AUTOBACKUP "autobackup"
 #define CFG_AUTOLIMITGENERATIONS "autolimitgenerations"
 #define CFG_SETPWDTOMWD "setpwdtomwd"
+#define CFG_PLOTWINDOWSONTOP "plotwindowsontop"
 
 #define CFG_PLOTGFXIMAGEFORMAT "plotgfximageformat"
 #define CFG_PLOTGFXDIMENSIONSUNIT "plotgfxdimensionsunit"
@@ -128,6 +129,7 @@ public:
     bool getEnableProgressBar() const;
     bool getSnapping() const;
     bool getAutoSetPwdToMwd() const;
+    bool getPlotWindowsOnTop() const;
 
     bool getUseMulticore() const;
     int getNumberOfThreads() const;
@@ -216,6 +218,7 @@ public:
     void addModelicaFile(const QString &value);
     void setSnapping(const bool value);
     void setAutoSetPwdToMwd(const bool value);
+    void setPlotWindowsOnTop(const bool value);
     void addRecentModel(QString value);
     void removeRecentModel(QString value);
     void addRecentGeneratorModel(QString value);
@@ -290,6 +293,7 @@ private:
     QList<QFileInfo> mModelicaFiles;
     bool mSnapping;
     bool mSetPwdToMwd;
+    bool mPlotWindowsOnTop;
     QStringList mRecentModels;
     QStringList mLastSessionModels;
     QStringList mRecentGeneratorModels;

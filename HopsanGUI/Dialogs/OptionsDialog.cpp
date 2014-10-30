@@ -309,6 +309,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpAutoLimitGenerationsCheckBox = new QCheckBox("Autoremove last generation when limit is reached");
     mpCacheLogDataCeckBox = new QCheckBox("Cache log data on hard drive");
     mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden node data variables");
+    mpPlotWindowsOnTop = new QCheckBox("Show plot windows on top of main window");
 
     mpUnitScaleWidget = new QWidget(this);
     mpUnitScaleWidget->setPalette(this->palette());
@@ -336,6 +337,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pPlottingLayout->addWidget(mpGenerationLimitSpinBox,          r, 2, 1, 1);
     ++r;
     pPlottingLayout->addWidget(mpShowHiddenNodeDataVarCheckBox,   r, 0, 1, 3);
+    ++r;
+    pPlottingLayout->addWidget(mpPlotWindowsOnTop,                r, 0, 1, 3);
     ++r;
     pPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 3);
     pPlottingLayout->setRowStretch(10, 1);
@@ -449,6 +452,7 @@ void OptionsDialog::setValues()
     gpConfig->setNumberOfThreads(mpThreadsSpinBox->value());
     gpConfig->setAutoLimitLogDataGenerations(mpAutoLimitGenerationsCheckBox->isChecked());
     gpConfig->setShowHiddenNodeDataVariables(mpShowHiddenNodeDataVarCheckBox->isChecked());
+    gpConfig->setPlotWindowsOnTop(mpPlotWindowsOnTop->isChecked());
     gpConfig->setGenerationLimit(mpGenerationLimitSpinBox->value());
     gpConfig->setCacheLogData(mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
@@ -541,6 +545,7 @@ void OptionsDialog::show()
     mpGenerationLimitSpinBox->setValue(gpConfig->getGenerationLimit());
     mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getAutoLimitLogDataGenerations());
     mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getShowHiddenNodeDataVariables());
+    mpPlotWindowsOnTop->setChecked(gpConfig->getPlotWindowsOnTop());
     mpCacheLogDataCeckBox->setChecked(gpConfig->getCacheLogData());
 
     // Update units scale lists

@@ -77,6 +77,7 @@ private:
     QCheckBox *mpAutoLimitGenerationsCheckBox;
     QCheckBox *mpCacheLogDataCeckBox;
     QCheckBox *mpShowHiddenNodeDataVarCheckBox;
+    QCheckBox *mpPlotWindowsOnTop;
 };
 
 #endif // OPTIONSDIALOG_H

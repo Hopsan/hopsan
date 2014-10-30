@@ -29,6 +29,7 @@
 #include "PlotWindow.h"
 #include "LogDataHandler.h"
 #include "PlotCurve.h"
+#include "Configuration.h"
 
 PlotHandler::PlotHandler(QObject *pParent) : QObject(pParent){}
 
@@ -61,7 +62,10 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
     PlotWindow* pPlotWindow = getPlotWindow(name);
     if (pPlotWindow==0)
     {
-        pPlotWindow = new PlotWindow(name, gpMainWindowWidget);
+        if(gpConfig->getPlotWindowsOnTop())
+            pPlotWindow = new PlotWindow(name, gpMainWindowWidget);
+        else
+            pPlotWindow = new PlotWindow(name, 0);
         pPlotWindow->show();
         mOpenPlotWindows.insert(name, pPlotWindow);
         connect(pPlotWindow, SIGNAL(windowClosed(PlotWindow*)), this, SLOT(forgetPlotWindow(PlotWindow*)));
@@ -85,7 +89,11 @@ PlotWindow *PlotHandler::createNewUniquePlotWindow(const QString &rName)
         keyName = actualName+QString("%1").arg(ctr++);
     }
 
-    PlotWindow *pPlotWindow = new PlotWindow(rName, gpMainWindowWidget);
+    PlotWindow *pPlotWindow;
+    if(gpConfig->getPlotWindowsOnTop())
+        pPlotWindow = new PlotWindow(rName, gpMainWindowWidget);
+    else
+        pPlotWindow = new PlotWindow(rName, 0);
     pPlotWindow->show();
     mOpenPlotWindows.insert(keyName, pPlotWindow);
     connect(pPlotWindow, SIGNAL(windowClosed(PlotWindow*)), this, SLOT(forgetPlotWindow(PlotWindow*)));

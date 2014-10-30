@@ -79,6 +79,8 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, CFG_CACHELOGDATA, mCacheLogData);
     appendDomBooleanNode(settings, CFG_AUTOBACKUP, mAutoBackup);
     appendDomBooleanNode(settings, CFG_SETPWDTOMWD, mSetPwdToMwd);
+    appendDomBooleanNode(settings, CFG_SETPWDTOMWD, mSetPwdToMwd);
+    appendDomBooleanNode(settings, CFG_PLOTWINDOWSONTOP, mPlotWindowsOnTop);
     appendDomTextNode(settings, CFG_LOADMODELDIR, mLoadModelDir);
     appendDomTextNode(settings, CFG_MODELGFXDIR, mModelGfxDir);
     appendDomTextNode(settings, CFG_PLOTDATADIR, mPlotDataDir);
@@ -406,6 +408,8 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mSnapping = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SNAPPING), mSnapping);
     if(!rDomElement.firstChildElement(CFG_SETPWDTOMWD).isNull())
         mSetPwdToMwd = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SETPWDTOMWD), mSetPwdToMwd);
+    if(!rDomElement.firstChildElement(CFG_PLOTWINDOWSONTOP).isNull())
+        mPlotWindowsOnTop = parseDomBooleanNode(rDomElement.firstChildElement(CFG_PLOTWINDOWSONTOP), mPlotWindowsOnTop);
     if(!rDomElement.firstChildElement(CFG_PROGRESSBAR).isNull())
         mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement(CFG_PROGRESSBAR), mEnableProgressBar);
     if(!rDomElement.firstChildElement(CFG_PROGRESSBARSTEP).isNull())
@@ -839,6 +843,11 @@ bool Configuration::getSnapping() const
 bool Configuration::getAutoSetPwdToMwd() const
 {
     return mSetPwdToMwd;
+}
+
+bool Configuration::getPlotWindowsOnTop() const
+{
+    return mPlotWindowsOnTop;
 }
 
 
@@ -1437,6 +1446,12 @@ void Configuration::setSnapping(bool value)
 void Configuration::setAutoSetPwdToMwd(const bool value)
 {
     mSetPwdToMwd = value;
+    saveToXml();
+}
+
+void Configuration::setPlotWindowsOnTop(const bool value)
+{
+    mPlotWindowsOnTop = value;
     saveToXml();
 }
 

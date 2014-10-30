@@ -125,7 +125,9 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_MouseTracking, true);
 
-    setWindowFlags(this->windowFlags() | Qt::Dialog);
+    setWindowFlags(Qt::Dialog);
+
+    setStyleSheet(gpConfig->getStyleSheet());
 
     //setAcceptDrops(false);
     //setAttribute(Qt::WA_TransparentForMouseEvents, false);
