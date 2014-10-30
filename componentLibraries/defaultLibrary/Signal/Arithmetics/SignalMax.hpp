@@ -66,6 +66,8 @@ namespace hopsan {
             {
                 mNDp_in_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInPort, i, NodeSignal::Value);
             }
+
+            simulateOneTimestep();
         }
 
 
