@@ -74,14 +74,18 @@ private:
     QList<QLineEdit*> mpMovementYLineEdits;
     QList<QLineEdit*> mpMovementThetaLineEdits;
     QList<QLineEdit*> mpMovementDataIdxLineEdits;
+    QList<QLineEdit*> mpMovementMultipliersLineEdits;
+    QList<QLineEdit*> mpMovementDivisorsLineEdits;
 
     //Resize
     QList<QLineEdit*> mpInitScaleXLineEdits;
     QList<QLineEdit*> mpInitScaleYLineEdits;
     QList<QLineEdit*> mpResizeXLineEdits;
     QList<QLineEdit*> mpResizeYLineEdits;
-    QList<QLineEdit*> mpScaleDataIdx1LineEdits;
-    QList<QLineEdit*> mpScaleDataIdx2LineEdits;
+    QList<QLineEdit*> mpResizeDataIdx1LineEdits;
+    QList<QLineEdit*> mpResizeDataIdx2LineEdits;
+    QList<QLineEdit*> mpResizeMultipliersLineEdits;
+    QList<QLineEdit*> mpResizeDivisorsLineEdits;
 
     //Color
     QList<QLineEdit*> mpInitColorLineEdits;

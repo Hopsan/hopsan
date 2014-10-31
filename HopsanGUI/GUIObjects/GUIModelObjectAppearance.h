@@ -54,10 +54,47 @@ public:
 };
 
 
+class ModelObjectAnimationResizeData
+{
+public:
+    ModelObjectAnimationResizeData(double xi=0, double yi=0, int dataIdx1i=0, int dataIdx2i=-1, QString divisori="", QString multiplieri="")
+        : x(xi), y(yi), dataIdx1(dataIdx1i), dataIdx2(dataIdx2i), divisor(divisori), multiplier(multiplieri), divisorValue(1), multiplierValue(1) {}
+    void readFromDomElement(QDomElement &rDomElement);
+    void saveToDomElement(QDomElement &rDomElement) const;
+    double x;
+    double y;
+    int dataIdx1;
+    int dataIdx2;
+    QString divisor;
+    QString multiplier;
+    double divisorValue;
+    double multiplierValue;
+};
+
+
+class ModelObjectAnimationMovementData
+{
+public:
+    ModelObjectAnimationMovementData(double xi=0, double yi=0, double thetai=0, int dataIdxi=0, QString divisori="", QString multiplieri="")
+        : x(xi), y(yi), theta(thetai), dataIdx(dataIdxi), divisor(divisori), multiplier(multiplieri), divisorValue(1), multiplierValue(1) {}
+    void readFromDomElement(QDomElement &rDomElement);
+    void saveToDomElement(QDomElement &rDomElement) const;
+    double x;
+    double y;
+    double theta;
+    int dataIdx;
+    QString divisor;
+    QString multiplier;
+    double divisorValue;
+    double multiplierValue;
+};
+
 
 class ModelObjectAnimationMovableData
 {
 public:
+    void readFromDomElement(QDomElement &rDomElement, QString basePath);
+
     QString iconPath;
     int idx;
 
@@ -71,18 +108,12 @@ public:
     double startX;
     double startY;
     double startTheta;
-    QList<double> movementX;
-    QList<double> movementY;
-    QList<double> movementTheta;
-    QList<int> movementDataIdx;
+    QList<ModelObjectAnimationMovementData> movementData;
 
     //Resize
     double initScaleX;
     double initScaleY;
-    QList<double> resizeX;
-    QList<double> resizeY;
-    QList<int> scaleDataIdx1;
-    QList<int> scaleDataIdx2;
+    QList<ModelObjectAnimationResizeData> resizeData;
 
     //Color
     double initColorR;

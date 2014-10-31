@@ -209,44 +209,44 @@ void AnimatedComponent::updateAnimation()
             double x = mpAnimationData->movables[m].startX;
             double y = mpAnimationData->movables[m].startY;
             double rot = mpAnimationData->movables[m].startTheta;
-            for(int j=0; j<mpAnimationData->movables[m].movementX.size(); ++j)
+            foreach(const ModelObjectAnimationMovementData &movement, mpAnimationData->movables[m].movementData)
             {
-                int idx = mpAnimationData->movables[m].movementDataIdx[j];
-                x -= data[idx]*mpAnimationData->movables[m].movementX[j];
-                y -= data[idx]*mpAnimationData->movables[m].movementY[j];
-                rot -= data[idx]*mpAnimationData->movables[m].movementTheta[j];
+                int idx = movement.dataIdx;
+                x -= data[idx]*movement.x*movement.multiplierValue/movement.divisorValue;
+                y -= data[idx]*movement.y*movement.multiplierValue/movement.divisorValue;
+                rot -= data[idx]*movement.theta*movement.multiplierValue/movement.divisorValue;
             }
 
             //Apply parameter multipliers/divisors
-            if(mpAnimationData->movables[m].useMultipliers)    //! @todo Multipliers and divisors currently only work for first data
-            {
-                x *= mpAnimationData->movables[m].multiplierValue;
-                y *= mpAnimationData->movables[m].multiplierValue;
-                rot *= mpAnimationData->movables[m].multiplierValue;
-            }
-            if(mpAnimationData->movables[m].useDivisors)
-            {
-                x /= mpAnimationData->movables[m].divisorValue;
-                y /= mpAnimationData->movables[m].divisorValue;
-                rot /= mpAnimationData->movables[m].divisorValue;
-            }
+//            if(mpAnimationData->movables[m].useMultipliers)    //! @todo Multipliers and divisors currently only work for first data
+//            {
+//                x *= mpAnimationData->movables[m].multiplierValue;
+//                y *= mpAnimationData->movables[m].multiplierValue;
+//                rot *= mpAnimationData->movables[m].multiplierValue;
+//            }
+//            if(mpAnimationData->movables[m].useDivisors)
+//            {
+//                x /= mpAnimationData->movables[m].divisorValue;
+//                y /= mpAnimationData->movables[m].divisorValue;
+//                rot /= mpAnimationData->movables[m].divisorValue;
+//            }
 
             //Apply new position
             mpMovables[m]->setPos(x, y);
             mpMovables[m]->setRotation(rot);
 
             //Set scale
-            if(!mpAnimationData->movables[m].resizeX.isEmpty())
+            if(!mpAnimationData->movables[m].resizeData.isEmpty())
             {
                 double totalScaleX = 1;
                 double totalScaleY = 1;
 
                 bool xChanged = false;
                 bool yChanged = false;
-                for(int r=0; r<mpAnimationData->movables[m].resizeX.size(); ++r)
+                foreach(const ModelObjectAnimationResizeData &resize, mpAnimationData->movables[m].resizeData)
                 {
-                    int idx1 = mpAnimationData->movables[m].scaleDataIdx1[r];
-                    int idx2 = mpAnimationData->movables[m].scaleDataIdx2[r];
+                    int idx1 = resize.dataIdx1;
+                    int idx2 = resize.dataIdx2;
                     double scaleData;
                     if(idx1 != idx2 && idx2 > 0)
                     {
@@ -257,17 +257,17 @@ void AnimatedComponent::updateAnimation()
                         scaleData = data[idx1];
                     }
 
-                    if(mpAnimationData->movables[m].resizeX[r] != 0)
+                    if(resize.x != 0)
                     {
-                        double scaleX = mpAnimationData->movables[m].resizeX[r]*scaleData;
-                        totalScaleX *= scaleX;
+                        double scaleX = resize.x*scaleData;
+                        totalScaleX *= scaleX*resize.multiplierValue/resize.divisorValue;
                         xChanged = true;
                     }
 
-                    if(mpAnimationData->movables[m].resizeY[r] != 0)
+                    if(resize.y != 0)
                     {
-                        double scaleY = mpAnimationData->movables[m].resizeY[r]*scaleData;
-                        totalScaleY *= scaleY;
+                        double scaleY = resize.y*scaleData;
+                        totalScaleY *= scaleY*resize.multiplierValue/resize.divisorValue;
                         yChanged = true;
                     }
                 }
@@ -520,7 +520,83 @@ void AnimatedComponent::setupAnimationMovable(int m)
 
 
 
-    //Get parameter multiplier (will be 1 if not found)
+    //Get parameter multipliers and divisors for movement data
+    for(int i=0; i<mpAnimationData->movables[m].movementData.size(); ++i)
+    {
+        QString multStr = mpAnimationData->movables[m].movementData[i].multiplier;
+        if(!multStr.isEmpty())
+        {
+            QString parValue = mpModelObject->getParameterValue(multStr);
+            if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+            {
+                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            }
+            bool ok;
+            double temp = parValue.toDouble(&ok);
+            if(!ok)
+            {
+                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            }
+            mpAnimationData->movables[m].movementData[i].multiplierValue = temp;
+        }
+
+        QString divStr = mpAnimationData->movables[m].movementData[i].divisor;
+        if(!divStr.isEmpty())
+        {
+            QString parValue = mpModelObject->getParameterValue(divStr);
+            if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+            {
+                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            }
+            bool ok;
+            double temp = parValue.toDouble(&ok);
+            if(!ok)
+            {
+                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            }
+            mpAnimationData->movables[m].movementData[i].divisorValue = temp;
+        }
+    }
+
+    //Get parameter multipliers and divisors for resize data
+    for(int i=0; i<mpAnimationData->movables[m].resizeData.size(); ++i)
+    {
+        QString multStr = mpAnimationData->movables[m].resizeData[i].multiplier;
+        if(!multStr.isEmpty())
+        {
+            QString parValue = mpModelObject->getParameterValue(multStr);
+            if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+            {
+                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            }
+            bool ok;
+            double temp = parValue.toDouble(&ok);
+            if(!ok)
+            {
+                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            }
+            mpAnimationData->movables[m].resizeData[i].multiplierValue = temp;
+        }
+
+        QString divStr = mpAnimationData->movables[m].resizeData[i].divisor;
+        if(!divStr.isEmpty())
+        {
+            QString parValue = mpModelObject->getParameterValue(divStr);
+            if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+            {
+                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            }
+            bool ok;
+            double temp = parValue.toDouble(&ok);
+            if(!ok)
+            {
+                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            }
+            mpAnimationData->movables[m].resizeData[i].divisorValue = temp;
+        }
+    }
+
+    //Old code
     double multiplierValue = 1;
     for(int p=0; p<mpAnimationData->movables[m].multipliers.size(); ++p)
     {
@@ -542,9 +618,9 @@ void AnimatedComponent::setupAnimationMovable(int m)
     }
     mpAnimationData->movables[m].multiplierValue = multiplierValue;
     mpAnimationData->movables[m].useMultipliers = !mpAnimationData->movables[m].multipliers.isEmpty();
+    //End old code
 
-
-    //Get parmeter divisor (will be 1 if not found)
+    //Old code
     double divisorValue = 1;
     for(int p=0; p<mpAnimationData->movables[m].divisors.size(); ++p)
     {
@@ -566,6 +642,7 @@ void AnimatedComponent::setupAnimationMovable(int m)
     }
     mpAnimationData->movables[m].divisorValue = divisorValue;
     mpAnimationData->movables[m].useDivisors = !mpAnimationData->movables[m].divisors.isEmpty();
+    //End old code
 }
 
 

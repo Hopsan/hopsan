@@ -97,26 +97,6 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         pScrollLayout->addWidget(mpDataNamesLineEdits.last(), row, 1);
         ++row;
 
-        //Multipliers and Divisors
-        QLabel *pMultipliersAndDivisorsLabel = new QLabel("Multipliers and Divisors");
-        pMultipliersAndDivisorsLabel->setFont(boldFont);
-        pScrollLayout->addWidget(pMultipliersAndDivisorsLabel, row, 0, 1, 2);
-        ++row;
-
-        //Multipliers
-        QLabel *pMultipliersLabel = new QLabel("Multipliers: ", this);
-        mpMultipliersLineEdits.append(new QLineEdit(this));
-        pScrollLayout->addWidget(pMultipliersLabel,             row, 0);
-        pScrollLayout->addWidget(mpMultipliersLineEdits.last(), row, 1);
-        ++row;
-
-        //Divisors
-        QLabel *pDivisorsLabel = new QLabel("Divisors: ", this);
-        mpDivisorsLineEdits.append(new QLineEdit(this));
-        pScrollLayout->addWidget(pDivisorsLabel,             row, 0);
-        pScrollLayout->addWidget(mpDivisorsLineEdits.last(), row, 1);
-        ++row;
-
         //Movement
         QLabel *pMovementLabel = new QLabel("Movement");
         pMovementLabel->setFont(boldFont);
@@ -179,6 +159,20 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         pScrollLayout->addWidget(mpMovementDataIdxLineEdits.last(), row, 1);
         ++row;
 
+        //Movement Multipliers
+        QLabel *pMovementMultipliersLabel = new QLabel("Movement Multipliers: ", this);
+        mpMovementMultipliersLineEdits.append(new QLineEdit(this));
+        pScrollLayout->addWidget(pMovementMultipliersLabel,       row, 0);
+        pScrollLayout->addWidget(mpMovementMultipliersLineEdits.last(), row, 1);
+        ++row;
+
+        //Movement Divisors
+        QLabel *pMovementDivisorsLabel = new QLabel("Movement Divisors: ", this);
+        mpMovementDivisorsLineEdits.append(new QLineEdit(this));
+        pScrollLayout->addWidget(pMovementDivisorsLabel,       row, 0);
+        pScrollLayout->addWidget(mpMovementDivisorsLineEdits.last(), row, 1);
+        ++row;
+
         //Stretch
         QLabel *pStretchLabel = new QLabel("Stretch");
         pStretchLabel->setFont(boldFont);
@@ -217,20 +211,34 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
         pScrollLayout->addWidget(mpResizeYLineEdits.last(), row, 1);
         ++row;
 
-        //Scale Data Index 1
-        QLabel *pScaleData1Label = new QLabel("Scale Data Index 1: ", this);
-        mpScaleDataIdx1LineEdits.append(new QLineEdit(this));
-        mpScaleDataIdx1LineEdits.last()->setValidator(new QIntValidator(this));
+        //Resize Data Index 1
+        QLabel *pScaleData1Label = new QLabel("Resize Data Index 1: ", this);
+        mpResizeDataIdx1LineEdits.append(new QLineEdit(this));
+        mpResizeDataIdx1LineEdits.last()->setValidator(new QIntValidator(this));
         pScrollLayout->addWidget(pScaleData1Label,               row, 0);
-        pScrollLayout->addWidget(mpScaleDataIdx1LineEdits.last(), row, 1);
+        pScrollLayout->addWidget(mpResizeDataIdx1LineEdits.last(), row, 1);
         ++row;
 
-        //Scale Data Index 2
-        QLabel *pScaleData2Label = new QLabel("Scale Data Index 2: ", this);
-        mpScaleDataIdx2LineEdits.append(new QLineEdit(this));
-        mpScaleDataIdx2LineEdits.last()->setValidator(new QIntValidator(this));
+        //Resize Data Index 2
+        QLabel *pScaleData2Label = new QLabel("Resize Data Index 2: ", this);
+        mpResizeDataIdx2LineEdits.append(new QLineEdit(this));
+        mpResizeDataIdx2LineEdits.last()->setValidator(new QIntValidator(this));
         pScrollLayout->addWidget(pScaleData2Label,               row, 0);
-        pScrollLayout->addWidget(mpScaleDataIdx2LineEdits.last(), row, 1);
+        pScrollLayout->addWidget(mpResizeDataIdx2LineEdits.last(), row, 1);
+        ++row;
+
+        //Movement Multipliers
+        QLabel *pResizeMultipliersLabel = new QLabel("Resize Multipliers: ", this);
+        mpResizeMultipliersLineEdits.append(new QLineEdit(this));
+        pScrollLayout->addWidget(pResizeMultipliersLabel,       row, 0);
+        pScrollLayout->addWidget(mpResizeMultipliersLineEdits.last(), row, 1);
+        ++row;
+
+        //Movement Divisors
+        QLabel *pResizeDivisorsLabel = new QLabel("Resize Divisors: ", this);
+        mpResizeDivisorsLineEdits.append(new QLineEdit(this));
+        pScrollLayout->addWidget(pResizeDivisorsLabel,       row, 0);
+        pScrollLayout->addWidget(mpResizeDivisorsLineEdits.last(), row, 1);
         ++row;
 
         //Colors
@@ -378,36 +386,27 @@ void AnimatedIconPropertiesDialog::updateValues()
         }
         tempStr.chop(1);
         mpDataNamesLineEdits[i]->setText(tempStr);
-        tempStr.clear();
-        for(int m=0; m<mpData->movables[i].multipliers.size(); ++m)
-        {
-            tempStr.append(mpData->movables[i].multipliers[m]+",");
-        }
-        tempStr.chop(1);
-        mpMultipliersLineEdits[i]->setText(tempStr);
-        tempStr.clear();
-        for(int m=0; m<mpData->movables[i].divisors.size(); ++m)
-        {
-            tempStr.append(mpData->movables[i].divisors[m]+",");
-        }
-        tempStr.chop(1);
-        mpDivisorsLineEdits[i]->setText(tempStr);
+
         mpStartXLineEdits[i]->setText(QString::number(mpData->movables[i].startX));
         mpStartYLineEdits[i]->setText(QString::number(mpData->movables[i].startY));
         mpStartThetaLineEdits[i]->setText(QString::number(mpData->movables[i].startTheta));
 
         QStringList tempStr1,tempStr2,tempStr3,tempStr4;
-        for(int r=0; r<mpData->movables[i].movementX.size(); ++r)
+        foreach(const ModelObjectAnimationMovementData &movement, mpData->movables[i].movementData)
         {
-            tempStr1.append(QString::number(mpData->movables[i].movementX[r]));
-            tempStr2.append(QString::number(mpData->movables[i].movementY[r]));
-            tempStr3.append(QString::number(mpData->movables[i].movementTheta[r]));
-            tempStr4.append(QString::number(mpData->movables[i].movementDataIdx[r]));
+            tempStr1.append(QString::number(movement.x));
+            tempStr2.append(QString::number(movement.y));
+            tempStr3.append(QString::number(movement.theta));
+            tempStr4.append(QString::number(movement.dataIdx));
+            mpMovementMultipliersLineEdits[i]->setText(movement.multiplier);
+            mpMovementDivisorsLineEdits[i]->setText(movement.divisor);
         }
+
         mpMovementXLineEdits[i]->setText(tempStr1.join(","));
         mpMovementYLineEdits[i]->setText(tempStr2.join(","));
         mpMovementThetaLineEdits[i]->setText(tempStr3.join(","));
         mpMovementDataIdxLineEdits[i]->setText(tempStr4.join(","));
+
 
         mpInitScaleXLineEdits[i]->setText(QString::number(mpData->movables[i].initScaleX));
         mpInitScaleYLineEdits[i]->setText(QString::number(mpData->movables[i].initScaleY));
@@ -416,17 +415,19 @@ void AnimatedIconPropertiesDialog::updateValues()
         tempStr2.clear();
         tempStr3.clear();
         tempStr4.clear();
-        for(int r=0; r<mpData->movables[i].resizeX.size(); ++r)
+        foreach(const ModelObjectAnimationResizeData &resize, mpData->movables[i].resizeData)
         {
-            tempStr1.append(QString::number(mpData->movables[i].resizeX[r]));
-            tempStr2.append(QString::number(mpData->movables[i].resizeY[r]));
-            tempStr3.append(QString::number(mpData->movables[i].scaleDataIdx1[r]));
-            tempStr4.append(QString::number(mpData->movables[i].scaleDataIdx2[r]));
+            tempStr1.append(QString::number(resize.x));
+            tempStr2.append(QString::number(resize.y));
+            tempStr3.append(QString::number(resize.dataIdx1));
+            tempStr4.append(QString::number(resize.dataIdx2));
+            mpResizeMultipliersLineEdits[i]->setText(resize.multiplier);
+            mpResizeDivisorsLineEdits[i]->setText(resize.divisor);
         }
         mpResizeXLineEdits[i]->setText(tempStr1.join(","));
         mpResizeYLineEdits[i]->setText(tempStr2.join(","));
-        mpScaleDataIdx1LineEdits[i]->setText(tempStr3.join(","));
-        mpScaleDataIdx2LineEdits[i]->setText(tempStr4.join(","));
+        mpResizeDataIdx1LineEdits[i]->setText(tempStr3.join(","));
+        mpResizeDataIdx2LineEdits[i]->setText(tempStr4.join(","));
 
         QString r = QString::number(mpData->movables[i].initColorR);
         QString g = QString::number(mpData->movables[i].initColorG);
@@ -489,9 +490,6 @@ void AnimatedIconPropertiesDialog::setValues()
             m.dataNames = namesSplit;
         }
 
-        m.multipliers = mpMultipliersLineEdits[i]->text().split(",");   //! @todo Check that variable exists
-        m.divisors = mpDivisorsLineEdits[i]->text().split(",");   //! @todo Check that variable exists
-
         m.startX = mpStartXLineEdits[i]->text().toDouble();
         m.startY = mpStartYLineEdits[i]->text().toDouble();
         m.startTheta = mpStartThetaLineEdits[i]->text().toDouble();
@@ -501,16 +499,12 @@ void AnimatedIconPropertiesDialog::setValues()
         QStringList tempStr3 = mpMovementThetaLineEdits[i]->text().split(",");
         QStringList tempStr4 = mpMovementDataIdxLineEdits[i]->text().split(",");
 
-        m.movementX.clear();
-        m.movementY.clear();
-        m.movementTheta.clear();
-        m.movementDataIdx.clear();
+        m.movementData.clear();
         for(int r=0; r<tempStr1.size(); ++r)
         {
-            m.movementX.append(tempStr1[r].toDouble());
-            m.movementY.append(tempStr2[r].toDouble());
-            m.movementTheta.append(tempStr3[r].toDouble());
-            m.movementDataIdx.append(tempStr4[r].toInt());
+            ModelObjectAnimationMovementData movement(tempStr1[r].toDouble(), tempStr2[r].toDouble(), tempStr3[r].toDouble(), tempStr4[r].toInt(),
+                                                      mpMovementDivisorsLineEdits[i]->text(), mpMovementMultipliersLineEdits[i]->text());
+            m.movementData.append(movement);
         }
 
         m.initScaleX = mpInitScaleXLineEdits[i]->text().toDouble();
@@ -518,23 +512,15 @@ void AnimatedIconPropertiesDialog::setValues()
 
         tempStr1 = mpResizeXLineEdits[i]->text().split(",");
         tempStr2 = mpResizeYLineEdits[i]->text().split(",");
-        tempStr3 = mpScaleDataIdx1LineEdits[i]->text().split(",");
-        tempStr4 = mpScaleDataIdx2LineEdits[i]->text().split(",");
+        tempStr3 = mpResizeDataIdx1LineEdits[i]->text().split(",");
+        tempStr4 = mpResizeDataIdx2LineEdits[i]->text().split(",");
 
-        m.resizeX.clear();
-        m.resizeY.clear();
-        m.scaleDataIdx1.clear();
-        m.scaleDataIdx2.clear();
+        m.resizeData.clear();
         for(int r=0; r<tempStr1.size(); ++r)
         {
-            if(!tempStr1[r].isEmpty())
-                m.resizeX.append(tempStr1[r].toDouble());
-            if(!tempStr2[r].isEmpty())
-                m.resizeY.append(tempStr2[r].toDouble());
-            if(!tempStr3[r].isEmpty())
-                m.scaleDataIdx1.append(tempStr3[r].toInt());
-            if(!tempStr4[r].isEmpty())
-                m.scaleDataIdx2.append(tempStr4[r].toInt());
+            ModelObjectAnimationResizeData resize(tempStr1[r].toDouble(), tempStr2[r].toDouble(), tempStr3[r].toInt(), tempStr4[r].toInt(),
+                                                  mpResizeDivisorsLineEdits[i]->text(), mpResizeMultipliersLineEdits[i]->text());
+            m.resizeData.append(resize);
         }
 
         QStringList splitInitColor = mpInitColorLineEdits[i]->text().split(",");
