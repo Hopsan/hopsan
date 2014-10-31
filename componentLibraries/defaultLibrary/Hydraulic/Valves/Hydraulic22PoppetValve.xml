@@ -17,7 +17,7 @@
         </ports>
                 <animation>
             <icon userpath="22poppetvalve_user_base.svg"/>
-            <movable>
+            <movable idx="0">
                 <icon userpath="22poppetvalve_user_movable1.svg"/>
                 <data port="xv_out" dataname="Value" idx="0"/>
                 <divisor name="x_vmax"/>
@@ -25,7 +25,7 @@
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>
-            <movable>
+            <movable idx="1">
                 <icon userpath="22poppetvalve_user_movable2.svg"/>
                 <data port="xv_out" dataname="Value" idx="0"/>
                 <divisor name="x_vmax"/>

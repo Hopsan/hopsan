@@ -22,7 +22,6 @@
             <movable idx="0">
                 <icon userpath="HydraulicFourChamberPistonInline_chamber1.svg"/>
                 <data port="P1" dataname="Pressure" idx="0"/>
-                <divisor name="s_l#Value"/>
                 <start x="0" y="0" a="0"/>
                 <initcolor g="0" r="0" b="255"/>
                 <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
@@ -31,10 +30,9 @@
                 <icon userpath="HydraulicFourChamberPistonInline_chamber1.svg"/>
                 <data port="P5" dataname="Position" idx="0"/>
                 <data port="P2" dataname="Pressure" idx="1"/>
-                <divisor name="s_l#Value"/>
-                <movement x="90" y="0" a="0" idx="0"/>
+                <movement x="90" y="0" a="0" idx="0" divisor="s_l#Value"/>
                 <start x="0" y="0" a="0"/>
-                <resize x="-1" y="0" idx1="0"/>
+                <resize x="-1" y="0" idx1="0" divisor="s_l#Value"/>
                 <initscale x="1" y="1"/>
                 <initcolor g="0" r="0" b="255"/>
                 <color g="0" idx="1" r="-0.00001275" b="0.00001275"/>
@@ -42,7 +40,6 @@
             <movable idx="2">
                 <icon userpath="HydraulicFourChamberPistonInline_chamber2.svg"/>
                 <data port="P3" dataname="Pressure" idx="0"/>
-                <divisor name="s_l#Value"/>
                 <start x="88.5" y="0" a="0"/>
                 <initcolor g="0" r="0" b="255"/>
                 <color g="0" idx="0" r="-0.00001275" b="0.00001275"/>
@@ -51,10 +48,9 @@
                 <icon userpath="HydraulicFourChamberPistonInline_chamber2.svg"/>
                 <data port="P5" dataname="Position" idx="0"/>
                 <data port="P4" dataname="Pressure" idx="1"/>
-                <divisor name="s_l#Value"/>
-                <movement x="90" y="0" a="0" idx="0"/>
+                <movement x="90" y="0" a="0" idx="0" divisor="s_l#Value"/>
                 <start x="88.5" y="0" a="0"/>
-                <resize x="-1" y="0" idx1="0"/>
+                <resize x="-1" y="0" idx1="0" divisor="s_l#Value"/>
                 <initscale x="1" y="1"/>
                 <initcolor g="0" r="0" b="255"/>
                 <color g="0" idx="1" r="-0.00001275" b="0.00001275"/>
@@ -65,8 +61,7 @@
             <movable idx="5">
                 <icon userpath="HydraulicFourChamberPistonInline_piston.svg"/>
                 <data port="P5" dataname="Position" idx="0"/>
-                <divisor name="s_l#Value"/>
-                <movement x="77.5" y="0" a="0" idx="0"/>
+                <movement x="77.5" y="0" a="0" idx="0" divisor="s_l#Value"/>
                 <start x="0" y="0" a="0"/>
             </movable>
         </animation>

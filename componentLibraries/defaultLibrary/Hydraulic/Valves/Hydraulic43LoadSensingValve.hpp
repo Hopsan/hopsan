@@ -260,7 +260,7 @@ namespace hopsan {
             (*mpPB_p) = pb;
             (*mpPB_q) = qb;
             (*mpPL_p) = pload;
-            (*mpPL_q) = (pload - cload)/Zcload;
+            (*mpPL_q) = 0;//(pload - cload)/Zcload;
             (*mpXv) = xv;
         }
     };

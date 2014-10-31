@@ -18,18 +18,18 @@
         </replacables>
         <animation>
             <icon userpath="variablemotorq_user_base.svg"/>
-            <movable>
+            <movable idx="0">
                 <icon userpath="variablemotorq_user_movable_2.svg"/>
                 <data port="P3" dataname="Angle" idx="0"/>
                 <movement x="0" y="0" a="57.295645531" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="60" y="50.5"/>
             </movable>
-            <movable>
+            <movable idx="1">
                 <icon userpath="variablemotorq_user_movable.svg"/>
                 <data port="eps" dataname="Value" idx="0"/>
                 <movement x="0" y="0" a="-90" idx="0"/>
-                <start x="18.677" y="6.626" a="0"/>
+                <start x="18.677" y="6.626" a="90"/>
                 <transformorigin x="42.6175" y="42.5985"/>
             </movable>
         </animation>

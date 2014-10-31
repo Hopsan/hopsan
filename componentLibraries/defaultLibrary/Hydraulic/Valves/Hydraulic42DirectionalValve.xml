@@ -28,7 +28,7 @@
         </ports>
         <animation>
             <icon userpath="Hydraulic42DirectionalValve_user_base.svg"/>
-            <movable>
+            <movable idx="0">
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <icon userpath="Hydraulic42DirectionalValve_user_base.svg"/>
@@ -36,10 +36,10 @@
                 <movement x="0" y="0" a="0" idx="0"/>
                 <switchable offvalue="0" onvalue="1" port="in" dataname="Value"/>
             </movable>
-            <movable>
+            <movable idx="1">
                 <icon userpath="Hydraulic42DirectionalValve_user_movable.svg"/>
                 <data port="xv" dataname="Value" idx="0"/>
-                <movement x="-4000" y="0" a="0" idx="0"/>
+                <movement x="-40" y="0" a="0" idx="0" divisor="x_vmax#Value"/>
                 <start x="-40" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>

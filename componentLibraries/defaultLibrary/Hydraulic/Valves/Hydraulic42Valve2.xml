@@ -27,10 +27,10 @@
         </ports>
         <animation>
             <icon userpath="42valve_user_base.svg"/>
-            <movable>
+            <movable idx="0">
                 <icon userpath="42valve2_user.svg"/>
                 <data port="xv" dataname="Value" idx="0"/>
-                <movement x="-4000" y="0" a="0" idx="0"/>
+                <movement x="-40" y="0" a="0" idx="0" divisor="x_vmax#Value"/>
                 <start x="-40" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <adjustable xgain="-0.00025" port="in" ygain="0" ymin="0" xmin="-40" ymax="0" xmax="0" dataname="Value"/>

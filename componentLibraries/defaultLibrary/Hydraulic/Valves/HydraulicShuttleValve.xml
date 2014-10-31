@@ -13,7 +13,7 @@
         </ports>
         <animation>
             <icon userpath="shuttlevalve_user_base.svg"/>
-            <movable>
+            <movable idx="0">
                 <icon userpath="shuttlevalve_user_movable.svg"/>
                 <data port="out" dataname="Value" idx="0"/>
                 <movement x="15.815" y="0" a="0" idx="0"/>

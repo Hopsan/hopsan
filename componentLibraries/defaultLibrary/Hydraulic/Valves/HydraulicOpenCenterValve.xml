@@ -9,13 +9,13 @@
             <text>Hydraulic proportional open-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
         </help>
         <ports>
-            <port x="0.4977" y="1" a="90" name="PP"/>
-            <port x="0.4977" y="0" a="270" name="PA"/>
-            <port x="0.6779" y="0" a="270" name="PB"/>
-            <port x="0.6779" y="1" a="90" name="PT"/>
+            <port x="0.5" y="1" a="90" name="PP"/>
+            <port x="0.5" y="0" a="270" name="PA"/>
+            <port x="0.68018" y="0" a="270" name="PB"/>
+            <port x="0.68018" y="1" a="90" name="PT"/>
             <port x="0" y="0.7" a="180" name="in"/>
-            <port x="0.5878" y="1" a="90" name="PC1"/>
-            <port x="0.5878" y="0" a="270" name="PC2"/>
+            <port x="0.59009" y="1" a="90" name="PC1"/>
+            <port x="0.59009" y="0" a="270" name="PC2"/>
             <port x="1" y="0.5" a="0" name="xv"/>
         </ports>
         <replacables>
@@ -29,10 +29,10 @@
         </replacables>
         <animation>
             <icon userpath="ocvalve_user_base.svg"/>
-            <movable>
-                <icon userpath="ocvalve_user.svg"/>
+            <movable idx="0">
+                <icon userpath="ocvalve_user_movable.svg"/>
                 <data port="xv" dataname="Value" idx="0"/>
-                <movement x="-4000" y="0" a="0" idx="0"/>
+                <movement x="-60" y="0" a="0" idx="0" divisor="x_vmax#Value"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <adjustable xgain="0.00025" port="in" ygain="0" ymin="0" xmin="-60" ymax="0" xmax="60" dataname="Value"/>

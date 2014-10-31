@@ -13,7 +13,7 @@
    height="100.00006"
    id="svg4568"
    sodipodi:version="0.32"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
    sodipodi:docname="fixedmotorq_user_base.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -47,6 +47,34 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       id="perspective3614-5" />
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       id="perspective3931-0" />
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       id="perspective3635-8" />
+    <inkscape:perspective
+       id="perspective4576-8"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -64,10 +92,10 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="732"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1600"
+     inkscape:window-height="1176"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata4573">
@@ -86,6 +114,13 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-398.57146,-249.50495)">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3595"
+       width="37.820419"
+       height="10"
+       x="399.57147"
+       y="293.99893" />
     <ellipse
        cx="18.8438"
        cy="21.018499"
@@ -135,6 +170,20 @@
          id="path3612-1"
          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          sodipodi:type="star" />
+    </g>
+    <g
+       id="g3072"
+       transform="translate(113.2143,24.785719)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3646-4"
+         d="m 345.35712,326.22656 0,-21.91971"
+         style="fill:none;stroke:#000000;stroke-width:1.49999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3646-4-1"
+         d="m 345.35715,244.78101 0,-20.56898"
+         style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     </g>
   </g>
 </svg>

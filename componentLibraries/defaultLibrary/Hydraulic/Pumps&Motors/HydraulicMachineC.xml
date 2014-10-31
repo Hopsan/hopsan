@@ -11,5 +11,22 @@
             <port x="0.5741" y="1" a="90" name="P2"/>
             <port x="0" y="0.5" a="180" name="P3"/>
         </ports>
+        <animation>
+            <icon userpath="variablepump_user_base.svg"/>
+            <movable idx="0">
+                <icon userpath="variablemotorq_user_movable_2.svg"/>
+                <data port="P3" dataname="AngularVelocity" idx="0"/>
+                <movement x="0" y="0" a="57.295645531" idx="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="60" y="50.5"/>
+            </movable>
+            <movable idx="1">
+                <icon userpath="variablepump_user_movable.svg"/>
+                <data port="eps" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="-90" idx="0"/>
+                <start x="18.677" y="6.626" a="90"/>
+                <transformorigin x="42.6175" y="42.5985"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
