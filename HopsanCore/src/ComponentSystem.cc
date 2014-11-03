@@ -2952,7 +2952,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     if(!noChanges)
     {
-        if(algorithm != WorkStealingAlgorithm)
+        if(algorithm != WorkStealingAlgorithm && algorithm != TaskPoolAlgorithm)
         {
             mSplitCVector.clear();
             mSplitQVector.clear();
@@ -2988,9 +2988,11 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         {
             mSplitCVector.clear();
             mSplitQVector.clear();
+            mSplitSignalVector.clear();
 
             mSplitCVector.resize(nThreads);
             mSplitQVector.resize(nThreads);
+            mSplitSignalVector.resize(nThreads);
 
             for(size_t c=0; c<mComponentCptrs.size();)
             {
@@ -3184,7 +3186,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     else if(algorithm == WorkStealingAlgorithm)
     {
-        addInfoMessage("Using work stealing algorithm with "+threadStr+" threads.");
+        addInfoMessage("Using task stealing algorithm with "+threadStr+" threads.");
 
         mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
@@ -3289,7 +3291,11 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
                                 //mTime is the current time during the simulateOneTimestep
 
             //Signal components
-            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentSignalptrs.size()), BodySimulateComponentVector( mComponentSignalptrs, mTime));
+            //tbb::parallel_for(tbb::blocked_range<int>(0, mComponentSignalptrs.size()), BodySimulateComponentVector( mComponentSignalptrs, mTime));
+            for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+            {
+                mComponentSignalptrs[s]->simulate(mTime);
+            }
 
             //C components
             tbb::parallel_for(tbb::blocked_range<int>(0, mComponentCptrs.size()), BodySimulateComponentVector( mComponentCptrs, mTime));

@@ -486,7 +486,7 @@ public:
 
     void reportDone()
     {
-        ++mnDone;
+        mnDone.fetch_and_increment();
     }
 
     bool isReady()
@@ -503,7 +503,7 @@ public:
 
     void close()
     {
-        mOpen=false;
+        mOpen.fetch_and_store(false);
     }
 
     bool isOpen()
@@ -743,18 +743,20 @@ public:
         Component *ret = 0;
         if(!mpMutex->try_lock())
             return 0;
+
+        int idx = (lastIdx%mSize+mSize)%mSize;
+        ret = mVector[idx];
+        mVector[idx] = 0;
+
         if(lastIdx != firstIdx)
-        {
-            int idx = (lastIdx%mSize+mSize)%mSize;
-            ret = mVector[idx];
-            mVector[idx] = 0;
             --lastIdx;
-        }
+
         mpMutex->unlock();
         return ret;
     }
 
-    size_t size()       //WARNING! NOT THREAD-SAFE!
+    //! @note NOT THREAD-SAFE
+    size_t size()
     {
         return mVector.size();
     }
@@ -792,6 +794,12 @@ public:
             mVector[idx] = comp;
         }
         mpMutex->unlock();
+    }
+
+    //! @note NOT THREAD-SAFE
+    Component* at(size_t idx)
+    {
+        return mVector[idx];
     }
 
 private:
@@ -856,6 +864,20 @@ public:
             //! C Components !//
 
             while(!mpBarrier_C->allArrived()) {}    //C barrier
+//            std::cout << "------------------------------------------------------------\n";
+//            std::cout << "Time: " << mTime << "\n";
+//            std::cout << "---------------------------------------\n";
+//            std::cout << "C-type components\n";
+//            for(size_t i=0; i<mnThreads; ++i)
+//            {
+//                std::cout << "Thread " << i << ": \n";
+//                for(size_t j=0; j<mpUnFinishedVectorsC->at(i)->size(); ++j)
+//                {
+//                    Component *pTempComponent = mpUnFinishedVectorsC->at(i)->at(j);
+//                    if(pTempComponent)
+//                        std::cout << "  " << pTempComponent->getName().c_str() << "\n";
+//                }
+//            }
             mpBarrier_Q->lock();
             mpBarrier_C->unlock();
 
@@ -894,6 +916,20 @@ public:
             //! Q Components !//
 
             while(!mpBarrier_Q->allArrived()) {}    //Q barrier
+//            std::cout << "------------------------------------------------------------\n";
+//            std::cout << "Time: " << mTime << "\n";
+//            std::cout << "---------------------------------------\n";
+//            std::cout << "Q-type components\n";
+//            for(size_t i=0; i<mnThreads; ++i)
+//            {
+//                std::cout << "Thread " << i << ": \n";
+//                for(size_t j=0; j<mpUnFinishedVectorsQ->at(i)->size(); ++j)
+//                {
+//                    Component *pTempComponent = mpUnFinishedVectorsQ->at(i)->at(j);
+//                    if(pTempComponent)
+//                        std::cout << "  " << pTempComponent->getName().c_str() << "\n";
+//                }
+//            }
             mpBarrier_N->lock();
             mpBarrier_Q->unlock();
 
