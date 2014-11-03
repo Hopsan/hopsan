@@ -3388,11 +3388,13 @@ void ContainerObject::measureSimulationTime()
 
     QPushButton *pDoneButton = new QPushButton("Done", pDialog);
     QPushButton *pChartButton = new QPushButton("Show Bar Chart", pDialog);
+    QPushButton *pExportButton = new QPushButton("Export to CSV", pDialog);
     pChartButton->setCheckable(true);
     pChartButton->setChecked(false);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
     pButtonBox->addButton(pChartButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pExportButton, QDialogButtonBox::ActionRole);
 
     QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
     pLayout->addWidget(pHowToShowResultsGroupBox);
@@ -3406,6 +3408,7 @@ void ContainerObject::measureSimulationTime()
     connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(close()));
     //connect(pChartButton, SIGNAL(toggled(bool)), pPlotWindow, SLOT(setVisible(bool)));
     connect(pChartButton, SIGNAL(clicked()), this, SLOT(plotMeasuredSimulationTime()));
+    connect(pExportButton, SIGNAL(clicked()), this, SLOT(exportMesasuredSimulationTime()));
 
     pDialog->setLayout(pLayout);
     pDialog->show();
@@ -3469,6 +3472,62 @@ void ContainerObject::plotMeasuredSimulationTime()
     PlotWindow *pWindow = gpPlotHandler->createNewUniquePlotWindow("Time measurements");
     pWindow->addPlotTab("Time measurements",BarchartPlotType)->addBarChart(pBarChartModel);
     //pPlotWindow->setAttribute(Qt::WA_DeleteOnClose, false);
+}
+
+void ContainerObject::exportMesasuredSimulationTime()
+{
+    //! @todo Ask for filename
+    QString pathStr = QFileDialog::getSaveFileName(gpMainWindowWidget, "Save measured simulation times", gpConfig->getPlotDataDir(), "*.csv");
+
+    if(pathStr.isEmpty())
+        return; //User aborted
+
+    gpConfig->setPlotDataDir(QFileInfo(pathStr).absolutePath());
+
+
+    QFile csvFile(pathStr);
+    if(!csvFile.open(QFile::Text | QFile::WriteOnly | QFile::Truncate))
+    {
+        gpMessageHandler->addErrorMessage("Unable to open file for writing: "+QFileInfo(csvFile).absoluteFilePath());
+        return;
+    }
+
+    //! @todo Get data somehow...
+    QItemSelectionModel *pSelect;
+    QStandardItemModel *pModel;
+    if(mpTypeTable->isVisible())
+    {
+        pSelect = mpTypeTable->selectionModel();
+        pModel = qobject_cast<QStandardItemModel*>(mpTypeTable->model());
+    }
+    else
+    {
+        pSelect = mpComponentTable->selectionModel();
+        pModel = qobject_cast<QStandardItemModel*>(mpComponentTable->model());
+    }
+
+    QStringList typeNames;
+    QList<double> typeTimes;
+    if(!pSelect->selectedRows().isEmpty())
+    {
+        for(int i=0; i<pSelect->selectedRows().size(); ++i)
+        {
+            //typeNames.append(pModel->data(pSelect->selectedRows(0)[i]).toString());
+            //typeTimes.append(pModel->data(pSelect->selectedRows(1)[i]).toString().remove(" ms").toDouble());
+            csvFile.write(QString(pModel->data(pSelect->selectedRows(0)[i]).toString()+","+pModel->data(pSelect->selectedRows(1)[i]).toString().remove(" ms")+"\n").toUtf8());
+        }
+    }
+    else
+    {
+        for(int i=0; i<pModel->rowCount(); ++i)
+        {
+            //typeNames.append(pModel->item(i,0)->data(Qt::DisplayRole).toString());
+            //typeTimes.append(pModel->item(i,1)->data(Qt::DisplayRole).toString().remove(" ms").toDouble());
+            csvFile.write(QString(pModel->item(i,0)->data(Qt::DisplayRole).toString()+","+pModel->item(i,1)->data(Qt::DisplayRole).toString().remove(" ms")+"\n").toUtf8());
+        }
+    }
+
+    csvFile.close();
 }
 
 

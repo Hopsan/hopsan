@@ -243,6 +243,7 @@ public slots:
     //Simulation time measurements
     void measureSimulationTime();
     void plotMeasuredSimulationTime();
+    void exportMesasuredSimulationTime();
 
     //External/internal subsystems
     bool isAncestorOfExternalSubsystem();

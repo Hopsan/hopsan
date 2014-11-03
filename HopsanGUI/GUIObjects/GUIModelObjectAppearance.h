@@ -106,11 +106,11 @@ public:
     double g;
     double b;
     double a;
+    int dataIdx;
     QString divisor;
     QString multiplier;
     double divisorValue;
     double multiplierValue;
-    int dataIdx;
 };
 
 
