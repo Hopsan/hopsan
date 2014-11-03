@@ -286,40 +286,42 @@ void AnimatedComponent::updateAnimation()
             }
 
             //Set color
-            if(mpAnimationData->movables[m].colorR != 0.0 || mpAnimationData->movables[m].colorG != 0.0 || mpAnimationData->movables[m].colorB != 0.0 || mpAnimationData->movables[m].colorA != 0.0)
+            if(mpAnimationData->movables[m].colorData.r != 0.0 || mpAnimationData->movables[m].colorData.g != 0.0 || mpAnimationData->movables[m].colorData.b != 0.0 || mpAnimationData->movables[m].colorData.a != 0.0)
             {
-                int idx = mpAnimationData->movables[m].colorDataIdx;
+                int idx = mpAnimationData->movables[m].colorData.dataIdx;
+                double div = mpAnimationData->movables[m].colorData.divisorValue;
+                double mul = mpAnimationData->movables[m].colorData.multiplierValue;
 
-                int ir = mpAnimationData->movables[m].initColorR;
+                int ir = mpAnimationData->movables[m].colorData.initR;
                 int r=ir;
-                if(mpAnimationData->movables[m].colorR != 0)
+                if(mpAnimationData->movables[m].colorData.r != 0)
                 {
-                    r = std::max(0, std::min(255, ir-int(mpAnimationData->movables[m].colorR*data[idx])));
+                    r = std::max(0, std::min(255, ir-int(mpAnimationData->movables[m].colorData.r*data[idx]*mul/div)));
                 }
 
-                int ig = mpAnimationData->movables[m].initColorG;
+                int ig = mpAnimationData->movables[m].colorData.initG;
                 int g = ig;
-                if(mpAnimationData->movables[m].colorG != 0)
+                if(mpAnimationData->movables[m].colorData.g != 0)
                 {
-                    g = std::max(0, std::min(255, ig-int(mpAnimationData->movables[m].colorG*data[idx])));
+                    g = std::max(0, std::min(255, ig-int(mpAnimationData->movables[m].colorData.g*data[idx]*mul/div)));
                 }
 
-                int ib = mpAnimationData->movables[m].initColorB;
+                int ib = mpAnimationData->movables[m].colorData.initB;
                 int b = ib;
-                if(mpAnimationData->movables[m].colorB != 0)
+                if(mpAnimationData->movables[m].colorData.b != 0)
                 {
-                    b = std::max(0, std::min(255, ib-int(mpAnimationData->movables[m].colorB*data[idx])));
+                    b = std::max(0, std::min(255, ib-int(mpAnimationData->movables[m].colorData.b*data[idx]*mul/div)));
                 }
 
-                int ia = mpAnimationData->movables[m].initColorA;
+                int ia = mpAnimationData->movables[m].colorData.initA;
                 if(ia == 0)
                 {
                     ia = 255;
                 }
                 int a = ia;
-                if(mpAnimationData->movables[m].colorA != 0)
+                if(mpAnimationData->movables[m].colorData.a != 0)
                 {
-                    a = std::max(0, std::min(255, ia-int(mpAnimationData->movables[m].colorA*data[idx])));
+                    a = std::max(0, std::min(255, ia-int(mpAnimationData->movables[m].colorData.a*data[idx]*mul/div)));
                 }
 
 
@@ -594,6 +596,41 @@ void AnimatedComponent::setupAnimationMovable(int m)
             }
             mpAnimationData->movables[m].resizeData[i].divisorValue = temp;
         }
+    }
+
+    //Get parameter multipliers and divisors for color data
+    QString multStr = mpAnimationData->movables[m].colorData.multiplier;
+    if(!multStr.isEmpty())
+    {
+        QString parValue = mpModelObject->getParameterValue(multStr);
+        if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+        {
+            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+        }
+        bool ok;
+        double temp = parValue.toDouble(&ok);
+        if(!ok)
+        {
+            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+        }
+        mpAnimationData->movables[m].colorData.multiplierValue = temp;
+    }
+
+    QString divStr = mpAnimationData->movables[m].colorData.divisor;
+    if(!divStr.isEmpty())
+    {
+        QString parValue = mpModelObject->getParameterValue(divStr);
+        if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
+        {
+            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+        }
+        bool ok;
+        double temp = parValue.toDouble(&ok);
+        if(!ok)
+        {
+            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+        }
+        mpAnimationData->movables[m].colorData.divisorValue = temp;
     }
 
     //Old code

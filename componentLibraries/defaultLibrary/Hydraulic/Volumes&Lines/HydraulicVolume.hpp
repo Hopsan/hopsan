@@ -40,6 +40,7 @@ namespace hopsan {
         double mZc;
         double mV;
         double mBetae;
+        double mPh;
 
         Port *mpP1, *mpP2;
         double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc;
@@ -61,6 +62,7 @@ namespace hopsan {
 
             addConstant("V", "Volume", "m^3", 1.0e-3, mV);
             addConstant("Beta_e", "Bulkmodulus", "Pa", 1.0e9, mBetae);
+            addConstant("P_high", "High pressure (for animation)", "Pa", 2e7, mPh);
 
             setDefaultStartValue(mpP1, NodeHydraulic::Flow, 0.0);
             setDefaultStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);

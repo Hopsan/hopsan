@@ -360,17 +360,8 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
         }
 
         QDomElement initColorElement = appendDomElement(movableElement, CAF_INITCOLOR);
-        setQrealAttribute(initColorElement, "r", m.initColorR);
-        setQrealAttribute(initColorElement, "g", m.initColorG);
-        setQrealAttribute(initColorElement, "b", m.initColorB);
-        setQrealAttribute(initColorElement, "a", m.initColorA);
-
         QDomElement colorElement = appendDomElement(movableElement, CAF_COLOR);
-        setQrealAttribute(colorElement, "r", m.colorR);
-        setQrealAttribute(colorElement, "g", m.colorG);
-        setQrealAttribute(colorElement, "b", m.colorB);
-        setQrealAttribute(colorElement, "a", m.colorA);
-        colorElement.setAttribute(CAF_IDX, m.colorDataIdx);
+        m.colorData.saveToDomElements(initColorElement, colorElement);
 
         QDomElement transformOriginElement = appendDomElement(movableElement, CAF_TRANSFORMORIGIN);
         setQrealAttribute(transformOriginElement, "x", m.transformOriginX);
@@ -1321,20 +1312,12 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         xmlResize = xmlResize.nextSiblingElement(CAF_RESIZE);
     }
 
-    if(!rDomElement.firstChildElement(CAF_COLOR).isNull())
+
+    QDomElement xmlInitColor = rDomElement.firstChildElement(CAF_INITCOLOR);
+    QDomElement xmlColor = rDomElement.firstChildElement(CAF_COLOR);
+    if(!xmlInitColor.isNull() && !xmlColor.isNull())
     {
-        colorDataIdx = rDomElement.firstChildElement(CAF_COLOR).attribute(CAF_IDX).toInt();
-        colorR = rDomElement.firstChildElement(CAF_COLOR).attribute("r").toDouble();
-        colorG = rDomElement.firstChildElement(CAF_COLOR).attribute("g").toDouble();
-        colorB = rDomElement.firstChildElement(CAF_COLOR).attribute("b").toDouble();
-        colorA = rDomElement.firstChildElement(CAF_COLOR).attribute("a").toDouble();
-    }
-    if(!rDomElement.firstChildElement(CAF_INITCOLOR).isNull())
-    {
-        initColorR = rDomElement.firstChildElement(CAF_INITCOLOR).attribute("r").toDouble();
-        initColorG = rDomElement.firstChildElement(CAF_INITCOLOR).attribute("g").toDouble();
-        initColorB = rDomElement.firstChildElement(CAF_INITCOLOR).attribute("b").toDouble();
-        initColorA = rDomElement.firstChildElement(CAF_INITCOLOR).attribute("a").toDouble();
+        colorData.readFromDomElements(xmlInitColor, xmlColor);
     }
 
     if(!rDomElement.firstChildElement(CAF_TRANSFORMORIGIN).isNull())
@@ -1460,7 +1443,10 @@ void ModelObjectAnimationResizeData::readFromDomElement(QDomElement &rDomElement
 {
     x = rDomElement.attribute("x").toDouble();
     y = rDomElement.attribute("y").toDouble();
-    dataIdx1 = parseAttributeInt(rDomElement, "idx1", -1);
+    if(rDomElement.hasAttribute("idx1"))
+        dataIdx1 = parseAttributeInt(rDomElement, "idx1", -1);
+    else
+        dataIdx1 = parseAttributeInt(rDomElement, "idx", 0);   //For backwards compatibility
     dataIdx2 = parseAttributeInt(rDomElement, "idx2", -1);
     divisor = rDomElement.attribute(CAF_DIVISOR);
     multiplier = rDomElement.attribute(CAF_MULTIPLIER);
@@ -1472,6 +1458,39 @@ void ModelObjectAnimationResizeData::saveToDomElement(QDomElement &rDomElement) 
     setQrealAttribute(rDomElement, "y", y);
     rDomElement.setAttribute("idx1", dataIdx1);
     rDomElement.setAttribute("idx2", dataIdx2);
+    rDomElement.setAttribute(CAF_DIVISOR, divisor);
+    rDomElement.setAttribute(CAF_MULTIPLIER, multiplier);
+}
+
+
+void ModelObjectAnimationColorData::readFromDomElements(QDomElement &rInitDomElement, QDomElement &rDomElement)
+{
+    initR = rInitDomElement.attribute("r").toDouble();
+    initG = rInitDomElement.attribute("g").toDouble();
+    initB = rInitDomElement.attribute("b").toDouble();
+    initA = rInitDomElement.attribute("a").toDouble();
+
+    dataIdx = rDomElement.attribute(CAF_IDX).toInt();
+    r = rDomElement.attribute("r").toDouble();
+    g = rDomElement.attribute("g").toDouble();
+    b = rDomElement.attribute("b").toDouble();
+    a = rDomElement.attribute("a").toDouble();
+    divisor = rDomElement.attribute(CAF_DIVISOR);
+    multiplier = rDomElement.attribute(CAF_MULTIPLIER);
+}
+
+void ModelObjectAnimationColorData::saveToDomElements(QDomElement &rInitDomElement, QDomElement &rDomElement) const
+{
+    setQrealAttribute(rInitDomElement, "r", initR);
+    setQrealAttribute(rInitDomElement, "g", initG);
+    setQrealAttribute(rInitDomElement, "b", initB);
+    setQrealAttribute(rInitDomElement, "a", initA);
+
+    setQrealAttribute(rDomElement, "r", r);
+    setQrealAttribute(rDomElement, "g", g);
+    setQrealAttribute(rDomElement, "b", b);
+    setQrealAttribute(rDomElement, "a", a);
+    rDomElement.setAttribute(CAF_IDX, dataIdx);
     rDomElement.setAttribute(CAF_DIVISOR, divisor);
     rDomElement.setAttribute(CAF_MULTIPLIER, multiplier);
 }

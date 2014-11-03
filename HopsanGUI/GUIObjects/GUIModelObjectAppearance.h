@@ -89,6 +89,30 @@ public:
     double multiplierValue;
 };
 
+class ModelObjectAnimationColorData
+{
+public:
+    ModelObjectAnimationColorData(double initRi=0, double initGi=0, double initBi=0, double initAi=0, double ri=0,
+                                  double gi=0, double bi=0, double ai=0, int dataIdxi=0, QString divisori="", QString multiplieri="")
+        : initR(initRi), initG(initGi), initB(initBi), initA(initAi), r(ri), g(gi), b(bi), a(ai), dataIdx(dataIdxi),
+          divisor(divisori), multiplier(multiplieri), divisorValue(1), multiplierValue(1) {}
+    void readFromDomElements(QDomElement &rInitDomElement, QDomElement &rDomElement);
+    void saveToDomElements(QDomElement &rInitDomElement, QDomElement &rDomElement) const;
+    double initR;
+    double initG;
+    double initB;
+    double initA;
+    double r;
+    double g;
+    double b;
+    double a;
+    QString divisor;
+    QString multiplier;
+    double divisorValue;
+    double multiplierValue;
+    int dataIdx;
+};
+
 
 class ModelObjectAnimationMovableData
 {
@@ -116,15 +140,7 @@ public:
     QList<ModelObjectAnimationResizeData> resizeData;
 
     //Color
-    double initColorR;
-    double initColorG;
-    double initColorB;
-    double initColorA;
-    double colorR;
-    double colorG;
-    double colorB;
-    double colorA;
-    int colorDataIdx;
+    ModelObjectAnimationColorData colorData;
 
     //Transform origin
     double transformOriginX;

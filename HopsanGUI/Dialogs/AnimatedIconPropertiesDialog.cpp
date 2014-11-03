@@ -429,17 +429,17 @@ void AnimatedIconPropertiesDialog::updateValues()
         mpResizeDataIdx1LineEdits[i]->setText(tempStr3.join(","));
         mpResizeDataIdx2LineEdits[i]->setText(tempStr4.join(","));
 
-        QString r = QString::number(mpData->movables[i].initColorR);
-        QString g = QString::number(mpData->movables[i].initColorG);
-        QString b = QString::number(mpData->movables[i].initColorB);
-        QString a = QString::number(mpData->movables[i].initColorA);
+        QString r = QString::number(mpData->movables[i].colorData.initR);
+        QString g = QString::number(mpData->movables[i].colorData.initG);
+        QString b = QString::number(mpData->movables[i].colorData.initB);
+        QString a = QString::number(mpData->movables[i].colorData.initA);
         mpInitColorLineEdits[i]->setText(r+","+g+","+b+","+a);
-        r = QString::number(mpData->movables[i].colorR);
-        g = QString::number(mpData->movables[i].colorG);
-        b = QString::number(mpData->movables[i].colorB);
-        a = QString::number(mpData->movables[i].colorA);
+        r = QString::number(mpData->movables[i].colorData.r);
+        g = QString::number(mpData->movables[i].colorData.g);
+        b = QString::number(mpData->movables[i].colorData.b);
+        a = QString::number(mpData->movables[i].colorData.a);
         mpColorModifiersLineEdits[i]->setText(r+","+g+","+b+","+a);
-        mpColorDataIdxLineEdits[i]->setText(QString::number(mpData->movables[i].colorDataIdx));
+        mpColorDataIdxLineEdits[i]->setText(QString::number(mpData->movables[i].colorData.dataIdx));
         mpTransformOriginXLineEdits[i]->setText(QString::number(mpData->movables[i].transformOriginX));
         mpTransformOriginYLineEdits[i]->setText(QString::number(mpData->movables[i].transformOriginY));
         mpMovableRelativeLineEdits[i]->setText(QString::number(mpData->movables[i].movableRelative));
@@ -526,17 +526,17 @@ void AnimatedIconPropertiesDialog::setValues()
         QStringList splitInitColor = mpInitColorLineEdits[i]->text().split(",");
         if(splitInitColor.size() == 4)
         {
-            m.initColorR = splitInitColor[0].toDouble();
-            m.initColorG = splitInitColor[1].toDouble();
-            m.initColorB = splitInitColor[2].toDouble();
-            m.initColorA = splitInitColor[3].toDouble();
+            m.colorData.initR = splitInitColor[0].toDouble();
+            m.colorData.initG = splitInitColor[1].toDouble();
+            m.colorData.initB = splitInitColor[2].toDouble();
+            m.colorData.initA = splitInitColor[3].toDouble();
         }
         else if(splitInitColor.size() == 3)
         {
-            m.initColorR = splitInitColor[0].toDouble();
-            m.initColorG = splitInitColor[1].toDouble();
-            m.initColorB = splitInitColor[2].toDouble();
-            m.initColorA = 255;
+            m.colorData.initR = splitInitColor[0].toDouble();
+            m.colorData.initG = splitInitColor[1].toDouble();
+            m.colorData.initB = splitInitColor[2].toDouble();
+            m.colorData.initA = 255;
         }
         else if(splitInitColor.size() > 0)
         {
@@ -547,17 +547,17 @@ void AnimatedIconPropertiesDialog::setValues()
         QStringList splitColors = mpColorModifiersLineEdits[i]->text().split(",");
         if(splitColors.size() == 4)
         {
-            m.colorR = splitColors[0].toDouble();
-            m.colorG = splitColors[1].toDouble();
-            m.colorB = splitColors[2].toDouble();
-            m.colorA = splitColors[3].toDouble();
+            m.colorData.r = splitColors[0].toDouble();
+            m.colorData.g = splitColors[1].toDouble();
+            m.colorData.b = splitColors[2].toDouble();
+            m.colorData.a = splitColors[3].toDouble();
         }
         else if(splitColors.size() == 3)
         {
-            m.colorR = splitColors[0].toDouble();
-            m.colorG = splitColors[1].toDouble();
-            m.colorB = splitColors[2].toDouble();
-            m.colorA = 255;
+            m.colorData.r = splitColors[0].toDouble();
+            m.colorData.g = splitColors[1].toDouble();
+            m.colorData.b = splitColors[2].toDouble();
+            m.colorData.a = 255;
         }
         else if(splitColors.size() > 0)
         {
@@ -565,7 +565,7 @@ void AnimatedIconPropertiesDialog::setValues()
             gpMessageHandler->addInfoMessage("Ignoring colors modifiers.");
         }
 
-        m.colorDataIdx = mpColorDataIdxLineEdits[i]->text().toInt();
+        m.colorData.dataIdx = mpColorDataIdxLineEdits[i]->text().toInt();
 
         m.transformOriginX = mpTransformOriginXLineEdits[i]->text().toDouble();
         m.transformOriginY = mpTransformOriginYLineEdits[i]->text().toDouble();

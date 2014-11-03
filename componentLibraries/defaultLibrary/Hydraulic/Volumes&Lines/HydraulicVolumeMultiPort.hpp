@@ -39,6 +39,7 @@ namespace hopsan {
     {
 
     private:
+        double mPh;
         Port *mpP1;
         size_t mNumPorts;
         std::vector<double*> mvpP1_p, mvpP1_q, mvpP1_c, mvpP1_Zc;
@@ -56,6 +57,8 @@ namespace hopsan {
         void configure()
         {
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
+
+            addConstant("P_high", "High pressure (for animation)", "Pa", 2e7, mPh);
 
             addInputVariable("V", "Volume", "m^3", 1.0e-3, &mpV);
             addInputVariable("Beta_e", "Bulkmodulus", "Pa", 1.0e9, &mpBetae);
