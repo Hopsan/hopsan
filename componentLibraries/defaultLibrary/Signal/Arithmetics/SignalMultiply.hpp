@@ -56,13 +56,6 @@ namespace hopsan {
 
         void initialize()
         {
-            //If only one input port is conncted, the other shall be 1 (= multiply by 1).
-            //If no input ports are connected, mpND_output shall allways be 0, so one of the inputs are set to 0.
-            if(!mpIn1Port->isConnected() && !mpIn2Port->isConnected())
-            {
-                (*mpND_in1) = 0;
-            }
-
             simulateOneTimestep();
         }
 
