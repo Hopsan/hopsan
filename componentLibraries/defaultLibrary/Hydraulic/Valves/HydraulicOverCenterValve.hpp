@@ -47,7 +47,7 @@ namespace hopsan {
         Port *mpP1, *mpP2, *mpPControl;
         double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc,
                *mpPControl_p, *mpPControl_c;
-        double *mpPref, *mpPh, *mpArat;
+        double *mpPref, *mpPh, *mpArat, *mpXv;
 
         // Constants
         double mTao, mKcs, mKcf, mPnom, mQnom;
@@ -67,6 +67,8 @@ namespace hopsan {
             addInputVariable("p_ref", "Reference Opening Pressure", "Pa", 2000000, &mpPref);
             addInputVariable("p_h", "Hysteresis Width", "Pa", 500000, &mpPh);
             addInputVariable("a_ratio", "Area ratio", "-", 5.0, &mpArat);
+
+            addOutputVariable("xv", "Equivalent spool position", "", &mpXv);
 
             addConstant("tao", "Time Constant of Spool", "s", 0.01, mTao);
             addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, mKcs);
@@ -171,6 +173,7 @@ namespace hopsan {
             (*mpP2_p) = p2;
             (*mpP2_q) = q2;
             (*mpPControl_p) = p_control;
+            (*mpXv) = x0;
         }
     };
 }
