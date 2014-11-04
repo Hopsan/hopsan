@@ -2952,7 +2952,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     if(!noChanges)
     {
-        if(algorithm != WorkStealingAlgorithm && algorithm != TaskPoolAlgorithm)
+        if(algorithm != TaskStealingAlgorithm && algorithm != TaskPoolAlgorithm)
         {
             mSplitCVector.clear();
             mSplitQVector.clear();
@@ -3184,7 +3184,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         delete(pTaskPoolQ);
         delete(pStop);
     }
-    else if(algorithm == WorkStealingAlgorithm)
+    else if(algorithm == TaskStealingAlgorithm)
     {
         addInfoMessage("Using task stealing algorithm with "+threadStr+" threads.");
 
