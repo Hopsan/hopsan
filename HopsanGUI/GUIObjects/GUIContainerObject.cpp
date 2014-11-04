@@ -550,10 +550,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
             pObj->loadFromDomElement(systemElement);
         }
     }
-    else
-    {
-        return addModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
-    }
+    return addModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
 }
 
 

@@ -435,7 +435,7 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
         }
     }
 
-    QStringList *pParNames = mpTerminal->mpHandler->mpOptHandler->getOptParNamesPtr();
+    //QStringList *pParNames = mpTerminal->mpHandler->mpOptHandler->getOptParNamesPtr();
 
     for(int x=0; x<mParameterOutputIndexes.size(); ++x)
     {
