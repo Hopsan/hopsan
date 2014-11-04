@@ -626,7 +626,12 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
 bool CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
     return mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString().c_str(), compName.toStdString().c_str(),
-                                                              portName.toStdString().c_str(), varName.toStdString().c_str());
+                                                                     portName.toStdString().c_str(), varName.toStdString().c_str());
+}
+
+QString CoreSystemAccess::getVariableAlias(QString compName, QString portName, QString varName)
+{
+    return mpCoreComponentSystem->getAliasHandler().getVariableAlias(compName.toStdString().c_str(), portName.toStdString().c_str(), varName.toStdString().c_str()).c_str();
 }
 
 void CoreSystemAccess::setParameterAlias(QString compName, QString paramName, QString alias)

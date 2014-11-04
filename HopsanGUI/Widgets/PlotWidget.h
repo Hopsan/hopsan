@@ -44,8 +44,10 @@ public:
     void addImportedVariable(HopsanVariable data);
     void refreshImportedVariables();
 
-    void updateList();
     void clear();
+
+public slots:
+    void updateList(const int gen);
 
 protected slots:
     PlotWindow *plotToPreferedPlotWindow(QTreeWidgetItem *item);
@@ -77,6 +79,9 @@ protected:
     QPointer<PlotWindow> mpPreferedPlotWindow;
 };
 
+// Forward declaration
+class GenerationSelector;
+
 class PlotWidget : public QWidget
 {
     Q_OBJECT
@@ -96,6 +101,7 @@ public slots:
 protected:
     virtual void showEvent(QShowEvent *event);
 
+    GenerationSelector *mpGenerationSelector;
     VariableTree *mpVariableTree;
     QPushButton *mpNewWindowButton;
     QPushButton *mpLoadButton;

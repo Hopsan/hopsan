@@ -107,6 +107,7 @@ namespace hopsan {
     {
     public:
         AliasHandler(ComponentSystem *pSystem);
+        HString getVariableAlias(const HString &rCompName, const HString &rPortName, const HString &rVarName);
         bool setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const HString &rVarName);
         bool setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const int varId);
         bool setParameterAlias(const HString &rAlias, const HString &rCompName, const HString &rParameterName);

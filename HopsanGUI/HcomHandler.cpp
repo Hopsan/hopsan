@@ -4320,7 +4320,7 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
             HopsanVariable data = getLogVariable(name+GENERATIONSPECIFIERSTR+"-1");
             if (data && data.mpContainer && data.getLogDataHandler())
             {
-                bool rc = data.getLogDataHandler()->deleteVariable(data.mpContainer->getName());
+                bool rc = data.getLogDataHandler()->deleteVariableContainer(data.mpContainer->getName());
                 if (!rc)
                 {
                     HCOMERR(QString("Variable %1 could not be deleted").arg(name));

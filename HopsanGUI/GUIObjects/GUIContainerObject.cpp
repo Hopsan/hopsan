@@ -2249,6 +2249,13 @@ bool ContainerObject::setVariableAlias(const QString &rFullName, const QString &
     return isOk;
 }
 
+QString ContainerObject::getVariableAlias(const QString &rFullName)
+{
+    QString compName, portName, varName;
+    splitConcatName(rFullName, compName, portName, varName);
+    return getCoreSystemAccessPtr()->getVariableAlias(compName, portName, varName);
+}
+
 QString ContainerObject::getFullNameFromAlias(const QString alias)
 {
     QString comp, port, var;

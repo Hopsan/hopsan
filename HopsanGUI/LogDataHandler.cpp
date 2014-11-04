@@ -1187,6 +1187,7 @@ QVector<double> LogDataHandler::copyTimeVector(const int generation) const
 
 //! @brief Defines a new alias for specified variable (popup box)
 //! @param[in] rFullName The Full name of the variable
+//! @todo this function should not be in the logdatahanlder /Peter
 void LogDataHandler::defineAlias(const QString &rFullName)
 {
     bool ok;
@@ -1202,6 +1203,7 @@ void LogDataHandler::defineAlias(const QString &rFullName)
 //! @brief Defines a new alias for specified variable
 //! @param[in] rAlias Alias name for variable
 //! @param[in] rFullName The Full name of the variable
+//! @todo this function should not be in the logdatahanlder /Peter
 bool LogDataHandler::defineAlias(const QString &rAlias, const QString &rFullName)
 {
     // Try to set the new alias, abort if it did not work
@@ -1209,37 +1211,37 @@ bool LogDataHandler::defineAlias(const QString &rAlias, const QString &rFullName
 }
 
 
-//! @brief Removes specified variable alias
-//! @param[in] alias Alias to remove
-void LogDataHandler::undefinePlotAlias(const QString &rAlias)
-{
-    QString fullName = getFullNameFromAlias(rAlias);
-    if (!fullName.isEmpty())
-    {
-        mpParentContainerObject->setVariableAlias(fullName,""); //!< @todo maybe a remove alias function would be nice
-        // Regardless of success or falure, lets remove the alias from log variables
-        // Set variable will fail if you try to remove alias from an old component that has already been deleted
-        unregisterAlias(rAlias);
-    }
-}
-
-
 //! @brief Returns plot variable for specified alias
 //! @param[in] rAlias Alias of variable
-QString LogDataHandler::getFullNameFromAlias(const QString &rAlias)
+//! @param[in] gen Generation to check, -1 = Current, -2 = Newest Availible, >= 0 = Specific generation to check
+QString LogDataHandler::getFullNameFromAlias(const QString &rAlias, const int gen) const
 {
-    //! @todo should know what gens are aliases
-    //! @todo what about multiple different namesunder the same alias (is that even possible right now)
     SharedVectorVariableContainerT pAliasContainer = getVariableContainer(rAlias);
-    if (pAliasContainer)
+    if (pAliasContainer && pAliasContainer->isStoringAlias())
     {
-        QList<int> gens = pAliasContainer->getGenerations();
-        foreach(int g, gens)
+        bool isStoringAlias = false;
+        int g = INT_MIN;
+        // Check if current
+        if (gen == -1)
         {
-            if (pAliasContainer->getDataGeneration(g)->getAliasName() == rAlias)
-            {
-                return pAliasContainer->getDataGeneration(g)->getFullVariableName();
-            }
+            g = mGenerationNumber;
+        }
+        // Check specific
+        else if (gen >= 0)
+        {
+            g = gen;
+        }
+        // First match (newest availible)
+        else if (gen == -2)
+        {
+            g = pAliasContainer->getHighestGeneration();
+        }
+        isStoringAlias = pAliasContainer->isGenerationAlias(g);
+
+        // Note there could be multiple different names under the same alias, but generation is used to choose
+        if (isStoringAlias && (pAliasContainer->getDataGeneration(g)->getAliasName() == rAlias) )
+        {
+            return pAliasContainer->getDataGeneration(g)->getFullVariableName();
         }
     }
     return QString();
@@ -1578,7 +1580,7 @@ SharedVectorVariableT LogDataHandler::lowPassFilterVariable(const SharedVectorVa
 }
 
 
-bool LogDataHandler::deleteVariable(const QString &rVarName)
+bool LogDataHandler::deleteVariableContainer(const QString &rVarName)
 {
     // Find the container with given name, but only try to remove it if it is not already being removed
     LogDataMapT::iterator it = mLogDataMap.find(rVarName);
@@ -2010,6 +2012,19 @@ void LogDataHandler::removeGenerationCacheIfEmpty(const int gen)
     }
 }
 
+void LogDataHandler::unregisterAliasForFullName(const QString &rFullName)
+{
+    SharedVectorVariableContainerT pFullContainer = getVariableContainer(rFullName);
+    if (pFullContainer)
+    {
+        SharedVectorVariableT pAliasData = pFullContainer->getDataGeneration(mGenerationNumber);
+        if (pAliasData)
+        {
+            unregisterAlias(pAliasData->getAliasName(), mGenerationNumber);
+        }
+    }
+}
+
 void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const int otherGeneration)
 {
     // If otherGeneration < -1 then take everything
@@ -2087,90 +2102,97 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
         // If alias is empty then we should unregister the alias
         if (rAlias.isEmpty())
         {
-            const QList<int> fullGens = pFullContainer->getGenerations();
-            SharedVectorVariableContainerT pAliasContainer;
-            QString currentAliasName;
-            bool didChangeAlias=false;
-            for(int i=0; i<fullGens.size(); ++i)
-            {
-                SharedVectorVariableT pFullData = pFullContainer->getDataGeneration(fullGens[i]);
-                if (pFullData->hasAliasName())
-                {
-                    // Prevent alias name lookup every time if alias name has not changed
-                    if (currentAliasName != pFullData->getAliasName())
-                    {
-                        currentAliasName = pFullData->getAliasName();
-                        pAliasContainer = getVariableContainer(currentAliasName);
-                    }
-
-                    // Remove the alias, here we assume that the alias name at this generation is actually an alias for the fullName (the registration should have taken care of that)
-                    if (pAliasContainer)
-                    {
-                        pAliasContainer->removeDataGeneration(fullGens[i]);
-                    }
-                    pFullData->mpVariableDescription->mAliasName = rAlias;
-                    didChangeAlias = true;
-                }
-            }
-            if (didChangeAlias)
-            {
-                emit aliasChanged();
-            }
+            unregisterAliasForFullName(rFullName);
         }
         else
         {
-            QList<int> fullGens = pFullContainer->getGenerations();
-            SharedVectorVariableContainerT pExistingAliasContainer = getVariableContainer(rAlias);             // Check if alias already exist
-            for(int i=fullGens.size()-1; i>=0; --i)
+            // If we get here then we should set a new alias or replace the previous one
+            SharedVectorVariableT pFullData = pFullContainer->getDataGeneration(mGenerationNumber);
+
+            // First unregister the previous alias (but only at the current generation)
+            if (pFullData->hasAliasName())
             {
-                SharedVectorVariableT pExistingAliasData;
-                if (pExistingAliasContainer)
-                {
-                    pExistingAliasData = pExistingAliasContainer->getDataGeneration(fullGens[i]);
-                }
-
-                // Check so that there will be no colision when merging alias
-                if ( pExistingAliasData && (pExistingAliasData->getFullVariableName() != rFullName) )
-                {
-                    // Abort if we reach a generation that already exist and does not match
-                    //! @todo we could keep going and try every gen (but then we do not want to duplicate this warning message)
-                    gpMessageHandler->addWarningMessage("Alias collision when trying to merge alias, Aborting alias merge!");
-                    break;
-                }
-                else
-                {
-                    // If we get here then we can merge (any previous data with alias name will be overwritten if fullname was same)
-                    SharedVectorVariableT pFullData = pFullContainer->getDataGeneration(fullGens[i]);
-
-                    // First remove the old alias from the previous alias container (and maybe the alias container itself)
-                    if (pFullData->hasAliasName())
-                    {
-                        SharedVectorVariableContainerT pPreviousAliasContainer = getVariableContainer(pFullData->getAliasName());
-                        if (pPreviousAliasContainer != pExistingAliasContainer)
-                        {
-                            unregisterAlias(pFullData->getAliasName());
-                        }
-                    }
-
-                    // Now insert the full data as new alias into existing or new alias container
-                    // existing data generations will be replaced (removed)
-                    pFullData->mpVariableDescription->mAliasName = rAlias;
-                    insertVariable(pFullData, rAlias, fullGens[i]);
-                }
+                unregisterAlias(pFullData->getAliasName(), -1);
             }
+
+            // Now insert the full data as new alias into existing or new alias container
+            // existing data generations will be replaced (removed)
+            pFullData->mpVariableDescription->mAliasName = rAlias;
+            insertVariable(pFullData, rAlias, mGenerationNumber);
+
             emit aliasChanged();
         }
     }
 }
 
 
-void LogDataHandler::unregisterAlias(const QString &rAlias)
+void LogDataHandler::unregisterAlias(const QString &rAlias, int gen)
 {
     //! @todo the container should know which generations are aliases for faster removal
-    QString fullName = getFullNameFromAlias(rAlias);
+    QString fullName = getFullNameFromAlias(rAlias, gen);
     if (!fullName.isEmpty())
     {
-        registerAlias(fullName, "");
+        SharedVectorVariableContainerT pFullContainer = getVariableContainer(fullName);
+        if (pFullContainer)
+        {
+
+            SharedVectorVariableContainerT pAliasContainer;
+            bool didChangeAlias=false;
+
+            // Unregister any alias at any (all) generations
+            if (gen == -2)
+            {
+                const QList<int> fullGens = pFullContainer->getGenerations();
+                QString currentAliasName;
+                for(int i=0; i<fullGens.size(); ++i)
+                {
+                    SharedVectorVariableT pFullData = pFullContainer->getDataGeneration(fullGens[i]);
+                    if (pFullData->hasAliasName() && pFullData->getAliasName() == rAlias)
+                    {
+                        // Prevent alias container lookup every time if alias name has not changed
+                        if (currentAliasName != pFullData->getAliasName())
+                        {
+                            currentAliasName = pFullData->getAliasName();
+                            pAliasContainer = getVariableContainer(pFullData->getAliasName());
+                        }
+
+                        // Remove the alias, here we assume that the alias name at this generation is actually an alias for the fullName (the registration should have taken care of that)
+                        if (pAliasContainer)
+                        {
+                            pAliasContainer->removeDataGeneration(fullGens[i]);
+                        }
+                        pFullData->mpVariableDescription->mAliasName = "";
+                        didChangeAlias = true;
+                    }
+                }
+            }
+            // Unregister alias at current generation (-1) or specific generation
+            else if (gen >= -1)
+            {
+                if (gen == -1)
+                {
+                    gen = mGenerationNumber;
+                }
+
+                SharedVectorVariableT pFullData = pFullContainer->getDataGeneration(gen);
+                if (pFullData && pFullData->hasAliasName())
+                {
+                    pAliasContainer = getVariableContainer(pFullData->getAliasName());
+                    // Remove the alias, here we assume that the alias name at this generation is actually an alias for the fullName (the registration should have taken care of that)
+                    if (pAliasContainer)
+                    {
+                        pAliasContainer->removeDataGeneration(gen);
+                    }
+                    pFullData->mpVariableDescription->mAliasName = "";
+                    didChangeAlias = true;
+                }
+            }
+
+            if (didChangeAlias)
+            {
+                emit aliasChanged();
+            }
+        }
     }
 }
 

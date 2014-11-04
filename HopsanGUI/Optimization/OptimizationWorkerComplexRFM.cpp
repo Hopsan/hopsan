@@ -82,11 +82,11 @@ void OptimizationWorkerComplexRFM::init()
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasVariable("WorstObjective"))
     {
-        pHandler->deleteVariable("WorstObjective");
+        pHandler->deleteVariableContainer("WorstObjective");
     }
     if (pHandler->hasVariable("BestObjective"))
     {
-        pHandler->deleteVariable("BestObjective");
+        pHandler->deleteVariableContainer("BestObjective");
     }
 
     // Close these plotwindows before optimization to make sure old data is removed

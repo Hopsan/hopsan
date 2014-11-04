@@ -1053,7 +1053,7 @@ void ModelWidget::simulateModelica()
 
     foreach(const QString &var, varsToRemove)
     {
-        mpToplevelSystem->getLogDataHandler()->deleteVariable(var);
+        mpToplevelSystem->getLogDataHandler()->deleteVariableContainer(var);
     }
 
 

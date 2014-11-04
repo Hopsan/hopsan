@@ -1362,7 +1362,7 @@ bool VectorVariableContainer::removeDataGeneration(const int generation, const b
     // If last data generation removed then ask my parent to delete me
     if (mDataGenerations.isEmpty())
     {
-        mpParentLogDataHandler->deleteVariable(mName);
+        mpParentLogDataHandler->deleteVariableContainer(mName);
     }
     return didRemove;
 }

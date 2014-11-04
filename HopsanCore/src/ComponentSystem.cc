@@ -4145,6 +4145,21 @@ AliasHandler::AliasHandler(ComponentSystem *pSystem)
     mpSystem = pSystem;
 }
 
+HString AliasHandler::getVariableAlias(const HString &rCompName, const HString &rPortName, const HString &rVarName)
+{
+    Component *pComp = mpSystem->getSubComponent(rCompName);
+    if (pComp)
+    {
+        Port *pPort = pComp->getPort(rPortName);
+        if (pPort)
+        {
+            int id = pPort->getNodeDataIdFromName(rVarName);
+            return pPort->getVariableAlias(id);
+        }
+    }
+    return "";
+}
+
 //! @todo maybe this should be the default version, right now search comp/port twice
 bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const HString &rVarName)
 {

@@ -67,7 +67,7 @@ public:
     SharedVectorVariableT defineNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
     SharedVectorVariableT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
-    bool deleteVariable(const QString &rVarName);
+    bool deleteVariableContainer(const QString &rVarName);
     bool deleteImportedVariable(const QString &rVarName);
 
     int getNumVariables() const;
@@ -104,8 +104,7 @@ public:
 
     void defineAlias(const QString &rFullName);
     bool defineAlias(const QString &rAlias, const QString &rFullName);
-    void undefinePlotAlias(const QString &rAlias);
-    QString getFullNameFromAlias(const QString &rAlias);
+    QString getFullNameFromAlias(const QString &rAlias, const int gen=-1) const;
 
     int getNumberOfGenerations() const;
     QList<int> getGenerations() const;
@@ -156,7 +155,7 @@ public:
 
 public slots:
     void registerAlias(const QString &rFullName, const QString &rAlias);
-    void unregisterAlias(const QString &rAlias);
+    void unregisterAlias(const QString &rAlias, int gen=-1);
 
 
 signals:
@@ -187,6 +186,7 @@ private:
     QString getNewCacheName();
     void rememberIfImported(HopsanVariable data);
     void removeGenerationCacheIfEmpty(const int gen);
+    void unregisterAliasForFullName(const QString &rFullName);
 
     ContainerObject *mpParentContainerObject;
 

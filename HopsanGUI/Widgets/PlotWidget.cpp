@@ -105,6 +105,117 @@ public:
     ComponentHeaderTreeItem(const QString &rCompName, QTreeWidgetItem *pParent);
 };
 
+class GenerationSelector : public QWidget
+{
+    Q_OBJECT
+public:
+    GenerationSelector()
+    {
+        mAllGensCheckBox.setChecked(false);
+        mAllGensCheckBox.setToolTip("Show variables from all generations");
+        mCurrentGenCheckBox.setChecked(true);
+        mCurrentGenCheckBox.setToolTip("Show variables from current (newest) generations");
+        mSelectGenSpinBox.setDisabled(true);
+        mSelectGenSpinBox.setToolTip("Show variables from manualy selected generation");
+
+        connect(&mAllGensCheckBox, SIGNAL(clicked(bool)), this, SLOT(selectAllToggled()));
+        connect(&mCurrentGenCheckBox, SIGNAL(clicked(bool)), this, SLOT(selectCurrentToggled()));
+        connect(&mSelectGenSpinBox, SIGNAL(valueChanged(int)), this, SLOT(selectManual(int)));
+
+        QHBoxLayout *pLayout = new QHBoxLayout(this);
+        pLayout->addWidget(new QLabel("Gen:"));
+        pLayout->addWidget(new QLabel("All"),0,Qt::AlignRight);
+        pLayout->addWidget(&mAllGensCheckBox);
+        pLayout->addWidget(new QLabel("Curr"),0,Qt::AlignRight);
+        pLayout->addWidget(&mCurrentGenCheckBox);
+        pLayout->addWidget(new QLabel("Select:"),0,Qt::AlignRight);
+        pLayout->addWidget(&mSelectGenSpinBox);
+    }
+
+    void setLogDataHandler(LogDataHandler *pLogDataHandler)
+    {
+        mpLogdataHandler = pLogDataHandler;
+    }
+
+    void refreshDisplayGen()
+    {
+        if(mpLogdataHandler)
+        {
+            int low, high;
+            mpLogdataHandler->getLowestAndHighestGenerationNumber(low,high);
+            mSelectGenSpinBox.setRange(low+1, high+1);
+            if (mCurrentGenCheckBox.isChecked())
+            {
+                mSelectGenSpinBox.setValue(mpLogdataHandler->getCurrentGeneration()+1);
+            }
+        }
+    }
+
+    int getGen() const
+    {
+        if (mCurrentGenCheckBox.isChecked())
+        {
+            return -1;
+        }
+        else if (mAllGensCheckBox.isChecked())
+        {
+            return -2;
+        }
+        else
+        {
+            return mSelectGenSpinBox.value()-1;
+        }
+    }
+
+signals:
+    void setGen(int gen);
+
+public slots:
+
+    void selectAllToggled()
+    {
+        if (mAllGensCheckBox.isChecked())
+        {
+            mCurrentGenCheckBox.setChecked(false);
+            mSelectGenSpinBox.setDisabled(true);
+            emit setGen(-2);
+        }
+        else
+        {
+            mSelectGenSpinBox.setDisabled(false);
+            emit setGen(mSelectGenSpinBox.value()-1);
+        }
+    }
+
+    void selectCurrentToggled()
+    {
+        if (mCurrentGenCheckBox.isChecked())
+        {
+            mAllGensCheckBox.setChecked(false);
+            mSelectGenSpinBox.setDisabled(true);
+            refreshDisplayGen();
+            emit setGen(-1);
+        }
+        else
+        {
+            mSelectGenSpinBox.setDisabled(false);
+            emit setGen(mSelectGenSpinBox.value()-1);
+        }
+    }
+
+    void selectManual(int gen)
+    {
+        setGen(gen-1);
+    }
+
+
+private:
+    QCheckBox mAllGensCheckBox;
+    QCheckBox mCurrentGenCheckBox;
+    QSpinBox mSelectGenSpinBox;
+    QPointer<LogDataHandler> mpLogdataHandler;
+};
+
 // ----------------------------------------------------------------------------
 
 
@@ -309,7 +420,10 @@ void VariableTree::refreshImportedVariables()
     }
 }
 
-void VariableTree::updateList()
+
+//! @brief Refresh the list for given generation
+//! @param gen The generation to show, (0 index based) -2 == ALL -1 == Current
+void VariableTree::updateList(const int gen)
 {
     QStringList expandedImportFiles, expandedFullVariableComponents;
     getExpandedFullVariables(expandedFullVariableComponents);
@@ -327,8 +441,22 @@ void VariableTree::updateList()
     // First refresh the import variable tree
     refreshImportedVariables();
 
-    // Now add variables to the Alis and Variable tree
-    QList<HopsanVariable> variables = getLogDataHandler()->getAllVariablesAtRespectiveNewestGeneration();
+    // Now add variables to the Alias and Variable tree depeding on selcted generation to display
+    QList<HopsanVariable> variables;
+
+    if (gen == -1)
+    {
+        variables = getLogDataHandler()->getAllVariablesAtGeneration(getLogDataHandler()->getCurrentGeneration());
+    }
+    else if (gen >= 0)
+    {
+        variables = getLogDataHandler()->getAllVariablesAtGeneration(gen);
+    }
+    else
+    {
+        variables = getLogDataHandler()->getAllVariablesAtRespectiveNewestGeneration();
+    }
+
     for(int i=0; i<variables.size(); ++i)
     {
         // Skip data that is only imported, (they are handled above)
@@ -398,7 +526,9 @@ void PlotWidget::updateList()
     // There is not point in updating if we are not visible
     if (isVisible())
     {
-        mpVariableTree->updateList();
+        mpGenerationSelector->refreshDisplayGen();
+        mpVariableTree->updateList(mpGenerationSelector->getGen());
+
         mHasPendingUpdate = false;
     }
     else
@@ -411,6 +541,7 @@ void PlotWidget::updateList()
 void PlotWidget::clearList()
 {
     mpVariableTree->clear();
+    mpGenerationSelector->setLogDataHandler(0);
 }
 
 
@@ -489,39 +620,68 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
     if(pItem)
     {
         bool isImportVariabel = (dynamic_cast<ImportedVariableTreeItem*>(currentItem()) != 0);
+        bool isAliasVariabel = (dynamic_cast<AliasVariableTreeItem*>(currentItem()) != 0);
 
         QMenu menu;
         QAction *pDefineAliasAction = 0;
-        QAction *pRemoveAliasAction = 0;
+        QAction *pUndefineAliasAction = 0;
         QAction *pFindAliasAction = 0;
-        QAction *pDeleteVariableAction = 0;
+        QAction *pDeleteVariableThisGenAction = 0;
+        QAction *pDeleteVariableAllGenAction = 0;
 
         // Add actions
         if (!isImportVariabel)
         {
-            // Only show alisa buttons for non imported variables
-            if(pItem->getAliasName().isEmpty())
+            if (!isAliasVariabel)
             {
-                pDefineAliasAction = menu.addAction(QString("Define Variable Alias"));
+                // Only show alisa buttons for non imported variables
+                if(pItem->getAliasName().isEmpty())
+                {
+                    pDefineAliasAction = menu.addAction(QString("Define Variable Alias"));
+                }
+                else
+                {
+                    pDefineAliasAction = menu.addAction(QString("Change Alias"));
+                    pUndefineAliasAction = menu.addAction(QString("Undefine Alias"));
+                    pFindAliasAction = menu.addAction("Find Alias");
+                }
             }
             else
             {
-                pDefineAliasAction = menu.addAction(QString("Change Alias"));
-                pRemoveAliasAction = menu.addAction(QString("Remove Alias"));
-                pFindAliasAction = menu.addAction("Find Alias");
+                ContainerObject *pContainer = mpLogDataHandler->getParentContainerObject();
+                if (pContainer)
+                {
+                    // Only show alias commands if the alias represent the actual current alias in the model (Avoids problems with aliases lingering in old generations after rename or similar)
+                    QString actualAlias = pContainer->getVariableAlias(pItem->getFullName());
+                    if (actualAlias == pItem->getAliasName())
+                    {
+                        pDefineAliasAction = menu.addAction(QString("Change Alias"));
+                        pUndefineAliasAction = menu.addAction(QString("Undefine Alias"));
+                        pFindAliasAction = menu.addAction("Find Alias");
+                    }
+                }
+
             }
             menu.addSeparator();
         }
-        pDeleteVariableAction = menu.addAction(QString("Remove Variable"));
+        pDeleteVariableThisGenAction = menu.addAction(QString("Remove Variable @%1").arg(pItem->getGeneration()+1));
+        pDeleteVariableAllGenAction = menu.addAction(QString("Remove Variable @*"));
 
         // Exectue menu and wait for selected action
         QAction *pSelectedAction = menu.exec(QCursor::pos());
         if (pSelectedAction != 0)
         {
             // Execute selected action
-            if(pSelectedAction == pRemoveAliasAction)
+            if(pSelectedAction == pUndefineAliasAction)
             {
-                mpLogDataHandler->undefinePlotAlias(pItem->getAliasName());
+                ContainerObject *pContainer = mpLogDataHandler->getParentContainerObject();
+                if (pContainer)
+                {
+                    pContainer->setVariableAlias(pItem->getFullName(),""); //!< @todo maybe a remove alias function would be nice
+                }
+                // Regardless of success or failure, lets remove the alias from log variables
+                // Set variable will fail if you try to remove alias from an old component that has already been deleted
+                mpLogDataHandler->unregisterAlias(pItem->getAliasName()); //!< @todo at what generation???
             }
             else if(pSelectedAction == pDefineAliasAction)
             {
@@ -531,17 +691,42 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             {
                 gpFindWidget->findAlias(pItem->getAliasName());
             }
-            else if (pSelectedAction == pDeleteVariableAction)
+            else if (pSelectedAction == pDeleteVariableThisGenAction)
             {
                 if (isImportVariabel)
                 {
                     mpLogDataHandler->deleteImportedVariable(pItem->getFullName());
                 }
+                else if (isAliasVariabel)
+                {
+                    mpLogDataHandler->unregisterAlias(pItem->getAliasName(), pItem->getGeneration());
+                }
                 else
                 {
                     //! @todo we should maybe not remove imported variables in this case
                     //! @todo what should you remove if you trigger remove on an alias? that is connected to both imported and non-imported variables
-                    mpLogDataHandler->deleteVariable(pItem->getFullName());
+                    SharedVectorVariableContainerT pCont = mpLogDataHandler->getVariableContainer(pItem->getFullName());
+                    if (pCont)
+                    {
+                        pCont->removeDataGeneration(pItem->getGeneration());
+                    }
+                }
+            }
+            else if (pSelectedAction == pDeleteVariableAllGenAction)
+            {
+                if (isImportVariabel)
+                {
+                    mpLogDataHandler->deleteImportedVariable(pItem->getFullName());
+                }
+                else if (isAliasVariabel)
+                {
+                    mpLogDataHandler->unregisterAlias(pItem->getAliasName(), -2);
+                }
+                else
+                {
+                    //! @todo we should maybe not remove imported variables in this case
+                    //! @todo what should you remove if you trigger remove on an alias? that is connected to both imported and non-imported variables
+                    mpLogDataHandler->deleteVariableContainer(pItem->getFullName());
                 }
             }
         }
@@ -697,8 +882,12 @@ PlotWidget::PlotWidget(QWidget *pParent)
     tempFont.setBold(true);
     mpLoadButton->setFont(tempFont);
 
+    mpGenerationSelector = new GenerationSelector();
+    connect(mpGenerationSelector, SIGNAL(setGen(int)), mpVariableTree,  SLOT(updateList(int)));
+
     QVBoxLayout *pLayout = new QVBoxLayout(this);
     pLayout->addWidget(mpVariableTree, 1);
+    pLayout->addWidget(mpGenerationSelector);
     pLayout->addWidget(mpNewWindowButton);
     pLayout->addWidget(mpLoadButton);
     pLayout->setSpacing(1);
@@ -718,6 +907,7 @@ void PlotWidget::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler)
         disconnect(getLogDataHandler(), 0, this, 0);
     }
 
+    mpGenerationSelector->setLogDataHandler(pLogDataHandler);
     mpVariableTree->setLogDataHandler(pLogDataHandler);
 
     // Connect signals if the pLogdataHndler is not a null pointer
@@ -907,3 +1097,5 @@ ComponentHeaderTreeItem::ComponentHeaderTreeItem(const QString &rCompName, QTree
     tempFont.setBold(true);
     setFont(0, tempFont);
 }
+
+#include "PlotWidget.moc"

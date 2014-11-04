@@ -86,6 +86,7 @@ public:
 
     // Alias methods
     bool setVariableAlias(const QString &rFullName, const QString &rAlias);
+    QString getVariableAlias(const QString &rFullName);
     QString getFullNameFromAlias(const QString alias);
     QStringList getAliasNames();
 

@@ -180,6 +180,7 @@ public:
 
     // Alias functions
     bool setVariableAlias(QString compName, QString portName, QString varName, QString alias);
+    QString getVariableAlias(QString compName, QString portName, QString varName);
     void setParameterAlias(QString compName, QString paramName, QString alias);
     void getFullVariableNameByAlias(QString alias, QString &rCompName, QString &rPortName, QString &rVarName);
     QStringList getAliasNames() const;
