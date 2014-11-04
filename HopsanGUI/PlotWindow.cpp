@@ -127,11 +127,13 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     setWindowFlags(Qt::Dialog);
 
+    setPalette(gpConfig->getPalette());
+
     setStyleSheet(gpConfig->getStyleSheet());
 
     //setAcceptDrops(false);
     //setAttribute(Qt::WA_TransparentForMouseEvents, false);
-    setPalette(gpConfig->getPalette());
+
 
     // Set size of Window
     int sh = qApp->desktop()->screenGeometry().height();
