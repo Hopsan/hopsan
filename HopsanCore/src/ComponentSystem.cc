@@ -2952,7 +2952,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     if(!noChanges)
     {
-        if(algorithm != TaskStealingAlgorithm && algorithm != TaskPoolAlgorithm)
+        if(algorithm != TaskStealingAlgorithm)
         {
             mSplitCVector.clear();
             mSplitQVector.clear();

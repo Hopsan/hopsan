@@ -19,18 +19,18 @@
 		</replacables>
         <animation>
             <icon userpath="laminarorifice_user_base.svg"/>
-            <movable>
+            <movable idx="0">
                 <icon userpath="laminarorifice_user_movable_1.svg"/>
                 <data port="Kc" dataname="Value" idx="0"/> 
-                <movement x="" y="5000000000" a="0" idx="0"/>
+                <movement x="" y="2e11" a="0" idx="0"/>
                 <start x="0" y="3" a="0"/>
                 <transformorigin x="0" y="0"/>
         		<movingport portname="Kc" startx="35" starty="0"/>
             </movable>
-            <movable>
+            <movable idx="1">
                 <icon userpath="laminarorifice_user_movable_2.svg"/>
                 <data port="Kc" dataname="Value" idx="0"/> 
-                <movement x="0" y="-5000000000" a="0" idx="0"/>
+                <movement x="0" y="-2e11" a="0" idx="0"/>
                 <start x="0" y="-3" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>

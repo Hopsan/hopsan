@@ -18,5 +18,22 @@
             <port x="1" y="0.5" a="0" name="P1"/>
             <port x="0" y="0.5" a="180" name="P2"/>
         </ports>
+        <animation>
+            <icon userpath="checkvalvepreload_user_base.svg"/>
+            <movable idx="0">
+                <icon userpath="checkvalve_user_ball.svg"/>
+                <data port="x" dataname="Value" idx="0"/> 
+                <movement x="5" y="0" a="0" idx="0"/>
+                <start x="6" y="0" a="0"/>
+            </movable>
+            <movable idx="0">
+                <icon userpath="checkvalve_user_spring.svg"/>
+                <data port="x" dataname="Value" idx="0"/> 
+                <movement x="0" y="0" a="0" idx="0"/>
+                <initscale x="1" y="1"/>
+                <resize x="0.4" y="0" idx1="0"/>
+                <start x="13" y="0" a="0"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

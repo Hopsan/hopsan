@@ -17,5 +17,23 @@
             <port x="0" y="0.5" a="180" name="P2"/>
             <port x="0.5" y="0" a="270" name="A"/>
         </ports>
+        <animation>
+            <icon userpath="turbulentorifice_user_base.svg"/>
+            <movable idx="0">
+                <icon userpath="turbulentorifice_user_movable_1.svg"/>
+                <data port="A" dataname="Value" idx="0"/> 
+                <movement x="" y="2e5" a="0" idx="0"/>
+                <start x="0" y="3" a="0"/>
+                <transformorigin x="0" y="0"/>
+        		<movingport portname="Kc" startx="35" starty="0"/>
+            </movable>
+            <movable idx="1">
+                <icon userpath="turbulentorifice_user_movable_2.svg"/>
+                <data port="A" dataname="Value" idx="0"/> 
+                <movement x="0" y="-2e5" a="0" idx="0"/>
+                <start x="0" y="-3" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

@@ -42,7 +42,7 @@ namespace hopsan {
 
         Port *mpP1, *mpP2;
         double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc;
-        double *mpKs, *mpFs;
+        double *mpKs, *mpFs, *mpX;
 
     public:
         static Component *Creator()
@@ -57,6 +57,8 @@ namespace hopsan {
 
             addInputVariable("K_s", "Restrictor Coefficient", "", 5e-7, &mpKs);
             addInputVariable("F_s", "Spring Pre-Load Tension", "Pa", 0.0, &mpFs);
+
+            addOutputVariable("x", "Position (for animation)", "", 0, &mpX);
         }
 
 
@@ -79,7 +81,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, Ks, Fs;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, Ks, Fs, x;
             c1 = (*mpP1_c);
             Zc1 = (*mpP1_Zc);
             c2 = (*mpP2_c);
@@ -89,8 +91,16 @@ namespace hopsan {
 
             //Checkvalve equations
             mQTurb.setFlowCoefficient(Ks);
-            if (c1 > c2+Fs) { q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2); }
-            else { q2 = 0.0; }
+            if (c1 > c2+Fs)
+            {
+                q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2);
+                x = 1;
+            }
+            else
+            {
+                q2 = 0.0;
+                x=0;
+            }
 
             q1 = -q2;
             p1 = c1 + Zc1 * q1;
@@ -126,6 +136,7 @@ namespace hopsan {
             (*mpP1_q) = q1;
             (*mpP2_p) = p2;
             (*mpP2_q) = q2;
+            (*mpX) = x;
         }
     };
 }
