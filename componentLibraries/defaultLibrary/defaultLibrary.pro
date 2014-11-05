@@ -324,7 +324,29 @@ HEADERS += \
     Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp \
     Hydraulic/Valves/Hydraulic22DirectionalCheckValve.hpp \
     Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp \
-    Experimental/Signal1DPLOLookupTable.hpp
+    Experimental/Signal1DPLOLookupTable.hpp \
+    Hydraulic/Valves/DirectionalValves/Hydraulic42DirectionalValve.hpp \
+    Hydraulic/Valves/DirectionalValves/Hydraulic32DirectionalValve.hpp \
+    Hydraulic/Valves/DirectionalValves/Hydraulic22DirectionalValve.hpp \
+    Hydraulic/Valves/DirectionalValves/Hydraulic22DirectionalCheckValve.hpp \
+    Hydraulic/Valves/FlowControlValves/HydraulicOpenCenterValve.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic43ValveNeutralToTank.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic43ValveNeutralSupplyToTank.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic43Valve.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic43LoadSensingValve.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic42Valve2.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic42Valve.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic33Valve.hpp \
+    Hydraulic/Valves/FlowControlValves/Hydraulic22Valve.hpp \
+    Hydraulic/Valves/PressureControlValves/HydraulicPressureReliefValve.hpp \
+    Hydraulic/Valves/PressureControlValves/HydraulicPressureReducingValve.hpp \
+    Hydraulic/Valves/PressureControlValves/HydraulicPressureDropValve.hpp \
+    Hydraulic/Valves/PressureControlValves/HydraulicPressureControlledValve.hpp \
+    Hydraulic/Valves/PressureControlValves/HydraulicPressureCompensatingValve.hpp \
+    Hydraulic/Valves/DirectionalValves/HopsanDefaultHydraulicDirectionalValves.h \
+    Hydraulic/Valves/FlowControlValves/HopsanDefaultHydraulicFlowControlValves.h \
+    Hydraulic/Valves/PressureControlValves/HopsanDefaultHydraulicPressureControlValves.h \
+    Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
@@ -337,4 +359,5 @@ OTHER_FILES += \
     Signal/HopsanDefaultSignalComponents.cci \
     Special/AeroComponents/HopsanDefaultAerocomponents.cci \
     Special/MechanicB/HopsanDefaultMechanicBComponents.cci \
-    Experimental/Experimental.cci
+    Experimental/Experimental.cci \
+    Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.xml

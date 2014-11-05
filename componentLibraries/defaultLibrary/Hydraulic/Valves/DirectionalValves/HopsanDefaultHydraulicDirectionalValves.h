@@ -21,22 +21,12 @@
 //!
 //$Id$
 
-#ifndef HOPSANDEFAULTHYDRAULICVALVES_H
-#define HOPSANDEFAULTHYDRAULICVALVES_H
+#ifndef HOPSANDEFAULTHYDRAULICDIRECTIONALVALVES_H
+#define HOPSANDEFAULTHYDRAULICDIRECTIONALVALVES_H
 
-#include "DirectionalValves/HopsanDefaultHydraulicDirectionalValves.h"
-#include "FlowControlValves/HopsanDefaultHydraulicFlowControlValves.h"
-#include "PressureControlValves/HopsanDefaultHydraulicPressureControlValves.h"
-
-#include "Hydraulic22PoppetValve.hpp"
-#include "Hydraulic33ShuttleValve.hpp"
-#include "HydraulicValve416.hpp"
-#include "HydraulicShuttleValve.hpp"
-#include "HydraulicCheckValvePreLoaded.hpp"
-#include "HydraulicPilotControlledCheckValve.hpp"
-#include "HydraulicPilotClosableCheckValve.hpp"
-#include "HydraulicCheckValve.hpp"
-#include "HydraulicCheckValveWithOrifice.hpp"
-#include "HydraulicPressureControlValve33.hpp"
+#include "Hydraulic22DirectionalValve.hpp"
+#include "Hydraulic22DirectionalCheckValve.hpp"
+#include "Hydraulic32DirectionalValve.hpp"
+#include "Hydraulic42DirectionalValve.hpp"
 
 #endif
