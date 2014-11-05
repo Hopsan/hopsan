@@ -346,7 +346,12 @@ HEADERS += \
     Hydraulic/Valves/DirectionalValves/HopsanDefaultHydraulicDirectionalValves.h \
     Hydraulic/Valves/FlowControlValves/HopsanDefaultHydraulicFlowControlValves.h \
     Hydraulic/Valves/PressureControlValves/HopsanDefaultHydraulicPressureControlValves.h \
-    Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.hpp
+    Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.hpp \
+    Hydraulic/Restrictors/HydraulicPilotControlledCheckValve.hpp \
+    Hydraulic/Restrictors/HydraulicPilotClosableCheckValve.hpp \
+    Hydraulic/Restrictors/HydraulicCheckValveWithOrifice.hpp \
+    Hydraulic/Restrictors/HydraulicCheckValvePreLoaded.hpp \
+    Hydraulic/Restrictors/HydraulicCheckValve.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

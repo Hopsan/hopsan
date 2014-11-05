@@ -1,4 +1,4 @@
-/*-----------------------------------------------------------------------------
+﻿/*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
  Copyright (c) 2011
@@ -32,11 +32,6 @@
 #include "Hydraulic33ShuttleValve.hpp"
 #include "HydraulicValve416.hpp"
 #include "HydraulicShuttleValve.hpp"
-#include "HydraulicCheckValvePreLoaded.hpp"
-#include "HydraulicPilotControlledCheckValve.hpp"
-#include "HydraulicPilotClosableCheckValve.hpp"
-#include "HydraulicCheckValve.hpp"
-#include "HydraulicCheckValveWithOrifice.hpp"
 #include "HydraulicPressureControlValve33.hpp"
 
 #endif
