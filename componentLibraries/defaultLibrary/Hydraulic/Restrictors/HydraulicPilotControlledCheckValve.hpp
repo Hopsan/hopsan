@@ -46,6 +46,7 @@ namespace hopsan {
         *mpPPilot_p, *mpPPilot_c;
         double *mpPhi;
         double *mpPf;
+        double *mpX;
 
         // Constants
         double mKs;
@@ -64,6 +65,8 @@ namespace hopsan {
 
             addInputVariable("phi", "Pilot Ratio","-", 3.5, &mpPhi);
             addInputVariable("p_f", "Cracking Pressure", "Pa", 1e+5, &mpPf);
+
+            addOutputVariable("x", "Position (for animation)", "", 0, &mpX);
 
             addConstant("K_s", "Restrictor Coefficient", "-", 5e-7, mKs);
         }
@@ -90,7 +93,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_pilot, c_pilot;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_pilot, c_pilot, x;
 
             //Get variable values from nodes
             c1 = (*mpP1_c);
@@ -103,10 +106,12 @@ namespace hopsan {
             if ((c1 > (c2 + (*mpPf))) || c_pilot > ((c1-c2) / (*mpPhi)) + c2 + (*mpPf) )
             {
                 q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2);
+                x=1;
             }
             else
             {
                 q2 = 0.0;
+                x=0;
             }
 
             q1 = -q2;
@@ -151,6 +156,7 @@ namespace hopsan {
             (*mpP2_p) = p2;
             (*mpP2_q) = q2;
             (*mpPPilot_p) = p_pilot;
+            (*mpX) = x;
         }
     };
 }

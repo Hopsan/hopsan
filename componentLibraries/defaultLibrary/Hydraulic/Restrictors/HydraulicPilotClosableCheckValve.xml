@@ -13,5 +13,14 @@
             <port x="1" y="0.625" a="0" name="P1"/>
             <port x="0" y="0.625" a="180" name="P2"/>
         </ports>
+        <animation>
+            <icon userpath="checkvalvepilotclosed_user_base.svg"/>
+            <movable idx="0">
+                <icon userpath="checkvalve_user_ball.svg"/>
+                <data port="x" dataname="Value" idx="0"/> 
+                <movement x="5" y="0" a="0" idx="0"/>
+                <start x="-9.5" y="16" a="0"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

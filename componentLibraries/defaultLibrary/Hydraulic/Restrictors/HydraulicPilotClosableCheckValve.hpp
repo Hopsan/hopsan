@@ -43,7 +43,7 @@ namespace hopsan {
         // Port and node data pointers
         Port *mpP1, *mpP2, *mpPPilot;
         double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc,
-        *mpPPilot_p, *mpPPilot_c;
+        *mpPPilot_p, *mpPPilot_c, *mpX;
 
         // Constants
         double mKs;
@@ -59,6 +59,8 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPPilot = addPowerPort("P_PILOT", "NodeHydraulic");
+
+            addOutputVariable("x", "Position (for animation)", "", 0, &mpX);
 
             addConstant("K_s", "Restrictor Coefficient", "", 5e-7, mKs);
         }
@@ -85,7 +87,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_pilot, c_pilot;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_pilot, c_pilot, x;
 
             //Get variable values from nodes
             c1 = (*mpP1_c);
@@ -95,8 +97,16 @@ namespace hopsan {
             c_pilot = (*mpPPilot_c);
 
             //Checkvalve equations
-            if (c1 > (c2 + c_pilot)) { q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2); }
-            else { q2 = 0.0; }
+            if (c1 > (c2 + c_pilot))
+            {
+                q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2);
+                x=1;
+            }
+            else
+            {
+                q2 = 0.0;
+                x=0;
+            }
 
             q1 = -q2;
             p1 = c1 + Zc1 * q1;
@@ -140,6 +150,7 @@ namespace hopsan {
             (*mpP2_p) = p2;
             (*mpP2_q) = q2;
             (*mpPPilot_p) = p_pilot;
+            (*mpX) = x;
         }
     };
 }

@@ -205,7 +205,7 @@ namespace hopsan {
             t1 = c1 + Zx1*w1;
             
             //Rotation equations
-            double F_dry = std::max(Kfrot*tanh(100*(*mpP2_v)/r2),(c2-c3)*r2);
+            double F_dry = std::max(Kfrot*tanh(10000*(*mpP2_v)/r2),(c2-c3)*r2);
             (*mpDebug) = F_dry;
 
             mDenA[0] = krot;
