@@ -13,8 +13,8 @@
    height="90"
    id="svg3709"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="ackumulator_movable3.svg"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="ackumulator_movable2.svg"
    sodipodi:version="0.32"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
@@ -75,10 +75,10 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="1132"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1280"
+     inkscape:window-height="776"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3714">
@@ -88,7 +88,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -106,7 +106,7 @@
        sodipodi:rx="46.875004"
        sodipodi:ry="46.875004"
        d="m -73.250006,47.124998 a 46.875004,46.875004 0 0 1 93.750008,2e-6 l -46.875004,0 z"
-       transform="matrix(0.39466663,0,0,-0.37466663,283.77861,703.992)"
+       transform="matrix(0.39466663,0,0,-0.37466663,283.77861,708.99194)"
        sodipodi:start="3.1415927"
        sodipodi:end="6.2831853" />
   </g>
