@@ -1582,6 +1582,18 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         QStringList parameterNames;
         getParameters(splitCmd[0], parameterNames);
 
+        //If no parameters found, try if component name can be evaluated by component index instead
+        if(parameterNames.isEmpty())
+        {
+            evaluateExpression(splitCmd[0].section(".",0,0));
+            if(mAnsType == Scalar)
+            {
+                QString compName = pSystem->getModelObjects().at(mAnsScalar)->getName();
+                splitCmd[0].replace(0, splitCmd[0].section(".",0,0).size(), compName);
+                getParameters(splitCmd[0], parameterNames);
+            }
+        }
+
         QString newValueStr;
         if(mpModel->getViewContainerObject()->getParameterNames().contains(splitCmd[1]))
         {
@@ -3528,6 +3540,10 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
         HCOMPRINT("Added "+typeName+" to current model.");
         mpModel->getViewContainerObject()->renameModelObject(pObj->getName(), name);
     }
+
+    // Return the index of the new component
+    mAnsScalar = mpModel->getViewContainerObject()->getModelObjects().size()-1;
+    mAnsType = Scalar;
 }
 
 
