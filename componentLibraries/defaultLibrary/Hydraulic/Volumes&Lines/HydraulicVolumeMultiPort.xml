@@ -17,6 +17,10 @@
                 <initcolor g="0" r="0" b="255"/>
                 <color g="0" idx="0" r="-255" b="255" divisor="P_high"/>
             </movable>
+            <movable idx="1">
+                <icon userpath="volume_user_overlay.svg"/>
+                <start x="0" y="0" a="0"/>
+            </movable>
         </animation>
     </modelobject>
 </hopsanobjectappearance>
