@@ -574,6 +574,7 @@ void TerminalConsole::handleEnterKeyPress()
 }
 
 
+//! @brief Handles pressing the up key (stepping backward through history)
 void TerminalConsole::handleUpKeyPress()
 {
     if(mHistory.isEmpty()) { return; }
@@ -596,6 +597,12 @@ void TerminalConsole::handleUpKeyPress()
     if(mCurrentHistoryItem > mHistory.filter(QRegExp("^"+mHistoryFilter)).size()-1)
     {
         mCurrentHistoryItem = mHistory.filter(QRegExp("^"+mHistoryFilter)).size()-1;
+        if(mCurrentHistoryItem < 0)
+        {
+            this->insertPlainText(">> " + mHistoryFilter);
+            this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+            return; //Prevents crash if no matches were found
+        }
     }
     setOutputColor(UndefinedMessageType);
     this->insertPlainText(">> " + mHistory.filter(QRegExp("^"+mHistoryFilter)).at(mCurrentHistoryItem));
@@ -604,6 +611,7 @@ void TerminalConsole::handleUpKeyPress()
 }
 
 
+//! @brief Handles pressing the down key (stepping forward through history)
 void TerminalConsole::handleDownKeyPress()
 {
     if(mCurrentHistoryItem == -1) { return; }
