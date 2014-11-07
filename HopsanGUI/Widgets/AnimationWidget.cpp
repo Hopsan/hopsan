@@ -28,6 +28,7 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QDialogButtonBox>
+#include <QMessageBox>
 
 //Hopsan includes
 #include "global.h"
@@ -45,6 +46,7 @@
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "MainWindow.h"
+#include "LibraryHandler.h"
 
 //! @brief Constructor for the animation widget class
 //! @param [in] parent Pointer to parent widget
@@ -307,10 +309,16 @@ void AnimationWidget::openPreferencesDialog()
 
     QPushButton *pCancelButton = new QPushButton("Cancel", pDialog);
     QPushButton *pOkButton = new QPushButton("Ok", pDialog);
+    QPushButton *pResetAllButton = new QPushButton("Reset all", pDialog);
+    QPalette palette = gpConfig->getPalette();
+    palette.setColor(QPalette::Text,Qt::darkRed);
+    pResetAllButton->setPalette(palette);
 
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+    pButtonBox->addButton(pResetAllButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::RejectRole);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::AcceptRole);
+
 
     QGridLayout *pLayout = new QGridLayout(pDialog);
     pLayout->addWidget(pFpsLabel,               0, 0);
@@ -325,6 +333,7 @@ void AnimationWidget::openPreferencesDialog()
 
     pDialog->setLayout(pLayout);
 
+    connect(pResetAllButton, SIGNAL(clicked()), this, SLOT(resetAllAnimationDataToDefault()));
     connect(pCancelButton,  SIGNAL(clicked()), pDialog, SLOT(reject()));
     connect(pOkButton,      SIGNAL(clicked()), pDialog, SLOT(accept()));
 
@@ -571,6 +580,49 @@ void AnimationWidget::updateMovables()
    }
 
    mpGraphicsView->update();
+}
+
+
+//! @brief Resets animation data in all animated components to default (but warns user first)
+void AnimationWidget::resetAllAnimationDataToDefault()
+{
+    int ret = QMessageBox::question(this, "Warning!", "This will reset animation data for all components to default values. Continue?",
+                                    QMessageBox::Ok, QMessageBox::Cancel);
+
+    if(ret == QMessageBox::Cancel) return;
+
+    for(int c=0; c<mAnimatedComponentList.size(); ++c)
+    {
+        AnimatedComponent *pComp = mAnimatedComponentList.at(c);
+
+        QDomDocument domDocument;
+        QDomElement animationRoot = domDocument.createElement("animation");
+        domDocument.appendChild(animationRoot);
+
+        QString subTypeName = pComp->mpModelObject->getSubTypeName();
+        QString typeName = pComp->mpModelObject->getTypeName();
+        ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(typeName, subTypeName);
+        pAppearanceData->getAnimationDataPtr()->saveToDomElement(animationRoot);
+        QString baseIconPath = gpLibraryHandler->getModelObjectAppearancePtr(pComp->mpModelObject->getTypeName())->getAnimationDataPtr()->baseIconPath;
+
+        //Store icon paths (they are not included in saveToDomElement() )
+        QStringList iconPaths;
+        foreach(const ModelObjectAnimationMovableData &m, pComp->getAnimationDataPtr()->movables)
+        {
+            iconPaths << m.iconPath;
+        }
+
+        //! @todo Maybe more things are not included in saveToDomElement(), make sure they are added here...
+
+        pComp->getAnimationDataPtr()->movables.clear();
+        pComp->getAnimationDataPtr()->readFromDomElement(animationRoot,baseIconPath);
+
+        //Restore icon paths
+        for(int m=0; m<iconPaths.size(); ++m)
+        {
+            pComp->getAnimationDataPtr()->movables[m].iconPath = iconPaths[m];
+        }
+    }
 }
 
 

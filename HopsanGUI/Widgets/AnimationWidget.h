@@ -120,6 +120,7 @@ private slots:
     void updateAnimationSpeed(double speed);
     void updateAnimation();
     void updateMovables();
+    void resetAllAnimationDataToDefault();
 
 private:
     //Graphics scene
