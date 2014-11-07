@@ -18,18 +18,24 @@
                 <icon userpath="spring_user_base.svg"/>
                 <data port="P1" dataname="Position" idx="0"/>
                 <start x="0" y="0" a="0"/>
-                <movement x="8.3333333" y="0" a="0" idx="0"/>
-                <movingport startx="33.33333" portname="P2" starty="10"/>
+                <movement x="-77.5" y="0" a="0" idx="0"/>
+                <movingport startx="-16" portname="P1" starty="10"/>
             </movable>
             <movable>
-                <icon userpath="spring_user.svg"/>
+                <icon userpath="spring_user_base.svg"/>
+                <data port="P2" dataname="Position" idx="0"/>
+                <start x="0" y="0" a="0"/>
+                <movement x="77.5" y="0" a="0" idx="0"/>
+                <movingport startx="49" portname="P2" starty="10"/>
+            </movable>
+            <movable>
+                <icon userpath="spring_user_movable.svg"/>
                 <data port="P1" dataname="Position" idx="0"/>
                 <data port="P2" dataname="Position" idx="1"/>
                 <start x="0" y="0" a="0"/>
-                <movement x="-8.3333333" y="0" a="0" idx="0"/>
-                <resize x="-0.5" y="0" idx1="0" idx2="1"/>
+                <movement x="-77.5" y="0" a="0" idx="0"/>
+                <resize x="1.19231" y="0" idx1="0" idx2="1"/>
                 <initscale x="1" y="1"/>
-                <movingport startx="0" portname="P1" starty="10"/>
             </movable>
         </animation>
     </modelobject>

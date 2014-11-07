@@ -8,5 +8,36 @@
             <port x="0" y="0.01924557351809083910700538876059" a="90" name="P1"/>
             <port x="1" y="0.37900949448293559148062612265846" a="270" name="P2"/>
         </ports>
+        <animation>
+            <icon userpath="MechanicPulley_base.svg"/>
+            <movable idx="0">
+                <icon userpath="MechanicPulley_movable2.svg"/>
+                <data port="P1" dataname="Position" idx="0"/>
+                <initscale x="1" y="1"/>
+                <resize x="1" y="0" idx1="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable idx="1">
+                <icon userpath="MechanicPulley_movable4.svg"/>
+                <data port="P1" dataname="Position" idx="0"/>
+                <resize x="1.65" y="0" idx1="0"/>
+                <start x="16.358" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable idx="2">
+                <icon userpath="MechanicPulley_movable1.svg"/>
+                <data port="P2" dataname="Position" idx="0"/>
+                <movement x="-77.5" y="0" a="0" idx="0"/>
+                <start x="25.795" y="-0.61" a="0"/>
+            </movable>
+            <movable idx="3">
+                <icon userpath="MechanicPulley_movable3.svg"/>
+                <data port="P2" dataname="Position" idx="0"/>
+                <movement x="-77.5" y="0" a="0" idx="0"/>
+                <start x="0" y="0" a="0"/>
+                <movingport portname="P2" startx="81" starty="14.4"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

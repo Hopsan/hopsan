@@ -10,12 +10,12 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
-   width="33.335991"
+   width="65"
    height="20.000223"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="spring_user.svg"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="spring_user_base.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <metadata
      id="metadata17">
@@ -25,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -43,10 +43,10 @@
      id="base"
      showgrid="false"
      inkscape:zoom="22.627417"
-     inkscape:cx="24.670784"
+     inkscape:cx="54.866705"
      inkscape:cy="10.127864"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-x="1625"
+     inkscape:window-y="35"
      inkscape:current-layer="svg2"
      inkscape:window-maximized="0" />
   <defs
