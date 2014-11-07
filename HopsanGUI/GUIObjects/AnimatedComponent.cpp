@@ -250,7 +250,7 @@ void AnimatedComponent::updateAnimation()
                     double scaleData;
                     if(idx1 != idx2 && idx2 > 0)
                     {
-                        scaleData = data[idx1]-data[idx2];
+                        scaleData = data[idx1]+data[idx2];
                     }
                     else
                     {
