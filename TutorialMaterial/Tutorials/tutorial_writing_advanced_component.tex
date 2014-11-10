@@ -100,6 +100,7 @@ We now have a linear equation system that can be solved step-by-step.
 
 \subsection*{C++ Code}
 
+\noindent 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 #include "ComponentEssentials.h"
@@ -122,6 +123,7 @@ public:
 \end{lstlisting}
 \end{minipage}
 
+\noindent 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 void configure()
@@ -137,6 +139,7 @@ void configure()
 \end{lstlisting}
 \end{minipage}
 
+\noindent 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 void initialize()
@@ -154,6 +157,7 @@ void initialize()
 \end{lstlisting}
 \end{minipage}
 
+\noindent 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 void simulateOneTimestep()
@@ -222,9 +226,246 @@ void simulateOneTimestep()
 \end{minipage}
 
 \section*{Translational Mass}
+This part of the tutorial will explain how to write a translational mass component with second order dynamics. It will contain a mass and a damping coefficient, as shown in the figure below. We leave out dry friction and spring coefficient for simplicity.
+
+\begin{tikzpicture}
+\node[] () {\includegraphics[width=6cm]{gfx/writingadvancedcomponents/mass.pdf}};
+\node[yshift=-10pt, xshift=0pt] () {$M$};
+\node[yshift=-3pt, xshift=-70pt] () {$F_{1}$};
+\node[yshift=-3pt, xshift=70pt] () {$F_{2}$};
+\node[yshift=36pt, xshift=55pt] () {$B$};
+\end{tikzpicture}
 
 \subsection*{Equations}
 
+The fundamental equation in the component will be Newton's second law of motion:
+
+\begin{equation*}
+M\ddot{x} + B\dot{x} + k x = \sum{F}
+\end{equation*}
+
+The Hopsan component will have two ports, which is defined in opposite direction. It is also necessary to provide equivalent mass variables, which are required by some other components in Hopsan. 
+
+\begin{equation*}
+\begin{cases}
+M\ddot{x_{2}} + B\dot{x_{2}} = F_{1} - F_{2}\\
+x_{1} = -x_{2} \\
+\dot{x}_{1} = -\dot{x}_{2} \\
+m_{e,1} = M \\
+m_{e,2} = M
+\end{cases}
+\end{equation*}
+
+Finally, we must add the TLM equations in order to calculate the force from the wave variables and impedances:
+
+\begin{equation*}
+\begin{cases}
+M\ddot{x_{2}} + B\dot{x_{2}} = F_{1} - F_{2}\\
+x_{1} = -x_{2} \\
+\ddot{x}_{1} = -\ddot{x}_{2} \\
+m_{e,1} = M \\
+m_{e,2} = M \\
+F_{1} = c_{1} + Z_{c,1}\dot{x}_{1} \\
+F_{2} = c_{2} + Z_{c,2}\dot{x}_{2} 
+\end{cases}
+\end{equation*}
+
+The equations of the mass is more complicated than the ones for the pump, since it contains time derivatives ($ddot{x}$ and $dot{x}$). Hopsan uses bilinear transforms to solve such equations. In order to use these, we must convert the first equation into a Laplace transform. We use a first order transform to calculate the velocity. Then the position can be obtained by integrating the velocity. By adding the impedance directly to the damping, we can use the wave variables as the external force. In this way we can calculate $x$ and $v$ without first calculating the forces. 
+
+\begin{equation*}
+\begin{cases}
+v_{2} = \dfrac{1}{M s + (B+Z_{c,1}+Z_{c,2})}(c_{1}-c_{2}) \\
+\dot{x}_{2} = v_{2} \\
+v_{1} = -v_{2} \\
+x_{1} = -x_{2} \\
+F_{1} = c_{1} + Z_{c,1}v_{1} \\
+F_{2} = c_{2} + Z_{c,2}v_{2} 
+\end{cases}
+\end{equation*}
+
 \subsection*{C++ Code}
+As with the previous component, we begin by creating a code skeleton. We want two mechanical ports, a constant parameter for the mass and input variables for damping and minimum and maximum position. Note that we also need to include the file \texttt{ComponentUtilities.h}, which contain classes for the transfer function and the integration.
  	
+\noindent 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=c++, basicstyle=\footnotesize\ttfamily]
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
+
+namespace hopsan {
+
+class MechanicTranslationalMass : public ComponentQ
+{
+private:
+    Port *mpP1, *mpP2;
+    double *mpP1_f, *mpP1_x, *mpP1_v, *mpP1_c, *mpP1_Zc, *mpP1_me;
+    double *mpP2_f, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zc, *mpP2_me;
+    double *mpB, *mpXMin, *mpXMax;
+    double mMass;
+
+    FirstOrderTransferFunction mTF;
+    Integrator mIntegrator;
+    double mNum[2], mDen[2];
+
+public:
+    static Component *Creator()
+    {
+        return new MechanicTranslationalMass();
+    }
+\end{lstlisting}
+\end{minipage}
+ 	
+There is nothing special with the \texttt{configure()} function. All we need to do here is to create the ports, the constant and the input variables.
+
+\noindent 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void configure()
+{
+    mpP1 = addPowerPort("P1", "NodeMechanic");
+    mpP2 = addPowerPort("P2", "NodeMechanic");
+
+    addConstant("m",          "Mass",               "kg",   100.0, mMass);
+    
+    addInputVariable("B",     "Viscous Friction",   "Ns/m", 10.0,  &mpB);
+    addInputVariable("x_min", "Minimum Position",   "m",    0.0,   &mpXMin);
+    addInputVariable("x_max", "Maximum Position",   "m",    1.0,   &mpXMax);
+}
+\end{lstlisting}
+\end{minipage}
+ 
+The \texttt{initialize()} function is a little more advanced than for the pump. We need to initialize the transfer function and the integrator with start values for $f$, $v$ and $x$. We also need to define the coefficients for the transfer function. This is done with two arrays called \texttt{mDen} and \texttt{mNum}, according to this:\\
+
+$\dfrac{mNum[1] s + mNum[0]}{mDen[1] s + mNum[0]}$\\
+ 
+ 
+\noindent Finally, we also need to initialize the equivalent mass variables in the nodes.
+
+\noindent 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void initialize()
+{
+    mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+    mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+    mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+    mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+    mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+    mpP1_me = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
+
+    mpP2_f = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+    mpP2_x = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+    mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+    mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+    mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
+    mpP2_me = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
+
+    //Initialization
+    double f1, f2, x2, v2;
+    f1 = (*mpP1_f);
+    f2 = (*mpP2_f);
+    x2 = (*mpP2_x);
+    v2 = (*mpP2_v);
+
+    mNum[0] = 1.0;
+    mNum[1] = 0.0;
+    mDen[0] = (*mpB);
+    mDen[1] = mMass;
+
+    mTF.initialize(mTimestep, mNum, mDen, f1-f2, v2);
+    mIntegrator.initialize(mTimestep, x2, v2); 
+    
+    (*mpP1_me) = mMass;
+    (*mpP2_me) = mMass;
+}
+\end{lstlisting}
+\end{minipage}
+ 	
+ 	
+Last but not least, we need to write the \texttt{simulateOneTimeStep()} function. This is explained step-by-step: 
+\begin{tutenumerate}
+\tutitem{Define local variables}
+Define local variables for input variables and node values (line 3-4)
+\tutitem{Read from input variables}
+Assign input variables to local variables (line 6-9)
+\tutitem{Read from nodes}
+Assign node variables to local variables (line 11-15)
+\tutitem{Update the damping coefficient}
+Update the coefficient in the transfer function by adding the impedance variables to the damping factor (line 17-19)
+\tutitem{Calculate velocity}
+Use the transfer function to calculate $v_{2}$ from $c_{1}-c_{2}$ (line 21-22)
+\tutitem{Calculate position}
+Use the integrator to calculate $x_{2}$ as a function of $v_{2}$ (line 24-25)
+\tutitem{Handle limitations}
+Reset variables and re-initialize the transfer function and the integrator if $x_{2}$ is outside limits (line 27-41)
+\tutitem{Calculate the remaining variables}
+Calulate velocity and position for node 1 ($v_{1}$, $x_{1}$), and then calculate, $F_{1}$ and $F_{2}$ using the TLM equations (line 43-47)
+\tutitem{Write values to the nodes}
+Write back the values of the local variables to the node variables (line 49-57)
+\end{tutenumerate}
+ 	
+\noindent 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily] 	
+void simulateOneTimestep()
+{
+    //Declare local variables
+    double f1, x1, v1, c1, Zc1, f2, x2, v2, c2, Zc2, B, xmin, xmax;
+
+    //Read input variables
+    B = (*mpB);
+    xmin = (*mpXMin);
+    xmax = (*mpXMax);
+            
+    //Get variable values from nodes
+    c1 = (*mpP1_c);
+    Zc1 = (*mpP1_Zc);
+    c2 = (*mpP2_c);
+    Zc2 = (*mpP2_Zc);
+
+    //Mass equations
+    mDen[0] = B+Zc1+Zc2;
+    mTF.setDen(mDen);
+
+    //Calculate velocity
+    v2 = mTF.update(c1-c2);
+    
+    //Calculate position
+    x2 = mIntegrator.update(v2);
+
+    //Handle position limits
+    if(x2<xmin)
+    {
+        x2=xmin;
+        v2=0.0;
+        mTF.initializeValues(c1-c2, v2);
+        mIntegrator.initializeValues(v2, xmin);
+    }
+    if(x2>xmax)
+    {
+        x2=xmax;
+        v2=0.0;
+        mTF.initializeValues(c1-c2, v2);
+        mIntegrator.initializeValues(v2, xmax);
+    }
+
+    //Calculate remainig varaibles
+    v1 = -v2;
+    x1 = -x2;
+    f1 = c1 + Zc1*v1;
+    f2 = c2 + Zc2*v2;
+
+    //Write new values to nodes
+    (*mpP1_f) = f1;
+    (*mpP1_x) = x1;
+    (*mpP1_v) = v1;
+    (*mpP2_f) = f2;
+    (*mpP2_x) = x2;
+    (*mpP2_v) = v2;
+    (*mpP1_me) = mMass;
+    (*mpP2_me) = mMass;
+}
+\end{lstlisting}
+\end{minipage}
+ 
 \end{document}
