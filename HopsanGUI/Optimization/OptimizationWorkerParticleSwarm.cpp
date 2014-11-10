@@ -204,6 +204,7 @@ void OptimizationWorkerParticleSwarm::run()
 
         plotPoints();
         plotObjectiveFunctionValues();
+        plotEntropy();
 
         //Check convergence
         if(checkForConvergence()) break;      //Use complex method, it's the same principle

@@ -291,6 +291,7 @@ void OptimizationWorkerComplexRF::run()
         }
 
         plotParameters();
+        plotEntropy();
     }
 
     gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);

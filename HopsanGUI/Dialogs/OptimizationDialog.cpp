@@ -142,6 +142,9 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpPlotParticlesCheckBox = new QCheckBox("Plot particles", this);
     mpPlotParticlesCheckBox->setChecked(false);
 
+    mpPlotEntropyCheckBox = new QCheckBox("Plot entropy", this);
+    mpPlotEntropyCheckBox->setChecked(false);
+
     mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
     mpPlottingCheckBox->setChecked(true);
 
@@ -192,6 +195,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpPlottingCheckBox,     row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpPlotBestWorstCheckBox,row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpPlotParticlesCheckBox,row++, 0, 1, 2);
+    pSettingsLayout->addWidget(mpPlotEntropyCheckBox,  row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpExport2CSVBox,        row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpFinalEvalCheckBox,    row++, 0, 1, 2);
     pSettingsLayout->addWidget(new QWidget(this),      row++, 0, 1, 2);    //Dummy widget for stretching the layout
@@ -1045,6 +1049,14 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
     {
         templateCode.replace("<<<plotpoints>>>","off");
     }
+    if(mpPlotEntropyCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotentropy>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotentropy>>>","off");
+    }
     if(mpPlotBestWorstCheckBox->isChecked())
     {
         templateCode.replace("<<<plotbestworst>>>","on");
@@ -1160,11 +1172,27 @@ void OptimizationDialog::generateParticleSwarmScript()
     QString extraPlots;
     if(mpPlotParticlesCheckBox->isChecked())
     {
-        extraPlots.append("opt set plotpoints on\n");
+        templateCode.replace("<<<plotpoints>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotpoints>>>","off");
+    }
+    if(mpPlotEntropyCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotentropy>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotentropy>>>","off");
     }
     if(mpPlotBestWorstCheckBox->isChecked())
     {
-        extraPlots.append("opt set plotbestworst on\n");
+        templateCode.replace("<<<plotbestworst>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotbestworst>>>","off");
     }
 
     templateCode.replace("<<<objfuncs>>>", objFuncs);
@@ -1275,6 +1303,10 @@ void OptimizationDialog::generateParameterSweepScript()
     if(mpPlotBestWorstCheckBox->isChecked())
     {
         extraPlots.append("opt set plotbestworst on\n");
+    }
+    if(mpPlotEntropyCheckBox->isChecked())
+    {
+        extraPlots.append("opt set plotentropy on\n");
     }
     extraPlots.chop(1);
 

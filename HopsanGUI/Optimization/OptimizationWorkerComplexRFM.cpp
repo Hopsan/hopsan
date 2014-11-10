@@ -440,8 +440,8 @@ void OptimizationWorkerComplexRFM::run()
 
         }
 
-
         plotParameters();
+        plotEntropy();
     }
 
     execute("echo on");

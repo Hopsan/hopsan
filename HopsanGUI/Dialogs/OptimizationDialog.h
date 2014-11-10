@@ -130,6 +130,7 @@ private:
     QLineEdit *mpEpsilonFLineEdit;
     QLineEdit *mpEpsilonXLineEdit;
     QCheckBox *mpPlotParticlesCheckBox;
+    QCheckBox *mpPlotEntropyCheckBox;
     QCheckBox *mpPlottingCheckBox;
     QCheckBox *mpPlotBestWorstCheckBox;
     QCheckBox *mpExport2CSVBox;

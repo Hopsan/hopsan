@@ -23,6 +23,9 @@ opt set partol <<<partol>>>
 opt set omega <<<omega>>>
 opt set c1 <<<c1>>>
 opt set c2 <<<c2>>>
+opt set plotbestworst <<<plotbestworst>>>
+opt set plotpoints <<<plotpoints>>>
+opt set plotentropy <<<plotentropy>>>
 
 <<<objpars>>>
 

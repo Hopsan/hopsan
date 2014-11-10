@@ -26,6 +26,7 @@ opt set finaleval <<<finaleval>>>
 opt set log <<<log>>>
 opt set plotpoints <<<plotpoints>>>
 opt set plotbestworst <<<plotbestworst>>>
+opt set plotentropy <<<plotentropy>>>
 
 <<<extravars>>>
 <<<extraplots>>>

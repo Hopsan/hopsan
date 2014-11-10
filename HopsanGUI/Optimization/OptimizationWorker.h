@@ -53,6 +53,7 @@ public:
     void plotPoints();
     void plotObjectiveFunctionValues();
     void plotParameters();
+    void plotEntropy();
 
     virtual void setOptVar(const QString &var, const QString &value);
     virtual double getOptVar(const QString &var, bool &ok);
@@ -104,6 +105,7 @@ protected:
     bool mPlotObjectiveFunctionValues;
     bool mPlotParameters;
     bool mPlotVariables;
+    bool mPlotEntropy;
     int mPercent;
 
     int mIterations;

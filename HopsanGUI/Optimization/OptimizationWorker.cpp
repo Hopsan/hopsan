@@ -48,6 +48,7 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mPlotPoints = false;
     mPlotObjectiveFunctionValues = false;
     mPlotParameters = false;
+    mPlotEntropy = false;
     mDoLog = true;
     mFinalEval = true;
 }
@@ -563,6 +564,38 @@ void OptimizationWorker::plotParameters()
 }
 
 
+//! @brief Plots the entropy of the points in the optimization
+void OptimizationWorker::plotEntropy()
+{
+    if(!mPlotEntropy) { return; }
+
+    double deltaX = getMaxParDiff();
+    int n = mParameters.size();
+    double entropy = -n*log2(deltaX);
+
+    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    SharedVectorVariableT entropyVar = pHandler->getVectorVariable("Entropy", -1);
+    if(entropyVar.isNull())
+    {
+        entropyVar = pHandler->defineNewVectorVariable("Entropy");
+        entropyVar->preventAutoRemoval();
+        entropyVar->assignFrom(entropy);
+        entropyVar->setCacheDataToDisk(false);
+    }
+    else
+    {
+        entropyVar->append(entropy);
+    }
+
+    // If this is the first time, then recreate the plotwindows
+    if(entropyVar.data()->getDataSize() == 1)
+    {
+        PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("OptimizationEntropy");
+        gpPlotHandler->plotDataToWindow(pPW, entropyVar, 0, true, QColor("blue"));
+    }
+}
+
+
 //! @brief Set function for optimization variables
 //! @param var Name of variable to set
 //! @param value Value for variable
@@ -583,6 +616,10 @@ void OptimizationWorker::setOptVar(const QString &var, const QString &value)
     else if(var == "plotparameters")
     {
         mPlotParameters = (value == "on");
+    }
+    else if(var == "plotentropy")
+    {
+        mPlotEntropy = (value == "on");
     }
     else if(var == "npoints")
     {
@@ -652,6 +689,13 @@ double OptimizationWorker::getOptVar(const QString &var, bool &ok)
     else if(var == "plotparameters")
     {
         if(mPlotParameters)
+            return 1;
+        else
+            return 0;
+    }
+    else if(var == "plotentropy")
+    {
+        if(mPlotEntropy)
             return 1;
         else
             return 0;
