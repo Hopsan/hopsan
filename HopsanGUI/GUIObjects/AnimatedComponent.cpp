@@ -351,8 +351,12 @@ void AnimatedComponent::updateAnimation()
                 double portStartY = mpAnimationData->movables[m].movablePortStartY[p];
 
                 QPointF pos;
-                pos.setX(portStartX+x);
-                pos.setY(portStartY+y);
+                //double mrot = mpMovables[m]->rotation();
+                //pos.setX((portStartX+x)*cos(mrot) - (portStartY+y)*sin(mrot));
+                //pos.setY((portStartY+y)*cos(mrot) + (portStartX+x)*sin(mrot));
+                //pos.setX(portStartX);
+                //pos.setY(portStartY);
+                pos = mpMovables[m]->mapToItem(mpBase, portStartX, portStartY);
                 mPortPositions.insert(portName, pos);
             }
         }
