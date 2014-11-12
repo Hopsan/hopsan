@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7413" hopsancoreversion="0.6.x_r7399">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7435" hopsancoreversion="0.6.x_r7431">
   <requirements>
-    <componentlibrary>ACAnalysisLibrary</componentlibrary>
-    <componentlibrary>ACHydraulicLibrary</componentlibrary>
-    <componentlibrary>ACMechanicLibrary</componentlibrary>
-    <componentlibrary>ACRotationalLibrary</componentlibrary>
+    <componentlibrary>DigitalHydraulicsLib</componentlibrary>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
   </requirements>
   <info/>
@@ -17,7 +14,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
       <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-      <viewport x="2709.5" y="2316.5" zoom="1"/>
+      <viewport x="2709.5" y="2300.5" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -196,7 +193,29 @@
         <hopsangui>
           <pose x="3347.107127" y="2163.913119" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="A" idx="0" dataname="Value"/>
+              <start x="0.000000" y="3.000000" a="0.000000"/>
+              <movement x="0.000000" y="200000.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <movingport startx="35.000000" portname="Kc" starty="0.000000"/>
+              <relative idx="-1"/>
+            </movable>
+            <movable idx="1">
+              <data port="A" idx="0" dataname="Value"/>
+              <start x="0.000000" y="-3.000000" a="0.000000"/>
+              <movement x="0.000000" y="-200000.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
+            </movable>
+          </animation>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicTurbulentOrifice" displayname="Turbulent_Orifice">
               <ports/>
@@ -239,19 +258,19 @@
               <initscale x="1.000000" y="1.000000"/>
               <resize x="0.000000" y="0.000000" multiplier="" idx1="0" divisor="" idx2="0"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="90.726000" y="49.998000"/>
               <movingport startx="0.000000" portname="" starty="0.000000"/>
               <relative idx="-1"/>
             </movable>
-            <movable idx="0">
+            <movable idx="1">
               <data port="eps" idx="0" dataname="Value"/>
               <start x="45.653000" y="9.941000" a="90.000000"/>
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-90.000000"/>
               <initscale x="1.000000" y="1.000000"/>
               <resize x="0.000000" y="0.000000" multiplier="" idx1="0" divisor="" idx2="0"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="44.492500" y="44.473500"/>
               <movingport startx="0.000000" portname="" starty="0.000000"/>
               <relative idx="-1"/>
@@ -329,13 +348,11 @@
             <movable idx="0">
               <data port="P3" idx="0" dataname="AngularVelocity"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="57.295600"/>
+              <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="57.295646"/>
               <initscale x="1.000000" y="1.000000"/>
-              <resize x="0.000000" y="0.000000" multiplier="" idx1="0" divisor="" idx2="0"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="60.000000" y="50.500000"/>
-              <movingport startx="0.000000" portname="" starty="0.000000"/>
               <relative idx="-1"/>
             </movable>
             <movable idx="1">
@@ -343,11 +360,9 @@
               <start x="18.677000" y="6.626000" a="90.000000"/>
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-90.000000"/>
               <initscale x="1.000000" y="1.000000"/>
-              <resize x="0.000000" y="0.000000" multiplier="" idx1="0" divisor="" idx2="0"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="42.617500" y="42.598500"/>
-              <movingport startx="0.000000" portname="" starty="0.000000"/>
               <relative idx="-1"/>
             </movable>
           </animation>
@@ -464,7 +479,7 @@
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="57.295646"/>
               <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="60.000000" y="50.500000"/>
               <relative idx="-1"/>
             </movable>
@@ -474,7 +489,7 @@
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-90.000000"/>
               <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="42.617500" y="42.598500"/>
               <relative idx="-1"/>
             </movable>
@@ -551,7 +566,7 @@
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="57.295646"/>
               <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="60.000000" y="50.500000"/>
               <relative idx="-1"/>
             </movable>
@@ -590,7 +605,7 @@
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="57.295646"/>
               <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="60.000000" y="50.500000"/>
               <relative idx="-1"/>
             </movable>
@@ -600,7 +615,7 @@
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-90.000000"/>
               <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="42.617500" y="42.598500"/>
               <relative idx="-1"/>
             </movable>
@@ -890,7 +905,7 @@
               <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="57.295646"/>
               <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="60.000000" y="50.500000"/>
               <relative idx="-1"/>
             </movable>
@@ -915,6 +930,7 @@
           <parameter unit="-" value="0.1" type="double" name="alpha#Value"/>
           <parameter unit="m^3" value="0.001" type="double" name="V"/>
           <parameter unit="Pa" value="1e+09" type="double" name="Beta_e"/>
+          <parameter unit="Pa" value="2e+07" type="double" name="P_high"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -929,7 +945,15 @@
               <start x="0.000000" y="0.000000" a="0.000000"/>
               <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="255.000000"/>
-              <color g="0.000000" idx="0" r="-0.000013" a="0.000000" b="0.000013"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="P_high" r="-255.000000" a="0.000000" b="255.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
+            </movable>
+            <movable idx="1">
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
               <relative idx="-1"/>
             </movable>
@@ -1332,8 +1356,8 @@
       <connect endport="P2" endcomponent="Q_Type_Pump_With_Pressure_Control" startport="P1" startcomponent="Hydraulic_Volume">
         <hopsangui>
           <coordinates>
-            <coordinate x="3254.01822409771011734847" y="2163.91311947286067152163"/>
-            <coordinate x="3215.91623540000000502914" y="2163.91311947286067152163"/>
+            <coordinate x="3254.01822399999991830555" y="2163.91311899999982415466"/>
+            <coordinate x="3215.91623540000000502914" y="2163.91311899999982415466"/>
             <coordinate x="3215.91623540000000502914" y="2181.80955099999982849113"/>
           </coordinates>
           <geometries>
@@ -1346,8 +1370,8 @@
       <connect endport="P2" endcomponent="Hydraulic_Volume" startport="P2" startcomponent="Turbulent_Orifice">
         <hopsangui>
           <coordinates>
-            <coordinate x="3317.10712711176074662944" y="2163.91311947286067152163"/>
-            <coordinate x="3304.01822409771011734847" y="2163.91311947286067152163"/>
+            <coordinate x="3317.10712700000021868618" y="2163.91311899999982415466"/>
+            <coordinate x="3304.01822399999991830555" y="2163.91311899999982415466"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -1358,9 +1382,9 @@
       <connect endport="P1" endcomponent="Turbulent_Orifice" startport="P1" startcomponent="C_type_Tank">
         <hopsangui>
           <coordinates>
-            <coordinate x="3400.26425314904645347269" y="2178.67940234732077442459"/>
-            <coordinate x="3400.26425314904645347269" y="2163.91311947286067152163"/>
-            <coordinate x="3377.10712711176074662944" y="2163.91311947286067152163"/>
+            <coordinate x="3400.26425299999982598820" y="2178.67940200000020922744"/>
+            <coordinate x="3400.26425299999982598820" y="2163.91311899999982415466"/>
+            <coordinate x="3377.10712700000021868618" y="2163.91311899999982415466"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
