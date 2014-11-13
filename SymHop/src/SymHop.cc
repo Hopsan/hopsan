@@ -227,7 +227,8 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
                 str[i] = ',';
                 int j=i-1;
                 int parBal = 0;
-                while(j>=0 && (str[j].isLetterOrNumber() || str[j] == '.' || str[j] == ')' || (str[j] == '(' && parBal != 0) || parBal > 0))
+                while(j>=0 && (str[j].isLetterOrNumber() || str[j] == '.' || str[j] == ')' || (str[j] == '(' && parBal != 0) || parBal > 0
+                               || (j>=1 && str[j]=='-' && str[j-1] == 'e') || (j>=1 && str[j]=='+' && str[j-1] == 'e')))
                 {
                     if(str[j] == ')') parBal++;
                     if(str[j] == '(') parBal--;
