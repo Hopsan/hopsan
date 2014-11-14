@@ -54,7 +54,7 @@ q_{leak} = C_{leak}\Delta p
 \end{cases}
 \end{equation*}
 
-Here $q$ is the generated flow and $q_{leak}$ the leakage flow. $\Delta p$ is the pressure difference over the pump. In Hopsan we will have one flow and pressure at each port. Thus, we need to introduce the variables $p_{1}$ and $q_{1}$ for the inlet port, and $p_{2}$ and $q_{2}$ for the outlet. Flow is always defined as positive outwards from Q-type components. Therefore, the inlet flow will be the same as the outlet flow but negative. The equations now become:
+\noindent Here $q$ is the generated flow and $q_{leak}$ the leakage flow. $\Delta p$ is the pressure difference over the pump. In Hopsan we will have one flow and pressure at each port. Thus, we need to introduce the variables $p_{1}$ and $q_{1}$ for the inlet port, and $p_{2}$ and $q_{2}$ for the outlet. Flow is always defined as positive outwards from Q-type components. Therefore, the inlet flow will be the same as the outlet flow but negative. The equations now become:
 
 \begin{equation*}
 \begin{cases}
@@ -63,7 +63,7 @@ q_{1} = -q_{2}
 \end{cases}
 \end{equation*}
 
-However, Hopsan uses the transmission line element method. For this reason we will not get the pressure variables as explicit input variables. Instead, we get a \textit{wave variable} and an \textit{impedance}. The TLM equations are then used to calculate the pressures from the flow variables, according to the two new equations below:
+\noindent However, Hopsan uses the transmission line element method. For this reason we will not get the pressure variables as explicit input variables. Instead, we get a \textit{wave variable} and an \textit{impedance}. The TLM equations are then used to calculate the pressures from the flow variables, according to the two new equations below:
 
 \begin{equation*}
 \begin{cases}
@@ -74,7 +74,7 @@ p_{2} = c_{2} + q_{2}Z_{c,2}
 \end{cases}
 \end{equation*}
 
-It is now possible to rearrange the equations so that the can be solved analytically. First we replace the pressure variables in the first equation with the TLM equations:
+\noindent It is now possible to rearrange the equations so that the can be solved analytically. First we replace the pressure variables in the first equation with the TLM equations:
 
 \begin{equation*}
 \begin{cases}
@@ -85,7 +85,7 @@ p_{2} = c_{2} + q_{2}Z_{c,2}
 \end{cases}
 \end{equation*}
 
-Finally, we rearrange the first equation to break out the flow variable:
+\noindent Finally, we rearrange the first equation to break out the flow variable:
 
 \begin{equation*}
 \begin{cases}
@@ -96,9 +96,10 @@ p_{2} = c_{2} + q_{2}Z_{c,2}
 \end{cases}
 \end{equation*}
 
-We now have a linear equation system that can be solved step-by-step. 
+\noindent We now have a linear equation system that can be solved step-by-step. 
 
 \subsection*{C++ Code}
+First, we create the skeleton for the new component, as described in the previous tutorial. We need two hydraulic ports and four input variables ($\omega$, $D_{p}$, $C_{leak}$ and $\varepsilon$). The resulting code for the class members and the creator functions is shown below:
 
 \noindent 
 \begin{minipage}{\linewidth}
@@ -112,7 +113,7 @@ class HydraulicFixedDisplacementPump : public ComponentQ
 private:
     double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1; 
     double *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
-    double *mpW, *mpDp, *mpClp, *mpEps;
+    double *mpW, *mpDp, *mpCleak, *mpEps;
     Port *mpP1, *mpP2;
 
 public:
@@ -123,7 +124,8 @@ public:
 \end{lstlisting}
 \end{minipage}
 
-\noindent 
+\noindent The only thing needed in the \texttt{configuration()} function is to create ports and input variables:
+
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 void configure()
@@ -134,12 +136,13 @@ void configure()
 	addInputVariable("eps", "Displacement setting", "", 1.0, &mpEps);
     addInputVariable("w_p", "Angular Velocity", "rad/s", 250.0, &mpW);
     addInputVariable("D_p", "Displacement", "m^3/rev", 0.00005, &mpDp);
-    addInputVariable("C_lp", "Leakage Coeff.", "(m^3/s)/Pa", 0.0, &mpClp);
+    addInputVariable("C_leak", "Leakage Coeff.", "(m^3/s)/Pa", 0.0, &mpCleak);
 }
 \end{lstlisting}
 \end{minipage}
 
-\noindent 
+\noindent The \texttt{initialize()} function will only need the \texttt{getSafeDataNodePtr()} function calls:
+
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 void initialize()
@@ -157,19 +160,41 @@ void initialize()
 \end{lstlisting}
 \end{minipage}
 
-\noindent 
+\noindent Now it is time for the interesting part, to write the actual equations in the \texttt{simulateOneTimestep()} function. The final code is presented below. Some of the steps below will already be done if you used HoLC to generate the code.
+
+\begin{tutenumerate}
+\tutitem{Create local variables}
+We begin with creating local variables for the port variables (line 3-4 below).
+
+\tutitem{Read input variables} 
+Assign all input variables them with their corresponding pointers (line 6-16).
+
+\tutitem{Write the pump equations}
+The equations must be converted to C++ syntax (line 18-22).
+
+\tutitem{Check for cavitation}
+In order to make the model physically correct, we must make sure that negative pressures are not allowed. For this we create a boolean variable for cavitation and assign it with false (line 25). Then we check if pressure $p_{1}$ or $p_{2}$ is smaller than zero. If they are, we set the cavitation boolean to true and assign $c_{1}$ and $Z_{c,1}$ with zero (line 26-37).
+
+\tutitem{Handle the cavitation}
+If the cavitation boolean is true, at least one of the pressures was negative. In this case we need to recalculate the flow and the pressure variables (line 39-46). 
+
+\tutitem{Write output variables}
+Finally, the output variables must be written to the nodes (line 48-52).
+
+\end{tutenumerate}
+
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 void simulateOneTimestep()
 {
     //Declare local variables
-    double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+    double p1, q1, c1, Zc1, p2, q2, c2, Zc2, w, dp, Cleak, eps;
 
     //Read input variables
-    double w = (*mpW);
-    double dp = (*mpDp);
-    double Clp = (*mpClp);
-    double eps = (*mpEps);
+    w = (*mpW);
+    dp = (*mpDp);
+    Cleak = (*mpCleak);
+    eps = (*mpEps);
 
     //Get variable values from nodes
     c1 = (*mpND_c1);
@@ -178,10 +203,10 @@ void simulateOneTimestep()
     Zc2 = (*mpND_Zc2);
 
     //Fixed Displacement Pump equations
-    q2 = ( dp*eps*w/(2.0*pi) + Clp*(c1-c2) ) / ( (Zc1+Zc2)*Clp+1 );
+    q2 = ( dp*eps*w/(2.0*pi) + Cleak*(c1-c2) ) / ( (Zc1+Zc2)*Cleak+1 );
     q1 = -q2;
-    p2 = c2 + Zc2*q2;
     p1 = c1 + Zc1*q1;
+    p2 = c2 + Zc2*q2;
 
     //Check for cavitation
     bool cav = false;
@@ -197,23 +222,14 @@ void simulateOneTimestep()
         Zc2 = 0.0;
         cav = true;
     }
+    
+    //Handle cavitation
     if (cav)
     {
-        q2 = ( dp*eps*w/(2.0*pi) + Clp*(c1-c2) ) / ( (Zc1+Zc2)*Clp+1 );
-
+        q2 = ( dp*eps*w/(2.0*pi) + Cleak*(c1-c2) ) / ( (Zc1+Zc2)*Cleak+1 );
+		q1 = -q2;
         p1 = c1 + Zc1 * q1;
         p2 = c2 + Zc2 * q2;
-        if (p1 <= 0.0)
-        {
-            p1 = 0.0;
-            q2 = std::min(q2, 0.0);
-        }
-        if (p2 <= 0.0)
-        {
-            p2 = 0.0;
-            q2 = std::max(q2, 0.0);
-        }
-        q1 = -q2;
     }
 
     //Write new values to nodes
@@ -224,6 +240,8 @@ void simulateOneTimestep()
 }
 \end{lstlisting}
 \end{minipage}
+
+\vfill
 
 \section*{Translational Mass}
 This part of the tutorial will explain how to write a translational mass component with second order dynamics. It will contain a mass and a damping coefficient, as shown in the figure below. We leave out dry friction and spring coefficient for simplicity.
@@ -241,10 +259,10 @@ This part of the tutorial will explain how to write a translational mass compone
 The fundamental equation in the component will be Newton's second law of motion:
 
 \begin{equation*}
-M\ddot{x} + B\dot{x} + k x = \sum{F}
+M\ddot{x} + B\dot{x} = \sum{F}
 \end{equation*}
 
-The Hopsan component will have two ports, which is defined in opposite direction. It is also necessary to provide equivalent mass variables, which are required by some other components in Hopsan. 
+\noindent The Hopsan component will have two ports, which will be defined in opposite directions. It is also necessary to provide equivalent mass variables, which are required by some other components in Hopsan:
 
 \begin{equation*}
 \begin{cases}
@@ -256,13 +274,13 @@ m_{e,2} = M
 \end{cases}
 \end{equation*}
 
-Finally, we must add the TLM equations in order to calculate the force from the wave variables and impedances:
+\noindent Finally, we must add the TLM equations in order to calculate the force from the wave variables and impedances:
 
 \begin{equation*}
 \begin{cases}
 M\ddot{x_{2}} + B\dot{x_{2}} = F_{1} - F_{2}\\
 x_{1} = -x_{2} \\
-\ddot{x}_{1} = -\ddot{x}_{2} \\
+\dot{x}_{1} = -\dot{x}_{2} \\
 m_{e,1} = M \\
 m_{e,2} = M \\
 F_{1} = c_{1} + Z_{c,1}\dot{x}_{1} \\
@@ -270,11 +288,11 @@ F_{2} = c_{2} + Z_{c,2}\dot{x}_{2}
 \end{cases}
 \end{equation*}
 
-The equations of the mass is more complicated than the ones for the pump, since it contains time derivatives ($ddot{x}$ and $dot{x}$). Hopsan uses bilinear transforms to solve such equations. In order to use these, we must convert the first equation into a Laplace transform. We use a first order transform to calculate the velocity. Then the position can be obtained by integrating the velocity. By adding the impedance directly to the damping, we can use the wave variables as the external force. In this way we can calculate $x$ and $v$ without first calculating the forces. 
+\noindent The equations of the mass is more complicated than the ones for the pump, since it contains time derivatives ($ddot{x}$ and $dot{x}$). Hopsan uses bilinear transforms to solve such equations. In order to use these, we must convert the first equation into a Laplace transform. We use a first order transform to calculate the velocity. Then the position can be obtained by integrating the velocity. By adding the impedance directly to the damping, we can use the wave variables as the external force. In this way we can calculate $x$ and $v$ without first calculating the forces. 
 
 \begin{equation*}
 \begin{cases}
-v_{2} = \dfrac{1}{M s + (B+Z_{c,1}+Z_{c,2})}(c_{1}-c_{2}) \\
+v_{2} = \dfrac{1}{M s + B}(F_{1}-F_{2}) = \dfrac{1}{M s + (B+Z_{c,1}+Z_{c,2})}(c_{1}-c_{2}) \\
 \dot{x}_{2} = v_{2} \\
 v_{1} = -v_{2} \\
 x_{1} = -x_{2} \\
@@ -315,7 +333,7 @@ public:
 \end{lstlisting}
 \end{minipage}
  	
-There is nothing special with the \texttt{configure()} function. All we need to do here is to create the ports, the constant and the input variables.
+\noindent There is nothing special with the \texttt{configure()} function. All we need to do here is to create the ports, the constant and the input variables.
 
 \noindent 
 \begin{minipage}{\linewidth}
@@ -334,7 +352,7 @@ void configure()
 \end{lstlisting}
 \end{minipage}
  
-The \texttt{initialize()} function is a little more advanced than for the pump. We need to initialize the transfer function and the integrator with start values for $f$, $v$ and $x$. We also need to define the coefficients for the transfer function. This is done with two arrays called \texttt{mDen} and \texttt{mNum}, according to this:\\
+\noindent The \texttt{initialize()} function is a little more advanced than for the pump. We need to initialize the transfer function and the integrator with start values for $f$, $v$ and $x$. We also need to define the coefficients for the transfer function. This is done with two arrays called \texttt{mDen} and \texttt{mNum}, according to this:\\
 
 $\dfrac{mNum[1] s + mNum[0]}{mDen[1] s + mNum[0]}$\\
  
@@ -360,13 +378,14 @@ void initialize()
     mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
     mpP2_me = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
 
-    //Initialization
+    //Read node variables
     double f1, f2, x2, v2;
     f1 = (*mpP1_f);
     f2 = (*mpP2_f);
     x2 = (*mpP2_x);
     v2 = (*mpP2_v);
 
+    //Initialization code
     mNum[0] = 1.0;
     mNum[1] = 0.0;
     mDen[0] = (*mpB);
@@ -375,6 +394,7 @@ void initialize()
     mTF.initialize(mTimestep, mNum, mDen, f1-f2, v2);
     mIntegrator.initialize(mTimestep, x2, v2); 
     
+    //Write values to nodes
     (*mpP1_me) = mMass;
     (*mpP2_me) = mMass;
 }
@@ -382,7 +402,7 @@ void initialize()
 \end{minipage}
  	
  	
-Last but not least, we need to write the \texttt{simulateOneTimeStep()} function. This is explained step-by-step: 
+\noindent Last but not least, we need to write the \texttt{simulateOneTimeStep()} function. This is explained step-by-step: 
 \begin{tutenumerate}
 \tutitem{Define local variables}
 Define local variables for input variables and node values (line 3-4)
