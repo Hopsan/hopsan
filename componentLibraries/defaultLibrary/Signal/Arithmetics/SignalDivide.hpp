@@ -55,11 +55,23 @@ namespace hopsan {
 
         void initialize()
         {
-            simulateOneTimestep();
+            // We do a weaker check for division be zero at first time step, to avoid initial value troubles.
+            // Simulation is allowed to continue and output value is set to zero.
+            // User gets a warning message.
+            if(*mpND_in2 == 0)
+            {
+                addWarningMessage("Division by zero at first time step. Output value set to zero.");
+                (*mpND_out) = 0;
+            }
+            else
+            {
+                (*mpND_out) = (*mpND_in1) / (*mpND_in2);
+            }
         }
 
         void simulateOneTimestep()
         {
+            // Stop simulation if division by zero.
             if(*mpND_in2 == 0)
             {
                 addErrorMessage("Division by zero.");
