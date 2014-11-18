@@ -62,9 +62,15 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
+
+    // Create the mainwindow
+    MainWindow mainwindow;
+    gpMainWindow = &mainwindow;
+    gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
+
     // Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
-    gpSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint);
+    gpSplash = new QSplashScreen(&mainwindow, pixmap/*, Qt::WindowStaysOnTopHint*/);
     //! @todo We need to delete it somehow, but still be able to check if it has been deleted or not (perhaps a QPointer will work)
     //gpSplash->setAttribute(Qt::WA_DeleteOnClose);
     gpSplash->showMessage("Starting Hopsan...");
@@ -77,10 +83,7 @@ int main(int argc, char *argv[])
     gpCopyStack = new CopyStack();
     gpMessageHandler = new GUIMessageHandler();
 
-    // Create the mainwindow
-    MainWindow mainwindow;
-    gpMainWindow = &mainwindow;
-    gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
+    //Create contents in MainWindow
     mainwindow.createContents();
 
     // Show main window and initialize workspace
