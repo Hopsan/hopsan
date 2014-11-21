@@ -636,6 +636,22 @@ void HcomHandler::createCommands()
     didfscCmd.group = "Variable Commands";
     mCmdList << didfscCmd;
 
+    HcomCommand chdfosCmd;
+    chdfosCmd.cmd = "chdfos";
+    chdfosCmd.description.append("Change default plot offset of specified variable");
+    chdfosCmd.help.append(" Usage: chdfsc [variable] [offset]");
+    chdfosCmd.fnc = &HcomHandler::executeChangeDefaultPlotOffsetCommand;
+    chdfosCmd.group = "Variable Commands";
+    mCmdList << chdfosCmd;
+
+    HcomCommand didfosCmd;
+    didfosCmd.cmd = "didfos";
+    didfosCmd.description.append("Display default plot offset of specified variable");
+    didfosCmd.help.append(" Usage: didfsc [variable]");
+    didfosCmd.fnc = &HcomHandler::executeDisplayDefaultPlotOffsetCommand;
+    didfosCmd.group = "Variable Commands";
+    mCmdList << didfosCmd;
+
     HcomCommand chscCmd;
     chscCmd.cmd = "chsc";
     chscCmd.description.append("Change plot scale of specified variable");
@@ -651,6 +667,22 @@ void HcomHandler::createCommands()
     discCmd.fnc = &HcomHandler::executeDisplayPlotScaleCommand;
     discCmd.group = "Variable Commands";
     mCmdList << discCmd;
+
+    HcomCommand chosCmd;
+    chosCmd.cmd = "chos";
+    chosCmd.description.append("Change plot offset of specified variable");
+    chosCmd.help.append(" Usage: chsc [variable] [scale]");
+    chosCmd.fnc = &HcomHandler::executeChangePlotOffsetCommand;
+    chosCmd.group = "Variable Commands";
+    mCmdList << chosCmd;
+
+    HcomCommand diosCmd;
+    diosCmd.cmd = "dios";
+    diosCmd.description.append("Display plot offset of specified variable");
+    diosCmd.help.append(" Usage: disc [variable]");
+    diosCmd.fnc = &HcomHandler::executeDisplayPlotOffsetCommand;
+    diosCmd.group = "Variable Commands";
+    mCmdList << diosCmd;
 
     HcomCommand dlogCmd;
     dlogCmd.cmd = "dlog";
@@ -2573,6 +2605,147 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
 }
 
 
+//! @brief Execute function for "chdfos" command
+void HcomHandler::executeChangeDefaultPlotOffsetCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 2)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    const QString &name = args[0];
+    evaluateExpression(args[1]);
+    if(mAnsType != Scalar)
+    {
+        HCOMERR("Second argument must be a scalar variable.");
+        return;
+    }
+    double offset = mAnsScalar;
+
+    QStringList vars;
+    getMatchingLogVariableNames(name,vars);
+    if(vars.isEmpty())
+    {
+        getMatchingLogVariableNamesWithoutLogDataHandler(name,vars);
+    }
+    int nChanged=0;
+    foreach(const QString var, vars)
+    {
+        QStringList fields = var.split(".");
+        // Handle alias
+        if (fields.size() == 1)
+        {
+            QString fullName = getfullNameFromAlias(fields.first());
+            toShortDataNames(fullName);
+            fields = fullName.split(".");
+        }
+
+        if (fields.size() == 3)
+        {
+            ModelObject *pComponent = mpModel->getViewContainerObject()->getModelObject(fields.first());
+            if(!pComponent)
+            {
+                HCOMERR(QString("Component not found: %1").arg(fields.first()));
+            }
+
+            QString description = "";
+            QString longVarName = fields[1]+"."+fields[2];
+            toLongDataNames(longVarName);
+            if(pComponent->getPort(fields[1]) && NodeInfo(pComponent->getPort(fields[1])->getNodeType()).shortNames.contains(fields[2]))
+            {
+                pComponent->registerCustomPlotOffset(longVarName, offset);
+                ++nChanged;
+            }
+        }
+        else
+        {
+            HCOMERR(QString("Unknown variable: %1").arg(var));
+        }
+    }
+
+    if(nChanged > 0)
+    {
+        HCOMINFO(QString("Changed default scale for %1 variables.").arg(nChanged));
+    }
+    else
+    {
+        HCOMERR(QString("No matching variables found."));
+    }
+}
+
+
+//! @brief Execute function for "didfos" command
+void HcomHandler::executeDisplayDefaultPlotOffsetCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    QStringList vars;
+    getMatchingLogVariableNames(args[0],vars);
+    if(vars.isEmpty())
+    {
+        getMatchingLogVariableNamesWithoutLogDataHandler(cmd, vars);
+    }
+    if(vars.isEmpty())
+    {
+        HCOMERR(QString("Variable not found: %1").arg(cmd));
+        mAnsType = Undefined;
+        return;
+    }
+    foreach(const QString var, vars)
+    {
+        QString dispName;
+        QStringList fields = var.split(".");
+        // Handle alias
+        if (fields.size() == 1)
+        {
+            dispName = fields.first();
+            QString fullName = getfullNameFromAlias(fields.first());
+            fields = fullName.split("#");
+        }
+
+        // Handle comp.port.var variable
+        if (fields.size() == 3)
+        {
+            // Only set dispName if it was not an alias (set above)
+            if (dispName.isEmpty())
+            {
+                dispName = var;
+            }
+
+            ModelObject *pComponent = gpModelHandler->getCurrentViewContainerObject()->getModelObject(fields.first());
+            if(!pComponent)
+            {
+                HCOMERR(QString("Component not found: %1").arg(fields.first()));
+                continue;
+            }
+
+            double offset;
+            QString portAndVarName = fields[1]+"."+fields[2];
+            toLongDataNames(portAndVarName);
+
+            offset = pComponent->getCustomPlotOffset(portAndVarName);
+
+            HCOMPRINT(QString("%1: %2").arg(dispName).arg(offset));
+
+            mAnsType = Scalar;
+            mAnsScalar = offset;
+        }
+        else
+        {
+            HCOMERR(QString("Unknown variable: %1").arg(var));
+            mAnsType = Undefined;
+        }
+    }
+}
+
+
 //! @brief Execute function for "info" command
 void HcomHandler::executeVariableInfoCommand(const QString cmd)
 {
@@ -2623,7 +2796,13 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     }
 
     const QString &varName = args[0];
-    double scale = args[1].toDouble(); //!< @todo check if ok
+    evaluateExpression(args[1]);
+    if(mAnsType != Scalar)
+    {
+        HCOMERR("Second argument must be a scalar variable.");
+        return;
+    }
+    double scale = mAnsScalar;
 
     QStringList vars;
     getMatchingLogVariableNames(varName,vars);
@@ -2701,6 +2880,73 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
         }
     }
 
+    return;
+}
+
+
+//! @brief Execute function for "chos" command
+void HcomHandler::executeChangePlotOffsetCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 2)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    const QString &varName = args[0];
+    evaluateExpression(args[1]);
+    if(mAnsType != Scalar)
+    {
+        HCOMERR("Second argument must be a scalar variable.");
+        return;
+    }
+    double offset = mAnsScalar;
+
+    QStringList vars;
+    getMatchingLogVariableNames(varName,vars);
+    if(vars.isEmpty())
+    {
+        HCOMERR("Unknown variable: "+varName);
+        return;
+    }
+    Q_FOREACH(const QString var, vars)
+    {
+        SharedVectorVariableT pVar = getLogVariable(var).mpVariable;
+        pVar.data()->setPlotOffset(offset);
+    }
+}
+
+
+//! @brief Execute function for "dios" command
+void HcomHandler::executeDisplayPlotOffsetCommand(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    QStringList vars;
+    getMatchingLogVariableNames(cmd,vars);
+    if(vars.isEmpty())
+    {
+        HCOMERR("Unknown variable: "+cmd);
+        return;
+    }
+    Q_FOREACH(const QString var, vars)
+    {
+        SharedVectorVariableT pVar = getLogVariable(var).mpVariable;
+        if(!pVar.isNull())
+        {
+            double offset = pVar.data()->getPlotOffset();
+
+            HCOMPRINT(QString("%1: %2").arg(var).arg(offset));
+
+            mAnsScalar = offset;
+            mAnsType = Scalar;
+        }
+    }
     return;
 }
 

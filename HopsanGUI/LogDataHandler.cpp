@@ -995,6 +995,8 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                         {
                             pNewData->setCustomUnitScale(us);
                         }
+
+                        pNewData->setPlotOffset(pModelObject->getCustomPlotOffset(pVarDesc->mPortName+"#"+pVarDesc->mDataName));
                     }
                 }
             }

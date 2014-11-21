@@ -99,8 +99,11 @@ public:
     // Custom variable plot unit methods
     void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);
     void unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName);
+    void registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset);
+    void unregisterCustomPlotOffset(const QString &rVariablePortDataName);
     const QMap<QString, UnitScale> &getCustomPlotUnitsOrScales() const;
     void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
+    double getCustomPlotOffset(const QString &rVariablePortDataName);
 
     // Load and save methods
     virtual void loadFromDomElement(QDomElement domElement);
@@ -186,6 +189,7 @@ protected:
     QStringList mActiveDynamicParameterPortNames;
     QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
     QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
+    QMap<QString, double> mRegisteredCustomPlotOffsets;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

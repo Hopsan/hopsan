@@ -790,6 +790,19 @@ void ModelObject::unregisterCustomPlotUnitOrScale(const QString &rVariablePortDa
     mRegisteredCustomPlotUnitsOrScales.remove(rVariablePortDataName);
 }
 
+
+//! @brief Regieters a default offset value for specified plot variable
+void ModelObject::registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset)
+{
+    mRegisteredCustomPlotOffsets.insert(rVariablePortDataName, offset);
+}
+
+//! @brief Unregieters a default offset value for specified plot variable
+void ModelObject::unregisterCustomPlotOffset(const QString &rVariablePortDataName)
+{
+    mRegisteredCustomPlotOffsets.remove(rVariablePortDataName);
+}
+
 const QMap<QString, UnitScale> &ModelObject::getCustomPlotUnitsOrScales() const
 {
     return mRegisteredCustomPlotUnitsOrScales;
@@ -799,6 +812,20 @@ void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName,
 {
     // Empty stringlist to indicate, no data
     rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
+}
+
+//! @brief Returns the default plot offset value for specified variable
+double ModelObject::getCustomPlotOffset(const QString &rVariablePortDataName)
+{
+    if(mRegisteredCustomPlotOffsets.contains(rVariablePortDataName))
+    {
+        return mRegisteredCustomPlotOffsets.find(rVariablePortDataName).value();
+    }
+    else
+    {
+        return 0.0;
+    }
+
 }
 
 void ModelObject::loadFromDomElement(QDomElement domElement)

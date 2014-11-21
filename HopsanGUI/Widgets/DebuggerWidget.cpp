@@ -59,6 +59,7 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     mpComponentsList = new QListWidget(mpVariablesTab);
     mpPortsList = new QListWidget(mpVariablesTab);
     mpVariablesList = new QListWidget(mpVariablesTab);
+    mpVariablesList->setSelectionMode(QListWidget::MultiSelection);
     mpRemoveButton = new QPushButton(mpVariablesTab);
     mpAddButton = new QPushButton(mpVariablesTab);
     mpChoosenVariablesList = new QListWidget(mpVariablesTab);
@@ -210,24 +211,29 @@ void DebuggerWidget::addVariable()
 {
     if(mpPortsList->count() == 0 || mpVariablesList->count() == 0) return;
 
-    if(mpComponentsList->currentItem() == 0 || mpPortsList->currentItem() == 0 || mpVariablesList->currentItem() == 0) return;
+    if(mpComponentsList->currentItem() == 0 || mpPortsList->currentItem() == 0 || mpVariablesList->selectedItems().isEmpty()) return;
     QString component = mpComponentsList->currentItem()->text();
     QString port = mpPortsList->currentItem()->text();
-    QString data = mpVariablesList->currentItem()->text();
-    if(component.isEmpty() || port.isEmpty() || data.isEmpty()) return;
+    QList<QListWidgetItem*> items = mpVariablesList->selectedItems();
 
-    QString fullName = component+"#"+port+"#"+data;
+    if(component.isEmpty() || port.isEmpty() || items.isEmpty()) return;
 
-    if(mVariables.contains(fullName)) return;
+    for(int i=0; i<items.size(); ++i)
+    {
+        QString data = items[i]->text();
+        QString fullName = component+"#"+port+"#"+data;
 
-    mVariables.append(fullName);
-    mpChoosenVariablesList->addItem(fullName);
+        if(mVariables.contains(fullName)) return;
+
+        mVariables.append(fullName);
+        mpChoosenVariablesList->addItem(fullName);
 
 
-    mpTraceTable->insertColumn(0);
+        mpTraceTable->insertColumn(0);
 
-    QTableWidgetItem *pItem = new QTableWidgetItem(fullName);
-    mpTraceTable->setHorizontalHeaderItem(0, pItem);
+        QTableWidgetItem *pItem = new QTableWidgetItem(fullName);
+        mpTraceTable->setHorizontalHeaderItem(0, pItem);
+    }
 }
 
 

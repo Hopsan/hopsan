@@ -130,12 +130,16 @@ private:
     void executeChangeLogarithmicAxisYR(const QString cmd);
     void executeChangePlotScaleCommand(const QString cmd);
     void executeDisplayPlotScaleCommand(const QString cmd);
+    void executeChangePlotOffsetCommand(const QString cmd);
+    void executeDisplayPlotOffsetCommand(const QString cmd);
     void executeSavePlotWindowCommand(const QString cmd);
 
     void executeDisplayVariablesCommand(const QString cmd);
     void executeRemoveVariableCommand(const QString cmd);
     void executeChangeDefaultPlotScaleCommand(const QString cmd);
     void executeDisplayDefaultPlotScaleCommand(const QString cmd);
+    void executeChangeDefaultPlotOffsetCommand(const QString cmd);
+    void executeDisplayDefaultPlotOffsetCommand(const QString cmd);
     void executeVariableInfoCommand(const QString cmd);
 
     void executeDisplayParameterCommand(const QString cmd);

@@ -663,7 +663,9 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
-        QStringList variableCmds = QStringList() << "disp" << "chpv" << "chpvr" << "chpvl" << "adpv" << "adpvl" << "adpvr" << "peek" << "poke" << "alias" << "aver" << "min" << "max" << "rmvar" << "chdfsc" << "didfsc";
+        QStringList variableCmds = QStringList() << "disp" << "chpv" << "chpvr" << "chpvl" << "adpv" << "adpvl" << "adpvr" << "peek"
+                                                 << "poke" << "alias" << "aver" << "min" << "max" << "rmvar" << "chdfsc" << "didfsc"
+                                                 << "chdfos" << "didfos" << "chos" << "dios";
         for(int c=0; c<variableCmds.size(); ++c)
         {
             if(args[0] == variableCmds[c])
