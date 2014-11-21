@@ -252,6 +252,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("minof", "Returns the element-wise minimum values of x and y vectors","Usage: minof(x,y)");
     registerInternalFunction("abs", "The absolute value of each vector element", "Usage: abs(vector)");
     registerInternalFunction("x", "Returns the X-vector of the specified variable.","Usage: x(vector)");
+    registerInternalFunction("td", "Converts variable to time domain." "Usage: y = td(x)");
+    registerInternalFunction("fd", "Converts variable to frequency domain." "Usage: y = fd(x)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
@@ -5316,6 +5318,66 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         mAnsType = Undefined;
         return;
+    }
+    else if(desiredType != Scalar && expr.startsWith("td(") && expr.endsWith(")"))      //Function for converting variable to time-domain variable
+    {
+        QString varName = expr.mid(3, expr.size()-4);
+
+        evaluateExpression(varName, DataVector);
+        SharedVectorVariableT pVar = mAnsVector;
+        if (mAnsType == DataVector)
+        {
+            mAnsType = DataVector;
+            SharedVectorVariableT pNewVar = pLogDataHandler->createOrphanVariable("TD", TimeDomainType);
+            pNewVar->assignFrom(pLogDataHandler->getTimeVectorVariable(-1), pVar->getDataVectorCopy());
+            mAnsVector = pNewVar;
+            return;
+        }
+        else
+        {
+            HCOMERR(QString("Variable: %1 was not found!").arg(varName));
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else if(desiredType != Scalar && expr.startsWith("fd(") && expr.endsWith(")"))  //Function for converting variable to frequency domain variable
+    {
+        QString varName = expr.mid(3, expr.size()-4);
+
+        evaluateExpression(varName, DataVector);
+        SharedVectorVariableT pVar = mAnsVector;
+        if (mAnsType == DataVector)
+        {
+            mAnsType = DataVector;
+            SharedVectorVariableT pNewVar = pLogDataHandler->createOrphanVariable("TD", FrequencyDomainType);
+
+            QVector<double> freqVec;
+            QVector<double> timeVec = pLogDataHandler->getTimeVectorVariable(-1)->getDataVectorCopy();
+
+            #ifndef __APPLE__
+                    const int n = pow(2, int(log2(timeVec.size()))); // This is odd.... /magse
+            #else
+                    const int n = (int)round(ldexp(2.0, int(log2(timeVec.size()))));
+            #endif
+
+            freqVec.reserve(n/2);
+            const double maxt = timeVec.last();
+
+            for(int i=1; i<=n/2; ++i)
+            {
+                freqVec.append(double(i)/maxt);
+            }
+
+            pNewVar->assignFrom(freqVec, pVar->getDataVectorCopy());
+            mAnsVector = pNewVar;
+            return;
+        }
+        else
+        {
+            HCOMERR(QString("Variable: %1 was not found!").arg(varName));
+            mAnsType = Undefined;
+            return;
+        }
     }
     else if(desiredType != Scalar && expr.startsWith("maxof(") && expr.endsWith(")"))
     {
