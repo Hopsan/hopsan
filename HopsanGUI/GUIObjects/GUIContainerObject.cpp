@@ -548,6 +548,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
             QFileInfo fileInfo(file);
             pObj->setAppearanceDataBasePath(fileInfo.absolutePath());
             pObj->loadFromDomElement(systemElement);
+            return pObj;
         }
     }
     return addModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
