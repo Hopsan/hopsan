@@ -13,7 +13,7 @@
    height="50"
    id="svg2477"
    sodipodi:version="0.32"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
    sodipodi:docname="43lsvalve_user_movable.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -52,15 +52,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.5766415"
-     inkscape:cx="82.146404"
+     inkscape:cx="38.530067"
      inkscape:cy="57.314461"
      inkscape:document-units="px"
      inkscape:current-layer="g4285"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="1026"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-width="1600"
+     inkscape:window-height="1132"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-maximized="1">
@@ -113,7 +113,7 @@
          height="144.20006"
          class="st4"
          id="rect2655"
-         style="fill:none;stroke:#000000;stroke-width:1.20000052;stroke-linecap:butt;stroke-miterlimit:3.06451607;stroke-opacity:1;stroke-dasharray:none" />
+         style="fill:#ffffff;stroke:#000000;stroke-width:1.20000051999999990;stroke-linecap:butt;stroke-miterlimit:3.06451606999999980;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1" />
       <path
          style="fill:none;stroke:#000000;stroke-width:1.20000052;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.06451607;stroke-opacity:1;stroke-dasharray:4.80000192, 1.20000048;stroke-dashoffset:4.92000172"
          d="M 170.66648,5.5456417 155.35091,34.67476"
