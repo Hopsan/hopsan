@@ -25,8 +25,59 @@
 ******************************
     Version History
 ******************************
-0.6.9   ( ??????? )
+0.6.9   (2014-11-25)
 - Feature: New LookupTable1D component for PLO v1 and v2 format files
+- Feature: HCOM command for writing (or appending) text strings to files
+- Feature: HCOM command for converting variables to time or frequency domain
+- Feature: HCOM command for saving models
+- Feature: HCOM command for showing and changing offset for variables
+- Feature: HCOM command for extracting X-vector from a variable
+- Feature: Option to reset all animation data in model to default
+- Feature: It is now possible to edit parameter values in subsystems hierarchialy using HCOM
+- Feature: It is now possible to modify default parameter values for subtype components in CAF files
+- Feature: Measured simulation times can now be exported to CSV
+- Feature: Multi-marker tool in plot windows, which shows values for several curves at the same time
+- Feature: Option to open containing folder of libraries in library widget (by right-clicking)
+- Feature: Option to automatically set HCOM working directory to model directory
+- Feature: Setting for showing plot windows on top or main window or not
+- Feature: Option to plot entropy during optimization
+- Feature: Setting for not running the extra evaluations after an optimization
+- Feature: Sub-systems can now be saved to components by right-clicking on them
+
+- New component: Symmetric C-type piston
+
+- Fixed component: Start values now work properly for all linear mass components
+- Fixed component: Multiply component now works correctly even if neither of the ports are connected
+- Fixed component: Incorrect modelling of overlap in open centre valve
+- Fixed component: Increased default value of restrictor coefficient in check valve component
+
+- Enhancement: When stepping through HCOM history using arrow keys, history are now filtered by what is already written
+- Enhancement: HCOM rmvar command are now be able to exclude specified variables and/or aliases
+- Enhancement: HCOM print command will now print text even if echo is off
+- Enhancement: Animation color tags can now have divisors/multipliers
+- Enhancement: Each movement and resize animation tag can now have individual divisors/multipliers
+- Enhancement: Animation movables can now have multiple resize and movement tags using different data variables
+- Enhancement: Minimum animation speed was greatly reduced
+- Enhancement: Tab key now works correctly in component properties dialog
+- Enhancement: Save as function now use current model directory as default directory, if model is saved
+- Enhancement: Broken connectors are now always shown on top of other objects
+- Enhancement: Generation number of imported data is now shown in plot widget
+- Enhancement: Right-click copy is less sensitive, to avoid doing it by mistake
+- Enhancement: Power component now use absolute values, to avoid creating imaginary numbers
+- Enhancement: Sub-folders are now always sorted on top of components in library widget
+- Enhancement: Optimization dialog now shows name of model and script file
+- Enhancement: Model is no longer auto-backuped at every iteration during optimization
+- Enhancement: Final evaluations are no longer run if animation was aborted
+- Enhancement: Optimization parameters can now have custom names
+- Enhancement: Warning about aborting the optimization when closing optimization dialog
+
+- Fixed: HCOM  Disp command no longer crashes when used without arguments
+- Fixed: Animation data for adjustable components are now saved correctly
+- Fixed: Crash if closing program while running a real-time animation
+- Fixed: Problems compiling exported FMUs with certain versions of GCC
+- Fixed: Optimization should no longer steal focus from other applications
+- Fixed: Simulink export can now load model even if original model was not saved
+- Fixed: Corrected number of state variables in FMI export for model exchange
 
 0.6.8   (2014-07-11)
 - Feature: Made it possible to use expressions when specifying plot generations from HCOM
