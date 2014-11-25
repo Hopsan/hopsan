@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7435" hopsancoreversion="0.6.x_r7399">
-  <requirements>
-    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-  </requirements>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.9pre" hopsancoreversion="0.6.9pre">
+  <requirements/>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
     <email>robert.braun@liu.se</email>
@@ -37,7 +35,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
       <animation flowspeed="1000" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-      <viewport x="2409.82" y="2506.66" zoom="1.18743"/>
+      <viewport x="2555.52" y="2647.74" zoom="1.18743"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -295,7 +293,7 @@
           <pose x="2816.11903" y="2326.497516" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-          <viewport x="2409.82" y="2506.66" zoom="1.18743"/>
+          <viewport x="2555.52" y="2647.74" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1001,7 +999,7 @@
           <pose x="2579.657028" y="2345.728933" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-          <viewport x="2409.82" y="2506.66" zoom="1.18743"/>
+          <viewport x="2555.52" y="2647.74" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1460,7 +1458,7 @@
           <pose x="2349.217863" y="2297.386885" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-          <viewport x="2409.82" y="2506.66" zoom="1.18743"/>
+          <viewport x="2555.52" y="2647.74" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -2682,6 +2680,34 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component typename="SignalAnimationSlider" name="Motor_Speed_1">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2053" y="2522.741637" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="out" idx="0" dataname="Value"/>
+              <start x="6.500000" y="6.500000" a="0.000000"/>
+              <movement x="0.000000" y="37.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
+              <adjustable xgain="0.000000" port="out" ygain="0.027027" ymin="0.000000" xmin="0.000000" ymax="37.000000" xmax="0.000000" dataname="Value"/>
+            </movable>
+          </animation>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAnimationSlider" displayname="Motor_Speed_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <component typename="HydraulicFlowSensor" name="q_effective">
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
@@ -2712,34 +2738,6 @@
           </animation>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicFlowSensor" displayname="q_effective">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component typename="SignalAnimationSlider" name="Motor_Speed_1">
-        <parameters/>
-        <ports>
-          <port nodetype="NodeSignal" name="out"/>
-        </ports>
-        <hopsangui>
-          <pose x="2053" y="2522.741637" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
-            <movable idx="0">
-              <data port="out" idx="0" dataname="Value"/>
-              <start x="6.500000" y="6.500000" a="0.000000"/>
-              <movement x="0.000000" y="37.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
-              <initscale x="1.000000" y="1.000000"/>
-              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
-              <transformorigin x="0.000000" y="0.000000"/>
-              <relative idx="-1"/>
-              <adjustable xgain="0.000000" port="out" ygain="0.027027" ymin="0.000000" xmin="0.000000" ymax="37.000000" xmax="0.000000" dataname="Value"/>
-            </movable>
-          </animation>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalAnimationSlider" displayname="Motor_Speed_1">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -2959,7 +2957,7 @@
           <pose x="2576.656885" y="2257.814104" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-          <viewport x="2409.82" y="2506.66" zoom="1.18743"/>
+          <viewport x="2555.52" y="2647.74" zoom="1.18743"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -3609,8 +3607,8 @@
       <connect endport="out" endcomponent="Angular_Velocity_Transducer" startport="in" startcomponent="Gain_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2154.25406770777772180736" y="2492.19298407777205284219"/>
-            <coordinate x="2249.72680300000001807348" y="2492.19298407777205284219"/>
+            <coordinate x="2154.25406800000018847641" y="2492.19298399999979665154"/>
+            <coordinate x="2249.72680300000001807348" y="2492.19298399999979665154"/>
             <coordinate x="2249.72680300000001807348" y="2552.26373599999988073250"/>
           </coordinates>
           <geometries>
@@ -3623,9 +3621,9 @@
       <connect endport="in" endcomponent="eta_tot_1" startport="out" startcomponent="Gain_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2129.25406770777772180736" y="2492.19298407777205284219"/>
-            <coordinate x="2110.72736389630381381721" y="2492.19298407777205284219"/>
-            <coordinate x="2110.72736389630381381721" y="2437.43165186332134908298"/>
+            <coordinate x="2129.25406800000018847641" y="2492.19298399999979665154"/>
+            <coordinate x="2110.72736399999985223985" y="2492.19298399999979665154"/>
+            <coordinate x="2110.72736399999985223985" y="2437.43165200000021286542"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -4081,8 +4079,8 @@
       <connect endport="angle" endcomponent="CylinderBlock" startport="out" startcomponent="Gain">
         <hopsangui>
           <coordinates>
-            <coordinate x="2154.86691423909678633208" y="2522.74163677532942529069"/>
-            <coordinate x="2331.15212800000017523416" y="2522.74163677532942529069"/>
+            <coordinate x="2154.86691400000017893035" y="2522.74163700000008248026"/>
+            <coordinate x="2331.15212800000017523416" y="2522.74163700000008248026"/>
             <coordinate x="2331.15212800000017523416" y="2569.51923399999986941111"/>
           </coordinates>
           <geometries>

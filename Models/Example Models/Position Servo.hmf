@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7407" hopsancoreversion="0.6.x_r7371">
-  <requirements>
-    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-  </requirements>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.9pre" hopsancoreversion="0.6.9pre">
+  <requirements/>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
     <email>robert.braun@liu.se</email>
@@ -18,7 +16,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
       <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-      <viewport x="2524.5" y="2445.5" zoom="1"/>
+      <viewport x="2524.5" y="2448" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -124,10 +122,10 @@
             <movable idx="0">
               <data port="P1" idx="0" dataname="Position"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="77.500000" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <movement x="77.500000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
               <movingport startx="0.000000" portname="P1" starty="20.000000"/>
               <movingport startx="65.000000" portname="P2" starty="20.000000"/>
@@ -161,10 +159,10 @@
             <movable idx="0">
               <data port="out" idx="0" dataname="Value"/>
               <start x="0.000000" y="0.000000" a="-60.000000"/>
-              <movement x="0.000000" y="0.000000" idx="0" a="-120.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-120.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="18.000000" y="18.000000"/>
               <relative idx="-1"/>
             </movable>
@@ -184,6 +182,7 @@
           <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
+          <parameter unit="Pa" value="2e+007" type="double" name="P_high"/>
           <parameter unit="m^3" value="0.001" type="double" name="V#Value"/>
           <parameter unit="Pa" value="1e+009" type="double" name="Beta_e#Value"/>
           <parameter unit="-" value="0.3" type="double" name="alpha#Value"/>
@@ -198,10 +197,17 @@
             <movable idx="0">
               <data port="P1" idx="0" dataname="Pressure"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="255.000000"/>
-              <color g="0.000000" idx="0" r="-0.000013" a="0.000000" b="0.000013"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="P_high" r="-255.000000" a="0.000000" b="255.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
+            </movable>
+            <movable idx="1">
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
               <relative idx="-1"/>
             </movable>
@@ -356,11 +362,22 @@
           <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable idx="0">
               <data port="xv" idx="0" dataname="Value"/>
-              <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="-5000000.000000" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <start x="59.000000" y="32.512000" a="0.000000"/>
+              <movement x="-4600000.000000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <resize x="200000.000000" y="0.000000" multiplier="" idx1="0" divisor="" idx2="-1"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
+            </movable>
+            <movable idx="1">
+              <data port="xv" idx="0" dataname="Value"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="-4600000.000000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
               <relative idx="-1"/>
             </movable>
@@ -411,10 +428,10 @@
             <movable idx="0">
               <data port="a" idx="0" dataname="Value"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" idx="0" a="0.572956"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="57.295646"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="60.000000" y="50.500000"/>
               <relative idx="-1"/>
             </movable>
@@ -512,24 +529,35 @@
             <movable idx="0">
               <data port="P1" idx="0" dataname="Position"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="-8.333333" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <movement x="-77.500000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
-              <movingport startx="33.333330" portname="P2" starty="10.000000"/>
+              <movingport startx="-16.000000" portname="P1" starty="10.000000"/>
               <relative idx="-1"/>
             </movable>
-            <movable idx="0">
+            <movable idx="1">
+              <data port="P2" idx="0" dataname="Position"/>
+              <start x="0.000000" y="0.000000" a="0.000000"/>
+              <movement x="77.500000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <movingport startx="49.000000" portname="P2" starty="10.000000"/>
+              <relative idx="-1"/>
+            </movable>
+            <movable idx="2">
               <data port="P1" idx="0" dataname="Position"/>
               <data port="P2" idx="1" dataname="Position"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="8.333333" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <movement x="-77.500000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <resize x="1.192310" y="0.000000" multiplier="" idx1="0" divisor="" idx2="1"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
-              <movingport startx="0.000000" portname="P1" starty="10.000000"/>
               <relative idx="-1"/>
             </movable>
           </animation>
@@ -574,10 +602,10 @@
             <movable idx="0">
               <data port="xv" idx="0" dataname="Value"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="-4000.000000" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <movement x="-40.000000" y="0.000000" idx="0" multiplier="" divisor="x_vmax#Value" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
               <relative idx="-1"/>
             </movable>
@@ -649,41 +677,32 @@
           <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
             <movable idx="0">
               <data port="P1" idx="0" dataname="Pressure"/>
-              <multiplier name=""/>
-              <divisor name="s_l#Value"/>
               <start x="1.500000" y="1.500000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="255.000000"/>
-              <color g="0.000000" idx="0" r="-0.000013" a="0.000000" b="0.000013"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="-0.000013" a="0.000000" b="0.000013"/>
               <transformorigin x="0.000000" y="0.000000"/>
-              <movingport startx="0.000000" portname="" starty="0.000000"/>
               <relative idx="-1"/>
             </movable>
             <movable idx="1">
               <data port="P3" idx="0" dataname="Position"/>
               <data port="P2" idx="1" dataname="Pressure"/>
-              <multiplier name=""/>
-              <divisor name="s_l#Value"/>
               <start x="11.000000" y="1.500000" a="0.000000"/>
-              <movement x="77.000000" y="0.000000" idx="0" a="0.000000"/>
+              <movement x="77.000000" y="0.000000" idx="0" multiplier="" divisor="s_l#Value" a="0.000000"/>
               <initscale x="1.000000" y="1.000000"/>
-              <resize x="-1.000000" y="0.000000" idx1="0" idx2="-1"/>
+              <resize x="-1.000000" y="0.000000" multiplier="" idx1="0" divisor="s_l#Value" idx2="-1"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="255.000000"/>
-              <color g="0.000000" idx="1" r="-0.000013" a="0.000000" b="0.000013"/>
+              <color g="0.000000" idx="1" multiplier="" divisor="" r="-0.000013" a="0.000000" b="0.000013"/>
               <transformorigin x="0.000000" y="0.000000"/>
-              <movingport startx="0.000000" portname="" starty="0.000000"/>
               <relative idx="-1"/>
             </movable>
             <movable idx="2">
               <data port="P3" idx="0" dataname="Position"/>
-              <multiplier name=""/>
-              <divisor name="s_l#Value"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="77.500000" y="0.000000" idx="0" a="0.000000"/>
-              <initscale x="0.000000" y="0.000000"/>
+              <movement x="77.500000" y="0.000000" idx="0" multiplier="" divisor="s_l#Value" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
               <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
-              <color g="0.000000" idx="0" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
               <transformorigin x="0.000000" y="0.000000"/>
               <movingport startx="100.000000" portname="P3" starty="20.000000"/>
               <relative idx="-1"/>

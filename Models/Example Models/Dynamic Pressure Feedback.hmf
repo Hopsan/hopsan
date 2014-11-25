@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6569" hopsancoreversion="0.6.x_r6545">
-  <requirements>
-    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-  </requirements>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.9pre" hopsancoreversion="0.6.9pre">
+  <requirements/>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
     <email>Robert Braun</email>
     <affiliation>Linköping University</affiliation>
-    <description>This example model shows the benefits of reducing oscillations in a servo system by using dynamic pressure feedback. &#xd;&#xd;&#xd;
-&#xd;&#xd;&#xd;
+    <description>This example model shows the benefits of reducing oscillations in a servo system by using dynamic pressure feedback. &#xd;&#xd;&#xd;&#xd;
+&#xd;&#xd;&#xd;&#xd;
 Try setting the pressure feedback gain to zero to see the difference! The filter is necessary to preserve stiffness, but it can be removed to remove oscillations further.</description>
   </info>
   <system typename="Subsystem" name="Dynamic_Pressure_Feedback">
@@ -22,8 +20,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
-      <animation flowspeed="100"/>
-      <viewport x="2499.22" y="2477.37" zoom="0.70922"/>
+      <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+      <viewport x="2524.5" y="2526" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -34,7 +32,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
             <icon path="subsystemDefault.svg" type="defaultmissing"/>
           </icons>
           <ports/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
         </modelobject>
       </hopsanobjectappearance>
       <optimization>
@@ -48,6 +46,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <partol>1e-05</partol>
           <plot>true</plot>
           <savecsv>false</savecsv>
+          <savecsv>true</savecsv>
           <logpar>true</logpar>
         </settings>
         <parameters>
@@ -88,7 +87,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2497.899741" y="2741.35493" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicTankC" displayname="Tank_C">
               <ports/>
@@ -112,10 +111,16 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2404.310003" y="2363.249993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="out" idx="0" dataname="Value"/>
               <start x="0.000000" y="0.000000" a="-60.000000"/>
-              <movement x="0.000000" y="0.000000" a="-120.000000"/>
+              <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-120.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="18.000000" y="18.000000"/>
+              <relative idx="-1"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -127,8 +132,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalGain" name="Gain_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in#Value"/>
-          <parameter unit="-" value="0.04" type="double" name="k#Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0.04" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -137,7 +142,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2718.310003" y="2689.249993" flipped="false" a="180"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalGain" displayname="Gain_1">
               <ports/>
@@ -147,8 +152,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSubtract" name="Subtract_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1#Value"/>
-          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -158,7 +163,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2856.310003" y="2689.249993" flipped="true" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSubtract" displayname="Subtract_1">
               <ports/>
@@ -168,8 +173,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSubtract" name="Subtract_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1#Value"/>
-          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -179,7 +184,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2630.310003" y="2689.249993" flipped="true" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSubtract" displayname="Subtract_2">
               <ports/>
@@ -189,7 +194,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="MechanicForceTransformer" name="Force_Transformer">
         <parameters>
-          <parameter unit="-" value="200" type="double" name="F#Value"/>
+          <parameter unit="N" value="200" type="double" name="F#Value"/>
           <parameter unit="m/s" value="0" type="double" name="P1#Velocity"/>
           <parameter unit="m" value="0.5" type="double" name="P1#Position"/>
           <parameter unit="N" value="0" type="double" name="P1#WaveVariable"/>
@@ -203,10 +208,17 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2362.310003" y="2369.249993" flipped="false" a="90"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="P1" idx="0" dataname="Position"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="77.500000" y="0.000000" a="0.000000"/>
+              <movement x="77.500000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <movingport startx="39.566000" portname="P1" starty="6.946000"/>
+              <relative idx="-1"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -219,10 +231,10 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <component typename="MechanicTranslationalMass" name="Translational_Mass">
         <parameters>
           <parameter unit="kg" value="50" type="double" name="m"/>
-          <parameter unit="-" value="100" type="double" name="B#Value"/>
-          <parameter unit="-" value="100" type="double" name="k#Value"/>
-          <parameter unit="-" value="0" type="double" name="x_min#Value"/>
-          <parameter unit="-" value="1" type="double" name="x_max#Value"/>
+          <parameter unit="Ns/m" value="100" type="double" name="B#Value"/>
+          <parameter unit="N/m" value="100" type="double" name="k#Value"/>
+          <parameter unit="m" value="0" type="double" name="x_min#Value"/>
+          <parameter unit="m" value="1" type="double" name="x_max#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanic" name="P1"/>
@@ -231,10 +243,18 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2362.310003" y="2444.249993" flipped="false" a="270"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="P1" idx="0" dataname="Position"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="77.500000" y="0.000000" a="0.000000"/>
+              <movement x="77.500000" y="0.000000" idx="0" multiplier="" divisor="" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <movingport startx="0.000000" portname="P1" starty="20.000000"/>
+              <movingport startx="65.000000" portname="P2" starty="20.000000"/>
+              <relative idx="-1"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -246,8 +266,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalGain" name="Gain">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in#Value"/>
-          <parameter unit="-" value="Kpf" type="double" name="k#Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="Kpf" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -256,7 +276,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2631.310003" y="2564.249993" flipped="false" a="90"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalGain" displayname="Gain">
               <ports/>
@@ -266,7 +286,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="HydraulicPressureSourceC" name="Prescribed_Pressure_C">
         <parameters>
-          <parameter unit="-" value="2e+007" type="double" name="p#Value"/>
+          <parameter unit="Pa" value="2e+007" type="double" name="p#Value"/>
           <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
           <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
           <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
@@ -280,7 +300,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2477.849841" y="2730.720878" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="HydraulicPressureSourceC" displayname="Prescribed_Pressure_C">
               <ports/>
@@ -290,8 +310,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalHP1Filter" name="First_order_high_pass_filter">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in#Value"/>
-          <parameter unit="-" value="0" type="double" name="out#Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
           <parameter unit="rad/s" value="w_cutoff" type="double" name="omega"/>
           <parameter unit="-" value="-1.5e+300" type="double" name="y_min"/>
           <parameter unit="-" value="1.5e+300" type="double" name="y_max"/>
@@ -303,7 +323,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2552.310003" y="2400.749993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalHP1Filter" displayname="First_order_high_pass_filter">
               <ports/>
@@ -313,7 +333,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalConstant" name="Constant_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y#Value"/>
+          <parameter unit="" value="0" type="double" name="y#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="y"/>
@@ -321,7 +341,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2606.560003" y="2346.249993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalConstant" displayname="Constant_1">
               <ports/>
@@ -331,8 +351,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSubtract" name="Subtract">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1#Value"/>
-          <parameter unit="-" value="0" type="double" name="in2#Value"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -342,7 +362,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2474.310003" y="2432.249993" flipped="true" a="270"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSubtract" displayname="Subtract">
               <ports/>
@@ -366,10 +386,16 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2447.310003" y="2583.249993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="out" idx="0" dataname="Value"/>
               <start x="0.000000" y="0.000000" a="-60.000000"/>
-              <movement x="0.000000" y="0.000000" a="-0.000006"/>
+              <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-0.000006"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="18.000000" y="18.000000"/>
+              <relative idx="-1"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -395,10 +421,16 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2534.310003" y="2583.249993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="out" idx="0" dataname="Value"/>
               <start x="0.000000" y="0.000000" a="-60.000000"/>
-              <movement x="0.000000" y="0.000000" a="-0.000006"/>
+              <movement x="0.000000" y="0.000000" idx="0" multiplier="" divisor="" a="-0.000006"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="18.000000" y="18.000000"/>
+              <relative idx="-1"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -410,7 +442,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalConstant" name="Routing">
         <parameters>
-          <parameter unit="-" value="1" type="double" name="y#Value"/>
+          <parameter unit="" value="1" type="double" name="y#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="y"/>
@@ -418,7 +450,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2757.310003" y="2449.249993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalConstant" displayname="Routing">
               <ports/>
@@ -428,12 +460,12 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalTripleRoute" name="Route_With_Three_Inputs">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1#Value"/>
-          <parameter unit="-" value="0" type="double" name="in2#Value"/>
-          <parameter unit="-" value="0" type="double" name="in3#Value"/>
-          <parameter unit="-" value="0" type="double" name="route#Value"/>
-          <parameter unit="-" value="0.5" type="double" name="limit12"/>
-          <parameter unit="-" value="1.5" type="double" name="limit23"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="in2#Value"/>
+          <parameter unit="" value="0" type="double" name="in3#Value"/>
+          <parameter unit="" value="0" type="double" name="route#Value"/>
+          <parameter unit="" value="0.5" type="double" name="limit12"/>
+          <parameter unit="" value="1.5" type="double" name="limit23"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="route"/>
@@ -445,7 +477,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2631.310003" y="2449.249993" flipped="false" a="90"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalTripleRoute" displayname="Route_With_Three_Inputs">
               <ports/>
@@ -455,20 +487,20 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="Hydraulic43Valve" name="4_3_Servo_Valve">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="xv#Value"/>
-          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="xv#Value"/>
+          <parameter unit="m" value="0" type="double" name="in#Value"/>
           <parameter unit="-" value="0.67" type="double" name="C_q#Value"/>
-          <parameter unit="-" value="890" type="double" name="rho#Value"/>
-          <parameter unit="-" value="0.01" type="double" name="d#Value"/>
+          <parameter unit="kg/m^3" value="890" type="double" name="rho#Value"/>
+          <parameter unit="m" value="0.01" type="double" name="d#Value"/>
           <parameter unit="-" value="1" type="double" name="f_pa#Value"/>
           <parameter unit="-" value="1" type="double" name="f_pb#Value"/>
           <parameter unit="-" value="1" type="double" name="f_at#Value"/>
           <parameter unit="-" value="1" type="double" name="f_bt#Value"/>
-          <parameter unit="-" value="0" type="double" name="x_pa#Value"/>
-          <parameter unit="-" value="0" type="double" name="x_pb#Value"/>
-          <parameter unit="-" value="0" type="double" name="x_at#Value"/>
-          <parameter unit="-" value="0" type="double" name="x_bt#Value"/>
-          <parameter unit="-" value="0.01" type="double" name="x_vmax#Value"/>
+          <parameter unit="m" value="0" type="double" name="x_pa#Value"/>
+          <parameter unit="m" value="0" type="double" name="x_pb#Value"/>
+          <parameter unit="m" value="0" type="double" name="x_at#Value"/>
+          <parameter unit="m" value="0" type="double" name="x_bt#Value"/>
+          <parameter unit="m" value="0.01" type="double" name="x_vmax#Value"/>
           <parameter unit="rad/s" value="300" type="double" name="omega_h"/>
           <parameter unit="-" value="0.5" type="double" name="delta_h"/>
         </parameters>
@@ -483,10 +515,16 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2508.310003" y="2680.249993" flipped="true" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="xv" idx="0" dataname="Value"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="-4000.000000" y="0.000000" a="0.000000"/>
+              <movement x="-40.000000" y="0.000000" idx="0" multiplier="" divisor="x_vmax#Value" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -498,7 +536,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       </component>
       <component typename="SignalSink" name="Scope">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -508,7 +546,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2962.490003" y="2561.659993" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Scope">
               <ports/>
@@ -536,14 +574,14 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
           <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
           <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
           <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
-          <parameter unit="-" value="0.001" type="double" name="A_1#Value"/>
-          <parameter unit="-" value="0.001" type="double" name="A_2#Value"/>
-          <parameter unit="-" value="1" type="double" name="s_l#Value"/>
-          <parameter unit="-" value="0.0003" type="double" name="V_1#Value"/>
-          <parameter unit="-" value="0.0003" type="double" name="V_2#Value"/>
-          <parameter unit="-" value="1000" type="double" name="B_p#Value"/>
-          <parameter unit="-" value="1e+009" type="double" name="Beta_e#Value"/>
-          <parameter unit="-" value="1e-011" type="double" name="c_leak#Value"/>
+          <parameter unit="m^2" value="0.001" type="double" name="A_1#Value"/>
+          <parameter unit="m^2" value="0.001" type="double" name="A_2#Value"/>
+          <parameter unit="m" value="1" type="double" name="s_l#Value"/>
+          <parameter unit="m^3" value="0.0003" type="double" name="V_1#Value"/>
+          <parameter unit="m^3" value="0.0003" type="double" name="V_2#Value"/>
+          <parameter unit="Ns/m" value="1000" type="double" name="B_p#Value"/>
+          <parameter unit="Pa" value="1e+009" type="double" name="Beta_e#Value"/>
+          <parameter unit="" value="1e-011" type="double" name="c_leak#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -553,18 +591,38 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2362.310003" y="2564.249993" flipped="false" a="270"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100">
-            <movable>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data port="P1" idx="0" dataname="Pressure"/>
               <start x="1.500000" y="1.500000" a="0.000000"/>
-              <movement x="0.000000" y="0.000000" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="255.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="-0.000013" a="0.000000" b="0.000013"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
             </movable>
-            <movable>
+            <movable idx="1">
+              <data port="P3" idx="0" dataname="Position"/>
+              <data port="P2" idx="1" dataname="Pressure"/>
               <start x="11.000000" y="1.500000" a="0.000000"/>
-              <movement x="77.000000" y="0.000000" a="0.000000"/>
+              <movement x="77.000000" y="0.000000" idx="0" multiplier="" divisor="s_l#Value" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <resize x="-1.000000" y="0.000000" multiplier="" idx1="0" divisor="s_l#Value" idx2="-1"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="255.000000"/>
+              <color g="0.000000" idx="1" multiplier="" divisor="" r="-0.000013" a="0.000000" b="0.000013"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <relative idx="-1"/>
             </movable>
-            <movable>
+            <movable idx="2">
+              <data port="P3" idx="0" dataname="Position"/>
               <start x="0.000000" y="0.000000" a="0.000000"/>
-              <movement x="77.500000" y="0.000000" a="0.000000"/>
+              <movement x="77.500000" y="0.000000" idx="0" multiplier="" divisor="s_l#Value" a="0.000000"/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" multiplier="" divisor="" r="0.000000" a="0.000000" b="0.000000"/>
+              <transformorigin x="0.000000" y="0.000000"/>
+              <movingport startx="100.000000" portname="P3" starty="20.000000"/>
+              <relative idx="-1"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -578,8 +636,8 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <parameters>
           <parameter unit="-" value="0.5" type="double" name="y_0#Value"/>
           <parameter unit="-" value="0.1" type="double" name="y_A#Value"/>
-          <parameter unit="-" value="1" type="double" name="f#Value"/>
-          <parameter unit="-" value="0" type="double" name="t_start#Value"/>
+          <parameter unit="Hz" value="1" type="double" name="f#Value"/>
+          <parameter unit="s" value="0" type="double" name="t_start#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -587,7 +645,7 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
         <hopsangui>
           <pose x="2931.310003" y="2689.249993" flipped="true" a="0"/>
           <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSquareWave" displayname="Square_Wave">
               <ports/>
@@ -598,25 +656,25 @@ Try setting the pressure feedback gain to zero to see the difference! The filter
       <textboxwidget>
         <hopsangui>
           <pose x="1969.000000" y="2417.000000"/>
-          <textobject fontcolor="#005500" text="This example model shows the benefits of&#xa;reducing oscillations in a servo system&#xa;by using dynamic pressure feedback.&#xa;&#xa;Try setting the pressure feedback gain &#xa;to zero to see the difference! The filter &#xa;is necessary to preserve stiffness, but it&#xa;can be removed to remove oscillations &#xa;further." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#005500" text="This example model shows the benefits of&#xa;reducing oscillations in a servo system&#xa;by using dynamic pressure feedback.&#xa;&#xa;Try setting the pressure feedback gain &#xa;to zero to see the difference! The filter &#xa;is necessary to preserve stiffness, but it&#xa;can be removed to remove oscillations &#xa;further." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
           <size width="282.000000" height="179.000000"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#005500"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2273.000000" y="2247.000000"/>
-          <textobject fontcolor="#005500" text="Example: Dynamic Pressure Feedback" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#005500" text="Example: Dynamic Pressure Feedback" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
           <size width="421.000000" height="41.000000"/>
-          <line width="2.000000" visible="0" style="solidline"/>
+          <line width="2" visible="0" style="solidline" color="#005500"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2680.000000" y="2370.000000"/>
-          <textobject fontcolor="#005500" text="Feedback Switch:&#xa;1 = No Pressure Feedback&#xa;2 = Static Pressure Feedback&#xa;3 = Dynamic Pressure Feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#005500" text="Feedback Switch:&#xa;1 = No Pressure Feedback&#xa;2 = Static Pressure Feedback&#xa;3 = Dynamic Pressure Feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
           <size width="155.000000" height="105.000000"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#005500"/>
         </hopsangui>
       </textboxwidget>
     </objects>
