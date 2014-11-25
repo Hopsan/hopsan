@@ -144,7 +144,6 @@
           <parameter unit="m^3" value="3" type="double" name="V_4#Value"/>
           <parameter unit="Ns/m" value="0" type="double" name="B_p#Value"/>
           <parameter unit="Pa" value="1e+009" type="double" name="Beta_e#Value"/>
-          <parameter unit="" value="0" type="double" name="c_leak#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
