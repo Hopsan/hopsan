@@ -14,21 +14,21 @@
         </ports>
         <animation>
             <icon userpath="spring_user_base.svg"/>
-            <movable>
+            <movable idx="0">
                 <icon userpath="spring_user_base.svg"/>
                 <data port="P1" dataname="Position" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <movement x="-77.5" y="0" a="0" idx="0"/>
                 <movingport startx="-16" portname="P1" starty="10"/>
             </movable>
-            <movable>
+            <movable idx="1">
                 <icon userpath="spring_user_base.svg"/>
                 <data port="P2" dataname="Position" idx="0"/>
                 <start x="0" y="0" a="0"/>
                 <movement x="77.5" y="0" a="0" idx="0"/>
                 <movingport startx="49" portname="P2" starty="10"/>
             </movable>
-            <movable>
+            <movable idx="2">
                 <icon userpath="spring_user_movable.svg"/>
                 <data port="P1" dataname="Position" idx="0"/>
                 <data port="P2" dataname="Position" idx="1"/>
