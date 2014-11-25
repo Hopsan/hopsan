@@ -116,5 +116,5 @@ const char* getHopsanGUIBuildTime()
 
 bool isHospanGUIVersionHigherThan(const char *version)
 {
-    return hopsan::isVersionGreaterThan(QString(HOPSANGUIVERSION).toStdString().c_str(), QString(version).toStdString().c_str());
+    return hopsan::isVersionGreaterThan(QString(version).toStdString().c_str(), QString(HOPSANGUIVERSION).toStdString().c_str());
 }
