@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="AeroWind" displayname="AeroWind">
+    <icons/>
+    <ports>
+       <port x="0.166667" y="0" enabled="true" a="270" name="V" autoplaced="true"/>
+      <port x="0.333333" y="0" enabled="true" a="270" name="h" autoplaced="true"/>
+      <port x="0.5" y="0" enabled="true" a="270" name="noiseu" autoplaced="true"/>
+      <port x="0.666667" y="0" enabled="true" a="270" name="noisev" autoplaced="true"/>
+      <port x="0.833333" y="0" enabled="true" a="270" name="noisew" autoplaced="true"/>
+      <port x="0.25" y="1" enabled="true" a="90" name="uw" autoplaced="true"/>
+      <port x="0.5" y="1" enabled="true" a="90" name="vw" autoplaced="true"/>
+	  <port x="0.75" y="1" enabled="true" a="90" name="ww" autoplaced="true"/>
+    </ports>
+    <animation flowspeed="100"/>
+  </modelobject>
+</hopsanobjectappearance>

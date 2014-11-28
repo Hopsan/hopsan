@@ -9,7 +9,7 @@
 //!
 //! @file AeroCombustionChamberMono.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 22 Sep 2014 10:41:36
+//! @date Fri 28 Nov 2014 12:54:04
 //! @brief Hydraulic volume with two connection
 //! @ingroup AeroComponents
 //!
@@ -149,7 +149,8 @@ public:
             addInputVariable("cv", "Heat capacity", "", 1800,&mpcv);
             addInputVariable("vfuel", "Exhaust speed", "m/s", \
 1571.,&mpvfuel);
-            addInputVariable("ethap", "Effectivness", "", 0.9,&mpethap);
+            addInputVariable("ethap", "Efficiency factor (<1)", "", \
+0.9,&mpethap);
             addInputVariable("rhofuel", "Exhaust speed", "kg/m3", \
 1200.,&mprhofuel);
             addInputVariable("As", "min effective area", "m2", \
@@ -235,7 +236,7 @@ chamber","kg/m3",0.,&mprhogas);
         //LocalExpressions
         gam = (cv + R)/cv;
         c10 = c2 - (2*mdot*mTimestep*(cv + R)*Tc)/(gam*Vc);
-        c20 = c1 + (mTimestep*q1*rhofuel*Power(vfuel,2))/(gam*Vc);
+        c20 = c1 + (ethap*mTimestep*q1*rhofuel*Power(vfuel,2))/(gam*Vc);
 
         //Initialize delays
         delayParts1[1] = (mdot*mTimestep - mTimestep*q1*rhofuel - \
@@ -264,7 +265,7 @@ chamber","kg/m3",0.,&mprhogas);
         //LocalExpressions
         gam = (cv + R)/cv;
         c10 = c2 - (2*mdot*mTimestep*(cv + R)*Tc)/(gam*Vc);
-        c20 = c1 + (mTimestep*q1*rhofuel*Power(vfuel,2))/(gam*Vc);
+        c20 = c1 + (ethap*mTimestep*q1*rhofuel*Power(vfuel,2))/(gam*Vc);
 
         //Initializing variable vector for Newton-Raphson
         stateVark[0] = rhogas;
@@ -309,7 +310,7 @@ R*Abs(Tc))),0.,1.e9))/(Sqrt(gam/(R + R*Abs(Tc)))*Power(R + R*Abs(Tc),2));
           //Expressions
           c1 = alpha*c1 + (1 - alpha)*c10;
           c2 = alpha*c2 + (1 - alpha)*c20;
-          Zc1 = (mTimestep*rhofuel*(293*cv + Power(vfuel,2)/2.))/(gam*Vc);
+          Zc1 = (ethap*mTimestep*rhofuel*Power(vfuel,2))/(2.*gam*Vc);
           pc = c2 - (mdot*mTimestep*(cv + R)*Tc)/(gam*Vc);
           Ae = (Power(2,(1 + gam)/(2.*(-1 + gam)))*As*Power(1 + ((-1 + \
 gam)*Power(Med,2))/2.,(1 + gam)/(2.*(-1 + gam))))/(Power(1 + gam,(1 + \
@@ -318,7 +319,7 @@ gam)/(2.*(-1 + gam)))*Med);
           Te = Tc/(1 + ((-1 + gam)*Power(Med,2))/2.);
           ve = Med*Sqrt(gam*R*Te);
           thrust = lowLimit(Ae*(-pa + pe) + mdot*ve,0);
-          Pin = (q1*rhofuel*Power(vfuel,2))/2.;
+          Pin = (ethap*q1*rhofuel*Power(vfuel,2))/2.;
           Pout = (mdot*Power(ve,2))/2.;
         }
 
