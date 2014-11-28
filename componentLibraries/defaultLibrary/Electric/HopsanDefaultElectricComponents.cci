@@ -10,6 +10,7 @@
     pComponentFactory->registerCreatorFunction("ElectricIsource", ElectricIsource::Creator);
     pComponentFactory->registerCreatorFunction("ElectricIsensor", ElectricIsensor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricMotor", ElectricMotor::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricACmachine", ElectricACmachine::Creator);
     pComponentFactory->registerCreatorFunction("ElectricMotorGear", ElectricMotorGear::Creator);
     pComponentFactory->registerCreatorFunction("ElectricMotorGearScrewLink", ElectricMotorGearScrewLink::Creator);
     pComponentFactory->registerCreatorFunction("ElectricResistor", ElectricResistor::Creator);

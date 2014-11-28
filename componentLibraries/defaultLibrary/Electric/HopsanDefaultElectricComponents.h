@@ -6,6 +6,7 @@
 #include "ElectricCapacitanceMultiPort.hpp"
 #include "ElectricGround.hpp"
 #include "ElectricMotor.hpp"
+#include "ElectricACmachine.hpp"
 #include "ElectricMotorGear.hpp"
 #include "ElectricMotorGearScrewLink.hpp"
 #include "ElectricIcontroller.hpp"

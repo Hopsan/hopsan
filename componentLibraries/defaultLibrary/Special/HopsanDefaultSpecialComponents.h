@@ -1,7 +1,7 @@
 #ifndef HOPSANDEFAULTSPECIALCOMPONENTS_H
 #define HOPSANDEFAULTSPECIALCOMPONENTS_H
 
-#include "AeroComponents/HopsanDefaultAerocomponents.h"
+#include "AeroComponents/HopsanDefaultAeroComponents.h"
 #include "MechanicB/HopsanDefaultMechanicBComponents.h"
 #include "SignalFFB/HopsanDefaultFBBComponents.h"
 #include "TMMS04/HopsanDefaultTMMS04Components.h"
