@@ -43,6 +43,7 @@ HEADERS += \
     Electric/ElectricPWMdceq.hpp \
     Electric/ElectricMotorGear.hpp \
     Electric/ElectricMotor.hpp \
+    Electric/ElectricACmachine.hpp \
     Electric/ElectricIsource.hpp \
     Electric/ElectricIsensor.hpp \
     Electric/ElectricInductance.hpp \
@@ -272,6 +273,11 @@ HEADERS += \
     Special/AeroComponents/AeroJetEngine.hpp \
     Special/AeroComponents/AeroFuelTank.hpp \
     Special/AeroComponents/AeroAtmosphere.hpp \
+    Special/AeroComponents/AeroWindFilter.hpp \
+    Special/AeroComponents/AeroTurbFilter.hpp \
+    Special/AeroComponents/AeroTurbXfilter.hpp \
+    Special/AeroComponents/AeroTurbYfilter.hpp \
+    Special/AeroComponents/AeroTurbZfilter.hpp \
     Special/AeroComponents/AeroAircraft6DOFS.hpp \
     Special/AeroComponents/FuelComponents/HydraulicFuelTankG.hpp \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \
@@ -313,7 +319,12 @@ HEADERS += \
     Hydraulic/Valves/PressureControlled/HopsanDefaultHydraulicPressureControlledValves.h \
     Hydraulic/Valves/Hydraulic42Valve2.hpp \
     Special/MechanicB/MechanicGear.hpp \
+    Special/AeroComponents/AeroWind.hpp \
     Special/MechanicB/HopsanDefaultMechanicBComponents.h \
+    Special/AeroComponents/AeroTurbZfilter.hpp \
+    Special/AeroComponents/AeroTurbYfilter.hpp \
+    Special/AeroComponents/AeroTurbXfilter.hpp \
+    Special/AeroComponents/AeroWind.hpp \
     Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \
     Experimental/Signal1DLookupTable.hpp \
     Experimental/Signal2DLookupTable.hpp \
