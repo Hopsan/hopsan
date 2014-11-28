@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       145,          7]
-NotebookDataLength[    284556,       6272]
-NotebookOptionsPosition[    281783,       6189]
-NotebookOutlinePosition[    282202,       6205]
-CellTagsIndexPosition[    282159,       6202]
+NotebookDataLength[    285355,       6289]
+NotebookOptionsPosition[    282581,       6206]
+NotebookOutlinePosition[    283001,       6222]
+CellTagsIndexPosition[    282958,       6219]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -1669,7 +1669,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"SetFile", "[", 
+  RowBox[{"SetFilename", "[", 
    RowBox[{"domain_", ",", "displayName_"}], "]"}], ":=", 
   RowBox[{"Block", "[", 
    RowBox[{
@@ -1695,13 +1695,19 @@ Cell[BoxData[
      RowBox[{"file", " ", "=", " ", 
       RowBox[{"ToString", "[", 
        RowBox[{"StringJoin", "[", 
+        RowBox[{"componentName", ",", "\"\<.hpp\>\""}], "]"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"filename", " ", "=", " ", 
+      RowBox[{"ToString", "[", 
+       RowBox[{"StringJoin", "[", 
         RowBox[{"componentName", ",", "\"\<.hpp\>\""}], "]"}], "]"}]}]}]}], 
    "]"}]}]], "Input",
  CellChangeTimes->{{3.505978263515625*^9, 3.50597833025*^9}, {
   3.50597839178125*^9, 3.505978435125*^9}, {3.5194993843125*^9, 
   3.51949941509375*^9}, {3.51953787103125*^9, 3.519537883875*^9}, {
   3.519537937890625*^9, 3.519537950484375*^9}, {3.5195382124375*^9, 
-  3.519538212796875*^9}, {3.53554089690625*^9, 3.535540902109375*^9}}],
+  3.519538212796875*^9}, {3.53554089690625*^9, 3.535540902109375*^9}, {
+  3.6114662979201965`*^9, 3.611466319801385*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -1728,24 +1734,33 @@ Cell[BoxData[
        RowBox[{"StringJoin", "[", 
         RowBox[{"componentName", ",", "\"\<.xml\>\""}], "]"}], "]"}]}], ";", 
      "\[IndentingNewLine]", 
-     RowBox[{"file", " ", "=", " ", 
-      RowBox[{"ToString", "[", 
-       RowBox[{"StringJoin", "[", 
-        RowBox[{"path", ",", "componentName", ",", "\"\<.hpp\>\""}], "]"}], 
-       "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"ToString", "[", "path", "]"}], "\[Equal]", "\"\<path\>\""}], 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{"file", " ", "=", " ", 
+        RowBox[{"ToString", "[", 
+         RowBox[{"StringJoin", "[", 
+          RowBox[{"componentName", ",", "\"\<.hpp\>\""}], "]"}], "]"}]}], ",",
+        "\[IndentingNewLine]", 
+       RowBox[{"file", " ", "=", " ", 
+        RowBox[{"ToString", "[", 
+         RowBox[{"StringJoin", "[", 
+          RowBox[{"path", ",", "componentName", ",", "\"\<.hpp\>\""}], "]"}], 
+         "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"filename", " ", "=", " ", 
       RowBox[{"ToString", "[", 
        RowBox[{"StringJoin", "[", 
         RowBox[{"componentName", ",", "\"\<.hpp\>\""}], "]"}], "]"}]}]}]}], 
    "]"}]}]], "Input",
- CellChangeTimes->{{3.505978263515625*^9, 3.50597833025*^9}, {
-   3.50597839178125*^9, 3.505978435125*^9}, {3.5194993843125*^9, 
-   3.51949941509375*^9}, {3.51953787103125*^9, 3.519537883875*^9}, {
-   3.519537937890625*^9, 3.519537950484375*^9}, {3.5195382124375*^9, 
-   3.519538212796875*^9}, {3.53554089690625*^9, 3.535540902109375*^9}, {
-   3.576514925169614*^9, 3.576514944064695*^9}, {3.576515018152932*^9, 
-   3.5765150452814837`*^9}, 3.5765150958323755`*^9, {3.5765151771650276`*^9, 
-   3.5765152266628585`*^9}, {3.5774504484879003`*^9, 3.577450457913843*^9}}]
+ CellChangeTimes->{{3.611469541825324*^9, 3.611469569676358*^9}, {
+   3.611469607764167*^9, 3.611469634750865*^9}, {3.611469675311921*^9, 
+   3.611469687058096*^9}, {3.6114697382602153`*^9, 3.6114697395323424`*^9}, 
+   3.61147319662603*^9, {3.6114732338650303`*^9, 3.61147326156603*^9}, 
+   3.611473644841976*^9, {3.611473678074299*^9, 3.6114736864201336`*^9}, {
+   3.611473789107401*^9, 3.611473798239314*^9}, {3.6114746621276946`*^9, 
+   3.6114746633058124`*^9}, {3.611474722346716*^9, 3.611474725526034*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -6022,11 +6037,11 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"DumpSave", "[", 
   RowBox[{
-  "\"\<C:\\\\Hopsan\\\\Compgen\\\\CompgenNG06.mx\>\"", ",", 
-   "\"\<Global`\>\""}], "]"}]], "Input",
+  "\"\<C:\\\\Hopsan\\\\Compgen\\\\CompgenNG.mx\>\"", ",", "\"\<Global`\>\""}],
+   "]"}]], "Input",
  CellChangeTimes->{{3.5039001061983414`*^9, 3.503900119120216*^9}, {
    3.503900191307716*^9, 3.503900192151466*^9}, 3.51832982048666*^9, 
-   3.57691974673184*^9}],
+   3.57691974673184*^9, {3.6114743065641418`*^9, 3.6114743068441696`*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", "\<\"Global`\"\>", "}"}]], "Output",
@@ -6182,13 +6197,15 @@ Cell[BoxData[
    3.5907271371191874`*^9, 3.590727149175393*^9}, 3.590727250418516*^9, 
    3.5907272819936733`*^9, 3.590727633111782*^9, 3.5907279187763453`*^9, 
    3.590727961854653*^9, 3.5907280671591825`*^9, 3.590728118260292*^9, 
-   3.590728252554135*^9, 3.5907282856301346`*^9}]
+   3.590728252554135*^9, 3.5907282856301346`*^9, 3.611467543821784*^9, 
+   3.6114742108435707`*^9, 3.6114743141318984`*^9, 3.6114746791033916`*^9, 
+   3.6114747508215632`*^9}]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
 WindowSize->{956, 690},
-WindowMargins->{{Automatic, 312}, {4, Automatic}},
+WindowMargins->{{191, Automatic}, {Automatic, 39}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
   CharacterEncoding -> "WindowsANSI"]
@@ -6259,18 +6276,18 @@ Cell[65878, 1512, 110, 1, 36, "Subsection"],
 Cell[65991, 1515, 3241, 67, 262, "Input"],
 Cell[69235, 1584, 3434, 70, 262, "Input"],
 Cell[72672, 1656, 521, 11, 41, "Input"],
-Cell[73196, 1669, 1483, 34, 122, "Input"],
-Cell[74682, 1705, 1964, 42, 142, "Input"]
+Cell[73196, 1669, 1753, 40, 142, "Input"],
+Cell[74952, 1711, 2319, 51, 182, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[76683, 1752, 155, 2, 36, "Subsection"],
-Cell[76841, 1756, 193737, 4256, 18690, "Input"]
+Cell[77308, 1767, 155, 2, 36, "Subsection"],
+Cell[77466, 1771, 193737, 4256, 18690, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[270615, 6017, 35, 0, 37, "Subsection"],
+Cell[271240, 6032, 35, 0, 37, "Subsection"],
 Cell[CellGroupData[{
-Cell[270675, 6021, 317, 7, 41, "Input"],
-Cell[270995, 6030, 10748, 154, 40, "Output"]
+Cell[271300, 6036, 364, 7, 41, "Input"],
+Cell[271667, 6045, 10874, 156, 40, "Output"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
