@@ -14,7 +14,12 @@ name=hopsan
 devversion=0.7.
 
 # Pbuilder dists and archs
-distArchArray=( trusty:amd64 trusty:i386 saucy:amd64 saucy:i386 precise:amd64 precise:i386 )
+debianDistArchArray=( wheezy:amd64 wheezy:i386 )
+ubuntuDistArchArray=( trusty:amd64 trusty:i386 precise:amd64 precise:i386 )
+
+# Pbuilder mirrors
+ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
+debianMirror="http://ftp.se.debian.org/debian/"
 
 #--------------------------------------------------------------------------------------------------
 # Code starts here
@@ -74,9 +79,13 @@ distArchArrayDo=()
 boolAskYNQuestion "Do you want to build for multiple supported dists, using pbuilder?" "y"
 doPbuild="$boolYNQuestionAnswer"
 if [ "$doPbuild" = "true" ]; then
-  for i in "${distArchArray[@]}"; do
+  for i in "${debianDistArchArray[@]}"; do
     boolAskYNQuestion "Do you want to build, "$i"?" "y"
-    distArchArrayDo+=("$i"":""$boolYNQuestionAnswer")
+    distArchArrayDo+=("$i"":""D"":""$boolYNQuestionAnswer")
+  done
+  for i in "${ubuntuDistArchArray[@]}"; do
+    boolAskYNQuestion "Do you want to build, "$i"?" "y"
+    distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
   done
 fi
 
@@ -164,7 +173,8 @@ if [ "$doPbuild" = "true" ]; then
     IFS=':' read -ra arr <<< "$i"
     dist="${arr[0]}"
     arch="${arr[1]}"
-    doBuild="${arr[2]}"
+    distBase="${arr[2]}"
+    doBuild="${arr[3]}"
 
     if [ "$doBuild" = "true" ]; then
       echo
@@ -180,20 +190,40 @@ if [ "$doPbuild" = "true" ]; then
       mkdir -p "$resultPath"
       logFile="$resultPath/$outputbasename.log"
 
-      # Update or create pbuild environments
+      # Set pbuild options specific to ubuntu or debian
+      if [ "$distBase" = "U" ]; then
+        #todo add mirror and keyring
+        optsComponents="main universe"
+        optsMirror="$ubuntuMirror"
+        optsDebootstrap="--debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
+      elif [ "$distBase" = "D" ]; then
+        optsComponents="main contrib"
+        optsMirror="$debianMirror"
+        optsDebootstrap="--debootstrapopts --keyring=/usr/share/keyrings/debian-archive-keyring.gpg"
+      fi
+      
+      # Debug
+      #echo $optsComponents
+      #echo $optsMirror
+      #echo $optsDebootstrap
+      #sleep 2
+      
+      # Set packages that need to be installed
       extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev fakeroot"
+      
+      # Update or create pbuild environments 
       debootstrapOk="true"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
 	      echo
 	      echo "Updating existing TGZ: $basetgzFile"
 	      echo "------------------------"
-	      sudo pbuilder --update --extrapackages "$extraPackages"  --aptcache "" --buildplace "$pbuilderBuildDir" --basetgz $basetgzFile
+	      sudo pbuilder --update $distBaseOpts  --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
 	    else
 	      echo
 	      echo "Creating new TGZ: $basetgzFile"
 	      echo "------------------------"
-	      sudo pbuilder --create --components "main universe" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir" --distribution $dist --architecture $arch --basetgz $basetgzFile
+          sudo pbuilder --create --distribution $dist --architecture $arch --mirror $optsMirror $optsDebootstrap --components "$optsComponents" --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
 	    fi
 	    # Check for success
 	    if [ $? -ne 0 ]; then
@@ -204,28 +234,27 @@ if [ "$doPbuild" = "true" ]; then
       fi
       
       if [ "$debootstrapOk" = "true" ]; then
-          # Now build source package
-          echo
-	  echo "Building with pbuilder"
-	  echo "------------------------"
-	  sudo pbuilder --build --basetgz $basetgzFile --logfile "$logFile" --aptcache "" --buildplace "$pbuilderBuildDir" --buildresult $resultPath $dscFile
+        # Now build source package
+        echo
+	    echo "Building with pbuilder"
+	    echo "------------------------"
+	    sudo pbuilder --build --basetgz "$basetgzFile" --aptcache "" --buildplace "$pbuilderBuildDir" --logfile "$logFile" --buildresult $resultPath $dscFile
 	  
-	  # Figure out the actual output file name
-	  outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
+	    # Figure out the actual output file name
+	    outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
 	  
-	  # Check if it exist (success)
-	  if [ -f "$outputDebName" ]; then
-	    buildStatusArray+=("$dist""_""$arch"":BuildOk")
+	    # Check if it exist (success)
+	    if [ -f "$outputDebName" ]; then
+	      buildStatusArray+=("$dist""_""$arch"":BuildOk")
 	    
-	    # Now move and rename output deb file to dist output dir
-	    mv $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
+	      # Now move and rename output deb file to dist output dir
+	      mv $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
 	  
-	    # Check package with lintian
-	    lintian --color always -X files $outputDebDir/$outputbasename\_$dist\_$arch.deb
-	    
-	  else
-	    buildStatusArray+=("$dist""_""$arch"":BuildFailed")
-	  fi
+	      # Check package with lintian
+	      lintian --color always -X files $outputDebDir/$outputbasename\_$dist\_$arch.deb
+	    else
+	      buildStatusArray+=("$dist""_""$arch"":BuildFailed")
+	    fi
       fi
     fi
   done

@@ -1,13 +1,13 @@
 ----------------------------------------
  Package Info:
 ----------------------------------------
-This DEB package is meant for installation on *Ubuntu (GNU Linux based) operating systems.
+These DEB packages are meant for installation on Debian or *Ubuntu (GNU Linux based) operating systems.
 
 Hopsan will be installed to /opt/hopsan
 A "shortcut" to HopsanGUI should end up under the Development category in your menu.
 HopsanCLI and libHopsanCore.so can be found in /opt/hopsan/bin
 
-For questions about this .deb package, contact:
+For questions about these .deb packages, contact:
 peter.nordin@liu.se
 
 ----------------------------------------
