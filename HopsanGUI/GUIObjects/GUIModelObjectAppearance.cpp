@@ -114,6 +114,7 @@
 #define CAF_MOVINGPORT "movingport"
 #define CAF_RELATIVE "relative"
 #define CAF_MOVABLE "movable"
+#define CAF_HIDEICON "hideicon"
 
 
 // =============== Help Functions ===============
@@ -398,6 +399,15 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
             switchableElement.setAttribute(CAF_PORT, m.switchablePort);
             setQrealAttribute(switchableElement, CAF_ONVALUE, m.switchableOnValue);
             setQrealAttribute(switchableElement, CAF_OFFVALUE, m.switchableOffValue);
+
+            if(m.hideIconOnSwitch)
+            {
+                switchableElement.setAttribute(CAF_HIDEICON, HMF_TRUETAG);
+            }
+            else
+            {
+                switchableElement.setAttribute(CAF_HIDEICON, HMF_FALSETAG);
+            }
         }
 
         if(m.isIndicator)
@@ -1358,6 +1368,7 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         switchableOnValue = xmlSwitchable.attribute(CAF_ONVALUE).toDouble();
         switchablePort = xmlSwitchable.attribute(CAF_PORT);
         switchableDataName = xmlSwitchable.attribute(CAF_DATANAME);
+        hideIconOnSwitch = parseAttributeBool(xmlSwitchable, CAF_HIDEICON, false);
     }
     else
     {
@@ -1366,6 +1377,7 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         switchableOnValue = 0;
         switchablePort = QString();
         switchableDataName = QString();
+        hideIconOnSwitch = false;
     }
 
     QDomElement xmlIndicaor = rDomElement.firstChildElement(CAF_INDICATOR);

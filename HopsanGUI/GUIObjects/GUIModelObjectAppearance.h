@@ -171,6 +171,7 @@ public:
     double switchableOnValue;
     QString switchablePort;
     QString switchableDataName;
+    bool hideIconOnSwitch;
 
     //Indicator
     bool isIndicator;

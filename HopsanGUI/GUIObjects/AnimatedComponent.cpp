@@ -518,7 +518,7 @@ void AnimatedComponent::setupAnimationMovable(int m)
     //Set icon to be movable by mouse if it shall be adjustable
     mpMovables.at(m)->setFlag(QGraphicsItem::ItemIsMovable, mpAnimationData->movables[m].isAdjustable);
 
-    if(mpAnimationData->movables[m].isSwitchable)
+    if(mpAnimationData->movables[m].isSwitchable && mpAnimationData->movables[m].hideIconOnSwitch)
     {
         mpMovables.at(m)->hide();
     }
@@ -868,6 +868,7 @@ void AnimatedIcon::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
+//! @brief Handles mouse press events on animated icons, used for switchable movables
 void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!mpAnimatedComponent->mpMovables.isEmpty())
@@ -884,15 +885,23 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
         {
             //! @todo Don't do pointer lookup every time step!
             double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->movables[mIdx].switchablePort, pData->movables[mIdx].switchableDataName);
-            if(mpAnimatedComponent->mpMovables[idx]->isVisible())
+            double onValue = pData->movables[idx].switchableOnValue;
+            double offValue = pData->movables[idx].switchableOffValue;
+            if((*pNodeData) == onValue/*mpAnimatedComponent->mpMovables[idx]->isVisible()*/)
             {
-                mpAnimatedComponent->mpMovables[idx]->setVisible(false);
-                (*pNodeData) = 0;
+                if(pData->movables[idx].hideIconOnSwitch)
+                {
+                    mpAnimatedComponent->mpMovables[idx]->setVisible(false);
+                }
+                (*pNodeData) = offValue;
             }
             else
             {
-                mpAnimatedComponent->mpMovables[idx]->setVisible(true);
-                (*pNodeData) = 1;
+                if(pData->movables[idx].hideIconOnSwitch)
+                {
+                    mpAnimatedComponent->mpMovables[idx]->setVisible(true);
+                }
+                (*pNodeData) = onValue;
             }
         }
     }
