@@ -22,17 +22,10 @@
             <movable idx="0">
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <icon userpath="22directionalvalve_user_base.svg"/>
-                <data port="in" dataname="Value" idx="0"/>
-                <movement x="0" y="0" a="0" idx="0"/>
-                <switchable offvalue="0" onvalue="1" port="in" dataname="Value"/>
-            </movable>
-            <movable idx="1">
                 <icon userpath="22directionalvalve_user.svg"/>
                 <data port="xv" dataname="Value" idx="0"/>
                 <movement x="-40" y="0" a="0" idx="0" divisor="x_vmax#Value"/>
-                <start x="0" y="0" a="0"/>
-                <transformorigin x="0" y="0"/>
+                <switchable offvalue="0" onvalue="1" port="in" dataname="Value" hideicon="false"/>
             </movable>
         </animation>
     </modelobject>

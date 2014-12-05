@@ -12,8 +12,7 @@
             <movable>
                 <icon userpath="gauge_movable.svg"/>
                 <data port="in" dataname="Value" idx="0"/>
-                <divisor name="max"/>
-                <movement x="0" y="0" a="-300" idx="0"/>
+                <movement x="0" y="0" a="-300" idx="0" divisor="max"/>
                 <start x="0" y="0" a="-150"/>
                 <transformorigin x="35" y="35"/>
             </movable>
