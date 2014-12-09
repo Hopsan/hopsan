@@ -30,22 +30,13 @@ defineReplace(setFMILIBPathInfo){
         exists($${libDir}){
             files =
 
-            win32:magic_hopsan_libpath = -L$${libDir}/build-fmil -llibfmilib_shared -llibfmu1_dll_cs -llibfmu1_dll_me -llibfmu2_dll_cs -llibfmu2_dll_me
-            unix:magic_hopsan_libpath = -L$${libDir}/build-fmil -lfmilib_shared -lfmu1_dll_cs -lfmu1_dll_me -lfmu2_dll_cs -lfmu2_dll_me
-            magic_hopsan_includepath = $${FMILIB_PATH}/Config.cmake
-            magic_hopsan_includepath *= $${FMILIB_PATH}/src/CAPI/include
-            magic_hopsan_includepath *= $${FMILIB_PATH}/src/Import/include
-            magic_hopsan_includepath *= $${FMILIB_PATH}/src/Util/include
-            magic_hopsan_includepath *= $${FMILIB_PATH}/src/XML/include
-            magic_hopsan_includepath *= $${FMILIB_PATH}/src/ZIP/include
-            magic_hopsan_includepath *= $${FMILIB_PATH}/ThirdParty/FMI/default
+            win32:magic_hopsan_libpath = -L$${libDir}/install/lib -llibfmilib_shared
+            unix:magic_hopsan_libpath = -L$${libDir}/install/lib -lfmilib_shared
             magic_hopsan_includepath *= $${FMILIB_PATH}/install/include
 
             #Set files to copy
-            win32:files = build-fmil/libfmilib_shared$${DLL_EXT}* build-fmil/libfmu1_dll_cs$${DLL_EXT}*
-            win32:files *= build-fmil/libfmu1_dll_me$${DLL_EXT}* build-fmil/libfmu2_dll_cs$${DLL_EXT}* build-fmil/libfmu2_dll_me$${DLL_EXT}*
-            unix:files = build-fmil/libfmilib_shared$${DLL_EXT}* build-fmil/libfmu1_dll_cs$${DLL_EXT}* 
-            unix:files *= build-fmil/libfmu1_dll_me$${DLL_EXT}* build-fmil/libfmu2_dll_cs$${DLL_EXT}* build-fmil/libfmu2_dll_me$${DLL_EXT}*
+            win32:files = install/lib/libfmilib_shared$${DLL_EXT}*
+            unix:files = install/lib/libfmilib_shared$${DLL_EXT}*
 
             #Generate the copy command
             magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
