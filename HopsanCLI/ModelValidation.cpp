@@ -34,6 +34,7 @@
 
 #include <cstring>
 #include <iomanip>
+#include <ctime>
 
 using namespace hopsan;
 using namespace std;
