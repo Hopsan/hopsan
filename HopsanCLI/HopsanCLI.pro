@@ -77,8 +77,14 @@ win32 {
 # Project files
 # -------------------------------------------------
 SOURCES += main.cpp \
-    cliFunctions.cpp
+    CliUtilities.cpp \
+    ModelValidation.cpp \
+    core_cli.cpp \
+    ModelUtilities.cpp
 
 HEADERS += \
-    cliFunctions.h \
-    version_cli.h
+    version_cli.h \
+    CliUtilities.h \
+    ModelValidation.h \
+    core_cli.h \
+    ModelUtilities.h

@@ -22,35 +22,18 @@
 //!
 //$Id$
 
-#ifndef CLIFUNCTIONS_H
-#define CLIFUNCTIONS_H
+#ifndef MODELUTILITIES_H
+#define MODELUTILITIES_H
 
 #include <string>
 #include <vector>
+#include "core_cli.h"
 
-// Forward Declaration
-namespace hopsan {
-class ComponentSystem;
-}
-
-// ===== Help Functions =====
-void splitFilePath(const std::string fullPath, std::string &rBasePath, std::string &rFileName);
-void splitFileName(const std::string fileName, std::string &rBaseName, std::string &rExt);
-void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector);
-std::string relativePath(std::string basePath, std::string fullPath);
-
-// ===== Print functions =====
-enum ColorsEnumT {Red, Green, Blue, Yellow, White, Reset};
-void printWaitingMessages(const bool printDebug=true);
-void printErrorMessage(const std::string &rError);
-void printWarningMessage(const std::string &rWarning);
-void printColorMessage(const ColorsEnumT color, const std::string &rMessage);
 void printTsInfo(const hopsan::ComponentSystem* pSystem);
 void printSystemParams(hopsan::ComponentSystem* pSystem);
 void printComponentHierarchy(hopsan::ComponentSystem *pSystem, std::string prefix="",
                              const bool doPrintTsInfo=false,
                              const bool doPrintSystemParams=false);
-void setTerminalColor(const ColorsEnumT color);
 
 // ===== Save Functions =====
 enum SaveResults {Final, Full};
@@ -60,15 +43,11 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
 
 // ===== Load Functions =====
 void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentSystem* pSystem);
-void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames);
 void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::string> &rComps, std::vector<std::string> &rPorts);
 
-// ===== compare Functions =====
-bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &rRef, const double tol);
-
-// ===== Model validation =====
-bool performModelTest(const std::string hvcFilePath);
-bool createModelTestDataSet(const std::string modelPath, const std::string hvcFilePath);
+// ===== Help Functions =====
+void generateFullSystemHierarchyName(const hopsan::ComponentSystem *pSys, hopsan::HString &rFullSysName);
+hopsan::HString generateFullPortVariableName(const hopsan::Port *pPort, const int dataId);
 
 
-#endif // CLIFUNCTIONS_H
+#endif // MODELUTILITIES_H

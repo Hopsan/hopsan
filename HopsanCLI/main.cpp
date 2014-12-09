@@ -29,11 +29,14 @@
 
 #include <tclap/CmdLine.h>
 
-#include "cliFunctions.h"
+#include "ModelUtilities.h"
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
 #include "TicToc.hpp"
 #include "version_cli.h"
+
+#include "CliUtilities.h"
+#include "ModelValidation.h"
 
 // If debug extension has not already been defined then define it to prevent compilation error
 #ifndef DEBUG_EXT
