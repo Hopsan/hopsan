@@ -1,0 +1,70 @@
+include( ../Common.prf )
+
+#Helpfunction to fetch correct FMILibrary INCLUDEPATH and LIBS path
+defineReplace(setFMILIBPathInfo){
+    #Assign input arguments
+    externalSrc = $$1
+    dstDir = $$2
+
+    #Set FMILibrary paths, Paths that are higher up in the list will have priority if found
+    win32:contains(QMAKE_HOST.arch, x86_64){
+        # 64 bit Windows release
+        FMILIB_PATHS *= $${PWD}/Dependencies/FMILibrary-2.0.1
+    } else {
+        # 32 bit Windows version or Linux / Mac
+        FMILIB_PATHS *= $${PWD}/Dependencies/FMILibrary-2.0.1
+    }
+    FMILIB_PATH = $$selectPath($$externalSrc, $$FMILIB_PATHS, "FMILibrary")
+
+    #warning(FMILIB_PATH $${FMILIB_PATH})
+
+    #Empty variables to fill in
+    magic_hopsan_libpath =
+    magic_hopsan_includepath =
+    magic_hopsan_qmake_post_link =
+    libDir =
+
+    exists($${FMILIB_PATH}){
+        libDir = $${FMILIB_PATH}
+        #Check libfolder path
+        exists($${libDir}){
+            files =
+
+            magic_hopsan_libpath = -L$${libDir}/build-fmil -lfmilib_shared -lfmu1_dll_cs -lfmu1_dll_me -lfmu2_dll_cs -lfmu2_dll_me
+            magic_hopsan_includepath = $${FMILIB_PATH}/Config.cmake
+            magic_hopsan_includepath *= $${FMILIB_PATH}/src/CAPI/include
+            magic_hopsan_includepath *= $${FMILIB_PATH}/src/Import/include
+            magic_hopsan_includepath *= $${FMILIB_PATH}/src/Util/include
+            magic_hopsan_includepath *= $${FMILIB_PATH}/src/XML/include
+            magic_hopsan_includepath *= $${FMILIB_PATH}/src/ZIP/include
+            magic_hopsan_includepath *= $${FMILIB_PATH}/ThirdParty/FMI/default
+
+            #Set files to copy
+            win32:files = build-fmil/fmilib_shared$${DLL_EXT} build-fmil/fmu1_dll_cs$${DLL_EXT} 
+            win32:files *= build-fmil/fmu1_dll_me$${DLL_EXT} build-fmil/fmu2_dll_cs$${DLL_EXT} build-fmil/fmu2_dll_me$${DLL_EXT}
+            unix:files = build-fmil/libfmilib_shared$${DLL_EXT}* build-fmil/libfmu1_dll_cs$${DLL_EXT}* 
+            unix:files *= build-fmil/libfmu1_dll_me$${DLL_EXT}* build-fmil/libfmu2_dll_cs$${DLL_EXT}* build-fmil/libfmu2_dll_me$${DLL_EXT}*
+
+            #Generate the copy command
+            magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
+            #message(qmake_post_link $${magic_hopsan_qmake_post_link})
+        }
+    }
+
+    !exists($${libDir}){
+        warning('Could not find your compiled FMILibrary dll')
+        magic_hopsan_libpath =
+        magic_hopsan_includepath =
+        magic_hopsan_qmake_post_link =
+    }
+
+    #Export lists to INCLUDEPATH, LIBS and QMAKE_POST_LINK variables
+    export(magic_hopsan_libpath)
+    export(magic_hopsan_includepath)
+    export(magic_hopsan_qmake_post_link)
+
+    #message(----------------Includepath is $${magic_hopsan_includepath})
+    #message(----------------Libs is $${magic_hopsan_libpath})
+
+    return($$magic_hopsan_libpath)
+}

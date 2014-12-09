@@ -2,6 +2,7 @@
 # Global project options
 # -------------------------------------------------
 include( ../Common.prf )
+include( HopsanGeneratorBuild.prf )
 
 TARGET = HopsanGenerator
 TEMPLATE = lib
@@ -15,6 +16,16 @@ QT += widgets concurrent
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
+#--------------------------------------------------------
+# Set the FMILibrary paths and dll/so/dylib/framework post linking copy command
+d = $$setFMILIBPathInfo($$(QWT_PATH), $$DESTDIR)
+isEmpty(d):warning("ERROR: Failed to locate FMILibrary, have you compiled it and put it in the expected location?")
+
+LIBS *= $$magic_hopsan_libpath
+INCLUDEPATH *= $$magic_hopsan_includepath
+
+QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+message(qmake_post_link $${QMAKE_POST_LINK})
 
 #--------------------------------------------------
 # Add the include path to our self, (HopsanGenerator)
