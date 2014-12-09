@@ -23,6 +23,9 @@
 //!
 //$Id$
 
+#ifndef HOPSAN_RABITXML_HPP
+#define HOPSAN_RABITXML_HPP
+
 #include <string>
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
@@ -213,5 +216,4 @@ void addXmlDeclaration(rapidxml::xml_document<> *pDoc)
     pDoc->append_node(pDecl);
 }
 
-
-
+#endif
