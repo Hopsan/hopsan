@@ -72,6 +72,7 @@ DesktopHandler::DesktopHandler()
     mDefaultConfigPath = mDefaultDataPath;
     mDefaultTempPath = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/";
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
+    mDefaultDocumentsPath.replace("\\", "/");
 #endif
     mBackupPath = mDefaultDocumentsPath+"Backup/";
     mModelsPath = mDefaultDocumentsPath+"Models/";

@@ -41,6 +41,8 @@
 
 #include "SymHop.h"
 
+#include "JM/jm_portability.h"
+
 //class ModelObjectAppearance;
 
 namespace hopsan {
@@ -160,7 +162,7 @@ public:
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 bool removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLinks="");
+bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLinks="", QString extraIncludes="");
 bool compile(QString path, QString o, QString c, QString i, QString l, QString flags, QString &output);
 QString toVarName(const QString org);
 QString extractTaggedSection(QString str, QString tag);
@@ -173,6 +175,7 @@ void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &f
 QStringList getHopsanCoreSourceFiles();
 QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
 
+void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
 class GeneratorNodeInfo
 {

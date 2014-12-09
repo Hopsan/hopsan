@@ -19,5 +19,6 @@
         <file>templates/fmuCoSimComponentTemplate.hpp</file>
         <file>templates/fmuCoSimSourceTemplate.c</file>
         <file>templates/simulinkCompileScriptTemplate.m</file>
+        <file>templates/fmi2ComponentTemplate.hpp</file>
     </qresource>
 </RCC>

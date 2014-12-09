@@ -123,6 +123,26 @@ void HopsanGenerator::printMessage(const QString &msg) const
 }
 
 
+void HopsanGenerator::printWarningMessage(const QString &msg) const
+{
+    if(mShowDialog)
+    {
+        mpTextEdit->setTextColor(QColor("Orange"));
+        mpTextEdit->append(msg);
+        QApplication::processEvents();
+#ifdef WIN32
+        Sleep(10);
+#else
+        usleep(10000);
+#endif
+    }
+    else
+    {
+        //qDebug() << msg;
+    }
+}
+
+
 void HopsanGenerator::printErrorMessage(const QString &msg) const
 {
     if(mShowDialog)
@@ -773,7 +793,8 @@ void HopsanGenerator::generateNewLibrary(QString path, QStringList hppFiles)
         QString code = hppFile.readAll();
         hppFile.close();
 
-        typeNames.append(code.section("class ",1,1).section(" : public",0,0).trimmed());
+        QString temp = code.section("class ",1,1);
+        typeNames.append(temp.section(" : public",0,0).trimmed());
     }
 
     printMessage("Writing "+libName+".cc...");

@@ -238,7 +238,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
 
 
 
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLinks)
+bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLinks, QString extraIncludes)
 {
     pGenerator->printMessage("Writing compilation script...");
 
@@ -281,6 +281,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     QString i = pGenerator->getCoreIncludePath();
     i.prepend("-I\"");
     i.append("\"");
+    i.append(" "+extraIncludes);
 
     QString binDir = pGenerator->getBinPath();
     QString l = "-L\""+binDir+"\" -lHopsanCore "+extraLinks;
@@ -661,3 +662,20 @@ void GeneratorNodeInfo::getNodeTypes(QStringList &nodeTypes)
 
 
 
+
+
+void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+{
+    if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
+    {
+        //printErrorMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
+    }
+    else if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
+    {
+        //printWarningMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
+    }
+    else
+    {
+        //printMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
+    }
+}

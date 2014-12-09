@@ -7,6 +7,7 @@ class HopsanFMIGenerator : public HopsanGenerator
 {
 public:
     HopsanFMIGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
+    bool generateFromFmu2(QString code, QString targetPath, QString &rTypeName, QString &rHppPath);
     void generateFromFmu(QString code, QString targetPath);
     void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, bool me=false);
 

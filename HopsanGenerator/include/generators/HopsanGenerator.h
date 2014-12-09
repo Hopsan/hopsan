@@ -68,6 +68,7 @@ public:
     QString getCoreIncludePath() const;
     QString getBinPath() const;
     void printMessage(const QString &msg) const;
+    void printWarningMessage(const QString &msg) const;
     void printErrorMessage(const QString &msg) const;
     void compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
     void generateNewLibrary(QString path, QStringList hppFiles);

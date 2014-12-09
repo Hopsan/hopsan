@@ -6,6 +6,17 @@
 #include <QProcess>
 #include <QUuid>
 
+//#include "../ThirdParty/FMILibrary-2.0.1/Config.cmake/fmilib.h"
+
+#include <stddef.h>
+//#include "fmilib_config.h"
+
+#include "FMI/fmi_import_context.h"
+#include <FMI1/fmi1_import.h>
+#include <FMI2/fmi2_import.h>
+
+#include <JM/jm_portability.h>
+
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -19,6 +30,453 @@ using namespace hopsan;
 HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath, bool showDialog)
     : HopsanGenerator(coreIncludePath, binPath, showDialog)
 {
+
+}
+
+
+//! @brief Generates a Hopsan component from a Functional Mockup Unit using FMI 2.0 standard
+//! @param path Path to .FMU file
+//! @param targetPath Path where to extract files and generate component
+//! @param rTypeName Reference to string containing the type name of the generated component
+//! @param rHppPath Reference to string containing the path to the generated .HPP file
+bool HopsanFMIGenerator::generateFromFmu2(QString path, QString targetPath, QString &rTypeName, QString &rHppPath)
+{
+    //----------------------------------------//
+    printMessage("Initializing FMU 2.0 import");
+    printMessage("path = "+path);
+    printMessage("targetPath = "+targetPath);
+    //----------------------------------------//
+
+    fmi2_callback_functions_t callBackFunctions;
+    QByteArray pathArray = path.toLocal8Bit();
+    const char* FMUPath = pathArray.data();
+    targetPath = targetPath+QFileInfo(path).baseName();
+    if(!QFileInfo(targetPath).exists())
+    {
+        QDir().mkpath(targetPath);
+    }
+    QByteArray targetArray = targetPath.toLocal8Bit();
+    const char* tmpPath = targetArray.data();
+    jm_callbacks callbacks;
+    fmi_import_context_t* context;
+    fmi_version_enu_t version;
+    jm_status_enu_t status;
+    //int k;
+
+    fmi2_import_t* fmu;
+
+    callbacks.malloc = malloc;
+    callbacks.calloc = calloc;
+    callbacks.realloc = realloc;
+    callbacks.free = free;
+    callbacks.logger = hopsanLogger;
+    callbacks.log_level = jm_log_level_debug;
+    callbacks.context = 0;
+
+    context = fmi_import_allocate_context(&callbacks);
+
+    version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+
+    if(version != fmi_version_2_0_enu) {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
+        printErrorMessage("The code only supports version 2.0\n");
+
+        return false;
+    }
+
+    //-----------------------------------------//
+    printMessage("Reading modelDescription.xml");
+    //-----------------------------------------//
+
+    fmu = fmi2_import_parse_xml(context, tmpPath, 0);
+
+    if(!fmu)
+    {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
+        printErrorMessage("Error parsing XML, exiting\n");
+        return false;
+    }
+
+    if(fmi2_import_get_fmu_kind(fmu) == fmi2_fmu_kind_me)
+    {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
+        printErrorMessage("Only CS 2.0 is supported by this code\n");
+        return false;
+    }
+
+    callBackFunctions.logger = fmi2_log_forwarding;
+    callBackFunctions.allocateMemory = calloc;
+    callBackFunctions.freeMemory = free;
+    callBackFunctions.componentEnvironment = fmu;
+
+    status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callBackFunctions);
+    if (status == jm_status_error)
+    {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
+        printErrorMessage(QString("Could not create the DLL loading mechanism(C-API) (error: %1).\n").arg(fmi2_import_get_last_error(fmu)));
+        return false;
+    }
+
+    //size_t nVars = fmi2_import_get_number_of_continuous_states(fmu);
+    //qDebug() << QString("FMU has %1 variables!").arg(nVars);
+
+    //Declare lists for parameters, input variables and output variables
+    QStringList parNames, parVars, parRefs;
+    QStringList inputNames, inputVars, inputRefs;
+    QStringList outputNames, outputVars, outputRefs;
+
+    //Loop through variables in FMU and generate the lists
+    fmi2_import_variable_list_t *pVarList = fmi2_import_get_variable_list(fmu,0);
+    for(size_t i=0; i<fmi2_import_get_variable_list_size(pVarList); ++i)
+    {
+        fmi2_import_variable_t *pVar = fmi2_import_get_variable(pVarList, i);
+        QString name = fmi2_import_get_variable_name(pVar);
+        fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
+        fmi2_base_type_enu_t type = fmi2_import_get_variable_base_type(pVar);
+        fmi2_value_reference_t vr = fmi2_import_get_variable_vr(pVar);
+        qDebug() << "Found variable: " << QString(name) << ", causality: " << causality << ", type: " << type << ", vr: " << vr;
+        name = toVarName(name);//name.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+        if(causality == fmi2_causality_enu_parameter)
+        {
+            parNames.append(name);
+            parVars.append("m"+name);
+            parRefs.append(QString::number(vr));
+        }
+        if(causality == fmi2_causality_enu_input)
+        {
+            inputNames.append(name);
+            inputVars.append("mp"+name);
+            inputRefs.append(QString::number(vr));
+        }
+        if(causality == fmi2_causality_enu_output || causality == fmi2_causality_enu_local) //! @todo Local should be removed from here!
+        {
+
+            outputNames.append(name);
+            outputVars.append("mp"+name);
+            outputRefs.append(QString::number(vr));
+        }
+    }
+
+    //Get name of FMU
+    QString fmuName = fmi2_import_get_model_name(fmu);
+    fmuName = toVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+
+    //--------------------------------------------//
+    printMessage("Creating " + fmuName + ".hpp...");
+    //--------------------------------------------//
+
+    //Create <fmuname>.hpp
+    QString hppPath = targetPath + "/" + fmuName + "/component_code";
+    if(!QFileInfo(hppPath).exists())
+    {
+        QDir().mkpath(hppPath);
+    }
+    QFile fmuComponentHppFile;
+    fmuComponentHppFile.setFileName(hppPath+"/"+fmuName+".hpp");
+    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
+        removeDir(targetPath);
+        return false;
+    }
+
+    //-------------------------------------------//
+    printMessage("Writing " + fmuName + ".hpp...");
+    //-------------------------------------------//
+
+    //Generate HPP file
+    QFile fmuComponentTemplateFile;
+    fmuComponentTemplateFile.setFileName(":templates/fmi2ComponentTemplate.hpp");
+    assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString fmuComponentCode;
+    QTextStream t2(&fmuComponentTemplateFile);
+    fmuComponentCode = t2.readAll();
+    fmuComponentTemplateFile.close();
+    if(fmuComponentCode.isEmpty())
+    {
+        printErrorMessage("Unable to generate code for "+fmuName+".hpp.");
+        removeDir(targetPath);
+        return false;
+    }
+
+    QString headerGuard = fmuName.toUpper()+"_HPP_INCLUDED";
+    QString className = "FMU_"+fmuName;
+
+    QString localVars;
+    if(!parVars.isEmpty())
+    {
+        localVars.append("double ");
+        foreach(const QString &varName, parVars)
+        {
+            localVars.append(varName+", ");
+        }
+        if(localVars.endsWith(", "))
+        {
+            localVars.chop(2);
+        }
+        localVars.append(";\n");
+    }
+    if(!inputVars.isEmpty()  || !outputVars.isEmpty())
+    {
+        localVars.append("double ");
+        foreach(const QString &varName, inputVars)
+        {
+            localVars.append("*"+varName+", ");
+        }
+        foreach(const QString &varName, outputVars)
+        {
+            localVars.append("*"+varName+", ");
+        }
+        if(localVars.endsWith(", "))
+        {
+            localVars.chop(2);
+        }
+        localVars.append(";\n");
+    }
+
+    QString addConstants;
+    for(int i=0; i<parNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            addConstants.append("        ");
+        }
+        addConstants.append("addConstant(\""+parNames.at(i)+"\", \"\", \"\", 0, "+parVars.at(i)+");\n");
+    }
+
+    QString addInputs;
+    for(int i=0; i<inputNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            addInputs.append("        ");
+        }
+        addInputs.append("addInputVariable(\""+inputNames.at(i)+"\", \"\", \"\", 0, &"+inputVars.at(i)+");\n");
+    }
+
+    QString addOutputs;
+    for(int i=0; i<outputNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            addOutputs.append("        ");
+        }
+        addOutputs.append("addOutputVariable(\""+outputNames.at(i)+"\", \"\", \"\", 0, &"+outputVars.at(i)+");\n");
+    }
+
+    QString setPars;
+    QString temp = extractTaggedSection(fmuComponentCode, "setpars");
+    for(int i=0; i<parNames.size(); ++i)
+    {
+        QString tempVar = temp;
+        tempVar.replace("<<<vr>>>", parRefs.at(i));
+        tempVar.replace("<<<var>>>", parVars.at(i));
+        setPars.append(tempVar+"\n");
+    }
+
+    QString readVars;
+    temp = extractTaggedSection(fmuComponentCode, "readvars");
+    for(int i=0; i<inputNames.size(); ++i)
+    {
+        QString tempVar = temp;
+        tempVar.replace("<<<vr>>>", inputRefs.at(i));
+        tempVar.replace("<<<var>>>", inputVars.at(i));
+        readVars.append(tempVar+"\n");
+    }
+
+    QString writeVars;
+    temp = extractTaggedSection(fmuComponentCode, "writevars");
+    for(int i=0; i<outputNames.size(); ++i)
+    {
+        QString tempVar = temp;
+        tempVar.replace("<<<vr>>>", outputRefs.at(i));
+        tempVar.replace("<<<var>>>", outputVars.at(i));
+        writeVars.append(tempVar+"\n");
+    }
+
+    fmuComponentCode.replace("<<<headerguard>>>", headerGuard);
+    fmuComponentCode.replace("<<<className>>>", className);
+    fmuComponentCode.replace("<<<localvars>>>", localVars);
+    fmuComponentCode.replace("<<<addconstants>>>", addConstants);
+    fmuComponentCode.replace("<<<addinputs>>>", addInputs);
+    fmuComponentCode.replace("<<<addoutputs>>>", addOutputs);
+    fmuComponentCode.replace("<<<fmupath>>>", path);
+    QDir().mkpath(targetPath+"/temp");
+    fmuComponentCode.replace("<<<temppath>>>", targetPath+"/temp/");
+    replaceTaggedSection(fmuComponentCode, "setpars", setPars);
+    replaceTaggedSection(fmuComponentCode, "readvars", readVars);
+    replaceTaggedSection(fmuComponentCode, "writevars", writeVars);
+
+    QTextStream fmuComponentHppStream(&fmuComponentHppFile);
+    fmuComponentHppStream << fmuComponentCode;
+    fmuComponentHppFile.close();
+
+
+    //-------------------------------------------//
+    printMessage("Writing " + fmuName + ".xml...");
+    //-------------------------------------------//
+
+    //Create <fmuname>.xml
+    QString cafPath = targetPath + "/" + fmuName;
+    QFile fmuCafFile;
+    fmuCafFile.setFileName(cafPath + "/" + fmuName + ".xml");
+    if(!fmuCafFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open "+fmuName+".xml for writing.");
+        removeDir(targetPath);
+        return false;
+    }
+
+    //Pre-calculated things
+    int nInputPorts = inputNames.size();
+    int nOutputPorts = outputNames.size();
+    double scale = qMax(qMax(nInputPorts, nOutputPorts)/2.0, 1.0);
+    QString scaleStr = QString::number(scale);
+
+    //Create DOM tree
+    QDomDocument domDocument;
+
+    QDomNode xmlProcessingInstruction = domDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
+    domDocument.appendChild(xmlProcessingInstruction);
+
+    QDomElement cafRoot = domDocument.createElement("hopsanobjectappearance");
+    cafRoot.setAttribute("version", "0.3");
+    domDocument.appendChild(cafRoot);
+
+    QDomElement modelElement = domDocument.createElement("modelobject");
+    modelElement.setAttribute("typename", "FMU_"+fmuName);
+    modelElement.setAttribute("displayname", "FMU_"+fmuName);
+    modelElement.setAttribute("sourcecode", "component_code/"+fmuName+".hpp");
+    modelElement.setAttribute("libpath", "");
+    modelElement.setAttribute("recompilable", "true");
+    cafRoot.appendChild(modelElement);
+
+    QDomElement iconsElement = domDocument.createElement("icons");
+    modelElement.appendChild(iconsElement);
+
+    QDomElement iconElement = domDocument.createElement("icon");
+    iconElement.setAttribute("type", "user");
+    iconElement.setAttribute("path", "fmucomponent.svg");
+    iconElement.setAttribute("iconrotation", "ON");
+    iconElement.setAttribute("scale", scaleStr);
+    iconsElement.appendChild(iconElement);
+
+    QDomElement portsElement = domDocument.createElement("ports");
+    modelElement.appendChild(portsElement);
+
+    double inputPosStep=1.0/(nInputPorts+1.0);      //These 4 variables are used for input/output port positioning
+    double outputPosStep=1.0/(nOutputPorts+1.0);
+    double inputPos=0;
+    double outputPos=0;
+
+    QString numStr;
+    for(int i=0; i<nInputPorts; ++i)
+    {
+        inputPos += inputPosStep;
+        numStr.setNum(inputPos);
+
+        QDomElement portElement = domDocument.createElement("port");
+        portElement.setAttribute("name", inputNames.at(i));
+        portElement.setAttribute("x", "0.0");
+        portElement.setAttribute("y", numStr);
+        portElement.setAttribute("a", "180");
+        portsElement.appendChild(portElement);
+    }
+    for(int i=0; i<nOutputPorts; ++i)
+    {
+        outputPos += outputPosStep;
+        numStr.setNum(outputPos);
+
+        QDomElement portElement = domDocument.createElement("port");
+        portElement.setAttribute("name", outputNames.at(i));
+        portElement.setAttribute("x", "1.0");
+        portElement.setAttribute("y", numStr);
+        portElement.setAttribute("a", "0.0");
+        portsElement.appendChild(portElement);
+    }
+
+    //Save to file
+    QTextStream out(&fmuCafFile);
+    domDocument.save(out, 2);
+    fmuCafFile.close();
+
+
+    rTypeName = fmuName;
+    rHppPath = QFileInfo(fmuComponentHppFile).absoluteFilePath();
+
+    return true;
+
+//    //Instantiate FMU
+//    fmi2_string_t instanceName = "Test CS model instance";
+//    fmi2_string_t fmuLocation = "";
+//    fmi2_boolean_t visible = fmi2_false;
+//    jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, fmuLocation, visible);
+//    if (jmstatus == jm_status_error)
+//    {
+//        printErrorMessage("fmi2_import_instantiate() failed!");
+//        return;
+//    }
+
+//    //Setup experiment
+//    fmi2_real_t relativeTol = 1e-4;
+//    double dT = 0.001;
+//    double stopT = 3;
+//    double time = 0;
+//    fmi2_status_t fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTol, time, fmi2_false, stopT);
+//    if(fmistatus != fmi2_status_ok)
+//    {
+//        printErrorMessage("fmi2_import_setup_experiment() failed!");
+//        return;
+//    }
+
+//    //Enter initialization mode
+//    fmistatus = fmi2_import_enter_initialization_mode(fmu);
+//    if(fmistatus != fmi2_status_ok)
+//    {
+//        printErrorMessage("fmi2_import_enter_initialization_mode() failed!");
+//        return;
+//    }
+
+//    fmistatus = fmi2_import_exit_initialization_mode(fmu);
+//    if(fmistatus != fmi2_status_ok)
+//    {
+//        printErrorMessage("fmi2_import_exit_initialization_mode() failed!");
+//        return;
+//    }
+
+//    QVector<double> tVector, hVector;
+//    while(time <= stopT)
+//    {
+//        fmi2_import_do_step(fmu, time, dT, true);
+
+//        double rValue;
+//        fmi2_value_reference_t vr = 0;
+
+//        tVector.append(time);
+//        fmistatus = fmi2_import_get_real(fmu, &vr, 1, &rValue);
+//        hVector.append(rValue);
+
+//        time += dT;
+//    }
+
+//    QFile testFile("c:/users/robbr48/Documents/Slask/height.csv");
+//    testFile.open(QFile::Text | QFile::WriteOnly);
+//    for(int i=0; i<tVector.size(); ++i)
+//    {
+//        testFile.write(QString::number(tVector.at(i)).toLocal8Bit() + ", " + QString::number(hVector.at(i)).toLocal8Bit()+"\n");
+//    }
+//    testFile.close();
+
+//    fmistatus = fmi2_import_terminate(fmu);
+
+//    fmi2_import_free_instance(fmu);
+
+//    fmi2_import_destroy_dllfmu(fmu);
+
+//    fmi2_import_free(fmu);
+//    fmi_import_free_context(context);
+
+//    printMessage("Everything seems to be OK since you got this far=)!");
 
 }
 
@@ -775,7 +1233,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QList<QStringList> tlmPorts;
 
     std::vector<HString> names = pSystem->getSubComponentNames();
-        for(size_t i=0; i<names.size(); ++i)
+    for(size_t i=0; i<names.size(); ++i)
     {
         getInterfaceInfo(pSystem->getSubComponent(names[i])->getTypeName().c_str(), names[i].c_str(),
                          inputVariables, inputComponents, inputPorts, inputDatatypes,
@@ -803,7 +1261,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     //Create file objects for all files that shall be created
     QFile modelSourceFile;
     QString modelName = pSystem->getName().c_str();
-   // modelName.chop(4);
+    // modelName.chop(4);
     QString realModelName = modelName;          //Actual model name (used for hmf file)
     modelName.replace(" ", "_");        //Replace white spaces with underscore, to avoid problems
     modelSourceFile.setFileName(savePath + "/" + modelName + ".c");
@@ -1244,7 +1702,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QFile modelSoFile(savePath + "/" + modelName + ".so");
     modelSoFile.copy(savePath + "/fmu/binaries/linux64/" + modelName + ".so");
 #endif
-   // QFile modelFile(savePath + "/" + realModelName + ".hmf");
+    // QFile modelFile(savePath + "/" + realModelName + ".hmf");
     modelFile.copy(savePath + "/fmu/resources/" + realModelName + ".hmf");
     modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
     tlmDescriptionFile.copy(savePath+"/fmu/"+modelName+"_TLM.xml");
