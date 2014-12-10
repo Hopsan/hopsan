@@ -52,6 +52,48 @@ class ComponentSystem;
 class HopsanGenerator;
 
 
+class ComponentAppearanceSpecification
+{
+public:
+    ComponentAppearanceSpecification(QString typeName)
+    {
+        mTypeName = typeName;
+        mDisplayName = typeName;
+        mRecompilable = false;
+        mUserIconRotation = true;
+        mIsoIconRotation = true;
+        mUserIconScale = 1.0;
+        mIsoIconScale = 1.0;
+    }
+
+    void addPort(QString name, int x, int y, int a)
+    {
+        mPortNames.append(name);
+        mPortX.append(x);
+        mPortY.append(y);
+        mPortA.append(a);
+    }
+
+    QString mTypeName;
+    QString mDisplayName;
+    QString mLibPath;
+    QString mSourceCode;
+    bool mRecompilable;
+
+    QString mUserIconPath;
+    bool mUserIconRotation;
+    QString mIsoIconPath;
+    bool mIsoIconRotation;
+    double mUserIconScale;
+    double mIsoIconScale;
+
+    QStringList mPortNames;
+    QList<int> mPortX;
+    QList<int> mPortY;
+    QList<int> mPortA;
+};
+
+
 class FMIPortSpecification
 {
 public:
@@ -174,6 +216,8 @@ bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Exp
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files);
 QStringList getHopsanCoreSourceFiles();
 QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
+
+bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
 void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 

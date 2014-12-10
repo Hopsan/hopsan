@@ -149,10 +149,9 @@ public:
         }
 
           //Set parameters
-        fmi2_value_reference_t vr;
-        double value;
+          fmi2_value_reference_t vr;
 >>>setpars>>>        vr = <<<vr>>>;
-        value = <<<var>>>;
+        double value = <<<var>>>;
         fmistatus = fmi2_import_set_real(fmu, &vr, 1, &value);
         <<<setpars<<<
 

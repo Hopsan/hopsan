@@ -661,9 +661,6 @@ void GeneratorNodeInfo::getNodeTypes(QStringList &nodeTypes)
 }
 
 
-
-
-
 void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
     if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)

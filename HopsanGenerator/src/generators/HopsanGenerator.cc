@@ -854,6 +854,103 @@ void HopsanGenerator::generateNewLibrary(QString path, QStringList hppFiles)
 
 
 
+bool HopsanGenerator::generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec)
+{
+    //Create <fmuname>.xml
+    QFile fmuCafFile;
+    fmuCafFile.setFileName(rPath);
+    if(!fmuCafFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open "+QFileInfo(rPath).absoluteFilePath()+" for writing.");
+        return false;
+    }
+
+    //Create DOM tree
+    QDomDocument domDocument;
+
+    QDomNode xmlProcessingInstruction = domDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
+    domDocument.appendChild(xmlProcessingInstruction);
+
+    QDomElement cafRoot = domDocument.createElement("hopsanobjectappearance");
+    cafRoot.setAttribute("version", "0.3");
+    domDocument.appendChild(cafRoot);
+
+    QDomElement modelElement = domDocument.createElement("modelobject");
+    modelElement.setAttribute("typename", rCafSpec.mTypeName);
+    modelElement.setAttribute("displayname", rCafSpec.mDisplayName);
+    modelElement.setAttribute("sourcecode", rCafSpec.mSourceCode);
+    modelElement.setAttribute("libpath", rCafSpec.mLibPath);
+    if(rCafSpec.mRecompilable)
+    {
+        modelElement.setAttribute("recompilable", "true");
+    }
+    else
+    {
+        modelElement.setAttribute("recompilable", "false");
+    }
+    cafRoot.appendChild(modelElement);
+
+    QDomElement iconsElement = domDocument.createElement("icons");
+    modelElement.appendChild(iconsElement);
+
+    if(!rCafSpec.mUserIconPath.isEmpty())
+    {
+        QDomElement iconElement = domDocument.createElement("icon");
+        iconElement.setAttribute("type", "user");
+        iconElement.setAttribute("path", rCafSpec.mUserIconPath);
+        if(rCafSpec.mUserIconRotation)
+        {
+            iconElement.setAttribute("iconrotation", "ON");
+        }
+        else
+        {
+            iconElement.setAttribute("iconrotation", "OFF");
+        }
+        iconElement.setAttribute("scale", rCafSpec.mUserIconScale);
+        iconsElement.appendChild(iconElement);
+    }
+
+    if(!rCafSpec.mIsoIconPath.isEmpty())
+    {
+        QDomElement iconElement = domDocument.createElement("icon");
+        iconElement.setAttribute("type", "iso");
+        iconElement.setAttribute("path", rCafSpec.mIsoIconPath);
+        if(rCafSpec.mIsoIconRotation)
+        {
+            iconElement.setAttribute("iconrotation", "ON");
+        }
+        else
+        {
+            iconElement.setAttribute("iconrotation", "OFF");
+        }
+        iconElement.setAttribute("scale", rCafSpec.mIsoIconScale);
+        iconsElement.appendChild(iconElement);
+    }
+
+
+    QDomElement portsElement = domDocument.createElement("ports");
+    modelElement.appendChild(portsElement);
+
+    for(int i=0; i<rCafSpec.mPortNames.size(); ++i)
+    {
+        QDomElement portElement = domDocument.createElement("port");
+        portElement.setAttribute("name", rCafSpec.mPortNames.at(i));
+        portElement.setAttribute("x", QString::number(rCafSpec.mPortX.at(i)));
+        portElement.setAttribute("y", QString::number(rCafSpec.mPortY.at(i)));
+        portElement.setAttribute("a", QString::number(rCafSpec.mPortA.at(i)));
+        portsElement.appendChild(portElement);
+    }
+
+    //Save to file
+    QTextStream out(&fmuCafFile);
+    domDocument.save(out, 2);
+    fmuCafFile.close();
+
+    return true;
+}
+
+
+
 void HopsanGenerator::setOutputPath(const QString path)
 {
     mOutputPath = path;

@@ -152,7 +152,13 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
 {
     HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     QString typeName, hppFile;
-    pGenerator->generateFromFmu2(QString(path.c_str()), QString(targetPath.c_str()), typeName, hppFile);
+    QString rPath = QString(path.c_str());
+    QString rTargetPath = QString(targetPath.c_str());
+    if(!pGenerator->generateFromFmu(rPath, rTargetPath, typeName, hppFile))
+    {
+        pGenerator->printErrorMessage("Import of FMU failed.");
+        return;
+    }
 
     QString fmuFileName = QFileInfo(QString(path.c_str())).baseName();
     QFileInfo libDirInfo = QFileInfo(QString(targetPath.c_str())+"/"+fmuFileName+"/"+typeName+"/");
@@ -168,8 +174,13 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
     i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/src/ZIP/include/");
     i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default/");
     i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/install/include/");
+#ifdef WIN32
     QString l = "-L"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1 -llibfmilib_shared";
+#else
+    QString l = "-L"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1 -lfmilib_shared";  //Remove extra "lib" prefix in Linux
+#endif
     compileComponentLibrary(libDirInfo.absoluteFilePath()+typeName+"_lib.xml", pGenerator, l, i);
+
 
     //pGenerator->generateFromFmu(QString(path.c_str()), QString(targetPath.c_str()));
     //Find

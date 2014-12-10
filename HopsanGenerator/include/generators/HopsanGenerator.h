@@ -72,6 +72,7 @@ public:
     void printErrorMessage(const QString &msg) const;
     void compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
     void generateNewLibrary(QString path, QStringList hppFiles);
+    bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
 protected:
 
