@@ -1,360 +1,181 @@
-#ifndef <<<modelname>>>_H
-#define <<<modelname>>>_H
+#ifndef <<<headerguard>>>
+#define <<<headerguard>>>
 
-//*******************************************//
-//             *** WARNING ***               //
-//                                           //
-//         AUTO GENERATED COMPONENT!         //
-// ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-//*******************************************//
-
-
-#define BUFSIZE 4096
-
-#define _WIN32_WINNT 0x0502
-#include "../fmi_me.h"
-#include "../xml_parser.h"
-#include "<<<includepath>>>ComponentEssentials.h"
-
-#include <sstream>
-#include <string>
-#include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
-#include <string.h>
+#include <time.h>
+#include <stddef.h>
+#include <sstream>
 #include <iostream>
-#include <assert.h>
-#ifdef WIN32
-#include <windows.h>
-#endif
 
-void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
-               fmiString category, fmiString message, ...){}
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
+
+#include "FMI/fmi_import_context.h"
+#include "FMI1/fmi1_import.h"
+#include "FMI2/fmi2_import.h"
+#include "JM/jm_portability.h"
+
+
+void localLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message) { }
 
 namespace hopsan {
 
-//*******************************************//
-//             *** WARNING ***               //
-//                                           //
-//         AUTO GENERATED COMPONENT!         //
-// ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-//*******************************************//
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
+class <<<className>>> : public ComponentQ
+{
 
-    class <<<modelname>>> : public Component<<<cqstype>>>
+private:
+    //Node data pointers
+    <<<localvars>>>
+
+    fmi1_callback_functions_t callBackFunctions;
+    jm_callbacks callbacks;
+    fmi_import_context_t* context;
+    fmi_version_enu_t version;
+    fmi1_status_t fmistatus;
+    jm_status_enu_t status;
+    int k;
+
+    fmi1_import_t* fmu;
+
+public:
+    static Component *Creator()
     {
-    private:
-        FMU mFMU;
-        FILE* mFile;
-        fmiComponent c;                  // instance of the fmu
-        fmiEventInfo eventInfo;          // updated by calls to initialize and eventUpdate
-        int nx;                          // number of state variables
-        int nz;                          // number of state event indicators
-        double *x;                       // continuous states
-        double *xdot;                    // the crresponding derivatives in same order
-        double *z;                // state event indicators
-        double *prez;             // previous values of state event indicators
+        return new <<<className>>>();
+    }
 
-        //Declare ports
->>>portdecl>>>        Port *<<<varname>>>;
-<<<portdecl<<<
+    void configure()
+    {
+        //Add constants
+        <<<addconstants>>>
 
-        //Declare node data pointers
->>>dataptrdecl>>>        double *<<<mpndname>>>;
-<<<dataptrdecl<<<
+        //Add input variables
+        <<<addinputs>>>
 
-        //Declare parameters
->>>pardecl>>>        double <<<varname>>>;
-<<<pardecl<<<
+        //Add output variables
+        <<<addoutputs>>>
+    }
 
-    public:
-        static Component *Creator()
+    void initialize()
+    {
+        addInfoMessage("Initializing FMU 2.0 import");
+
+        const char* FMUPath = "<<<fmupath>>>";
+        const char* tmpPath = "<<<temppath>>>";
+
+        callbacks.malloc = malloc;
+        callbacks.calloc = calloc;
+        callbacks.realloc = realloc;
+        callbacks.free = free;
+        callbacks.logger = localLogger;
+        callbacks.log_level = jm_log_level_debug;
+        callbacks.context = 0;
+
+        context = fmi_import_allocate_context(&callbacks);
+
+        version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+
+        if(version != fmi_version_1_enu)
         {
-            return new <<<modelname>>>();
+            addErrorMessage("The code only supports version 2.0\n");
+            stopSimulation();
+            return;
         }
 
-        void configure()
+        fmu = fmi1_import_parse_xml(context, tmpPath);
+
+        if(!fmu)
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-            mFMU.modelDescription = parse("<<<fmudir>>>/modelDescription.xml");
-            assert(mFMU.modelDescription);
-            assert(loadLib("<<<fmudir>>>/<<<modelname>>>.<<<fileext>>>"));
-            addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));
-
-            //Add ports
->>>addports>>>            <<<varname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>", <<<notrequired>>>);
-<<<addports<<<
-
-<<<addvars>>>
-
-            //Initialize and register parameters
->>>addconstants>>>            addConstant("<<<parname>>>", "<<<description>>>", "-", <<<initvalue>>>, <<<varname>>>);
-<<<addconstants<<<        }
-
-        void initialize()
-        {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-            if (!mFMU.modelDescription)
-            {
-                addErrorMessage("Missing FMU model description");
-                stopSimulation();
-                return;
-            }
-
-            //Initialize node data pointers
->>>initdataptrs>>>            <<<mpndname>>> = getSafeNodeDataPtr(<<<varname>>>, <<<datatype>>>);
-<<<initdataptrs<<<
-           
-            //Initialize FMU
-            ModelDescription* md;            // handle to the parsed XML file
-            const char* guid;                // global unique id of the fmu
-            fmiCallbackFunctions callbacks;  // called by the model during simulation
-            fmiStatus fmiFlag;               // return code of the fmu functions
-            fmiReal t0 = 0;                  // start time
-            fmiBoolean toleranceControlled = fmiFalse;
-            int loggingOn = 0;
-
-            // instantiate the fmu
-            md = mFMU.modelDescription;
-            guid = getString(md, att_guid);
-            callbacks.logger = fmuLogger;
-            callbacks.allocateMemory = calloc;
-            callbacks.freeMemory = free;
-            c = mFMU.instantiateModel(getModelIdentifier(md), guid, callbacks, loggingOn);
-
-            // allocate memory
-            nx = getNumberOfStates(md);
-            nz = getNumberOfEventIndicators(md);
-            x    = (double *) calloc(nx, sizeof(double));
-            xdot = (double *) calloc(nx, sizeof(double));
-            if (nz>0)
-            {
-                z    =  (double *) calloc(nz, sizeof(double));
-                prez =  (double *) calloc(nz, sizeof(double));
-            }
-              
-            ScalarVariable** vars = mFMU.modelDescription->modelVariables;
-            double value;
-            ScalarVariable* sv;
-            fmiValueReference vr;
-                        
-            //Set parameters
->>>setpars>>>            sv = vars[<<<valueref>>>];
-            vr = getValueReference(sv);
-            value=<<<varname>>>;
-            mFMU.setReal(c, &vr, 1, &value);
-<<<setpars<<<
-
-            // set the start time and initialize
-            fmiFlag =  mFMU.setTime(c, t0);
-            fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);
+            addErrorMessage("Error parsing XML, exiting\n");
+            stopSimulation();
+            return;
         }
 
-        void simulateOneTimestep()
+        if(fmi1_import_get_fmu_kind(fmu) == fmi1_fmu_kind_enu_me)
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-            ScalarVariable** vars = mFMU.modelDescription->modelVariables;
-            double value;
-            ScalarVariable* sv;
-            fmiValueReference vr;
-
-            //write input values
->>>readsignalinputs>>>            sv = vars[<<<valueref>>>];
-                vr = getValueReference(sv);
-                value = (*<<<mpndname>>>);
-                mFMU.setReal(c, &vr, 1, &value);
-<<<readsignalinputs<<<
->>>readinputs>>>            if(<<<varname>>>->isConnected())
-            {
-                sv = vars[<<<valueref>>>];
-                vr = getValueReference(sv);
-                value = (*<<<mpndname>>>);
-                mFMU.setReal(c, &vr, 1, &value);
-            }
-<<<readinputs<<<
-            //run simulation
-            simulateFMU();
-
-            //write back output values
->>>writeoutputs>>>            sv = vars[<<<valueref>>>];
-            vr = getValueReference(sv);
-            mFMU.getReal(c, &vr, 1, &value);
-            (*<<<varname>>>) = value;
-<<<writeoutputs<<<
-        }
-        void finalize()
-        {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-            //cleanup
-            mFMU.terminate(c);
-            mFMU.freeModelInstance(c);
-            if (x!=NULL) free(x);
-            if (xdot!= NULL) free(xdot);
-            if (z!= NULL) free(z);
-            if (prez!= NULL) free(prez);
+            addErrorMessage("Only CS 2.0 is supported by this code\n");
+            stopSimulation();
+             return;
         }
 
-        bool loadLib(std::string path)
+        callBackFunctions.logger = fmi1_log_forwarding;
+        callBackFunctions.allocateMemory = calloc;
+        callBackFunctions.freeMemory = free;
+
+        status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
+        if (status == jm_status_error)
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-            bool success = true;
-            void *h;
-            std::string libdir = path;
-            while(libdir.at(libdir.size()-1) != '/')
-            {
-            libdir.erase(libdir.size()-1, 1);
-            }
-#ifdef WIN32
-            SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies\n");
-            h = LoadLibraryA(path.c_str());
-#elif linux
-            h = dlopen(path.c_str(), RTLD_LAZY);
-            std::cout << dlerror();
-#endif
-            if (!h)
-            {
-                success = false; // failure
-                return success;
-            }
-            mFMU.dllHandle = h;
-
-            mFMU.getModelTypesPlatform   = (fGetModelTypesPlatform) getAdr(&success, "fmiGetModelTypesPlatform");
-            mFMU.instantiateModel        = (fInstantiateModel)   getAdr(&success, "fmiInstantiateModel");
-            mFMU.freeModelInstance       = (fFreeModelInstance)  getAdr(&success, "fmiFreeModelInstance");
-            mFMU.setTime                 = (fSetTime)            getAdr(&success, "fmiSetTime");
-            mFMU.setContinuousStates     = (fSetContinuousStates)getAdr(&success, "fmiSetContinuousStates");
-            mFMU.completedIntegratorStep = (fCompletedIntegratorStep)getAdr(&success, "fmiCompletedIntegratorStep");
-            mFMU.initialize              = (fInitialize)         getAdr(&success, "fmiInitialize");
-            mFMU.getDerivatives          = (fGetDerivatives)     getAdr(&success, "fmiGetDerivatives");
-            mFMU.getEventIndicators      = (fGetEventIndicators) getAdr(&success, "fmiGetEventIndicators");
-            mFMU.eventUpdate             = (fEventUpdate)        getAdr(&success, "fmiEventUpdate");
-            mFMU.getContinuousStates     = (fGetContinuousStates)getAdr(&success, "fmiGetContinuousStates");
-            mFMU.getNominalContinuousStates = (fGetNominalContinuousStates)getAdr(&success, "fmiGetNominalContinuousStates");
-            mFMU.getStateValueReferences = (fGetStateValueReferences)getAdr(&success, "fmiGetStateValueReferences");
-            mFMU.terminate               = (fTerminate)          getAdr(&success, "fmiTerminate");
-
-            mFMU.getVersion              = (fGetVersion)         getAdr(&success, "fmiGetVersion");
-            mFMU.setDebugLogging         = (fSetDebugLogging)    getAdr(&success, "fmiSetDebugLogging");
-            mFMU.setReal                 = (fSetReal)            getAdr(&success, "fmiSetReal");
-            mFMU.setInteger              = (fSetInteger)         getAdr(&success, "fmiSetInteger");
-            mFMU.setBoolean              = (fSetBoolean)         getAdr(&success, "fmiSetBoolean");
-            mFMU.setString               = (fSetString)          getAdr(&success, "fmiSetString");
-            mFMU.getReal                 = (fGetReal)            getAdr(&success, "fmiGetReal");
-            mFMU.getInteger              = (fGetInteger)         getAdr(&success, "fmiGetInteger");
-            mFMU.getBoolean              = (fGetBoolean)         getAdr(&success, "fmiGetBoolean");
-            mFMU.getString               = (fGetString)          getAdr(&success, "fmiGetString");
-            return success;
+            std::stringstream ss;
+            ss << "Could not create the DLL loading mechanism(C-API) (error: " << fmi1_import_get_last_error(fmu) << ").";
+            addErrorMessage(ss.str().c_str());
+            stopSimulation();
+            return;
         }
 
-        void* getAdr(bool* s, const char* functionName)
+        //Instantiate FMU
+        fmi1_string_t mimeType = "";
+        fmi1_string_t instanceName = "Test CS model instance";
+        fmi1_string_t fmuLocation = "";
+        fmi1_real_t timeout = 0.0;
+        fmi1_boolean_t visible = fmi1_false;
+        fmi1_boolean_t interactive = fmi1_false;
+        status = fmi1_import_instantiate_slave(fmu, instanceName, fmuLocation, mimeType, timeout, visible, interactive);
+        if (status == jm_status_error)
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-            char name[BUFSIZE];
-            void* fp;
-            sprintf(name, "%s_%s", getModelIdentifier(mFMU.modelDescription), functionName);
-#ifdef WIN32
-            fp = (void*)GetProcAddress(static_cast<HINSTANCE__*>(mFMU.dllHandle), name);
-#else
-            fp = dlsym(mFMU.dllHandle, name);
-#endif
-            if (!fp)
-            {
-                *s = false; // mark dll load as 'failed'
-            }
-            return fp;
+            addErrorMessage("fmi1_import_instantiate_slave() failed!");
+            stopSimulation();
+            return;
         }
 
-        void simulateFMU()
+        //Enter initialization mode
+        fmistatus = fmi1_import_initialize_slave(fmu, mTime, fmi1_false, 10);
+        if(fmistatus != fmi1_status_ok)
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-            int i;                          // For loop index
-            fmiBoolean timeEvent, stateEvent, stepEvent;
-            fmiStatus fmiFlag;               // return code of the fmu functions
-
-            if (eventInfo.terminateSimulation)
-            {
-                stopSimulation();
-            }
-
-            //Simulate one step
-
-            // get current state and derivatives
-            fmiFlag = mFMU.getContinuousStates(c, x, nx);
-            fmiFlag = mFMU.getDerivatives(c, xdot, nx);
-
-            // advance time
-            timeEvent = eventInfo.upcomingTimeEvent && eventInfo.nextEventTime < mTime;
-            fmiFlag = mFMU.setTime(c, mTime);
-
-            // perform one step
-            for (i=0; i<nx; i++) x[i] += mTimestep*xdot[i]; // forward Euler method
-            fmiFlag = mFMU.setContinuousStates(c, x, nx);
-
-            // Check for step event, e.g. dynamic state selection
-            fmiFlag = mFMU.completedIntegratorStep(c, &stepEvent);
-
-            // Check for state event
-            for (i=0; i<nz; i++) prez[i] = z[i];
-            fmiFlag = mFMU.getEventIndicators(c, z, nz);
-            stateEvent = FALSE;
-            for (i=0; i<nz; i++)
-            {
-                stateEvent = stateEvent || (prez[i] * z[i] < 0);
-            }
-
-            // handle events
-            if (timeEvent || stateEvent || stepEvent)
-            {
-                // event iteration in one step, ignoring intermediate results
-                fmiFlag = mFMU.eventUpdate(c, fmiFalse, &eventInfo);
-                // terminate simulation, if requested by the model
-                if (eventInfo.terminateSimulation)
-                {
-                    stopSimulation();
-                }
-            } // if event
+            addErrorMessage("fmi1_import_initialize_slave() failed!");
+            stopSimulation();
+            return; 
         }
-    };
+
+          //Set parameters
+          fmi1_value_reference_t vr;
+>>>setpars>>>        vr = <<<vr>>>;
+        double value = <<<var>>>;
+        fmistatus = fmi1_import_set_real(fmu, &vr, 1, &value);
+        <<<setpars<<<
+    }
+
+
+    void simulateOneTimestep()
+    {
+        //Read inputs
+        fmi1_value_reference_t vr;
+        double value;
+>>>readvars>>>        vr = <<<vr>>>;
+        value = (*<<<var>>>);
+        fmistatus = fmi1_import_set_real(fmu, &vr, 1, &value);
+        <<<readvars<<<
+
+        fmi1_import_do_step(fmu, mTime, mTimestep, true);
+
+        double rValue;
+>>>writevars>>>        vr = <<<vr>>>;
+        fmistatus = fmi1_import_get_real(fmu, &vr, 1, &rValue);
+        (*<<<var>>>) = rValue;
+        <<<writevars<<<
+    }
+
+
+    void finalize()
+    {
+        fmi1_import_destroy_dllfmu(fmu);
+        fmi1_import_free(fmu);
+        fmi_import_free_context(context);
+    }
+};
 }
 
-#endif // <<<modelname>>>_H
+#endif

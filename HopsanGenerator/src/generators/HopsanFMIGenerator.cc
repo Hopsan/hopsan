@@ -34,16 +34,15 @@ HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath,
 
 
 
-
-//! @brief Generates a Hopsan component from a Functional Mockup Unit using FMI 2.0 standard
-//! @param path Path to .FMU file
-//! @param targetPath Path where to extract files and generate component
-//! @param rTypeName Reference to string containing the type name of the generated component
-//! @param rHppPath Reference to string containing the path to the generated .HPP file
+//! @brief Generates a Hopsan component from a Functional Mockup Unit (.FMU) file using the FMI standard (1.0 or 2.0)
+//! @param rPath Reference to string containing the path to .FMU file
+//! @param rTargetPath Reference to string containing the path where to generate the component
+//! @param rTypeName Reference to string used to return the type name of the generated component
+//! @param rHppPath Reference to string used to return thepath to the generated .HPP file
 bool HopsanFMIGenerator::generateFromFmu(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath)
 {
     //----------------------------------------//
-    printMessage("Initializing FMU 2.0 import");
+    printMessage("Initializing FMU import");
     printMessage("path = "+rPath);
     printMessage("targetPath = "+rTargetPath);
     //----------------------------------------//
@@ -73,18 +72,321 @@ bool HopsanFMIGenerator::generateFromFmu(QString &rPath, QString &rTargetPath, Q
 
     version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
-    if(version != fmi_version_2_0_enu) {
+    if(version == fmi_version_1_enu)
+    {
+        printMessage("FMU is of version 1.0");
+        return generateFromFmu1(rPath, rTargetPath, rTypeName, rHppPath, callbacks, context);
+    }
+    else if(version == fmi_version_2_0_enu)
+    {
+        printMessage("FMU is of version 2.0");
+        return generateFromFmu2(rPath, rTargetPath, rTypeName, rHppPath, callbacks, context);
+    }
+    else if(version == fmi_version_unknown_enu)
+    {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
-        printErrorMessage("The code only supports version 2.0\n");
-
+        printErrorMessage("FMU version is unknown.");
+        return false;
+    }
+    else if(version == fmi_version_unsupported_enu)
+    {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
+        printErrorMessage("FMU version is unsupported.");
         return false;
     }
 
-    return generateFromFmu2(rPath, rTargetPath, rTypeName, rHppPath, callbacks, context);
+    return false;   //Should never reach this
 }
 
 
+//! @brief Generates a Hopsan component from an FMU using FMI 1.0
+//! @param rPath Reference to a string with the path to the .FMU file
+//! @param rTargetPath Refernce to a string with the path where to export the new component
+//! @param rHppPath Reference to string used to return the actual path to the generated .HPP file
+//! @param callbacks Callbacks struct used by FMILibrary
+//! @param context Context struct used by FMILibrary
+bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
+{
+    fmi1_callback_functions_t callBackFunctions;
+    jm_status_enu_t status;
 
+    //-----------------------------------------//
+    printMessage("Reading modelDescription.xml");
+    //-----------------------------------------//
+
+    QByteArray targetArray = rTargetPath.toLocal8Bit();
+    const char* tmpPath = targetArray.data();
+
+    fmi1_import_t* fmu = fmi1_import_parse_xml(context, tmpPath);
+
+    if(!fmu)
+    {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
+        printErrorMessage("Error parsing XML, exiting");
+        return false;
+    }
+
+    if(fmi1_import_get_fmu_kind(fmu) == fmi1_fmu_kind_enu_me)
+    {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
+        printErrorMessage("Only FMUs for co-simulation are supported by this code.");
+        return false;
+    }
+
+    callBackFunctions.logger = fmi1_log_forwarding;
+    callBackFunctions.allocateMemory = calloc;
+    callBackFunctions.freeMemory = free;
+
+    status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
+    if (status == jm_status_error)
+    {
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
+        printErrorMessage(QString("Could not create the DLL loading mechanism (C-API) (error: %1).\n").arg(fmi1_import_get_last_error(fmu)));
+        return false;
+    }
+
+    //Declare lists for parameters, input variables and output variables
+    QStringList parNames, parVars, parRefs;
+    QStringList inputNames, inputVars, inputRefs;
+    QStringList outputNames, outputVars, outputRefs;
+
+    //Loop through variables in FMU and generate the lists
+    fmi1_import_variable_list_t *pVarList = fmi1_import_get_variable_list(fmu);
+    for(size_t i=0; i<fmi1_import_get_variable_list_size(pVarList); ++i)
+    {
+        fmi1_import_variable_t *pVar = fmi1_import_get_variable(pVarList, i);
+        QString name = fmi1_import_get_variable_name(pVar);
+        fmi1_causality_enu_t causality = fmi1_import_get_causality(pVar);
+        fmi1_variability_enu_t variability = fmi1_import_get_variability(pVar);
+        fmi1_base_type_enu_t type = fmi1_import_get_variable_base_type(pVar);
+        fmi1_value_reference_t vr = fmi1_import_get_variable_vr(pVar);
+        name = toVarName(name);
+        if(causality == fmi1_causality_enu_input && variability == fmi1_variability_enu_parameter)
+        {
+            parNames.append(name);
+            parVars.append("m"+name);
+            parRefs.append(QString::number(vr));
+        }
+        if(causality == fmi1_causality_enu_input && variability != fmi1_variability_enu_parameter)
+        {
+            inputNames.append(name);
+            inputVars.append("mp"+name);
+            inputRefs.append(QString::number(vr));
+        }
+        if(causality == fmi1_causality_enu_output)
+        {
+
+            outputNames.append(name);
+            outputVars.append("mp"+name);
+            outputRefs.append(QString::number(vr));
+        }
+    }
+
+    //Get name of FMU
+    QString fmuName = fmi1_import_get_model_name(fmu);
+    fmuName = toVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+
+    //--------------------------------------------//
+    printMessage("Creating " + fmuName + ".hpp...");
+    //--------------------------------------------//
+
+    //Create <fmuname>.hpp
+    QString hppPath = rTargetPath + "/" + fmuName + "/component_code";
+    if(!QFileInfo(hppPath).exists())
+    {
+        QDir().mkpath(hppPath);
+    }
+    QFile fmuComponentHppFile;
+    fmuComponentHppFile.setFileName(hppPath+"/"+fmuName+".hpp");
+    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
+        removeDir(rTargetPath);
+        return false;
+    }
+
+    //-------------------------------------------//
+    printMessage("Writing " + fmuName + ".hpp...");
+    //-------------------------------------------//
+
+    //Generate HPP file
+    QFile fmuComponentTemplateFile;
+    fmuComponentTemplateFile.setFileName(":templates/fmuComponentTemplate.hpp");
+    assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString fmuComponentCode;
+    QTextStream t2(&fmuComponentTemplateFile);
+    fmuComponentCode = t2.readAll();
+    fmuComponentTemplateFile.close();
+    if(fmuComponentCode.isEmpty())
+    {
+        printErrorMessage("Unable to generate code for "+fmuName+".hpp.");
+        removeDir(rTargetPath);
+        return false;
+    }
+
+    QString headerGuard = fmuName.toUpper()+"_HPP_INCLUDED";
+    QString className = "FMU_"+fmuName;
+
+    QString localVars;
+    if(!parVars.isEmpty())
+    {
+        localVars.append("double ");
+        foreach(const QString &varName, parVars)
+        {
+            localVars.append(varName+", ");
+        }
+        if(localVars.endsWith(", "))
+        {
+            localVars.chop(2);
+        }
+        localVars.append(";\n");
+    }
+    if(!inputVars.isEmpty()  || !outputVars.isEmpty())
+    {
+        localVars.append("double ");
+        foreach(const QString &varName, inputVars)
+        {
+            localVars.append("*"+varName+", ");
+        }
+        foreach(const QString &varName, outputVars)
+        {
+            localVars.append("*"+varName+", ");
+        }
+        if(localVars.endsWith(", "))
+        {
+            localVars.chop(2);
+        }
+        localVars.append(";\n");
+    }
+
+    QString addConstants;
+    for(int i=0; i<parNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            addConstants.append("        ");
+        }
+        addConstants.append("addConstant(\""+parNames.at(i)+"\", \"\", \"\", 0, "+parVars.at(i)+");\n");
+    }
+
+    QString addInputs;
+    for(int i=0; i<inputNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            addInputs.append("        ");
+        }
+        addInputs.append("addInputVariable(\""+inputNames.at(i)+"\", \"\", \"\", 0, &"+inputVars.at(i)+");\n");
+    }
+
+    QString addOutputs;
+    for(int i=0; i<outputNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            addOutputs.append("        ");
+        }
+        addOutputs.append("addOutputVariable(\""+outputNames.at(i)+"\", \"\", \"\", 0, &"+outputVars.at(i)+");\n");
+    }
+
+    QString setPars;
+    QString temp = extractTaggedSection(fmuComponentCode, "setpars");
+    for(int i=0; i<parNames.size(); ++i)
+    {
+        QString tempVar = temp;
+        tempVar.replace("<<<vr>>>", parRefs.at(i));
+        tempVar.replace("<<<var>>>", parVars.at(i));
+        setPars.append(tempVar+"\n");
+    }
+
+    QString readVars;
+    temp = extractTaggedSection(fmuComponentCode, "readvars");
+    for(int i=0; i<inputNames.size(); ++i)
+    {
+        QString tempVar = temp;
+        tempVar.replace("<<<vr>>>", inputRefs.at(i));
+        tempVar.replace("<<<var>>>", inputVars.at(i));
+        readVars.append(tempVar+"\n");
+    }
+
+    QString writeVars;
+    temp = extractTaggedSection(fmuComponentCode, "writevars");
+    for(int i=0; i<outputNames.size(); ++i)
+    {
+        QString tempVar = temp;
+        tempVar.replace("<<<vr>>>", outputRefs.at(i));
+        tempVar.replace("<<<var>>>", outputVars.at(i));
+        writeVars.append(tempVar+"\n");
+    }
+
+    fmuComponentCode.replace("<<<headerguard>>>", headerGuard);
+    fmuComponentCode.replace("<<<className>>>", className);
+    fmuComponentCode.replace("<<<localvars>>>", localVars);
+    fmuComponentCode.replace("<<<addconstants>>>", addConstants);
+    fmuComponentCode.replace("<<<addinputs>>>", addInputs);
+    fmuComponentCode.replace("<<<addoutputs>>>", addOutputs);
+    fmuComponentCode.replace("<<<fmupath>>>", rPath);
+    QDir().mkpath(rTargetPath+"/temp");
+    fmuComponentCode.replace("<<<temppath>>>", rTargetPath+"/temp/");
+    replaceTaggedSection(fmuComponentCode, "setpars", setPars);
+    replaceTaggedSection(fmuComponentCode, "readvars", readVars);
+    replaceTaggedSection(fmuComponentCode, "writevars", writeVars);
+
+    QTextStream fmuComponentHppStream(&fmuComponentHppFile);
+    fmuComponentHppStream << fmuComponentCode;
+    fmuComponentHppFile.close();
+
+
+    //-------------------------------------------//
+    printMessage("Writing " + fmuName + ".xml...");
+    //-------------------------------------------//
+
+
+    ComponentAppearanceSpecification cafSpec("FMU_"+fmuName);
+    cafSpec.mSourceCode = "component_code/"+fmuName+".hpp";
+    cafSpec.mRecompilable = true;
+    cafSpec.mUserIconPath = "fmucomponent.svg";
+
+
+    //These 4 variables are used for input/output port positioning
+    double inputPosStep=1.0/(inputNames.size()+1.0);
+    double outputPosStep=1.0/(outputNames.size()+1.0);
+    double inputPos=0;
+    double outputPos=0;
+
+    for(int i=0; i<inputNames.size(); ++i)
+    {
+        inputPos += inputPosStep;
+        cafSpec.addPort(inputNames.at(i), 0.0, inputPos, 180);
+    }
+    for(int i=0; i<outputNames.size(); ++i)
+    {
+        outputPos += outputPosStep;
+        cafSpec.addPort(outputNames.at(i), 1.0, outputPos, 0.0);
+    }
+
+    QString cafPath = rTargetPath + "/" + fmuName + "/" + fmuName + ".xml";
+    if(!generateCafFile(cafPath, cafSpec))
+    {
+        printErrorMessage("Generation of component appearance file (XML) failed.");
+        removeDir(rTargetPath);
+        return false;
+    }
+
+    rTypeName = fmuName;
+    rHppPath = QFileInfo(fmuComponentHppFile).absoluteFilePath();
+
+    return true;
+
+}
+
+
+//! @brief Generates a Hopsan component from an FMU using FMI 2.0
+//! @param rPath Reference to a string with the path to the .FMU file
+//! @param rTargetPath Refernce to a string with the path where to export the new component
+//! @param rHppPath Reference to string used to return the actual path to the generated .HPP file
+//! @param callbacks Callbacks struct used by FMILibrary
+//! @param context Context struct used by FMILibrary
 bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
 {
     fmi2_callback_functions_t callBackFunctions;
@@ -108,8 +410,8 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
     if(fmi2_import_get_fmu_kind(fmu) == fmi2_fmu_kind_me)
     {
-        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
-        printErrorMessage("Only CS 2.0 is supported by this code\n");
+        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
+        printErrorMessage("Only FMUs for co-simulation are supported by this code");
         return false;
     }
 
@@ -126,9 +428,6 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         return false;
     }
 
-    //size_t nVars = fmi2_import_get_number_of_continuous_states(fmu);
-    //qDebug() << QString("FMU has %1 variables!").arg(nVars);
-
     //Declare lists for parameters, input variables and output variables
     QStringList parNames, parVars, parRefs;
     QStringList inputNames, inputVars, inputRefs;
@@ -141,10 +440,8 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         fmi2_import_variable_t *pVar = fmi2_import_get_variable(pVarList, i);
         QString name = fmi2_import_get_variable_name(pVar);
         fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
-        fmi2_base_type_enu_t type = fmi2_import_get_variable_base_type(pVar);
         fmi2_value_reference_t vr = fmi2_import_get_variable_vr(pVar);
-        qDebug() << "Found variable: " << QString(name) << ", causality: " << causality << ", type: " << type << ", vr: " << vr;
-        name = toVarName(name);//name.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+        name = toVarName(name);
         if(causality == fmi2_causality_enu_parameter)
         {
             parNames.append(name);
@@ -361,716 +658,6 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     rHppPath = QFileInfo(fmuComponentHppFile).absoluteFilePath();
 
     return true;
-}
-
-
-
-void HopsanFMIGenerator::generateFromFmu1(QString path, QString targetPath)
-{
-    printMessage("Initializing FMU import");
-
-    QFileInfo fmuFileInfo = QFileInfo(path);
-    fmuFileInfo.setFile(path);
-
-    QDir zipDir;
-    zipDir = QDir::cleanPath(mBinPath + "../ThirdParty/7z");
-
-    QDir gccDir;
-    gccDir = QDir::cleanPath(mBinPath + "../ThirdParty/mingw32/bin");
-
-    QString fmuName = fmuFileInfo.fileName();
-    fmuName.chop(4);
-
-    QString cqsType="Signal";
-
-    //Create import directory if it does not exist
-    if(!QDir(targetPath).exists())
-        QDir().mkpath(targetPath);
-
-    //Remove output directory if it already exists
-    if(QDir(targetPath+"/"+fmuName).exists() && !removeDir(targetPath+"/"+fmuName))
-    {
-        printErrorMessage("Unable to remove output directory: "+QDir().cleanPath(targetPath+"/"+fmuName)+". Please remove it manually and try again.");
-        return;
-    }
-
-    //Create output directory
-    if(!QDir().mkdir(targetPath+"/" + fmuName))
-    {
-        printErrorMessage("Unable to create output directory: "+QDir().cleanPath(targetPath+"/"+fmuName)+". Please remove it manually and try again.");
-        return;
-    }
-
-    QString fmuPath = targetPath+"/" + fmuName;
-    QDir fmuDir = QDir::cleanPath(fmuPath);
-
-    printMessage("Unpacking files");
-
-#ifdef WIN32
-    QStringList arguments;
-    arguments << "x" << fmuFileInfo.filePath() << "-o" + fmuDir.path() << "-aoa";
-    callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());
-#else
-    QStringList arguments = QStringList() << fmuFileInfo.filePath() << "-d" << fmuDir.path();
-    callProcess("unzip", arguments, fmuDir.path());
-#endif
-
-    //Move all binary files to FMU directory
-#ifdef WIN32
-    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/win32");
-#elif WIN64
-    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/win64");
-#elif linux && __i386__
-    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux32");
-#elif linux && __x86_64__
-    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux64");
-#elif __APPLE__
-    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/macx64");
-#endif
-    if(!binaryDir.exists())
-    {
-        removeDir(fmuDir.path());
-        printErrorMessage("Import of FMU failed: Unable to unpack files");
-        return;
-    }
-    QFileInfoList binaryFiles = binaryDir.entryInfoList(QDir::Files);
-    for(int i=0; i<binaryFiles.size(); ++i)
-    {
-        QFile tempFile;
-        tempFile.setFileName(binaryFiles.at(i).filePath());
-        tempFile.copy(fmuDir.path() + "/" + binaryFiles.at(i).fileName());
-        printMessage("Copying " + tempFile.fileName() + " to " + fmuDir.path() + "/" + binaryFiles.at(i).fileName());
-        tempFile.remove();
-    }
-
-
-    //Move all resource files to FMU directory
-    QDir resDir = QDir::cleanPath(fmuDir.path() + "/resources");
-    QFileInfoList resFiles = resDir.entryInfoList(QDir::Files);
-    for(int i=0; i<resFiles.size(); ++i)
-    {
-        QFile tempFile;
-        tempFile.setFileName(resFiles.at(i).filePath());
-        tempFile.copy(fmuDir.path() + "/" + resFiles.at(i).fileName());
-        printMessage("Copying " + tempFile.fileName() + " to " + fmuDir.path() + "/" + resFiles.at(i).fileName());
-        tempFile.remove();
-    }
-
-    //Move hmf files to execution path (ugly hack for importing hopsan fmu to hopsan)
-    QStringList filters;
-    filters << "*.hmf";
-    fmuDir.setNameFilters(filters);
-    QStringList hmfList = fmuDir.entryList();
-    for (int i = 0; i < hmfList.size(); ++i)
-    {
-        QFile hmfFile;
-        hmfFile.setFileName(fmuDir.path() + "/" + hmfList.at(i));
-        if(hmfFile.exists())
-        {
-            QFile().remove(mBinPath+hmfList.at(i));
-            if(QFile().exists(mBinPath+hmfList.at(i)))
-            {
-                printErrorMessage("Unable to copy "+hmfFile.fileName()+" to /bin directory: File already exists.");
-                return;
-            }
-            hmfFile.copy(mBinPath + hmfList.at(i));
-            hmfFile.remove();
-            hmfFile.setFileName(mBinPath + hmfList.at(i));
-            printMessage("Copying " + hmfFile.fileName() + " to " + mBinPath + hmfList.at(i)+"...");
-        }
-    }
-    fmuDir.setFilter(QDir::NoFilter);
-
-    printMessage("Parsing modelDescription.xml...");
-
-    //Load XML data from modelDescription.xml
-    //Copy xml-file to this directory
-    QFile modelDescriptionFile;
-    modelDescriptionFile.setFileName(fmuDir.path() + "/modelDescription.xml");
-    if(!binaryDir.exists())
-    {
-        removeDir(fmuDir.path());
-        printErrorMessage("Import of FMU failed: modelDescription.xml not found.");
-        return;
-    }
-    QDomDocument fmuDomDocument;
-    QDomElement fmuRoot = loadXMLDomDocument(modelDescriptionFile, fmuDomDocument, "fmiModelDescription");
-    modelDescriptionFile.close();
-
-    if(fmuRoot == QDomElement())
-    {
-        removeDir(fmuDir.path());
-        printErrorMessage("Import of FMU failed: Could not parse modelDescription.xml.");
-        return;
-    }
-
-    printMessage("Defining variables...");
-
-
-    bool isModelExchangeFMU = fmuRoot.firstChildElement("Implementation").isNull();
-
-    //Define lists with input and output variables
-
-    QStringList inVarValueRefs, inVarPortNames;
-    QStringList outVarValueRefs, outVarPortNames;
-    QStringList inoutVarValueRefs, inoutVarPortNames;
-    QDomElement variablesElement = fmuRoot.firstChildElement("ModelVariables");
-    QDomElement varElement = variablesElement.firstChildElement("ScalarVariable");
-    int i=0;
-    //! @todo We cannot use value reference as port names, because several ports can point to the same value
-    while (!varElement.isNull())
-    {
-        if(varElement.attribute("variability") != "parameter" && varElement.attribute("variability") != "constant")
-        {
-            /*if(!varElement.hasAttribute("causality"))
-            {
-                //inoutVarValueRefs << varElement.attribute("valueReference");
-                inoutVarValueRefs << QString::number(i);
-                inoutVarPortNames << varElement.attribute("name");
-            }
-            else */if(varElement.attribute("causality") == "input")
-            {
-                //inVarValueRefs << varElement.attribute("valueReference");
-                inVarValueRefs << QString::number(i);
-                inVarPortNames << varElement.attribute("name");
-            }
-            else if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
-            {
-                //outVarValueRefs << varElement.attribute("valueReference");
-                outVarValueRefs << QString::number(i);
-                outVarPortNames << varElement.attribute("name");
-            }
-        }
-        varElement = varElement.nextSiblingElement("ScalarVariable");
-        ++i;
-    }
-
-    i=0;
-
-    QStringList tlmPortTypes;
-    QList<QStringList> tlmPortVarNames;
-    QList<QStringList> tlmPortValueRefs;
-    readTLMSpecsFromFile(fmuPath+"/"+fmuName+"_TLM.xml", tlmPortTypes, tlmPortVarNames, tlmPortValueRefs,
-                         inVarValueRefs, inVarPortNames, outVarValueRefs, outVarPortNames, cqsType);
-    if(cqsType=="")
-    {
-        printErrorMessage("CQS-type undefined. Mixing C and Q ports in the same component is not allowed.");
-        return;
-    }
-
-    ////////////////////////////////
-    // DEFINE PORT SPECIFICATIONS //
-    ////////////////////////////////
-
-
-    QList<FMIPortSpecification> portSpecs;
-    for(int i=0; i<inVarPortNames.size(); ++i)
-    {
-        QString varName = toVarName("mpIn_"+inVarPortNames[i]);
-        QString portName = toVarName(inVarPortNames[i]+"In");
-        QString mpndName = toVarName("mpND_in"+inVarPortNames[i]);
-        portSpecs << FMIPortSpecification(varName, portName, mpndName, inVarValueRefs[i], "ReadPort", "NodeSignal", "NodeSignal::Value", "input");
-    }
-    for(int i=0; i<outVarPortNames.size(); ++i)
-    {
-        portSpecs << FMIPortSpecification(toVarName("mpOut"+outVarPortNames[i]), toVarName(outVarPortNames[i]+"Out"),
-                                          toVarName("mpND_out"+outVarPortNames[i]), outVarValueRefs[i],
-                                          "WritePort", "NodeSignal", "NodeSignal::Value", "output");
-    }
-    for(int i=0; i<inoutVarPortNames.size(); ++i)
-    {
-        portSpecs << FMIPortSpecification(toVarName("mpIn"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"In"),
-                                          toVarName("mpND_in"+inoutVarPortNames[i]), inoutVarValueRefs[i],
-                                          "ReadPort", "NodeSignal", "NodeSignal::Value", "");
-        portSpecs << FMIPortSpecification(toVarName("mpOut"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"Out"),
-                                          toVarName("mpND_out"+inoutVarPortNames[i]), inoutVarValueRefs[i],
-                                          "WritePort", "NodeSignal", "NodeSignal::Value", "");
-    }
-    for(int i=0; i<tlmPortVarNames.size(); ++i)
-    {
-        QString numStr = QString::number(i);
-        QString varName = "mpP"+numStr;
-        QString portName = "P"+numStr;
-        QString portType = "PowerPort";
-        QString nodeType;
-        QString cqType;
-        QStringList mpndNames, dataTypes, causalities;
-
-        QStringList nodeTypes;
-        GeneratorNodeInfo::getNodeTypes(nodeTypes);
-        Q_FOREACH(const QString &type, nodeTypes)
-        {
-            if(tlmPortTypes[i] == GeneratorNodeInfo(type).niceName+"q")
-            {
-                nodeType = type;
-                cqType = "q";
-            }
-            else if(tlmPortTypes[i] == GeneratorNodeInfo(type).niceName+"c")
-            {
-                nodeType = type;
-                cqType = "c";
-            }
-        }
-
-        GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
-        if(cqType == "q")
-        {
-            int j=0;
-            for(; j<info.qVariables.size(); ++j)
-            {
-                mpndNames << "mpND_"+info.qVariables[j]+QString::number(i);
-                dataTypes << nodeType+"::"+info.variableLabels[j];
-                causalities << "output";
-            }
-            for(int k=0; k<info.cVariables.size(); ++k)
-            {
-                mpndNames << "mpND_"+info.cVariables[k]+QString::number(i);
-                dataTypes << nodeType+"::"+info.variableLabels[j+k];
-                causalities << "input";
-            }
-        }
-        else if(cqType == "c")
-        {
-            int j=0;
-            for(; j<info.qVariables.size(); ++j)
-            {
-                mpndNames << "mpND_"+info.qVariables[j]+QString::number(i);
-                dataTypes << nodeType+"::"+info.variableLabels[j];
-                causalities << "input";
-            }
-            for(int k=0; k<info.cVariables.size(); ++k)
-            {
-                mpndNames << "mpND_"+info.cVariables[k]+QString::number(i);
-                dataTypes << nodeType+"::"+info.variableLabels[j+k];
-                causalities << "output";
-            }
-        }
-
-        for(int j=0; j<mpndNames.size(); ++j)
-        {
-            portSpecs << FMIPortSpecification(varName, portName, mpndNames[j], tlmPortValueRefs[i][j], portType, nodeType, dataTypes[j], causalities[j]);
-        }
-    }
-
-    //Print port info to user
-    for(int p=0; p<portSpecs.size(); ++p)
-        printMessage(QString("\nPort:")+
-                     "  \n  Variable        = \""+portSpecs[p].varName +
-                     "\"\n  Name            = \""+portSpecs[p].portName +
-                     "\"\n  Node pointer    = \""+portSpecs[p].mpndName+
-                     "\"\n  Value reference = \""+portSpecs[p].valueRef+
-                     "\"\n  Port type       = \""+portSpecs[p].valueRef+
-                     "\"\n  Node type       = \""+portSpecs[p].nodeType+
-                     "\"\n  Data type       = \""+portSpecs[p].dataType+
-                     "\"\n  Causality       = \""+portSpecs[p].causality+"\"\n");
-
-
-    /////////////////////////////////////
-    // DEFINE PARAMETER SPECIFICATIONS //
-    /////////////////////////////////////
-
-
-    QList<FMIParameterSpecification> parSpecs;
-    varElement = variablesElement.firstChildElement("ScalarVariable");
-    i=0;
-    int j=0;
-    while (!varElement.isNull())
-    {
-        if(varElement.attribute("variability") == "parameter")
-        {
-            QString varName = toVarName("par"+QString::number(i));
-            QString initValue = varElement.firstChildElement("Real").attribute("start", "0");
-            QString parName = toVarName(varElement.attribute("name"));
-            QString description = varElement.attribute("description");
-            //QString valueRef = varElement.attribute("valueReference");
-            QString valueRef = QString::number(j);
-            parSpecs << FMIParameterSpecification(varName, parName, description, initValue, valueRef);
-            ++i;
-
-        }
-        varElement = varElement.nextSiblingElement("ScalarVariable");
-        ++j;
-    }
-
-    //Print parameter info to user
-    for(int p=0; p<parSpecs.size(); ++p)
-        printMessage(QString("\nParameter:")+
-                     "  \n  Variable        = \""+parSpecs[p].varName +
-                     "\"\n  Name            = \""+parSpecs[p].parName +
-                     "\"\n  Description     = \""+parSpecs[p].description+
-                     "\"\n  Initial value   = \""+parSpecs[p].initValue+
-                     "\"\n  Value reference = \""+parSpecs[p].valueRef+"\"\n");
-
-
-    ///////////////////////////////////
-    // GENERATE FILES FROM TEMPLATES //
-    ///////////////////////////////////
-
-
-    printMessage("Creating fmuLib.cc...");
-
-    //Create fmuLib.cc
-    QFile fmuLibFile;
-    fmuLibFile.setFileName(fmuDir.path() + "/fmuLib.cc");
-    if(!fmuLibFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Import of FMU failed: Could not open fmuLib.cc for writing.");
-        removeDir(fmuDir.path());
-        return;
-    }
-
-    printMessage("Writing fmuLib.cc...");
-
-    QFile fmuLibTemplateFile(":templates/fmuLibTemplate.cc");
-    assert(fmuLibTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
-    QString fmuLibCode;
-    QTextStream t(&fmuLibTemplateFile);
-    fmuLibCode = t.readAll();
-    fmuLibTemplateFile.close();
-    assert(!fmuLibCode.isEmpty());
-
-    fmuLibCode.replace("<<<0>>>", fmuName);
-    fmuLibCode.replace("<<<1>>>", mCoreIncludePath);
-
-    QTextStream fmuLibStream(&fmuLibFile);
-    fmuLibStream << fmuLibCode;
-    fmuLibFile.close();
-
-
-    printMessage("Creating " + fmuName + ".hpp...");
-
-    //Create <fmuname>.hpp
-    QDir().mkdir(fmuDir.path() + "/component_code");
-    QFile fmuComponentHppFile;
-    fmuComponentHppFile.setFileName(fmuDir.path() + "/component_code/" + fmuName + ".hpp");
-    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
-        removeDir(fmuDir.path());
-        return;
-    }
-
-    printMessage("Writing " + fmuName + ".hpp...");
-
-    QFile fmuComponentTemplateFile;
-    if(isModelExchangeFMU)
-    {
-        fmuComponentTemplateFile.setFileName(":templates/fmuComponentTemplate.hpp");
-    }
-    else
-    {
-        fmuComponentTemplateFile.setFileName(":templates/fmuCoSimComponentTemplate.hpp");
-    }
-    assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
-    QString fmuComponentCode;
-    QTextStream t2(&fmuComponentTemplateFile);
-    fmuComponentCode = t2.readAll();
-    fmuComponentTemplateFile.close();
-    if(fmuComponentCode.isEmpty())
-    {
-        printErrorMessage("Unable to generate code for "+fmuName+".hpp.");
-        return;
-    }
-
-    //Declare ports
-    QString fmuComponentReplace2;
-    QString portLine = extractTaggedSection(fmuComponentCode, "portdecl");
-    QStringList addedPorts;
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        if(!addedPorts.contains(portSpecs[p].varName) && portSpecs[p].nodeType != "NodeSignal")
-        {
-            fmuComponentReplace2.append(replaceTag(portLine, "varname", portSpecs[p].varName));
-            addedPorts << portSpecs[p].varName;
-        }
-    }
-
-    //Declare node data pointers
-    QString fmuComponentReplace3;
-    QString mpndLine = extractTaggedSection(fmuComponentCode, "dataptrdecl");
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        fmuComponentReplace3.append(replaceTag(mpndLine, "mpndname", portSpecs[p].mpndName));
-    }
-
-    //Declare parameters
-    QString fmuComponentReplace4;
-    QString parLine = extractTaggedSection(fmuComponentCode, "pardecl");
-    for(int p=0; p<parSpecs.size(); ++p)
-    {
-        fmuComponentReplace4.append(replaceTag(parLine, "varname", parSpecs[p].varName));
-    }
-
-    //Add ports
-    QString fmuComponentReplace7;
-    QString addPortLine = extractTaggedSection(fmuComponentCode, "addports");
-    addedPorts.clear();
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        if(!addedPorts.contains(portSpecs[p].varName) && portSpecs[p].portType == "PowerPort")
-        {
-            fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "varname" << "portname" << "porttype" << "nodetype" << "notrequired",
-                                                    QStringList() << portSpecs[p].varName << portSpecs[p].portName << portSpecs[p].portType << portSpecs[p].nodeType << "Port::NotRequired"));
-            addedPorts << portSpecs[p].varName;
-        }
-    }
-
-    //Add variables
-    QString fmuComponentReplaceAddVars;
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        if(portSpecs[p].portType == "ReadPort")
-        {
-            fmuComponentReplaceAddVars.append("            addInputVariable(\""+portSpecs[p].portName+"\",\"\",\"\",0,&"+portSpecs[p].mpndName+");\n");
-        }
-        if(portSpecs[p].portType == "WritePort")
-        {
-            fmuComponentReplaceAddVars.append("            addOutputVariable(\""+portSpecs[p].portName+"\",\"\",\"\",0,&"+portSpecs[p].mpndName+");\n");
-        }
-    }
-
-
-    //Initialize and register parameters
-    QString fmuComponentReplace8;
-    QString regParLine = extractTaggedSection(fmuComponentCode, "addconstants");
-    for(int p=0; p<parSpecs.size(); ++p)
-    {
-        fmuComponentReplace8.append(replaceTags(regParLine, QStringList() << "varname" << "initvalue" << "parname" << "description",
-                                                QStringList() << parSpecs[p].varName << parSpecs[p].initValue << parSpecs[p].parName << parSpecs[p].description));
-    }
-
-    //Initialize node data pointers
-    QString fmuComponentReplace9;
-    QString getNodePtrLine = extractTaggedSection(fmuComponentCode, "initdataptrs");
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        if(portSpecs[p].portType == "PowerPort")
-        {
-            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "mpndname" << "varname" << "datatype", QStringList() << portSpecs[p].mpndName << portSpecs[p].varName << portSpecs[p].dataType));
-        }
-    }
-
-
-    //Set parameters
-    QString fmuComponentReplace10;
-    QString writeParLines = extractTaggedSection(fmuComponentCode, "setpars");
-    for(int p=0; p<parSpecs.size(); ++p)
-    {
-        fmuComponentReplace10.append(replaceTags(writeParLines, QStringList() << "valueref" << "varname", QStringList() << parSpecs[p].valueRef << parSpecs[p].varName));
-    }
-
-    //Write signal input values
-    QString fmuComponentReplace14;
-    QString writeSignalVarLines = extractTaggedSection(fmuComponentCode, "readsignalinputs");
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        if(portSpecs[p].causality != "output" && portSpecs[p].nodeType == "NodeSignal")
-            fmuComponentReplace14.append(replaceTags(writeSignalVarLines, QStringList() << "valueref" << "mpndname", QStringList() << portSpecs[p].valueRef << portSpecs[p].mpndName));
-    }
-
-
-    //Write input values
-    QString fmuComponentReplace11;
-    QString writeVarLines = extractTaggedSection(fmuComponentCode, "readinputs");
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        if(portSpecs[p].causality != "output" && portSpecs[p].nodeType != "NodeSignal")
-            fmuComponentReplace11.append(replaceTags(writeVarLines, QStringList() << "varname" << "valueref" << "mpndname", QStringList() << portSpecs[p].varName << portSpecs[p].valueRef << portSpecs[p].mpndName));
-    }
-
-    //Write back output values
-    QString fmuComponentReplace12;
-    QString readVarLines = extractTaggedSection(fmuComponentCode, "writeoutputs");
-    for(int p=0; p<portSpecs.size(); ++p)
-    {
-        if(portSpecs[p].causality != "input")
-            fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << portSpecs[p].valueRef << portSpecs[p].mpndName));
-    }
-
-    QString fmuComponentReplace13;
-#ifdef WIN32
-    fmuComponentReplace13 = "dll";
-#elif linux
-    fmuComponentReplace13 = "so";
-#endif
-
-    fmuComponentCode.replace("<<<cqstype>>>", cqsType);
-    fmuComponentCode.replace("<<<modelname>>>", fmuName);
-    fmuComponentCode.replace("<<<includepath>>>", mCoreIncludePath);
-    replaceTaggedSection(fmuComponentCode, "portdecl", fmuComponentReplace2);
-    replaceTaggedSection(fmuComponentCode, "dataptrdecl", fmuComponentReplace3);
-    replaceTaggedSection(fmuComponentCode, "pardecl", fmuComponentReplace4);
-    fmuComponentCode.replace("<<<fmudir>>>", fmuDir.path());
-    replaceTaggedSection(fmuComponentCode, "addports", fmuComponentReplace7);
-    fmuComponentCode.replace("<<<addvars>>>", fmuComponentReplaceAddVars);
-    replaceTaggedSection(fmuComponentCode, "addconstants", fmuComponentReplace8);
-    replaceTaggedSection(fmuComponentCode, "initdataptrs", fmuComponentReplace9);
-    replaceTaggedSection(fmuComponentCode, "setpars", fmuComponentReplace10);
-    replaceTaggedSection(fmuComponentCode, "readinputs", fmuComponentReplace11);
-    replaceTaggedSection(fmuComponentCode, "writeoutputs", fmuComponentReplace12);
-    replaceTaggedSection(fmuComponentCode,  "readsignalinputs", fmuComponentReplace14);
-    fmuComponentCode.replace("<<<fileext>>>", fmuComponentReplace13);
-
-    QTextStream fmuComponentHppStream(&fmuComponentHppFile);
-    fmuComponentHppStream << fmuComponentCode;
-    fmuComponentHppFile.close();
-
-
-    QString iconName = "fmucomponent.svg";
-    QImage *pIconImage = new QImage(fmuPath+"/model.png");
-    if(!pIconImage->isNull())
-    {
-        iconName = "model.svg";
-    }
-
-
-    printMessage("Writing "+fmuName+".xml...");
-
-    //Create <fmuname>.xml
-    //! @todo Use dom elements for generating xml (this is just stupid)
-    QFile fmuXmlFile;
-    fmuXmlFile.setFileName(fmuDir.path() + "/" + fmuName + ".xml");
-    if(!fmuXmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Import of FMU failed: Could not open "+fmuName+".xml for writing.");
-        removeDir(fmuDir.path());
-        return;
-    }
-
-    int nInputPorts = inVarValueRefs.size()+inoutVarValueRefs.size();
-    int nOutputPorts = outVarValueRefs.size()+inoutVarValueRefs.size();
-    double scale = qMax(qMax(nInputPorts, nOutputPorts)/2.0, 1.0);
-    QString scaleStr = QString::number(scale);
-
-    QTextStream fmuXmlStream(&fmuXmlFile);
-    fmuXmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    fmuXmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
-    fmuXmlStream << "    <modelobject typename=\""+fmuName+"\" displayname=\""+fmuName+"\" sourcecode=\"component_code"+fmuName+".hpp\" libpath=\"\" recompilable=\"true\">\n";
-    fmuXmlStream << "        <icons>\n";
-    fmuXmlStream << "            <icon type=\"user\" path=\"fmucomponent.svg\" iconrotation=\"ON\" scale=\""+scaleStr+"\"/>\n";
-    fmuXmlStream << "        </icons>\n";
-    fmuXmlStream << "        <ports>\n";
-    varElement = variablesElement.firstChildElement("ScalarVariable");
-    i=0;
-
-    double tlmPosStep=1.0/(tlmPortTypes.size()+1.0);      //These 2 variables are used for TLM port positioning
-    double tlmPos=0;
-
-    double inputPosStep=1.0/(nInputPorts+1.0);      //These 4 variables are used for input/output port positioning
-    double outputPosStep=1.0/(nOutputPorts+1.0);
-    double inputPos=0;
-    double outputPos=0;
-
-    QString numStr, numStr2;
-    for(int i=0; i<tlmPortTypes.size(); ++i)
-    {
-        tlmPos += tlmPosStep;
-        numStr = QString::number(i);
-        numStr2.setNum(tlmPos);
-        fmuXmlStream << "            <port name=\"P"+numStr+"\" x=\""+numStr2+"\" y=\"0.0\"  a=\"270\"/>\n";
-    }
-    for(int i=0; i<inoutVarValueRefs.size(); ++i)
-    {
-        inputPos += inputPosStep;
-        numStr2.setNum(inputPos);
-        fmuXmlStream << "            <port name=\""+toVarName(inoutVarPortNames[i])+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
-        outputPos += outputPosStep;
-        numStr2.setNum(outputPos);
-        fmuXmlStream << "            <port name=\""+toVarName(inoutVarPortNames[i])+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
-    }
-    for(int i=0; i<inVarValueRefs.size(); ++i)
-    {
-        inputPos += inputPosStep;
-        numStr2.setNum(inputPos);
-        fmuXmlStream << "            <port name=\""+toVarName(inVarPortNames[i])+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
-    }
-    for(int i=0; i<outVarValueRefs.size(); ++i)
-    {
-        outputPos += outputPosStep;
-        numStr2.setNum(outputPos);
-        fmuXmlStream << "            <port name=\""+toVarName(outVarPortNames[i])+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
-    }
-    fmuXmlStream << "        </ports>\n";
-    fmuXmlStream << "    </modelobject>\n";
-    fmuXmlStream << "</hopsanobjectappearance>\n";
-    fmuXmlFile.close();
-
-    //Move FMI source files to compile directory
-
-#ifdef WIN32
-    QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/";
-#elif linux
-    QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/linux/";
-#elif __APPLE__
-    QString fmiSrcPath = mBinPath + "../ThirdParty/fmi/macx/";
-#endif
-
-    if(!copyFile(fmiSrcPath+"sim_support.c", fmuDir.path()+"/sim_support.c")) return;
-    if(!copyFile(fmiSrcPath+"stack.cc", fmuDir.path()+"/stack.cc")) return;
-    if(!copyFile(fmiSrcPath+"xml_parser.h", fmuDir.path()+"/xml_parser.h")) return;
-    if(!copyFile(fmiSrcPath+"sim_support.h", fmuDir.path()+"/sim_support.h")) return;
-    if(!copyFile(fmiSrcPath+"stack.h", fmuDir.path()+"/stack.h")) return;
-    if(!copyFile(fmiSrcPath+"xml_parser.cc", fmuDir.path()+"/xml_parser.cc")) return;
-    if(!copyFile(fmiSrcPath+"expat.h", fmuDir.path()+"/expat.h")) return;
-    if(!copyFile(fmiSrcPath+"expat_external.h", fmuDir.path()+"/expat_external.h")) return;
-    if(!copyFile(fmiSrcPath+"fmi_me.h", fmuDir.path()+"/fmi_me.h")) return;
-    if(!copyFile(fmiSrcPath+"fmiModelFunctions.h", fmuDir.path()+"/fmiModelFunctions.h")) return;
-    if(!copyFile(fmiSrcPath+"fmiModelTypes.h", fmuDir.path()+"/fmiModelTypes.h")) return;
-    if(!copyFile(fmiSrcPath+"fmi_cs.h", fmuDir.path()+"/fmi_cs.h")) return;
-    if(!copyFile(fmiSrcPath+"fmiFunctions.h", fmuDir.path()+"/fmiFunctions.h")) return;
-    if(!copyFile(fmiSrcPath+"fmiPlatformTypes.h", fmuDir.path()+"/fmiPlatformTypes.h")) return;
-
-#ifdef WIN32
-    if(!copyFile(fmiSrcPath+"libexpat.a", fmuDir.path()+"/libexpat.a")) return;
-    if(!copyFile(fmiSrcPath+"libexpat.dll", fmuDir.path()+"/libexpat.dll")) return;
-    if(!copyFile(fmiSrcPath+"libexpatw.a", fmuDir.path()+"/libexpatw.a")) return;
-    if(!copyFile(fmiSrcPath+"libexpatw.dll", fmuDir.path()+"/libexpatw.dll")) return;
-#elif linux
-    if(!copyFile(fmiSrcPath+"libexpatMT.lib", fmuDir.path()+"/libexpatMT.lib")) return;
-#elif __APPLE__
-    if(!copyFile(fmiSrcPath+"libexpatMT.a", fmuDir.path()+"/libexpatMT.a")) return;
-#endif
-
-    printMessage("Writing " + fmuName + "_lib.xml...");
-
-    QFile xmlFile;
-    xmlFile.setFileName(fmuDir.path()+"/"+fmuName+"_lib.xml");
-    if(!xmlFile.exists())
-    {
-        if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            printErrorMessage("Failed to open " + fmuName + "_lib.xml  for writing.");
-            return;
-        }
-        QTextStream xmlStream(&xmlFile);
-        xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-
-        xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\" name=\""+fmuName+"\">\n";
-        xmlStream << "  <lib>fmuLib</lib>\n";
-        xmlStream << "  <source>fmuLib.cc</source>\n";
-        xmlStream << "  <source>stack.cc</source>\n";
-        xmlStream << "  <source>xml_parser.cc</source>\n";
-        xmlStream << "</hopsancomponentlibrary>\n";
-        xmlFile.close();
-    }
-
-#ifdef WIN32
-    if(!compileComponentLibrary(QFileInfo(xmlFile).absoluteFilePath(), this, "-L./ -llibexpat"))
-#else
-    if(!compileComponentLibrary(QFileInfo(xmlFile).absoluteFilePath(), this))
-#endif
-    {
-        printErrorMessage("Failed to import fmu.");
-        return;
-    }
-    else
-    {
-        cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
-                "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
-                QStringList() << "component_code" << "binaries");
-
-        printMessage("Finished.\n");
-    }
 }
 
 

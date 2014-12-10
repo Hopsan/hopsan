@@ -198,7 +198,7 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(hopsan::HString path, hopsan::ComponentSystem *pSystem, hopsan::HString coreIncludePath, hopsan::HString binPath, bool me=false, bool showDialog=false)
 {
-    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), true);
+    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToFmu(QString(path.c_str()), pSystem, me);
     delete(pGenerator);
 }
