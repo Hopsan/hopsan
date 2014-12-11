@@ -37,7 +37,7 @@ else
         echo "Unknown OS for qwt build and patch"
 fi
 # Build and install (local dir install)
-make
+make -j4
 make install test
 cd $basepwd
 

@@ -80,7 +80,7 @@ fi
 sed "s|unix:PYTHON_VERSION=2.6|unix:PYTHON_VERSION=$pyversion|" -i build/python.prf
 
 qmake PythonQt.pro -r -spec linux-g++
-make -w
+make -j4 -w
 cd $basepwd
 
 
