@@ -46,6 +46,9 @@ public:
     double invRescale(const double value) const;
     QString invRescale(const QString value) const;
 
+    bool operator== (const UnitScale &rOther);
+    bool operator!= (const UnitScale &rOther);
+
     QString mUnit;
     QString mScale;
     QString mPhysicalQuantity;

@@ -115,7 +115,14 @@ void UnitScale::setOnlyScale(const double scale)
 //! @returns The rescaled value
 double UnitScale::rescale(const double value) const
 {
-    return mScale.toDouble()*value;
+    if (isEmpty())
+    {
+        return value;
+    }
+    else
+    {
+        return mScale.toDouble()*value;
+    }
 }
 
 //! @brief Rescale a value expressed as string with this unit scale
@@ -142,4 +149,15 @@ double UnitScale::invRescale(const double value) const
 QString UnitScale::invRescale(const QString value) const
 {
     return QString("%1").arg(invRescale(value.toDouble()));
+}
+
+
+bool UnitScale::operator== (const UnitScale &rOther)
+{
+    return  !(*this != rOther);
+}
+
+bool UnitScale::operator!= (const UnitScale &rOther)
+{
+    return (mPhysicalQuantity != rOther.mPhysicalQuantity) || (mScale != rOther.mScale) || (mUnit != rOther.mUnit);
 }

@@ -903,7 +903,14 @@ bool ModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QStr
 
 bool ModelObject::registerCustomParameterUnitScale(QString name, UnitScale us)
 {
-    mRegisteredCustomParameterUnitScales.insert(name, us);
+    if (us.isEmpty())
+    {
+        unregisterCustomParameterUnitScale(name);
+    }
+    else
+    {
+        mRegisteredCustomParameterUnitScales.insert(name, us);
+    }
     return true;
 }
 

@@ -725,7 +725,8 @@ bool VariableTableWidget::setStartValues()
         }
 
         // Check if we have new custom scaling
-        UnitScale customUnitScale;
+        UnitScale newCustomUnitScale, previousUnitScale;
+        mpModelObject->getCustomParameterUnitScale(name, previousUnitScale);
         UnitSelectionWidget *pUnitWidget = pValueWideget->getUnitSelectionWidget();
         if (pUnitWidget)
         {
@@ -740,21 +741,22 @@ bool VariableTableWidget::setStartValues()
             // Else register (remember) the new unit scale
             else
             {
-                pUnitWidget->getSelectedUnitScale(customUnitScale);
-                mpModelObject->registerCustomParameterUnitScale(name, customUnitScale);
+                pUnitWidget->getSelectedUnitScale(newCustomUnitScale);
+                mpModelObject->registerCustomParameterUnitScale(name, newCustomUnitScale);
             }
         }
 
-        // Get the old value to see if a changed has occured
-        QString oldValue = mpModelObject->getParameterValue(name);
-        if (oldValue != value)
+        // If we have a custom unit scale then undo the scale and set a value expressed in the default unit
+        if (!newCustomUnitScale.isEmpty())
         {
-            // If we have a custom unit scale then undo the scale and set a value expressed in the default unit
-            if (!customUnitScale.isEmpty())
-            {
-                value = customUnitScale.invRescale(value);
-            }
+            value = newCustomUnitScale.invRescale(value);
+        }
 
+        // Get the old value to see if a changed has occured
+        // We also check the unit scale as that may have changeed to even if the value (in orgiginal unit) is the same
+        QString oldValue = mpModelObject->getParameterValue(name);
+        if ((oldValue != value) || (previousUnitScale != newCustomUnitScale))
+        {
             // Parameter has changed, add to undo stack and set the parameter
             if( cleanAndVerifyParameterValue(value, qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getDataType()) )
             {
@@ -763,7 +765,9 @@ bool VariableTableWidget::setStartValues()
                 {
                     QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(oldValue));
                     // Reset old value
-                    qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(oldValue);
+                    mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
+                    //! @todo need to reset the scale dropdown box aswell
+                    qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(previousUnitScale.rescale(oldValue));
                     allok = false;
                     break;
                 }
@@ -787,7 +791,9 @@ bool VariableTableWidget::setStartValues()
             else
             {
                 // Reset old value
-                qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(oldValue);
+                mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
+                //! @todo need to reset the scale dropdown box aswell
+                qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(previousUnitScale.rescale(oldValue));
                 allok = false;
                 break;
             }
