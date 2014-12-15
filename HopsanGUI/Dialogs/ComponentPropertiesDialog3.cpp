@@ -755,23 +755,14 @@ bool VariableTableWidget::setStartValues()
         // Get the old value to see if a changed has occured
         // We also check the unit scale as that may have changeed to even if the value (in orgiginal unit) is the same
         QString oldValue = mpModelObject->getParameterValue(name);
+        bool setNewValueSucess=false;
         if ((oldValue != value) || (previousUnitScale != newCustomUnitScale))
         {
             // Parameter has changed, add to undo stack and set the parameter
             if( cleanAndVerifyParameterValue(value, qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getDataType()) )
             {
-                // If we fail to set the parameter, then warning box and reset value
-                if(!mpModelObject->setParameterValue(name, value))
-                {
-                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(oldValue));
-                    // Reset old value
-                    mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
-                    //! @todo need to reset the scale dropdown box aswell
-                    qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(previousUnitScale.rescale(oldValue));
-                    allok = false;
-                    break;
-                }
-                else
+                // Try to set the actual parameter
+                if(mpModelObject->setParameterValue(name, value))
                 {
                     // Add an undo post (but only one for all values changed this time
                     if(!addedUndoPost)
@@ -786,14 +777,22 @@ bool VariableTableWidget::setStartValues()
                                                                                                            value);
                     // Mark project tab as changed
                     mpModelObject->getParentContainerObject()->hasChanged();
+
+                    setNewValueSucess =true;
+                }
+                // If we fail to set the parameter, then warning box
+                else
+                {
+                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(oldValue));
                 }
             }
-            else
+
+            // Reset old value
+            if (!setNewValueSucess)
             {
-                // Reset old value
+                ParameterValueSelectionWidget *pWidget = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)));
+                pWidget->setValueAndScale_nosignals(previousUnitScale.rescale(oldValue), previousUnitScale);
                 mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
-                //! @todo need to reset the scale dropdown box aswell
-                qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->setValueText(previousUnitScale.rescale(oldValue));
                 allok = false;
                 break;
             }
@@ -1430,6 +1429,28 @@ QLineEdit *ParameterValueSelectionWidget::getValueEditPtr() const
     return mpValueEdit;
 }
 
+//! @brief Use this to reset values without triggering rescale signals and such things
+void ParameterValueSelectionWidget::setValueAndScale_nosignals(QString value, UnitScale &rCustomUS)
+{
+    mpValueEdit->blockSignals(true);
+    mpUnitSelectionWidget->blockSignals(true);
+
+    mCustomScale=rCustomUS;
+    mpValueEdit->setText(value);
+    if (mCustomScale.isEmpty())
+    {
+        mpUnitSelectionWidget->resetDefault();
+    }
+    else
+    {
+        mpUnitSelectionWidget->setUnitScaling(mCustomScale);
+    }
+
+    mpValueEdit->blockSignals(false);
+    mpUnitSelectionWidget->blockSignals(false);
+
+}
+
 void ParameterValueSelectionWidget::setValue()
 {
     //! @todo maybe do something here, would be nice if we could check if value is OK, or maybe we should even set the value here
@@ -1510,15 +1531,15 @@ void ParameterValueSelectionWidget::refreshValueTextStyle()
 {
     if(mpModelObject && mpValueEdit)
     {
-        if( mpValueEdit->text() == mpModelObject->getDefaultParameterValue(mVariablePortDataName) )
-        {
-            setDefaultValueTextStyle();
-        }
-        else
+        if( !mCustomScale.isEmpty() || (mpValueEdit->text() != mpModelObject->getDefaultParameterValue(mVariablePortDataName)) )
         {
             QString style("color: black; font: bold;");
             decideBackgroundColor(style);
             mpValueEdit->setStyleSheet(style);
+        }
+        else
+        {
+            setDefaultValueTextStyle();
         }
 
     }

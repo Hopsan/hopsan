@@ -182,6 +182,7 @@ public:
     UnitSelectionWidget *getUnitSelectionWidget();
     bool isValueDisabled() const;
     QLineEdit *getValueEditPtr() const;
+    void setValueAndScale_nosignals(QString value, UnitScale &rCustomUS);
 
 public slots:
     void refreshValueTextStyle();
