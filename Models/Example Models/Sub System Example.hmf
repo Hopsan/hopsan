@@ -124,13 +124,9 @@
               </icons>
               <ports>
                 <port x="0.3333333333" y="1" enabled="true" a="90" name="Container_Port_1" autoplaced="true"/>
-                <port x="0.3333333333" y="1" enabled="true" a="90" name="Container Port_1" autoplaced="true"/>
                 <port x="0.6666666667" y="1" enabled="true" a="90" name="Container_Port_2" autoplaced="true"/>
-                <port x="0.6666666667" y="1" enabled="true" a="90" name="Container Port_2" autoplaced="true"/>
                 <port x="1" y="0.5" enabled="true" a="0" name="Container_Port_3" autoplaced="true"/>
-                <port x="1" y="0.5" enabled="true" a="0" name="Container Port_3" autoplaced="true"/>
                 <port x="0" y="0.5" enabled="true" a="180" name="Container_Port" autoplaced="true"/>
-                <port x="0" y="0.5" enabled="true" a="180" name="Container Port" autoplaced="true"/>
               </ports>
               <animation flowspeed="100"/>
             </modelobject>
@@ -669,13 +665,9 @@
               </icons>
               <ports>
                 <port x="0.3333333333" y="1" enabled="true" a="90" name="Container_Port_1" autoplaced="true"/>
-                <port x="0.3333333333" y="1" enabled="true" a="90" name="Container Port_1" autoplaced="true"/>
                 <port x="0.6666666667" y="1" enabled="true" a="90" name="Container_Port_2" autoplaced="true"/>
-                <port x="0.6666666667" y="1" enabled="true" a="90" name="Container Port_2" autoplaced="true"/>
                 <port x="1" y="0.5" enabled="true" a="0" name="Container_Port_3" autoplaced="true"/>
-                <port x="1" y="0.5" enabled="true" a="0" name="Container Port_3" autoplaced="true"/>
                 <port x="0" y="0.5" enabled="true" a="180" name="Container_Port" autoplaced="true"/>
-                <port x="0" y="0.5" enabled="true" a="180" name="Container Port" autoplaced="true"/>
               </ports>
               <animation flowspeed="100"/>
             </modelobject>
