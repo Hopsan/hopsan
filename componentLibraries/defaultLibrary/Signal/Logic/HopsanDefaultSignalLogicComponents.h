@@ -8,5 +8,6 @@
 #include "SignalGreaterThan.hpp"
 #include "SignalSmallerThan.hpp"
 #include "SignalSRlatch.hpp"
+#include "SignalCounter.hpp"
 
 #endif // HOPSANDEFAULTSIGNALLOGICCOMPONENTS_H

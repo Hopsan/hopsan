@@ -363,7 +363,8 @@ HEADERS += \
     Hydraulic/Restrictors/HydraulicCheckValveWithOrifice.hpp \
     Hydraulic/Restrictors/HydraulicCheckValvePreLoaded.hpp \
     Hydraulic/Restrictors/HydraulicCheckValve.hpp \
-    Signal/Non-Linearities/SignalSampleAndHold.hpp
+    Signal/Non-Linearities/SignalSampleAndHold.hpp \
+    Signal/Logic/SignalCounter.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
