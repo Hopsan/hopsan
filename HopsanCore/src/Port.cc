@@ -714,8 +714,6 @@ SystemPort::SystemPort(const HString &rNodeType, const HString &rPortName, Compo
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
     // Do nothing special
-
-    createStartNode(mNodeType);
 }
 
 PortTypesEnumT SystemPort::getPortType() const

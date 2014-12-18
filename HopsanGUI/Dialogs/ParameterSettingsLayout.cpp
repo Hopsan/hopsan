@@ -39,9 +39,10 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
 
     // Set name label
     mName = rParameterData.mName;
-    mNameLabel.setText(parseVariableDescription(mName));
-    mNameLabel.setMinimumWidth(10);
-    mNameLabel.setMaximumWidth(100);
+    mNameLabel.setText(mName);
+    //mNameLabel.setText(parseVariableDescription(mName));
+    mNameLabel.setMinimumWidth(100);
+    mNameLabel.setMaximumWidth(1000);
     mNameLabel.adjustSize();
     mNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
 
