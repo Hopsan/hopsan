@@ -62,6 +62,7 @@
     pComponentFactory->registerCreatorFunction("SignalVariableTimeDelay", SignalVariableTimeDelay::Creator);
     pComponentFactory->registerCreatorFunction("SignalUnitDelay", SignalUnitDelay::Creator);
     pComponentFactory->registerCreatorFunction("SignalRateLimiter", SignalRateLimiter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSampleAndHold", SignalSampleAndHold::Creator);
 
 // Signal Routing
     pComponentFactory->registerCreatorFunction("SignalDualRoute", SignalDualRoute::Creator);

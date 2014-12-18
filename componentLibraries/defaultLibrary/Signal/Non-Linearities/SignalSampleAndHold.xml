@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-  <modelobject typename="SignalRateLimiter" displayname="Rate limiter" sourcecode="SignalRateLimiter.hpp">
+  <modelobject typename="SignalSampleAndHold" displayname="SampleAndHold" sourcecode="SignalSampleAndHold.hpp">
     <icons>
-      <icon scale="1" path="SignalRateLimiter.svg" iconrotation="OFF" type="user"/>
+      <icon scale="1" path="SignalSampleAndHold.svg" iconrotation="OFF" type="user"/>
     </icons>
     <ports>
       <port name="in" x="0" y="0.5" a="180"/>

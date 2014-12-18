@@ -10,5 +10,6 @@
 #include "SignalVariableTimeDelay.hpp"
 #include "SignalTimeDelay.hpp"
 #include "SignalRateLimiter.hpp"
+#include "SignalSampleAndHold.hpp"
 
 #endif // HOPSANDEFAULTSIGNALNONLINEARITIES_H
