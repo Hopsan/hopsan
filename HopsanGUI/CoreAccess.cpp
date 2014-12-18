@@ -1229,7 +1229,11 @@ void CoreSystemAccess::addSearchPath(QString searchPath)
 
 NodeInfo::NodeInfo(QString nodeType)
 {
-    hopsan::Node *pNode = gHopsanCore.createNode(nodeType.toStdString().c_str());
+    hopsan::Node *pNode = 0;
+    if (!nodeType.isEmpty())
+    {
+        pNode = gHopsanCore.createNode(nodeType.toStdString().c_str());
+    }
     if(!pNode) return;
 
     niceName = pNode->getNiceName().c_str();
