@@ -321,7 +321,13 @@ size_t Port::getNumConnectedPorts(const int subPortIdx)
 //! @param[in] rNodeType The type of node to create (Such as NodeHydraulic)
 void Port::createStartNode(const HString &rNodeType)
 {
-    mpStartNode = getComponent()->getHopsanEssentials()->createNode(rNodeType.c_str());
+    // If startnode already exists we need to remove it before creating a new one (to avoid memory leak)
+    if (mpStartNode)
+    {
+        eraseStartNode();
+    }
+    // Now create a new startnode of given type
+    mpStartNode = getComponent()->getHopsanEssentials()->createNode(rNodeType);
     //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if below
 
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected
@@ -335,6 +341,7 @@ void Port::createStartNode(const HString &rNodeType)
 void Port::eraseStartNode()
 {
     unRegisterStartValueParameters();
+    getComponent()->getHopsanEssentials()->removeNode(mpStartNode);
     mpStartNode = 0;
 }
 

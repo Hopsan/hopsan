@@ -401,7 +401,7 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
     }
     else
     {
-        if (this->hasReservedUniqueName(rName) || !isNameValid(rName))
+        if (this->hasReservedUniqueName(rName) || !isNameValid(rName, "#"))
         {
             addErrorMessage("The desired system parameter name: "+rName+" is invalid or already used by somthing else");
             success=false;
@@ -1073,7 +1073,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
     //If type same as before do nothing
     //if (cqs_type !=  mTypeCQS)
     //{
-        //Do we have a system parent
+        // If we have a system parent, then tell it to change our CQS type
         if ( !this->isTopLevelSystem() && !doOnlyLocalSet )
         {
             //Request change by our parent (som parent changes are neeeded)
@@ -1085,10 +1085,16 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
             {
             case Component::CType :
                 mTypeCQS = Component::CType;
-                for(size_t i=0; i<mPortPtrVector.size(); ++i)       //C-type, create start node for all power ports
+                for(size_t i=0; i<mPortPtrVector.size(); ++i)   //C-type, create start node for all power ports
                 {
                     if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
-                        mPortPtrVector[i]->createStartNode(mPortPtrVector[i]->getNodeType());
+                    {
+                        Node *pStartNode = mPortPtrVector[i]->getStartNodePtr();
+                        if (!pStartNode || pStartNode->getNodeType() == "NodeEmpty")
+                        {
+                            mPortPtrVector[i]->createStartNode(mPortPtrVector[i]->getNodeType());
+                        }
+                    }
                 }
                 break;
 
@@ -1097,12 +1103,21 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
                 for(size_t i=0; i<mPortPtrVector.size(); ++i)   //Q-type, remove start node for all powerports
                 {
                     if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
+                    {
                         mPortPtrVector[i]->eraseStartNode();
+                    }
                 }
                 break;
 
             case Component::SType :
                 mTypeCQS = Component::SType;
+                for(size_t i=0; i<mPortPtrVector.size(); ++i)   //S-type, remove start node for all powerports
+                {
+                    if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
+                    {
+                        mPortPtrVector[i]->eraseStartNode();
+                    }
+                }
                 break;
 
             case Component::UndefinedCQSType :

@@ -891,6 +891,15 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
 //            xmlFavVariable = xmlFavVariable.nextSiblingElement(HMF_FAVORITEVARIABLETAG);
 //        }
 
+        //8. Load system parameters again in case we need to reregister systemport start values
+        xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
+        xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadSystemParameter(xmlSubObject, hmfFormatVersion, this);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+
         //9. Load plot variable aliases
         QDomElement xmlAliases = domElement.firstChildElement(HMF_ALIASES);
         QDomElement xmlAlias = xmlAliases.firstChildElement(HMF_ALIAS);

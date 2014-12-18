@@ -688,7 +688,7 @@ Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType
 void Component::removePort(const HString &rPortName)
 {
     PortPtrMapT::iterator it = mPortPtrMap.find(rPortName);
-    Port *pPort = it->second;
+    Port *pPort = it->second;    //!< @todo dangerous we dont check if we found someting
     std::vector<Port *> connectedPorts = pPort->getConnectedPorts();
     for(size_t p=0; p<connectedPorts.size(); ++p)
     {
@@ -698,17 +698,20 @@ void Component::removePort(const HString &rPortName)
     mPortPtrVector.erase(std::remove(mPortPtrVector.begin(), mPortPtrVector.end(), pPort), mPortPtrVector.end());
     mAutoSignalNodeDataPtrPorts.erase(pPort);
 
-    if(pPort->getStartNodePtr())
-    {
-        for(size_t i=0; i<pPort->getStartNodePtr()->getNumDataVariables(); ++i)
-        {
-            const NodeDataDescription* pDesc = pPort->getStartNodePtr()->getDataDescription(0);
-            const HString name = getName()+"#"+pDesc->name;
-            mpParameters->deleteParameter(name);
-        }
-    }
+    // Unregister all startvalue parameters connected to this port
+    pPort->unRegisterStartValueParameters();
+//    if(pPort->getStartNodePtr())
+//    {
+//        for(size_t i=0; i<pPort->getStartNodePtr()->getNumDataVariables(); ++i)
+//        {
+//            const NodeDataDescription* pDesc = pPort->getStartNodePtr()->getDataDescription(0);
+//            const HString name = getName()+"#"+pDesc->name;
+//            unRegisterParameter(name);
+//        }
+//    }
 
     //! @todo Deleting port like this seem to cause cowboy-writing. Figure out why...
+    //! @todo memmory leak??? !
     //delete pPort;
 }
 
@@ -881,6 +884,9 @@ void Component::deletePort(const HString &rName)
 
         // Erase from map
         mPortPtrMap.erase(it);
+
+        // Unregister any start value parameters connected to this port
+        pPort->unRegisterStartValueParameters();
 
         // delete the port
         delete pPort;

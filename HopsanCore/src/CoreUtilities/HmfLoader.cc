@@ -441,6 +441,10 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
         }
     }
 
+    // Load system parameters again in case we have c-component subsystems with startvalues
+    //! @todo this is an ugly hack to be forced to load again
+    loadSystemParameters(pSysNode, pSystem);
+
     // Load aliases
     rapidxml::xml_node<> *pAliases = pSysNode->first_node("aliases");
     if (pAliases)
