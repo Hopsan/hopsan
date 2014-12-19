@@ -379,11 +379,14 @@ void AnimatedComponent::updateAnimation()
             SharedVectorVariableT pVar;
             foreach(const Port *pPort, QVector<Port*>() << mpModelObject->getPort("in")->getConnectedPorts() << mpModelObject->getPort("in_right")->getConnectedPorts() << mpModelObject->getPort("in_bottom"))
             {
-                if(! pPort) continue;
                 QString fullName = makeConcatName(pPort->getParentModelObjectName(),
                                                   pPort->getName(),"Value");
                 fullName.remove("#");
                 pVar = pHandler->getVectorVariable(fullName,-1);
+                if(pVar.isNull())
+                {
+                    continue;
+                }
                 double data;
                 pPort->getLastNodeData("Value", data);
                 pVar->append(data);
