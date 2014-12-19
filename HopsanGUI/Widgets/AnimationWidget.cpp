@@ -171,7 +171,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpPlayButton->setDisabled(mpPlotData->isEmpty());
     mpRewindButton->setDisabled(mpPlotData->isEmpty());
 
-    if(!mpPlotData->isEmpty())
+    if(!mpPlotData->isEmpty() && !mpPlotData->getTimeVectorVariable(-1).isNull())
     {
         //Obtain time values from plot data
         mTimeValues = mpContainer->getLogDataHandler()->getTimeVectorVariable(-1)->getDataVectorCopy();
