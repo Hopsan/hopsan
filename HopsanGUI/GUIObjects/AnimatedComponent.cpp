@@ -41,6 +41,8 @@
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/ModelWidget.h"
 
+#include "PlotHandler.h"
+#include "PlotWindow.h"
 
 
 //! @brief Constructor for the animated component class
@@ -361,6 +363,47 @@ void AnimatedComponent::updateAnimation()
             }
         }
     }
+
+    if(mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
+    {
+        LogDataHandler *pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler();
+
+        QList<SharedVectorVariableT> vectors;
+
+        SharedVectorVariableT pTimeVar = pHandler->getVectorVariable(mpModelObject->getName()+"_time",-1);
+        if(!pTimeVar.isNull())
+        {
+            pTimeVar->append(mpAnimationWidget->getLastAnimationTime());
+            vectors << pTimeVar;
+
+            SharedVectorVariableT pVar;
+            foreach(const Port *pPort, QVector<Port*>() << mpModelObject->getPort("in")->getConnectedPorts() << mpModelObject->getPort("in_right")->getConnectedPorts() << mpModelObject->getPort("in_bottom"))
+            {
+                if(! pPort) continue;
+                QString fullName = makeConcatName(pPort->getParentModelObjectName(),
+                                                  pPort->getName(),"Value");
+                fullName.remove("#");
+                pVar = pHandler->getVectorVariable(fullName,-1);
+                double data;
+                pPort->getLastNodeData("Value", data);
+                pVar->append(data);
+                vectors << pVar;
+            }
+
+            double firstT = pTimeVar->first();
+            double lastT = pTimeVar->last();
+            while(lastT-firstT > 3)
+            {
+                for(int i=0; i<vectors.size(); ++i)
+                {
+                    vectors[i]->chopAtBeginning();
+                }
+                firstT = pTimeVar->first();
+            }
+        }
+
+    }
+
 }
 
 
@@ -843,6 +886,78 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         pDialog->exec();
         delete(pDialog);
     }
+
+
+    //Open plot window if double-clicking on scope component
+    if(mpAnimatedComponent->mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
+    {
+        LogDataHandler *pHandler = mpAnimatedComponent->mpModelObject->getParentContainerObject()->getLogDataHandler();
+        QString name = mpAnimatedComponent->mpModelObject->getName();
+        PlotWindow *pPlotWindow = mpAnimatedComponent->mpPlotWindow;
+
+        QString timeName = name+"_time";
+        SharedVectorVariableT pTimeVar = pHandler->getVectorVariable(timeName, -1);
+        if(pTimeVar.isNull())
+        {
+            pTimeVar = pHandler->defineNewVectorVariable(timeName);
+        }
+        pTimeVar->assignFrom(QVector<double>() << 0);
+
+
+        pPlotWindow = gpPlotHandler->createNewUniquePlotWindow(name);
+
+        foreach(const Port* pPort, mpAnimatedComponent->mpModelObject->getPort("in")->getConnectedPorts())
+        {
+            QString fullName = makeConcatName(pPort->getParentModelObjectName(),
+                                              pPort->getName(),"Value");
+            fullName.remove("#");
+            SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
+            if(pVar.isNull())
+            {
+                pVar = pHandler->defineNewVectorVariable(fullName);
+            }
+            pVar->assignFrom(QVector<double>() << 0);
+            pHandler->plotVariable(pPlotWindow, fullName, -1, QwtPlot::yLeft);
+        }
+        foreach(const Port* pPort, mpAnimatedComponent->mpModelObject->getPort("in_right")->getConnectedPorts())
+        {
+            QString fullName = makeConcatName(pPort->getParentModelObjectName(),
+                                              pPort->getName(),"Value");
+            fullName.remove("#");
+            SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
+            if(pVar.isNull())
+            {
+                pVar = pHandler->defineNewVectorVariable(fullName);
+            }
+            pVar->assignFrom(QVector<double>() << 0);
+            pHandler->plotVariable(pPlotWindow, fullName, -1, QwtPlot::yLeft);
+        }
+        if(mpAnimatedComponent->mpModelObject->getPort("in_bottom")->isConnected())
+        {
+            Port *pPort = mpAnimatedComponent->mpModelObject->getPort("in_bottom");
+            QString fullName = makeConcatName(pPort->getParentModelObjectName(),
+                                              pPort->getName(),"Value");
+            fullName.remove("#");
+            SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
+            if(pVar.isNull())
+            {
+                pVar = pHandler->defineNewVectorVariable(fullName);
+            }
+            pVar->assignFrom(QVector<double>() << 0);
+
+            gpPlotHandler->setPlotWindowXData(pPlotWindow, pVar, true);
+
+        }
+        else
+        {
+            gpPlotHandler->setPlotWindowXData(pPlotWindow, pTimeVar, true);
+        }
+
+
+
+        pPlotWindow->showNormal();
+    }
+
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
 }

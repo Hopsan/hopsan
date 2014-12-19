@@ -966,7 +966,7 @@ void Port::setDisplayName(const QString name)
 }
 
 
-bool Port::getLastNodeData(QString dataName, double& rData)
+bool Port::getLastNodeData(QString dataName, double& rData) const
 {
     return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getLastNodeData(getParentModelObjectName(), this->getName(), dataName, rData);
 }

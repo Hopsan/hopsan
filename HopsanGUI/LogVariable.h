@@ -269,6 +269,7 @@ public:
     void absData();
     double pokeData(const int index, const double value, QString &rErr);
     void append(const double y);
+    void chopAtBeginning();
 
     // Functions that modify data, but that may require reimplementation in derived classes
     virtual void assignFrom(const SharedVectorVariableT pOther);

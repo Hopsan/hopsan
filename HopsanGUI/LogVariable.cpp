@@ -941,6 +941,17 @@ void VectorVariable::append(const double y)
 }
 
 
+//! @brief Removes the first element in the vector
+void VectorVariable::chopAtBeginning()
+{
+    DataVectorT* pData = mpCachedDataVector->beginFullVectorOperation();
+    pData->remove(0,1);
+    mpCachedDataVector->endFullVectorOperation(pData);
+    emit dataChanged();
+}
+
+
+
 double VectorVariable::maxOfData(int &rIdx) const
 {
     rIdx = -1;

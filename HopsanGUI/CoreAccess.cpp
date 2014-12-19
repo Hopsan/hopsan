@@ -991,7 +991,7 @@ bool CoreSystemAccess::havePlotData(const QString compname, const QString portna
 }
 
 
-bool CoreSystemAccess::getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData)
+bool CoreSystemAccess::getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData) const
 {
     int dataId = -1;
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
@@ -1110,7 +1110,7 @@ bool CoreSystemAccess::writeNodeData(const QString compname, const QString portn
 //! @param [in] componentName The name of the component to which the port belongs
 //! @param [in] portName The name of the port
 //! @returns A pointer to the port or a 0 ptr if component or port not found
-hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString portName)
+hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString portName) const
 {
     //We must use getcomponent here if we want to be able to find root system ptr
     //! @todo see if we can reduce the number f public get functions one, the one which only searches subcomponents make function in core to solve the other access type like bellow

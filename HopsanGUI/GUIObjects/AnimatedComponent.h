@@ -40,7 +40,7 @@ class AnimationWidget;
 class AnimatedIcon;
 class ModelObject;
 class ModelObjectAppearance;
-
+class PlotWindow;
 
 class AnimatedComponent : public QObject
 {
@@ -81,6 +81,8 @@ private:
 
     bool mIsDisplay;
     bool mIsNumericalInput;
+
+    PlotWindow *mpPlotWindow;
 };
 
 

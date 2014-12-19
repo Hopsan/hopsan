@@ -79,7 +79,7 @@ public:
     QStringList getVariableNames();
     QStringList getFullVariableNames();
 
-    bool getLastNodeData(QString dataName, double& rData);
+    bool getLastNodeData(QString dataName, double& rData) const;
 
     void disconnectAndRemoveAllConnectedConnectors();
     virtual void rememberConnection(Connector *pConnector);

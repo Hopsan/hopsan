@@ -255,7 +255,7 @@ public:
     void getPlotData(const QString compname, const QString portname, const QString dataname, std::vector<double> *&rpTimeVector, QVector<double> &rData);
     std::vector<double> *getLogTimeData() const;
     bool havePlotData(const QString compname, const QString portname, const QString dataname);
-    bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData);
+    bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData) const;
     double *getNodeDataPtr(const QString compname, const QString portname, const QString dataname);
 
     //Time measurements
@@ -267,7 +267,7 @@ public:
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
-    hopsan::Port* getCorePortPtr(QString componentName, QString portName);
+    hopsan::Port* getCorePortPtr(QString componentName, QString portName) const;
 
     hopsan::ComponentSystem *mpCoreComponentSystem;
 };
