@@ -456,7 +456,7 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
 
         double x = it.value().x;
         double y = it.value().y;
-        qDebug() << "x,y: " << x << " " << y;
+        //qDebug() << "x,y: " << x << " " << y;
 
         if (this->type() == GroupContainerType)
         {

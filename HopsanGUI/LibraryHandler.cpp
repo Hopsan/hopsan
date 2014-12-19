@@ -177,7 +177,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         QFileInfo fileInfo(file);
 
         //Iterate over all xml files in folder and subfolders
-        qDebug() << "Reading xml from " << fileInfo.filePath();
+        //qDebug() << "Reading xml from " << fileInfo.filePath();
         if(file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QDomDocument domDocument;
@@ -638,7 +638,7 @@ ModelObjectAppearance *LibraryHandler::getModelObjectAppearancePtr(const QString
 
 void LibraryHandler::addReplacement(QString type1, QString type2)
 {
-    qDebug() << "Adding replacement: " << type1 << ", " << type2;
+    //qDebug() << "Adding replacement: " << type1 << ", " << type2;
 
     if(mReplacementsMap.contains(type1))
     {

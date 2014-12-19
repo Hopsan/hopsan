@@ -641,7 +641,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
 
             double x = pPortApp->x*boundingRect().width();
             double y = pPortApp->y*boundingRect().height();
-            qDebug() << "x,y: " << x << " " << y;
+            //qDebug() << "x,y: " << x << " " << y;
 
             if (this->type() == GroupContainerType)
             {
