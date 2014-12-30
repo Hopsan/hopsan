@@ -24,18 +24,21 @@
 
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
+#include <QApplication>
 
 #include "global.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIModelObject.h"
+#include "GUIObjects/GUIComponent.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "Widgets/ModelWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "loadFunctions.h"
 #include "Configuration.h"
+#include "LibraryHandler.h"
 
 class UndoStack;
 
@@ -49,6 +52,8 @@ Connector::Connector(ContainerObject *pParentContainer)
     mpParentContainerObject = 0;
     mpStartPort = 0;
     mpEndPort = 0;
+
+    mpVolunectorComponent = 0;
 
     mMakingDiagonal = false;
     mIsDashed = false;
@@ -557,6 +562,32 @@ bool Connector::isBroken() const
 bool Connector::isDangling()
 {
     return (mpStartPort && !mpEndPort);
+}
+
+bool Connector::isVolunector() const
+{
+    return (mpVolunectorComponent != 0);
+}
+
+void Connector::makeVolunector()
+{
+    //Create the hidden volume component
+    ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr("HydraulicVolume");
+    mpVolunectorComponent = new Component(mpStartPort->pos(), 0, pAppearance, mpParentContainerObject);
+
+    //Let parent container object take ownership of the hidden component
+//    QList<ModelObject*> modelObjectsList;
+//    QList<Widget*> widgetsList;
+//    modelObjectsList << mpVolunectorComponent;
+//    mpParentContainerObject->takeOwnershipOf(modelObjectsList, widgetsList);
+
+    //Hide the hidden component
+    mpVolunectorComponent->hide();
+}
+
+Component *Connector::getVolunectorComponent()
+{
+    return mpVolunectorComponent;
 }
 
 
@@ -1456,6 +1487,17 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
 }
 
+void ConnectorLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(mpParentConnector->isVolunector())
+    {
+        //QApplication::sendEvent(mpParentConnector->getVolunectorComponent(), event);
+        mpParentConnector->getVolunectorComponent()->openPropertiesDialog();
+    }
+
+    QGraphicsLineItem::mouseDoubleClickEvent(event);
+}
+
 
 
 //! @brief Returns the number of the line in the connector
@@ -1573,4 +1615,13 @@ void ConnectorLine::setPen (const QPen &pen)
         mArrowLine2->setPen(tempPen);
         //mArrowLine1->line();
     }
+}
+
+
+Volunector::Volunector(ContainerObject *pParentContainer)
+    : Connector(pParentContainer)
+{
+    //ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr("HydraulicVolume");
+    //mpVolunectorComponent = new Component(this->center(), 0, pAppearance, pParentContainer);
+    //mpVolunectorComponent->hide();
 }

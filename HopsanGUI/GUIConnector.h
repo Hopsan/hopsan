@@ -42,6 +42,7 @@ class WorkspaceObject;
 class Port;
 class SystemContainer;
 class ContainerObject;
+class Component;
 
 class Connector : public QGraphicsWidget
 {
@@ -86,6 +87,10 @@ public:
     bool isActive() const;
     bool isBroken() const;
     bool isDangling();
+    bool isVolunector() const;
+
+    void makeVolunector();
+    Component* getVolunectorComponent();
 
     void saveToDomElement(QDomElement &rDomElement);
 
@@ -138,6 +143,8 @@ private:
     QVector<ConnectorLine*> mpLines;
     QVector<ConnectorGeometryEnumT> mGeometries;
     QVector<QPointF> mPoints;
+
+    Component *mpVolunectorComponent;
 };
 
 
@@ -172,6 +179,7 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
@@ -193,6 +201,15 @@ private:
     QPointF mStartPos;
     QPointF mEndPos;
     QPointF mOldPos;
+};
+
+
+class Volunector : public Connector
+{
+public:
+    Volunector(ContainerObject *pParentContainer);
+private:
+    Component *mpVolunectorComponent;
 };
 
 #endif // GUICONNECTOR_H

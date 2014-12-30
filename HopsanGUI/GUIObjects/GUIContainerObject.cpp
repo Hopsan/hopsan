@@ -1195,6 +1195,24 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                  {
                      success = true;
                  }
+                 else if ( !startPortIsGroupPort && !endPortIsGroupPort && pConnector->isVolunector())
+                 {
+                    bool ok1 = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
+                                                                         pStartP->getName(),
+                                                                         pConnector->getVolunectorComponent()->getName(),
+                                                                         "P1");
+                    bool ok2 = this->getCoreSystemAccessPtr()->disconnect(pConnector->getVolunectorComponent()->getName(),
+                                                                     "P2",
+                                                                         pEndP->getParentModelObjectName(),
+                                                                         pEndP->getName());
+
+                    Component *vComp = pConnector->getVolunectorComponent();
+                    vComp->scene()->removeItem(vComp);
+                    vComp->deleteInHopsanCore();
+                    vComp->deleteLater();
+
+                    success = (ok1 && ok2);
+                 }
                  else if ( !startPortIsGroupPort && !endPortIsGroupPort )
                  {
                     success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
@@ -1413,6 +1431,24 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
                     success = false;
                 }
             }
+#ifdef DEVELOPMENT
+            else if(pStartRealPort->getNodeType() == "NodeHydraulic" &&                 //Connecting two Q-type hydraulic ports, add a "volunector"
+                    pEndRealPort->getNodeType() == "NodeHydraulic" &&
+                    pStartRealPort->getParentModelObject()->getTypeCQS() == "Q" &&
+                    pEndRealPort->getParentModelObject()->getTypeCQS() == "Q")
+            {
+                mpTempConnector->makeVolunector();
+                bool ok1 = getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
+                                                             pStartRealPort->getName(),
+                                                             mpTempConnector->getVolunectorComponent()->getName(),
+                                                             "P1");
+                bool ok2 = getCoreSystemAccessPtr()->connect(mpTempConnector->getVolunectorComponent()->getName(),
+                                                             "P2",
+                                                             pEndRealPort->getParentModelObjectName(),
+                                                             pEndRealPort->getName());
+                success = ok1 && ok2;
+            }
+#endif
             // Else treat as normal ports
             else
             {

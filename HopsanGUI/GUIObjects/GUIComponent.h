@@ -56,6 +56,8 @@ public:
     int type() const;
     virtual QString getHmfTagName() const;
 
+    void openPropertiesDialog();
+
 private slots:
     virtual void setVisible(bool visible);
 
@@ -63,7 +65,6 @@ protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void openPropertiesDialog();
     void createPorts();
 };
 
