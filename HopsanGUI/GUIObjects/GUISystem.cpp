@@ -42,6 +42,8 @@
 #include "Widgets/PyDockWidget.h"
 #include "Configuration.h"
 #include "GUIContainerObject.h"
+#include "GUIComponent.h"
+#include "GUIPort.h"
 
 SystemContainer::SystemContainer(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -651,6 +653,51 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
         this->saveGuiDataToDomElement(xmlSubsystem);
     }
 
+    //Replace volunecros with connectors and component
+    QList<Connector*> volunectorPtrs;
+    QList<Connector*> tempConnectorPtrs;  //To be removed later
+    QList<ModelObject*> tempComponentPtrs; //To be removed later
+    for(int i=0; i<mSubConnectorList.size(); ++i)
+    {
+        if(mSubConnectorList[i]->isVolunector())
+        {
+            Connector *pVolunector = mSubConnectorList[i];
+            volunectorPtrs.append(pVolunector);
+            mSubConnectorList.removeAll(pVolunector);
+            --i;
+
+            tempComponentPtrs.append(pVolunector->getVolunectorComponent());
+
+            tempConnectorPtrs.append(new Connector(this));
+            tempConnectorPtrs.last()->setStartPort(pVolunector->getStartPort());
+            tempConnectorPtrs.last()->setEndPort(tempComponentPtrs.last()->getPort("P1"));
+            QVector<QPointF> points;
+            QStringList geometries;
+            points.append(pVolunector->mapToScene(pVolunector->getLine(0)->line().p1()));
+            for(int j=0; j<pVolunector->getNumberOfLines(); ++j)
+            {
+                points.append(pVolunector->mapToScene(pVolunector->getLine(j)->line().p2()));
+                if(pVolunector->getGeometry(j) == Horizontal)
+                    geometries.append("horizontal");
+                else if(pVolunector->getGeometry(j) == Vertical)
+                    geometries.append("vertical");
+                else
+                    geometries.append("diagonal");
+            }
+            tempConnectorPtrs.last()->setPointsAndGeometries(points, geometries);
+
+            tempConnectorPtrs.append(new Connector(this));
+            tempConnectorPtrs.last()->setStartPort(tempComponentPtrs.last()->getPort("P2"));
+            tempConnectorPtrs.last()->setEndPort(pVolunector->getEndPort());
+        }
+
+        for(int j=0; j<tempComponentPtrs.size(); ++j)
+        {
+            mModelObjectMap.insert(tempComponentPtrs[j]->getName(), tempComponentPtrs[j]);
+        }
+    }
+    mSubConnectorList.append(tempConnectorPtrs);
+
         //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
     {
@@ -660,6 +707,10 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
         for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
         {
             it.value()->saveToDomElement(xmlObjects, contents);
+            if(tempComponentPtrs.contains(it.value()))
+            {
+                xmlObjects.lastChildElement().setAttribute("volunector", "true");
+            }
         }
 
         if(contents==FullModel)
@@ -679,6 +730,21 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
             }
         }
     }
+
+    //Remove temporary connectors/components and re-add volunectors
+    for(int i=0; i<tempConnectorPtrs.size(); ++i)
+    {
+        mSubConnectorList.removeAll(tempConnectorPtrs[i]);
+    }
+    for(int i=0; i<volunectorPtrs.size(); ++i)
+    {
+        mSubConnectorList.append(volunectorPtrs[i]);
+    }
+    for(int i=0; i<tempComponentPtrs.size(); ++i)
+    {
+        mModelObjectMap.remove(tempComponentPtrs[i]->getName());
+    }
+
 }
 
 //! @brief Loads a System from an XML DOM Element
@@ -791,6 +857,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         }
 
         //2. Load all sub-components
+        QList<ModelObject*> volunectorObjectPtrs;
         QDomElement xmlSubObjects = domElement.firstChildElement(HMF_OBJECTS);
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
@@ -820,6 +887,10 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
                     loadStartValue(xmlStartValue, pObj, NoUndo);
                     xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
                 }
+            }
+            if(xmlSubObject.attribute("volunector") == "true")
+            {
+                volunectorObjectPtrs.append(pObj);
             }
 
 //            if(pObj && pObj->getTypeName().startsWith("CppComponent"))
@@ -925,6 +996,40 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         //11. Load sensitivity analysis settings
         xmlSubObject = guiStuff.firstChildElement(HMF_SENSITIVITYANALYSIS);
         loadSensitivityAnalysisSettingsFromDomElement(xmlSubObject);
+
+        //Replace volunector components with volunectors
+        for(int i=0; i<volunectorObjectPtrs.size(); ++i)
+        {
+            if(volunectorObjectPtrs[i]->getPort("P1")->isConnected() &&
+                volunectorObjectPtrs[i]->getPort("P2")->isConnected())
+            {
+
+
+                Port *pP1 = volunectorObjectPtrs[i]->getPort("P1");
+                Port *pP2 = volunectorObjectPtrs[i]->getPort("P2");
+                Connector *pVolunector = pP1->getAttachedConnectorPtrs().first();
+
+                pVolunector->setEndPort(pP2->getConnectedPorts().first());
+                pVolunector->makeVolunector(dynamic_cast<Component*>(volunectorObjectPtrs[i]));
+
+                mSubConnectorList.removeAll(pP2->getAttachedConnectorPtrs().first());
+                mModelObjectMap.remove(volunectorObjectPtrs[i]->getName());
+
+                volunectorObjectPtrs[i]->forgetConnector(pP2->getAttachedConnectorPtrs().first());
+
+                pVolunector->drawConnector();
+
+                volunectorObjectPtrs[i]->setParent(0);
+
+                Connector *pExcessiveConnector = pP2->getAttachedConnectorPtrs().first();
+
+                pP1->forgetConnection(pP1->getAttachedConnectorPtrs().first());
+                pP2->forgetConnection(pP2->getAttachedConnectorPtrs().first());
+
+                delete(pExcessiveConnector);
+            }
+        }
+
 
         //Refresh the appearance of the subsystemem and create the GUIPorts based on the loaded portappearance information
         //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff

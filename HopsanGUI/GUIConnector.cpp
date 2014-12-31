@@ -585,6 +585,16 @@ void Connector::makeVolunector()
     mpVolunectorComponent->hide();
 }
 
+
+void Connector::makeVolunector(Component *pComponent)
+{
+    mpVolunectorComponent = pComponent;
+
+    //Hide the hidden component
+    mpVolunectorComponent->hide();
+}
+
+
 Component *Connector::getVolunectorComponent()
 {
     return mpVolunectorComponent;

@@ -90,6 +90,7 @@ public:
     bool isVolunector() const;
 
     void makeVolunector();
+    void makeVolunector(Component *pComponent);
     Component* getVolunectorComponent();
 
     void saveToDomElement(QDomElement &rDomElement);
