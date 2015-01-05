@@ -1008,25 +1008,36 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
                 Port *pP1 = volunectorObjectPtrs[i]->getPort("P1");
                 Port *pP2 = volunectorObjectPtrs[i]->getPort("P2");
                 Connector *pVolunector = pP1->getAttachedConnectorPtrs().first();
-
-                pVolunector->setEndPort(pP2->getConnectedPorts().first());
-                pVolunector->makeVolunector(dynamic_cast<Component*>(volunectorObjectPtrs[i]));
-
-                mSubConnectorList.removeAll(pP2->getAttachedConnectorPtrs().first());
-                mModelObjectMap.remove(volunectorObjectPtrs[i]->getName());
-
-                volunectorObjectPtrs[i]->forgetConnector(pP2->getAttachedConnectorPtrs().first());
-
-                pVolunector->drawConnector();
-
-                volunectorObjectPtrs[i]->setParent(0);
-
                 Connector *pExcessiveConnector = pP2->getAttachedConnectorPtrs().first();
+                Port *pEndPort = pExcessiveConnector->getEndPort();
+                ModelObject *pEndComponent = pEndPort->getParentModelObject();
+                ModelObject *pVolunectorObject = volunectorObjectPtrs[i];
 
-                pP1->forgetConnection(pP1->getAttachedConnectorPtrs().first());
-                pP2->forgetConnection(pP2->getAttachedConnectorPtrs().first());
 
+                //Forget and remove excessive connector
+                mSubConnectorList.removeAll(pExcessiveConnector);
+                pVolunectorObject->forgetConnector(pExcessiveConnector);    //Start component
+                pEndComponent->forgetConnector(pExcessiveConnector);        //Start port
+                pP2->forgetConnection(pExcessiveConnector);                 //End component
+                pEndPort->forgetConnection(pExcessiveConnector);            //End port
                 delete(pExcessiveConnector);
+
+                //Disconnect volunector from volunector component
+                pVolunectorObject->forgetConnector(pVolunector);
+                pP1->forgetConnection(pVolunector);
+
+                //Re-connect volunector with end component
+                pVolunector->setEndPort(pEndPort);
+
+                //Make the connector a volunector
+                pVolunector->makeVolunector(dynamic_cast<Component*>(pVolunectorObject));
+
+                //Remove volunector object parent container object
+                mModelObjectMap.remove(pVolunectorObject->getName());
+                pVolunectorObject->setParent(0);
+
+                //Re-draw connector object
+                pVolunector->drawConnector();
             }
         }
 
