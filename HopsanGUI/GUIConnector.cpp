@@ -1286,6 +1286,7 @@ ConnectorLine::ConnectorLine(double x1, double y1, double x2, double y2, int lin
     mHasEndArrow = false;
     mArrowSize = 8.0;
     mArrowAngle = 0.5;
+    mpVolunectorLine = 0;
 }
 
 
@@ -1558,6 +1559,18 @@ void ConnectorLine::setLine(QPointF pos1, QPointF pos2)
     }
     QGraphicsLineItem::setLine(this->mapFromParent(pos1).x(),this->mapFromParent(pos1).y(),
                                this->mapFromParent(pos2).x(),this->mapFromParent(pos2).y());
+
+    if(mpParentConnector->isVolunector())
+    {
+        if(!mpVolunectorLine)
+        {
+            mpVolunectorLine = new QGraphicsLineItem(this->line(), this->parentItem(), this->scene());
+        }
+        else
+        {
+            mpVolunectorLine->setLine(this->line());
+        }
+    }
 }
 
 
@@ -1624,6 +1637,15 @@ void ConnectorLine::setPen (const QPen &pen)
         mArrowLine1->setPen(tempPen);
         mArrowLine2->setPen(tempPen);
         //mArrowLine1->line();
+    }
+    if(mpParentConnector->isVolunector() && mpVolunectorLine)
+    {
+        QPen tempPen = this->pen();
+        QPen tempPen2 = this->pen();
+        tempPen = QPen(tempPen.color(), pen.width()*3, Qt::SolidLine);
+        tempPen2 = QPen(QColor(Qt::white), pen.width(), Qt::SolidLine);
+        QGraphicsLineItem::setPen(tempPen);
+        mpVolunectorLine->setPen(tempPen2);
     }
 }
 

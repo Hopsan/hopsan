@@ -202,6 +202,8 @@ private:
     QPointF mStartPos;
     QPointF mEndPos;
     QPointF mOldPos;
+
+    QGraphicsLineItem *mpVolunectorLine;
 };
 
 
