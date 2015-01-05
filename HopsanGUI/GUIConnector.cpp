@@ -1408,7 +1408,26 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *pBrownAction = pColorMenu->addAction("Brown");
     QAction *pOrangeAction = pColorMenu->addAction("Orange");
     QAction *pPinkAction = pColorMenu->addAction("Pink");
+
     menu.addMenu(pColorMenu);
+
+    QMap<QAction*, QString> actionToTypeNameMap;
+    if(mpParentConnector->isVolunector())
+    {
+        menu.addSeparator();
+        QMenu *pVolunectorComponentsMenu = new QMenu("Change Volunector Component");
+        QStringList components;
+        components << "HydraulicVolume" << "HydraulicTLMlossless" << "HydraulicHose";
+        foreach(const QString &component, components)
+        {
+            QString name = gpLibraryHandler->getModelObjectAppearancePtr(component)->getTypeName();
+            QIcon icon = gpLibraryHandler->getModelObjectAppearancePtr(component)->getIcon(UserGraphics);
+            QAction *pComponentAction = pVolunectorComponentsMenu->addAction(icon, name);
+            pComponentAction->setIconVisibleInMenu(true);
+            actionToTypeNameMap.insert(pComponentAction, component);
+        }
+        menu.addMenu(pVolunectorComponentsMenu);
+    }
 
     //-- User interaction --//
     QAction *selectedAction = menu.exec(event->screenPos());
@@ -1496,6 +1515,32 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         mpParentConnector->setColor(newConnectorColor);
     }
+
+    if(actionToTypeNameMap.contains(selectedAction))
+    {
+        QString typeName = actionToTypeNameMap.find(selectedAction).value();
+
+        ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+        Component *pNewComponent = new Component(mpParentConnector->getStartPort()->pos(), 0, pAppearance, mpParentConnector->getParentContainer());
+        Component *pOldComponent = mpParentConnector->getVolunectorComponent();
+
+        QString startPort = mpParentConnector->getStartPortName();
+        QString endPort = mpParentConnector->getEndPortName();
+        QString startComponent = mpParentConnector->getStartComponentName();
+        QString endComponent = mpParentConnector->getEndComponentName();
+
+        this->scene()->removeItem(pOldComponent);
+        pOldComponent->deleteInHopsanCore();
+        pOldComponent->deleteLater();
+
+        mpParentConnector->mpParentContainerObject->getCoreSystemAccessPtr()->connect(startComponent, startPort, pNewComponent->getName(), "P1");
+        mpParentConnector->mpParentContainerObject->getCoreSystemAccessPtr()->connect(pNewComponent->getName(), "P2", endComponent, endPort);
+
+        mpParentConnector->makeVolunector(pNewComponent);
+        pNewComponent->hide();
+
+        mpParentConnector->drawConnector();
+    }
 }
 
 void ConnectorLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -1565,6 +1610,7 @@ void ConnectorLine::setLine(QPointF pos1, QPointF pos2)
         if(!mpVolunectorLine)
         {
             mpVolunectorLine = new QGraphicsLineItem(this->line(), this->parentItem(), this->scene());
+            this->setPen(this->pen());
         }
         else
         {
@@ -1633,7 +1679,7 @@ void ConnectorLine::setPen (const QPen &pen)
     if(mHasStartArrow | mHasEndArrow)       //Update arrow lines two, but ignore dashes
     {
         QPen tempPen = this->pen();
-        tempPen = QPen(tempPen.color(), tempPen.width(), Qt::SolidLine);
+        tempPen = QPen(tempPen.color(), tempPen.widthF(), Qt::SolidLine);
         mArrowLine1->setPen(tempPen);
         mArrowLine2->setPen(tempPen);
         //mArrowLine1->line();
@@ -1642,8 +1688,8 @@ void ConnectorLine::setPen (const QPen &pen)
     {
         QPen tempPen = this->pen();
         QPen tempPen2 = this->pen();
-        tempPen = QPen(tempPen.color(), pen.width()*3, Qt::SolidLine);
-        tempPen2 = QPen(QColor(Qt::white), pen.width(), Qt::SolidLine);
+        tempPen = QPen(tempPen.color(), pen.widthF()*3, Qt::SolidLine);
+        tempPen2 = QPen(QColor(Qt::white), pen.widthF(), Qt::SolidLine);
         QGraphicsLineItem::setPen(tempPen);
         mpVolunectorLine->setPen(tempPen2);
     }

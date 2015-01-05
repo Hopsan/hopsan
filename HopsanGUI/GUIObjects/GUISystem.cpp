@@ -735,6 +735,19 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
     for(int i=0; i<tempConnectorPtrs.size(); ++i)
     {
         mSubConnectorList.removeAll(tempConnectorPtrs[i]);
+
+        Connector *pConnector = tempConnectorPtrs[i];
+        Port *pStartPort = pConnector->getStartPort();
+        ModelObject *pStartComponent = pStartPort->getParentModelObject();
+        Port *pEndPort = pConnector->getEndPort();
+        ModelObject *pEndComponent = pEndPort->getParentModelObject();
+
+        pStartPort->forgetConnection(pConnector);
+        pStartComponent->forgetConnector(pConnector);
+        pEndPort->forgetConnection(pConnector);
+        pEndComponent->forgetConnector(pConnector);
+
+        delete(tempConnectorPtrs[i]);
     }
     for(int i=0; i<volunectorPtrs.size(); ++i)
     {
