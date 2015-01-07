@@ -24,7 +24,7 @@ The second toolbar has buttons for editing tools, such as copy, cut, paste, undo
 \image html "Edit Toolbar.png"
 \image latex "Edit Toolbar.png" "Edit toolbar"
 
-The third toolbar consists of viewport operations such as centering the viewport and zooming. It is also possible to chooce whether or not component names and unconnected ports shall be displayed.
+The third toolbar consists of viewport operations such as centering the viewport and zooming. It is also possible to choose whether or not component names and unconnected ports shall be displayed.
 \image html "View Toolbar.png"
 \image latex "View Toolbar.png" "View Toolbar"
 
@@ -138,7 +138,7 @@ Once a plot window has been opened, it is possible to add more plot curves to it
 \htmlimagerightcaption{../../graphics/toggleplotvariables_icon.png, Toggle Plot Variables}
 \image latex "toggleplotvariables_icon.png" "Toggle Plot Variables"
 
-New curves can be added either to the left y-axis, to the right y-axis or to the x-axis. The latter will replace the time vector and result in an XY-plot. The x-axis can be rest to the time vector by using the Rest Time Vector button.
+New curves can be added either to the left y-axis, to the right y-axis or to the x-axis. The latter will replace the time vector and result in an XY-plot. The x-axis can be reset to the time vector by using the Reset Time Vector button.
 
 \htmlimagerightcaption{../../graphics/plotresettimevector_icon.png, Reset Time Vector}
 \image latex "plotresettimevector_icon.png" "Reset Time Vector"

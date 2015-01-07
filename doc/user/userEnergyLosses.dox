@@ -13,7 +13,7 @@ The energy efficiency tool will open a bar plot with total added or consumed ene
 
 \section energy_example Example
 
-As an example, let's use the position servo model (found under Example Models). This uses a constant pressure system with a fixed pump and a pressure relief valve. This is a common, but very energy inefficient solution. The pump will always supply flow to the system, and pressure will be maintained by the pressure drop over the relief valve.
+As an example, let's use the "Position Servo" model (found under Help-Examples Models). This uses a constant pressure system with a fixed pump and a pressure relief valve. This is a common, but very energy inefficient solution. The pump will always supply flow to the system, and pressure will be maintained by the pressure drop over the relief valve.
 
 \htmllinkimage{../../graphics/energylosses_model1.png, 400}
 \image latex "energylosses_model1.png" "Energy losses model1"
