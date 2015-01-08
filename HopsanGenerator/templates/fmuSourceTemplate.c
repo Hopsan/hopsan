@@ -7,7 +7,7 @@
 #include "model.hpp"
 
 static double fmu_time=0;
-static hopsan::ComponentSystem *spCoreComponentSystem;
+static hopsan::ComponentSystem *spCoreComponentSystem = 0;
 static std::vector<std::string> sComponentNames;
 std::map<std::string, double> parametersMap;
 hopsan::HopsanEssentials gHopsanCore;
@@ -81,16 +81,23 @@ double getFmuTime()
 
 double getVariable(size_t ref, size_t idx)
 {
-    return ports[ref]->readNode(idx);
+    if(spCoreComponentSystem)
+        return ports[ref]->readNode(idx);
+    else
+        return 0;
 }
 
 void setVariable(size_t ref, size_t idx, double value)
 {
-    return ports[ref]->writeNode(idx, value);
+    if(spCoreComponentSystem)
+        return ports[ref]->writeNode(idx, value);
 }
 
 void setParameter(char* name, double value)
 {
-    parametersMap.erase(name);
-    parametersMap.insert (std::pair<std::string,double>(name,value));
+    if(spCoreComponentSystem)
+    {
+        parametersMap.erase(name);
+        parametersMap.insert (std::pair<std::string,double>(name,value));
+    }
 }

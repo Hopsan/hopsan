@@ -408,19 +408,21 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         return false;
     }
 
-    if(fmi2_import_get_fmu_kind(fmu) == fmi2_fmu_kind_me)
-    {
-        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
-        printErrorMessage("Only FMUs for co-simulation are supported by this code");
-        return false;
-    }
+//    if(fmi2_import_get_fmu_kind(fmu) == fmi2_fmu_kind_me)
+//    {
+//        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
+//        printErrorMessage("Only FMUs for co-simulation are supported by this code");
+//        return false;
+//    }
+
+    fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
 
     callBackFunctions.logger = fmi2_log_forwarding;
     callBackFunctions.allocateMemory = calloc;
     callBackFunctions.freeMemory = free;
     callBackFunctions.componentEnvironment = fmu;
 
-    status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callBackFunctions);
+    status = fmi2_import_create_dllfmu(fmu, fmuKind, &callBackFunctions);
     if (status == jm_status_error)
     {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
@@ -492,7 +494,14 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
     //Generate HPP file
     QFile fmuComponentTemplateFile;
-    fmuComponentTemplateFile.setFileName(":templates/fmi2ComponentTemplate.hpp");
+    if(fmuKind == fmi2_fmu_kind_me)
+    {
+        fmuComponentTemplateFile.setFileName(":templates/fmi2MeComponentTemplate.hpp");
+    }
+    else
+    {
+        fmuComponentTemplateFile.setFileName(":templates/fmi2ComponentTemplate.hpp");
+    }
     assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString fmuComponentCode;
     QTextStream t2(&fmuComponentTemplateFile);
@@ -1195,9 +1204,9 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
         return;
 
     //Clean up temporary files
-    cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
-            "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
-            "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
+   // cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
+   //         "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
+   //         "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
 
     printMessage("Finished.");
 }

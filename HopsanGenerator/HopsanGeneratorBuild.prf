@@ -9,7 +9,7 @@ defineReplace(setFMILIBPathInfo){
     #Set FMILibrary paths, Paths that are higher up in the list will have priority if found
     win32:contains(QMAKE_HOST.arch, x86_64){
         # 64 bit Windows release
-        FMILIB_PATHS *= $${PWD}/Dependencies/FMILibrary-2.0.1
+        FMILIB_PATHS *= $${PWD}/Dependencies/FMILibrary-2.0.1_x64
     } else {
         # 32 bit Windows version or Linux / Mac
         FMILIB_PATHS *= $${PWD}/Dependencies/FMILibrary-2.0.1
