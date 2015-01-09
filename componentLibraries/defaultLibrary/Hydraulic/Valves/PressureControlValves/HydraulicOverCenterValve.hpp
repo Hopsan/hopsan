@@ -130,7 +130,7 @@ namespace hopsan {
             /* Equations */
 
             b1 = mCs+mCf*(p1-p2);                               // Help Variable, equals sqrt(p1-p2)/Kctot
-            xs = (p1 / arat - pref + p_control) / b1;           // Spool position calculation
+            xs = (p1 - pref + arat * p_control) / b1;           // Spool position calculation
             xh = ph/b1;
             xsh = mHyst.getValue(xs, xh, mPrevX0);              // Hysteresis
             double x0 = mFilterLP.update(xsh);                  // Dynamics
