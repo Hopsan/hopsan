@@ -67,7 +67,7 @@ namespace hopsan {
             addOutputVariable("a", "NodeSignal", "rad", 0, &mpA);
             addInputVariable("p_dif", "Reference pressure difference", "Pa", 1000000, &mpPdif);
             addInputVariable("omega_p", "Pump movement", "rad/s", 125, &mpMovement);
-            addInputVariable("q_max", "Nomainal maximal flow", "m^3/s", 0.00125, &mpQmax);
+            addInputVariable("q_max", "Nomainal maximal flow (at 125 rad/s)", "m^3/s", 0.00125, &mpQmax);
             addInputVariable("l_p", "Regulator inductance at nominal pressure", "", 70000000, &mpLp);
             addInputVariable("r_p", "Static characteristic at nominal pressure", "", 1000000000, &mpRp);
             addInputVariable("omega_p1", "Lead frequency of regulator", "rad/s", 200, &mpWp1);
@@ -76,7 +76,7 @@ namespace hopsan {
             addInputVariable("t_p", "Time from min to full displacement", "s", 0.15, &mpTp);
             addInputVariable("t_m", "Time from full to min displacement", "s", 0.12, &mpTm);
 
-            addConstant("q_min", "Nominal minimal flow", "m^3/s", 0, qmin);
+            addConstant("q_min", "Nominal minimal flow (at 125 rad/s)", "m^3/s", 0, qmin);
         }
 
 
@@ -223,7 +223,7 @@ namespace hopsan {
             (*mpND_q2) = q2;
             (*mpND_p3) = c3;
             (*mpND_q3) = 0.0;
-            (*mpEps) = q2/qmax;
+            (*mpEps) = q2/qmaxl;
             (*mpA) += movement*mTimestep;
         }
 
