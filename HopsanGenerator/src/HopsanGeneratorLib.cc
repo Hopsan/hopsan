@@ -40,9 +40,9 @@ using namespace std;
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callModelicaGenerator(hopsan::HString path, bool showDialog=false, int solver=0, bool compile=false, hopsan::HString coreIncludePath="", hopsan::HString binPath="")
+extern "C" DLLIMPORTEXPORT void callModelicaGenerator(hopsan::HString path, hopsan::HString gccPath, bool showDialog=false, int solver=0, bool compile=false, hopsan::HString coreIncludePath="", hopsan::HString binPath="")
 {
-    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), QString(gccPath.c_str()), showDialog);
     pGenerator->generateFromModelica(QString(path.c_str()), HopsanGenerator::SolverT(solver));
     if(compile)
     {
@@ -55,14 +55,13 @@ extern "C" DLLIMPORTEXPORT void callModelicaGenerator(hopsan::HString path, bool
 }
 
 
-//! @brief Calls the Modelica generator
-//! @param modelicaCode Modelica code
-//! @param coreIncludePath Path to HopsanCore include files
-//! @param binPath Path to HopsanCore binary files
+//! @brief Generates .cc and .xml files for a library from a list of .hpp files
+//! @param path Path to where the files shall be created
+//! @param hppFiles Vector with filenames for .hpp files
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callLibraryGenerator(hopsan::HString path, vector<hopsan::HString> hppFiles, bool showDialog=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator("", "", showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator("", "", "", showDialog);
     QStringList tempList;
     for(size_t i=0; i<hppFiles.size(); ++i)
     {
@@ -78,7 +77,7 @@ extern "C" DLLIMPORTEXPORT void callLibraryGenerator(hopsan::HString path, vecto
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, bool compile=false, hopsan::HString coreIncludePath="", hopsan::HString binPath="")
+extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, hopsan::HString gccPath, bool compile=false, hopsan::HString coreIncludePath="", hopsan::HString binPath="")
 {
     qDebug() << "Called C++ generator (in dll)!";
 
@@ -133,7 +132,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, bool c
 
     if(compile)
     {
-        HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), true);
+        HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), QString(gccPath.c_str()), true);
         QString dir = QFileInfo(QString(hppPath.c_str())).absolutePath()+"/";
         QString typeName = QFileInfo(QString(hppPath.c_str())).baseName();
         pGenerator->generateNewLibrary(dir, QStringList() << typeName+".hpp");
@@ -148,9 +147,9 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, bool c
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hopsan::HString targetPath, hopsan::HString coreIncludePath, hopsan::HString binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hopsan::HString targetPath, hopsan::HString coreIncludePath, hopsan::HString binPath, hopsan::HString gccPath, bool showDialog=false)
 {
-    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), QString(gccPath.c_str()), showDialog);
     QString typeName, hppFile;
     QString rPath = QString(path.c_str());
     QString rTargetPath = QString(targetPath.c_str());
@@ -196,10 +195,10 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(hopsan::HString path, hopsan::ComponentSystem *pSystem, hopsan::HString coreIncludePath, hopsan::HString binPath, bool me=false, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(hopsan::HString path, hopsan::ComponentSystem *pSystem, hopsan::HString coreIncludePath, hopsan::HString binPath, hopsan::HString gccPath, bool me=false, bool x64=false, bool showDialog=false)
 {
-    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
-    pGenerator->generateToFmu(QString(path.c_str()), pSystem, me);
+    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), QString(gccPath.c_str()), showDialog);
+    pGenerator->generateToFmu(QString(path.c_str()), pSystem, me, x64);
     delete(pGenerator);
 }
 
@@ -258,9 +257,9 @@ extern "C" DLLIMPORTEXPORT void callLabViewSITGenerator(hopsan::HString path, ho
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binpath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callComponentLibraryCompiler(hopsan::HString path, hopsan::HString extraLinks, hopsan::HString coreIncludePath, hopsan::HString binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callComponentLibraryCompiler(hopsan::HString path, hopsan::HString extraLinks, hopsan::HString coreIncludePath, hopsan::HString binPath, hopsan::HString gccPath, bool showDialog=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), QString(gccPath.c_str()), showDialog);
     compileComponentLibrary(QString(path.c_str()), pGenerator, QString(extraLinks.c_str()));
     delete(pGenerator);
 }

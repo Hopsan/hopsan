@@ -10,8 +10,8 @@ using namespace SymHop;
 
 Expression gTempExpr;
 
-HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QString binPath, bool showDialog)
-    : HopsanGenerator(coreIncludePath, binPath, showDialog)
+HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog)
+    : HopsanGenerator(coreIncludePath, binPath, gccPath, showDialog)
 {
 
 }

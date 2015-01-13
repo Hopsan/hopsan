@@ -28,6 +28,7 @@
 #include <QDesktopServices>
 #include <QMainWindow>
 #include <QLineEdit>
+#include <QFileDialog>
 
 #include "global.h"
 #include "Configuration.h"
@@ -344,6 +345,48 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pPlottingLayout->setRowStretch(10, 1);
 
 
+#ifdef WIN32
+    QLabel *pCompiler32Label = new QLabel("32-bit GCC Compiler Path:");
+    mpCompiler32LineEdit = new QLineEdit(this);
+    QToolButton *pCompiler32Button = new QToolButton(this);
+    pCompiler32Button->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
+
+    mpCompiler32WarningLabel = new QLabel(this);
+    mpCompiler32WarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
+
+    QLabel *pCompiler64Label = new QLabel("64-bit GCC Compiler Path:");
+    mpCompiler64LineEdit = new QLineEdit(this);
+    QToolButton *pCompiler64Button = new QToolButton(this);
+    pCompiler64Button->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
+
+    mpCompiler64WarningLabel = new QLabel(this);
+    mpCompiler64WarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
+
+
+    QWidget *pCompilersWidget = new QWidget(this);
+    QGridLayout *pCompilersLayout = new QGridLayout(pCompilersWidget);
+
+    int row=-1;
+    pCompilersLayout->addWidget(pCompiler32Label,                      ++row,0,1,1);
+    pCompilersLayout->addWidget(mpCompiler32LineEdit,                    row,1,1,1);
+    pCompilersLayout->addWidget(pCompiler32Button,                       row,2,1,1);
+    pCompilersLayout->addWidget(mpCompiler32WarningLabel,              ++row,0,1,3);
+    pCompilersLayout->addWidget(pCompiler64Label,                      ++row,0,1,1);
+    pCompilersLayout->addWidget(mpCompiler64LineEdit,                    row,1,1,1);
+    pCompilersLayout->addWidget(pCompiler64Button,                       row,2,1,1);
+    pCompilersLayout->addWidget(mpCompiler64WarningLabel,              ++row,0,1,3);
+    pCompilersLayout->addWidget(new QWidget(this),                     ++row,0,1,3);
+    pCompilersLayout->setRowStretch(row,1);
+
+    setCompilerPath(gpConfig->getGcc32Dir(), false);
+    setCompilerPath(gpConfig->getGcc64Dir(), true);
+
+    connect(pCompiler32Button, SIGNAL(clicked()), this, SLOT(setCompiler32Path()));
+    connect(mpCompiler32LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler32Path(QString)));
+    connect(pCompiler64Button, SIGNAL(clicked()), this, SLOT(setCompiler64Path()));
+    connect(mpCompiler64LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler64Path(QString)));
+#endif
+
     QPushButton *mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
     mpResetButton->setAutoDefault(false);
     QPushButton *mpOpenXmlButton = new QPushButton(tr("&Open Settings File"), this);
@@ -375,6 +418,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pTabWidget->addTab(mpSimulationWidget, "Simulation");
     pTabWidget->addTab(pUnitScaleScrollArea, "Unit Scaling");
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
+#ifdef WIN32
+    pTabWidget->addTab(pCompilersWidget, "Compilers");
+#endif
 
     QGridLayout *pLayout = new QGridLayout;
     //pLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -471,6 +517,9 @@ void OptionsDialog::setValues()
         }
     }
 
+    gpConfig->setGcc32Dir(mpCompiler32LineEdit->text());
+    gpConfig->setGcc64Dir(mpCompiler64LineEdit->text());
+
     gpConfig->saveToXml();
 
     this->accept();
@@ -560,4 +609,82 @@ void OptionsDialog::show()
     }
 
     QDialog::show();
+}
+
+
+
+
+void OptionsDialog::setCompiler32Path()
+{
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getGcc32Dir());
+
+    if(path.isEmpty()) return;
+
+    setCompiler32Path(path);
+}
+
+
+void OptionsDialog::setCompiler32Path(QString path)
+{
+    setCompilerPath(path, false);
+}
+
+
+void OptionsDialog::setCompiler64Path()
+{
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getGcc64Dir());
+
+    if(path.isEmpty()) return;
+
+    setCompiler64Path(path);
+}
+
+
+void OptionsDialog::setCompiler64Path(QString path)
+{
+    setCompilerPath(path, true);
+}
+
+
+void OptionsDialog::setCompilerPath(QString path, bool x64)
+{
+    bool exists;
+#ifdef linux
+    if(path.endsWith("/gcc"))
+    {
+        path.chop(4);
+    }
+    exists = QFile::exists(path+"/gcc");
+#else
+    if(path.endsWith("/g++.exe") || path.endsWith("\\g++.exe"))
+    {
+        path.chop(8);
+    }
+    exists = QFile::exists(path+"/gcc.exe");
+#endif
+    //! @todo We should also check that it is the correct version of gcc!
+
+
+    if(x64)
+    {
+        if(!mpCompiler64LineEdit->hasFocus())
+        {
+            disconnect(mpCompiler64LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler64Path(QString)));
+            mpCompiler64LineEdit->setText(path);
+            connect(mpCompiler64LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler64Path(QString)));
+        }
+
+        mpCompiler64WarningLabel->setVisible(!exists);
+    }
+    else
+    {
+        if(!mpCompiler32LineEdit->hasFocus())
+        {
+            disconnect(mpCompiler32LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler32Path(QString)));
+            mpCompiler32LineEdit->setText(path);
+            connect(mpCompiler32LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler32Path(QString)));
+        }
+
+        mpCompiler32WarningLabel->setVisible(!exists);
+    }
 }

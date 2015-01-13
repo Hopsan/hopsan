@@ -1116,80 +1116,63 @@ void SystemContainer::exportToLabView()
     delete(pCoreAccess);
 }
 
-void SystemContainer::exportToFMU()
+void SystemContainer::exportToFMUME32()
 {
-    //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
-    QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
-                                                    gpConfig->getFmuExportDir(),
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
-    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    exportToFMU("", true, CoreGeneratorAccess::x86);
+}
 
-    QDir saveDir;
-    saveDir.setPath(savePath);
-    gpConfig->setFmuExportDir(saveDir.absolutePath());
-    saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
-    if(!saveDir.entryList().isEmpty())
-    {
-        qDebug() << saveDir.entryList();
-        QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
-        msgBox.setText(QString("Folder is not empty!"));
-        msgBox.setInformativeText("Are you sure you want to export files here?");
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::No);
+void SystemContainer::exportToFMUME64()
+{
+    exportToFMU("", true, CoreGeneratorAccess::x64);
+}
 
-        int answer = msgBox.exec();
-        if(answer == QMessageBox::No)
-        {
-            return;
-        }
-    }
+void SystemContainer::exportToFMUCS32()
+{
+    exportToFMU("", false, CoreGeneratorAccess::x86);
+}
 
-    exportToFMU(savePath, true);
+void SystemContainer::exportToFMUCS64()
+{
+    exportToFMU("", false, CoreGeneratorAccess::x64);
 }
 
 
-void SystemContainer::exportToFMUCoSim()
+
+
+void SystemContainer::exportToFMU(QString savePath, bool me, CoreGeneratorAccess::TargetArchitectureT arch)
 {
-    //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
-    QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
-                                                    gpConfig->getFmuExportDir(),
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
-    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
-
-    QDir saveDir;
-    saveDir.setPath(savePath);
-    gpConfig->setFmuExportDir(saveDir.absolutePath());
-    saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
-    if(!saveDir.entryList().isEmpty())
+    if(savePath.isEmpty())
     {
-        qDebug() << saveDir.entryList();
-        QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
-        msgBox.setText(QString("Folder is not empty!"));
-        msgBox.setInformativeText("Are you sure you want to export files here?");
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::No);
+        //Open file dialog and initialize the file stream
+        QDir fileDialogSaveDir;
+        savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
+                                                        gpConfig->getFmuExportDir(),
+                                                        QFileDialog::ShowDirsOnly
+                                                        | QFileDialog::DontResolveSymlinks);
+        if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
-        int answer = msgBox.exec();
-        if(answer == QMessageBox::No)
+        QDir saveDir;
+        saveDir.setPath(savePath);
+        gpConfig->setFmuExportDir(saveDir.absolutePath());
+        saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+        if(!saveDir.entryList().isEmpty())
         {
-            return;
+            qDebug() << saveDir.entryList();
+            QMessageBox msgBox;
+            msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+            msgBox.setText(QString("Folder is not empty!"));
+            msgBox.setInformativeText("Are you sure you want to export files here?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+
+            int answer = msgBox.exec();
+            if(answer == QMessageBox::No)
+            {
+                return;
+            }
         }
     }
 
-    exportToFMU(savePath, false);
-}
-
-
-void SystemContainer::exportToFMU(QString savePath, bool me)
-{
     QDir saveDir(savePath);
     if(!saveDir.exists())
     {
@@ -1201,9 +1184,8 @@ void SystemContainer::exportToFMU(QString savePath, bool me)
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToFmu(savePath, me, this);
+    pCoreAccess->generateToFmu(savePath, me, arch, this);
     delete(pCoreAccess);
-
 }
 
 //void SystemContainer::exportToFMU()

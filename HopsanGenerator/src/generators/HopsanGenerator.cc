@@ -56,7 +56,7 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const bool showDialog)
+HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath, const bool showDialog)
 {
 #ifdef WIN32
     mOutputPath = "C:/HopsanGeneratorTempFiles/output/";
@@ -68,6 +68,7 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
     mTarget = "";
     mCoreIncludePath = coreIncludePath;
     mBinPath = binPath;
+    mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
 
     mShowDialog = showDialog;
 
@@ -974,6 +975,11 @@ QString HopsanGenerator::getCoreIncludePath() const
 QString HopsanGenerator::getBinPath() const
 {
     return mBinPath;
+}
+
+QString HopsanGenerator::getGccPath() const
+{
+    return mGccPath;
 }
 
 

@@ -11,7 +11,7 @@ using namespace hopsan;
 
 
 HopsanSimulinkGenerator::HopsanSimulinkGenerator(QString coreIncludePath, QString binPath, bool showDialog)
-    : HopsanGenerator(coreIncludePath, binPath, showDialog)
+    : HopsanGenerator(coreIncludePath, binPath, "", showDialog)
 {
 
 }

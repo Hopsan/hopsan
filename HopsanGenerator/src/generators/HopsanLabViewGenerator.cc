@@ -5,7 +5,7 @@
 using namespace hopsan;
 
 HopsanLabViewGenerator::HopsanLabViewGenerator(QString coreIncludePath, QString binPath, bool showDialog)
-    : HopsanGenerator(coreIncludePath, binPath, showDialog)
+    : HopsanGenerator(coreIncludePath, binPath, "", showDialog)
 {
 
 }

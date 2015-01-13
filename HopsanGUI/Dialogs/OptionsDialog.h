@@ -49,10 +49,19 @@ public slots:
     void colorDialog();
     void show();
 
+private slots:
+    void setCompiler32Path();
+    void setCompiler64Path();
+    void setCompiler32Path(QString path);
+    void setCompiler64Path(QString path);
+
+
 signals:
     void paletteChanged();
 
 private:
+    void setCompilerPath(QString path, bool x64);
+
     QWidget *mpInterfaceWidget;
     QToolButton *mpBackgroundColorButton;
     QColor mPickedBackgroundColor;
@@ -71,6 +80,11 @@ private:
     QSpinBox *mpProgressBarSpinBox;
 
     QWidget *mpUnitScaleWidget;
+
+    QLineEdit *mpCompiler32LineEdit;
+    QLineEdit *mpCompiler64LineEdit;
+    QLabel *mpCompiler32WarningLabel;
+    QLabel *mpCompiler64WarningLabel;
 
     QWidget *mpPlottingWidget;
     QSpinBox *mpGenerationLimitSpinBox;

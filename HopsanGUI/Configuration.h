@@ -73,6 +73,8 @@
 #define CFG_FMUIMPORTDIR "fmuimportdir"
 #define CFG_FMUEXPORTDIR "fmuexportdir"
 #define CFG_LABVIEWEXPORTDIR "labviewexportdir"
+#define CFG_GCC32DIR "gcc32dir"
+#define CFG_GCC64DIR "gcc64dir"
 
 #define CFG_PENSTYLE "penstyle"
 #define CFG_TYPE "type"
@@ -199,6 +201,8 @@ public:
     QString getFmuImportDir();
     QString getFmuExportDir();
     QString getLabViewExportDir();
+    QString getGcc32Dir();
+    QString getGcc64Dir();
 
     int getParallelAlgorithm();
 
@@ -248,6 +252,8 @@ public:
     void setFmuImportDir(QString value);
     void setFmuExportDir(QString value);
     void setLabViewExportDir(QString value);
+    void setGcc32Dir(QString value);
+    void setGcc64Dir(QString value);
     void setPlotGfxImageFormat(QString value);
     void setPlotGfxDimensionsUnit(QString value);
     void setPlotGfxDPI(double value);
@@ -323,6 +329,8 @@ private:
     QString mFmuImportDir;
     QString mFmuExportDir;
     QString mLabViewExportDir;
+    QString mGcc32Dir;
+    QString mGcc64Dir;
     int mPLOExportVersion;
     bool mShowHiddenNodeDataVariables;
     QString mPlotGfxImageFormat;

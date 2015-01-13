@@ -94,6 +94,8 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, CFG_FMUIMPORTDIR, mFmuImportDir);
     appendDomTextNode(settings, CFG_FMUEXPORTDIR, mFmuExportDir);
     appendDomTextNode(settings, CFG_LABVIEWEXPORTDIR, mLabViewExportDir);
+    appendDomTextNode(settings, CFG_GCC32DIR, mGcc32Dir);
+    appendDomTextNode(settings, CFG_GCC64DIR, mGcc64Dir);
     appendDomIntegerNode(settings, CFG_PLOEXPORTVERSION, mPLOExportVersion);
     appendDomBooleanNode(settings, CFG_SHOWHIDDENNODEDATAVARIABLES, mShowHiddenNodeDataVariables);
     appendDomTextNode(settings, CFG_PLOTGFXIMAGEFORMAT, mPlotGfxImageFormat);
@@ -481,6 +483,10 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mFmuExportDir = rDomElement.firstChildElement("fmuexportdir").text();
     if(!rDomElement.firstChildElement(CFG_LABVIEWEXPORTDIR).isNull())
         mLabViewExportDir = rDomElement.firstChildElement(CFG_LABVIEWEXPORTDIR).text();
+    if(!rDomElement.firstChildElement(CFG_GCC32DIR).isNull())
+        mGcc32Dir = rDomElement.firstChildElement(CFG_GCC32DIR).text();
+    if(!rDomElement.firstChildElement(CFG_GCC64DIR).isNull())
+        mGcc64Dir = rDomElement.firstChildElement(CFG_GCC64DIR).text();
 }
 
 
@@ -1288,6 +1294,16 @@ QString Configuration::getLabViewExportDir()
     return mLabViewExportDir;
 }
 
+QString Configuration::getGcc32Dir()
+{
+    return mGcc32Dir;
+}
+
+QString Configuration::getGcc64Dir()
+{
+    return mGcc64Dir;
+}
+
 int Configuration::getParallelAlgorithm()
 {
     return mParallelAlgorighm;
@@ -1661,6 +1677,16 @@ void Configuration::setFmuExportDir(QString value)
 void Configuration::setLabViewExportDir(QString value)
 {
     mLabViewExportDir = value;
+}
+
+void Configuration::setGcc32Dir(QString value)
+{
+    mGcc32Dir = value;
+}
+
+void Configuration::setGcc64Dir(QString value)
+{
+    mGcc64Dir = value;
 }
 
 void Configuration::setPlotGfxImageFormat(QString value)

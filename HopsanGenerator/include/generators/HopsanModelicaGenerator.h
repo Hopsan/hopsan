@@ -11,7 +11,7 @@ SymHop::Expression concurrentDiff(SymHop::Expression expr);
 class HopsanModelicaGenerator : public HopsanGenerator
 {
 public:
-    HopsanModelicaGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
+    HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog=false);
     void generateFromModelica(QString code, SolverT solver=NumericalIntegration);
 
 private:

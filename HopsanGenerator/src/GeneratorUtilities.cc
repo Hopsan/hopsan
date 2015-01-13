@@ -295,7 +295,8 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     pGenerator->printMessage("Links: "+l+"\n");
 
     QString output;
-    bool success = compile(path, name, c, i, l, "-Dhopsan=hopsan -fPIC -w -Wl,--rpath -Wl,\""+path+"\" -shared ", output);
+    QString gccPath = pGenerator->getGccPath();
+    bool success = compile(path, gccPath, name, c, i, l, "-Dhopsan=hopsan -fPIC -w -Wl,--rpath -Wl,\""+path+"\" -shared ", output);
     pGenerator->printMessage(output);
     return success;
 }
@@ -309,7 +310,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 //! @param l Link command, example: "-Lpath1 -lfile1 -lfile2"
 //! @param flags Compiler flags
 //! @param output Reference to string where output messages are stored
-bool compile(QString path, QString o, QString c, QString i, QString l, QString flags, QString &output)
+bool compile(QString path, QString gccPath, QString o, QString c, QString i, QString l, QString flags, QString &output)
 {
     //Create compilation script file
 #ifdef WIN32
@@ -321,7 +322,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
         return false;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "call g++.exe "+flags;
+    clBatchStream << "call "+gccPath+"/g++.exe "+flags;
     clBatchStream << c+" -o "+o+".dll "+i+" "+l+"\n";
     clBatchFile.close();
 #endif

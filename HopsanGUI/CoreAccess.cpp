@@ -68,7 +68,16 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
 
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(path.toStdString().c_str(), showDialog, solver, compile, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str());
+#ifdef HOPSANCOMPILED64BIT
+        hopsan::HString hGccPath = gpConfig->getGcc64Dir().toStdString().c_str();
+#else
+        hopsan::HString hGccPath = gpConfig->getGcc32Dir().toStdString().c_str();
+#endif
+        hopsan::HString hPath = path.toStdString().c_str();
+        hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
+        hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
+
+        pHandler->callModelicaGenerator(hPath, hGccPath, showDialog, solver, compile, hIncludePath, hBinPath);
         return true;
     }
     delete(pHandler);
@@ -82,7 +91,16 @@ bool CoreGeneratorAccess::generateFromCpp(QString hppFile, bool compile)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callCppGenerator(hppFile.toStdString().c_str(), compile, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str());
+#ifdef HOPSANCOMPILED64BIT
+        hopsan::HString hGccPath = gpConfig->getGcc64Dir().toStdString().c_str();
+#else
+        hopsan::HString hGccPath = gpConfig->getGcc32Dir().toStdString().c_str();
+#endif
+        hopsan::HString hHppFile = hppFile.toStdString().c_str();
+        hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
+        hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
+
+        pHandler->callCppGenerator(hHppFile, hGccPath, compile, hIncludePath, hBinPath);
         return true;
     }
     delete(pHandler);
@@ -118,7 +136,16 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
-        pHandler->callFmuImportGenerator(path.toStdString().c_str(), gpDesktopHandler->getFMUPath().toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
+#ifdef HOPSANCOMPILED64BIT
+        hopsan::HString hGccPath = gpConfig->getGcc64Dir().toStdString().c_str();
+#else
+        hopsan::HString hGccPath = gpConfig->getGcc32Dir().toStdString().c_str();
+#endif
+        hopsan::HString hFmuPath = gpDesktopHandler->getFMUPath().toStdString().c_str();
+        hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
+        hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
+
+        pHandler->callFmuImportGenerator(path.toStdString().c_str(), hFmuPath, hIncludePath, hBinPath, hGccPath, true);
 
         if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuName))
         {
@@ -141,12 +168,32 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 }
 
 
-bool CoreGeneratorAccess::generateToFmu(QString path, bool me, SystemContainer *pSystem)
+//! @brief Generates specified system to functional mock-up unit
+//! @param path Path where to create FMU
+//! @param me True if FMU shall be of model exchange kind, false if co-simulation kind
+//! @param architecture Architecture to export for
+//! @param pSystem Pointer to system that shall be exported
+bool CoreGeneratorAccess::generateToFmu(QString path, bool me, TargetArchitectureT architecture, SystemContainer *pSystem)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callFmuExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), me, true);
+        hopsan::HString hGccPath;
+        if(architecture == x86)
+        {
+            hGccPath = gpConfig->getGcc32Dir().toStdString().c_str();
+        }
+        else
+        {
+            hGccPath = gpConfig->getGcc64Dir().toStdString().c_str();
+        }
+        hopsan::HString hPath = path.toStdString().c_str();
+        hopsan::ComponentSystem *pCoreSystem = pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr();
+        hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
+        hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
+
+        bool use64bit = (architecture == x64);
+        pHandler->callFmuExportGenerator(hPath, pCoreSystem, hIncludePath, hBinPath, hGccPath, me, use64bit, true);
         return true;
     }
     delete(pHandler);
@@ -154,6 +201,10 @@ bool CoreGeneratorAccess::generateToFmu(QString path, bool me, SystemContainer *
 }
 
 
+//! @brief Generates source files for Simulink S-function
+//! @param path Path where to create files
+//! @param pSystem Pointer to system that shall be exported
+//! @param Tells whether or not to disable port labels (for older versions of Matlab)
 bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
@@ -180,6 +231,9 @@ bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer 
 }
 
 
+//! @brief Generates source files for LabVIEW Simulation Interface Toolkit
+//! @param path Path where to create files
+//! @param pSystem Pointer to system that shall be exported
 bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pSystem)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
@@ -192,6 +246,10 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
     return false;
 }
 
+
+//! @brief Generates source and appearance files for a component library
+//! @param path Path where to create files
+//! @param hppFiles List with component source code files to use in library
 void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
@@ -207,12 +265,26 @@ void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 }
 
 
+//! @brief Compiles a component library from specified source files
+//! @param path Path where source files are located
+//! @param extraLibs Extra libraries to use in compilation
+//! @param showDialog True if HopsanGenerator dialog shall be shown
 bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString extraLibs, bool showDialog)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), extraLibs.toStdString().c_str(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), showDialog);
+#ifdef HOPSANCOMPILED64BIT
+        hopsan::HString hGccPath = gpConfig->getGcc64Dir().toStdString().c_str();
+#else
+        hopsan::HString hGccPath = gpConfig->getGcc32Dir().toStdString().c_str();
+#endif
+        hopsan::HString hPath = path.toStdString().c_str();
+        hopsan::HString hExtraLibs = extraLibs.toStdString().c_str();
+        hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
+        hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
+
+        pHandler->callComponentLibraryCompiler(hPath, hExtraLibs, hIncludePath, hBinPath, hGccPath, showDialog);
         return true;
     }
     delete(pHandler);

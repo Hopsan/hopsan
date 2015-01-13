@@ -3841,13 +3841,42 @@ void HcomHandler::executeCreateModelCommand(const QString cmd)
 void HcomHandler::executeExportToFMUCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() != 1)
+    if(args.size() != 3)
     {
         HCOMERR("Wrong number of arguments.");
     }
 
-    //! @todo Add argument for me or cs
-    mpModel->getTopLevelSystemContainer()->exportToFMU(args[0], false);
+    bool me;
+    if(args[1] == "me")
+    {
+        me = true;
+    }
+    else if(args[1] == "cs")
+    {
+        me = false;
+    }
+    else
+    {
+        HCOMERR("Unknown FMU kind. Only \"me\" or \"cs\" is accepted.");
+        return;
+    }
+
+    CoreGeneratorAccess::TargetArchitectureT arch;
+    if(args[2] == "32")
+    {
+        arch = CoreGeneratorAccess::x86;
+    }
+    else if(args[2] == "64")
+    {
+        arch = CoreGeneratorAccess::x64;
+    }
+    else
+    {
+        HCOMERR("Unknown architecture. Only \"32\" or \"64\" is accepted.");
+        return;
+    }
+
+    mpModel->getTopLevelSystemContainer()->exportToFMU(args[0], me, arch);
 }
 
 

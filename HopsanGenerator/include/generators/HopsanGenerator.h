@@ -62,11 +62,12 @@ class DLLIMPORTEXPORT HopsanGenerator
 public:
     enum SolverT {NumericalIntegration, BilinearTransform};
 
-    HopsanGenerator(const QString coreIncludePath, const QString binPath, const bool showDialog=false);
+    HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath, const bool showDialog=false);
     void setOutputPath(const QString path);
     void setTarget(const QString fileName);
     QString getCoreIncludePath() const;
     QString getBinPath() const;
+    QString getGccPath() const;
     void printMessage(const QString &msg) const;
     void printWarningMessage(const QString &msg) const;
     void printErrorMessage(const QString &msg) const;
@@ -96,6 +97,7 @@ protected:
     QString mTempPath;
     QString mCoreIncludePath;
     QString mBinPath;
+    QString mGccPath;
 
     QTextEdit *mpTextEdit;
     QVBoxLayout *mpLayout;

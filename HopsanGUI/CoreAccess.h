@@ -59,10 +59,12 @@ private:
 class CoreGeneratorAccess
 {
 public:
+    enum FmuKind {ModelExchange, CoSimulation};
+    enum TargetArchitectureT {x86, x64};
     bool generateFromModelica(QString path, bool showDialog=true, int solver=0, bool compile=false);
     bool generateFromCpp(QString hppFile, bool compile=false);
     bool generateFromFmu(QString path);
-    bool generateToFmu(QString path, bool me, SystemContainer *pSystem);
+    bool generateToFmu(QString path, bool me, TargetArchitectureT architecture, SystemContainer *pSystem);
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false);
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);

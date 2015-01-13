@@ -33,6 +33,7 @@ defineReplace(setFMILIBPathInfo){
             win32:magic_hopsan_libpath = -L$${libDir}/install/lib -llibfmilib_shared
             unix:magic_hopsan_libpath = -L$${libDir}/install/lib -lfmilib_shared
             magic_hopsan_includepath *= $${FMILIB_PATH}/install/include
+            magic_hopsan_includepath *= $${FMILIB_PATH}
 
             #Set files to copy
             win32:files = install/lib/libfmilib_shared$${DLL_EXT}*

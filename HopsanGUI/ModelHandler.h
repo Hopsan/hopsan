@@ -76,8 +76,10 @@ public slots:
     void restoreState();
 
     void createLabviewWrapperFromCurrentModel();
-    void exportCurrentModelToFMU();
-    void exportCurrentModelToFMUCoSim();
+    void exportCurrentModelToFMUME32();
+    void exportCurrentModelToFMUME64();
+    void exportCurrentModelToFMUCS32();
+    void exportCurrentModelToFMUCS64();
     void exportCurrentModelToSimulink();
     void exportCurrentModelToSimulinkCoSim();
 

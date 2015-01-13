@@ -13,11 +13,11 @@
 class HopsanFMIGenerator : public HopsanGenerator
 {
 public:
-    HopsanFMIGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
+    HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog=false);
     bool generateFromFmu(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath);
     bool generateFromFmu1(QString &rPath, QString &targetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
     bool generateFromFmu2(QString &rPath, QString &targetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
-    void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, bool me=false);
+    void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, bool me=false, bool x64=true);
 
     bool readTLMSpecsFromFile(const QString &fileName, QStringList &tlmPortTypes, QList<QStringList> &tlmPortVarNames,
                               QList<QStringList> &tlmPortValueRefs, QStringList &inVarValueRefs, QStringList &inVarPortNames,
