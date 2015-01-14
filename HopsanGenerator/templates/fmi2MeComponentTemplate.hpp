@@ -225,15 +225,16 @@ public:
         fmistatus = fmi2_import_set_real(fmu, &vr, 1, &value);
         <<<readvars<<<
 
-        double tStop = mTime+mTimestep;
+        double time = mTime-mTimestep;
+        double tStop = mTime;
 
-        while(mTime < tStop)
+        while(time < tStop)
         {
             size_t k;
             fmi2_real_t tlast;
             int zero_crossing_event = 0;
 
-            fmistatus = fmi2_import_set_time(fmu, mTime);
+            fmistatus = fmi2_import_set_time(fmu, time);
 
             { /* Swap event_indicators and event_indicators_prev so that we can get new indicators */
                 fmi2_real_t *temp = event_indicators;
@@ -254,7 +255,7 @@ public:
 
             /* Handle any events */
             if (callEventUpdate || zero_crossing_event ||
-                    (eventInfo.nextEventTimeDefined && mTime == eventInfo.nextEventTime))
+                    (eventInfo.nextEventTimeDefined && time == eventInfo.nextEventTime))
             {
                 fmistatus = fmi2_import_enter_event_mode(fmu);
                 do_event_iteration(fmu, &eventInfo);
@@ -265,13 +266,13 @@ public:
             }
 
             /* Calculate next time step */
-            tlast = mTime;
-            mTime = tStop;
-            if (eventInfo.nextEventTimeDefined && (mTime >= eventInfo.nextEventTime))
+            tlast = time;
+            time = tStop;
+            if (eventInfo.nextEventTimeDefined && (time >= eventInfo.nextEventTime))
             {
-                mTime = eventInfo.nextEventTime;
+                time = eventInfo.nextEventTime;
             }
-            hcur = mTime - tlast;
+            hcur = time - tlast;
 
             /* Integrate a step */
             fmistatus = fmi2_import_get_derivatives(fmu, states_der, n_states);
