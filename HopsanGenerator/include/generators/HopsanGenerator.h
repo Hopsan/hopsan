@@ -104,6 +104,8 @@ protected:
     QPushButton *mpDoneButton;
     QWidget *mpDialog;
 
+    QDialog *mpPortsDialog;
+
     bool mShowDialog;
 };
 

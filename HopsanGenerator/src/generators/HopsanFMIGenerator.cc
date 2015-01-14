@@ -467,6 +467,91 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     QString fmuName = fmi2_import_get_model_name(fmu);
     fmuName = toVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
+
+
+    QStringList portTypes, portNames, portVars;
+    QList<QStringList> portVarNames, portVarVars, portVarRefs;
+
+    QString tlmFileName = fmuName+"_TLM.xml";
+    QFile file(rTargetPath+"/"+tlmFileName);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QDomDocument domDocument;
+        QString errorStr;
+        int errorLine, errorColumn;
+        if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+        {
+            QString lineStr = QString::number(errorLine);
+            QString colStr = QString::number(errorColumn);
+            printErrorMessage(tlmFileName+": Parse error at line "+lineStr+", column "+colStr+": "+errorStr);
+            printMessage(tlmFileName+" ignored.");
+        }
+        else
+        {
+            QDomElement rootElement = domDocument.documentElement();
+            if (rootElement.tagName() != "fmutlm")
+            {
+                printErrorMessage("Wrong root tag in "+tlmFileName+": "+rootElement.tagName());
+                printMessage(tlmFileName+" ignored");
+            }
+            else
+            {
+                QDomElement portElement = rootElement.firstChildElement("tlmport");
+                int idx = 1;
+                while(!portElement.isNull())
+                {
+                    QString portType = portElement.attribute("type");
+                    if(portType == "mechanicq")
+                    {
+                        portTypes.append(portType);
+                        portNames.append("P"+QString::number(idx));
+                        portVars.append("mpP"+QString::number(idx));
+
+                        portVarNames.append(QStringList());
+                        portVarVars.append(QStringList());
+                        portVarRefs.append(QStringList());
+
+                        QStringList outputs = QStringList() << "f" << "x" << "v" << "me";
+                        QStringList inputs = QStringList() << "c" << "Zc";
+
+                        QString name;
+                        foreach(const QString &output, outputs)
+                        {
+                            name = portElement.firstChildElement(output).text();
+                            portVarNames.last().append(name);
+                            portVarVars.last().append(portVars.last()+"_"+name);
+                            portVarRefs.last().append(outputRefs.at(outputNames.indexOf(name)));
+
+                            outputVars.removeAt(outputNames.indexOf(name));
+                            outputRefs.removeAt(outputNames.indexOf(name));
+                            outputNames.removeAll(name);
+
+                        }
+                        foreach(const QString &input, inputs)
+                        {
+                            name = portElement.firstChildElement(input).text();
+                            portVarNames.last().append(name);
+                            portVarVars.last().append(portVars.last()+"_"+name);
+                            portVarRefs.last().append(inputRefs.at(inputNames.indexOf(name)));
+
+                            inputVars.removeAt(inputNames.indexOf(name));
+                            inputRefs.removeAt(inputNames.indexOf(name));
+                            inputNames.removeAll(name);
+                        }
+
+                        ++idx;
+                    }
+                    else
+                    {
+                        printErrorMessage("Unknown port type: "+portType+", ignored.");
+                    }
+                    portElement = portElement.nextSiblingElement("tlmport");
+                }
+            }
+        }
+        file.close();
+    }
+
     //--------------------------------------------//
     printMessage("Creating " + fmuName + ".hpp...");
     //--------------------------------------------//
@@ -521,7 +606,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         localVars.append("double ");
         foreach(const QString &varName, parVars)
         {
-            localVars.append(varName+", ");
+            localVars.append(varName+", ");             //Parameters
         }
         if(localVars.endsWith(", "))
         {
@@ -529,16 +614,33 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         }
         localVars.append(";\n");
     }
-    if(!inputVars.isEmpty()  || !outputVars.isEmpty())
+    if(!inputVars.isEmpty()  || !outputVars.isEmpty() || !portVars.isEmpty())
     {
-        localVars.append("double ");
+        localVars.append("    double ");
         foreach(const QString &varName, inputVars)
         {
-            localVars.append("*"+varName+", ");
+            localVars.append("*"+varName+", ");         //Input variables
         }
         foreach(const QString &varName, outputVars)
         {
-            localVars.append("*"+varName+", ");
+            localVars.append("*"+varName+", ");         //Output variables
+        }
+        for(int i=0; i<portVarVars.size(); ++i)
+        {
+            foreach(const QString &varName, portVarVars.at(i))
+            {
+                localVars.append("*"+varName+", ");     //Power port variables
+            }
+        }
+        if(localVars.endsWith(", "))
+        {
+            localVars.chop(2);
+        }
+        localVars.append(";\n");
+        localVars.append("    Port ");
+        foreach(const QString &varName, portVars)
+        {
+            localVars.append("*"+varName+", ");         //Ports
         }
         if(localVars.endsWith(", "))
         {
@@ -577,6 +679,40 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         addOutputs.append("addOutputVariable(\""+outputNames.at(i)+"\", \"\", \"\", 0, &"+outputVars.at(i)+");\n");
     }
 
+    QString addPorts;
+    for(int i=0; i<portNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            addPorts.append("        ");
+        }
+        QString nodeType;
+        if(portTypes.at(i) == "mechanicq")
+        {
+            nodeType = "NodeMechanic";
+        }
+        addPorts.append(portVars.at(i)+"= addPowerPort(\""+portNames.at(i)+"\",\""+nodeType+"\");\n");
+    }
+
+    QString setNodeDataPointers;
+    for(int i=0; i<portNames.size(); ++i)
+    {
+        if(i!=0)
+        {
+            setNodeDataPointers.append("        ");
+        }
+        if(portTypes.at(i) == "mechanicq")
+        {
+            QString port = portVars.at(i);
+            setNodeDataPointers.append(portVarVars.at(i).at(0)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Force);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(1)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Position);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(2)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Velocity);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(3)+" = getSafeNodeDataPtr("+port+", NodeMechanic::EquivalentMass);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(4)+" = getSafeNodeDataPtr("+port+", NodeMechanic::WaveVariable);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(5)+" = getSafeNodeDataPtr("+port+", NodeMechanic::CharImpedance);\n");
+        }
+    }
+
     QString setPars;
     QString temp = extractTaggedSection(fmuComponentCode, "setpars");
     for(int i=0; i<parNames.size(); ++i)
@@ -596,6 +732,22 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         tempVar.replace("<<<var>>>", inputVars.at(i));
         readVars.append(tempVar+"\n");
     }
+    for(int i=0; i<portNames.size(); ++i)
+    {
+        QString tempVar;
+        int nOutputs;
+        if(portTypes.at(i) == "mechanicq")
+        {
+            nOutputs = 4;
+        }
+        for(int j=nOutputs; j<portVarRefs.at(i).size(); ++j)
+        {
+            tempVar = temp;
+            tempVar.replace("<<<vr>>>", portVarRefs.at(i).at(j));
+            tempVar.replace("<<<var>>>", portVarVars.at(i).at(j));
+            readVars.append(tempVar+"\n");
+        }
+    }
 
     QString writeVars;
     temp = extractTaggedSection(fmuComponentCode, "writevars");
@@ -606,6 +758,22 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         tempVar.replace("<<<var>>>", outputVars.at(i));
         writeVars.append(tempVar+"\n");
     }
+    for(int i=0; i<portNames.size(); ++i)
+    {
+        QString tempVar;
+        int nOutputs;
+        if(portTypes.at(i) == "mechanicq")
+        {
+            nOutputs = 4;
+        }
+        for(int j=0; j<nOutputs; ++j)
+        {
+            tempVar = temp;
+            tempVar.replace("<<<vr>>>", portVarRefs.at(i).at(j));
+            tempVar.replace("<<<var>>>", portVarVars.at(i).at(j));
+            writeVars.append(tempVar+"\n");
+        }
+    }
 
     fmuComponentCode.replace("<<<headerguard>>>", headerGuard);
     fmuComponentCode.replace("<<<className>>>", className);
@@ -613,6 +781,8 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     fmuComponentCode.replace("<<<addconstants>>>", addConstants);
     fmuComponentCode.replace("<<<addinputs>>>", addInputs);
     fmuComponentCode.replace("<<<addoutputs>>>", addOutputs);
+    fmuComponentCode.replace("<<<addports>>>", addPorts);
+    fmuComponentCode.replace("<<<setnodedatapointers>>>", setNodeDataPointers);
     fmuComponentCode.replace("<<<fmupath>>>", rPath);
     QDir().mkpath(rTargetPath+"/temp");
     fmuComponentCode.replace("<<<temppath>>>", rTargetPath+"/temp/");
@@ -639,18 +809,25 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     //These 4 variables are used for input/output port positioning
     double inputPosStep=1.0/(inputNames.size()+1.0);
     double outputPosStep=1.0/(outputNames.size()+1.0);
+    double portPosStep=1.0/(portNames.size()+1.0);
     double inputPos=0;
     double outputPos=0;
+    double portPos=0;
 
     for(int i=0; i<inputNames.size(); ++i)
     {
         inputPos += inputPosStep;
-        cafSpec.addPort(inputNames.at(i), 0.0, inputPos, 180);
+        cafSpec.addPort(inputNames.at(i), 0.0, inputPos, 180.0);
     }
     for(int i=0; i<outputNames.size(); ++i)
     {
         outputPos += outputPosStep;
         cafSpec.addPort(outputNames.at(i), 1.0, outputPos, 0.0);
+    }
+    for(int i=0; i<portNames.size(); ++i)
+    {
+        portPos += portPosStep;
+        cafSpec.addPort(portNames.at(i), portPos, 0.0, 270.0);
     }
 
     QString cafPath = rTargetPath + "/" + fmuName + "/" + fmuName + ".xml";

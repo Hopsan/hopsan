@@ -58,10 +58,15 @@ public:
 
         //Add output variables
         <<<addoutputs>>>
+
+        //Add ports
+        <<<addports>>>
     }
 
     void initialize()
     {
+        <<<setnodedatapointers>>>
+
         addInfoMessage("Initializing FMU 2.0 import");
 
         const char* FMUPath = "<<<fmupath>>>";

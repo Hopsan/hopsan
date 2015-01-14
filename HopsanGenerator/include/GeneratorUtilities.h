@@ -66,7 +66,7 @@ public:
         mIsoIconScale = 1.0;
     }
 
-    void addPort(QString name, int x, int y, int a)
+    void addPort(QString name, double x, double y, double a)
     {
         mPortNames.append(name);
         mPortX.append(x);
@@ -88,9 +88,9 @@ public:
     double mIsoIconScale;
 
     QStringList mPortNames;
-    QList<int> mPortX;
-    QList<int> mPortY;
-    QList<int> mPortA;
+    QList<double> mPortX;
+    QList<double> mPortY;
+    QList<double> mPortA;
 };
 
 
