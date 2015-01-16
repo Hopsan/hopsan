@@ -532,6 +532,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
     else if(!pAppearanceData->getHmfFile().isEmpty())
     {
         QString hmfFile = pAppearanceData->getHmfFile();
+        QString subTypeName = pAppearanceData->getSubTypeName();
         ContainerObject *pObj = dynamic_cast<ContainerObject*>(addModelObject("Subsystem", position, rotation, startSelected, nameStatus, undoSettings));
         //pObj->clearContents();
 
@@ -548,6 +549,8 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
             QFileInfo fileInfo(file);
             pObj->setAppearanceDataBasePath(fileInfo.absolutePath());
             pObj->loadFromDomElement(systemElement);
+            pObj->setIconPath(pAppearanceData->getIconPath(UserGraphics, Absolute), UserGraphics, Absolute);
+            pObj->refreshAppearance();
             return pObj;
         }
     }
