@@ -110,7 +110,7 @@ private Q_SLOTS:
         QFile file(path);
         file.copy(QDir::currentPath()+"/fmu_me/unittestmodel_export.hmf");
         file.copy(QDir::currentPath()+"/fmu_cs/unittestmodel_export.hmf");
-        QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
     }
 
     void Generator_Simulink_Export()
@@ -141,7 +141,7 @@ private Q_SLOTS:
         QDir().mkpath(QDir::currentPath()+"/simulink/");
         QFile file(path);
         file.copy(QDir::currentPath()+"/simulink/unittestmodel_export.hmf");
-        QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
     }
 #endif
 
@@ -180,7 +180,7 @@ private Q_SLOTS:
         QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
         removeDir(QDir::currentPath()+"/labview/");
         QDir().mkpath(QDir::currentPath()+"/labview/");
-        QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
     }
 
     void Generator_Modelica()

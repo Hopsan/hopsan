@@ -70,9 +70,9 @@ public:
                 "</hopsanmodelfile>"
                 "";
 
-        mpSystemFromText = mHopsanCore.loadHMFModel(xmlStr);
         double startT, stopT;
-        mpSystemFromFile = mHopsanCore.loadHMFModel("../Models/unittestmodel.hmf",startT,stopT);
+        mpSystemFromText = mHopsanCore.loadHMFModel(xmlStr, startT, stopT);
+        mpSystemFromFile = mHopsanCore.loadHMFModelFile("../Models/unittestmodel.hmf",startT,stopT);
     }
 
 private:

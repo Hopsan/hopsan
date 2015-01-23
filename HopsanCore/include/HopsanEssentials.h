@@ -96,9 +96,9 @@ public:
     void getLibPathForComponentType(const HString &rTypeName, HString &rLibPath);
 
     // Loading HMF models
-    ComponentSystem* loadHMFModel(const char* filePath, double &rStartTime, double &rStopTime);
+    ComponentSystem* loadHMFModelFile(const char* filePath, double &rStartTime, double &rStopTime);
     ComponentSystem* loadHMFModel(const std::vector<unsigned char> xmlVector);
-    ComponentSystem* loadHMFModel(const char* xmlString);
+    ComponentSystem* loadHMFModel(const char* xmlString, double &rStartTime, double &rStopTime);
 
     // Running simulation
     SimulationHandler *getSimulationHandler();

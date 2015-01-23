@@ -254,7 +254,7 @@ HopsanCoreMessageHandler *HopsanEssentials::getCoreMessageHandler()
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
-ComponentSystem* HopsanEssentials::loadHMFModel(const char *filePath, double &rStartTime, double &rStopTime)
+ComponentSystem* HopsanEssentials::loadHMFModelFile(const char *filePath, double &rStartTime, double &rStopTime)
 {
     addLogMess("HopsanEssentials::loadHMFModel()");
     return loadHopsanModelFile(filePath, this, rStartTime, rStopTime);
@@ -262,12 +262,17 @@ ComponentSystem* HopsanEssentials::loadHMFModel(const char *filePath, double &rS
 
 ComponentSystem* HopsanEssentials::loadHMFModel(const std::vector<unsigned char> xmlVector)
 {
-    return loadHopsanModelFile(xmlVector, this);
+    return loadHopsanModel(xmlVector, this);
 }
 
-ComponentSystem* HopsanEssentials::loadHMFModel(const char *xmlString)
+//! @brief This function is used to load a HMF model from a string
+//! @param [in] xmlString The model xml string
+//! @param [out] rStartTime A reference to the starttime variable
+//! @param [out] rStopTime A reference to the stoptime variable
+//! @returns A pointer to the rootsystem of the loaded model
+ComponentSystem* HopsanEssentials::loadHMFModel(const char *xmlString, double &rStartTime, double &rStopTime)
 {
-    return loadHopsanModelFile(xmlString, this);
+    return loadHopsanModel(xmlString, this, rStartTime, rStopTime);
 }
 
 SimulationHandler *HopsanEssentials::getSimulationHandler()

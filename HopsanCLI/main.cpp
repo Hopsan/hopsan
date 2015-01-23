@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 
             cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
             double startTime=0, stopTime=2;
-            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue().c_str(), startTime, stopTime);
+            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModelFile(hmfPathOption.getValue().c_str(), startTime, stopTime);
             size_t nErrors = gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();
             printWaitingMessages(printDebugOption.getValue());
             if (nErrors < 1)

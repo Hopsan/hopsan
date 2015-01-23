@@ -391,7 +391,7 @@ bool performModelTest(const std::string hvcFilePath)
                             }
 
                             double startTime=0, stopTime=1;
-                            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile.c_str(), startTime, stopTime);
+                            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModelFile(modelfile.c_str(), startTime, stopTime);
 
                             if ( pRootSystem && ((gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages()) < 1) )
                             {
@@ -562,7 +562,7 @@ bool performModelTest(const std::string hvcFilePath)
 
                 //  Load the system
                 double startTime=0, stopTime=-1;
-                ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile.c_str(), startTime, stopTime);
+                ComponentSystem* pRootSystem = gHopsanCore.loadHMFModelFile(modelfile.c_str(), startTime, stopTime);
                 if ( pRootSystem && ((gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages()) < 1) )
                 {
                     if (gHopsanCore.getNumWarningMessages() > 0)
@@ -689,7 +689,7 @@ bool performModelTest(const std::string hvcFilePath)
 bool createModelTestDataSet(const string modelPath, const string hvcFilePath)
 {
     double startT, stopT;
-    ComponentSystem *pSystem = gHopsanCore.loadHMFModel(modelPath.c_str(), startT, stopT);
+    ComponentSystem *pSystem = gHopsanCore.loadHMFModelFile(modelPath.c_str(), startT, stopT);
     if (!pSystem)
     {
         printWaitingMessages(false);

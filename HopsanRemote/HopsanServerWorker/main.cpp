@@ -24,8 +24,6 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "TicToc.hpp"
 
-//#define DEFAULTCOMPONENTLIB "/home/petno25/svn/hopsan/trunk/componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
-
 using namespace hopsan;
 using namespace std;
 
@@ -191,9 +189,8 @@ int main(int argc, char* argv[])
                 pRootSystem=nullptr;
             }
 
-            int dummy;
             //! @todo loadHMFModel will hang if hmf empty
-            pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime, dummy);
+            pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime);
             if (pRootSystem)
             {
                 sendServerAck(socket);

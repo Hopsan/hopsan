@@ -166,9 +166,9 @@ inline bool isVersionGreaterThan(HString version1, HString version2)
 }
 
 ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
-ComponentSystem* loadHopsanModelFile(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
-ComponentSystem* loadHopsanModelFile(const char* xmlStr, HopsanEssentials* pHopsanEssentials);
-ComponentSystem* loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHopsanEssentials);
+ComponentSystem* loadHopsanModel(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
+ComponentSystem* loadHopsanModel(const char* xmlStr, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
+ComponentSystem* loadHopsanModel(char* xmlStr, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 void loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem);
 
 }
