@@ -225,8 +225,7 @@ void RemoteHopsanClient::disconnect()
     // Disconnect from Server
     if (serverConnected())
     {
-        sendShortClientMessage(mRSCSocket, C_Bye);
-        readAckNackServerMessage(mRSCSocket); //But we do not care about result
+        //! @todo maybe should auto disconnect when we connect to worker
         mRSCSocket.close();
     }
 }

@@ -116,27 +116,35 @@ size_t nThreads = 1;
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2)
+    if (argc < 4)
     {
-        cout << "Error: you must specify what base port to use!" << endl;
+        cout << "Error: To few arguments!" << endl;
         return 1;
     }
 
+    //cout << "argv: " << argv[0] << " " << argv[1] << " " << argv[2] << " " << argv[3] << " " << argv[4] << endl;
+    string workerId = argv[1];
+    string serverCtrlPort = argv[2];
+    string workerCtrlPort = argv[3];
+
     // Read num threads argument
-    if (argc == 3)
+    if (argc == 5)
     {
-        nThreads = size_t(atoi(argv[2]));
+        nThreads = size_t(atoi(argv[4]));
     }
 
-    cout << "Server Worker Process Starting with port: " << argv[1] << " Using: " << nThreads << " threads" << endl;
+    cout << "Server Worker Process with ID: " << workerId << " Listening on port: " << workerCtrlPort << " Using: " << nThreads << " threads" << endl;
 
-    //gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+    // Loading component libraries
     loadComponentLibraries();
 
-    // Prepare our context and socket
+    // Prepare our context and sockets
     zmq::context_t context (1);
     zmq::socket_t socket (context, ZMQ_REP);
-    socket.bind( makeZMQAddress("*", size_t(atoi(argv[1]))).c_str() );
+    socket.bind( makeZMQAddress("*", workerCtrlPort).c_str() );
+
+    zmq::socket_t serverSocket( context, ZMQ_REQ);
+    serverSocket.connect( makeZMQAddress("localhost", serverCtrlPort).c_str() );
 
     bool keepRunning=true;
     while (keepRunning) {
@@ -146,7 +154,7 @@ int main(int argc, char* argv[])
         socket.recv (&request);
         size_t offset=0;
         size_t msg_id = getMessageId(request, offset);
-        cout << "Worker received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+        //cout << "Worker received message with length: " << request.size() << " msg_id: " << msg_id << endl;
         if (msg_id == C_SetParam)
         {
             CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset);
@@ -156,7 +164,7 @@ int main(int argc, char* argv[])
             //! @todo
 
             // Send ack or nack
-            sendServerAck(socket);
+            sendServerNAck(socket, "Not implemented");
         }
         else if (msg_id == C_GetParam)
         {
@@ -165,7 +173,7 @@ int main(int argc, char* argv[])
 
             // Get parameter
             //! @todo
-            bool isOK=true;
+            bool isOK=false;
 
             // Send param value (as string) or nack
             if (isOK)
@@ -281,6 +289,9 @@ int main(int argc, char* argv[])
             cout << "Client said godbye!" << endl;
             sendServerAck(socket);
             keepRunning = false;
+
+            sendServerStringMessage(serverSocket, SW_Finished, argv[1]);
+            serverSocket.recv(&request); // Wait for but ignore replay
         }
         else
         {
@@ -296,7 +307,6 @@ int main(int argc, char* argv[])
 #else
         //Sleep (1);
 #endif
-
     }
 
     // Delete the model if we have one
@@ -305,4 +315,6 @@ int main(int argc, char* argv[])
         delete pRootSystem;
         pRootSystem=nullptr;
     }
+
+
 }

@@ -6,8 +6,8 @@
 #include <string>
 #include "msgpack.hpp"
 
-enum ClientMessageIdEnumT {C_Ack, C_NAck, C_Bye, C_ReqSlot, C_SendingHmf, C_SetParam, C_GetParam, C_Simulate, C_ReqResults, C_ReqMessages};
-enum ServerMessageIdEnumT {S_Ack=128, S_NAck, S_ReqSlot_Reply, S_GetParam_Reply, S_ReqResults_Reply, S_ReqMessages_Reply};
+enum ClientMessageIdEnumT {C_Ack, C_NAck, C_Bye, C_ReqAlive, C_ReqSlot, C_SendingHmf, C_SetParam, C_GetParam, C_Simulate, C_ReqResults, C_ReqMessages};
+enum ServerMessageIdEnumT {S_Ack=128, S_NAck, S_Available, S_ReqSlot_Reply, S_GetParam_Reply, S_ReqResults_Reply, S_ReqMessages_Reply, SW_Finished};
 
 MSGPACK_ADD_ENUM(ClientMessageIdEnumT)
 MSGPACK_ADD_ENUM(ServerMessageIdEnumT)
@@ -41,6 +41,13 @@ typedef struct
 
 
 // Server messages
+
+typedef struct
+{
+    std::string ip;
+    std::string port;
+    MSGPACK_DEFINE(ip,port)
+}SM_Available_t;
 
 typedef struct
 {

@@ -14,19 +14,22 @@
 //#include <thread>
 #include <vector>
 #include "zmq.hpp"
+#include <map>
 
 #include "Messages.h"
 #include "MessageUtilities.h"
 #include "global.h"
 
 #include <spawn.h>
+#include <sys/wait.h>
 
 using namespace std;
+
+map<int, pid_t> workerMap;
 
 extern char **environ;
 
 ServerConfig gServerConfig;
-
 size_t nTakenSlots=0;
 
 int main(int argc, char* argv[])
@@ -43,8 +46,7 @@ int main(int argc, char* argv[])
     zmq::context_t context (1);
     zmq::socket_t socket (context, ZMQ_REP);
 
-    cout << makeZMQAddress("*", size_t(atoi(argv[1]))).c_str() << endl;
-    socket.bind( makeZMQAddress("*", size_t(atoi(argv[1]))).c_str() );
+    socket.bind( makeZMQAddress("*", argv[1]).c_str() );
 
     while (true) {
         zmq::message_t request;
@@ -54,6 +56,22 @@ int main(int argc, char* argv[])
         size_t offset=0;
         size_t msg_id = getMessageId(request, offset);
         cout << "Server received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+
+//        int fd = request.get(ZMQ_SRCFD);
+//        struct sockaddr addr;
+//        unsigned int len;
+//        getpeername(fd, &addr, &len);
+//        cout << "Addr len: " << len << " data: ";
+//        for (int i=0; i<len; ++i)
+//        {
+//            cout << addr.sa_data[i];
+//        }
+//        cout << endl;
+
+//        string soxtype = request.gets("Socket-Type");
+//        string identity = request.gets("Identity");
+//        cout << "Socket-type: " << soxtype << " Identity: " << identity << endl;
+
         if (msg_id == C_ReqSlot)
         {
             cout << "Client is requesting slot... " << endl;
@@ -62,20 +80,29 @@ int main(int argc, char* argv[])
             {
                 size_t port = gServerConfig.mControlPort+1+nTakenSlots;
 
-                char port_buff[64], thread_buff[64];
-                // Write port as char in buffer
-                sprintf(port_buff,"%d", int(port));
-                // Write num threads as char in buffer
-                sprintf(thread_buff,"%d", gServerConfig.mMaxThreadsPerClient);
+                // Generate unique worker Id
+                int uid = rand();
+                while (workerMap.count(uid) != 0)
+                {
+                    uid = rand();
+                }
 
-                char *argv[] = {"HopsanServerWorker", port_buff, thread_buff, nullptr};
+                char sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
+                // Write port as char in buffer
+                sprintf(sport_buff, "%d", gServerConfig.mControlPort);
+                sprintf(wport_buff, "%d", int(port));
+                // Write num threads as char in buffer
+                sprintf(thread_buff, "%d", gServerConfig.mMaxThreadsPerClient);
+                // Write id as char in buffer
+                sprintf(uid_buff, "%d", uid);
+
+                char *argv[] = {"HopsanServerWorker", uid_buff, sport_buff, wport_buff, thread_buff, nullptr};
                 pid_t pid;
-                cout << "argv: " << argv[0] << " " << argv[1] << endl;
-                //int status = posix_spawn(&pid,"/home/petno25/svn/hopsan/trunk/HopsanRemote/bin/HopsanServerWorker",nullptr,nullptr,argv,environ);
                 int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
                 if(status == 0)
                 {
-                    std::cout<<"Launched Worker Process, pid: "<< pid << " port: " << port << endl;
+                    std::cout<<"Launched Worker Process, pid: "<< pid << " port: " << port << " uid: " << uid << endl;
+                    workerMap.insert({uid,pid});
 
                     SM_ReqSlot_Reply_t msg = {port};
                     msgpack::pack(out_buffer, S_ReqSlot_Reply);
@@ -96,17 +123,35 @@ int main(int argc, char* argv[])
                 cout << "Denied!" << endl;
             }
         }
-        else if (msg_id == C_Bye)
+        else if (msg_id == SW_Finished)
         {
-            cout << "Client said godbye!" << endl;
-            nTakenSlots--;
-            sendServerAck(socket);
+            string id_string = unpackMessage<std::string>(request,offset);
+            int id = atoi(id_string.c_str());
+            cout << "Server Worker " << id_string << " Finished! Client said godbye!" << endl;
+
+            auto it = workerMap.find(id);
+            if (it != workerMap.end())
+            {
+                sendServerAck(socket);
+
+                // Wait for process to stop (to avoid zombies)
+                pid_t pid = it->second;
+                int stat_loc;
+                pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
+
+                workerMap.erase(it);
+                nTakenSlots--;
+            }
+            else
+            {
+                sendServerNAck(socket, "Wrong worker id specified");
+            }
         }
         else
         {
             stringstream ss;
             ss << "Server error: Unknown message id " << msg_id << endl;
-            cout << "Server error: Unknown message id " << msg_id << endl;
+            cout << ss.str() << endl;
             sendServerNAck(socket, ss.str());
         }
 
