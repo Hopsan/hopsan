@@ -1609,7 +1609,7 @@ void ConnectorLine::setLine(QPointF pos1, QPointF pos2)
     {
         if(!mpVolunectorLine)
         {
-            mpVolunectorLine = new QGraphicsLineItem(this->line(), this->parentItem(), this->scene());
+            mpVolunectorLine = new QGraphicsLineItem(this->line(), this->parentItem());
             this->setPen(this->pen());
         }
         else
