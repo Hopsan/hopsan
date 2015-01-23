@@ -22,7 +22,7 @@ int main()
     // Prepare our context and socket
     zmq::context_t context (1);
     RemoteHopsanClient rhopsan(context);
-    rhopsan.connectToServer(makeAddress("localhost",23300));
+    rhopsan.connectToServer("localhost", "23300");
 
     cout << "Connected: " << rhopsan.serverConnected() << endl;
 
@@ -33,7 +33,7 @@ int main()
         if (rc)
         {
             cout << "Server Worker slot at port: " << ctrlPort << endl;
-            rhopsan.connectToWorker(makeAddress("localhost", ctrlPort));
+            rhopsan.connectToWorker("localhost",to_string(ctrlPort));
 
             rc = rhopsan.sendModelMessage(filebuffer.str());
             rhopsan.requestMessages();

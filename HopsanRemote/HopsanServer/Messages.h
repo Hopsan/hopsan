@@ -4,18 +4,7 @@
 #define MESSAGES_H
 
 #include <string>
-#include <sstream>
 #include "msgpack.hpp"
-
-inline size_t parseMessageId(char* pBuffer, size_t len, size_t &rOffset)
-{
-    return msgpack::unpack(pBuffer, len, rOffset).get().as<size_t>();
-}
-
-inline std::string makeZMQAddress(std::string ip, size_t port)
-{
-    return "tcp://" + ip + ":" + std::to_string(port);
-}
 
 enum ClientMessageIdEnumT {C_Ack, C_NAck, C_Bye, C_ReqSlot, C_SendingHmf, C_SetParam, C_GetParam, C_Simulate, C_ReqResults, C_ReqMessages};
 enum ServerMessageIdEnumT {S_Ack=128, S_NAck, S_ReqSlot_Reply, S_GetParam_Reply, S_ReqResults_Reply, S_ReqMessages_Reply};

@@ -4,25 +4,29 @@
 
 #include "msgpack.hpp"
 #include "Messages.h"
-#include "Packing.h"
+#include "MessageUtilities.h"
 
 #include <iostream>
 
 using namespace std;
 
+// ---------- Help functions start ----------
 
-void sendShortMessage(zmq::socket_t &rSocket, ClientMessageIdEnumT id)
+template <typename T>
+void sendClientMessage(zmq::socket_t &rSocket, ClientMessageIdEnumT id, const T &rMessage)
 {
     msgpack::v1::sbuffer out_buffer;
     msgpack::pack(out_buffer, id);
+    msgpack::pack(out_buffer, rMessage);
     rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
 }
 
 
-
-size_t getMessageId(zmq::message_t &rMsg, size_t &rOffset)
+void sendShortClientMessage(zmq::socket_t &rSocket, ClientMessageIdEnumT id)
 {
-    return parseMessageId(static_cast<char*>(rMsg.data()), rMsg.size(), rOffset);
+    msgpack::v1::sbuffer out_buffer;
+    msgpack::pack(out_buffer, id);
+    rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
 }
 
 
@@ -54,15 +58,20 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket)
     return readAckNackServerMessage(rSocket, dummy);
 }
 
+// ---------- Help functions end ----------
 
 
 
 
 
-
-void RemoteHopsanClient::connectToServer(std::string addres)
+void RemoteHopsanClient::connectToServer(std::string zmqaddres)
 {
-    mRSCSocket.connect(addres.c_str());
+    mRSCSocket.connect(zmqaddres.c_str());
+}
+
+void RemoteHopsanClient::connectToServer(string ip, string port)
+{
+    connectToServer(makeZMQAddress(ip,port));
 }
 
 bool RemoteHopsanClient::serverConnected()
@@ -74,7 +83,7 @@ bool RemoteHopsanClient::serverConnected()
 bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue)
 {
     CM_GetParam_t msg {rName};
-    sendMessage<CM_GetParam_t>(mRWCSocket, C_GetParam, msg);
+    sendClientMessage<CM_GetParam_t>(mRWCSocket, C_GetParam, msg);
 
     zmq::message_t response;
     mRWCSocket.recv(&response);
@@ -96,7 +105,7 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
 bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &rValue)
 {
     CM_SetParam_t msg {rName, rValue};
-    sendMessage<CM_SetParam_t>(mRWCSocket, C_SetParam, msg);
+    sendClientMessage<CM_SetParam_t>(mRWCSocket, C_SetParam, msg);
 
     string err;
     bool rc = readAckNackServerMessage(mRWCSocket, err);
@@ -109,7 +118,7 @@ bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &
 
 bool RemoteHopsanClient::sendModelMessage(const std::string &rModel)
 {
-    sendMessage<std::string>(mRWCSocket, C_SendingHmf, rModel);
+    sendClientMessage<std::string>(mRWCSocket, C_SendingHmf, rModel);
     string err;
     bool rc = readAckNackServerMessage(mRWCSocket, err);
     if (!rc)
@@ -123,7 +132,7 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
                          const int simStarttime, const int simSteptime, const int simStoptime)
 {
     CM_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
-    sendMessage<CM_Simulate_t>(mRWCSocket, C_Simulate, msg);
+    sendClientMessage<CM_Simulate_t>(mRWCSocket, C_Simulate, msg);
     string err;
     bool rc = readAckNackServerMessage(mRWCSocket, err);
     if (!rc)
@@ -135,7 +144,7 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
 
 bool RemoteHopsanClient::requestSimulationResults(vector<string> &rDataNames, vector<double> &rData)
 {
-    sendMessage<string>(mRWCSocket, C_ReqResults, "*"); // Request all
+    sendClientMessage<string>(mRWCSocket, C_ReqResults, "*"); // Request all
     //string err;
     //return readAckNackServerMessage(rSocket,err);
     zmq::message_t response;
@@ -169,7 +178,7 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> &rDataNames, ve
 
 bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
 {
-    sendShortMessage(mRSCSocket, C_ReqSlot);
+    sendShortClientMessage(mRSCSocket, C_ReqSlot);
 
     zmq::message_t response;
     mRSCSocket.recv(&response);
@@ -188,9 +197,14 @@ bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
     }
 }
 
-void RemoteHopsanClient::connectToWorker(std::string addres)
+void RemoteHopsanClient::connectToWorker(std::string zmqaddres)
 {
-    mRWCSocket.connect(addres.c_str());
+    mRWCSocket.connect(zmqaddres.c_str());
+}
+
+void RemoteHopsanClient::connectToWorker(string ip, string port)
+{
+    connectToWorker(makeZMQAddress(ip,port));
 }
 
 bool RemoteHopsanClient::workerConnected()
@@ -203,7 +217,7 @@ void RemoteHopsanClient::disconnect()
     // Disconnect from Worker
     if (workerConnected())
     {
-        sendShortMessage(mRWCSocket, C_Bye);
+        sendShortClientMessage(mRWCSocket, C_Bye);
         readAckNackServerMessage(mRWCSocket); //But we do not care about result
         mRWCSocket.close();
     }
@@ -211,7 +225,7 @@ void RemoteHopsanClient::disconnect()
     // Disconnect from Server
     if (serverConnected())
     {
-        sendShortMessage(mRSCSocket, C_Bye);
+        sendShortClientMessage(mRSCSocket, C_Bye);
         readAckNackServerMessage(mRSCSocket); //But we do not care about result
         mRSCSocket.close();
     }
@@ -219,7 +233,7 @@ void RemoteHopsanClient::disconnect()
 
 bool RemoteHopsanClient::requestMessages()
 {
-    sendShortMessage(mRWCSocket, C_ReqMessages);
+    sendShortClientMessage(mRWCSocket, C_ReqMessages);
 
     zmq::message_t response;
     mRWCSocket.recv(&response);
@@ -239,10 +253,4 @@ bool RemoteHopsanClient::requestMessages()
     {
         return false;
     }
-}
-
-
-std::string makeAddress(std::string ip, size_t port)
-{
-    return "tcp://" + ip + ":" + to_string(port);
 }

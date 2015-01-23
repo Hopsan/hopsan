@@ -49,5 +49,9 @@ unix {
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 }
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    FileAccess.cpp
+
+HEADERS += \
+    FileAccess.h
 

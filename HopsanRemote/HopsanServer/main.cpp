@@ -16,7 +16,7 @@
 #include "zmq.hpp"
 
 #include "Messages.h"
-#include "PackAndSend.h"
+#include "MessageUtilities.h"
 #include "global.h"
 
 #include <spawn.h>
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
         // Wait for next request from client
         socket.recv (&request);
         size_t offset=0;
-        size_t msg_id = parseMessageId(static_cast<char*>(request.data()), request.size(), offset);
+        size_t msg_id = getMessageId(request, offset);
         cout << "Server received message with length: " << request.size() << " msg_id: " << msg_id << endl;
         if (msg_id == C_ReqSlot)
         {
@@ -61,13 +61,18 @@ int main(int argc, char* argv[])
             if (nTakenSlots < gServerConfig.mMaxClients)
             {
                 size_t port = gServerConfig.mControlPort+1+nTakenSlots;
-                char buff[64];
-                sprintf(buff,"%d", int(port));
 
-                char *argv[] = {"HopsanServerWorker", buff, nullptr};
+                char port_buff[64], thread_buff[64];
+                // Write port as char in buffer
+                sprintf(port_buff,"%d", int(port));
+                // Write num threads as char in buffer
+                sprintf(thread_buff,"%d", gServerConfig.mMaxThreadsPerClient);
+
+                char *argv[] = {"HopsanServerWorker", port_buff, thread_buff, nullptr};
                 pid_t pid;
                 cout << "argv: " << argv[0] << " " << argv[1] << endl;
-                int status = posix_spawn(&pid,"/home/petno25/svn/hopsan/trunk/HopsanRemote/bin/HopsanServerWorker",nullptr,nullptr,argv,environ);
+                //int status = posix_spawn(&pid,"/home/petno25/svn/hopsan/trunk/HopsanRemote/bin/HopsanServerWorker",nullptr,nullptr,argv,environ);
+                int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
                 if(status == 0)
                 {
                     std::cout<<"Launched Worker Process, pid: "<< pid << " port: " << port << endl;

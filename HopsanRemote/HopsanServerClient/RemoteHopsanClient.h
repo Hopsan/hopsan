@@ -8,19 +8,18 @@
 
 #include "zmq.hpp"
 
-std::string makeAddress(std::string ip, size_t port);
-
-
 class RemoteHopsanClient
 {
 public:
     RemoteHopsanClient(zmq::context_t &rContext) : mRSCSocket(rContext, ZMQ_REQ), mRWCSocket(rContext, ZMQ_REQ) {}
 
-    void connectToServer(std::string addres);
+    void connectToServer(std::string zmqaddres);
+    void connectToServer(std::string ip, std::string port);
     bool serverConnected();
     bool requestSlot(size_t &rControlPort);
 
-    void connectToWorker(std::string addres);
+    void connectToWorker(std::string zmqaddres);
+    void connectToWorker(std::string ip, std::string port);
     bool workerConnected();
 
     void disconnect();

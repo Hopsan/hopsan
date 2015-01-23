@@ -16,6 +16,5 @@ SOURCES += main.cpp \
     RemoteHopsanClient.cpp
 
 HEADERS += \
-    RemoteHopsanClient.h \
-    Packing.h
+    RemoteHopsanClient.h
 

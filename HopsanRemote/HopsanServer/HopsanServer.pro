@@ -46,5 +46,5 @@ SOURCES += main.cpp
 HEADERS += \
     global.h \
     Messages.h \
-    PackAndSend.h
+    MessageUtilities.h
 

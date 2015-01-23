@@ -1,35 +1,34 @@
 //$Id$
 
-#include <streambuf>
+//#include <streambuf>
 #include <sstream>
-#include <fstream>
+//#include <fstream>
 
-#ifndef _WIN32
-#include <unistd.h>
-#else
-#include <windows.h>
-#endif
+//#ifndef _WIN32
+//#include <unistd.h>
+//#else
+//#include <windows.h>
+//#endif
 
 #include <iostream>
-//#include <thread>
 #include <vector>
 #include "zmq.hpp"
 
 #include "Messages.h"
-#include "PackAndSend.h"
-#include "global.h"
+#include "MessageUtilities.h"
+//#include "global.h"
+#include "FileAccess.h"
 
 
 #include "HopsanEssentials.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "TicToc.hpp"
 
-#define DEFAULTCOMPONENTLIB "/home/petno25/svn/hopsan/trunk/componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+//#define DEFAULTCOMPONENTLIB "/home/petno25/svn/hopsan/trunk/componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 
 using namespace hopsan;
 using namespace std;
 
-ServerConfig gServerConfig;
 HopsanEssentials gHopsanCore;
 
 typedef struct
@@ -100,24 +99,41 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
     }
 }
 
+void loadComponentLibraries()
+{
+    FileAccess fa;
+    fa.enterDir("./componentLibraries");
+    vector<string> soFiles = fa.findFilesWithSuffix("so");
+    for (string f : soFiles)
+    {
+        cout << "Loading library file: " << f << endl;
+        gHopsanCore.loadExternalComponentLib(f.c_str());
+    }
+}
+
 
 ComponentSystem *pRootSystem=nullptr;
 double simStartTime, simStopTime;
+size_t nThreads = 1;
 
 int main(int argc, char* argv[])
 {
-    //ofstream logfile("/home/petno25/svn/hopsan/trunk/HopsanRemote/bin/logfile");
     if (argc < 2)
     {
         cout << "Error: you must specify what base port to use!" << endl;
-        //logfile.close();
         return 1;
     }
 
-    cout << "Server Worker Process Starting with port: " << argv[1] << endl;
-    //logfile.flush();
+    // Read num threads argument
+    if (argc == 3)
+    {
+        nThreads = size_t(atoi(argv[2]));
+    }
 
-    gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+    cout << "Server Worker Process Starting with port: " << argv[1] << " Using: " << nThreads << " threads" << endl;
+
+    //gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+    loadComponentLibraries();
 
     // Prepare our context and socket
     zmq::context_t context (1);
@@ -131,7 +147,7 @@ int main(int argc, char* argv[])
         // Wait for next request from client
         socket.recv (&request);
         size_t offset=0;
-        size_t msg_id = parseMessageId(static_cast<char*>(request.data()), request.size(), offset);
+        size_t msg_id = getMessageId(request, offset);
         cout << "Worker received message with length: " << request.size() << " msg_id: " << msg_id << endl;
         if (msg_id == C_SetParam)
         {
@@ -166,19 +182,24 @@ int main(int argc, char* argv[])
         else if (msg_id == C_SendingHmf)
         {
             std::string hmf = unpackMessage<std::string>(request, offset);
-            cout << "Received hmf with size: " << hmf.size() << endl;
-            //cout << hmf << endl;
+            cout << "Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
+
+            // If a model is already loaded then delete it
+            if (pRootSystem)
+            {
+                delete pRootSystem;
+                pRootSystem=nullptr;
+            }
+
             int dummy;
             //! @todo loadHMFModel will hang if hmf empty
             pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime, dummy);
             if (pRootSystem)
             {
-                //cout << "Loaded OK Sending server ACK" << endl;
                 sendServerAck(socket);
             }
             else
             {
-                //cout << "Load failed Sending server NACK" << endl;
                 sendServerNAck(socket, "Server could not load model");
             }
         }
@@ -219,19 +240,12 @@ int main(int argc, char* argv[])
         else if (msg_id == C_ReqResults)
         {
             string varName = unpackMessage<string>(request, offset);
-            cout << "Client requests variable: " << varName << endl;
-
-
             vector<ModelVariableInfo_t> vMVI;
             collectAllModelVariables(pRootSystem, vMVI, "");
+            cout << "Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
 
-            cout << "vMVI size: " << vMVI.size() << endl;
-
-            // check if simulation finnished, ACK Nack
+            //! @todo Check if simulation finnished, ACK Nack
             vector<SM_Variable_Description_t> vars;
-            //vector<double> dd {1, 2, 3, 4};
-            //SM_Variable_Description_t var {"kalle", "apa", "m^2", dd};
-
             for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
             {
                 vars.push_back(SM_Variable_Description_t());
@@ -244,22 +258,16 @@ int main(int argc, char* argv[])
                     vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
                 }
             }
-            //vars.push_back(var);
-            //dd = {5, 6, 7, 8};
-            //var = {"hona", "", "m/s", dd};
-            //vars.push_back(var);
 
-            sendMessage<vector<SM_Variable_Description_t>>(socket,S_ReqResults_Reply,vars);
-            //sendServerNAck(socket, "Simulation not finnished yet!");
-
+            sendServerMessage<vector<SM_Variable_Description_t>>(socket,S_ReqResults_Reply,vars);
         }
         else if (msg_id == C_ReqMessages)
         {
-            cout << "Client requests messages" << endl;
             HopsanCoreMessageHandler *pHandler = gHopsanCore.getCoreMessageHandler();
             vector<SM_HopsanCoreMessage_t> messages;
             size_t nMessages = pHandler->getNumWaitingMessages();
             messages.resize(nMessages);
+            cout << "Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
             for (size_t i=0; i<nMessages; ++i)
             {
                 HString mess, tag, type;
@@ -269,7 +277,7 @@ int main(int argc, char* argv[])
                 messages[i].type = type[0];
             }
 
-            sendMessage<vector<SM_HopsanCoreMessage_t>>(socket,S_ReqMessages_Reply,messages);
+            sendServerMessage<vector<SM_HopsanCoreMessage_t>>(socket,S_ReqMessages_Reply,messages);
         }
         else if (msg_id == C_Bye)
         {
@@ -280,18 +288,24 @@ int main(int argc, char* argv[])
         else
         {
             stringstream ss;
-            ss << "Server error: Unknown message id " << msg_id << endl;
-            cout << "Server error: Unknown message id " << msg_id << endl;
+            ss << "Server error: Unknown message id: " << msg_id << endl;
+            cout << ss.str() << endl;
             sendServerNAck(socket, ss.str());
         }
 
-        // Do some 'work'
+        //! @todo do we need to sleep here?
 #ifndef _WIN32
         //sleep(1);
 #else
         //Sleep (1);
 #endif
-        //! @todo need to clear the hopsan model
+
     }
-    //logfile.close();
+
+    // Delete the model if we have one
+    if (pRootSystem)
+    {
+        delete pRootSystem;
+        pRootSystem=nullptr;
+    }
 }
