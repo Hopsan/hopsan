@@ -1,7 +1,7 @@
 /*!
 \page userFrequencyAnalysisPage Frequency Analysis
 
-Hopsan has built-in tools for Nyquist diagrams, Bode plots and frequency spectrums.
+Hopsan has built-in tools for Nyquist diagrams, Bode plots and frequency spectrum.
 
 \section Transfer Function Analysis
 
@@ -23,11 +23,11 @@ A dialog will appear, where input signal and output signal can be selected. It i
 
 \section Frequency Spectrum
 
-It is possible to generate a frequency spectrum for a curve in the plot window. This is accessed by clicking the Frequency Spectrum buttom in the curve control panel (below the plot area).
+It is possible to generate a frequency spectrum for a curve in the plot window. This is accessed by clicking the Frequency Spectrum button in the curve control panel (below the plot area).
 
 \htmlimagerightcaption{../../graphics/fft_icon.png, Frequency Analysis}
 \image latex "fft_icon.png" "Frequency Analysis"
 
-A dialog will appear, where it is possible to choose whether or not to use logarithmic scaling or power spectum The latter means that the square of the frequencies are used, to give a better picture of the energy contents. After clicking "Go" a new plot tab with the frequency spectrum will appear.
+A dialog will appear, where it is possible to choose whether to use logarithmic scaling or power spectrum The latter means that the square of the frequencies are used, to give a better picture of the energy contents. After clicking "Go," a new plot tab with the frequency spectrum will appear.
 
 */

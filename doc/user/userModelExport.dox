@@ -20,7 +20,7 @@ Hopsan models can be exported to Simulink as S-function libraries. This is done 
 
 \subsection simulink-step1 1. Prepare the model
 
-First of all we must have a model to export. In this example we want to export the position servo model (found in Example Models directory) and create a closed-loop controller in Simulink. The only required modifications is that we must add interface components (found in Connectivity library) wherever we want interaction between Simulink and Hopsan. In this case we want a signal input to control the valve, and a signal output from the sensor. The controller is thus removed from the Hopsan model.
+First of all we must have a model to export. In this example, we want to export the "position servo" model (found in Example Models directory) and create a closed-loop controller in Simulink. The only required modifications is that we must add interface components (found in Connectivity library) wherever we want interaction between Simulink and Hopsan. In this case we want a signal input to control the valve, and a signal output from the sensor. The controller is thus removed from the Hopsan model.
 
 \image html "simulink_model.png"
 \image latex "simulink_model.png" "Prepare model for use in Simulink"
@@ -32,13 +32,13 @@ Next step is to export the files. Click the "Export" button and select Simulink 
 \htmlimagerightcaption{../../graphics/export_simulink_icon.png, Export to S-function}
 \image latex "export_simulink_icon.png" "Export to S-function"
 
-A dialog appears, where you can choose version of Visual C++ and if you want 32-bit or 64-bit architecture. These settings should be choosen so that they match your version of Matlab. It is also possible to disable port graphics, for portability with older versions of Simulink. Use this setting only if Matlab gives an error message ending with "called mdlSetNumInputPorts more than once". 
+A dialog appears, where you can choose version of Visual C++ and if you want 32-bit or 64-bit architecture. These settings should be chosen so that they match your version of Matlab. It is also possible to disable port graphics, for portability with older versions of Simulink. Use this setting only if Matlab gives an error message ending with "called mdlSetNumInputPorts more than once". 
 
 When this dialog is closed, a file dialog appears. Choose an empty directory. Source files, model files and binaries will be generated and copied to this directory.
 
 \subsection simulink-step3 3. Compile in Matlab
 
-Open Matlab. First make sure that the correct compiler is used. Write the following command in the console:
+Open Matlab. First, make sure that the correct compiler is used. Write the following command in the console:
 \verbatim
 mex -setup
 \endverbatim

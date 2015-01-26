@@ -19,7 +19,7 @@ Open doc/dev/html/index.html or doc/user/html/index.html in a web browser after 
 -# A LaTeX package including dvipng (to generate png for latex equations), 
    We recomend: <a href="http://miktex.org/" target="_blank">http://miktex.org/</a>
 -# You will also need Ghostscript \b 9.05 \b win32 for formulas, install to default directory. c:/"ProgramFiles (or similar)"/gs/gs9.05\n
-   You must use 9.05 because paths are hardcoded in buildDocumentation scripts, (you can set your global path as an alternative if you like some other version).
+   You must use 9.05 because paths are hard coded in buildDocumentation scripts, (you can set your global path as an alternative if you like some other version).
    You can find it here <a href="http://sourceforge.net/projects/ghostscript/" target="_blank">http://sourceforge.net/projects/ghostscript/</a>
 
 To build or later rebuild the documentation, double click the buildDevDocumentation.bat or buildUserDocumentation.bat file.\n

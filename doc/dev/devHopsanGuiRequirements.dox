@@ -34,7 +34,7 @@ This will build against your **system-version** of the Qt libs, if you have a di
 This will build against your \b system-version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
 -# Make sure that you have the libqt4-dev and the python-dev package installed. "apt-get install libqt4-dev python-dev"
   -# \e Note! PythonQt will likely not work with Python version >= 3, use 2.7 if you can choose
--# Run the unpackPatchAndBuildPythonQt.sh script in HopsanGUI/Dependencies, it will build PythonQt, (assumes python 2.7, (second commandline arg to change))
+-# Run the unpackPatchAndBuildPythonQt.sh script in HopsanGUI/Dependencies, it will build PythonQt, (assumes python 2.7, (second command line arg to change))
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection pythonqt-ubuntu-manual Ubuntu (Manually)
@@ -59,7 +59,7 @@ This will build against your \b system-version of the Qt libs, if you have a dif
 
 \subsection pythonqt-windows-vc Windows (with Visual C++) --OBSOLETE Needs update--
 -# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
--# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
+-# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN repository, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
 -# Open QT Creator and the PythonQT project. Use release settings. Deactivate shadowbuild.
 -# Go to the project tab and add the following build variables:\n
 PYTHON_PATH = c:\\Python26 \n

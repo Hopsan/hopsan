@@ -14,7 +14,7 @@
 -# Build the dependencies
 -# Open the HopsanNG.pro project file. Make sure that you are using the same qmake version and build tool chain as you used to build the dependencies.
 -# It is recommended to activate shadow build for both debug and release, (you will likely be able to use the default shadow build location)
--# qmake will automatically search for the previously build dependencies in the Dependecies directory under each sub project according to default paths given in the .prf files.
+-# qmake will automatically search for the previously build dependencies in the Dependencies directory under each sub project according to default paths given in the .prf files.
   -# If you have a new version of a library that should be officially supported add the path to the TOP of the default list in each prf
   -# If you want to use a completely custom path to your library then set the appropriate environment variable, eg. TBB_PATH, QWT_PATH or PYTHONQT_PATH.
 -# Before you compile, <b>run qmake</b> on the HopsanNG project (right click), to see the qmake messages, (you will see if all dependencies were found correctly)

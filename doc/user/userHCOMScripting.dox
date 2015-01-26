@@ -1,7 +1,7 @@
 /*!
 \page userScriptingPageHcomPage HCOM Scripting
 HCOM is the built-in scripting language in Hopsan. It can control most parts of the program, either from the terminal widget or through external script files. 
-Use the \c help command to list all available commands or \c help \c \<command\> \endverbatim to get help for a specific commands.<br>
+Use the \c help command to list all available commands or \c help \c \<command\> \endverbatim to get help for a specific command.<br>
 
 All available commands are listed below. 
 
@@ -83,7 +83,7 @@ Turn on and off logarithmic right y-axis scale<br>
  Usage: logyr off
 
 \subsection sapw sapw
-Save the current plotwinow as an image<br>
+Save the current plot window as an image<br>
  Usage: sapw [fileName.ext] [width] [height] [dimUnit] [dpi] <br>
  Usage: sapw [fileName.ext] [width] [height] [dimUnit]       <br>
  Usage: sapw [fileName.ext] [width] [height]                 Pixels size<br>
@@ -227,7 +227,7 @@ Enables logging in specified ports<br>
  Usage: elog [ports]
 
 \subsection abs abs
-Irreversibly turn all vector elements into aboslute values<br>
+Irreversibly turn all vector elements into absolute values<br>
  Usage: abs [var]
 
 \section modelcommands Model Commands
@@ -327,7 +327,7 @@ Sets terminal output on or off<br>
  Usage: echo [on/off]
 
 \subsection semt semt
-Change mutli-trheading settings<br>
+Change mutli-threading settings<br>
  Usage: semt [on/off] [numThreads] [algorithm]<br>
  Usage: semt [on/off] [numThreads]
 

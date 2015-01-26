@@ -24,7 +24,7 @@ The second toolbar has buttons for editing tools, such as copy, cut, paste, undo
 \image html "Edit Toolbar.png"
 \image latex "Edit Toolbar.png" "Edit toolbar"
 
-The third toolbar consists of viewport operations such as centering the viewport and zooming. It is also possible to choose whether or not component names and unconnected ports shall be displayed.
+The third toolbar consists of viewport operations such as centering the viewport and zooming. It is also possible to choose whether component names and unconnected ports shall be displayed.
 \image html "View Toolbar.png"
 \image latex "View Toolbar.png" "View Toolbar"
 
@@ -32,7 +32,7 @@ The forth toolbar consists of tools for modifying the model. It is possible to a
 \image html "Tools Toolbar.png"
 \image latex "Tools Toolbar.png" "Tools Toolbar"
     
-Finally, the last toolbar contains simulation controls selecting start time, time step and stop time, running a simlation, plotting and changing simulation parameters. This toolbar also has the icon for changing model specific properties. Note that after changing simulation parameters it is necessary to click outside the text field before clicking on Simulate; otherwise the changes will not apply for this simulation.
+Finally, the last toolbar contains simulation controls selecting start time, time step and stop time, running a simulation, plotting and changing simulation parameters. This toolbar also has the icon for changing model specific properties. Note that after changing simulation parameters it is necessary to click outside the text field before clicking on Simulate; otherwise the changes will not apply for this simulation.
 \image html "Simulation Toolbar.png"
 \image latex "Simulation Toolbar.png" "Simulation toolbar"
 
@@ -81,11 +81,11 @@ Global system parameters can be used to quickly change a parameter value in seve
 \htmlimagerightcaption{../../graphics/systemparameters_icon.png,System Parameters}
 \image latex "systemparameters_icon.png" "System Parameters"
 
-From here new system parameters can be added or removed by clicking on the "Set" and "Unset" buttons. Values can be changed directly by double-clicking on their values in the list. They can then be used as parameters in components by clicking on the icon to the right of the parameter value box in the component's parameter dialog. When a system parameter is changed, it will changed for all components that use it. Should a system parameter be removed, the components that use it will change to simply using the last numerical value of the parameter instead.
+From here new system parameters can be added or removed by clicking on the "Set" and "Unset" buttons. Values can be changed directly by double-clicking on their values in the list. They can then be used as parameters in components by clicking on the icon to the right of the parameter value box in the component's parameter dialog. When a system parameter is changed, it is changed for all components that use it. Should a system parameter be removed, the components that use it will change to simply using the last numerical value of the parameter instead.
 
 
 \section subsystems Subsystems
-Parts of a model can be converted to subsystems, by adding a Subsystem component from the subsystems library. This works as a component that can contain other components (and other subsystems). The ports on a subsystems are defined by adding Container Port components inside it. When connecting to a component on the inside, the outside port will change its type and vice versa. 
+Parts of a model can be converted to subsystems, by adding a Subsystem component from the subsystems library. This works as a component that can contain other components (and other subsystems). Subsystem ports are defined by adding Container Port components inside it. When connecting to a component on the inside, the outside port will change its type and vice versa. 
 
 Subsystems offers several interesting features. They can for example have smaller time steps (even multiples) than the one in the parent system. They can also be loaded from external model files, and thereby be shared between several models. System parameters can also propagate downwards from parent systems to subsystems.
 
@@ -96,7 +96,7 @@ Because subsystems works as a component, the C, Q or S type is important. It is 
 Groups is a feature that makes it possible to hide components graphically, similar to subsystems, but without affecting the actual simulation. This feature is not implemented in this version of Hopsan, but will be available in future releases.
 
 \section widgets Widgets
-To make models more nice looking and understandable, it is possible to add text box widgets. These are purely cosmetical and do not modify the behavior of the system in any way. To add a widget, simply right click on the workspace and select "Add Text Box Widget" from the pop-up menu. 
+To make models more nice looking and understandable, it is possible to add text box widgets. These are purely cosmetic and do not modify the behavior of the system in any way. To add a widget, simply right click on the workspace and select "Add Text Box Widget" from the pop-up menu. 
 
 A new widget will then appear at the menu position. It contains of two parts, a text and a box. The text is always located in the upper left corner. Its appearance can be modified by double clicking on it. The box can be resized by dragging the lines with the mouse. A pure text widget or a pure box widget can be created by removing the box or the text from a text box widget.
 
@@ -107,7 +107,7 @@ A new widget will then appear at the menu position. It contains of two parts, a 
 \section how-simulations-work How simulations work
 Hopsan uses fixed time step simulations with distributed solvers. This means that the number of iterations is stop time minus start time divided by the time step. If the start time is negative, the negative time will be simulated but not logged for plotting. This can be used to avoid initial transients in the simulation, which are normally caused by incorrect start values. 
 
-Simulations always begin with an initialization phase. Here all start values are set, and all equations initalized (in case they require initalization). During the simulation phase, each time step will begin with simulating all C-components, then it will simulate all signal components and finally the Q-components. When everything in a time step is simulated, the data will be logged for plotting. This is only performed a certain amount of times, depending on how many log samples the user has selected in the Model Preferences dialog. 
+Simulations always begin with an initialization phase. Here all start values are set, and all equations initialized (in case they require initialization). During the simulation phase, each time step will begin with simulating all C-components, then it will simulate all signal components and finally the Q-components. When everything in a time step is simulated, the data will be logged for plotting. This is only performed a certain amount of times, depending on how many log samples the user has selected in the Model Preferences dialog. 
 
 After the simulation there is a finalize phase, where components has the opportunity to clean up things. This is not used by most components, and nothing the user needs to bother about. When the simulation is finished, data will be loaded from the core to the graphical interface so that it can be plotted by the user.
 

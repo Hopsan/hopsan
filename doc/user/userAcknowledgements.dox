@@ -1,10 +1,10 @@
 /*!
-\page userAcknowledgementsPage Acknowledgements
+\page userAcknowledgementsPage Acknowledgments
 \section userAcknowledgements_externalDependecies External Dependencies
 Different parts of Hopsan depend on various third-party projects for some functionality. We would like to acknowledge these projects.
 
 \subsection userAcknowledgements_externalDependecies_core HopsanCore
-- <a href="http://threadingbuildingblocks.org/">Intel Threading Building Blocks</a> For multicore thread managment
+- <a href="http://threadingbuildingblocks.org/">Intel Threading Building Blocks</a> For multicore thread management
 - <a href="http://code.google.com/p/csv-parser-cplusplus/">CSV Parser</a> For the CSV parser utility
 - <a href="http://rapidxml.sourceforge.net/">RapidXML</a> For Hopsan Model file Loading (if HopsanGUI not used)
 

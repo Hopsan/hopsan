@@ -1,6 +1,6 @@
 /*!
 \page userScriptingPagePythonPage Python Scripting
-The Python Console in Hopsan can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. All Python interaction with Hopsan is done trough an object called "hopsan". The commands as well as command examples are available and described below. 
+The Python Console in Hopsan can be used for scripting simulations of your models. It includes features for modifying parameters, setting simulation times and so on. All Python interaction with Hopsan is done through an object called "hopsan". The commands as well as command examples are available and described below. 
 
 \b Note! Python script functions are not working very well! It is recommended that you use HCOM instead. Python script support may be improved in a future release.
 
@@ -10,13 +10,13 @@ The Python Console in Hopsan can be used for scripting simulations of your model
 Prints a message in the Messages Console. Example: hopsan.printMessage("Goddag yxskaft.")
 
 \subsection printInfo printInfo(message)
-Prints a info message in the Messages Console. Example: hopsan.printInfo("Goddag yxskaft.")
+Prints an info message in the Messages Console. Example: hopsan.printInfo("Goddag yxskaft.")
 
 \subsection printWarning printWarning(message)
 Prints a warning message in the Messages Console. Example: hopsan.printWarning("Goddag yxskaft.")
 
 \subsection printError printError(message)
-Prints a error message in the Messages Console. Example: hopsan.printError("Goddag yxskaft.")
+Prints an error message in the Messages Console. Example: hopsan.printError("Goddag yxskaft.")
 
 
 \section PyModelCommands Model Commands
@@ -34,7 +34,7 @@ Closes all opened models.
 Changes active tab to specified tab number.
 
 \subsection entersystem enterSystem(sysName)
-Enter subsystem with specified name. Example: hopsan.enterSystem("My Subsystem")
+Enter subsystem with the specified name. Example: hopsan.enterSystem("My Subsystem")
 
 \subsection exitsystem exitSystem()
 Leaves current subsystem and opens parent system.
@@ -64,13 +64,13 @@ Returns the finish time of a simulation. Example: finishTime = hopsan.finishTime
 Simulates the current model. Example hopsan.simulate()
 
 \subsection getSimulationTime getSimulationTime()
-Returns the actual simlation time from last simulation. Example: hopsan.getSimlationTime()
+Returns the actual simulation time from last simulation. Example: hopsan.getSimlationTime()
 
 \subsection openAbortDialog openAbortDialog(text)
-Open a abort dialog with given text. This makes it possible to abort a lengthy simulation manually. Example: hopsan.openAbortDialog("Abort Simulation")
+Open an abort dialog with given text. This makes it possible to abort a lengthy simulation manually. Example: hopsan.openAbortDialog("Abort Simulation")
 
 \subsection isAborted isAborted()
-Check if simulation was aborted. Example: hopsan.isAborted()
+Check if the simulation was aborted. Example: hopsan.isAborted()
 
 \subsection abort abort()
 Abort a simulation. Example: hopsan.abort()

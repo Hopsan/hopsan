@@ -11,13 +11,13 @@
 \page constrained-simplex-algorithm Constrained Simplex Algorithm
 The constrained simplex algorithm, also known as the complex algorithm, is based upon the simplex method developed by (Spendley et al, 1962) and (Nelder & Mead, 1965). It was first presented by (Box, 1965) and later improved by (Guin, 1968).
 
-To optimize a model with n tunable parameters, we use k≥n+1 points in an n-dimensional parameter space, typically k=2n. The most important settings are the reflection coefficient \f$\alpha\f$, the randomization factor \f$\beta\f$ and the forgetting factor \f$\gamma\f$. The following proceedure is used:
+To optimize a model with n tunable parameters, we use k≥n+1 points in an n-dimensional parameter space, typically k=2n. The most important settings are the reflection coefficient \f$\alpha\f$, the randomization factor \f$\beta\f$ and the forgetting factor \f$\gamma\f$. The following procedure is used:
 
 1.   Assign random values to each point.
 
 2.   Simulate and evaluate the objective function for each point.
 
-3.   Reflect the worst point \f$(x_{w})\f$ through the geometrical center \f$(x_{c})\f$ of the other points, using the following formula:
+3.   Reflect the worst point \f$(x_{w})\f$ through the geometric centre \f$(x_{c})\f$ of the other points, using the following formula:
 
      \f$x_{new}=x_{c}+\alpha(x_{c}-x_{w})+r\f$
 
@@ -25,7 +25,7 @@ To optimize a model with n tunable parameters, we use k≥n+1 points in an n-dim
 
 5.   Check for convergence in parameter values
 
-5.   Reduce objective value for the non-mirrored point with the forgetting factor
+5.   Reduce objective value of the non-mirrored point with the forgetting factor
 
 6.   Restart at point 2
 
@@ -61,7 +61,7 @@ The particle swarm algorithm was first presented by (Eberhard and Kennedy, 1995)
 
 5.   Update the swarms best known point if one of the new points is better: \f$if(f(p_{i})>f(g)): g=p_{i}\f$
 
-6.   Repeat from point 4 until convergance
+6.   Repeat from point 4 until convergence
 
 \section References
 Eberhart, R. C. and Kennedy, J. A new optimizer using particle swarm theory. Proceedings of the
@@ -76,26 +76,26 @@ Sixth International Symposium on Micromachine and Human Science, Nagoya, Japan. 
 \image html "optimization_model.png"
 \image latex "optimization_model.png" "Optimization model"
 
-2.	Click the 'Optimization' icon. It is found in the simulation tool bar, next to the simulate button. It can also be reached from the menus.
+2.	Click the 'Optimization' icon. It is found in the simulation toolbar, next to the simulate button. It can also be reached from the menus.
 
 \htmlimagerightcaption{../../graphics/optimization_icon.png, Open Optimization Dialog}
 \image latex "optimization_icon.png" "Open Optimization Dialog"
 
-3.	Select general settings. Specify number of iterations, number of search points, reflection coefficient, randomization and forgetting factor and tolerances for convergence. Also choose whether or not to plot each iteration (will slow down optimization). In the example we choose 100 iterations, 4 search points, reflection coefficient of 1.3, randomization factor of 0.3, and a forgetting factor of 0. For tolerance values we use default settings.
+3.	Select general settings. Specify number of iterations, number of search points, reflection coefficient, randomization and forgetting factor and tolerances for convergence. Also choose whether to plot each iteration (will slow down optimization). In the example we choose 100 iterations, 4 search points, reflection coefficient of 1.3, randomization factor of 0.3, and a forgetting factor of 0. For tolerance values we use default settings.
 
 \image html "optimization_settings.png"
 \image latex "optimization_settings.png" "Optimization settings"
 
 4.	Select parameters. A list of all components in the model is shown. Expanding a component will show its parameters. Check the parameters that shall be optimized, and they will appear below the list. Here the minimum and maximum values for each parameter can be chosen. There is also an option to use logarithmic parameter scaling. This is useful when values for the parameters can vary over several orders of magnitude. Keep in mind that all parameters must be strictly greater than zero to use this.
 
-In this example we want to optimize the PI-controller parameters. The parameters to optimize is therefore the gains called GainP and GainI. Considering the unit conversion from cylinder position [m] to spool position [m], reasonable maximum values are about 0.1.	
+In this example, we want to optimize the PI-controller parameters. The parameters to optimize is therefore the gains called GainP and GainI. Considering the unit conversion from cylinder position [m] to spool position [m], reasonable maximum values are about 0.1.	
 
 \image html "optimization_parameters.png"
 \image latex "optimization_parameters.png" "Optimization parameters"
 
-5.	Select objective functions. The next tab also contains a list with the components. This time, however, expanding them will reveal a list of their ports. Expanding a port will show a list of variables in the port. Below the list are two drop down menus. Here it is possible to choose an objective function and whether or not to maximize or minimize it. Select a function and an appropriate number of variables, and then click "Add Function". For each function it is then possible to select weight factor, normalization factor,  exponential factor and provide other data if applicable.
+5.	Select objective functions. The next tab also contains a list with the components. This time, however, expanding them will reveal a list of their ports. Expanding a port will show a list of variables in the port. Below the list are two drop down menus. Here it is possible to choose an objective function and whether to maximize or minimize it. Select a function and an appropriate number of variables, and then click "Add Function". For each function it is then possible to select weight factor, normalization factor,  exponential factor and provide other data if applicable.
 
-For the example we want to optimize a step response so that the cylinder position as closely as possible matches the step input signal. We therefore add a "Minimize average absolute difference" function between step output and position sensor output. We also want to penalize the overshot over the final value. This is done by adding a "Minimize overshot over value" function for position sensor output. This is given a weight factor of 2.0, because it is considered important.
+For the example we want to optimize a step response so that the cylinder position as closely as possible matches the step input signal. We therefore add a "Minimize average absolute difference" function between step output and position sensor output. We also want to penalize the overshot over the final value. This is done by adding a "Minimize overshot over value" function for position sensor output. Use a weight factor of 2.0, because it is considered important.
 
 \image html "optimization_functions.png"
 \image latex "optimization_functions.png" "Optimization functions"
@@ -108,6 +108,6 @@ For the example we want to optimize a step response so that the cylinder positio
 
 7.	Investigate the code. Before starting the optimization it is now possible to investigate and make changes to the script if desired. This is not needed in the example.
 
-8.	Run optimization. Pressing the "Run Optimization" button will launch the script file. It will take control of the program and simulate the model as desired. It will stop either by convergence, or by reaching maximum number of iterations. In the example it should find an optimum somewhere around GainI,k = 0.0028 and GainP,k = 0.0065.
+8.	Run optimization. Pressing the "Run Optimization" button will launch the script file. It will take control of the program and simulate the model as desired. It will stop either by convergence, or by reaching the maximum number of iterations. In the example it should find an optimum somewhere around GainI,k = 0.0028 and GainP,k = 0.0065.
 
 */
