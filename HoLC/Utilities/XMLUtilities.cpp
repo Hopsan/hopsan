@@ -20,7 +20,7 @@
 //!
 //! @brief Contains XML DOM help functions that are more or less Hopsan specific
 //!
-//$Id: XMLUtilities.cpp 6763 2014-03-20 16:26:00Z petno25 $
+//$Id$
 
 #include "XMLUtilities.h"
 #include <QMessageBox>

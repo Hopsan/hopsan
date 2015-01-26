@@ -5,7 +5,7 @@
 //!
 //! @brief Contains XML DOM help functions that are more or less Hopsan specific
 //!
-//$Id: XMLUtilities.h 6628 2014-02-24 13:47:38Z petno25 $
+//$Id$
 
 #ifndef XMLUTILITIES_H
 #define XMLUTILITIES_H

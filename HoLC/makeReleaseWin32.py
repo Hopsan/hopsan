@@ -1,4 +1,4 @@
-# $Id: makeReleaseWin32.py 6587 2014-02-17 09:12:10Z petno25 $
+# $Id$
 
 import subprocess
 import os
