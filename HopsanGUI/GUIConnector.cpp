@@ -62,10 +62,10 @@ Connector::Connector(ContainerObject *pParentContainer)
     // Set parent
     this->setParentContainer(pParentContainer);
 
-    // Add this item to the correct scene, whcih should also set the QtParent, the scene own the qt object
+    // Add this item to the correct scene, which should also set the QtParent, the scene own the qt object
     mpParentContainerObject->getContainedScenePtr()->addItem(this);
 
-    // Determine inital appearance
+    // Determine initial appearance
     mpConnectorAppearance = new ConnectorAppearance("Undefined", mpParentContainerObject->getGfxType());
 }
 
@@ -196,7 +196,7 @@ void Connector::addPoint(QPointF point)
 }
 
 
-//! @brief Removes the last point in the connecetor. Asks to delete the connector if deleteIfEmpty is true and if no lines or only one non-diagonal lines remains.
+//! @brief Removes the last point in the connector. Asks to delete the connector if deleteIfEmpty is true and if no lines or only one non-diagonal lines remains.
 //! @param deleteIfEmpty True if the connector shall be deleted if too few points remains.
 //! @see addPoint(QPointF point)
 void Connector::removePoint(bool deleteIfEmpty)
@@ -286,7 +286,7 @@ void Connector::setEndPort(Port *pPort)
 }
 
 
-//! @brief Executes the final tasks before creation of the connetor is complete. Then flags that the connection if finished.
+//! @brief Executes the final tasks before creation of the connector is complete. Then flags that the connection if finished.
 void Connector::finishCreation()
 {
     if (mpStartPort && mpEndPort)
@@ -344,7 +344,7 @@ void Connector::finishCreation()
                     mpEndPort->getParentModelObject()->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
                 }
             }
-            // Vertical snapping (horizontal conector)
+            // Vertical snapping (horizontal connector)
 //            else if( ((getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) ||
 //                     ((getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) )
             else if ( (qAbs(diff.y()) < SNAPDISTANCE) && (nl < 4) )
@@ -360,7 +360,7 @@ void Connector::finishCreation()
             }
         }
 
-        // Connect show/hide signal-stuff signalto the conector if any of the components are signal components
+        // Connect show/hide signal-stuff signalto the connector if any of the components are signal components
         if(mpStartPort->getParentModelObject()->getTypeCQS() == "S" || mpEndPort->getParentModelObject()->getTypeCQS() == "S")
         {
             connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
@@ -605,7 +605,7 @@ Component *Connector::getVolunectorComponent()
 //! @param rDomElement Reference to the DOM element to write to
 void Connector::saveToDomElement(QDomElement &rDomElement)
 {
-    // Ignore if conector broken
+    // Ignore if connector broken
     if (mIsBroken)
     {
         return;
@@ -655,7 +655,7 @@ void Connector::drawConnector(bool alignOperation)
     //Do not try to draw if no points have been added yet (avoid crash in code bellow)
     if (mPoints.size() > 0)
     {
-        // First prepare connector before the actual reddraw
+        // First prepare connector before the actual redraw
 //        // If broken nothing special should happen
 //        if (isBroken())
 //        {
@@ -1057,7 +1057,7 @@ bool Connector::isFirstAndLastDiagonal()
 }
 
 
-//! @brief Uppdates the appearance of the connector (setting its type and line endings)
+//! @brief Updates the appearance of the connector (setting its type and line endings)
 void Connector::determineAppearance()
 {
     if (isBroken())
@@ -1119,7 +1119,7 @@ void Connector::determineAppearance()
     this->setPassive();
 }
 
-//! @brief Redraws the connector after redetermining what appearanche to use
+//! @brief Redraws the connector after redetermining what appearance to use
 void Connector::refreshConnectorAppearance()
 {
     determineAppearance();
@@ -1201,7 +1201,7 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     // Setup geometries
-    //! @todo maybe we should clear this allways and set up new, (this function is "loading" a new appearance)
+    //! @todo maybe we should clear this always and set up new, (this function is "loading" a new appearance)
     for(int i=0; i < mPoints.size()-1; ++i)
     {
         if(rGeometries.empty() || rGeometries.size() < mPoints.size()-1)
@@ -1228,7 +1228,7 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
     updateStartEndPositions();
 }
 
-//! @brief Helpfunction to add linesegment to connector
+//! @brief Helpfunction to add line segment to connector
 void Connector::addLine(ConnectorLine *pLine)
 {
     mpLines.push_back(pLine);

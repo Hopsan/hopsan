@@ -18,7 +18,7 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-01-03
 //!
-//! @brief Contains a class for manimulation of Container properties
+//! @brief Contains a class for manipulation of Container properties
 //!
 //$Id$
 
@@ -34,7 +34,7 @@
 //Forward Declaration
 class ContainerPort;
 
-//! @todo We have three different properties dialog with basically the same "style", maybe we could have a class hierarky, no big dela right now though
+//! @todo We have three different properties dialog with basically the same "style", maybe we could have a class hierarchy, no big deal right now though
 class ContainerPortPropertiesDialog : public ModelObjectPropertiesDialog
 {
     Q_OBJECT

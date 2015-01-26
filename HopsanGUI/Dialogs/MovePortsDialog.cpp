@@ -18,7 +18,7 @@
 #include <algorithm>
 
 //! @brief Constructor for the move port dialog
-//! @param[in] pComponentAppearance Pointer to the component appearance data of the compoennt which has the ports
+//! @param[in] pComponentAppearance Pointer to the component appearance data of the component which has the ports
 //! @param[in] gfxType USER or ISO graphics for the port
 //! @param[in] parent Pointer to the parent widget
 MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, const ModelObjectAppearance *pLibraryComponentAppearance,
@@ -239,7 +239,7 @@ bool MovePortsDialog::okButtonPressed()
             it.value().mEnabled = ports[i]->getPortAppearance().mEnabled;
             it.value().mPoseModified = ports[i]->getPortAppearance().mPoseModified;
         }
-        //! @todo enabled and autoplaced are set emediately so even if you select cancle they will be set
+        //! @todo enabled and autoplaced are set immediately so even if you select cancel they will be set
     }
 
     emit finished();
@@ -254,7 +254,7 @@ bool MovePortsDialog::cancelButtonPressed()
 }
 
 
-//! @brief Constructor for the port that can be draged around
+//! @brief Constructor for the port that can be dragged around
 //! @param[in] appearance Pointer to the port appearance data of the port that should be used
 //! @param[in] name Name of the port
 //! @param[in] parentComponent Pointer to the parent component on which the port is placed on

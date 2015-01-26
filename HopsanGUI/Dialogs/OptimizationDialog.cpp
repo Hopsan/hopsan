@@ -848,7 +848,7 @@ void OptimizationDialog::accept()
 }
 
 
-//! @brief Slot that ahndles reject event (clicking "Cancel" button)
+//! @brief Slot that handles reject event (clicking "Cancel" button)
 void OptimizationDialog::reject()
 {
     //! @todo Duplicated code with accept() function

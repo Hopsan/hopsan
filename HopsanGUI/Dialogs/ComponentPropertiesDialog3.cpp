@@ -181,7 +181,7 @@ bool VariableTableWidget::setAliasName(const int row)
     }
 
     QString alias = item(row,VariableTableWidget::Alias)->text();
-    //! @todo since alias=empty means unregister we can not skip it, but there should be some check if a variable has changed, so that we do not need to go thourgh set for all variables every freeking time
+    //! @todo since alias=empty means unregister we can not skip it, but there should be some check if a variable has changed, so that we do not need to go through set for all variables every freaking time
     QString name = item(row,VariableTableWidget::Name)->toolTip();
     QStringList parts = name.split("#");
     if (parts.size() == 2)
@@ -427,7 +427,7 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     mpSourceCodeTextEdit->setText(code);
     if(rFilePath.endsWith(".hpp"))
     {
-        //! @todo who own and who deleats
+        //! @todo who own and who deletes
         CppHighlighter *pHighLighter = new CppHighlighter(mpSourceCodeTextEdit->document());
         Q_UNUSED(pHighLighter);
     }
@@ -528,8 +528,8 @@ void ComponentPropertiesDialog3::createEditStuff()
 
     setLayout(pMainLayout);
 
-    // Avoid a dialog that is higher than the availible space
-    //! @todo this prevents fullscreen mode ,maybe limit should be fullscrean height
+    // Avoid a dialog that is higher than the available space
+    //! @todo this prevents fullscreen mode ,maybe limit should be fullscreen height
     int maxHeight = qApp->desktop()->screenGeometry().height()-100;
     this->setMaximumHeight(maxHeight);
 }
@@ -630,7 +630,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         ++r;
     }
 
-    // Write remaning port variables
+    // Write remaining port variables
     QString currPortName;
     for (int i=0; i<variameters.size(); ++i)
     {
@@ -707,7 +707,7 @@ bool VariableTableWidget::setStartValues()
             continue;
         }
 
-        // If startvalue is empty (disabled, then we should not atempt to change it)
+        // If startvalue is empty (disabled, then we should not attempt to change it)
         bool isDisabled = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->isValueDisabled();
         if (isDisabled)
         {
@@ -752,8 +752,8 @@ bool VariableTableWidget::setStartValues()
             value = newCustomUnitScale.invRescale(value);
         }
 
-        // Get the old value to see if a changed has occured
-        // We also check the unit scale as that may have changeed to even if the value (in orgiginal unit) is the same
+        // Get the old value to see if a change has occurred
+        // We also check the unit scale as that may have changed to even if the value (in original unit) is the same
         QString oldValue = mpModelObject->getParameterValue(name);
         bool setNewValueSucess=false;
         if ((oldValue != value) || (previousUnitScale != newCustomUnitScale))
@@ -907,7 +907,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     QTableWidgetItem *pItem;
     insertRow(row);
 
-    //! @todo maybe store the variamter data objects localy, and check for hiden info there, would also make it possible to check for changes without asking core all of the time /Peter
+    //! @todo maybe store the variameter data objects locally, and check for hidden info there, would also make it possible to check for changes without asking core all of the time /Peter
 
     if (variametertype == Constant)
     {
@@ -964,7 +964,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     // Set the value field
     ParameterValueSelectionWidget *pValueWidget = new ParameterValueSelectionWidget(rData, variametertype, mpModelObject, this);
     this->setIndexWidget(model()->index(row,Value), pValueWidget);
-    // Trigger signal to unit selector if syspar entered to disable the unit scrol box
+    // Trigger signal to unit selector if syspar entered to disable the unit scroll box
     pValueWidget->checkIfSysParEntered();
 
     // Create the custom plot unit display and selection button
@@ -1262,7 +1262,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
     mVariameterType = type;
     mVariablePortName = rData.mPortName;
 
-    //! @todo maybe store the variamter data objects localy, and check for hiden info there, would also make it possible to check for changes without asking core all of the time /Peter
+    //! @todo maybe store the variameter data objects locally, and check for hidden info there, would also make it possible to check for changes without asking core all of the time /Peter
     if (rData.mPortName.isEmpty())
     {
         mVariablePortDataName = rData.mName;
@@ -1554,7 +1554,7 @@ void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitScale &rUnitSca
         QString valS = mpValueEdit->text();
         if (isOK)
         {
-            // If we alreday have a custom scale then unconvert first
+            // If we already have a custom scale then unconvert first
             if (!mCustomScale.isEmpty())
             {
                 //val = val / mCustomScale.toDouble();
@@ -1681,7 +1681,7 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
     mDefaultIndex = -1;
 
     QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mDefaultUnit);
-    //! @todo if more then one is returned both will be shown, ther could be mixups, dont know how to handle that
+    //! @todo if more then one is returned both will be shown, there could be mixups, don't know how to handle that
 
     //! @todo this may show the wrong set of units
     if (pqs.size() > 1)

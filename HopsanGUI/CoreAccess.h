@@ -30,7 +30,7 @@
 #include <QPair>
 #include <QStringList>
 
-//Forward declrations of HopsanGUI classes
+//Forward declarations of HopsanGUI classes
 class LibraryWidget;
 class SystemContainer;
 
@@ -154,7 +154,7 @@ public:
 
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
     ~CoreSystemAccess();
-    void deleteRootSystemPtr(); //!< @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
+    void deleteRootSystemPtr(); //!< @todo This is very strange, needed because core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
 
     // Name and type functions
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
@@ -210,7 +210,7 @@ public:
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);
 
-    // Simualtion functions
+    // Simulation functions
     bool isSimulationOk();
     bool initialize(double mStartTime, double mFinishTime, int nSamples=2048);
     void simulate(double mStartTime, double mFinishTime, int nThreads=-1, bool modelHasNotChanged=false);

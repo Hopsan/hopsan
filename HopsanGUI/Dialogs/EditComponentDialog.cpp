@@ -9,7 +9,7 @@
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
  Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- rediibuting any part of this file is prohibited without explicit
+ redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
@@ -345,7 +345,7 @@ void CreateComponentWizard::updatePage(int i)
             ++portId;
         }
     }
-    else if(i == 2)     //Parameteres page
+    else if(i == 2)     //Parameters page
     {
         while(mParameterNameLineEditPtrs.size() > mpNumberOfParametersSpinBox->value())
         {
@@ -559,7 +559,7 @@ void CreateComponentWizard::generate()
         output.append("        return new "+typeName+"();\n");
         output.append("    }\n\n");
 
-        //Contructor
+        //Constructor
         output.append("    void configure()\n");
         output.append("    {\n");
 

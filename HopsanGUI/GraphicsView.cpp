@@ -44,7 +44,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "LibraryHandler.h"
 
-//Maybe we can remove these to when some cleanup has happend in the code later on (maybe even GUIPort.h)
+//Maybe we can remove these to when some cleanup has happened in the code later on (maybe even GUIPort.h)
 #include "GUIPort.h"
 #include "Widgets/LibraryWidget.h"
 
@@ -276,7 +276,7 @@ void GraphicsView::setZoomFactor(double zoomFactor)
 }
 
 
-//! @brief Returns the current soom factor
+//! @brief Returns the current zoom factor
 double GraphicsView::getZoomFactor()
 {
     return mZoomFactor;
@@ -712,7 +712,7 @@ void GraphicsView::exportToPDF()
         QFileInfo file(fileName);
         gpConfig->setModelGfxDir(file.absolutePath());
 
-        //Here we set A0, Landscape and Fullpage among other things to make sure that components get large enough to be treeted as vector graphics
+        //Here we set A0, Landscape and Fullpage among other things to make sure that components get large enough to be treated as vector graphics
         //Some bug or "feature" makes small objects be converted to bitmaps (ugly)
         //! @todo Try to find out why this happens (se comment above)
         QPrinter *printer = new QPrinter(QPrinter::HighResolution);
@@ -894,7 +894,7 @@ void AnimatedGraphicsView::setZoomFactor(double zoomFactor)
 }
 
 
-//! @brief Returns the current soom factor
+//! @brief Returns the current zoom factor
 double AnimatedGraphicsView::getZoomFactor()
 {
     return mZoomFactor;

@@ -456,12 +456,12 @@ hopsan::ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
 
 CoreSystemAccess::~CoreSystemAccess()
 {
-    //Dont remove the mpCoreComponentSystem here you must do that manually until we have found a samrter way to do all of this
+    //Dont remove the mpCoreComponentSystem here you must do that manually until we have found a smarter way to do all of this
     //see deleteRootSystemPtr()
     //delete mpCoreComponentSystem;
 }
 
-//! @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
+//! @todo This is very strange, needed because core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
 void CoreSystemAccess::deleteRootSystemPtr()
 {
     delete mpCoreComponentSystem;
@@ -1007,7 +1007,7 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
             rpTimeVector = pPort->getLogTimeVectorPtr();
 
             // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
-            // This is usefull when a simulation has been aborted
+            // This is useful when a simulation has been aborted
             size_t nElements;
             if (pPort->getNodePtr())
             {
@@ -1212,7 +1212,7 @@ bool CoreSystemAccess::setSystemParameterValue(QString name, QString value, bool
 }
 
 //! @brief Get the value of a parameter in the system
-//! @returns The aprameter value as a QString or "" if parameter not found
+//! @returns The parameter value as a QString or "" if parameter not found
 QString CoreSystemAccess::getSystemParameterValue(const QString name)
 {
     hopsan::HString value;

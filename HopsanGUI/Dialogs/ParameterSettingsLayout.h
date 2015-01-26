@@ -33,7 +33,7 @@
 #include <QCheckBox>
 
 
-#include "CoreAccess.h" //!< @todo mayeb should have parameter stuff in h file of its own so that we dont need to include coreaccess whenever we want to work with parameters
+#include "CoreAccess.h" //!< @todo maybe should have parameter stuff in h file of its own so that we don't need to include core access whenever we want to work with parameters
 
 class ModelObject;
 

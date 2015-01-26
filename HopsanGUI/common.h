@@ -61,7 +61,7 @@
 #define LIBPREFIX "lib"
 #endif
 
-//! @todo all of these dont have to be common
+//! @todo all of these don't have to be common
 //Enums
 enum SelectionStatusEnumT {Deselected, Selected};
 enum NameVisibilityEnumT {NameVisible, NameNotVisible, UseDefault};

@@ -9,7 +9,7 @@
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
  Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- rediibuting any part of this file is prohibited without explicit
+ redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 

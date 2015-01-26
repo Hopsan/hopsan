@@ -18,7 +18,7 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-11-24
 //!
-//! @brief Contains a class for manimulation of Container properties
+//! @brief Contains a class for manipulation of Container properties
 //!
 //$Id$
 

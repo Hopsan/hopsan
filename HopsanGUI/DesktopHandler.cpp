@@ -172,13 +172,13 @@ void DesktopHandler::setupPaths()
         QDir().mkpath(getBackupPath());
     }
 
-    // Make sure model folder exists, create it if not, if create not sucessfull use dev dir
+    // Make sure model folder exists, create it if not, if create not sucessful use dev dir
     if (!QDir().exists(getModelsPath()))
     {
         QDir().mkpath(getModelsPath());
     }
 
-    // Select which scripts path to use, create it if not, if create not sucessfull use dev dir
+    // Select which scripts path to use, create it if not, if create not sucessful use dev dir
     //! @todo problem in linux if scripts must be changed, as they  are not installed to user home
     if (!QDir().exists(getScriptsPath()))
     {

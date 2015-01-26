@@ -212,7 +212,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
                     if(!cafRoot.isNull())
                     {
                         //Read appearance data from the caf xml file
-                        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+                        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file, also not hardcode tagnames
                         mModelObjectAppearance.setBasePath(QFileInfo(cafFile).absolutePath()+"/");
                         mModelObjectAppearance.readFromDomElement(xmlModelObjectAppearance);
                         mModelObjectAppearance.setTypeName(MODELICATYPENAME);
@@ -321,7 +321,7 @@ QString Component::getHmfTagName() const
 
 
 //! @brief Decide if component should be visible or not
-//! @details We do not want to run the Qt setVisble function because the item should not be hidden, only the visual parts should be hidden, mouse evns should still be processed
+//! @details We do not want to run the Qt setVisble function because the item should not be hidden, only the visual parts should be hidden, mouse events should still be processed
 //! @param[in] visible True or False
 void Component::setVisible(bool visible)
 {
@@ -333,7 +333,7 @@ void Component::setVisible(bool visible)
     {
         mpNameText->setVisible(false);
     }
-    // But when we turn it back on, it should only become visible if it is supposed to be vissible
+    // But when we turn it back on, it should only become visible if it is supposed to be visible
     else if (mNameTextVisible)
     {
         mpNameText->setVisible(true);
@@ -418,7 +418,7 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     if( !mpParentContainerObject->getLogDataHandler()->isEmpty() && !mpParentContainerObject->isCreatingConnector() &&
             (getPort("in")->isConnected() || getPort("in_right")->isConnected()) )
     {
-        // If we dont have valid plotwindow then create one
+        // If we don't have valid plotwindow then create one
         if (mpPlotWindow.isNull())
         {
             mpPlotWindow = gpPlotHandler->createNewUniquePlotWindow(getName());

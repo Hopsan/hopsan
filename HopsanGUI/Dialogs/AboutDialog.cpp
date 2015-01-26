@@ -90,7 +90,7 @@ AboutDialog::AboutDialog(QWidget *parent)
             .arg(getHopsanCoreCompiler(),       HOPSANCOMPILEDWITH)
             .arg(getHopsanCoreBuildTime(),      getHopsanGUIBuildTime())
             .arg(QT_VERSION_STR));
-            //! @todo include debug or relase info here as well
+            //! @todo include debug or release info here as well
 
     QLabel *pAuthorsHeading = new QLabel();
     pAuthorsHeading->setText(tr("Main Authors:"));
@@ -128,7 +128,7 @@ AboutDialog::AboutDialog(QWidget *parent)
 //    pLicenseHeading->setAlignment(Qt::AlignCenter);
 
 //    QLabel *pLicenseText = new QLabel();
-//    pLicenseText->setText("Hopsan is a free software package developed at the Divistion of Fluid and Mechatronic Systems (Flumes). It must not be sold or redestributed without permision from Flumes.\n");
+//    pLicenseText->setText("Hopsan is a free software package developed at the Division of Fluid and Mechatronic Systems (Flumes). It must not be sold or redistributed without permission from Flumes.\n");
 //    pLicenseText->setWordWrap(true);
 //    pLicenseText->setAlignment(Qt::AlignJustify);
 

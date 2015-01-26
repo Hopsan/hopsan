@@ -32,7 +32,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "MessageHandler.h"
 #include "Widgets/PyDockWidget.h"
-//! @todo this config object should not need to include all those other things, rather tehy should prepare their data and sent it into the config object, or something similar
+//! @todo this config object should not need to include all those other things, rather they should prepare their data and sent it into the config object, or something similar
 
 //Qt includes
 #include <QDomElement>

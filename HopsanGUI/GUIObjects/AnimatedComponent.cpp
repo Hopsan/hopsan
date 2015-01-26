@@ -79,7 +79,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
             //{
                 mpData->append(QList<QVector<double> >());
                 mpNodeDataPtrs->append(QList<double*>());
-                //! @todo generation info should be some kind of "propertie" for alla of the animation code sp that if you change it it should change everywhere, to make it possible to animate different generations
+                //! @todo generation info should be some kind of "property" for all of the animation code so that if you change it, it should change everywhere, to make it possible to animate different generations
                 int generation = mpAnimationWidget->mpContainer->getLogDataHandler()->getCurrentGeneration();
                 QString componentName = unanimatedComponent->getName();
                 for(int j=0; j<mpAnimationData->movables[i].dataPorts.size(); ++j)
@@ -848,7 +848,7 @@ int AnimatedIcon::type() const
 
 QString AnimatedIcon::getHmfTagName() const
 {
-    // These objeects are not present in hmf files, so nothing
+    // These objects are not present in hmf files, so nothing
     return QString();
 }
 
@@ -1065,14 +1065,14 @@ void AnimatedIcon::flipHorizontal(UndoStatusEnumT undoSettings)
     //Remember center pos
     QPointF cpos = this->getCenterPos();
     //Transform
-    this->setTransform(transf,true); // transformationorigin point seems to have no effect here for some reason
+    this->setTransform(transf,true); // transformation origin point seems to have no effect here for some reason
     //Reset to center pos (as transform origin point was ignored)
     this->setCenterPos(cpos);
 
     // If the icon is (not rotating) its position will be refreshed
     //refreshIconPosition();
 
-    // Toggel isFlipped bool
+    // Toggle isFlipped bool
     if(mIsFlipped)
     {
         mIsFlipped = false;

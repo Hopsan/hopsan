@@ -44,7 +44,7 @@ CopyStack::CopyStack()
 }
 
 
-//! @brief Clears all contentse in the copy stack
+//! @brief Clears all contents in the copy stack
 void CopyStack::clear()
 {
     mCopyRoot.clear();

@@ -80,10 +80,10 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, QWid
 //! @param [in,out] parameterDescription The description of the parameter/startvalue
 //! @returns true if it is a startvalue, otherwise false
 //!
-//! This method is used to determine whether or not a parameter should be interpretted
+//! This method is used to determine whether or not a parameter should be interpreted
 //! as a start value by the GUI. In HOPSANcore there is no difference between parameters
-//! and start values. The start values are registred and stored in the same container.
-//! But, a start value is taged by "startvalue:" in the description.
+//! and start values. The start values are registered and stored in the same container.
+//! But, a start value is tagged by "startvalue:" in the description.
 bool ComponentPropertiesDialog::interpretedAsStartValue(QString &parameterDescription)
 {    
     QString startValueString = "startvalue:";
@@ -161,7 +161,7 @@ void ComponentPropertiesDialog::createEditStuff()
     //Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
     int descriptionSize=30;
     int nameSize = 10;
-    //Paramters
+    //Parameters
     for(int i=0; i<mvParameterLayout.size(); ++i)
     {
         descriptionSize = std::max(descriptionSize, mvParameterLayout.at(i)->mDescriptionLabel.width());
@@ -173,7 +173,7 @@ void ComponentPropertiesDialog::createEditStuff()
         descriptionSize = std::max(descriptionSize, mvStartValueLayout.at(i)->mDescriptionLabel.width());
         nameSize = std::max(nameSize, mvStartValueLayout.at(i)->mNameLabel.width());
     }
-    //Paramters
+    //Parameters
     for(int i=0; i<mvParameterLayout.size(); ++i)
     {
         mvParameterLayout.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin

@@ -76,7 +76,7 @@
 
 
 
-//! @brief Construtor for container objects.
+//! @brief Constructor for container objects.
 //! @param position Initial position where container object is to be placed in its parent container
 //! @param rotation Initial rotation of the object
 //! @param pAppearanceData Pointer to the appearance data object
@@ -100,7 +100,7 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
     //Create the scene
     mpScene = new QGraphicsScene(this);
 
-    //Create the undastack
+    //Create the undostack
     mpUndoStack = new UndoStack(this);
     mpUndoStack->clear();
 
@@ -125,14 +125,14 @@ bool ContainerObject::isTopLevelContainer() const
     return (mpParentContainerObject==0);
 }
 
-//! @brief Notify the parent project tab that changes has occured
+//! @brief Notify the parent project tab that changes has occurred
 void ContainerObject::hasChanged()
 {
     mpModelWidget->hasChanged();
 }
 
 //! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
-//! This is useful when we are swithching what continer we want to the buttons to trigger actions in
+//! This is useful when we are switching what container we want the buttons to trigger actions in
 void ContainerObject::makeMainWindowConnectionsAndRefresh()
 {
     connect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
@@ -174,7 +174,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
-//! This is useful when we are swithching what continer we want to the buttons to trigger actions in
+//! This is useful when we are switching what container we want the buttons to trigger actions in
 void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 {
     // Update Systemparameter widget to have no contents
@@ -205,7 +205,7 @@ void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 
 //! @brief A helpfunction that determines on which edge an external port should be placed based on its internal position
 //! @param[in] center The center point of all objects to be compared with
-//! @param[in] pt The position of this object, used to determine the center relative posistion
+//! @param[in] pt The position of this object, used to determine the center relative position
 //! @returns An enum that indicates on which side the port should be placed
 ContainerObject::ContainerEdgeEnumT ContainerObject::findPortEdge(QPointF center, QPointF pt)
 {
@@ -241,14 +241,14 @@ ContainerObject::ContainerEdgeEnumT ContainerObject::findPortEdge(QPointF center
     }
 }
 
-//! @brief Refreshes the appearance and postion of all external ports
+//! @brief Refreshes the appearance and position of all external ports
 void ContainerObject::refreshExternalPortsAppearanceAndPosition()
 {
     //refresh the external port poses
     ModelObjectMapT::iterator moit;
     double val;
 
-    //Set the initial values to be overwriten by the if bellow
+    //Set the initial values to be overwritten by the if bellow
     double xMin=std::numeric_limits<double>::max(), xMax=-xMin, yMin=xMin, yMax=xMax;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
@@ -264,7 +264,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             yMax = std::max(yMax,val);
         //}
     }
-    //! @todo Find out if it is possible to ask the scene or view for this information instead of calulating it ourselves
+    //! @todo Find out if it is possible to ask the scene or view for this information instead of calculating it ourselves
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
     //qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
 
@@ -279,7 +279,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             ContainerEdgeEnumT edge = findPortEdge(center, moit.value()->getCenterPos());
             //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
-            //Make sure we dont screw up in the code and forget to rename or create external ports on internal rename or create
+            //Make sure we don't screw up in the code and forget to rename or create external ports on internal rename or create
             assert(this->getPort(moit.value()->getName()) != 0);
 
             //We insert into maps for automatic sorting based on x or y position as key value
@@ -367,7 +367,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     redrawConnectors();
 }
 
-//! @brief Overloaded refreshAppearance for containers, to make sure that port positions are updeted if graphics size is changed
+//! @brief Overloaded refreshAppearance for containers, to make sure that port positions are updated if graphics size is changed
 void ContainerObject::refreshAppearance()
 {
     ModelObject::refreshAppearance();
@@ -376,7 +376,7 @@ void ContainerObject::refreshAppearance()
 
 //! @brief Use this function to calculate the placement of the ports on a subsystem icon.
 //! @param[in] w width of the subsystem icon
-//! @param[in] h heigth of the subsystem icon
+//! @param[in] h height of the subsystem icon
 //! @param[in] angle the angle in radians of the line between center and the actual port
 //! @param[out] x the new calculated horizontal placement for the port
 //! @param[out] y the new calculated vertical placement for the port
@@ -421,7 +421,7 @@ CoreSystemAccess *ContainerObject::getCoreSystemAccessPtr()
 }
 
 
-//! @brief Retunrs a pointer to the contained scene
+//! @brief Returns a pointer to the contained scene
 QGraphicsScene *ContainerObject::getContainedScenePtr()
 {
     return mpScene;
@@ -430,7 +430,7 @@ QGraphicsScene *ContainerObject::getContainedScenePtr()
 
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
-//! @todo maybe defualt create that info if it is missing
+//! @todo maybe default create that info if it is missing
 //! @todo massive duplicate implementation with the one in modelobject
 Port *ContainerObject::createRefreshExternalPort(QString portName)
 {
@@ -449,7 +449,7 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
     {
         qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
 
-        //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
+        //! @todo to minimize search time make a get porttype  and nodetype function, we need to search twice now
         QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
         QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
@@ -475,12 +475,12 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
     else
     {
 
-        // The external port already seems to exist, lets update it incase something has changed
-        //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
+        // The external port already seems to exist, lets update it in case something has changed
+        //! @todo Maybe need to have a refresh port appearance function, don't really know if this will ever be used though, will fix when it becomes necessary
         pPort->refreshPortGraphics();
 
         // In this case of container object, also refresh any attached connectors, if types have changed
-        //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
+        //! @todo we always update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
         QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
         for (int i=0; i<connectors.size(); ++i)
         {
@@ -496,7 +496,7 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
 
 
 
-//! @brief Reanmes an external GUIPort
+//! @brief Renames an external GUIPort
 //! @param[in] oldName The name to be replaced
 //! @param[in] newName The new name
 //! This function assumes that oldName exist and that newName is correct, no error checking is done
@@ -543,7 +543,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
         if (!hmfRoot.isNull())
         {
             //! @todo Check version numbers
-            //! @todo check if we could load else give error message and dont attempt to load
+            //! @todo check if we could load else give error message and don't attempt to load
             QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
             pObj->setModelFileInfo(file); //Remember info about the file from which the data was loaded
             QFileInfo fileInfo(file);
@@ -705,7 +705,7 @@ void ContainerObject::deleteWidget(const int id, UndoStatusEnumT undoSettings)
 
 
 //! @brief Delete ModelObject with specified name
-//! @param rObjectName is the name of the componenet to delete
+//! @param rObjectName is the name of the component to delete
 void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings)
 {
     ModelObjectMapT::iterator it = mModelObjectMap.find(rObjectName);
@@ -726,7 +726,7 @@ void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEn
             this->mpUndoStack->registerDeletedObject(pModelObject);
         }
 
-        //! @todo maybe this should be handled somwhere else (not sure maybe this is the best place)
+        //! @todo maybe this should be handled somewhere else (not sure maybe this is the best place)
         if (pModelObject->type() == ContainerPortType )
         {
             this->removeExternalPort(pModelObject->getName());
@@ -743,7 +743,7 @@ void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEn
         gpMessageHandler->addErrorMessage("Could not delete object with name " + rObjectName + ", object not found");
     }
     emit checkMessages();
-    mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo maybe handle by signal, and maybe have a bool in view that tells it to hold redraw (usefull on multiple deletes like when closing a model)
+    mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo maybe handle by signal, and maybe have a bool in view that tells it to hold redraw (useful on multiple deletes like when closing a model)
 }
 
 
@@ -803,7 +803,7 @@ bool ContainerObject::hasModelObject(const QString &rName) const
 
 //! @brief Takes ownership of supplied objects, widgets and connectors
 //!
-//! This method assumes that the previous owner have forgotten all about these objects, it however sets iself as new Qtparent, parentContainer and scene, overwriting the old values
+//! This method assumes that the previous owner have forgotten all about these objects, it however sets itself as new Qtparent, parentContainer and scene, overwriting the old values
 void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QList<Widget*> &rWidgetList)
 {
     for (int i=0; i<rModelObjectList.size(); ++i)
@@ -814,7 +814,7 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
             this->getContainedScenePtr()->addItem(rModelObjectList[i]);
             rModelObjectList[i]->setParentContainerObject(this);
             mModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
-            //! @todo what if name already taken, dont care for now as we shal only move into groups when they are created
+            //! @todo what if name already taken, don't care for now as we shall only move into groups when they are created
 
             //rModelObjectList[i]->refreshParentContainerSigSlotConnections();
         }
@@ -830,7 +830,7 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
         this->getContainedScenePtr()->addItem(rWidgetList[i]);
         rWidgetList[i]->setParentContainerObject(this);
         mWidgetMap.insert(rWidgetList[i]->getWidgetIndex(), rWidgetList[i]);
-        //! @todo what if idx already taken, dont care for now as we shal only move into groups when they are created
+        //! @todo what if idx already taken, don't care for now as we shall only move into groups when they are created
     }
 
     QList<Connector*> transitConnectors;
@@ -861,7 +861,7 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
                 {
                     transitConnectors.append(connectorPtrs[i]);
 
-                    //! @todo for now we disconnect the transit connection as we are noy yet capable of recreating the external connection
+                    //! @todo for now we disconnect the transit connection as we are not yet capable of recreating the external connection
                     this->getCoreSystemAccessPtr()->disconnect(connectorPtrs[i]->getStartComponentName(),
                                                                connectorPtrs[i]->getStartPortName(),
                                                                connectorPtrs[i]->getEndComponentName(),
@@ -916,16 +916,16 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
         transitConnectors[i]->setParentContainer(this);
         mSubConnectorList.append(transitConnectors[i]);
 
-        //! @todo instead of having set startport and set end port, (we can keep them also maybe), we should have a function that sets startport if no port is set and end port if start port already set, dont know if good idea but we can keep it in mind, then we would not have to do stuff like bellow. (maybe we could call that function "connect")
+        //! @todo instead of having set startport and set end port, (we can keep them also maybe), we should have a function that sets startport if no port is set and end port if start port already set, don't know if good idea but we can keep it in mind, then we would not have to do stuff like bellow. (maybe we could call that function "connect")
         if (endPortIsTransitPort)
         {
-            //Make new port and connector know about eachother
+            //Make new port and connector know about each other
             transitConnectors[i]->setEndPort(pTransPort->getPortListPtrs().at(0));
             transitConnectors[i]->getEndPort()->getParentModelObject()->rememberConnector(transitConnectors[i]);
         }
         else
         {
-            //Make new port and connector know about eachother
+            //Make new port and connector know about each other
             transitConnectors[i]->setStartPort(pTransPort->getPortListPtrs().at(0));
             transitConnectors[i]->getStartPort()->getParentModelObject()->rememberConnector(transitConnectors[i]);
         }
@@ -1131,7 +1131,7 @@ void ContainerObject::disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port 
 
     // The real port is the first so we skip it (begin at index 1), we cant disconnect from ourself
     // The first connection to the group port does not have an actual core connection
-    // The GUI disconect will come later in the function calling this one
+    // The GUI disconnect will come later in the function calling this one
     // Disconnect all secondary connections
     for (int i=1; i<connPortsVect.size(); ++i)
     {
@@ -1235,7 +1235,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                         pStartRealPort = pStartP->getRealPort();
                         pEndRealPort = pEndP;
 
-                        // Determine if the port beeing disconnected is the actual REAL port, that is, the first port connected to the group port
+                        // Determine if the port being disconnected is the actual REAL port, that is, the first port connected to the group port
                         if (pStartRealPort == pEndRealPort)
                         {
                             disconStartRealPort = true;
@@ -1247,7 +1247,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                          pStartRealPort = pStartP;
                          pEndRealPort = pEndP->getRealPort();
 
-                         // Determine if the port beeing disconnected is the actual REAL port, that is, the first port connected to the group port
+                         // Determine if the port being disconnected is the actual REAL port, that is, the first port connected to the group port
                          if (pStartRealPort == pEndRealPort)
                          {
                              disconEndRealPort = true;
@@ -1263,7 +1263,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                          assert(false);
                      }
 
-                     // If one or both real ports are beeing disconnected
+                     // If one or both real ports are being disconnected
                      if (disconStartRealPort || disconEndRealPort)
                      {
                          if (disconStartRealPort && disconEndRealPort)
@@ -1340,7 +1340,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
 //! @brief Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
-//! @return A pointer to the created connector, 0 if failed, or connector unfinnished
+//! @return A pointer to the created connector, 0 if failed, or connector unfinished
 Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSettings)
 {
     // When clicking end port (finish creation of connector)
@@ -1530,7 +1530,7 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
         createConnector(pPort1, undoSettings);
         Connector* pConn = createConnector(pPort2, undoSettings);
 
-        // If we failed we still want to finnish and ad this connector (if success it was already added)
+        // If we failed we still want to finish and add this connector (if success it was already added)
         if (!pConn->isConnected())
         {
             mpTempConnector->finishCreation();
@@ -2005,10 +2005,10 @@ void ContainerObject::groupSelected(QPointF pt)
     QList<ModelObject*> modelObjects = mSelectedModelObjectsList;
     QList<Widget*> widgets = mSelectedWidgetsList;
 
-    //"Detach" the selected objects from this container, basically by removing pointers from the subobject storage maps, make this container forget aboout these objects
+    //"Detach" the selected objects from this container, basically by removing pointers from the subobject storage maps, make this container forget about these objects
     for (int i=0; i<modelObjects.size(); ++i)
     {
-        //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly, for now we just ignore them (maybe we should allways ignore them when grouping)
+        //! @todo if a containerport is selected we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly, for now we just ignore them (maybe we should always ignore them when grouping)
         if (modelObjects[i]->type() != ContainerPortType)
         {
             // Maybe take ownership should handle this
@@ -2033,7 +2033,7 @@ void ContainerObject::groupSelected(QPointF pt)
         ModelObject* pObj =  this->addModelObject(HOPSANGUIGROUPTYPENAME, pt.toPoint(),0);
         ContainerObject* pContainer =  qobject_cast<ContainerObject*>(pObj);
 
-        //If dyncast sucessfull (it should allways be) then let new group take ownership of objects
+        //If dyncast successful (it should always be) then let new group take ownership of objects
         if (pContainer != 0)
         {
             pContainer->takeOwnershipOf(modelObjects, widgets);
@@ -2486,7 +2486,7 @@ void ContainerObject::rememberSubConnector(Connector *pConnector)
 //! @brief This is a helpfunction that can be used to make a container "forget" about a certain connector
 //!
 //! It does not delete the connector and connected components dos not forget about it
-//! use only when transfering ownership of objects to an other container
+//! use only when transferring ownership of objects to an other container
 void ContainerObject::forgetSubConnector(Connector *pConnector)
 {
     mSubConnectorList.removeAll(pConnector);
@@ -2529,7 +2529,7 @@ void ContainerObject::cancelCreatingConnector()
 }
 
 
-//! @brief Swiches mode of connector being created to or from diagonal mode.
+//! @brief Switches mode of connector being created to or from diagonal mode.
 //! @param diagonal Tells whether or not connector shall be diagonal or not
 void ContainerObject::makeConnectorDiagonal(bool diagonal)
 {
@@ -2559,7 +2559,7 @@ void ContainerObject::addOneConnectorLine(QPointF pos)
 }
 
 
-//! @brief Removse one line from connector being created.
+//! @brief Removes one line from connector being created.
 //! @param pos Position to redraw connector to after removing the line
 void ContainerObject::removeOneConnectorLine(QPointF pos)
 {
@@ -2725,7 +2725,7 @@ void ContainerObject::deselectSelectedNameText()
 
 
 //! @brief Defines the right click menu for container objects.
-//! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
+//! @todo Maybe should try to reduce multiple copies of same functions with other GUIObjects
 void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
@@ -2773,7 +2773,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 if (!hmfRoot.isNull())
                 {
                     //! @todo Check version numbers
-                    //! @todo check if we could load else give error message and dont attempt to load
+                    //! @todo check if we could load else give error message and don't attempt to load
                     QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
                     this->setModelFileInfo(file); //Remember info about the file from which the data was loaded
                     QFileInfo fileInfo(file);
@@ -2821,7 +2821,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
         }
 
-        //Save the model component hierarcy
+        //Save the model component hierarchy
         this->saveToDomElement(rootElement, FullModel);
 
         //Save to file
@@ -2907,7 +2907,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
         }
 
-        //Save the model component hierarcy
+        //Save the model component hierarchy
         this->saveToDomElement(rootElement, FullModel);
 
         //Save to file
@@ -2929,7 +2929,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QFile::remove(getModelFilePath()+"/"+iconFileName);
     }
 
-    //Dont call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
+    //Don't call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
     //GUIModelObject::contextMenuEvent(event);
     ////QGraphicsItem::contextMenuEvent(event);
 }
@@ -2943,15 +2943,15 @@ void ContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-//! @brief Opens the properites dialog for container objects.
+//! @brief Opens the properties dialog for container objects.
 void ContainerObject::openPropertiesDialog()
 {
     //Do Nothing
 }
 
 
-//! @brief Clears all of the contained objects (and delets them).
-//! This code cant be run in the desturctor as this wold cause wired behaviour in the derived susyem class.
+//! @brief Clears all of the contained objects (and deletes them).
+//! This code cant be run in the destructor as this wold cause wired behaviour in the derived system class.
 //! The core system would be deleted before container clear code is run, that is why we have it as a convenient protected function
 void ContainerObject::clearContents()
 {
@@ -2978,10 +2978,10 @@ void ContainerObject::clearContents()
 }
 
 
-//! @brief Enters a container object and maks the view represent it contents.
+//! @brief Enters a container object and makes the view represent it contents.
 void ContainerObject::enterContainer()
 {
-    // First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
+    // First deselect everything so that buttons pressed in the view are not sent to objects in the previous container
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
     // Show this scene
@@ -3002,7 +3002,7 @@ void ContainerObject::enterContainer()
                                            this->isAncestorOfExternalSubsystem());
 }
 
-//! @brief Exit a container object and maks its the view represent its parents contents.
+//! @brief Exit a container object and make its the view represent its parents contents.
 void ContainerObject::exitContainer()
 {
     this->deselectAll();
@@ -3020,7 +3020,7 @@ void ContainerObject::exitContainer()
     mpParentContainerObject->makeMainWindowConnectionsAndRefresh();
 
     // Refresh external port appearance
-    //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal
+    //! @todo We only need to do this if ports have change, right now we always refresh, don't know if this is a big deal
     this->refreshExternalPortsAppearanceAndPosition();
 }
 

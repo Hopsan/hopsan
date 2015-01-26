@@ -37,7 +37,7 @@ class QProgressBar;
 class QLabel;
 class QLineEdit;
 
-// Hospan forward declaration
+// Hopsan forward declaration
 class ModelWidget;
 class SensitivityAnalysisSettings;
 class SystemContainer;

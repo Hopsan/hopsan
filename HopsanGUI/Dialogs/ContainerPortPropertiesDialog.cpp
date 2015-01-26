@@ -18,7 +18,7 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-01-03
 //!
-//! @brief Contains a class for manimulation of ContainerPort properties
+//! @brief Contains a class for manipulation of ContainerPort properties
 //!
 //$Id$
 

@@ -42,7 +42,7 @@ MultiDataVectorCache::~MultiDataVectorCache()
 
 bool MultiDataVectorCache::addVector(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes)
 {
-    //! @todo maybe have register for how long added data at each start adress was, to prevent destorying data
+    //! @todo maybe have register for how long added data at each start address was, to prevent destroying data
     return appendToCache(rDataVector, rStartByte, rNumBytes);
 }
 
@@ -305,7 +305,7 @@ CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, Share
     mCacheStartByte = 0;
     mCacheNumBytes = 0;
     // This bool is needed so that we can handled non-cached but empty data.
-    // We can not rely on checking size of mDataVector (may be empty but non-cached) or the mCacheNumBytes (will still have a value after moving from cache to mem temporarly)
+    // We can not rely on checking size of mDataVector (may be empty but non-cached) or the mCacheNumBytes (will still have a value after moving from cache to mem temporarily)
     mIsCached = false;
 
     if (pMultiCache)
@@ -554,7 +554,7 @@ bool CachableDataVector::moveToCache()
                 return true;
             }
         }
-        // Else new data is longer, add to cache and update adress and byte length
+        // Else new data is longer, add to cache and update address and byte length
         else if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
         {
             mDataVector.clear();

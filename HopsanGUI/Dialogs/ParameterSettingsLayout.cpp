@@ -58,7 +58,7 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     mUnitLabel.setMaximumWidth(50);
     mUnitLabel.setText(parseVariableUnit(rParameterData.mUnit));
 
-    // Set value line editd
+    // Set value line edit
     mValueLineEdit.setMinimumWidth(100);
     mValueLineEdit.setMaximumWidth(100);
     mValueLineEdit.setText(rParameterData.mValue);
@@ -84,7 +84,7 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
 
             // If the port exist and is connected then show in value editor that value will not be used
             // NOTE! We cant us "isEnabled from core since it will not be reset until a new simulation is run"
-            //! @todo maybe dissable is not best way, you may want to change value without having to dissconnect first.
+            //! @todo maybe disable is not best way, you may want to change value without having to disconnect first.
             if (pPort->isConnected())
             {
                 mValueLineEdit.setEnabled(false);
@@ -94,7 +94,7 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
         addWidget(&mDynamicEnabledCheckBox, 0, 0);
     }
 
-    // Add lables, edits and buttons
+    // Add labels, edits and buttons
     int i=1;
     if(!mDescriptionLabel.text().isEmpty())
     {

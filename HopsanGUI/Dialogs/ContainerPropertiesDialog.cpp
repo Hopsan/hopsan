@@ -18,7 +18,7 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-11-24
 //!
-//! @brief Contains a class for manimulation of Container properties
+//! @brief Contains a class for manipulation of Container properties
 //!
 //$Id$
 
@@ -226,7 +226,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpSettingsLayout->addWidget(mpTimeStepLabel, 5, 0, 1, 1);
         mpSettingsLayout->addWidget(mpTimeStepEdit, 5, 1, 1, 1);
 
-            //Log sampels
+            //Log samples
         mpNumLogSamplesEdit = new QLineEdit(this);
         mpNumLogSamplesEdit->setValidator(new QIntValidator(0, 2000000000, this));
         mpNumLogSamplesEdit->setText(QString("%1").arg(mpContainerObject->getNumberOfLogSamples())); //!< @todo what if group
@@ -427,7 +427,7 @@ void ContainerPropertiesDialog::setValues()
 
     mpContainerObject->setSaveUndo(mpSaveUndoCheckBox->isChecked());
 
-    //Set the icon paths, only update and refresh appearance if a change has occured
+    //Set the icon paths, only update and refresh appearance if a change has occurred
     if ( mpContainerObject->getIconPath(ISOGraphics, Absolute) != mpIsoIconPath->text() )
     {
         mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGraphics, Absolute);
@@ -440,7 +440,7 @@ void ContainerPropertiesDialog::setValues()
     }
 
     //Set scale if they have changed
-    //! @todo maybe use fuzze compare utility function instead (but then we need to include utilites here)
+    //! @todo maybe use fuzzy compare utility function instead (but then we need to include utilities here)
     if ( fabs(mpContainerObject->getAppearanceData()->getIconScale(ISOGraphics) - mpIsoIconScaleEdit->text().toDouble()) > 0.001 )
     {
         mpContainerObject->getAppearanceData()->setIconScale(mpIsoIconScaleEdit->text().toDouble(), ISOGraphics);
