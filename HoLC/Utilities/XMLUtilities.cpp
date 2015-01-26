@@ -39,7 +39,7 @@ QString bool2str(const bool in)
     }
 }
 
-//! @brief Function for loading an XML DOM Documunt from file
+//! @brief Function for loading an XML DOM Document from file
 //! @param[in] rFile The file to load from
 //! @param[in] rDomDocument The DOM Document to load into
 //! @param[in] rootTagName The expected root tag name to extract from the Dom Document
@@ -82,7 +82,7 @@ void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
 }
 
 
-//! @brief Function for adding one initially empty Dom Element to extingd Element
+//! @brief Function for adding one initially empty Dom Element to exiting Element
 //! @param[in] rDomElement The DOM Element to append to
 //! @param[in] element_name The name of the new DOM element
 //! @returns The new sub element dom node
@@ -93,7 +93,7 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
     return subDomElement;
 }
 
-//! @brief Function to get a sub dom ellement, if it does not exist it is first added
+//! @brief Function to get a sub dom element, if it does not exist it is first added
 QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString element_name)
 {
     QDomElement elem = rDomElement.firstChildElement(element_name);
@@ -126,7 +126,7 @@ void appendDomTextNode(QDomElement &rDomElement, const QString element_name, con
 //! @brief Function for adding Dom elements containing one boolean text node
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
-//! @param[in] value The boolen value
+//! @param[in] value The boolean value
 void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value)
 {
     if(value)
@@ -182,7 +182,7 @@ void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, c
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] a The first double value
 //! @param[in] b The second double value
-//! @param[in] c The theird double value
+//! @param[in] c The third double value
 void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c)
 {
     QString num,str;
@@ -229,7 +229,7 @@ void setQrealAttribute(QDomElement domElement, const QString attrName, const qre
 //! @param[in] domElement The DOM Element to parse
 //! @param[out] rA The first extracted double value
 //! @param[out] rB The second extracted double value
-//! @param[out] rC The theird extracted double value
+//! @param[out] rC The third extracted double value
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC)
 {
     QStringList poseList = domElement.text().split(" ");

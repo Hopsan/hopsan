@@ -18,7 +18,7 @@ void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 
 QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString element_name);
 
-//! @todo We could go back to using only appendDomNode and then overload manny different functions with same anme but different input arguments)
+//! @todo We could go back to using only appendDomNode and then overload many different functions with same name but different input arguments)
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
 void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value);

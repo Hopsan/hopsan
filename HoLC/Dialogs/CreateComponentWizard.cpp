@@ -49,7 +49,7 @@ NodeInfo::NodeInfo(QString nodeType)
 
 void NodeInfo::getNodeTypes(QStringList &nodeTypes)
 {
-    //! @todo Support pneumatic and electic as well
+    //! @todo Support pneumatic and electric as well
     nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic";// << "NodePneumatic" << "NodeElectric";
 }
 
@@ -337,7 +337,7 @@ void CreateComponentWizard::updatePage(int i)
             mpPortsLayout->addWidget(mPortDefaultSpinBoxPtrs.last(),        portId,4);
             ++portId;
         }
-        //! @todo I think that it would be better if each portedid line (actaully same for constants in/out variables) would be a widget by itself then all of this code would be easier to manage
+        //! @todo I think that it would be better if each portedit line (actually same for constants in/out variables) would be a widget by itself then all of this code would be easier to manage
     }
 }
 

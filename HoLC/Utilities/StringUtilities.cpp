@@ -10,7 +10,7 @@ QString spaces(const int n)
 void replacePatternLine(QString &rData, const QString &rPattern, const QString &rString)
 {
     QRegExp rx("[^\\n]*"+rPattern+"[^\\n]*\\n");
-    // The rx first matches anything but newline preceeding the pattern (meaning it should stay on the pattern line)
+    // The rx first matches anything but newline preceding the pattern (meaning it should stay on the pattern line)
     // The match also swallows any non-newline characters after the pattern until it encounters and swallows one newline character.
     // double escaping is needed since a QString is created first (due to "str"+pattern+"str")
 

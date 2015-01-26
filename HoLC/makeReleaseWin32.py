@@ -339,7 +339,7 @@ def createCleanOutputDirectory():
     return True
 
 def renameBinFolder():
-    # Move the bin folder to temp storage to avoid packagin dev junk into release
+    # Move the bin folder to temp storage to avoid packaging dev junk into release
     if pathExists(holcDir+r'\bin'):
         callMove(holcDir+r'\bin', holcDir+r'\bin_build_backup')
         sleep(1)
@@ -415,7 +415,7 @@ if success:
         printError("Compilation script failed in compilation error.")
 		
 if success:
-    #Unpack depedency bin files to bin folder without asking stupid questions, we do this in the build step to have a run-able compiled version before running tests
+    #Unpack dependency bin files to bin folder without asking stupid questions, we do this in the build step to have a run-able compiled version before running tests
     call7z(r'x '+quotePath(holcDir+"\\"+dependecyBinFile)+r' -o'+quotePath(holcDir+r'\bin')+r' -y')
 
 if success:

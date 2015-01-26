@@ -126,7 +126,7 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
         }
         else
         {
-            moveCursor(QTextCursor::StartOfBlock);      //Home = move ursor to start of line, excluding initial whitespace
+            moveCursor(QTextCursor::StartOfBlock);      //Home = move cursor to start of line, excluding initial whitespace
             moveCursor(QTextCursor::NextWord);
         }
     }
@@ -153,7 +153,7 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
                 nSpaces++;
                 line.remove(0,1);
             }
-            int nSpacesToInsert = 4;    //Inssert four spaces by default
+            int nSpacesToInsert = 4;    //Insert four spaces by default
             if(pos < nSpaces)           //If at beginning of line, insert until next tab stop
             {
                 while((nSpaces+nSpacesToInsert)%4 != 0)

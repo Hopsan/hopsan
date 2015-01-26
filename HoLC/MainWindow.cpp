@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *pParent)
     mpCreateComponentWizard = new CreateComponentWizard(mpFileHandler, mpMessageHandler, this);
     mpCreateComponentWizard->hide();
 
-    //Setup connetions
+    //Setup connections
     connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(updateText()));
     connect(pOpenAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(loadFromXml()));
     connect(pSaveAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(saveToXml()));
