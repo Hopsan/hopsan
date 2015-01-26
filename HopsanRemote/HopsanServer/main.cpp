@@ -32,15 +32,17 @@ extern char **environ;
 ServerConfig gServerConfig;
 size_t nTakenSlots=0;
 
+#define PRINTSERVER "Server; "
+
 int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
-        cout << "Error: you must specify what base port to use!" << endl;
+        cout << PRINTSERVER << "Error: you must specify what base port to use!" << endl;
         return 1;
     }
 
-    cout << "Server Process Starting with base port: " << argv[1]  << endl;
+    cout << PRINTSERVER << "Listening on port: " << argv[1]  << endl;
 
     // Prepare our context and socket
     zmq::context_t context (1);
@@ -55,7 +57,7 @@ int main(int argc, char* argv[])
         socket.recv (&request);
         size_t offset=0;
         size_t msg_id = getMessageId(request, offset);
-        cout << "Server received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+//        cout << PRINTSERVER << "Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
 
 //        int fd = request.get(ZMQ_SRCFD);
 //        struct sockaddr addr;
@@ -74,7 +76,7 @@ int main(int argc, char* argv[])
 
         if (msg_id == C_ReqSlot)
         {
-            cout << "Client is requesting slot... " << endl;
+            cout << PRINTSERVER << "Client is requesting slot... " << endl;
             msgpack::v1::sbuffer out_buffer;
             if (nTakenSlots < gServerConfig.mMaxClients)
             {
@@ -101,7 +103,7 @@ int main(int argc, char* argv[])
                 int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
                 if(status == 0)
                 {
-                    std::cout<<"Launched Worker Process, pid: "<< pid << " port: " << port << " uid: " << uid << endl;
+                    std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< pid << " port: " << port << " uid: " << uid << endl;
                     workerMap.insert({uid,pid});
 
                     SM_ReqSlot_Reply_t msg = {port};
@@ -113,21 +115,21 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    std::cout<<"Failed to launch worker process!"<<endl;
+                    std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
                     sendServerNAck(socket, "Failed to launch worker process!");
                 }
             }
             else
             {
                 sendServerNAck(socket, "All slots taken");
-                cout << "Denied!" << endl;
+                cout << PRINTSERVER << "Denied! All slots taken." << endl;
             }
         }
         else if (msg_id == SW_Finished)
         {
             string id_string = unpackMessage<std::string>(request,offset);
             int id = atoi(id_string.c_str());
-            cout << "Server Worker " << id_string << " Finished! Client said godbye!" << endl;
+            cout << PRINTSERVER << "Worker " << id_string << " Finished!" << endl;
 
             auto it = workerMap.find(id);
             if (it != workerMap.end())
@@ -150,7 +152,7 @@ int main(int argc, char* argv[])
         else
         {
             stringstream ss;
-            ss << "Server error: Unknown message id " << msg_id << endl;
+            ss << PRINTSERVER << "Error: Unknown message id " << msg_id << endl;
             cout << ss.str() << endl;
             sendServerNAck(socket, ss.str());
         }

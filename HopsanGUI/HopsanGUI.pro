@@ -5,6 +5,7 @@
 # Global project options
 # -------------------------------------------------
 include( HopsanGuiBuild.prf )
+include( $${PWD}/../HopsanRemote/HopsanRemoteBuild.pri )
 
 TARGET = HopsanGUI
 TEMPLATE = app
@@ -63,6 +64,22 @@ d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 } else {
     message(Compiling HopsanGUI WITHOUT PythonQt and Python support)
+}
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Set the ZMQ paths and dll/so post linking copy command
+d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
+!isEmpty(d){
+    DEFINES *= USEZMQ       #If ZMQ was found then lets build GUI with ZMQ / msgpack support
+    message(Compiling HopsanGUI with ZeroMQ and msgpack support)
+    LIBS *= $$magic_hopsan_libpath
+    INCLUDEPATH *= $$magic_hopsan_includepath
+    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+
+    QMAKE_CXXFLAGS *= -std=c++11
+} else {
+    message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
 }
 #--------------------------------------------------------
 

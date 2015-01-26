@@ -39,7 +39,11 @@ typedef struct
     string unit;
 }ModelVariableInfo_t;
 
-// Model utitility
+// ------------------------------
+// Model utitilities BEGIN
+// ------------------------------
+//! @todo Model utilities should not be in this file they should be shared
+
 //! @todo vector for vars bad maybe list or map better
 void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t> &rvMVI, HString parentSysNames)
 {
@@ -97,15 +101,135 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
     }
 }
 
+void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector)
+{
+    rSplitVector.clear();
+    string item;
+    stringstream ss(rString);
+    while(getline(ss, item, delim))
+    {
+        rSplitVector.push_back(item);
+    }
+}
+
+bool setParameter(ComponentSystem *pSystem, HString &fullname, const HString &rValue)
+{
+    if (pSystem)
+    {
+        size_t d = fullname.find_first_of('$');
+        if (d != HString::npos)
+        {
+            HString sysname = fullname.substr(0, d);
+            fullname.erase(0, d+1);
+            ComponentSystem *pSubsys = pSystem->getSubComponentSystem(sysname);
+            return setParameter(pSubsys, fullname, rValue);
+        }
+        else
+        {
+            //! @todo write split function in hstring class
+            string item;
+            stringstream ss(fullname.c_str());
+            vector<string> cpv;
+            while(getline(ss, item, '#'))
+            {
+                cpv.push_back(item);
+            }
+
+            if (cpv.size() == 2 || cpv.size() == 3)
+            {
+                Component *pComp = pSystem->getSubComponent(cpv[0].c_str());
+                if (pComp)
+                {
+                    string parameter;
+                    if (cpv.size() == 2)
+                    {
+                        parameter = cpv[1];
+                    }
+                    else if (cpv.size() == 3)
+                    {
+                        // Set component name and restor the (startvalue) name
+                        parameter = cpv[1]+"#"+cpv[2];
+                    }
+
+                    return pComp->setParameterValue(parameter.c_str(), rValue);
+                }
+            }
+        }
+    }
+    return false;
+}
+
+string getParameter(ComponentSystem *pSystem, HString &fullname)
+{
+    if (pSystem)
+    {
+        size_t d = fullname.find_first_of('$');
+        if (d != HString::npos)
+        {
+            HString sysname = fullname.substr(0, d);
+            fullname.erase(0, d+1);
+            ComponentSystem *pSubsys = pSystem->getSubComponentSystem(sysname);
+            return getParameter(pSubsys, fullname);
+        }
+        else
+        {
+            //! @todo write split function in hstring class
+            string item;
+            stringstream ss(fullname.c_str());
+            vector<string> cpv;
+            while(getline(ss, item, '#'))
+            {
+                cpv.push_back(item);
+            }
+
+            if (cpv.size() == 2 || cpv.size() == 3)
+            {
+                Component *pComp = pSystem->getSubComponent(cpv[0].c_str());
+                if (pComp)
+                {
+                    string parameter;
+                    if (cpv.size() == 2)
+                    {
+                        parameter = cpv[1];
+                    }
+                    else if (cpv.size() == 3)
+                    {
+                        // Set component name and restor the (startvalue) name
+                        parameter = cpv[1]+"#"+cpv[2];
+                    }
+
+                    HString value;
+                    pComp->getParameterValue(parameter.c_str(), value);
+                    return value.c_str();
+                }
+            }
+        }
+    }
+    return "";
+}
+
+// ------------------------------
+// Model utitilities END
+// ------------------------------
+
+string gWorkerId;
+#define PRINTWORKER "Worker "+gWorkerId+"; "
+
 void loadComponentLibraries()
 {
     FileAccess fa;
-    fa.enterDir("./componentLibraries");
-    vector<string> soFiles = fa.findFilesWithSuffix("so");
-    for (string f : soFiles)
+    if (fa.enterDir("./componentLibraries"))
     {
-        cout << "Loading library file: " << f << endl;
-        gHopsanCore.loadExternalComponentLib(f.c_str());
+        vector<string> soFiles = fa.findFilesWithSuffix("so");
+        for (string f : soFiles)
+        {
+            cout << PRINTWORKER << "Loading library file: " << f << endl;
+            gHopsanCore.loadExternalComponentLib(f.c_str());
+        }
+    }
+    else
+    {
+        cout << PRINTWORKER << "Error: Could not enter directory: " << "./componentLibraries" << endl;
     }
 }
 
@@ -114,16 +238,17 @@ ComponentSystem *pRootSystem=nullptr;
 double simStartTime, simStopTime;
 size_t nThreads = 1;
 
+
 int main(int argc, char* argv[])
 {
     if (argc < 4)
     {
-        cout << "Error: To few arguments!" << endl;
+        cout << PRINTWORKER << "Error: To few arguments!" << endl;
         return 1;
     }
 
     //cout << "argv: " << argv[0] << " " << argv[1] << " " << argv[2] << " " << argv[3] << " " << argv[4] << endl;
-    string workerId = argv[1];
+    gWorkerId = argv[1];
     string serverCtrlPort = argv[2];
     string workerCtrlPort = argv[3];
 
@@ -133,7 +258,7 @@ int main(int argc, char* argv[])
         nThreads = size_t(atoi(argv[4]));
     }
 
-    cout << "Server Worker Process with ID: " << workerId << " Listening on port: " << workerCtrlPort << " Using: " << nThreads << " threads" << endl;
+    cout << PRINTWORKER << "Listening on port: " << workerCtrlPort << " Using: " << nThreads << " threads" << endl;
 
     // Loading component libraries
     loadComponentLibraries();
@@ -154,41 +279,49 @@ int main(int argc, char* argv[])
         socket.recv (&request);
         size_t offset=0;
         size_t msg_id = getMessageId(request, offset);
-        //cout << "Worker received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+        //cout << PRINTWORKER << "Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
         if (msg_id == C_SetParam)
         {
             CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset);
-            cout << "Client want to set parameter " << msg.name << " " << msg.value << endl;
+            cout << PRINTWORKER << "Client want to set parameter " << msg.name << " " << msg.value << endl;
 
             // Set parameter
-            //! @todo
-
+            HString fullName = msg.name.c_str();
+            bool rc = setParameter(pRootSystem, fullName, msg.value.c_str());
             // Send ack or nack
-            sendServerNAck(socket, "Not implemented");
+            if (rc)
+            {
+                sendServerAck(socket);
+            }
+            else
+            {
+                sendServerNAck(socket, "Failed to set parameter: "+msg.name);
+            }
         }
         else if (msg_id == C_GetParam)
         {
             std::string msg = unpackMessage<std::string>(request, offset);
-            cout << "Client want to get parameter " << msg << endl;
+            cout << PRINTWORKER << "Client want to get parameter " << msg << endl;
 
             // Get parameter
-            //! @todo
-            bool isOK=false;
+            HString fullName = msg.c_str();
+            string val = getParameter(pRootSystem, fullName);
+            //! @todo what if root system name is first?
 
             // Send param value (as string) or nack
-            if (isOK)
+            if (val.empty())
             {
-                sendServerStringMessage(socket, S_GetParam_Reply, "value");
+                sendServerNAck(socket, "Could not get parameter");
             }
             else
             {
-                sendServerNAck(socket, "Could not get parameter");
+                sendServerStringMessage(socket, S_GetParam_Reply, val);
             }
         }
         else if (msg_id == C_SendingHmf)
         {
             std::string hmf = unpackMessage<std::string>(request, offset);
-            cout << "Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
+            cout << PRINTWORKER << "Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
 
             // If a model is already loaded then delete it
             if (pRootSystem)
@@ -197,14 +330,20 @@ int main(int argc, char* argv[])
                 pRootSystem=nullptr;
             }
 
-            //! @todo loadHMFModel will hang if hmf empty
-            pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime);
-            if (pRootSystem)
+            //! @todo loadHMFModel will hang (sometimes) if hmf empty
+            if (!hmf.empty())
             {
+                pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime);
+            }
+
+            if (pRootSystem && (gHopsanCore.getNumErrorMessages() == 0) && (gHopsanCore.getNumFatalMessages() == 0) )
+            {
+                cout << PRINTWORKER << "Model was loaded sucessfully" << endl;
                 sendServerAck(socket);
             }
             else
             {
+                cout << PRINTWORKER << "Error: Could not load the model" << endl;
                 sendServerNAck(socket, "Server could not load model");
             }
         }
@@ -216,16 +355,16 @@ int main(int argc, char* argv[])
             bool irc=false,src=false;
             TicToc timer;
             irc = simulator.initializeSystem(simStartTime, simStopTime, pRootSystem);
-            timer.TocPrint("Initialize");
+            timer.TocPrint(PRINTWORKER+"Initialize");
             if (irc)
             {
                 timer.Tic();
                 src = simulator.simulateSystem(simStartTime, simStopTime, 1, pRootSystem);
-                timer.TocPrint("Simulate");
+                timer.TocPrint(PRINTWORKER+"Simulate");
             }
             timer.Tic();
             simulator.finalizeSystem(pRootSystem);
-            timer.TocPrint("Finalize");
+            timer.TocPrint(PRINTWORKER+"Finalize");
 
             if (irc && src)
             {
@@ -233,12 +372,12 @@ int main(int argc, char* argv[])
             }
             else if (!irc)
             {
-                cout  << "Model Init failed"  << endl;
+                cout  << PRINTWORKER << "Model Init failed"  << endl;
                 sendServerNAck(socket, "Could not initialize system");
             }
             else
             {
-                cout  << "Model simulation failed"  << endl;
+                cout  << PRINTWORKER << "Model simulation failed"  << endl;
                 sendServerNAck(socket, "Cold not simulate system");
             }
         }
@@ -247,7 +386,7 @@ int main(int argc, char* argv[])
             string varName = unpackMessage<string>(request, offset);
             vector<ModelVariableInfo_t> vMVI;
             collectAllModelVariables(pRootSystem, vMVI, "");
-            cout << "Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
+            cout << PRINTWORKER << "Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
 
             //! @todo Check if simulation finnished, ACK Nack
             vector<SM_Variable_Description_t> vars;
@@ -272,7 +411,7 @@ int main(int argc, char* argv[])
             vector<SM_HopsanCoreMessage_t> messages;
             size_t nMessages = pHandler->getNumWaitingMessages();
             messages.resize(nMessages);
-            cout << "Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
+            cout << PRINTWORKER << "Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
             for (size_t i=0; i<nMessages; ++i)
             {
                 HString mess, tag, type;
@@ -286,7 +425,7 @@ int main(int argc, char* argv[])
         }
         else if (msg_id == C_Bye)
         {
-            cout << "Client said godbye!" << endl;
+            cout << PRINTWORKER << "Client said godbye!" << endl;
             sendServerAck(socket);
             keepRunning = false;
 
@@ -296,7 +435,7 @@ int main(int argc, char* argv[])
         else
         {
             stringstream ss;
-            ss << "Server error: Unknown message id: " << msg_id << endl;
+            ss << PRINTWORKER << "Error: Unknown message id: " << msg_id << endl;
             cout << ss.str() << endl;
             sendServerNAck(socket, ss.str());
         }
