@@ -176,7 +176,7 @@ PlotArea *PlotTab::getPlotArea(const int subPlotId)
 void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 {
     Q_UNUSED(pItemModel);
-    // Do nothing by default, should only be implemented in barchart plots
+    // Do nothing by default, should only be implemented in bar chart plots
 }
 
 
@@ -371,9 +371,9 @@ void PlotTab::exportToCsv(QString fileName)
     if(pPlotArea->hasCustomXData())
     {
         //! @todo how to handle this with multiple xvectors per curve
-        //! @todo take into account wheter cached or not, Should have some smart auto function for this in the data object
+        //! @todo take into account whether cached or not, Should have some smart auto function for this in the data object
 
-        QVector<double> xvec = pPlotArea->getCustomXData().mpVariable->getDataVectorCopy(); //! @todo shoudl direct access if not in cache
+        QVector<double> xvec = pPlotArea->getCustomXData().mpVariable->getDataVectorCopy(); //! @todo should direct access if not in cache
         for(int i=0; i<xvec.size(); ++i)
         {
             fileStream << xvec[i];
@@ -491,7 +491,7 @@ void PlotTab::exportToHvc(QString fileName)
         QString port = curves[i]->getPortName();
         QString data = curves[i]->getDataName();
 
-        // Figur out system hierarchy name
+        // Figure out system hierarchy name
         QString sysnames;
         LogDataHandler *pLogDataHandler = curves[i]->getSharedVectorVariable()->getLogDataHandler();
         if (pLogDataHandler)
@@ -568,7 +568,7 @@ void PlotTab::exportToMatlab()
             fileStream << "x" << c+nTotCurves << "=[";                                         //Write time/X vector
             if(pArea->hasCustomXData())
             {
-                //! @todo need smart function to autoselect copy or direct access depending on cached or not (also in other places)
+                //! @todo need smart function to auto select copy or direct access depending on cached or not (also in other places)
                 QVector<double> xvec = pArea->getCustomXData().mpVariable->getDataVectorCopy();
                 for(int j=0; j<xvec.size(); ++j)
                 {
@@ -709,7 +709,7 @@ void PlotTab::exportToGnuplot()
 
 void PlotTab::exportToGraphics()
 {
-    //! @todo this only works with one plot area in plot (sam problem in export (render) code
+    //! @todo this only works with one plot area in plot (same problem in export (render) code
     HopQwtPlot *pPlot = getQwtPlot(0);
     if (pPlot)
     {

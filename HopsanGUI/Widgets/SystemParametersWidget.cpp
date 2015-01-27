@@ -256,7 +256,7 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
             return false;
         }
 
-        // We dont need to add new row or update because setOrAddParameter should have signald for update already
+        // We don't need to add new row or update because setOrAddParameter should have signaled for update already
 
         //! @todo check if other stuff than value or type has changed
         CoreParameterData newParameter;
@@ -321,7 +321,7 @@ void SysParamTableModel::removeParameter(const int row)
 }
 
 
-//! @brief Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
+//! @brief Constructor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
 SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     : QWidget(pParent)

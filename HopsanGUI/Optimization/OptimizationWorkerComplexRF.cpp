@@ -133,7 +133,7 @@ void OptimizationWorkerComplexRF::run()
     //Turn of terminal output during optimization
     execute("echo off");
 
-    //Evaluate initial objevtive values
+    //Evaluate initial objective values
     execute("call evalall");
     logAllPoints();
     mEvaluations = mNumPoints;

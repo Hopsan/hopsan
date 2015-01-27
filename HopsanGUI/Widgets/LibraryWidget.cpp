@@ -43,7 +43,7 @@
 #include "ModelicaEditor.h"
 #include "ProjectTabWidget.h"
 
-//! @todo Ok dont know where I should put this, putting it here for now /Peter
+//! @todo Ok don't know where I should put this, putting it here for now /Peter
 QString gHopsanCoreVersion = getHopsanCoreVersion();
 
 LibraryWidget::LibraryWidget(QWidget *parent)
@@ -147,7 +147,7 @@ LibraryWidget::LibraryWidget(QWidget *parent)
 QSize LibraryWidget::sizeHint() const
 {
     QSize size = QWidget::sizeHint();
-    size.rwidth() = 250;            //Set very small width. A minimum apperantly stops at resonable size.
+    size.rwidth() = 250;            //Set very small width. A minimum apparently stops at reasonable size.
     return size;
 }
 
@@ -353,7 +353,7 @@ void LibraryWidget::update()
 
         if((*itt)->childCount() > 0 && (*itt)->text(0) != EXTLIBSTR)
         {
-            (*itt)->setText(0, "0000000000"+(*itt)->text(0));       //Prepend a lot of zeros to subfolders, to make sure they are sorted on top (REALLY ugly, but it works)
+            (*itt)->setText(0, "0000000000"+(*itt)->text(0));       //Prepends a lot of zeros to subfolders, to make sure they are sorted on top (REALLY ugly, but it works)
         }
         ++itt;
     }
@@ -426,7 +426,7 @@ void LibraryWidget::update()
                     if(!cafRoot.isNull())
                     {
                         //Read appearance data from the caf xml file
-                        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+                        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file, also not hardcode tagnames
                         appearane.setBasePath(QFileInfo(cafFile).absolutePath()+"/");
                         appearane.readFromDomElement(xmlModelObjectAppearance);
                         appearane.cacheIcons();
@@ -496,7 +496,7 @@ void LibraryWidget::update()
     }
 
 
-    //Expand preiously expanded folders
+    //Expand previously expanded folders
     foreach(const QStringList &list, expandedItems)
     {
         for(int i=0; i<mpTree->topLevelItemCount(); ++i)

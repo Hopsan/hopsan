@@ -342,7 +342,7 @@ void VariableTree::addFullVariable(HopsanVariable data)
     QString cname = data.mpVariable->getComponentName();
     if (cname.isEmpty())
     {
-        // Mostly for the timevariable
+        // Mostly for the time variable
         cname = data.mpVariable->getFullVariableName();
     }
     // Try to find the component if it has already been added
@@ -352,7 +352,7 @@ void VariableTree::addFullVariable(HopsanVariable data)
         pComponentItem = cit.value();
     }
     else
-    // Ok, we did not find it, then this is the first time the component is added, lets create and add that top-lvel item
+    // Ok, we did not find it, then this is the first time the component is added, lets create and add that top-level item
     {
         pComponentItem = new ComponentHeaderTreeItem(cname,0);
         addTopLevelItem(pComponentItem);
@@ -387,7 +387,7 @@ void VariableTree::addImportedVariable(HopsanVariable data)
 {
     QString fName = data.mpVariable->getImportedFileName();
     QTreeWidgetItem *pFileItem = mImportedFileItemMap.value(fName, 0);
-    // If this file was not alrady added then create it
+    // If this file was not already added then create it
     if (!pFileItem)
     {
         pFileItem = new ImportedFileTreeItem(QString("%1 (%2)").arg(fName).arg(data.mpVariable->getGeneration()+1),0);
@@ -441,7 +441,7 @@ void VariableTree::updateList(const int gen)
     // First refresh the import variable tree
     refreshImportedVariables();
 
-    // Now add variables to the Alias and Variable tree depeding on selcted generation to display
+    // Now add variables to the Alias and Variable tree depending on selected generation to display
     QList<HopsanVariable> variables;
 
     if (gen == -1)
@@ -545,8 +545,8 @@ void PlotWidget::clearList()
 }
 
 
-//! @brief Helper function that plots item to prefered plotwindow or creates a new one
-//! @param[in] *item Pointer to the tree widget item whos should be plotted
+//! @brief Helper function that plots item to preferred plotwindow or creates a new one
+//! @param[in] *item Pointer to the tree widget item who should be plotted
 //! @returns A pointer to the plotwindow or 0 pointer if item could not be plotted
 PlotWindow *VariableTree::plotToPreferedPlotWindow(QTreeWidgetItem *item)
 {
@@ -581,7 +581,7 @@ void VariableTree::mousePressEvent(QMouseEvent *event)
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void VariableTree::mouseMoveEvent(QMouseEvent *event)
 {
-    //! @todo maybe should try to be smart with a lcoal function that selcts plotwindow if one is set (for message)
+    //! @todo maybe should try to be smart with a local function that selects plotwindow if one is set (for message)
     gpHelpPopupWidget->showHelpPopupMessage("Double click on a variable to plot it, or drag it to an existing plot window.");
     if (!(event->buttons() & Qt::LeftButton))
     {
@@ -615,7 +615,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
 {
     Q_UNUSED(event);
 
-    // Build context menue for variable items
+    // Build context menu for variable items
     BaseVariableTreeItem *pItem = dynamic_cast<BaseVariableTreeItem *>(currentItem());
     if(pItem)
     {
@@ -634,7 +634,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         {
             if (!isAliasVariabel)
             {
-                // Only show alisa buttons for non imported variables
+                // Only show alias buttons for non imported variables
                 if(pItem->getAliasName().isEmpty())
                 {
                     pDefineAliasAction = menu.addAction(QString("Define Variable Alias"));
@@ -667,7 +667,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         pDeleteVariableThisGenAction = menu.addAction(QString("Remove Variable @%1").arg(pItem->getGeneration()+1));
         pDeleteVariableAllGenAction = menu.addAction(QString("Remove Variable @*"));
 
-        // Exectue menu and wait for selected action
+        // Execute menu and wait for selected action
         QAction *pSelectedAction = menu.exec(QCursor::pos());
         if (pSelectedAction != 0)
         {
@@ -745,7 +745,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
-    // Build context menue for component header items
+    // Build context menu for component header items
     ComponentHeaderTreeItem *pComponentItem = dynamic_cast<ComponentHeaderTreeItem *>(currentItem());
     if (pComponentItem)
     {

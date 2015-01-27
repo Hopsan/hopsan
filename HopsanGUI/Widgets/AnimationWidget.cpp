@@ -379,7 +379,7 @@ void AnimationWidget::stop()
 }
 
 
-//! @brief Slot that rewindes the animation (with full speed)
+//! @brief Slot that rewinds the animation (with full speed)
 void AnimationWidget::rewind()
 {
     mRealTime=false;
@@ -400,7 +400,7 @@ void AnimationWidget::play()
     mRealTime=false;
     if(mSimulationSpeed == 0)
     {
-        //Stop animation timer if speed is zero (it sholdn't be running for no reason)
+        //Stop animation timer if speed is zero (it shouldn't be running for no reason)
         mpTimer->stop();
     }
     else
@@ -419,7 +419,7 @@ void AnimationWidget::play()
 }
 
 
-//! @brief Slot that plays the animation continously in real-time
+//! @brief Slot that plays the animation continuously in real-time
 //! @todo The plot data object in container should perhaps be cleared of these generations
 void AnimationWidget::playRT()
 {
@@ -432,7 +432,7 @@ void AnimationWidget::playRT()
 
     if(mSimulationSpeed == 0)
     {
-        //Stop animation timer if speed is zero (it sholdn't be running for no reason)
+        //Stop animation timer if speed is zero (it shouldn't be running for no reason)
         mpTimer->stop();
     }
     else
@@ -484,7 +484,7 @@ void AnimationWidget::updateAnimationSpeed(double speed)
     mSimulationSpeed = speed;
     if(mSimulationSpeed == 0)
     {
-        //Stop animation timer if speed is zero (it sholdn't be running for no reason)
+        //Stop animation timer if speed is zero (it shouldn't be running for no reason)
         mpTimer->stop();
     }
 //    else
@@ -528,7 +528,7 @@ void AnimationWidget::updateAnimation()
         //Update animated connectors and components
         updateMovables();
     }
-    else    //Real-time simualtion
+    else    //Real-time simulation
     {
         //Calculate time to simulate (equals interval of animation timer)
         double dT = mSimulationSpeed/double(mFps);

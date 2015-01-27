@@ -27,8 +27,8 @@
 // Include compiler info and hopsan core macros
 #include "compiler_info.h"
 
-// If we dont have the revision number then define UNKNOWN
-// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
+// If we don't have the revision number then define UNKNOWN
+// On real release  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANGUISVNREVISION
  #define HOPSANGUISVNREVISION UNKNOWN
 #endif

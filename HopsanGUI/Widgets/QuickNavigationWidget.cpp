@@ -45,7 +45,7 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
     refreshVisible();
 }
 
-//! @brief Append a new opened container to teh navigation widget
+//! @brief Append a new opened container to the navigation widget
 //! @param[in] pContainer A pointer to the Container Object
 void QuickNavigationWidget::addOpenContainer(ContainerObject* pContainer)
 {

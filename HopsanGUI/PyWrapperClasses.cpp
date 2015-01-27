@@ -346,7 +346,7 @@ void PythonHopsanInterface::setSystemParameter(const QString &rSysParName, const
     CoreParameterData paramData(rSysParName, "", "double");
     paramData.mValue.setNum(value);
     getCurrentViewcontainerObject()->setOrAddParameter(paramData);
-    gpSystemParametersWidget->update(); //!< @todo this should not be neded, container should signal widget (do not know if it does that right now)
+    gpSystemParametersWidget->update(); //!< @todo this should not be needed, container should signal widget (do not know if it does that right now)
 }
 
 ModelObject *PythonHopsanInterface::addComponent(const QString &rName, const QString &rTypeName, const int x, const int y, const int rot)

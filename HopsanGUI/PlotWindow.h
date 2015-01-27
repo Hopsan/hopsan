@@ -69,7 +69,7 @@ public:
 
     PlotTab *addPlotTab(const QString &rName, PlotTabTypeT type=XYPlotType);
     PlotTab *getCurrentPlotTab();
-    PlotTabWidget *getPlotTabWidget(); //!< @todo should this realy be needed
+    PlotTabWidget *getPlotTabWidget(); //!< @todo should this really be needed
 
     void createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax);
 

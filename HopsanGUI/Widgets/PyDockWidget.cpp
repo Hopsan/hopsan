@@ -234,7 +234,7 @@ PythonTerminalWidget::PythonTerminalWidget(QWidget *parent)
 //QSize PyWidget::sizeHint() const
 //{
 //    QSize size = QWidget::sizeHint();
-//    //Set very small height. A minimum apperantly stops at resonable size.
+//    //Set very small height. A minimum apparently stops at reasonable size.
 //    size.rheight() = 1; //pixels
 //    return size;
 //}

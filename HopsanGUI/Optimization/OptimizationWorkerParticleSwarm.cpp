@@ -124,7 +124,7 @@ void OptimizationWorkerParticleSwarm::run()
     //Disable terminal output during optimization
     execute("echo off");
 
-    //Evaluate initial objevtive values
+    //Evaluate initial objective values
     evaluateAllParticles();
     if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
     {
@@ -172,7 +172,7 @@ void OptimizationWorkerParticleSwarm::run()
         //Move particles
         moveParticles();
 
-        //Evaluate objevtive values
+        //Evaluate objective values
         evaluateAllParticles();
         if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
         {

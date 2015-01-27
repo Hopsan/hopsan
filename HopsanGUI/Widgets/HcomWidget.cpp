@@ -122,7 +122,7 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
 QSize TerminalWidget::sizeHint() const
 {
     QSize size = QWidget::sizeHint();
-    //Set very small height. A minimum apperantly stops at resonable size.
+    //Set very small height. A minimum apparently stops at reasonable size.
     size.rheight() = 1; //pixels
     return size;
 }
@@ -366,7 +366,7 @@ void TerminalConsole::abortHCOM()
 }
 
 
-//! @brief Tells the message widget wether or not messages shall be grouped by tags
+//! @brief Tells the message widget whether or not messages shall be grouped by tags
 //! @param value True means that messages shall be grouped
 void TerminalConsole::setGroupByTag(bool value)
 {
@@ -375,7 +375,7 @@ void TerminalConsole::setGroupByTag(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show error messages
+//! @brief Tells the message widget whether or not it shall show error messages
 //! @param value True means show messages
 void TerminalConsole::showErrorMessages(bool value)
 {
@@ -383,7 +383,7 @@ void TerminalConsole::showErrorMessages(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show warning messages
+//! @brief Tells the message widget whether or not it shall show warning messages
 //! @param value True means show messages
 void TerminalConsole::showWarningMessages(bool value)
 {
@@ -391,7 +391,7 @@ void TerminalConsole::showWarningMessages(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show info messages
+//! @brief Tells the message widget whether or not it shall show info messages
 //! @param value True means show messages
 void TerminalConsole::showInfoMessages(bool value)
 {
@@ -399,7 +399,7 @@ void TerminalConsole::showInfoMessages(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show debug messages
+//! @brief Tells the message widget whether or not it shall show debug messages
 //! @param value True means show messages
 void TerminalConsole::showDebugMessages(bool value)
 {

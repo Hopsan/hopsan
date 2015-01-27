@@ -44,7 +44,7 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
     mpMessageHandler = new GUIMessageHandler(this);
     mpMessageHandler->startPublish();
     mpConfig = new Configuration(); //!< @todo memory leak, never deleted
-    mpConfig->loadFromXml();        //This should work, since changes are always saved to file immideately from gpConfig
+    mpConfig->loadFromXml();        //This should work, since changes are always saved to file immediately from gpConfig
 
     mpWorker = 0;
     mAlgorithm = Uninitialized;

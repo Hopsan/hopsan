@@ -211,7 +211,7 @@ void DataExplorer::openExportDataDialog()
         progress.setValue(0);
         for (int i=0; i<fNames.size(); ++i)
         {
-            // Abort if canceld
+            // Abort if canceled
             if (progress.wasCanceled())
                 break;
 
@@ -305,7 +305,7 @@ void DataExplorer::removeSelectedGenerations()
     // Since removeGeneration will also remove from mGenerationItemMap, we cant remove directly in for loop above
     for (int i=0; i<gens.size(); ++i)
     {
-        // Abort if canceld
+        // Abort if canceled
         if (progress.wasCanceled())
             break;
 

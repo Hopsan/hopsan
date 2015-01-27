@@ -174,7 +174,7 @@ TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pVa
     pHBoxLayout->addWidget(new QLabel("Offset: ", this));
     pHBoxLayout->addWidget(mpOffsetLineEdit);
 
-    // Dont do stuff if mpTimeOrFrequency = NULL ptr
+    // Don't do stuff if mpTimeOrFrequency = NULL ptr
     if (mpTimeOrFrequency)
     {
         // Populate time scale box and try to figure out current time unit
@@ -201,7 +201,7 @@ TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pVa
         // Set the current offset value
         mpOffsetLineEdit->setText(QString("%1").arg(mpTimeOrFrequency->getPlotOffset()));
 
-        // Connect signals to update time scale and ofset when changing values
+        // Connect signals to update time scale and offset when changing values
         connect(mpScaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setVaules()));
         connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setVaules()));
     }
@@ -231,7 +231,7 @@ void TimeOrFrequencyScaleWidget::setVaules()
     mpTimeOrFrequency->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
     mpTimeOrFrequency->setPlotOffset(mpOffsetLineEdit->text().toDouble());
     emit valuesChanged();
-    //! @todo this will aslo call all the updates again, need to be able to set scale and ofset separately or togheter
+    //! @todo this will also call all the updates again, need to be able to set scale and offset separately or together
 }
 
 PlotArea::PlotArea(PlotTab *pParentPlotTab)
@@ -385,7 +385,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     // Refresh the curve
     pCurve->refreshCurveTitle();
 
-    // Set custom xdata if one is already pressent in this tab
+    // Set custom xdata if one is already present in this tab
     if(hasCustomXData())
     {
         if (!pCurve->hasCustomXData())
@@ -446,13 +446,13 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     mPlotCurveControlBoxes.last()->show();
 
 
-    // Connect som signals from the curve
+    // Connect some signals from the curve
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
     connect(pCurve, SIGNAL(customXDataChanged()), this, SLOT(refreshPlotAreaCustomXData()));
     connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
 
     // Refresh and redraw the plot area
-    //! @todo maybe make it possible to rescale only selected axis, instead of always recscaling both of them
+    //! @todo maybe make it possible to rescale only selected axis, instead of always rescaling both of them
     rescaleAxesToCurves();
     updateAxisLabels();
     updateWindowtitleModelName();
@@ -485,7 +485,7 @@ void PlotArea::setCustomXVectorForAll(HopsanVariable data, bool force)
 
 void PlotArea::removeCurve(PlotCurve *pCurve)
 {
-    // Remove any markes used by the curve
+    // Remove any markers used by the curve
     for(int i=0; i<mPlotMarkers.size(); ++i)
     {
         if(mPlotMarkers[i]->getCurve() == pCurve)
@@ -532,7 +532,7 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
     pCurve->disconnect();
     delete pCurve;
 
-    // Reset timevector incase we had special x-axis set previously
+    // Reset timevector in case we had special x-axis set previously
     refreshPlotAreaCustomXData();
 
     // Reset zoom and remove axis locks if last curve was removed (makes no sense to keep it zoomed in)
@@ -821,7 +821,7 @@ void PlotArea::setAxisLabel(QwtPlot::Axis axis, const QString &rLabel)
     updateAxisLabels();
 }
 
-//! @brief Get the min and max values of the curves on the current axis, (lienar or logarithmic values)
+//! @brief Get the min and max values of the curves on the current axis, (linear or logarithmic values)
 HopQwtInterval PlotArea::getAxisCurveLimits(const QwtPlot::Axis axis) const
 {
     HopQwtInterval curveLimits(DoubleMax,-DoubleMax);
@@ -883,7 +883,7 @@ void PlotArea::replot()
 void PlotArea::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    // Unless we are zoomd, try to readjust the axis (to add auto offset for legend)
+    // Unless we are zoomed, try to readjust the axis (to add auto offset for legend)
     if (!isZoomed())
     {
         rescaleAxesToCurves();
@@ -1329,7 +1329,7 @@ void PlotArea::rescaleAxesToCurves()
         }
     }
 
-    // Scale the axes autoamtically if not locked
+    // Scale the axes automatically if not locked
     if (!mpXLockCheckBox->isChecked())
     {
         mpQwtPlot->setAxisScale(QwtPlot::xBottom, xAxisLim.minValue(), xAxisLim.maxValue());
@@ -1443,7 +1443,7 @@ void PlotArea::updateAxisLabels()
             }
 
             // Now decide new bottom axis label
-            // Use custom x-axis if availible, else try to use the time or frequency vector (if set), but also check for showVSsamples
+            // Use custom x-axis if available, else try to use the time or frequency vector (if set), but also check for showVSsamples
             SharedVectorVariableT pSharedXVector;
             if (!mPlotCurves[i]->getShowVsSamples())
             {
@@ -1460,7 +1460,7 @@ void PlotArea::updateAxisLabels()
             }
             else if (!sharedBottomVars.contains(pSharedXVector))
             {
-                //! @todo for custom x mayb check for alias name
+                //! @todo for custom x maybe check for alias name
                 sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
                 bottomLabel = QString("%1").arg(pSharedXVector->getDataName());
                 if (!pSharedXVector->getActualPlotDataUnit().isEmpty())
@@ -1481,7 +1481,7 @@ void PlotArea::updateAxisLabels()
         mpQwtPlot->setAxisTitle(QwtPlot::yRight, QwtText(rightLabels.join(", ")));
     }
 
-    // If Usercustom labels exist overwrite automatic label
+    // If User custom labels exist overwrite automatic label
     if (mpUserDefinedLabelsCheckBox->isChecked())
     {
         if (!mpUserDefinedXLabel->text().isEmpty())
@@ -1589,7 +1589,7 @@ void PlotArea::openTimeScalingDialog()
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
     pGridLayout->addWidget(pButtonBox, row, 1);
     connect(pDoneButton,SIGNAL(clicked()),&scaleDialog,SLOT(close()));
-    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateAxisLabels())); //!< @todo this should ahppen directly when changing scale values
+    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateAxisLabels())); //!< @todo this should happen directly when changing scale values
 
     scaleDialog.exec();
 }
@@ -1613,7 +1613,7 @@ void PlotArea::applyAxisLabelSettings()
 
 void PlotArea::applyLegendSettings()
 {
-    // Show/change internal legneds
+    // Show/change internal legends
     if(mpLegendsEnabledCheckBox->isChecked())
     {
         mpRightPlotLegend->show();
@@ -1802,7 +1802,7 @@ void PlotArea::refreshLockCheckBoxPositions()
     QFont font = mpQwtPlot->axisFont(QwtPlot::xBottom); //Assume same font on all axes
     mpXLockCheckBox->move(0,mpQwtPlot->axisScaleDraw(QwtPlot::xBottom)->extent(font)+space);
 
-    // We do not need to refresh left y axis since lock box will be in 0,0 allways, but we add space
+    // We do not need to refresh left y axis since lock box will be in 0,0 always, but we add space
     mpYLLockCheckBox->move(-space,0);
 
     // Calculate placement for right axis lock box
@@ -2111,7 +2111,7 @@ void PlotArea::constructAxisLabelDialog()
     connect(pFinishedButton, SIGNAL(clicked()), mpUserDefinedLabelsDialog, SLOT(close()));
 }
 
-//! @brief Help function to set legend symbole style for all curves
+//! @brief Help function to set legend symbols style for all curves
 void PlotArea::setLegendSymbol(const QString symStyle)
 {
     for(int j=0; j<mPlotCurves.size(); ++j)
@@ -2120,7 +2120,7 @@ void PlotArea::setLegendSymbol(const QString symStyle)
     }
 }
 
-//! @brief Help function to set legend symbole style for one particualr curve
+//! @brief Help function to set legend symbols style for one particular curve
 void PlotArea::setLegendSymbol(const QString symStyle, PlotCurve *pCurve)
 {
     pCurve->setLegendAttribute( PlotCurve::LegendNoAttribute, false);
@@ -2194,18 +2194,18 @@ void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
         }
 
         // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
-        // But only if there is an original unit to begin with otherwise we swould scale somthing with unknown original unit (bad)
+        // But only if there is an original unit to begin with otherwise we should scale something with unknown original unit (bad)
         if (!originalDataUnit.isEmpty())
         {
             QString customUnit;
             for(int i=0; i<mPlotCurves.size(); ++i)
             {
-                // Skip checking the curve we are adding, and only check for curves on teh same axis as we are adding to
+                // Skip checking the curve we are adding, and only check for curves on the same axis as we are adding to
                 if ( (mPlotCurves[i] != pCurve) && (mPlotCurves[i]->getAxisY() == pCurve->getAxisY()) )
                 {
                     if( customUnit.isEmpty() )
                     {
-                        // Assign custom unit on first occurance
+                        // Assign custom unit on first occurrence
                         customUnit = mPlotCurves[i]->getCurrentUnit();
                     }
                     else if(customUnit != mPlotCurves[i]->getCurrentUnit())
@@ -2270,7 +2270,7 @@ void PlotArea::setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisL
         // Divide with the curves value range to get the scale
         double s = (ah-(lht+lhb))/cr; //[px/unit]
 
-        // Dont try to change axis limits if legend is higher then teh axis that will look strange and risk krashing Hopsan when axis limit -> inf
+        // Don't try to change axis limits if legend is higher then the axis that will look strange and risk crashing Hopsan when axis limit -> inf
         if (s > 0)
         {
             //qDebug() << "s: " << s;
@@ -2284,7 +2284,7 @@ void PlotArea::setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisL
         }
     }
 
-    //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
+    //! @todo before setting we should check so that min max is reasonable else hopsan will crash (example: Inf)
     // Set the new axis value
     mpQwtPlot->setAxisScale(axisId, axisLimits.minValue(), axisLimits.maxValue());
     // Create the zoom base (original zoom) rectangle for the left or right axis
@@ -2301,7 +2301,7 @@ void PlotArea::setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisL
     {
         mpQwtZoomerRight->setZoomBase(baseZoomRect);
     }
-    //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis, this is a todo problem with legend buffer ofset
+    //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis, this is a todo problem with legend buffer offset
 }
 
 
@@ -2317,9 +2317,9 @@ void PlotArea::calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &
     {
         rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpRightPlotLegend->borderDistance();
     }
-    //! @todo even if a legend is empty it seems to be visible and the borderDistance will be added, this causes unecssary space when on top or bottom (and the other legend is not)
+    //! @todo even if a legend is empty it seems to be visible and the borderDistance will be added, this causes unnecessary space when on top or bottom (and the other legend is not)
 
-    // Figure out vertical alginemnt, by bitwise masking
+    // Figure out vertical alignment, by bitwise masking
     Qt::Alignment lva = mpLeftPlotLegend->alignment() & Qt::AlignVertical_Mask;
     Qt::Alignment rva = mpRightPlotLegend->alignment() & Qt::AlignVertical_Mask;
 
@@ -2425,7 +2425,7 @@ void PlotArea::updatePlotMarkers()
         mPlotMarkers[i]->setYValue(mpQwtPlot->invTransform(QwtPlot::yLeft, mpQwtPlot->transform(pCurve->yAxis(), closestPoint.y())));
         mPlotMarkers[i]->refreshLabel(closestPoint.x(), mpQwtPlot->invTransform(QwtPlot::yLeft, mpQwtPlot->transform(pCurve->yAxis(), closestPoint.y())));
         //!< @todo label text will be wrong if curve data has changed
-        //!< @todo label text will be wrong if plot sclae or offset change
+        //!< @todo label text will be wrong if plot scale or offset change
     }
 }
 

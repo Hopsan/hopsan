@@ -61,7 +61,7 @@ ModelicaModel::ModelicaModel(const ModelicaModel &rOther)
 
 
 //! @brief Returns a list of all parameters in the model
-//! @param rParameters Referens map between parameter name and parameter type and defaultvalue
+//! @param rParameters Reference map between parameter name and parameter type and default value
 QList<ModelicaVariable> ModelicaModel::getParameters() const
 {
     QList<ModelicaVariable> retval;
@@ -83,7 +83,7 @@ QList<ModelicaVariable> ModelicaModel::getParameters() const
 
 
 //! @brief Returns all variables in the model
-//! @param rVariables Referens map between parameter names and parameter types
+//! @param rVariables Reference map between parameter names and parameter types
 QList<ModelicaVariable> ModelicaModel::getVariables() const
 {
     QList<ModelicaVariable> retval;
@@ -265,7 +265,7 @@ QString ModelicaModel::getAnnotations() const
 
 
 //! @brief Returns a flattened equation system, which contains all model equations and equations from submodels in one equation system
-//! @param rEquations Referens to list of equations
+//! @param rEquations Reference to list of equations
 //! @param rLocalVars Reference to a map between name and type of local variables
 //! @param rPrefix Used to prepend a prefix to the equations (to be used for recursive calls to this function)
 //! @param rSubModels Used to generate equations for only a subset of submodels. Empty means use all submodels.

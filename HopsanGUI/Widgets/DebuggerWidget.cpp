@@ -203,7 +203,7 @@ void DebuggerWidget::updateVariablesList(QString port)
     NodeInfo info(mpSystem->getModelObject(component)->getPort(port)->getNodeType());
     QStringList variables = info.variableLabels;
     mpVariablesList->addItems(variables);
-    // Note we dont want to sort here, we want them to appear in the correct order
+    // Note we don't want to sort here, we want them to appear in the correct order
 }
 
 

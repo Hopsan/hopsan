@@ -204,7 +204,7 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
         mpProgressBarWorkerObject->moveToThread(&mProgressBarWorkerThread);
         mpSimulationWorkerObject->connectProgressDialog(mpProgressDialog);
 
-        // Start the progres bar worker thread and then signal the timer to start, so that it is started in the correct thread, will be problems otherwise
+        // Start the progress bar worker thread and then signal the timer to start, so that it is started in the correct thread, will be problems otherwise
         mProgressBarWorkerThread.start(QThread::LowPriority);
         emit startProgressBarRefreshTimer(gpConfig->getProgressBarStep());
     }
@@ -232,7 +232,7 @@ void SimulationThreadHandler::initSimulateFinalize_blocking(QVector<SystemContai
     connect(this, SIGNAL(done(bool)), &loop, SLOT(quit()), Qt::UniqueConnection);
     initSimulateFinalize(vpSystems, noChanges);
     loop.exec();
-    //! @todo what happens if the simulation cmopletes before the loop is started, then it will never quit
+    //! @todo what happens if the simulation completes before the loop is started, then it will never quit
 }
 
 void SimulationThreadHandler::initDone(bool success, int ms)

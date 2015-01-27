@@ -43,7 +43,7 @@ QString bool2str(const bool in)
     }
 }
 
-//! @brief Function for loading an XML DOM Documunt from file
+//! @brief Function for loading an XML DOM Document from file
 //! @param[in] rFile The file to load from
 //! @param[in] rDomDocument The DOM Document to load into
 //! @param[in] rootTagName The expected root tag name to extract from the Dom Document
@@ -85,7 +85,7 @@ void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
     rDomDocument.insertBefore(xmlProcessingInstruction, rDomDocument.firstChild());
 }
 
-//! @brief This function adds the root alement including version info to a HMF xml document
+//! @brief This function adds the root element including version info to a HMF xml document
 //! @param[in] rDomDocument The XML DOM document to append to
 //! @param[in] hmfVersion The version string of the hmf file
 //! @param[in] hopsanGuiVersion The version string of the Hopsan GUI Application
@@ -112,7 +112,7 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
     return subDomElement;
 }
 
-//! @brief Function to get a sub dom ellement, if it does not exist it is first added
+//! @brief Function to get a sub dom element, if it does not exist it is first added
 QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString element_name)
 {
     QDomElement elem = rDomElement.firstChildElement(element_name);
@@ -147,7 +147,7 @@ QDomElement appendDomTextNode(QDomElement &rDomElement, const QString element_na
 //! @brief Function for adding Dom elements containing one boolean text node
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
-//! @param[in] value The boolen value
+//! @param[in] value The boolean value
 QDomElement appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value)
 {
     if(value)
@@ -199,7 +199,7 @@ QDomElement appendDomValueNode2(QDomElement &rDomElement, const QString element_
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] a The first double value
 //! @param[in] b The second double value
-//! @param[in] c The theird double value
+//! @param[in] c The third double value
 //! @param[in] format The format to use when converting the number to text
 //! @param[in] precision The precision of the converted value according to format
 QDomElement appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c, const char format, const int precision)
@@ -241,7 +241,7 @@ void setQrealAttribute(QDomElement domElement, const QString attrName, const dou
 //! @param[in] domElement The DOM Element to parse
 //! @param[out] rA The first extracted double value
 //! @param[out] rB The second extracted double value
-//! @param[out] rC The theird extracted double value
+//! @param[out] rC The third extracted double value
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC)
 {
     QStringList poseList = domElement.text().split(" ");
@@ -319,7 +319,7 @@ bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue)
 //! @param[in] rDomElement The DOM Element to append to
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
-//! @param[in] th The orientaion (angle)
+//! @param[in] th The orientation (angle)
 //! @param[in] flipped isFlipped status of the object
 void appendPoseTag(QDomElement &rDomElement, const double x, const double y, const double th, const bool flipped, const int precision)
 {
@@ -390,7 +390,7 @@ void appendLogSettingsTag(QDomElement &rDomElement, const double logStartTime, c
 //! @param[in] domElement The DOM Element to parse
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
-//! @param[out] rTheta The orientaion (angle)
+//! @param[out] rTheta The orientation (angle)
 //! @param[out] rFlipped isFlipped status of the object
 void parsePoseTag(QDomElement domElement, double &rX, double &rY, double &rTheta, bool &rFlipped)
 {
@@ -529,7 +529,7 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVe
         QDomElement xmlParameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
         while (!xmlParameter.isNull())
         {
-            // Fix renamed node data vaariables
+            // Fix renamed node data variables
             //! @todo :: is used to upconvert old formats, can be removed later after 0.7 release (if 0.7 requires models to be saved in quite new hopsan version)
             if (xmlParameter.attribute("name").contains("#") || xmlParameter.attribute("name").contains("::"))
             {

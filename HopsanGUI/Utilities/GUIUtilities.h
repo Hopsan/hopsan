@@ -90,10 +90,10 @@ inline double rad2deg(const double rad)
     return rad*180.0/M_PI;
 }
 
-//! @brief Converts a string to Integer returning true if sucess
+//! @brief Converts a string to Integer returning true if success
 //!@param[in] rString The string to convert
 //!@param[out] rIntValue The value of the converted int
-//!@returns True if conversion was successfull
+//!@returns True if conversion was successful
 inline bool toInt(const QString &rString, int &rIntValue)
 {
     bool isOK=false;

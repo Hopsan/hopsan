@@ -75,7 +75,7 @@ QString readName(QTextStream &rTextStream)
                 tempName.append(" " + tmpstr);
             }
         }
-        return tempName.remove("\"").trimmed(); //Remove quotes and trimm (just to be sure)
+        return tempName.remove("\"").trimmed(); //Remove quotes and trim (just to be sure)
     }
     else
     {
@@ -97,7 +97,7 @@ void stripLTSpaces(QString &rString)
 }
 
 
-//! @brief Convenience function if you dont have a stream to read from
+//! @brief Convenience function if you don't have a stream to read from
 //! @return The extracted name without quotes, empty string if failed
 //! It is assumed that the name was saved OK. but error indicated by empty string
 QString readName(QString namestring)
@@ -117,7 +117,7 @@ QString readName(QString namestring)
 }
 
 
-//! @brief This function may be used to add quotes around string, usefull for saving names. Ex: "string"
+//! @brief This function may be used to add quotes around string, useful for saving names. Ex: "string"
 QString addQuotes(QString str)
 {
     str.prepend("\"");
@@ -129,7 +129,7 @@ QString addQuotes(QString str)
 //! @brief This function returns the relative absolute path
 //! @param [in] pathtochange The absolute path that you want to change
 //! @param [in] basedir The absolute directory path of the base directory
-//! @returns The realtive pathtochange, relative to basepath
+//! @returns The relative pathtochange, relative to basepath
 QString relativePath(QFileInfo pathtochange, QDir basedir)
 {
     if (!pathtochange.isAbsolute())
@@ -162,10 +162,10 @@ double normDeg360(double deg)
         deg -= 360.0;
     }
 
-    return fabs(deg); //Make sure we return positive (close to 0 if we have rounding issus that takes us bellow zero)
+    return fabs(deg); //Make sure we return positive (close to 0 if we have rounding issue that takes us below zero)
 }
 
-//! @brief normalises radinas to range between -PI and PI degrees
+//! @brief normalises radians to range between -PI and PI degrees
 double normRad(const double rad)
 {
     return qAtan2(qCos(rad),qSin(rad));
@@ -187,7 +187,7 @@ bool fuzzyLT(const double first, const double second, const double eps)
     return (first+eps) < second;
 }
 
-//! @brief Calculates the 2NORM of one point, the absoulte distance from 0,0
+//! @brief Calculates the 2NORM of one point, the absolute distance from 0,0
 double dist(const QPointF &rPoint)
 {
     return sqrt( rPoint.x()*rPoint.x() + rPoint.y()*rPoint.y() );
@@ -220,7 +220,7 @@ void replaceWord(QString &string, QString before, QString after)
 
 
 //! @brief Parses special symbols, subscripts and superscript in parameter names
-//! Names of greek letters will be transformed into greek letters.
+//! Names of Greek letters will be transformed into Greek letters.
 //! All text after '^' will be superscript.
 //! All text after '_' will be subscript.
 //! Superscripts and subscripts always cancels each other.
@@ -577,7 +577,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
     return rLineStream;
 }
 
-//! @todo this should be handeled by CORE
+//! @todo this should be handled by CORE
 bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString)
 {
     //Strip trailing and leading spaces
@@ -721,7 +721,7 @@ double findSmallestValueGreaterThanZero(QVector<double> data)
 //! @brief Splits a string at specified character, but does not split inside quotations
 //! @param str String to split
 //! @param c Character to split at
-//! @param split Referens to list with split strings
+//! @param split Reference to list with split strings
 void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split)
 {
     bool withinQuotations=false;
@@ -744,10 +744,10 @@ void splitWithRespectToQuotations(const QString str, const QChar c, QStringList 
     split.append(str.mid(start,len));
 }
 
-//! @brief Splits a string at specified character, but does not split inside quotations and paranthesis
+//! @brief Splits a string at specified character, but does not split inside quotations and parenthesis
 //! @param str String to split
 //! @param c Character to split at
-//! @param split Referens to list with split strings
+//! @param split Reference to list with split strings
 void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit)
 {
     bool withinQuotations=false;
@@ -760,7 +760,7 @@ void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, Q
         {
             withinQuotations=!withinQuotations;
         }
-        // This code assumes that paranthesis are correctly ordered (some other code should check that)
+        // This code assumes that parenthesis are correctly ordered (some other code should check that)
         else if (str[i] == '(')
         {
             ++withinNumParanthesis;
@@ -780,7 +780,7 @@ void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, Q
     rSplit.append(str.mid(start,len));
 }
 
-//! @brief Reimplementation of the core function santize name
+//! @brief Reimplementation of the core function sanitize name
 //! @todo this one may not be needed in the future when all loading of core data, and name checking, is moved to core
 void santizeName(QString &rString)
 {

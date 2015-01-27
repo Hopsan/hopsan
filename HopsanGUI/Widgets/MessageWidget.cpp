@@ -19,7 +19,7 @@
 //! @date   2010-12-xx
 //! @version $Id$
 //!
-//! @brief Contains the MessageWidget that dissplays messages to the user
+//! @brief Contains the MessageWidget that displays messages to the user
 //!
 
 #include "global.h"
@@ -124,7 +124,7 @@ void MessageWidget::addText(const QString &rText)
 QSize MessageWidget::sizeHint() const
 {
     QSize size = QWidget::sizeHint();
-    //Set very small height. A minimum apperantly stops at resonable size.
+    //Set very small height. A minimum apparently stops at reasonable size.
     size.rheight() = 1; //pixels
     return size;
 }
@@ -264,7 +264,7 @@ void MessageWidget::clear()
 }
 
 
-//! @brief Tells the message widget wether or not messages shall be grouped by tags
+//! @brief Tells the message widget whether or not messages shall be grouped by tags
 //! @param value True means that messages shall be grouped
 void MessageWidget::setGroupByTag(bool value)
 {
@@ -274,7 +274,7 @@ void MessageWidget::setGroupByTag(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show error messages
+//! @brief Tells the message widget whether or not it shall show error messages
 //! @param value True means show messages
 void MessageWidget::showErrorMessages(bool value)
 {
@@ -283,7 +283,7 @@ void MessageWidget::showErrorMessages(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show warning messages
+//! @brief Tells the message widget whether or not it shall show warning messages
 //! @param value True means show messages
 void MessageWidget::showWarningMessages(bool value)
 {
@@ -292,7 +292,7 @@ void MessageWidget::showWarningMessages(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show info messages
+//! @brief Tells the message widget whether or not it shall show info messages
 //! @param value True means show messages
 void MessageWidget::showInfoMessages(bool value)
 {
@@ -301,7 +301,7 @@ void MessageWidget::showInfoMessages(bool value)
 }
 
 
-//! @brief Tells the message widget wether or not it shall show debug messages
+//! @brief Tells the message widget whether or not it shall show debug messages
 //! @param value True means show messages
 void MessageWidget::showDebugMessages(bool value)
 {

@@ -69,7 +69,7 @@ SharedVectorVariableT createFreeFrequencyVectorVariabel(const QVector<double> &r
     return SharedVectorVariableT(new VectorVariable(rFrequency, 0, createFrequencyVariableDescription(), SharedMultiDataVectorCacheT(0)));
 }
 
-//! @brief This is a variable factory, variables will be free and wont be connected to a data chace
+//! @brief This is a variable factory, variables will be free and won't be connected to a data cache
 SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc)
 {
     switch(type)
@@ -87,7 +87,7 @@ SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescr
     }
 }
 
-//! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
+//! @todo this should not be here should be together with plot variable stuff in some other file later
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName)
 {
     if (componentName.isEmpty() && portName.isEmpty())
@@ -103,7 +103,7 @@ QString makeConcatName(const QString componentName, const QString portName, cons
     return "ERRORinConcatName";
 }
 
-//! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
+//! @todo this should not be here should be together with plot variable stuff in some other file later
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName)
 {
     rCompName.clear();
@@ -460,7 +460,7 @@ void VectorVariable::diffBy(SharedVectorVariableT pOther)
             return;
         }
 
-        // Performe diff operation
+        // Perform diff operation
         for(int i=0; i<pThisData->size()-1; ++i)
         {
             (*pThisData)[i] = ((*pThisData)[i+1]-(*pThisData)[i])/((*pOtherData)[i+1]-(*pOtherData)[i]);
@@ -590,7 +590,7 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
         }
 
         // Vector size has to be an even potential of 2.
-        // Calculate largets potential that is smaller than or equal to the vector size.
+        // Calculate largest potential that is smaller than or equal to the vector size.
 #ifndef __APPLE__
         const int n = pow(2, int(log2(data.size()))); // This is odd.... /magse
 #else
@@ -614,7 +614,7 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
         FFT(vComplex);
 
         // Scalar multiply complex vector with its conjugate, and divide it with its size
-        // Alos build frequency vector
+        // Also build frequency vector
         DataVectorT freq, mag;
         freq.reserve(n/2);
         mag.reserve(n/2);
@@ -933,7 +933,7 @@ void VectorVariable::append(const double t, const double y)
 void VectorVariable::append(const double y)
 {
     //! @todo smarter append regardless of cached or not
-    //! @todo mayebe a reserve function to reserve memory if we know how much to expect
+    //! @todo maybe a reserve function to reserve memory if we know how much to expect
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
     pData->append(y);
     mpCachedDataVector->endFullVectorOperation(pData);
@@ -1058,7 +1058,7 @@ bool VectorVariable::isCachingDataToDisk() const
 
 bool VectorVariable::indexInRange(const int idx) const
 {
-    //! @todo Do we need to check timevector also ? (or should we assume thay are the same)
+    //! @todo Do we need to check timevector also ? (or should we assume that are the same)
     return (idx>=0 && idx<mpCachedDataVector->size());
 }
 
@@ -1361,10 +1361,10 @@ void VectorVariableContainer::insertDataGeneration(const int generation, SharedV
     emit generationAdded();
 }
 
-//! @brief Removes a generation of the variable, and the varaiable itself if it becomes empty
-//! @note If last generation the container itself will be deletet from parent log data handler, so DO NOT CALL this while itterating through the log data map
-//! @todo this functions should not call delete in parent if empty, it causes difficult to debugg problems while calling it during itteration, need to come up with a smarter solution
-//! @returns True if the generation was removed, otherwise false (if generation was not present or taged as keep (when not forcing)
+//! @brief Removes a generation of the variable, and the variable itself if it becomes empty
+//! @note If last generation the container itself will be deleted from parent log data handler, so DO NOT CALL this while iterating through the log data map
+//! @todo this functions should not call delete in parent if empty, it causes difficult to debug problems while calling it during iteration, need to come up with a smarter solution
+//! @returns True if the generation was removed, otherwise false (if generation was not present or tagged as keep (when not forcing)
 bool VectorVariableContainer::removeDataGeneration(const int generation, const bool force)
 {
     // Remove a data generation
@@ -1379,7 +1379,7 @@ bool VectorVariableContainer::removeDataGeneration(const int generation, const b
 }
 
 //! @brief Removes a generation of the variable
-//! @returns True if the generation was removed, otherwise false (if generation was not present or taged as keep (when not forcing)
+//! @returns True if the generation was removed, otherwise false (if generation was not present or tagged as keep (when not forcing)
 bool VectorVariableContainer::removeDataGenerationOnly(const int generation, const bool force)
 {
     bool didRemove=false;
@@ -1442,7 +1442,7 @@ bool VectorVariableContainer::purgeOldGenerations(const int purgeEnd, const int 
 
 void VectorVariableContainer::removeAllGenerations()
 {
-    // It is assumed that the generation map is sorted by key which it should be since adding will allways append
+    // It is assumed that the generation map is sorted by key which it should be since adding will always append
     QList<int> gens = mDataGenerations.keys();
     for (int it=0; it<gens.size(); ++it)
     {
@@ -1571,7 +1571,7 @@ void TimeDomainVariable::diffBy(SharedVectorVariableT pOther)
         if (mpSharedTimeOrFrequencyVector)
         {
             VectorVariable::diffBy(mpSharedTimeOrFrequencyVector);
-            //! @todo if successfull we need to make our time vector shorter by one
+            //! @todo if successful we need to make our time vector shorter by one
         }
         else
         {
@@ -1675,7 +1675,7 @@ void TimeDomainVariable::assignFrom(const QVector<double> &rTime, const QVector<
 }
 
 //! @brief Appends one point to a curve, NEVER USE THIS UNLESS A CUSTOM (PRIVATE) X (TIME) VECTOR IS USED!
-//! @todo we need som kind of differnt variable typ for this
+//! @todo we need some kind of different variable type for this
 void TimeDomainVariable::append(const double t, const double y)
 {
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
@@ -1857,7 +1857,7 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
     FFT(vCompOut);
     FFT(vCompIn);
 
-    // Calculate the trasfere function G and then the bode vectors
+    // Calculate the transfer function G and then the bode vectors
     QVector< std::complex<double> > G;
     QVector<double> vRe, vIm, vImNeg, vBodeGain, vBodePhase, vBodePhaseUncorrected, freq;
     // Reserve memory
@@ -1890,7 +1890,7 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
             vBodeGain.append( 20.*log10( std::abs(G[i]) ) );            // Gain: abs(G) = sqrt(R^2 + X^2) in dB
             vBodePhaseUncorrected.append( rad2deg(std::arg(G[i])) );    // Phase: arg(G) = arctan(X/R) in deg
 
-            // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
+            // Correct the phase plot to make it continuous (because atan2 is limited from -180 to +180)
             if(vBodePhaseUncorrected.size() > 1)
             {
                 //! @todo there is a risk here that the skip from +-180 to -+180 is missed if the value lies below (abs) 170
@@ -2117,7 +2117,7 @@ void IndexIntervalCollection::testMe()
 
 void IndexIntervalCollection::mergeIntervals(int first, int second)
 {
-    // We assume that the intervals to merge are actually continuos neighbors
+    // We assume that the intervals to merge are actually continuous neighbors
     mIntervalList[first].mMax = mIntervalList[second].mMax;
     mIntervalList.removeAt(second);
 }

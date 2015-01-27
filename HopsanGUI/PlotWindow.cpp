@@ -492,7 +492,7 @@ PlotCurve* PlotWindow::addPlotCurve(HopsanVariable data, const QwtPlot::Axis axi
     if (data)
     {
         // Remember which model it belongs to, and connect the closeWindow signal from the data handler
-        // this makes it possible to autoclose all plotwindows with data from a particular model(logdatahandler)
+        // this makes it possible to auto close all plotwindows with data from a particular model(logdatahandler)
         if (data.mpVariable->getLogDataHandler())
         {
             connect(data.mpVariable->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
@@ -732,7 +732,7 @@ void PlotWindow::showToolBarHelpPopup()
 //! @brief Slot that closes all tabs with no curves, and then closes the entire plot window if it has no curves.
 void PlotWindow::closeIfEmpty()
 {
-    // Cloase each plottab that is empty (no curves)
+    // Close each plottab that is empty (no curves)
     int i=0;
     while (i<mpPlotTabWidget->count())
     {

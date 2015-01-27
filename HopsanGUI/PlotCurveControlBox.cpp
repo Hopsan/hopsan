@@ -195,7 +195,7 @@ void PlotCurveControlBox::updateColor(const QColor color)
     buttonStyle.append(QString("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
     buttonStyle.append(QString("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
 
-    //! @todo need to fix the syle so that it is shown which is activated
+    //! @todo need to fix the style so that it is shown which is activated
 
     mpColorBlob->setStyleSheet(buttonStyle);
 }
@@ -203,7 +203,7 @@ void PlotCurveControlBox::updateColor(const QColor color)
 //! @brief Updates buttons and text in plot info box to correct values
 void PlotCurveControlBox::updateInfo()
 {
-    // Enable/diable generation buttons
+    // Enable/disable generation buttons
     SharedVectorVariableContainerT pVarContainer = mpPlotCurve->getSharedVectorVariableContainer();
     int gen = mpPlotCurve->getGeneration();
     int lowGen, highGen, nGen;
@@ -229,7 +229,7 @@ void PlotCurveControlBox::updateInfo()
     //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
     mpGenerationLabel->setText(QString("[%1,%2]").arg(lowGen+1).arg(highGen+1));
 
-    // Set source lable
+    // Set source label
     mpSourceLable->setText(variableSourceTypeAsShortString(mpPlotCurve->getDataSource()));
     switch(mpPlotCurve->getDataSource())
     {
@@ -270,7 +270,7 @@ void PlotCurveControlBox::refreshTitle()
 
 void PlotCurveControlBox::markActive(bool active)
 {
-    //! @todo this is not visible (marking doesnt show)
+    //! @todo this is not visible (marking doesn't show)
     mpColorBlob->setChecked(active);
     if (active)
     {
@@ -388,7 +388,7 @@ void CustomXDataControl::dropEvent(QDropEvent *e)
     QString mimeText = e->mimeData()->text();
     if(mimeText.startsWith("HOPSANPLOTDATA:"))
     {
-        //! @todo what about model name, if draging from other model (it should not work but sowhere we need to block and warn) (maybe not here)
+        //! @todo what about model name, if dragging from other model (it should not work but somewhere we need to block and warn) (maybe not here)
         QStringList fields = mimeText.split(":");
         if (fields.size() > 2)
         {

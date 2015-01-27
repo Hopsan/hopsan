@@ -114,7 +114,7 @@ PlotWindow *PlotHandler::createNewOrReplacePlotwindow(const QString &rName)
 
 void PlotHandler::forgetPlotWindow(PlotWindow *pWindow)
 {
-    // Destruction of plot window data will happen by itself so we dont need to do that here
+    // Destruction of plot window data will happen by itself so we don't need to do that here
     mOpenPlotWindows.remove(mOpenPlotWindows.key(pWindow));
 }
 
@@ -163,7 +163,7 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariabl
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
     PlotCurve *pCurve = pPlotWindow->addPlotCurve(data, QwtPlot::Axis(axis), curveColor, thickness, type);
-    // We want to preserve the internal autoupdate setting from the curve if it is off, so we can actually only turn it off here
+    // We want to preserve the internal auto update setting from the curve if it is off, so we can actually only turn it off here
     pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
     return pPlotWindow;
 }
@@ -175,7 +175,7 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariabl
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
     PlotCurve *pCurve = pPlotWindow->addPlotCurve(xdata, ydata, QwtPlot::Axis(axis), curveColor, thickness, type);
-    // We want to preserve the internal autoupdate setting from the curve if it is off, so we can actually only turn it off here
+    // We want to preserve the internal auto update setting from the curve if it is off, so we can actually only turn it off here
     pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
     return pPlotWindow;
 }

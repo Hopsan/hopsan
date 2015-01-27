@@ -476,7 +476,7 @@ void UndoStack::undoOneStep()
 }
 
 
-//! @brief Will redo the previously undone changes if they exist, and increase stsack position one step
+//! @brief Will redo the previously undone changes if they exist, and increase stack position one step
 //! @see undoOneStep()
 void UndoStack::redoOneStep()
 {
@@ -846,7 +846,7 @@ void UndoStack::registerAddedConnector(Connector *item)
 }
 
 
-//! @brief Registser function for renaming an object
+//! @brief Register function for renaming an object
 //! @param oldName Old object name
 //! @param newName New object name
 void UndoStack::registerRenameObject(QString oldName, QString newName)
@@ -943,7 +943,7 @@ void UndoStack::registerHorizontalFlip(QString objectName)
 }
 
 
-//! @brief Registser function for changing parameters of an object
+//! @brief Register function for changing parameters of an object
 //! @param objectName Name of the object with the parameter
 //! @param parameterName Name of the changed parameter
 //! @param oldValueTxt Text string with old parameter value
@@ -963,7 +963,7 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
 }
 
 
-////! @brief Registser function for changing the start values of an object
+////! @brief Register function for changing the start values of an object
 ////! @param objectName Name of the object
 ////! @param portName Name of the port where start value has changed
 ////! @param parameterName Name of the changed start value
@@ -1051,7 +1051,7 @@ void UndoStack::registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos
 
 
 //! @brief Register function for resizing a text box widget
-//! Although this function handles position changes, it must not be confused with registerMovedWidget function. This functin only remembers the position because resizing a box will move the center position.
+//! Although this function handles position changes, it must not be confused with registerMovedWidget function. This function only remembers the position because resizing a box will move the center position.
 //! @param index Widget index of the resized box widget
 //! @param w_old Previous width of the box widget
 //! @param h_old Previous height of the box widget
@@ -1117,7 +1117,7 @@ void UndoStack::modifyTextboxWidget(QDomElement &rStuffElement)
         QString tagname(HMF_TEXTBOXWIDGETTAG);
         pWidget->loadFromDomElement(rStuffElement.firstChildElement(tagname));
 
-        // Now remeber the prevData incase we want to redo/undo again
+        // Now remember the prevData in case we want to redo/undo again
         rStuffElement.replaceChild(rStuffElement.lastChildElement(tagname), rStuffElement.firstChildElement(tagname));
     }
 }

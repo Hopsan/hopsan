@@ -398,7 +398,7 @@ private:
     QString mImportFileName;
 };
 
-//! @todo complex varibales is a bit strange right now, it abuses overloading of function from vector variable. Reason is that real xy plots are not supported /Peter
+//! @todo complex variables is a bit strange right now, it abuses overloading of function from vector variable. Reason is that real xy plots are not supported /Peter
 class ComplexVectorVariable : public VectorVariable
 {
     Q_OBJECT

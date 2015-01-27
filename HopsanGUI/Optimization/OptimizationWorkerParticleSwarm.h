@@ -29,7 +29,7 @@
 #include <QVector>
 #include <QStringList>
 
-//Hopasn includes
+//Hopsan includes
 #include "OptimizationWorker.h"
 
 class OptimizationHandler;

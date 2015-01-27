@@ -463,7 +463,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double worstObjective = -1000000000;
             for(int i=0; i<mNumPoints; ++i)
             {
-                if(mvIdx.contains(i)) continue;  //Ignore alraedy added indexes
+                if(mvIdx.contains(i)) continue;  //Ignore already added indexes
 
                 if(mObjectives[i] > worstObjective)
                 {
@@ -835,7 +835,7 @@ void OptimizationWorkerComplexRFP::plotPoints()
         }
         else
         {
-            //! @todo need to turn of auto refresh on plot and trygger it manually to avoid multiple redraws here
+            //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
             parVar_x->assignFrom(x);
             parVar_y->assignFrom(y);
         }
@@ -867,7 +867,7 @@ void OptimizationWorkerComplexRFP::plotPoints()
         }
         else
         {
-            //! @todo need to turn of auto refresh on plot and trygger it manually to avoid multiple redraws here
+            //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
             parVar_x->assignFrom(x);
             parVar_y->assignFrom(y);
         }

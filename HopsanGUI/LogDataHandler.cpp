@@ -505,7 +505,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
             i=1;
         }
         // Go through all imported variable columns, and create the appropriate vector variable type and insert it
-        // Note! You can not mix time frequency or plain vector types in the sam plo (v1) file
+        // Note! You can not mix time frequency or plain vector types in the same plo (v1) file
         for (; i<importedPLODataVector.size(); ++i)
         {
             SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
@@ -771,7 +771,7 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
 
             while (!csvStream.atEnd())
             {
-                //! @todo it fould be better here to read line by line into a large array and then extract sub vectors from that throu a smart matrix object
+                //! @todo it would be better here to read line by line into a large array and then extract sub vectors from that through a smart matrix object
                 QStringList row_fields = csvStream.readLine().split(",");
                 if (row_fields.size() > 0)
                 {
@@ -900,7 +900,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
     std::vector<double> *pCoreSysTimeVector=0, *pPrevInsertedCoreVarTimeVector=0;
     SharedVectorVariableT pSysTimeVec, pVarTimeVec;
 
-    //! @todo why not run multiappend when overwriting generation ? Baecouse tehn we are not appending, need som common open mode
+    //! @todo why not run multiappend when overwriting generation ? Because then we are not appending, need some common open mode
     if(!overWriteLastGeneration)
     {
         this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
@@ -908,7 +908,7 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
     // Iterate components
     for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
     {
-        //! @todo getting names every time is very ineffecient it creates and copies a new vector every freaking time
+        //! @todo getting names every time is very inefficient it creates and copies a new vector every freaking time
         ModelObject *pModelObject = mpParentContainerObject->getModelObject(mpParentContainerObject->getModelObjectNames().at(m));
 
         for(QList<Port*>::iterator pit=pModelObject->getPortListPtrs().begin(); pit!=pModelObject->getPortListPtrs().end(); ++pit)
@@ -960,18 +960,18 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                         pVarDesc->mVariableSourceType = ModelVariableType;
 
                         SharedVectorVariableT pNewData;
-                        //! @todo here we should be able to communicate between logdatahanlders to get data from parent, htis must be solved in a better way
-                        // Insert system internal timevector unless a variable has a different timevector (like those connected to interface componets)
+                        //! @todo here we should be able to communicate between logdatahanlders to get data from parent, this must be solved in a better way
+                        // Insert system internal timevector unless a variable has a different timevector (like those connected to interface components)
                         if (pCoreVarTimeVector == pCoreSysTimeVector)
                         {
                             pNewData = insertTimeDomainVariable(pSysTimeVec, dataVec, pVarDesc);
                         }
-                        // Else insert the other time vector, this should only happen at most once per subsystem, otherwse something is wrong (but we do not check that)
+                        // Else insert the other time vector, this should only happen at most once per subsystem, otherwise something is wrong (but we do not check that)
                         else if (pPrevInsertedCoreVarTimeVector != pCoreVarTimeVector)
                         {
                             // Make sure we use the same time vector
                             SharedVariableDescriptionT pTimeVarDesc = createTimeVariableDescription();
-                            pTimeVarDesc->mDataName = "Time_Parent_"; //!< @todo wery bad hardcoded name
+                            pTimeVarDesc->mDataName = "Time_Parent_"; //!< @todo very bad hardcoded name
                             pVarTimeVec = insertCustomVectorVariable(QVector<double>::fromStdVector(*pCoreVarTimeVector), pTimeVarDesc); //!< @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
 
                             // Set the custom unit scaling to the default
@@ -1077,7 +1077,7 @@ HopsanVariable LogDataHandler::getHopsanVariable(const QString &rName, const int
     return HopsanVariable();
 }
 
-//! @brief Returns multiple logdatavariables based on regular expression search. Exluding temp variables but including aliases
+//! @brief Returns multiple logdatavariables based on regular expression search. Excluding temp variables but including aliases
 //! @param [in] rNameExp The regular expression for the names to match
 //! @param [in] generation The desired generation of the variable
 QVector<SharedVectorVariableT> LogDataHandler::getMatchingVariablesAtGeneration(const QRegExp &rNameExp, const int generation) const
@@ -1215,7 +1215,7 @@ bool LogDataHandler::defineAlias(const QString &rAlias, const QString &rFullName
 
 //! @brief Returns plot variable for specified alias
 //! @param[in] rAlias Alias of variable
-//! @param[in] gen Generation to check, -1 = Current, -2 = Newest Availible, >= 0 = Specific generation to check
+//! @param[in] gen Generation to check, -1 = Current, -2 = Newest Available, >= 0 = Specific generation to check
 QString LogDataHandler::getFullNameFromAlias(const QString &rAlias, const int gen) const
 {
     SharedVectorVariableContainerT pAliasContainer = getVariableContainer(rAlias);
@@ -1255,7 +1255,7 @@ QList<int> LogDataHandler::getGenerations() const
 {
     QMap<int, void*> allGens;
 
-    // Ask each data variable what gens it is availible in
+    // Ask each data variable what gens it is available in
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
@@ -1275,7 +1275,7 @@ QList<int> LogDataHandler::getGenerations() const
 int LogDataHandler::getLowestGenerationNumber() const
 {
     int min=INT_MAX;
-    // We must search through and ask all variables since they may have different sets of non-contious generations
+    // We must search through and ask all variables since they may have different sets of non-continuous generations
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
@@ -1288,7 +1288,7 @@ int LogDataHandler::getLowestGenerationNumber() const
 int LogDataHandler::getHighestGenerationNumber() const
 {
     int max=INT_MIN;
-    // We must search through and ask all variables since they may have different sets of non-contious generations
+    // We must search through and ask all variables since they may have different sets of non-continuous generations
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
@@ -1304,7 +1304,7 @@ void LogDataHandler::getLowestAndHighestGenerationNumber(int &rLowest, int &rHig
     rLowest=INT_MAX;
     rHighest=INT_MIN;
 
-    // We must search through and ask all variables since they may have different sets of non-contious generations
+    // We must search through and ask all variables since they may have different sets of non-continuous generations
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
@@ -1313,12 +1313,12 @@ void LogDataHandler::getLowestAndHighestGenerationNumber(int &rLowest, int &rHig
     }
 }
 
-//! @brief Ask each variable how many generations it has, and returns the maximum (the total number of availiable generations)
+//! @brief Ask each variable how many generations it has, and returns the maximum (the total number of available generations)
 //! @note This function will become slower as the number of unique variable names grow
 int LogDataHandler::getNumberOfGenerations() const
 {
     int num = 0;
-    // Lets loop through everyone and ask how many gens they have, the one with the most will be the total availible number
+    // Lets loop through everyone and ask how many gens they have, the one with the most will be the total available number
     LogDataMapT::const_iterator it;
     for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
     {
@@ -1374,10 +1374,10 @@ void LogDataHandler::limitPlotGenerations()
 //            removeGeneration(lowest, false);
 
 //            // Clear from generations cache object map
-//            //! @todo should we realy clear this, what if there were some variables that hade autoremove disabled
+//            //! @todo should we really clear this, what if there were some variables that had autoremove disabled
 //            mGenerationCacheMap.remove(lowest);
 //            ++lowest;
-//            //! @todo since getNumGens may be slow, maybe removeGen should return booltrue if something was actually removed, then we can calc numGens locally
+//            //! @todo since getNumGens may be slow, maybe removeGen should return bool true if something was actually removed, then we can calc numGens locally
 //            numGens = getNumberOfGenerations(); //Update num gens
 //        }
 //        timer.tocDbg("removeOldGenerations");
@@ -1477,7 +1477,7 @@ const QList<QDir> &LogDataHandler::getCacheDirs() const
     return mCacheDirs;
 }
 
-//! @brief Will retreive an existing or create a new generation multi-chace object
+//! @brief Will retrieve an existing or create a new generation multi-cache object
 SharedMultiDataVectorCacheT LogDataHandler::getGenerationMultiCache(const int gen)
 {
     SharedMultiDataVectorCacheT pCache = mGenerationCacheMap.value(gen, SharedMultiDataVectorCacheT());
@@ -1588,7 +1588,7 @@ bool LogDataHandler::deleteVariableContainer(const QString &rVarName)
     LogDataMapT::iterator it = mLogDataMap.find(rVarName);
     if( (it != mLogDataMap.end()) && !mCurrentlyDeletingContainers.contains(it.value()) )
     {
-        // Remember that this one is being deleted to avoid deleting the iterator agin if any subfunction results in a call back to this one
+        // Remember that this one is being deleted to avoid deleting the iterator again if any subfunction results in a call back to this one
         mCurrentlyDeletingContainers.push_back(it.value());
 
         // Handle alias removal
@@ -1597,7 +1597,7 @@ bool LogDataHandler::deleteVariableContainer(const QString &rVarName)
             unregisterAlias(rVarName);
         }
 
-        // Explicitly remove all generations, if you trigger a delete then you expect the data to be removed (otherwise it would remin untill all shared pointers dies)
+        // Explicitly remove all generations, if you trigger a delete then you expect the data to be removed (otherwise it would remain until all shared pointers dies)
         // Note! Anyone using a data vector shared pointer will still hang on to that as long as they wish
         it.value()->removeAllGenerations();
 
@@ -1730,7 +1730,7 @@ double LogDataHandler::peekVariable(SharedVectorVariableT a, const int index)
 
 
 //! @brief Creates an orphan temp variable that will be deleted when its shared pointer reference counter reaches zero (when no one is using it)
-//! @todo this function should not be inside logdatahdnler, it should be free so that you do not need to use a log datahnadler to create a free variable, however it is nice to get the generation number, we wont get that if creating it outside
+//! @todo this function should not be inside logdatahandler, it should be free so that you do not need to use a log datahandler to create a free variable, however it is nice to get the generation number, we wont get that if creating it outside
 SharedVectorVariableT LogDataHandler::createOrphanVariable(const QString &rName, VariableTypeT type)
 {
     SharedVariableDescriptionT varDesc = SharedVariableDescriptionT(new VariableDescription());
@@ -1808,7 +1808,7 @@ PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString 
     return 0;
 }
 
-//! @brief Get a list of all available variables at their respective higest (newest) generation. Aliases are excluded.
+//! @brief Get a list of all available variables at their respective highest (newest) generation. Aliases are excluded.
 QList<HopsanVariable> LogDataHandler::getAllNonAliasVariablesAtRespectiveNewestGeneration()
 {
     return getAllNonAliasVariablesAtGeneration(-1);
@@ -1971,7 +1971,7 @@ void LogDataHandler::removeImportedFileGenerations(const QString &rFileName)
 
 QString LogDataHandler::getNewCacheName()
 {
-    // The first dir is the main one, any other dirs have been appended later when taking ownership of someone elses data
+    // The first dir is the main one, any other dirs have been appended later when taking ownership of someone else's data
     return mCacheDirs.first().absoluteFilePath("cf"+QString("%1").arg(mCacheSubDirCtr++));
 }
 
@@ -2034,8 +2034,8 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
     {
         int minOGen = pOtherHandler->getLowestGenerationNumber();
         int maxOGen = pOtherHandler->getHighestGenerationNumber();
-        // Since generations are not necessarily continous and same in all datavariables we try with every generation between min and max
-        // We cant take them all at once, that colut change the internal ordering
+        // Since generations are not necessarily continuous and same in all datavariables we try with every generation between min and max
+        // We cant take them all at once, that could change the internal ordering
         for (int i=minOGen; i<=maxOGen; ++i)
         {
             // Take one at a time
@@ -2060,7 +2060,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
             if (!mCacheDirs.contains(cacheDir))
             {
                 mCacheDirs.append(cacheDir);
-                //! @todo this will leave the dir in the other object aswell but I dont think it will remove the files in the dir when it dies, may need to deal with that.
+                //! @todo this will leave the dir in the other object as well but I don't think it will remove the files in the dir when it dies, may need to deal with that.
             }
 
             tookOwnershipOfSomeData = true;
@@ -2082,7 +2082,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, const in
                 other_it.value()->removeDataGeneration(otherGeneration, true);
                 tookOwnershipOfSomeData=true;
 
-                //! @todo how to detect if alias colision appear, how to notify user
+                //! @todo how to detect if alias collision appear, how to notify user
             }
 
         }
@@ -2208,7 +2208,7 @@ void LogDataHandler::forgetImportedVariable(SharedVectorVariableT pData)
         fit = mImportedLogDataMap.find(pData->getImportedFileName());
         if (fit != mImportedLogDataMap.end())
         {
-            // Now remove the sub map entery
+            // Now remove the sub map entry
             // Only remove if same variable (same key,value) (compare pointers)
             fit.value().remove(pData->getFullVariableName(),pData);
             // Now erase the file level map if it has become empty
@@ -2291,7 +2291,7 @@ SharedVectorVariableT LogDataHandler::insertFrequencyDomainVariable(SharedVector
 
 //! @brief Inserts a variable into the map creating a container if needed
 //! @param[in] pVariable The variable to insert
-//! @param[in] keyName An alternative keyName to use (used recursivly to set an alias, do not abuse this argument)
+//! @param[in] keyName An alternative keyName to use (used recursively to set an alias, do not abuse this argument)
 //! @param[in] gen An alternative generation number (-1 = current))
 //! @returns A HopsanVariable object representing the inserted variable
 HopsanVariable LogDataHandler::insertVariable(SharedVectorVariableT pVariable, QString keyName, int gen)
@@ -2309,7 +2309,7 @@ HopsanVariable LogDataHandler::insertVariable(SharedVectorVariableT pVariable, Q
     }
 
     SharedVectorVariableContainerT pDataContainer;
-    // First check if a data variable with this name alread exist, if it exist then insert into it
+    // First check if a data variable with this name already exist, if it exist then insert into it
     LogDataMapT::iterator it = mLogDataMap.find(keyName);
     if (it != mLogDataMap.end())
     {

@@ -132,7 +132,7 @@ void HVCWidget::openHvcFile()
             }
             else
             {
-                // Make sure absoulte, the loaded modelpath should be relative to the hvc file
+                // Make sure absolute, the loaded modelpath should be relative to the hvc file
                 modelFilePath = hvcFileInfo.absolutePath()+"/"+modelFilePath;
             }
             hmfFile.setFileName(modelFilePath);
@@ -223,7 +223,7 @@ void HVCWidget::openHvcFile()
                 }
                 else
                 {
-                    // Make sure absoulte, the loaded datafilepath should be relative to the hvc file
+                    // Make sure absolute, the loaded datafilepath should be relative to the hvc file
                     dataFilePath = hvcFileInfo.absolutePath()+"/"+dataFilePath;
                 }
                 dataFile.setFileName(dataFilePath);
@@ -373,7 +373,7 @@ void FullNameVariableTreeWidget::addFullNameVariable(const QString &rFullName, c
             {
                 if (pParentItem->child(c)->text(0) == name)
                 {
-                    // We assume there will never be duplicates due to uniqe name requirements
+                    // We assume there will never be duplicates due to unique name requirements
                     pFound = pParentItem->child(c);
                     break;
                 }
@@ -401,7 +401,7 @@ void FullNameVariableTreeWidget::addFullNameVariable(const QString &rFullName, c
             }
             else
             {
-                // We assume there will never be duplicates due to uniqe name requirements
+                // We assume there will never be duplicates due to unique name requirements
                 pLevelItem = found.first();
             }
 

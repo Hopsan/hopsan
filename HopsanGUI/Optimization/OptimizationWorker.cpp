@@ -40,7 +40,7 @@
 #include "PlotCurve.h"
 #include "Configuration.h"
 
-//! @brief Checkes for convergence (in either of the algorithms)
+//! @brief Checks for convergence (in either of the algorithms)
 OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
 {
     mpHandler = pHandler;
@@ -113,7 +113,7 @@ void OptimizationWorker::run()
 }
 
 
-//! @brief Finalie function for optimization worker base class (should never be called directly)
+//! @brief Finalize function for optimization worker base class (should never be called directly)
 void OptimizationWorker::finalize()
 {
 
@@ -342,7 +342,7 @@ void OptimizationWorker::logAllPoints()
 }
 
 
-//! @brief Checks whether or not any of the convergence cricterias has been fulfilled
+//! @brief Checks whether or not any of the convergence criteria has been fulfilled
 bool OptimizationWorker::checkForConvergence()
 {
     //Check objective function convergence
@@ -444,7 +444,7 @@ void OptimizationWorker::plotPoints()
         }
         else
         {
-            //! @todo need to turn of auto refresh on plot and trygger it manually to avoid multiple redraws here
+            //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
             parVar_x->assignFrom(x);
             parVar_y->assignFrom(y);
         }
@@ -521,7 +521,7 @@ void OptimizationWorker::plotObjectiveFunctionValues()
     }
 
     // If this is the first time, then recreate the plotwindows
-    // Note! plots will autoupdate when new data is appended, so there is no need to call plotab->update()
+    // Note! plots will auto update when new data is appended, so there is no need to call plotab->update()
     if(bestVar.data()->getDataSize() == 1)
     {
         PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("ObjectiveFunction");
@@ -554,7 +554,7 @@ void OptimizationWorker::plotParameters()
         }
 
         // If this is the first time, then recreate the plotwindows
-        // Note! plots will autoupdate when new data is appended, so there is no need to call plotab->update()
+        // Note! plots will auto update when new data is appended, so there is no need to call plotab->update()
         if(par.data()->getDataSize() == 1)
         {
             PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");

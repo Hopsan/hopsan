@@ -490,7 +490,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 }
 
-//! @brief Returns a list with supported functions for equation-based model genereation
+//! @brief Returns a list with supported functions for equation-based model generation
 //! @todo Duplicated with HopsanGenerator
 QStringList ModelicaHighlighter::getSupportedFunctionsList()
 {

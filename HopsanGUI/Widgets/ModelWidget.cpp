@@ -153,7 +153,7 @@ ModelWidget::~ModelWidget()
 {
     delete mpAnimationWidget;
 
-    //First make sure that we go to the top level system, we dont want to be inside a subsystem while it is beeing deleted
+    //First make sure that we go to the top level system, we don't want to be inside a subsystem while it is being deleted
     this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
     //Now delete the root system, first remove in core (will also trigger delete for all sub modelobjects)
     mpToplevelSystem->deleteInHopsanCore();
@@ -463,8 +463,8 @@ void ModelWidget::exportModelParameters()
 ////        appendDomValueNode2(XMLparameter, "minmax", gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
 ////    }
 
-////    //Save the model component hierarcy
-////    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
+////    //Save the model component hierarchy
+////    //! @todo maybe use a saveload object instead of calling save immediately (only load object exist for now), or maybe this is fine
 //    mpSystem->saveToDomElement(hmfRoot);
 
 //    //Save to file
@@ -482,7 +482,7 @@ void ModelWidget::exportModelParameters()
 //    //Close the file
 //    xmlhmf.close();
 
-//    //Set the tab name to the model name, efectively removing *, also mark the tab as saved
+//    //Set the tab name to the model name, effectively removing *, also mark the tab as saved
 //    QString tabName = mpSystem->getModelFileInfo().baseName();
 //    mpParentCentralTabWidget->setTabText(mpParentCentralTabWidget->currentIndex(), tabName);
 //    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
@@ -1180,7 +1180,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
 
     if(success)
     {
-            //Set the tab name to the model name, efectively removing *, also mark the tab as saved
+            //Set the tab name to the model name, effectively removing *, also mark the tab as saved
         //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
         QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
         gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
@@ -1246,7 +1246,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
         }
     }
         //Save the model component hierarcy
-    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
+    //! @todo maybe use a saveload object instead of calling save immediately (only load object exist for now), or maybe this is fine
     mpToplevelSystem->saveToDomElement(rootElement, contents);
 
         //Save to file

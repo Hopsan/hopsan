@@ -30,7 +30,7 @@
 #include <QStringList>
 #include <QVector>
 
-// Qt Forward declaritions
+// Qt Forward declarations
 class QProgressDialog;
 class GUIMessageHandler;
 
@@ -75,7 +75,7 @@ public slots:
 
     // Model loading and closing
     void newModel();
-    void loadModel(const QString& rModelFileName); //!< @todo should return a model wraper
+    void loadModel(const QString& rModelFileName); //!< @todo should return a model wrapper
     void closeAllModels();
 
     // Model navigation

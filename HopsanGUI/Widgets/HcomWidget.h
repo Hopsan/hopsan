@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2012-11-19
 //!
-//! @brief Contains the HcomWidget that dissplays messages to the user
+//! @brief Contains the HcomWidget that displays messages to the user
 //!
 //$Id$
 

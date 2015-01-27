@@ -63,7 +63,7 @@ double UnitScale::toDouble() const
 }
 
 //! @brief Convert scale string to double (return default value if this UnitScale is NULL)
-//! @param[in] def Default value to use if scle is NULL
+//! @param[in] def Default value to use if scale is NULL
 //! @returns Scale as double
 double UnitScale::toDouble(const double def) const
 {

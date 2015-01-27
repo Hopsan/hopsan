@@ -18,7 +18,7 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-10-xx
 //!
-//! @brief Contains the MessageWidget that dissplays messages to the user
+//! @brief Contains the MessageWidget that displays messages to the user
 //!
 //$Id$
 

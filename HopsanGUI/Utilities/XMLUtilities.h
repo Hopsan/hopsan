@@ -83,7 +83,7 @@ void updateRenamedPort(QDomElement &rDomElement, const QString componentType, co
 void updateRenamedParameter(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
 
 //Save Load Definitions
-//! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use thses defines where appropriate instead of hardcoded strings
+//! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use theses defines where appropriate instead of hardcoded strings
 #define HPF_ROOTTAG "hopsanparameterfile"
 
 #define HMF_ROOTTAG "hopsanmodelfile"
@@ -130,7 +130,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_GEOMETRYTAG "geometry"
 #define HMF_STYLETAG "style"
 #define HMF_COLORTAG "color"
-#define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
+#define HMF_XYTAG "xy"                      //Contains an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"
 #define HMF_SYSTEMPARAMETERTAG "globalkey"

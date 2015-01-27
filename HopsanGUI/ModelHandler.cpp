@@ -237,7 +237,7 @@ void ModelHandler::loadModelParameters()
 //! @see saveModel(saveTarget saveAsFlag)
 ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen, bool detatched)
 {
-    //! @todo maybe  write utility function that opens filel checks existance and sets fileinfo
+    //! @todo maybe  write utility function that opens file, checks existence and sets fileinfo
     QFile file(modelFileName);   //Create a QFile object
     if(!file.exists())
     {
@@ -279,7 +279,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
     if (!hmfRoot.isNull())
     {
-        //! @todo check if we could load else give error message and dont attempt to load
+        //! @todo check if we could load else give error message and don't attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
 
         // Check if Format version OK
@@ -433,7 +433,7 @@ bool ModelHandler::closeModel(int idx, bool force)
         // Remove and delete the model
         delete pModelToClose;
         mModelPtrs.removeAt(idx);
-        //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgete before it has been deletet because of this. This behavoir is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
+        //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgets before it has been deleted because of this. This behavior is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
 
         // When a model widget is removed all previous indexes for later models will become incorrect,
         // lets set the new current to the latest in that case
@@ -516,7 +516,7 @@ void ModelHandler::refreshMainWindowConnections()
 
 void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
 {
-    //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
+    //! @todo  Are these connections such connection that are supposed to be permanent connections? otherwise they should be in the disconnectMainWindowActions function
     disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(resetZoom()));
     disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(zoomIn()));
     disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    pModel->getGraphicsView(),   SLOT(zoomOut()));
@@ -539,7 +539,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
 
 void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
 {
-    //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
+    //! @todo  Are these connections such connection that are supposed to be permanent connections? otherwise they should be in the disconnectMainWindowActions function
     connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
     connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
     connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    pModel->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
@@ -729,7 +729,7 @@ bool ModelHandler::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
         size_t nSamples = getCurrentTopLevelSystem()->getNumberOfLogSamples();
         double logStartT = getCurrentTopLevelSystem()->getLogStartTime();
 
-        // Create a system vecetor
+        // Create a system vector
         QVector<SystemContainer*> systemsVector;
         for(int i=0; i<mModelPtrs.size(); ++i)
         {
@@ -755,7 +755,7 @@ bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
         size_t nSamples = getCurrentTopLevelSystem()->getNumberOfLogSamples();
         double logStartT = getCurrentTopLevelSystem()->getLogStartTime();
 
-        // Create a system vecetor
+        // Create a system vector
         QVector<SystemContainer*> systemsVector;
         for(int i=0; i<mModelPtrs.size(); ++i)
         {

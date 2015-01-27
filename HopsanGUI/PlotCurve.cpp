@@ -78,7 +78,7 @@ public:
 //! @brief Constructor for plot curves.
 //! @param pData A shared pointer to the data to plot
 //! @param curveType The type of the curve (controls the name and some other special things)
-//! @todo why is the axis in the curve constructor, it would make more sence if the axis is specified when adding a curve to a plot area /Peter
+//! @todo why is the axis in the curve constructor, it would make more sense if the axis is specified when adding a curve to a plot area /Peter
 PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const HopsanPlotCurveTypeEnumT curveType)
     : QObject(), QwtPlotCurve()
 {
@@ -98,7 +98,7 @@ PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const Hopsa
 
     mAxisY = axisY;
 
-    // We do not want imported data to auto refresh, incase the data name is the same as somthing from the model (alias)
+    // We do not want imported data to auto refresh, in case the data name is the same as something from the model (alias)
     if (data.mpVariable->isImported())
     {
         mAutoUpdate = false;
@@ -319,7 +319,7 @@ PlotArea *PlotCurve::getParentPlotArea() const
 //! @brief Returns the (unscaled) data vector of a plot curve
 QVector<double> PlotCurve::getVariableDataCopy() const
 {
-    //! @todo this is no longer a reference need to see where it was used to avoid REALY slow code feetching data all the time /Peter
+    //! @todo this is no longer a reference need to see where it was used to avoid REALLY slow code fetching data all the time /Peter
     return mData.mpVariable->getDataVectorCopy();
 }
 
@@ -386,12 +386,12 @@ const SharedVectorVariableT PlotCurve::getSharedCustomXVariable() const
 
 //! @brief Sets the generation of a plot curve
 //! Updates the data to specified generation, and updates plot info box.
-//! @param genereation Genereation to use
+//! @param generation Generation to use
 bool PlotCurve::setGeneration(const int generation)
 {
     if(mData.mpContainer)
     {
-        //! @todo maybe not set generation if same as current but what aboput custom x-axis
+        //! @todo maybe not set generation if same as current but what about custom x-axis
         // Make sure we have the data requested
         SharedVectorVariableT pNewData = mData.mpContainer->getDataGeneration(generation);
         if (pNewData)
@@ -410,7 +410,7 @@ bool PlotCurve::setGeneration(const int generation)
         {
             if (mCustomXdata.mpContainer)
             {
-                // We switch generation in a temp variable to make sure that connecte/disconect of signals works when we set a new one
+                // We switch generation in a temp variable to make sure that connect/disconnect of signals works when we set a new one
                 HopsanVariable temp = mCustomXdata;
                 temp.switchToGeneration(mData.mpVariable->getGeneration());
                 if (temp)
@@ -481,7 +481,7 @@ void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
     else
     {
         updateCurve();
-        //! @todo shouldnt these be triggered by signal in update curve?
+        //! @todo shouldn't these be triggered by signal in update curve?
         mpParentPlotArea->replot();
     }
 }
@@ -491,7 +491,7 @@ void PlotCurve::removeCustomCurveDataUnit()
     mCustomCurveDataUnitScale.clear();
     updateCurve();
 
-    //! @todo shouldnt these be triggered by signal in update curve?
+    //! @todo shouldn't these be triggered by signal in update curve?
     mpParentPlotArea->replot();
 }
 
@@ -530,7 +530,7 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
     deleteCustomData();
 
     // Create new custom data
-    //! @todo we are abusing tiedomain variable here
+    //! @todo we are abusing timedomain variable here
     mData.mpVariable = SharedVectorVariableT(new TimeDomainVariable(createFreeTimeVectorVariabel(rvTime), rvData, 0,
                                                        SharedVariableDescriptionT(new VariableDescription(rVarDesc)), SharedMultiDataVectorCacheT()));
     mHaveCustomData = true;
@@ -798,7 +798,7 @@ void PlotCurve::setLineColor(QColor color)
     tempPen.setColor(color);
     setPen(tempPen);
 
-    // Set symbol color, (but only if we have one, else an empty symbold will be created)
+    // Set symbol color, (but only if we have one, else an empty symbols will be created)
     if (mpCurveSymbol)
     {
         // Need to recreate the symbol so that legend will update
@@ -978,7 +978,7 @@ void PlotCurve::markActive(bool value)
     if(value)
     {
         mIsActive = true;
-        //! @todo setZ to show selected on top, changes the actual curve order and legent order which looks strange, need to solve that somehow
+        //! @todo setZ to show selected on top, changes the actual curve order and legend order which looks strange, need to solve that somehow
         //setZ(ActiveCurveZOrderType);
     }
     else
@@ -1356,7 +1356,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         }
     }
 
-    // We must check the following allways, since a quick mouse move will take us outside the "cursorIsClose range" before a move event is generated
+    // We must check the following always, since a quick mouse move will take us outside the "cursorIsClose range" before a move event is generated
 
     // If we are moving the mouse, then update the position and label
     if ((event->type() == QEvent::MouseMove) && mIsBeingMoved)
@@ -1455,7 +1455,7 @@ QList<QwtLegendData> PlotCurve::legendData() const
     return list;
 }
 
-//! @brief This function overload is requireed to avoid auto-scale problems when the data containes inf
+//! @brief This function overload is required to avoid auto-scale problems when the data contains inf
 //! @note This is related to issue #1151
 QRectF PlotCurve::boundingRect() const
 {

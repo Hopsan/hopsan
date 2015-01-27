@@ -42,7 +42,7 @@
 //!
 
 
-//! @brief Construtor for undo list widget
+//! @brief Constructor for undo list widget
 //! @param parent Pointer to the parent main window
 UndoWidget::UndoWidget(QWidget *parent)
     : QDialog(parent)

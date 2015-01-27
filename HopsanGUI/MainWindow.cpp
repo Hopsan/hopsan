@@ -81,7 +81,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HelpPopUpWidget.h"
 
-//! @todo maybe we can make sure that we dont need to include these here
+//! @todo maybe we can make sure that we don't need to include these here
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 
@@ -157,7 +157,7 @@ MainWindow::~MainWindow()
 //! @brief Creates the contents of the MainWindow, call this only once
 void MainWindow::createContents()
 {
-    // Create plothandler as child to mainwindo but assign to global ptr
+    // Create plothandler as child to mainwindow but assign to global ptr
     gpPlotHandler = new PlotHandler(this);
 
     //Create the terminal widget
@@ -453,7 +453,7 @@ void MainWindow::toggleVisiblePlotWidget()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     // Must close all open windows before closing project tabs
-    //! @todo need to restore function that closes those plots beloning to a particular tab/model automatically /Peter
+    //! @todo need to restore function that closes those plots belonging to a particular tab/model automatically /Peter
     gpPlotHandler->closeAllOpenWindows();
 
     if (mpModelHandler->closeAllModels())
@@ -864,7 +864,7 @@ void MainWindow::createMenus()
     mpMenuBar = new QMenuBar();
     mpMenuBar->setGeometry(QRect(0,0,800,25));
 
-    // Create the main menues
+    // Create the main menus
     mpFileMenu = new QMenu(mpMenuBar);
     mpFileMenu->setTitle(tr("&File"));
 
@@ -897,7 +897,7 @@ void MainWindow::createMenus()
 
     this->setMenuBar(mpMenuBar);
 
-    // Create sub menues for the help menue
+    // Create sub menus for the help menu
     mpExamplesMenu = new QMenu("Example Models");
     QDir exampleModelsDir(gpDesktopHandler->getMainPath()+"Models/Example Models/");
     buildModelActionsMenu(mpExamplesMenu, exampleModelsDir);
@@ -906,7 +906,7 @@ void MainWindow::createMenus()
     QDir testModelsDir(gpDesktopHandler->getMainPath()+"Models/Component Test/");
     buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
 
-    // Add the actionbuttons to the menues
+    // Add the action buttons to the menus
     mpNewAction->setText("Project");
     mpNewMenu->addAction(mpNewAction);
 
@@ -1060,7 +1060,7 @@ void MainWindow::createToolbars()
 //    mpExportButton->setPopupMode(QToolButton::InstantPopup);
 //    mpFileToolBar->addWidget(mpExportButton);
 
-    //Simulation toolbar, contains tools for simulationg, plotting and model preferences
+    //Simulation toolbar, contains tools for simulation, plotting and model preferences
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
     mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpSimToolBar->setAttribute(Qt::WA_MouseTracking);
@@ -1296,7 +1296,7 @@ void MainWindow::showReleaseNotes()
 void MainWindow::toggleHideShowDockAreas(bool show)
 {
     // Show default set of docks
-    //! @todo would be nice if we would remember those opened and reshow them, but there will be odd behavior if uo hide and tehn oopen some manually and close tehm again, then triggering show will reshow them, but maybe not a big deal
+    //! @todo would be nice if we would remember those opened and reshow them, but there will be odd behavior if you hide and then open some manually and close them again, then triggering show will reshow them, but maybe not a big deal
     if (show)
     {
         mpLibDock->show();
@@ -1402,7 +1402,7 @@ void MainWindow::updateRecentList()
                 QAction *tempAction;
                 tempAction = mpRecentMenu->addAction(gpConfig->getRecentModels().at(i));
                 tempAction->setIcon(QIcon(QString(ICONPATH) + "hmf.ico"));
-                disconnect(mpRecentMenu, SIGNAL(triggered(QAction *)), mpModelHandler, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
+                disconnect(mpRecentMenu, SIGNAL(triggered(QAction *)), mpModelHandler, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connections are not made twice (then program would try to open model more than once...)
                 connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));
             }
         }
