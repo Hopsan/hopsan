@@ -45,7 +45,7 @@ void initializeHopsanWrapperFromBuiltInModel()
         spCoreComponentSystem->setSystemParameter(it->first.c_str(), ss.str().c_str(), "double");
     }
 
-    //Initialize systsem
+    //Initialize system
     spCoreComponentSystem->setDesiredTimestep(0.001);
     spCoreComponentSystem->disableLog();
     spCoreComponentSystem->initialize(0,10);

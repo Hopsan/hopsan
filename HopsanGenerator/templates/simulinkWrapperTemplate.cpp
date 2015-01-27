@@ -26,7 +26,7 @@ permission from the copyright holders.
 using namespace hopsan;
 
 
-//! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you dont want error message
+//! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you don't want error message
 void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)
 {
     rExtLibFileNames.clear();

@@ -164,7 +164,7 @@ DLL_EXPORT long NIRT_GetSignalSpec(long* sidx, char* ID, long* ID_len, char* blk
   if (sigidx>=0 && sigidx<SignalSize) {
     if (ID) {
       // no need for return string to be null terminated!
-      // 10 to accomodate ':', port number and null character
+      // 10 to accommodate ':', port number and null character
       char *tempID = (char *)calloc(strlen(rtSignalAttribs[sigidx].blockname) + 10,
         sizeof(char));
 //      sprintf(tempID,"%s:%d",rtSignalAttribs[sigidx].blockname,rtSignalAttribs[sigidx].

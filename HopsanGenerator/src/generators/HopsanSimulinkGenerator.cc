@@ -632,7 +632,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 //    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
 //    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
 
-//    //! @todo copy all of the symolic links and the .so
+//    //! @todo copy all of the symbolic links and the .so
 
 #endif
     //compileFile.close();

@@ -36,7 +36,7 @@ HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath,
 //! @param rPath Reference to string containing the path to .FMU file
 //! @param rTargetPath Reference to string containing the path where to generate the component
 //! @param rTypeName Reference to string used to return the type name of the generated component
-//! @param rHppPath Reference to string used to return thepath to the generated .HPP file
+//! @param rHppPath Reference to string used to return the path to the generated .HPP file
 bool HopsanFMIGenerator::generateFromFmu(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath)
 {
     //----------------------------------------//
@@ -99,7 +99,7 @@ bool HopsanFMIGenerator::generateFromFmu(QString &rPath, QString &rTargetPath, Q
 
 //! @brief Generates a Hopsan component from an FMU using FMI 1.0
 //! @param rPath Reference to a string with the path to the .FMU file
-//! @param rTargetPath Refernce to a string with the path where to export the new component
+//! @param rTargetPath Reference to a string with the path where to export the new component
 //! @param rHppPath Reference to string used to return the actual path to the generated .HPP file
 //! @param callbacks Callbacks struct used by FMILibrary
 //! @param context Context struct used by FMILibrary
@@ -381,7 +381,7 @@ bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, 
 
 //! @brief Generates a Hopsan component from an FMU using FMI 2.0
 //! @param rPath Reference to a string with the path to the .FMU file
-//! @param rTargetPath Refernce to a string with the path where to export the new component
+//! @param rTargetPath Reference to a string with the path where to export the new component
 //! @param rHppPath Reference to string used to return the actual path to the generated .HPP file
 //! @param callbacks Callbacks struct used by FMILibrary
 //! @param context Context struct used by FMILibrary

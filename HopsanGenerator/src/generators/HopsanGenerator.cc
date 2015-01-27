@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-01-08
 //!
-//! @brief Contains component generation utiluties
+//! @brief Contains component generation utilities
 //!
 //$Id$
 

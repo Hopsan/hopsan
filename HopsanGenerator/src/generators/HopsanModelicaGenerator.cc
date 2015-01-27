@@ -247,7 +247,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 preAlgorithmPart = true;
                 continue;
             }
-            else if(words.at(0) == "equation")       //Equation part begings, end of initial algorithm section
+            else if(words.at(0) == "equation")       //Equation part beginning, end of initial algorithm section
             {
                 initAlgorithmPart = false;
                 equationPart = true;
@@ -294,7 +294,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
             {
                 break;
             }
-            if(words.at(0) == "equation")       //Equation part begings, end of algorithm section
+            if(words.at(0) == "equation")       //Equation part beginning, end of algorithm section
             {
                 preAlgorithmPart = false;
                 equationPart = true;
@@ -451,7 +451,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         logStream << preAlgorithms[i] << "\n";
     }
 
-    //Create list of equqtions
+    //Create list of equations
     QList<Expression> systemEquations;
     for(int e=0; e<plainEquations.size(); ++e)
     {
@@ -563,7 +563,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         }
     }
 
-    //Add parameterse to list of known variables
+    //Add parameters to list of known variables
     for(int i=0; i<parameters.size(); ++i)
     {
         knowns.append(Expression(parameters[i].name));
@@ -598,7 +598,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         }
     }
 
-    //Remove known variables from list of uknowns
+    //Remove known variables from list of unknowns
     for(int i=0; i<knowns.size(); ++i)
     {
         unknowns.removeAll(knowns[i]);
@@ -938,7 +938,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             comp.simEquations << xExpressions[i].toString()+";";
         }
 
-        //Newton-Rhapson
+        //Newton-Raphson
         for(int i=0; i<vExpressions.size(); ++i)
         {
             comp.simEquations << vExpressions[i].toString()+";";
@@ -1026,7 +1026,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         logStream << preAlgorithms[i] << "\n";
     }
 
-    //Create list of equqtions
+    //Create list of equations
     logStream << "\n--- Equations ---\n";
     QList<Expression> equations;
     for(int e=0; e<plainEquations.size(); ++e)
@@ -1552,7 +1552,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
     comp.parNames << "nIter";
     comp.parDisplayNames << "nIter";
-    comp.parDescriptions << "Number of Newton-Rhapson iterations";
+    comp.parDescriptions << "Number of Newton-Raphson iterations";
     comp.parUnits << "-";
     comp.parInits << "1";
 

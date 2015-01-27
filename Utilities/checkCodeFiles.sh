@@ -34,6 +34,6 @@ test $# -ne 1 && echo "Usage: `basename $0` <dirPath>" && exit -1
 
 rootDir="$1"
 
-checkCodeFiles "*.cc" "*.cpp" "*.cci" "*.h" "*.hpp" "*.hcom" "*.py"
+checkCodeFiles "*.c" "*.cc" "*.cpp" "*.cci" "*.h" "*.hpp" "*.hcom" "*.py"
 
 echo "Done!"

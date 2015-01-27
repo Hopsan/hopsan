@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-01-08
 //!
-//! @brief Contains component generation utiluties
+//! @brief Contains component generation utilities
 //!
 //$Id$
 
@@ -140,7 +140,7 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 
 
 
-//! @brief Function for loading an XML DOM Documunt from file
+//! @brief Function for loading an XML DOM Document from file
 //! @param[in] rFile The file to load from
 //! @param[in] rDomDocument The DOM Document to load into
 //! @param[in] rootTagName The expected root tag name to extract from the Dom Document
@@ -466,7 +466,7 @@ QString replaceTags(QString str, QStringList tags, QStringList replacements)
 }
 
 
-//! @brief Verifies that a system of equations is solveable (number of equations = number of unknowns etc)
+//! @brief Verifies that a system of equations is solvable (number of equations = number of unknowns etc)
 bool verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVars, HopsanGenerator *pGenerator)
 {
     bool retval = true;

@@ -9,12 +9,14 @@ This means that if you add new files some necessary file properties for those fi
 -# A text file (the config file) will open in a text editor. Find the line "# enable-auto-props = yes" and uncomment it, also remove the whitespace.
 -# Now add the following at the bottom under the "[auto-props]" section \n
 \verbatim
+*.c = svn:eol-style=native;svn:keywords=Id
 *.cc = svn:eol-style=native;svn:keywords=Id
 *.cpp = svn:eol-style=native;svn:keywords=Id
 *.h = svn:eol-style=native;svn:keywords=Id
 *.hpp = svn:eol-style=native;svn:keywords=Id
 *.pro = svn:eol-style=native
 *.prf = svn:eol-style=native
+*.pri = svn:eol-style=native
 *.dox = svn:eol-style=native
 *.xml = svn:eol-style=native
 *.hvc = svn:eol-style=native

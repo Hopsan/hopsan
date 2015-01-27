@@ -72,7 +72,7 @@ if [ "$2" == "set" ]; then
 fi
 
 checkEOLStyleFiles "*.hmf" "*.xml" "*.txt" "*.pro" "*.pri" "*.prf" "*.dox"
-checkCodeFiles "*.cc" "*.cpp" "*.cci" "*.h" "*.hpp" "*.hcom" "*.py" "*.m" "*.bat"
+checkCodeFiles "*.c" "*.cc" "*.cpp" "*.cci" "*.h" "*.hpp" "*.hcom" "*.py" "*.m" "*.bat"
 checkExecScriptFiles "*.sh"
 
 echo "Done!"
