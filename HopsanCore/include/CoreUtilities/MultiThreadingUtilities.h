@@ -69,7 +69,7 @@ private:
 
 
 
-//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
 class taskSimOneComponent
 {
 public:
@@ -92,7 +92,7 @@ private:
 
 
 
-//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
 class taskSimSlave
 {
 public:
@@ -176,7 +176,7 @@ public:
             mpBarrier_N->increment();
             while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
 
-            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
+            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with something smart
 //            for(size_t i=0; i<mVectorN.size(); ++i)
 //            {
 //                mVectorN[i]->logData(mTime);
@@ -207,12 +207,12 @@ private:
 };
 
 
-//! @brief Class for master simulation thread, that is responsible for syncronizing the simulation
+//! @brief Class for master simulation thread, that is responsible for synchronizing the simulation
 class taskSimMaster
 {
 public:
 
-    //! @brief Constructor for master simulation thead class.
+    //! @brief Constructor for master simulation thread class.
     //! @param sVector Vector with signal components executed from this thread
     //! @param cVector Vector with C-type components executed from this thread
     //! @param qVector Vector with Q-type components executed from this thread
@@ -260,7 +260,7 @@ public:
             //! Signal Components !//
 
             while(!mpBarrier_S->allArrived()) {}    //Wait for all other threads to arrive at signal barrier
-            mpBarrier_C->lock();                    //Lock next barrier (must be done before unlocking this one, to prevnet deadlocks)
+            mpBarrier_C->lock();                    //Lock next barrier (must be done before unlocking this one, to prevent deadlocks)
             mpBarrier_S->unlock();                  //Unlock signal barrier
 
             for(size_t i=0; i<mVectorS.size(); ++i)
@@ -299,7 +299,7 @@ public:
             mpBarrier_S->lock();
             mpBarrier_N->unlock();
 
-            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
+            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with something smart
 //            for(size_t i=0; i<mVectorN.size(); ++i)
 //            {
 //                mVectorN[i]->logData(mTime);
@@ -338,7 +338,7 @@ class taskSimWholeSystems
 {
 public:
 
-    //! @brief Constructor for master simulation thead class.
+    //! @brief Constructor for master simulation thread class.
     //! @param pSystem Pointer to the system to simulate
     taskSimWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime)
     {
@@ -375,7 +375,7 @@ private:
 //{
 //public:
 
-//    //! @brief Constructor for master simulation thead class.
+//    //! @brief Constructor for master simulation thread class.
 //    //! @param pSystem Pointer to the system to simulate
 //    taskSimComponentC(Component* pComp, vector<taskSimComponent *> neighbourPtrs, size_t stopIteration, bool *pStart, double timeStep)
 //    {
@@ -434,7 +434,7 @@ private:
 //{
 //public:
 
-//    //! @brief Constructor for master simulation thead class.
+//    //! @brief Constructor for master simulation thread class.
 //    //! @param pSystem Pointer to the system to simulate
 //    taskSimComponent(vector<ComponentSystem *> systemPtrs, double stopTime)
 //    {
@@ -520,7 +520,7 @@ private:
 };
 
 
-//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
 class taskSimPoolSlave
 {
 public:
@@ -647,7 +647,7 @@ private:
 };
 
 
-//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
 class taskSimRandomPoolSlave
 {
 public:
@@ -811,7 +811,7 @@ private:
 
 
 
-//! @brief Class for master simulation thread, that is responsible for syncronizing the simulation
+//! @brief Class for master simulation thread, that is responsible for synchronizing the simulation
 class taskSimStealingMaster
 {
 public:

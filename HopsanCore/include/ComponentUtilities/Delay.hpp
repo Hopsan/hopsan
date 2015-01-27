@@ -52,7 +52,7 @@ public:
     //! @param [in] initValue The initial value of all buffer elements
     void initialize(const double timeDelay, const double Ts, const T initValue)
     {
-        //We let truncation round downwards, +0.5 to be sure we dont fall bellow integer value in float
+        //We let truncation round downwards, +0.5 to be sure we don't fall bellow integer value in float
         this->initialize( int(timeDelay/Ts+0.5), initValue);
     }
 
@@ -86,13 +86,13 @@ public:
 
     //! @brief Updates delay with a new value, "pop old", "push new". You should likely run this at the end of each time step
     //! @param [in] newValue The new value to insert into delay buffer
-    //! @return The odlest value in the delay buffer (After update this value will have been overwriten in the buffer)
+    //! @return The oldest value in the delay buffer (After update this value will have been overwritten in the buffer)
     T update(const T newValue)
     {
-        // First get the oldes value
+        // First get the oldest value
         T oldestValue = mpArray[mOldest];
 
-        // Increment the pointers, newest will after incrementaion overwrite previous oldest
+        // Increment the pointers, newest will after incrementation overwrite previous oldest
         ++mOldest;
         ++mNewest;
 
@@ -180,7 +180,7 @@ private:
 };
 
 //! @ingroup ComponentUtilityClasses
-typedef Delay_<double> Delay; //!< @todo My we should only have template class and let users choose data type themselfs
+typedef Delay_<double> Delay; //!< @todo Maybe we should only have template class and let users choose data type themselves
 
 }
 

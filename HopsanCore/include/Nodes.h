@@ -50,7 +50,7 @@ public:
 
     void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const
     {
-        // Copy variable valus from this to pNode
+        // Copy variable values from this to pNode
         if(pOtherNode->getNodeType()==this->getNodeType())
         {
             for(size_t i=0; i<mDataDescriptions.size(); ++i)
@@ -91,7 +91,7 @@ private:
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
         setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
 
-        // Set default intial startvales to resonable (non-zero) values
+        // Set default initial startvales to reasonable (non-zero) values
         mDataValues[Pressure] = 100000;
         mDataValues[WaveVariable] = 100000;
         mDataValues[Temperature] = 293;
@@ -150,7 +150,7 @@ private:
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
         setDataCharacteristics(EnergyFlow, "EnergyFlow", "Qdot", "J/s", DefaultType);
 
-        // Set default intial startvales to resonable (non-zero) values
+        // Set default initial startvales to reasonable (non-zero) values
         mDataValues[Pressure] = 100000;
         mDataValues[WaveVariable] = 100000;
         mDataValues[Temperature] = 293;

@@ -77,7 +77,7 @@ public:
     enum CQSEnumT {CType, QType, SType, UndefinedCQSType};
 
     //==========Public functions==========
-    // Configureation and simulation functions
+    // Configuration and simulation functions
     virtual void configure();
     virtual void deconfigure();
     virtual bool preInitialize();
@@ -124,7 +124,7 @@ public:
     void setConstantValue(const HString &rName, const char* value);
     void setConstantValue(const HString &rName, const bool value);
 
-    // Variabels and Parameters
+    // Variables and Parameters
     const std::vector<VariameterDescription>* getVariameters();
 
     //! @todo clean this mess up /Peter
@@ -169,7 +169,7 @@ public:
     ComponentSystem *getSystemParent() const;
     size_t getModelHierarchyDepth() const;
 
-    //! @todo Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
+    //! @todo Should it be possible to set timestep of a component? Should only be possible for a System component
     //void setTimestep(const double timestep);
     double getTimestep() const;
     double *getTimePtr();
@@ -192,7 +192,7 @@ public:
     // HopsanEssentials
     HopsanEssentials *getHopsanEssentials();
 
-    //Searchpath
+    //Search path
     HString findFilePath(const HString &rFileName);
 
     //Numerical integration members
@@ -208,7 +208,7 @@ protected:
     virtual ~Component();
 
     // Virtual functions
-    virtual void initialize(); //!< @todo Maybe we should be able to return sucess true or false from components
+    virtual void initialize(); //!< @todo Maybe we should be able to return success true or false from components
     virtual void simulateOneTimestep();
     virtual void finalize();
     virtual void setTimestep(const double timestep);
@@ -226,7 +226,7 @@ protected:
     void initializeAutoSignalNodeDataPtrs();
 
     // Port functions
-    //! @todo we should depracte the version without description as argument (do this in 0.7)
+    //! @todo we should deprecate the version without description as argument (do this in 0.7)
     Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
@@ -252,7 +252,7 @@ protected:
     bool mInheritTimestep;
     double mTimestep, mDesiredTimestep;
     double mTime;
-    size_t mModelHierarchyDepth; //!< This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
+    size_t mModelHierarchyDepth; //!< This variable contains the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
     std::vector<HString> mSearchPaths;
 
 private:

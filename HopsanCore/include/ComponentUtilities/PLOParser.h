@@ -42,7 +42,7 @@ public:
     bool eof() const;
 
     bool readFile(const HString &rFilepath);
-    //! @todo maybe have a function that direcly copies time and data
+    //! @todo maybe have a function that directly copies time and data
 
     HString getErrorString() const;
     size_t getNumDataRows() const;

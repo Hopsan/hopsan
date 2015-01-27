@@ -92,7 +92,7 @@ void writeStringAttribute(rapidxml::xml_node<> *pNode, const std::string attrNam
     }
     else
     {
-        // Allocate memory and copy to remeber the attribute name
+        // Allocate memory and copy to remember the attribute name
         char* pRapidAllocatedAttributeName = pNode->document()->allocate_string(attrName.c_str());
         // Create attribute and then append it
         pAttribute = pNode->document()->allocate_attribute(pRapidAllocatedAttributeName, pRapidAllocatedAttributeValue);

@@ -12,7 +12,7 @@
 #include "Dependencies/boost/boost/interprocess/mapped_region.hpp"
 #endif
 
-//Some defines, to inrease readability
+//Some defines, to increase readability
 #define MEMOBJ boost::interprocess::shared_memory_object
 #define MEMREG boost::interprocess::mapped_region
 #define BSTIPC boost::interprocess

@@ -95,7 +95,7 @@ namespace hopsan {
             return 0;
         }
 
-        //! @brief Check if the factory has key registerd
+        //! @brief Check if the factory has key registered
         bool hasKey(const _Key &rIdKey) const
         {
             if (mFactoryMap.find(rIdKey) != mFactoryMap.end())
@@ -138,7 +138,7 @@ namespace hopsan {
             }
         }
 
-        //! @brief Get a copy of the internal error vector, it maps key values agains error codes, error codes come from registration or unregistration
+        //! @brief Get a copy of the internal error vector, it maps key values against error codes, error codes come from registration or unregistration
         RegStatusVectorT getRegisterStatus()
         {
             return mRegStatusVector;

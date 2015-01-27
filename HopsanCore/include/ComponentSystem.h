@@ -223,7 +223,7 @@ namespace hopsan {
         bool disconnect(const HString &compname1, const HString &portname1, const HString &compname2, const HString &portname2);
         bool disconnect(Port *pPort1, Port *pPort2);
 
-        // Convenience functions for enable and dissable data logging
+        // Convenience functions to enable and disable data logging
         void setAllNodesDoLogData(const bool logornot);
 
         // Startvalue loading
@@ -289,7 +289,7 @@ namespace hopsan {
         ComponentSystem();
 
         // Internal Flags
-        //! @brief This bool can be toggled off in programmed subsystems to avoid anoying warnings
+        //! @brief This bool can be toggled off in programmed subsystems to avoid annoying warnings
         //! @ingroup ComponentPowerAuthorFunctions
         bool mWarnIfUnusedSystemParameters;
 
@@ -317,7 +317,7 @@ namespace hopsan {
         void addSubComponentPtrToStorage(Component* pComponent);
         void removeSubComponentPtrFromStorage(Component* pComponent);
 
-        // Celar all contents of the system (use in destructor)
+        // Clear all contents of the system (use in destructor)
         void clear();
 
         bool sortComponentVector(std::vector<Component*> &rOldSignalVector);
@@ -343,8 +343,8 @@ namespace hopsan {
 
         bool volatile mStopSimulation;
 
-        // This block of variables are only used whith TBB but they must be incuded allways else
-        // components inhereting ComponentSystem will not know that they exist resulting in overwriting memory
+        // This block of variables are only used with TBB but they must be included always else
+        // components inheriting ComponentSystem will not know that they exist resulting in overwriting memory
         tbb::mutex *mpStopMutex;
         std::vector<double *> mvTimePtrs;
         std::vector< std::vector<Component*> > mSplitCVector;

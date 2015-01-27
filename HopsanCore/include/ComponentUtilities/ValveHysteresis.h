@@ -51,7 +51,7 @@ namespace hopsan {
 class ValveHysteresis
 {
 public:
-    //! @todo does this realy need to be aclass, it could be a function (no member variables, and only one function)
+    //! @todo does this really need to be a class? It could be a function (no member variables, and only one function)
     double getValue(double xs, double xh, double xd)
     {
         if (xd < xs-xh/2.0)

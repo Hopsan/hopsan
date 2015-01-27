@@ -6,7 +6,7 @@ defineReplace(setTBBWindowsPathInfo){
     externalSrc = $$1
     dstDir = $$2
 
-    #Set default tbb path alternatives, higher up is prefered
+    #Set default tbb path alternatives, higher up is preferred
     contains(QMAKE_HOST.arch, x86_64){
         #64 bit paths
         TBB_PATHS *= $${PWD}/Dependencies/tbb41_20130613oss_64

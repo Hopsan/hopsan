@@ -226,7 +226,7 @@ inline double rad2deg(const double rad)
 //! @brief Returns the integer modulus of x/y
 //! @ingroup AuxiliarySimlationFunctions
 //! @ingroup ModelicaWrapperFunctions
-//! @param x Numinator
+//! @param x Numerator
 //! @param y Denominator
 //! @returns x%y
 inline double mod(const double x, const double y)
@@ -239,7 +239,7 @@ inline double mod(const double x, const double y)
 //! @brief Returns the integer remainder of x/y, such that div(x,y)*y + rem(x,y) = x
 //! @ingroup AuxiliarySimlationFunctions
 //! @ingroup ModelicaWrapperFunctions
-//! @param x Numinator
+//! @param x Numerator
 //! @param y Denominator
 //! @returns Integer remainder of x/y
 inline double rem(const double x, const double y)

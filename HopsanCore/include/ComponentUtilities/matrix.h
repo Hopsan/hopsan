@@ -23,6 +23,7 @@
 //!
 //! matrix data structure, and routines for matrix manipulation.
 //! (found by Petter on the net, url may be nice)
+//! Found on John Loomis's website http://www.johnloomis.org/ece538/notes/Matrix/Matrix_C.html#matrix.h
 //!
 //$Id$
 

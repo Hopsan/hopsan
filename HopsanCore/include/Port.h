@@ -39,7 +39,7 @@ namespace hopsan {
     class MultiPort;
 
     //! @brief This enum type specifies all porttypes
-    // It is VERY important that the MultiPort enums commes LAST, MULTIPORT is never instantiated but enum MUST be present
+    // It is VERY important that the MultiPort enums comes LAST, MULTIPORT is never instantiated but enum MUST be present
     enum PortTypesEnumT {UndefinedPortType, PowerPortType, ReadPortType, WritePortType, SystemPortType, MultiportType, PowerMultiportType, ReadMultiportType};
 
     class DLLIMPORTEXPORT Port

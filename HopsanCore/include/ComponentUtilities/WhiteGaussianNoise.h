@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2011-06-09
 //!
-//! @brief Contains a helper function that generates white gaussian noise
+//! @brief Contains a helper function that generates white Gaussian noise
 //!
 //$Id$
 

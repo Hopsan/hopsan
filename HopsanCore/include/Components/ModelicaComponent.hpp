@@ -37,7 +37,7 @@ namespace hopsan {
         HString mParameterNames;
         HString mParameterDefaults;
         double mParametersValues[100];  //!< @todo Horrible! But for some reason it crashes when using std::vector...
-        //! @note This can be solved by using a vector and reserving the size instead of using push_back; push_back moves the whole vector to a new adress which ruins the previous references...
+        //! @note This can be solved by using a vector and reserving the size instead of using push_back; push_back moves the whole vector to a new address which ruins the previous references...
 
     public:
         static Component *Creator()
@@ -113,7 +113,7 @@ namespace hopsan {
                     }
                 }
 
-                //Geerate list of constants default values
+                //Generate list of constants default values
                 //std::vector<double> newDefaults;
                 //! @todo Implement default value support (need to parse CSV string to vector of doubles somehow)
 

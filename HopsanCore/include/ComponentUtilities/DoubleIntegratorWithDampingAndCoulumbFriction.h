@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-08-03
 //!
-//! @brief Core utility for double integrator with provision for some damping and coulimb friction
+//! @brief Core utility for double integrator with provision for some damping and coulomb friction
 //!
 //$Id$
 

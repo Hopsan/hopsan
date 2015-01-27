@@ -179,7 +179,7 @@ public:
     }
 
     //! @brief Append data
-    //! @note This function is slow, it will reallocate all array memmory every time
+    //! @note This function is slow, it will reallocate all array memory every time
     //! @param [in] rData Data to append
     void append(const T &rData)
     {
@@ -204,7 +204,7 @@ public:
         return mSize;
     }
 
-    //! @brief Ceck if the array is empty
+    //! @brief Check if the array is empty
     //! @returns true if the array is empty
     bool empty() const
     {

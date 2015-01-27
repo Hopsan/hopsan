@@ -14,7 +14,7 @@
 
 // Decide compiler and architecture 32 or 64 bit version information
 // Note! MinGW32 is also defined on MinGW-w64,
-// Note2! __GNUC__ is also defined on MinGW (that is why we chech for MinGW first)
+// Note2! __GNUC__ is also defined on MinGW (that is why we check for MinGW first)
 
 #if defined(__MINGW32__)
  #define HOPSANCOMPILEDWITH "MinGW GCC " TO_STR(__GNUC__) "." TO_STR(__GNUC_MINOR__)

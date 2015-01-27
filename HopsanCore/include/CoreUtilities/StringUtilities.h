@@ -18,7 +18,7 @@
 //! @author <peter.nordin@liu.se>
 //! @date   2013-03-12
 //!
-//! @brief Contains functions for working with strings, in particualr Name strings.
+//! @brief Contains functions for working with strings, in particular Name strings.
 //!
 //$Id$
 
@@ -60,7 +60,7 @@ HString findUniqueName(const ContainerT &rContainer, HString name)
             {
                 unsigned char nr = name.at(foundpos+1);
                 //cout << "nr after _: " << nr << endl;
-                //Check the ascii code for the charachter
+                //Check the ascii code for the character
                 if ((nr >= 48) && (nr <= 57))
                 {
                     //Is number lets assume that the _ found is the beginning of a suffix

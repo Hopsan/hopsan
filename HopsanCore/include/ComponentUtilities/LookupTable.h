@@ -250,14 +250,14 @@ public:
         // Example: if dim = 3 (plane) then in a 3d case step =  numSubDimDataElements * nPlanes (1 * nPlanes)
         size_t stepBetweenSliceParts = mNumSubDimDataElements[dim] * mIndexData[dim].size();
 
-        // Caclulate the start index
+        // Calculate the start index
         size_t part_start_idx = mNumSubDimDataElements[dim]*idx;
 
         // Copy data
         size_t ctr=0;
         while (ctr<sizeOfOneSlice)
         {
-            // Copy each sub dimension elment
+            // Copy each sub dimension element
             for (size_t i=0; i<mNumSubDimDataElements[dim]; ++i)
             {
                 rData[ctr] = mValueData[part_start_idx+i];
@@ -273,7 +273,7 @@ public:
     {
         // mNumSubDimDataElements = the number of elements belonging to this dimension and sub dimensions
 
-        // sizeOfOneSlice = The total number of elements in the slize to extract
+        // sizeOfOneSlice = The total number of elements in the slice to extract
         // Example: if dim = 0 (row)   then in a 3D case sizeOfOneSlice = numSubDimDataElements (nCols*nPlanes)
         // Example: if dim = 1 (col)   then in a 3D case sizeOfOneSlice = numSubDimDataElements*nRows (nPlanes*nRows)
         // Example: if dim = 3 (plane) then in a 3D case sizeOfOneSlice = numSubDimDataElements*nCols*nRows (1*nCols*nRows)
@@ -289,14 +289,14 @@ public:
         // Example: if dim = 3 (plane) then in a 3d case step =  numSubDimDataElements * nPlanes (1 * nPlanes)
         size_t stepBetweenSliceParts = mNumSubDimDataElements[dim] * mIndexData[dim].size();
 
-        // Caclulate the start index
+        // Calculate the start index
         size_t part_start_idx = mNumSubDimDataElements[dim]*idx;
 
         // Insert data
         size_t ctr=0;
         while (ctr<sizeOfOneSlice)
         {
-            // Copy each sub dimension elment
+            // Copy each sub dimension element
             for (size_t i=0; i<mNumSubDimDataElements[dim]; ++i)
             {
                 mValueData[part_start_idx+i] = rData[ctr];
@@ -379,7 +379,7 @@ protected:
             size_t pivotNewIndex = quickSortPartition(dim, rIndexArray, left, right, pivotIndex);
 
             // Recursively sort elements smaller than the pivot
-            // but not if it happend to be zero (would lead to underflow in size_t)
+            // but not if it happened to be zero (would lead to underflow in size_t)
             if (pivotNewIndex>0)
             {
                 quickSort(dim, rIndexArray, left, pivotNewIndex-1);

@@ -79,7 +79,7 @@ public:
         return mDataValues[dataId];
     }
     //! @brief set data in node
-    //! @param [in] dataId Identifier for the typ of node data to set, (no bounds check is performed)
+    //! @param [in] dataId Identifier for the type of node data to set, (no bounds check is performed)
     //! @param [in] data The data value
     inline void setDataValue(const size_t dataId, const double data)
     {
@@ -122,7 +122,7 @@ protected:
     std::vector<double> mDataValues;
 
 private:
-    // Private member fuctions
+    // Private member functions
     void addConnectedPort(Port *pPort);
     void removeConnectedPort(const Port *pPort);
 
