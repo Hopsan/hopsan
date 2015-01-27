@@ -40,7 +40,7 @@ defineReplace(setQWTPathInfo){
             win32:CONFIG(debug, debug|release):dbg_ext = d
             #unix:CONFIG(debug, debug|release):dbg_ext = d
 
-            # OS X uses the Frameworks concept instead of lib&include directories. A security meassure.
+            # OS X uses the Frameworks concept instead of lib&include directories. A security measure.
             #macx {
             #    magic_hopsan_libpath = $${libDir}
             #    magic_hopsan_includepath = $${QWT_PATH}

@@ -127,11 +127,11 @@ unix {
     }
 
 
-    # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
-    # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
+    # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative the executable (regardless of working dir, VERY useful)
+    # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to handle the $$ORIGIN stuff, adding manually to LFLAGS
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
-    # Get the svn revision in here if script succeed, we dont care about the external file generated,
+    # Get the svn revision in here if script succeed, we don't care about the external file generated,
     system($${PWD}/../getSvnRevision.sh) {
         DEFINES *= "HOPSANGUISVNREVISION=$$system($${PWD}/../getSvnRevision.sh)"
     }
@@ -154,17 +154,17 @@ win32 {
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
-    # Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
+    # Activate large address aware, to access more the 2GB virtual RAM (for 32-bit version)
     !contains(QMAKE_HOST.arch, x86_64){
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 
-    # Activate consol output of cout for debug builds (you aslo need to run in consol but hopsan seems slow)
+    # Activate console output of cout for debug builds (you aslo need to run in console but hopsan seems slow)
     CONFIG(debug, debug|release) {
         CONFIG += console
     }
 
-    # Get the svn revision in here if script succeed, we dont care about the external file generated,
+    # Get the svn revision in here if script succeed, we don't care about the external file generated,
     system($${PWD}/../getSvnRevision.bat){
         DEFINES *= "HOPSANGUISVNREVISION=$$system($${PWD}/../getSvnRevision.bat)"
     }

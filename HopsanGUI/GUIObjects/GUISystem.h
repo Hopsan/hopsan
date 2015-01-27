@@ -75,7 +75,7 @@ public:
     bool mFinalEval;
     bool mlogPar;
 
-    //Paramters
+    //Parameters
     QVector<OptParameter> mParamters;
     QVector<Objectives> mObjectives;
 };

@@ -37,7 +37,7 @@ PortAppearance::PortAppearance()
 }
 
 //! @brief Contains hardcoded appearance for different hopsancore ports
-//! @todo maybe this should be placed in som more generic external .txt file in som way
+//! @todo maybe this should be placed in some more generic external .txt file in some way
 void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
 {
     mMainIconPath.clear();

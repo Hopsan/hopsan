@@ -191,7 +191,7 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT
 
     QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
 
-    //Save GUI realted stuff
+    //Save GUI related stuff
     QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
 
     QPointF pos = mapToScene(boundingRect().topLeft());
@@ -738,8 +738,8 @@ void TextBoxWidget::updateWidgetFromDialog()
 void TextBoxWidget::openFontDialog()
 {
     bool ok;
-    // We need to create a fontinfo objeect here to figure out what font is actually beeing used to render the text
-    // The qfont object might not correspon exactly to the actual font used
+    // We need to create a fontinfo object here to figure out what font is actually being used to render the text
+    // The qfont object might not correspond exactly to the actual font used
     QFontInfo fi(mpDialogTextBox->font());
     qDebug()  << fi.family();
     qDebug()  << fi.styleName();

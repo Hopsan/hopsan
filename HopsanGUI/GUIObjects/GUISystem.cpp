@@ -228,7 +228,7 @@ QString SystemContainer::getHmfTagName() const
 //! @brief Opens the GUISystem properties dialog
 void SystemContainer::openPropertiesDialog()
 {
-    //! @todo shouldnt this be in the containerproperties class, right now groups are not working thats is why it is here, the containerproperties dialog only works with systems for now
+    //! @todo shouldn't this be in the containerproperties class, right now groups are not working thats is why it is here, the containerproperties dialog only works with systems for now
     ContainerPropertiesDialog dialog(this, gpMainWindowWidget);
     dialog.setAttribute(Qt::WA_DeleteOnClose, false);
     dialog.exec();
@@ -243,7 +243,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
 
     if (mLoadType == "EXTERNAL" && contents == FullModel)
     {
-        // Determine the realitive path
+        // Determine the relative path
         QFileInfo parentModelPath(mpParentContainerObject->getModelFilePath());
         QString relPath = relativePath(getModelFilePath(), parentModelPath.absolutePath());
 
@@ -280,7 +280,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
     for (int i=0; i<aliases.size(); ++i)
     {
         QDomElement alias = appendDomElement(xmlAliases, HMF_ALIAS);
-        alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not maunal type
+        alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
         alias.setAttribute(HMF_NAMETAG, aliases[i]);
         QString fullName = getFullNameFromAlias(aliases[i]);
         appendDomTextNode(alias, "fullname",fullName );
@@ -559,10 +559,10 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     QDomElement guiStuff = ModelObject::saveGuiDataToDomElement(rDomElement);
 
-    //Should we try to append appearancedata stuff, we dont want this in external systems as they contain their own appearance
+    //Should we try to append appearancedata stuff, we don't want this in external systems as they contain their own appearance
     if (mLoadType!="EXTERNAL")
     {
-        //! @todo what happens if a subsystem (embeded) is asved, then we dont want to set the current graphics view
+        //! @todo what happens if a subsystem (embedded) is saved, then we don't want to set the current graphics view
         if (this->mpModelWidget->getGraphicsView() != 0)
         {
             double x,y,zoom;
@@ -653,7 +653,7 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
         this->saveGuiDataToDomElement(xmlSubsystem);
     }
 
-    //Replace volunecros with connectors and component
+    //Replace volunector with connectors and component
     QList<Connector*> volunectorPtrs;
     QList<Connector*> tempConnectorPtrs;  //To be removed later
     QList<ModelObject*> tempComponentPtrs; //To be removed later
@@ -803,14 +803,14 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
     {
         //Load embedded subsystem
         //0. Load core and gui stuff
-        //! @todo might need some error checking here incase some fields are missing
+        //! @todo might need some error checking here in case some fields are missing
         //Now load the core specific data, might need inherited function for this
         this->setName(domElement.attribute(HMF_NAMETAG));
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
-        this->refreshDisplayName(); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
+        this->refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
         this->mShowSubComponentNames = !parseAttributeBool(guiStuff.firstChildElement(HMF_NAMESTAG),"hidden",true);
         this->mShowSubComponentPorts = !parseAttributeBool(guiStuff.firstChildElement(HMF_PORTSTAG),"hidden",true);
         QString gfxType = guiStuff.firstChildElement(HMF_GFXTAG).attribute("type");
@@ -994,7 +994,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         }
 
         //9.1 Load plot variable aliases
-        //! @deprecated Remove in teh future when hmf format stabilized and everyone has upgraded
+        //! @deprecated Remove in the future when hmf format stabilized and everyone has upgraded
         xmlSubObject = xmlParameters.firstChildElement(HMF_ALIAS);
         while (!xmlSubObject.isNull())
         {
@@ -1055,7 +1055,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         }
 
 
-        //Refresh the appearance of the subsystemem and create the GUIPorts based on the loaded portappearance information
+        //Refresh the appearance of the subsystem and create the GUIPorts based on the loaded portappearance information
         //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
         this->refreshAppearance();
         this->refreshExternalPortsAppearanceAndPosition();
@@ -1068,7 +1068,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
             this->mpUndoStack->clear();
         }
         //Only do this for the root system
-        //! @todo maybe can do this for subsystems to (even if we dont see them right now)
+        //! @todo maybe can do this for subsystems to (even if we don't see them right now)
         if (this->mpParentContainerObject == 0)
         {
             //mpParentModelWidget->getGraphicsView()->centerView();

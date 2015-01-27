@@ -103,7 +103,7 @@ void WorkspaceObject::setCenterPos(const QPointF cpos)
 {
     if (scene())
     {
-        // We translate pos by the same amout as the diff from our current center pos
+        // We translate pos by the same amount as the diff from our current center pos
         QPointF posDiff = cpos - sceneBoundingRect().center();
         setPos(pos()+posDiff);
     }
@@ -179,7 +179,7 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
 
     setFlag(QGraphicsItem::ItemIsMovable, true);    // Make the component movable if not (it is not movable during creation of connector)
-    setFlag(QGraphicsItem::ItemIsSelectable, true); // Make the component selactable if not (it is not selectable during creation of connector)
+    setFlag(QGraphicsItem::ItemIsSelectable, true); // Make the component selectable if not (it is not selectable during creation of connector)
 
     // Make sure current objects oldpos is changed (it may not be selected before being clicked)
     rememberPos();
@@ -199,7 +199,7 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if(mpParentContainerObject->isCreatingConnector())
     {
         setFlag(QGraphicsItem::ItemIsMovable, false);    // Make the component not movable during connection
-        setFlag(QGraphicsItem::ItemIsSelectable, false); // Make the component not selactable during connection
+        setFlag(QGraphicsItem::ItemIsSelectable, false); // Make the component not selectable during connection
 
         setSelected(false);
         setActive(false);
@@ -302,7 +302,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 //! @brief Slot that rotates an object to the desired angle (NOT registered in undo stack!)
 //! @param angle Angle to rotate to
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-//! @note Undo registration will not work for obejcts or widgets as they have no name
+//! @note Undo registration will not work for objects or widgets as they have no name
 void WorkspaceObject::rotate(double angle, UndoStatusEnumT undoSettings)
 {
     Q_UNUSED(undoSettings)
@@ -418,7 +418,7 @@ WorkspaceObjectSelectionBox::WorkspaceObjectSelectionBox(double x1, double y1, d
 
 void WorkspaceObjectSelectionBox::setSize(double x1, double y1, double x2, double y2)
 {
-    prepareGeometryChange(); //dont know if this is actually necessary but lets call it anyway
+    prepareGeometryChange(); //don't know if this is actually necessary but lets call it anyway
 
     double b = 6;
     double a = 6;

@@ -41,7 +41,7 @@
 //! @brief Loads a Connector from the supplied load data
 //! @param[in] rDomElement The DOM element to load from
 //! @param[in] pContainer The Container Object to load into
-//! @param[in] undoSettings Wheter or not to register undo for the operation
+//! @param[in] undoSettings Whether or not to register undo for the operation
 bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     // -----First read from DOM element-----
@@ -151,7 +151,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     parameterType = rDomElement.attribute(HMF_TYPE);
     parameterType = rDomElement.attribute(HMF_TYPENAME, parameterType); //!< @deprecated load old typename
 
-    //! @todo Remove this check in teh future when models should have been updated
+    //! @todo Remove this check in the future when models should have been updated
     QStringList existingNames = pObject->getParameterNames();
     // This code makes sure we can load old parameters from before they became ports
     bool tryingToAddColonColonValue = false;
@@ -164,7 +164,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         }
     }
 
-    //Use the setParameter method that mapps to System parameter
+    //Use the setParameter method that maps to System parameter
     if(!parameterName.startsWith("noname_subport:") && !existingNames.contains(parameterName))
     {
         if (parameterName.contains("#"))
@@ -178,7 +178,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         return;
     }
 
-    //! @todo this is also a compatibility hack, to prevent startvalues in dynamic parameter ports from overwriting previously renamed but loaded paremter values, when the parmeter has the same name as its port. This prevents data from overwriting if loaded last
+    //! @todo this is also a compatibility hack, to prevent startvalues in dynamic parameter ports from overwriting previously renamed but loaded parameter values, when the parameter has the same name as its port. This prevents data from overwriting if loaded last
     if (!tryingToAddColonColonValue && parameterName.contains("::Value"))
     {
         QStringList theotherparameternames;
@@ -225,7 +225,7 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEn
 //    }
 //    else
     {
-        //Use the setStartValue method that mapps to System parameter
+        //Use the setStartValue method that maps to System parameter
         pObject->setStartValue(portName, variable, startValue);
     }
 }
@@ -235,7 +235,7 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEn
 //! @param[in] rData The ModelObjectLoadData to load from
 //! @param[in] pLibrary a pointer to the library widget which holds appearance data
 //! @param[in] pContainer The Container Object to load into
-//! @param[in] undoSettings Wheter or not to register undo for the operation
+//! @param[in] undoSettings Whether or not to register undo for the operation
 ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //Read core specific data
@@ -284,7 +284,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
         pObj->setSubTypeName(subtype); //!< @todo is this really needed
 
         //First set flip (before rotate, Important!)
-        //! @todo For now If flipped than we need to rotate in wrong direction also, saving saves flipped rotation angle i think but changing save and load would couse old models to load incorrectly
+        //! @todo For now If flipped than we need to rotate in wrong direction also, saving saves flipped rotation angle i think but changing save and load would cause old models to load incorrectly
         if (isFlipped)
         {
             pObj->flipHorizontal(undoSettings);
@@ -298,11 +298,11 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
         //Read system specific core and gui data
         if (rDomElement.tagName() == HMF_SYSTEMTAG)
         {
-            //Check if we should load an embeded or external system
+            //Check if we should load an embedded or external system
             QString externalFilePath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
             if (externalFilePath.isEmpty())
             {
-                //Load embeded system
+                //Load embedded system
                 pObj->getAppearanceData()->setBasePath(pContainer->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
                 pObj->loadFromDomElement(rDomElement);
             }
@@ -324,7 +324,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                     //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
                     pObj->setModelFileInfo(externalModelFile);
                     pObj->loadFromDomElement(externalSystemRoot);
-                    //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
+                    //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embedded subsystems will will need to fix this
 
                     //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
                     if (!name.isEmpty())
@@ -332,7 +332,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                         pObj->setName(name);
                     }
 
-                    // Now load all overwriten parameters
+                    // Now load all overwritten parameters
                     QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
                     QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
                     while (!xmlParameter.isNull())
@@ -371,7 +371,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 pObj->getAppearanceData()->readFromDomElement(cafMoStuff);
                 pObj->refreshDisplayName(); //Need to refresh display name if read appearance data contained an incorrect name
 
-                // Now refresh only thos ports that were new
+                // Now refresh only those ports that were new
                 QDomElement dom_port = cafMoStuff.firstChildElement("ports").firstChildElement("port");
                 while (!dom_port.isNull())
                 {
@@ -396,17 +396,17 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 UnitScale us = UnitScale(paramscale.attribute(HMF_PARAMETERSCALEUNIT), paramscale.attribute(HMF_PARAMETERSCALESCALE));
                 us.mPhysicalQuantity = paramscale.attribute(HMF_PARAMETERSCALEQUANTITY);
                 pObj->registerCustomParameterUnitScale(paramscale.attribute(HMF_PARAMETERSCALEPARAMNAME), us);
-                //! @todo The actual custom value is ignored here, since only scale can be registred, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
+                //! @todo The actual custom value is ignored here, since only scale can be registered, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
                 paramscale = paramscale.nextSiblingElement(HMF_PARAMETERSCALE);
             }
 
             //---------------------------
-            //! @todo stupid name misstake,  remove this later after 0.6.7 has been officially released
+            //! @todo stupid name mistake,  remove this later after 0.6.7 has been officially released
             paramscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement("customparamcales").firstChildElement(HMF_PARAMETERSCALE);
             while (!paramscale.isNull())
             {
                 pObj->registerCustomParameterUnitScale(paramscale.attribute(HMF_PARAMETERSCALEPARAMNAME), UnitScale(paramscale.attribute(HMF_PARAMETERSCALEUNIT), paramscale.attribute(HMF_PARAMETERSCALESCALE)));
-                //! @todo The actual custom value is ignored here, since only scale can be registred, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
+                //! @todo The actual custom value is ignored here, since only scale can be registered, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
                 paramscale = paramscale.nextSiblingElement(HMF_PARAMETERSCALE);
             }
             //---------------------------
@@ -436,7 +436,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
 ModelObject* loadContainerPortObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
-    rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
+    rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actually given in the HMF file (should not be)
     return loadModelObject(rDomElement, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
 }
 
@@ -472,7 +472,7 @@ void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, Con
 //    dynamic_cast<SystemContainer *>(pContainer)->getLogDataHandler()->setFavoriteVariable(componentName, portName, dataName, dataUnit);
 //}
 
-//! @todo We should remove Plot from the name as this is suposed to be useable for more then plotting only
+//! @todo We should remove Plot from the name as this is supposed to be usable for more then plotting only
 void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 {
     QString aliasname, fullName;
@@ -485,7 +485,7 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
     fullName = rDomElement.firstChildElement("fullname").text();
 
     // try the old format
-    //! @todo dont know if this works, but likely only atlas cares
+    //! @todo don't know if this works, but likely only atlas cares
     if (type=="UnknownAliasType")
     {
         aliasname = rDomElement.attribute("alias");
@@ -499,7 +499,7 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 
     //! @todo maybe should only be in core
     pContainer->setVariableAlias(fullName,aliasname);
-    //! @todo instead of bool return the uniqe changed alias should be returned
+    //! @todo instead of bool return the unique changed alias should be returned
     //! @todo what about parameter alias or other types
 }
 

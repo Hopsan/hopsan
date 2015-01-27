@@ -175,7 +175,7 @@ public:
             }
             else if (foundAtLeastOne)
             {
-                // We can brek loop since maps should be ordered by key
+                // We can break loop since maps should be ordered by key
                 break;
             }
         }
@@ -201,7 +201,7 @@ public:
             }
             else if (foundAtLeastOne)
             {
-                // We can brek loop since maps should be ordered by key
+                // We can break loop since maps should be ordered by key
                 break;
             }
         }
@@ -230,7 +230,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mpConsole = pConsole;
 
     mpOptHandler = new OptimizationHandler(this);
-    // connect the optimization message handler to the consol for this HCOM handler
+    // connect the optimization message handler to the console for this HCOM handler
     connect(mpOptHandler->getMessageHandler(), SIGNAL(newAnyMessage(GUIMessage)), mpConsole, SLOT(printMessage(GUIMessage)));
 
     mPwd = gpDesktopHandler->getDocumentsPath();
@@ -2965,7 +2965,7 @@ void HcomHandler::executeSavePlotWindowCommand(const QString cmd)
         filename.remove("\"");
         QString ext = extractFilenameExtension(filename);
 
-        // Make an absolute path relativ mPwd if given path is not already absolute
+        // Make an absolute path relative mPwd if given path is not already absolute
         QFileInfo file(filename);
         if (!file.isAbsolute())
         {
@@ -2981,13 +2981,13 @@ void HcomHandler::executeSavePlotWindowCommand(const QString cmd)
             return;
         }
 
-        // Read dpi argument if spcified
+        // Read dpi argument if specified
         if (args.size() > 4)
         {
             dpi = args[4];
         }
 
-        // Read dim unit argument if speecified
+        // Read dim unit argument if specified
         if (args.size() > 3)
         {
             dim = args[3];
@@ -4248,7 +4248,7 @@ void HcomHandler::executeCallFunctionCommand(const QString cmd)
 
     bool abort = false;
     runScriptCommands(mFunctions.find(funcName).value(), &abort);
-    //timer.toc(" <<<<<<<<<<<<< In executeCallFunctionCommand: Finnished runScriptCommands for: "+cmd+" func: "+funcName);
+    //timer.toc(" <<<<<<<<<<<<< In executeCallFunctionCommand: Finished runScriptCommands for: "+cmd+" func: "+funcName);
     if(abort)
     {
         HCOMPRINT("Function aborted");
@@ -4433,7 +4433,7 @@ void HcomHandler::executeLockXAxisCommand(const QString cmd)
 
 //! @brief Changes plot variables on specified axes
 //! @param cmd Command containing the plot variables
-//! @param axis Axis specification (0=left, 1=right, -1=both, separeted by "-r")
+//! @param axis Axis specification (0=left, 1=right, -1=both, separated by "-r")
 void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool hold)
 {
     QStringList varNames = splitCommandArguments(cmd);
@@ -4583,7 +4583,7 @@ void HcomHandler::addPlotCurve(HopsanVariable data, const int axis, bool autoRef
 
 
 //! @brief Adds a plot curve to specified axis in current plot
-//! @param [in] fullShortVarNameWithGen Full short name of varaiable to remove (inlcuding optional generation specifier)
+//! @param [in] fullShortVarNameWithGen Full short name of variable to remove (including optional generation specifier)
 void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
 {
     if(!mpModel) return;
@@ -4601,7 +4601,7 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
     }
     else
     {
-        // Restor the name
+        // Restore the name
         name = fullShortVarNameWithGen;
     }
 
@@ -4609,7 +4609,7 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
     {
         if( allGens )
         {
-            // Get the latest availible (we actually want the container)
+            // Get the latest available (we actually want the container)
             HopsanVariable data = getLogVariable(name+GENERATIONSPECIFIERSTR+"-1");
             if (data && data.mpContainer && data.getLogDataHandler())
             {
@@ -6305,7 +6305,7 @@ QString HcomHandler::getfullNameFromAlias(const QString &rAlias) const
 //! @brief Help function that returns a list of parameters according to input (with support for asterisks)
 //! @param str String to look for
 //! @param pComponent Pointer to component to look in
-//! @param parameterse Reference to list of found parameters
+//! @param parameters Reference to list of found parameters
 void HcomHandler::getParameters(QString str, ModelObject* pComponent, QStringList &parameters)
 {
     if(str.contains("*"))
@@ -6624,7 +6624,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
 
 //! @brief Parses the generation specifier of a name and chops it from the name
 //! @param[in,out] rStr A reference to the name string, the generation specifier will be chopped
-//! @param[out] rOk A bool descibing if parsing was sucessfull
+//! @param[out] rOk A bool describing if parsing was successful
 //! @returns The desired generation, or: -1 = Latest available, -2 = All generations, -3 = Not generation specified, -4 on failure
 int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
 {
@@ -6755,7 +6755,7 @@ double HcomHandler::getVar(const QString &var) const
 
 //! @brief Checks if a command is an arithmetic expression and evaluates it if possible
 //! @param cmd Command to evaluate
-//! @returns True if it is a correct exrpession, otherwise false
+//! @returns True if it is a correct expression, otherwise false
 bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 {
     //cmd.replace("**", "%%%%%");
@@ -6871,7 +6871,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     }
     else  //Not an assignment, evaluate with SymHop
     {
-        //! @todo Should we allow pure expessions without assignment?
+        //! @todo Should we allow pure expressions without assignment?
         //TicToc timer;
         evaluateExpression(cmd);
         //timer.toc("Evaluate expression "+cmd);
@@ -7230,7 +7230,7 @@ void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
 
 
 //! @brief Returns data pointers for the variable with given full short name format (may include generation)
-//! @param fullShortName Full concatinated name of the variable, (short name format expected)
+//! @param fullShortName Full concatenated name of the variable, (short name format expected)
 //! @returns Pointers to the data variable and container
 HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
 {
@@ -7242,7 +7242,7 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
     QString warningMessage;
 
     // If no generation is specified we want to use the current generation
-    // otherwise an arithmetic expression could get mixed generations if "latest (-1)" was choosen every time
+    // otherwise an arithmetic expression could get mixed generations if "latest (-1)" was chosen every time
     int generation = mpModel->getViewContainerObject()->getLogDataHandler()->getCurrentGeneration();
 
     // Now try to parse and separate the generation  number from the name
@@ -7264,7 +7264,7 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
         }
         else
         {
-            // Generation = -1 (latest availible) or higher is accepted
+            // Generation = -1 (latest available) or higher is accepted
             generation = genRC;
         }
     }
@@ -7276,7 +7276,7 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
     HopsanVariable data = mpModel->getViewContainerObject()->getLogDataHandler()->getHopsanVariable(fullShortName, generation);
 
     // If data was found then also print any warnings from the generation parser, otherwise do not print anything and
-    // let a higher level function deal with printing warnings or errors ragarding data that was not found
+    // let a higher level function deal with printing warnings or errors regarding data that was not found
     if (data && !warningMessage.isEmpty())
     {
         HCOMWARN(warningMessage);
@@ -7934,7 +7934,7 @@ double HcomFunctionoidFC::operator()(QString &str, bool &ok)
     }
     else if ((pData1 || pData2) && (isScalar1 || isScalar2))
     {
-        //! @todo maybe support this as a elementwise comparisson
+        //! @todo maybe support this as a elementwise comparison
         mpHandler->mpConsole->printWarningMessage("Comparing scalar with vector (will fail)", "", false);
     }
 

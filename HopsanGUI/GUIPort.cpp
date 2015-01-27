@@ -97,7 +97,7 @@ Port::Port(QString portName, double xpos, double ypos, PortAppearance* pPortAppe
     setCenterPos(xpos, ypos);
     //qDebug() << "---getPos: " << this->pos();
 
-    //Setup port label (ports allways have lables)
+    //Setup port label (ports always have labels)
     mpPortLabel = new QGraphicsTextItem(this);
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
@@ -121,7 +121,7 @@ Port::Port(QString portName, double xpos, double ypos, PortAppearance* pPortAppe
     }
 
     // Create signal connection to the zoom change signal for port overlay scaling and port hide/show function
-    GraphicsView *pView = getParentContainerObject()->mpModelWidget->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
+    GraphicsView *pView = getParentContainerObject()->mpModelWidget->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in other places
     connect(getParentContainerObject(),  SIGNAL(showOrHideAllSubComponentPorts(bool)),   this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
     connect(mpParentModelObject,         SIGNAL(visibleChanged()),                       this,   SLOT(showIfNotConnected()),             Qt::UniqueConnection);
     connect(pView,                       SIGNAL(zoomChange(double)),                     this,   SLOT(refreshPortOverlayScale(double)),   Qt::UniqueConnection);
@@ -129,20 +129,20 @@ Port::Port(QString portName, double xpos, double ypos, PortAppearance* pPortAppe
 
 Port::~Port()
 {
-    //! @todo Hack, we need to mark this as 0 to avoid graphics refresh triggerd from connector deleteMe in case of subsystemport (bellow), The interaction between ports and connectors should be rewritten in a smarter way
+    //! @todo Hack, we need to mark this as 0 to avoid graphics refresh triggered from connector deleteMe in case of subsystemport (bellow), The interaction between ports and connectors should be rewritten in a smarter way
     mpPortAppearance = 0; //
 
-    //If any connectors are present they need to be deleated also
+    //If any connectors are present they need to be deleted also
     // We need to use while and access first element every time as Vector will be modified when connector removes itself
-    //! @todo What about Undo, right now these deleations are not registered
+    //! @todo What about Undo, right now these deletions are not registered
     disconnectAndRemoveAllConnectedConnectors();
     //! @todo Maybe we should use signal and slots instead to handle connector removal on port delete, we are doing that with GuiModelObjects right now
 
-    //We dont need to disconnect the permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
+    //We don't need to disconnect the permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaling
     //They should be disconnected automatically when the objects die
 }
 
-//! Magnify the port with a class mebmer factor 'mMag'. Is used i.e. at hovering over disconnected port.
+//! Magnify the port with a class member factor 'mMag'. Is used i.e. at hovering over disconnected port.
 //! @param blowup says if the port should be magnified or not.
 void Port::magnify(bool doMagnify)
 {
@@ -222,7 +222,7 @@ void Port::setCenterPos(const double x, const double y)
     setPos(x,y);
 }
 
-//! @brief Conveniance function when fraction positions are known
+//! @brief Convenience function when fraction positions are known
 void Port::setCenterPosByFraction(double x, double y)
 {
     //! @todo for now root systems may not have an icon, if icon is empty ports will end up in zero, which is OK, maybe we should always force a default icon
@@ -298,7 +298,7 @@ void Port::openRightClickMenu(QPoint screenPos)
 {
     QMenu menu;
 
-    // First build alias menue
+    // First build alias menu
     QMenu *pAliasMenu = new QMenu("Define Alias");
     QMap<QAction*, int> aliasActions;
     QVector<CoreVariameterDescription> variameterDescriptions;
@@ -325,7 +325,7 @@ void Port::openRightClickMenu(QPoint screenPos)
     menu.addMenu(pAliasMenu);
     menu.addSeparator();
 
-    // Now build plot menue
+    // Now build plot menu
     QMap<QAction*, int> plotActions;
 
     LogDataHandler *pLogHandler = mpParentModelObject->getParentContainerObject()->getLogDataHandler();
@@ -345,8 +345,8 @@ void Port::openRightClickMenu(QPoint screenPos)
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;
-        //! @todo This is a ugly special hack for Signal Value but I cant thing of anything better, (maye make it impossible to have custom plotscales for Values)
-        //! @todo should have a help function for this as similar checks are done elsewere
+        //! @todo This is a ugly special hack for Signal Value but I cant thing of anything better, (maybe make it impossible to have custom plot scales for Values)
+        //! @todo should have a help function for this as similar checks are done elsewhere
         const QString &dataName = logVars[i]->getDataName();
         const QString &dataUnit = logVars[i]->getDataUnit();
 
@@ -401,7 +401,7 @@ void Port::openRightClickMenu(QPoint screenPos)
         plotActions.insert(pTempAction, i);
     }
 
-    // Execute menue and then check selected action
+    // Execute menu and then check selected action
     QAction *selectedAction = menu.exec(screenPos);
     // Check for alias action
     QMap<QAction*, int>::iterator it = aliasActions.find(selectedAction);
@@ -434,7 +434,7 @@ void Port::openDefineAliasDialog(const QString &rVarName, const QString &rCurren
                                           rCurrentAlias, &ok);
     if(ok)
     {
-        //! @todo should not go through logdatahnadler for this, should access directly, and signal the alias change to logdata handler
+        //! @todo should not go through logdatahandler for this, should access directly, and signal the alias change to logdata handler
         getParentContainerObject()->getLogDataHandler()->defineAlias(alias, fullName);
     }
 }
@@ -453,12 +453,12 @@ void Port::moveEvent(QGraphicsSceneMoveEvent *event)
 
 void Port::refreshPortMainGraphics()
 {
-    double rotAng = mpPortAppearance->rot; // OK, uggly, but has to be done in case the mpMainIcon is reset below
+    double rotAng = mpPortAppearance->rot; // OK, ugly, but has to be done in case the mpMainIcon is reset below
     if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
     {
         if (mpMainIcon != 0)
         {
-            // We must restore original angle and translation before deleting and applying new main graphis, i know it sucks, but we have to
+            // We must restore original angle and translation before deleting and applying new main graphics, i know it sucks, but we have to
             setRotation(0);
             setTransform(QTransform::fromTranslate(mpMainIcon->boundingRect().center().x(), mpMainIcon->boundingRect().center().y()), true);
             mpMainIcon->deleteLater();
@@ -471,7 +471,7 @@ void Port::refreshPortMainGraphics()
         setTransform(QTransform::fromTranslate(-mpMainIcon->boundingRect().center().x(), -mpMainIcon->boundingRect().center().y()), true);
     }
     // Always refresh rotation
-    setTransformOriginPoint(boundingRect().center()); //All rotaion and other transformation should be aplied around the port center
+    setTransformOriginPoint(boundingRect().center()); //All rotation and other transformation should be applied around the port center
     setRotation(rotAng); // This will also reset mpPortAppearance->rot
 }
 
@@ -531,10 +531,10 @@ void Port::refreshPortOverlayGraphics()
 }
 
 
-//! @brief Refreshes the port overlay graphics and lable position
+//! @brief Refreshes the port overlay graphics and label position
 void Port::refreshPortOverlayPosition()
 {
-    this->magnify(false); //We must turn magnification off or the pos adjustment calculation will be massivly brainfucked
+    this->magnify(false); //We must turn magnification off or the pos adjustment calculation will be massively *%&##^@!!&*(@#(*&
 
     //Refresh the port overlay graphics positions
     if (mpCQSIconOverlay != 0)
@@ -579,7 +579,7 @@ void Port::refreshPortOverlayPosition()
         mpMultiPortIconOverlay->setPos(this->mapFromScene(this->parentItem()->mapToScene(this->pos())-diff));
     }
 
-    //! @todo Do we even need to recalculate lable pos every time, the offset will never change and lable should move with port anyway
+    //! @todo Do we even need to recalculate label pos every time, the offset will never change and label should move with port anyway
     //We take the ports bounding rect center in scene coordinates and add a predetermined offset, then transform back to port coordinate system
     this->mpPortLabel->setPos( this->mapFromScene( this->sceneBoundingRect().center() + QPointF(10, 10) ) );
 }
@@ -587,7 +587,7 @@ void Port::refreshPortOverlayPosition()
 
 //! @brief recreate the port graphics overlay
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
-//! @todo Maybe we should preload all cqs and multiport overlays (just three of them) and create som kind of shared svg renderer that all ports can share, then we dont need to reload graphics from file every freaking time it changes and in every systemport
+//! @todo Maybe we should preload all cqs and multiport overlays (just three of them) and create some kind of shared svg renderer that all ports can share, then we don't need to reload graphics from file every freaking time it changes and in every systemport
 void Port::refreshPortGraphics()
 {
     qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
@@ -607,7 +607,7 @@ void Port::refreshPortGraphics()
                 //If we are port in containerport model object then ask our parent system model object about cqs-type
                 cqsType = getParentContainerObject()->getTypeCQS();
 
-                //Dont show cqs typ internally, it will become confusing, only show question marks if undefined
+                //Don't show cqs type internally, it will become confusing, only show question marks if undefined
                 if (cqsType != "UndefinedCQSType")
                 {
                     cqsType = "NULL";
@@ -671,16 +671,16 @@ void Port::refreshPortOverlayScale(double scale)
     }
 }
 
-//! @brief Updates the port lable text
+//! @brief Updates the port label text
 void Port::refreshPortLabelText()
 {
-    //Set the lable, &#160 means extra white space, to make lable more readable
+    //Set the label, &#160 means extra white space, to make label more readable
     QString label("<p><span style=\"background-color:lightyellow;font-size:14px;text-align:center\">&#160;&#160;");
 
     label.append(mPortDisplayName).append("&#160;&#160;");
 
-    //! @todo should get portdescription once and store it instead of getting it every time (search in core)
-    //! @todo we should show unit here aswell (for signal ports)
+    //! @todo should get port description once and store it instead of getting it every time (search in core)
+    //! @todo we should show unit here as well (for signal ports)
     QString desc = getPortDescription();
     if (desc.isEmpty())
     {
@@ -835,9 +835,9 @@ void Port::forgetConnection(Connector *pConnector)
     //qDebug() << "Removing connection, connections = " << mnConnections;
 }
 
-//! @brief Convenienc function to dissconnect and remove all conected connectors, usefull to call before deleteing ports
-//! @note The main reason for this function is that connector port relasionship during delete is MADNESS
-//! @note No undo will be registred
+//! @brief Convenience function to disconnect and remove all connected connectors, useful to call before deleting ports
+//! @note The main reason for this function is that connector port relationship during delete is MADNESS
+//! @note No undo will be registered
 void Port::disconnectAndRemoveAllConnectedConnectors()
 {
     while (mConnectedConnectors.size() > 0)
@@ -888,7 +888,7 @@ const PortAppearance *Port::getPortAppearance() const
 }
 
 
-//! @brief virtual function, only usefull for group port, guiport will return it self (this)
+//! @brief virtual function, only useful for group port, guiport will return it self (this)
 Port* Port::getRealPort()
 {
     return this;
@@ -915,7 +915,7 @@ void Port::setEnable(bool enable)
     }
     else
     {
-        // Only show if not connected and not suposed to be hidden if unconnected
+        // Only show if not connected and not supposed to be hidden if unconnected
         if (!isConnected() && getParentContainerObject()->areSubComponentPortsShown())
         {
             show();

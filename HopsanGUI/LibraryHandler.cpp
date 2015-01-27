@@ -337,7 +337,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         }
 
         //Read appearance data from the caf xml file, begin with the first
-        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file, also not hardcoded tagnames
         ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
         pAppearanceData->setBasePath(QFileInfo(cafFiles[i]).absolutePath()+"/");
         pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
@@ -359,7 +359,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                    << "NOTE! Your old files will be copied to the hopsan Backup folder, but you should make sure that you have a backup in case something goes wrong.\n"
                    << "NOTE! All non-standard Hopsan contents will be lost\n"
                    << "NOTE! Attributes may change order within a tag (but the order is not important)\n\n"
-                   << "If you want to update manually, see the documantation about the latest format version.";
+                   << "If you want to update manually, see the documentation about the latest format version.";
                 questionBox.setWindowTitle("New appearance data format available");
                 questionBox.setText(text);
                 QPushButton* pYes = questionBox.addButton(QMessageBox::Yes);
@@ -411,7 +411,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
         {
             //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
-            success = coreAccess.hasComponent(pAppearanceData->getTypeName()) || !pAppearanceData->getHmfFile().isEmpty(); //Check so that there is such component availible in the Core
+            success = coreAccess.hasComponent(pAppearanceData->getTypeName()) || !pAppearanceData->getHmfFile().isEmpty(); //Check so that there is such a component available in the Core
             if(!success)
             {
                 gpMessageHandler->addWarningMessage("Failed to load component: "+pAppearanceData->getTypeName()+", (library is not recompilable)", "failedtoloadcomp");
