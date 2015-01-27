@@ -187,7 +187,7 @@ namespace hopsan {
             double A2 = sqrt(s2*(s2-d3)*(s2-d4)*(s2-x02-P2_x));
             double h2 = 2.0*A2/(x02+P2_x);
 
-            //Calcualte th1 and th2 by using second order transfer functions
+            //Calculate th1 and th2 by using second order transfer functions
             den1[1] = B1+P1_Zc;
             mFilter1.setDen(den1);
             w1 = mFilter1.update(h1*P1_c - L1*cos(th1)/2.0*M1*g - (L1*cos(th1)+L2*cos(th2)/2.0)*M2*g - (L1*cos(th1)+L2*cos(th2))*Fload);

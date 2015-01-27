@@ -55,7 +55,7 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeMechanic");
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             registerParameter("l_1", "Length 1", "[m]", l1);
             registerParameter("l_2", "Length 2", "[m]", l2);
             registerParameter("J", "Moment of Inertia", "[kgm^2]", J);

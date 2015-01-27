@@ -19,7 +19,7 @@
 //! @date   2010-01-22
 //!
 //! @brief Alternative version of pressure relief valve with first order dynamics
-//! Only for temporary use in comparision between HOPSAN NG and Modelica. Not to be used in release versions of HOPSAN NG!
+//! Only for temporary use in comparison between HOPSAN NG and Modelica. Not to be used in release versions of HOPSAN NG!
 //!
 //$Id$
 
@@ -77,9 +77,9 @@ namespace hopsan {
             addConstant("D_s", "Spool Diameter", "[m]", mSpoolDiameter);
             addConstant("frac", "Fraction of Spool Circumference that is Opening", "[-]", mFrac);
             addConstant("A_p", "Working Area of Pilot Pressure", "[m^2]", mPilotArea);
-            addConstant("k", "Steady State Characheristics of Spring", "[N/m]", mK);
+            addConstant("k", "Steady State Characteristics of Spring", "[N/m]", mK);
             addConstant("c", "Steady State Damping Coefficient", "[Ns/m]", mC);
-            addConstant("m", "Ineretia of Spool", "[kg]", mMass);
+            addConstant("m", "Inertia of Spool", "[kg]", mMass);
             addConstant("x_hyst", "Hysteresis of Spool Position", "[m]", mXhyst);
             addConstant("x_max", "Maximum Spool Position", "[m]", mXmax);
 

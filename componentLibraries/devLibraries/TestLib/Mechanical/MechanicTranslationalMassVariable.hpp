@@ -35,7 +35,7 @@ namespace hopsan {
     private:
         double m;
         double *mpB, *mpK, *xMin, *xMax;
-        double mLength;         //This length is not accesible by the user,
+        double mLength;         //This length is not accessible by the user,
                                 //it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;  //Node data pointers
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
@@ -59,7 +59,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addConstant("m", "Mass", "kg",                      100.0, m);
             addInputVariable("B", "Viscous Friction", "Ns/m",   10.0, &mpB);
             addInputVariable("k", "Spring Coefficient", "N/m", 0.0, &mpK);

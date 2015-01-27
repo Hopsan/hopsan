@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2014-07-07
 //!
-//! @brief Contains a translational mass with coulumb friction and damper using multi-ports (converted from version without multi-ports)
+//! @brief Contains a translational mass with coulomb friction and damper using multi-ports (converted from version without multi-ports)
 //$Id$
 
 #ifndef MECHANICTRANSLATIONALMASSWITHCOULOMBFRICTIONANDMULTIPORTS_HPP_INCLUDED
@@ -42,7 +42,7 @@ namespace hopsan {
         double m;
         double *mpB, *mpFs, *mpFk, *xMin, *xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
-        double mLength;                                                                                     //This length is not accesible by the user, it is set from the start values by the c-components in the ends
+        double mLength;                                                                                     //This length is not accessible by the user, it is set from the start values by the c-components in the ends
         std::vector<double*> mvpN_f1, mvpN_x1, mvpN_v1, mvpN_me1, mvpN_c1, mvpN_Zx1, mvpN_f2, mvpN_x2, mvpN_v2, mvpN_me2, mvpN_c2, mvpN_Zx2;
         std::vector<double> x1, x2, mvpStartX1, mvpStartX2;
         size_t mNumPorts1, mNumPorts2;
@@ -66,7 +66,7 @@ namespace hopsan {
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
             mpP2 = addPowerMultiPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addConstant("m", "Mass", "kg", 100.0, m);
 
             addInputVariable("b", "Viscous Friction Coefficient", "Ns/m", 10, &mpB);

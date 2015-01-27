@@ -110,7 +110,7 @@ namespace hopsan {
             return true;
         }
 
-        // Overload the ComponentSystem initialize(startT, stopT) fuunction
+        // Overload the ComponentSystem initialize(startT, stopT) function
         // Important! initialize must have these arguments (const double startT, const double stopT),
         // otherwise the wrong function will be overloaded
         bool initialize(const double startT, const double stopT)
@@ -129,7 +129,7 @@ namespace hopsan {
                 // Here we call the actual initialize(startT, stopT) function, to initialize all submodels
                 bool isOK = ComponentSystem::initialize(startT, stopT);
 
-                // If initialization is successfull then proceeed with setting inital output values
+                // If initialization is successful then proceed with setting initial output values
                 if (isOK)
                 {
                     std::cout << (*mpInternalVolumePressure) << " " << mpSysPortVolPressureOut->readNode(NodeSignal::Value) << std::endl;
@@ -140,7 +140,7 @@ namespace hopsan {
                 }
             }
 
-            // If there was a problem in submodel initialization then we wil lget here
+            // If there was a problem in submodel initialization then we will get here
             // we must abort the simulation and return false
             stopSimulation();
             return false;

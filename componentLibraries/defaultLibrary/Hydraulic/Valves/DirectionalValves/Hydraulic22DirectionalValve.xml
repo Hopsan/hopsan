@@ -9,7 +9,7 @@
             <replacable typename="Hydraulic22DirectionalCheckValve"/>
         </replacables>
         <help>
-            <text>Hydraulic on/off valve with second order dynamics. Spool moves to position 1 if input signal is false (&lt; 0.5) or to position 2 if input signal is true (> 0.5). Dynamics is modelled as a low-pass filter with bandwith and damping.</text>
+            <text>Hydraulic on/off valve with second order dynamics. Spool moves to position 1 if input signal is false (&lt; 0.5) or to position 2 if input signal is true (> 0.5). Dynamics is modelled as a low-pass filter with bandwidth and damping.</text>
         </help>
         <ports>
             <port x="0.827731092436975" y="1" a="90" name="P1"/>

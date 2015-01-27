@@ -6,7 +6,7 @@
             <icon scale="1" path="22valve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Hydraulic flow control valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified.</text>
+            <text>Hydraulic flow control valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwidth and damping. Overlap (or underlap) can be specified.</text>
             <picture>22valvehelp.svg</picture>
         </help>
         <ports>

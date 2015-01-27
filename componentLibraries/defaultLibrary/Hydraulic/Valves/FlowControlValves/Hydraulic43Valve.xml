@@ -6,7 +6,7 @@
             <icon scale="1" path="43valve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Hydraulic proportional closed-center directional valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
+            <text>Hydraulic proportional closed-center directional valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwidth and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
             <picture>43valvehelp.svg</picture>
         </help>
         <ports>

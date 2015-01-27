@@ -7,7 +7,7 @@
         </icons>
         <help>
             <picture>masschelp.svg</picture>
-            <text>A translational inertia modelled according to Euler's first law of motion. Coulumb friction is modelled like an ideal force acting in the opposite direction of the movement. Limitation parameters apply to port P2. This version use multi-ports, allowing several connections on each side. For better performance, use the version without multi-ports.</text>
+            <text>A translational inertia modelled according to Euler's first law of motion. Coulomb friction is modelled like an ideal force acting in the opposite direction of the movement. Limitation parameters apply to port P2. This version use multi-ports, allowing several connections on each side. For better performance, use the version without multi-ports.</text>
         </help>
         <ports>
             <port x="0.1016875" y="0.4166666667" a="0" name="P1"/>

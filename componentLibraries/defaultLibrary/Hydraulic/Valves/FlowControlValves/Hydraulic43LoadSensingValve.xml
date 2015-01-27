@@ -6,7 +6,7 @@
             <icon scale="1" path="43lsvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Hydraulic proportional closed-center load sensing servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction. Highest load pressure can be obtained from read port.</text>
+            <text>Hydraulic proportional closed-center load sensing servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwidth and damping. Overlap (or underlap) can be specified individually for each flow direction. Highest load pressure can be obtained from read port.</text>
         </help>
         <ports>
             <port x="0.5" y="1" a="90" name="PP"/>

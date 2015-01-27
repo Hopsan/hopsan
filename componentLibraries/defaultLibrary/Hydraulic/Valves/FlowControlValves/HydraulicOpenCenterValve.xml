@@ -6,7 +6,7 @@
             <icon scale="1" path="ocvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Hydraulic proportional open-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
+            <text>Hydraulic proportional open-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwidth and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
         </help>
         <ports>
             <port x="0.5" y="1" a="90" name="PP"/>
