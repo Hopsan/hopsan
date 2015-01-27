@@ -16,7 +16,7 @@ if "%~1" == "" (
 cd doc
 if %~1==user (
   echo Building user documentation!
-  REM First remove output folders to be sure documenation is clean
+  REM First remove output folders to be sure documentation is clean
   REM We can afford to do this as user documentation builds relatively fast
   rmdir "user\html\" /s /q
   rmdir "user\latex\" /s /q

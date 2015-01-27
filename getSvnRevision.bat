@@ -15,7 +15,7 @@ set foldername="include"
 :: -------------------------------------------
 set version=""
 set versionS=""
-:: Find the revison number, the fifth token from the line
+:: Find the revision number, the fifth token from the line
 for /f "tokens=5" %%i in ('SubWCRev .^|find "Last committed at revision"') do set version=%%i 
 :: Remove trailing space
 for /f "tokens=1 delims=/ " %%a in ("%version%") do set versionS=%%a
@@ -26,7 +26,7 @@ if exist %foldername% (
 )
 
 :: Determine what to report and what exit code to give
-:: Exit with code 0 (sucess) or 1 (failed)
+:: Exit with code 0 (success) or 1 (failed)
 if %versionS%=="" (
   echo "RevisionInformationNotFound"
   exit /b 1
