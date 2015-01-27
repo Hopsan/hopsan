@@ -156,7 +156,7 @@ public:
     QList<Expression> mArguments;   //Used for functions
     QList<Expression> mTerms;       //Used in terms
     QList<Expression> mFactors;     //Used in factor-divisor
-    QList<Expression> mDivisors;    //Used in factor-divosor or modulo
+    QList<Expression> mDivisors;    //Used in factor-divisor or modulo
     Expression *mpBase;        //Used in power
     Expression *mpPower;       //Used in power
     Expression *mpLeft;        //Used in equality

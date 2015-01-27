@@ -33,8 +33,8 @@ LIBS *= -L$${PWD}/../../bin -lHopsanCore$${DEBUG_EXT}
 LIBS += -pthread
 
 unix {
-    # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
-    # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
+    # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative to the executable (regardless of working dir, VERY useful)
+    # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to handle the $$ORIGIN stuff, adding manually to LFLAGS
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 }
 

@@ -40,7 +40,7 @@ typedef struct
 }ModelVariableInfo_t;
 
 // ------------------------------
-// Model utitilities BEGIN
+// Model utilities BEGIN
 // ------------------------------
 //! @todo Model utilities should not be in this file they should be shared
 
@@ -66,7 +66,7 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
                 Port *pPort = ports[p];
                 if (pPort->isMultiPort())
                 {
-                    // Ignore multiports, not possible to determin what we want to log anyway
+                    // Ignore multiports, not possible to determine what we want to log anyway
                     continue;
                 }
 
@@ -209,7 +209,7 @@ string getParameter(ComponentSystem *pSystem, HString &fullname)
 }
 
 // ------------------------------
-// Model utitilities END
+// Model utilities END
 // ------------------------------
 
 string gWorkerId;
@@ -388,7 +388,7 @@ int main(int argc, char* argv[])
             collectAllModelVariables(pRootSystem, vMVI, "");
             cout << PRINTWORKER << "Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
 
-            //! @todo Check if simulation finnished, ACK Nack
+            //! @todo Check if simulation finished, ACK Nack
             vector<SM_Variable_Description_t> vars;
             for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
             {

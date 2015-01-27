@@ -68,7 +68,7 @@ void hAssert(const bool cond)
 
 
 //! @brief Constructor for Expression class using QString
-//! @param indata String containg a numerical expression
+//! @param indata String containing a numerical expression
 //! @param simplifications Specifies the degree of simplification
 //FIXED
 Expression::Expression(const QString indata, bool *ok, const ExpressionSimplificationT simplifications)
@@ -96,7 +96,7 @@ Expression::Expression(const QString indata, bool *ok, const ExpressionSimplific
 
 //! @brief Constructor for Expression class using QStringList
 //! @details This constructor is faster than the one using a string, because the string does not need to be parsed.
-//! @param symbols String list containg numerical symbols
+//! @param symbols String list containing numerical symbols
 //! @param simplifications Specifies the degree of simplification
 //! @param parentSeparator Used when recursively creating the tree, this shall never be used when defining a new expression
 //FIXED
@@ -108,7 +108,7 @@ Expression::Expression(QStringList symbols, const ExpressionSimplificationT simp
 
 
 ////! @brief Constructor for Expression using left and right expressions and an operator
-////! @details This is the fastest way to create a new expression of operator type, because no evaulations or parsing needs to be performed.
+////! @details This is the fastest way to create a new expression of operator type, because no evaluations or parsing needs to be performed.
 ////! @param left Left side Expression
 ////! @param right Right side expression
 ////! @param mid Operator ("+", "*" or "/")
@@ -126,7 +126,7 @@ Expression::Expression(QStringList symbols, const ExpressionSimplificationT simp
 //}
 
 
-////! @brief Constructor for Expression using a list of expressions joined by operaetors
+////! @brief Constructor for Expression using a list of expressions joined by operators
 ////! @example Expression([A,B,C,D], "+") will result in A+B+C+D
 ////! @param children List of child expressions
 ////! @param separator Operator used to combine child expressions ("+", "*" or "/")
@@ -180,7 +180,7 @@ Expression::Expression(const double value)
 }
 
 //! @brief Common constructor code that constructs an Expression from a string list
-//! @param symbols String list containg numerical symbols
+//! @param symbols String list containing numerical symbols
 //! @param simplifications Specifies the degree of simplification
 //! @param parentSeparator Used when recursively creating the tree
 //FIXED
@@ -354,7 +354,7 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
     else if(splitAtSeparator("{", symbols, simplifications)) {}                  //Logical and (replace with function)
     else if(splitAtSeparator("}", symbols, simplifications)) {}                  //Logical or (replace with function)
     else if(splitAtSeparator(">", symbols, simplifications)) {}                  //Logical greater than (replace with function)
-    else if(splitAtSeparator("?", symbols, simplifications)) {}                  //Logical greaater than or equal (replace with function)
+    else if(splitAtSeparator("?", symbols, simplifications)) {}                  //Logical greater than or equal (replace with function)
     else if(splitAtSeparator("<", symbols, simplifications)) {}                  //Logical smaller than (replace with function)
     else if(splitAtSeparator("|", symbols, simplifications)) {}                  //Logical smaller than or equal (replace with function)
     else if(splitAtSeparator("+", symbols, simplifications)) {}                  //Addition
@@ -580,7 +580,7 @@ Expression Expression::fromTerms(const QList<Expression> terms)
 }
 
 
-//! @brief Combines to expressions to a multiplication exprsesion
+//! @brief Combines to expressions to a multiplication expression
 //! @param factor1 First factor
 //! @param factor2 Second factor
 Expression Expression::fromTwoFactors(const Expression factor1, const Expression factor2)
@@ -590,7 +590,7 @@ Expression Expression::fromTwoFactors(const Expression factor1, const Expression
 
 
 //! @brief Combines to expressions to a division expression
-//! @param factor Factor exprsesion
+//! @param factor Factor expression
 //! @param divisor Divisor expression
 Expression Expression::fromFactorDivisor(const Expression factor, const Expression divisor)
 {
@@ -1444,7 +1444,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         }
 
         bool negative = false;
-        if(func.startsWith('-'))        //Rememver that the function was negative
+        if(func.startsWith('-'))        //Remember that the function was negative
         {
             func = func.right(func.size()-1);
             negative = true;
@@ -1763,7 +1763,7 @@ bool Expression::contains(const Expression expr) const
 }
 
 
-//! @brief Converts time derivatives (der) in the expression to Z operators with bilinar transform
+//! @brief Converts time derivatives (der) in the expression to Z operators with bilinear transform
 //FIXED
 Expression Expression::bilinearTransform() const
 {
@@ -3189,7 +3189,7 @@ QString SymHop::getFunctionDerivative(const QString &key)
 }
 
 
-//! @brief Returns a list with supported functions for equation-based model genereation
+//! @brief Returns a list with supported functions for equation-based model generation
 //FIXED
 QStringList SymHop::getSupportedFunctionsList()
 {
@@ -3205,7 +3205,7 @@ QStringList SymHop::getCustomFunctionList()
 }
 
 
-//! @brief Finds the first path through a matrix of dependencies, used to sort jacobian matrixes
+//! @brief Finds the first path through a matrix of dependencies, used to sort jacobian matrices
 //FIXED
 bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int level, QList<int> preferredPath)
 {
