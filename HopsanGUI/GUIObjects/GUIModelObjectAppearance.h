@@ -227,6 +227,7 @@ public:
     const QString &getHelpPicture() const;
     const QString &getHelpText() const;
     const QString &getHelpLink() const;
+    QString getHelpHtmlPath() const;
     const QMap<QString, QString> &getOverridedDefaultParameters() const;
     bool isParameterHidden(const QString &name) const;
     QString getBasePath() const;
@@ -265,7 +266,7 @@ private:
     QString mSourceCode;
     QString mLibPath;
     bool mIsRecompilable;
-    QString mHelpText,mHelpPicture,mHelpLink;
+    QString mHelpText,mHelpPicture,mHelpLink,mHelpHtmlPath;
     QMap<QString,QString> mOverridedDefaultParameters;
     QStringList mHiddenParameters;
     ModelObjectIconAppearance mIsoIconAppearance;

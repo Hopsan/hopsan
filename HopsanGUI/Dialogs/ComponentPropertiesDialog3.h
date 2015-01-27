@@ -67,6 +67,7 @@ protected slots:
     void copyToNewComponent();
     void recompile();
     virtual void reject();
+    void openDescription();
 
 protected:
     bool setAliasNames();

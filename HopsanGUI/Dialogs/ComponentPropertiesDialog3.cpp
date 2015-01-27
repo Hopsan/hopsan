@@ -32,6 +32,8 @@
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QMenu>
+#include <QWebView>
+#include <QMainWindow>
 
 
 //Hopsan includes
@@ -318,6 +320,15 @@ void ComponentPropertiesDialog3::reject()
     QDialog::close();
 }
 
+void ComponentPropertiesDialog3::openDescription()
+{
+    QMainWindow *pDescriptionWindow = new QMainWindow(gpMainWindowWidget);
+    pDescriptionWindow->setCentralWidget(createHelpWidget());
+    pDescriptionWindow->setWindowTitle(gpLibraryHandler->getModelObjectAppearancePtr(mpModelObject->getTypeName())->getDisplayName());
+    pDescriptionWindow->resize(this->size());
+    pDescriptionWindow->show();
+}
+
 QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
 {
     QGridLayout *pNameTypeLayout = new QGridLayout();
@@ -325,19 +336,19 @@ QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
     mpNameEdit = new QLineEdit(mpModelObject->getName());
     QLabel *pCQSTypeLabel = new QLabel("CQS Type: \""+mpModelObject->getTypeCQS()+"\"");
     QLabel *pTypeNameLabel = new QLabel("Typename: \""+mpModelObject->getTypeName()+"\"");
-    pNameTypeLayout->addWidget(pNameLabel,0,0);
-    pNameTypeLayout->addWidget(mpNameEdit,0,1);
-    pNameTypeLayout->addWidget(pTypeNameLabel,1,0,1,2);
+    int r=0;
+    pNameTypeLayout->addWidget(pNameLabel,r,0);
+    pNameTypeLayout->addWidget(mpNameEdit,r,1);
+    r++;
+    pNameTypeLayout->addWidget(pTypeNameLabel,r,0,1,2);
+    r++;
     if (!mpModelObject->getSubTypeName().isEmpty())
     {
         QLabel *pSubTypeNameLabel = new QLabel("SubTypename: \""+mpModelObject->getSubTypeName()+"\"");
-        pNameTypeLayout->addWidget(pSubTypeNameLabel,2,0,1,2);
-        pNameTypeLayout->addWidget(pCQSTypeLabel,3,0,1,2);
+        pNameTypeLayout->addWidget(pSubTypeNameLabel,r,0,1,2);
+        r++;
     }
-    else
-    {
-        pNameTypeLayout->addWidget(pCQSTypeLabel,2,0,1,2);
-    }
+    pNameTypeLayout->addWidget(pCQSTypeLabel,r,0,1,2);
 
     return pNameTypeLayout;
 }
@@ -360,19 +371,26 @@ QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
 
 QWidget *ComponentPropertiesDialog3::createHelpWidget()
 {
-    if(!mpModelObject->getHelpText().isNull() || !mpModelObject->getHelpPicture().isNull() || !mpModelObject->getHelpLink().isNull())
+    if(!mpModelObject->getHelpText().isNull() || !mpModelObject->getHelpPicture().isNull() || !mpModelObject->getHelpLink().isNull() || !mpModelObject->getHelpHtmlPath().isNull())
     {
         QScrollArea *pHelpScrollArea = new QScrollArea();
         QGroupBox *pHelpWidget = new QGroupBox();
         QVBoxLayout *pHelpLayout = new QVBoxLayout(pHelpWidget);
 
         QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getModelObjectAppearancePtr(mpModelObject->getTypeName())->getDisplayName());
-        pHelpHeading->setAlignment(Qt::AlignCenter);
+        pHelpHeading->setAlignment(Qt::AlignLeft);
         QFont tempFont = pHelpHeading->font();
         tempFont.setPixelSize(16);
         tempFont.setBold(true);
         pHelpHeading->setFont(tempFont);
         pHelpLayout->addWidget(pHelpHeading);
+
+        if (!mpModelObject->getHelpHtmlPath().isNull())
+        {
+            QWebView * pHtmlView = new QWebView();
+            pHtmlView->load(QUrl::fromLocalFile(mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath()));
+            pHelpLayout->addWidget(pHtmlView);
+        }
 
         if(!mpModelObject->getHelpPicture().isNull())
         {
@@ -380,7 +398,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             QPixmap helpPixMap(mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpPicture());
             pHelpPicture->setPixmap(helpPixMap);
             pHelpLayout->addWidget(pHelpPicture);
-            pHelpPicture->setAlignment(Qt::AlignHCenter);
+            pHelpPicture->setAlignment(Qt::AlignLeft);
         }
 
         if(!mpModelObject->getHelpText().isNull())
@@ -388,22 +406,27 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             QLabel *pHelpText = new QLabel(mpModelObject->getHelpText(), this);
             pHelpText->setWordWrap(true);
             pHelpLayout->addWidget(pHelpText);
-            pHelpText->setAlignment(Qt::AlignHCenter);
+            pHelpText->setAlignment(Qt::AlignLeft);
         }
 
         if (!mpModelObject->getHelpLink().isNull())
         {
-            QString link = QString("<a href=\"%1\">%2</a>").arg(mpModelObject->getAppearanceData()->getBasePath()+mpModelObject->getHelpLink()).arg(mpModelObject->getHelpLink());
+            QString link = QString("External document: <a href=\"%1\">%2</a>").arg(mpModelObject->getAppearanceData()->getBasePath()+mpModelObject->getHelpLink()).arg(mpModelObject->getHelpLink());
             QLabel *pHelpLink = new QLabel(link,this);
             pHelpLink->setOpenExternalLinks(true);
             pHelpLayout->addWidget(pHelpLink);
-            pHelpLink->setAlignment(Qt::AlignHCenter);
+            pHelpLink->setAlignment(Qt::AlignLeft);
+        }
+
+        // Add dummy stretch widget at bottom if no html is pressent (to force image / text / link together)
+        if (mpModelObject->getHelpHtmlPath().isNull())
+        {
+            QWidget *pDummyWidget = new QWidget(this);
+            pHelpLayout->addWidget(pDummyWidget, 1);
         }
 
         pHelpWidget->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px;}"));
 
-        pHelpWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-        //pHelpLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
         pHelpScrollArea->setWidget(pHelpWidget);
         pHelpScrollArea->setWidgetResizable(true);
         pHelpScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -471,14 +494,7 @@ void ComponentPropertiesDialog3::createEditStuff()
 
     // Add help picture and text
     //------------------------------------------------------------------------------------------------------------------------------
-    QWidget *pHelpBoxWidget = createHelpWidget();
-    QWidget *pDummyWidget = new QWidget(this);
-    QVBoxLayout *pHelpLayout = new QVBoxLayout();
-    pHelpLayout->addWidget(pHelpBoxWidget);
-    pHelpLayout->addWidget(pDummyWidget);
-    pHelpLayout->setStretch(1,1);
-    QWidget *pHelpWidget = new QWidget(this);
-    pHelpWidget->setLayout(pHelpLayout);
+    QWidget *pHelpWidget = createHelpWidget();
     //------------------------------------------------------------------------------------------------------------------------------
 
     // Add name edit and type information
@@ -488,18 +504,30 @@ void ComponentPropertiesDialog3::createEditStuff()
     pPropertiesLayout->setRowStretch(row,0);
     //------------------------------------------------------------------------------------------------------------------------------
 
+    // Add button widget with description and copy to clipboard buttons
+    //------------------------------------------------------------------------------------------------------------------------------
+    QWidget *pDCButtonWidget = new QWidget(this);
+    QVBoxLayout *pDCButtonsLayout = new QVBoxLayout(pDCButtonWidget);
+    QPushButton *pDescriptionButton = new QPushButton(tr("&Description"), this);
+    pDescriptionButton->setToolTip("Open description in separate window");
+    connect(pDescriptionButton, SIGNAL(clicked()), this, SLOT(openDescription()));
+    pDCButtonsLayout->addWidget(pDescriptionButton);
+    pPropertiesLayout->addWidget(pDCButtonWidget, row, 1);
+    //------------------------------------------------------------------------------------------------------------------------------
+
+
     // Add button box with buttons
     //------------------------------------------------------------------------------------------------------------------------------
     QDialogButtonBox *pButtonBox = createButtonBox();
-    pPropertiesLayout->addWidget(pButtonBox, row, 1);
+    pPropertiesLayout->addWidget(pButtonBox, row, 2);
     //------------------------------------------------------------------------------------------------------------------------------
     ++row;
 
     // Add Parameter settings table
     //------------------------------------------------------------------------------------------------------------------------------
     mpVariableTableWidget = new VariableTableWidget(mpModelObject,this);
-    mpVariableTableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    pPropertiesLayout->addWidget(mpVariableTableWidget, row, 0,1,2);
+    mpVariableTableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    pPropertiesLayout->addWidget(mpVariableTableWidget, row, 0, 1, 3);
     pPropertiesLayout->setRowStretch(row,1);
     qDebug() << "Table: " << mpVariableTableWidget->sizeHint() << "  " << mpVariableTableWidget->minimumWidth() << "  " << mpVariableTableWidget->minimumHeight();
     //------------------------------------------------------------------------------------------------------------------------------

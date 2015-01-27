@@ -72,6 +72,7 @@ public:
     const QString &getHelpPicture() const;
     const QString &getHelpText() const;
     const QString &getHelpLink() const;
+    QString getHelpHtmlPath() const;
 
     // Parameter methods
     virtual QStringList getParameterNames();

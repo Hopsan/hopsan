@@ -1732,6 +1732,10 @@ const QString &ModelObject::getHelpLink() const
     return mModelObjectAppearance.getHelpLink();
 }
 
+QString ModelObject::getHelpHtmlPath() const
+{
+    return mModelObjectAppearance.getHelpHtmlPath();
+}
 
 //! @brief Constructor for the name text object
 //! @param pParent Pointer to the object which the name text belongs to

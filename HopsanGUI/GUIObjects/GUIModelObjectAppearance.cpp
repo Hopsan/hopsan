@@ -61,6 +61,7 @@
 #define CAF_HELPTEXT "text"
 #define CAF_HELPPICTURE "picture"
 #define CAF_HELPLINK "link"
+#define CAF_HELPHTML "html"
 
 
 #define CAF_PARAMETERS "defaultparameters"
@@ -492,6 +493,11 @@ const QString &ModelObjectAppearance::getHelpLink() const
     return mHelpLink;
 }
 
+QString ModelObjectAppearance::getHelpHtmlPath() const
+{
+    return mHelpHtmlPath;
+}
+
 const QMap<QString, QString> &ModelObjectAppearance::getOverridedDefaultParameters() const
 {
     return mOverridedDefaultParameters;
@@ -774,7 +780,14 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         QDomElement xmlHelpText = xmlHelp.firstChildElement(CAF_HELPTEXT);
         if (!xmlHelpText.isNull())
         {
-            mHelpText = xmlHelpText.text();
+            mHelpText.clear();
+            // We read the help text line by line and remove whitespaces from the front of each line
+            QString text = xmlHelpText.text();
+            QTextStream ts(&text);
+            while (!ts.atEnd())
+            {
+                mHelpText.append(ts.readLine().trimmed()).append("\n");
+            }
         }
 
         QDomElement xmlHelpPicture = xmlHelp.firstChildElement(CAF_HELPPICTURE);
@@ -787,6 +800,12 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         if (!xmlHelpLink.isNull())
         {
             mHelpLink = xmlHelpLink.text();
+        }
+
+        QDomElement xmlHelpHtml = xmlHelp.firstChildElement(CAF_HELPHTML);
+        if (!xmlHelpHtml.isNull())
+        {
+            mHelpHtmlPath = xmlHelpHtml.text();
         }
     }
 
@@ -995,7 +1014,7 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     }
 
     // Save help text and picture data
-    if(!mHelpText.isEmpty() || !mHelpPicture.isEmpty())
+    if(!mHelpText.isEmpty() || !mHelpPicture.isEmpty() || !mHelpLink.isEmpty() || !mHelpHtmlPath.isEmpty() )
     {
         QDomElement xmlHelp = appendDomElement(xmlObject, CAF_HELP);
         if( !mHelpText.isEmpty() )
@@ -1008,9 +1027,14 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
             appendDomTextNode(xmlHelp, CAF_HELPPICTURE, mHelpPicture);
         }
 
-        if( !mHelpPicture.isEmpty() )
+        if( !mHelpLink.isEmpty() )
         {
-            appendDomTextNode(xmlHelp, CAF_HELPPICTURE, mHelpPicture);
+            appendDomTextNode(xmlHelp, CAF_HELPLINK, mHelpLink);
+        }
+
+        if( !mHelpHtmlPath.isEmpty() )
+        {
+            appendDomTextNode(xmlHelp, CAF_HELPHTML, mHelpHtmlPath);
         }
     }
 

@@ -223,6 +223,7 @@ Information about the component for the graphical interface, such as icon, port 
       <text>Help Text</text>
       <picture>helpPicture.svg</picture>
       <link>externalHelpDocumentation.pdf</link>
+      <html>./HydraulicLaminarOrifice.html</html>
     </help>
     <ports>
       <port name="P1" x="1.0" y="0.5" a="0" visible="true"/>
