@@ -79,7 +79,7 @@ Defines that the movable will be adjustable by the user during real-time animati
 Specifies that a port shall follow with the movable, starting at specified coordinates.
 
 <b>\<relative\></b>\n
-Specifies that this movable moves relative to the movable with specified index. Position and rotation of this movable will be added with those of the other movable.
+Specifies that this movable moves relative to the movable with specified index. Position and rotation of this movable will be added to those of the other movable.
 
 <b>\<initcolor\></b>\n
 Specifies initial colors for the movable. The SVG icon should be black for this to work properly.
