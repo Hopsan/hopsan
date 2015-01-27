@@ -83,7 +83,7 @@ GroupContainer::GroupContainer(QPointF position, double rotation, const ModelObj
 {
     qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
 
-    QString newname = this->getCoreSystemAccessPtr()->reserveUniqueName("Grupp_test"); //Dont forget to unreserve this later when renaming or deleting
+    QString newname = this->getCoreSystemAccessPtr()->reserveUniqueName("Grupp_test"); //Don't forget to unreserve this later when renaming or deleting
     this->setName(newname);
 
     //! @todo this is not good all mpModelWidget should be set in one common place not in guigroup and guisystem
@@ -97,13 +97,13 @@ GroupContainer::~GroupContainer()
 {
     qDebug() << ",,,,,,,,,GuiGroupDestructor";
 
-    //Disable undo befor clearing
+    //Disable undo before clearing
     this->setUndoEnabled(false, true); //The last true means DONT ASK
 
     //First remove all contents
     this->clearContents();
 
-    //Now unregister my name in core (instead of delete in core as I am not a core obejct)
+    //Now unregister my name in core (instead of delete in core as I am not a core object)
     this->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
 
 //    qDebug() << "GUIGroup destructor";
@@ -194,7 +194,7 @@ GroupContainer::~GroupContainer()
 ////        //Add the components in the group to the group scene
 ////        getContainedScenePtr()->addItem(mGUICompList.at(i));
 
-////        //Find the rect for the selscted items (the group)
+////        //Find the rect for the selected items (the group)
 ////        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 < xMin)
 ////            xMin = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
 ////        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 > xMax)
@@ -369,7 +369,7 @@ void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 
 
 ////! A slot that makes an entrance into a group at double clicks.
-////! @param event contain information of the doubleclick event.
+////! @param event contain information of the double click event.
 //void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //{
 //    QGraphicsItem::mouseDoubleClickEvent(event);
@@ -394,7 +394,7 @@ void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 //        double x = i.value().x;
 //        double y = i.value().y;
 
-//        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
+//        i.value().selectPortIcon("", "", "Undefined"); //Don't really need to write undefined here, could be empty, (just to make it clear)
 
 ////        mModelObjectAppearance.setName(mpParentSystem->mpParentModelWidget->mGUIRootSystem.addSystemPort(i.key()));
 //        mModelObjectAppearance.setName(i.key());

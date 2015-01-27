@@ -130,7 +130,7 @@ QDomElement appendOrGetCAFRootTag(QDomElement parentElement)
 //! @param[out] rName The name of the port
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
-//! @param[out] rTheta The orientaion (angle)
+//! @param[out] rTheta The orientation (angle)
 //! @deprecated Only use for loading old version files
 void parsePortPoseTag(QDomElement domElement, QString &rName, double &rX, double &rY, double &rTheta)
 {
@@ -142,7 +142,7 @@ void parsePortPoseTag(QDomElement domElement, QString &rName, double &rX, double
 //! @brief Help function that writes PortAppearance to DOM Element
 //! @param [in,out] domElement The DOM element to append to
 //! @param [in] portName QString containing the port name
-//! @param [in] rPortAppearance Reference to PortAppearance object to be writen
+//! @param [in] rPortAppearance Reference to PortAppearance object to be written
 void appendPortDomElement(QDomElement &rDomElement, const QString portName, const PortAppearance &rPortAppearance)
 {
     QDomElement xmlPort = appendDomElement(rDomElement, CAF_PORT);
@@ -508,7 +508,7 @@ bool ModelObjectAppearance::isParameterHidden(const QString &name) const
 //! If that is also missing return a path to the missing graphics icon
 QString ModelObjectAppearance::getFullAvailableIconPath(GraphicsTypeEnumT gfxType)
 {
-    // Determine which type to use based on aviliablity of icons
+    // Determine which type to use based on availability of icons
     gfxType = selectAvailableGraphicsType(gfxType);
 
     // Return user graphics path
@@ -528,7 +528,7 @@ QString ModelObjectAppearance::getFullAvailableIconPath(GraphicsTypeEnumT gfxTyp
     }
 }
 
-//! @brief Returns the path to the graphics icon of requested type, regardles of wheter it is valid or not
+//! @brief Returns the path to the graphics icon of requested type, regardless of whether it is valid or not
 QString ModelObjectAppearance::getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel)
 {
     if (gfxType == UserGraphics)
@@ -573,10 +573,10 @@ QString ModelObjectAppearance::getDefaultMissingIconPath() const
     return QString(OBJECTICONPATH) + mDefaultMissingIconPath;
 }
 
-//! @todo This is a bit wrong, it will return the scale for the availiable type not necessarily the requested
+//! @todo This is a bit wrong, it will return the scale for the available type not necessarily the requested
 double ModelObjectAppearance::getIconScale(const GraphicsTypeEnumT gfxType)
 {
-    // Determine which type to use based on aviliablity of icons
+    // Determine which type to use based on availability of icons
     GraphicsTypeEnumT gfxTypeI = selectAvailableGraphicsType(gfxType);
 
     if (gfxTypeI == UserGraphics)
@@ -630,10 +630,10 @@ void ModelObjectAppearance::setAbsoultePathFromRelative()
 
 }
 
-//! @todo This is a bit wrong, it will return the scale for the availiable type not necessarily the requested
+//! @todo This is a bit wrong, it will return the scale for the available type not necessarily the requested
 QString ModelObjectAppearance::getIconRotationBehaviour(const GraphicsTypeEnumT gfxType)
 {
-    // Determine which type to use based on aviliablity of icons
+    // Determine which type to use based on availability of icons
     GraphicsTypeEnumT gfxTypeI = selectAvailableGraphicsType(gfxType);
 
     if (gfxTypeI == UserGraphics)
@@ -827,7 +827,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         }
         else if (type == "defaultmissing")
         {
-            //! @todo maye have a DefaultIconAppearance object to, an load all data
+            //! @todo maybe have a DefaultIconAppearance object to, an load all data
             mDefaultMissingIconPath = xmlIcon.attribute(CAF_PATH);
         }
         //else ignore, maybe should give warning
@@ -846,7 +846,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             parsePortDomElement(xmlPort, portname, portApp);
             if (mPortAppearanceMap.contains(portname))
             {
-                // We need to copy data, not replace as there may be pointers to data (wich is kind of unsafe)
+                // We need to copy data, not replace as there may be pointers to data (which is kind of unsafe)
                 mPortAppearanceMap[portname] = portApp;
             }
             else
@@ -866,7 +866,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         while (!xmlReplacable.isNull())
         {
             QString typeName = xmlReplacable.attribute(CAF_TYPENAME);
-            gpLibraryHandler->addReplacement(mTypeName, typeName); //!< @todo mainwindow and library should not be called in this file it is suposed to be a leaf class
+            gpLibraryHandler->addReplacement(mTypeName, typeName); //!< @todo mainwindow and library should not be called in this file it is supposed to be a leaf class
             xmlReplacable = xmlReplacable.nextSiblingElement(CAF_REPLACABLE);
         }
 
@@ -1145,7 +1145,7 @@ void ModelObjectAppearance::setIconScale(const double scale, const GraphicsTypeE
     {
         mIsoIconAppearance.mScale = scale;
     }
-    //else dont do anything
+    //else don't do anything
 }
 
 QString ModelObjectAppearance::getHmfFile() const
@@ -1154,7 +1154,7 @@ QString ModelObjectAppearance::getHmfFile() const
 }
 
 
-//! @brief Check if specified Icon path is availiable and icon exists
+//! @brief Check if specified Icon path is available and icon exists
 bool ModelObjectAppearance::hasIcon(const GraphicsTypeEnumT gfxType)
 {
     if (gfxType == ISOGraphics)

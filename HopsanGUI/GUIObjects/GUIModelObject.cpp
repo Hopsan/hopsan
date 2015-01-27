@@ -23,7 +23,7 @@
 //$Id$
 
 #include <QGraphicsColorizeEffect>
-//! @todo figure out a way not to need to include eveerything here (qtGui / qtWidgets) due to multiplication of qtransfrom and qpointf
+//! @todo figure out a way not to need to include everything here (qtGui / qtWidgets) due to multiplication of qtransform and qpointf
 #if QT_VERSION >= 0x050000
     #include <QtWidgets>
 #else
@@ -176,13 +176,13 @@ void ModelObject::snapNameTextPosition(QPointF pos)
     QPointF  mtp_pos = mpNameText->mapToParent(pos);
     if ( dist(mtp_pos, pts[0]) < dist(mtp_pos, pts[1]) )
     {
-        //We dont use this.setnamepos here as that would recaluclate the positions again
+        //We don't use this.setnamepos here as that would recalculate the positions again
         mpNameText->setPos(pts[0]);
         mNameTextPos = 0;
     }
     else
     {
-        //We dont use this.setnamepos here as that would recaluclate the positions again
+        //We don't use this.setnamepos here as that would recalculate the positions again
         mpNameText->setPos(pts[1]);
         mNameTextPos = 1;
     }
@@ -215,8 +215,8 @@ void ModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
     tWH.setY(fabs(tWH.y()));
 
     //qDebug() <<  " width: " << this->boundingRect().width() << "height: " << this->boundingRect().height()  << " lWH: " << localWH << " tWH: " << tWH;
-    //Now we transforme the name text posistions
-    //pt0 = top, pt1 = bottom, pts relative loacal center on object
+    //Now we transform the name text positions
+    //pt0 = top, pt1 = bottom, pts relative local center on object
     pt0.rx() = -mpNameText->boundingRect().width()/2.0;
     pt0.ry() = -(tWH.y()/2.0 + mpNameText->boundingRect().height() + mTextOffset);
 
@@ -268,7 +268,7 @@ void ModelObject::forgetConnector(Connector *item)
     disconnect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
 }
 
-//! @param Returns a copy of the list with pointers to the connecetors connected to the object
+//! @param Returns a copy of the list with pointers to the connectors connected to the object
 QList<Connector*> ModelObject::getConnectorPtrs()
 {
     return mConnectorPtrs;
@@ -343,12 +343,12 @@ void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
         mIconType = UserGraphics;
     }
 
-    //Avoid swappping icon if same as before, we swap also if scale changes
+    //Avoid swapping icon if same as before, we swap also if scale changes
     if  ( (mLastIconPath != iconPath) || !fuzzyEqual(mLastIconScale, iconScale, 0.001) )
     {
         if (mpIcon != 0)
         {
-            mpIcon->deleteLater(); //Shedule previous icon for deletion
+            mpIcon->deleteLater(); //Schedule previous icon for deletion
             disconnect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setIconZoom(double)));
         }
 
@@ -605,7 +605,7 @@ void ModelObject::hideExternalDynamicParameterPort(QString portName)
     {
         if ((*plit)->getName() == portName )
         {
-            // Disconnect port, hide it and forget its a dynamic parmater port (to prevent saving it)
+            // Disconnect port, hide it and forget its a dynamic parameter port (to prevent saving it)
             (*plit)->disconnectAndRemoveAllConnectedConnectors();
             (*plit)->setEnable(false);
             break;
@@ -631,7 +631,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
             pPortApp = mModelObjectAppearance.getPortAppearance(portName);
         }
 
-        //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
+        //! @todo to minimize search time make a get porttype  and nodetype function, we need to search twice now
         QString nodeType = getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(this->getName(), portName);
         QString portType = getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(this->getName(), portName);
 
@@ -664,15 +664,15 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
     }
     else
     {
-        // The external port already seems to exist, lets update it incase something has changed
-        //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
+        // The external port already seems to exist, lets update it in case something has changed
+        //! @todo Maybe need to have a refresh portappearance function, don't really know if this will ever be used though, will fix when it becomes necessary
         pPort->refreshPortGraphics();
 
         // Adjust the position
         pPort->setCenterPosByFraction(pPort->getPortAppearance()->x, pPort->getPortAppearance()->y);
 
         // In this case connections exist, also refresh any attached connectors, if types have changed
-        //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
+        //! @todo we always update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
         QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
         for (int i=0; i<connectors.size(); ++i)
         {
@@ -693,7 +693,7 @@ void ModelObject::removeExternalPort(QString portName)
     {
         if ((*plit)->getName() == portName )
         {
-            // Delete the GUIPort its post in the portlist and its appearance data
+            // Delete the GUIPort its post in the port list and its appearance data
             (*plit)->disconnectAndRemoveAllConnectedConnectors();
             (*plit)->deleteLater();
             mPortListPtrs.erase(plit);
@@ -791,13 +791,13 @@ void ModelObject::unregisterCustomPlotUnitOrScale(const QString &rVariablePortDa
 }
 
 
-//! @brief Regieters a default offset value for specified plot variable
+//! @brief Registers a default offset value for specified plot variable
 void ModelObject::registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset)
 {
     mRegisteredCustomPlotOffsets.insert(rVariablePortDataName, offset);
 }
 
-//! @brief Unregieters a default offset value for specified plot variable
+//! @brief Unregisters a default offset value for specified plot variable
 void ModelObject::unregisterCustomPlotOffset(const QString &rVariablePortDataName)
 {
     mRegisteredCustomPlotOffsets.remove(rVariablePortDataName);
@@ -810,7 +810,7 @@ const QMap<QString, UnitScale> &ModelObject::getCustomPlotUnitsOrScales() const
 
 void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales)
 {
-    // Empty stringlist to indicate, no data
+    // Empty string list to indicate, no data
     rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
 }
 
@@ -967,14 +967,14 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
         rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
     }
 
-    // Save GUI realted stuff
+    // Save GUI related stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
 
     // Save center pos in parent coordinates (same as scene coordinates for model objects)
     QPointF cpos = this->getCenterPos();
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
 
-    // Save the taext displaying the component name
+    // Save the text displaying the component name
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
     nametext.setAttribute("position", getNameTextPos());
     nametext.setAttribute("visible", mNameTextAlwaysVisible);
@@ -1170,7 +1170,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
     qDebug() << "mouseReleaseEvent()";
 
-    //! @todo It would be better if this was handled in some other way,  one particualr object should not be repsonsible for regesteringen moves from other object
+    //! @todo It would be better if this was handled in some other way,  one particular object should not be responsible for registering moves from other object
     // Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
     QList<ModelObject *> selectedObjects = mpParentContainerObject->getSelectedModelObjectPtrs();
@@ -1258,7 +1258,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
 
-    // If the selected action is 0 then we abort before comparison, (some disabled actions could be 0 so do not want to comare as they may trigger)
+    // If the selected action is 0 then we abort before comparison, (some disabled actions could be 0 so do not want to compare as they may trigger)
     if (selectedAction == 0)
     {
         return 0;
@@ -1328,7 +1328,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         }
 
         // If non of the above actions were triggered then we get here and should return the one that was
-        // The menu may contain enteries that were added one level up in the menu construction
+        // The menu may contain entries that were added one level up in the menu construction
         return selectedAction;
     }
 
@@ -1370,7 +1370,7 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
     // Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        //! @todo maybe this should be emmited from the workspace object itemChanged() function
+        //! @todo maybe this should be omitted from the workspace object itemChanged() function
         emit objectMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
 
         // Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
@@ -1387,7 +1387,7 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
             const double dx = qAbs(diff.x());
             if( (nl<4) && !(isFALD && nl==2) && !(isFOLD && nl>1) && (dx<SNAPDISTANCE) && (dx>0.0001) )
             {
-                // We turn of snapp here to avoid infinit snapping struggle if ctrl is pressed and komponent mOldPos is within snap distance
+                // We turn of snapp here to avoid infinite snapping struggle if ctrl is pressed and component mOldPos is within snap distance
                 //! @todo should find a better solution to this snap problem
                 mEnableSnap = false;
                 if(pFirstConnector->getStartPort()->getParentModelObject() == this)
@@ -1424,7 +1424,7 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
 
 
 //! @brief Shows or hides the port, depending on the input boolean and whether or not they are connected
-//! @details Ports will allways be shown if visible is true, but they will not allways be hidden when false, this depends on other factors as well
+//! @details Ports will always be shown if visible is true, but they will not always be hidden when false, this depends on other factors as well
 //! @param visible Tells whether the ports shall be shown or hidden
 void ModelObject::showPorts(bool visible)
 {
@@ -1440,7 +1440,7 @@ void ModelObject::showPorts(bool visible)
     {
         for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
         {
-            // Only hide ports if they are connected, are not suposted to be shown or if the MO icon is already hidden (such as for hidden signal components)
+            // Only hide ports if they are connected, are not supposed to be shown or if the MO icon is already hidden (such as for hidden signal components)
             if ((*it)->isConnected() || !mpParentContainerObject->areSubComponentPortsShown() || !mpIcon->isVisible())
             {
                 (*it)->hide();
@@ -1521,7 +1521,7 @@ void ModelObject::flipHorizontal(UndoStatusEnumT undoSettings)
     // If the icon is (not rotating) its position will be refreshed
     refreshIconPosition();
 
-    // Toggel isFlipped bool
+    // Toggle isFlipped bool
     if(mIsFlipped)
     {
         mIsFlipped = false;
@@ -1570,7 +1570,7 @@ void ModelObject::setNameTextPos(int textPos)
 //! @brief Slots that hides the name text of the object
 void ModelObject::hideName(UndoStatusEnumT undoSettings)
 {
-    // Ignore if set to allways show
+    // Ignore if set to always show
     if (!mNameTextAlwaysVisible)
     {
         bool previousStatus = mpNameText->isVisible();
@@ -1591,7 +1591,7 @@ void ModelObject::showName(UndoStatusEnumT undoSettings)
     mpNameText->setVisible(true);
     mNameTextVisible = true;
     // Ignore setting undo if tagged as always visible
-    //! @todo saving undo info for this is not realy necessary
+    //! @todo saving undo info for this is not really necessary
     if (!mNameTextAlwaysVisible)
     {
         if(undoSettings == Undo && previousStatus == false)
@@ -1611,7 +1611,7 @@ QString ModelObject::getTypeName() const
 }
 
 //! @brief Returns this modelobjects subtype
-//! @todo maybe we should overload this in systems so that the parent can ask itself (usefull in root systems)
+//! @todo maybe we should overload this in systems so that the parent can ask itself (useful in root systems)
 QString ModelObject::getSubTypeName() const
 {
 //    if (mpParentContainerObject)
@@ -1624,7 +1624,7 @@ QString ModelObject::getSubTypeName() const
 }
 
 //! @brief Set this modelobjects subtype
-//! @todo maybe we should overload this in systems so that the parent can set itself (usefull in root systems)
+//! @todo maybe we should overload this in systems so that the parent can set itself (useful in root systems)
 void ModelObject::setSubTypeName(const QString subTypeName)
 {
 //    if (mpParentContainerObject)
@@ -1733,7 +1733,7 @@ const QString &ModelObject::getHelpLink() const
 }
 
 
-//! @brief Construtor for the name text object
+//! @brief Constructor for the name text object
 //! @param pParent Pointer to the object which the name text belongs to
 ModelObjectDisplayName::ModelObjectDisplayName(ModelObject *pParent)
     :   QGraphicsTextItem(pParent)

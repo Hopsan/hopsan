@@ -90,7 +90,7 @@ void ContainerPort::createPorts()
     }
 
     mPortListPtrs.append(mpPort);
-    refreshDisplayName(); //Must run this after append port couse portname will also be refreshed
+    refreshDisplayName(); //Must run this after append port cause portname will also be refreshed
 }
 
 
@@ -108,7 +108,7 @@ void ContainerPort::refreshDisplayName(QString overrideName)
     mPortListPtrs[0]->setDisplayName(mName);
 }
 
-//! @brief ContainerPorts shal only save their port name if they are systemports, if they are group ports no core data should be saved
+//! @brief ContainerPorts shall only save their port name if they are systemports, if they are group ports no core data should be saved
 void ContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     if (isSystemPort())

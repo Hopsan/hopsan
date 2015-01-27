@@ -190,7 +190,7 @@ public:
     void readFromDomElement(QDomElement &rDomElement, QString basePath);
     void saveToDomElement(QDomElement &rDomElement);
 
-    //Movabels
+    //Movables
     QList<ModelObjectAnimationMovableData> movables;
 
     //Icon path
