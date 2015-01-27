@@ -55,7 +55,7 @@ namespace hopsan {
     class HydraulicCylinderQ : public ComponentQ
     {
     private:
-        // Mmebers
+        // Members
         SecondOrderTransferFunction mPositionTF;
         FirstOrderTransferFunction mVelocityTF;
         double mPosNum[3], mPosDen[3], mVelNum[3], mVelDen[3];

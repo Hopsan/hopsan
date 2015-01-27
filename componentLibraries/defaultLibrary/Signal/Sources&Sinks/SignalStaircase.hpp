@@ -47,7 +47,7 @@ class SignalStaircase : public ComponentSignal
 
         void configure()
         {
-            // Register changable parameters to the HOPSAN++ core
+            // Register changeable parameters to the HOPSAN++ core
             addInputVariable("T_start", "Start Time", "s", 0.0, &mpStartT);
             addInputVariable("H_step", "Step Height", "-", 1.0, &mpStepHeight);
             addInputVariable("W_step", "Step Width", "s", 1.0, &mpStepWidth);

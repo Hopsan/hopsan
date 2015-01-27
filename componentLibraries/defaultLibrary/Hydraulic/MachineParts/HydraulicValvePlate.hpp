@@ -64,7 +64,7 @@ namespace hopsan {
 
         void configure()
         {
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addInputVariable("phi_P", "Length of grooves", "deg", 160, &mpPhiP);
             addInputVariable("phi_1", "Length of first pre-compression chamber", "deg", 6, &mpPhi1);
             addInputVariable("phi_2", "Length of second pre-compression chamber", "deg", 6, &mpPhi2);

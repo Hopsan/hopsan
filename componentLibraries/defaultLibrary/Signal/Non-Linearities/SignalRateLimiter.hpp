@@ -57,7 +57,7 @@ public:
     {
         const double diff  = (*mpIn)-(*mpOut);
 
-        // Choose which limit to comare with
+        // Choose which limit to compare with
         double c;
         if (diff>=0)
         {

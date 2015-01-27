@@ -38,7 +38,7 @@ public:
     void configure()
     {
         addInputVariable("e", "Control error", "", 0, &mpErr);
-        addInputVariable("de", "Derivativ signal input", "", 0, &mpDerr);
+        addInputVariable("de", "Derivative signal input", "", 0, &mpDerr);
         addOutputVariable("u", "Control signal", "", &mpOut);
 
         addConstant("K", "Gain", "", 1, mK);
@@ -80,11 +80,11 @@ public:
             mLastErr = err;
         }
 
-        //! @todo many of the constant based calulations can be pre calulated in initialize
+        //! @todo many of the constant based calculations can be pre calculated in initialize
         // Integrate
         mI = mI + mK * mTimestep/mTi * err;
 
-        // Calulate control signal
+        // Calculate control signal
         const double v = mK*err + mI + mK*mTd/mTimestep * dErr;
 
         // Limit to Umin Umax for anti-windup correction

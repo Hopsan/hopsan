@@ -67,7 +67,7 @@ class HydraulicPumpPiston : public ComponentC
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addInputVariable("A_1", "Piston Area", "m^2", 0.001, &mpA1);
             addInputVariable("s_l", "Stroke", "m", 1.0, &mpSl);
             addInputVariable("V_1", "Dead Volume in Chamber 1", "m^3", 0.0003, &mpV01);

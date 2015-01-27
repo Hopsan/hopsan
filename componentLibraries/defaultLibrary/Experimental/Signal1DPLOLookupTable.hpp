@@ -59,7 +59,7 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpIn);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relativ to model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mDataCurveFileName);
             addConstant("invar", "Name of input variable (in file)", "", "Time", mInDataName);
             addConstant("outvar", "Name of output variable (in file)", "", "Data", mOutDataName);
             addConstant("reload","Reload plo file in initialize", "", true, mReloadPLO);

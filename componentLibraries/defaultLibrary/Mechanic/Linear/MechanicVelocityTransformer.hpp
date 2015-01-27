@@ -49,7 +49,7 @@ namespace hopsan {
             //Add ports to the component
             mpPm1 = addPowerPort("Pm1", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             mpVPort = addInputVariable("v", "Generated Velocity", "m/s", 0.0, &mpIn_v);
             mpXPort = addInputVariable("x", "Generated Position", "m", 0.0, &mpIn_x);
 
@@ -70,11 +70,11 @@ namespace hopsan {
             mXIsConnected = mpXPort->isConnected();
             if(mXIsConnected && !mpVPort->isConnected())
             {
-                addWarningMessage("Position input is connected but velocity is constant, kinematic relationsship must be manually enforced.");
+                addWarningMessage("Position input is connected but velocity is constant, kinematic relationship must be manually enforced.");
             }
             else if(mXIsConnected && mpVPort->isConnected())
             {
-                addWarningMessage("Both position and velocity inputs are connected, kinematic relationsship must be manually enforced.");
+                addWarningMessage("Both position and velocity inputs are connected, kinematic relationship must be manually enforced.");
             }
 
             // Initialize node values

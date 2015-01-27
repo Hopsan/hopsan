@@ -71,7 +71,7 @@ namespace hopsan {
 
         void configure()
         {
-            addConstant("other_ip", "The ip adress", "", "127.0.0.1", mOtherIp);
+            addConstant("other_ip", "The ip address", "", "127.0.0.1", mOtherIp);
             addConstant("other_port", "Write port", "", "30000", mOtherPort);
             addConstant("this_port", "Read port", "", "30001", mThisPort);
             std::vector<HString> conds;

@@ -48,7 +48,7 @@ namespace hopsan {
         double mNumX[3], mNumV[2];
         double mDenX[3], mDenV[2];
 
-        // This length is not accesible by the user,
+        // This length is not accessible by the user,
         // it is set from the start values by the c-components in the ends
         double mLength;
 
@@ -64,7 +64,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addConstant("m", "Mass", "kg",                      100.0, mMass);
             addInputVariable("B", "Viscous Friction", "Ns/m",   10.0, &mpB);
             addInputVariable("k", "Spring Coefficient", "N/m", 0.0, &mpK);

@@ -57,7 +57,7 @@ namespace hopsan {
         void initialize()
         {
             mpND_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
-            simulateOneTimestep(); //Set initial ouput node value
+            simulateOneTimestep(); //Set initial output node value
         }
 
 

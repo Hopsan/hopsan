@@ -72,7 +72,7 @@ class HydraulicFourChamberPiston : public ComponentC
             mpP4 = addPowerMultiPort("P4", "NodeHydraulic");
             mpP5 = addPowerPort("P5", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addInputVariable("A_1", "Piston Area 1", "m^2", 0.001, &mpA1);
             addInputVariable("A_2", "Piston Area 2", "m^2", 0.001, &mpA2);
             addInputVariable("A_3", "Piston Area 3", "m^2", 0.001, &mpA3);
@@ -335,7 +335,7 @@ class HydraulicFourChamberPiston : public ComponentC
                     addErrorMessage("The equivalent mass 'me' has to be greater than 0.");
                     stopSimulation();
                 }
-                else        //Don't check first time step, because C is executed before Q and Q may not have written me durint initalization
+                else        //Don't check first time step, because C is executed before Q and Q may not have written me during initialization
                 {
                     addWarningMessage("Equivalent mass 'me' not initialized to a value greater than 0.");
                     me5 = 1;

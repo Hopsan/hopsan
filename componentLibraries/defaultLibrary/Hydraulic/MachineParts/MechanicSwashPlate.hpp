@@ -59,7 +59,7 @@ namespace hopsan {
 
         void configure()
         {
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addInputVariable("r", "Swivel Radius", "m", 0.05, &mpR);
             addInputVariable("theta_offset", "Angle Offset", "m", 0.0, &mpOffset);
             addInputVariable("angle", "Angle", "rad", 0, &mpAngle);

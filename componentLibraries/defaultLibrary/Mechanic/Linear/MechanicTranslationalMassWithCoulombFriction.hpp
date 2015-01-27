@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2011-01-05
 //!
-//! @brief Contains a translational mass with coulumb friction and damper
+//! @brief Contains a translational mass with coulomb friction and damper
 //$Id$
 
 #ifndef MECHANICTRANSLATIONALMASSWITHCOULOMBFRICTION_HPP_INCLUDED
@@ -42,7 +42,7 @@ namespace hopsan {
         double m;
         double *mpB, *mpFs, *mpFk, *xMin, *xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
-        double mLength;                                                                                     //This length is not accesible by the user, it is set from the start values by the c-components in the ends
+        double mLength;                                                                                     //This length is not accessible by the user, it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1;    //Node data pointers
         double *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
@@ -65,7 +65,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addConstant("m", "Mass", "kg", 100.0, m);
 
             addInputVariable("b", "Viscous Friction Coefficient", "Ns/m", 10, &mpB);

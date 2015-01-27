@@ -73,7 +73,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addInputVariable("rho",    "Density",                   "kg/m^3", 870.0, &mpRho);
             addInputVariable("eta",    "Dynamic oil viscosity",     "Ns/m^2", 0.03, &mpVisc);
             addInputVariable("d",      "Line diameter",             "m",      0.03, &mpD);
@@ -201,7 +201,7 @@ namespace hopsan {
             NTIME1 = NTIME-1*NT + 1;
             if(NTIME1 < 1) NTIME1 = NTIME1 + NTMAX;
 
-                //-------- Line modell -----------
+                //-------- Line model -----------
             RQ1 = rq(RL1,q1,d,l,rho,visc);
             RQ2 = rq(RL2,q2,d,l,rho,visc);
             RL1 = (RL1 + RL1d)/2.0;
@@ -266,7 +266,7 @@ namespace hopsan {
             RQEF1D = RQEF1;
             RQEF2D = RQEF2;
 
-                // Calculation of caracteristics in N1 and N2.
+                // Calculation of characteristics in N1 and N2.
             c1 = C2F1 + RQF1 + BC0*(-RL1*q1) + RQEF1;
             c2 = C1F1 + RQF2 + BC0*(-RL2*q2) + RQEF2;
 

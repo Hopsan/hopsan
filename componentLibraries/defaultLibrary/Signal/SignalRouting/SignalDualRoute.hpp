@@ -18,7 +18,7 @@
 //! @author Robert Braun <bjorn.eriksson@liu.se>
 //! @date   2011-08-29
 //!
-//! @brief Contains a signal routering component with two inputs
+//! @brief Contains a signal routing component with two inputs
 //!
 //$Id$
 

@@ -100,7 +100,7 @@ public:
 
     //}
 
-    // The deconfigure function is called just before a component is deleated
+    // The deconfigure function is called just before a component is deleted
     // Use it to clean up after any custom allocation in the configure function
     // This function is optional
     //void deconfigure()

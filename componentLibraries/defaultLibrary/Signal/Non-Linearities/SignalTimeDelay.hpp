@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SignalTimeDelay.hpppp
+//! @file   SignalTimeDelay.hpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-22
 //!

@@ -67,7 +67,7 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpND_in);
             addOutputVariable("out", "", "", &mpND_out);
 
-            addConstant("filename", "Data file (absolute or relativ model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("filename", "Data file (absolute or relative model path)", "", "FilePath", mDataCurveFileName);
             addConstant("outid", "csv file value column index", "", 1, mOutDataId);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
 

@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SignalUnitDelay.hpppp
+//! @file   SignalUnitDelay.hpp
 //! @author Robert Braun <bjorn.eriksson@liu.se>
 //! @date   2013-01-11
 //!

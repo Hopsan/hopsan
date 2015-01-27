@@ -57,7 +57,7 @@ namespace hopsan {
         void initialize()
         {
             mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            simulateOneTimestep(); //Set initial ouput node value
+            simulateOneTimestep(); //Set initial output node value
         }
 
 

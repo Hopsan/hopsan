@@ -81,7 +81,7 @@ class HydraulicCylinderC : public ComponentC
 
 
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addInputVariable("A_1", "Piston Area 1", "m^2", 0.001, &mpA1);
             addInputVariable("A_2", "Piston Area 2", "m^2", 0.001, &mpA2);
             addInputVariable("s_l", "Stroke", "m", 1.0, &mpSl);
@@ -242,7 +242,7 @@ class HydraulicCylinderC : public ComponentC
                     addErrorMessage("The equivalent mass 'me' has to be greater than 0.");
                     stopSimulation();
                 }
-                else        //Don't check first time step, because C is executed before Q and Q may not have written me durint initalization
+                else        //Don't check first time step, because C is executed before Q and Q may not have written me during initialization
                 {
                     addWarningMessage("Equivalent mass 'me' not initialized to a value greater than 0.");
                     me = 1;
@@ -452,7 +452,7 @@ class HydraulicCylinderC : public ComponentC
 //            mpP2 = addPowerPort("P2", "NodeHydraulic");
 //            mpP3 = addPowerPort("P3", "NodeMechanic");
 
-//            //Register changable parameters to the HOPSAN++ core
+//            //Register changeable parameters to the HOPSAN++ core
 //            registerParameter("A_1", "Piston Area 1", "m^2", A1);
 //            registerParameter("A_2", "Piston Area 2", "m^2", A2);
 //            registerParameter("s_l", "Stroke", "m", SL);
@@ -836,7 +836,7 @@ class HydraulicCylinderC : public ComponentC
 //            mpP2 = addPowerPort("P2", "NodeHydraulic");
 //            mpP3 = addPowerPort("P3", "NodeMechanic");
 
-//            //Register changable parameters to the HOPSAN++ core
+//            //Register changeable parameters to the HOPSAN++ core
 //            registerParameter("A_1", "Piston Area 1", "m^2", A1);
 //            registerParameter("A_2", "Piston Area 2", "m^2", A2);
 //            registerParameter("s_l", "Stroke", "m", sl);

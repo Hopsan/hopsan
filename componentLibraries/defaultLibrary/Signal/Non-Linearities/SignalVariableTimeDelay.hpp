@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SignalVariableTimeDelay.hpppp
+//! @file   SignalVariableTimeDelay.hpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2013-02-22
 //!
@@ -109,7 +109,7 @@ namespace hopsan {
                     // Copy old data, depending on longer or shorter delay
                     if (nSamps < mpDelay->getSize())
                     {
-                        // Keep the oldest values truncate teh newest ones
+                        // Keep the oldest values truncate the newest ones
                         for (size_t i=0; i<nSamps; ++i)
                         {
                             pNewDelay->update(mpDelay->getOldIdx(i));

@@ -56,7 +56,7 @@ namespace hopsan {
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
             mpP2 = addPowerMultiPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addInputVariable("m", "Mass", "kg",                100.0, &mpM);
             addInputVariable("B", "Viscous Friction", "Ns/m",  10.0,  &B);
             //addInputVariable("k", "Spring Coefficient", "N/m", 0.0,   &k);

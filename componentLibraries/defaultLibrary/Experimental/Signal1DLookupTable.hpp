@@ -59,7 +59,7 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpIn);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relativ to model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mDataCurveFileName);
             addConstant("inid", "csv file index column (0-based index)", "", 0, mInDataId);
             addConstant("outid", "csv file value column (0-based index)", "", 1, mOutDataId);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
@@ -99,7 +99,7 @@ namespace hopsan {
 
                     mDataFile.copyColumn(mInDataId, mLookupTable.getIndexDataRef());
                     mDataFile.copyColumn(mOutDataId, mLookupTable.getValueDataRef());
-                    // Now the data is in the lookuptable and we can throw away the csv data to conservev memory
+                    // Now the data is in the lookuptable and we can throw away the csv data to conserve memory
                     mDataFile.clearData();
 
                     // Make sure strictly increasing (no sorting will be done if that is already the case)

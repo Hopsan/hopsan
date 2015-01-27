@@ -56,7 +56,7 @@ public:
         addInputVariable("Be", "Bulkmodulus", "Pa", 1.0e9, &mpBulkmodulus);
 
         // Register parameters that are constant during simulation
-        addConstant("a", "Low pass coeficient to dampen standing delayline waves", "", 0.1, mAlpha);
+        addConstant("a", "Low pass coefficient to dampen standing delayline waves", "", 0.1, mAlpha);
     }
 
 
@@ -127,7 +127,7 @@ public:
         // Nothing to finalize
     }
 
-    // The deconfigure function is called just before a component is deleated
+    // The deconfigure function is called just before a component is deleted
     // Use it to clean up after any custom allocation in the configure function
     // This function is optional
     void deconfigure()

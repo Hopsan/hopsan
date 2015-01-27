@@ -50,7 +50,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changeable parameters to the HOPSAN++ core
             addConstant("m", "Inertia", "kg", 1.0, m);
             addInputVariable("B", "Viscous Friction", "Nms/rad", 10, &mpB);
         }

@@ -54,7 +54,7 @@ namespace hopsan {
         {
             //Add ports to the component
             mpP1 = addPowerPort("Pm1", "NodeMechanic");
-            addInputVariable("B", "Viscous Friction", "Ns/m", 0.001, &mpB); // B, Must not be zero - velocity will become very oscillative
+            addInputVariable("B", "Viscous Friction", "Ns/m", 0.001, &mpB); // B, Must not be zero - velocity will become very oscillatory
 
             // Add constants
             addConstant("m_e", "Equivalent Mass", "kg", 1, me);

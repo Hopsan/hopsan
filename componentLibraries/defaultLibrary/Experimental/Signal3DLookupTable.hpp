@@ -60,7 +60,7 @@ namespace hopsan {
             addInputVariable("plane", "", "", 0.0, &mpInPlane);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relativ to model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mDataCurveFileName);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
         }
 

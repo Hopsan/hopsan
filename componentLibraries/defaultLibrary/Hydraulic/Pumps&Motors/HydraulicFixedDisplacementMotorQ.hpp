@@ -59,7 +59,7 @@ namespace hopsan {
             addInputVariable("D_m", "Displacement", "m^3/rev", 0.00005, &mpDm);
             addInputVariable("B_m", "Viscous Friction", "Nm/rad", 0.0, &mpBm);
             addInputVariable("C_lm", "Leakage Coefficient", "", 0.0, &mpClm);
-            addInputVariable("J_m", "Inerteia Load", "kg*m^2", 0.1, &mpJ);
+            addInputVariable("J_m", "Inertia Load", "kg*m^2", 0.1, &mpJ);
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
