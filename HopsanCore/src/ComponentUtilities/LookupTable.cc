@@ -82,7 +82,7 @@
 //    return mIndexIncreasingOrDecreasing;
 //}
 
-////! @brief Check if data in columns are strictly increasing or decresing
+////! @brief Check if data in columns are strictly increasing or decreasing
 ////! @todo maybe we should force the input data vector to be strictly increasing or decreasing
 ////! @todo maybe data should be automatically sorted when reading the file instead
 //LookupTable1DNonTemplate::IncreasingEnumT LookupTable1DNonTemplate::calcIncreasingOrDecreasing()
@@ -170,7 +170,7 @@
 //            return mValueData[row] + (x - mIndexData[row])*(mValueData[row+1] -  mValueData[row])/(mIndexData[row+1] -  mIndexData[row]);
 //        }
 //    }
-//    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+//    return x; //!< @todo  Don't know if this is correct, return x if we were unsuccessful
 //}
 
 ////! @brief Recursively subdivide into halves to find start row for interpolation
@@ -236,7 +236,7 @@
 //        size_t pivotNewIndex = quickSortPartition(rIndexArray, left, right, pivotIndex);
 
 //        // Recursively sort elements smaller than the pivot
-//        // but not if it happend to be zero (would lead to underflow in size_t)
+//        // but not if it happened to be zero (would lead to underflow in size_t)
 //        if (pivotNewIndex>0)
 //        {
 //            quickSort(rIndexArray, left, pivotNewIndex-1);

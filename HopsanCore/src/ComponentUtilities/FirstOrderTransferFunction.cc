@@ -161,7 +161,7 @@ double FirstOrderTransferFunction::delayedY() const
     return mDelayedY;
 }
 
-//! @brief Check if the transfere function is saturated (har reached the set limits)
+//! @brief Check if the transfer function is saturated (has reached the set limits)
 //! @returns true or false
 bool FirstOrderTransferFunction::isSaturated() const
 {

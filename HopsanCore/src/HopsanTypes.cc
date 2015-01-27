@@ -47,7 +47,7 @@ HString::HString(const HString &rOther, size_t pos, size_t len)
         pos = rOther.size();
     }
 
-    // Auto caluclate end index and make sure it is within bounds
+    // Auto calculate end index and make sure it is within bounds
     if (len == npos)
     {
         len = rOther.size()-pos;
@@ -59,7 +59,7 @@ HString::HString(const HString &rOther, size_t pos, size_t len)
         len = rOther.size()-pos;
     }
 
-    // Reallocate memmory and copy string
+    // Reallocate memory and copy string
     mpDataBuffer = static_cast<char*>(realloc(mpDataBuffer,len+1));
     mSize = len;
     strncpy(mpDataBuffer, rOther.c_str()+pos, len);
@@ -229,7 +229,7 @@ long int HString::toLongInt(bool *isOK) const
     if (mSize > 0)
     {
         char *pEnd;
-        //! @todo maybe support other bases then 10, sett strtol documentation
+        //! @todo maybe support other bases then 10, see strtol documentation
         long int i = strtol(mpDataBuffer, &pEnd, 10);
         *isOK = (*pEnd == '\0');
         return i;
@@ -284,7 +284,7 @@ size_t HString::find(const char *s, size_t pos) const
         const char* pFirst = strstr(mpDataBuffer+pos, s);
         if (pFirst)
         {
-            // Calculate adress offset from pointers
+            // Calculate address offset from pointers
             return (pFirst - mpDataBuffer);
         }
     }

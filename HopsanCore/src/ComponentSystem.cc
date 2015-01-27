@@ -255,12 +255,12 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
 {
     mTypeName = "ComponentSystem";
     mTypeCQS = Component::UndefinedCQSType;
-    mName = mTypeName; //Make sure intial name is same as typename
+    mName = mTypeName; //Make sure initial name is same as typename
     mWarnIfUnusedSystemParameters = true;
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
     mKeepStartValues = false;
-    mRequestedNumLogSamples = 0; //This has to be 0 since we want loging to be disabled by default
+    mRequestedNumLogSamples = 0; //This has to be 0 since we want logging to be disabled by default
     mRequestedLogStartTime = 0;
 #ifdef USETBB
     mpStopMutex = new tbb::mutex();
@@ -320,7 +320,7 @@ size_t ComponentSystem::getNumLogSamples() const
 }
 
 //! @brief Returns the number of actually logged data samples
-//! @return Number of availible logged data samples in storage
+//! @return Number of available logged data samples in storage
 size_t ComponentSystem::getNumActuallyLoggedSamples() const
 {
     // This assumes that the logCtr has been incremented after each saved log step
@@ -448,12 +448,12 @@ void ComponentSystem::addComponent(Component *pComponent)
         // Add to the cqs component vectors
         addSubComponentPtrToStorage(pComponent);
 
-        // Set system parent and model system depth hierarcy
+        // Set system parent and model system depth hierarchy
         pComponent->setSystemParent(this);
         pComponent->mModelHierarchyDepth = mModelHierarchyDepth+1; //Set the ModelHierarchyDepth counter
 
-        // Go thorugh the components ports and take ownership of any dummy nodes
-        //! @todo what happens if I take ownership of an other systems components (shouldnt we take ownership of all ports nodes by default) Not sure!! especially difficult with system border nodes
+        // Go through the components ports and take ownership of any dummy nodes
+        //! @todo what happens if I take ownership of an other systems components (shouldn't we take ownership of all ports nodes by default) Not sure!! especially difficult with system border nodes
         //! @todo maybe node ownership should be decided early in initialize instead to make this less complicated
         std::vector<Port*> ports = pComponent->getPortPtrVector();
         for (size_t i=0; i<ports.size(); ++i)
@@ -551,7 +551,7 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
     removeSubComponentPtrFromStorage(pComponent);
 
     // Remove any dummy node ptrs
-    //! @todo (shouldnt we remove ownership of all port nodes by default) Not sure!! especially difficult with system border nodes
+    //! @todo (shouldn't we remove ownership of all port nodes by default) Not sure!! especially difficult with system border nodes
     std::vector<Port*> ports = pComponent->getPortPtrVector();
     for (size_t i=0; i<ports.size(); ++i)
     {
@@ -678,7 +678,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
     }
 }
 
-//! @brief Clear all the contents of a system (deleting any remaning components and connections)
+//! @brief Clear all the contents of a system (deleting any remaining components and connections)
 void ComponentSystem::clear()
 {
     // Remove and delete every subcomponent, one by one
@@ -789,7 +789,7 @@ bool ComponentSystem::componentVectorContains(std::vector<Component*> vector, Co
 
 //! @brief Overloaded function that behaves slightly different when determining unique port names
 //! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
-//! It is VERY important that systemports dont have the same name as a subcomponent
+//! It is VERY important that systemports don't have the same name as a subcomponent
 HString ComponentSystem::determineUniquePortName(const HString &rPortname)
 {
     return this->reserveUniqueName(rPortname, UniqueSysportNameTyp);
@@ -797,7 +797,7 @@ HString ComponentSystem::determineUniquePortName(const HString &rPortname)
 
 //! @brief Overloaded function that behaves slightly different when determining unique component names
 //! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
-//! It is VERY important that systemports dont have the same name as a subcomponent
+//! It is VERY important that systemports don't have the same name as a subcomponent
 //! @todo the determineUniquePortNAme and ComponentName looks VERY similar maybe we could use the same function for both
 HString ComponentSystem::determineUniqueComponentName(const HString &rName) const
 {
@@ -899,7 +899,7 @@ AliasHandler &ComponentSystem::getAliasHandler()
 }
 
 
-//! @brief Add a node as subnode in the system, if the node is already owned by someone else, trasfere owneship to this system
+//! @brief Add a node as subnode in the system, if the node is already owned by someone else, transfer ownership to this system
 void ComponentSystem::addSubNode(Node* pNode)
 {
     if (pNode->getOwnerSystem() != 0)
@@ -933,7 +933,7 @@ void ComponentSystem::preAllocateLogSpace()
     bool success = true;
 //    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 //    this->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
-    //! @todo Fixa /Peter
+    //! @todo Fix /Peter
     mLogCtr = 0;
     if (mEnableLogData)
     {
@@ -946,18 +946,18 @@ void ComponentSystem::preAllocateLogSpace()
             vector<Node*>::iterator it;
             for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
             {
-                // Abort if we are told to stop or if memmory allocation fails
+                // Abort if we are told to stop or if memory allocation fails
                 if (mStopSimulation || !success)
                     break;
 
                 // Prepare the node log data allocation and determine if loggings should be on
                 //! @todo What if we want to use one of the other ways of setting logsample time steps
 
-                // Now try to allocate log memmory for each node
+                // Now try to allocate log memory for each node
                 try
                 {
                     // If the node is in a read port and if that port is not connected (node only have one connected port)
-                    // Then we should disable logging for that node as loging the startvalue does not make sense
+                    // Then we should disable logging for that node as logging the startvalue does not make sense
                     if ( ((*it)->getNumConnectedPorts() < 2) && ((*it)->getNumberOfPortsByType(ReadPortType) == 1) )
                     {
                         (*it)->setLoggingEnabled(false);
@@ -986,7 +986,7 @@ void ComponentSystem::preAllocateLogSpace()
         }
     }
 
-    // If we faild to allocate log memory then stop simulation
+    // If we failed to allocate log memory then stop simulation
     if (!success)
     {
         mStopSimulation = true;
@@ -1068,7 +1068,7 @@ void ComponentSystem::deleteSystemPort(const HString &rName)
 void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
 {
     //! @todo should really try to figure out a better way to do this
-    //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
+    //! @todo need to do error checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
 
     //If type same as before do nothing
     //if (cqs_type !=  mTypeCQS)
@@ -1076,7 +1076,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
         // If we have a system parent, then tell it to change our CQS type
         if ( !this->isTopLevelSystem() && !doOnlyLocalSet )
         {
-            //Request change by our parent (som parent changes are neeeded)
+            //Request change by our parent (some parent changes are needed)
             mpSystemParent->changeSubComponentSystemTypeCQS(mName, cqs_type);
         }
         else
@@ -1144,10 +1144,10 @@ bool ComponentSystem::changeSubComponentSystemTypeCQS(const HString &rName, cons
             //Remove old version
             this->removeSubComponentPtrFromStorage(tmpptr);
 
-            //Change cqsType localy in the subcomponent, make sure to set true to avoid looping back to this rename
+            //Change cqsType locally in the subcomponent, make sure to set true to avoid looping back to this rename
             tmpptr->setTypeCQS(newType, true);
 
-            //readd to system
+            //re-add to system
             this->addSubComponentPtrToStorage(tmpptr);
         //}
         return true;
@@ -1156,7 +1156,7 @@ bool ComponentSystem::changeSubComponentSystemTypeCQS(const HString &rName, cons
 }
 
 //! @brief This function automatically determines the CQS type depending on the what has been connected to the systemports
-//! @todo This function will go through all conected ports every time it is run, maybe a quicker version would only be run on the port beeing connected or disconnectd, in the connect and disconnect function
+//! @todo This function will go through all connected ports every time it is run, maybe a quicker version would only be run on the port being connected or disconnected, in the connect and disconnect function
 void ComponentSystem::determineCQSType()
 {
     size_t c_ctr=0;
@@ -1166,8 +1166,8 @@ void ComponentSystem::determineCQSType()
     PortPtrMapT::iterator ppmit;
     for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
     {
-        //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
-        //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if we dont want it in some other place
+        //! @todo I don't think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
+        //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if we don't want it in some other place
         vector<Port*> connectedPorts = (*ppmit).second->getConnectedPorts(-1); //Make a copy of connected ports
         vector<Port*>::iterator cpit;
         for (cpit=connectedPorts.begin(); cpit!=connectedPorts.end(); ++cpit)
@@ -1224,7 +1224,7 @@ bool ComponentSystem::isTopLevelSystem() const
 }
 
 
-//! @brief Connect two commponents, string version
+//! @brief Connect two components, string version
 //! @param [in] compname1 The name of the first component
 //! @param [in] portname1 The name of the port on the first component
 //! @param [in] compname2 The name of the second component
@@ -1248,7 +1248,7 @@ bool ComponentSystem::connect(const HString &compname1, const HString &portname1
         return false;
     }
 
-    // Check if commponents have specified ports
+    // Check if components have specified ports
     Port *pPort1, *pPort2;
     if (!pComp1->getPort(portname1, pPort1))
     {
@@ -1262,7 +1262,7 @@ bool ComponentSystem::connect(const HString &compname1, const HString &portname1
         return false;
     }
 
-    // Ok components and ports exist, lets atempt the connect
+    // Ok components and ports exist, lets attempt the connect
     return connect( pPort1, pPort2 );
 }
 
@@ -1292,7 +1292,7 @@ bool ConnectionAssistant::mergeNodeConnection(Port *pPort1, Port *pPort2)
     Node *pOldNode1 = pPort1->getNodePtr();
     Node *pOldNode2 = pPort2->getNodePtr();
 
-    // Check for very rare occurance, (Looping a subsystem, and connecting an out port to an in port that are actually directly connected to each other)
+    // Check for very rare occurrence, (Looping a subsystem, and connecting an out port to an in port that are actually directly connected to each other)
     if (pOldNode1 == pOldNode2)
     {
         mpComponentSystem->addErrorMessage("This connection would mean that a node is joined with it self, this does not make any sense and is not allowed");
@@ -1326,7 +1326,7 @@ bool ConnectionAssistant::mergeNodeConnection(Port *pPort1, Port *pPort2)
     }
 }
 
-//! @brief Find the system highest up in the model hieararcy for the ports connected to this node and store the node there
+//! @brief Find the system highest up in the model hierarchy for the ports connected to this node and store the node there
 //! @param[in] pNode The node to store
 void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 {
@@ -1359,7 +1359,7 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
         }
         else if (pMinLevelComp->isComponentSystem())
         {
-            // This will trigger if we are connectiong to our parant system which happens to be the top level system
+            // This will trigger if we are connecting to our parent system which happens to be the top level system
             ComponentSystem *pRootSystem = dynamic_cast<ComponentSystem*>(pMinLevelComp);
             pRootSystem->addSubNode(pNode);
         }
@@ -1373,7 +1373,7 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
         mpComponentSystem->addFatalMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): No system found!");
     }
 
-//    //! @todo what if we are connecting only subsystems within the same lavel AND they have different timesteps
+//    //! @todo what if we are connecting only subsystems within the same level AND they have different timesteps
 //    if (pMinLevelComp==0)
 //    {
 //        mpComponentSystem->addSubNode(pNode);
@@ -1397,7 +1397,7 @@ void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Nod
     vector<Port*> conn_ports = pPort->getConnectedPorts();
     for (pit=conn_ports.begin(); pit!=conn_ports.end(); ++pit)
     {
-        //dont recures back to parent will get stuck in infinate recursion
+        //don't recurse back to parent will get stuck in infinite recursion
         if (*pit == pParentPort)
         {
             continue;
@@ -1444,7 +1444,7 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
     pPort1->eraseConnectedPort(pPort2);
     pPort2->eraseConnectedPort(pPort1);
 
-    // Recursievly set new nodes
+    // Recursively set new nodes
     recursivelySetNode(pPort1, 0, pNewNode1);
     recursivelySetNode(pPort2, 0, pNewNode2);
 
@@ -1516,7 +1516,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
-    // Preven crossconnection between systems
+    // Prevent cross connection between systems
     if (!connAssist.ensureNotCrossConnecting(pPort1, pPort2))
     {
         addErrorMessage("You can not cross-connect between systems", "crossconnection");
@@ -1547,7 +1547,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //! @todo better way to find out if systemports are blank might give more clear code
     if ( ( (pPort1->getPortType() == SystemPortType) && (!pPort1->isConnected()) ) || ( (pPort2->getPortType() == SystemPortType) && (!pPort2->isConnected()) ) )
     {
-        // Now lets find out wich of the ports that is a blank systemport
+        // Now lets find out which of the ports that is a blank systemport
         Port *pBlankSysPort=0;
         Port *pOtherPort=0;
 
@@ -1570,7 +1570,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
         sucess = connAssist.mergeNodeConnection(pBlankSysPort, pActualPort);
 
-        // Handle multiport connection sucess or failure
+        // Handle multiport connection success or failure
         connAssist.ifMultiportCleanupAfterConnect(pOtherPort, pActualPort, sucess);
     }
     // Non of the ports  are blank systemports
@@ -1582,7 +1582,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
         sucess = connAssist.mergeNodeConnection(pActualPort1, pActualPort2);
 
-        // Handle multiport connection sucess or failure
+        // Handle multiport connection success or failure
         connAssist.ifMultiportCleanupAfterConnect(pPort1, pActualPort1, sucess);
         connAssist.ifMultiportCleanupAfterConnect(pPort2, pActualPort2, sucess);
     }
@@ -1597,7 +1597,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     this->determineCQSType();
 
     // Update parent cqs-type
-    //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
+    //! @todo we should only do this if we are actually connected directly to our parent, but I don't know what will take the most time, to check if we are connected to parent or to just refresh parent
     if (!this->isTopLevelSystem())
     {
         mpSystemParent->determineCQSType();
@@ -1700,7 +1700,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     }
 
     //Check the kind of ports in the components subjected for connection
-    //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
+    //Don't count port if it is already connected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort1) )
     {
         checkPort(pPort1, counters);
@@ -1757,7 +1757,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 //        }
     }
 
-    //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
+    //Don't count port if it is already connected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort2) )
     {
         checkPort(pPort2, counters);
@@ -1848,7 +1848,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     //cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
 
     // We want at most one C and one Q component in a connection
-    //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
+    //! @todo not 100% sure that this will work always. Only work if we assume that the subsystem has the correct cqs type when connecting
     if (counters.nNonInterfaceCPowerPorts > 1)
     {
         mpComponentSystem->addErrorMessage("You can not connect two C-Component power ports to each other");
@@ -1885,9 +1885,9 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
     return true;
 }
 
-//! @brief Detects if a port is a multiport and then adds adn returns a subport
+//! @brief Detects if a port is a multiport and then adds and returns a subport
 //! @param [in] pMaybeMultiport A pointer to the port that may be a multiport
-//! @returns A pointer to a new subport in teh multiport, or the pMaybeMultiport itself if it was not a multiport
+//! @returns A pointer to a new subport in the multiport, or the pMaybeMultiport itself if it was not a multiport
 Port *ConnectionAssistant::ifMultiportAddSubport(Port *pMaybeMultiport)
 {
     // If the port is a multiport then create a new subport and then return it (as the actual port)
@@ -1940,7 +1940,7 @@ void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, 
     {
         if (wasSucess)
         {
-            //! @todo What do we need to do to handle sucess
+            //! @todo What do we need to do to handle success
         }
         else
         {
@@ -1956,7 +1956,7 @@ void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *pMaybeMultipo
     {
         if (wasSucess)
         {
-            //If sucessful we should remove the empty port
+            //If successful we should remove the empty port
             pMaybeMultiport->removeSubPort(pActualPort);
             pActualPort = 0;
         }
@@ -2032,7 +2032,7 @@ void ConnectionAssistant::removeNode(Node *pNode)
 ////! @brief Prepares port pointers for multiport disconnections,
 //void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiSubPort1, Port *&rpMultiSubPort2)
 //{
-//    // First make sure that multiport pointers are zero if no multiports are beeing connected
+//    // First make sure that multiport pointers are zero if no multiports are being connected
 //    rpMultiSubPort1=0;
 //    rpMultiSubPort2=0;
 
@@ -2094,7 +2094,7 @@ bool ComponentSystem::disconnect(const HString &compname1, const HString &portna
 //! @param pPort2 Pointer to second port
 bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
-    // First check if prots not null
+    // First check if ports not null
     if (pPort1 && pPort2)
     {
         //cout << "disconnecting " << pPort1->getComponentName().c_str() << " " << pPort1->getName().c_str() << "  and  " << pPort2->getComponentName().c_str() << " " << pPort2->getName().c_str() << endl;
@@ -2126,7 +2126,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
                 success = disconnAssistant.splitNodeConnection(pActualPort1, pActualPort2);
 
-                // Handle multiport connection sucess or failure
+                // Handle multiport connection success or failure
                 disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pActualPort1, success);
                 disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pActualPort2, success);
             }
@@ -2139,7 +2139,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
             this->determineCQSType();
 
             //Update parent cqs-type
-            //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
+            //! @todo we should only do this if we are actually connected directly to our parent, but I don't know what will take the most time, to check if we are connected to parent or to just always refresh parent
             if (!this->isTopLevelSystem())
             {
                 this->mpSystemParent->determineCQSType();
@@ -2278,14 +2278,14 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
 size_t limitNumLogSlotsToLogOrSimTimeInterval(const double simStartT, const double simStopT, const double simTs, const double logStartT, const size_t nRequestedLogSamples)
 {
     double startT = max(simStartT, logStartT);
-    // Saturate startT to stopT to avoid underflow in size_t if somone enters a logT that is higher the startT
+    // Saturate startT to stopT to avoid underflow in size_t if someone enters a logT that is higher the startT
     if (startT > simStopT)
     {
         startT = simStopT;
     }
 
-    // Make sure we dont try to log more samples than we will simulate
-    //! @todo may need som rounding tricks here
+    // Make sure we don't try to log more samples than we will simulate
+    //! @todo may need some rounding tricks here
     if ( ((simStopT - startT) / simTs + 1) < nRequestedLogSamples )
     {
         return size_t( (simStopT - startT) / simTs + 1);
@@ -2325,7 +2325,7 @@ void ComponentSystem::setupLogSlotsAndTs(const double simStartT, const double si
         // Figure out the first simulation step to log (the one where simT >= logT)
         size_t n = (logT-simT)/double(simTs)+0.5;
         mLogTheseTimeSteps.push_back(n);
-        // Fastforward simT
+        // Fast forward simT
         simT += double(n)*simTs;
 
         // Now Calculate which additional simulation steps should be logged
@@ -2512,7 +2512,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
                 break;
             }
 
-            // If a system parameter is used in the componente, then erase it from the list
+            // If a system parameter is used in the component, then erase it from the list
             std::vector<HString>::iterator itp = std::find(unusedSysParNames.begin(), unusedSysParNames.end(), pCompParameters->at(p)->getValue());
             if(itp != unusedSysParNames.end())
             {
@@ -2528,7 +2528,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
             return false;
         }
 
-        // Recures testing into subsystems
+        // Recurse testing into subsystems
         if (pComp->isComponentSystem())
         {
             if (!pComp->checkModelBeforeSimulation())
@@ -2557,7 +2557,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
     return true;
 }
 
-//! @todo if we recononect we should actually run checkbefore simulation, BEFORE simulating, this is not done right now
+//! @todo if we reconnect we should actually run check before simulation, BEFORE simulating, this is not done right now
 bool ComponentSystem::preInitialize()
 {
     // Recursively run preinitialize
@@ -2615,7 +2615,7 @@ void ComponentSystem::loadStartValues()
             if (pReadPort)
             {
                 // Only write readport start value if it is connected to other readports
-                // This is the case of inputvariable ports on systems that are not externally connected
+                // This is the case of input variable ports on systems that are not externally connected
                 if (!pReadPort->isConnectedToWriteOrPowerPort())
                 {
                     pReadPort->forceLoadStartValue();
@@ -2710,7 +2710,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
     //this->setLogSettingsNSamples(mRequestedNumLogSamples, startT, stopT, mTimestep);
 
-    // This will caluclate the mnLogSlots and other log related variables
+    // This will calculate the mnLogSlots and other log related variables
     this->setupLogSlotsAndTs(startT, stopT, mTimestep);
     //! @todo make it possible to use other logtimestep methods then nLogSamples
 
@@ -2883,7 +2883,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
 //        distributeSignalcomponents(mSplitSignalVector, nThreads);
 //        distributeNodePointers(mSplitNodeVector, nThreads);
 
-//        //! @todo Reiniti
+//        //! @todo Reinit
 
 //    }
 
@@ -2996,7 +2996,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             distributeNodePointers(mSplitNodeVector, nThreads);
 
             // Re-initialize the system to reset values and timers
-            //! @note This only work for top level systems where the simulateMultiThreaded will not be called nmore than once
+            //! @note This only work for top level systems where the simulateMultiThreaded will not be called more than once
             this->initialize(startT, stopT);
         }
         else
@@ -3589,7 +3589,7 @@ void ComponentSystem::sortComponentVectorsByMeasuredTime()
 //}
 
 
-//! @brief Helper function that distributes C componente equally over one vector per thread
+//! @brief Helper function that distributes C components equally over one vector per thread
 //! Greedy algorithm is used. This does not guarantee an optimal solution, but is gives a 4/3-approximation.
 //! @param rSplitCVector Reference to vector with vectors of components (one vector per thread)
 //! @param nThreads Number of simulation threads
@@ -3629,7 +3629,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
     }
 
         //Finally we sort each component vector, so that
-        //signal components are simlated in correct order:
+        //signal components are simulated in correct order:
     for(size_t i=0; i<rSplitCVector.size(); ++i)
     {
         sortComponentVector(rSplitCVector[i]);
@@ -3642,7 +3642,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
 }
 
 
-//! @brief Helper function that distributes Q componente equally over one vector per thread
+//! @brief Helper function that distributes Q components equally over one vector per thread
 //! Greedy algorithm is used. This does not guarantee an optimal solution, but is gives a 4/3-approximation.
 //! @param rSplitQVector Reference to vector with vectors of components (one vector per thread)
 //! @param nThreads Number of simulation threads
@@ -3682,7 +3682,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
     }
 
         //Finally we sort each component vector, so that
-        //signal components are simlated in correct order:
+        //signal components are simulated in correct order:
     for(size_t i=0; i<rSplitQVector.size(); ++i)
     {
         sortComponentVector(rSplitQVector[i]);
@@ -3805,7 +3805,7 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
 
 
         //Finally we sort each component vector, so that
-        //signal components are simlated in correct order:
+        //signal components are simulated in correct order:
     for(size_t i=0; i<rSplitSignalVector.size(); ++i)
     {
         sortComponentVector(rSplitSignalVector[i]);
@@ -3918,7 +3918,7 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &/*rSplitNo
 //    mTime = startT;
 
 //    //Simulate
-//    double stopTsafe = stopT - mTimestep/2.0; //minus half a timestep is here to ensure that no numerical issues occure
+//    double stopTsafe = stopT - mTimestep/2.0; //minus half a timestep is here to ensure that no numerical issues occurs
 
 //    while ((mTime < stopTsafe) && (!mStopSimulation))
 //    {
@@ -3994,14 +3994,14 @@ void ComponentSystem::simulate(const double stopT)
 //! @brief Simulates several systems sequentially until given stop time
 //! @param[in] stopT Stop time for all systems
 //! @param[in] rSystemVector Vector of pointers to component systems to simulate
-//! @returns true if successfull else false if simulation was aborted for some reason
+//! @returns true if successful else false if simulation was aborted for some reason
 bool SimulationHandler::simulateMultipleSystems(const double stopT, vector<ComponentSystem*> &rSystemVector)
 {
     bool aborted = false;
     for(size_t i=0; i<rSystemVector.size(); ++i)
     {
         rSystemVector[i]->simulate(stopT);
-        aborted = aborted && rSystemVector[i]->wasSimulationAborted(); //!< @todo this will give abort=true if one the systems fail, maybe we should abort entierly when one do
+        aborted = aborted && rSystemVector[i]->wasSimulationAborted(); //!< @todo this will give abort=true if one the systems fail, maybe we should abort entirely when one do
     }
     return !aborted;
 }
@@ -4086,12 +4086,12 @@ void ComponentSystem::disableLog()
 {
     mEnableLogData = false;
 
-    // If log disabled, then free memmory if something has been previously allocated
+    // If log disabled, then free memory if something has been previously allocated
     mTimeStorage.clear();
     mLogTheseTimeSteps.clear();
 
     mLogTimeDt = -1.0;
-    //mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
+    //mLastLogTime = 0.0; //Initial value should not matter, will be overwritten when selecting log amount
     mnLogSlots = 0;
     mLogCtr = 0;
 }
@@ -4101,7 +4101,7 @@ vector<double> *ComponentSystem::getLogTimeVector()
     return &mTimeStorage;
 }
 
-//! @brief Simulates a vector of component systems in parallel, by assigning one or more system to each simluation thread
+//! @brief Simulates a vector of component systems in parallel, by assigning one or more system to each simulation thread
 //! @param startT Start time for all systems
 //! @param stopT Stop time for all systems
 //! @param nDesiredThreads Desired number of threads (may change due to hardware limitations)
@@ -4219,7 +4219,7 @@ bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompN
         }
         else
         {
-            // The alias already exist somwhere else
+            // The alias already exist somewhere else
             mpSystem->addErrorMessage("Alias: "+rAlias+" already exist");
             return false;
         }
@@ -4242,7 +4242,7 @@ bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompN
             HString prevAlias = pPort->getVariableAlias(varId);
             if (!prevAlias.empty())
             {
-                //! @todo the remove will search for port agin all the way, maybe have a special remove to use when we know the port and id already
+                //! @todo the remove will search for port again all the way, maybe have a special remove to use when we know the port and id already
                 removeAlias(prevAlias);
             }
 

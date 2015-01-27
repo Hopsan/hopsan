@@ -99,7 +99,7 @@ HopsanEssentials::HopsanEssentials()
 HopsanEssentials::~HopsanEssentials()
 {
     //Clear the factories
-    //! @todo need to make sure that every one has destoyed all components/nodes before we unregister them, it probably cant be done from inside here
+    //! @todo need to make sure that every one has destroyed all components/nodes before we unregister them, it probably cant be done from inside here
     mpNodeFactory->clearFactory();
     mpComponentFactory->clearFactory();
     closeLogFile();
@@ -107,7 +107,7 @@ HopsanEssentials::~HopsanEssentials()
     delete mpNodeFactory;
     delete mpComponentFactory;
 
-    // Delete the messsage handler
+    // Delete the message handler
     delete mpMessageHandler;
 }
 
@@ -158,7 +158,7 @@ Component* HopsanEssentials::createComponent(const HString &rTypeName)
     if (pComp)
     {
         pComp->mpHopsanEssentials = this;
-        pComp->mpMessageHandler = mpMessageHandler; //!< @todo maybe it should only be in HopsanEssentials but then the core message handler will be accesible in main program also (maybe not a big deal)
+        pComp->mpMessageHandler = mpMessageHandler; //!< @todo maybe it should only be in HopsanEssentials but then the core message handler will be accessible in main program also (maybe not a big deal)
         pComp->setTypeName(rTypeName);
         pComp->setName(rTypeName);
         pComp->configure();
@@ -328,7 +328,7 @@ size_t HopsanEssentials::getNumDebugMessages() const
 
 //! @brief Loads an external component library
 //! @param [in] path The path to the library DLL or SO file
-//! @returns True if loaded sucessfully, otherwise false
+//! @returns True if loaded successfully, otherwise false
 bool HopsanEssentials::loadExternalComponentLib(const char *path)
 {
     return mpExternalLoader->load(path);
@@ -336,7 +336,7 @@ bool HopsanEssentials::loadExternalComponentLib(const char *path)
 
 //! @brief Unloads an external component library
 //! @param [in] path The path to the library DLL or SO file to unload
-//! @returns True if unloaded sucessfully, otherwise false
+//! @returns True if unloaded successfully, otherwise false
 bool HopsanEssentials::unLoadExternalComponentLib(const char *path)
 {
     return mpExternalLoader->unLoad(path);

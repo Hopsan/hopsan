@@ -130,7 +130,7 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
-    //Load modelica generator function
+    //Load Modelica generator function
     callModelicaGenerator = (call_modelica_generator_t)dlsym(lib_ptr, "callModelicaGenerator");
     char *dlsym_error = dlerror();
     if(dlsym_error)

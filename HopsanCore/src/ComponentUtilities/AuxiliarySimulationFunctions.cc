@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-06-30
 //!
-//! @brief Contiains a second order integrator utility with provision for some damping
+//! @brief Contains a second order integrator utility with provision for some damping
 //!
 //$Id$
 
@@ -60,7 +60,7 @@ void hopsan::limitValue(double &rValue, double min, double max)
 }
 
 
-//! @brief checks if two double varaiables are equal with a tolerance
+//! @brief checks if two double variables are equal with a tolerance
 //! @ingroup AuxiliarySimulationFunctions
 //! @param [in] x First value
 //! @param [in] y Second value
@@ -243,7 +243,7 @@ double hopsan::lowLimit(const double x, const double xmin)
 //! @brief Sets the derivative of x to zero if x is outside of limits.
 //! @ingroup AuxiliarySimulationFunctions
 //! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
-//! @param x Value whos derivative is to be limited
+//! @param x Value whose derivative is to be limited
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
 //! @returns Limited derivative of x
@@ -257,7 +257,7 @@ double hopsan::dxLimit(const double x, const double xmin, const double xmax)
 //! @brief Sets the derivative of x to zero if x is outside of limits.
 //! @ingroup AuxiliarySimulationFunctions
 //! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
-//! @param x Value whos derivative is to be limited
+//! @param x Value whose derivative is to be limited
 //! @param xmin Minimum value of x
 //! @returns Limited derivative of x
 double hopsan::dxLowLimit(const double x,const double xmin)
@@ -268,7 +268,7 @@ double hopsan::dxLowLimit(const double x,const double xmin)
 //! @brief Sets the derivative of x to zero if x is outside of limits.
 //! @ingroup AuxiliarySimulationFunctions
 //! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
-//! @param x Value whos derivative is to be limited
+//! @param x Value whose derivative is to be limited
 //! @param xmin Minimum value of x
 //! @returns Limited derivative of x
 double hopsan::dxLowLimit2(const double x, const double sx, const double xmin)
@@ -280,7 +280,7 @@ double hopsan::dxLowLimit2(const double x, const double sx, const double xmin)
 //! @brief Limits the derivative of x when x is outside of its limits.
 //! @ingroup AuxiliarySimulationFunctions
 //! Returns 1.0 if x is within borders, or if x is outside borders but derivative has opposite sign (so that x can only move back to the limited range).
-//! @param x Value whos derivative is to be limited
+//! @param x Value whose derivative is to be limited
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
 //! @returns Limited derivative of x
@@ -294,9 +294,9 @@ double hopsan::dxLimit2(const double x, const double sx, const double xmin, cons
 //! @brief Returns the algebraic quotient x/y with any fractional parts discarded
 //! @ingroup AuxiliarySimlationFunctions
 //! @ingroup ModelicaWrapperFunctions
-//! @param x Numinator
+//! @param x Numerator
 //! @param y Denominator
-//! @returns Algebraic quotient with any fracrional parts discarded
+//! @returns Algebraic quotient with any fractional parts discarded
 double hopsan::div(const double x, const double y)
 {
     if(x/y > 0)

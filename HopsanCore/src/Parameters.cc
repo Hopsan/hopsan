@@ -38,7 +38,7 @@ using namespace std;
 //! @brief The Parameter class implements the parameter used in the container class Parameters
 //!
 //! The parameter is implemented with a name, a value string and a data pointer that can be of various types.
-//! Both Compontents and Systems use the same paramter implementation. In the case of a system parameter the
+//! Both Components and Systems use the same parameter implementation. In the case of a system parameter the
 //! data pointer is 0.
 
 //! @brief Constructor
@@ -64,8 +64,8 @@ ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rVal
 
 
 //! @brief Returns a pointer directly to the parameter data variable
-//! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
-//! @warning This function may be removed in teh future
+//! @warning Don't use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
+//! @warning This function may be removed in the future
 void* ParameterEvaluator::getDataPtr()
 {
     return mpData;
@@ -106,7 +106,7 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
     return success;
 }
 
-//! @brief Set the parameter value for an exsisting parameter
+//! @brief Set the parameter value for an existing parameter
 //! @param [in] rValue The new value for the parameter
 //! @param [out] ppNeedEvaluation Tell if the parameter needs evaluation, e.g. is a system parameter or an expression
 //! @return true if success, otherwise false
@@ -219,7 +219,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     bool success = true;
     HString evaluatedParameterValue, prefix, strippedValue;
 
-    // Strip + or - from name incase we want to take a negative value of a system parameter
+    // Strip + or - from name in case we want to take a negative value of a system parameter
     splitSignPrefix(mParameterValue, prefix, strippedValue);
 
     // Determine if we should look for parameter among other parameters and system parameters
@@ -421,7 +421,7 @@ void ParameterEvaluator::splitSignPrefix(const HString &rString, HString &rPrefi
 }
 
 //! @class hopsan::Parameters
-//! @brief The Parameters class implements the parameters used in both Componenets and ComponentSystems
+//! @brief The Parameters class implements the parameters used in both Components and ComponentSystems
 //!
 
 
@@ -435,7 +435,7 @@ ParameterEvaluatorHandler::ParameterEvaluatorHandler(Component* pParentComponent
 //! @brief Destructor
 ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 {
-    //Deleates all parameters stored in vector
+    //Deletes all parameters stored in vector
     for (size_t i=0; i<mParameters.size(); ++i)
     {
         delete mParameters[i];
@@ -450,7 +450,7 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 //! @param [in] rUnit The physical unit of the parameter e.g. kg, default: "0"
 //! @param [in] rType The type of the parameter e.g. double, default: ""
 //! @param [in] pData Only used by Components, system parameters don't use this, default: 0
-//! @param [in] force Should we force to add paramter even if it fails to evaluate
+//! @param [in] force Should we force to add parameter even if it fails to evaluate
 //! @param [in] conditions Conditions for a conditional constant parameter
 //! @return true if success, otherwise false
 bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<HString> conditions)
@@ -460,7 +460,7 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
     {
         if(!hasParameter(rName))
         {
-            //! @todo should make sure that parameter names do not have + - * / . or similar as first charater
+            //! @todo should make sure that parameter names do not have + - * / . or similar as first character
             ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rUnit, rType, pData, this);
             if(rType == "conditional")
             {
@@ -483,7 +483,7 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
 
 
 //! @brief Deletes a parameter
-//! @param[in] rName The name of the paramter to delete
+//! @param[in] rName The name of the parameter to delete
 void ParameterEvaluatorHandler::deleteParameter(const HString &rName)
 {
     std::vector<ParameterEvaluator*>::iterator parIt;
@@ -500,7 +500,7 @@ void ParameterEvaluatorHandler::deleteParameter(const HString &rName)
     }
 }
 
-//! @brief Rename a parameter (only useful for system paramters)
+//! @brief Rename a parameter (only useful for system parameters)
 //! @todo do I need to call some needs evaluation here or ?
 bool ParameterEvaluatorHandler::renameParameter(const HString &rOldName, const HString &rNewName)
 {
@@ -530,7 +530,7 @@ const ParameterEvaluator* ParameterEvaluatorHandler::getParameter(const HString 
         }
     }
 
-    // If paramter not found return 0
+    // If parameter not found return 0
     return 0;
 }
 
@@ -560,7 +560,7 @@ void ParameterEvaluatorHandler::getParameterValue(const HString &rName, HString 
 }
 
 //! @brief Returns a pointer directly to the parameter data variable
-//! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
+//! @warning Don't use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 //! @warning This function may be removed in the future
 void* ParameterEvaluatorHandler::getParameterDataPtr(const HString &rName)
 {
@@ -585,7 +585,7 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
 {
     bool success = false;
 
-    // Try to find the parameter among the excisting parameters
+    // Try to find the parameter among the existing parameters
     for(size_t i=0; i<mParameters.size(); ++i)
     {
         // If Found (It cannot find itself)
@@ -621,7 +621,7 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
     return success;
 }
 
-//! @brief Set the parameter value for an exsisting parameter
+//! @brief Set the parameter value for an existing parameter
 //! @param [in] rName The name of the parameter to be set
 //! @param [in] rValue The new value for the parameter
 //! @param [in] force Should we force the value to be set

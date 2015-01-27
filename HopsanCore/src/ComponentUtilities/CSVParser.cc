@@ -87,7 +87,7 @@ CSVParser::CSVParser(bool &rSuccess,
 
         csv_parser file_parser;
 
-        // Define how many records we're gonna skip. This could be used to skip the column definitions.
+        // Define how many records we're going skip. This could be used to skip the column definitions.
         file_parser.set_skip_lines(lines_to_skip);
 
         // Specify the file to parse
@@ -200,7 +200,7 @@ size_t CSVParser::getNumDataCols() const
 }
 
 //! @brief Returns one full data column
-//! @param [in] idx The index of the data column to retreive
+//! @param [in] idx The index of the data column to retrieve
 //! @returns Data column vector or empty vector if index out of range
 const std::vector<double> CSVParser::getDataColumn(const size_t idx) const
 {
@@ -212,7 +212,7 @@ const std::vector<double> CSVParser::getDataColumn(const size_t idx) const
 }
 
 //! @brief Returns if specified vector is strictly increasing or decreasing
-//! @returns -1 on decreasing 1 on increasing 0 otherwie
+//! @returns -1 on decreasing 1 on increasing 0 otherwise
 int CSVParser::getIncreasingOrDecresing(const size_t idx) const
 {
     if (idx < mnDataCols)
@@ -259,7 +259,7 @@ void CSVParser::quickSort(std::vector<double> &rIndexArray, const size_t left, c
         size_t pivotNewIndex = quickSortPartition(rIndexArray, left, right, pivotIndex);
 
         // Recursively sort elements smaller than the pivot
-        // but not if it happend to be zero (would lead to underflow in size_t)
+        // but not if it happened to be zero (would lead to underflow in size_t)
         if (pivotNewIndex>0)
         {
             quickSort(rIndexArray, left, pivotNewIndex-1);
@@ -284,7 +284,7 @@ void CSVParser::swapRows(const size_t r1, const size_t r2)
 //! @brief Sorts the data so that the specified index vector is strictly increasing
 void CSVParser::sortIncreasing(const size_t indexColumn)
 {
-    // If row is strictly decreasing the swap row order, else ruyn quicksort and hope for the best
+    // If row is strictly decreasing the swap row order, else run quicksort and hope for the best
     if (mIncDec[indexColumn] == -1)
     {
         reverseRows();
@@ -298,7 +298,7 @@ void CSVParser::sortIncreasing(const size_t indexColumn)
     // Else we are already OK
 }
 
-//! @brief Check if data in columns are strictly increasing or decresing
+//! @brief Check if data in columns are strictly increasing or decreasing
 //! @todo maybe we should force the input data vector to be strictly increasing or decreasing
 //! @todo maybe data should be automatically sorted when reading the file instead
 void CSVParser::calcIncreasingOrDecreasing()
@@ -441,7 +441,7 @@ double CSVParser::interpolate(const double x, const size_t inCol, const size_t o
         }
 
     }
-    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+    return x; //!< @todo  Don't know if this is correct, return x if we were unsuccessful
 }
 
 
@@ -450,7 +450,7 @@ void CSVParser::transpose()
 {
     // Note! data is stored column wise in memory, so column / row is actually "transposed" compared to storage row / col
 
-    //! @todo we realy need to use smart vectors here
+    //! @todo we really need to use smart vectors here
     vector< vector<double> > newData;
     newData.resize(mnDataCols);
     for (size_t i=0; i<mnDataCols; ++i)
@@ -589,7 +589,7 @@ bool CSVParserNG::setFile(const HString &rFilepath)
             return false;
         }
 
-        // If we get here the file was sucessfully initialized
+        // If we get here the file was successfully initialized
         return true;
     }
     else

@@ -42,7 +42,7 @@ using namespace hopsan;
 
 //! @brief Constructor
 //! @param timestep Time step
-//! @param num Numinator
+//! @param num Numerator
 //! @param den Denominator
 //! @param u0 Initial input value
 //! @param y0 Initial output value
@@ -194,7 +194,7 @@ double SecondOrderTransferFunction::delayed2Y() const
     return mDelayed2Y;
 }
 
-//! @brief Check if the transfere function is saturated (har reached the set limits)
+//! @brief Check if the transfer function is saturated (har reached the set limits)
 //! @returns true or false
 bool SecondOrderTransferFunction::isSaturated() const
 {

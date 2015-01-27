@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2011-08-03
 //!
-//! @brief Contiains a second order integrator utility with provision for some damping and coulumb friction
+//! @brief Contains a second order integrator utility with provision for some damping and coulomb friction
 //! Revised by Liselott Eriksson 2013
 //!
 //$Id$

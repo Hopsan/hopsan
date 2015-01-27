@@ -60,7 +60,7 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n)
     mnVars = n;
     mpOrder = new int[n];                   //Used to keep track of the order of the equations
     mpDeltaStateVar = new Vec(n);           //Difference between nwe state variables and the previous ones
-    mSingular = false;                      //Tells whether or not the Jaciabian is singular
+    mSingular = false;                      //Tells whether or not the Jacobian is singular
 }
 
 
@@ -77,7 +77,7 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n, M
     mnVars = n;
     mpOrder = new int[n];                   //Used to keep track of the order of the equations
     mpDeltaStateVar = new Vec(n);           //Difference between nwe state variables and the previous ones
-    mSingular = false;                      //Tells whether or not the Jaciabian is singular
+    mSingular = false;                      //Tells whether or not the Jacobian is singular
 
     mpJacobian = pJacobian;
     mpEquations = pEquations;

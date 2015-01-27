@@ -57,7 +57,7 @@ bool PLOParser::readFile(const HString &rFilepath)
     // Clear old data
     clearData();
 
-    // Atempt to open file
+    // Attempt to open file
     std::ifstream myfile(rFilepath.c_str());
     if (myfile.is_open())
     {
@@ -106,7 +106,7 @@ bool PLOParser::readFile(const HString &rFilepath)
             myfile >> tmp;
             HString name(tmp.c_str());
 
-            //! @todo isnt there frequency as well
+            //! @todo isn't there frequency as well
             if ( (i==0) && (mPloVersion == 1) && (name=="'Time',") )
             {
                 ++mNumDataCols;
@@ -115,7 +115,7 @@ bool PLOParser::readFile(const HString &rFilepath)
             name.replace("',", "");
             name.replace("'", "");
 
-            // Remeber name
+            // Remember name
             mDataNames.push_back(name);
         }
 

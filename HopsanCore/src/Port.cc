@@ -132,7 +132,7 @@ void Port::removeSubPort(Port* pPort)
 //! @brief This function registers the startvalue parameters from the start node
 void Port::registerStartValueParameters()
 {
-    // Prevent regestering if subports in multiport, or if startnode is missing
+    // Prevent registering if subports in multiport, or if startnode is missing
     if (mpStartNode && !mpParentPort)
     {
         for(size_t i=0; i<mpStartNode->getNumDataVariables(); ++i)
@@ -234,7 +234,7 @@ const Node *Port::getNodePtr(const size_t subPortIdx) const
 //! @brief Get a ptr to the data variable in the node
 //! @param [in] idx The id of the data variable to return ptr to
 //! @param [in] subPortIdx Ignored for non multi ports
-//! @returns Pointer to data vaariable or 0 if idx was not found
+//! @returns Pointer to data variable or 0 if idx was not found
 double *Port::getNodeDataPtr(const size_t idx, const size_t subPortIdx) const
 {
     HOPSAN_UNUSED(subPortIdx)
@@ -328,7 +328,7 @@ void Port::createStartNode(const HString &rNodeType)
     }
     // Now create a new startnode of given type
     mpStartNode = getComponent()->getHopsanEssentials()->createNode(rNodeType);
-    //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if below
+    //!< @todo Maybe I don't even need to create startnodes for subports in multiports, in that case, move this line into if below
 
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected
     if (mpParentPort == 0)
@@ -356,7 +356,7 @@ void Port::setVariableAlias(const HString &rAlias, const int id)
         if (it->second == id)
         {
             mVariableAliasMap.erase(it);
-            // Restart search if something was removed as itterator breaks
+            // Restart search if something was removed as iterator breaks
             it = mVariableAliasMap.begin();
         }
         else
@@ -372,7 +372,7 @@ void Port::setVariableAlias(const HString &rAlias, const int id)
     }
 }
 
-//! @brief Get the alias name for a spcific node variable id
+//! @brief Get the alias name for a specific node variable id
 //! @param [in] id The node data id of the requested variable (Ex: NodeHydraulic::Pressure)
 //! @return The alias name or empty string if no alias name exist for requested variable
 const HString &Port::getVariableAlias(const int id)
@@ -431,7 +431,7 @@ bool Port::haveLogData(const size_t subPortIdx)
 const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t subPortIdx)
 {
     HOPSAN_UNUSED(subPortIdx)
-    // We prefere to use the startnode
+    // We prefer to use the startnode
     if (mpStartNode)
     {
         return mpStartNode->getDataDescriptions();
@@ -451,7 +451,7 @@ const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size
 const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t subPortIdx) const
 {
     HOPSAN_UNUSED(subPortIdx)
-    // We prefere to use the startnode
+    // We prefer to use the startnode
     if (mpStartNode)
     {
         return mpStartNode->getDataDescription(dataid);
@@ -483,8 +483,8 @@ int Port::getNodeDataIdFromName(const HString &rName, const size_t subPortIdx)
     }
 }
 
-//! @brief A help function taht makes it possible to overwrite the unit and description of scalar signal node variables
-//! @todo is this even needed anymore now taht we have in/out variables
+//! @brief A help function that makes it possible to overwrite the unit and description of scalar signal node variables
+//! @todo is this even needed any more now that we have in/out variables
 void Port::setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription)
 {
     //! @todo multiport version needed
@@ -544,7 +544,7 @@ vector<double> *Port::getDataVectorPtr(const size_t subPortIdx)
 }
 
 //! @brief Returns the number of data variables in the node
-//! @returns The number of data varaibles in the node
+//! @returns The number of data variables in the node
 size_t Port::getNumDataVariables() const
 {
     return mpNode->getNumDataVariables();
@@ -603,12 +603,12 @@ void Port::disableStartValue(const size_t idx)
 
         // Note, the startNode and its value will remain, it will also be copied every time.
         // Components should automatically write the correct initial value to nodes in initialize
-        // If a startvalue has been disabled you can not change it, (it actually means that it is hiddden)
+        // If a startvalue has been disabled you can not change it, (it actually means that it is hidden)
     }
 }
 
 
-//! @brief Check if the port is curently connected
+//! @brief Check if the port is currently connected
 //! @brief Returns True or False
 bool Port::isConnected() const
 {
@@ -652,7 +652,7 @@ size_t Port::getNumPorts()
     return 1;
 }
 
-//! @brief Convenience functin to check if port is multiport
+//! @brief Convenience function to check if port is multiport
 bool Port::isMultiPort() const
 {
     return false;
@@ -689,7 +689,7 @@ const HString &Port::getName() const
 }
 
 
-//! @brief Get the name of the commponent that the port is attached to
+//! @brief Get the name of the component that the port is attached to
 const HString &Port::getComponentName() const
 {
     return getComponent()->getName();
@@ -730,7 +730,7 @@ PortTypesEnumT SystemPort::getExternalPortType()
         //External ports component parents will belong to the same system as our component parent
         if ( (*pit)->getComponent()->getSystemParent() == this->getComponent()->getSystemParent() )
         {
-            //! @todo for now we return the first one we find, usually thi is corect except when you are mixing powerports and readports, powerports should be returned in that case but I dont know how to fix this except going through ALL ports every time
+            //! @todo for now we return the first one we find, usually this is correct except when you are mixing powerports and readports, powerports should be returned in that case but I don't know how to fix this except going through ALL ports every time
             return (*pit)->getPortType();
         }
     }
@@ -748,7 +748,7 @@ PortTypesEnumT SystemPort::getInternalPortType()
         //Internal ports component parents will belong to our component parent
         if ( (*pit)->getComponent()->getSystemParent() == this->getComponent() )
         {
-            //! @todo for now we return the first one we find, usually thi is corect except when you are mixing powerports and readports, powerports should be returned in that case but I dont know how to fix this except going through ALL ports every time
+            //! @todo for now we return the first one we find, usually this is correct except when you are mixing powerports and readports, powerports should be returned in that case but I don't know how to fix this except going through ALL ports every time
             return (*pit)->getPortType();
         }
     }
@@ -813,7 +813,7 @@ void ReadPort::loadStartValues()
 
 //bool ReadPort::hasConnectedExternalSystemWritePort()
 //{
-//    // Frist figure out who my system parent is
+//    // First figure out who my system parent is
 //    Component *pSystemParent;
 //    if (this->getComponent()->isComponentSystem())
 //    {
@@ -881,7 +881,7 @@ MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Compone
 
 MultiPort::~MultiPort()
 {
-    // Delete all subports thay may remain, if everything is working this shoudl be zero
+    // Delete all subports that may remain, if everything is working this should be zero
     //! @todo removed assert, BUT problem needs to be fixed /Peter
     if (mSubPortsVector.size() != 0)
     {
@@ -935,7 +935,7 @@ void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t
 }
 
 //! @brief Returns the node pointer from one of the subports in the port (const version)
-//! @param [in] subPortIdx The sub port to retreive from, (range check is NOT performed!)
+//! @param [in] subPortIdx The sub port to retrieve from, (range check is NOT performed!)
 //! @returns The node pointer in the sub port
 const Node *MultiPort::getNodePtr(const size_t subPortIdx) const
 {
@@ -1038,7 +1038,7 @@ std::vector<double> *MultiPort::getDataVectorPtr(const size_t subPortIdx)
 //! @brief Get the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param[in] subPortIdx The sub port to get start value from
-//! @todo shouldnt this be called get default startvalue, to avoid confusion with initial value (I am not sure)
+//! @todo shouldn't this be called get default startvalue, to avoid confusion with initial value (I am not sure)
 //! @returns the start value
 double MultiPort::getStartValue(const size_t idx, const size_t subPortIdx)
 {
@@ -1090,10 +1090,10 @@ bool MultiPort::isConnectedTo(Port *pOtherPort)
     return false;
 }
 
-//! @brief Check if the port is curently connected
+//! @brief Check if the port is currently connected
 bool MultiPort::isConnected() const
 {
-    //! @todo actaully we should check all subports if they are connected (but a subport should not exist if not connected)
+    //! @todo actually we should check all subports if they are connected (but a subport should not exist if not connected)
     return (mSubPortsVector.size() > 0);
 }
 
@@ -1118,7 +1118,7 @@ void MultiPort::removeSubPort(Port* ptr)
 }
 
 //! @brief Returns the node pointer from one of the subports in the port
-//! @param [in] subPortIdx The sub port to retreive from, (range check is performed)
+//! @param [in] subPortIdx The sub port to retrieve from, (range check is performed)
 //! @returns The node pointer in the sub port, or 0 if index out of range
 Node *MultiPort::getNodePtr(const size_t subPortIdx)
 {

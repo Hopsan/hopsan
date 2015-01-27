@@ -18,7 +18,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2011-06-09
 //!
-//! @brief Contains a white gaussian noise generator
+//! @brief Contains a white Gaussian noise generator
 //!
 //$Id$
 

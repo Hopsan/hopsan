@@ -43,7 +43,7 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 #endif
     if(nDesiredThreads != 0)
     {
-        // If user specifides a number of threads, attempt to use this number
+        // If user specifies a number of threads, attempt to use this number
         // But limit number of threads to the number of system cores
         nThreads = min(nCores, nDesiredThreads);
     }

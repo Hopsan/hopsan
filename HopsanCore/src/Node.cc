@@ -59,7 +59,7 @@ Node::Node(const size_t datalength)
 
     mForceDisableLog = false;
 
-    // Default dissabled logging
+    // Default disabled logging
     setLoggingEnabled(false);
 }
 
@@ -161,11 +161,11 @@ const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
 }
 
 
-//! @brief Copy variable valus from this to pNode
+//! @brief Copy variable values from this to pNode
 //! @param pOtherNode The destination node to copy into
 void Node::copyNodeDataValuesTo(Node *pOtherNode) const
 {
-    // Copy variable valus from this to pNode
+    // Copy variable values from this to pNode
     if(pOtherNode->getNodeType()==this->getNodeType())
     {
         for(size_t i=0; i<pOtherNode->getNumDataVariables(); ++i)
@@ -191,14 +191,14 @@ void Node::copySignalDataUnitAndDescriptionTo(Node* /*pOtherNode*/) const
 
 void Node::setTLMNodeDataValuesTo(Node* /*pOtherNode*/) const
 {
-    // This method schould be implemented in child Nodes
+    // This method should be implemented in child Nodes
 }
 
 
 //! @brief Pre allocate memory for the needed amount of log data
 void Node::preAllocateLogSpace(const size_t nLogSlots)
 {
-    // Dont try to allocate if we are not going to log
+    // Don't try to allocate if we are not going to log
     if (mDoLog)
     {
         mDataStorage.resize(nLogSlots, vector<double>(mDataValues.size()));
