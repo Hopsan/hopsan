@@ -95,7 +95,7 @@ In this example, we want to optimize the PI-controller parameters. The parameter
 
 5.	Select objective functions. The next tab also contains a list with the components. This time, however, expanding them will reveal a list of their ports. Expanding a port will show a list of variables in the port. Below the list are two drop down menus. Here it is possible to choose an objective function and whether to maximize or minimize it. Select a function and an appropriate number of variables, and then click "Add Function". For each function it is then possible to select weight factor, normalization factor,  exponential factor and provide other data if applicable.
 
-For the example we want to optimize a step response so that the cylinder position as closely as possible matches the step input signal. We therefore add a "Minimize average absolute difference" function between step output and position sensor output. We also want to penalize the overshot over the final value. This is done by adding a "Minimize overshot over value" function for position sensor output. Use a weight factor of 2.0, because it is considered important.
+For the example we want to optimize a step response so that the cylinder position as closely as possible matches the step input signal. We therefore add a "Minimize average absolute difference" function between step output and position sensor output. We also want to penalize the overshot over the final value. This is done by adding a "Minimize overshot over value" function for the position sensor output. We use a weight factor of 2.0, because it is considered important.
 
 \image html "optimization_functions.png"
 \image latex "optimization_functions.png" "Optimization functions"

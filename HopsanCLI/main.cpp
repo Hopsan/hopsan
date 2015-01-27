@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
 
         // Define a value argument and add it to the command line.
         //TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
-        TCLAP::SwitchArg testInstanciateComponentsOption("", "testInstanciateComponents", "Create an instace of each registered component to look for errors.", cmd);
-        TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at end to let you see its output", cmd);
+        TCLAP::SwitchArg testInstanciateComponentsOption("", "testInstanciateComponents", "Create an instance of each registered component to look for errors.", cmd);
+        TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at the end to let you see its output", cmd);
         TCLAP::SwitchArg printDebugOption("", "printDebug", "Show debug messages in the output", cmd);
         TCLAP::SwitchArg createHvcTestOption("", "createValidationData","Create a model validation data set based on the variables connected to scopes in the model given by option -m", cmd);
 
