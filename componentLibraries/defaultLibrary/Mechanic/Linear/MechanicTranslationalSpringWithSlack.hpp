@@ -21,7 +21,7 @@
 //!
 //! @brief Contains a mechanical translational spring component with slack
 //!
-//$Id: MechanicSpeedSensor.hpp 5559 2013-06-24 15:43:06Z bjoer $
+//$Id$
 
 #ifndef MECHANICTRANSLATIONALSPRINGWITHSLACK_HPP_INCLUDED
 #define MECHANICTRANSLATIONALSPRINGWITHSLACK_HPP_INCLUDED

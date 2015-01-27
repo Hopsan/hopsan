@@ -19,7 +19,7 @@
 //! @date   2014-05-04
 //!
 //! @brief Contains a hydraulic 4/2-valve of Q-type
-//$Id: Hydraulic42Valve.hpp 6863 2014-04-07 12:19:09Z petno25 $
+//$Id$
 
 #ifndef HYDRAULIC42VALVE2_HPP_INCLUDED
 #define HYDRAULIC42VALVE2_HPP_INCLUDED

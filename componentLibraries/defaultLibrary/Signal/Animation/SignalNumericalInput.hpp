@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a numerical input component (for animation)
 //!
-//$Id: SignalDisplay.hpp 5241 2013-04-12 13:13:21Z petno25 $
+//$Id$
 
 #ifndef SIGNALNUMERICALINPUT_HPP_INCLUDED
 #define SIGNALNUMERICALINPUT_HPP_INCLUDED

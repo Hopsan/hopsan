@@ -19,7 +19,7 @@
 //! @date   2014-07-07
 //!
 //! @brief Contains a translational mass with coulumb friction and damper using multi-ports (converted from version without multi-ports)
-//$Id: MechanicTranslationalMassWithCoulombFriction.hpp 6218 2013-11-20 13:46:59Z robbr48 $
+//$Id$
 
 #ifndef MECHANICTRANSLATIONALMASSWITHCOULOMBFRICTIONANDMULTIPORTS_HPP_INCLUDED
 #define MECHANICTRANSLATIONALMASSWITHCOULOMBFRICTIONANDMULTIPORTS_HPP_INCLUDED

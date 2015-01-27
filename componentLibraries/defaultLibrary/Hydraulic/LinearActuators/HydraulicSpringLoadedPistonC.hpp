@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Hydraulic Spring-Loaded Piston of C type
 //!
-//$Id: HydraulicCylinderC.hpp 6845 2014-04-03 13:01:35Z magse $
+//$Id$
 
 #ifndef HYDRAULICSPRINGLOADEDPISTONC_HPP_INCLUDED
 #define HYDRAULICSPRINGLOADEDPISTONC_HPP_INCLUDED

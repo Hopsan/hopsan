@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a signal sample-and-hold component
 //!
-//$Id: SignalRateLimiter.hpp 7282 2014-07-11 14:33:52Z robbr48 $
+//$Id$
 #ifndef SIGNALSAMPLEANDHOLD_HPP_INCLUDED
 #define SIGNALSAMPLEANDHOLD_HPP_INCLUDED
 

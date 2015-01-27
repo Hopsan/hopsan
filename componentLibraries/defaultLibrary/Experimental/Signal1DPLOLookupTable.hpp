@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a one dimensional lookup table from PLO files
 //!
-//$Id: Signal1DLookupTable.hpp 7198 2014-07-02 12:16:57Z petno25 $
+//$Id$
 
 #ifndef SIGNAL1DPLOLOOKUPTABLE_HPP_INCLUDED
 #define SIGNAL1DPLOLOOKUPTABLE_HPP_INCLUDED

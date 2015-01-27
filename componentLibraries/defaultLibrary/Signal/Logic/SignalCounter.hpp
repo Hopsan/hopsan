@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a signal flank counter component
 //!
-//$Id: SignalRateLimiter.hpp 7282 2014-07-11 14:33:52Z robbr48 $
+//$Id$
 #ifndef SIGNALCOUNTER_HPP
 #define SIGNALCOUNTER_HPP
 
