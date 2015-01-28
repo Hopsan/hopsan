@@ -35,7 +35,7 @@ defineReplace(setZMQPathInfo){
 
             #Add debug if debugmode (only default on for windows)
             dbg_ext =
-            win32:CONFIG(debug, debug|release):dbg_ext = d
+            win32:CONFIG(debug, debug|release):dbg_ext =
             #unix:CONFIG(debug, debug|release):dbg_ext = d
 
             # OS X uses the Frameworks concept instead of lib&include directories. A security meassure.
@@ -51,7 +51,7 @@ defineReplace(setZMQPathInfo){
             #}
 
             #Set files to copy,  only zmq[d].dll/libzmq[d].so
-            win32:files = $${libName}$${dbg_ext}$${DLL_EXT}
+            win32:files = lib$${libName}$${dbg_ext}$${DLL_EXT}
             unix:files = lib$${libName}$${dbg_ext}$${DLL_EXT}*
             # On mac we need all of the framework
             #macx:files = $${libName}.framework

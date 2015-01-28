@@ -20,12 +20,21 @@
 #include "MessageUtilities.h"
 #include "global.h"
 
+#ifdef WIN32
+//#include <strsafe.h>
+#include <tchar.h>
+#else
 #include <spawn.h>
 #include <sys/wait.h>
+#endif
 
 using namespace std;
 
+#ifdef WIN32
+map<int, PROCESS_INFORMATION> workerMap;
+#else
 map<int, pid_t> workerMap;
+#endif
 
 extern char **environ;
 
@@ -89,6 +98,42 @@ int main(int argc, char* argv[])
                     uid = rand();
                 }
 
+#ifdef WIN32
+                PROCESS_INFORMATION processInformation;
+                STARTUPINFO startupInfo;
+                memset(&processInformation, 0, sizeof(processInformation));
+                memset(&startupInfo, 0, sizeof(startupInfo));
+                startupInfo.cb = sizeof(startupInfo);
+
+                string scport = to_string(gServerConfig.mControlPort);
+                string swport = to_string(port);
+                string nthreads = to_string(gServerConfig.mMaxThreadsPerClient);
+                string uidstr = to_string(uid);
+
+                std::string appName("HopsanServerWorker.exe");
+                std::string cmdLine("HopsanServerWorker "+uidstr+" "+scport+" "+swport+" "+nthreads);
+                TCHAR tempCmdLine[cmdLine.size()*2];
+                strcpy_s(tempCmdLine, cmdLine.size()*2, cmdLine.c_str());
+
+                BOOL result = CreateProcess(appName.c_str(), tempCmdLine, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startupInfo, &processInformation);
+                if (result == 0)
+                {
+                    std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
+                    sendServerNAck(socket, "Failed to launch worker process!");
+                }
+                else
+                {
+                    std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << port << " uid: " << uid << endl;
+                    workerMap.insert({uid,processInformation});
+
+                    SM_ReqSlot_Reply_t msg = {port};
+                    msgpack::pack(out_buffer, S_ReqSlot_Reply);
+                    msgpack::pack(out_buffer, msg);
+                    socket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+                    nTakenSlots++;
+                }
+
+#else
                 char sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
                 // Write port as char in buffer
                 sprintf(sport_buff, "%d", gServerConfig.mControlPort);
@@ -99,6 +144,7 @@ int main(int argc, char* argv[])
                 sprintf(uid_buff, "%d", uid);
 
                 char *argv[] = {"HopsanServerWorker", uid_buff, sport_buff, wport_buff, thread_buff, nullptr};
+
                 pid_t pid;
                 int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
                 if(status == 0)
@@ -118,12 +164,14 @@ int main(int argc, char* argv[])
                     std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
                     sendServerNAck(socket, "Failed to launch worker process!");
                 }
+#endif
             }
             else
             {
                 sendServerNAck(socket, "All slots taken");
                 cout << PRINTSERVER << "Denied! All slots taken." << endl;
             }
+
         }
         else if (msg_id == SW_Finished)
         {
@@ -136,11 +184,18 @@ int main(int argc, char* argv[])
             {
                 sendServerAck(socket);
 
+#ifdef WIN32
+                PROCESS_INFORMATION pi = it->second;
+                WaitForSingleObject( pi.hProcess, INFINITE );
+                CloseHandle( pi.hProcess );
+                CloseHandle( pi.hThread );
+#else
                 // Wait for process to stop (to avoid zombies)
                 pid_t pid = it->second;
                 int stat_loc;
                 pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
-
+#endif
+                //! @todo check returncodes maybe
                 workerMap.erase(it);
                 nTakenSlots--;
             }

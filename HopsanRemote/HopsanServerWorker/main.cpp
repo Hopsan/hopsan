@@ -1,24 +1,14 @@
 //$Id$
 
-//#include <streambuf>
 #include <sstream>
-//#include <fstream>
-
-//#ifndef _WIN32
-//#include <unistd.h>
-//#else
-//#include <windows.h>
-//#endif
-
 #include <iostream>
 #include <vector>
+
 #include "zmq.hpp"
 
 #include "Messages.h"
 #include "MessageUtilities.h"
-//#include "global.h"
 #include "FileAccess.h"
-
 
 #include "HopsanEssentials.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -220,7 +210,7 @@ void loadComponentLibraries()
     FileAccess fa;
     if (fa.enterDir("./componentLibraries"))
     {
-        vector<string> soFiles = fa.findFilesWithSuffix("so");
+        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT));
         for (string f : soFiles)
         {
             cout << PRINTWORKER << "Loading library file: " << f << endl;
@@ -279,7 +269,7 @@ int main(int argc, char* argv[])
         socket.recv (&request);
         size_t offset=0;
         size_t msg_id = getMessageId(request, offset);
-        //cout << PRINTWORKER << "Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+        cout << PRINTWORKER << "Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
         if (msg_id == C_SetParam)
         {
             CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset);

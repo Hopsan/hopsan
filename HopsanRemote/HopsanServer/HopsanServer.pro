@@ -31,6 +31,10 @@ QMAKE_CXXFLAGS *= -std=c++11
 # -------------------------------------------------
 LIBS += -pthread
 
+win32 {
+    DEFINES -= UNICODE
+}
+
 unix {
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS

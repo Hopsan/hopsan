@@ -191,10 +191,15 @@ bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
         assert(response.size() == offset);
         return true;
     }
+    else if (id == S_NAck)
+    {
+        mLastErrorMessage = unpackMessage<string>(response, offset);
+    }
     else
     {
-        return false;
+        mLastErrorMessage = "Got wrong reply type from server";
     }
+    return false;
 }
 
 void RemoteHopsanClient::connectToWorker(std::string zmqaddres)
@@ -252,4 +257,9 @@ bool RemoteHopsanClient::requestMessages()
     {
         return false;
     }
+}
+
+string RemoteHopsanClient::getLastErrorMessage() const
+{
+    return mLastErrorMessage;
 }

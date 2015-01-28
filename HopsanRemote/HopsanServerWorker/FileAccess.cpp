@@ -40,7 +40,7 @@ std::vector<std::string> FileAccess::findFilesWithSuffix(std::string suffix)
         size_t p = name.find_last_of(".");
         if (p != string::npos)
         {
-            if (name.substr(p+1) == suffix)
+            if (name.substr(p) == suffix)
             {
                 files.push_back(mCurrentDir+"/"+name);
             }

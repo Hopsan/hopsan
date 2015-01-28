@@ -33,7 +33,10 @@ public:
     bool requestSimulationResults(std::vector<std::string> &rDataNames, std::vector<double> &rData);
     bool requestMessages();
 
+    std::string getLastErrorMessage() const;
+
 private:
+    std::string mLastErrorMessage;
     zmq::socket_t mRSCSocket; //!< The Remote Server Control Socket
     zmq::socket_t mRWCSocket; //!< The Remote Worker Control Socket
 
