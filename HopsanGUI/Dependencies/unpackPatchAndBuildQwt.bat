@@ -12,7 +12,7 @@ echo.
 echo ======================
 echo Unpack libQWT
 echo ======================
-rd \s\q %filename%
+rd /s/q %filename%
 mkdir %filename%
 REM Use this for svn version
 REM svn co svn://svn.code.sf.net/p/qwt/code/trunk/qwt %dst%

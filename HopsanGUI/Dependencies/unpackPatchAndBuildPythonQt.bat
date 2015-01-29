@@ -13,7 +13,7 @@ REM first unpack
 echo ====================
 echo Unpacking sourcecode
 echo ====================
-rd \s\q %pythonqtVersion%
+rd /s/q %pythonqtVersion%
 ..\..\ThirdParty\7z\7z.exe x %pythonqtVersion%.zip -y
 
 REM Now apply patch
