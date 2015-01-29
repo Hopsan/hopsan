@@ -30,7 +30,17 @@
 #include "global.h"
 #include "GUIObjects/GUISystem.h"
 
-void SimulationWorkerObject::initSimulateFinalize()
+LocalSimulationWorkerObject::LocalSimulationWorkerObject(QVector<SystemContainer *> vpSystems, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples, const bool noChanges)
+{
+    mvpSystems = vpSystems;
+    mStartTime = startTime;
+    mStopTime = stopTime;
+    mLogStartTime = logStartTime;
+    mnLogSamples = nLogSamples;
+    mNoChanges = noChanges;
+}
+
+void LocalSimulationWorkerObject::initSimulateFinalize()
 {
     QTime timer;
     bool initSuccess, simulateSuccess;
@@ -82,7 +92,87 @@ void SimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-void SimulationWorkerObject::connectProgressDialog(QProgressDialog *pProgressDialog)
+RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(QString hmfModel, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
+{
+    mHmfModel = hmfModel;
+    mStartTime = startTime;
+    mStopTime = stopTime;
+    mLogStartTime = logStartTime;
+    mnLogSamples = nLogSamples;
+    mNoChanges = false;
+}
+
+void RemoteSimulationWorkerObject::initSimulateFinalize()
+{
+#ifdef USEZMQ
+    QTime timer;
+    bool connectSuccess, modelSuccess, initSuccess, simulateSuccess;
+    RemoteCoreSimulationHandler rcsh;
+    rcsh.setHopsanServer("localhost", "23300"); //!< @todo get from config);
+
+    // Initializing
+    emit setProgressBarText(tr("Connecting..."));
+    emit setProgressBarRange(0,0);
+
+    timer.start();
+    connectSuccess = rcsh.connect(); //initialize(mStartTime, mStopTime, mLogStartTime, mnLogSamples, coreSystemAccessVector);
+    if (connectSuccess)
+    {
+        emit setProgressBarText(tr("Sending Model..."));
+        modelSuccess = rcsh.loadModel(mHmfModel);
+        if (modelSuccess)
+        {
+            emit initDone(true, timer.elapsed());
+            emit setProgressBarText(tr("Simulating..."));
+            timer.start();
+            simulateSuccess = rcsh.simulateModel();
+            emit simulateDone(simulateSuccess, timer.elapsed());
+            emit finalizeDone(true, 0);
+            return;
+
+//            if (simulateSuccess)
+//            {
+//                // Simulating
+//                emit setProgressBarText(tr("Simulating..."));
+//                emit setProgressBarRange(0,100);
+
+//                // Check if we should simulate multiple systems at the same time using multicore
+//                if ((coreSystemAccessVector.size() > 1) && (gpConfig->getUseMulticore()))
+//                {
+//                    simulateSuccess = rcsh.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+//                }
+//                else if (gpConfig->getUseMulticore())
+//                {
+//                    // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
+//                    timer.start();
+//                    simulateSuccess = rcsh.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+//                }
+//                else
+//                {
+//                    timer.start();
+//                    simulateSuccess = rcsh.simulate(mStartTime, mStopTime, -1, coreSystemAccessVector, mNoChanges);
+//                }
+
+
+//            }
+
+//            // Finalizing
+//            emit setProgressBarText(tr("Finalizing..."));
+//            emit setProgressBarRange(0,0);
+//            timer.start();
+//            rcsh.finalize(coreSystemAccessVector);
+//            emit finalizeDone(true, timer.elapsed());
+        }
+        else
+        {
+            emit initDone(false, timer.elapsed());
+        }
+    }
+#endif
+    emit finalizeDone(false, 0);
+}
+
+void SimulationWorkerObjectBase::connectProgressDialog(QProgressDialog *pProgressDialog)
 {
     // Disconnect from old progress bar if any
     disconnect(this, SIGNAL(setProgressBarRange(int,int)), 0, 0);
@@ -117,26 +207,30 @@ void ProgressBarWorkerObject::startRefreshTimer(int ts)
 
 void ProgressBarWorkerObject::refreshProgressBar()
 {
-    //! @todo this will give incorrect update for multi system simulations
-    const double t = mvSystems[0]->getCoreSystemAccessPtr()->getCurrentTime();
+    if (!mvSystems.isEmpty())
+    {
+        //! @todo this will give incorrect update for multi system simulations
+        const double t = mvSystems[0]->getCoreSystemAccessPtr()->getCurrentTime();
 
-    // Round up and truncate
-    const int step = int((t-mStartT)/(mStopT - mStartT)*100.0 + 0.5);
-    if( step > mLastProgressRefreshStep)
-    {
-        mLastProgressRefreshStep = step;
-        emit setProgressBarValue(step);
-    }
-    else
-    {
-        // adapt timer timestep to the simulation model
-        int currentTimeStep = mProgressDialogRefreshTimer.interval();
-        mProgressDialogRefreshTimer.setInterval( currentTimeStep + 10);
+        // Round up and truncate
+        const int step = int((t-mStartT)/(mStopT - mStartT)*100.0 + 0.5);
+        if( step > mLastProgressRefreshStep)
+        {
+            mLastProgressRefreshStep = step;
+            emit setProgressBarValue(step);
+        }
+        else
+        {
+            // adapt timer timestep to the simulation model
+            int currentTimeStep = mProgressDialogRefreshTimer.interval();
+            mProgressDialogRefreshTimer.setInterval( currentTimeStep + 10);
+        }
     }
 }
 
 void ProgressBarWorkerObject::abort()
 {
+    //! @todo how to handle abort for remote simulations
     for (int i=0; i<mvSystems.size(); ++i)
     {
         mvSystems[i]->getCoreSystemAccessPtr()->stop();
@@ -166,13 +260,32 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
     initSimulateFinalize(vpSystems, noChanges);
 }
 
+void SimulationThreadHandler::initSimulateFinalizeRemote(QString modelPath)
+{
+    mvpSystems.clear();
+    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(modelPath, mStartT, mStopT, mLogStartTime, mnLogSamples);
+    initSimulateFinalizePrivate();
+}
+
 void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges)
 {
-    mInitSuccess=false; mSimuSucess=false; mFiniSucess=false; mAborted=false;
-
     mvpSystems = vpSystems;
+    mpSimulationWorkerObject = new LocalSimulationWorkerObject(mvpSystems, mStartT, mStopT, mLogStartTime, mnLogSamples, noChanges);
+    initSimulateFinalizePrivate();
+}
 
-    mpSimulationWorkerObject = new SimulationWorkerObject(mvpSystems, mStartT, mStopT, mLogStartTime, mnLogSamples, noChanges);
+void SimulationThreadHandler::initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges)
+{
+    QEventLoop loop;
+    connect(this, SIGNAL(done(bool)), &loop, SLOT(quit()), Qt::UniqueConnection);
+    initSimulateFinalize(vpSystems, noChanges);
+    loop.exec();
+    //! @todo what happens if the simulation completes before the loop is started, then it will never quit
+}
+
+void SimulationThreadHandler::initSimulateFinalizePrivate()
+{
+    mInitSuccess=false; mSimuSucess=false; mFiniSucess=false; mAborted=false;
     mpSimulationWorkerObject->moveToThread(&mSimulationWorkerThread);
 
     connect(this, SIGNAL(startSimulation()), mpSimulationWorkerObject, SLOT(initSimulateFinalize()), Qt::UniqueConnection);
@@ -209,8 +322,9 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
         emit startProgressBarRefreshTimer(gpConfig->getProgressBarStep());
     }
 
-    //Create a timer to make sure messages are displayed in terminal during simulation
-    if(!gpConfig->getUseMulticore())
+    // Create a timer to make sure messages are displayed in terminal during simulation
+    // But not if we run multi threaded or a remote simulation
+    if( (mpSimulationWorkerObject->swoType() != RemoteSWO) && !gpConfig->getUseMulticore())
     {
         QTimer *pCheckMessagesTimer = new QTimer();
         connect(pCheckMessagesTimer, SIGNAL(timeout()), mpMessageHandler, SLOT(collectHopsanCoreMessages()));
@@ -224,15 +338,6 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     //simulationThread.start(QThread::TimeCriticalPriority);
     mSimulationWorkerThread.start(QThread::HighestPriority);
     emit startSimulation();
-}
-
-void SimulationThreadHandler::initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges)
-{
-    QEventLoop loop;
-    connect(this, SIGNAL(done(bool)), &loop, SLOT(quit()), Qt::UniqueConnection);
-    initSimulateFinalize(vpSystems, noChanges);
-    loop.exec();
-    //! @todo what happens if the simulation completes before the loop is started, then it will never quit
 }
 
 void SimulationThreadHandler::initDone(bool success, int ms)
@@ -283,7 +388,7 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
         {
             name = "MultipleModels";
         }
-        else
+        else if (!mvpSystems.isEmpty())
         {
             name = mvpSystems[0]->getName();
         }

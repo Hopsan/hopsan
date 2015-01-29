@@ -301,6 +301,39 @@ private:
 
 };
 
+#ifdef USEZMQ
+class RemoteCoreSimulationHandler
+{
+private:
+    QString mRemoteServerAddress,   mRemoteServerPort;
+    QString mHopsanDispatchAddress, mHopsanDispatchPort;
+
+    bool mUseDispatch = false;
+
+
+public:
+    ~RemoteCoreSimulationHandler();
+
+    void setHopsanServer(QString ip, QString port );
+    void setHopsanDispatch( QString ip, QString port );
+
+    void setUseDispatchServer(bool tf);
+    bool usingDispatchServer() const;
+
+    bool connect();
+    void disconnect();
+
+    bool loadModel(QString hmfModelFile);
+    bool simulateModel();
+
+    bool getCoreMessages(QVector<QString> &rTags, QVector<QString> &rTypes, QVector<QString> &rMessages, bool includeDebug=true);
+
+    bool getLogData(int &rNum);
+
+    QString getLastError() const;
+};
+#endif
+
 
 class NodeInfo
 {

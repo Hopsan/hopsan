@@ -47,7 +47,6 @@ unix {
 SOURCES += main.cpp
 
 HEADERS += \
-    global.h \
     Messages.h \
     MessageUtilities.h
 

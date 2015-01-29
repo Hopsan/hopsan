@@ -32,6 +32,7 @@ public:
 
     bool requestSimulationResults(std::vector<std::string> &rDataNames, std::vector<double> &rData);
     bool requestMessages();
+    bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
 
     std::string getLastErrorMessage() const;
 

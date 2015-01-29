@@ -18,7 +18,6 @@
 
 #include "Messages.h"
 #include "MessageUtilities.h"
-#include "global.h"
 
 #ifdef _WIN32
 //#include <strsafe.h>
@@ -37,6 +36,16 @@ map<int, pid_t> workerMap;
 #endif
 
 extern char **environ;
+
+class ServerConfig
+{
+public:
+    int mControlPort = 23300;
+    int mClientPortStart = 23301;
+    int mClientPortEnd = 23310;
+    int mMaxClients = 20;
+    int mMaxThreadsPerClient = 2;
+};
 
 ServerConfig gServerConfig;
 size_t nTakenSlots=0;

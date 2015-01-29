@@ -66,7 +66,14 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket)
 
 void RemoteHopsanClient::connectToServer(std::string zmqaddres)
 {
-    mRSCSocket.connect(zmqaddres.c_str());
+    try
+    {
+        mRSCSocket.connect(zmqaddres.c_str());
+    }
+    catch (zmq::error_t e)
+    {
+        cout << e.what() << endl;
+    }
 }
 
 void RemoteHopsanClient::connectToServer(string ip, string port)
@@ -204,7 +211,14 @@ bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
 
 void RemoteHopsanClient::connectToWorker(std::string zmqaddres)
 {
-    mRWCSocket.connect(zmqaddres.c_str());
+    try
+    {
+        mRWCSocket.connect(zmqaddres.c_str());
+    }
+    catch(zmq::error_t e)
+    {
+        cout << e.what() << endl;
+    }
 }
 
 void RemoteHopsanClient::connectToWorker(string ip, string port)
@@ -250,6 +264,35 @@ bool RemoteHopsanClient::requestMessages()
         for (size_t m=0; m<messages.size(); ++m)
         {
             cout << messages[m].type << " " << messages[m].tag << " " << messages[m].message << endl;
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<string> &rTags, std::vector<string> &rMessages)
+{
+    sendShortClientMessage(mRWCSocket, C_ReqMessages);
+
+    zmq::message_t response;
+    mRWCSocket.recv(&response);
+    size_t offset=0;
+    size_t id = getMessageId(response, offset);
+    if (id == S_ReqMessages_Reply)
+    {
+        vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset);
+        //cout << "Received: " << messages.size() << " messages from server" << endl;
+        rTypes.resize(messages.size());
+        rTags.resize(messages.size());
+        rMessages.resize(messages.size());
+        for (size_t m=0; m<messages.size(); ++m)
+        {
+            rTypes[m] =  messages[m].type;
+            rTags[m] = messages[m].tag;
+            rMessages[m] = messages[m].message;
         }
         return true;
     }

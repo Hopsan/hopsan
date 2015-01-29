@@ -1,5 +1,8 @@
 include( $${PWD}/../Common.prf )
 
+# Set thisDir to the directory of the pri file, else lookup will use PWD from the calling project file
+thisDir = $${PWD}
+
 #Helpfunction to fetch correct QWT INCLUDEPATH and LIBS path
 defineReplace(setZMQPathInfo){
     #Assign input arguments
@@ -9,10 +12,10 @@ defineReplace(setZMQPathInfo){
     #Set QWT paths, Paths that are higher up in the list will have priority if found
     win32:contains(QMAKE_HOST.arch, x86_64){
         # 64 bit Windows release
-        ZMQ_PATHS *= $${PWD}/../../ThirdParty/zeromq-4.1.0_64
+        ZMQ_PATHS *= $${thisDir}/../ThirdParty/zeromq-4.1.0_64
     } else {
         # 32 bit Windows version or Linux / Mac
-        ZMQ_PATHS *= $${PWD}/../../ThirdParty/zeromq-4.1.0
+        ZMQ_PATHS *= $${thisDir}/../ThirdParty/zeromq-4.1.0
     }
     ZMQ_PATH = $$selectPath($$externalSrc, $$ZMQ_PATHS, "zmq")
 
@@ -83,5 +86,3 @@ defineReplace(setZMQPathInfo){
 
 INCLUDEPATH *= $${PWD}/../ThirdParty/msgpack-c-master/include/
 INCLUDEPATH *= $${PWD}/../ThirdParty/cppzmq-master/
-#INCLUDEPATH += $${PWD}/../../ThirdParty/zeromq-4.1.0/include/
-#LIBS += -L$${PWD}/../../ThirdParty/zeromq-4.1.0/src/.libs/ -lzmq

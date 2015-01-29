@@ -42,6 +42,13 @@
 #include "CoreUtilities/GeneratorHandler.h"
 #include "ComponentUtilities/CSVParser.h"
 
+// RemoteServerClient includes
+#ifdef USEZMQ
+#include "RemoteHopsanClient.h"
+zmq::context_t context(1);
+RemoteHopsanClient gRHC(context);
+#endif
+
 // Here the HopsanCore object is created
 hopsan::HopsanEssentials gHopsanCore;
 
@@ -1419,3 +1426,160 @@ QString getHopsanCoreBuildTime()
 {
     return QString::fromStdString(gHopsanCore.getCoreBuildTime());
 }
+
+#ifdef USEZMQ
+RemoteCoreSimulationHandler::~RemoteCoreSimulationHandler()
+{
+    if (gRHC.workerConnected() || gRHC.serverConnected())
+    {
+        disconnect();
+    }
+}
+
+void RemoteCoreSimulationHandler::setHopsanServer(QString ip, QString port)
+{
+    mRemoteServerAddress = ip;
+    mRemoteServerPort = port;
+}
+
+void RemoteCoreSimulationHandler::setHopsanDispatch(QString ip, QString port)
+{
+    mHopsanDispatchAddress = ip;
+    mHopsanDispatchPort = port;
+}
+
+void RemoteCoreSimulationHandler::setUseDispatchServer(bool tf)
+{
+    mUseDispatch = tf;
+}
+
+bool RemoteCoreSimulationHandler::usingDispatchServer() const
+{
+    return mUseDispatch;
+}
+
+bool RemoteCoreSimulationHandler::connect()
+{
+    if (mUseDispatch)
+    {
+        //! @todo use dispatch
+        return false;
+    }
+    else
+    {
+        if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
+        {
+            gRHC.connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
+            if (gRHC.serverConnected())
+            {
+                size_t workerPort;
+                if (gRHC.requestSlot(workerPort))
+                {
+                    gRHC.connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
+                    if (gRHC.workerConnected())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void RemoteCoreSimulationHandler::disconnect()
+{
+    gRHC.disconnect();
+}
+
+bool RemoteCoreSimulationHandler::loadModel(QString hmfModelFile)
+{
+    QFile hmfFile(hmfModelFile);
+    if (hmfFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream ts(&hmfFile);
+        bool rc = gRHC.sendModelMessage(ts.readAll().toStdString());
+        hmfFile.close();
+        return rc;
+    }
+    else
+    {
+        //! @todo must remort failed to open
+        return false;
+    }
+}
+
+bool RemoteCoreSimulationHandler::simulateModel()
+{
+    return gRHC.sendSimulateMessage(-1, -1, -1, -1, -1);
+}
+
+bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTags, QVector<QString> &rTypes, QVector<QString> &rMessages, bool includeDebug)
+{
+    std::vector<char> types;
+    std::vector<string> tags, messages;
+    bool rc = gRHC.requestMessages(types, tags, messages);
+    if (rc)
+    {
+        // Here we copy messages AGAIN
+        rTypes.resize(messages.size());
+        rTags.resize(messages.size());
+        rMessages.resize(messages.size());
+        for (size_t m=0; m<messages.size(); ++m)
+        {
+            if (types[m] == 'f')
+            {
+                rTypes[m] = "fatal";
+            }
+            else if (types[m] == 'e')
+            {
+                rTypes[m] = "error";
+            }
+            else if (types[m] == 'w')
+            {
+                rTypes[m] = "warning";
+            }
+            else if (types[m] == 'i')
+            {
+                rTypes[m] = "info";
+            }
+            else if (types[m] == 'd')
+            {
+                if (includeDebug)
+                {
+                    rTypes[m] = "debug";
+                }
+                else
+                {
+                    //! @todo This will realocate message vectors not very clever, should use reserve and push_back instead maybe
+                    rTypes.pop_back();
+                    rMessages.pop_back();
+                    rTags.pop_back();
+                    continue;
+                }
+            }
+
+            rTags[m].fromStdString(tags[m]);
+            rMessages[m].fromStdString(messages[m]);
+        }
+        return true;
+    }
+
+    return false;
+}
+
+bool RemoteCoreSimulationHandler::getLogData(int &rNum)
+{
+    std::vector<string> names;
+    std::vector<double> data;
+    bool rc = gRHC.requestSimulationResults(names, data);
+    rNum = names.size();
+    return rc;
+}
+
+QString RemoteCoreSimulationHandler::getLastError() const
+{
+    return QString::fromStdString(gRHC.getLastErrorMessage());
+}
+
+#endif

@@ -54,6 +54,7 @@
 #include "Widgets/ModelWidget.h"
 #include "Widgets/QuickNavigationWidget.h"
 #include "SymHop.h"
+#include "MessageHandler.h"
 
 //Needed for Modelica experiments, move later if necessary
 #include "ModelicaLibrary.h"
@@ -380,11 +381,47 @@ bool ModelWidget::simulate_blocking()
 
 void ModelWidget::startCoSimulation()
 {
-    CoreSimulationHandler *pHandler = new CoreSimulationHandler();
-    pHandler->runCoSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
-    delete(pHandler);
+    //! @todo I am borrowing this pice of useless code for now to run remote simulation, the original code is in this block /Peter
+    //---------- Original Code START ----------
+//    CoreSimulationHandler *pHandler = new CoreSimulationHandler();
+//    pHandler->runCoSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
+//    delete(pHandler);
 
-    emit checkMessages();
+//    emit checkMessages();
+    //---------- Original Code END ----------
+
+    //---------- Peters Remote Simulation Test Code START ---------
+
+    // Save backup copy
+    if (!isSaved() && gpConfig->getAutoBackup())
+    {
+        //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
+        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    }
+
+    if(!mSimulateMutex.tryLock())
+    {
+        gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
+        return;
+    }
+
+    // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+    foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+    {
+        if(comp->getTypeName() == MODELICATYPENAME)
+        {
+            gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+            return;
+        }
+    }
+
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+    mpSimulationThreadHandler->initSimulateFinalizeRemote(mpToplevelSystem->getModelFileInfo().fileName());
+
+    //---------- Peters Remote Simulation Test Code END ---------
 }
 
 

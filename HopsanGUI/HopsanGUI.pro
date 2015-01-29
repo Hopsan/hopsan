@@ -78,6 +78,12 @@ d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 
     QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__
+
+    INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServer
+    INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServerClient
+    SOURCES += $${PWD}/../HopsanRemote/HopsanServerClient/RemoteHopsanClient.cpp
+    HEADERS += $${PWD}/../HopsanRemote/HopsanServerClient/RemoteHopsanClient.h
+
 } else {
     message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
 }
