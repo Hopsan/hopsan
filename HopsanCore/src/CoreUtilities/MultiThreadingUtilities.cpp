@@ -6,7 +6,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 
@@ -28,7 +28,7 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 {
     // Obtain number of processor cores from environment variable, or use user specified value if not zero
     size_t nThreads, nCores;
-#ifdef WIN32
+#ifdef _WIN32
     if(getenv("NUMBER_OF_PROCESSORS") != 0)
     {
         string temp = getenv("NUMBER_OF_PROCESSORS");

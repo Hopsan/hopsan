@@ -747,7 +747,7 @@ void TextBoxWidget::openFontDialog()
     qDebug()  << fi.styleHint();
     qDebug()  << fi.weight();
     QFont initialFont(fi.family(), fi.pointSize());
-#ifdef WIN32
+#ifdef _WIN32
     initialFont.setBold(fi.bold());
     initialFont.setItalic(fi.italic());
 #else

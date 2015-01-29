@@ -38,7 +38,7 @@
 
 //C++ includes
 #include <math.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 
@@ -57,7 +57,7 @@ void OptimizationWorkerParameterSweep::init()
     mNumThreads = gpConfig->getNumberOfThreads();
     if(mNumThreads == 0)
     {
-#ifdef WIN32
+#ifdef _WIN32
         std::string temp = getenv("NUMBER_OF_PROCESSORS");
         mNumThreads = atoi(temp.c_str());
 #else

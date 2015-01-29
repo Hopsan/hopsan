@@ -3559,7 +3559,7 @@ void ComponentSystem::sortComponentVectorsByMeasuredTime()
 //        //Obtain number of processor cores from environment variable, or use user specified value if not zero
 //    size_t nThreads;
 //    size_t nCores;
-//#ifdef WIN32
+//#ifdef _WIN32
 //    if(getenv("NUMBER_OF_PROCESSORS") != 0)
 //    {
 //        string temp = getenv("NUMBER_OF_PROCESSORS");

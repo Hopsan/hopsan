@@ -1306,7 +1306,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me, CoreGeneratorAccess
 //        return;
 //    }
 
-//#ifdef WIN32
+//#ifdef _WIN32
 //    QFile clBatchFile;
 //    clBatchFile.setFileName(savePath + "/compile.bat");
 //    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1528,7 +1528,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me, CoreGeneratorAccess
 //    fmuSrcLines << "}";
 //    fmuSourceFile.close();
 
-//#ifdef WIN32
+//#ifdef _WIN32
 //    //progressBar.setLabelText("Writing to compile.bat");
 //    //progressBar.setValue(6);
 
@@ -1558,7 +1558,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me, CoreGeneratorAccess
 
 
 //    //Copy binaries to export directory
-//#ifdef WIN32
+//#ifdef _WIN32
 //    QFile dllFile;
 //    QFile libFile;
 //    QFile expFile;

@@ -24,7 +24,7 @@
 #include <string.h>
 #include <iostream>
 #include <assert.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -232,7 +232,7 @@ namespace hopsan {
             {
             libdir.erase(libdir.size()-1, 1);
             }
-#ifdef WIN32
+#ifdef _WIN32
             SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies\n");
             h = LoadLibraryA(path.c_str());
 #elif linux
@@ -280,7 +280,7 @@ namespace hopsan {
             char name[BUFSIZE];
             void* fp;
             sprintf(name, "%s_%s", getModelIdentifier(mFMU.modelDescription), functionName);
-#ifdef WIN32
+#ifdef _WIN32
             fp = (void*)GetProcAddress(static_cast<HINSTANCE__*>(mFMU.dllHandle), name);
 #else
             fp = dlsym(mFMU.dllHandle, name);

@@ -604,7 +604,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
 
 //    QTextStream compileStream(&compileFile);
-#ifdef WIN32
+#ifdef _WIN32
     //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /HopsanCore/include/Component.cc /HopsanCore/include/ComponentSystem.cc /HopsanCore/include/HopsanEssentials.cc /HopsanCore/include/Node.cc /HopsanCore/include/Port.cc /HopsanCore/include/Components/Components.cc /HopsanCore/include/CoreUtilities/HmfLoader.cc /HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.cc /HopsanCore/include/CoreUtilities/LoadExternal.cc /HopsanCore/include/Nodes/Nodes.cc /HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /HopsanCore/include/ComponentUtilities/Delay.cc /HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /HopsanCore/include/ComponentUtilities/FirstOrderFilter.cc /HopsanCore/include/ComponentUtilities/Integrator.cc /HopsanCore/include/ComponentUtilities/IntegratorLimited.cc /HopsanCore/include/ComponentUtilities/ludcmp.cc /HopsanCore/include/ComponentUtilities/matrix.cc /HopsanCore/include/ComponentUtilities/SecondOrderFilter.cc /HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.cc /HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.cc /HopsanCore/include/ComponentUtilities/ValveHysteresis.cc\n";
 //    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -IHopsanCore/include -lHopsanCore "+name+".cpp\n";
 
@@ -1127,7 +1127,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
 
 
     QTextStream compileStream(&compileFile);
-#ifdef WIN32
+#ifdef _WIN32
     compileStream << "mex -DWIN32 -DSTATICCORE -L./ -I./include -I./include/boost HopsanSimulink.cpp\n";
 #else
     compileStream << "mex -L./ -Iinclude -Iinclude/boost HopsanSimulink.cpp" << endl;

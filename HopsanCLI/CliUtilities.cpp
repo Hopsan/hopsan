@@ -29,7 +29,7 @@
 #include <fstream>
 #include <cmath>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #else
 #include <windows.h>
@@ -70,7 +70,7 @@ void printColorMessage(const ColorsEnumT color, const std::string &rMessage)
 //! @todo Need yellow color also
 void setTerminalColor(const ColorsEnumT color)
 {
-#ifdef WIN32
+#ifdef _WIN32
     WORD c;
     switch (color)
     {
@@ -218,7 +218,7 @@ void splitFilePath(const std::string fullPath, std::string &rBasePath, std::stri
 size_t getNumAvailibleCores()
 {
     size_t nCores = 1; // If non-Windows system, make sure there is at least one thread
-#ifdef WIN32
+#ifdef _WIN32
     // Obtain number of processor cores from environment variable
     if(getenv("NUMBER_OF_PROCESSORS") != 0)
     {

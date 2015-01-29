@@ -31,7 +31,7 @@
 #include <sstream>
 #include <cstring>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define _WIN32_WINNT 0x0502
 #include "win32dll.h"
 #include "Windows.h"
@@ -56,7 +56,7 @@ bool LoadExternal::load(const HString &rLibpath)
     typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
     typedef void (*get_hopsan_info_t)(HopsanExternalLibInfoT *pHopsanExternalLibInfo);
 
-#ifdef WIN32
+#ifdef _WIN32
     HINSTANCE lib_ptr;
 
 //Use this for 64-bit compilation
@@ -210,7 +210,7 @@ bool LoadExternal::load(const HString &rLibpath)
     if (!isCorrectVersion)
     {
         // If wrong version free lib and return false
-#ifdef WIN32
+#ifdef _WIN32
         FreeLibrary(lib_ptr);
 #else
         dlclose(lib_ptr);
@@ -282,7 +282,7 @@ bool LoadExternal::unLoad(const HString &rLibpath)
             //! @todo we should check register status to make sure unregistered
         }
 
-#ifdef WIN32
+#ifdef _WIN32
         HINSTANCE lib_ptr = static_cast<HINSTANCE>(lelit->second.mpLib);
         FreeLibrary(lib_ptr);
         //! @todo handle error messages after close

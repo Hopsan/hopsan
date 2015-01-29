@@ -345,7 +345,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pPlottingLayout->setRowStretch(10, 1);
 
 
-#ifdef WIN32
+#ifdef _WIN32
     QLabel *pCompiler32Label = new QLabel("32-bit GCC Compiler Path:");
     mpCompiler32LineEdit = new QLineEdit(this);
     QToolButton *pCompiler32Button = new QToolButton(this);
@@ -418,7 +418,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pTabWidget->addTab(mpSimulationWidget, "Simulation");
     pTabWidget->addTab(pUnitScaleScrollArea, "Unit Scaling");
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
-#ifdef WIN32
+#ifdef _WIN32
     pTabWidget->addTab(pCompilersWidget, "Compilers");
 #endif
 

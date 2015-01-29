@@ -30,7 +30,7 @@
 #include <limits>
 #include <math.h>
 #include <complex>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -370,8 +370,12 @@ void FFT(QVector< complex<double> > &data)
     {
         if (j>i)
         {
-            swap(data[j-1].real(), data[i].real());     //Even numbers
-            swap(data[j-1].imag(), data[i].imag());         //Odd numbers
+#if __cplusplus >= 201103L
+            swap(data[j-1],  data[i]);
+#else
+            swap(data[j-1].real(), data[i].real());     // Even numbers
+            swap(data[j-1].imag(), data[i].imag());     // Odd numbers
+#endif
         }
         m = n>>1;
         while (m>=2 && j>m)
@@ -401,10 +405,17 @@ void FFT(QVector< complex<double> > &data)
                 tempr = wr*data[j].real() - wi*data[j].imag();
                 tempi = wr*data[j].imag() + wi*data[j].real();
 
+#if __cplusplus >= 201103L
+                data[j].real(data[i].real() - tempr);
+                data[j].imag(data[i].imag() - tempi);
+                data[i].real(data[i].real() + tempr);
+                data[i].imag(data[i].imag() + tempi);
+#else
                 data[j].real() = data[i].real() - tempr;
                 data[j].imag() = data[i].imag() - tempi;
                 data[i].real() += tempr;
                 data[i].imag() += tempi;
+#endif
             }
             wtemp=wr;
             wr += wr*wpr - wi*wpi;
@@ -446,7 +457,7 @@ void removeDir(QString path)
         }
         else
         {
-//#ifdef WIN32
+//#ifdef _WIN32
 //            QStringList s;
 //            s << "del "+info.absoluteFilePath();
 //            QProcess browser;

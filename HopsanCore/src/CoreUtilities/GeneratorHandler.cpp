@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 #include <stdio.h>
-#ifdef WIN32
+#ifdef _WIN32
 #define _WIN32_WINNT 0x0502
 #include "Windows.h"
 #else
@@ -30,7 +30,7 @@ GeneratorHandler::GeneratorHandler()
 {
     mLoadedSuccessfully = false;
 
-#ifdef WIN32
+#ifdef _WIN32
     HINSTANCE lib_ptr;
 #ifdef QT_NO_DEBUG
     lib_ptr = LoadLibrary("HopsanGenerator.dll"); //Load the dll
@@ -220,7 +220,7 @@ GeneratorHandler::GeneratorHandler()
 
 GeneratorHandler::~GeneratorHandler()
 {
-#ifdef WIN32
+#ifdef _WIN32
     FreeLibrary(lib_ptr);
 #else
     dlclose(lib_ptr);

@@ -423,7 +423,7 @@ void LogDataHandler::importFromPlo(QString importFilePath)
             // Else check for data header info
             else if(lineNum == 5)//(line.startsWith("'Time"))
             {
-                if ( (ploVersion == 1) && (line.startsWith("'"TIMEVARIABLENAME) || line.startsWith("'"FREQUENCYVARIABLENAME)) )
+                if ( (ploVersion == 1) && (line.startsWith("'" TIMEVARIABLENAME) || line.startsWith("'" FREQUENCYVARIABLENAME)) )
                 {
                     // We add one to include "time or frequency x column"
                     nDataColumns+=1;

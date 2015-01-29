@@ -18,7 +18,7 @@ QT += svg xml
 QT += core gui network
 
 isEqual(QT_MAJOR_VERSION, 5){
-    QT += widgets webkitwidgets multimedia
+    QT += widgets webkitwidgets multimedia printsupport
 } else {
     QT += webkit
 }
@@ -77,7 +77,7 @@ d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
     INCLUDEPATH *= $$magic_hopsan_includepath
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 
-    QMAKE_CXXFLAGS *= -std=c++11
+    QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__
 } else {
     message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
 }

@@ -16,7 +16,7 @@
 #ifndef GENERATORHANDLER_H
 #define GENERATORHANDLER_H
 
-#ifdef WIN32
+#ifdef _WIN32
 #define _WIN32_WINNT 0x0502
 #include "Windows.h"
 #else
@@ -61,7 +61,7 @@ public:
 private:
     bool mLoadedSuccessfully;
 
-#ifdef WIN32
+#ifdef _WIN32
     HINSTANCE lib_ptr;
 #else
     void* lib_ptr;

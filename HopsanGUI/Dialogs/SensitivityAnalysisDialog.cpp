@@ -45,7 +45,7 @@
 #include "PlotCurve.h"
 #include "MessageHandler.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h> //Needed for sysctl
 #endif
 
@@ -498,7 +498,7 @@ void SensitivityAnalysisDialog::run()
     int nThreads = gpConfig->getNumberOfThreads();
     if(nThreads == 0)
     {
-#ifdef WIN32
+#ifdef _WIN32
         std::string temp = getenv("NUMBER_OF_PROCESSORS");
         nThreads = atoi(temp.c_str());
 #else

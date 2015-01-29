@@ -22,10 +22,10 @@
 //!
 //$Id$
 
-#ifndef WIN32DLL_H_INCLUDED
+#ifndef _WIN32DLL_H_INCLUDED
 #define WIN32DLL_H_INCLUDED
 
-#ifdef WIN32
+#ifdef _WIN32
 
 //! Specifies that a function or class will only be exported on windows platforms
 #define DLLEXPORT __declspec(dllexport)

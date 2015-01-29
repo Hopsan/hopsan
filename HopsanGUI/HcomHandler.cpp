@@ -51,7 +51,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "SymHop.h"
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 
@@ -2285,7 +2285,7 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
         QStringList output;
         if(cmd.isEmpty())
         {
-            getMatchingLogVariableNames("*"GENERATIONSPECIFIERSTR"H", output);
+            getMatchingLogVariableNames("*" GENERATIONSPECIFIERSTR "H", output);
         }
         else
         {
@@ -3241,7 +3241,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     // Handle special case where we want to export a specific generation only
     // Example: *.g (g=15, g=l, g=h)
     QString specialCase = splitCmdMajor.last();
-    if ( (splitCmdMajor.size() == 2) && specialCase.startsWith("*"GENERATIONSPECIFIERSTR) )
+    if ( (splitCmdMajor.size() == 2) && specialCase.startsWith("*" GENERATIONSPECIFIERSTR) )
     {
         bool parseOK;
         int g=parseAndChopGenerationSpecifier(specialCase, parseOK);
@@ -4155,7 +4155,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             int nThreads = gpConfig->getNumberOfThreads();
             if(nThreads == 0)
             {
-        #ifdef WIN32
+        #ifdef _WIN32
                 std::string temp = getenv("NUMBER_OF_PROCESSORS");
                 nThreads = atoi(temp.c_str());
         #else
@@ -6603,7 +6603,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             QList<int> gens = variables[d]->getGenerations();
             for (int g=0; g<gens.size(); ++g)
             {
-                QString name2 = QString("%1"GENERATIONSPECIFIERSTR"%2").arg(name).arg(gens[g]+1);
+                QString name2 = QString("%1" GENERATIONSPECIFIERSTR "%2").arg(name).arg(gens[g]+1);
                 rVariables.append(name2);
             }
         }

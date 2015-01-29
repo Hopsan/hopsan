@@ -20,7 +20,7 @@
 #include "MessageUtilities.h"
 #include "global.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 //#include <strsafe.h>
 #include <tchar.h>
 #else
@@ -30,7 +30,7 @@
 
 using namespace std;
 
-#ifdef WIN32
+#ifdef _WIN32
 map<int, PROCESS_INFORMATION> workerMap;
 #else
 map<int, pid_t> workerMap;
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
                     uid = rand();
                 }
 
-#ifdef WIN32
+#ifdef _WIN32
                 PROCESS_INFORMATION processInformation;
                 STARTUPINFO startupInfo;
                 memset(&processInformation, 0, sizeof(processInformation));
@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
             {
                 sendServerAck(socket);
 
-#ifdef WIN32
+#ifdef _WIN32
                 PROCESS_INFORMATION pi = it->second;
                 WaitForSingleObject( pi.hProcess, INFINITE );
                 CloseHandle( pi.hProcess );

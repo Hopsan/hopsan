@@ -37,7 +37,7 @@
 
 #include <cassert>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -58,7 +58,7 @@ using namespace hopsan;
 
 HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath, const bool showDialog)
 {
-#ifdef WIN32
+#ifdef _WIN32
     mOutputPath = "C:/HopsanGeneratorTempFiles/output/";
     mTempPath = "C:/HopsanGeneratorTempFiles/temp/";
 #else
@@ -111,7 +111,7 @@ void HopsanGenerator::printMessage(const QString &msg) const
         mpTextEdit->setTextColor(QColor("Black"));
         mpTextEdit->append(msg);
         QApplication::processEvents();
-#ifdef WIN32
+#ifdef _WIN32
         Sleep(10);
 #else
         usleep(10000);
@@ -131,7 +131,7 @@ void HopsanGenerator::printWarningMessage(const QString &msg) const
         mpTextEdit->setTextColor(QColor("Orange"));
         mpTextEdit->append(msg);
         QApplication::processEvents();
-#ifdef WIN32
+#ifdef _WIN32
         Sleep(10);
 #else
         usleep(10000);
@@ -151,7 +151,7 @@ void HopsanGenerator::printErrorMessage(const QString &msg) const
         mpTextEdit->setTextColor(QColor("Red"));
         mpTextEdit->append(msg);
         QApplication::processEvents();
-#ifdef WIN32
+#ifdef _WIN32
         Sleep(10);
 #else
         usleep(10000);
@@ -739,7 +739,7 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     }
 
     QString libFileName = outputFile;
-#ifdef WIN32
+#ifdef _WIN32
     libFileName.append(".dll");
 #else
     libFileName.append(".so");

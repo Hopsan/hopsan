@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 //! @brief Returns the date and time when the HopsanGUI application was built
 const char* getHopsanGUIBuildTime()
 {
-    return __DATE__" "__TIME__;
+    return __DATE__ " " __TIME__;
 }
 
 

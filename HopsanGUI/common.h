@@ -53,7 +53,7 @@
 #define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
 #define HOPSANGUISCOPECOMPONENTTYPENAME "SignalSink"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define LIBEXT ".dll"
 #define LIBPREFIX ""
 #else

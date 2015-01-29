@@ -38,7 +38,7 @@
 
 #include <cassert>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -313,7 +313,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 bool compile(QString path, QString gccPath, QString o, QString c, QString i, QString l, QString flags, QString &output)
 {
     //Create compilation script file
-#ifdef WIN32
+#ifdef _WIN32
     QFile clBatchFile;
     clBatchFile.setFileName(path + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -328,7 +328,7 @@ bool compile(QString path, QString gccPath, QString o, QString c, QString i, QSt
 #endif
 
     //Call compilation script file
-#ifdef WIN32
+#ifdef _WIN32
     QProcess gccProcess;
     gccProcess.setWorkingDirectory(path);
     gccProcess.start("cmd.exe", QStringList() << "/c" << "compile.bat");
@@ -378,7 +378,7 @@ bool compile(QString path, QString gccPath, QString o, QString c, QString i, QSt
 #endif
 
     QDir targetDir(path);
-#ifdef WIN32
+#ifdef _WIN32
 
     if(!targetDir.exists(o + ".dll") || !gccErrorList.isEmpty())
     {

@@ -1045,7 +1045,7 @@ QPalette Configuration::getPalette() const
 QFont Configuration::getFont() const
 {
     //! @note Embedded truetype fonts does not seem to work in Linux, so ignore them
-#ifdef WIN32
+#ifdef _WIN32
     return mFont;
 #else
     return qApp->font();

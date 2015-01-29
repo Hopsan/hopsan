@@ -7,7 +7,7 @@
 #include <assert.h>
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-#ifdef WIN32
+#ifdef _WIN32
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
 #define LIBEXT ".dll"
 #else

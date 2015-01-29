@@ -586,7 +586,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 //    {
 //        QDir zipDir;
 //        zipDir = QDir::cleanPath(mExecPath + "../ThirdParty/7z");
-//    #ifdef WIN32
+//    #ifdef _WIN32
 //        QStringList arguments;
 //        arguments << "x" << sourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path()+"/HopsanCore" << "-aoa" << "-phopsanhejsan";
 //        callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());
@@ -609,7 +609,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     {
         QDir zipDir;
         zipDir = QDir::cleanPath(mBinPath + "../ThirdParty/7z");
-    #ifdef WIN32
+    #ifdef _WIN32
         QStringList arguments;
         arguments << "x" << componentsSourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path() << "-aoa" << "-phopsanhejsan";
         callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());

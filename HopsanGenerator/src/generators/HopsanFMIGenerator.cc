@@ -15,7 +15,7 @@
 #include <FMI2/fmi2_import.h>
 #include <JM/jm_portability.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -957,7 +957,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
         return;
     }
 
-#ifdef WIN32
+#ifdef _WIN32
     QFile clBatchFile;
     clBatchFile.setFileName(savePath + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1307,7 +1307,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     if(!replaceInFile(savePath+"/HopsanFMU.h", before, after))
         return;
 
-#ifdef WIN32
+#ifdef _WIN32
     printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
     QTextStream clBatchStream(&clBatchFile);
@@ -1338,7 +1338,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     printMessage("Sorting files...");
 
-#ifdef WIN32
+#ifdef _WIN32
     if(x64)
     {
         saveDir.mkpath("fmu/binaries/win64");
@@ -1375,7 +1375,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     printMessage("Compressing files...");
 
-#ifdef WIN32
+#ifdef _WIN32
     QString program = mBinPath + "../ThirdParty/7z/7z";
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");

@@ -33,7 +33,7 @@
 
 //C++ includes
 #include <limits>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 

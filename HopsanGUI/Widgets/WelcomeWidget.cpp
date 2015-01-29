@@ -271,7 +271,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewsFrame->setLayout(pNewsLayout);
 
     QMenu *pNewVersionMenu = new QMenu(this);
-#ifdef WIN32
+#ifdef _WIN32
     QAction *pAutoUpdateAction = new QAction("Launch Auto Updater", this);
     pNewVersionMenu->addAction(pAutoUpdateAction);
     connect(pAutoUpdateAction, SIGNAL(triggered()), this, SLOT(launchAutoUpdate()));

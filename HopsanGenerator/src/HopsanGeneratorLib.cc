@@ -173,7 +173,7 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
     i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/src/ZIP/include/");
     i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default/");
     i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/install/include/");
-#ifdef WIN32
+#ifdef _WIN32
     QString l = "-L"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1 -llibfmilib_shared";
 #else
     QString l = "-L"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1 -lfmilib_shared";  //Remove extra "lib" prefix in Linux

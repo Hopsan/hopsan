@@ -26,7 +26,7 @@
 #ifndef HOPSANGENERAETOR_H
 #define HOPSANGENERAETOR_H
 
-#ifdef WIN32
+#ifdef _WIN32
 #define LIBEXT ".dll"
 #define LIBPREFIX ""
 #else
