@@ -541,6 +541,46 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
                         ++idx;
                     }
+                    else if(portType == "hydraulicq")
+                    {
+                        portTypes.append(portType);
+                        portNames.append("P"+QString::number(idx));
+                        portVars.append("mpP"+QString::number(idx));
+
+                        portVarNames.append(QStringList());
+                        portVarVars.append(QStringList());
+                        portVarRefs.append(QStringList());
+
+                        QStringList outputs = QStringList() << "p" << "q";
+                        QStringList inputs = QStringList() << "c" << "Zc";
+
+                        QString name;
+                        foreach(const QString &output, outputs)
+                        {
+                            name = portElement.firstChildElement(output).text();
+                            portVarNames.last().append(name);
+                            portVarVars.last().append(portVars.last()+"_"+name);
+                            portVarRefs.last().append(outputRefs.at(outputNames.indexOf(name)));
+
+                            outputVars.removeAt(outputNames.indexOf(name));
+                            outputRefs.removeAt(outputNames.indexOf(name));
+                            outputNames.removeAll(name);
+
+                        }
+                        foreach(const QString &input, inputs)
+                        {
+                            name = portElement.firstChildElement(input).text();
+                            portVarNames.last().append(name);
+                            portVarVars.last().append(portVars.last()+"_"+name);
+                            portVarRefs.last().append(inputRefs.at(inputNames.indexOf(name)));
+
+                            inputVars.removeAt(inputNames.indexOf(name));
+                            inputRefs.removeAt(inputNames.indexOf(name));
+                            inputNames.removeAll(name);
+                        }
+
+                        ++idx;
+                    }
                     else
                     {
                         printErrorMessage("Unknown port type: "+portType+", ignored.");
@@ -691,6 +731,10 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         {
             nodeType = "NodeMechanic";
         }
+        else if(portTypes.at(i) == "hydraulicq")
+        {
+            nodeType = "NodeHydraulic";
+        }
         addPorts.append(portVars.at(i)+"= addPowerPort(\""+portNames.at(i)+"\",\""+nodeType+"\");\n");
     }
 
@@ -710,6 +754,14 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
             setNodeDataPointers.append(portVarVars.at(i).at(3)+" = getSafeNodeDataPtr("+port+", NodeMechanic::EquivalentMass);\n");
             setNodeDataPointers.append(portVarVars.at(i).at(4)+" = getSafeNodeDataPtr("+port+", NodeMechanic::WaveVariable);\n");
             setNodeDataPointers.append(portVarVars.at(i).at(5)+" = getSafeNodeDataPtr("+port+", NodeMechanic::CharImpedance);\n");
+        }
+        else if(portTypes.at(i) == "hydraulicq")
+        {
+            QString port = portVars.at(i);
+            setNodeDataPointers.append(portVarVars.at(i).at(0)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::Pressure);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(1)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::Flow);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(2)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::WaveVariable);\n");
+            setNodeDataPointers.append(portVarVars.at(i).at(3)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::CharImpedance);\n");
         }
     }
 
@@ -740,6 +792,10 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         {
             nOutputs = 4;
         }
+        else if(portTypes.at(i) == "hydraulicq")
+        {
+            nOutputs = 2;
+        }
         for(int j=nOutputs; j<portVarRefs.at(i).size(); ++j)
         {
             tempVar = temp;
@@ -765,6 +821,10 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         if(portTypes.at(i) == "mechanicq")
         {
             nOutputs = 4;
+        }
+        else if(portTypes.at(i) == "hydraulicq")
+        {
+            nOutputs = 2;
         }
         for(int j=0; j<nOutputs; ++j)
         {
