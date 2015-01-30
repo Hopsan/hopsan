@@ -775,7 +775,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
                 if(mArguments[0].evaluate(variables, functions, &ok1) >= 0.0)
                     retval = 1.0;
                 else
-                    retval = 0.0;
+                    retval = -1.0;
             }
             else if(variables.contains(this->toString()))
             {
