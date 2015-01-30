@@ -1024,6 +1024,91 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
     tictoc.toc("Collect plot data");
 }
 
+void LogDataHandler::collectLogDataFromRemoteModel(std::vector<string> &rNames, std::vector<double> &rData, bool overWriteLastGeneration)
+{
+    TicToc tictoc;
+    if(!overWriteLastGeneration)
+    {
+        ++mGenerationNumber;
+    }
+
+    if(rData.size() == 0)
+    {
+        return;         //Don't collect plot data if logging is disabled (to avoid empty generations)
+    }
+
+
+    bool foundData = false;
+
+    std::vector<double> *pCoreSysTimeVector=0, *pPrevInsertedCoreVarTimeVector=0;
+    SharedVectorVariableT pSysTimeVec, pVarTimeVec;
+
+    //! @todo why not run multiappend when overwriting generation ? Because then we are not appending, need some common open mode
+    if(!overWriteLastGeneration)
+    {
+        this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
+    }
+    // Iterate over variables
+    for(int v=0; v<rNames.size(); ++v)
+    {
+        QString name = QString::fromStdString((rNames[v]));
+        QStringList nsplit = name.split('#');
+        if (nsplit.size() == 3)
+        {
+            foundData=true;
+            SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
+            pVarDesc->mModelPath = "UNKNOWN";
+            pVarDesc->mComponentName = nsplit.first();
+            pVarDesc->mPortName = nsplit[1];
+            pVarDesc->mDataName = nsplit.last();
+            pVarDesc->mDataUnit = "UNKOWN";
+            pVarDesc->mDataDescription = "UNKOWN";
+            pVarDesc->mAliasName  = "";
+            pVarDesc->mVariableSourceType = ModelVariableType;
+
+            long int nElements = rData.size() / rNames.size();
+            qDebug() << "nElements: " << nElements;
+
+            QVector<double> newData;
+            newData.reserve(nElements);
+            for (int i=nElements*v; i<nElements*(v+1); ++i)
+            {
+                newData.push_back(rData[i]);
+            }
+            SharedVectorVariableT pNewData = insertTimeDomainVariable(SharedVectorVariableT(), newData, pVarDesc);
+
+
+        }
+        else
+        {
+            qDebug() << "Something is wrong in collectLogDataFromRemoteModel";
+        }
+
+
+    }
+
+    if(!overWriteLastGeneration)
+    {
+        this->getGenerationMultiCache(mGenerationNumber)->endMultiAppend();
+    }
+
+    // Limit number of plot generations if there are too many
+    limitPlotGenerations();
+
+    // Increment generation counter
+    if (foundData)
+    {
+        emit dataAdded();
+        emit dataAddedFromModel(true);
+    }
+    else if (!overWriteLastGeneration)
+    {
+        // Revert generation number if no data was found, and we were not overwriting this generation
+        --mGenerationNumber;
+    }
+    tictoc.toc("Collect plot data");
+}
+
 void LogDataHandler::exportGenerationToPlo(const QString &rFilePath, const int gen, const int version) const
 {
     QList<HopsanVariable> vars = getAllNonAliasVariablesAtGeneration(gen);

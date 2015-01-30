@@ -76,6 +76,10 @@
 #define CFG_GCC32DIR "gcc32dir"
 #define CFG_GCC64DIR "gcc64dir"
 
+#define CFG_REMOTEHOPSANADDRESS "remotehopsanaddress"
+#define CFG_REMOTEHOPSANDISPATCHADDRESS "remotehopsandispatchaddress"
+#define CFG_USEREMOTEDISPATCH "useremotehopsandispatch"
+
 #define CFG_PENSTYLE "penstyle"
 #define CFG_TYPE "type"
 #define CFG_GFXTYPE "gfxtype"
@@ -264,6 +268,14 @@ public:
 
     void setParallelAlgorithm(int value);
 
+    QString getRemoteHopsanAddress() const;
+    void setRemoteHopsanAddress(QString addr);
+    QString getRemoteHopsanDispatchAddress() const;
+    void setRemoteHopsanDispatchAddress(QString addr);
+    bool getUseRemoteHopsanDispatch() const;
+    void setUseRemoteHopsanDispatch(bool tf);
+
+
 private:
     void loadUserSettings(QDomElement &rDomElement);
     void loadStyleSettings(QDomElement &rDomElement);
@@ -339,6 +351,10 @@ private:
     QSizeF mPlotGfxSize;
     bool mPlotGfxKeepAspect;
     bool mPlotGfxUseScreenSize;
+
+    QString mRemoteHopsanAddress;
+    QString mRemoteHopsanDispatchAddress;
+    bool mUseRemoteHopsanDispatch;
 
     int mParallelAlgorighm;
 

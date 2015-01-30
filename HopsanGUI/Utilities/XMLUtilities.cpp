@@ -706,3 +706,17 @@ QDomComment appendComment(QDomElement &rDomElement, const QString &rComment)
     rDomElement.appendChild(xmlcomment);
     return xmlcomment;
 }
+
+//! @brief Function that parses one DOM elements containing one text node
+//! @param[in] domElement The DOM Element to parse
+//! @param[in] rDefaultVal The default value to use if DOM element is null
+//! @returns The extracted value
+QString parseDomStringNode(QDomElement domElement, const QString &rDefaultValue)
+{
+    if ( !domElement.isNull() )
+    {
+        return domElement.text();
+    }
+    // If dom was null we return the default value
+    return rDefaultValue;
+}

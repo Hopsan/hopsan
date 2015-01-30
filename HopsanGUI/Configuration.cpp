@@ -104,6 +104,9 @@ void Configuration::saveToXml()
     appendDomValueNode2(settings, CFG_PLOTGFXSIZE, mPlotGfxSize.width(), mPlotGfxSize.height());
     appendDomBooleanNode(settings, CFG_PLOTGFXKEEPASPECT, mPlotGfxKeepAspect);
     appendDomBooleanNode(settings, CFG_PLOTGFXUSESCREENSIZE, mPlotGfxUseScreenSize);
+    appendDomTextNode(settings, CFG_REMOTEHOPSANADDRESS, mRemoteHopsanAddress);
+    appendDomTextNode(settings, CFG_REMOTEHOPSANADDRESS, mRemoteHopsanAddress);
+    appendDomBooleanNode(settings, CFG_USEREMOTEDISPATCH, mUseRemoteHopsanDispatch);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -487,6 +490,10 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mGcc32Dir = rDomElement.firstChildElement(CFG_GCC32DIR).text();
     if(!rDomElement.firstChildElement(CFG_GCC64DIR).isNull())
         mGcc64Dir = rDomElement.firstChildElement(CFG_GCC64DIR).text();
+
+    mRemoteHopsanAddress = parseDomStringNode(rDomElement.firstChildElement(CFG_REMOTEHOPSANADDRESS), mRemoteHopsanAddress);
+    mRemoteHopsanDispatchAddress = parseDomStringNode(rDomElement.firstChildElement(CFG_REMOTEHOPSANDISPATCHADDRESS), mRemoteHopsanDispatchAddress);
+    mUseRemoteHopsanDispatch = parseDomBooleanNode(rDomElement.firstChildElement(CFG_USEREMOTEDISPATCH), mUseRemoteHopsanDispatch);
 }
 
 
@@ -1722,4 +1729,34 @@ void Configuration::setPlotGfxUseScreenSize(bool value)
 void Configuration::setParallelAlgorithm(int value)
 {
     mParallelAlgorighm = value;
+}
+
+QString Configuration::getRemoteHopsanAddress() const
+{
+    return mRemoteHopsanAddress;
+}
+
+void Configuration::setRemoteHopsanAddress(QString addr)
+{
+    mRemoteHopsanAddress = addr;
+}
+
+QString Configuration::getRemoteHopsanDispatchAddress() const
+{
+    return mRemoteHopsanDispatchAddress;
+}
+
+void Configuration::setRemoteHopsanDispatchAddress(QString addr)
+{
+    mRemoteHopsanDispatchAddress = addr;
+}
+
+bool Configuration::getUseRemoteHopsanDispatch() const
+{
+    return mUseRemoteHopsanDispatch;
+}
+
+void Configuration::setUseRemoteHopsanDispatch(bool tf)
+{
+    mUseRemoteHopsanDispatch = tf;
 }

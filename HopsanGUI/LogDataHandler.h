@@ -51,6 +51,7 @@ public:
     void setParentContainerObject(ContainerObject *pParent);
 
     void collectLogDataFromModel(bool overWriteLastGeneration=false);
+    void collectLogDataFromRemoteModel(std::vector<std::string> &rNames, std::vector<double> &rData, bool overWriteLastGeneration=false);
     void importFromPlo(QString importFilePath=QString());
     void importFromCSV_AutoFormat(QString importFilePath=QString());
     void importHopsanRowCSV(QString importFilePath=QString());

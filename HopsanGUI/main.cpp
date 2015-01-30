@@ -51,6 +51,7 @@ GUIMessageHandler *gpMessageHandler = 0;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    qRegisterMetaType<GUIMessage>("GUIMessage");
 
 #ifdef USETBB
     qDebug() << "TBB is used!";

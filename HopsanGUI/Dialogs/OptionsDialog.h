@@ -86,6 +86,10 @@ private:
     QLabel *mpCompiler32WarningLabel;
     QLabel *mpCompiler64WarningLabel;
 
+    QLineEdit *mpRemoteHopsanAddress;
+    QLineEdit *mpRemoteHopsanDispatchAddress;
+    QCheckBox *mpUseRemoteHopsanDispatch;
+
     QWidget *mpPlottingWidget;
     QSpinBox *mpGenerationLimitSpinBox;
     QCheckBox *mpAutoLimitGenerationsCheckBox;

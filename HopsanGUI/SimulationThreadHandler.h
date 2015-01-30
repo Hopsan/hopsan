@@ -31,7 +31,6 @@
 
 // Forward Declaration
 class SystemContainer;
-//class LocalSimulationWorkerObjectbject;
 class GUIMessageHandler;
 
 enum SimulationWorkeObjectEnumT {LocalSWO, RemoteSWO};
@@ -46,8 +45,10 @@ protected:
     double mLogStartTime;
     unsigned int mnLogSamples;
     bool mNoChanges;
+    GUIMessageHandler *mpMessageHandler;
 
 public:
+    void setMessageHandler(GUIMessageHandler *pMessageHandler);
     void connectProgressDialog(QProgressDialog *pProgressDialog);
     virtual int swoType() const = 0;
 
@@ -82,8 +83,10 @@ class RemoteSimulationWorkerObject : public SimulationWorkerObjectBase
     Q_OBJECT
 private:
     QString mHmfModel;
+    std::vector<std::string> *mpLogDataNames;
+    std::vector<double> *mpLogData;
 public:
-    RemoteSimulationWorkerObject(QString hmfModel, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
+    RemoteSimulationWorkerObject(QString hmfModel, std::vector<std::string> &rLogNames, std::vector<double> &rLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     int swoType() const {return RemoteSWO;}
 
 public slots:
@@ -151,7 +154,7 @@ public:
     void setSimulationTimeVariables(const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     void setProgressDilaogBehaviour(bool enabled, bool modal);
     void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
-    void initSimulateFinalizeRemote(QString modelPath);
+    void initSimulateFinalizeRemote(QString modelPath, std::vector<std::string> &rLogNames, std::vector<double> &rLogData);
     void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();

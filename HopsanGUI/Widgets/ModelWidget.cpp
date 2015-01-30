@@ -417,9 +417,17 @@ void ModelWidget::startCoSimulation()
         }
     }
 
+    disconnect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
+    std::vector<string> logNames; std::vector<double> logData;
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-    mpSimulationThreadHandler->initSimulateFinalizeRemote(mpToplevelSystem->getModelFileInfo().fileName());
+    mpSimulationThreadHandler->initSimulateFinalizeRemote(mpToplevelSystem->getModelFileInfo().absoluteFilePath(), logNames, logData);
+
+    mpToplevelSystem->getLogDataHandler()->collectLogDataFromRemoteModel(logNames,logData);
+
+
+
+    connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
 
     //---------- Peters Remote Simulation Test Code END ---------
 }

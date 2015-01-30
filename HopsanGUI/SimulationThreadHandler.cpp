@@ -30,6 +30,14 @@
 #include "global.h"
 #include "GUIObjects/GUISystem.h"
 
+void printRemoteCoreMessages(GUIMessageHandler *pMessageHandler, QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages)
+{
+    for (int i=0; i<rMessages.size(); ++i)
+    {
+       pMessageHandler->addMessageFromCore(rTypes[i], rTags[i], rMessages[i]);
+    }
+}
+
 LocalSimulationWorkerObject::LocalSimulationWorkerObject(QVector<SystemContainer *> vpSystems, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples, const bool noChanges)
 {
     mvpSystems = vpSystems;
@@ -38,6 +46,7 @@ LocalSimulationWorkerObject::LocalSimulationWorkerObject(QVector<SystemContainer
     mLogStartTime = logStartTime;
     mnLogSamples = nLogSamples;
     mNoChanges = noChanges;
+    mpMessageHandler = gpMessageHandler;
 }
 
 void LocalSimulationWorkerObject::initSimulateFinalize()
@@ -92,7 +101,7 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(QString hmfModel, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
+RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(QString hmfModel, std::vector<string> &rLogNames, std::vector<double> &rLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
     mHmfModel = hmfModel;
     mStartTime = startTime;
@@ -100,15 +109,22 @@ RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(QString hmfModel, con
     mLogStartTime = logStartTime;
     mnLogSamples = nLogSamples;
     mNoChanges = false;
+    mpMessageHandler = gpMessageHandler;
+    mpLogDataNames = &rLogNames;
+    mpLogData = &rLogData;
 }
 
 void RemoteSimulationWorkerObject::initSimulateFinalize()
 {
 #ifdef USEZMQ
     QTime timer;
-    bool connectSuccess, modelSuccess, initSuccess, simulateSuccess;
+    bool connectSuccess=false, modelSuccess=false, initSuccess=false, simulateSuccess=false;
     RemoteCoreSimulationHandler rcsh;
-    rcsh.setHopsanServer("localhost", "23300"); //!< @todo get from config);
+    QStringList addr_port = gpConfig->getRemoteHopsanAddress().split(":");
+    if (addr_port.size() == 2)
+    {
+        rcsh.setHopsanServer(addr_port.first(), addr_port.last());
+    }
 
     // Initializing
     emit setProgressBarText(tr("Connecting..."));
@@ -126,50 +142,34 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
             emit setProgressBarText(tr("Simulating..."));
             timer.start();
             simulateSuccess = rcsh.simulateModel();
+
             emit simulateDone(simulateSuccess, timer.elapsed());
             emit finalizeDone(true, 0);
-            return;
-
-//            if (simulateSuccess)
-//            {
-//                // Simulating
-//                emit setProgressBarText(tr("Simulating..."));
-//                emit setProgressBarRange(0,100);
-
-//                // Check if we should simulate multiple systems at the same time using multicore
-//                if ((coreSystemAccessVector.size() > 1) && (gpConfig->getUseMulticore()))
-//                {
-//                    simulateSuccess = rcsh.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
-//                }
-//                else if (gpConfig->getUseMulticore())
-//                {
-//                    // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
-//                    timer.start();
-//                    simulateSuccess = rcsh.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
-//                }
-//                else
-//                {
-//                    timer.start();
-//                    simulateSuccess = rcsh.simulate(mStartTime, mStopTime, -1, coreSystemAccessVector, mNoChanges);
-//                }
-
-
-//            }
-
-//            // Finalizing
-//            emit setProgressBarText(tr("Finalizing..."));
-//            emit setProgressBarRange(0,0);
-//            timer.start();
-//            rcsh.finalize(coreSystemAccessVector);
-//            emit finalizeDone(true, timer.elapsed());
         }
         else
         {
             emit initDone(false, timer.elapsed());
         }
+        QVector<QString> types,tags,messages;
+        rcsh.getCoreMessages(types, tags, messages);
+        printRemoteCoreMessages(mpMessageHandler, types, tags, messages);
+        //! @todo should open a separate window with remote messages
+
+        if (simulateSuccess)
+        {
+            // Collect data
+            rcsh.getLogData(mpLogDataNames, mpLogData);
+
+            return;
+        }
     }
 #endif
     emit finalizeDone(false, 0);
+}
+
+void SimulationWorkerObjectBase::setMessageHandler(GUIMessageHandler *pMessageHandler)
+{
+     mpMessageHandler = pMessageHandler;
 }
 
 void SimulationWorkerObjectBase::connectProgressDialog(QProgressDialog *pProgressDialog)
@@ -260,10 +260,11 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
     initSimulateFinalize(vpSystems, noChanges);
 }
 
-void SimulationThreadHandler::initSimulateFinalizeRemote(QString modelPath)
+void SimulationThreadHandler::initSimulateFinalizeRemote(QString modelPath, std::vector<string> &rLogNames, std::vector<double> &rLogData)
 {
     mvpSystems.clear();
-    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(modelPath, mStartT, mStopT, mLogStartTime, mnLogSamples);
+    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(modelPath, rLogNames, rLogData, mStartT, mStopT, mLogStartTime, mnLogSamples);
+    mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }
 

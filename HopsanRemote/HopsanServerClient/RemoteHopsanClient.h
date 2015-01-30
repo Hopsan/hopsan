@@ -13,13 +13,13 @@ class RemoteHopsanClient
 public:
     RemoteHopsanClient(zmq::context_t &rContext) : mRSCSocket(rContext, ZMQ_REQ), mRWCSocket(rContext, ZMQ_REQ) {}
 
-    void connectToServer(std::string zmqaddres);
-    void connectToServer(std::string ip, std::string port);
+    bool connectToServer(std::string zmqaddres);
+    bool connectToServer(std::string ip, std::string port);
     bool serverConnected();
     bool requestSlot(size_t &rControlPort);
 
-    void connectToWorker(std::string zmqaddres);
-    void connectToWorker(std::string ip, std::string port);
+    bool connectToWorker(std::string zmqaddres);
+    bool connectToWorker(std::string ip, std::string port);
     bool workerConnected();
 
     void disconnect();
@@ -30,7 +30,7 @@ public:
     bool sendModelMessage(const std::string &rModel);
     bool sendSimulateMessage(const int nLogsamples, const int logStartTime, const int simStarttime, const int simSteptime, const int simStoptime);
 
-    bool requestSimulationResults(std::vector<std::string> &rDataNames, std::vector<double> &rData);
+    bool requestSimulationResults(std::vector<std::string> *pDataNames, std::vector<double> *pData);
     bool requestMessages();
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
 
@@ -38,6 +38,8 @@ public:
 
 private:
     std::string mLastErrorMessage;
+    std::string mServerAddress;
+    std::string mWorkerAddress;
     zmq::socket_t mRSCSocket; //!< The Remote Server Control Socket
     zmq::socket_t mRWCSocket; //!< The Remote Worker Control Socket
 

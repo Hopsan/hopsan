@@ -37,6 +37,8 @@ enum MessageTypeEnumT {Info, Warning, Error, Fatal, Debug, UndefinedMessageType}
 class GUIMessage
 {
 public:
+    GUIMessage() {}
+    GUIMessage(const GUIMessage &rOther);
     GUIMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type, bool doTimeStamp=true);
     QString getMessageTypeAsString() const;
 
@@ -61,6 +63,7 @@ public:
 
 public slots:
     void collectHopsanCoreMessages();
+    void addMessageFromCore(QString &rType, QString &rTag, QString &rMessage);
     void addInfoMessage(QString message, QString tag=QString(), bool doTimeStamp=true);
     void addWarningMessage(QString message, QString tag=QString(), bool doTimeStamp=true);
     void addErrorMessage(QString message, QString tag=QString(), bool doTimeStamp=true);

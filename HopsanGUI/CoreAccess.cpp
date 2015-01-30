@@ -1514,7 +1514,7 @@ bool RemoteCoreSimulationHandler::simulateModel()
     return gRHC.sendSimulateMessage(-1, -1, -1, -1, -1);
 }
 
-bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTags, QVector<QString> &rTypes, QVector<QString> &rMessages, bool includeDebug)
+bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug)
 {
     std::vector<char> types;
     std::vector<string> tags, messages;
@@ -1559,8 +1559,8 @@ bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTags, QVect
                 }
             }
 
-            rTags[m].fromStdString(tags[m]);
-            rMessages[m].fromStdString(messages[m]);
+            rTags[m] = QString::fromStdString(tags[m]);
+            rMessages[m] = QString::fromStdString(messages[m]);
         }
         return true;
     }
@@ -1568,13 +1568,9 @@ bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTags, QVect
     return false;
 }
 
-bool RemoteCoreSimulationHandler::getLogData(int &rNum)
+bool RemoteCoreSimulationHandler::getLogData(std::vector<std::string> *pNames, std::vector<double> *pData)
 {
-    std::vector<string> names;
-    std::vector<double> data;
-    bool rc = gRHC.requestSimulationResults(names, data);
-    rNum = names.size();
-    return rc;
+    return gRHC.requestSimulationResults(pNames, pData);
 }
 
 QString RemoteCoreSimulationHandler::getLastError() const

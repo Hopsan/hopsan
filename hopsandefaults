@@ -29,6 +29,9 @@
         <plotgfxusescreensize>false</plotgfxusescreensize>
         <setpwdtomwd>false</setpwdtomwd>
         <plotwindowsontop>true</plotwindowsontop>
+		<remotehopsanaddress>localhost:23300</remotehopsanaddress>
+		<remotehopsandispatchaddress>localhost:23200</remotehopsandispatchaddress>
+		<useremotehopsandispatch>false</useremotehopsandispatch>
     </settings>
     <style>
         <penstyle width="1" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="Iso"/>

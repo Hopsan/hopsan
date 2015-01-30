@@ -64,26 +64,39 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket)
 
 
 
-void RemoteHopsanClient::connectToServer(std::string zmqaddres)
+bool RemoteHopsanClient::connectToServer(std::string zmqaddres)
 {
-    try
+    if (serverConnected())
     {
-        mRSCSocket.connect(zmqaddres.c_str());
+        mLastErrorMessage = "You are already connected to a server";
+        return false;
     }
-    catch (zmq::error_t e)
+    else
     {
-        cout << e.what() << endl;
+        try
+        {
+            mRSCSocket.connect(zmqaddres.c_str());
+            mServerAddress = zmqaddres;
+            return true;
+        }
+        catch (zmq::error_t e)
+        {
+            mLastErrorMessage =  e.what();
+            mServerAddress.clear();
+            return false;
+        }
     }
 }
 
-void RemoteHopsanClient::connectToServer(string ip, string port)
+bool RemoteHopsanClient::connectToServer(string ip, string port)
 {
-    connectToServer(makeZMQAddress(ip,port));
+    return connectToServer(makeZMQAddress(ip,port));
 }
 
 bool RemoteHopsanClient::serverConnected()
 {
-    return mRSCSocket.connected();
+    // Note we can not use socket.connected() it only checks if underlying c-socket exist
+    return !mServerAddress.empty();
 }
 
 
@@ -149,7 +162,7 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     return rc;
 }
 
-bool RemoteHopsanClient::requestSimulationResults(vector<string> &rDataNames, vector<double> &rData)
+bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, vector<double> *pData)
 {
     sendClientMessage<string>(mRWCSocket, C_ReqResults, "*"); // Request all
     //string err;
@@ -163,13 +176,22 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> &rDataNames, ve
     {
         vector<SM_Variable_Description_t> vars = unpackMessage<vector<SM_Variable_Description_t>>(response,offset);
         cout << "Received: " << vars.size() << " vars" << endl;
+        size_t nLogSamples;
+        if (!vars.empty())
+        {
+            nLogSamples = vars[0].data.size();
+        }
+
+        pDataNames->reserve(vars.size());
+        pData->reserve(nLogSamples*vars.size());
+
         for (auto &v : vars)
         {
-            rDataNames.push_back(v.name);
+            pDataNames->push_back(v.name);
             cout << v.name << " " << v.alias << " " << v.unit << " Data:";
             for (auto d : v.data)
             {
-                rData.push_back(d);
+                pData->push_back(d);
                 //cout << " " << d;
             }
             cout << endl;
@@ -209,26 +231,39 @@ bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
     return false;
 }
 
-void RemoteHopsanClient::connectToWorker(std::string zmqaddres)
+bool RemoteHopsanClient::connectToWorker(std::string zmqaddres)
 {
-    try
+    if (workerConnected())
     {
-        mRWCSocket.connect(zmqaddres.c_str());
+        mLastErrorMessage = "You are already connected to a worker";
+        return false;
     }
-    catch(zmq::error_t e)
+    else
     {
-        cout << e.what() << endl;
+        try
+        {
+            mRWCSocket.connect(zmqaddres.c_str());
+            mWorkerAddress = zmqaddres;
+            return true;
+        }
+        catch (zmq::error_t e)
+        {
+            mLastErrorMessage =  e.what();
+            mWorkerAddress.clear();
+            return false;
+        }
     }
 }
 
-void RemoteHopsanClient::connectToWorker(string ip, string port)
+bool RemoteHopsanClient::connectToWorker(string ip, string port)
 {
-    connectToWorker(makeZMQAddress(ip,port));
+    return connectToWorker(makeZMQAddress(ip,port));
 }
 
 bool RemoteHopsanClient::workerConnected()
 {
-    return mRWCSocket.connected();
+    // Note we can not use socket.connected() it only checks if underlying c-socket exist
+    return !mWorkerAddress.empty();
 }
 
 void RemoteHopsanClient::disconnect()
@@ -238,14 +273,16 @@ void RemoteHopsanClient::disconnect()
     {
         sendShortClientMessage(mRWCSocket, C_Bye);
         readAckNackServerMessage(mRWCSocket); //But we do not care about result
-        mRWCSocket.close();
+        mRWCSocket.disconnect(mWorkerAddress.c_str());
+        mWorkerAddress.clear();
     }
 
     // Disconnect from Server
     if (serverConnected())
     {
         //! @todo maybe should auto disconnect when we connect to worker
-        mRSCSocket.close();
+        mRSCSocket.disconnect(mServerAddress.c_str());
+        mServerAddress.clear();
     }
 }
 

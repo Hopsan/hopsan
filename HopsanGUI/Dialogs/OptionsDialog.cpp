@@ -387,6 +387,21 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     connect(mpCompiler64LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler64Path(QString)));
 #endif
 
+    QWidget *pRemoteHopsanSettingsWidget = new QWidget();
+    QGridLayout *pRemoteHopsanSettingsLayout = new QGridLayout(pRemoteHopsanSettingsWidget);
+    QLabel *pRemoteHopsanAddressLabel = new QLabel("RemoteHopsanAddress: ");
+    QLabel *pRemoteHopsanDispatchAddressLabel = new QLabel("RemoteHopsanDispatchAddress: ");
+    QLabel *pUseRemoteHopsanDispatchLabel = new QLabel("Use remote Hopsan dispatch server: ");
+    mpUseRemoteHopsanDispatch = new QCheckBox();
+    mpRemoteHopsanAddress = new QLineEdit();
+    mpRemoteHopsanDispatchAddress = new QLineEdit();
+    pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanAddressLabel, 0, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanAddress, 0, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanDispatchAddressLabel, 1, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanDispatchAddress, 1, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanDispatchLabel, 2, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanDispatch, 2, 1);
+
     QPushButton *mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
     mpResetButton->setAutoDefault(false);
     QPushButton *mpOpenXmlButton = new QPushButton(tr("&Open Settings File"), this);
@@ -421,6 +436,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 #ifdef _WIN32
     pTabWidget->addTab(pCompilersWidget, "Compilers");
 #endif
+    pTabWidget->addTab(pRemoteHopsanSettingsWidget, "Remote Hopsan");
 
     QGridLayout *pLayout = new QGridLayout;
     //pLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -520,6 +536,10 @@ void OptionsDialog::setValues()
     gpConfig->setGcc32Dir(mpCompiler32LineEdit->text());
     gpConfig->setGcc64Dir(mpCompiler64LineEdit->text());
 
+    gpConfig->setRemoteHopsanAddress(mpRemoteHopsanAddress->text());
+    gpConfig->setRemoteHopsanDispatchAddress(mpRemoteHopsanDispatchAddress->text());
+    gpConfig->setUseRemoteHopsanDispatch(mpUseRemoteHopsanDispatch->isChecked());
+
     gpConfig->saveToXml();
 
     this->accept();
@@ -596,6 +616,10 @@ void OptionsDialog::show()
     mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getShowHiddenNodeDataVariables());
     mpPlotWindowsOnTop->setChecked(gpConfig->getPlotWindowsOnTop());
     mpCacheLogDataCeckBox->setChecked(gpConfig->getCacheLogData());
+
+    mpRemoteHopsanAddress->setText(gpConfig->getRemoteHopsanAddress());
+    mpRemoteHopsanDispatchAddress->setText(gpConfig->getRemoteHopsanDispatchAddress());
+    mpUseRemoteHopsanDispatch->setChecked(gpConfig->getUseRemoteHopsanDispatch());
 
     // Update units scale lists
     QObjectList unitselectors =  mpUnitScaleWidget->children();

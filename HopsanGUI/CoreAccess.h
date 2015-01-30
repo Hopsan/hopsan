@@ -326,9 +326,9 @@ public:
     bool loadModel(QString hmfModelFile);
     bool simulateModel();
 
-    bool getCoreMessages(QVector<QString> &rTags, QVector<QString> &rTypes, QVector<QString> &rMessages, bool includeDebug=true);
+    bool getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug=true);
 
-    bool getLogData(int &rNum);
+    bool getLogData(std::vector<std::string> *pNames, std::vector<double> *pData);
 
     QString getLastError() const;
 };

@@ -48,6 +48,7 @@ QDomElement appendDomValueNodeN(QDomElement &rDomElement, const QString element_
 int parseDomIntegerNode(QDomElement, const int defaultValue);
 bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue);
 double parseDomValueNode(QDomElement domElement, const double defaultValue);
+QString parseDomStringNode(QDomElement domElement, const QString &rDefaultValue);
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
 
