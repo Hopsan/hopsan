@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
                     {
                         vector<string> names;
                         vector<double> data;
-                        rc = rhopsan.requestSimulationResults(names, data);
+                        rc = rhopsan.requestSimulationResults(&names, &data);
                         cout << PRINTCLIENT << "Results: " << rc << endl;
                     }
                     else

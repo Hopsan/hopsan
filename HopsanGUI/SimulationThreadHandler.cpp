@@ -144,12 +144,14 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
             simulateSuccess = rcsh.simulateModel();
 
             emit simulateDone(simulateSuccess, timer.elapsed());
-            emit finalizeDone(true, 0);
         }
         else
         {
             emit initDone(false, timer.elapsed());
         }
+
+        // It is VERY important that we collect messages before we send finalizeDone signal as that will also do messaging and we could (will) have thread collission
+        //! @todo since gpMessageHandler is indirectly used we could easily crash here if doing local simulation or just modelling at the same time
         QVector<QString> types,tags,messages;
         rcsh.getCoreMessages(types, tags, messages);
         printRemoteCoreMessages(mpMessageHandler, types, tags, messages);
@@ -157,8 +159,11 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
 
         if (simulateSuccess)
         {
-            // Collect data
+
+            // Collect data before emitting finalizeDone as that will signal that data is ready to be collected
             rcsh.getLogData(mpLogDataNames, mpLogData);
+
+            emit finalizeDone(true, 0);
 
             return;
         }

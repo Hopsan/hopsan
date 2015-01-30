@@ -120,6 +120,9 @@ private:
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;
     QMutex mSimulateMutex;
+
+    // Remote collected data
+    std::vector<std::string> mRemoteLogNames; std::vector<double> mRemoteLogData;
 };
 
 

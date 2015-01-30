@@ -417,17 +417,9 @@ void ModelWidget::startCoSimulation()
         }
     }
 
-    disconnect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
-    std::vector<string> logNames; std::vector<double> logData;
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-    mpSimulationThreadHandler->initSimulateFinalizeRemote(mpToplevelSystem->getModelFileInfo().absoluteFilePath(), logNames, logData);
-
-    mpToplevelSystem->getLogDataHandler()->collectLogDataFromRemoteModel(logNames,logData);
-
-
-
-    connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
+    mpSimulationThreadHandler->initSimulateFinalizeRemote(mpToplevelSystem->getModelFileInfo().absoluteFilePath(), mRemoteLogNames, mRemoteLogData);
 
     //---------- Peters Remote Simulation Test Code END ---------
 }
@@ -616,8 +608,22 @@ void ModelWidget::collectPlotData()
     //gpMainWindow->mpShowLossesAction->setEnabled(true); //! @todo Can this be done without including main window?
    // gpMainWindow->mpAnimateAction->setEnabled(true);
 
-    // Tell container to do the job
-    mpToplevelSystem->collectPlotData();
+    if (mRemoteLogNames.empty())
+    {
+        // Collect local data
+        // Tell container to do the job
+        mpToplevelSystem->collectPlotData();
+    }
+    else
+    {
+        // Collect remote data instead
+        mpToplevelSystem->getLogDataHandler()->collectLogDataFromRemoteModel(mRemoteLogNames,mRemoteLogData);
+        // Clear now obsolete data
+        mRemoteLogNames.clear();
+        mRemoteLogData.clear();
+    }
+
+
 }
 
 
