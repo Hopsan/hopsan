@@ -90,7 +90,7 @@ static void mdlInitializeSizes(SimStruct *S)
 
     const char* hmfFilePath = "<<<4>>>";
     double startT, stopT;
-    pComponentSystem = gHopsanCore.loadHMFModel(hmfFilePath, startT, stopT);
+    pComponentSystem = gHopsanCore.loadHMFModelFile(hmfFilePath, startT, stopT);
     if (pComponentSystem==0)
     {
         while(gHopsanCore.checkMessage())

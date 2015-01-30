@@ -677,3 +677,164 @@ void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_leve
         //printMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
     }
 }
+
+
+
+
+InterfacePortSpec::InterfacePortSpec(InterfaceTypesEnumT type, QString component, QString port, QStringList path)
+{
+    this->type = type;
+    this->path = path;
+    this->component = component;
+    this->port = port;
+
+    QStringList inputDataNames;
+    QStringList outputDataNames;
+    QList<size_t> dataIds;
+
+    switch(type)
+    {
+    case InterfacePortSpec::Input:
+        inputDataNames << "";
+        dataIds << 0;
+        break;
+    case InterfacePortSpec::Output:
+        outputDataNames << "";
+        dataIds << 0;
+        break;
+    case InterfacePortSpec::MechanicQ:
+        inputDataNames << GeneratorNodeInfo("NodeMechanic").qVariables;
+        outputDataNames << GeneratorNodeInfo("NodeMechanic").cVariables;
+        dataIds << GeneratorNodeInfo("NodeMechanic").varIdx;
+        break;
+    case InterfacePortSpec::MechanicC:
+        inputDataNames << GeneratorNodeInfo("NodeMechanic").cVariables;
+        outputDataNames << GeneratorNodeInfo("NodeMechanic").qVariables;
+        dataIds << GeneratorNodeInfo("NodeMechanic").varIdx;
+        break;
+    case InterfacePortSpec::MechanicRotationalQ:
+        inputDataNames << GeneratorNodeInfo("NodeMechanicRotational").qVariables;
+        outputDataNames << GeneratorNodeInfo("NodeMechanicRotational").cVariables;
+        dataIds << GeneratorNodeInfo("NodeMechanicRotational").varIdx;
+        break;
+    case InterfacePortSpec::MechanicRotationalC:
+        inputDataNames << GeneratorNodeInfo("NodeMechanicRotational").cVariables;
+        outputDataNames << GeneratorNodeInfo("NodeMechanicRotational").qVariables;
+        dataIds << GeneratorNodeInfo("NodeMechanicRotational").varIdx;
+        break;
+    case InterfacePortSpec::HydraulicQ:
+        inputDataNames << GeneratorNodeInfo("NodeHydraulic").qVariables;
+        outputDataNames << GeneratorNodeInfo("NodeHydraulic").cVariables;
+        dataIds << GeneratorNodeInfo("NodeHydraulic").varIdx;
+        break;
+    case InterfacePortSpec::HydraulicC:
+        inputDataNames << GeneratorNodeInfo("NodeHydraulic").cVariables;
+        outputDataNames << GeneratorNodeInfo("NodeHydraulic").qVariables;
+        dataIds << GeneratorNodeInfo("NodeHydraulic").varIdx;
+        break;
+    case InterfacePortSpec::PneumaticQ:
+        inputDataNames << GeneratorNodeInfo("NodePneumatic").qVariables;
+        outputDataNames << GeneratorNodeInfo("NodePneumatic").cVariables;
+        dataIds << GeneratorNodeInfo("NodePneumatic").varIdx;
+        break;
+    case InterfacePortSpec::PneumaticC:
+        inputDataNames << GeneratorNodeInfo("NodePneumatic").cVariables;
+        outputDataNames << GeneratorNodeInfo("NodePneumatic").qVariables;
+        dataIds << GeneratorNodeInfo("NodePneumatic").varIdx;
+        break;
+    case InterfacePortSpec::ElectricQ:
+        inputDataNames << GeneratorNodeInfo("NodeElectric").qVariables;
+        outputDataNames << GeneratorNodeInfo("NodeElectric").cVariables;
+        dataIds << GeneratorNodeInfo("NodeElectric").varIdx;
+        break;
+    case InterfacePortSpec::ElectricC:
+        inputDataNames << GeneratorNodeInfo("NodeElectric").cVariables;
+        outputDataNames << GeneratorNodeInfo("NodeElectric").qVariables;
+        dataIds << GeneratorNodeInfo("NodeElectric").varIdx;
+        break;
+    default:
+        break;
+    }
+
+    foreach(const QString &dataName, inputDataNames)
+    {
+        vars.append(InterfaceVarSpec(dataName, dataIds.takeFirst(), InterfaceVarSpec::Input));
+    }
+    foreach(const QString &dataName, outputDataNames)
+    {
+        vars.append(InterfaceVarSpec(dataName, dataIds.takeFirst(), InterfaceVarSpec::Output));
+    }
+}
+
+
+
+void getInterfaces(QList<InterfacePortSpec> &interfaces, ComponentSystem *pSystem, QStringList &path)
+{
+    std::vector<HString> names = pSystem->getSubComponentNames();
+    for(size_t i=0; i<names.size(); ++i)
+    {
+        Component *pComponent = pSystem->getSubComponent(names[i]);
+        HString typeName = pComponent->getTypeName();
+        if(typeName == "SignalInputInterface")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::Input, names[i].c_str(), "out", path));
+        }
+        else if(typeName == "SignalOutputInterface")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::Output, names[i].c_str(), "in", path));
+        }
+        else if(typeName == "MechanicInterfaceQ")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicQ, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "MechanicInterfaceC")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicC, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "MechanicRotationalInterfaceQ")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicRotationalQ, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "MechanicRotationalInterfaceC")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicRotationalC, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "HydraulicQ")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::HydraulicQ, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "HydraulicC")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::HydraulicC, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "PneumaticQ")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::PneumaticQ, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "PneumaticC")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::PneumaticC, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "ElectricQ")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::ElectricQ, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "ElectricC")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::ElectricC, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "Subsystem")
+        {
+            getInterfaces(interfaces, dynamic_cast<hopsan::ComponentSystem *>(pComponent), path << pComponent->getName().c_str());
+        }
+    }
+}
+
+
+
+InterfaceVarSpec::InterfaceVarSpec(QString dataName, int dataId, InterfaceVarSpec::CausalityEnumT causality)
+{
+    this->dataName = dataName;
+    this->dataId = dataId;
+    this->causality = causality;
+}

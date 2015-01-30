@@ -251,4 +251,38 @@ private:
 };
 
 
+class InterfaceVarSpec
+{
+public:
+    enum CausalityEnumT {Input, Output};
+
+    InterfaceVarSpec(QString dataName, int dataId, CausalityEnumT causality);
+
+    QString dataName;
+    int dataId;
+    CausalityEnumT causality;
+};
+
+
+class InterfacePortSpec
+{
+public:
+    enum InterfaceTypesEnumT {Input, Output, MechanicC, MechanicQ, MechanicRotationalC, MechanicRotationalQ, HydraulicC, HydraulicQ, ElectricC, ElectricQ, PneumaticC, PneumaticQ};
+
+    InterfacePortSpec(InterfaceTypesEnumT type, QString component, QString port, QStringList path);
+
+    InterfaceTypesEnumT type;
+    QStringList path;
+    QString component;
+    QString port;
+
+    QList<InterfaceVarSpec> vars;
+};
+
+
+
+
+
+void getInterfaces(QList<InterfacePortSpec> &interfaces, hopsan::ComponentSystem *pSystem, QStringList &path);
+
 #endif // GENERATORUTILITIES_H
