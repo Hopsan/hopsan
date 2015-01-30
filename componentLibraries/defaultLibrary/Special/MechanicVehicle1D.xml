@@ -5,7 +5,11 @@
             <icon scale="1" path="MechanicVehicle1D.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="MechanicVehicle1D.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <ports>
+        <help>
+            <text>A one dimmensional vehicle model with rolling resitance and aerodynamic drag. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>MechanicVehicle1D.nb</link>
+        </help>       
+       <ports>
             <port x="1" y="0.8" a="0" name="fr"/>
             <port x="1" y="0.6" a="0" name="xc"/>
             <port x="1" y="0.5" a="0" name="vc"/>
