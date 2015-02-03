@@ -677,16 +677,19 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
             localVars.chop(2);
         }
         localVars.append(";\n");
-        localVars.append("    Port ");
-        foreach(const QString &varName, portVars)
+        if(!portVars.isEmpty())
         {
-            localVars.append("*"+varName+", ");         //Ports
+            localVars.append("    Port ");
+            foreach(const QString &varName, portVars)
+            {
+                localVars.append("*"+varName+", ");         //Ports
+            }
+            if(localVars.endsWith(", "))
+            {
+                localVars.chop(2);
+            }
+            localVars.append(";\n");
         }
-        if(localVars.endsWith(", "))
-        {
-            localVars.chop(2);
-        }
-        localVars.append(";\n");
     }
 
     QString addConstants;

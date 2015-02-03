@@ -18,8 +18,7 @@ void initializeHopsanWrapper(char* filename)
 {
     double startT;      //Dummy variable
     double stopT;       //Dummy variable
-    gHopsanCore.loadHMFModel("defaultComponentLibrary.dll");    //Only used for debugging, since components are not included in HopsanCore.dll during development
-    spCoreComponentSystem = gHopsanCore.loadHMFModel(filename, startT, stopT);
+    spCoreComponentSystem = gHopsanCore.loadHMFModelFile(filename, startT, stopT);
 
     assert(spCoreComponentSystem);
     spCoreComponentSystem->setDesiredTimestep(0.001);
@@ -31,7 +30,9 @@ void initializeHopsanWrapper(char* filename)
 
 void initializeHopsanWrapperFromBuiltInModel()
 {
-    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str());
+    double startT;      //Dummy variable
+    double stopT;       //Dummy variable
+    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
 
     //Assert that model was successfully loaded
     assert(spCoreComponentSystem);
