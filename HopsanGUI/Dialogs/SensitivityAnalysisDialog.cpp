@@ -44,6 +44,7 @@
 #include "PlotArea.h"
 #include "PlotCurve.h"
 #include "MessageHandler.h"
+#include "SimulationThreadHandler.h"
 
 #ifndef _WIN32
 #include <unistd.h> //Needed for sysctl
@@ -138,12 +139,14 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     pSettingsGroupBox->setLayout(pSettingsLayout);
 
     //Buttons
-    QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
+    QPushButton *pCancelButton = new QPushButton(tr("&Close"), this);
     pCancelButton->setAutoDefault(false);
+    QPushButton *pAbortButton = new QPushButton(tr("&Abort"), this);
     QPushButton *pRunButton = new QPushButton(tr("&Start Analysis"), this);
     pRunButton->setDefault(true);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pAbortButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pRunButton, QDialogButtonBox::ActionRole);
 
     //Toolbar
@@ -170,6 +173,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
 
     //Connections
     connect(pCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
+    connect(pAbortButton,                   SIGNAL(clicked()),      this,                   SLOT(abort()));
     connect(pRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
     connect(pHelpAction,                   SIGNAL(triggered()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
     connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), pParameterAverageLabel, SLOT(setVisible(bool)));
@@ -484,6 +488,8 @@ void SensitivityAnalysisDialog::updateChosenVariables(QTreeWidgetItem* item, int
 
 void SensitivityAnalysisDialog::run()
 {
+    mAborted = false;
+
     DistributionEnumT type;
     if(mpUniformDistributionRadioButton->isChecked())
     {
@@ -549,6 +555,11 @@ void SensitivityAnalysisDialog::run()
     gpConfig->setEnableProgressBar(false);
     for(int i=0; i<nSteps/nThreads; ++i)
     {
+        if(mAborted)
+        {
+            return;
+        }
+
         for(int m=0; m<mModelPtrs.size(); ++m)
         {
             for(int p=0; p<nParameteres; ++p)
@@ -582,6 +593,7 @@ void SensitivityAnalysisDialog::run()
         }
         mpProgressBar->setValue(double(i)*double(nThreads)/double(nSteps)*100);
     }
+
     mpProgressBar->setValue(100);   //Just to make it look better
     gpConfig->setEnableProgressBar(progressBarOrgSetting);
 
@@ -661,4 +673,9 @@ void SensitivityAnalysisDialog::run()
 //        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::yLeft, totalMin, totalMax);
 //        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::xBottom, time.first(), time.last());
     }
+}
+
+void SensitivityAnalysisDialog::abort()
+{
+    mAborted = true;
 }

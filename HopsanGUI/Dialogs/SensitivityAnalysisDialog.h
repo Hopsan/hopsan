@@ -59,6 +59,7 @@ private slots:
     void updateChosenParameters(QTreeWidgetItem* item, int i);
     void updateChosenVariables(QTreeWidgetItem* item, int i);
     void run();
+    void abort();
 
 private:
     //Parameters
@@ -97,6 +98,8 @@ private:
 
     QList<QStringList> mOutputVariables;
     QList<QLabel*> mpOutputLabels;
+
+    bool mAborted;
 };
 
 #endif // SENSITIVITYANALYSISDIALOG_H
