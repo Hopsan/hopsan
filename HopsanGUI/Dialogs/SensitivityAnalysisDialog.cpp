@@ -218,7 +218,20 @@ void SensitivityAnalysisDialog::loadSettings()
             pComponentItem->insertChild(0, pParameterItem);
         }
     }
-    mpParametersList->sortItems(0, Qt::AscendingOrder);
+    QTreeWidgetItem *pSystemParametersItem = new QTreeWidgetItem(QStringList() << "_System Parameters");
+    QFont componentFont = pSystemParametersItem->font(0);
+    componentFont.setBold(true);
+    pSystemParametersItem->setFont(0, componentFont);
+    mpParametersList->insertTopLevelItem(0, pSystemParametersItem);
+    QStringList parameterNames = pSystem->getParameterNames();
+    for(int p=0; p<parameterNames.size(); ++p)
+    {
+        QTreeWidgetItem *pParameterItem = new QTreeWidgetItem(QStringList() << parameterNames.at(p));
+        pParameterItem->setCheckState(0, Qt::Unchecked);
+        pSystemParametersItem->insertChild(0, pParameterItem);
+    }
+    mpParametersList->sortItems(0,Qt::AscendingOrder);
+    mpParametersList->sortItems(1,Qt::AscendingOrder);
     connect(mpParametersList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenParameters(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
     mpOutputList->clear();
@@ -375,11 +388,24 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
 {
     if(item->checkState(0) == Qt::Checked)
     {
-        mSelectedComponents.append(item->parent()->text(0));
-        mSelectedParameters.append(item->text(0));
-        QLabel *pLabel = new QLabel(item->parent()->text(0) + ", " + item->text(0) + ": ");
+        QLabel *pLabel;
+        QString averageValue;
+        if(item->parent()->text(0) == "_System Parameters")
+        {
+            mSelectedComponents.append("");
+            mSelectedParameters.append(item->text(0));
+            pLabel = new QLabel(item->text(0) + ": ");
+            averageValue = mpModel->getTopLevelSystemContainer()->getParameterValue(item->text(0));
+        }
+        else
+        {
+            mSelectedComponents.append(item->parent()->text(0));
+            mSelectedParameters.append(item->text(0));
+            pLabel = new QLabel(item->parent()->text(0) + ", " + item->text(0) + ": ");
+            averageValue = mpModel->getTopLevelSystemContainer()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+        }
         //pLabel->setAlignment(Qt::AlignCenter);
-        QString averageValue = mpModel->getTopLevelSystemContainer()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+
         QLineEdit *pAverageLineEdit = new QLineEdit(averageValue, this);
         QLineEdit *pSigmaLineEdit = new QLineEdit("0.0", this);
         QLineEdit *pMinLineEdit = new QLineEdit("0.0", this);
@@ -414,6 +440,12 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
         for(; i<mSelectedParameters.size(); ++i)
         {
             if(mSelectedComponents.at(i) == item->parent()->text(0) &&
+               mSelectedParameters.at(i) == item->text(0))
+            {
+                break;
+            }
+            if(mSelectedComponents.at(i).isEmpty() &&
+               item->parent()->text(0) == "_System Parameters" &&
                mSelectedParameters.at(i) == item->text(0))
             {
                 break;
@@ -575,7 +607,14 @@ void SensitivityAnalysisDialog::run()
                 {
                     randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
                 }
-                mModelPtrs[m]->getTopLevelSystemContainer()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                if(mSelectedComponents.at(p).isEmpty())
+                {
+                    mModelPtrs[m]->getTopLevelSystemContainer()->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                }
+                else
+                {
+                    mModelPtrs[m]->getTopLevelSystemContainer()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                }
             }
         }
         if(gpConfig->getUseMulticore())
