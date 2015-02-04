@@ -710,7 +710,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                 for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
                 {
                     Component* requiredComponent=0;
-                    if(((*itp)->getPortType() == ReadPortType || (*itp)->getPortType() == ReadMultiportType) && (*itp)->isConnected())
+                    if(((*itp)->getPortType() == ReadPortType || (*itp)->getPortType() == ReadMultiportType ||
+                        ((*it)->getTypeName() == "Subsystem" && (*itp)->getInternalPortType() == ReadPortType)) && (*itp)->isConnected())
                     {
                         requiredComponent = (*itp)->getNodePtr()->getWritePortComponentPtr();
                     }
