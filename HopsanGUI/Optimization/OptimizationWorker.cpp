@@ -124,6 +124,7 @@ void OptimizationWorker::finalize()
         execute("call evalall");
     }
     calculateBestAndWorstId();
+    gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
     double secondBestObj = mObjectives[mWorstId];
     mSecondBestId = mWorstId;
     for(int i=0; i<mNumParameters; ++i)
