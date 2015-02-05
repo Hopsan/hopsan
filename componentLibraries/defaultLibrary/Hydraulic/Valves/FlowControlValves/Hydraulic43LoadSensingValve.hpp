@@ -260,7 +260,14 @@ namespace hopsan {
             (*mpPB_p) = pb;
             (*mpPB_q) = qb;
             (*mpPL_p) = pload;
-            (*mpPL_q) = (pload - cload)/Zcload;
+            if(Zcload != 0)
+            {
+                (*mpPL_q) = (pload - cload)/Zcload;
+            }
+            else
+            {
+                (*mpPL_q) = 0;  //Fixes singular point in flow due to Zcload=0
+            }
             (*mpXv) = xv;
         }
     };
