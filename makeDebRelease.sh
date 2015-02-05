@@ -14,7 +14,7 @@ name=hopsan
 devversion=0.7.
 
 # Pbuilder dists and archs
-debianDistArchArray=( wheezy:amd64 wheezy:i386 )
+debianDistArchArray=( jessie:amd64 jessie:i386 wheezy:amd64 wheezy:i386 )
 ubuntuDistArchArray=( utopic:amd64 utopic:i386 trusty:amd64 trusty:i386 precise:amd64 precise:i386 )
 
 # Pbuilder mirrors

@@ -15,11 +15,12 @@ build:
 	#First build dependencies
 	cd HopsanGUI/Dependencies; ./unpackPatchAndBuildQwt.sh
 	cd HopsanGUI/Dependencies; ./unpackPatchAndBuildPythonQt.sh release 2.7
+	cd HopsanGenerator/Dependencies/; ./unpackAndBuildFMILibrary.sh
 
 	#Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
 	cd hopsanShadowBuild; qmake-qt4 ../HopsanNG.pro -r -spec linux-g++ -config release
-	make -C hopsanShadowBuild
+	make -j4 -C hopsanShadowBuild
 
 clean:
 	dh_testdir
