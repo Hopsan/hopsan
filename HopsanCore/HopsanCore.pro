@@ -28,6 +28,7 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 # Set the rappidxml and csv_parser include paths
 INCLUDEPATH *= $${PWD}/Dependencies/rapidxml-1.13
 INCLUDEPATH *= $${PWD}/Dependencies/libcsv_parser++-1.0.0/include/csv_parser
+INCLUDEPATH *= $${PWD}/Dependencies/IndexingCSVParser
 INCLUDEPATH *= $${PWD}/Dependencies/boost
 #--------------------------------------------------------
 
@@ -125,7 +126,8 @@ SOURCES += \
     src/HopsanTypes.cc \
     src/ComponentUtilities/HopsanPowerUser.cc \
     src/ComponentUtilities/LookupTable.cc \
-    src/ComponentUtilities/PLOParser.cc
+    src/ComponentUtilities/PLOParser.cc \
+    Dependencies/IndexingCSVParser/IndexingCSVParser.cpp
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -174,7 +176,9 @@ HEADERS += \
     include/compiler_info.h \
     include/Components/ModelicaComponent.hpp \
     include/ComponentUtilities/LookupTable.h \
-    include/ComponentUtilities/PLOParser.h
+    include/ComponentUtilities/PLOParser.h \
+    Dependencies/IndexingCSVParser/IndexingCSVParser.h \
+    Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

@@ -23,6 +23,7 @@
 //$Id$
 
 #include "csv_parser.hpp"
+#include "IndexingCSVParser.h"
 
 #include "ComponentUtilities/CSVParser.h"
 #include "ComponentUtilities/num2string.hpp"
@@ -879,4 +880,149 @@ bool CSVParserNG::copyEveryNthFromColumnRange(const size_t columnIdx, const size
         status = false;
     }
     return status;
+}
+
+
+
+CSVParserNNG::CSVParserNNG(const char separator_char)
+{
+    mpCsvParser = new indcsvp::IndexingCSVParser();
+    mpCsvParser->setSeparatorChar(separator_char);
+}
+
+CSVParserNNG::~CSVParserNNG()
+{
+    delete mpCsvParser;
+}
+
+bool CSVParserNNG::openFile(const HString &rFilepath)
+{
+    return mpCsvParser->openFile(rFilepath.c_str());
+}
+
+void CSVParserNNG::closeFile()
+{
+    mpCsvParser->closeFile();
+}
+
+void CSVParserNNG::setFieldSeparator(const char sep)
+{
+    mpCsvParser->setSeparatorChar(sep);
+}
+
+char CSVParserNNG::autoSetFieldSeparator(std::vector<char> &rAlternatives)
+{
+    return mpCsvParser->autoSetSeparatorChar(rAlternatives);
+}
+
+void CSVParserNNG::indexFile()
+{
+    mpCsvParser->indexFile();
+}
+
+size_t CSVParserNNG::getNumDataRows() const
+{
+    return mpCsvParser->numRows();
+}
+
+size_t CSVParserNNG::getNumDataCols(const size_t row) const
+{
+    return mpCsvParser->numCols(row);
+}
+
+bool CSVParserNNG::allRowsHaveSameNumCols() const
+{
+    return mpCsvParser->allRowsHaveSameNumCols();
+}
+
+void CSVParserNNG::getMinMaxNumCols(size_t &rMin, size_t &rMax) const
+{
+    return mpCsvParser->minMaxNumCols(rMin, rMax);
+}
+
+HString CSVParserNNG::getErrorString() const
+{
+    return mErrorString;
+}
+
+bool CSVParserNNG::copyRow(const size_t rowIdx, std::vector<double> &rRow)
+{
+    if (rowIdx < mpCsvParser->numRows())
+    {
+        return mpCsvParser->getIndexedRowAs<double>(rowIdx, rRow);
+        //! @todo convert decimal separator
+    }
+    else
+    {
+        mErrorString = "rowIdx out of range";
+        return false;
+    }
+}
+
+bool CSVParserNNG::copyRow(const size_t rowIdx, std::vector<long int> &rRow)
+{
+    if (rowIdx < mpCsvParser->numRows())
+    {
+        return mpCsvParser->getIndexedRowAs<long int>(rowIdx, rRow);
+    }
+    else
+    {
+        mErrorString = "rowIdx out of range";
+        return false;
+    }
+}
+
+bool CSVParserNNG::copyColumn(const size_t columnIdx, std::vector<double> &rColumn)
+{
+    if (mpCsvParser->numRows() > 0)
+    {
+        return copyRangeFromColumn(columnIdx, 0, mpCsvParser->numRows(), rColumn);
+    }
+    else
+    {
+        mErrorString = "To few rows < 1";
+        return false;
+    }
+}
+
+bool CSVParserNNG::copyRangeFromColumn(const size_t columnIdx, const size_t startRow, const size_t numRows, std::vector<double> &rColumn)
+{
+    rColumn.clear();
+
+    //! @todo assumes that all rows have same num cols
+    if (columnIdx < mpCsvParser->numCols(startRow))
+    {
+        return mpCsvParser->getIndexedColumnRowRangeAs<double>(columnIdx, startRow, numRows, rColumn);
+    }
+    else
+    {
+        mErrorString = "columnIdx out of range";
+        return false;
+    }
+}
+
+bool CSVParserNNG::copyEveryNthFromColumn(const size_t columnIdx, const size_t stepSize, std::vector<double> &rColumn)
+{
+    return copyEveryNthFromColumnRange(columnIdx, 0, mpCsvParser->numRows(), stepSize, rColumn);
+}
+
+bool CSVParserNNG::copyEveryNthFromColumnRange(const size_t columnIdx, const size_t startRow, const size_t numRows, const size_t stepSize, std::vector<double> &rColumn)
+{
+    rColumn.clear();
+    vector<double> wholeColRange;
+    bool rc = mpCsvParser->getIndexedColumnRowRangeAs<double>(columnIdx, startRow, numRows, wholeColRange);
+    if (rc)
+    {
+        rColumn.reserve(numRows/stepSize);
+        for (size_t r=0; r<wholeColRange.size(); r+=stepSize)
+        {
+            rColumn.push_back(wholeColRange[r]);
+        }
+        return true;
+    }
+    else
+    {
+        mErrorString = "Failed to get data";
+        return false;
+    }
 }

@@ -31,6 +31,10 @@
 
 // Forward declaration
 class csv_parser;
+namespace indcsvp
+{
+class IndexingCSVParser;
+}
 
 namespace hopsan {
 
@@ -115,6 +119,39 @@ protected:
 };
 
 
+
+class DLLIMPORTEXPORT CSVParserNNG
+{
+public:
+    CSVParserNNG(const char separator_char = ',');
+    ~CSVParserNNG();
+
+    bool openFile(const HString &rFilepath);
+    void closeFile();
+
+    void setFieldSeparator(const char sep);
+    char autoSetFieldSeparator(std::vector<char> &rAlternatives);
+
+    void indexFile();
+    size_t getNumDataRows() const;
+    size_t getNumDataCols(const size_t row=0) const;
+    void getMinMaxNumCols(size_t &rMin, size_t &rMax) const;
+    bool allRowsHaveSameNumCols() const;
+
+    HString getErrorString() const;
+
+    bool copyRow(const size_t rowIdx, std::vector<double> &rRow);
+    bool copyRow(const size_t rowIdx, std::vector<long int> &rRow);
+    bool copyColumn(const size_t columnIdx, std::vector<double> &rColumn);
+    bool copyRangeFromColumn(const size_t columnIdx, const size_t startRow, const size_t numRows, std::vector<double> &rColumn);
+    bool copyEveryNthFromColumn(const size_t columnIdx, const size_t stepSize, std::vector<double> &rColumn);
+    bool copyEveryNthFromColumnRange(const size_t columnIdx, const size_t startRow, const size_t numRows, const size_t stepSize, std::vector<double> &rColumn);
+
+protected:
+    indcsvp::IndexingCSVParser *mpCsvParser;
+    HString mErrorString;
+    bool mConvertDecimalSeparator;
+};
 
 }
 

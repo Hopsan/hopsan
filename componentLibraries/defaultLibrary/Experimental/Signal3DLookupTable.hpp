@@ -44,7 +44,7 @@ namespace hopsan {
 
         bool mReloadCSV;
         HString mDataCurveFileName;
-        CSVParserNG mDataFile;
+        CSVParserNNG mDataFile;
         LookupTable3D mLookupTable;
 
     public:
@@ -72,22 +72,24 @@ namespace hopsan {
                 bool isOK=false;
                 mLookupTable.clear();
 
-                isOK = mDataFile.setFile(findFilePath(mDataCurveFileName));
+                isOK = mDataFile.openFile(findFilePath(mDataCurveFileName));
                 if (isOK)
                 {
-                    isOK = mDataFile.parseEntireFile();
+                    mDataFile.indexFile();
+                    isOK = true;
                 }
                 if(!isOK)
                 {
                     addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mDataFile.getErrorString());
                     stopSimulation();
+                    mDataFile.closeFile();
                     return;
                 }
                 else
                 {
                     // Make sure that selected data vector is in range
                     const int nDataCols = mDataFile.getNumDataCols();
-                    if ( nDataCols != 4 )
+                    if ( !mDataFile.allRowsHaveSameNumCols() || nDataCols != 4 )
                     {
                         addErrorMessage(HString("Wrong number of data columns: ")+to_hstring(nDataCols)+" != 4");
                         stopSimulation();
@@ -108,9 +110,16 @@ namespace hopsan {
                     size_t nPlanes = rowscols[2];
 
                     // Copy row and column index vectors (ignoring the final row with nRows and nCols)
-                    mDataFile.copyEveryNthFromColumn(0, nCols*nPlanes, mLookupTable.getIndexDataRef(0));
-                    mDataFile.copyEveryNthFromColumnRange(1, 0, nCols*nPlanes, nPlanes, mLookupTable.getIndexDataRef(1));
-                    mDataFile.copyRangeFromColumn(2, 0, nPlanes, mLookupTable.getIndexDataRef(2));
+                    isOK = mDataFile.copyEveryNthFromColumn(0, nCols*nPlanes, mLookupTable.getIndexDataRef(0));
+                    isOK = isOK && mDataFile.copyEveryNthFromColumnRange(1, 0, nCols*nPlanes, nPlanes, mLookupTable.getIndexDataRef(1));
+                    isOK = isOK && mDataFile.copyRangeFromColumn(2, 0, nPlanes, mLookupTable.getIndexDataRef(2));
+                    if (!isOK)
+                    {
+                        addErrorMessage("Could not parse one or all of the csv index columns");
+                        stopSimulation();
+                        mDataFile.closeFile();
+                        return;
+                    }
 
                     // Remove "extra element (num rows)" from row index column, cols and planes not needed since we did not fetch all values
                     if (mLookupTable.getDimSize(0) == nRows+1)
@@ -119,7 +128,17 @@ namespace hopsan {
                     }
 
                     // Copy values
-                    mDataFile.copyRangeFromColumn(3, 0, mDataFile.getNumDataRows()-1, mLookupTable.getValueDataRef());
+                    isOK = mDataFile.copyRangeFromColumn(3, 0, mDataFile.getNumDataRows()-1, mLookupTable.getValueDataRef());
+                    if (!isOK)
+                    {
+                        addErrorMessage("Could not parse the csv value column");
+                        stopSimulation();
+                        mDataFile.closeFile();
+                        return;
+                    }
+
+                    // Now the data is in the lookuptable and we can throw away the csv data to conserve memory
+                    mDataFile.closeFile();
 
                     // Make sure the correct number of rows and columns are available
                     if ( (nRows != mLookupTable.getDimSize(0)) ||
@@ -135,9 +154,6 @@ namespace hopsan {
                         stopSimulation();
                         return;
                     }
-
-                    // Now the data is in the lookuptable and we can throw away the csv data to conserve memory
-                    mDataFile.clearData();
 
                     // Make sure strictly increasing (no sorting will be done if that is already the case)
                     mLookupTable.sortIncreasing();

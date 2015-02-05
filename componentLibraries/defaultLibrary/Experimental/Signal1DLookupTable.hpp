@@ -45,7 +45,8 @@ namespace hopsan {
         int mInDataId, mOutDataId;
         bool mReloadCSV;
         HString mDataCurveFileName;
-        CSVParserNG mDataFile;
+        HString mSeparatorChar;
+        CSVParserNNG mDataFile;
         LookupTable1D mLookupTable;
 
     public:
@@ -60,6 +61,7 @@ namespace hopsan {
             addOutputVariable("out", "", "", &mpOut);
 
             addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("csvsep", "csv separator character", "", HString(","), mSeparatorChar);
             addConstant("inid", "csv file index column (0-based index)", "", 0, mInDataId);
             addConstant("outid", "csv file value column (0-based index)", "", 1, mOutDataId);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
@@ -73,34 +75,54 @@ namespace hopsan {
                 bool isOK=false;
                 mLookupTable.clear();
 
-                isOK = mDataFile.setFile(findFilePath(mDataCurveFileName));
+                isOK = mDataFile.openFile(findFilePath(mDataCurveFileName));
                 if (isOK)
                 {
-                    isOK = mDataFile.parseEntireFile();
+                    if (mSeparatorChar.size() == 1)
+                    {
+                        mDataFile.setFieldSeparator(mSeparatorChar[0]);
+                        mDataFile.indexFile();
+                        isOK = true;
+                    }
+                    else
+                    {
+                        addErrorMessage("Separator character must be ONE character");
+                        isOK = false;
+                    }
                 }
                 if(!isOK)
                 {
                     addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mDataFile.getErrorString());
                     stopSimulation();
+                    mDataFile.closeFile();
                     return;
                 }
                 else
                 {
                     // Make sure that selected data vector is in range
-                    const int nDataCols = mDataFile.getNumDataCols();
-                    if ( mInDataId >= nDataCols || mOutDataId >= nDataCols )
+                    size_t minCols, maxCols;
+                    mDataFile.getMinMaxNumCols(minCols, maxCols);
+                    if ( mInDataId >= int(maxCols) || mOutDataId >= int(maxCols) )
                     {
                         HString ss;
                         ss = "inid: "+to_hstring(mInDataId)+" or outid:"+to_hstring(mOutDataId)+" is out of range!";
                         addErrorMessage(ss);
                         stopSimulation();
+                        mDataFile.closeFile();
                         return;
                     }
 
-                    mDataFile.copyColumn(mInDataId, mLookupTable.getIndexDataRef());
-                    mDataFile.copyColumn(mOutDataId, mLookupTable.getValueDataRef());
-                    // Now the data is in the lookuptable and we can throw away the csv data to conserve memory
-                    mDataFile.clearData();
+                    isOK = mDataFile.copyColumn(mInDataId, mLookupTable.getIndexDataRef());
+                    isOK = isOK && mDataFile.copyColumn(mOutDataId, mLookupTable.getValueDataRef());
+                    // Now the data is in the lookuptable and we can close the csv file and clear the index
+                    mDataFile.closeFile();
+
+                    if (!isOK)
+                    {
+                        addErrorMessage("There were parsing errors in either the input or output data columns");
+                        stopSimulation();
+                        return;
+                    }
 
                     // Make sure strictly increasing (no sorting will be done if that is already the case)
                     mLookupTable.sortIncreasing();
