@@ -114,8 +114,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     this->hide();
 
-    connect(gpConfig, SIGNAL(recentModelsListChanged()), this, SLOT(updateRecentList()));
-
     // Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
     this->setMouseTracking(true);

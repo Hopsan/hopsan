@@ -89,6 +89,8 @@ int main(int argc, char *argv[])
     gpCopyStack = new CopyStack();
     gpMessageHandler = new GUIMessageHandler();
 
+    gpConfig->connect(gpConfig, SIGNAL(recentModelsListChanged()), gpMainWindow, SLOT(updateRecentList()));
+
     //Create contents in MainWindow
     mainwindow.createContents();
 
