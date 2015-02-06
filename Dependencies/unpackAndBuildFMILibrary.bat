@@ -18,7 +18,7 @@ set mingw_path=NotAvailable
 if defined ProgramFiles(x86) (
 	REM do stuff for 64bit here
 	echo 64bit
-	set dirname=%updirname%_64
+	set dirname=%updirname%_x64
 	set cmake_path=%cmake_path64%
 	set mingw_path=%mingw-w64_path%
 ) else (
