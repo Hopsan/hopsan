@@ -22,6 +22,13 @@ qtlib64DirList = [r'C:\Qt\Qt64-4.8.5']
 tbblibDirList = [r'.\HopsanCore\Dependencies\tbb30_20110704oss', r'.\HopsanCore\Dependencies\tbb41_20130613oss']
 tbblib64DirList = [r'.\HopsanCore\Dependencies\tbb30_20110704oss_64', r'.\HopsanCore\Dependencies\tbb41_20130613oss_64']
 
+# Runtime binaries
+qtRuntimeBins = ['QtCore4.dll', 'QtGui4.dll', 'QtNetwork4.dll', 'QtOpenGL4.dll',
+                 'QtSql4.dll', 'QtSvg4.dll', 'QtWebKit4.dll', 'QtXml4.dll',
+                 'phonon4.dll']
+qtPluginBins = [r'iconengines\qsvgicon4.dll', r'imageformats\qjpeg4.dll'
+                r'imageformats\qsvg4.dll']
+
 # Compilers and build tools
 qtcreatorDirList = [r'C:\Qt\qtcreator-2.8.1']
 mingwDirList = [r'C:\Qt\MinGW-gcc440_1\mingw\bin', r'C:\Qt\mingw\bin', r'C:\mingw\bin']
@@ -438,7 +445,7 @@ def buildRelease():
     f.write(r'SET PATH='+mingwDir+r';'+qmakeDir+r';%PATH%'+"\n")
     f.write(r'mingw32-make.exe clean'+"\n")
     f.write(r'qmake.exe '+quotePath(hopsanDir+r'\HopsanNG.pro')+r' -r -spec '+mkspec+r' "CONFIG+=release"'+"\n")
-    f.write(r'mingw32-make.exe'+"\n")
+    f.write(r'mingw32-make -j4.exe'+"\n")
     #f.write("pause\n")
     f.close();
     
