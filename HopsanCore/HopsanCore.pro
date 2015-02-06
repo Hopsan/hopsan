@@ -26,10 +26,10 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
-INCLUDEPATH *= $${PWD}/Dependencies/rapidxml-1.13
-INCLUDEPATH *= $${PWD}/Dependencies/libcsv_parser++-1.0.0/include/csv_parser
-INCLUDEPATH *= $${PWD}/Dependencies/IndexingCSVParser
-INCLUDEPATH *= $${PWD}/Dependencies/boost
+INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
+INCLUDEPATH *= $${PWD}/../Dependencies/libcsv_parser++-1.0.0/include/csv_parser
+INCLUDEPATH *= $${PWD}/../Dependencies/IndexingCSVParser
+#INCLUDEPATH *= $${PWD}/Dependencies/boost
 #--------------------------------------------------------
 
 # -------------------------------------------------
@@ -113,7 +113,7 @@ SOURCES += \
     src/ComponentUtilities/Integrator.cc \
     src/ComponentUtilities/FirstOrderTransferFunction.cc \
     src/ComponentUtilities/CSVParser.cc \
-    Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
+    ../Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
     src/Parameters.cc \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
@@ -127,7 +127,7 @@ SOURCES += \
     src/ComponentUtilities/HopsanPowerUser.cc \
     src/ComponentUtilities/LookupTable.cc \
     src/ComponentUtilities/PLOParser.cc \
-    Dependencies/IndexingCSVParser/IndexingCSVParser.cpp
+    ../Dependencies/IndexingCSVParser/IndexingCSVParser.cpp
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -161,11 +161,11 @@ HEADERS += \
     include/ComponentUtilities/CSVParser.h \
     include/ComponentUtilities/AuxiliarySimulationFunctions.h \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
-    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
+    ../Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
-    Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
+    ../Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
     include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
@@ -177,8 +177,8 @@ HEADERS += \
     include/Components/ModelicaComponent.hpp \
     include/ComponentUtilities/LookupTable.h \
     include/ComponentUtilities/PLOParser.h \
-    Dependencies/IndexingCSVParser/IndexingCSVParser.h \
-    Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp
+    ../Dependencies/IndexingCSVParser/IndexingCSVParser.h \
+    ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

@@ -18,7 +18,7 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set the FMILibrary paths and dll/so/dylib/framework post linking copy command
-d = $$setFMILIBPathInfo($$(QWT_PATH), $$DESTDIR)
+d = $$setFMILIBPathInfo($$(FMI_PATH), $$DESTDIR)
 isEmpty(d):warning("ERROR: Failed to locate FMILibrary, have you compiled it and put it in the expected location?")
 
 LIBS *= $$magic_hopsan_libpath

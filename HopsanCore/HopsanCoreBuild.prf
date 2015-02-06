@@ -9,14 +9,10 @@ defineReplace(setTBBWindowsPathInfo){
     #Set default tbb path alternatives, higher up is preferred
     contains(QMAKE_HOST.arch, x86_64){
         #64 bit paths
-        TBB_PATHS *= $${PWD}/Dependencies/tbb41_20130613oss_64
-        TBB_PATHS *= $${PWD}/Dependencies/tbb40_20111003oss_64
-        TBB_PATHS *= $${PWD}/Dependencies/tbb30_20110704oss_64
+        TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss_64
     } else {
         #32 bit paths
-        TBB_PATHS *= $${PWD}/Dependencies/tbb41_20130613oss
-        TBB_PATHS *= $${PWD}/Dependencies/tbb40_20111003os
-        TBB_PATHS *= $${PWD}/Dependencies/tbb30_20110704oss
+        TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss
     }
     #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
     TBB_PATH = $$selectPath($$externalSrc, $$TBB_PATHS, "tbb")
@@ -37,22 +33,6 @@ defineReplace(setTBBWindowsPathInfo){
         }
         CONFIG(release, debug|release) {
             libDir = $${TBB_PATH}/build/output_release
-            magic_hopsan_libpath *= -L$${libDir} -ltbb
-            files = tbb.dll
-        }
-        magic_hopsan_includepath *= $${TBB_PATH}/include
-        magic_hopsan_qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
-    }
-
-    # Check hardcoded libfolder path works for 32 bit tbb40_20111003oss
-    exists($${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_release){
-        CONFIG(debug, debug|release) {
-            libDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_debug
-            magic_hopsan_libpath *= -L$${libDir} -ltbb_debug
-            files = tbb_debug.dll
-        }
-        CONFIG(release, debug|release) {
-            libDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_release
             magic_hopsan_libpath *= -L$${libDir} -ltbb
             files = tbb.dll
         }

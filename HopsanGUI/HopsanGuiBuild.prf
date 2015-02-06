@@ -9,12 +9,12 @@ defineReplace(setQWTPathInfo){
     #Set QWT paths, Paths that are higher up in the list will have priority if found
     win32:contains(QMAKE_HOST.arch, x86_64){
         # 64 bit Windows release
-        QWT_PATHS *= $${PWD}/Dependencies/qwt-svn_64
-        QWT_PATHS *= $${PWD}/Dependencies/qwt-6.1.0_64
+        QWT_PATHS *= $${PWD}/../Dependencies/qwt-svn_x64
+        QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.0_x64
     } else {
         # 32 bit Windows version or Linux / Mac
-        QWT_PATHS *= $${PWD}/Dependencies/qwt-svn
-        QWT_PATHS *= $${PWD}/Dependencies/qwt-6.1.0
+        QWT_PATHS *= $${PWD}/../Dependencies/qwt-svn
+        QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.0
     }
     QWT_PATH = $$selectPath($$externalSrc, $$QWT_PATHS, "qwt")
 
@@ -92,10 +92,10 @@ defineReplace(setPythonQtPathInfo){
     #Set QWT paths, Paths that are earlier in the list will be used if found
     win32:contains(QMAKE_HOST.arch, x86_64){
         # 64 bit version
-        PYTHONQT_PATHS *= $${PWD}/Dependencies/PythonQt2.1_Qt4.8_64
+        PYTHONQT_PATHS *= $${PWD}/../Dependencies/PythonQt2.1_Qt4.8_x64
     } else {
         # 32 bit version or Linux / Mac
-        PYTHONQT_PATHS *= $${PWD}/Dependencies/PythonQt2.1_Qt4.8
+        PYTHONQT_PATHS *= $${PWD}/../Dependencies/PythonQt2.1_Qt4.8
     }
     PYTHONQT_PATH = $$selectPath($$externalSrc, $$PYTHONQT_PATHS, "pythonqt")
 

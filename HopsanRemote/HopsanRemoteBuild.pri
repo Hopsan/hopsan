@@ -12,10 +12,10 @@ defineReplace(setZMQPathInfo){
     #Set QWT paths, Paths that are higher up in the list will have priority if found
     win32:contains(QMAKE_HOST.arch, x86_64){
         # 64 bit Windows release
-        ZMQ_PATHS *= $${thisDir}/../ThirdParty/zeromq-4.1.0_64
+        ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq-4.1.0_x64
     } else {
         # 32 bit Windows version or Linux / Mac
-        ZMQ_PATHS *= $${thisDir}/../ThirdParty/zeromq-4.1.0
+        ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq-4.1.0
     }
     ZMQ_PATH = $$selectPath($$externalSrc, $$ZMQ_PATHS, "zmq")
 
@@ -84,5 +84,5 @@ defineReplace(setZMQPathInfo){
     return($$magic_hopsan_libpath)
 }
 
-INCLUDEPATH *= $${PWD}/../ThirdParty/msgpack-c-master/include/
-INCLUDEPATH *= $${PWD}/../ThirdParty/cppzmq-master/
+INCLUDEPATH *= $${PWD}/../Dependencies/msgpack-c-master/include/
+INCLUDEPATH *= $${PWD}/../Dependencies/cppzmq-master/

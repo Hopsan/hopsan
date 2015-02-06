@@ -21,8 +21,8 @@ CONFIG   -= app_bundle
 
 #--------------------------------------------------------
 # Set the tclap and rapidxml include path
-INCLUDEPATH *= $${PWD}/Dependencies/tclap-1.2.0/include
-INCLUDEPATH *= $${PWD}/../HopsanCore/Dependencies/rapidxml-1.13
+INCLUDEPATH *= $${PWD}/../Dependencies/tclap-1.2.0/include
+INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
 #--------------------------------------------------------
 
 #--------------------------------------------------------
