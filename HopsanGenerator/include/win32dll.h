@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#ifndef _WIN32DLL_H_INCLUDED
+#ifndef WIN32DLL_H_INCLUDED
 #define WIN32DLL_H_INCLUDED
 
 #ifdef _WIN32
