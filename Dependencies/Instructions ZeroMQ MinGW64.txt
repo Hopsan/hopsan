@@ -5,7 +5,7 @@ See http://sourceforge.net/p/mingw-w64/wiki2/MSYS/ for more details
 --Unpacking--
 1. Unpack MSYS-20111123.zip
 2. Unpack zeromq4.1.0.zip (or newer)
-3. Add "_64" to teh end of the zeromq directory name
+3. Add "_x64" to the end of the zeromq directory name
 
 --Find mingw inside MSYS--
 1. Run msys/msys.bat
