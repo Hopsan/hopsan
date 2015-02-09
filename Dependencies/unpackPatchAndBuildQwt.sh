@@ -5,8 +5,8 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-29
 
-qwtzipfile="qwt-6.1.0.zip"
-qwtname="qwt-6.1.0"
+qwtzipfile="qwt-6.1.2.zip"
+qwtname="qwt-6.1.2"
 basepwd=`pwd`
 
 # If arg 1 is --force then override regardless
@@ -29,11 +29,9 @@ patch --binary -p0 < $qwtname.patch
 mkdir $qwtname\_shb
 cd $qwtname\_shb
 # Generate makefiles on different platforms
-if [ "$OSTYPE" == "linux-gnu" ]
-then
+if [ "$OSTYPE" == "linux-gnu" ]; then
         qmake ../$qwtname/qwt.pro -r -spec linux-g++
-elif [ "$OSTYPE" == "darwin13" ]
-then
+elif [ "$OSTYPE" == "darwin13" ]; then
         $HOME/Qt/5.2.1/clang_64/bin/qmake ../$qwtname/qwt.pro -r # This is a rather temporary ugly solution...
 else
         echo "Unknown OS for qwt build and patch"

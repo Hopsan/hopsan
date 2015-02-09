@@ -9,11 +9,11 @@ defineReplace(setQWTPathInfo){
     #Set QWT paths, Paths that are higher up in the list will have priority if found
     win32:contains(QMAKE_HOST.arch, x86_64){
         # 64 bit Windows release
-        QWT_PATHS *= $${PWD}/../Dependencies/qwt-svn_x64
+        QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.2_x64
         QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.0_x64
     } else {
         # 32 bit Windows version or Linux / Mac
-        QWT_PATHS *= $${PWD}/../Dependencies/qwt-svn
+        QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.2
         QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.0
     }
     QWT_PATH = $$selectPath($$externalSrc, $$QWT_PATHS, "qwt")
