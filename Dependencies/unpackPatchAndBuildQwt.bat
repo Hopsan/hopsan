@@ -41,7 +41,6 @@ echo ======================
 echo Building 64-bit libQWT
 echo ======================
 call setHopsanBuildPaths.bat 0.7.x x64
-echo %PATH%
 rd /s/q %dirname64%_shb
 mkdir %dirname64%_shb
 cd %dirname64%_shb
