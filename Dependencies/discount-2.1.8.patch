@@ -1,0 +1,24 @@
+diff -urb discount-2.1.8/configure.inc discount-2.1.8_x64/configure.inc
+--- discount-2.1.8/configure.inc	2015-01-25 03:07:28.000000000 +0100
++++ discount-2.1.8_x64/configure.inc	2015-02-09 15:42:25.178074000 +0100
+@@ -736,7 +736,7 @@
+ 	    TLOG " ($DEST exists, but -s does not seem to work)"
+ 	    echo "$DEST exists, but ln -s doesn't seem to work"
+ 	    rm -f /tmp/b$$
+-	    return 1
++	    #return 1
+ 	fi
+     else
+ 	AC_SUB 'LN_S' ''
+diff -urb discount-2.1.8/mkdio.h.in discount-2.1.8_x64/mkdio.h.in
+--- discount-2.1.8/mkdio.h.in	2015-01-25 03:07:28.000000000 +0100
++++ discount-2.1.8_x64/mkdio.h.in	2015-02-09 15:46:25.604983400 +0100
+@@ -5,7 +5,7 @@
+ 
+ typedef void MMIOT;
+ 
+-typedef @DWORD@ mkd_flag_t;
++typedef unsigned int mkd_flag_t;
+ 
+ /* line builder for markdown()
+  */
