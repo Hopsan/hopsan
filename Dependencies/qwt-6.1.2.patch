@@ -1,0 +1,12 @@
+--- qwt-6.1.2/qwtconfig.pri	2014-12-08 09:59:44.917220264 +0100
++++ qwt-6.1.2/qwtconfig.pri	2014-12-08 10:00:04.921221232 +0100
+@@ -118,7 +118,7 @@
+ # Otherwise you have to build it from the designer directory.
+ ######################################################################
+ 
+-QWT_CONFIG     += QwtDesigner
++#QWT_CONFIG     += QwtDesigner
+ 
+ ######################################################################
+ # Compile all Qwt classes into the designer plugin instead
+

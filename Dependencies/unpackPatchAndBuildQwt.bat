@@ -5,7 +5,7 @@ REM Bat script building HopsaGUI dependency QWT automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Date:   2012-12-18
 
-set filename="qwt-6.1.0"
+set filename="qwt-6.1.2"
 
 REM Automatic code begins here
 set dirname=%filename%
