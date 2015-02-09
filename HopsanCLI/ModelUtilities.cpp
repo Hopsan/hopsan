@@ -427,7 +427,17 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                             // Set the parameter value if component is found
                             if (pParentSys)
                             {
-                                Component *pComp = pParentSys->getSubComponent(componentName.c_str());
+                                Component *pComp = 0;
+                                // If syshierarcy is empty then we are setting a parameter in the top-level system
+                                if (syshierarcy.empty())
+                                {
+                                    pComp = pParentSys;
+                                }
+                                else
+                                {
+                                    pComp = pParentSys->getSubComponent(componentName.c_str());
+                                }
+
                                 if (pComp)
                                 {
                                     // lineVec[1] should be parameter value
