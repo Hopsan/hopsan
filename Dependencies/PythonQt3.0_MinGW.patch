@@ -1,0 +1,126 @@
+diff -urb PythonQt3.0/build/common.prf PythonQt3.0_mod/build/common.prf
+--- PythonQt3.0/build/common.prf	2015-02-03 11:37:34.000000000 +0100
++++ PythonQt3.0_mod/build/common.prf	2015-02-09 11:21:23.338426000 +0100
+@@ -4,7 +4,7 @@
+ # the default of your Qt installation will used)
+ 
+ # build with both debug and release mode
+-#CONFIG += debug_and_release build_all
++CONFIG += debug_and_release build_all
+ 
+ # build with release mode only
+ #CONFIG += release
+diff -urb PythonQt3.0/build/python.prf PythonQt3.0_mod/build/python.prf
+--- PythonQt3.0/build/python.prf	2014-09-04 16:47:06.000000000 +0200
++++ PythonQt3.0_mod/build/python.prf	2015-02-09 12:34:02.021874300 +0100
+@@ -1,7 +1,7 @@
+ # profile to include and link Python
+ 
+ # Change this variable to your python version (2.6, 2.7, 3.3, ...)
+-win32:PYTHON_VERSION=26
++win32:PYTHON_VERSION=27
+ unix:PYTHON_VERSION=2.6
+ 
+ macx {
+@@ -23,6 +23,9 @@
+   # set PYTHON_PATH = c:\yourDir\Python-2.6.1\
+   # set PYTHON_LIB  = c:\yourDir\Python-2.6.1\PCbuild8\Win32
+ 
++  PYTHON_PATH = c:/Python27
++  PYTHON_LIB = c:/Python27/libs
++
+   # check if debug or release
+   CONFIG(debug, debug|release) {
+     DEBUG_EXT = _d 
+@@ -30,8 +33,9 @@
+     DEBUG_EXT = 
+   }
+ 
+-  win32:INCLUDEPATH += $$(PYTHON_PATH)/PC $$(PYTHON_PATH)/include
+-  win32:LIBS += $$(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib
++  win32:INCLUDEPATH += $${PYTHON_PATH}/PC $${PYTHON_PATH}/include
++  #win32:LIBS += $$(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib
++  win32:LIBS += -L${PYTHON_LIB} -lpython$${PYTHON_VERSION}
+ } else:unix {
+   # on linux, python-config is used to autodetect Python.
+   # make sure that you have installed a matching python-dev package.
+diff -urb PythonQt3.0/build/PythonQt.prf PythonQt3.0_mod/build/PythonQt.prf
+--- PythonQt3.0/build/PythonQt.prf	2007-11-15 13:40:58.000000000 +0100
++++ PythonQt3.0_mod/build/PythonQt.prf	2015-02-09 11:21:50.127271500 +0100
+@@ -11,5 +11,6 @@
+   DEBUG_EXT = 
+ }
+ 
+-win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib
++#win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib
++win32::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}
+ unix::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}
+diff -urb PythonQt3.0/build/PythonQt_QtAll.prf PythonQt3.0_mod/build/PythonQt_QtAll.prf
+--- PythonQt3.0/build/PythonQt_QtAll.prf	2009-04-09 09:39:56.000000000 +0200
++++ PythonQt3.0_mod/build/PythonQt_QtAll.prf	2015-02-09 12:35:21.589061300 +0100
+@@ -9,5 +9,6 @@
+   DEBUG_EXT = 
+ }
+ 
+-win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib
++#win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib
++win32::LIBS += -L$$PWD/../lib -lPythonQt_QtAll$${DEBUG_EXT}
+ unix::LIBS += -L$$PWD/../lib -lPythonQt_QtAll$${DEBUG_EXT}
+diff -urb PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.pro PythonQt3.0_mod/extensions/PythonQt_QtAll/PythonQt_QtAll.pro
+--- PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2014-10-08 09:59:42.000000000 +0200
++++ PythonQt3.0_mod/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2015-02-09 11:25:41.595826800 +0100
+@@ -2,7 +2,7 @@
+ TARGET   = PythonQt_QtAll
+ TEMPLATE = lib
+ 
+-DESTDIR    = ../../lib
++DESTDIR    = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -urb PythonQt3.0/generator/generator.pro PythonQt3.0_mod/generator/generator.pro
+--- PythonQt3.0/generator/generator.pro	2010-02-21 15:44:58.000000000 +0100
++++ PythonQt3.0_mod/generator/generator.pro	2015-02-09 11:25:02.395953400 +0100
+@@ -1,7 +1,7 @@
+ TARGET = pythonqt_generator
+ CONFIG -= debug
+ CONFIG += release
+-DESTDIR = .
++DESTDIR = $${PWD}/.
+ 
+ include(generator.pri)
+ 
+diff -urb PythonQt3.0/PythonQt.pro PythonQt3.0_mod/PythonQt.pro
+--- PythonQt3.0/PythonQt.pro	2009-04-09 11:32:54.000000000 +0200
++++ PythonQt3.0_mod/PythonQt.pro	2015-02-09 11:26:06.130334400 +0100
+@@ -1,4 +1,4 @@
+ TEMPLATE = subdirs
+ 
+ CONFIG += ordered
+-SUBDIRS = generator src extensions tests examples
++SUBDIRS = generator src extensions tests #examples
+Only in PythonQt3.0_mod/: PythonQt.pro.user
+diff -urb PythonQt3.0/src/src.pri PythonQt3.0_mod/src/src.pri
+--- PythonQt3.0/src/src.pri	2014-09-18 17:37:12.000000000 +0200
++++ PythonQt3.0_mod/src/src.pri	2015-02-09 11:38:47.768273900 +0100
+@@ -3,7 +3,7 @@
+ INCLUDEPATH += $$PWD
+ 
+ # This was needed to work around "number of sections exceeded object file format limit" linker error
+-win32:QMAKE_CXXFLAGS += /bigobj
++#win32:QMAKE_CXXFLAGS += /bigobj
+ 
+ HEADERS +=                    \
+   $$PWD/PythonQt.h                  \
+diff -urb PythonQt3.0/src/src.pro PythonQt3.0_mod/src/src.pro
+--- PythonQt3.0/src/src.pro	2015-02-03 11:38:06.000000000 +0100
++++ PythonQt3.0_mod/src/src.pro	2015-02-09 11:25:22.371372300 +0100
+@@ -8,7 +8,7 @@
+ TEMPLATE = lib
+ 
+ 
+-DESTDIR    = ../lib
++DESTDIR    = $${PWD}/../lib
+ 
+ CONFIG += qt
+ CONFIG -= flat
