@@ -1323,58 +1323,62 @@ void MainWindow::toggleHideShowDockAreas(bool show)
 //! @brief Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
-    if(mpModelHandler->count() > 0 && mpModelHandler->getCurrentModel())
+    bool modelOpen = mpModelHandler->count() > 0;
+    bool modelTab = modelOpen && (mpCentralTabs->currentWidget() != mpWelcomeWidget);
+    ModelWidget *pModel = qobject_cast<ModelWidget*>(mpCentralTabs->currentWidget());
+    bool logData = modelTab && pModel->getViewContainerObject()->getLogDataHandler();
+
+    if(modelTab)
     {
-        mpTogglePortsAction->setChecked(mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->areSubComponentPortsShown());
+        mpTogglePortsAction->setChecked(pModel->getTopLevelSystemContainer()->areSubComponentPortsShown());
     }
 
-    bool noTabs = !(mpModelHandler->count() > 0);
-    mpSaveAction->setEnabled(!noTabs);
-    mpExportToFMUMenuButton->setEnabled(!noTabs);
-    mpSaveAsAction->setEnabled(!noTabs);
-    mpExportModelParametersAction->setEnabled(!noTabs);
-    mpCutAction->setEnabled(!noTabs);
-    mpCopyAction->setEnabled(!noTabs);
-    mpPasteAction->setEnabled(!noTabs);
-    mpUndoAction->setEnabled(!noTabs);
-    mpRedoAction->setEnabled(!noTabs);
-    mpCenterViewAction->setEnabled(!noTabs);
-    mpResetZoomAction->setEnabled(!noTabs);
-    mpZoomInAction->setEnabled(!noTabs);
-    mpZoomOutAction->setEnabled(!noTabs);
-    mpToggleNamesAction->setEnabled(!noTabs);
-    mpToggleSignalsAction->setEnabled(!noTabs);
-    mpTogglePortsAction->setEnabled(!noTabs);
-    mpTogglePortsAction->setEnabled(!noTabs);
-    mpPrintAction->setEnabled(!noTabs);
-    mpExportPDFAction->setEnabled(!noTabs);
-    mpExportPNGAction->setEnabled(!noTabs);
-    mpAlignXAction->setEnabled(!noTabs);
-    mpAlignYAction->setEnabled(!noTabs);
-    mpDistributeXAction->setEnabled(!noTabs);
-    mpDistributeYAction->setEnabled(!noTabs);
-    mpRotateLeftAction->setEnabled(!noTabs);
-    mpRotateRightAction->setEnabled(!noTabs);
-    mpFlipHorizontalAction->setEnabled(!noTabs);
-    mpFlipVerticalAction->setEnabled(!noTabs);
-    mpSimulationTimeEdit->setEnabled(!noTabs);
-    mpSimulateAction->setEnabled(!noTabs);
-    mpOpenDebuggerAction->setEnabled(!noTabs);
-    mpCoSimulationAction->setEnabled(!noTabs);
-    mpOptimizeAction->setEnabled(!noTabs);
-    mpSensitivityAnalysisAction->setEnabled(!noTabs);
-    mpMeasureSimulationTimeAction->setEnabled(!noTabs);
-    mpPlotAction->setEnabled(!noTabs);
-    mpShowLossesAction->setEnabled(!noTabs);
-    mpAnimateAction->setEnabled(!noTabs);
-    mpPropertiesAction->setEnabled(!noTabs);
-    mpOpenSystemParametersAction->setEnabled(!noTabs);
-    mpExportToFMUME32Action->setEnabled(!noTabs);
-    mpExportToFMUCS32Action->setEnabled(!noTabs);
-    mpExportToLabviewAction->setEnabled(!noTabs);
-    mpExportToSimulinkAction->setEnabled(!noTabs);
-    mpExportToSimulinkCoSimAction->setEnabled(!noTabs);
-    mpLoadModelParametersAction->setEnabled(!noTabs);
+    mpShowLossesAction->setEnabled(logData);
+    mpAnimateAction->setEnabled(modelTab);
+    mpSaveAction->setEnabled(modelTab);
+    mpExportToFMUMenuButton->setEnabled(modelTab);
+    mpSaveAsAction->setEnabled(modelTab);
+    mpExportModelParametersAction->setEnabled(modelTab);
+    mpCutAction->setEnabled(modelTab);
+    mpCopyAction->setEnabled(modelTab);
+    mpPasteAction->setEnabled(modelTab);
+    mpUndoAction->setEnabled(modelTab);
+    mpRedoAction->setEnabled(modelTab);
+    mpCenterViewAction->setEnabled(modelTab);
+    mpResetZoomAction->setEnabled(modelTab);
+    mpZoomInAction->setEnabled(modelTab);
+    mpZoomOutAction->setEnabled(modelTab);
+    mpToggleNamesAction->setEnabled(modelTab);
+    mpToggleSignalsAction->setEnabled(modelTab);
+    mpTogglePortsAction->setEnabled(modelTab);
+    mpTogglePortsAction->setEnabled(modelTab);
+    mpPrintAction->setEnabled(modelTab);
+    mpExportPDFAction->setEnabled(modelTab);
+    mpExportPNGAction->setEnabled(modelTab);
+    mpAlignXAction->setEnabled(modelTab);
+    mpAlignYAction->setEnabled(modelTab);
+    mpDistributeXAction->setEnabled(modelTab);
+    mpDistributeYAction->setEnabled(modelTab);
+    mpRotateLeftAction->setEnabled(modelTab);
+    mpRotateRightAction->setEnabled(modelTab);
+    mpFlipHorizontalAction->setEnabled(modelTab);
+    mpFlipVerticalAction->setEnabled(modelTab);
+    mpSimulationTimeEdit->setEnabled(modelTab);
+    mpSimulateAction->setEnabled(modelTab);
+    mpOpenDebuggerAction->setEnabled(modelTab);
+    mpCoSimulationAction->setEnabled(modelTab);
+    mpOptimizeAction->setEnabled(modelTab);
+    mpSensitivityAnalysisAction->setEnabled(modelTab);
+    mpMeasureSimulationTimeAction->setEnabled(modelTab);
+    mpPlotAction->setEnabled(logData);
+    mpPropertiesAction->setEnabled(modelTab);
+    mpOpenSystemParametersAction->setEnabled(modelTab);
+    mpExportToFMUME32Action->setEnabled(modelTab);
+    mpExportToFMUCS32Action->setEnabled(modelTab);
+    mpExportToLabviewAction->setEnabled(modelTab);
+    mpExportToSimulinkAction->setEnabled(modelTab);
+    mpExportToSimulinkCoSimAction->setEnabled(modelTab);
+    mpLoadModelParametersAction->setEnabled(modelTab);
 }
 
 
