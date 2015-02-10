@@ -328,10 +328,36 @@ size_t ComponentSystem::getNumActuallyLoggedSamples() const
 }
 
 
-//! @brief Sets a bool which is looked at in initialization and simulation loops.
+//! @brief Set the stop simulation flag to abort the initialization or simulation loops
 //! @param[in] rReason An optional HString describing the reason for the stop
 //! This method can be used by users e.g. GUIs to stop an start a initialization/simulation process
 void ComponentSystem::stopSimulation(const HString &rReason)
+{
+    if (rReason.empty())
+    {
+        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime), "StopSimulation");
+    }
+    else
+    {
+        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason, "StopSimulation");
+    }
+#ifdef USETBB
+    mpStopMutex->lock();
+    mStopSimulation = true;
+    mpStopMutex->unlock();
+#else
+    mStopSimulation = true;
+#endif
+    // Now propagate stop signal upwards, to parent
+    if (mpSystemParent)
+    {
+        mpSystemParent->stopSimulation(""); // We use string version here to make sure sub system hierarchy is printed
+    }
+}
+
+//! @brief Set the stop simulation flag to abort the initialization or simulation loops, (without messages being added)
+//! @todo maybe we should only have with messages version
+void ComponentSystem::stopSimulation()
 {
 #ifdef USETBB
     mpStopMutex->lock();
@@ -344,11 +370,6 @@ void ComponentSystem::stopSimulation(const HString &rReason)
     if (mpSystemParent != 0)
     {
         mpSystemParent->stopSimulation();
-    }
-    // Send reason message
-    if (!rReason.empty())
-    {
-        addInfoMessage(rReason);
     }
 }
 

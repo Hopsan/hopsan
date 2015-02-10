@@ -66,10 +66,12 @@ namespace hopsan {
             {
                 if (mMessage.empty())
                 {
-                    mMessage="No reason given";
+                    stopSimulation("No reason given");
                 }
-                addInfoMessage("Simulation was stopped at t="+to_hstring(mTime)+ " : "+mMessage, "StopSimulation");
-                stopSimulation();
+                else
+                {
+                    stopSimulation(mMessage);
+                }
             }
         }
     };

@@ -367,7 +367,15 @@ void Component::setSubTypeName(const HString &rSubTypeName)
 //! @ingroup ComponentSimulationFunctions
 void Component::stopSimulation(const HString &rReason)
 {
-    mpSystemParent->stopSimulation(rReason);
+    if (rReason.empty())
+    {
+        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime), "StopSimulation");
+    }
+    else
+    {
+        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason, "StopSimulation");
+    }
+    mpSystemParent->stopSimulation(""); // We use string version here to make sure sub system hierarchy is printed
 }
 
 HopsanEssentials *Component::getHopsanEssentials()
