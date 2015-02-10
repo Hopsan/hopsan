@@ -19,6 +19,7 @@
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>
             <port x="0" y="0.5" a="180" name="P2"/>
+            <port x="0.5" y="1.0" a="90" name="x" enabled="false"/> 
         </ports>
         <animation>
             <icon userpath="checkvalve_user_base.svg"/>
