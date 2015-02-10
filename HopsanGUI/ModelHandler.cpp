@@ -312,7 +312,10 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
         pNewModel->setSaved(true);
         pNewModel->getTopLevelSystemContainer()->setUndoEnabled(true, true);
         emit newModelWidgetAdded();
-        emit modelChanged(pNewModel);
+        if(!detatched)
+        {
+            emit modelChanged(pNewModel);
+        }
     }
     else
     {
