@@ -38,7 +38,8 @@ namespace hopsan {
     {
 
     private:
-        double *mpND_in;
+        double *mpIn;
+        HString mMessage;
 
     public:
         static Component *Creator()
@@ -48,7 +49,8 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in", "Stop simulation if >0.5", "", boolToDouble(false), &mpND_in);
+            addInputVariable("in", "Stop simulation if >0.5", "", boolToDouble(false), &mpIn);
+            addConstant("message", "Message to show when stopping", "", "", mMessage);
         }
 
 
@@ -60,10 +62,14 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            if(doubleToBool(*mpND_in))
+            if(doubleToBool(*mpIn))
             {
-                this->addWarningMessage("The simulation has been stop by a StopSimulation component.", "StopSimulation");
-                this->stopSimulation();
+                if (mMessage.empty())
+                {
+                    mMessage="No reason given";
+                }
+                addInfoMessage("Simulation was stopped at t="+to_hstring(mTime)+ " : "+mMessage, "StopSimulation");
+                stopSimulation();
             }
         }
     };
