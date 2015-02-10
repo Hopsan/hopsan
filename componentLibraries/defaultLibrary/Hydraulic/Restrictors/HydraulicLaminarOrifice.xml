@@ -17,6 +17,9 @@
             <replacable typename="HydraulicCheckValveWithOrifice"/>
             <replacable typename="HydraulicCheckValvePreLoaded"/>           
 		</replacables>
+        <help>
+            <html>HydraulicLaminarOrifice.md</html>
+        </help>
         <animation>
             <icon userpath="laminarorifice_user_base.svg"/>
             <movable idx="0">

@@ -57,6 +57,9 @@
 #include "LibraryHandler.h"
 #include "MessageHandler.h"
 
+#ifdef USEDISCOUNT
+#include "mkdio.h"
+#endif
 
 //! @class ComponentPropertiesDialog3
 //! @brief The ComponentPropertiesDialog3 class is a Widget used to interact with component parameters.
@@ -388,7 +391,44 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         if (!mpModelObject->getHelpHtmlPath().isNull())
         {
             QWebView * pHtmlView = new QWebView();
-            pHtmlView->load(QUrl::fromLocalFile(mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath()));
+            QString path = mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath();
+            if (path.endsWith(".md"))
+            {
+#ifdef USEDISCOUNT
+                QString htmlFile = mpModelObject->getHelpHtmlPath();
+                htmlFile.truncate(htmlFile.size()-3);
+                htmlFile.append(".html");
+                htmlFile.prepend(gpDesktopHandler->getTempPath()+"html/");
+
+                // Make sure temp dir exist
+                QFileInfo fi(htmlFile);
+                QDir().mkpath(fi.absolutePath());
+
+                FILE *inFile = fopen(path.toStdString().c_str(), "r");
+                FILE *outFile = fopen(htmlFile.toStdString().c_str(), "w");
+                if (inFile && outFile)
+                {
+                    // Generate html from markdown
+                    MMIOT *doc = mkd_in(inFile, 0);
+                    markdown(doc, outFile, MKD_TABSTOP);
+                    fclose(outFile);
+                    fclose(inFile);
+                    mkd_cleanup(doc);
+                    // Set html to view
+                    pHtmlView->load(QUrl::fromLocalFile(htmlFile));
+                }
+                else
+                {
+                    pHtmlView->setHtml(QString("<p>Error: Could not convert %1 to HTML or load the file.</p>").arg(path));
+                }
+#else
+                pHtmlView->setHtml(QString("<p>Error: Markdown support is not available in this build!</p>").arg(path));
+#endif
+            }
+            else
+            {
+                pHtmlView->load(QUrl::fromLocalFile(mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath()));
+            }
             pHelpLayout->addWidget(pHtmlView);
         }
 

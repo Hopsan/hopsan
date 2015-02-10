@@ -108,6 +108,15 @@ LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
+# Set Discount Paths
+exists($${PWD}/../Dependencies/discount-2.1.8){
+DEFINES *= USEDISCOUNT
+INCLUDEPATH *= $${PWD}/../Dependencies/discount-2.1.8
+LIBS *= -L$${PWD}/../Dependencies/discount-2.1.8 -lmarkdown
+}
+#--------------------------------------------------------
+
+#--------------------------------------------------------
 # Set our own HopsanGUI Include Path
 INCLUDEPATH *= $${PWD}/
 #--------------------------------------------------------
