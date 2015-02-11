@@ -23,13 +23,13 @@
     //Set start values
     void setStartValues(ModelInstance *comp) 
     {
+        initializeHopsanWrapperFromBuiltInModel();
 >>>6>>>        r(<<<varname>>>_) = 0;
 <<<6<<<    }
 
     //Initialize
     void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)
     {
-        initializeHopsanWrapperFromBuiltInModel();
         eventInfo->upcomingTimeEvent = fmiTrue;
         eventInfo->nextEventTime = comp->time;
     }
