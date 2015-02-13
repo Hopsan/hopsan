@@ -48,6 +48,7 @@ public:
     const QString &getMainPath() const;
     const QString &getHelpPath() const;
     const QString &getComponentsPath() const;
+    const QString &getAutoLibsPath() const;
     const QString &getCoreIncludePath() const;
     const QString &getMSVC2008X86Path() const;
     const QString &getMSVC2010X86Path() const;
@@ -77,6 +78,7 @@ private:
     QString mHelpPath;
     QString mMainPath;
     QString mComponentsPath;
+    QString mAutoLibsPath;
     QString mCoreIncludePath;
     QString mMSVC2008X86Path;
     QString mMSVC2010X86Path;

@@ -384,6 +384,19 @@ void MainWindow::initializeWorkspace()
     gpLibraryHandler->loadLibrary(componentPath+"defaultComponentLibrary.xml", InternalLib);
 #endif
 
+    // Load libraries from autoLibs folder
+    QString autoLibsPath = gpDesktopHandler->getAutoLibsPath();
+    QDir autoLibsDir;
+    autoLibsDir.setPath(autoLibsPath);
+    if(autoLibsDir.exists())
+    {
+        foreach(const QString &libPath, autoLibsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
+        {
+            qDebug() << "Loading library: " << autoLibsPath+"/"+libPath;
+            gpLibraryHandler->loadLibrary(autoLibsPath+"/"+libPath);
+        }
+    }
+
     // Load builtIn library (Container special components)
     gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "visible/builtin_visible.xml", InternalLib);
 

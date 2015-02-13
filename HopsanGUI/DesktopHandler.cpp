@@ -80,6 +80,7 @@ DesktopHandler::DesktopHandler()
     mMainPath = mExecPath+"../";
     mHelpPath = mExecPath+"../doc/user/html/";
     mComponentsPath = mExecPath+"../componentLibraries/defaultLibrary/";
+    mAutoLibsPath = mExecPath+"../componentLibraries/autoLibs/";
     mCoreIncludePath = mExecPath+"../HopsanCore/include/";
     mMSVC2008X86Path = mExecPath+"MSVC2008_x86/";
     mMSVC2010X86Path = mExecPath+"MSVC2010_x86/";
@@ -263,6 +264,11 @@ const QString &DesktopHandler::getHelpPath() const
 const QString &DesktopHandler::getComponentsPath() const
 {
     return mComponentsPath;
+}
+
+const QString &DesktopHandler::getAutoLibsPath() const
+{
+    return mAutoLibsPath;
 }
 
 const QString &DesktopHandler::getCoreIncludePath() const
