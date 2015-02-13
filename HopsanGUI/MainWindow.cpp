@@ -158,6 +158,10 @@ void MainWindow::createContents()
     // Create plothandler as child to mainwindow but assign to global ptr
     gpPlotHandler = new PlotHandler(this);
 
+    // Initialize the help message popup
+    mpHelpPopup = new HelpPopUpWidget(this);
+    gpHelpPopupWidget = mpHelpPopup;
+
     //Create the terminal widget
     mpTerminalDock = new QDockWidget(tr("Terminal"), this);
     mpTerminalDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -314,10 +318,6 @@ void MainWindow::createContents()
     tabifyDockWidget(mpTerminalDock, mpMessageDock);
 #endif
     mpTerminalDock->raise();
-
-    // Initialize the help message popup
-    mpHelpPopup = new HelpPopUpWidget(this);
-    gpHelpPopupWidget = mpHelpPopup;
 
     // Set the correct position of the help popup message in the central widget
     mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
@@ -1135,7 +1135,7 @@ void MainWindow::buildModelActionsMenu(QMenu *pParentMenu, QDir dir)
     QFileInfoList entrys = dir.entryInfoList(QStringList("*.hmf"), QDir::Files | QDir::NoDotAndDotDot | QDir::Readable | QDir::AllDirs);
     for (int i=0; i<entrys.size(); ++i)
     {
-        qDebug() << entrys[i].absolutePath() << " " << entrys[i].baseName();
+        //qDebug() << entrys[i].absolutePath() << " " << entrys[i].baseName();
         if (entrys[i].isDir())
         {
             QDir newDir(entrys[i].absoluteFilePath());
