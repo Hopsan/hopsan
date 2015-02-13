@@ -679,10 +679,10 @@ void SensitivityAnalysisDialog::run()
         //Commented out code = add curve for max and min
         SharedVectorVariableT pTime = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorVariable(nGenerations-1);
         SharedVariableDescriptionT minDesc(new VariableDescription);
-        minDesc.data()->mAliasName = "Min";
+        minDesc.data()->mAliasName = "min("+fullName+")";
         SharedVectorVariableT pMinData(new TimeDomainVariable(pTime, vMin, -1, minDesc, SharedMultiDataVectorCacheT(0)));
         SharedVariableDescriptionT maxDesc = SharedVariableDescriptionT(new VariableDescription);
-        maxDesc.data()->mAliasName = "Max";
+        maxDesc.data()->mAliasName = "max("+fullName+")";
         SharedVectorVariableT pMaxData(new TimeDomainVariable(pTime, vMax, -1, maxDesc, SharedMultiDataVectorCacheT(0)));
 
         PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
@@ -694,7 +694,7 @@ void SensitivityAnalysisDialog::run()
         pPlotWindow->setLegendsVisible(false);
 
         //! @todo Implement interval curve type support in plot window instead!
-        //! @node This is not compatible with most plot functions
+        //! @note This is not compatible with most plot functions
         QwtPlotIntervalCurve *pCurve = new QwtPlotIntervalCurve();
         pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
         QVector<QwtIntervalSample> data;
