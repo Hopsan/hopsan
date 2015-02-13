@@ -63,7 +63,11 @@ int main(int argc, char* argv[])
     cout << PRINTSERVER << "Listening on port: " << argv[1]  << endl;
 
     // Prepare our context and socket
-    zmq::context_t context (1);
+#ifdef _WIN32
+    zmq::context_t context(1, 63);
+#else
+    zmq::context_t context(1);
+#endif
     zmq::socket_t socket (context, ZMQ_REP);
 
     socket.bind( makeZMQAddress("*", argv[1]).c_str() );

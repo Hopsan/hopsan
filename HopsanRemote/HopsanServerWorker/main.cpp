@@ -254,7 +254,11 @@ int main(int argc, char* argv[])
     loadComponentLibraries();
 
     // Prepare our context and sockets
-    zmq::context_t context (1);
+#ifdef _WIN32
+    zmq::context_t context(1, 63);
+#else
+    zmq::context_t context(1);
+#endif
     zmq::socket_t socket (context, ZMQ_REP);
     socket.bind( makeZMQAddress("*", workerCtrlPort).c_str() );
 

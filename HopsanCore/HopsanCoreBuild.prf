@@ -9,7 +9,7 @@ defineReplace(setTBBWindowsPathInfo){
     #Set default tbb path alternatives, higher up is preferred
     contains(QMAKE_HOST.arch, x86_64){
         #64 bit paths
-        TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss_64
+        TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss_x64
     } else {
         #32 bit paths
         TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss

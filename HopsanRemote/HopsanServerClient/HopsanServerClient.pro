@@ -12,7 +12,7 @@ DESTDIR = $${PWD}/../../bin
 
 #--------------------------------------------------------
 # Set the tclap include path
-INCLUDEPATH *= $${PWD}/../../HopsanCLI/Dependencies/tclap-1.2.0/include
+INCLUDEPATH *= $${PWD}/../../Dependencies/tclap-1.2.0/include
 #--------------------------------------------------------
 
 #--------------------------------------------------------

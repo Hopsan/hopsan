@@ -45,7 +45,11 @@
 // RemoteServerClient includes
 #ifdef USEZMQ
 #include "RemoteHopsanClient.h"
+#ifdef _WIN32
+zmq::context_t context(1, 63);
+#else
 zmq::context_t context(1);
+#endif
 RemoteHopsanClient gRHC(context);
 #endif
 
