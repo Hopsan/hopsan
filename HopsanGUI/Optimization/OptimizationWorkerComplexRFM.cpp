@@ -140,7 +140,7 @@ void OptimizationWorkerComplexRFM::run()
     print("Running optimization...", "", true);
 
     //Turn of terminal output during optimization
-    execute("echo off");
+    execute("echo off -nonerrors");
 
     //Evaluate initial objective values
     execute("call evalall");
@@ -366,7 +366,7 @@ void OptimizationWorkerComplexRFM::run()
 
             ++mWorstCounter;
             ++i;
-            execute("echo off");
+            execute("echo off -nonerrors");
 
 
             //See if it is time to update meta model
@@ -708,7 +708,7 @@ void OptimizationWorkerComplexRFM::printMatrix(hopsan::Matrix &matrix)
         }
         print(line, "", false);
     }
-    execute("echo off");
+    execute("echo off -nonerrors");
 }
 
 

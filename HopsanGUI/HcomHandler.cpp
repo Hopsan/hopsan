@@ -4265,21 +4265,26 @@ void HcomHandler::executeEchoCommand(const QString cmd)
     if(!mpConsole) return;
 
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() != 1)
+    if(args.size() > 2)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
     const QString &arg = args[0];
+    bool ignoreErrors = false;
+    if(args.size() > 1)
+    {
+        ignoreErrors = (args[1] == "-nonerrors");
+    }
 
 
     if(arg == "on")
     {
-        mpConsole->setDontPrint(false);
+        mpConsole->setDontPrint(false, ignoreErrors);
     }
     else if(arg == "off")
     {
-        mpConsole->setDontPrint(true);
+        mpConsole->setDontPrint(true, ignoreErrors);
     }
     else
     {

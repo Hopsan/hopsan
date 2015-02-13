@@ -85,7 +85,7 @@ void OptimizationWorkerParameterSweep::init()
 
 void OptimizationWorkerParameterSweep::run()
 {
-    execute("echo off");
+    execute("echo off -nonerrors");
 
     //Verify that everything is ok
     if(!mpHandler->mpHcomHandler->hasFunction("evalall"))

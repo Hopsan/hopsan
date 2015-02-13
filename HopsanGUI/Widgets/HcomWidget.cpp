@@ -307,7 +307,8 @@ void TerminalConsole::printDebugMessage(QString message, QString tag, bool timeS
 
 void TerminalConsole::printMessage(const GUIMessage &rMessage, bool timeStamp, bool force)
 {
-    if(mDontPrint && !force) return;
+    if(!force && (mDontPrint && rMessage.mType != Error)) return;
+    if(!force && (mDontPrintErrors && rMessage.mType == Error)) return;
 
     // Only show message if its type shall be shown
     if( (rMessage.mType == Info    && mShowInfoMessages)     ||
@@ -411,9 +412,15 @@ bool TerminalConsole::getDontPrint() const
     return mDontPrint;
 }
 
-void TerminalConsole::setDontPrint(const bool value)
+bool TerminalConsole::getDontPrintErrors() const
+{
+    return mDontPrintErrors;
+}
+
+void TerminalConsole::setDontPrint(const bool value, const bool ignoreErrors)
 {
     mDontPrint = value;
+    mDontPrintErrors = value && !ignoreErrors;
 }
 
 

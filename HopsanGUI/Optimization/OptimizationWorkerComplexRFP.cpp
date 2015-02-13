@@ -162,7 +162,7 @@ void OptimizationWorkerComplexRFP::run()
     print("Running optimization...", "", true);
 
     //Turn of terminal output during optimization
-    execute("echo off");
+    execute("echo off -nonerrors");
 
     //Evaluate all points
     execute("call evalall");
@@ -335,7 +335,7 @@ void OptimizationWorkerComplexRFP::run()
             wid = mWorstId;
 
             ++i;
-            execute("echo off");
+            execute("echo off -nonerrors");
         }
 
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);

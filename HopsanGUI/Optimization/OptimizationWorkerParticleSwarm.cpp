@@ -122,7 +122,7 @@ void OptimizationWorkerParticleSwarm::run()
     print("Running optimization...", "", true);
 
     //Disable terminal output during optimization
-    execute("echo off");
+    execute("echo off -nonerrors");
 
     //Evaluate initial objective values
     evaluateAllParticles();

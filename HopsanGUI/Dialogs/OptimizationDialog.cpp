@@ -2081,11 +2081,12 @@ void OptimizationDialog::applyParameters()
     mpTerminal->mpHandler->getFunctionCode("setpars", code);
     bool abort;
     bool oldEchoState = gpTerminalWidget->mpHandler->mpConsole->getDontPrint();     //Remember old dont print setting (necessary in case the setpars function contains an "echo off" command)
+    bool oldEchoStateError = gpTerminalWidget->mpHandler->mpConsole->getDontPrintErrors();
     gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(true);              //Temporarily allow optimization commands in main terminal
     gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "opt set evalid "+QString::number(idx), &abort);    //Set evalId corresponding to clicked button
     gpTerminalWidget->mpHandler->runScriptCommands(code, &abort);                   //Run the setpars function
     gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(false);             //Disable optimization commands again
-    gpTerminalWidget->mpHandler->mpConsole->setDontPrint(oldEchoState);             //Reset old dont print setting
+    gpTerminalWidget->mpHandler->mpConsole->setDontPrint(oldEchoState, !oldEchoStateError);             //Reset old dont print setting
 
     //Switch back HCOM handler
     gpTerminalWidget->mpHandler->mpOptHandler = pOrgOptHandler;

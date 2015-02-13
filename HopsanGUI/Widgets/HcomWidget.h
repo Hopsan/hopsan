@@ -95,7 +95,8 @@ public slots:
     void showInfoMessages(bool value);
     void showDebugMessages(bool value);
     bool getDontPrint() const;
-    void setDontPrint(const bool value);
+    bool getDontPrintErrors() const;
+    void setDontPrint(const bool value, const bool ignoreErrors);
 
 protected:
     virtual void keyPressEvent(QKeyEvent * event);
@@ -131,6 +132,7 @@ private:
     int mSubsequentTags;
     bool mGroupByTag;
     bool mDontPrint;
+    bool mDontPrintErrors;
     bool mShowErrorMessages;
     bool mShowInfoMessages;
     bool mShowWarningMessages;

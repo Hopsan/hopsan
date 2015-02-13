@@ -131,7 +131,7 @@ void OptimizationWorkerComplexRF::run()
     print("Running optimization...", "", true);
 
     //Turn of terminal output during optimization
-    execute("echo off");
+    execute("echo off -nonerrors");
 
     //Evaluate initial objective values
     execute("call evalall");
@@ -285,7 +285,7 @@ void OptimizationWorkerComplexRF::run()
             }
 
             ++mWorstCounter;
-            execute("echo off");
+            execute("echo off -nonerrors");
 
             updateProgressBar(i);
         }
