@@ -53,7 +53,7 @@ timeout 10
 REM This first patch was taken from https://github.com/Alexpux/MINGW-packages/tree/master/mingw-w64-discount
 bash.exe -c "cp ../discount-mingw-building.patch .; patch -p0 < discount-mingw-building.patch"
 bash.exe -c "cp ../discount-2.1.8.patch .; patch -p1 < discount-2.1.8.patch"
-bash.exe -c "CC=gcc ./configure.sh --shared; mingw32-make"
+bash.exe -c "CC=gcc ./configure.sh --shared; mingw32-make -j4"
 
 echo.
 echo Done

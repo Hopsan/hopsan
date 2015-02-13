@@ -109,10 +109,15 @@ LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set Discount Paths
-exists($${PWD}/../Dependencies/discount-2.1.8){
+depext=""
+win32:contains(QMAKE_HOST.arch, x86_64){
+    depext="_x64"
+}
+exists($${PWD}/../Dependencies/discount-2.1.8$${depext}){
 DEFINES *= USEDISCOUNT
-INCLUDEPATH *= $${PWD}/../Dependencies/discount-2.1.8
-LIBS *= -L$${PWD}/../Dependencies/discount-2.1.8 -lmarkdown
+INCLUDEPATH *= $${PWD}/../Dependencies/discount-2.1.8$${depext}
+LIBS *= -L$${PWD}/../Dependencies/discount-2.1.8$${depext} -lmarkdown
+message(Compiling with Discount$${depext} support)
 }
 #--------------------------------------------------------
 

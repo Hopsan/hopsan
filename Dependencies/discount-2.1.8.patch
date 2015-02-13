@@ -12,9 +12,15 @@ diff -urb discount-2.1.8/configure.inc discount-2.1.8_x64/configure.inc
  	AC_SUB 'LN_S' ''
 diff -urb discount-2.1.8/mkdio.h.in discount-2.1.8_x64/mkdio.h.in
 --- discount-2.1.8/mkdio.h.in	2015-01-25 03:07:28.000000000 +0100
-+++ discount-2.1.8_x64/mkdio.h.in	2015-02-09 15:46:25.604983400 +0100
-@@ -5,7 +5,7 @@
++++ discount-2.1.8_x64/mkdio.h.in	2015-02-11 13:37:00.735686100 +0100
+@@ -3,9 +3,13 @@
  
+ #include <stdio.h>
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
  typedef void MMIOT;
  
 -typedef @DWORD@ mkd_flag_t;
@@ -22,3 +28,12 @@ diff -urb discount-2.1.8/mkdio.h.in discount-2.1.8_x64/mkdio.h.in
  
  /* line builder for markdown()
   */
+@@ -111,5 +115,8 @@
+ /* special flags for mkd_in() and mkd_string()
+  */
+ 
++#ifdef __cplusplus
++}
++#endif
+ 
+ #endif/*_MKDIO_D*/
