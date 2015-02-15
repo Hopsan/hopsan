@@ -17,7 +17,7 @@
      AC_PROG_CC
  
      LOGN "checking for C compiler option to produce PIC "
-+	if uname -a | grep MINGW >/dev/null; then
++	if uname -a | grep Msys >/dev/null; then
 +	    LOG "(not needed)"
 +	else
      echo "int some_variable = 0;" > ngc$$.c 
@@ -77,7 +77,7 @@
  	    LOG "(no)"
  	    __rc=1
  	fi
-+	elif uname -a | grep MINGW >/dev/null; then
++	elif uname -a | grep Msys >/dev/null; then
 +	__AC_DLL_LIBRARIAN
 +        LOG "(yes; -shared)"
 +	__rc=0	

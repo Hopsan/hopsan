@@ -1,0 +1,12 @@
+diff -urb matio-1.5.2/configure.ac matio-1.5.2_x64/configure.ac
+--- matio-1.5.2/configure.ac	2013-07-31 20:22:28.000000000 +0200
++++ matio-1.5.2_mod/configure.ac	2015-02-11 13:57:59.248905200 +0100
+@@ -122,6 +122,8 @@
+ 
+ AC_ENABLE_SHARED
+ AC_ENABLE_STATIC
++
++AC_LIBTOOL_WIN32_DLL
+ AC_PROG_LIBTOOL
+ 
+ AC_PROG_MAKE_SET

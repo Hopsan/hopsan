@@ -36,6 +36,7 @@ set cmake_path32=%ProgramFiles%\CMake\bin
 set cmake_path64=%ProgramFiles(x86)%\CMake\bin
 set doxygen_path32=%ProgramFiles%\doxygen\bin
 set doxygen_path64=%ProgramFiles%\doxygen\bin
+set msys_path=C:\msys64\usr\bin
 
 REM Set tools paths depending on current arch
 if defined ProgramFiles(x86) (
@@ -61,11 +62,13 @@ if "%2"=="x64" (
 
 REM Echo resulting paths
 echo CMake path:   %cmake_path%
+echo Doxygen path: %doxygen_path%
+echo Msys path:    %msys_path%
 echo MinGW path:   %mingw_path%
 echo QMake path:   %qmake_path%
-echo Doxygen path: %doxygen_path%
+
 echo.
 
-set PATH=%mingw_path%;%qmake_path%;%cmake_path%;%doxygen_path%;%PATH%
+set PATH=%mingw_path%;%qmake_path%;%cmake_path%;%doxygen_path%;%msys_path%;%PATH%
 
 :eof

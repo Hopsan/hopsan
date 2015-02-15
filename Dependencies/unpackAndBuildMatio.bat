@@ -5,8 +5,8 @@ REM Bat script for building Discount automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Date:   2015-02-09
 
-set filename=discount-2.1.8.zip
-set dirname=discount-2.1.8
+set filename=matio-1.5.2.zip
+set dirname=matio-1.5.2
 
 REM Automatic code begins here
 set dirname64=%dirname%_x64
@@ -38,10 +38,7 @@ echo ======================
 call setHopsanBuildPaths.bat 0.7.x x64
 
 cd %dirname64%
-
-REM The first patch was taken from https://github.com/Alexpux/MINGW-packages/tree/master/mingw-w64-discount
-REM It was however modified to grep for Msys instead of MINGW (from uname -a)
-bash.exe -c "patch -p0 < ../discount-mingw-building.patch; patch -p1 < ../discount-2.1.8.patch; CC=gcc ./configure.sh --shared; mingw32-make -j4"
+bash.exe -c "patch -p1 < ../%dirname%.patch; autoreconf -i --force; LT_LDFLAGS=-no-undefined ./configure --without-zlib; mingw32-make.exe -j4"
 
 echo.
 echo Done
