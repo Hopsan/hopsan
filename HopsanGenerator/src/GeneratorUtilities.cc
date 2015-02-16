@@ -547,10 +547,11 @@ QStringList getHopsanCoreSourceFiles()
                 "HopsanCore/src/CoreUtilities/LoadExternal.cc" <<
                 "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" <<
                 "HopsanCore/src/CoreUtilities/StringUtilities.cpp" <<
+                "HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc" <<
                 "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" <<
+                "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp" <<
                 "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
                 "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
-
     return srcFiles;
 }
 
@@ -791,6 +792,7 @@ void getInterfaces(QList<InterfacePortSpec> &interfaces, ComponentSystem *pSyste
     {
         Component *pComponent = pSystem->getSubComponent(names[i]);
         HString typeName = pComponent->getTypeName();
+
         if(typeName == "SignalInputInterface")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::Input, names[i].c_str(), "out", path));

@@ -21,5 +21,11 @@
         <file>templates/simulinkCompileScriptTemplate.m</file>
         <file>templates/fmi2ComponentTemplate.hpp</file>
         <file>templates/fmi2MeComponentTemplate.hpp</file>
+        <file>templates/fmu2_hopsan.c</file>
+        <file>templates/fmu2_hopsan.h</file>
+        <file>templates/fmu2_model.c</file>
+        <file>templates/fmu2_model.h</file>
+        <file>templates/fmu2_model_cs.c</file>
+        <file>templates/fmu2_model_defines.h</file>
     </qresource>
 </RCC>

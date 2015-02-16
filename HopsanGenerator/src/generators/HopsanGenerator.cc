@@ -68,8 +68,13 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
     mTarget = "";
     mCoreIncludePath = coreIncludePath;
     mBinPath = binPath;
+
     mHopsanRootPath = mBinPath+"../";
-    mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
+    if(!gccPath.isEmpty())
+    {
+        mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
+    }
+
 
     mShowDialog = showDialog;
 
@@ -1093,6 +1098,7 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
 
     QDir saveDir(path);
     saveDir.mkpath(".");
+
     Q_FOREACH(const QString &file, includeFiles)
     {
         if(!copyFile(mHopsanRootPath+file, path+file)) return false;
@@ -1119,6 +1125,7 @@ bool HopsanGenerator::copySourceFilesToDir(QString tgtPath) const
 
     QDir saveDir(tgtPath);
     saveDir.mkpath(".");
+
     Q_FOREACH(const QString &file, srcFiles)
     {
         if(!copyFile(mHopsanRootPath+file, tgtPath+file)) return false;
@@ -1173,7 +1180,7 @@ bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
     saveDir.cd("include");
     saveDir.cd("boost");
 
-    copyDir( QString("../HopsanCore/Dependencies/boost"), saveDir.path() );
+    copyDir( QString("../Dependencies/boost"), saveDir.path() );
 
     saveDir.cd("bin");
     QStringList binFiles = saveDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
