@@ -438,7 +438,7 @@ def buildRelease():
     f.write(r'SET PATH='+mingwDir+r';'+qmakeDir+r';%PATH%'+"\n")
     f.write(r'mingw32-make.exe clean'+"\n")
     f.write(r'qmake.exe '+quotePath(hopsanDir+r'\HopsanNG.pro')+r' -r -spec '+mkspec+r' "CONFIG+=release"'+"\n")
-    f.write(r'mingw32-make.exe'+"\n")
+    f.write(r'mingw32-make.exe -j4'+"\n")
     #f.write("pause\n")
     f.close();
     
