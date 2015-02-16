@@ -52,6 +52,7 @@
 - Bug fix: Sensitivity analysis can now be aborted
 - Bug fix: Icons for animation and loss calculation are now always disabled when welcome screen is open
 - Bug fix: Check valve components no longer crash when used in animation
+- Bug fix: It is now possible to load connectors without the <coordinates> xml tag
 
 ------------------------------
 0.6.9   (2014-11-25)
