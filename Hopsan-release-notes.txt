@@ -25,7 +25,7 @@
 ******************************
     Version History
 ******************************
-0.6.10  (2015-02-??)
+0.6.10  (2015-02-16)
 - Feature: Added flag to HCOM echo command for ignoring error messages
 - Feature: Added support for componentLibraries/autoLibs/ folder, from where component libraries are automatically loaded at startup
 
