@@ -41,6 +41,7 @@
 #include "ComponentSystem.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include "ComponentUtilities/CSVParser.h"
+#include "compiler_info.h"
 
 // RemoteServerClient includes
 #ifdef USEZMQ

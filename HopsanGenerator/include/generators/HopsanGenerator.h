@@ -67,6 +67,7 @@ public:
     void setTarget(const QString fileName);
     QString getCoreIncludePath() const;
     QString getBinPath() const;
+    QString getHopsanRootPath() const;
     QString getGccPath() const;
     void printMessage(const QString &msg) const;
     void printWarningMessage(const QString &msg) const;

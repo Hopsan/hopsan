@@ -238,7 +238,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
 
 
 
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLinks, QString extraIncludes)
+bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLFlags, QString extraIncludes)
 {
     pGenerator->printMessage("Writing compilation script...");
 
@@ -278,59 +278,59 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
         c.append(file+" ");
     c.chop(1);
 
-    QString i = pGenerator->getCoreIncludePath();
-    i.prepend("-I\"");
-    i.append("\"");
-    i.append(" "+extraIncludes);
-
-    QString binDir = pGenerator->getBinPath();
-    QString l = "-L\""+binDir+"\" -lHopsanCore "+extraLinks;
+    QString hopsanBinDir = pGenerator->getBinPath();
+    QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath())+" "+extraIncludes;
+    QString lflags = QString("-L%1 -l%2").arg(hopsanBinDir).arg("HopsanCore"TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
     pGenerator->printMessage("\nCalling compiler utility:");
     pGenerator->printMessage("Path: "+path);
     pGenerator->printMessage("Objective: "+name);
     qDebug() << "Objective: " << name;
     pGenerator->printMessage("Source files: "+c);
-    pGenerator->printMessage("Includes: "+i);
-    pGenerator->printMessage("Links: "+l+"\n");
+    pGenerator->printMessage("Includes: "+iflags);
+    pGenerator->printMessage("Links: "+lflags+"\n");
+
+    //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work)
+    QString cflags = QString(" -Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(path);
 
     QString output;
     QString gccPath = pGenerator->getGccPath();
-    bool success = compile(path, gccPath, name, c, i, l, "-Dhopsan=hopsan -fPIC -w -Wl,--rpath -Wl,\""+path+"\" -shared ", output);
+    bool success = compile(path, gccPath, name, c, iflags, cflags, lflags, output);
     pGenerator->printMessage(output);
     return success;
 }
 
 
 //! @brief Calls GCC or MinGW compiler with specified parameters
-//! @param path Absolute path where compiler shall be run
+//! @param wdPath Absolute path where compiler shall be run
 //! @param o Objective file name (without file extension)
-//! @param c List with source files, example: "file1.cpp file2.cc"
-//! @param i Include command, example: "-Ipath1 -Ipath2"
-//! @param l Link command, example: "-Lpath1 -lfile1 -lfile2"
-//! @param flags Compiler flags
+//! @param srcFiles List with source files, example: "file1.cpp file2.cc"
+//! @param inclPaths Include paths, example: "-Ipath1 -Ipath2"
+//! @param cflags Compiler flags
+//! @param lflags Link paths and libs, example: "-Lpath1 -lfile1 -lfile2"
 //! @param output Reference to string where output messages are stored
-bool compile(QString path, QString gccPath, QString o, QString c, QString i, QString l, QString flags, QString &output)
+bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output)
 {
     //Create compilation script file
 #ifdef _WIN32
     QFile clBatchFile;
-    clBatchFile.setFileName(path + "/compile.bat");
+    clBatchFile.setFileName(wdPath + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         output = "Could not open compile.bat for writing.";
         return false;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "call "+gccPath+"/g++.exe "+flags;
-    clBatchStream << c+" -o "+o+".dll "+i+" "+l+"\n";
+    clBatchStream << "set PATH=" << gccPath << ";%PATH%\n";
+    clBatchStream << gccPath+"/g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
+    clBatchStream << " -o " << o+".dll" << " " << lflags <<"\n";
     clBatchFile.close();
 #endif
 
     //Call compilation script file
 #ifdef _WIN32
     QProcess gccProcess;
-    gccProcess.setWorkingDirectory(path);
+    gccProcess.setWorkingDirectory(wdPath);
     gccProcess.start("cmd.exe", QStringList() << "/c" << "compile.bat");
     gccProcess.waitForFinished();
     QByteArray gccResult = gccProcess.readAllStandardOutput();
@@ -377,7 +377,7 @@ bool compile(QString path, QString gccPath, QString o, QString c, QString i, QSt
     }
 #endif
 
-    QDir targetDir(path);
+    QDir targetDir(wdPath);
 #ifdef _WIN32
 
     if(!targetDir.exists(o + ".dll") || !gccErrorList.isEmpty())

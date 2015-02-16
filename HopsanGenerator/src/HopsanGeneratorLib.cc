@@ -165,20 +165,29 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
 
     pGenerator->generateNewLibrary(libDirInfo.absoluteFilePath(), QStringList() << hppFileInfo.filePath());
 
-    QString i = "-I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/Config.cmake/";
-    i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/src/CAPI/include/");
-    i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/src/Import/include/");
-    i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/src/Util/include/");
-    i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/src/XML/include/");
-    i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/src/ZIP/include/");
-    i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default/");
-    i.append(" -I"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1/install/include/");
-#ifdef _WIN32
-    QString l = "-L"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1 -llibfmilib_shared";
+#ifdef _WIN64
+    QString fmiLibDir="/Dependencies/FMILibrary-2.0.1_x64/";
 #else
-    QString l = "-L"+pGenerator->getBinPath()+"/../HopsanGenerator/Dependencies/FMILibrary-2.0.1 -lfmilib_shared";  //Remove extra "lib" prefix in Linux
+    QString fmiLibDir="/Dependencies/FMILibrary-2.0.1/";
 #endif
-    compileComponentLibrary(libDirInfo.absoluteFilePath()+typeName+"_lib.xml", pGenerator, l, i);
+
+    //    QString inc = "-I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/Config.cmake/";
+    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/CAPI/include/");
+    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/Import/include/");
+    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/Util/include/");
+    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/XML/include/");
+    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/ZIP/include/");
+    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default/");
+    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/install/include/");
+
+    QString inc = "-I"+pGenerator->getHopsanRootPath()+fmiLibDir+"install/include/";
+    QString lib = "-L"+pGenerator->getHopsanRootPath()+fmiLibDir+"install/lib";
+#ifdef _WIN32
+    lib.append(" -llibfmilib_shared");
+#else
+    lib.append(" -lfmilib_shared");  //Remove extra "lib" prefix in Linux
+#endif
+    compileComponentLibrary(libDirInfo.absoluteFilePath()+typeName+"_lib.xml", pGenerator, lib, inc);
 
 
     //pGenerator->generateFromFmu(QString(path.c_str()), QString(targetPath.c_str()));

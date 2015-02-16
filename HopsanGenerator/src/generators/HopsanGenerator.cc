@@ -983,6 +983,11 @@ QString HopsanGenerator::getBinPath() const
     return mBinPath;
 }
 
+QString HopsanGenerator::getHopsanRootPath() const
+{
+    return mHopsanRootPath;
+}
+
 QString HopsanGenerator::getGccPath() const
 {
     return mGccPath;
