@@ -25,6 +25,24 @@
 ******************************
     Version History
 ******************************
+0.6.10  (2015-02-??)
+- Feature:
+
+- New component: SignalCounter
+- New component: Sample and hold
+
+- Fixed component:
+
+- Enhancement: Parameter for custom message in stop simulation component
+- Enhancement: The stop simulation function will always print the current simulation time and the name of the component it was called from, parent systems will also print this information 
+
+- Bug fix: When changing scaling of parameter, sometimes the value will not change, happened if the new value was the same as the default value (even if unit was different)
+- Bug fix: When writing an invalid parameter value the value is reset but any applied custom scale is not reset resulting in incorrect actual value
+- Bug fix: Recent models list is not updated when you have opened a new model, only after restarting Hopsan
+- Bug fix: It is not possible to load start values in c subsystems from hmf due to # being considered an illegal character
+- Bug fix: It is not possible to import top-level system parameters in HopsanCLI
+
+------------------------------
 0.6.9   (2014-11-25)
 - Feature: New LookupTable1D component for PLO v1 and v2 format files
 - Feature: HCOM command for writing (or appending) text strings to files
@@ -79,6 +97,7 @@
 - Fixed: Simulink export can now load model even if original model was not saved
 - Fixed: Corrected number of state variables in FMI export for model exchange
 
+------------------------------
 0.6.8   (2014-07-11)
 - Feature: Made it possible to use expressions when specifying plot generations from HCOM
 - Feature: Writing multiple HCOM commands on the same line separated by semicolons
@@ -129,6 +148,7 @@
 - Fixed: Animation display component no longer shows numbers outside its icon
 - Fixed: Aliases no longer lose their connection to plot curves when clicking "ok" in component properties dialog
 
+------------------------------
 0.6.7    (2014-05-14)
 - Feature: It is now possible to change the unit for constants and start values in the component properties dialog.
            Only registered unit scales will be available
@@ -185,7 +205,7 @@
 - Fixed: Removing parameters in sensitivity dialog does not remove min and max boxes
 - Fixed: Assigning parameters with system parameters from HCOM does not work
 
-
+------------------------------
 0.6.6    (2014-04-07)
 
 - Feature: Find widget capable of finding by component name, system variables, aliases, highlighting the found component(s)
@@ -253,7 +273,7 @@
 
 - Documentation: Python function documentation is not up to date after python functions have changed names and some new functions have been added.
 
-
+------------------------------
 0.6.5    (2014-02-14)
 
 - Feature: SAPA and REPA commands in HCOM (Save and read parameter files from scripts)
@@ -323,7 +343,7 @@
 - Fixed: Clicking debug multiple time opens multiple dialogues even if one is already open
 - Fixed: Load-order in the HopsanCore hmdf loader. To avoid warnings while loading components using nested subsystem parameters
 
-
+------------------------------
 0.6.4    (2013-12-02)
 
 - Feature: True 64-bit GUI and CLI application version (for Ms Windows) to make use of more then 4GB ram. (*Ubuntu releases were already 64-bit)
@@ -371,13 +391,13 @@
 - Fixed: Drag direction when reversing in MechanicalVehicle1D
 - Fixed: Translational multi-port mass overrides start values with 0
 
-
+------------------------------
 0.6.3a    (2013-10-28)
 - Fixed: Update notification and auto updater was not working (since 0.6.0)
 - Enhancement: If you import variables and then run a simulation resulting in variables with same name, the model variables will be shown in the PlotWidget.
                Imported variables are still shown under the __Imported__ category.
 
-
+------------------------------
 0.6.3
 - Feature: HCOM: Command for removing components
 - Feature: HCOM: min and max functions for scalars
@@ -425,7 +445,7 @@
 
 - Other: Removed option to automatically load last session at startup
 
-
+------------------------------
 0.6.2
 - Update: Updated to Qt 4.8.5 (Windows)
 
@@ -467,7 +487,7 @@
 
 - Fixed: Other related issues that were never entered into the issue tracker
 
-
+------------------------------
 0.6.1
 - Feature: Import CSV data directly to plot window
 - Feature: Plot window can be opened without simulating the model first
@@ -494,6 +514,7 @@
 
 - Other: Fixed bad parameterization of inline axial piston machine example model
 
+------------------------------
 0.6.0
 - Important: The handling of Parameter Startvalues and "dynamic" parameter/ports have changed significantly in this release.
              Read the important information above.
