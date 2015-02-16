@@ -1348,12 +1348,12 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{";
     Q_FOREACH(const QString &file, getHopsanCoreSourceFiles())
     {
-        if(!replaceInFile(savePath+"/HopsanCore/"+file, before, after))
+        if(!replaceInFile(savePath+"/"+file, before, after))
             return;
     }
     Q_FOREACH(const QString &file, getHopsanCoreIncludeFiles())
     {
-        if(!replaceInFile(savePath+"/HopsanCore/"+file, before, after))
+        if(!replaceInFile(savePath+"/"+file, before, after))
             return;
     }
     QStringList componentFiles;
@@ -1374,11 +1374,23 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
     QTextStream clBatchStream(&clBatchFile);
+    clBatchStream << "set PATH="+mGccPath+";%PATH%\n";
     clBatchStream << mGccPath+"gcc.exe -c -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c\n";
-    clBatchStream << mGccPath+"g++ -w -shared -static -static-libgcc -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".dll "+modelName+".o HopsanFMU.cpp HopsanCore/src/Component.cc HopsanCore/src/ComponentSystem.cc HopsanCore/src/HopsanEssentials.cc HopsanCore/src/HopsanTypes.cc HopsanCore/src/Node.cc HopsanCore/src/Nodes.cc HopsanCore/src/Parameters.cc HopsanCore/src/Port.cc HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc HopsanCore/src/ComponentUtilities/CSVParser.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc HopsanCore/src/ComponentUtilities/PLOParser.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc HopsanCore/src/ComponentUtilities/Integrator.cc HopsanCore/src/ComponentUtilities/IntegratorLimited.cc HopsanCore/src/ComponentUtilities/ludcmp.cc HopsanCore/src/ComponentUtilities/matrix.cc HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp HopsanCore/src/CoreUtilities/GeneratorHandler.cpp HopsanCore/src/CoreUtilities/HmfLoader.cc HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc HopsanCore/src/CoreUtilities/LoadExternal.cc HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp HopsanCore/src/CoreUtilities/StringUtilities.cpp componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp -IHopsanCore/include -IcomponentLibraries/defaultLibrary -IHopsanCore/Dependencies/rapidxml-1.13 -IHopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser\n";
+    clBatchStream << mGccPath+"g++ -w -shared -static -static-libgcc -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".dll "+modelName+".o HopsanFMU.cpp";
+    // Add HopsanCore (and necessary dependency) src files
+    Q_FOREACH(const QString &srcFile, getHopsanCoreSourceFiles())
+    {
+        clBatchStream << " " << srcFile;
+    }
+    // Add HopsanCore (and necessary dependency) include paths
+    Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
+    {
+       clBatchStream << " -I"+incPath;
+    }
+    clBatchStream << "\n";
     clBatchFile.close();
 
-    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compile.bat");
+    callProcess("cmd.exe", QStringList() << "/c" << "cd /d" + savePath + " & compile.bat");
 
     if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
         return;

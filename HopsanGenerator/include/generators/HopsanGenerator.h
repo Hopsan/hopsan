@@ -84,7 +84,7 @@ protected:
     bool runUnixCommand(QString cmd) const;
     bool replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const;
     bool copyIncludeFilesToDir(QString path, bool skipDependencies=false) const;
-    bool copySourceFilesToDir(QString path) const;
+    bool copySourceFilesToDir(QString tgtPath) const;
     bool copyDefaultComponentCodeToDir(const QString &path) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     bool copyFile(const QString &source, const QString &target) const;
@@ -97,6 +97,7 @@ protected:
     QString mTempPath;
     QString mCoreIncludePath;
     QString mBinPath;
+    QString mHopsanRootPath;
     QString mGccPath;
 
     QTextEdit *mpTextEdit;

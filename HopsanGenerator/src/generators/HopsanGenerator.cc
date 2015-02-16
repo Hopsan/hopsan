@@ -68,6 +68,7 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
     mTarget = "";
     mCoreIncludePath = coreIncludePath;
     mBinPath = binPath;
+    mHopsanRootPath = mBinPath+"../";
     mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
 
     mShowDialog = showDialog;
@@ -985,11 +986,11 @@ QString HopsanGenerator::getGccPath() const
 
 bool HopsanGenerator::assertFilesExist(const QString &path, const QStringList &files) const
 {
-    Q_FOREACH(const QString file, files)
+    Q_FOREACH(const QString &file, files)
     {
         if(!QFile::exists(path+"/"+file))
         {
-            printErrorMessage("File not found: "+file+".");
+            printErrorMessage("File not found: "+file);
             return false;
         }
     }
@@ -1087,24 +1088,15 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
 
     //Make sure HopsanCore include files are available
     QStringList includeFiles = getHopsanCoreIncludeFiles(skipDependencies);
-
-    if(!assertFilesExist(mBinPath, includeFiles))
+    if(!assertFilesExist(mHopsanRootPath, includeFiles))
         return false;
 
-    QDir saveDir;
-    saveDir.setPath(path);
-    saveDir.mkpath("HopsanCore/include");
-    saveDir.mkpath("HopsanCore/include/Components");
-    saveDir.mkpath("HopsanCore/include/ComponentUtilities");
-    saveDir.mkpath("HopsanCore/include/CoreUtilities");
-    saveDir.mkpath("componentLibraries/defaultLibrary/code");
-    saveDir.mkpath("HopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser");
-    saveDir.mkpath("HopsanCore/Dependencies/rapidxml-1.13");
-
+    QDir saveDir(path);
+    saveDir.mkpath(".");
     Q_FOREACH(const QString &file, includeFiles)
     {
-        if(!copyFile(mBinPath+file, path+file.right(file.size()-3))) return false;
-        QFile::setPermissions(path+file.right(file.size()-3), QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
+        if(!copyFile(mHopsanRootPath+file, path+file)) return false;
+        QFile::setPermissions(path+file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
     }
 
     return true;
@@ -1113,29 +1105,24 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
 
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
-bool HopsanGenerator::copySourceFilesToDir(QString path) const
+bool HopsanGenerator::copySourceFilesToDir(QString tgtPath) const
 {
     printMessage("Copying HopsanCore source files...");
 
-    if(!path.endsWith("/") && !path.endsWith("\\"))
-        path.append("/");
+    if(!tgtPath.endsWith("/") && !tgtPath.endsWith("\\"))
+        tgtPath.append("/");
 
     //Make sure HopsanCore source files are available
     QStringList srcFiles = getHopsanCoreSourceFiles();
-    if(!assertFilesExist(mBinPath, srcFiles))
+    if(!assertFilesExist(mHopsanRootPath, srcFiles))
         return false;
 
-    QDir saveDir;
-    saveDir.setPath(path);
-    saveDir.mkpath("HopsanCore/src/ComponentUtilities");
-    saveDir.mkpath("HopsanCore/src/CoreUtilities");
-    saveDir.mkpath("componentLibraries/defaultLibrary/code");
-    saveDir.mkpath("HopsanCore/Dependencies/libcsv_parser++-1.0.0");
-
+    QDir saveDir(tgtPath);
+    saveDir.mkpath(".");
     Q_FOREACH(const QString &file, srcFiles)
     {
-        if(!copyFile(mBinPath+file, path+file.right(file.size()-3))) return false;
-        QFile::setPermissions(path+file.right(file.size()-3), QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
+        if(!copyFile(mHopsanRootPath+file, tgtPath+file)) return false;
+        QFile::setPermissions(tgtPath+file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
     }
 
     return true;
@@ -1212,10 +1199,18 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
     QFile sourceFile;
     sourceFile.setFileName(source);
     QFileInfo sourceFileInfo(sourceFile);
+    // Remove target file if it already exists
     if(QFile::exists(target))
     {
         QFile::remove(target);
     }
+    // Create directory if it does not exist before copying
+    QDir tgtDir = QFileInfo(target).dir();
+    if (!tgtDir.exists())
+    {
+        tgtDir.mkpath(".");
+    }
+    // Now copy the files
     if(!sourceFile.copy(target))
     {
         printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target+".");

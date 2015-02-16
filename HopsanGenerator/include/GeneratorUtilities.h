@@ -213,9 +213,11 @@ QString replaceTag(QString str, QString tag, QString replacement);
 QString replaceTags(QString str, QStringList tags, QStringList replacements);
 
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
+
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files);
 QStringList getHopsanCoreSourceFiles();
 QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
+QStringList getHopsanCoreIncludePaths(bool skipDependencies=false);
 
 bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
