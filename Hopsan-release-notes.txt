@@ -26,21 +26,32 @@
     Version History
 ******************************
 0.6.10  (2015-02-??)
-- Feature:
+- Feature: Added flag to HCOM echo command for ignoring error messages
+- Feature: Added support for componentLibraries/autoLibs/ folder, from where component libraries are automatically loaded at startup
 
 - New component: SignalCounter
 - New component: Sample and hold
 
-- Fixed component:
+- Fixed component: Area ratio parameter in over-center valve is now defined correctly
+- Fixed component: Displacement setting for pressure-controlled pump can no longer exceed 1
 
 - Enhancement: Parameter for custom message in stop simulation component
 - Enhancement: The stop simulation function will always print the current simulation time and the name of the component it was called from, parent systems will also print this information 
+- Enhancement: Optimization now prints error messages
+- Enhancement: Sensitivity analysis can now use system parameters
+- Enhancement: Sensitivity analysis plot windows now show variable names in legend
 
 - Bug fix: When changing scaling of parameter, sometimes the value will not change, happened if the new value was the same as the default value (even if unit was different)
 - Bug fix: When writing an invalid parameter value the value is reset but any applied custom scale is not reset resulting in incorrect actual value
 - Bug fix: Recent models list is not updated when you have opened a new model, only after restarting Hopsan
 - Bug fix: It is not possible to load start values in c subsystems from hmf due to # being considered an illegal character
 - Bug fix: It is not possible to import top-level system parameters in HopsanCLI
+- Bug fix: Applying values after optimization now works again
+- Bug fix: Optimization output displays are now updated correctly after finished optimization
+- Bug fix: SymHop sign() function now returns correct value for negative input
+- Bug fix: Sensitivity analysis can now be aborted
+- Bug fix: Icons for animation and loss calculation are now always disabled when welcome screen is open
+- Bug fix: Check valve components no longer crash when used in animation
 
 ------------------------------
 0.6.9   (2014-11-25)
