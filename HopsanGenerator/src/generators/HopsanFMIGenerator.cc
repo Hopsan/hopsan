@@ -1560,7 +1560,7 @@ void HopsanFMIGenerator::generateToFmu2(QString savePath, ComponentSystem *pSyst
             InterfaceVarSpec var = port.vars[j];
             QDomElement varElement = domDocument.createElement("ScalarVariable");
             varElement.setAttribute("name", port.component+"_"+port.port+"_"+var.dataName);
-            varElement.setAttribute("valueReference", vr);
+            varElement.setAttribute("valueReference", (unsigned int)vr);
             if(var.causality == InterfaceVarSpec::Input)
             {
                 varElement.setAttribute("causality", "input");
@@ -1893,7 +1893,7 @@ void HopsanFMIGenerator::generateToFmu2(QString savePath, ComponentSystem *pSyst
 
     if(!assertFilesExist(savePath, QStringList() << "fmu2_model_cs.o"))
         return;
-#endif _WIN32
+#endif
 
     //------------------------------------------------------------------//
     printMessage("Compiling C++ files");
@@ -1966,7 +1966,7 @@ void HopsanFMIGenerator::generateToFmu2(QString savePath, ComponentSystem *pSyst
 
     if(!assertFilesExist(savePath, objectFiles))
         return;
-#endif _WIN32
+#endif
 
     //------------------------------------------------------------------//
     printMessage("Linking");

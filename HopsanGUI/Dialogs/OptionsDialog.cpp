@@ -533,8 +533,10 @@ void OptionsDialog::setValues()
         }
     }
 
+#ifdef _WIN32
     gpConfig->setGcc32Dir(mpCompiler32LineEdit->text());
     gpConfig->setGcc64Dir(mpCompiler64LineEdit->text());
+#endif
 
     gpConfig->setRemoteHopsanAddress(mpRemoteHopsanAddress->text());
     gpConfig->setRemoteHopsanDispatchAddress(mpRemoteHopsanDispatchAddress->text());

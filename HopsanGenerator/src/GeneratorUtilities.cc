@@ -354,8 +354,8 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         //output = output.remove(output.size()-1, 1);
     }
 #elif linux
-    QString gccCommand = "cd \""+path+"\" && gcc "+flags+" ";
-    gccCommand.append(c+" -fpermissive -o "+o+".so "+i+" "+l);
+    QString gccCommand = "cd \""+wdPath+"\" && gcc "+cflags+" ";
+    gccCommand.append(srcFiles+" -fpermissive -o "+o+".so "+inclPaths+" "+lflags);
     //qDebug() << "Command = " << gccCommand;
     gccCommand +=" 2>&1";
     FILE *fp;
