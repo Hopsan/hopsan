@@ -286,6 +286,10 @@ void MainWindow::createContents()
     mpHVCWidget = new HVCWidget(this);
     mpHVCWidget->setVisible(false);
 
+    // Create the data explorer widget
+    mpDataExplorer = new DataExplorer(this);
+    mpDataExplorer->hide();
+
     //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
     mpPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -409,11 +413,6 @@ void MainWindow::initializeWorkspace()
     // Create the plot widget, only once! :)
     gpPlotWidget = new PlotWidget(this);
     gpPlotWidget->hide();
-
-    // Create the data explorer widget
-    //! @todo does it need to exist in memory all the time?
-    mpDataExplorer = new DataExplorer(this);
-    mpDataExplorer->hide();
 
     // Create the find widget
     gpFindWidget = new FindWidget(this);
@@ -752,6 +751,11 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpImportFMUAction, "Import Functional Mock-up Unit (FMU).");
     connect(mpImportFMUAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpImportDataFileAction = new QAction(tr("Import data file"), this);
+    mHelpPopupTextMap.insert(mpImportDataFileAction, "Import (PLO or CSV) data file.");
+    connect(mpImportDataFileAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    connect(mpImportDataFileAction, SIGNAL(triggered()), mpDataExplorer, SLOT(openImportDataDialog()));
+
     mpExportToSimulinkAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulink.png"), tr("Export to Simulink S-function Source Files"), this);
     mHelpPopupTextMap.insert(mpExportToSimulinkAction, "Export model to Simulink S-function.");
     connect(mpExportToSimulinkAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
@@ -979,6 +983,7 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOpenDataExplorerAction);
     mpToolsMenu->addAction(mpOpenFindWidgetAction);
 
+    mpImportMenu->addAction(mpImportDataFileAction);
     mpImportMenu->addAction(mpLoadModelParametersAction);
     mpImportMenu->addSeparator();
     mpImportMenu->addAction(mpImportFMUAction);

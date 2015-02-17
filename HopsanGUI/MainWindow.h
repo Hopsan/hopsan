@@ -141,6 +141,7 @@ public:
     QAction *mpSaveAsAction;
     QAction *mpExportModelParametersAction;
     QAction *mpImportFMUAction;
+    QAction *mpImportDataFileAction;
     QAction *mpExportToSimulinkAction;
     QAction *mpExportToSimulinkCoSimAction;
     QAction *mpExportToFMUME32Action;
