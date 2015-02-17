@@ -29,7 +29,11 @@ int main(int argc, char* argv[])
         cout << PRINTCLIENT << "Connecting to: " << serverAddrOption.getValue() << ":" << serverPortOption.getValue()  << endl;
 
         // Prepare our context and socket
-        zmq::context_t context (1);
+#ifdef _WIN32
+        zmq::context_t context(1, 63);
+#else
+        zmq::context_t context(1);
+#endif
         RemoteHopsanClient rhopsan(context);
         rhopsan.connectToServer(serverAddrOption.getValue(), serverPortOption.getValue());
 
