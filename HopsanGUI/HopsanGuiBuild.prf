@@ -95,6 +95,7 @@ defineReplace(setPythonQtPathInfo){
         PYTHONQT_PATHS *= $${PWD}/../Dependencies/PythonQt2.1_Qt4.8_x64
     } else {
         # 32 bit version or Linux / Mac
+        PYTHONQT_PATHS *= $${PWD}/../Dependencies/PythonQt3.0
         PYTHONQT_PATHS *= $${PWD}/../Dependencies/PythonQt2.1_Qt4.8
     }
     PYTHONQT_PATH = $$selectPath($$externalSrc, $$PYTHONQT_PATHS, "pythonqt")
