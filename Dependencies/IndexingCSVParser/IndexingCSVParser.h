@@ -27,6 +27,9 @@ public:
     void setCommentChar(char com);
     void setNumLinesToSkip(size_t num);
     char autoSetSeparatorChar(const std::vector<char> &rAlternatives);
+    char getSeparatorChar() const;
+    char getCommentChar() const;
+    size_t getNumLinesToSkip() const;
 
     // ----- File methods -----
     bool openFile(const char* filePath);

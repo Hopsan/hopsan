@@ -80,6 +80,24 @@ char IndexingCSVParser::autoSetSeparatorChar(const std::vector<char> &rAlternati
     return mSeparatorChar;
 }
 
+//! @brief Returns the separator character used
+char IndexingCSVParser::getSeparatorChar() const
+{
+    return mSeparatorChar;
+}
+
+//! @brief Returns the comment character used
+char IndexingCSVParser::getCommentChar() const
+{
+    return mCommentChar;
+}
+
+//! @brief Returns the number of initial lines to skip
+size_t IndexingCSVParser::getNumLinesToSkip() const
+{
+    return mNumSkipLines;
+}
+
 //! @brief Open a file in binary read-only mode
 //! @param[in] filePath Path to the file to open
 //! @returns true if the files was opened successfully else false
@@ -109,7 +127,7 @@ void IndexingCSVParser::rewindFile()
 //! @brief Run indexing on the file, to find all separator positions
 void IndexingCSVParser::indexFile()
 {
-    rewind(mpFile);
+    rewindFile();
     readUntilData();
     mSeparatorPositions.clear();
 
@@ -129,7 +147,7 @@ void IndexingCSVParser::indexFile()
         // Register Start of line position
         rLine.push_back(pos);
         // Now read line until and register each separator char position
-        while (c!='\n' && c!='\r') //!< @todo maybe need to check eof
+        while (c!='\n' && c!='\r' && c!=EOF)
         {
             if (c==mSeparatorChar)
             {
@@ -331,7 +349,7 @@ bool IndexingCSVParser::getRow(std::vector<string> &rData)
         size_t e = ftell(mpFile);
         int c = fgetc(mpFile);
 
-        if (c == mSeparatorChar || c == '\n' || c == '\r')
+        if (c == mSeparatorChar || c == '\n' || c == '\r' || c == EOF)
         {
             // Rewind file pointer to start of field
             fseek(mpFile, b, SEEK_SET);
@@ -354,8 +372,8 @@ bool IndexingCSVParser::getRow(std::vector<string> &rData)
                 b = ftell(mpFile); //!< @todo maybe can use +1 since binary mode (calc bytes) might be faster
             }while(c == '\r');
 
-            // Break loop when we have reachen EOL
-            if (c == '\n')
+            // Break loop when we have reached EOL or EOF
+            if (c == '\n' || c == EOF)
             {
                 // If we got a LF then peek to see if EOF reached, if so gooble char to set EOF flag on file
                 if (peek(mpFile) == EOF)

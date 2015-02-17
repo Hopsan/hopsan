@@ -16,6 +16,20 @@
 namespace indcsvp
 {
 
+inline void replaceDecimalComma(char* pBuff)
+{
+    size_t i=0;
+    while (pBuff[i] != '\0')
+    {
+        if (pBuff[i] == ',')
+        {
+            pBuff[i] = '.';
+            break;
+        }
+        ++i;
+    }
+}
+
 //! @brief The default converter template function
 //! @details This function will allways fail, template speciallisations for each type are required
 //! @tparam T The type that we want to interpret the contests of pBuffer as.
@@ -23,7 +37,7 @@ namespace indcsvp
 //! @param[out] rIsOK Reference to bool flag tellig you if parsing completed successfully
 //! @returns Type default constructed value;
 template <typename T>
-T converter(const char* pBuff, bool &rIsOK)
+T converter(char* pBuff, bool &rIsOK)
 {
     rIsOK = false;
     return T();
@@ -34,15 +48,18 @@ T converter(const char* pBuff, bool &rIsOK)
 //! @param[out] rIsOK Reference to bool flag telling you if parsing completed successfully
 //! @returns The contents of pBuff as a std::string
 template<> inline
-std::string converter<std::string>( const char* pBuff, bool &rIsOK)
+std::string converter<std::string>(char* pBuff, bool &rIsOK)
 {
     rIsOK = true;
     return std::string(pBuff);
 }
 
 template<> inline
-double converter<double>( const char* pBuff, bool &rIsOK)
+double converter<double>(char* pBuff, bool &rIsOK)
 {
+#ifdef INDCSVP_REPLACEDECIMALCOMMA
+    replaceDecimalComma(pBuff);
+#endif
     char *pEnd;
     double d = std::strtod(pBuff, &pEnd);
     rIsOK = (*pEnd == '\0');
@@ -50,7 +67,7 @@ double converter<double>( const char* pBuff, bool &rIsOK)
 }
 
 template<> inline
-unsigned long int converter<unsigned long int>( const char* pBuff, bool &rIsOK)
+unsigned long int converter<unsigned long int>(char* pBuff, bool &rIsOK)
 {
     char *pEnd;
     long int ul = strtoul(pBuff, &pEnd, 10); //!< @todo maybe support other bases then 10, see strtol documentation
@@ -59,7 +76,7 @@ unsigned long int converter<unsigned long int>( const char* pBuff, bool &rIsOK)
 }
 
 template<> inline
-long int converter<long int>( const char* pBuff, bool &rIsOK)
+long int converter<long int>(char* pBuff, bool &rIsOK)
 {
     char *pEnd;
     long int i = strtol(pBuff, &pEnd, 10); //!< @todo maybe support other bases then 10, see strtol documentation
@@ -99,6 +116,7 @@ public:
     {
         if (size > mSize)
         {
+            // Size is larger then before (realloc memmory)
             mpCharArray = static_cast<char*>(realloc(mpCharArray, size));
             if (mpCharArray)
             {
@@ -250,11 +268,11 @@ T IndexingCSVParser::getIndexedPosAs(const size_t row, const size_t col, bool &r
             size_t e = mSeparatorPositions[row][col+1];
             fseek(mpFile, b, SEEK_SET);
 
-            char buff[e-b+1];
-            char* rc = fgets(buff, e-b+1, mpFile);
+            CharBuffer cb(e-b+1);
+            char* rc = fgets(cb.buff(), e-b+1, mpFile);
             if (rc)
             {
-                return converter<T>(buff, rParseOK);
+                return converter<T>(cb.buff(), rParseOK);
             }
         }
     }
@@ -266,22 +284,24 @@ template <typename T>
 bool IndexingCSVParser::getRowAs(std::vector<T> &rData)
 {
     bool isSuccess = true;
+    CharBuffer cb;
+
     size_t b = ftell(mpFile);
     while (true)
     {
         size_t e = ftell(mpFile);
         int c = fgetc(mpFile);
 
-        if (c == mSeparatorChar || c == '\n' || c == '\r')
+        if (c == mSeparatorChar || c == '\n' || c == '\r' || c == EOF)
         {
             // Rewind file pointer to start of field
             fseek(mpFile, b, SEEK_SET);
-            char buff[e-b+1];
-            char* rc = fgets(buff, e-b+1, mpFile);
+            cb.resize(e-b+1);
+            char* rc = fgets(cb.buff(), e-b+1, mpFile);
             if (rc)
             {
                 bool parseOK;
-                rData.push_back(converter<T>(buff, parseOK));
+                rData.push_back(converter<T>(cb.buff(), parseOK));
                 // Indicate we failed to parse, but we still need to gobble the entire line incase we reach EOF
                 if (!parseOK)
                 {
@@ -301,8 +321,8 @@ bool IndexingCSVParser::getRowAs(std::vector<T> &rData)
                 b = ftell(mpFile); //!< @todo maybe can use +1 since binary mode (calc bytes) might be faster
             }while(c == '\r');
 
-            // Break loop when we have reachen EOL
-            if (c == '\n')
+            // Break loop when we have reachen EOL or EOF
+            if (c == '\n' || c == EOF)
             {
                 // If we got a LF then peek to see if EOF reached, if so gooble char to set EOF flag on file
                 if (peek(mpFile) == EOF)
