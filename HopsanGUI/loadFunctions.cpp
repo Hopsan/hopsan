@@ -400,8 +400,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
             QDomElement paramscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PARAMETERSCALES).firstChildElement(HMF_PARAMETERSCALE);
             while (!paramscale.isNull())
             {
-                UnitScale us = UnitScale(paramscale.attribute(HMF_PARAMETERSCALEUNIT), paramscale.attribute(HMF_PARAMETERSCALESCALE));
-                us.mPhysicalQuantity = paramscale.attribute(HMF_PARAMETERSCALEQUANTITY);
+                UnitScale us = UnitScale(paramscale.attribute(HMF_PARAMETERSCALEQUANTITY), paramscale.attribute(HMF_PARAMETERSCALEUNIT), paramscale.attribute(HMF_PARAMETERSCALESCALE));
                 pObj->registerCustomParameterUnitScale(paramscale.attribute(HMF_PARAMETERSCALEPARAMNAME), us);
                 //! @todo The actual custom value is ignored here, since only scale can be registered, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
                 paramscale = paramscale.nextSiblingElement(HMF_PARAMETERSCALE);

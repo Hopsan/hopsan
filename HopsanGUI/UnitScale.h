@@ -33,6 +33,7 @@ public:
     UnitScale();
     UnitScale(const QString &rUnit, const QString &rScale);
     UnitScale(const QString &rUnit, const double scale);
+    UnitScale(const QString &rQuantity, const QString &rUnit, const QString &rScale);
     void clear();
     double toDouble() const;
     double toDouble(const double def) const;
@@ -49,8 +50,8 @@ public:
     bool operator== (const UnitScale &rOther);
     bool operator!= (const UnitScale &rOther);
 
+    QString mQuantity;
     QString mUnit;
     QString mScale;
-    QString mPhysicalQuantity;
 };
 #endif // UNITSCALE_H

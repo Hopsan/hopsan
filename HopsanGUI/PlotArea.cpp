@@ -181,9 +181,10 @@ TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pVa
         //! @todo what if time = 0
         //! @todo would be nice if we could sort on scale size
         QMap<QString,double> units = gpConfig->getUnitScales(mpTimeOrFrequency->getDataName());
-        QString currUnit = mpTimeOrFrequency->getPlotScaleDataUnit();
+        QString currUnit = mpTimeOrFrequency->getActualPlotDataUnit();
         if (currUnit.isEmpty())
         {
+            //! @todo if we get here something is wrong (time should alwasy have a unit) /Peter
             currUnit = gpConfig->getDefaultUnit(mpTimeOrFrequency->getDataName());
         }
         QMap<QString,double>::iterator it;

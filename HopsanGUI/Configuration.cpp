@@ -628,14 +628,14 @@ void Configuration::loadUnitScales(QDomElement &rDomElement)
         if (!siunit.isEmpty())
         {
             qit.value().siunit = siunit;
-            qit.value().customScales.insert(siunit, UnitScale(siunit, "1.0"));
+            qit.value().customScales.insert(siunit, UnitScale(quantity, siunit, "1.0"));
         }
 
         QDomElement xmlUnitscale = xmlQuantity.firstChildElement(CFG_UNITSCALE);
         while (!xmlUnitscale.isNull())
         {
             QString unit = xmlUnitscale.attribute(CFG_UNIT);
-            qit.value().customScales.insert(unit, UnitScale(unit, xmlUnitscale.text()));
+            qit.value().customScales.insert(unit, UnitScale(quantity, unit, xmlUnitscale.text()));
             xmlUnitscale = xmlUnitscale.nextSiblingElement(CFG_UNITSCALE);
         }
 
@@ -950,7 +950,6 @@ void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString
     if (mUnitScales.contains(rPhysicalQuantity))
     {
         rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitScale("",0));
-        rUnitScale.mPhysicalQuantity = rPhysicalQuantity;
     }
 }
 

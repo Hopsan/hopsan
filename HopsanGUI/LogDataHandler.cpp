@@ -49,6 +49,22 @@
 #include "ComponentUtilities/CSVParser.h"
 #include "HopsanTypes.h"
 
+UnitScale figureOutCutomUnitScale(QString quantity, double scale)
+{
+    QList<UnitScale> uss;
+    gpConfig->getUnitScales(quantity,uss);
+    Q_FOREACH(const UnitScale &us, uss)
+    {
+        double s = us.toDouble();
+        if (fuzzyEqual(us.toDouble(), scale, 0.1*qMin(s,scale)))
+        {
+            return us;
+        }
+    }
+    return UnitScale();
+}
+
+
 //! @brief Constructor for plot data object
 //! @param pParent Pointer to parent container object
 LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
@@ -492,10 +508,20 @@ void LogDataHandler::importFromPlo(QString importFilePath)
         if (importedPLODataVector.first().mDataName == TIMEVARIABLENAME)
         {
             pTimeVec = insertTimeVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
+            UnitScale us = figureOutCutomUnitScale(TIMEVARIABLENAME, importedPLODataVector.first().mPlotScale);
+            if (!us.isOne() && !us.isEmpty())
+            {
+                pTimeVec->setCustomUnitScale(us);
+            }
         }
         else if (importedPLODataVector.first().mDataName == FREQUENCYVARIABLENAME)
         {
             pFreqVec = insertFrequencyVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
+            UnitScale us = figureOutCutomUnitScale(FREQUENCYVARIABLENAME, importedPLODataVector.first().mPlotScale);
+            if (!us.isOne() && !us.isEmpty())
+            {
+                pFreqVec->setCustomUnitScale(us);
+            }
         }
 
         // First decide if we should skip the first column (if time or frequency vector)
@@ -944,7 +970,9 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                             QString defaultTimeUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
                             if (defaultTimeUnit != pSysTimeVec->getDataUnit())
                             {
-                                pSysTimeVec->setCustomUnitScale(UnitScale(defaultTimeUnit, gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                                UnitScale us;
+                                gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit, us);
+                                pSysTimeVec->setCustomUnitScale(us);
                             }
                         }
 
@@ -978,7 +1006,9 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                             QString defaultTimeUnit = gpConfig->getDefaultUnit(TIMEVARIABLENAME);
                             if (defaultTimeUnit != pVarTimeVec->getDataUnit())
                             {
-                                pVarTimeVec->setCustomUnitScale(UnitScale(defaultTimeUnit, gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit)));
+                                UnitScale us;
+                                gpConfig->getUnitScale(TIMEVARIABLENAME, defaultTimeUnit, us);
+                                pVarTimeVec->setCustomUnitScale(us);
                             }
 
                             pNewData = insertTimeDomainVariable(pVarTimeVec, dataVec, pVarDesc);
@@ -988,6 +1018,9 @@ void LogDataHandler::collectLogDataFromModel(bool overWriteLastGeneration)
                         {
                             pNewData = insertTimeDomainVariable(pVarTimeVec, dataVec, pVarDesc);
                         }
+
+                        //! @todo right now default time unit scales are applied in here but the default unit scale on the data is applied later when plotting, maybe it should also be applied here to the data variable instead of only in the plot
+                        //! @todo or the other way around, maybe default time scale should only be applied in the plot and not to the data, but there was some problem with this that is why the code is in here (do not remember what exactly) /Peter
 
                         UnitScale us;
                         pModelObject->getCustomPlotUnitOrScale(pVarDesc->mPortName+"#"+pVarDesc->mDataName, us);

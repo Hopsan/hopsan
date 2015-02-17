@@ -30,6 +30,19 @@ UnitScale::UnitScale(const QString &rUnit, const double scale) : mUnit(rUnit)
     setScale(scale);
 }
 
+//! @brief Constructor for a quantity / unit / scale (QString) combination
+UnitScale::UnitScale(const QString &rQuantity, const QString &rUnit, const QString &rScale) :
+    mQuantity(rQuantity), mUnit(rUnit), mScale(rScale)
+{
+    // Check if valid
+    bool isOK;
+    mScale.toDouble(&isOK);
+    if (!isOK)
+    {
+        clear();
+    }
+}
+
 //! @brief Constructor for a unit / scale (QString) combination
 UnitScale::UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale)
 {
@@ -87,7 +100,7 @@ bool UnitScale::isEmpty() const
 bool UnitScale::isOne() const
 {
     //! @todo this may not work if scale is very close to 1 due to truncation
-    return mScale == "1";
+    return mScale == "1" || (mScale == "1.0");
 }
 
 bool UnitScale::isMinusOne() const
@@ -159,5 +172,5 @@ bool UnitScale::operator== (const UnitScale &rOther)
 
 bool UnitScale::operator!= (const UnitScale &rOther)
 {
-    return (mPhysicalQuantity != rOther.mPhysicalQuantity) || (mScale != rOther.mScale) || (mUnit != rOther.mUnit);
+    return (mQuantity != rOther.mQuantity) || (mScale != rOther.mScale) || (mUnit != rOther.mUnit);
 }

@@ -1819,9 +1819,9 @@ void UnitSelectionWidget::setUnitScaling(const UnitScale &rUs)
     {
         int i = mpUnitComboBox->findText(rUs.mUnit);
         // If we did not find anything then add <PhysicalQuantity> in front and try that
-        if (i<0 && !rUs.mPhysicalQuantity.isEmpty())
+        if (i<0 && !rUs.mQuantity.isEmpty())
         {
-            i = mpUnitComboBox->findText(QString("<%1> %2").arg(rUs.mPhysicalQuantity, rUs.mUnit));
+            i = mpUnitComboBox->findText(QString("<%1> %2").arg(rUs.mQuantity, rUs.mUnit));
         }
 
         if (i >= 0)
@@ -1868,7 +1868,7 @@ void UnitSelectionWidget::getSelectedUnitScale(UnitScale &rUnitScale) const
     }
     //! @todo converting to and from text could damage the scale value due to truncation
     rUnitScale.mScale = QString("%1").arg(getSelectedUnitScale());
-    rUnitScale.mPhysicalQuantity = pq;
+    rUnitScale.mQuantity = pq;
 }
 
 bool UnitSelectionWidget::isDefaultSelected() const
