@@ -23,6 +23,7 @@
 //$Id$
 
 #include "csv_parser.hpp"
+#define INDCSVP_REPLACEDECIMALCOMMA
 #include "IndexingCSVParser.h"
 
 #include "ComponentUtilities/CSVParser.h"
