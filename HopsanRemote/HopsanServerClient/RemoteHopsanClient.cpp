@@ -29,33 +29,62 @@ void sendShortClientMessage(zmq::socket_t &rSocket, ClientMessageIdEnumT id)
     rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
 }
 
-
-bool readAckNackServerMessage(zmq::socket_t &rSocket, string &rNackReason)
+bool receiveWithTimeout(zmq::socket_t &rSocket, long timeout, zmq::message_t &rMessage)
 {
-    zmq::message_t response;
-    rSocket.recv(&response);
-    size_t offset=0;
-    size_t id = getMessageId(response, offset);
-    //cout << "id: " << id << endl;
-    if (id == S_Ack)
+    // Create a poll item
+    zmq::pollitem_t pollitems[] = {{ rSocket, 0, ZMQ_POLLIN, 0 }};
+    try
     {
-        return true;
+        // Poll socket for a reply, with timeout
+        zmq::poll(&pollitems[0], 1,  timeout);
+
+        // If we have received a message then read message and return true
+        if (pollitems[0].revents & ZMQ_POLLIN)
+        {
+            rSocket.recv(&rMessage);
+            return true;
+        }
+        // Else we reached timeout, return false
     }
-    else if (id == S_NAck)
+    catch(zmq::error_t e)
     {
-        rNackReason = unpackMessage<std::string>(response, offset);
-    }
-    else
-    {
-        rNackReason = "Got neither Ack nor Nack";
+        //Ignore
     }
     return false;
 }
 
-bool readAckNackServerMessage(zmq::socket_t &rSocket)
+bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNackReason)
+{
+    zmq::message_t response;
+    if(receiveWithTimeout(rSocket, timeout, response))
+    {
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        //cout << "id: " << id << endl;
+        if (id == S_Ack)
+        {
+            return true;
+        }
+        else if (id == S_NAck)
+        {
+            rNackReason = unpackMessage<std::string>(response, offset);
+        }
+        else
+        {
+            rNackReason = "Got neither Ack nor Nack";
+        }
+    }
+    else
+    {
+        rNackReason = "Got either timeout or exception in zmq::recv()";
+    }
+    return false;
+}
+
+bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout)
 {
     string dummy;
-    return readAckNackServerMessage(rSocket, dummy);
+    return readAckNackServerMessage(rSocket, timeout, dummy);
 }
 
 // ---------- Help functions end ----------
@@ -128,7 +157,7 @@ bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &
     sendClientMessage<CM_SetParam_t>(mRWCSocket, C_SetParam, msg);
 
     string err;
-    bool rc = readAckNackServerMessage(mRWCSocket, err);
+    bool rc = readAckNackServerMessage(mRWCSocket, mReceiveTimeout, err);
     if (!rc)
     {
         cout << err << endl;
@@ -140,7 +169,7 @@ bool RemoteHopsanClient::sendModelMessage(const std::string &rModel)
 {
     sendClientMessage<std::string>(mRWCSocket, C_SendingHmf, rModel);
     string err;
-    bool rc = readAckNackServerMessage(mRWCSocket, err);
+    bool rc = readAckNackServerMessage(mRWCSocket, mReceiveTimeout, err);
     if (!rc)
     {
         cout << err << endl;
@@ -154,7 +183,8 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     CM_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
     sendClientMessage<CM_Simulate_t>(mRWCSocket, C_Simulate, msg);
     string err;
-    bool rc = readAckNackServerMessage(mRWCSocket, err);
+    //! @todo blocking read for now, in the future we need to poll while simulating
+    bool rc = readAckNackServerMessage(mRWCSocket, -1, err);
     if (!rc)
     {
         cout << err << endl;
@@ -165,44 +195,46 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
 bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, vector<double> *pData)
 {
     sendClientMessage<string>(mRWCSocket, C_ReqResults, "*"); // Request all
-    //string err;
-    //return readAckNackServerMessage(rSocket,err);
+
     zmq::message_t response;
-    mRWCSocket.recv(&response);
-    cout << "Response size: " << response.size() << endl;
-    size_t offset=0;
-    size_t id = getMessageId(response, offset);
-    if (id == S_ReqResults_Reply)
+    if (receiveWithTimeout(mRWCSocket, response))
     {
-        vector<SM_Variable_Description_t> vars = unpackMessage<vector<SM_Variable_Description_t>>(response,offset);
-        cout << "Received: " << vars.size() << " vars" << endl;
-        size_t nLogSamples;
-        if (!vars.empty())
+        cout << "Response size: " << response.size() << endl;
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        if (id == S_ReqResults_Reply)
         {
-            nLogSamples = vars[0].data.size();
-        }
-
-        pDataNames->reserve(vars.size());
-        pData->reserve(nLogSamples*vars.size());
-
-        for (auto &v : vars)
-        {
-            pDataNames->push_back(v.name);
-            cout << v.name << " " << v.alias << " " << v.unit << " Data:";
-            for (auto d : v.data)
+            vector<SM_Variable_Description_t> vars = unpackMessage<vector<SM_Variable_Description_t>>(response,offset);
+            cout << "Received: " << vars.size() << " vars" << endl;
+            size_t nLogSamples;
+            if (!vars.empty())
             {
-                pData->push_back(d);
-                //cout << " " << d;
+                nLogSamples = vars[0].data.size();
             }
-            cout << endl;
-        }
 
-        return true;
+            pDataNames->reserve(vars.size());
+            pData->reserve(nLogSamples*vars.size());
+
+            for (auto &v : vars)
+            {
+                pDataNames->push_back(v.name);
+                cout << v.name << " " << v.alias << " " << v.unit << " Data:";
+                for (auto d : v.data)
+                {
+                    pData->push_back(d);
+                    //cout << " " << d;
+                }
+                cout << endl;
+            }
+
+            return true;
+        }
+        else
+        {
+            mLastErrorMessage = "Got wrong reply";
+        }
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
@@ -210,23 +242,25 @@ bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
     sendShortClientMessage(mRSCSocket, C_ReqSlot);
 
     zmq::message_t response;
-    mRSCSocket.recv(&response);
-    size_t offset=0;
-    size_t id = getMessageId(response, offset);
-    if (id == S_ReqSlot_Reply)
+    if (receiveWithTimeout(mRSCSocket, response))
     {
-        SM_ReqSlot_Reply_t msg = unpackMessage<SM_ReqSlot_Reply_t>(response, offset);
-        rControlPort = msg.port;
-        assert(response.size() == offset);
-        return true;
-    }
-    else if (id == S_NAck)
-    {
-        mLastErrorMessage = unpackMessage<string>(response, offset);
-    }
-    else
-    {
-        mLastErrorMessage = "Got wrong reply type from server";
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        if (id == S_ReqSlot_Reply)
+        {
+            SM_ReqSlot_Reply_t msg = unpackMessage<SM_ReqSlot_Reply_t>(response, offset);
+            rControlPort = msg.port;
+            assert(response.size() == offset);
+            return true;
+        }
+        else if (id == S_NAck)
+        {
+            mLastErrorMessage = unpackMessage<string>(response, offset);
+        }
+        else
+        {
+            mLastErrorMessage = "Got wrong reply type from server";
+        }
     }
     return false;
 }
@@ -272,7 +306,7 @@ void RemoteHopsanClient::disconnect()
     if (workerConnected())
     {
         sendShortClientMessage(mRWCSocket, C_Bye);
-        readAckNackServerMessage(mRWCSocket); //But we do not care about result
+        readAckNackServerMessage(mRWCSocket, 1000); //But we do not care about result
         mRWCSocket.disconnect(mWorkerAddress.c_str());
         mWorkerAddress.clear();
     }
@@ -291,23 +325,26 @@ bool RemoteHopsanClient::requestMessages()
     sendShortClientMessage(mRWCSocket, C_ReqMessages);
 
     zmq::message_t response;
-    mRWCSocket.recv(&response);
-    size_t offset=0;
-    size_t id = getMessageId(response, offset);
-    if (id == S_ReqMessages_Reply)
+    if (receiveWithTimeout(mRWCSocket, response))
     {
-        vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset);
-        cout << "Received: " << messages.size() << " messages from server" << endl;
-        for (size_t m=0; m<messages.size(); ++m)
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        if (id == S_ReqMessages_Reply)
         {
-            cout << messages[m].type << " " << messages[m].tag << " " << messages[m].message << endl;
+            vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset);
+            cout << "Received: " << messages.size() << " messages from server" << endl;
+            for (size_t m=0; m<messages.size(); ++m)
+            {
+                cout << messages[m].type << " " << messages[m].tag << " " << messages[m].message << endl;
+            }
+            return true;
         }
-        return true;
+        else
+        {
+            mLastErrorMessage = "Got wrong reply";
+        }
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<string> &rTags, std::vector<string> &rMessages)
@@ -315,31 +352,72 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
     sendShortClientMessage(mRWCSocket, C_ReqMessages);
 
     zmq::message_t response;
-    mRWCSocket.recv(&response);
-    size_t offset=0;
-    size_t id = getMessageId(response, offset);
-    if (id == S_ReqMessages_Reply)
+    if (receiveWithTimeout(mRWCSocket, response))
     {
-        vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset);
-        //cout << "Received: " << messages.size() << " messages from server" << endl;
-        rTypes.resize(messages.size());
-        rTags.resize(messages.size());
-        rMessages.resize(messages.size());
-        for (size_t m=0; m<messages.size(); ++m)
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        if (id == S_ReqMessages_Reply)
         {
-            rTypes[m] =  messages[m].type;
-            rTags[m] = messages[m].tag;
-            rMessages[m] = messages[m].message;
+            vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset);
+            //cout << "Received: " << messages.size() << " messages from server" << endl;
+            rTypes.resize(messages.size());
+            rTags.resize(messages.size());
+            rMessages.resize(messages.size());
+            for (size_t m=0; m<messages.size(); ++m)
+            {
+                rTypes[m] =  messages[m].type;
+                rTags[m] = messages[m].tag;
+                rMessages[m] = messages[m].message;
+            }
+            return true;
         }
-        return true;
+        else
+        {
+            mLastErrorMessage = "Got wrong reply";
+        }
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 string RemoteHopsanClient::getLastErrorMessage() const
 {
     return mLastErrorMessage;
+}
+
+bool RemoteHopsanClient::receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage)
+{
+    // Create a poll item
+    zmq::pollitem_t pollitems[] = {{ rSocket, 0, ZMQ_POLLIN, 0 }};
+    try
+    {
+        // Poll socket for a reply, with timeout
+        zmq::poll(&pollitems[0], 1,  mReceiveTimeout);
+        // If we have received a message then read message and return true
+        if (pollitems[0].revents & ZMQ_POLLIN)
+        {
+            rSocket.recv(&rMessage);
+            return true;
+        }
+        // Else we reached timeout, return false
+        else
+        {
+            mLastErrorMessage = "Timeout in receive";
+        }
+    }
+    catch(zmq::error_t e)
+    {
+        mLastErrorMessage = e.what();
+    }
+    return false;
+}
+
+
+void RemoteHopsanClient::setReceiveTimeout(long ms)
+{
+    mReceiveTimeout = ms;
+}
+
+long RemoteHopsanClient::getReceiveTimeout() const
+{
+    return mReceiveTimeout;
 }

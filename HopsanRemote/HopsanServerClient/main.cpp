@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
             }
             else
             {
-                cout << PRINTCLIENT << "Server denied slot request! Because: " << rhopsan.getLastErrorMessage() << endl;
+                cout << PRINTCLIENT << "Could not get a server slot! Because: " << rhopsan.getLastErrorMessage() << endl;
             }
         }
         catch (zmq::error_t e)

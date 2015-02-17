@@ -12,6 +12,8 @@ class RemoteHopsanClient
 {
 public:
     RemoteHopsanClient(zmq::context_t &rContext) : mRSCSocket(rContext, ZMQ_REQ), mRWCSocket(rContext, ZMQ_REQ) {}
+    void setReceiveTimeout(long ms);
+    long getReceiveTimeout() const;
 
     bool connectToServer(std::string zmqaddres);
     bool connectToServer(std::string ip, std::string port);
@@ -37,6 +39,9 @@ public:
     std::string getLastErrorMessage() const;
 
 private:
+    bool receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage);
+
+    long mReceiveTimeout = 8000; //!< Receive timeout in ms
     std::string mLastErrorMessage;
     std::string mServerAddress;
     std::string mWorkerAddress;
