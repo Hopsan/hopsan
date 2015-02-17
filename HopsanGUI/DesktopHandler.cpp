@@ -87,7 +87,7 @@ DesktopHandler::DesktopHandler()
     mMSVC2008X64Path = mExecPath+"MSVC2008_x64/";
     mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
     mFMUPath = mDefaultDocumentsPath+"import/FMU/";
-    mLogDataPath = mDefaultDocumentsPath + "LogData/";
+    mLogDataPath = mDefaultTempPath + "LogData/";
 }
 
 
@@ -164,7 +164,7 @@ void DesktopHandler::setupPaths()
     mBackupPath = getDocumentsPath()+"Backup/";
     mModelsPath = getDocumentsPath()+"Models/";
     mScriptsPath = getDocumentsPath()+"Scripts/";
-    mLogDataPath = getDocumentsPath()+"LogData/";
+    mLogDataPath = getTempPath()+"LogData/";
     mFMUPath = getDocumentsPath()+"import/FMU/";
 
      // Make sure backup folder exists, create it if not
