@@ -125,7 +125,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_MouseTracking, true);
 
-    setWindowFlags(Qt::Dialog);
+    setWindowFlags(Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
     setPalette(gpConfig->getPalette());
 
