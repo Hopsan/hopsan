@@ -54,6 +54,45 @@ QString getStandardLocation(QStandardPaths::StandardLocation type)
 }
 #endif
 
+bool testIfDirectoryIsWritable(QDir &rDir)
+{
+    if (rDir.exists())
+    {
+        bool rc = true;
+        QFile dummyFile(rDir.absoluteFilePath("HOPSANDUMMYTESTFILETHATWILLBEREMOVED"));
+        // Remove file if it already exists
+        if(dummyFile.exists())
+        {
+            rc = dummyFile.remove();
+        }
+        // If we could remove it (and or if we can open a new one (writeable) then all is good
+        if (rc && dummyFile.open(QFile::ReadWrite))
+        {
+            qDebug() << rDir.absolutePath() << " is writable!";
+        }
+        // Else it is not so good
+        else
+        {
+            qDebug() << rDir.absolutePath() << " is NOT writable!";
+            rc = false;
+        }
+        dummyFile.close();
+        dummyFile.remove();
+        return rc;
+    }
+    return false;
+}
+
+bool mkpath(const QDir &rDir)
+{
+    // No need to check if it exists first, mkpath does that internally
+    return rDir.mkpath(rDir.absolutePath());
+}
+
+bool mkpath(const QString &rPath)
+{
+    return mkpath(QDir(rPath));
+}
 
 
 DesktopHandler::DesktopHandler()
@@ -93,98 +132,92 @@ DesktopHandler::DesktopHandler()
 
 void DesktopHandler::setupPaths()
 {
-    //Make sure data path exists, ask user for custom path if default cannot be created
+    // Make sure data path exists, ask user for custom path if default cannot be created
     QDir dataDir(mDefaultDataPath);
-    if (!dataDir.exists())
+    mkpath(dataDir);
+    if (!testIfDirectoryIsWritable(dataDir))
     {
-        dataDir.mkpath(mDefaultDataPath);
+        QDir customDir;
+        do
+        {
+            QMessageBox::information(0, "Choose data path", "Default data directory is not writable:\n\n"+mDefaultDataPath+"\n\nPlease choose a different path.", "Okay");
+            QWidget *pWidget = new QWidget();
+            QFileDialog *pDialog = new QFileDialog(pWidget);
+            mCustomDataPath = pDialog->getExistingDirectory(pWidget, "Choose Data Directory",
+                                                            mExecPath,
+                                                            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+            mCustomDataPath.append("/");
+            customDir.setPath(mCustomDataPath);
+            mkpath(customDir);
+            pDialog->deleteLater();
+            pWidget->deleteLater();
+        }while(!testIfDirectoryIsWritable(customDir));
+        mUseCustomDataPath = true;
     }
-    QFile dummyFile1(mDefaultDataPath+"HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
-    if(dummyFile1.exists())
-    {
-        dummyFile1.remove();
-    }
-    if (dummyFile1.open(QFile::ReadWrite))
-    {
-        qDebug() << "Data path is writable!";
-    }
-    else
-    {
-        dummyFile1.close();
-        qDebug() << "Data path is NOT writable!";
-        QMessageBox::information(0, "Choose data path", "Default data directory is not writable:\n\n"+mDefaultDataPath+"\n\nPlease choose a different path.", "Okay");
-        QWidget *pWidget = new QWidget();
-        QFileDialog *pDialog = new QFileDialog(pWidget);
-        mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Data Directory",
-                                mExecPath,
-                                QFileDialog::ShowDirsOnly
-                                | QFileDialog::DontResolveSymlinks);
-        delete(pDialog);
-        delete(pWidget);
-        mUseCustomDocumentsPath = true;
-    }
-    dummyFile1.remove();
 
-
-    //Make sure documents path exists, ask user for custom path if default cannot be created
+    // Make sure documents path exists, ask user for custom path if default cannot be created
     QDir documentsDir(mDefaultDocumentsPath);
-    if (!documentsDir.exists())
+    mkpath(documentsDir);
+    if(!testIfDirectoryIsWritable(documentsDir))
     {
-        documentsDir.mkpath(mDefaultDocumentsPath);
-    }
-    QFile dummyFile2(mDefaultDocumentsPath+"HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
-    if(dummyFile2.exists())
-    {
-        dummyFile2.remove();
-    }
-    if (dummyFile2.open(QFile::ReadWrite))
-    {
-        qDebug() << "Documents path is writable!";
-    }
-    else
-    {
-        dummyFile2.close();
-        qDebug() << "Documents path is NOT writable!";
-        QMessageBox::information(0, "Choose documents path", "Default documents directory is not writable:\n\n"+mDefaultDocumentsPath+"\n\nPlease choose a different path.", "Okay");
-        QWidget *pWidget = new QWidget();
-        QFileDialog *pDialog = new QFileDialog(pWidget);
-        mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Documents Directory",
-                                mExecPath,
-                                QFileDialog::ShowDirsOnly
-                                | QFileDialog::DontResolveSymlinks);
-        mCustomDocumentsPath.append('/');
-        delete(pDialog);
-        delete(pWidget);
+        QDir customDir;
+        do
+        {
+            QMessageBox::information(0, "Choose documents path", "Default documents directory is not writable:\n\n"+mDefaultDocumentsPath+"\n\nPlease choose a different path.", "Okay");
+            QWidget *pWidget = new QWidget();
+            QFileDialog *pDialog = new QFileDialog(pWidget);
+            mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Documents Directory",
+                                    mExecPath,
+                                    QFileDialog::ShowDirsOnly
+                                    | QFileDialog::DontResolveSymlinks);
+            mCustomDocumentsPath.append('/');
+            customDir.setPath(mCustomDocumentsPath);
+            mkpath(customDir);
+            pDialog->deleteLater();
+            pWidget->deleteLater();
+        }while(!testIfDirectoryIsWritable(customDir));
         mUseCustomDocumentsPath = true;
     }
-    dummyFile2.remove();
 
+    // Make sure temp path exists, ask user for custom path if default cannot be created
+    QDir tempDir(mDefaultTempPath);
+    mkpath(tempDir);
+    if (!testIfDirectoryIsWritable(tempDir))
+    {
+        QDir customDir;
+        do
+        {
+            QMessageBox::information(0, "Choose temp path", "Default temp directory is not writable:\n\n"+mDefaultTempPath+"\n\nPlease choose a different path.", "Okay");
+            QWidget *pWidget = new QWidget();
+            QFileDialog *pDialog = new QFileDialog(pWidget);
+            mCustomTempPath = pDialog->getExistingDirectory(pWidget, "Choose Temp Directory",
+                                                            mExecPath,
+                                                            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+            mCustomTempPath.append("/");
+            customDir.setPath(mCustomTempPath);
+            mkpath(customDir);
+            pDialog->deleteLater();
+            pWidget->deleteLater();
+        }while(!testIfDirectoryIsWritable(customDir));
+        mUseCustomTempPath = true;
+    }
 
-    //Update paths depending on data, temp and documents paths
+    // Update paths depending on data, temp and documents paths
     mBackupPath = getDocumentsPath()+"Backup/";
     mModelsPath = getDocumentsPath()+"Models/";
     mScriptsPath = getDocumentsPath()+"Scripts/";
-    mLogDataPath = getTempPath()+"LogData/";
     mFMUPath = getDocumentsPath()+"import/FMU/";
+    mLogDataPath = getTempPath()+"LogData/";
 
      // Make sure backup folder exists, create it if not
-    if (!QDir().exists(getBackupPath()))
-    {
-        QDir().mkpath(getBackupPath());
-    }
+    mkpath(getBackupPath());
 
     // Make sure model folder exists, create it if not, if create not sucessful use dev dir
-    if (!QDir().exists(getModelsPath()))
-    {
-        QDir().mkpath(getModelsPath());
-    }
+    mkpath(getModelsPath());
 
     // Select which scripts path to use, create it if not, if create not sucessful use dev dir
     //! @todo problem in linux if scripts must be changed, as they  are not installed to user home
-    if (!QDir().exists(getScriptsPath()))
-    {
-        QDir().mkpath(getScriptsPath());
-    }
+    mkpath(getScriptsPath());
 
     // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
     qDebug() << "LogdataCache: " << getLogDataPath();
