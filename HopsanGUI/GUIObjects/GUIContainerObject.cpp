@@ -2856,18 +2856,29 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QString iconFileName = QFileInfo(getIconPath(UserGraphics, Absolute)).fileName();
         QString modelFileName = QFileInfo(cafFilePath).baseName()+".hmf";
 
+        //! @todo wahy is graphics copied twice
         QFile::copy(getIconPath(UserGraphics, Absolute), QFileInfo(cafFilePath).path()+"/"+iconFileName);
         QFile::copy(getIconPath(UserGraphics, Absolute), getAppearanceData()->getBasePath()+"/"+iconFileName);
 
+        bool ok;
+        QString subtype = QInputDialog::getText(gpMainWindowWidget, tr("Decide a unique Subtype"),
+                                                tr("Decide a unique subtype name for this component:"), QLineEdit::Normal,
+                                                QString(""), &ok);
+        if (!ok || subtype.isEmpty())
+        {
+            gpMessageHandler->addErrorMessage("You must specify a subtype name. Aborting!");
+            return;
+        }
 
+        //! @todo it would be better if this xml would only include hmffile attribute and all otehr info loaded from there
         QString cafStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        cafStr.append("<hopsanobjectappearance version=\"0.3\">\n");
-        cafStr.append("    <modelobject hmffile=\""+modelFileName+"\" displayname=\""+getName()+"\" typename=\""+getName()+"\">\n");
-        cafStr.append("        <icons>\n");
-        cafStr.append("            <icon scale=\"1\" path=\""+iconFileName+"\" iconrotation=\"ON\" type=\"user\"/>\n");
-        cafStr.append("        </icons>\n");
-        cafStr.append("    </modelobject>\n");
-        cafStr.append("</hopsanobjectappearance>\n");
+        cafStr.append(QString("<hopsanobjectappearance version=\"0.3\">\n"));
+        cafStr.append(QString("    <modelobject hmffile=\"%1\" displayname=\"%2\" typename=\"%3\" subtypename=\"%4\">\n").arg(modelFileName).arg(getName()).arg("Subsystem").arg(subtype));
+        cafStr.append(QString("        <icons>\n"));
+        cafStr.append(QString("            <icon scale=\"1\" path=\"%1\" iconrotation=\"ON\" type=\"user\"/>\n").arg(iconFileName));
+        cafStr.append(QString("        </icons>\n"));
+        cafStr.append(QString("    </modelobject>\n"));
+        cafStr.append(QString("</hopsanobjectappearance>\n"));
 
         QFile cafFile(cafFilePath);
         if(!cafFile.open(QFile::Text | QFile::WriteOnly))
@@ -2908,7 +2919,10 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
 
         //Save the model component hierarchy
+        QString old_subtype = this->getAppearanceData()->getSubTypeName();
+        this->getAppearanceData()->setSubTypeName(subtype);
         this->saveToDomElement(rootElement, FullModel);
+        this->getAppearanceData()->setSubTypeName(old_subtype);
 
         //Save to file
         QFile xmlFile(modelFilePath);
