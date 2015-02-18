@@ -29,30 +29,6 @@ void sendShortClientMessage(zmq::socket_t &rSocket, ClientMessageIdEnumT id)
     rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
 }
 
-bool receiveWithTimeout(zmq::socket_t &rSocket, long timeout, zmq::message_t &rMessage)
-{
-    // Create a poll item
-    zmq::pollitem_t pollitems[] = {{ rSocket, 0, ZMQ_POLLIN, 0 }};
-    try
-    {
-        // Poll socket for a reply, with timeout
-        zmq::poll(&pollitems[0], 1,  timeout);
-
-        // If we have received a message then read message and return true
-        if (pollitems[0].revents & ZMQ_POLLIN)
-        {
-            rSocket.recv(&rMessage);
-            return true;
-        }
-        // Else we reached timeout, return false
-    }
-    catch(zmq::error_t e)
-    {
-        //Ignore
-    }
-    return false;
-}
-
 bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNackReason)
 {
     zmq::message_t response;
@@ -411,6 +387,14 @@ bool RemoteHopsanClient::receiveWithTimeout(zmq::socket_t &rSocket, zmq::message
     return false;
 }
 
+
+RemoteHopsanClient::RemoteHopsanClient(zmq::context_t &rContext) :
+    mRSCSocket(rContext, ZMQ_REQ), mRWCSocket(rContext, ZMQ_REQ)
+{
+    int linger_ms = 1000;
+    mRSCSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+    mRWCSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+}
 
 void RemoteHopsanClient::setReceiveTimeout(long ms)
 {

@@ -12,12 +12,12 @@ FileAccess::FileAccess()
 }
 
 
-bool FileAccess::enterDir(std::string dir)
+bool FileAccess::enterDir(const std::string &rDir)
 {
-    DIR *pDir = opendir(dir.c_str());
+    DIR *pDir = opendir(rDir.c_str());
     if (pDir != nullptr)
     {
-        mCurrentDir = dir.c_str();
+        mCurrentDir = rDir.c_str();
         (void)closedir(pDir);
         return true;
     }

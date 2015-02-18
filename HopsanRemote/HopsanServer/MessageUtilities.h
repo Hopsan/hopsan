@@ -37,6 +37,30 @@ inline void sendServerNAck(zmq::socket_t &rSocket, const std::string &rReason)
     sendServerStringMessage(rSocket, S_NAck, rReason);
 }
 
+bool receiveWithTimeout(zmq::socket_t &rSocket, long timeout, zmq::message_t &rMessage)
+{
+    // Create a poll item
+    zmq::pollitem_t pollitems[] = {{ rSocket, 0, ZMQ_POLLIN, 0 }};
+    try
+    {
+        // Poll socket for a reply, with timeout
+        zmq::poll(&pollitems[0], 1,  timeout);
+
+        // If we have received a message then read message and return true
+        if (pollitems[0].revents & ZMQ_POLLIN)
+        {
+            rSocket.recv(&rMessage);
+            return true;
+        }
+        // Else we reached timeout, return false
+    }
+    catch(zmq::error_t e)
+    {
+        //Ignore
+    }
+    return false;
+}
+
 template <typename T>
 inline T unpackMessage(zmq::message_t &rRequest, size_t &rOffset)
 {

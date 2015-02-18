@@ -11,7 +11,7 @@
 class RemoteHopsanClient
 {
 public:
-    RemoteHopsanClient(zmq::context_t &rContext) : mRSCSocket(rContext, ZMQ_REQ), mRWCSocket(rContext, ZMQ_REQ) {}
+    RemoteHopsanClient(zmq::context_t &rContext);
     void setReceiveTimeout(long ms);
     long getReceiveTimeout() const;
 
