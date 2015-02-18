@@ -1197,6 +1197,19 @@ bool ModelObjectAppearance::hasIcon(const GraphicsTypeEnumT gfxType)
     }
 }
 
+bool ModelObjectAppearance::iconValid(const GraphicsTypeEnumT gfxType) const
+{
+    if (gfxType == GraphicsTypeEnumT::UserGraphics)
+    {
+        return mUserIconAppearance.mIsValid;
+    }
+    else if (gfxType == GraphicsTypeEnumT::ISOGraphics)
+    {
+        return mIsoIconAppearance.mIsValid;
+    }
+    return false;
+}
+
 void ModelObjectAppearance::refreshIconValid()
 {
     if (hasIcon(UserGraphics))

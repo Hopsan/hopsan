@@ -252,6 +252,7 @@ public:
     void addPortAppearance(const QString portName, PortAppearance *pPortAppearance=0);
 
     bool hasIcon(const GraphicsTypeEnumT gfxType);
+    bool iconValid(const GraphicsTypeEnumT gfxType) const;
 
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);

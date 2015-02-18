@@ -807,10 +807,32 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         //Now load the core specific data, might need inherited function for this
         this->setName(domElement.attribute(HMF_NAMETAG));
 
-        //Load the GUI stuff like appearance data and viewport
+        // Begin loading GUI stuff like appearance data and viewport
         QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
-        this->mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
-        this->refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
+        mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
+        refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
+
+        // Now lets check if the icons were loaded sucessfully else we may want to ask the library widget for the graphics (components saved as subsystems)
+        if (!mModelObjectAppearance.iconValid(UserGraphics) || !mModelObjectAppearance.iconValid(ISOGraphics))
+        {
+            ModelObjectAppearance *pApp = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getSubTypeName());
+            if (pApp)
+            {
+                // If our user graphics is invalid but library has valid data then set from library
+                if (!mModelObjectAppearance.iconValid(UserGraphics) && pApp->iconValid(UserGraphics))
+                {
+                    setIconPath(pApp->getIconPath(UserGraphics, Absolute), UserGraphics, Absolute);
+                }
+
+                // If our iso graphics is invalid but library has valid data then set from library
+                if (!mModelObjectAppearance.iconValid(ISOGraphics) && pApp->iconValid(ISOGraphics))
+                {
+                    setIconPath(pApp->getIconPath(ISOGraphics, Absolute), ISOGraphics, Absolute);
+                }
+            }
+        }
+
+        // Continue loading GUI stuff like appearance data and viewport
         this->mShowSubComponentNames = !parseAttributeBool(guiStuff.firstChildElement(HMF_NAMESTAG),"hidden",true);
         this->mShowSubComponentPorts = !parseAttributeBool(guiStuff.firstChildElement(HMF_PORTSTAG),"hidden",true);
         QString gfxType = guiStuff.firstChildElement(HMF_GFXTAG).attribute("type");
