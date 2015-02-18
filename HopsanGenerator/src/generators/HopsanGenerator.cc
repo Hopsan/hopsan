@@ -1228,7 +1228,7 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
         printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target+".");
         return false;
     }
-    printMessage("Copying " + sourceFileInfo.fileName()+"...");
+    printMessage("Copying " + sourceFileInfo.fileName());
     return true;
 }
 

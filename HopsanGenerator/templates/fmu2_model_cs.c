@@ -26,7 +26,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* Standard FMI 2.0 ME and CS types */
 #include <FMI2/fmi2Functions.h>
 
-#include "fmu2_hopsan.h"
+#include "fmu_hopsan.h"
 #include "fmu2_model.h"
 #include "config_test.h"
 /* #define MODEL_IDENTIFIER FMU_DUMMY_CS_MODEL_IDENTIFIER */

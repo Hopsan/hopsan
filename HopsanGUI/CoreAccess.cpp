@@ -185,7 +185,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 //! @param me True if FMU shall be of model exchange kind, false if co-simulation kind
 //! @param architecture Architecture to export for
 //! @param pSystem Pointer to system that shall be exported
-bool CoreGeneratorAccess::generateToFmu(QString path, bool me, TargetArchitectureT architecture, SystemContainer *pSystem)
+bool CoreGeneratorAccess::generateToFmu(QString path, int version, TargetArchitectureT architecture, SystemContainer *pSystem)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
@@ -205,7 +205,7 @@ bool CoreGeneratorAccess::generateToFmu(QString path, bool me, TargetArchitectur
         hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
 
         bool use64bit = (architecture == x64);
-        pHandler->callFmuExportGenerator(hPath, pCoreSystem, hIncludePath, hBinPath, hGccPath, me, use64bit, true);
+        pHandler->callFmuExportGenerator(hPath, pCoreSystem, hIncludePath, hBinPath, hGccPath, version, use64bit, true);
         return true;
     }
     delete(pHandler);

@@ -764,28 +764,28 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpExportToSimulinkCoSimAction, "Export model Simulink S-function for co-simulation (under development).");
     connect(mpExportToSimulinkCoSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToFMUME32Action = new QAction(tr("FMU for Model Exchange (32-bit)"), this);
-    mHelpPopupTextMap.insert(mpExportToFMUME32Action, "FMU for Model Exchange (32-bit)");
-    connect(mpExportToFMUME32Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpExportToFMU1_32Action = new QAction(tr("FMU 1.0 (32-bit)"), this);
+    mHelpPopupTextMap.insert(mpExportToFMU1_32Action, "FMU 1.0 (32-bit)");
+    connect(mpExportToFMU1_32Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToFMUME64Action = new QAction(tr("FMU for Model Exchange (64-bit)"), this);
-    mHelpPopupTextMap.insert(mpExportToFMUME64Action, "FMU for Model Exchange (64-bit)");
-    connect(mpExportToFMUME64Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpExportToFMU1_64Action = new QAction(tr("FMU 1.0 (64-bit)"), this);
+    mHelpPopupTextMap.insert(mpExportToFMU1_64Action, "FMU 1.0 (64-bit)");
+    connect(mpExportToFMU1_64Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToFMUCS32Action = new QAction(tr("FMU for Co-Simulation (32-bit)"), this);
-    mHelpPopupTextMap.insert(mpExportToFMUCS32Action, "FMU for Co-Simulation (32-bit)");
-    connect(mpExportToFMUCS32Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpExportToFMU2_32Action = new QAction(tr("FMU 2.0 (32-bit)"), this);
+    mHelpPopupTextMap.insert(mpExportToFMU2_32Action, "FMU 2.0 (32-bit)");
+    connect(mpExportToFMU2_32Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToFMUCS64Action = new QAction(tr("FMU for Co-Simulation (64-bit)"), this);
-    mHelpPopupTextMap.insert(mpExportToFMUCS64Action, "FMU for Co-Simulation (64-bit)");
-    connect(mpExportToFMUCS64Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpExportToFMU2_64Action = new QAction(tr("FMU 2.0 (64-bit)"), this);
+    mHelpPopupTextMap.insert(mpExportToFMU2_64Action, "FMU 2.0 (64-bit)");
+    connect(mpExportToFMU2_64Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpExportToFMUMenu = new QMenu("Export to Functional Mock-Up Interface (FMI)");
     mpExportToFMUMenu->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
-    mpExportToFMUMenu->addAction(mpExportToFMUME32Action);
-    mpExportToFMUMenu->addAction(mpExportToFMUME64Action);
-    mpExportToFMUMenu->addAction(mpExportToFMUCS32Action);
-    mpExportToFMUMenu->addAction(mpExportToFMUCS64Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU1_32Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
 
     mpExportToLabviewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSIT.png"), tr("Export to LabVIEW/SIT"), this);
     mHelpPopupTextMap.insert(mpExportToLabviewAction, "Export model to LabVIEW Veristand.");
@@ -1140,10 +1140,10 @@ void MainWindow::createToolbars()
     connect(mpImportFMUAction,              SIGNAL(triggered()), gpLibraryHandler,     SLOT(importFmu()));
     connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulink()));
     connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulinkCoSim()));
-    connect(mpExportToFMUME32Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMUME32()));
-    connect(mpExportToFMUME64Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMUME64()));
-    connect(mpExportToFMUCS32Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMUCS32()));
-    connect(mpExportToFMUCS64Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMUCS64()));
+    connect(mpExportToFMU1_32Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU1_32()));
+    connect(mpExportToFMU1_64Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU1_64()));
+    connect(mpExportToFMU2_32Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU2_32()));
+    connect(mpExportToFMU2_64Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU2_64()));
     connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpModelHandler, SLOT(createLabviewWrapperFromCurrentModel()));
     connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpModelHandler, SLOT(loadModelParameters()));
 }
@@ -1391,8 +1391,8 @@ void MainWindow::updateToolBarsToNewTab()
     mpPlotAction->setEnabled(logData);
     mpPropertiesAction->setEnabled(modelTab);
     mpOpenSystemParametersAction->setEnabled(modelTab);
-    mpExportToFMUME32Action->setEnabled(modelTab);
-    mpExportToFMUCS32Action->setEnabled(modelTab);
+    mpExportToFMU1_32Action->setEnabled(modelTab);
+    mpExportToFMU2_32Action->setEnabled(modelTab);
     mpExportToLabviewAction->setEnabled(modelTab);
     mpExportToSimulinkAction->setEnabled(modelTab);
     mpExportToSimulinkCoSimAction->setEnabled(modelTab);

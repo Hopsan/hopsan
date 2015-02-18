@@ -137,11 +137,11 @@ public:
     void loadParameterFile(const QString &path="");
 
     void exportToLabView();
-    void exportToFMUME32();
-    void exportToFMUME64();
-    void exportToFMUCS32();
-    void exportToFMUCS64();
-    void exportToFMU(QString savePath, bool me, CoreGeneratorAccess::TargetArchitectureT arch);
+    void exportToFMU1_32();
+    void exportToFMU1_64();
+    void exportToFMU2_32();
+    void exportToFMU2_64();
+    void exportToFMU(QString savePath, int version, CoreGeneratorAccess::TargetArchitectureT arch);
     void exportToSimulink();
     void exportToSimulinkCoSim();
 

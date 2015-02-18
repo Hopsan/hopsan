@@ -1116,30 +1116,30 @@ void SystemContainer::exportToLabView()
     delete(pCoreAccess);
 }
 
-void SystemContainer::exportToFMUME32()
+void SystemContainer::exportToFMU1_32()
 {
-    exportToFMU("", true, CoreGeneratorAccess::x86);
+    exportToFMU("", 1, CoreGeneratorAccess::x86);
 }
 
-void SystemContainer::exportToFMUME64()
+void SystemContainer::exportToFMU1_64()
 {
-    exportToFMU("", true, CoreGeneratorAccess::x64);
+    exportToFMU("", 1, CoreGeneratorAccess::x64);
 }
 
-void SystemContainer::exportToFMUCS32()
+void SystemContainer::exportToFMU2_32()
 {
-    exportToFMU("", false, CoreGeneratorAccess::x86);
+    exportToFMU("", 2, CoreGeneratorAccess::x86);
 }
 
-void SystemContainer::exportToFMUCS64()
+void SystemContainer::exportToFMU2_64()
 {
-    exportToFMU("", false, CoreGeneratorAccess::x64);
+    exportToFMU("", 2, CoreGeneratorAccess::x64);
 }
 
 
 
 
-void SystemContainer::exportToFMU(QString savePath, bool me, CoreGeneratorAccess::TargetArchitectureT arch)
+void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAccess::TargetArchitectureT arch)
 {
     if(savePath.isEmpty())
     {
@@ -1184,7 +1184,7 @@ void SystemContainer::exportToFMU(QString savePath, bool me, CoreGeneratorAccess
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToFmu(savePath, me, arch, this);
+    pCoreAccess->generateToFmu(savePath, version, arch, this);
     delete(pCoreAccess);
 }
 

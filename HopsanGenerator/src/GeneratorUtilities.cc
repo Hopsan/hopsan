@@ -59,27 +59,6 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-FMIPortSpecification::FMIPortSpecification(QString varName, QString portName, QString mpndName, QString valueRef, QString portType, QString nodeType, QString dataType, QString causality)
-{
-    this->varName = varName;
-    this->portName = portName;
-    this->mpndName = mpndName;
-    this->valueRef = valueRef;
-    this->portType = portType;
-    this->nodeType = nodeType;
-    this->dataType = dataType;
-    this->causality = causality;
-}
-
-
-FMIParameterSpecification::FMIParameterSpecification(QString varName, QString parName, QString description, QString initValue, QString valueRef)
-{
-    this->varName = varName;
-    this->parName = parName;
-    this->description = description;
-    this->initValue = initValue;
-    this->valueRef = valueRef;
-}
 
 
 PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue)
@@ -108,19 +87,6 @@ VariableSpecification::VariableSpecification(QString name, QString init)
     this->init = init;
 }
 
-
-UtilitySpecification::UtilitySpecification(QString utility, QString name)
-{
-    this->utility = utility;
-    this->name = name;
-}
-
-
-StaticVariableSpecification::StaticVariableSpecification(QString datatype, QString name)
-{
-    this->datatype = datatype;
-    this->name = name;
-}
 
 
 
@@ -547,9 +513,7 @@ QStringList getHopsanCoreSourceFiles()
                 "HopsanCore/src/CoreUtilities/LoadExternal.cc" <<
                 "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" <<
                 "HopsanCore/src/CoreUtilities/StringUtilities.cpp" <<
-                "HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc" <<
                 "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" <<
-                "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp" <<
                 "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
                 "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
     return srcFiles;

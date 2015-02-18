@@ -94,31 +94,8 @@ public:
 };
 
 
-class FMIPortSpecification
-{
-public:
-    FMIPortSpecification(QString varName, QString portName, QString mpndName, QString valueRef, QString portType, QString nodeType, QString dataType, QString causality);
-    QString varName;
-    QString portName;
-    QString mpndName;
-    QString valueRef;
-    QString portType;
-    QString nodeType;
-    QString dataType;
-    QString causality;
-};
 
 
-class FMIParameterSpecification
-{
-public:
-    FMIParameterSpecification(QString varName, QString parName, QString description, QString initValue, QString valueRef);
-    QString varName;
-    QString parName;
-    QString description;
-    QString initValue;
-    QString valueRef;
-};
 
 
 class PortSpecification
@@ -151,21 +128,6 @@ public:
     QString init;
 };
 
-class UtilitySpecification
-{
-public:
-    UtilitySpecification(QString utility="FirstOrderTransferFunction", QString name=QString());
-    QString utility;
-    QString name;
-};
-
-class StaticVariableSpecification
-{
-public:
-    StaticVariableSpecification(QString datatype="double", QString name=QString());
-    QString datatype;
-    QString name;
-};
 
 class ComponentSpecification
 {
@@ -218,8 +180,6 @@ void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &f
 QStringList getHopsanCoreSourceFiles();
 QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
 QStringList getHopsanCoreIncludePaths(bool skipDependencies=false);
-
-bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
 void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 

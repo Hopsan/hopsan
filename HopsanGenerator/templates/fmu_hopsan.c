@@ -1,4 +1,4 @@
-#include "fmu2_hopsan.h"
+#include "fmu_hopsan.h"
 #include "HopsanCore.h"
 #include "HopsanEssentials.h"
 #include <string>

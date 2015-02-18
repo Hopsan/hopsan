@@ -908,47 +908,26 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 }
 
 
-void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, bool me, bool x64, int version)
+
+void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSystem, int version, bool x64)
 {
     if(mGccPath.isEmpty())
     {
         printErrorMessage("Compiler path not specified.");
         return;
     }
-    if(version==1)
-    {
-        generateToFmu1(savePath, pSystem, me, x64);
-    }
-    else if(version==2)
-    {
-        generateToFmu2(savePath, pSystem, me, x64);
-    }
-    else
-    {
-        printErrorMessage("Unknown FMI version: "+QString::number(version)+". Only 1 or 2 are supported.");
-    }
-    return;
-}
 
+    //------------------------------------------------------------------//
+    //Obtain model name and version string
+    //------------------------------------------------------------------//
 
-//! @brief Generates an FMU for specified component system
-//! @param savePath Path where to export FMU
-//! @param me Boolean for using model exchange
-//! @param pSystme Pointer to system to export
-void HopsanFMIGenerator::generateToFmu1(QString savePath, hopsan::ComponentSystem *pSystem, bool me, bool x64)
-{
-    printMessage("Initializing FMU export...");
+    QString modelName = pSystem->getName().c_str();
+    QString vStr = QString::number(version);
 
-    if(pSystem == 0)
-    {
-        printErrorMessage("System pointer is null. Aborting.");
-        return;
-    }
-
-    QDir saveDir;
-    saveDir.setPath(savePath);
-
+    //------------------------------------------------------------------//
     //Copy HopsanCore files to export directory
+    //------------------------------------------------------------------//
+
     if(!this->copyIncludeFilesToDir(savePath))
         return;
     if(!this->copySourceFilesToDir(savePath))
@@ -956,819 +935,88 @@ void HopsanFMIGenerator::generateToFmu1(QString savePath, hopsan::ComponentSyste
     if(!this->copyDefaultComponentCodeToDir(savePath))
         return;
 
-    //Write the FMU ID
-    int random = rand() % 1000000000;
-    QString randomString = QString::number(random);
-    QString ID = QUuid::createUuid().toString();
-
-    //Collect information about ports
-    QStringList inputVariables;
-    QStringList inputComponents;
-    QStringList inputPorts;
-    QList<int> inputDatatypes;
-    QStringList outputVariables;
-    QStringList outputComponents;
-    QStringList outputPorts;
-    QList<int> outputDatatypes;
-    QList<QStringList> tlmPorts;
-
-    std::vector<HString> names = pSystem->getSubComponentNames();
-    for(size_t i=0; i<names.size(); ++i)
-    {
-        getInterfaceInfo(pSystem->getSubComponent(names[i])->getTypeName().c_str(), names[i].c_str(),
-                         inputVariables, inputComponents, inputPorts, inputDatatypes,
-                         outputVariables, outputComponents, outputPorts, outputDatatypes, tlmPorts);
-    }
-
-
-    //Collect information about system parameters
-    QStringList parameterNames;
-    QStringList parameterValues;
-    std::vector<HString> parameterNamesStd;
-    pSystem->getParameterNames(parameterNamesStd);
-    for(size_t p=0; p<parameterNamesStd.size(); ++p)
-    {
-        parameterNames.append(QString(parameterNamesStd[p].c_str()));
-    }
-    for(int p=0; p<parameterNames.size(); ++p)
-    {
-        HString value;
-        pSystem->getParameterValue(parameterNamesStd[p], value);
-        parameterValues.append(QString(value.c_str()));
-    }
-
-
-    //Create file objects for all files that shall be created
-    QFile modelSourceFile;
-    QString modelName = pSystem->getName().c_str();
-    // modelName.chop(4);
-    QString realModelName = modelName;          //Actual model name (used for hmf file)
-    modelName.replace(" ", "_");        //Replace white spaces with underscore, to avoid problems
-    modelSourceFile.setFileName(savePath + "/" + modelName + ".c");
-    if(!modelSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open " + modelName + ".c for writing.");
-        return;
-    }
-
-    QFile modelDescriptionFile;
-    modelDescriptionFile.setFileName(savePath + "/modelDescription.xml");
-    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open modelDescription.xml for writing.");
-        return;
-    }
-
-    QFile tlmDescriptionFile;
-    tlmDescriptionFile.setFileName(savePath + "/"+modelName+"_TLM.xml");
-    if(!tlmDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open "+modelName+"_TLM.xml for writing.");
-        return;
-    }
-
-    QFile fmuHeaderFile;
-    fmuHeaderFile.setFileName(savePath + "/HopsanFMU.h");
-    if(!fmuHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open HopsanFMU.h for writing.");
-        return;
-    }
-
-    QFile fmuSourceFile;
-    fmuSourceFile.setFileName(savePath + "/HopsanFMU.cpp");
-    if(!fmuSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open HopsanFMU.cpp for writing.");
-        return;
-    }
-
-#ifdef _WIN32
-    QFile clBatchFile;
-    clBatchFile.setFileName(savePath + "/compile.bat");
-    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compile.bat for writing.");
-        return;
-    }
-#endif
-
-    QFile modelHppFile;
-    modelHppFile.setFileName(savePath + "/model.hpp");
-    if(!modelHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open model.hpp for writing.");
-        return;
-    }
-
-    printMessage("Writing modelDescription.xml...");
-
-    QFile xmlTemplatefile(":templates/fmuModelDescriptionTemplate.xml");
-    if(!xmlTemplatefile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open modelDescription.xml for writing.");
-        return;
-    }
-
-    QString xmlCode;
-    QTextStream t(&xmlTemplatefile);
-    xmlCode = t.readAll();
-    xmlTemplatefile.close();
-    if(xmlCode.isEmpty())
-    {
-        printErrorMessage("Failed to generate XML code for modelDescription.xml.");
-        return;
-    }
-
-    QString xmlReplace3;
-    QString scalarVarLines = extractTaggedSection(xmlCode, "variables");
-    int i, j;
-    for(i=0; i<inputVariables.size(); ++i)
-    {
-        QString refString = QString::number(i);
-        xmlReplace3.append(replaceTags(scalarVarLines, QStringList() << "varname" << "varref" << "causality", QStringList() << inputVariables.at(i) << refString << "input"));
-    }
-    for(j=0; j<outputVariables.size(); ++j)
-    {
-        QString refString = QString::number(i+j);
-        xmlReplace3.append(replaceTags(scalarVarLines, QStringList() << "varname" << "varref" << "causality", QStringList() << outputVariables.at(j) << refString << "output"));
-    }
-
-    QString xmlReplace4;
-    QString paramLines = extractTaggedSection(xmlCode, "parameters");
-    for(int k=0; k<parameterNames.size(); ++k)
-    {
-        QString refString = QString::number(i+j+k);
-        xmlReplace4.append(replaceTags(paramLines, QStringList() << "varname" << "varref" << "variability" << "start", QStringList() << parameterNames[k] << refString << "parameter" << parameterValues[k]));
-    }
-
-    xmlCode.replace("<<<modelname>>>", modelName);
-    xmlCode.replace("<<<guid>>>", ID);
-    replaceTaggedSection(xmlCode, "variables", xmlReplace3);
-    replaceTaggedSection(xmlCode, "parameters", xmlReplace4);
-
-    if(me)
-    {
-        xmlCode.replace("<<<implementation>>>","");
-    }
-    else
-    {
-        xmlCode.replace("<<<implementation>>>","<Implementation>\n  <CoSimulation_StandAlone>\n    <Capabilities\n      canHandleVariableCommunicationStepSize=\"false\"\n      canHandleEvents=\"false\"/>\n  </CoSimulation_StandAlone>\n</Implementation>");
-    }
-
-    if(me)
-    {
-        xmlCode.replace("<<<nstates>>>",QString::number(inputVariables.size()+outputVariables.size()));
-    }
-    else
-    {
-        xmlCode.replace("<<<nstates>>>","0");
-    }
-
-
-    QTextStream modelDescriptionStream(&modelDescriptionFile);
-    modelDescriptionStream << xmlCode;
-    modelDescriptionFile.close();
-
-
-    if(!tlmPorts.isEmpty())
-    {
-        printMessage("Writing "+modelName+"_TLM.xml...");
-
-        QString tlmCode;
-        tlmCode.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-        tlmCode.append("<fmutlm>\n");
-        for(int i=0; i<tlmPorts.size(); ++i)
-        {
-            tlmCode.append("  <tlmport type=\""+tlmPorts[i].first()+"\">\n");
-            for(int j=1; j<tlmPorts[i].size(); j+=2)
-            {
-                tlmCode.append("    <"+tlmPorts[i][j]+">"+tlmPorts[i][j+1]+"</"+tlmPorts[i][j]+">\n");
-            }
-            tlmCode.append("  </tlmport>\n");
-        }
-        tlmCode.append("</fmutlm>\n");
-
-        QTextStream tlmDescriptionStream(&tlmDescriptionFile);
-        tlmDescriptionStream << tlmCode;
-        tlmDescriptionFile.close();
-    }
-
-
-    printMessage("Writing " + modelName + ".c...");
-
-    QString sourceTemplateFileName;
-    if(me)
-    {
-        sourceTemplateFileName = ":templates/fmuModelSourceTemplate.c";
-    }
-    else
-    {
-        sourceTemplateFileName = ":templates/fmuCoSimSourceTemplate.c";
-    }
-
-    QFile sourceTemplateFile(sourceTemplateFileName);
-    if(!sourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open "+modelName+".c for writing.");
-        return;
-    }
-    QString modelSourceCode;
-    QTextStream t2(&sourceTemplateFile);
-    modelSourceCode = t2.readAll();
-    sourceTemplateFile.close();
-    if(modelSourceCode.isEmpty())
-    {
-        printErrorMessage("Failed to generate code for "+modelName+".c.");
-        return;
-    }
-
-    QString sourceReplace4;
-    QString varDefLine = extractTaggedSection(modelSourceCode, "4");
-    for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << inputVariables.at(i) << QString::number(i)));
-    for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << outputVariables.at(j) << QString::number(i+j)));
-    for(int k=0; k<parameterNames.size(); ++k)
-        sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << parameterNames.at(k) << QString::number(i+j+k)));
-
-    QString sourceReplace5;
-    i=0;
-    j=0;
-    if(!inputVariables.isEmpty())
-    {
-        sourceReplace5.append(inputVariables.at(0)+"_");
-        ++i;
-    }
-    else if(!outputVariables.isEmpty())
-    {
-        sourceReplace5.append(outputVariables.at(0)+"_");
-        ++j;
-    }
-    for(; i<inputVariables.size(); ++i)
-        sourceReplace5.append(", "+inputVariables.at(i)+"_");
-    for(; j<outputVariables.size(); ++j)
-        sourceReplace5.append(", "+outputVariables.at(j)+"_");
-
-    QString sourceReplace6;
-    QString startValueLine = extractTaggedSection(modelSourceCode, "6");
-    for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace6.append(replaceTag(startValueLine, "varname", inputVariables.at(i)));         //!< Fix start value handling
-    for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace6.append(replaceTag(startValueLine, "varname", outputVariables.at(j)));        //!< Fix start value handling
-
-    QString sourceReplace8;
-    for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace8.append("           case "+inputVariables.at(i)+"_: return getVariable(vr, "+QString::number(inputDatatypes.at(i))+");\n");
-    for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace8.append("           case "+outputVariables.at(j)+"_: return getVariable(vr, "+QString::number(outputDatatypes.at(j))+");\n");
-
-    QString sourceReplace9;
-    for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace9.append("           case "+inputVariables.at(i)+"_: setVariable(vr, "+QString::number(inputDatatypes.at(i))+", value); break;\n");
-    for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace9.append("           case "+outputVariables.at(j)+"_: setVariable(vr, "+QString::number(outputDatatypes.at(j))+", value); break;\n");
-    for(int k=0; k<parameterNames.size(); ++k)
-        sourceReplace9.append("           case "+parameterNames.at(k)+"_: setParameter(\""+parameterNames.at(k)+"\", value); break;\n");
-
-    modelSourceCode.replace("<<<0>>>", modelName);
-    modelSourceCode.replace("<<<1>>>", ID);
-    modelSourceCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size() + parameterNames.size()));
-    modelSourceCode.replace("<<<3>>>", QString::number(inputVariables.size() + outputVariables.size() + parameterNames.size()));  //!< @todo Does number of variables equal number of states?
-    replaceTaggedSection(modelSourceCode, "4", sourceReplace4);
-    modelSourceCode.replace("<<<5>>>", sourceReplace5);
-    replaceTaggedSection(modelSourceCode, "6", sourceReplace6);
-    modelSourceCode.replace("<<<7>>>", modelName);
-    modelSourceCode.replace("<<<8>>>", sourceReplace8);
-    modelSourceCode.replace("<<<9>>>", sourceReplace9);
-
-    QTextStream modelSourceStream(&modelSourceFile);
-    modelSourceStream << modelSourceCode;
-    modelSourceFile.close();
-
-
-    printMessage("Writing HopsanFMU.h...");
-
-    QFile fmuHeaderTemplateFile(":templates/fmuHeaderTemplate.h");
-    if(!fmuHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open HopsanFMU.h for writing.");
-        return;
-    }
-
-    QString fmuHeaderCode;
-    QTextStream t3(&fmuHeaderTemplateFile);
-    fmuHeaderCode = t3.readAll();
-    fmuHeaderTemplateFile.close();
-    if(fmuHeaderCode.isEmpty())
-    {
-        printErrorMessage("Failed to generate code for HopsanFMU.h.");
-        return;
-    }
-
-    QTextStream fmuHeaderStream(&fmuHeaderFile);
-    fmuHeaderStream << fmuHeaderCode;
-    fmuHeaderFile.close();
-
-
-    printMessage("Writing HopsanFMU.cpp...");
-
-    QString fmuSourceTemplateFileName(":templates/fmuSourceTemplate.c");
-    QFile fmuSourceTemplateFile(fmuSourceTemplateFileName);
-    if(!fmuSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open HopsanFMU.cpp for writing.");
-        return;
-    }
-
-    QString fmuSourceCode;
-    QTextStream t4(&fmuSourceTemplateFile);
-    fmuSourceCode = t4.readAll();
-    fmuSourceTemplateFile.close();
-    if(fmuSourceCode.isEmpty())
-    {
-        printErrorMessage("Failed to generate code for HopsanFMU.cpp.");
-        return;
-    }
-
-    fmuSourceCode = replaceTag(fmuSourceCode, "nports", QString::number(inputVariables.size() + outputVariables.size()));
-
-    QString fmuSourceReplace1;
-    QString portPointerSection = extractTaggedSection(fmuSourceCode, "assignportpointers");
-    for(i=0; i<inputVariables.size(); ++i)
-    {
-        QStringList tags = QStringList() << "idx" << "comp" << "port";
-        QStringList replacements = QStringList() << QString::number(i) << inputComponents.at(i) << inputPorts.at(i);
-        fmuSourceReplace1.append(replaceTags(portPointerSection, tags, replacements));
-    }
-    for(j=0; j<outputVariables.size(); ++j)
-    {
-        QStringList tags = QStringList() << "idx" << "comp" << "port";
-        QStringList replacements = QStringList() << QString::number(i+j) << outputComponents.at(j) << outputPorts.at(j);
-        fmuSourceReplace1.append(replaceTags(portPointerSection, tags, replacements));
-    }
-
-    replaceTaggedSection(fmuSourceCode, "assignportpointers", fmuSourceReplace1);
-    QTextStream fmuSourceStream(&fmuSourceFile);
-    fmuSourceStream << fmuSourceCode;
-    fmuSourceFile.close();
-
-    printMessage("Copying HopsanCore files...");
-
-    printMessage("Copying FMI files...");
-
-    QFile fmuModelFunctionsHFile(mBinPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
-    fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
-    QFile fmuFunctionsHFile(mBinPath + "/../ThirdParty/fmi/fmiFunctions.h");
-    fmuFunctionsHFile.copy(savePath + "/fmiFunctions.h");
-    QFile fmuPlatformTypesHFile(mBinPath + "/../ThirdParty/fmi/fmiPlatformTypes.h");
-    fmuPlatformTypesHFile.copy(savePath + "/fmiPlatformTypes.h");
-    QFile fmiModelTypesHFile(mBinPath + "/../ThirdParty/fmi/fmiModelTypes.h");
-    fmiModelTypesHFile.copy(savePath + "/fmiModelTypes.h");
-    QFile fmiTemplateCFile(mBinPath + "/../ThirdParty/fmi/fmuTemplate.c");
-    fmiTemplateCFile.copy(savePath + "/fmuTemplate.c");
-    QFile fmiTemplateHFile(mBinPath + "/../ThirdParty/fmi/fmuTemplate.h");
-    fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
-
-    if(!assertFilesExist(savePath, QStringList() << "fmiModelFunctions.h" << "fmiFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h"))
-        return;
-
-    printMessage("Generating model file...");
-
-    QStringList modelLines;
-    QFile modelFile(savePath + "/" + realModelName + ".hmf");
-    if (!modelFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Could not open "+realModelName+".hmf for reading.");
-        return;
-    }
-    while (!modelFile.atEnd())
-    {
-        QString line = modelFile.readLine();
-        line.chop(1);
-        line.replace("\"", "\\\"");
-        modelLines.append(line);
-    }
-    modelLines.last().append("\\n");
-    modelFile.close();
-
-    QTextStream modelHppStream(&modelHppFile);
-    modelHppStream << "#include <vector>\n\n";
-    modelHppStream << "std::string getModelString()\n{\n";
-    modelHppStream << "    std::string model = ";
-    Q_FOREACH(const QString line, modelLines)
-    {
-        modelHppStream << "\""+line+"\"\n";
-    }
-    modelHppStream << "    ;\n\n";
-    modelHppStream << "    return model;\n}\n";
-    modelHppFile.close();
-
-    printMessage("Replacing namespace...");
-
-    QString nameSpace = "HopsanFMU"+randomString;
-    QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::" << "namespace hopsan{";
-    QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{";
-    Q_FOREACH(const QString &file, getHopsanCoreSourceFiles())
-    {
-        if(!replaceInFile(savePath+"/"+file, before, after))
-            return;
-    }
-    Q_FOREACH(const QString &file, getHopsanCoreIncludeFiles())
-    {
-        if(!replaceInFile(savePath+"/"+file, before, after))
-            return;
-    }
-    QStringList componentFiles;
-    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "hpp", componentFiles);
-    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "h", componentFiles);
-    Q_FOREACH(const QString &file, componentFiles)
-    {
-        //qDebug() << "Replacing component file: " << file;
-        if(!replaceInFile(file, before, after))
-            return;
-    }
-    if(!replaceInFile(savePath+"/HopsanFMU.cpp", before, after))
-        return;
-    if(!replaceInFile(savePath+"/HopsanFMU.h", before, after))
-        return;
-
-#ifdef _WIN32
-    printMessage("Compiling "+modelName+".dll...");
-    //Write the compilation script file
-    QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "set PATH="+mGccPath+";%PATH%\n";
-    clBatchStream << mGccPath+"gcc.exe -c -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c\n";
-    clBatchStream << mGccPath+"g++ -w -shared -static -static-libgcc -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".dll "+modelName+".o HopsanFMU.cpp";
-    // Add HopsanCore (and necessary dependency) src files
-    Q_FOREACH(const QString &srcFile, getHopsanCoreSourceFiles())
-    {
-        clBatchStream << " " << srcFile;
-    }
-    // Add HopsanCore (and necessary dependency) include paths
-    Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
-    {
-       clBatchStream << " -I"+incPath;
-    }
-    clBatchStream << "\n";
-    clBatchFile.close();
-
-    callProcess("cmd.exe", QStringList() << "/c" << "cd /d" + savePath + " & compile.bat");
-
-    if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
-        return;
-
-#elif linux
-    printMessage("Compiling "+modelName+".so...");
-
-    QString gccCommand1 = "cd "+savePath+" && gcc -c -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c\n";
-    QString gccCommand2 = "cd "+savePath+" && g++ -w -shared -static -static-libgcc -fPIC -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".so "+modelName+".o HopsanFMU.cpp HopsanCore/src/Component.cc HopsanCore/src/ComponentSystem.cc HopsanCore/src/HopsanEssentials.cc HopsanCore/src/Node.cc HopsanCore/src/Nodes.cc HopsanCore/src/Parameters.cc HopsanCore/src/Port.cc HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc HopsanCore/src/ComponentUtilities/CSVParser.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc HopsanCore/src/ComponentUtilities/PLOParser.cc HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/Integrator.cc HopsanCore/src/ComponentUtilities/IntegratorLimited.cc HopsanCore/src/ComponentUtilities/ludcmp.cc HopsanCore/src/ComponentUtilities/matrix.cc HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp HopsanCore/src/CoreUtilities/GeneratorHandler.cpp HopsanCore/src/CoreUtilities/HmfLoader.cc HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc HopsanCore/src/CoreUtilities/LoadExternal.cc HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp -IHopsanCore/include -IcomponentLibraries/defaultLibrary -IHopsanCore/Dependencies/rapidxml-1.13 -IHopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser\n";
-
-    //qDebug() << "Command 1: " << gccCommand1;
-    //qDebug() << "Command 2: " << gccCommand2;
-
-    callProcess("gcc", QStringList() << "-c" << "-w" << "-shared" << "-fPIC" << "-Wl,--rpath,'$ORIGIN/.'" << modelName+".c", savePath);
-    callProcess("g++", QStringList() << "-w" << "-shared" << "-fPIC" << "-DDOCOREDLLEXPORT" << "-DBUILTINDEFAULTCOMPONENTLIB" << "-o"+modelName+".so" << modelName+".o" << "HopsanFMU.cpp" << "HopsanCore/src/Component.cc" << "HopsanCore/src/ComponentSystem.cc" << "HopsanCore/src/HopsanEssentials.cc" << "HopsanCore/src/Node.cc" << "HopsanCore/src/Nodes.cc" << "HopsanCore/src/Parameters.cc" << "HopsanCore/src/Port.cc" << "HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc" << "HopsanCore/src/ComponentUtilities/CSVParser.cc" << "HopsanCore/src/ComponentUtilities/PLOParser.cc"<< "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc" << "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" << "HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp" << "HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc" << "HopsanCore/src/ComponentUtilities/Integrator.cc" << "HopsanCore/src/ComponentUtilities/IntegratorLimited.cc" << "HopsanCore/src/ComponentUtilities/ludcmp.cc" << "HopsanCore/src/ComponentUtilities/matrix.cc" << "HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc" << "HopsanCore/src/ComponentUtilities/TurbulentFlowFunction.cc" << "HopsanCore/src/ComponentUtilities/ValveHysteresis.cc" << "HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc" << "HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp" << "HopsanCore/src/CoreUtilities/GeneratorHandler.cpp" << "HopsanCore/src/CoreUtilities/HmfLoader.cc" << "HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc" << "HopsanCore/src/CoreUtilities/LoadExternal.cc" << "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" << "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" << "HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" << "-IHopsanCore/include" << "-IcomponentLibraries/defaultLibrary" << "-IHopsanCore/Dependencies/rapidxml-1.13" << "-IHopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser", savePath);
-
-    if(!assertFilesExist(savePath, QStringList() << modelName+".so"))
-        return;
-#endif
-
-    printMessage("Sorting files...");
-
-#ifdef _WIN32
-    if(x64)
-    {
-        saveDir.mkpath("fmu/binaries/win64");
-        saveDir.mkpath("fmu/resources");
-        QFile modelDllFile(savePath + "/" + modelName + ".dll");
-        modelDllFile.copy(savePath + "/fmu/binaries/win64/" + modelName + ".dll");
-        QFile modelLibFile(savePath + "/" + modelName + ".lib");
-        modelLibFile.copy(savePath + "/fmu/binaries/win64/" + modelName + ".lib");
-    }
-    else
-    {
-        saveDir.mkpath("fmu/binaries/win32");
-        saveDir.mkpath("fmu/resources");
-        QFile modelDllFile(savePath + "/" + modelName + ".dll");
-        modelDllFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".dll");
-        QFile modelLibFile(savePath + "/" + modelName + ".lib");
-        modelLibFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".lib");
-    }
-#elif linux && __i386__
-    saveDir.mkpath("fmu/binaries/linux32");
-    saveDir.mkpath("fmu/resources");
-    QFile modelSoFile(savePath + "/" + modelName + ".so");
-    modelSoFile.copy(savePath + "/fmu/binaries/linux32/" + modelName + ".so");
-#elif linux && __x86_64__
-    saveDir.mkpath("fmu/binaries/linux64");
-    saveDir.mkpath("fmu/resources");
-    QFile modelSoFile(savePath + "/" + modelName + ".so");
-    modelSoFile.copy(savePath + "/fmu/binaries/linux64/" + modelName + ".so");
-#endif
-    // QFile modelFile(savePath + "/" + realModelName + ".hmf");
-    modelFile.copy(savePath + "/fmu/resources/" + realModelName + ".hmf");
-    modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
-    tlmDescriptionFile.copy(savePath+"/fmu/"+modelName+"_TLM.xml");
-
-    printMessage("Compressing files...");
-
-#ifdef _WIN32
-    QString program = mBinPath + "../ThirdParty/7z/7z";
-    QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
-    callProcess(program, arguments, savePath+"/fmu");
-#elif linux && __i386__
-    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux32/"+modelName+".so";
-    callProcess("zip", arguments, savePath+"/fmu");
-#elif linux && __x86_64__
-    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux64/"+modelName+".so";
-    callProcess("zip", arguments, savePath+"/fmu");
-#endif
-
-    if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
-        return;
-
-    //Clean up temporary files
-   // cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
-   //         "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
-   //         "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
-
-    printMessage("Finished.");
-}
-
-void HopsanFMIGenerator::generateToFmu2(QString savePath, ComponentSystem *pSystem, bool me, bool x64)
-{
-    //Obtain model name
-    QString modelName = pSystem->getName().c_str();
-    QString realModelName = modelName;          //Actual model name (used for hmf file)
-
-    //Copy HopsanCore files to export directory
-    if(!this->copyIncludeFilesToDir(savePath))
-        return;
-    if(!this->copySourceFilesToDir(savePath))
-        return;
-    if(!this->copyDefaultComponentCodeToDir(savePath))
-        return;
-
-    //Write the FMU ID
-    int random = rand() % 1000000000;
-    QString randomString = QString::number(random);
-    QString GUID = QUuid::createUuid().toString();
-
-    QString today = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm");
-
     //------------------------------------------------------------------//
-    printMessage("Generating modelDescription.xml");
+    //Generate identifier string
     //------------------------------------------------------------------//
 
-    //Write modelDescription.xml
-    QDomDocument domDocument;
-    QDomElement rootElement = domDocument.createElement("fmiModelDescription");
-    rootElement.setAttribute("fmiVersion", "2.0");
-    rootElement.setAttribute("modelName", modelName);
-    rootElement.setAttribute("guid", GUID);
-    rootElement.setAttribute("description", "");
-    rootElement.setAttribute("generationTool", "HopsanGenerator");
-    rootElement.setAttribute("generationDateAndTime", today);
-    rootElement.setAttribute("variableNamingConvention", "structured");
-    rootElement.setAttribute("numberOfEventIndicators", "0");
-    domDocument.appendChild(rootElement);
-
-    QDomElement coSimElement = domDocument.createElement("CoSimulation");
-    coSimElement.setAttribute("modelIdentifier",modelName);
-    coSimElement.setAttribute("canHandleVariableCommunicationStepSize", "false");
-    rootElement.appendChild(coSimElement);
-
-    QDomElement varsElement = domDocument.createElement("ModelVariables");
-    rootElement.appendChild(varsElement);
-
-    QList<InterfacePortSpec> interfacePortSpecs;
-    QStringList path = QStringList();
-    getInterfaces(interfacePortSpecs, pSystem, path);
-
-    QMap<InterfaceVarSpec*, size_t> varToVrMap;
-    size_t vr=0;
-    size_t nReals=0;
-    size_t nInputs=0;
-    size_t nOutputs=0;
-    for(int i=0; i<interfacePortSpecs.size(); ++i)
-    {
-        for(int j=0; j<interfacePortSpecs[i].vars.size(); ++j)
-        {
-            varToVrMap.insert(&interfacePortSpecs[i].vars[j], vr);
-            InterfacePortSpec port = interfacePortSpecs[i];
-            InterfaceVarSpec var = port.vars[j];
-            QDomElement varElement = domDocument.createElement("ScalarVariable");
-            varElement.setAttribute("name", port.component+"_"+port.port+"_"+var.dataName);
-            varElement.setAttribute("valueReference", (unsigned int)vr);
-            if(var.causality == InterfaceVarSpec::Input)
-            {
-                varElement.setAttribute("causality", "input");
-                ++nInputs;
-            }
-            else
-            {
-                varElement.setAttribute("initial","exact");
-                varElement.setAttribute("causality", "output");
-                ++nOutputs;
-            }
-            ++nReals;
-            varElement.setAttribute("description", "");
-
-            QDomElement dataElement = domDocument.createElement("Real");    //We only support real data type for now
-            dataElement.setAttribute("start", 0);   //! @todo Support start values
-            varElement.appendChild(dataElement);
-
-            varsElement.appendChild(varElement);
-            ++vr;
-        }
-    }
-
-    QDomElement structureElement = domDocument.createElement("ModelStructure");
-    rootElement.appendChild(structureElement);
-
-    QDomNode xmlProcessingInstruction = domDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
-    domDocument.insertBefore(xmlProcessingInstruction, domDocument.firstChild());
-
-    QFile modelDescriptionFile(savePath + "/modelDescription.xml");
-    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open modelDescription.xml for writing.");
-        return;
-    }
-    QTextStream out(&modelDescriptionFile);
-    domDocument.save(out, 4);
-    modelDescriptionFile.close();
+    QString guid = QUuid::createUuid().toString();
 
     //------------------------------------------------------------------//
-    printMessage("Generating fmu2_model.h");
+    //Generate modelDescription.xml
     //------------------------------------------------------------------//
 
-    QFile fmu2ModelHeaderTemplateFile;
-    fmu2ModelHeaderTemplateFile.setFileName(":templates/fmu2_model.h");
-    if(!fmu2ModelHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open fmu2_model.c for reading.");
-        return;
-    }
-    QString fmu2ModelHeaderCode;
-    QTextStream t1(&fmu2ModelHeaderTemplateFile);
-    fmu2ModelHeaderCode = t1.readAll();
-    fmu2ModelHeaderTemplateFile.close();
-    if(fmu2ModelHeaderCode.isEmpty())
-    {
-        printErrorMessage("Unable to generate code for fmu2_model.h");
-        return;
-    }
-    QFile fmu2ModelHeaderFile(savePath+"/fmu2_model.h");
-    if(!fmu2ModelHeaderFile.open(QFile::Text | QFile::WriteOnly))
-    {
-        printErrorMessage("Unable to open fmu2_model.h for writing");
-        return;
-    }
-    QTextStream fmu2ModelHeaderStream(&fmu2ModelHeaderFile);
-    fmu2ModelHeaderStream << fmu2ModelHeaderCode;
-    fmu2ModelHeaderFile.close();
+    size_t nReals, nInputs, nOutputs;
+    generateModelDescriptionXmlFile(pSystem, savePath, guid, version, nReals, nInputs, nOutputs);
 
     //------------------------------------------------------------------//
-    printMessage("Generating fmu2_model.c");
+    //Copy source files from templates
     //------------------------------------------------------------------//
 
-    QFile fmu2ModelSourceTemplateFile;
-    fmu2ModelSourceTemplateFile.setFileName(":templates/fmu2_model.c");
-    if(!fmu2ModelSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open fmu2_model.c for reading.");
-        return;
-    }
-    QString fmu2ModelSourceCode;
-    QTextStream t2(&fmu2ModelSourceTemplateFile);
-    fmu2ModelSourceCode = t2.readAll();
-    fmu2ModelSourceTemplateFile.close();
-    if(fmu2ModelSourceCode.isEmpty())
-    {
-        printErrorMessage("Unable to generate code for fmu2_model.c");
-        return;
-    }
-    QFile fmu2ModelSourceFile(savePath+"/fmu2_model.c");
-    if(!fmu2ModelSourceFile.open(QFile::Text | QFile::WriteOnly))
-    {
-        printErrorMessage("Unable to open fmu2_model.c for writing");
-        return;
-    }
-    QTextStream fmu2ModelSourceStream(&fmu2ModelSourceFile);
-    fmu2ModelSourceStream << fmu2ModelSourceCode;
-    fmu2ModelSourceFile.close();
+    copyFile(":/templates/fmu"+vStr+"_model.h", savePath+"/fmu"+vStr+"_model.h");
+    copyFile(":/templates/fmu"+vStr+"_model.c", savePath+"/fmu"+vStr+"_model.c");
+    copyFile(":/templates/fmu"+vStr+"_model_cs.c", savePath+"/fmu"+vStr+"_model_cs.c");
+    copyFile(":/templates/fmu_hopsan.h", savePath+"/fmu_hopsan.h");
 
     //------------------------------------------------------------------//
-    printMessage("Generating fmu2_model_defines.h");
+    printMessage("Generating fmu1_model_defines.h");
     //------------------------------------------------------------------//
 
-    QFile fmu2ModelDefinesHeaderTemplateFile;
-    fmu2ModelDefinesHeaderTemplateFile.setFileName(":templates/fmu2_model_defines.h");
-    if(!fmu2ModelDefinesHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    QFile fmuModelDefinesHeaderTemplateFile;
+    fmuModelDefinesHeaderTemplateFile.setFileName(":templates/fmu"+vStr+"_model_defines.h");
+    if(!fmuModelDefinesHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open fmu2_model_defines.h for reading.");
+        printErrorMessage("Failed to open fmu"+vStr+"_model_defines.h for reading.");
         return;
     }
-    QString fmu2ModelDefinesHeaderCode;
-    QTextStream t3(&fmu2ModelDefinesHeaderTemplateFile);
-    fmu2ModelDefinesHeaderCode = t3.readAll();
-    fmu2ModelDefinesHeaderTemplateFile.close();
-    if(fmu2ModelDefinesHeaderCode.isEmpty())
+    QString fmuModelDefinesHeaderCode;
+    QTextStream t3(&fmuModelDefinesHeaderTemplateFile);
+    fmuModelDefinesHeaderCode = t3.readAll();
+    fmuModelDefinesHeaderTemplateFile.close();
+    if(fmuModelDefinesHeaderCode.isEmpty())
     {
-        printErrorMessage("Unable to generate code for fmu2_model_defines.h");
+        printErrorMessage("Unable to generate code for fmu"+vStr+"_model_defines.h");
         return;
     }
-    fmu2ModelDefinesHeaderCode.replace("<<<n_reals>>>", QString::number(nReals));
-    fmu2ModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
-    fmu2ModelDefinesHeaderCode.replace("<<<n_outputs>>>", QString::number(nOutputs));
-    fmu2ModelDefinesHeaderCode.replace("<<<guid>>>", GUID);
-    QFile fmu2ModelDefinesHeaderFile(savePath+"/fmu2_model_defines.h");
-    if(!fmu2ModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly))
+    fmuModelDefinesHeaderCode.replace("<<<n_reals>>>", QString::number(nReals));
+    fmuModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
+    fmuModelDefinesHeaderCode.replace("<<<n_outputs>>>", QString::number(nOutputs));
+    fmuModelDefinesHeaderCode.replace("<<<guid>>>", guid);
+    if(version == 1)
     {
-        printErrorMessage("Unable to open fmu2_model_defines.h for writing");
+        fmuModelDefinesHeaderCode.replace("<<<modelname>>>", modelName);
+    }
+    QFile fmuModelDefinesHeaderFile(savePath+"/fmu"+vStr+"_model_defines.h");
+    if(!fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly))
+    {
+        printErrorMessage("Unable to open fmu"+vStr+"_model_defines.h for writing");
         return;
     }
-    QTextStream fmu2ModelDefinesHeaderStream(&fmu2ModelDefinesHeaderFile);
-    fmu2ModelDefinesHeaderStream << fmu2ModelDefinesHeaderCode;
-    fmu2ModelDefinesHeaderFile.close();
+    QTextStream fmuModelDefinesHeaderStream(&fmuModelDefinesHeaderFile);
+    fmuModelDefinesHeaderStream << fmuModelDefinesHeaderCode;
+    fmuModelDefinesHeaderFile.close();
 
     //------------------------------------------------------------------//
-    printMessage("Generating fmu2_model_cs.c");
+    printMessage("Generating fmu_hopsan.c");
     //------------------------------------------------------------------//
 
-    QFile fmu2ModelSourceCsFileTemplate;
-    fmu2ModelSourceCsFileTemplate.setFileName(":templates/fmu2_model_cs.c");
-    if(!fmu2ModelSourceCsFileTemplate.open(QIODevice::ReadOnly | QIODevice::Text))
+    QFile fmuHopsanSourceFileTemplate;
+    fmuHopsanSourceFileTemplate.setFileName(":templates/fmu_hopsan.c");
+    assert(fmuHopsanSourceFileTemplate.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString fmuHopsanSourceCode;
+    QTextStream t6(&fmuHopsanSourceFileTemplate);
+    fmuHopsanSourceCode = t6.readAll();
+    fmuHopsanSourceFileTemplate.close();
+    if(fmuHopsanSourceCode.isEmpty())
     {
-        printErrorMessage("Failed to open fmu2_model.c for reading.");
-        return;
-    }
-    QString fmu2ModelSourceCsCode;
-    QTextStream t4(&fmu2ModelSourceCsFileTemplate);
-    fmu2ModelSourceCsCode = t4.readAll();
-    fmu2ModelSourceCsFileTemplate.close();
-    if(fmu2ModelSourceCsCode.isEmpty())
-    {
-        printErrorMessage("Unable to generate code for fmu2_model.c");
-        return;
-    }
-    QFile fmu2ModelSourceCsFile(savePath+"/fmu2_model_cs.c");
-    if(!fmu2ModelSourceCsFile.open(QFile::Text | QFile::WriteOnly))
-    {
-        printErrorMessage("Unable to open fmu2_model_cs.c for writing");
-        return;
-    }
-    QTextStream fmu2ModelSourceCsStream(&fmu2ModelSourceCsFile);
-    fmu2ModelSourceCsStream << fmu2ModelSourceCsCode;
-    fmu2ModelSourceCsFile.close();
-
-    //------------------------------------------------------------------//
-    printMessage("Generating fmu2_hopsan.h");
-    //------------------------------------------------------------------//
-
-    QFile fmu2HopsanHeaderFileTemplate;
-    fmu2HopsanHeaderFileTemplate.setFileName(":templates/fmu2_hopsan.h");
-    assert(fmu2HopsanHeaderFileTemplate.open(QIODevice::ReadOnly | QIODevice::Text));
-    QString fmu2HopsanHeaderCode;
-    QTextStream t5(&fmu2HopsanHeaderFileTemplate);
-    fmu2HopsanHeaderCode = t5.readAll();
-    fmu2HopsanHeaderFileTemplate.close();
-    if(fmu2HopsanHeaderCode.isEmpty())
-    {
-        printErrorMessage("Unable to generate code for fmu2_hopsan.h");
-        return;
-    }
-    QFile fmu2HopsanHeaderFile(savePath+"/fmu2_hopsan.h");
-    if(!fmu2HopsanHeaderFile.open(QFile::Text | QFile::WriteOnly))
-    {
-        printErrorMessage("Unable to open fmu2_hopsan.h for writing");
-        return;
-    }
-    QTextStream fmu2HopsanHeaderStream(&fmu2HopsanHeaderFile);
-    fmu2HopsanHeaderStream << fmu2HopsanHeaderCode;
-    fmu2HopsanHeaderFile.close();
-
-    //------------------------------------------------------------------//
-    printMessage("Generating fmu2_hopsan.c");
-    //------------------------------------------------------------------//
-
-    QFile fmu2HopsanSourceFileTemplate;
-    fmu2HopsanSourceFileTemplate.setFileName(":templates/fmu2_hopsan.c");
-    assert(fmu2HopsanSourceFileTemplate.open(QIODevice::ReadOnly | QIODevice::Text));
-    QString fmu2HopsanSourceCode;
-    QTextStream t6(&fmu2HopsanSourceFileTemplate);
-    fmu2HopsanSourceCode = t6.readAll();
-    fmu2HopsanSourceFileTemplate.close();
-    if(fmu2HopsanSourceCode.isEmpty())
-    {
-        printErrorMessage("Unable to generate code for fmu2_hopsan.c");
+        printErrorMessage("Unable to generate code for fmu_hopsan.c");
         return;
     }
 
     QString setDataPtrsString;
-    vr=0;
+    size_t vr=0;
+    QList<InterfacePortSpec> interfacePortSpecs;
+    QStringList path = QStringList();
+    getInterfaces(interfacePortSpecs, pSystem, path);
     foreach(const InterfacePortSpec &portSpec, interfacePortSpecs)
     {
         foreach(const InterfaceVarSpec &varSpec, portSpec.vars)
@@ -1783,299 +1031,47 @@ void HopsanFMIGenerator::generateToFmu2(QString savePath, ComponentSystem *pSyst
             ++vr;
         }
     }
-    fmu2HopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
-    fmu2HopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
-    QFile fmu2HopsanSourceFile(savePath+"/fmu2_hopsan.c");
-    if(!fmu2HopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
+    fmuHopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
+    fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
+    QFile fmuHopsanSourceFile(savePath+"/fmu_hopsan.c");
+    if(!fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
     {
-        printErrorMessage("Unable to open fmu2_hopsan.c for writing");
+        printErrorMessage("Unable to open fmu_hopsan.c for writing");
         return;
     }
-    QTextStream fmu2HopsanSourceStream(&fmu2HopsanSourceFile);
-    fmu2HopsanSourceStream << fmu2HopsanSourceCode;
-    fmu2HopsanSourceFile.close();
+    QTextStream fmuHopsanSourceStream(&fmuHopsanSourceFile);
+    fmuHopsanSourceStream << fmuHopsanSourceCode;
+    fmuHopsanSourceFile.close();
 
     //------------------------------------------------------------------//
-    printMessage("Generating model.hpp");
+    // Generate model file
     //------------------------------------------------------------------//
 
-    QFile modelHppFile;
-    modelHppFile.setFileName(savePath + "/model.hpp");
-    if(!modelHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open model.hpp for writing.");
-        return;
-    }
-
-    QStringList modelLines;
-    QFile modelFile(savePath + "/" + realModelName + ".hmf");
-    if (!modelFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Could not open "+realModelName+".hmf for reading.");
-        return;
-    }
-    while (!modelFile.atEnd())
-    {
-        QString line = modelFile.readLine();
-        line.chop(1);
-        line.replace("\"", "\\\"");
-        modelLines.append(line);
-    }
-    modelLines.last().append("\\n");
-    modelFile.close();
-
-    QTextStream modelHppStream(&modelHppFile);
-    modelHppStream << "#include <vector>\n\n";
-    modelHppStream << "std::string getModelString()\n{\n";
-    modelHppStream << "    std::string model = ";
-    Q_FOREACH(const QString line, modelLines)
-    {
-        modelHppStream << "\""+line+"\"\n";
-    }
-    modelHppStream << "    ;\n\n";
-    modelHppStream << "    return model;\n}\n";
-    modelHppFile.close();
-
+    generateModelFile(pSystem, savePath);
 
     //------------------------------------------------------------------//
-    printMessage("Replacing namespace");
+    // Replacing namespace
     //------------------------------------------------------------------//
 
-    QString nameSpace = "HopsanFMU"+randomString;
-    QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::" << "namespace hopsan{";
-    QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{";
-    Q_FOREACH(const QString &file, getHopsanCoreSourceFiles())
-    {
-        if(!replaceInFile(savePath+"/HopsanCore/"+file, before, after))
-            return;
-    }
-    Q_FOREACH(const QString &file, getHopsanCoreIncludeFiles())
-    {
-        if(!replaceInFile(savePath+"/HopsanCore/"+file, before, after))
-            return;
-    }
-    QStringList componentFiles;
-    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "hpp", componentFiles);
-    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "h", componentFiles);
-    Q_FOREACH(const QString &file, componentFiles)
-    {
-        //qDebug() << "Replacing component file: " << file;
-        if(!replaceInFile(file, before, after))
-            return;
-    }
-    if(!replaceInFile(savePath+"/fmu2_hopsan.c", before, after))
-        return;
-    if(!replaceInFile(savePath+"/fmu2_hopsan.h", before, after))
-        return;
+    replaceNameSpace(savePath);
 
     //------------------------------------------------------------------//
-    printMessage("Compiling C files");
+    // Compiling and linking
     //------------------------------------------------------------------//
 
-#ifdef _WIN32
-    QFile compileCBatchFile;
-    compileCBatchFile.setFileName(savePath + "/compileC.bat");
-    if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compile1.bat for writing.");
-        return;
-    }
-    printMessage("Compiling "+modelName+".dll...");
-    //Write the compilation script file
-    QTextStream compileBatchCStream(&compileCBatchFile);
-    compileBatchCStream << mGccPath+"gcc.exe -c fmu2_model_cs.c "
-                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default "
-                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/Test/FMI2 "
-                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/build-fmil\n";
-    compileCBatchFile.close();
-
-    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileC.bat");
-
-    if(!assertFilesExist(savePath, QStringList() << "fmu2_model_cs.o"))
-        return;
-#endif
+    compileAndLinkFMU(savePath, modelName, version);
 
     //------------------------------------------------------------------//
-    printMessage("Compiling C++ files");
+    // Sorting files
     //------------------------------------------------------------------//
 
-#ifdef _WIN32
-    QFile compileCppBatchFile;
-    compileCppBatchFile.setFileName(savePath + "/compileCpp.bat");
-    if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compile1.bat for writing.");
-        return;
-    }
-    printMessage("Compiling "+modelName+".dll...");
-    //Write the compilation script file
-    QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mGccPath+"g++ -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB "+
-                     "fmu2_hopsan.c "
-                     "HopsanCore/src/Component.cc "
-                     "HopsanCore/src/ComponentSystem.cc "
-                     "HopsanCore/src/HopsanEssentials.cc "
-                     "HopsanCore/src/HopsanTypes.cc "
-                     "HopsanCore/src/Node.cc "
-                     "HopsanCore/src/Nodes.cc "
-                     "HopsanCore/src/Parameters.cc HopsanCore/src/Port.cc "
-                     "HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc "
-                     "HopsanCore/src/ComponentUtilities/CSVParser.cc "
-                     "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc "
-                     "HopsanCore/src/ComponentUtilities/PLOParser.cc "
-                     "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc "
-                     "HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp "
-                     "HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc "
-                     "HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc "
-                     "HopsanCore/src/ComponentUtilities/Integrator.cc "
-                     "HopsanCore/src/ComponentUtilities/IntegratorLimited.cc "
-                     "HopsanCore/src/ComponentUtilities/ludcmp.cc "
-                     "HopsanCore/src/ComponentUtilities/matrix.cc "
-                     "HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc "
-                     "HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc "
-                     "HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp "
-                     "HopsanCore/src/CoreUtilities/GeneratorHandler.cpp "
-                     "HopsanCore/src/CoreUtilities/HmfLoader.cc "
-                     "HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc "
-                     "HopsanCore/src/CoreUtilities/LoadExternal.cc "
-                     "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp "
-                     "HopsanCore/src/CoreUtilities/StringUtilities.cpp "
-                     "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc "
-                     "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp "
-                     "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp "
-                     "-IHopsanCore/include "
-                     "-IcomponentLibraries/defaultLibrary "
-                     "-IDependencies/rapidxml-1.13 "
-                     "-IDependencies/libcsv_parser++-1.0.0/include/csv_parser "
-                     "-IDependencies/IndexingCSVParser\n";
-    compileCppBatchFile.close();
-
-    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileCpp.bat");
-
-    QStringList objectFiles;
-    objectFiles << "fmu2_hopsan.o" <<"Component.o" <<"ComponentSystem.o" <<"HopsanEssentials.o"
-                << "HopsanTypes.o" <<"Node.o" <<"Nodes.o" <<"Parameters.o" <<"Port.o"
-                << "AuxiliarySimulationFunctions.o" <<"CSVParser.o" <<"DoubleIntegratorWithDamping.o"
-                << "PLOParser.o" <<"DoubleIntegratorWithDampingAndCoulumbFriction.o" <<"EquationSystemSolver.o"
-                << "FirstOrderTransferFunction.o" <<"HopsanPowerUser.o" <<"Integrator.o" <<"IntegratorLimited.o"
-                << "ludcmp.o" <<"matrix.o" <<"SecondOrderTransferFunction.o" <<"WhiteGaussianNoise.o"
-                << "CoSimulationUtilities.o" <<"GeneratorHandler.o" <<"HmfLoader.o"
-                << "HopsanCoreMessageHandler.o" <<"LoadExternal.o" <<"MultiThreadingUtilities.o"
-                << "StringUtilities.o" <<"defaultComponentLibraryInternal.o" <<"csv_parser.o"
-                << "IndexingCSVParser.o";
-
-    if(!assertFilesExist(savePath, objectFiles))
-        return;
-#endif
+    sortFiles(savePath, modelName, x64);
 
     //------------------------------------------------------------------//
-    printMessage("Linking");
+    // Compressing files
     //------------------------------------------------------------------//
 
-#ifdef _WIN32
-    QFile linkBatchFile;
-    linkBatchFile.setFileName(savePath + "/link.bat");
-    if(!linkBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compile1.bat for writing.");
-        return;
-    }
-    printMessage("Compiling "+modelName+".dll...");
-    //Write the compilation script file
-    QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << mGccPath+"g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' "
-                     "fmu2_model_cs.o "
-                     "fmu2_hopsan.o "
-                     "Component.o "
-                     "ComponentSystem.o "
-                     "HopsanEssentials.o "
-                     "HopsanTypes.o "
-                     "Node.o "
-                     "Nodes.o "
-                     "Parameters.o "
-                     "Port.o "
-                     "AuxiliarySimulationFunctions.o "
-                     "CSVParser.o "
-                     "DoubleIntegratorWithDamping.o "
-                     "PLOParser.o "
-                     "DoubleIntegratorWithDampingAndCoulumbFriction.o "
-                     "EquationSystemSolver.o "
-                     "FirstOrderTransferFunction.o "
-                     "HopsanPowerUser.o "
-                     "Integrator.o "
-                     "IntegratorLimited.o "
-                     "ludcmp.o "
-                     "matrix.o "
-                     "SecondOrderTransferFunction.o "
-                     "WhiteGaussianNoise.o "
-                     "CoSimulationUtilities.o "
-                     "GeneratorHandler.o "
-                     "HmfLoader.o "
-                     "HopsanCoreMessageHandler.o "
-                     "LoadExternal.o "
-                     "MultiThreadingUtilities.o "
-                     "StringUtilities.o "
-                     "defaultComponentLibraryInternal.o "
-                     "csv_parser.o "
-                     "IndexingCSVParser.o "
-                     "-o "+modelName+".dll\n";
-    linkBatchFile.close();
-
-    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & link.bat");
-
-    if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
-        return;
-#endif
-
-    //------------------------------------------------------------------//
-    printMessage("Sorting files");
-    //------------------------------------------------------------------//
-    QDir saveDir(savePath);
-#ifdef _WIN32
-    if(x64)
-    {
-        saveDir.mkpath("fmu/binaries/win64");
-        QFile modelDllFile(savePath + "/" + modelName + ".dll");
-        modelDllFile.copy(savePath + "/fmu/binaries/win64/" + modelName + ".dll");
-    }
-    else
-    {
-        saveDir.mkpath("fmu/binaries/win32");
-        QFile modelDllFile(savePath + "/" + modelName + ".dll");
-        modelDllFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".dll");
-    }
-#elif linux && __i386__
-    saveDir.mkpath("fmu/binaries/linux32");
-    saveDir.mkpath("fmu/resources");
-    QFile modelSoFile(savePath + "/" + modelName + ".so");
-    modelSoFile.copy(savePath + "/fmu/binaries/linux32/" + modelName + ".so");
-#elif linux && __x86_64__
-    saveDir.mkpath("fmu/binaries/linux64");
-    saveDir.mkpath("fmu/resources");
-    QFile modelSoFile(savePath + "/" + modelName + ".so");
-    modelSoFile.copy(savePath + "/fmu/binaries/linux64/" + modelName + ".so");
-#endif
-    modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
-    //tlmDescriptionFile.copy(savePath+"/fmu/"+modelName+"_TLM.xml");
-
-    //------------------------------------------------------------------//
-    printMessage("Compressing files");
-    //------------------------------------------------------------------//
-
-#ifdef _WIN32
-    QString program = mBinPath + "../ThirdParty/7z/7z";
-    QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
-    callProcess(program, arguments, savePath+"/fmu");
-#elif linux && __i386__
-    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux32/"+modelName+".so";
-    callProcess("zip", arguments, savePath+"/fmu");
-#elif linux && __x86_64__
-    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux64/"+modelName+".so";
-    callProcess("zip", arguments, savePath+"/fmu");
-#endif
-
-    if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
-        return;
+    compressFiles(savePath, modelName);
 
     //------------------------------------------------------------------//
     //printMessage("Cleaning up");
@@ -2089,6 +1085,171 @@ void HopsanFMIGenerator::generateToFmu2(QString savePath, ComponentSystem *pSyst
     printMessage("Finished.");
 
 }
+
+
+
+
+//void HopsanFMIGenerator::generateToFmu2(QString savePath, ComponentSystem *pSystem, bool me, bool x64)
+//{
+//    //------------------------------------------------------------------//
+//    //Obtain model name
+//    //------------------------------------------------------------------//
+
+//    QString modelName = pSystem->getName().c_str();
+
+//    //------------------------------------------------------------------//
+//    //Copy HopsanCore files to export directory
+//    //------------------------------------------------------------------//
+
+//    if(!this->copyIncludeFilesToDir(savePath))
+//        return;
+//    if(!this->copySourceFilesToDir(savePath))
+//        return;
+//    if(!this->copyDefaultComponentCodeToDir(savePath))
+//        return;
+
+//    //------------------------------------------------------------------//
+//    // Generate identifier string
+//    //------------------------------------------------------------------//
+
+//    QString guid = QUuid::createUuid().toString();
+
+//    //------------------------------------------------------------------//
+//    // Generate modelDescription.xml
+//    //------------------------------------------------------------------//
+
+//    generateModelDescriptionXmlFile(pSystem, savePath, guid, 2);
+
+//    //------------------------------------------------------------------//
+//    // Copy FMU2 model source files
+//    //------------------------------------------------------------------//
+
+//    QFile::copy(":/templates/fmu2_model.h", savePath+"/fmu2_model.h");
+//    QFile::copy(":/templates/fmu2_model.h", savePath+"/fmu2_model.h");
+//    QFile::copy(":/templates/fmu2_model_cs.c", savePath+"/fmu2_model_cs.c");
+//    QFile::copy(":/templates/fmu_hopsan.h", savePath+"/fmu_hopsan.h");
+
+//    //------------------------------------------------------------------//
+//    printMessage("Generating fmu2_model_defines.h");
+//    //------------------------------------------------------------------//
+
+//    QFile fmu2ModelDefinesHeaderTemplateFile;
+//    fmu2ModelDefinesHeaderTemplateFile.setFileName(":templates/fmu2_model_defines.h");
+//    if(!fmu2ModelDefinesHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+//    {
+//        printErrorMessage("Failed to open fmu2_model_defines.h for reading.");
+//        return;
+//    }
+//    QString fmu2ModelDefinesHeaderCode;
+//    QTextStream t3(&fmu2ModelDefinesHeaderTemplateFile);
+//    fmu2ModelDefinesHeaderCode = t3.readAll();
+//    fmu2ModelDefinesHeaderTemplateFile.close();
+//    if(fmu2ModelDefinesHeaderCode.isEmpty())
+//    {
+//        printErrorMessage("Unable to generate code for fmu2_model_defines.h");
+//        return;
+//    }
+//    fmu2ModelDefinesHeaderCode.replace("<<<n_reals>>>", QString::number(nReals));
+//    fmu2ModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
+//    fmu2ModelDefinesHeaderCode.replace("<<<n_outputs>>>", QString::number(nOutputs));
+//    fmu2ModelDefinesHeaderCode.replace("<<<guid>>>", guid);
+//    QFile fmu2ModelDefinesHeaderFile(savePath+"/fmu2_model_defines.h");
+//    if(!fmu2ModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly))
+//    {
+//        printErrorMessage("Unable to open fmu2_model_defines.h for writing");
+//        return;
+//    }
+//    QTextStream fmu2ModelDefinesHeaderStream(&fmu2ModelDefinesHeaderFile);
+//    fmu2ModelDefinesHeaderStream << fmu2ModelDefinesHeaderCode;
+//    fmu2ModelDefinesHeaderFile.close();
+
+//    //------------------------------------------------------------------//
+//    printMessage("Generating fmu_hopsan.c");
+//    //------------------------------------------------------------------//
+
+//    QFile fmu2HopsanSourceFileTemplate;
+//    fmu2HopsanSourceFileTemplate.setFileName(":templates/fmu_hopsan.c");
+//    assert(fmu2HopsanSourceFileTemplate.open(QIODevice::ReadOnly | QIODevice::Text));
+//    QString fmu2HopsanSourceCode;
+//    QTextStream t6(&fmu2HopsanSourceFileTemplate);
+//    fmu2HopsanSourceCode = t6.readAll();
+//    fmu2HopsanSourceFileTemplate.close();
+//    if(fmu2HopsanSourceCode.isEmpty())
+//    {
+//        printErrorMessage("Unable to generate code for fmu_hopsan.c");
+//        return;
+//    }
+
+//    QString setDataPtrsString;
+//    vr=0;
+//    foreach(const InterfacePortSpec &portSpec, interfacePortSpecs)
+//    {
+//        foreach(const InterfaceVarSpec &varSpec, portSpec.vars)
+//        {
+//            QString temp = "dataPtrs["+QString::number(vr)+"] = spCoreComponentSystem";
+//            foreach(const QString &subsystem, portSpec.path)
+//            {
+//                temp.append("->getSubComponentSystem(\""+subsystem+"\")");
+//            }
+//            temp.append("->getSubComponent(\""+portSpec.component+"\")->getSafeNodeDataPtr(\""+portSpec.port+"\", "+QString::number(varSpec.dataId)+");\n");
+//            setDataPtrsString.append(temp);
+//            ++vr;
+//        }
+//    }
+//    fmu2HopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
+//    fmu2HopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
+//    QFile fmu2HopsanSourceFile(savePath+"/fmu_hopsan.c");
+//    if(!fmu2HopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
+//    {
+//        printErrorMessage("Unable to open fmu_hopsan.c for writing");
+//        return;
+//    }
+//    QTextStream fmu2HopsanSourceStream(&fmu2HopsanSourceFile);
+//    fmu2HopsanSourceStream << fmu2HopsanSourceCode;
+//    fmu2HopsanSourceFile.close();
+
+//    //------------------------------------------------------------------//
+//    // Generate model file
+//    //------------------------------------------------------------------//
+
+//    generateModelFile(pSystem, savePath);
+
+//    //------------------------------------------------------------------//
+//    // Replacing namespace
+//    //------------------------------------------------------------------//
+
+//    replaceNameSpace(savePath);
+
+//    //------------------------------------------------------------------//
+//    // Compiling and linking
+//    //------------------------------------------------------------------//
+
+//    compileAndLinkFMU(savePath, modelName, 2);
+
+//    //------------------------------------------------------------------//
+//    // Sorting files
+//    //------------------------------------------------------------------//
+
+//    sortFiles(savePath, modelName, x64);
+
+//    //------------------------------------------------------------------//
+//    // Compressing files
+//    //------------------------------------------------------------------//
+
+//    compressFiles(savePath, modelName);
+
+//    //------------------------------------------------------------------//
+//    //printMessage("Cleaning up");
+//    //------------------------------------------------------------------//
+
+//    //Clean up temporary files
+//   // cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
+//   //         "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
+//   //         "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
+
+//    printMessage("Finished.");
+
+//}
 
 
 bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringList &tlmPortTypes, QList<QStringList> &tlmPortVarNames,
@@ -2246,6 +1407,419 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
     }
 
     return true;
+}
+
+void HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs)
+{
+    QString versionStr = QString::number(version, 'f', 1);
+    QString today = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm");
+    QString modelName = pSystem->getName().c_str();
+
+    printMessage("Generating modelDescription.xml for FMI "+versionStr);
+
+    //Write modelDescription.xml
+    QDomDocument domDocument;
+    QDomElement rootElement = domDocument.createElement("fmiModelDescription");
+    rootElement.setAttribute("fmiVersion", versionStr);
+    rootElement.setAttribute("modelName", modelName);
+    if(version==1)
+    {
+        rootElement.setAttribute("modelIdentifier", modelName);
+        rootElement.setAttribute("numberOfContinuousStates", "0");
+    }
+    else
+    {
+        rootElement.setAttribute("variableNamingConvention", "structured");
+    }
+    rootElement.setAttribute("guid", guid);
+    rootElement.setAttribute("description", "");
+    rootElement.setAttribute("generationTool", "HopsanGenerator");
+    rootElement.setAttribute("generationDateAndTime", today);
+    rootElement.setAttribute("numberOfEventIndicators", "0");
+    domDocument.appendChild(rootElement);
+
+    if(version==2)
+    {
+        QDomElement coSimElement = domDocument.createElement("CoSimulation");
+        coSimElement.setAttribute("modelIdentifier",modelName);
+        coSimElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
+        rootElement.appendChild(coSimElement);
+    }
+
+    QDomElement varsElement = domDocument.createElement("ModelVariables");
+    rootElement.appendChild(varsElement);
+
+    QList<InterfacePortSpec> interfacePortSpecs;
+    QStringList path = QStringList();
+    getInterfaces(interfacePortSpecs, pSystem, path);
+
+    size_t vr=0;
+    nReals=0;
+    nInputs=0;
+    nOutputs=0;
+    for(int i=0; i<interfacePortSpecs.size(); ++i)
+    {
+        for(int j=0; j<interfacePortSpecs[i].vars.size(); ++j)
+        {
+            InterfacePortSpec port = interfacePortSpecs[i];
+            InterfaceVarSpec var = port.vars[j];
+            QDomElement varElement = domDocument.createElement("ScalarVariable");
+            varElement.setAttribute("name", port.component+"_"+port.port+"_"+var.dataName);
+            varElement.setAttribute("valueReference", (unsigned int)vr);
+            if(var.causality == InterfaceVarSpec::Input)
+            {
+                varElement.setAttribute("causality", "input");
+                ++nInputs;
+            }
+            else
+            {
+                if(version == 2)
+                {
+                    varElement.setAttribute("initial","exact");
+                }
+                varElement.setAttribute("causality", "output");
+                ++nOutputs;
+            }
+            ++nReals;
+            varElement.setAttribute("description", "");
+
+            QDomElement dataElement = domDocument.createElement("Real");    //We only support real data type for now
+            dataElement.setAttribute("start", 0);   //! @todo Support start values
+            if(version == 1)
+            {
+                dataElement.setAttribute("fixed", "false");
+            }
+            varElement.appendChild(dataElement);
+
+            varsElement.appendChild(varElement);
+            ++vr;
+        }
+    }
+
+    if(version == 1)
+    {
+        QDomElement implElement = domDocument.createElement("Implementation");
+        QDomElement coSimElement = domDocument.createElement("CoSimulation_StandAlone");
+        QDomElement capabilitiesElement = domDocument.createElement("Capabilities");
+        capabilitiesElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
+        coSimElement.appendChild(capabilitiesElement);
+        implElement.appendChild(coSimElement);
+        rootElement.appendChild(implElement);
+    }
+    else
+    {
+        QDomElement structureElement = domDocument.createElement("ModelStructure");
+        rootElement.appendChild(structureElement);
+    }
+
+    QDomNode xmlProcessingInstruction = domDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
+    domDocument.insertBefore(xmlProcessingInstruction, domDocument.firstChild());
+
+    QFile modelDescriptionFile(savePath + "/modelDescription.xml");
+    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open modelDescription.xml for writing.");
+        return;
+    }
+    QTextStream out(&modelDescriptionFile);
+    domDocument.save(out, 4);
+    modelDescriptionFile.close();
+}
+
+void HopsanFMIGenerator::generateModelFile(const ComponentSystem *pSystem, const QString &savePath) const
+{
+    printMessage("Generating model.hpp");
+
+    QString modelName = pSystem->getName().c_str();
+
+    QFile modelHppFile;
+    modelHppFile.setFileName(savePath + "/model.hpp");
+    if(!modelHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open model.hpp for writing.");
+        return;
+    }
+
+    QStringList modelLines;
+    QFile modelFile(savePath + "/" + modelName + ".hmf");
+    if (!modelFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        printErrorMessage("Could not open "+modelName+".hmf for reading.");
+        return;
+    }
+    while (!modelFile.atEnd())
+    {
+        QString line = modelFile.readLine();
+        line.chop(1);
+        line.replace("\"", "\\\"");
+        modelLines.append(line);
+    }
+    modelLines.last().append("\\n");
+    modelFile.close();
+
+    QTextStream modelHppStream(&modelHppFile);
+    modelHppStream << "#include <vector>\n\n";
+    modelHppStream << "std::string getModelString()\n{\n";
+    modelHppStream << "    std::string model = ";
+    Q_FOREACH(const QString line, modelLines)
+    {
+        modelHppStream << "\""+line+"\"\n";
+    }
+    modelHppStream << "    ;\n\n";
+    modelHppStream << "    return model;\n}\n";
+    modelHppFile.close();
+}
+
+void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
+{
+    printMessage("Replacing namespace");
+
+    int random = rand() % 1000000000;
+    QString randomString = QString::number(random);
+    QString nameSpace = "HopsanFMU"+randomString;
+    QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::" << "namespace hopsan{";
+    QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{";
+    Q_FOREACH(const QString &file, getHopsanCoreSourceFiles())
+    {
+        if(!replaceInFile(savePath+"/"+file, before, after))
+            return;
+    }
+    Q_FOREACH(const QString &file, getHopsanCoreIncludeFiles())
+    {
+        if(!replaceInFile(savePath+"/"+file, before, after))
+            return;
+    }
+    QStringList componentFiles;
+    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "hpp", componentFiles);
+    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "h", componentFiles);
+    Q_FOREACH(const QString &file, componentFiles)
+    {
+        //qDebug() << "Replacing component file: " << file;
+        if(!replaceInFile(file, before, after))
+            return;
+    }
+    if(!replaceInFile(savePath+"/fmu_hopsan.c", before, after))
+        return;
+    if(!replaceInFile(savePath+"/fmu_hopsan.h", before, after))
+        return;
+}
+
+void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const
+{
+    QString vStr = QString::number(version);
+
+    printMessage("------------------------------------------------------------------------");
+    printMessage("Compiling C files");
+    printMessage("------------------------------------------------------------------------");
+
+#ifdef _WIN32
+    QFile compileCBatchFile;
+    compileCBatchFile.setFileName(savePath + "/compileC.bat");
+    if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open compile1.bat for writing.");
+        return;
+    }
+    printMessage("Compiling "+modelName+".dll...");
+    //Write the compilation script file
+    QTextStream compileBatchCStream(&compileCBatchFile);
+    compileBatchCStream << mGccPath+"gcc.exe -c fmu"+vStr+"_model_cs.c "
+                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default "
+                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/Test/FMI"+vStr+" "
+                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/build-fmil\n";
+    compileCBatchFile.close();
+
+    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileC.bat");
+
+    if(!assertFilesExist(savePath, QStringList() << "fmu"+vStr+"_model_cs.o"))
+        return;
+#endif
+
+    printMessage("------------------------------------------------------------------------");
+    printMessage("Compiling C++ files");
+    printMessage("------------------------------------------------------------------------");
+
+#ifdef _WIN32
+    QFile compileCppBatchFile;
+    compileCppBatchFile.setFileName(savePath + "/compileCpp.bat");
+    if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open compile1.bat for writing.");
+        return;
+    }
+    printMessage("Compiling "+modelName+".dll...");
+    //Write the compilation script file
+    QTextStream compileCppBatchStream(&compileCppBatchFile);
+    compileCppBatchStream << mGccPath+"g++ -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB "+
+                     "fmu_hopsan.c "
+                     "HopsanCore/src/Component.cc "
+                     "HopsanCore/src/ComponentSystem.cc "
+                     "HopsanCore/src/HopsanEssentials.cc "
+                     "HopsanCore/src/HopsanTypes.cc "
+                     "HopsanCore/src/Node.cc "
+                     "HopsanCore/src/Nodes.cc "
+                     "HopsanCore/src/Parameters.cc HopsanCore/src/Port.cc "
+                     "HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc "
+                     "HopsanCore/src/ComponentUtilities/CSVParser.cc "
+                     "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc "
+                     "HopsanCore/src/ComponentUtilities/PLOParser.cc "
+                     "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc "
+                     "HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp "
+                     "HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc "
+                     "HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc "
+                     "HopsanCore/src/ComponentUtilities/Integrator.cc "
+                     "HopsanCore/src/ComponentUtilities/IntegratorLimited.cc "
+                     "HopsanCore/src/ComponentUtilities/ludcmp.cc "
+                     "HopsanCore/src/ComponentUtilities/matrix.cc "
+                     "HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc "
+                     "HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc "
+                     "HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp "
+                     "HopsanCore/src/CoreUtilities/GeneratorHandler.cpp "
+                     "HopsanCore/src/CoreUtilities/HmfLoader.cc "
+                     "HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc "
+                     "HopsanCore/src/CoreUtilities/LoadExternal.cc "
+                     "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp "
+                     "HopsanCore/src/CoreUtilities/StringUtilities.cpp "
+                     "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc "
+                     "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp "
+                     "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp "
+                     "-IHopsanCore/include "
+                     "-IcomponentLibraries/defaultLibrary "
+                     "-IDependencies/rapidxml-1.13 "
+                     "-IDependencies/libcsv_parser++-1.0.0/include/csv_parser "
+                     "-IDependencies/IndexingCSVParser\n";
+    compileCppBatchFile.close();
+
+    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileCpp.bat");
+
+    QStringList objectFiles;
+    objectFiles << "fmu_hopsan.o" <<"Component.o" <<"ComponentSystem.o" <<"HopsanEssentials.o"
+                << "HopsanTypes.o" <<"Node.o" <<"Nodes.o" <<"Parameters.o" <<"Port.o"
+                << "AuxiliarySimulationFunctions.o" <<"CSVParser.o" <<"DoubleIntegratorWithDamping.o"
+                << "PLOParser.o" <<"DoubleIntegratorWithDampingAndCoulumbFriction.o" <<"EquationSystemSolver.o"
+                << "FirstOrderTransferFunction.o" <<"HopsanPowerUser.o" <<"Integrator.o" <<"IntegratorLimited.o"
+                << "ludcmp.o" <<"matrix.o" <<"SecondOrderTransferFunction.o" <<"WhiteGaussianNoise.o"
+                << "CoSimulationUtilities.o" <<"GeneratorHandler.o" <<"HmfLoader.o"
+                << "HopsanCoreMessageHandler.o" <<"LoadExternal.o" <<"MultiThreadingUtilities.o"
+                << "StringUtilities.o" <<"defaultComponentLibraryInternal.o" <<"csv_parser.o"
+                << "IndexingCSVParser.o";
+
+    if(!assertFilesExist(savePath, objectFiles))
+        return;
+#endif
+
+    printMessage("------------------------------------------------------------------------");
+    printMessage("Linking");
+    printMessage("------------------------------------------------------------------------");
+
+#ifdef _WIN32
+    QFile linkBatchFile;
+    linkBatchFile.setFileName(savePath + "/link.bat");
+    if(!linkBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open link.bat for writing.");
+        return;
+    }
+    printMessage("Compiling "+modelName+".dll...");
+    //Write the compilation script file
+    QTextStream linkBatchStream(&linkBatchFile);
+    linkBatchStream << mGccPath+"g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' "
+                     "fmu"+vStr+"_model_cs.o "
+                     "fmu_hopsan.o "
+                     "Component.o "
+                     "ComponentSystem.o "
+                     "HopsanEssentials.o "
+                     "HopsanTypes.o "
+                     "Node.o "
+                     "Nodes.o "
+                     "Parameters.o "
+                     "Port.o "
+                     "AuxiliarySimulationFunctions.o "
+                     "CSVParser.o "
+                     "DoubleIntegratorWithDamping.o "
+                     "PLOParser.o "
+                     "DoubleIntegratorWithDampingAndCoulumbFriction.o "
+                     "EquationSystemSolver.o "
+                     "FirstOrderTransferFunction.o "
+                     "HopsanPowerUser.o "
+                     "Integrator.o "
+                     "IntegratorLimited.o "
+                     "ludcmp.o "
+                     "matrix.o "
+                     "SecondOrderTransferFunction.o "
+                     "WhiteGaussianNoise.o "
+                     "CoSimulationUtilities.o "
+                     "GeneratorHandler.o "
+                     "HmfLoader.o "
+                     "HopsanCoreMessageHandler.o "
+                     "LoadExternal.o "
+                     "MultiThreadingUtilities.o "
+                     "StringUtilities.o "
+                     "defaultComponentLibraryInternal.o "
+                     "csv_parser.o "
+                     "IndexingCSVParser.o "
+                     "-o "+modelName+".dll\n";
+    linkBatchFile.close();
+
+    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & link.bat");
+
+    if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
+        return;
+#endif
+}
+
+void HopsanFMIGenerator::sortFiles(const QString &savePath, const QString &modelName, bool x64) const
+{
+    printMessage("Sorting files");
+
+    QDir saveDir(savePath);
+#ifdef _WIN32
+    if(x64)
+    {
+        saveDir.mkpath("fmu/binaries/win64");
+        QFile modelDllFile(savePath + "/" + modelName + ".dll");
+        modelDllFile.copy(savePath + "/fmu/binaries/win64/" + modelName + ".dll");
+    }
+    else
+    {
+        saveDir.mkpath("fmu/binaries/win32");
+        QFile modelDllFile(savePath + "/" + modelName + ".dll");
+        modelDllFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".dll");
+    }
+#elif linux && __i386__
+    saveDir.mkpath("fmu/binaries/linux32");
+    saveDir.mkpath("fmu/resources");
+    QFile modelSoFile(savePath + "/" + modelName + ".so");
+    modelSoFile.copy(savePath + "/fmu/binaries/linux32/" + modelName + ".so");
+#elif linux && __x86_64__
+    saveDir.mkpath("fmu/binaries/linux64");
+    saveDir.mkpath("fmu/resources");
+    QFile modelSoFile(savePath + "/" + modelName + ".so");
+    modelSoFile.copy(savePath + "/fmu/binaries/linux64/" + modelName + ".so");
+#endif
+    QFile modelDescriptionFile(savePath+"/modelDescription.xml");
+    modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
+    //tlmDescriptionFile.copy(savePath+"/fmu/"+modelName+"_TLM.xml");
+}
+
+void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &modelName) const
+{
+    printMessage("Compressing files");
+
+#ifdef _WIN32
+    QString program = mBinPath + "../ThirdParty/7z/7z";
+    QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
+    callProcess(program, arguments, savePath+"/fmu");
+#elif linux && __i386__
+    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux32/"+modelName+".so";
+    callProcess("zip", arguments, savePath+"/fmu");
+#elif linux && __x86_64__
+    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux64/"+modelName+".so";
+    callProcess("zip", arguments, savePath+"/fmu");
+#endif
+
+    if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
+        return;
 }
 
 

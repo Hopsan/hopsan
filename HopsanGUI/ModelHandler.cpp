@@ -658,24 +658,24 @@ void ModelHandler::createLabviewWrapperFromCurrentModel()
 }
 
 
-void ModelHandler::exportCurrentModelToFMUME32()
+void ModelHandler::exportCurrentModelToFMU1_32()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMUME32();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU1_32();
 }
 
-void ModelHandler::exportCurrentModelToFMUME64()
+void ModelHandler::exportCurrentModelToFMU1_64()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMUME64();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU1_64();
 }
 
-void ModelHandler::exportCurrentModelToFMUCS32()
+void ModelHandler::exportCurrentModelToFMU2_32()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMUCS32();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU2_32();
 }
 
-void ModelHandler::exportCurrentModelToFMUCS64()
+void ModelHandler::exportCurrentModelToFMU2_64()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMUCS64();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU2_64();
 }
 
 void ModelHandler::exportCurrentModelToSimulink()

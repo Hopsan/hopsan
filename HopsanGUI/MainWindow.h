@@ -144,10 +144,10 @@ public:
     QAction *mpImportDataFileAction;
     QAction *mpExportToSimulinkAction;
     QAction *mpExportToSimulinkCoSimAction;
-    QAction *mpExportToFMUME32Action;
-    QAction *mpExportToFMUME64Action;
-    QAction *mpExportToFMUCS32Action;
-    QAction *mpExportToFMUCS64Action;
+    QAction *mpExportToFMU1_32Action;
+    QAction *mpExportToFMU1_64Action;
+    QAction *mpExportToFMU2_32Action;
+    QAction *mpExportToFMU2_64Action;
     QAction *mpExportToLabviewAction;
     QAction *mpLoadModelParametersAction;
     QAction *mpCloseAction;
