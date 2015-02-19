@@ -911,11 +911,13 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
 void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSystem, int version, bool x64)
 {
+#ifdef _WIN32
     if(mGccPath.isEmpty())
     {
         printErrorMessage("Compiler path not specified.");
         return;
     }
+#endif
 
     //------------------------------------------------------------------//
     //Obtain model name and version string
@@ -1059,7 +1061,10 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     // Compiling and linking
     //------------------------------------------------------------------//
 
-    compileAndLinkFMU(savePath, modelName, version);
+    if(!compileAndLinkFMU(savePath, modelName, version))
+    {
+        return;
+    }
 
     //------------------------------------------------------------------//
     // Sorting files
@@ -1604,7 +1609,7 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
         return;
 }
 
-void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const
+bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const
 {
     QString vStr = QString::number(version);
 
@@ -1618,7 +1623,7 @@ void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open compile1.bat for writing.");
-        return;
+        return false;
     }
     printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
@@ -1630,10 +1635,33 @@ void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileC.bat");
+#elif linux
+    QString gccCommand = "cd \""+savePath+"\" && gcc -fPIC -c fmu"+vStr+"_model_cs.c "
+                         "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default "
+                         "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/Test/FMI"+vStr+" "
+                         "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/build-fmil\n";
+    gccCommand +=" 2>&1";
+    FILE *fp;
+    char line[130];
+    printMessage("Compiler command: \""+gccCommand+"\"\n");
 
-    if(!assertFilesExist(savePath, QStringList() << "fmu"+vStr+"_model_cs.o"))
-        return;
+    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        printErrorMessage("Could not execute '" + gccCommand + "'! err=%d\n");
+        return false;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            printMessage(QString::fromUtf8(line));
+        }
+    }
 #endif
+    if(!assertFilesExist(savePath, QStringList() << "fmu"+vStr+"_model_cs.o"))
+        return false;
+
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Compiling C++ files");
@@ -1645,7 +1673,7 @@ void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open compile1.bat for writing.");
-        return;
+        return false;
     }
     printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
@@ -1691,7 +1719,62 @@ void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCppBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileCpp.bat");
+#elif linux
+    QString gppCommand = "cd \""+savePath+"\" && g++ -fPIC -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB "+
+            "fmu_hopsan.c "
+            "HopsanCore/src/Component.cc "
+            "HopsanCore/src/ComponentSystem.cc "
+            "HopsanCore/src/HopsanEssentials.cc "
+            "HopsanCore/src/HopsanTypes.cc "
+            "HopsanCore/src/Node.cc "
+            "HopsanCore/src/Nodes.cc "
+            "HopsanCore/src/Parameters.cc HopsanCore/src/Port.cc "
+            "HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc "
+            "HopsanCore/src/ComponentUtilities/CSVParser.cc "
+            "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc "
+            "HopsanCore/src/ComponentUtilities/PLOParser.cc "
+            "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc "
+            "HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp "
+            "HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc "
+            "HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc "
+            "HopsanCore/src/ComponentUtilities/Integrator.cc "
+            "HopsanCore/src/ComponentUtilities/IntegratorLimited.cc "
+            "HopsanCore/src/ComponentUtilities/ludcmp.cc "
+            "HopsanCore/src/ComponentUtilities/matrix.cc "
+            "HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc "
+            "HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc "
+            "HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp "
+            "HopsanCore/src/CoreUtilities/GeneratorHandler.cpp "
+            "HopsanCore/src/CoreUtilities/HmfLoader.cc "
+            "HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc "
+            "HopsanCore/src/CoreUtilities/LoadExternal.cc "
+            "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp "
+            "HopsanCore/src/CoreUtilities/StringUtilities.cpp "
+            "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc "
+            "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp "
+            "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp "
+            "-IHopsanCore/include "
+            "-IcomponentLibraries/defaultLibrary "
+            "-IDependencies/rapidxml-1.13 "
+            "-IDependencies/libcsv_parser++-1.0.0/include/csv_parser "
+            "-IDependencies/IndexingCSVParser\n";
+    gppCommand +=" 2>&1";
+    printMessage("Compiler command: \""+gppCommand+"\"\n");
 
+    fp = popen(  (const char *) gppCommand.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        printErrorMessage("Could not execute '" + gppCommand + "'! err=%d\n");
+        return false;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            printMessage(QString::fromUtf8(line));
+        }
+    }
+#endif
     QStringList objectFiles;
     objectFiles << "fmu_hopsan.o" <<"Component.o" <<"ComponentSystem.o" <<"HopsanEssentials.o"
                 << "HopsanTypes.o" <<"Node.o" <<"Nodes.o" <<"Parameters.o" <<"Port.o"
@@ -1705,8 +1788,7 @@ void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
                 << "IndexingCSVParser.o";
 
     if(!assertFilesExist(savePath, objectFiles))
-        return;
-#endif
+        return false;
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Linking");
@@ -1718,7 +1800,7 @@ void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     if(!linkBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open link.bat for writing.");
-        return;
+        return false;
     }
     printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
@@ -1764,7 +1846,63 @@ void HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & link.bat");
 
     if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
-        return;
+        return false;
+#elif linux
+    QString linkCommand = "cd \""+savePath+"\" && g++ -fPIC  -w -shared -static -static-libgcc-Wl,--rpath,'$ORIGIN/.' "
+            "fmu"+vStr+"_model_cs.o "
+            "fmu_hopsan.o "
+            "Component.o "
+            "ComponentSystem.o "
+            "HopsanEssentials.o "
+            "HopsanTypes.o "
+            "Node.o "
+            "Nodes.o "
+            "Parameters.o "
+            "Port.o "
+            "AuxiliarySimulationFunctions.o "
+            "CSVParser.o "
+            "DoubleIntegratorWithDamping.o "
+            "PLOParser.o "
+            "DoubleIntegratorWithDampingAndCoulumbFriction.o "
+            "EquationSystemSolver.o "
+            "FirstOrderTransferFunction.o "
+            "HopsanPowerUser.o "
+            "Integrator.o "
+            "IntegratorLimited.o "
+            "ludcmp.o "
+            "matrix.o "
+            "SecondOrderTransferFunction.o "
+            "WhiteGaussianNoise.o "
+            "CoSimulationUtilities.o "
+            "GeneratorHandler.o "
+            "HmfLoader.o "
+            "HopsanCoreMessageHandler.o "
+            "LoadExternal.o "
+            "MultiThreadingUtilities.o "
+            "StringUtilities.o "
+            "defaultComponentLibraryInternal.o "
+            "csv_parser.o "
+            "IndexingCSVParser.o "
+            "-o "+modelName+".so\n";
+    linkCommand +=" 2>&1";
+    printMessage("Compiler command: \""+linkCommand+"\"\n");
+
+    fp = popen(  (const char *) linkCommand.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        printErrorMessage("Could not execute '" + linkCommand + "'! err=%d\n");
+        return false;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            printMessage(QString::fromUtf8(line));
+        }
+    }
+
+    return assertFilesExist(savePath, QStringList() << modelName+".so");
+
 #endif
 }
 

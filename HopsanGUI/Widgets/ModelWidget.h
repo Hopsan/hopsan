@@ -73,6 +73,7 @@ public:
     ContainerObject *getViewContainerObject();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
+    SimulationThreadHandler *getSimulationThreadHandler();
 
     ModelHandler *mpParentModelHandler;
     GraphicsView *mpGraphicsView;

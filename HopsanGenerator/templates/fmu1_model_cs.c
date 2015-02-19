@@ -30,7 +30,10 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include "fmu1_model.h"
 
 #define MODEL_IDENTIFIER FMU_CS_MODEL_IDENTIFIER
+
+#ifdef _WIN32
 #define DllExport __declspec(dllexport)
+#endif
 
 
 #include "fmu1_model.c"

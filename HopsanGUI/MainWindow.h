@@ -247,6 +247,7 @@ private:
 
     // Private Actions
     QAction *mpSimulateAction;
+
     QToolButton *mpExportToFMUMenuButton;
 
     // Dialogs

@@ -269,6 +269,12 @@ QuickNavigationWidget *ModelWidget::getQuickNavigationWidget()
 }
 
 
+SimulationThreadHandler *ModelWidget::getSimulationThreadHandler()
+{
+    return mpSimulationThreadHandler;
+}
+
+
 //! @brief Sets last simulation time (only use this from project tab widget!)
 void ModelWidget::setLastSimulationTime(int time)
 {

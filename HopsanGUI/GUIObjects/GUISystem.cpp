@@ -1202,6 +1202,12 @@ void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAc
     }
     saveDir.setFilter(QDir::NoFilter);
 
+    if(!mpModelWidget->isSaved())
+    {
+        QMessageBox::information(gpMainWindowWidget, "Model not saved", "Please save your model before exporting an FMU");
+        return;
+    }
+
     //Save model to hmf in export directory
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 

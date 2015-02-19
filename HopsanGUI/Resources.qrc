@@ -156,5 +156,6 @@
         <file>graphics/objecticons/conditionalSubsystemDefault.svg</file>
         <file>graphics/uiicons/Hopsan-FolderExternal.png</file>
         <file>graphics/uiicons/Hopsan-FolderModelica.png</file>
+        <file>graphics/uiicons/Hopsan-StopSimulation.png</file>
     </qresource>
 </RCC>

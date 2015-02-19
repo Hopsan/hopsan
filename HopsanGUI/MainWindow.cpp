@@ -55,6 +55,7 @@
 #include "version_gui.h"
 #include "HcomHandler.h"
 #include "ModelicaLibrary.h"
+#include "SimulationThreadHandler.h"
 
 #include "Widgets/DebuggerWidget.h"
 #include "Widgets/PlotWidget.h"
@@ -260,7 +261,6 @@ void MainWindow::createContents()
     mpModelHandler = new ModelHandler(this);
     gpModelHandler = mpModelHandler;
     connect(mpModelHandler, SIGNAL(modelChanged(ModelWidget*)), gpTerminalWidget->mpHandler, SLOT(setModelPtr(ModelWidget*)));
-
 
     //Create the sensitivity analysis dialog
     mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
@@ -782,10 +782,18 @@ void MainWindow::createActions()
 
     mpExportToFMUMenu = new QMenu("Export to Functional Mock-Up Interface (FMI)");
     mpExportToFMUMenu->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
+#ifdef _WIN32
     mpExportToFMUMenu->addAction(mpExportToFMU1_32Action);
-    mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
+#elif linux && __i386__
+    mpExportToFMUMenu->addAction(mpExportToFMU1_32Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
+#elif linux && __x86_64__
+    mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
+#endif
 
     mpExportToLabviewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSIT.png"), tr("Export to LabVIEW/SIT"), this);
     mHelpPopupTextMap.insert(mpExportToLabviewAction, "Export model to LabVIEW Veristand.");

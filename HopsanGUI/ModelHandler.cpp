@@ -268,6 +268,9 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     }
 
     ModelWidget *pNewModel = new ModelWidget(this, gpCentralTabWidget);
+    connect(pNewModel->getSimulationThreadHandler(), SIGNAL(startSimulation()), gpMainWindow, SLOT(hideSimulateButton()));
+    connect(pNewModel->getSimulationThreadHandler(), SIGNAL(done(bool)), gpMainWindow, SLOT(showSimulateButton()));
+
     this->addModelWidget(pNewModel, fileInfo.baseName(), detatched);
     pNewModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
     pNewModel->getTopLevelSystemContainer()->setUndoEnabled(false, true);

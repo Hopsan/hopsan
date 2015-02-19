@@ -36,7 +36,7 @@ private:
     void generateModelDescriptionXmlFile(hopsan::ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs);
     void generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &savePath) const;
     void replaceNameSpace(const QString &savePath) const;
-    void compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const;
+    bool compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const;
     void sortFiles(const QString &savePath, const QString &modelName, bool x64) const;
     void compressFiles(const QString &savePath, const QString &modelName) const;
 
