@@ -1199,11 +1199,11 @@ bool ModelObjectAppearance::hasIcon(const GraphicsTypeEnumT gfxType)
 
 bool ModelObjectAppearance::iconValid(const GraphicsTypeEnumT gfxType) const
 {
-    if (gfxType == GraphicsTypeEnumT::UserGraphics)
+    if (gfxType == UserGraphics)
     {
         return mUserIconAppearance.mIsValid;
     }
-    else if (gfxType == GraphicsTypeEnumT::ISOGraphics)
+    else if (gfxType == ISOGraphics)
     {
         return mIsoIconAppearance.mIsValid;
     }
