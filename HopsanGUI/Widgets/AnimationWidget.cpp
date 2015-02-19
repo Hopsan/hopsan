@@ -211,10 +211,12 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     //Generate list of connectors from container object
     for(int d=0;d<mModelObjectsList.size();d++)
     {
-        for(int e=0;e<mModelObjectsList.at(d)->getConnectorPtrs().size();e++)
+        QList<Connector*> moConnectors = mModelObjectsList.at(d)->getConnectorPtrs();
+        for(int e=0;e<moConnectors.size();e++)
         {
-            Connector* tempConnector = mModelObjectsList.at(d)->getConnectorPtrs().at(e);
-            if(!mConnectorList.contains(tempConnector) &&
+            Connector* tempConnector = moConnectors.at(e);
+            if(tempConnector->isConnected() &&
+               !mConnectorList.contains(tempConnector) &&
                !hiddenComponents.contains(tempConnector->getStartPort()->getParentModelObject()->getTypeName()) &&
                !hiddenComponents.contains(tempConnector->getEndPort()->getParentModelObject()->getTypeName()))
             {
