@@ -1501,22 +1501,25 @@ QLineEdit *ParameterValueSelectionWidget::getValueEditPtr() const
 void ParameterValueSelectionWidget::setValueAndScale_nosignals(QString value, UnitScale &rCustomUS)
 {
     mpValueEdit->blockSignals(true);
-    mpUnitSelectionWidget->blockSignals(true);
 
     mCustomScale=rCustomUS;
     mpValueEdit->setText(value);
-    if (mCustomScale.isEmpty())
+
+    if (mpUnitSelectionWidget)
     {
-        mpUnitSelectionWidget->resetDefault();
-    }
-    else
-    {
-        mpUnitSelectionWidget->setUnitScaling(mCustomScale);
+        mpUnitSelectionWidget->blockSignals(true);
+        if (mCustomScale.isEmpty())
+        {
+            mpUnitSelectionWidget->resetDefault();
+        }
+        else
+        {
+            mpUnitSelectionWidget->setUnitScaling(mCustomScale);
+        }
+        mpUnitSelectionWidget->blockSignals(false);
     }
 
     mpValueEdit->blockSignals(false);
-    mpUnitSelectionWidget->blockSignals(false);
-
 }
 
 void ParameterValueSelectionWidget::setValue()
