@@ -47,6 +47,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "MainWindow.h"
 #include "LibraryHandler.h"
+#include "MessageHandler.h"
 
 //! @brief Constructor for the animation widget class
 //! @param [in] parent Pointer to parent widget
@@ -425,9 +426,17 @@ void AnimationWidget::play()
 //! @todo The plot data object in container should perhaps be cleared of these generations
 void AnimationWidget::playRT()
 {
-    if(!mpContainer->getCoreSystemAccessPtr()->isSimulationOk()) return;
+    if(!mpContainer->getCoreSystemAccessPtr()->isSimulationOk())
+    {
+        gpMessageHandler->addErrorMessage("Could not start real-time animation, model is not OK");
+        return;
+    }
+    if(!mpContainer->getCoreSystemAccessPtr()->initialize(0,10,0))
+    {
+        gpMessageHandler->addErrorMessage("Could not start real-time animation, model failed to initialize");
+        return;
+    }
 
-    mpContainer->getCoreSystemAccessPtr()->initialize(0,10,0);
     mRealTime = true;
     mpTimeSlider->setValue(1);
     changeIndex(0);
