@@ -516,6 +516,9 @@ def copyFiles():
     
     #Export "exampleComponentLib" SVN directory to temporary directory
     svnExport(r'componentLibraries\exampleComponentLib', tempDir+r'\componentLibraries\exampleComponentLib')
+
+    #Export "autoLibs" SVN directory to temporary directory
+    svnExport(r'componentLibraries\autoLibs', tempDir+r'\componentLibraries\autoLibs')
    
     #Export "Scripts" folder to temporary directory
     svnExport(r'Scripts\HopsanOptimization.py', tempDirScripts)
