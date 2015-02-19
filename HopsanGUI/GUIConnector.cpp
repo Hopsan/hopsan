@@ -1060,7 +1060,7 @@ bool Connector::isFirstAndLastDiagonal()
 //! @brief Updates the appearance of the connector (setting its type and line endings)
 void Connector::determineAppearance()
 {
-    if (isBroken())
+    if (isBroken() || isDangling())
     {
         mpConnectorAppearance->setStyle(BrokenConnectorStyle);
     }
