@@ -30,8 +30,7 @@ namespace hopsan {
     class HydraulicLaminarOrifice : public ComponentQ
     {
     private:
-        bool cav;
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpKc;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc, *mpKc;
         Port *mpP1, *mpP2, *mpIn;
 
     public:
@@ -50,15 +49,15 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
         }
 
 
@@ -67,10 +66,10 @@ namespace hopsan {
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
 
             //Get variable values from nodes
-            c1 = (*mpND_c1);
-            Zc1 = (*mpND_Zc1);
-            c2 = (*mpND_c2);
-            Zc2 = (*mpND_Zc2);
+            c1 = (*mpP1_c);
+            Zc1 = (*mpP1_Zc);
+            c2 = (*mpP2_c);
+            Zc2 = (*mpP2_Zc);
             const double Kc = (*mpKc);
 
             //Orifice equations
@@ -80,7 +79,7 @@ namespace hopsan {
             p2 = c2 + q2*Zc2;
 
             //Cavitation check
-            cav = false;
+            bool cav = false;
             if(p1 < 0.0)
             {
                 c1 = 0.0;
@@ -104,10 +103,10 @@ namespace hopsan {
             }
 
             //Write new variables to nodes
-            (*mpND_p1) = p1;
-            (*mpND_q1) = q1;
-            (*mpND_p2) = p2;
-            (*mpND_q2) = q2;
+            (*mpP1_p) = p1;
+            (*mpP1_q) = q1;
+            (*mpP2_p) = p2;
+            (*mpP2_q) = q2;
         }
     };
 }
