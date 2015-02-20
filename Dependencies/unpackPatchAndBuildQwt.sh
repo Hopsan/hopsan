@@ -9,6 +9,9 @@ qwtzipfile="qwt-6.1.2.zip"
 qwtname="qwt-6.1.2"
 basepwd=`pwd`
 
+# include general settings
+./setHopsanBuildPaths.sh
+
 # If arg 1 is --force then override regardless
 if [ "$1" != "--force" ]; then
     # Abort if dir already exist. When running release build script we dont want to build twice
@@ -23,6 +26,10 @@ rm -rf $qwtname
 rm -rf $qwtname\_shb
 # Unzip
 unzip -q $qwtzipfile
+# Adjust CRLF on Mac OS X
+if [ "$OSTYPE" == "darwin14" ]; then
+    find $qwtname -name '*.pr?' -exec dos2unix {} \;
+fi
 #Patch
 patch --binary -p0 < $qwtname.patch
 # Create Shadowbbuild directory
@@ -30,9 +37,9 @@ mkdir $qwtname\_shb
 cd $qwtname\_shb
 # Generate makefiles on different platforms
 if [ "$OSTYPE" == "linux-gnu" ]; then
-        qmake ../$qwtname/qwt.pro -r -spec linux-g++
-elif [ "$OSTYPE" == "darwin13" ]; then
-        $HOME/Qt/5.2.1/clang_64/bin/qmake ../$qwtname/qwt.pro -r # This is a rather temporary ugly solution...
+        $hopsan_qt_qmake ../$qwtname/qwt.pro -r -spec linux-g++
+elif [ "$OSTYPE" == "darwin14" ]; then
+        $hopsan_qt_qmake ../$qwtname/qwt.pro -r # This is a rather temporary ugly solution...
 else
         echo "Unknown OS for qwt build and patch"
 fi

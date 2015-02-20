@@ -10,6 +10,8 @@ fmizipfile="$fminame-src.zip"
 
 basepwd=`pwd`
 
+./setHopsanBuildPaths.sh
+
 # If arg 1 is --force then override regardless
 if [ "$1" != "--force" ]; then
     # Abort if dir already exist. When running release build script we dont want to build twice
@@ -30,7 +32,7 @@ cd $fminame/build-fmil
 if [ "$OSTYPE" == "linux-gnu" ]
 then
 	cmake ../
-elif [ "$OSTYPE" == "darwin13" ]
+elif [ "$OSTYPE" == "darwin14" ]
 then
         cmake ../
 else
