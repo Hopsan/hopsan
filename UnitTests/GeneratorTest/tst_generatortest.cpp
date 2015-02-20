@@ -45,71 +45,105 @@ private Q_SLOTS:
 
         //Generate FMU
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu_me/", system, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", true, false);
-        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu_cs/", system, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", false, false);
+        HString includePath = HString(pwd.toStdString().c_str())+"/../HopsanCore/include/";
+        HString binPath = HString(pwd.toStdString().c_str())+"/../bin/";
+        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu1_32/", system, includePath, binPath, "c:/mingw/bin", 1, false, false);
+        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu1_64/", system, includePath, binPath, "c:/mingw64/bin", 1, true, false);
+        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu2_32/", system, includePath, binPath, "c:/mingw/bin", 2, false, false);
+        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu2_64/", system, includePath, binPath, "c:/mingw64/bin", 2, true, false);
 
-        QString code = "#include \"ComponentEssentials.h\"\n"
-                "namespace hopsan {\n"
-                "  class HydraulicLaminarOrifice : public ComponentQ\n"
-                "    {\n"
-                "      public:\n"
-                "        double ko;\n"
-                "      private:\n"
-                "        int gris;\n"
-                "        Integrator katt;\n"
-                "      void simulateOneTimestep()\n"
-                "      {\n"
-                "        gris=ko+5;\n"
-                "      }\n"
-                "      bool initialize()\n"
-                "      {\n"
-                "        int x=gris*3;\n"
-                "        gris= 3;\n"
-                "        ko=5;\n"
-                "      }\n"
-                "    };\n"
-                "}\n";
-        QStringList errorMsgs;
+//        QString code = "#include \"ComponentEssentials.h\"\n"
+//                "namespace hopsan {\n"
+//                "  class HydraulicLaminarOrifice : public ComponentQ\n"
+//                "    {\n"
+//                "      public:\n"
+//                "        double ko;\n"
+//                "      private:\n"
+//                "        int gris;\n"
+//                "        Integrator katt;\n"
+//                "      void simulateOneTimestep()\n"
+//                "      {\n"
+//                "        gris=ko+5;\n"
+//                "      }\n"
+//                "      bool initialize()\n"
+//                "      {\n"
+//                "        int x=gris*3;\n"
+//                "        gris= 3;\n"
+//                "        ko=5;\n"
+//                "      }\n"
+//                "    };\n"
+//                "}\n";
+//        QStringList errorMsgs;
         //examineCode(code, errorMsgs);
 
-        //Run FMUChecker for Model Exchange export
+        //Run FMUChecker for FMU 1.0 32-bit export
         QStringList args;
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu_me/unittestmodel_export.fmu";
+        args << QDir::currentPath()+"/fmu1_32/unittestmodel_export.fmu";
         QProcess p;
         p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
         p.waitForReadyRead();
         QString output = p.readAllStandardError();
         QStringList errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU for model exchange, FMU not acceted by FMUChecker.");
+        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
 
-        //Run FMUChecker for Co-Simulation export
+        //Run FMUChecker for FMU 1.0 64-bit export
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu_cs/unittestmodel_export.fmu";
+        args << QDir::currentPath()+"/fmu1_64/unittestmodel_export.fmu";
+        p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win64.exe", args);
+        p.waitForReadyRead();
+        output = p.readAllStandardError();
+        errors = output.split("\n");
+
+        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
+
+        //Run FMUChecker for FMU 2.0 32-bit export
+        args.clear();
+        args << "-l" << "2";
+        args << "-o" << "log.txt";
+        args << QDir::currentPath()+"/fmu2_32/unittestmodel_export.fmu";
         p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
         errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU for co-simulation, FMU not acceted by FMUChecker.");
+        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 2.0 (32-bit), FMU not accepted by FMUChecker.");
+
+        //Run FMUChecker for FMU 2.0 64-bit export
+        args.clear();
+        args << "-l" << "2";
+        args << "-o" << "log.txt";
+        args << QDir::currentPath()+"/fmu2_64/unittestmodel_export.fmu";
+        p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win64.exe", args);
+        p.waitForReadyRead();
+        output = p.readAllStandardError();
+        errors = output.split("\n");
+
+        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
     }
 
     void Generator_FMU_Export_data()
     {
         QTest::addColumn<ComponentSystem*>("system");
         double start, stop;
-        removeDir(QDir::currentPath()+"/fmu_me/");
-        QDir().mkpath(QDir::currentPath()+"/fmu_me/");
-        removeDir(QDir::currentPath()+"/fmu_cs/");
-        QDir().mkpath(QDir::currentPath()+"/fmu_cs/");
+        removeDir(QDir::currentPath()+"/fmu1_32/");
+        removeDir(QDir::currentPath()+"/fmu1_64/");
+        removeDir(QDir::currentPath()+"/fmu2_32/");
+        removeDir(QDir::currentPath()+"/fmu2_64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu1_32/");
+        QDir().mkpath(QDir::currentPath()+"/fmu1_64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu2_32/");
+        QDir().mkpath(QDir::currentPath()+"/fmu2_64/");
         QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
         QFile file(path);
-        file.copy(QDir::currentPath()+"/fmu_me/unittestmodel_export.hmf");
-        file.copy(QDir::currentPath()+"/fmu_cs/unittestmodel_export.hmf");
+        file.copy(QDir::currentPath()+"/fmu1_32/unittestmodel_export.hmf");
+        file.copy(QDir::currentPath()+"/fmu1_64/unittestmodel_export.hmf");
+        file.copy(QDir::currentPath()+"/fmu2_32/unittestmodel_export.hmf");
+        file.copy(QDir::currentPath()+"/fmu2_64/unittestmodel_export.hmf");
         QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
     }
 
@@ -197,7 +231,7 @@ private Q_SLOTS:
         moFile.close();
 
         GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callModelicaGenerator(HString(QFileInfo(moFile).absoluteFilePath().toStdString().c_str()), false, 0, true, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/");
+        //pHandler->callModelicaGenerator(HString(QFileInfo(moFile).absoluteFilePath().toStdString().c_str()), false, 0, true, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/");
 
         QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(LIBEXT)).c_str())), "Failure! Modelica generator failed to generate dll.");
     }
