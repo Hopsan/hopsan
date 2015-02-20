@@ -33,6 +33,7 @@
 #include <QScrollBar>
 #include <QMenu>
 #include <QWebView>
+#include <QWebFrame>
 #include <QMainWindow>
 
 
@@ -395,17 +396,17 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             if (path.endsWith(".md"))
             {
 #ifdef USEDISCOUNT
-                QString htmlFile = mpModelObject->getHelpHtmlPath();
-                htmlFile.truncate(htmlFile.size()-3);
-                htmlFile.append(".html");
-                htmlFile.prepend(gpDesktopHandler->getTempPath()+"html/");
+                QString htmlFilePath = mpModelObject->getHelpHtmlPath();
+                htmlFilePath.truncate(htmlFilePath.size()-3);
+                htmlFilePath.append(".html");
+                htmlFilePath.prepend(gpDesktopHandler->getTempPath()+"html/");
 
                 // Make sure temp dir exist
-                QFileInfo fi(htmlFile);
+                QFileInfo fi(htmlFilePath);
                 QDir().mkpath(fi.absolutePath());
 
                 FILE *inFile = fopen(path.toStdString().c_str(), "r");
-                FILE *outFile = fopen(htmlFile.toStdString().c_str(), "w");
+                FILE *outFile = fopen(htmlFilePath.toStdString().c_str(), "w");
                 if (inFile && outFile)
                 {
                     // Generate html from markdown
@@ -414,8 +415,155 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                     fclose(outFile);
                     fclose(inFile);
                     mkd_cleanup(doc);
+
+                    // Now parse the html file for equations
+                    QFile htmlFile(htmlFilePath);
+                    htmlFile.open(QIODevice::ReadOnly);
+                    QTextStream htmlStream(&htmlFile);
+                    QString tmp_html = htmlStream.readAll();
+                    htmlFile.close();
+
+                    QMap<size_t, QString> equationMap;
+                    QTextStream inHtmlStream(&tmp_html);
+                    size_t ln=0;
+                    while(!inHtmlStream.atEnd())
+                    {
+                        //! @todo multiline ?
+
+                        QString line = inHtmlStream.readLine();
+                        if (line.trimmed().startsWith("<!---EQUATION"))
+                        {
+                            QString eq = line.mid(13, line.size()-18).trimmed();
+                            //eq.replace("\\", "\\\\");
+                            equationMap.insert(ln, QString("<div class=\"equation\" expr=\"%1\"></div>").arg(eq));
+                        }
+                        ++ln;
+                    }
+
+                    htmlFile.open(QIODevice::WriteOnly);
+                    htmlStream.seek(0);
+
+                    if (!equationMap.empty())
+                    {
+                        htmlStream << "<!DOCTYPE html>\n";
+                        htmlStream << "<html>\n";
+                        htmlStream << "  <head>\n";
+                        htmlStream << "    <meta charset=\"UTF-8\">\n";
+                        htmlStream << "      " << QString("<script src=\"%1katex/katex.min.js\" type=\"text/javascript\"></script>\n").arg("/home/petno25/svn/hopsan/trunk/HopsanGUI/Dependencies/");
+                        htmlStream << "      " << QString("<link href=\"%1katex/katex.min.css\" rel=\"stylesheet\" type=\"text/css\">\n").arg("/home/petno25/svn/hopsan/trunk/HopsanGUI/Dependencies/");
+                        htmlStream << "  </head>\n";
+
+                        inHtmlStream.seek(0);
+                        ln=0;
+                        while (!inHtmlStream.atEnd())
+                        {
+                            htmlStream << inHtmlStream.readLine() << "\n";
+                            auto it = equationMap.find(ln);
+                            if (it != equationMap.end())
+                            {
+                                htmlStream << it.value() << "\n";
+                                equationMap.erase(it);
+                            }
+                            ln++;
+                        }
+
+                        htmlStream << "  <script type=\"text/javascript\">\n";
+                        htmlStream << "    var eqns = document.getElementsByClassName(\"equation\");\n";
+                        htmlStream << "    Array.prototype.forEach.call(eqns, function(eq) {\n";
+                        htmlStream << "      katex.render(\"\\displaystyle \" + eq.getAttribute(\"expr\"), eq);\n";
+                        htmlStream << "    });\n";
+                        htmlStream << "  </script>\n";
+
+                        htmlStream << "</html>\n";
+
+                        htmlFile.close();
+
+                    }
+                    else
+                    {
+                        while (!inHtmlStream.atEnd())
+                        {
+                            htmlStream << inHtmlStream.readLine() << "\n";
+                        }
+                    }
+
+//                        while (!htmlStream.atEnd())
+//                        {
+//                            //! @todo multiline ?
+//                            QString line = htmlStream.readLine();
+//                            if (line.trimmed().startsWith("<!---EQUATION"))
+//                            {
+//                                QString eq = line.mid(13, line.size()-18).trimmed();
+//                                //eq.replace("\\", "\\\\");
+
+//                                QString expr = QString("<div class=\"equation\" expr=\"%1\"></div>").arg(eq);
+//                                htmlStream << line << "\n";
+//                                htmlStream << expr << "\n";
+
+//                                have_eq=true;
+//                            }
+//                            else if (line.trimmed().startsWith("</body>") || htmlStream.atEnd())
+//                            {
+
+
+
+//                                QString a =\
+//                                "<script type=\"text/javascript\">\n \
+//                                   var eqns = document.getElementsByClassName(\"equation\");\n \
+//                                   Array.prototype.forEach.call(eqns, function(eq) {\n \
+//                                     katex.render(eq.getAttribute(\"expr\"), eq);\n \
+//                                    });\n \
+//                                </script>\n";
+//                                htmlStream << a.simplified();
+//                                htmlStream << line << "\n";
+//                            }
+//                            else if (line.trimmed().startsWith("</head>"))
+//                            {
+//                                QString a = \
+//                                "<script src=\"<<<PATH>>>katex/katex.min.js\" type=\"text/javascript\"></script>\n \
+//                                <link href=\"<<<PATH>>>katex/katex.min.css\" rel=\"stylesheet\" type=\"text/css\">\n";
+//                                a.replace("<<<PATH>>>", "/home/petno25/svn/hopsan/trunk/HopsanGUI/Dependencies/");
+//                                htmlStream << a.simplified();
+//                                htmlStream << line << "\n";
+//                            }
+//                            else
+//                            {
+//                                htmlStream << line << "\n";
+//                            }
+
+//                        }
+//                        htmlStream << "</html>";
+
+//                        htmlFile.close();
+//                        outfile2.close();;
+
+
+//                    QString latex_eq = "c = \\pm\\sqrt{a^2 + b^2}";
+//                    // Make sure backslashes are escaped
+//                    latex_eq.replace("\\", "\\\\");
+
+//                    QFile katex_template("../HopsanGUI/Dependencies/katexIt_template.html");
+//                    katex_template.open(QIODevice::ReadOnly);
+//                    QTextStream text(&katex_template);
+
+//                    QString katext_equation = text.readAll().replace("<<<PATH>>>", "/home/petno25/svn/hopsan/trunk/HopsanGUI/Dependencies/")
+//                                                            .replace("<<<EQUATION>>>", latex_eq);
+//                    katex_template.close();
+
+//                    QFile outfile("./katemp.html");
+//                    outfile.open(QIODevice::WriteOnly);
+//                    QTextStream outstream(&outfile);
+//                    outstream << katext_equation;
+//                    outfile.close();
+
+//                    //mpHelp->setHtml(katext_equation);
+//                    pHtmlView->load(QUrl::fromLocalFile(gpDesktopHandler->getExecPath()+"katemp.html"));
+
+//                    QString htmltext = pHtmlView->page()->currentFrame()->toHtml();
+//                    qDebug() << htmltext;
+
                     // Set html to view
-                    pHtmlView->load(QUrl::fromLocalFile(htmlFile));
+                    pHtmlView->load(QUrl::fromLocalFile(htmlFilePath));
                 }
                 else
                 {
