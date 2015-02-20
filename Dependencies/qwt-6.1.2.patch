@@ -1,6 +1,6 @@
-diff -urb qwt-6.1.2/designer/designer.pro qwt-6.1.2_mod/designer/designer.pro
+diff -urb --binary qwt-6.1.2/designer/designer.pro qwt-6.1.2_mod/designer/designer.pro
 --- qwt-6.1.2/designer/designer.pro	2014-12-11 15:14:20.000000000 +0100
-+++ qwt-6.1.2_mod/designer/designer.pro	2015-02-09 13:52:12.988135200 +0100
++++ qwt-6.1.2_mod/designer/designer.pro	2015-02-20 14:10:21.725895522 +0100
 @@ -8,7 +8,7 @@
  ################################################################
  
@@ -10,9 +10,9 @@ diff -urb qwt-6.1.2/designer/designer.pro qwt-6.1.2_mod/designer/designer.pro
  
  include ( $${QWT_ROOT}/qwtconfig.pri )
  include ( $${QWT_ROOT}/qwtbuild.pri )
-diff -urb qwt-6.1.2/examples/examples.pri qwt-6.1.2_mod/examples/examples.pri
+diff -urb --binary qwt-6.1.2/examples/examples.pri qwt-6.1.2_mod/examples/examples.pri
 --- qwt-6.1.2/examples/examples.pri	2014-12-11 15:14:20.000000000 +0100
-+++ qwt-6.1.2_mod/examples/examples.pri	2015-02-09 13:52:12.988135200 +0100
++++ qwt-6.1.2_mod/examples/examples.pri	2015-02-20 14:10:21.725895522 +0100
 @@ -12,7 +12,7 @@
  include( $${QWT_ROOT}/qwtbuild.pri )
  include( $${QWT_ROOT}/qwtfunctions.pri )
@@ -22,9 +22,9 @@ diff -urb qwt-6.1.2/examples/examples.pri qwt-6.1.2_mod/examples/examples.pri
  
  TEMPLATE     = app
  
-diff -urb qwt-6.1.2/playground/playground.pri qwt-6.1.2_mod/playground/playground.pri
+diff -urb --binary qwt-6.1.2/playground/playground.pri qwt-6.1.2_mod/playground/playground.pri
 --- qwt-6.1.2/playground/playground.pri	2014-12-11 15:14:20.000000000 +0100
-+++ qwt-6.1.2_mod/playground/playground.pri	2015-02-09 13:52:12.978135100 +0100
++++ qwt-6.1.2_mod/playground/playground.pri	2015-02-20 14:10:21.725895522 +0100
 @@ -12,7 +12,7 @@
  include( $${QWT_ROOT}/qwtbuild.pri )
  include( $${QWT_ROOT}/qwtfunctions.pri )
@@ -34,10 +34,9 @@ diff -urb qwt-6.1.2/playground/playground.pri qwt-6.1.2_mod/playground/playgroun
  
  TEMPLATE     = app
  
-Only in qwt-6.1.2_mod/: qwt.pro.user
-diff -urb qwt-6.1.2/qwtconfig.pri qwt-6.1.2_mod/qwtconfig.pri
+diff -urb --binary qwt-6.1.2/qwtconfig.pri qwt-6.1.2_mod/qwtconfig.pri
 --- qwt-6.1.2/qwtconfig.pri	2014-12-11 15:14:20.000000000 +0100
-+++ qwt-6.1.2_mod/qwtconfig.pri	2015-02-09 13:52:54.074795700 +0100
++++ qwt-6.1.2_mod/qwtconfig.pri	2015-02-20 14:10:21.725895522 +0100
 @@ -118,7 +118,7 @@
  # Otherwise you have to build it from the designer directory.
  ######################################################################
@@ -47,9 +46,9 @@ diff -urb qwt-6.1.2/qwtconfig.pri qwt-6.1.2_mod/qwtconfig.pri
  
  ######################################################################
  # Compile all Qwt classes into the designer plugin instead
-diff -urb qwt-6.1.2/src/src.pro qwt-6.1.2_mod/src/src.pro
---- qwt-6.1.2/src/src.pro	2014-12-11 15:14:19.000000000 +0100
-+++ qwt-6.1.2_mod/src/src.pro	2015-02-09 13:52:15.582364000 +0100
+diff -urb --binary qwt-6.1.2/src/src.pro qwt-6.1.2_mod/src/src.pro
+--- qwt-6.1.2/src/src.pro	2014-12-11 15:14:20.000000000 +0100
++++ qwt-6.1.2_mod/src/src.pro	2015-02-20 14:10:21.725895522 +0100
 @@ -14,7 +14,7 @@
  include( $${QWT_ROOT}/qwtbuild.pri )
  include( $${QWT_ROOT}/qwtfunctions.pri )
@@ -59,9 +58,9 @@ diff -urb qwt-6.1.2/src/src.pro qwt-6.1.2_mod/src/src.pro
  
  TEMPLATE          = lib
  TARGET            = $$qwtLibraryTarget(qwt)
-diff -urb qwt-6.1.2/textengines/textengines.pri qwt-6.1.2_mod/textengines/textengines.pri
+diff -urb --binary qwt-6.1.2/textengines/textengines.pri qwt-6.1.2_mod/textengines/textengines.pri
 --- qwt-6.1.2/textengines/textengines.pri	2014-12-11 15:14:20.000000000 +0100
-+++ qwt-6.1.2_mod/textengines/textengines.pri	2015-02-09 13:52:13.008135400 +0100
++++ qwt-6.1.2_mod/textengines/textengines.pri	2015-02-20 14:10:21.725895522 +0100
 @@ -13,7 +13,7 @@
  include( $${QWT_ROOT}/qwtbuild.pri )
  include( $${QWT_ROOT}/qwtfunctions.pri )
