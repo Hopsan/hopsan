@@ -6,12 +6,12 @@
 # Date:   2015-02-20
 
 if [ "$OSTYPE" == "darwin14" ]; then
-    hopsan_qt_path=$HOME/Qt/5.4
-    hopsan_qt_bin=$hopsan_qt_path/bin/
-    hopsan_qt_qmake=$hopsan_qt_bin/qmake
+    export hopsan_qt_path=$HOME/Qt/5.4
+    export hopsan_qt_bin=$hopsan_qt_path/bin/
+    export hopsan_qt_qmake=$hopsan_qt_bin/qmake
 else
-    hopsan_qt_path=
-    hopsan_qt_bin=
-    hopsan_qt_qmake=qmake
+    export hopsan_qt_path=
+    export hopsan_qt_bin=
+    export hopsan_qt_qmake=qmake
 fi
 
