@@ -119,9 +119,17 @@ GeneratorHandler::GeneratorHandler()
 #else
     void *lib_ptr;
 #ifdef QT_NO_DEBUG
+#ifdef __APPLE__
+    lib_ptr = dlopen("libHopsanGenerator.dylib", RTLD_NOW);  //Load the dylib
+#else
     lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll
+#endif
+#else
+#ifdef __APPLE__
+    lib_ptr = dlopen("libHopsanGenerator_d.dylib", RTLD_NOW);  //Load the dylib
 #else
     lib_ptr = dlopen("libHopsanGenerator_d.so", RTLD_NOW);  //Load the dll
+#endif
 #endif
     if(!lib_ptr)
     {
