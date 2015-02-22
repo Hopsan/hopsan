@@ -10,7 +10,7 @@ fmizipfile="$fminame-src.zip"
 
 basepwd=`pwd`
 
-./setHopsanBuildPaths.sh
+source setHopsanBuildPaths.sh
 
 # If arg 1 is --force then override regardless
 if [ "$1" != "--force" ]; then

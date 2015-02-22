@@ -10,7 +10,7 @@ qwtname="qwt-6.1.2"
 basepwd=`pwd`
 
 # include general settings
-./setHopsanBuildPaths.sh
+source setHopsanBuildPaths.sh
 
 # If arg 1 is --force then override regardless
 if [ "$1" != "--force" ]; then
