@@ -1684,7 +1684,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
         return false;
 #elif linux
-    QString linkCommand = "cd \""+savePath+"\" && g++ -fPIC  -w -shared -static -static-libgcc-Wl,--rpath,'$ORIGIN/.' "
+    QString linkCommand = "cd \""+savePath+"\" && g++ -fPIC  -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' "
             "fmu"+vStr+"_model_cs.o "
             "fmu_hopsan.o "
             "Component.o "
