@@ -2228,19 +2228,21 @@ void LogDataHandler::registerAlias(const QString &rFullName, const QString &rAli
         {
             // If we get here then we should set a new alias or replace the previous one
             SharedVectorVariableT pFullData = pFullContainer->getDataGeneration(mGenerationNumber);
-
-            // First unregister the previous alias (but only at the current generation)
-            if (pFullData->hasAliasName())
+            if (pFullData)
             {
-                unregisterAlias(pFullData->getAliasName(), -1);
+                // First unregister the previous alias (but only at the current generation)
+                if (pFullData->hasAliasName())
+                {
+                    unregisterAlias(pFullData->getAliasName(), -1);
+                }
+
+                // Now insert the full data as new alias into existing or new alias container
+                // existing data generations will be replaced (removed)
+                pFullData->mpVariableDescription->mAliasName = rAlias;
+                insertVariable(pFullData, rAlias, mGenerationNumber);
+
+                emit aliasChanged();
             }
-
-            // Now insert the full data as new alias into existing or new alias container
-            // existing data generations will be replaced (removed)
-            pFullData->mpVariableDescription->mAliasName = rAlias;
-            insertVariable(pFullData, rAlias, mGenerationNumber);
-
-            emit aliasChanged();
         }
     }
 }
