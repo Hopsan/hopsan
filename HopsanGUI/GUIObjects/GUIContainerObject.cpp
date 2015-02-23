@@ -1167,6 +1167,12 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
 {
     bool success=false;
 
+    if (pConnector->isDangling())
+    {
+        cancelCreatingConnector();
+        return;
+    }
+
     //! @todo why do we have this loop, probably as safety not to try and remove connectors thats not in this system
     for(int i=0; i<mSubConnectorList.size(); ++i)
     {
@@ -2523,7 +2529,8 @@ void ContainerObject::cancelCreatingConnector()
             mpTempConnector->getStartPort()->show();
         }
         mIsCreatingConnector = false;
-        delete(mpTempConnector);
+        mpTempConnector->deleteLater();
+        mpTempConnector=0;
         gpHelpPopupWidget->hide();
     }
 }
