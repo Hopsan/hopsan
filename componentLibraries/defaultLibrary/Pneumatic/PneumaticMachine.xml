@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="PneumaticMachine" displayname="PneumaticMachine">
+    <icons>
+      <icon scale="1" path="PneumaticMachine.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="PneumaticMachine.svg" iconrotation="ON" type="iso"/>
+    </icons>
+    <help>
+       <text>A pneumatic machine that can be used as compressor and motor. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+       <link>PneumaticMachine.nb</link>
+    </help>       
+   <ports>
+      <port x="0.664" y="1" enabled="true" a="90" name="Pp1" autoplaced="true"/>
+      <port x="0.664" y="0" enabled="true" a="270" name="Pp2" autoplaced="true"/>
+      <port x="0" y="0.492" enabled="true" a="180" name="Pmr1" autoplaced="true"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

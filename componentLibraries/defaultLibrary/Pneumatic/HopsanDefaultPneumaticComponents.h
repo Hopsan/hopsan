@@ -3,6 +3,7 @@
 
 #include "PneumaticVolume2.hpp"
 #include "PneumaticOrifice.hpp"
+#include "PneumaticMachine.hpp"
 #include "PneumaticQsrc.hpp"
 #include "PneumaticPTsrc.hpp"
 #include "PneumaticPsensor.hpp"
@@ -11,3 +12,4 @@
 #include "PneumaticdEsensor.hpp"
 
 #endif
+
