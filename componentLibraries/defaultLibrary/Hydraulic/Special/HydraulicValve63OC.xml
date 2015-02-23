@@ -5,6 +5,10 @@
             <icon scale="1" path="HydraulicValve63OC.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicValve63OC.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <text>Hydraulic directional 6-3 open-centre valve. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>HydraulicValve63OC.nb</link>
+        </help>       
         <ports>
             <port x="0.5" y="0" enabled="true" a="270" name="Pa" autoplaced="true"/>
             <port x="0.68" y="0" enabled="true" a="270" name="Pb" autoplaced="true"/>
