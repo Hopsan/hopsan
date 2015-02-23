@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5339" hopsancoreversion="0.6.x_r5334">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6964" hopsancoreversion="0.6.x_r6964">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>PettersComponentLibrary</componentlibrary>
   </requirements>
   <info/>
-  <system logsamples="2048" typename="Subsystem" name="FFBDtest">
+  <system typename="Subsystem" name="FFBDtest">
     <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
     <parameters/>
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
-      <nametext position="0" visible="1"/>
+      <nametext position="0" visible="0"/>
       <animation flowspeed="100"/>
-      <viewport x="2379.99" y="1611.49" zoom="0.597272"/>
+      <viewport x="2781.35" y="1609.36" zoom="0.502994"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -27,10 +27,9 @@
           <animation flowspeed="100"/>
         </modelobject>
       </hopsanobjectappearance>
-      <favoritevariables/>
       <optimization>
         <settings>
-          <niter>100</niter>
+          <iterations>100</iterations>
           <nsearchp>8</nsearchp>
           <refcoeff>1.3</refcoeff>
           <randfac>0.3</randfac>
@@ -44,13 +43,21 @@
         <parameters/>
         <objectives/>
       </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
     </hopsangui>
     <objects>
       <component typename="SignalStep" name="Step">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
-          <parameter unit="-" value="8" type="double" name="t_step::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="-" value="8" type="double" name="t_step#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -68,11 +75,11 @@
       </component>
       <component typename="SignalFFBorIn" name="FFB_or__in_">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="divert::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="out0::Value"/>
-          <parameter unit="-" value="0" type="double" name="out1::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="divert#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="out0#Value"/>
+          <parameter unit="" value="0" type="double" name="out1#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out0"/>
@@ -94,10 +101,10 @@
       </component>
       <component typename="SignalPulse" name="Pulse">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="1" type="double" name="t_start#Value"/>
+          <parameter unit="s" value="2" type="double" name="t_end#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -115,10 +122,10 @@
       </component>
       <component typename="SignalFFBloopIn" name="FFB_loop__in_">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="exiting"/>
@@ -139,10 +146,10 @@
       </component>
       <component typename="SignalFFBand" name="FFB_and__out_">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="exiting"/>
@@ -163,10 +170,10 @@
       </component>
       <component typename="SignalFFBandIn" name="FFB_and__In__1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="out0::Value"/>
-          <parameter unit="-" value="0" type="double" name="out1::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="out0#Value"/>
+          <parameter unit="" value="0" type="double" name="out1#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out0"/>
@@ -187,20 +194,20 @@
       </component>
       <component typename="SignalWaypoint" name="SignalWaypoint">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="s1::Value"/>
-          <parameter unit="-" value="0" type="double" name="xc::Value"/>
-          <parameter unit="-" value="0" type="double" name="yc::Value"/>
-          <parameter unit="-" value="1" type="double" name="set1::Value"/>
-          <parameter unit="-" value="0" type="double" name="altitudeRef::Value"/>
-          <parameter unit="-" value="0" type="double" name="headingRef::Value"/>
-          <parameter unit="-" value="0" type="double" name="velocityRef::Value"/>
-          <parameter unit="-" value="0" type="double" name="distanceWp::Value"/>
-          <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-          <parameter unit="m" value="500" type="double" name="alt1"/>
-          <parameter unit="m/s" value="200" type="double" name="v1"/>
-          <parameter unit="m" value="500" type="double" name="wptol"/>
-          <parameter unit="deg" value="15.1669" type="double" name="xcWp1"/>
-          <parameter unit="deg" value="58.3812" type="double" name="ycWp1"/>
+          <parameter unit="" value="0" type="double" name="s1#Value"/>
+          <parameter unit="m" value="0" type="double" name="xc#Value"/>
+          <parameter unit="m" value="0" type="double" name="yc#Value"/>
+          <parameter unit="m" value="6.3675e+006" type="double" name="R#Value"/>
+          <parameter unit="m" value="500" type="double" name="alt1#Value"/>
+          <parameter unit="m/s" value="200" type="double" name="v1#Value"/>
+          <parameter unit="m" value="500" type="double" name="wptol#Value"/>
+          <parameter unit="deg" value="15.1669" type="double" name="xcWp1#Value"/>
+          <parameter unit="deg" value="58.3812" type="double" name="ycWp1#Value"/>
+          <parameter unit="" value="1" type="double" name="set1#Value"/>
+          <parameter unit="" value="0" type="double" name="altitudeRef#Value"/>
+          <parameter unit="" value="0" type="double" name="headingRef#Value"/>
+          <parameter unit="" value="0" type="double" name="velocityRef#Value"/>
+          <parameter unit="" value="0" type="double" name="distanceWp#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="headingRef"/>
@@ -213,7 +220,7 @@
           <port nodetype="NodeSignal" name="distanceWp"/>
         </ports>
         <hopsangui>
-          <pose x="2285.843486" y="1518.571103" flipped="false" a="0"/>
+          <pose x="2285.84" y="1518.57" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -225,10 +232,10 @@
       </component>
       <component typename="SignalFFBandIn" name="FFB_and__In_">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="out0::Value"/>
-          <parameter unit="-" value="0" type="double" name="out1::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="out0#Value"/>
+          <parameter unit="" value="0" type="double" name="out1#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out0"/>
@@ -249,12 +256,12 @@
       </component>
       <component typename="SignalFFBor" name="FFB_or__out__1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb0::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb1::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb0#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb1#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="exiting"/>
@@ -275,7 +282,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -294,7 +302,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -313,14 +322,15 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_10">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2423.551977" y="1688.607593" flipped="false" a="270"/>
+          <pose x="2423.55" y="1736.324309" flipped="false" a="270"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -332,7 +342,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_3">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -351,8 +362,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_1">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -371,7 +382,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_11">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -390,7 +402,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_4">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -409,8 +422,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_2">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -429,7 +442,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_12">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -448,7 +462,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_5">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -467,8 +482,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_3">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -487,7 +502,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_13">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -506,7 +522,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_6">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -525,8 +542,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_4">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -545,7 +562,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_14">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -564,7 +582,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_7">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -583,8 +602,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_5">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -603,7 +622,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_15">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -620,29 +640,10 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalUnitDelay" name="Unit_Delay_8">
-        <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="in"/>
-          <port nodetype="NodeSignal" name="out"/>
-        </ports>
-        <hopsangui>
-          <pose x="2333.736352" y="1424.45113" flipped="false" a="270"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalUnitDelay" displayname="Unit_Delay_8">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
       <component typename="SignalTimeDelay" name="Time_Delay_6">
         <parameters>
-          <parameter unit="[s]" value="1.5" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1.5" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -661,7 +662,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_16">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -678,16 +680,37 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalUnitDelay" name="Unit_Delay_9">
+      <component typename="SignalUnitDelay" name="Unit_Delay_8">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2293.832003" y="1690.607593" flipped="false" a="270"/>
+          <pose x="2333.74" y="1424.45" flipped="false" a="270"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalUnitDelay" displayname="Unit_Delay_8">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalUnitDelay" name="Unit_Delay_9">
+        <parameters>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2293.83" y="1738.324309" flipped="false" a="270"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -699,8 +722,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_7">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -719,7 +742,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_17">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -736,29 +760,10 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalTimeDelay" name="Time_Delay_8">
-        <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="in"/>
-          <port nodetype="NodeSignal" name="out"/>
-        </ports>
-        <hopsangui>
-          <pose x="2313.736352" y="1464.132837" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalTimeDelay" displayname="Time_Delay_8">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_18">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -775,17 +780,37 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalTimeDelay" name="Time_Delay_9">
+      <component typename="SignalTimeDelay" name="Time_Delay_8">
         <parameters>
-          <parameter unit="[s]" value="2" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2249.149121" y="1708.107593" flipped="false" a="0"/>
+          <pose x="2313.74" y="1464.13" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalTimeDelay" displayname="Time_Delay_8">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalTimeDelay" name="Time_Delay_9">
+        <parameters>
+          <parameter unit="s" value="2" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2249.15" y="1755.824309" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -797,7 +822,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay_19">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -816,7 +842,7 @@
       </component>
       <component typename="SignalSink" name="Scope">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -836,13 +862,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_10">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -852,7 +878,7 @@
           <port nodetype="NodeSignal" name="exit"/>
         </ports>
         <hopsangui>
-          <pose x="2240.982478" y="1613.107593" flipped="false" a="0"/>
+          <pose x="2240.98" y="1660.824309" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -864,13 +890,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_11">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -880,7 +906,7 @@
           <port nodetype="NodeSignal" name="exit"/>
         </ports>
         <hopsangui>
-          <pose x="2367.982478" y="1613.107593" flipped="false" a="0"/>
+          <pose x="2367.98" y="1660.824309" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -892,13 +918,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_12">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -920,13 +946,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_13">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -948,13 +974,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_14">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -976,13 +1002,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_15">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -1004,13 +1030,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_16">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -1032,13 +1058,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_17">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -1060,13 +1086,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_19">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -1088,7 +1114,8 @@
       </component>
       <component typename="SignalUnitDelay" name="Unit_Delay">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
+          <parameter unit="" value="0" type="double" name="out#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -1107,12 +1134,12 @@
       </component>
       <component typename="SignalFFBor" name="FFB_or__out_">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb0::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb1::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb0#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb1#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="exiting"/>
@@ -1133,8 +1160,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -1153,15 +1180,15 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_10">
         <parameters>
-          <parameter unit="[s]" value="2" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="2" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2376.149121" y="1706.107593" flipped="false" a="0"/>
+          <pose x="2376.15" y="1753.824309" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -1173,8 +1200,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_11">
         <parameters>
-          <parameter unit="[s]" value="1.5" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1.5" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -1191,15 +1218,16 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <system logsamples="2048" typename="Subsystem" name="Subsystem">
+      <system typename="Subsystem" name="Subsystem">
         <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+        <simulationlogsettings numsamples="2048" starttime="0"/>
         <parameters/>
         <aliases/>
         <hopsangui>
           <pose x="2363.357422" y="2251.11722" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2379.99" y="1611.49" zoom="0.597272"/>
+          <viewport x="2781.35" y="1609.36" zoom="0.502994"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1218,10 +1246,9 @@
               <animation flowspeed="100"/>
             </modelobject>
           </hopsanobjectappearance>
-          <favoritevariables/>
           <optimization>
             <settings>
-              <niter>100</niter>
+              <iterations>100</iterations>
               <nsearchp>8</nsearchp>
               <refcoeff>1.3</refcoeff>
               <randfac>0.3</randfac>
@@ -1235,12 +1262,20 @@
             <parameters/>
             <objectives/>
           </optimization>
+          <senstivitityanalysis>
+            <settings>
+              <iterations>100</iterations>
+              <distribution>uniform</distribution>
+            </settings>
+            <parameters/>
+            <plotvariables/>
+          </senstivitityanalysis>
         </hopsangui>
         <objects>
           <component typename="SignalTimeDelay" name="Time_Delay_4">
             <parameters>
-              <parameter unit="[s]" value="1" type="double" name="deltat"/>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="s" value="1" type="double" name="deltat"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1259,8 +1294,8 @@
           </component>
           <component typename="SignalTimeDelay" name="Time_Delay_5">
             <parameters>
-              <parameter unit="[s]" value="1" type="double" name="deltat"/>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="s" value="1" type="double" name="deltat"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1279,8 +1314,8 @@
           </component>
           <component typename="SignalTimeDelay" name="Time_Delay_6">
             <parameters>
-              <parameter unit="[s]" value="1.5" type="double" name="deltat"/>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="s" value="1.5" type="double" name="deltat"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1299,10 +1334,10 @@
           </component>
           <component typename="SignalFFBandIn" name="FFB_and__In__1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in0::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="out0::Value"/>
-              <parameter unit="-" value="0" type="double" name="out1::Value"/>
+              <parameter unit="" value="0" type="double" name="in0#Value"/>
+              <parameter unit="" value="0" type="double" name="state#Value"/>
+              <parameter unit="" value="0" type="double" name="out0#Value"/>
+              <parameter unit="" value="0" type="double" name="out1#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out0"/>
@@ -1323,8 +1358,8 @@
           </component>
           <component typename="SignalTimeDelay" name="Time_Delay_7">
             <parameters>
-              <parameter unit="[s]" value="1" type="double" name="deltat"/>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="s" value="1" type="double" name="deltat"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1343,7 +1378,8 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
+              <parameter unit="" value="0" type="double" name="out#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1369,7 +1405,8 @@
           </systemport>
           <component typename="SignalUnitDelay" name="Unit_Delay_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
+              <parameter unit="" value="0" type="double" name="out#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1388,7 +1425,8 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_3">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
+              <parameter unit="" value="0" type="double" name="out#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1407,13 +1445,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_5">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="" value="0" type="double" name="set#Value"/>
+              <parameter unit="" value="0" type="double" name="exit#Value"/>
+              <parameter unit="" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="" value="0" type="double" name="leave#Value"/>
+              <parameter unit="" value="0" type="double" name="state#Value"/>
+              <parameter unit="" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1435,13 +1473,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_6">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="" value="0" type="double" name="set#Value"/>
+              <parameter unit="" value="0" type="double" name="exit#Value"/>
+              <parameter unit="" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="" value="0" type="double" name="leave#Value"/>
+              <parameter unit="" value="0" type="double" name="state#Value"/>
+              <parameter unit="" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1463,7 +1501,8 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_5">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="" value="0" type="double" name="in#Value"/>
+              <parameter unit="" value="0" type="double" name="out#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1482,13 +1521,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_7">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="" value="0" type="double" name="set#Value"/>
+              <parameter unit="" value="0" type="double" name="exit#Value"/>
+              <parameter unit="" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="" value="0" type="double" name="leave#Value"/>
+              <parameter unit="" value="0" type="double" name="state#Value"/>
+              <parameter unit="" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1510,13 +1549,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_8">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="" value="0" type="double" name="set#Value"/>
+              <parameter unit="" value="0" type="double" name="exit#Value"/>
+              <parameter unit="" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="" value="0" type="double" name="leave#Value"/>
+              <parameter unit="" value="0" type="double" name="state#Value"/>
+              <parameter unit="" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1545,10 +1584,10 @@
           </systemport>
           <component typename="SignalFFBand" name="FFB_and__out_">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in0::Value"/>
-              <parameter unit="-" value="0" type="double" name="in1::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
+              <parameter unit="" value="0" type="double" name="in0#Value"/>
+              <parameter unit="" value="0" type="double" name="in1#Value"/>
+              <parameter unit="" value="0" type="double" name="state#Value"/>
+              <parameter unit="" value="0" type="double" name="exiting#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="exiting"/>
@@ -1569,7 +1608,7 @@
           </component>
           <component typename="SignalSink" name="Scope">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -1951,7 +1990,7 @@
       </system>
       <component typename="SignalSink" name="Scope_10">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -1971,8 +2010,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_12">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -1991,8 +2030,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_13">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2011,7 +2050,7 @@
       </component>
       <component typename="SignalSink" name="Scope_12">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2031,8 +2070,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_14">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2051,7 +2090,7 @@
       </component>
       <component typename="SignalSink" name="Scope_13">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2071,8 +2110,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_15">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2091,7 +2130,7 @@
       </component>
       <component typename="SignalSink" name="Scope_14">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2111,8 +2150,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_16">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2131,8 +2170,8 @@
       </component>
       <component typename="SignalTimeDelay" name="Time_Delay_17">
         <parameters>
-          <parameter unit="[s]" value="1" type="double" name="deltat"/>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="s" value="1" type="double" name="deltat"/>
+          <parameter unit="" value="0" type="double" name="in#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -2151,13 +2190,13 @@
       </component>
       <component typename="SignalFFB" name="FFB">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2179,7 +2218,7 @@
       </component>
       <component typename="SignalSink" name="Scope_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2199,7 +2238,7 @@
       </component>
       <component typename="SignalSink" name="Scope_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2219,7 +2258,7 @@
       </component>
       <component typename="SignalSink" name="Scope_3">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2239,7 +2278,7 @@
       </component>
       <component typename="SignalConstant" name="Constant">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y::Value"/>
+          <parameter unit="" value="0" type="double" name="y#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="y"/>
@@ -2257,7 +2296,7 @@
       </component>
       <component typename="SignalSink" name="Scope_4">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2265,7 +2304,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2494.926843" y="1402.761442" flipped="false" a="0"/>
+          <pose x="2494.93" y="1402.76" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -2277,13 +2316,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2305,7 +2344,7 @@
       </component>
       <component typename="SignalSink" name="Scope_5">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2313,7 +2352,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2541.555606" y="1552.465335" flipped="false" a="0"/>
+          <pose x="2541.56" y="1552.47" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -2325,13 +2364,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2353,7 +2392,7 @@
       </component>
       <component typename="SignalSink" name="Scope_6">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2361,7 +2400,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2552.982478" y="1667.107593" flipped="false" a="0"/>
+          <pose x="2552.98" y="1714.824309" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -2373,11 +2412,11 @@
       </component>
       <component typename="SignalFFBloop" name="FFB_loop__out_">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in0::Value"/>
-          <parameter unit="-" value="0" type="double" name="divert::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="out0::Value"/>
-          <parameter unit="-" value="0" type="double" name="out1::Value"/>
+          <parameter unit="" value="0" type="double" name="in0#Value"/>
+          <parameter unit="" value="0" type="double" name="divert#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="out0#Value"/>
+          <parameter unit="" value="0" type="double" name="out1#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out0"/>
@@ -2399,13 +2438,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_3">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2427,13 +2466,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_4">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2455,7 +2494,7 @@
       </component>
       <component typename="SignalSink" name="Scope_8">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -2475,13 +2514,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_5">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2503,13 +2542,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_6">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2531,10 +2570,10 @@
       </component>
       <component typename="SignalPulse" name="Pulse_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="3.5" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="10" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="3.5" type="double" name="t_start#Value"/>
+          <parameter unit="s" value="10" type="double" name="t_end#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -2552,13 +2591,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_7">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2580,10 +2619,10 @@
       </component>
       <component typename="SignalPulse" name="Pulse_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="1" type="double" name="t_start#Value"/>
+          <parameter unit="s" value="2" type="double" name="t_end#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -2601,13 +2640,13 @@
       </component>
       <component typename="SignalFFB" name="FFB_8">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="leave"/>
@@ -2629,16 +2668,16 @@
       </component>
       <component typename="SignalPulse" name="Pulse_3">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="1" type="double" name="t_start#Value"/>
+          <parameter unit="s" value="2" type="double" name="t_end#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2056.926843" y="1338.761442" flipped="false" a="0"/>
+          <pose x="2056.93" y="1338.76" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -2648,46 +2687,18 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalFFB" name="FFB_9">
-        <parameters>
-          <parameter unit="-" value="0" type="double" name="set::Value"/>
-          <parameter unit="-" value="0" type="double" name="exit::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-          <parameter unit="-" value="0" type="double" name="leave::Value"/>
-          <parameter unit="-" value="0" type="double" name="state::Value"/>
-          <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-          <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="leave"/>
-          <port nodetype="NodeSignal" name="exiting"/>
-          <port nodetype="NodeSignal" name="set"/>
-          <port nodetype="NodeSignal" name="state"/>
-          <port nodetype="NodeSignal" name="exit"/>
-        </ports>
-        <hopsangui>
-          <pose x="2279.926843" y="1338.761442" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalFFB" displayname="FFB_9">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
       <component typename="SignalPulse" name="Pulse_4">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="1" type="double" name="t_start#Value"/>
+          <parameter unit="s" value="2" type="double" name="t_end#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2061.982478" y="1613.107593" flipped="false" a="0"/>
+          <pose x="2061.98" y="1660.824309" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -2697,12 +2708,40 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component typename="SignalFFB" name="FFB_9">
+        <parameters>
+          <parameter unit="" value="0" type="double" name="set#Value"/>
+          <parameter unit="" value="0" type="double" name="exit#Value"/>
+          <parameter unit="" value="0" type="double" name="exitb#Value"/>
+          <parameter unit="" value="0" type="double" name="leave#Value"/>
+          <parameter unit="" value="0" type="double" name="state#Value"/>
+          <parameter unit="" value="0" type="double" name="exiting#Value"/>
+          <parameter unit="" value="0" type="double" name="exitingb#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="leave"/>
+          <port nodetype="NodeSignal" name="exiting"/>
+          <port nodetype="NodeSignal" name="set"/>
+          <port nodetype="NodeSignal" name="state"/>
+          <port nodetype="NodeSignal" name="exit"/>
+        </ports>
+        <hopsangui>
+          <pose x="2279.93" y="1338.76" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalFFB" displayname="FFB_9">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <component typename="SignalPulse" name="Pulse_5">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="1" type="double" name="t_start#Value"/>
+          <parameter unit="s" value="2" type="double" name="t_end#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -2720,10 +2759,10 @@
       </component>
       <component typename="SignalPulse" name="Pulse_6">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="1" type="double" name="t_start#Value"/>
+          <parameter unit="s" value="2" type="double" name="t_end#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -2741,90 +2780,90 @@
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="2045.000000" y="1173.000000"/>
-          <textobject fontcolor="#000000" text="FFB block diagram examples" font="Calibri,24,-1,0,75,0,0,0,0,0"/>
+          <pose x="2160.028623" y="1168.866172"/>
+          <textobject reflow="0" fontcolor="#000000" text="FFB block diagram examples" font="Calibri,24,-1,0,75,0,0,0,0,0"/>
           <size width="418.000000" height="50.000000"/>
-          <line width="2.000000" visible="0" style="solidline"/>
+          <line width="2" visible="0" style="solidline" color="#000000"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="2540.000000" y="1321.000000"/>
-          <textobject fontcolor="#556b2f" text="The delay is used to simulate waiting for a&#xa; signal from a process." font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <pose x="2655.028623" y="1316.866172"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="The delay is used to simulate waiting for a&#xa; signal from a process." font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="285.000000" height="50.127774"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="2540.000000" y="1387.000000"/>
-          <textobject fontcolor="#556b2f" text="The unit delay is just used to avoid algebraic loop&#xa; in the sorting algorithm" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <pose x="2655.028623" y="1382.866172"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="The unit delay is just used to avoid algebraic loop&#xa; in the sorting algorithm" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="331.000000" height="50.127774"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2412.000000" y="2197.000000"/>
-          <textobject fontcolor="#556b2f" text="Same system as above as a&#xa;subsystem" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="Same system as above as a&#xa;subsystem" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="202.119319" height="46.000000"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2111.000000" y="1824.000000"/>
-          <textobject fontcolor="#556b2f" text="FFB block diagram with the AND-in and AND-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="FFB block diagram with the AND-in and AND-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
           <size width="516.000000" height="50.000000"/>
-          <line width="2.000000" visible="0" style="solidline"/>
+          <line width="2" visible="0" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2110.000000" y="2923.000000"/>
-          <textobject fontcolor="#556b2f" text="FFB block diagram with the AND-in and OR-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="FFB block diagram with the AND-in and OR-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
           <size width="501.000000" height="50.000000"/>
-          <line width="2.000000" visible="0" style="solidline"/>
+          <line width="2" visible="0" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2107.000000" y="2395.000000"/>
-          <textobject fontcolor="#556b2f" text="FFB block diagram with the OR-in and OR-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="FFB block diagram with the OR-in and OR-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
           <size width="486.000000" height="50.000000"/>
-          <line width="2.000000" visible="0" style="solidline"/>
+          <line width="2" visible="0" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="1893.000000" y="2576.000000"/>
-          <textobject fontcolor="#556b2f" text="If signal is set to one the one &#xa;the signal will be diverted to &#xa;the lower path." font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="If signal is set to one the one &#xa;the signal will be diverted to &#xa;the lower path." font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="205.190672" height="65.000000"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="1912.000000" y="3646.000000"/>
-          <textobject fontcolor="#556b2f" text="If signal is set to one the one &#xa;the signal will be diverted &#xa;from the loop and continue" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="If signal is set to one the one &#xa;the signal will be diverted &#xa;from the loop and continue" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="202.000000" height="65.000000"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2121.000000" y="3409.000000"/>
-          <textobject fontcolor="#556b2f" text="FFB block diagram with the LOOP-in and LOOP-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="FFB block diagram with the LOOP-in and LOOP-out functions" font="Calibri,16,-1,0,50,0,0,0,0,0"/>
           <size width="532.000000" height="50.000000"/>
-          <line width="2.000000" visible="0" style="solidline"/>
+          <line width="2" visible="0" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
           <pose x="2606.000000" y="2992.000000"/>
-          <textobject fontcolor="#556b2f" text="This path is used to force &#xa;the block to be released" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <textobject reflow="0" fontcolor="#556b2f" text="This path is used to force &#xa;the block to be released" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="187.007560" height="46.000000"/>
-          <line width="2.000000" visible="1" style="solidline"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
         </hopsangui>
       </textboxwidget>
     </objects>
@@ -2974,9 +3013,9 @@
       <connect endport="in" endcomponent="Unit_Delay_10" startport="out" startcomponent="Time_Delay_10">
         <hopsangui>
           <coordinates>
-            <coordinate x="2396.14912099999992278754" y="1706.10759299999995164399"/>
-            <coordinate x="2423.55197700000007898780" y="1706.10759299999995164399"/>
-            <coordinate x="2423.55197700000007898780" y="1706.10759299999995164399"/>
+            <coordinate x="2396.15000000000009094947" y="1753.82430940826111509523"/>
+            <coordinate x="2423.55000000000018189894" y="1753.82430940826111509523"/>
+            <coordinate x="2423.55000000000018189894" y="1753.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -2988,23 +3027,9 @@
       <connect endport="in" endcomponent="Unit_Delay_9" startport="out" startcomponent="Time_Delay_9">
         <hopsangui>
           <coordinates>
-            <coordinate x="2269.14912099999992278754" y="1708.10759299999995164399"/>
-            <coordinate x="2293.83200299999998605927" y="1708.10759299999995164399"/>
-            <coordinate x="2293.83200299999998605927" y="1708.10759299999995164399"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="in" endcomponent="Unit_Delay_8" startport="out" startcomponent="Time_Delay_8">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2333.73635199999989708886" y="1464.13283700000010867370"/>
-            <coordinate x="2333.73635199999989708886" y="1464.13283700000010867370"/>
-            <coordinate x="2333.73635199999989708886" y="1441.95112999999992098310"/>
+            <coordinate x="2269.15000000000009094947" y="1755.82430940826111509523"/>
+            <coordinate x="2293.82999999999992724042" y="1755.82430940826111509523"/>
+            <coordinate x="2293.82999999999992724042" y="1755.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -4119,73 +4144,13 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="set" endcomponent="FFB_9" startport="out" startcomponent="Pulse_3">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2069.42684300000018993160" y="1338.76144199999998818384"/>
-            <coordinate x="2224.42684300000018993160" y="1338.76144199999998818384"/>
-            <coordinate x="2224.42684300000018993160" y="1338.76144199999998818384"/>
-            <coordinate x="2244.42684300000018993160" y="1338.76144199999998818384"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="in" endcomponent="Time_Delay_8" startport="state" startcomponent="FFB_9">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2268.09348600000021178857" y="1359.26144199999998818384"/>
-            <coordinate x="2268.09348600000021178857" y="1464.13283700000010867370"/>
-            <coordinate x="2293.73635199999989708886" y="1464.13283700000010867370"/>
-          </coordinates>
-          <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="exit" endcomponent="FFB_9" startport="out" startcomponent="Unit_Delay_8">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2333.73635199999989708886" y="1406.95112999999992098310"/>
-            <coordinate x="2333.73635199999989708886" y="1383.35908083210529184726"/>
-            <coordinate x="2291.76041299999997136183" y="1383.35908083210529184726"/>
-            <coordinate x="2291.76041299999997136183" y="1359.26144199999998818384"/>
-          </coordinates>
-          <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="in" endcomponent="Scope_4" startport="state" startcomponent="FFB_9">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2268.09348600000021178857" y="1359.26144199999998818384"/>
-            <coordinate x="2268.09348600000021178857" y="1402.76144199999998818384"/>
-            <coordinate x="2474.92684300000018993160" y="1402.76144199999998818384"/>
-          </coordinates>
-          <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
       <connect endport="set" endcomponent="FFB_10" startport="out" startcomponent="Pulse_4">
         <hopsangui>
           <coordinates>
-            <coordinate x="2074.48247799999990093056" y="1613.10759299999995164399"/>
-            <coordinate x="2185.48247799999990093056" y="1613.10759299999995164399"/>
-            <coordinate x="2185.48247799999990093056" y="1613.10759299999995164399"/>
-            <coordinate x="2205.48247799999990093056" y="1613.10759299999995164399"/>
+            <coordinate x="2074.48000000000001818989" y="1660.82430940826111509523"/>
+            <coordinate x="2183.11461686806705984054" y="1660.82430940826111509523"/>
+            <coordinate x="2183.11461686806705984054" y="1660.82430940826111509523"/>
+            <coordinate x="2205.48000000000001818989" y="1660.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -4198,10 +4163,10 @@
       <connect endport="set" endcomponent="FFB_11" startport="exiting" startcomponent="FFB_10">
         <hopsangui>
           <coordinates>
-            <coordinate x="2276.48247799999990093056" y="1613.10759299999995164399"/>
-            <coordinate x="2312.48247799999990093056" y="1613.10759299999995164399"/>
-            <coordinate x="2312.48247799999990093056" y="1613.10759299999995164399"/>
-            <coordinate x="2332.48247799999990093056" y="1613.10759299999995164399"/>
+            <coordinate x="2276.48000000000001818989" y="1660.82430940826111509523"/>
+            <coordinate x="2310.11461686806705984054" y="1660.82430940826111509523"/>
+            <coordinate x="2310.11461686806705984054" y="1660.82430940826111509523"/>
+            <coordinate x="2332.48000000000001818989" y="1660.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -4214,11 +4179,11 @@
       <connect endport="in" endcomponent="Time_Delay_10" startport="state" startcomponent="FFB_11">
         <hopsangui>
           <coordinates>
-            <coordinate x="2356.14912099999992278754" y="1633.60759299999995164399"/>
-            <coordinate x="2356.14912099999992278754" y="1651.71886818665961982333"/>
-            <coordinate x="2334.49266344714078513789" y="1651.71886818665961982333"/>
-            <coordinate x="2334.49266344714078513789" y="1706.10759299999995164399"/>
-            <coordinate x="2356.14912099999992278754" y="1706.10759299999995164399"/>
+            <coordinate x="2356.14664300000004004687" y="1681.32430940826111509523"/>
+            <coordinate x="2356.14664300000004004687" y="1701.23546955010215242510"/>
+            <coordinate x="2332.12480231520794404787" y="1701.23546955010215242510"/>
+            <coordinate x="2332.12480231520794404787" y="1753.82430940826111509523"/>
+            <coordinate x="2356.15000000000009094947" y="1753.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4232,10 +4197,10 @@
       <connect endport="out" endcomponent="Unit_Delay_10" startport="exit" startcomponent="FFB_11">
         <hopsangui>
           <coordinates>
-            <coordinate x="2379.81604799999968236079" y="1633.60759299999995164399"/>
-            <coordinate x="2379.81604799999968236079" y="1650.53143549925016486668"/>
-            <coordinate x="2423.55197700000007898780" y="1650.53143549925016486668"/>
-            <coordinate x="2423.55197700000007898780" y="1671.10759299999995164399"/>
+            <coordinate x="2379.81356999999979962013" y="1681.32430940826111509523"/>
+            <coordinate x="2379.81356999999979962013" y="1700.04803686269269746845"/>
+            <coordinate x="2423.55000000000018189894" y="1700.04803686269269746845"/>
+            <coordinate x="2423.55000000000018189894" y="1718.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4248,10 +4213,10 @@
       <connect endport="out" endcomponent="Unit_Delay_9" startport="exit" startcomponent="FFB_10">
         <hopsangui>
           <coordinates>
-            <coordinate x="2252.81604799999968236079" y="1633.60759299999995164399"/>
-            <coordinate x="2252.81604799999968236079" y="1650.53143549925016486668"/>
-            <coordinate x="2293.83200299999998605927" y="1650.53143549925016486668"/>
-            <coordinate x="2293.83200299999998605927" y="1673.10759299999995164399"/>
+            <coordinate x="2252.81356999999979962013" y="1681.32430940826111509523"/>
+            <coordinate x="2252.81356999999979962013" y="1700.04803686269269746845"/>
+            <coordinate x="2293.82999999999992724042" y="1700.04803686269269746845"/>
+            <coordinate x="2293.82999999999992724042" y="1720.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4264,11 +4229,11 @@
       <connect endport="in" endcomponent="Time_Delay_9" startport="state" startcomponent="FFB_10">
         <hopsangui>
           <coordinates>
-            <coordinate x="2229.14912099999992278754" y="1633.60759299999995164399"/>
-            <coordinate x="2229.14912099999992278754" y="1660.03089699852625926724"/>
-            <coordinate x="2196.75047170763491521939" y="1660.03089699852625926724"/>
-            <coordinate x="2196.75047170763491521939" y="1708.10759299999995164399"/>
-            <coordinate x="2229.14912099999992278754" y="1708.10759299999995164399"/>
+            <coordinate x="2229.14664300000004004687" y="1681.32430940826111509523"/>
+            <coordinate x="2229.14664300000004004687" y="1709.54749836196879186900"/>
+            <coordinate x="2194.38261057570207412937" y="1709.54749836196879186900"/>
+            <coordinate x="2194.38261057570207412937" y="1755.82430940826111509523"/>
+            <coordinate x="2229.15000000000009094947" y="1755.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4282,9 +4247,9 @@
       <connect endport="in" endcomponent="Scope_6" startport="state" startcomponent="FFB_10">
         <hopsangui>
           <coordinates>
-            <coordinate x="2229.14912099999992278754" y="1633.60759299999995164399"/>
-            <coordinate x="2229.14912099999992278754" y="1667.10759299999995164399"/>
-            <coordinate x="2532.98247799999990093056" y="1667.10759299999995164399"/>
+            <coordinate x="2229.14664300000004004687" y="1681.32430940826111509523"/>
+            <coordinate x="2229.14664300000004004687" y="1714.82430940826111509523"/>
+            <coordinate x="2532.98000000000001818989" y="1714.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4296,9 +4261,9 @@
       <connect endport="in" endcomponent="Scope_6" startport="state" startcomponent="FFB_11">
         <hopsangui>
           <coordinates>
-            <coordinate x="2356.14912099999992278754" y="1633.60759299999995164399"/>
-            <coordinate x="2356.14912099999992278754" y="1667.10759299999995164399"/>
-            <coordinate x="2532.98247799999990093056" y="1667.10759299999995164399"/>
+            <coordinate x="2356.14664300000004004687" y="1681.32430940826111509523"/>
+            <coordinate x="2356.14664300000004004687" y="1714.82430940826111509523"/>
+            <coordinate x="2532.98000000000001818989" y="1714.82430940826111509523"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4607,13 +4572,43 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="s1" endcomponent="SignalWaypoint" startport="state" startcomponent="FFB_9">
+      <connect endport="set" endcomponent="FFB_9" startport="out" startcomponent="Pulse_3">
         <hopsangui>
           <coordinates>
-            <coordinate x="2268.09348600000021178857" y="1359.26144199999998818384"/>
-            <coordinate x="2268.09348600000021178857" y="1509.88240533626208161877"/>
-            <coordinate x="2268.09348600000021178857" y="1509.88240533626208161877"/>
-            <coordinate x="2268.09348600000021178857" y="1498.07110299999999369902"/>
+            <coordinate x="2069.43000000000029103830" y="1338.75999999999999090505"/>
+            <coordinate x="2225.33946749643064322299" y="1338.75999999999999090505"/>
+            <coordinate x="2225.33946749643064322299" y="1338.75999999999999090505"/>
+            <coordinate x="2244.42999999999983629095" y="1338.75999999999999090505"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Time_Delay_8" startport="state" startcomponent="FFB_9">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2268.09664299999985814793" y="1359.25999999999999090505"/>
+            <coordinate x="2268.09664299999985814793" y="1464.13000000000010913936"/>
+            <coordinate x="2293.73999999999978172127" y="1464.13000000000010913936"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="exit" endcomponent="FFB_9" startport="out" startcomponent="Unit_Delay_8">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2333.73999999999978172127" y="1406.95000000000004547474"/>
+            <coordinate x="2333.73999999999978172127" y="1383.99766896492951673281"/>
+            <coordinate x="2291.76356999999961772119" y="1383.99766896492951673281"/>
+            <coordinate x="2291.76356999999961772119" y="1359.25999999999999090505"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4623,12 +4618,56 @@
           <style>solid</style>
         </hopsangui>
       </connect>
+      <connect endport="in" endcomponent="Scope_4" startport="state" startcomponent="FFB_9">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2268.09664299999985814793" y="1359.25999999999999090505"/>
+            <coordinate x="2268.09664299999985814793" y="1402.75999999999999090505"/>
+            <coordinate x="2474.92999999999983629095" y="1402.75999999999999090505"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="s1" endcomponent="SignalWaypoint" startport="state" startcomponent="FFB_9">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2268.09664299999985814793" y="1359.25999999999999090505"/>
+            <coordinate x="2268.09664299999985814793" y="1510.52099346908630650432"/>
+            <coordinate x="2268.09000000000014551915" y="1510.52099346908630650432"/>
+            <coordinate x="2268.09000000000014551915" y="1498.06999999999993633537"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Unit_Delay_8" startport="out" startcomponent="Time_Delay_8">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2333.73999999999978172127" y="1464.13000000000010913936"/>
+            <coordinate x="2333.73999999999978172127" y="1464.13000000000010913936"/>
+            <coordinate x="2333.73999999999978172127" y="1441.95000000000004547474"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
       <connect endport="in" endcomponent="Scope_5" startport="altitudeRef" startcomponent="SignalWaypoint">
         <hopsangui>
           <coordinates>
-            <coordinate x="2274.01012900000023364555" y="1539.07110299999999369902"/>
-            <coordinate x="2274.01012900000023364555" y="1552.46533500000009553332"/>
-            <coordinate x="2521.55560599999989790376" y="1552.46533500000009553332"/>
+            <coordinate x="2274.00664300000016737613" y="1539.06999999999993633537"/>
+            <coordinate x="2274.00664300000016737613" y="1552.47000000000002728484"/>
+            <coordinate x="2521.55999999999994543032" y="1552.47000000000002728484"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4640,11 +4679,11 @@
       <connect endport="in_right" endcomponent="Scope_5" startport="velocityRef" startcomponent="SignalWaypoint">
         <hopsangui>
           <coordinates>
-            <coordinate x="2297.67684300000018993160" y="1539.07110299999999369902"/>
-            <coordinate x="2297.67684300000018993160" y="1575.49659116784300749714"/>
-            <coordinate x="2593.45825687458955144393" y="1575.49659116784300749714"/>
-            <coordinate x="2593.45825687458955144393" y="1552.46533500000009553332"/>
-            <coordinate x="2561.55560599999989790376" y="1552.46533500000009553332"/>
+            <coordinate x="2297.67335700000012366218" y="1539.06999999999993633537"/>
+            <coordinate x="2297.67335700000012366218" y="1576.13517930066723238269"/>
+            <coordinate x="2594.37088137102000473533" y="1576.13517930066723238269"/>
+            <coordinate x="2594.37088137102000473533" y="1552.47000000000002728484"/>
+            <coordinate x="2561.55999999999994543032" y="1552.47000000000002728484"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
