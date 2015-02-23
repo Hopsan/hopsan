@@ -109,15 +109,13 @@ LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set Discount Paths
-depext=""
-win32:contains(QMAKE_HOST.arch, x86_64){
-    depext="_x64"
-}
-exists($${PWD}/../Dependencies/discount-2.1.8$${depext}){
-DEFINES *= USEDISCOUNT
-INCLUDEPATH *= $${PWD}/../Dependencies/discount-2.1.8$${depext}
-LIBS *= -L$${PWD}/../Dependencies/discount-2.1.8$${depext} -lmarkdown
-message(Compiling with Discount$${depext} support)
+d = $$setDiscountPathInfo($$(DISCOUNT_PATH), $$DESTDIR)
+!isEmpty(d){
+    DEFINES *= USEDISCOUNT
+    LIBS *= $$magic_hopsan_libpath
+    INCLUDEPATH *= $$magic_hopsan_includepath
+    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+    message(Compiling with Discount (libmarkdown) support)
 }
 #--------------------------------------------------------
 
