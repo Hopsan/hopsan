@@ -1,0 +1,926 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hopsancoreversion="0.6.x_r7734" hmfversion="0.4" hopsanguiversion="0.6.x_r7736">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info/>
+  <system typename="Subsystem" name="PneumaticMachineGearShaftTest">
+    <simulationtime start="0" timestep="0.0001" inherit_timestep="true" stop="1"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" a="0" flipped="false"/>
+      <nametext position="0" visible="0"/>
+      <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+      <viewport x="3033.61" y="2276.44" zoom="0.70922"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="PneumaticMachineGearShaftTest">
+          <icons>
+            <icon type="defaultmissing" path="subsystemDefault.svg"/>
+          </icons>
+          <ports/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <optimization>
+        <settings>
+          <iterations>100</iterations>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <savecsv>true</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
+    </hopsangui>
+    <objects>
+      <component typename="SignalGain" name="Gain_2">
+        <parameters>
+          <parameter type="double" name="in#Value" unit="" value="0"/>
+          <parameter type="double" name="k#Value" unit="" value="-1"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose x="2294.551364" y="2361.50521" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalGain" displayname="Gain_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicTorqueSensor" name="Torque_Transducer_2">
+        <parameters>
+          <parameter type="double" name="P1#AngularVelocity" unit="rad/s" value="0"/>
+          <parameter type="double" name="P1#Torque" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#Angle" unit="rad" value="0"/>
+          <parameter type="double" name="P1#WaveVariable" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="P1#EquivalentInertia" unit="kgm^2" value="0"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="P1" nodetype="NodeMechanicRotational"/>
+        </ports>
+        <hopsangui>
+          <pose x="2559.222501" y="2334.246226" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data idx="0" dataname="Value" port="out"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" idx="0" y="0.000000" a="-1.200000" multiplier="" divisor=""/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" r="0.000000" a="0.000000" multiplier="" b="0.000000" divisor=""/>
+              <transformorigin x="18.000000" y="18.000000"/>
+              <relative idx="-1"/>
+            </movable>
+          </animation>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicTorqueSensor" displayname="Torque_Transducer_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicTorqueSensor" name="Torque_Transducer_3">
+        <parameters>
+          <parameter type="double" name="P1#AngularVelocity" unit="rad/s" value="0"/>
+          <parameter type="double" name="P1#Torque" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#Angle" unit="rad" value="0"/>
+          <parameter type="double" name="P1#WaveVariable" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="P1#EquivalentInertia" unit="kgm^2" value="0"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="P1" nodetype="NodeMechanicRotational"/>
+        </ports>
+        <hopsangui>
+          <pose x="2728.657035" y="2334.43366" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data idx="0" dataname="Value" port="out"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" idx="0" y="0.000000" a="-1.200000" multiplier="" divisor=""/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" r="0.000000" a="0.000000" multiplier="" b="0.000000" divisor=""/>
+              <transformorigin x="18.000000" y="18.000000"/>
+              <relative idx="-1"/>
+            </movable>
+          </animation>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicTorqueSensor" displayname="Torque_Transducer_3">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicAngularVelocitySensor" name="Angular_Velocity_Transducer_1">
+        <parameters>
+          <parameter type="double" name="P1#AngularVelocity" unit="rad/s" value="0"/>
+          <parameter type="double" name="P1#Torque" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#Angle" unit="rad" value="0"/>
+          <parameter type="double" name="P1#WaveVariable" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="P1#EquivalentInertia" unit="kgm^2" value="0"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="P1" nodetype="NodeMechanicRotational"/>
+        </ports>
+        <hopsangui>
+          <pose x="2520.418494" y="2334.406817" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data idx="0" dataname="Value" port="out"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" idx="0" y="0.000000" a="-120.000000" multiplier="" divisor=""/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" r="0.000000" a="0.000000" multiplier="" b="0.000000" divisor=""/>
+              <transformorigin x="18.000000" y="18.000000"/>
+              <relative idx="-1"/>
+            </movable>
+          </animation>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicAngularVelocitySensor" displayname="Angular_Velocity_Transducer_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicAngularVelocitySensor" name="Angular_Velocity_Transducer_2">
+        <parameters>
+          <parameter type="double" name="P1#AngularVelocity" unit="rad/s" value="0"/>
+          <parameter type="double" name="P1#Torque" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#Angle" unit="rad" value="0"/>
+          <parameter type="double" name="P1#WaveVariable" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="P1#EquivalentInertia" unit="kgm^2" value="0"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="P1" nodetype="NodeMechanicRotational"/>
+        </ports>
+        <hopsangui>
+          <pose x="2689.633383" y="2334.654027" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000">
+            <movable idx="0">
+              <data idx="0" dataname="Value" port="out"/>
+              <start x="0.000000" y="0.000000" a="-60.000000"/>
+              <movement x="0.000000" idx="0" y="0.000000" a="-120.000000" multiplier="" divisor=""/>
+              <initscale x="1.000000" y="1.000000"/>
+              <initcolor g="0.000000" r="0.000000" a="0.000000" b="0.000000"/>
+              <color g="0.000000" idx="0" r="0.000000" a="0.000000" multiplier="" b="0.000000" divisor=""/>
+              <transformorigin x="18.000000" y="18.000000"/>
+              <relative idx="-1"/>
+            </movable>
+          </animation>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicAngularVelocitySensor" displayname="Angular_Velocity_Transducer_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="PneumaticPTsrc" name="PneumaticPTsrc_2">
+        <parameters>
+          <parameter type="double" name="Pp1#MassFlow" unit="kg/s" value="0"/>
+          <parameter type="double" name="Pp1#EnergyFlow" unit="J/s" value="0"/>
+          <parameter type="double" name="Pp1#Pressure" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#Temperature" unit="K" value="293"/>
+          <parameter type="double" name="Pp1#WaveVariable" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="pinput#Value" unit="Pa" value="1e6"/>
+          <parameter type="double" name="Tinput#Value" unit="K" value="273"/>
+        </parameters>
+        <ports>
+          <port name="pinput" nodetype="NodeSignal"/>
+          <port name="Tinput" nodetype="NodeSignal"/>
+          <port name="Pp1" nodetype="NodePneumatic"/>
+        </ports>
+        <hopsangui>
+          <pose x="2393.374868" y="2558.359108" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="PneumaticPTsrc" displayname="PneumaticPTsrc_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="PneumaticdEsensor" name="PneumaticdEsensor">
+        <parameters>
+          <parameter type="double" name="Pp1#MassFlow" unit="kg/s" value="0"/>
+          <parameter type="double" name="Pp1#EnergyFlow" unit="J/s" value="0"/>
+          <parameter type="double" name="Pp1#Pressure" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#Temperature" unit="K" value="293"/>
+          <parameter type="double" name="Pp1#WaveVariable" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#CharImpedance" unit="?" value="0"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="Pp1" nodetype="NodePneumatic"/>
+        </ports>
+        <hopsangui>
+          <pose x="2262.061956" y="2411.678652" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="PneumaticdEsensor" displayname="PneumaticdEsensor">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope">
+        <parameters>
+          <parameter type="double" name="in_bottom#Value" unit="" value="0"/>
+        </parameters>
+        <ports>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose x="2843.728264" y="2166.620025" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="PneumaticOrifice" name="PneumaticOrifice">
+        <parameters>
+          <parameter type="double" name="A0#Value" unit="m2" value="5e-006"/>
+          <parameter type="double" name="Cd#Value" unit="" value="0.65"/>
+          <parameter type="double" name="R#Value" unit="J/Kg K" value="287"/>
+          <parameter type="double" name="cv#Value" unit="J/Kg K" value="718"/>
+          <parameter type="double" name="eps#Value" unit="" value="0.02"/>
+          <parameter type="double" name="qma#Value" unit="" value="0"/>
+          <parameter type="double" name="qmb#Value" unit="" value="0"/>
+        </parameters>
+        <ports>
+          <port name="A0" nodetype="NodeSignal"/>
+          <port name="Pp1" nodetype="NodePneumatic"/>
+          <port name="Pp2" nodetype="NodePneumatic"/>
+        </ports>
+        <hopsangui>
+          <pose x="2690.725665" y="2292.858257" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="PneumaticOrifice" displayname="PneumaticOrifice">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_2">
+        <parameters>
+          <parameter type="double" name="in_bottom#Value" unit="" value="0"/>
+        </parameters>
+        <ports>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose x="2842.203971" y="2224.862908" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_3">
+        <parameters>
+          <parameter type="double" name="in_bottom#Value" unit="" value="0"/>
+        </parameters>
+        <ports>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose x="2842.71723" y="2265.624257" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_3">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicRotationalInertia" name="Rotational_Inertia_1">
+        <parameters>
+          <parameter type="double" name="J" unit="kgm^2" value="0.1"/>
+          <parameter type="double" name="B#Value" unit="Nms/rad" value="10"/>
+          <parameter type="double" name="k#Value" unit="Nm/rad" value="0"/>
+        </parameters>
+        <ports>
+          <port name="P1" nodetype="NodeMechanicRotational"/>
+          <port name="P2" nodetype="NodeMechanicRotational"/>
+        </ports>
+        <hopsangui>
+          <pose x="2776.967328" y="2393.073437" a="0" flipped="false"/>
+          <nametext position="0" visible="1"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicRotationalInertia" displayname="Rotational_Inertia_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicTorqueTransformer" name="Torque_Source_1">
+        <parameters>
+          <parameter type="double" name="T#Value" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#AngularVelocity" unit="rad/s" value="0"/>
+          <parameter type="double" name="P1#Angle" unit="rad" value="0"/>
+          <parameter type="double" name="P1#WaveVariable" unit="Nm" value="0"/>
+          <parameter type="double" name="P1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="P1#EquivalentInertia" unit="kgm^2" value="0"/>
+        </parameters>
+        <ports>
+          <port name="P1" nodetype="NodeMechanicRotational"/>
+          <port name="T" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose x="2959.832178" y="2393.073437" a="0" flipped="true"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicTorqueTransformer" displayname="Torque_Source_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalMultiply" name="Multiply_1">
+        <parameters>
+          <parameter type="double" name="in1#Value" unit="" value="1"/>
+          <parameter type="double" name="in2#Value" unit="" value="1"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="in1" nodetype="NodeSignal"/>
+          <port name="in2" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose x="2425.035405" y="2201.575351" a="180" flipped="true"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalMultiply" displayname="Multiply_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="PneumaticPTsrc" name="PneumaticPTsrc">
+        <parameters>
+          <parameter type="double" name="Pp1#MassFlow" unit="kg/s" value="0"/>
+          <parameter type="double" name="Pp1#EnergyFlow" unit="J/s" value="0"/>
+          <parameter type="double" name="Pp1#Pressure" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#Temperature" unit="K" value="293"/>
+          <parameter type="double" name="Pp1#WaveVariable" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="pinput#Value" unit="Pa" value="100000"/>
+          <parameter type="double" name="Tinput#Value" unit="K" value="273"/>
+        </parameters>
+        <ports>
+          <port name="pinput" nodetype="NodeSignal"/>
+          <port name="Tinput" nodetype="NodeSignal"/>
+          <port name="Pp1" nodetype="NodePneumatic"/>
+        </ports>
+        <hopsangui>
+          <pose x="2773.217782" y="2561.318349" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="PneumaticPTsrc" displayname="PneumaticPTsrc">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="PneumaticVolume2" name="PneumaticVolume2">
+        <parameters>
+          <parameter type="double" name="Pp1#MassFlow" unit="kg/s" value="0"/>
+          <parameter type="double" name="Pp1#EnergyFlow" unit="J/s" value="0"/>
+          <parameter type="double" name="Pp1#Pressure" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#Temperature" unit="K" value="293"/>
+          <parameter type="double" name="Pp1#WaveVariable" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="Pp2#MassFlow" unit="kg/s" value="0"/>
+          <parameter type="double" name="Pp2#EnergyFlow" unit="J/s" value="0"/>
+          <parameter type="double" name="Pp2#Pressure" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp2#Temperature" unit="K" value="293"/>
+          <parameter type="double" name="Pp2#WaveVariable" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp2#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="V#Value" unit="m3" value="0.0001"/>
+          <parameter type="double" name="R#Value" unit="J/Kg K" value="287"/>
+          <parameter type="double" name="cv#Value" unit="J/Kg K" value="718"/>
+          <parameter type="double" name="ka#Value" unit="J/Ks" value="0"/>
+          <parameter type="double" name="T0#Value" unit="K" value="300"/>
+          <parameter type="double" name="alpha#Value" unit="" value="0.01"/>
+          <parameter type="double" name="pmin#Value" unit="" value="1"/>
+          <parameter type="double" name="mass#Value" unit="" value="0.001"/>
+        </parameters>
+        <ports>
+          <port name="Pp1" nodetype="NodePneumatic"/>
+          <port name="Pp2" nodetype="NodePneumatic"/>
+          <port name="mass" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose x="2594.516438" y="2292.858257" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="PneumaticVolume2" displayname="PneumaticVolume2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicGearShaft" name="MechanicGearShaft">
+        <parameters>
+          <parameter type="double" name="Pmr1#AngularVelocity" unit="rad/s" value="0"/>
+          <parameter type="double" name="Pmr1#Torque" unit="Nm" value="0"/>
+          <parameter type="double" name="Pmr1#Angle" unit="rad" value="0"/>
+          <parameter type="double" name="Pmr1#WaveVariable" unit="Nm" value="0"/>
+          <parameter type="double" name="Pmr1#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="Pmr1#EquivalentInertia" unit="kgm^2" value="0"/>
+          <parameter type="double" name="Pmr2#AngularVelocity" unit="rad/s" value="0"/>
+          <parameter type="double" name="Pmr2#Torque" unit="Nm" value="0"/>
+          <parameter type="double" name="Pmr2#Angle" unit="rad" value="0"/>
+          <parameter type="double" name="Pmr2#WaveVariable" unit="Nm" value="0"/>
+          <parameter type="double" name="Pmr2#CharImpedance" unit="?" value="0"/>
+          <parameter type="double" name="Pmr2#EquivalentInertia" unit="kgm^2" value="0"/>
+          <parameter type="double" name="gearRatio#Value" unit="" value="-1"/>
+          <parameter type="double" name="Ks#Value" unit="Nm/rad" value="100000"/>
+          <parameter type="double" name="alpha#Value" unit="" value="0.5"/>
+          <parameter type="double" name="alpha" unit="" value="0.3"/>
+        </parameters>
+        <ports>
+          <port name="gearRatio" nodetype="NodeSignal"/>
+          <port name="Pmr1" nodetype="NodeMechanicRotational"/>
+          <port name="Pmr2" nodetype="NodeMechanicRotational"/>
+        </ports>
+        <hopsangui>
+          <pose x="2630.912934" y="2393.593731" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicGearShaft" displayname="MechanicGearShaft">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="PneumaticMachine" name="PneumaticMachine">
+        <parameters>
+          <parameter type="double" name="Dm#Value" unit="m3" value="8e-005"/>
+          <parameter type="double" name="Cim#Value" unit="m3/(s Pa)" value="0"/>
+          <parameter type="double" name="Bm#Value" unit="N/m/s" value="0"/>
+          <parameter type="double" name="Jm#Value" unit="kg/m2" value="0.01"/>
+          <parameter type="double" name="R#Value" unit="J/Kg K" value="287"/>
+          <parameter type="double" name="cv#Value" unit="J/Kg K" value="718"/>
+        </parameters>
+        <ports>
+          <port name="Pmr1" nodetype="NodeMechanicRotational"/>
+          <port name="Pp1" nodetype="NodePneumatic"/>
+          <port name="Pp2" nodetype="NodePneumatic"/>
+        </ports>
+        <hopsangui>
+          <pose x="2457.829548" y="2395.187434" a="0" flipped="true"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="PneumaticMachine" displayname="PneumaticMachine">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="PneumaticdEsensor" name="PneumaticdEsensor_2">
+        <parameters>
+          <parameter type="double" name="Pp1#MassFlow" unit="kg/s" value="0"/>
+          <parameter type="double" name="Pp1#EnergyFlow" unit="J/s" value="0"/>
+          <parameter type="double" name="Pp1#Pressure" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#Temperature" unit="K" value="293"/>
+          <parameter type="double" name="Pp1#WaveVariable" unit="Pa" value="100000"/>
+          <parameter type="double" name="Pp1#CharImpedance" unit="?" value="0"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="Pp1" nodetype="NodePneumatic"/>
+        </ports>
+        <hopsangui>
+          <pose x="2263.24939" y="2275.123731" a="0" flipped="false"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="PneumaticdEsensor" displayname="PneumaticdEsensor_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2516.973451" y="2058.403806"/>
+          <textobject reflow="0" font="Calibri,16,-1,0,75,0,0,0,0,0" fontcolor="#000000" text="Cooling air circuit"/>
+          <size width="287.000000" height="39.000000"/>
+          <line width="2" visible="0" style="solidline" color="#000000"/>
+        </hopsangui>
+      </textboxwidget>
+    </objects>
+    <connections>
+      <connect startport="Pp1" endcomponent="PneumaticMachine" endport="Pp1" startcomponent="PneumaticPTsrc_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2405.37486799999942377326" y="2558.35910837465917211375"/>
+            <coordinate x="2443.06954795444153205608" y="2558.35910837465917211375"/>
+            <coordinate x="2443.06954795444153205608" y="2445.18743409740727656754"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="Pp1" endcomponent="PneumaticMachine" endport="Pp2" startcomponent="PneumaticVolume2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2569.51643800000010742224" y="2292.85825699999986682087"/>
+            <coordinate x="2443.06954795444153205608" y="2292.85825699999986682087"/>
+            <coordinate x="2443.06954795444153205608" y="2345.18743409740727656754"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Scope_2" endport="in" startcomponent="Angular_Velocity_Transducer_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2520.41849364512017928064" y="2316.40681690259179958957"/>
+            <coordinate x="2520.41849364512017928064" y="2224.86290841555455699563"/>
+            <coordinate x="2822.20397059779179471661" y="2224.86290841555455699563"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="P1" endcomponent="Rotational_Inertia_1" endport="P2" startcomponent="Torque_Source_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2936.33217826948884976446" y="2393.07343719901473377831"/>
+            <coordinate x="2762.47101809250443693600" y="2393.07343719901473377831"/>
+            <coordinate x="2762.47101809250443693600" y="2393.07343719901427903096"/>
+            <coordinate x="2808.96732751615081724594" y="2393.07343719901427903096"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="Pp2" endcomponent="PneumaticOrifice" endport="Pp1" startcomponent="PneumaticVolume2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2619.51643800000010742224" y="2292.85825699999986682087"/>
+            <coordinate x="2640.72566472560811234871" y="2292.85825699999986682087"/>
+            <coordinate x="2640.72566472560811234871" y="2292.85825699999986682087"/>
+            <coordinate x="2660.72566499999993538950" y="2292.85825699999986682087"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="Pp2" endcomponent="PneumaticPTsrc" endport="Pp1" startcomponent="PneumaticOrifice">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2720.72566499999993538950" y="2292.85825699999986682087"/>
+            <coordinate x="2840.32642330247017525835" y="2292.85825699999986682087"/>
+            <coordinate x="2840.32642330247017525835" y="2561.31834873786374373594"/>
+            <coordinate x="2785.21778154627372714458" y="2561.31834873786374373594"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="Pmr2" endcomponent="Rotational_Inertia_1" endport="P1" startcomponent="MechanicGearShaft">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2680.91293393170553827076" y="2393.59373101048913667910"/>
+            <coordinate x="2717.84272296288281722809" y="2393.59373101048913667910"/>
+            <coordinate x="2717.84272296288281722809" y="2393.07343719901427903096"/>
+            <coordinate x="2744.96732751615081724594" y="2393.07343719901427903096"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="Pmr1" endcomponent="MechanicGearShaft" endport="Pmr1" startcomponent="PneumaticMachine">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2502.82954795444175033481" y="2394.38743409740709466860"/>
+            <coordinate x="2560.91293356619462429080" y="2394.38743409740709466860"/>
+            <coordinate x="2560.91293356619462429080" y="2393.59373101048913667910"/>
+            <coordinate x="2580.91293393170553827076" y="2393.59373101048913667910"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="P1" endcomponent="Rotational_Inertia_1" endport="P1" startcomponent="Angular_Velocity_Transducer_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2689.63338307148478634190" y="2352.65402714925539839896"/>
+            <coordinate x="2689.63338307148478634190" y="2393.07343719901427903096"/>
+            <coordinate x="2744.96732751615081724594" y="2393.07343719901427903096"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>dashed</style>
+        </hopsangui>
+      </connect>
+      <connect startport="P1" endcomponent="Rotational_Inertia_1" endport="P1" startcomponent="Torque_Transducer_3">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2728.65703536370619985973" y="2352.43366034407108600135"/>
+            <coordinate x="2728.65703536370619985973" y="2393.07343719901427903096"/>
+            <coordinate x="2744.96732751615081724594" y="2393.07343719901427903096"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>dashed</style>
+        </hopsangui>
+      </connect>
+      <connect startport="P1" endcomponent="PneumaticMachine" endport="Pmr1" startcomponent="Torque_Transducer_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2559.22250090259331045672" y="2352.24622634407160148839"/>
+            <coordinate x="2559.22250090259331045672" y="2394.38743409740709466860"/>
+            <coordinate x="2502.82954795444175033481" y="2394.38743409740709466860"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>dashed</style>
+        </hopsangui>
+      </connect>
+      <connect startport="P1" endcomponent="PneumaticMachine" endport="Pmr1" startcomponent="Angular_Velocity_Transducer_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2520.41849364512017928064" y="2352.40681690259179958957"/>
+            <coordinate x="2520.41849364512017928064" y="2394.38743409740709466860"/>
+            <coordinate x="2502.82954795444175033481" y="2394.38743409740709466860"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>dashed</style>
+        </hopsangui>
+      </connect>
+      <connect startport="Pp1" endcomponent="PneumaticdEsensor" endport="Pp1" startcomponent="PneumaticMachine">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2443.06954795444153205608" y="2445.18743409740727656754"/>
+            <coordinate x="2443.06954795444153205608" y="2473.42522490001783808111"/>
+            <coordinate x="2262.06195556146622038796" y="2473.42522490001783808111"/>
+            <coordinate x="2262.06195556146622038796" y="2429.67865183482354041189"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>dashed</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Gain_2" endport="in" startcomponent="PneumaticdEsensor">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2262.06195556146622038796" y="2393.67865183482354041189"/>
+            <coordinate x="2262.06195556146622038796" y="2361.50520979183829695103"/>
+            <coordinate x="2282.05136359514972355100" y="2361.50520979183829695103"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="Pp1" endcomponent="PneumaticMachine" endport="Pp2" startcomponent="PneumaticdEsensor_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2263.24939009740819528815" y="2293.12373079812641663011"/>
+            <coordinate x="2263.24939009740819528815" y="2326.18339682147643543431"/>
+            <coordinate x="2443.06954795444153205608" y="2326.18339682147643543431"/>
+            <coordinate x="2443.06954795444153205608" y="2345.18743409740727656754"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>dashed</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Multiply_1" endport="in1" startcomponent="Angular_Velocity_Transducer_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2520.41849364512017928064" y="2316.40681690259179958957"/>
+            <coordinate x="2520.41849364512017928064" y="2263.68952133872517151758"/>
+            <coordinate x="2366.25773515241417044308" y="2263.68952133872517151758"/>
+            <coordinate x="2366.25773515241417044308" y="2201.57535055528796874569"/>
+            <coordinate x="2412.53540535686124712811" y="2201.57535055528796874569"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Multiply_1" endport="in2" startcomponent="Torque_Transducer_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2559.22250090259331045672" y="2316.24622634407160148839"/>
+            <coordinate x="2559.22250090259331045672" y="2223.31801199212213759893"/>
+            <coordinate x="2425.03540535686124712811" y="2223.31801199212213759893"/>
+            <coordinate x="2425.03540535686124712811" y="2214.07535055528796874569"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Scope" endport="in" startcomponent="Multiply_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2437.53540535686124712811" y="2201.57535055528796874569"/>
+            <coordinate x="2823.72826449205240351148" y="2201.57535055528796874569"/>
+            <coordinate x="2823.72826449205240351148" y="2166.62002494436592314742"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Scope" endport="in" startcomponent="PneumaticdEsensor_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2263.24939009740819528815" y="2257.12373079812641663011"/>
+            <coordinate x="2263.24939009740819528815" y="2166.62002494436592314742"/>
+            <coordinate x="2823.72826449205240351148" y="2166.62002494436592314742"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Scope" endport="in" startcomponent="Gain_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2307.05136359514972355100" y="2361.50520979183829695103"/>
+            <coordinate x="2327.07240993796358452528" y="2361.50520979183829695103"/>
+            <coordinate x="2327.07240993796358452528" y="2166.62002494436592314742"/>
+            <coordinate x="2823.72826449205240351148" y="2166.62002494436592314742"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Scope_3" endport="in" startcomponent="Torque_Transducer_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2559.22250090259331045672" y="2316.24622634407160148839"/>
+            <coordinate x="2559.22250090259331045672" y="2265.62425743813491862966"/>
+            <coordinate x="2822.71722959598764646216" y="2265.62425743813491862966"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Scope_3" endport="in" startcomponent="Torque_Transducer_3">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2728.65703536370619985973" y="2316.43366034407108600135"/>
+            <coordinate x="2728.65703536370619985973" y="2265.62425743813491862966"/>
+            <coordinate x="2822.71722959598764646216" y="2265.62425743813491862966"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" endcomponent="Scope_2" endport="in" startcomponent="Angular_Velocity_Transducer_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2689.63338307148478634190" y="2316.65402714925539839896"/>
+            <coordinate x="2689.63338307148478634190" y="2224.86290841555455699563"/>
+            <coordinate x="2822.20397059779179471661" y="2224.86290841555455699563"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>
