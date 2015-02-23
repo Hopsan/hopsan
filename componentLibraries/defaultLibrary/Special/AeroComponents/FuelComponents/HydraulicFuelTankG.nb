@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     11613,        298]
-NotebookOptionsPosition[     10149,        254]
-NotebookOutlinePosition[     10493,        269]
-CellTagsIndexPosition[     10450,        266]
+NotebookDataLength[     14286,        345]
+NotebookOptionsPosition[     12795,        300]
+NotebookOutlinePosition[     13174,        316]
+CellTagsIndexPosition[     13131,        313]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -26,8 +26,34 @@ Cell["Fuel Tank G", "Section",
    3.568354108970954*^9}, 3.56846401697423*^9}],
 
 Cell[BoxData[
- RowBox[{"p0", "=."}]], "Input",
- CellChangeTimes->{{3.568355078809949*^9, 3.568355082456949*^9}}],
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG.mx"}]], "Input",
+ CellChangeTimes->{{3.5772037650720577`*^9, 3.5772037650780582`*^9}, {
+  3.611474457184202*^9, 3.611474523938877*^9}, {3.6114745588913717`*^9, 
+  3.61147456057154*^9}}],
+
+Cell[BoxData[
+ RowBox[{"path", "=", 
+  RowBox[{"ToFileName", "[", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", 
+     "\"\<ComponentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
+     "\"\<Special\>\"", ",", "\"\<Aerocomponents\>\"", ",", 
+     "\"\<FuelComponents}];\>"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.5757727777685804`*^9, 3.575772792541806*^9}, {
+   3.5757728423954945`*^9, 3.5757728498367076`*^9}, {3.57577333888545*^9, 
+   3.5757733706315055`*^9}, 3.5757734316206255`*^9, 3.6031909973287797`*^9, 
+   3.6057717887213297`*^9, {3.605771829393656*^9, 3.605771830929744*^9}, 
+   3.6058530990363216`*^9, {3.621138851005574*^9, 3.621138863716845*^9}, {
+   3.626164321826791*^9, 3.626164327986407*^9}, {3.6327778035174313`*^9, 
+   3.6327778156381245`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"p0", "=."}], ";", 
+  RowBox[{"T", "=."}], ";"}]], "Input",
+ CellChangeTimes->{{3.568355078809949*^9, 3.568355082456949*^9}, {
+  3.6327779100075226`*^9, 3.63277791101558*^9}}],
 
 Cell[BoxData[{
  RowBox[{
@@ -61,10 +87,38 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
    3.568289274044094*^9}, {3.5685259622875643`*^9, 3.568525962456581*^9}, 
    3.5757721208896084`*^9}],
 
-Cell[BoxData[
- RowBox[{
-  RowBox[{"T", "=."}], ";"}]], "Input",
- CellChangeTimes->{{3.577451175729617*^9, 3.577451197140758*^9}}],
+Cell[TextData[{
+ "Simple model of fuel tank\n\n",
+ Cell[GraphicsData["Metafile", "\<\
+CF5dJ6E]HGAYHf4PEfU^I6mgLb15CDHPAVmbKF5d0@0000AP0@000?@0001Xo_ooZOkookP100090P00
+00000000001]1000R`d00215CDH00040H0@003<000030000@`0006`000000000EPD00003003R0@00
+3`40000000000000000006IJ1`1E8P@0B@1^06/0L`1S0640L01U0200<00^03@0>00^0380801b03T0
+>00a03T0800X0440M@1W0200<@0d0200<P0`0340<@0Y0000J@1^06/0L`1S0640L01U02d0H`1/06T0
+L01R06l0H@1b06@0;@1U07P0L01_0780M00^06D0K@1V000000000140000<0000200000T0000@0000
+K@@008/=000;000040000200001R0000AP0002P0000L0000Df=bIFE^?C4c=SIh=cHhL7P/83@h<WPb
+=c5]KDH0000/00007P0004AbHGMYKVLm<2h`N2d`;S1`N2`P<2h`N2d`;S1]K@009`0001P000010000
+00000?ooo`0000009@0000`0000100004`0000`000020000G`0003P000020000>0000000000h0000
+000000020@0O0000000000000000000000000000000U000030000080000k0000200001/0000@0000
+4P000140000f0000400005`4000A0000=P000100001L1000h`L003H0000@00004P000><7000m0000
+200003`000080000?`0001P0003oooooooooob80000k00009@0000`000000020:00000`000010000
+9@0000`000070020:00000`0000200009`0001P000020000000009VIV@0000009@0000`000020000
+4`0000`000020000G`0003P000010000>0000000000h0000000000020@0M00000000000000000000
+00000000000U000030000040000k0000200001/0000@00003`000903000f0000400005h4002@0`00
+=P000100001N1000>0/003H0000@00003`0003P;000m0000200003`000080000?`0001P0003noooo
+60000280001C00009@0000`000000020:00000`0000200009@0000`000070020:00000`000010000
+G`0003P000010000>0000000000h00000000000R0@0U0000000000000000000000000000000U0000
+30000040000j0000300001X1000k0000200001/0000@0000>`8003D;000f0000400003/2001h3@00
+?00000P000100000600006SnoonYo_oo^04000T2000U0000300000L0080X000030000040000>0000
+50000000000@00005000
+\>"], "Graphics",
+  GeneratedCell->False,
+  CellAutoOverwrite->False,
+  ImageSize->{89., 277.5952380952381},
+  ImageMargins->{{0, 0}, {0, 147}}],
+ "\n"
+}], "Text",
+ CellChangeTimes->{{3.632777681336443*^9, 3.632777752369506*^9}, {
+  3.6327778548883696`*^9, 3.632777862747819*^9}}],
 
 Cell[CellGroupData[{
 
@@ -172,14 +226,6 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"boudaryEquations", " ", "=", " ", 
-   RowBox[{"{", "}"}]}], ";"}]], "Input",
- CellGroupingRules->{GroupTogetherGrouping, 10000.},
- CellChangeTimes->{{3.522430069765625*^9, 3.522430069765625*^9}, 
-   3.53189964671875*^9, 3.5411602015417213`*^9, 3.5682892740450945`*^9}],
-
-Cell[BoxData[
- RowBox[{
   RowBox[{"systemVariables", " ", "=", " ", 
    RowBox[{"{", "consfuel", "}"}]}], ";"}]], "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.},
@@ -253,7 +299,8 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{707, 505},
-WindowMargins->{{Automatic, 211}, {Automatic, 24}},
+WindowMargins->{{Automatic, 223}, {Automatic, 33}},
+Magnification->0.8999999761581421,
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
 ]
@@ -269,34 +316,34 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[579, 22, 221, 3, 71, "Section"],
-Cell[803, 27, 112, 2, 31, "Input"],
-Cell[918, 31, 1291, 30, 172, "Input",
+Cell[579, 22, 221, 3, 63, "Section"],
+Cell[803, 27, 248, 4, 27, "Input"],
+Cell[1054, 33, 804, 15, 46, "Input"],
+Cell[1861, 50, 209, 5, 27, "Input"],
+Cell[2073, 57, 1291, 30, 154, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[2212, 63, 129, 3, 31, "Input"],
+Cell[3367, 89, 1926, 31, 310, "Text"],
 Cell[CellGroupData[{
-Cell[2366, 70, 1570, 33, 152, "Input",
+Cell[5318, 124, 1570, 33, 136, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[3939, 105, 767, 14, 72, "Input",
+Cell[6891, 159, 767, 14, 64, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[4709, 121, 888, 19, 92, "Input",
+Cell[7661, 175, 888, 19, 82, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[5600, 142, 540, 12, 72, "Input",
+Cell[8552, 196, 540, 12, 64, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[6143, 156, 639, 14, 72, "Input",
+Cell[9095, 210, 639, 14, 64, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[6785, 172, 303, 6, 31, "Input",
- CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[7091, 180, 313, 6, 31, "Input",
+Cell[9737, 226, 313, 6, 27, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Open  ]],
-Cell[7419, 189, 194, 4, 31, "Input"],
+Cell[10065, 235, 194, 4, 27, "Input"],
 Cell[CellGroupData[{
-Cell[7638, 197, 1692, 33, 132, "Input",
+Cell[10284, 243, 1692, 33, 118, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[9333, 232, 577, 12, 31, "Input",
+Cell[11979, 278, 577, 12, 27, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[9913, 246, 208, 4, 31, "Input",
+Cell[12559, 292, 208, 4, 27, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Open  ]]
 }, Open  ]]
@@ -305,4 +352,3 @@ Cell[9913, 246, 208, 4, 31, "Input",
 *)
 
 (* End of internal cache information *)
-

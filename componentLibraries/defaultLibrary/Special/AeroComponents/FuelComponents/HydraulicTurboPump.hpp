@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicTurboPump.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 8 Apr 2014 15:51:04
+//! @date Mon 15 Dec 2014 15:04:47
 //! @brief Turbo pump
 //! @ingroup HydraulicComponents
 //!
@@ -64,7 +64,9 @@ private:
      //inputVariables
      double omegap;
      //outputVariables
-     double q2e;
+     double qmp2 R (1. + Tp2)
+-----------------
+       pp2;
      double torp;
      double Pin;
      double Pout;
@@ -97,7 +99,9 @@ private:
      double *mpKcp;
      double *mpBp;
      //outputVariables pointers
-     double *mpq2e;
+     double *mpqmp2 R (1. + Tp2)
+-----------------
+       pp2;
      double *mptorp;
      double *mpPin;
      double *mpPout;
@@ -144,7 +148,11 @@ public:
 1.e-9,&mpKcp);
             addInputVariable("Bp", "Visc friction coeff", "N/m/s", 1.,&mpBp);
         //Add outputVariables to the component
-            addOutputVariable("q2e","uncorrected flow","m3/s",0.,&mpq2e);
+            addOutputVariable("qmp2 R (1. + Tp2)
+-----------------
+       pp2","uncorrected flow","m3/s",0.,&mpqmp2 R (1. + Tp2)
+-----------------
+       pp2);
             addOutputVariable("torp","torque","Nm",0.,&mptorp);
             addOutputVariable("Pin","input power","W",0.,&mpPin);
             addOutputVariable("Pout","output power","W",0.,&mpPout);
@@ -202,7 +210,11 @@ public:
         Bp = (*mpBp);
 
         //Read outputVariables from nodes
-        q2e = (*mpq2e);
+        qmp2 R (1. + Tp2)
+-----------------
+       pp2 = (*mpqmp2 R (1. + Tp2)
+-----------------
+       pp2);
         torp = (*mptorp);
         Pin = (*mpPin);
         Pout = (*mpPout);
@@ -251,9 +263,9 @@ public:
          //Differential-algebraic system of equation parts
 
           //Assemble differential-algebraic equations
-          systemEquations[0] =q2 - (onNegative(q2) + onPositive(p1))*(Kcp*(p1 \
-- p2) + Ap*signedSquareL((2*(p1 - p2 + (omegap*rho*(0.25*b*Power(d,2)*omegap \
-- 0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.));
+          systemEquations[0] =Kcp*(-p1 + p2) + q2 - Ap*signedSquareL((2*(p1 - \
+p2 + (omegap*rho*(0.25*b*Power(d,2)*omegap - \
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.);
           systemEquations[1] =(Power(Ap,2)*(Bp*omegap*(0.001 + 1.*omegap) + \
 1.*Kcp*Power(p1,2) - 2.*Kcp*p1*p2 + 1.*Kcp*Power(p2,2) - 1.*p1*q2 + 1.*p2*q2) \
 + kl*(-0.5*Kcp*p1 + 0.5*Kcp*p2 + \
@@ -265,17 +277,14 @@ public:
           jacobianMatrix[0][0] = 1 + \
 (0.31831*Ap*omegap*rho*Cot(beta2)*dxSignedSquareL((2*(p1 - p2 + \
 (omegap*rho*(0.25*b*Power(d,2)*omegap - \
-0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.)*(onNegative(q2) + \
-onPositive(p1)))/(b*kl);
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(b*kl);
           jacobianMatrix[0][1] = 0;
-          jacobianMatrix[0][2] = -((Kcp + (2*Ap*dxSignedSquareL((2*(p1 - p2 + \
+          jacobianMatrix[0][2] = -Kcp - (2*Ap*dxSignedSquareL((2*(p1 - p2 + \
 (omegap*rho*(0.25*b*Power(d,2)*omegap - \
-0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho))*(onNegative(q2) + \
-onPositive(p1)));
-          jacobianMatrix[0][3] = -((-Kcp - (2*Ap*dxSignedSquareL((2*(p1 - p2 \
-+ (omegap*rho*(0.25*b*Power(d,2)*omegap - \
-0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho))*(onNegative(q2) + \
-onPositive(p1)));
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho);
+          jacobianMatrix[0][3] = Kcp + (2*Ap*dxSignedSquareL((2*(p1 - p2 + \
+(omegap*rho*(0.25*b*Power(d,2)*omegap - \
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho);
           jacobianMatrix[1][0] = (Power(Ap,2)*(0. - 1.*p1 + 1.*p2) + \
 2*kl*(-0.5*Kcp*p1 + 0.5*Kcp*p2 + 0.5*q2)*q2*rho + \
 0.5*kl*Power(q2,2)*rho)/(Power(Ap,2)*(-0.001 - 1.*omegap));
@@ -303,7 +312,7 @@ onPositive(p1)));
           p1=stateVark[2];
           p2=stateVark[3];
           //Expressions
-          q1 = -q2;
+          -((qmp2*R*(1. + Tp1))/pp1) = -q2;
           Pin = omegap*torp;
           Pout = (-p1 + p2)*q2;
         }
@@ -325,7 +334,11 @@ onPositive(p1)));
         (*mpND_q2)=q2;
         (*mpND_dE2)=dE2;
         //outputVariables
-        (*mpq2e)=q2e;
+        (*mpqmp2 R (1. + Tp2)
+-----------------
+       pp2)=qmp2 R (1. + Tp2)
+-----------------
+       pp2;
         (*mptorp)=torp;
         (*mpPin)=Pin;
         (*mpPout)=Pout;

@@ -5,6 +5,10 @@
             <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <text>Transformtion into lattitude and longitude. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>SignalEarthCoordinates.nb</link>
+        </help>       
         <ports>
             <port x="0.5" y="0" a="270" name="vxcg"/>
             <port x="0.75" y="0" a="270" name="vycg"/>

@@ -9,7 +9,7 @@
 //!
 //! @file AeroAircraft6DOFSS.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 23 Jan 2015 12:38:08
+//! @date Sat 21 Feb 2015 20:20:44
 //! @brief Flight dynamics model of super-sonic aircraft
 //! @ingroup AeroComponents
 //!
@@ -54,6 +54,7 @@ private:
      double Cmde1;
      double Cmde12;
      double CLdefin;
+     double Cydeelev;
      double dah1;
      double dah2;
      double en;
@@ -83,6 +84,7 @@ private:
      double lc120;
      double lcfin0;
      double Me;
+     double mac0;
      double rc10;
      double rc120;
      double rc20;
@@ -236,6 +238,7 @@ private:
      double b1;
      double b2;
      double smc;
+     double mac;
      double hthrust;
      double Ix;
      double Ixz;
@@ -285,6 +288,8 @@ private:
      double Liftb;
      double Dragb;
      double Cfin;
+     double Cl2;
+     double Cr2;
      double Dragfin;
      double Mdvtheta;
      double Mdvpsi;
@@ -395,6 +400,7 @@ private:
      double *mpCmde1;
      double *mpCmde12;
      double *mpCLdefin;
+     double *mpCydeelev;
      double *mpdah1;
      double *mpdah2;
      double *mpen;
@@ -424,6 +430,7 @@ private:
      double *mplc120;
      double *mplcfin0;
      double *mpMe;
+     double *mpmac0;
      double *mprc10;
      double *mprc120;
      double *mprc20;
@@ -607,6 +614,8 @@ z","rad/s",0.,&mpwturbz);
 0.1,&mpCmde12);
             addInputVariable("CLdefin", "Rudder coef 1", "", \
 0.0827084,&mpCLdefin);
+            addInputVariable("Cydeelev", "elevator side force coef", "", \
+0.1,&mpCydeelev);
             addInputVariable("dah1", "down wash effect on 1", "", \
 1.,&mpdah1);
             addInputVariable("dah2", "down wash effect on 2", "", \
@@ -653,6 +662,8 @@ lc1/sqrt(AR1 S1)", "", 0.05,&mplc20);
             addInputVariable("lcfin0", "ctrl s. fin ac fr hinge", "", \
 0.01,&mplcfin0);
             addInputVariable("Me", "Empty weight", "kg", 8700.,&mpMe);
+            addInputVariable("mac0", "mean aerodynamic cord/Sqrt(S1/b1)", "", \
+1.,&mpmac0);
             addInputVariable("rc10", "norm. ctrl surface 1 mom. arm", "", \
 0.25,&mprc10);
             addInputVariable("rc120", "norm. ctrl surface 12 mom. arm", "", \
@@ -926,6 +937,7 @@ NodeMechanicRotational::EquivalentInertia);
         Cmde1 = (*mpCmde1);
         Cmde12 = (*mpCmde12);
         CLdefin = (*mpCLdefin);
+        Cydeelev = (*mpCydeelev);
         dah1 = (*mpdah1);
         dah2 = (*mpdah2);
         en = (*mpen);
@@ -955,6 +967,7 @@ NodeMechanicRotational::EquivalentInertia);
         lc120 = (*mplc120);
         lcfin0 = (*mplcfin0);
         Me = (*mpMe);
+        mac0 = (*mpmac0);
         rc10 = (*mprc10);
         rc120 = (*mprc120);
         rc20 = (*mprc20);
@@ -1024,47 +1037,60 @@ Cos(Psi/2.)*Sin(Phi/2.)*Sin(Thetao/2.);
         b1 = Sqrt(AR1*S1);
         b2 = Sqrt(AR2*S2);
         smc = Sqrt(S1/AR1);
-        hthrust = hthrust0*smc;
+        mac = mac0*smc;
+        hthrust = b1*hthrust0;
         Ix = AR1*Ix0*Me*S1;
         Ixz = Ixz0*Me*S1;
         Iy = (Iy0*Me*S1)/AR1;
         Iz = (Iz0*Me*S1)/AR1;
-        lc1 = lc10*smc;
-        lc2 = lc20*smc;
-        lc12 = lc120*smc;
-        lcfin = lcfin0*smc;
+        lc1 = lc10*mac;
+        lc2 = lc20*mac;
+        lc12 = lc120*mac;
+        lcfin = lcfin0*mac;
         rc1 = b1*rc10;
         rc12 = b1*rc120;
         rc2 = b1*rc20;
-        rcfin = rcfin0*smc;
+        rcfin = mac*rcfin0;
         S2 = S1*S20;
         Sbh = S1*Sbh0;
         Sbv = S1*Sbv0;
         Sfin = S1*Sfin0;
-        xbach = smc*xbach0;
-        xbacv = smc*xbacv0;
-        xbcge = smc*xbcge0;
-        xcargo = smc*xcargo0;
-        xfuel = smc*xfuel0;
-        xw1 = smc*xw10;
-        xw2 = smc*xw20;
-        xwfin = smc*xwfin0;
-        xeng = smc*xeng0;
+        xbach = mac*xbach0;
+        xbacv = mac*xbacv0;
+        xbcge = mac*xbcge0;
+        xcargo = mac*xcargo0;
+        xfuel = mac*xfuel0;
+        xw1 = mac*xw10;
+        xw2 = mac*xw20;
+        xwfin = mac*xwfin0;
+        xeng = mac*xeng0;
         yeng = b1*yeng0;
         betaM = Power(Power(1 - Power(v,2)/Power(vM,2),2) + \
 (Power(epsM,2)*Power(v,2))/Power(vM,2),0.25);
         CLalpha1e = CLalpha1/betaM;
         CLalpha2e = CLalpha2/betaM;
         e1e = e1 - ((1 - 1/AR1)*e1)/(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM)));
+dM)*vM))/(dM*vM)));
         e2e = e2 - ((1 - 1/AR2)*e2)/(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM)));
-        v = Sqrt(0.0001 + Power(Ub + vturbx,2) + Power(Vb + vturby,2) + \
-Power(vturbz + Wb,2));
-        Alpha = Atan2L(vturbz + Wb,0.0001 + Ub + vturbx);
+dM)*vM))/(dM*vM)));
+        v = Sqrt(0.0001 + Power(Ub + (Power(q0,2) + Power(q1,2) - Power(q2,2) \
+- Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + \
+q1*q3)*vturbz,2) + Power(Vb + (Power(q0,2) + Power(q1,2) - Power(q2,2) - \
+Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + q1*q3)*vturbz,2) \
++ Power(2*(-(q0*q2) + q1*q3)*vturbx + 2*(q0*q1 + q2*q3)*vturby + (Power(q0,2) \
+- Power(q1,2) - Power(q2,2) + Power(q3,2))*vturbz + Wb,2));
+        Alpha = Atan2L(2*(-(q0*q2) + q1*q3)*vturbx + 2*(q0*q1 + q2*q3)*vturby \
++ (Power(q0,2) - Power(q1,2) - Power(q2,2) + Power(q3,2))*vturbz + Wb,0.0001 \
++ Ub + (Power(q0,2) + Power(q1,2) - Power(q2,2) - Power(q3,2))*vturbx + \
+2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + q1*q3)*vturbz);
         qpress = (rho*Power(v,2))/2.;
-        Beta = Atan2L(Vb + vturby,Sqrt(0.0001 + Power(Ub + vturbx,2) + \
-Power(vturbz + Wb,2)));
+        Beta = Atan2L(Vb + (Power(q0,2) + Power(q1,2) - Power(q2,2) - \
+Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + \
+q1*q3)*vturbz,Sqrt(0.0001 + Power(Ub + (Power(q0,2) + Power(q1,2) - \
+Power(q2,2) - Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + \
+q1*q3)*vturbz,2) + Power(2*(-(q0*q2) + q1*q3)*vturbx + 2*(q0*q1 + \
+q2*q3)*vturby + (Power(q0,2) - Power(q1,2) - Power(q2,2) + \
+Power(q3,2))*vturbz + Wb,2)));
         mass = Mcargo + Me + Mfuel;
         xbcg = (Me*xbcge + Mcargo*xcargo + Mfuel*xfuel)/mass;
         Dragl1 = qpress*S1*(Cd01/2. + Cdide1*Power(-de10 + thetaal1,2) - \
@@ -1089,48 +1115,54 @@ thetaal2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
 thetaar2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
         Liftb = CLalphabh*qpress*Sbh*Sin(Alpha);
         Dragb = qpress*((CdW0*S1)/(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM))) + Cd0b*Sbh);
+dM)*vM))/(dM*vM))) + Cd0b*Sbh);
         Cfin = qpress*Sfin*CLift(-Beta - \
 (CLdefin*thetafin)/CLalphafin,CLalphafin,afin,afin,awfin,awfin);
+        Cl2 = (qpress*S2*CLift(Alpha*dah2 - ia2 + \
+thetaal2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
+        Cr2 = -(qpress*S2*CLift(Alpha*dah2 - ia2 + \
+thetaar2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
         Dragfin = Cd0fin*qpress*Sfin;
         Mdvtheta = (CLalpha2e*qpress*S2*Power(-xbcg + xw2,2))/(0.1 + v);
         Mdvpsi = (CLalphafin*qpress*Sfin*Power(-xbcg + xwfin,2))/(0.1 + v);
         Fx = (-Dragb - Dragfin - Dragl1 - Dragl2 - Dragr1 - \
 Dragr2)*Cos(Alpha)*Cos(Beta) + thrustl*Cos(deythrustl)*Cos(dezthrustr) + \
 thrustr*Cos(deythrustr)*Cos(dezthrustr) - (-Liftb - Liftl1 - Liftl2 - Liftr1 \
-- Liftr2)*Sin(Alpha) - Cos(Alpha)*Sin(Beta)*(-Cfin + \
-CLalphabv*qpress*Sbv*Sin(Beta));
+- Liftr2)*Sin(Alpha) - Cos(Alpha)*Sin(Beta)*(-Cfin - \
+Cydeelev*qpress*S2*(thetaal2 - thetaar2) + CLalphabv*qpress*Sbv*Sin(Beta));
         Fy = (-Dragb - Dragfin - Dragl1 - Dragl2 - Dragr1 - Dragr2)*Sin(Beta) \
-+ Cos(Beta)*(-Cfin + CLalphabv*qpress*Sbv*Sin(Beta)) - \
-thrustl*Cos(dezthrustr)*Sin(deythrustl) - \
++ Cos(Beta)*(-Cfin - Cydeelev*qpress*S2*(thetaal2 - thetaar2) + \
+CLalphabv*qpress*Sbv*Sin(Beta)) - thrustl*Cos(dezthrustr)*Sin(deythrustl) - \
 thrustr*Cos(dezthrustr)*Sin(deythrustr);
         Fz = (-Liftb - Liftl1 - Liftl2 - Liftr1 - Liftr2)*Cos(Alpha) - \
 kground*zcg*onPositive(zcg) + (-Dragb - Dragfin - Dragl1 - Dragl2 - Dragr1 - \
-Dragr2)*Cos(Beta)*Sin(Alpha) - Sin(Alpha)*Sin(Beta)*(-Cfin + \
-CLalphabv*qpress*Sbv*Sin(Beta)) - thrustl*Cos(deythrustl)*Sin(dezthrustr) - \
+Dragr2)*Cos(Beta)*Sin(Alpha) - Sin(Alpha)*Sin(Beta)*(-Cfin - \
+Cydeelev*qpress*S2*(thetaal2 - thetaar2) + CLalphabv*qpress*Sbv*Sin(Beta)) - \
+thrustl*Cos(deythrustl)*Sin(dezthrustr) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr);
-        Lb = (-0.12249999999999998*qpress*(Power(b1,2)*CLalpha1e*S1 + \
-Power(b2,2)*CLalpha2e*S2)*(Pb + wturbx))/(0.1 + v) + rc1*rc2*((Liftl1 - \
-Liftr1)*Cos(Alpha) - (Dragl1 - Dragr1)*Sin(Alpha)) + rc2*((Liftl2 - \
-Liftr2)*Cos(Alpha) - (Dragl2 - Dragr2)*Sin(Alpha)) + \
+        Lb = (Liftl1 - Liftr1)*rc1 + (Liftl2 - Liftr2)*rc2 - \
+(qpress*(CLalpha1e*Power(rc1,2)*S1 + CLalpha2e*Power(rc2,2)*S2)*(Pb + \
+(Power(q0,2) + Power(q1,2) - Power(q2,2) - Power(q3,2))*wturbx + 2*(q1*q2 - \
+q0*q3)*wturby + 2*(q0*q2 + q1*q3)*wturbz))/(0.1 + v) + \
 yeng*(thrustl*Cos(deythrustl)*Sin(dezthrustl) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr));
-        Mb = -(Mdvtheta*(Qb + wturby)) + qpress*S1*(-(Cmde1*thetaal1) - \
-Cmde12*thetaal12 - Cmde1*thetaar1 - Cmde12*thetaar12 - (smc*(CLde1*thetaal1 + \
-CLde12*thetaal12 + CLift(Alpha*dah1 - \
-ia1,CLalpha1e,ap1,an1,awp1,awn1)/2.))/(4.*(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM)))) - (smc*(CLde1*thetaar1 + CLde12*thetaar12 + \
+        Mb = -(Mdvtheta*(Qb + 2*(q1*q2 + q0*q3)*wturbx + (Power(q0,2) - \
+Power(q1,2) + Power(q2,2) - Power(q3,2))*wturby + 2*(-(q0*q1) + \
+q2*q3)*wturbz)) + qpress*S1*(-(Cmde1*thetaal1) - Cmde12*thetaal12 - \
+Cmde1*thetaar1 - Cmde12*thetaar12 - (smc*(CLde1*thetaal1 + CLde12*thetaal12 + \
 CLift(Alpha*dah1 - ia1,CLalpha1e,ap1,an1,awp1,awn1)/2.))/(4.*(1 + \
-Power(en,(-2*(v - (1 - 0.7*dM)*vM))/(dM*vM)))) + CMoment(Alpha*dah1 - \
-ia1,Cm01,Cmfs1,ap1,an1,awp1,awn1)) + (xbcg - xw1)*((Liftl1 + \
-Liftr1)*Cos(Alpha) + (Dragl1 + Dragr1)*Sin(Alpha)) + (xbcg - xw2)*((Liftl2 + \
-Liftr2)*Cos(Alpha) - (Dragl2 + Dragr2)*Sin(Alpha)) + (xbcg - \
-xeng)*(thrustl*Cos(deythrustl)*Sin(dezthrustl) + \
-thrustr*Cos(deythrustr)*Sin(dezthrustr));
-        Nb = -(Mdvpsi*(Rb + wturbz)) - Cfin*(-xbcg + xwfin) + rc1*((-Dragl1 + \
-Dragr1)*Cos(Alpha) + (-Liftl1 + Liftr1)*Sin(Alpha)) + rc2*((-Dragl2 + \
-Dragr2)*Cos(Alpha) + (-Liftl2 + Liftr2)*Sin(Alpha)) + (xbcg - \
-xeng)*(thrustl*Cos(dezthrustl)*Sin(deythrustl) + \
+Power(en,(-2*(v - (1 - dM)*vM))/(dM*vM)))) - (smc*(CLde1*thetaar1 + \
+CLde12*thetaar12 + CLift(Alpha*dah1 - \
+ia1,CLalpha1e,ap1,an1,awp1,awn1)/2.))/(4.*(1 + Power(en,(-2*(v - (1 - \
+dM)*vM))/(dM*vM)))) + CMoment(Alpha*dah1 - ia1,Cm01,Cmfs1,ap1,an1,awp1,awn1)) \
++ (xbcg - xw1)*((Liftl1 + Liftr1)*Cos(Alpha) + (Dragl1 + Dragr1)*Sin(Alpha)) \
++ (xbcg - xw2)*(-Cl2 - Cr2 + (Liftl2 + Liftr2)*Cos(Alpha) - (Dragl2 + \
+Dragr2)*Sin(Alpha)) + (xbcg - xeng)*(thrustl*Cos(deythrustl)*Sin(dezthrustl) \
++ thrustr*Cos(deythrustr)*Sin(dezthrustr));
+        Nb = (-Dragl1 + Dragr1)*rc1 + (-Dragl2 + Dragr2)*rc2 - Mdvpsi*(Rb + \
+2*(-(q0*q2) + q1*q3)*wturbx + 2*(q0*q1 + q2*q3)*wturby + (Power(q0,2) - \
+Power(q1,2) - Power(q2,2) + Power(q3,2))*wturbz) - Cfin*(-xbcg + xwfin) + \
+(xbcg - xeng)*(thrustl*Cos(dezthrustl)*Sin(deythrustl) + \
 thrustr*Cos(dezthrustr)*Sin(deythrustr));
 
         //Initialize delays
@@ -1273,51 +1305,150 @@ mTimestep*Power(q3,2)*Wb - 2*zcg)/2.;
         wturby = (*mpwturby);
         wturbz = (*mpwturbz);
 
+        //Read inputParameters from nodes
+        afin = (*mpafin);
+        an1 = (*mpan1);
+        an2 = (*mpan2);
+        ap1 = (*mpap1);
+        ap2 = (*mpap2);
+        AR1 = (*mpAR1);
+        AR2 = (*mpAR2);
+        ARfin = (*mpARfin);
+        Cd01 = (*mpCd01);
+        Cd02 = (*mpCd02);
+        Cd0b = (*mpCd0b);
+        Cd0fin = (*mpCd0fin);
+        CdW0 = (*mpCdW0);
+        CLalpha1 = (*mpCLalpha1);
+        CLalpha2 = (*mpCLalpha2);
+        CLalphabh = (*mpCLalphabh);
+        CLalphabv = (*mpCLalphabv);
+        CLalphafin = (*mpCLalphafin);
+        CLde1 = (*mpCLde1);
+        CLde12 = (*mpCLde12);
+        Cdide1 = (*mpCdide1);
+        Cdide12 = (*mpCdide12);
+        Cdide112 = (*mpCdide112);
+        de10 = (*mpde10);
+        de120 = (*mpde120);
+        dM = (*mpdM);
+        Cm01 = (*mpCm01);
+        Cmfs1 = (*mpCmfs1);
+        Cmde1 = (*mpCmde1);
+        Cmde12 = (*mpCmde12);
+        CLdefin = (*mpCLdefin);
+        Cydeelev = (*mpCydeelev);
+        dah1 = (*mpdah1);
+        dah2 = (*mpdah2);
+        en = (*mpen);
+        e1 = (*mpe1);
+        e2 = (*mpe2);
+        efin = (*mpefin);
+        epsM = (*mpepsM);
+        awfin = (*mpawfin);
+        awn1 = (*mpawn1);
+        awn2 = (*mpawn2);
+        awp1 = (*mpawp1);
+        awp2 = (*mpawp2);
+        gamma1 = (*mpgamma1);
+        gamma2 = (*mpgamma2);
+        hthrust0 = (*mphthrust0);
+        ia1 = (*mpia1);
+        ia2 = (*mpia2);
+        Ix0 = (*mpIx0);
+        Ixz0 = (*mpIxz0);
+        Iy0 = (*mpIy0);
+        Iz0 = (*mpIz0);
+        lambda1 = (*mplambda1);
+        lambda2 = (*mplambda2);
+        lambdafin = (*mplambdafin);
+        lc10 = (*mplc10);
+        lc20 = (*mplc20);
+        lc120 = (*mplc120);
+        lcfin0 = (*mplcfin0);
+        Me = (*mpMe);
+        mac0 = (*mpmac0);
+        rc10 = (*mprc10);
+        rc120 = (*mprc120);
+        rc20 = (*mprc20);
+        rcfin0 = (*mprcfin0);
+        S1 = (*mpS1);
+        S20 = (*mpS20);
+        Sbh0 = (*mpSbh0);
+        Sbv0 = (*mpSbv0);
+        Sfin0 = (*mpSfin0);
+        xbach0 = (*mpxbach0);
+        xbacv0 = (*mpxbacv0);
+        xbcge0 = (*mpxbcge0);
+        xcargo0 = (*mpxcargo0);
+        xfuel0 = (*mpxfuel0);
+        xw10 = (*mpxw10);
+        xw20 = (*mpxw20);
+        xwfin0 = (*mpxwfin0);
+        xeng0 = (*mpxeng0);
+        yeng0 = (*mpyeng0);
+        g0 = (*mpg0);
+        kground = (*mpkground);
+        cground = (*mpcground);
+
         //LocalExpressions
         b1 = Sqrt(AR1*S1);
         b2 = Sqrt(AR2*S2);
         smc = Sqrt(S1/AR1);
-        hthrust = hthrust0*smc;
+        mac = mac0*smc;
+        hthrust = b1*hthrust0;
         Ix = AR1*Ix0*Me*S1;
         Ixz = Ixz0*Me*S1;
         Iy = (Iy0*Me*S1)/AR1;
         Iz = (Iz0*Me*S1)/AR1;
-        lc1 = lc10*smc;
-        lc2 = lc20*smc;
-        lc12 = lc120*smc;
-        lcfin = lcfin0*smc;
+        lc1 = lc10*mac;
+        lc2 = lc20*mac;
+        lc12 = lc120*mac;
+        lcfin = lcfin0*mac;
         rc1 = b1*rc10;
         rc12 = b1*rc120;
         rc2 = b1*rc20;
-        rcfin = rcfin0*smc;
+        rcfin = mac*rcfin0;
         S2 = S1*S20;
         Sbh = S1*Sbh0;
         Sbv = S1*Sbv0;
         Sfin = S1*Sfin0;
-        xbach = smc*xbach0;
-        xbacv = smc*xbacv0;
-        xbcge = smc*xbcge0;
-        xcargo = smc*xcargo0;
-        xfuel = smc*xfuel0;
-        xw1 = smc*xw10;
-        xw2 = smc*xw20;
-        xwfin = smc*xwfin0;
-        xeng = smc*xeng0;
+        xbach = mac*xbach0;
+        xbacv = mac*xbacv0;
+        xbcge = mac*xbcge0;
+        xcargo = mac*xcargo0;
+        xfuel = mac*xfuel0;
+        xw1 = mac*xw10;
+        xw2 = mac*xw20;
+        xwfin = mac*xwfin0;
+        xeng = mac*xeng0;
         yeng = b1*yeng0;
         betaM = Power(Power(1 - Power(v,2)/Power(vM,2),2) + \
 (Power(epsM,2)*Power(v,2))/Power(vM,2),0.25);
         CLalpha1e = CLalpha1/betaM;
         CLalpha2e = CLalpha2/betaM;
         e1e = e1 - ((1 - 1/AR1)*e1)/(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM)));
+dM)*vM))/(dM*vM)));
         e2e = e2 - ((1 - 1/AR2)*e2)/(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM)));
-        v = Sqrt(0.0001 + Power(Ub + vturbx,2) + Power(Vb + vturby,2) + \
-Power(vturbz + Wb,2));
-        Alpha = Atan2L(vturbz + Wb,0.0001 + Ub + vturbx);
+dM)*vM))/(dM*vM)));
+        v = Sqrt(0.0001 + Power(Ub + (Power(q0,2) + Power(q1,2) - Power(q2,2) \
+- Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + \
+q1*q3)*vturbz,2) + Power(Vb + (Power(q0,2) + Power(q1,2) - Power(q2,2) - \
+Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + q1*q3)*vturbz,2) \
++ Power(2*(-(q0*q2) + q1*q3)*vturbx + 2*(q0*q1 + q2*q3)*vturby + (Power(q0,2) \
+- Power(q1,2) - Power(q2,2) + Power(q3,2))*vturbz + Wb,2));
+        Alpha = Atan2L(2*(-(q0*q2) + q1*q3)*vturbx + 2*(q0*q1 + q2*q3)*vturby \
++ (Power(q0,2) - Power(q1,2) - Power(q2,2) + Power(q3,2))*vturbz + Wb,0.0001 \
++ Ub + (Power(q0,2) + Power(q1,2) - Power(q2,2) - Power(q3,2))*vturbx + \
+2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + q1*q3)*vturbz);
         qpress = (rho*Power(v,2))/2.;
-        Beta = Atan2L(Vb + vturby,Sqrt(0.0001 + Power(Ub + vturbx,2) + \
-Power(vturbz + Wb,2)));
+        Beta = Atan2L(Vb + (Power(q0,2) + Power(q1,2) - Power(q2,2) - \
+Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + \
+q1*q3)*vturbz,Sqrt(0.0001 + Power(Ub + (Power(q0,2) + Power(q1,2) - \
+Power(q2,2) - Power(q3,2))*vturbx + 2*(q1*q2 - q0*q3)*vturby + 2*(q0*q2 + \
+q1*q3)*vturbz,2) + Power(2*(-(q0*q2) + q1*q3)*vturbx + 2*(q0*q1 + \
+q2*q3)*vturby + (Power(q0,2) - Power(q1,2) - Power(q2,2) + \
+Power(q3,2))*vturbz + Wb,2)));
         mass = Mcargo + Me + Mfuel;
         xbcg = (Me*xbcge + Mcargo*xcargo + Mfuel*xfuel)/mass;
         Dragl1 = qpress*S1*(Cd01/2. + Cdide1*Power(-de10 + thetaal1,2) - \
@@ -1342,48 +1473,54 @@ thetaal2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
 thetaar2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
         Liftb = CLalphabh*qpress*Sbh*Sin(Alpha);
         Dragb = qpress*((CdW0*S1)/(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM))) + Cd0b*Sbh);
+dM)*vM))/(dM*vM))) + Cd0b*Sbh);
         Cfin = qpress*Sfin*CLift(-Beta - \
 (CLdefin*thetafin)/CLalphafin,CLalphafin,afin,afin,awfin,awfin);
+        Cl2 = (qpress*S2*CLift(Alpha*dah2 - ia2 + \
+thetaal2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
+        Cr2 = -(qpress*S2*CLift(Alpha*dah2 - ia2 + \
+thetaar2,CLalpha2e,ap2,an2,awp2,awn2))/2.;
         Dragfin = Cd0fin*qpress*Sfin;
         Mdvtheta = (CLalpha2e*qpress*S2*Power(-xbcg + xw2,2))/(0.1 + v);
         Mdvpsi = (CLalphafin*qpress*Sfin*Power(-xbcg + xwfin,2))/(0.1 + v);
         Fx = (-Dragb - Dragfin - Dragl1 - Dragl2 - Dragr1 - \
 Dragr2)*Cos(Alpha)*Cos(Beta) + thrustl*Cos(deythrustl)*Cos(dezthrustr) + \
 thrustr*Cos(deythrustr)*Cos(dezthrustr) - (-Liftb - Liftl1 - Liftl2 - Liftr1 \
-- Liftr2)*Sin(Alpha) - Cos(Alpha)*Sin(Beta)*(-Cfin + \
-CLalphabv*qpress*Sbv*Sin(Beta));
+- Liftr2)*Sin(Alpha) - Cos(Alpha)*Sin(Beta)*(-Cfin - \
+Cydeelev*qpress*S2*(thetaal2 - thetaar2) + CLalphabv*qpress*Sbv*Sin(Beta));
         Fy = (-Dragb - Dragfin - Dragl1 - Dragl2 - Dragr1 - Dragr2)*Sin(Beta) \
-+ Cos(Beta)*(-Cfin + CLalphabv*qpress*Sbv*Sin(Beta)) - \
-thrustl*Cos(dezthrustr)*Sin(deythrustl) - \
++ Cos(Beta)*(-Cfin - Cydeelev*qpress*S2*(thetaal2 - thetaar2) + \
+CLalphabv*qpress*Sbv*Sin(Beta)) - thrustl*Cos(dezthrustr)*Sin(deythrustl) - \
 thrustr*Cos(dezthrustr)*Sin(deythrustr);
         Fz = (-Liftb - Liftl1 - Liftl2 - Liftr1 - Liftr2)*Cos(Alpha) - \
 kground*zcg*onPositive(zcg) + (-Dragb - Dragfin - Dragl1 - Dragl2 - Dragr1 - \
-Dragr2)*Cos(Beta)*Sin(Alpha) - Sin(Alpha)*Sin(Beta)*(-Cfin + \
-CLalphabv*qpress*Sbv*Sin(Beta)) - thrustl*Cos(deythrustl)*Sin(dezthrustr) - \
+Dragr2)*Cos(Beta)*Sin(Alpha) - Sin(Alpha)*Sin(Beta)*(-Cfin - \
+Cydeelev*qpress*S2*(thetaal2 - thetaar2) + CLalphabv*qpress*Sbv*Sin(Beta)) - \
+thrustl*Cos(deythrustl)*Sin(dezthrustr) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr);
-        Lb = (-0.12249999999999998*qpress*(Power(b1,2)*CLalpha1e*S1 + \
-Power(b2,2)*CLalpha2e*S2)*(Pb + wturbx))/(0.1 + v) + rc1*rc2*((Liftl1 - \
-Liftr1)*Cos(Alpha) - (Dragl1 - Dragr1)*Sin(Alpha)) + rc2*((Liftl2 - \
-Liftr2)*Cos(Alpha) - (Dragl2 - Dragr2)*Sin(Alpha)) + \
+        Lb = (Liftl1 - Liftr1)*rc1 + (Liftl2 - Liftr2)*rc2 - \
+(qpress*(CLalpha1e*Power(rc1,2)*S1 + CLalpha2e*Power(rc2,2)*S2)*(Pb + \
+(Power(q0,2) + Power(q1,2) - Power(q2,2) - Power(q3,2))*wturbx + 2*(q1*q2 - \
+q0*q3)*wturby + 2*(q0*q2 + q1*q3)*wturbz))/(0.1 + v) + \
 yeng*(thrustl*Cos(deythrustl)*Sin(dezthrustl) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr));
-        Mb = -(Mdvtheta*(Qb + wturby)) + qpress*S1*(-(Cmde1*thetaal1) - \
-Cmde12*thetaal12 - Cmde1*thetaar1 - Cmde12*thetaar12 - (smc*(CLde1*thetaal1 + \
-CLde12*thetaal12 + CLift(Alpha*dah1 - \
-ia1,CLalpha1e,ap1,an1,awp1,awn1)/2.))/(4.*(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM)))) - (smc*(CLde1*thetaar1 + CLde12*thetaar12 + \
+        Mb = -(Mdvtheta*(Qb + 2*(q1*q2 + q0*q3)*wturbx + (Power(q0,2) - \
+Power(q1,2) + Power(q2,2) - Power(q3,2))*wturby + 2*(-(q0*q1) + \
+q2*q3)*wturbz)) + qpress*S1*(-(Cmde1*thetaal1) - Cmde12*thetaal12 - \
+Cmde1*thetaar1 - Cmde12*thetaar12 - (smc*(CLde1*thetaal1 + CLde12*thetaal12 + \
 CLift(Alpha*dah1 - ia1,CLalpha1e,ap1,an1,awp1,awn1)/2.))/(4.*(1 + \
-Power(en,(-2*(v - (1 - 0.7*dM)*vM))/(dM*vM)))) + CMoment(Alpha*dah1 - \
-ia1,Cm01,Cmfs1,ap1,an1,awp1,awn1)) + (xbcg - xw1)*((Liftl1 + \
-Liftr1)*Cos(Alpha) + (Dragl1 + Dragr1)*Sin(Alpha)) + (xbcg - xw2)*((Liftl2 + \
-Liftr2)*Cos(Alpha) - (Dragl2 + Dragr2)*Sin(Alpha)) + (xbcg - \
-xeng)*(thrustl*Cos(deythrustl)*Sin(dezthrustl) + \
-thrustr*Cos(deythrustr)*Sin(dezthrustr));
-        Nb = -(Mdvpsi*(Rb + wturbz)) - Cfin*(-xbcg + xwfin) + rc1*((-Dragl1 + \
-Dragr1)*Cos(Alpha) + (-Liftl1 + Liftr1)*Sin(Alpha)) + rc2*((-Dragl2 + \
-Dragr2)*Cos(Alpha) + (-Liftl2 + Liftr2)*Sin(Alpha)) + (xbcg - \
-xeng)*(thrustl*Cos(dezthrustl)*Sin(deythrustl) + \
+Power(en,(-2*(v - (1 - dM)*vM))/(dM*vM)))) - (smc*(CLde1*thetaar1 + \
+CLde12*thetaar12 + CLift(Alpha*dah1 - \
+ia1,CLalpha1e,ap1,an1,awp1,awn1)/2.))/(4.*(1 + Power(en,(-2*(v - (1 - \
+dM)*vM))/(dM*vM)))) + CMoment(Alpha*dah1 - ia1,Cm01,Cmfs1,ap1,an1,awp1,awn1)) \
++ (xbcg - xw1)*((Liftl1 + Liftr1)*Cos(Alpha) + (Dragl1 + Dragr1)*Sin(Alpha)) \
++ (xbcg - xw2)*(-Cl2 - Cr2 + (Liftl2 + Liftr2)*Cos(Alpha) - (Dragl2 + \
+Dragr2)*Sin(Alpha)) + (xbcg - xeng)*(thrustl*Cos(deythrustl)*Sin(dezthrustl) \
++ thrustr*Cos(deythrustr)*Sin(dezthrustr));
+        Nb = (-Dragl1 + Dragr1)*rc1 + (-Dragl2 + Dragr2)*rc2 - Mdvpsi*(Rb + \
+2*(-(q0*q2) + q1*q3)*wturbx + 2*(q0*q1 + q2*q3)*wturby + (Power(q0,2) - \
+Power(q1,2) - Power(q2,2) + Power(q3,2))*wturbz) - Cfin*(-xbcg + xwfin) + \
+(xbcg - xeng)*(thrustl*Cos(dezthrustl)*Sin(deythrustl) + \
 thrustr*Cos(dezthrustr)*Sin(deythrustr));
 
         //Initializing variable vector for Newton-Raphson
@@ -1706,15 +1843,15 @@ CLde12*thetaar12 + CLift(Alpha*dah1 - ia1,CLalpha1e,ap1,an1,awp1,awn1) + \
 (S2*(CLift(Alpha*dah2 - ia2 + thetaal2,CLalpha2e,ap2,an2,awp2,awn2)/2. + \
 CLift(Alpha*dah2 - ia2 + thetaar2,CLalpha2e,ap2,an2,awp2,awn2)/2.))/S1 + \
 (CLalphabh*Sbh*Sin(Alpha))/S1;
-          Cd1 = Cd01 + CdW0/(1 + Power(en,(-2*(v - (1 - \
-0.7*dM)*vM))/(dM*vM))) + (Cd0b*Sbh)/S1 + (Cd0fin*Sfin)/S1 + \
-Cdide1*Power(-de10 + thetaal1,2) - Cdide112*(-de10 + thetaal1)*(-de120 + \
-thetaal12) + Cdide12*Power(-de120 + thetaal12,2) + Cdide1*Power(-de10 + \
-thetaar1,2) - Cdide112*(-de10 + thetaar1)*(-de120 + thetaar12) + \
-Cdide12*Power(-de120 + thetaar12,2) + CDragInd(Alpha*dah1 - \
-ia1,AR1,e1e,CLalpha1e,ap1,an1,awp1,awn1) + (S2*(Cd02 + CDragInd(Alpha*dah2 - \
-ia2 + thetaal2,AR2,e2e,CLalpha2e,ap2,an2,awp2,awn2)/2. + CDragInd(Alpha*dah2 \
-- ia2 + thetaar2,AR2,e2e,CLalpha2e,ap2,an2,awp2,awn2)/2.))/S1;
+          Cd1 = Cd01 + CdW0/(1 + Power(en,(-2*(v - (1 - dM)*vM))/(dM*vM))) + \
+(Cd0b*Sbh)/S1 + (Cd0fin*Sfin)/S1 + Cdide1*Power(-de10 + thetaal1,2) - \
+Cdide112*(-de10 + thetaal1)*(-de120 + thetaal12) + Cdide12*Power(-de120 + \
+thetaal12,2) + Cdide1*Power(-de10 + thetaar1,2) - Cdide112*(-de10 + \
+thetaar1)*(-de120 + thetaar12) + Cdide12*Power(-de120 + thetaar12,2) + \
+CDragInd(Alpha*dah1 - ia1,AR1,e1e,CLalpha1e,ap1,an1,awp1,awn1) + (S2*(Cd02 + \
+CDragInd(Alpha*dah2 - ia2 + thetaal2,AR2,e2e,CLalpha2e,ap2,an2,awp2,awn2)/2. \
++ CDragInd(Alpha*dah2 - ia2 + \
+thetaar2,AR2,e2e,CLalpha2e,ap2,an2,awp2,awn2)/2.))/S1;
           Zcfin = CLdefin*lcfin*mTimestep*qpress*Sfin;
           Zcal1 = CLde1*lc1*mTimestep*qpress*S1;
           Zcar1 = CLde1*lc1*mTimestep*qpress*S1;

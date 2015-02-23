@@ -10,14 +10,20 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     30058,        732]
-NotebookOptionsPosition[     28276,        673]
-NotebookOutlinePosition[     28696,        689]
-CellTagsIndexPosition[     28653,        686]
+NotebookDataLength[     33715,        793]
+NotebookOptionsPosition[     31819,        730]
+NotebookOutlinePosition[     32239,        746]
+CellTagsIndexPosition[     32196,        743]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+
+Cell[CellGroupData[{
+Cell["Combustion Chamber Monopropellant", "Section",
+ CellChangeTimes->{{3.4785828348125*^9, 3.478582896703125*^9}, {
+   3.5159023652393904`*^9, 3.5159023668175154`*^9}, 3.5698707380574408`*^9}],
+
 Cell[BoxData[
  RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG.mx"}]], "Input",
  CellChangeTimes->{{3.5772037650720577`*^9, 3.5772037650780582`*^9}, {
@@ -41,11 +47,53 @@ Cell[BoxData[
    3.6058530990363216`*^9, {3.621138851005574*^9, 3.621138863716845*^9}, {
    3.626164321826791*^9, 3.626164327986407*^9}}],
 
-Cell[CellGroupData[{
+Cell[TextData[{
+ "Model of a combustion chamber and nozzle for monopropellant fuel.\n\n",
+ Cell[GraphicsData["Metafile", "\<\
+CF5dJ6E]HGAYHf4PEfU^I6mgLb15CDHPAVmbKF5d0@0000NH0@000?@0001ko_ooNokoojL100340@00
+0000000000371000]0P00215CDH00040V0L001X000020000@`0006`000000000EPD00003003R0@00
+3`40000000000000000006IJ1`1E8P@0B@1^06/0L`1S0640L01U0200<00^03@0>00^0380801b03T0
+>00a03T0800X0440M@1W0200<@0d0200<P0`0340<@0Y0000J@1^06/0L`1S0640L01U02d0H`1/06T0
+L01R06l0H@1b06@0;@1U07P0L01_0780M00^06D0K@1V000000000140000<0000200000T0000@0000
+a`@00;@8000;000040000280000o0000AP0002P0000L0000Df=bIFE^?C4c=SIh=cHhL7P/83@h<WPb
+=c5]KDH0000<1000oP<004AbHGMYKVLm<2h`N3@h>3H`<S8g<3Dc>CDi=S@h<cHc=S<g<3Pc=c<h=S@h
+<S4e=S8g=38c<CPg<cHh>38f=SPg=S<e<CPa>C0f<C@d>CTf=3<c<3Ti=C0`<SDe>3@i<C8e<CTh=30g
+=SLe=3Lg<cHh=C<h=C@g=3@`<c8b=C8g<SHh=30f=C0g<C4`<cDg=30a<30a>CTb=3H`=cH`=cTe>CP`
+>3Le<SPi<SHa<CDc=cLd=STd=CHg=SLe=C0d=3Td<3Li<cTb>C0h<S4f>C@d<CTh>C<e<cHa>3Lb>C<b
+=S@f<CPh<C0a=C8g=3Lf<3<g<SHc=c8e=C8c<c@i>3Lh<SLh=C4f>C@h<CLf=3<`=38b<CHa=S@b=S8`
+=c<d=CPb=SPd<CLg<C@c<CDa<C0b=c4g=S<c>3@b<cDh<S@a<3Db<c8a=c@a>3<b<3Th=3Dd>3@h=3Hc
+<CLc>3Th=S8`<cTa<3<`=cHb=3@`>CTf<3Ph>C4d<CTe>3<e=SHb<cHe=c0a<3Pd=c@b=cDc=c<`<SHf
+=CLg<CHh=SHc=CPa<cLi=34h<S4e=CTb<3Lf<CTb<3Df>3@h>30`<CLi>C<d=C@h<3Pg=30h<30e<cPg
+=34`>CPf<3De=cPd=CD`=SDc>C0e=SHi>CL`=S0b>CTi<S4f=SPd<S0`=3Pf<34d=3Lb<c<h=c@i=SDc
+<CTb=3L`=S8f<CTd<STh<34`<3Hh=C8f<c<f=S8`=cDa=SLh>3<i=S4d<CTd<34e<S<e<CPa<C8c<C0`
+=3Dg<38e<c<h=3<h=cLd=cHb=CDi=cPb<STg=C8i<c@g>CHc=3Lc<C0f=C<f=cHd<3Di<3Di=C0`<cTc
+=C0a>3@c=SLe<SDg<3Pb>CTg=C8g<cPd=S4h<cT`>3Hd>3Lg=CDe<3H`=cDg<3@`<3@`<c0i>3@f=C8c
+=c<d=S@b<3<h=C<f=3<a<3Ha<3Ld=c<f>CLi=cTe=C<i=SLb<cTa=CL`>C<b=38d>3@i=CHb>CPf=S8`
+>CDf<S4e<30`<30e<SDa>3Hb=S4a=CTi<c@`=S4f<SPd=3Li<SHf<3Pa=S0g=C<d=cP`<c0f=SHf=c8c
+<3<d<3La=3Pe=3<f=S@b<C4`=34`<3Hb<C0g>C8i<C<d=c<d<cHb=cDa=38a>CTi=3<a=38d>3Td<cLb
+=3<c=C<i<S<h=38a<cHi=C0i<38`=SHa>38d<CPa<S<g<STg<c0e=CDg=CHc=CDc=CDh<cPg<3<d=SD`
+=CD`>C8b=3@i<30g<3<g=38i<S0i<3De<38`<3Lc<38`<S0c>3<e=SH`=SPb<cHi>CTe=CHd=S4d=c0h
+>CPi=3<g=CPf<SLe=3@d<cTf001O0000>0000040000h0000000003P000000000028101`000000000
+0000000000000000000002D0000<00000@0003X0000<00006P4003/0000800006`000100000>0000
+YPP005P0000X000000000000003oooooooooo`<0000b0=L7Q@0l1]X1O@AH0000:000000000000000
+ooooooooool30000lP551?d140CJ0KP3F00002P00000000000000?oooooooooo0`000:@1AP<W0B03
+lP230UP0000X000000000000003oooooooooo`<0003L0442_`2<0OL0o`1H0000:000000000000000
+ooooooooool30000:`5k08T12`1U0Ph0F00002P00000000000000?oooooooooo0`0004432`2b0hD0
+i`<E0EP0000X000000000000003oooooooooo`<0000G19T1k@=U0^d3I@9H0000:000000000000000
+ooooooooool30000Z0<=0c/3AP<50kP3F00002P00000000000000?oooooooooo0`000>8240C/0TD4
+1@=m15P0000X000000000000003oooooooooo`<0001:13D6U0CG1kP4YPPl000020000400000H0000
+Nokoog_noonW0@00a04002D0000<00001`00P2P0000<00000@0000h0000D000000000100000D0000
 
-Cell["Combustion Chamber Monopropellant", "Section",
- CellChangeTimes->{{3.4785828348125*^9, 3.478582896703125*^9}, {
-   3.5159023652393904`*^9, 3.5159023668175154`*^9}, 3.5698707380574408`*^9}],
+\>"], "Graphics",
+  GeneratedCell->False,
+  CellAutoOverwrite->False,
+  ImageSize->{97., 177.1304347826087},
+  ImageMargins->{{0, 0}, {0, 94}}],
+ "\n"
+}], "Text",
+ CellChangeTimes->{{3.6327774770987616`*^9, 3.632777563394697*^9}}],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
@@ -83,6 +131,14 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
    3.5769421260582237`*^9, 3.576942132400586*^9}, {3.585565721543457*^9, 
    3.5855657233405595`*^9}, 3.5855657678881073`*^9, 3.585970738275631*^9, 
    3.5907536940196877`*^9, {3.6058720364207926`*^9, 3.60587203990114*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "2014", ",", "11", ",", "28", ",", "12", ",", "54", ",", 
+   "3.6269696`8.312118896467481"}], "}"}]], "Output",
+ CellChangeTimes->{3.626164443637971*^9}]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -142,7 +198,7 @@ Cell[BoxData[
      RowBox[{"{", 
       RowBox[{
       "ethap", ",", "0.9", ",", "double", ",", "\"\<\>\"", ",", 
-       "\"\<Effectivness\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+       "\"\<Efficiency factor (<1)\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
       "rhofuel", ",", "1200.", ",", "double", ",", "\"\<kg/m3\>\"", ",", 
@@ -176,7 +232,7 @@ Cell[BoxData[
    3.571236117829505*^9}, {3.5712983309848943`*^9, 3.571298340503439*^9}, {
    3.5718249944690647`*^9, 3.571825014576215*^9}, {3.5718594450715847`*^9, 
    3.5718594459451866`*^9}, {3.5810529620212717`*^9, 3.5810530704698715`*^9}, 
-   3.5908072238885756`*^9}],
+   3.5908072238885756`*^9, {3.6261643789915066`*^9, 3.6261643859231997`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -293,17 +349,18 @@ Cell[BoxData[
       RowBox[{"(", 
        RowBox[{"1", "+", "Tc"}], ")"}]}]]}]}], "}"}]], "Output",
  CellChangeTimes->{3.59075345107176*^9, 3.59075350562531*^9, 
-  3.590753758472154*^9, 3.590807251028701*^9}]
+  3.590753758472154*^9, 3.590807251028701*^9, 3.6261644437709837`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"cfuel", "=", " ", 
-   FractionBox[
-    SuperscriptBox["vfuel", "2"], "2"]}], ";"}]], "Input",
+  RowBox[{"cfuel", "=", 
+   RowBox[{"ethap", " ", 
+    FractionBox[
+     SuperscriptBox["vfuel", "2"], "2"]}]}], ";"}]], "Input",
  CellChangeTimes->{{3.569851306825736*^9, 3.569851404036707*^9}, 
    3.5703923675004215`*^9, {3.5704746874626803`*^9, 3.570474713213153*^9}, 
-   3.5718299672550926`*^9}],
+   3.5718299672550926`*^9, {3.6261644058031874`*^9, 3.6261644161302204`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -349,11 +406,11 @@ Cell[BoxData[
 
 Cell[BoxData[
  FractionBox[
-  RowBox[{"mTimestep", " ", "rhofuel", " ", 
+  RowBox[{"ethap", " ", "mTimestep", " ", "rhofuel", " ", 
    SuperscriptBox["vfuel", "2"]}], 
   RowBox[{"2", " ", "gam", " ", "Vc"}]]], "Output",
  CellChangeTimes->{3.590753451134161*^9, 3.5907535056877103`*^9, 
-  3.5907537585345545`*^9, 3.590807251106737*^9}]
+  3.5907537585345545`*^9, 3.590807251106737*^9, 3.62616444382999*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -369,7 +426,7 @@ Cell[BoxData[
  FractionBox["mTimestep", 
   RowBox[{"gam", " ", "Vc"}]]], "Output",
  CellChangeTimes->{3.5907534511653605`*^9, 3.5907535057033105`*^9, 
-  3.590753758565755*^9, 3.5908072511535587`*^9}]
+  3.590753758565755*^9, 3.5908072511535587`*^9, 3.6261644438569927`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -382,10 +439,10 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{
-  FractionBox["1", "2"], " ", "q1", " ", "rhofuel", " ", 
+  FractionBox["1", "2"], " ", "ethap", " ", "q1", " ", "rhofuel", " ", 
   SuperscriptBox["vfuel", "2"]}]], "Output",
  CellChangeTimes->{3.5907534511809607`*^9, 3.590753505734511*^9, 
-  3.590753758581355*^9, 3.5908072511847725`*^9}]
+  3.590753758581355*^9, 3.5908072511847725`*^9, 3.6261644438869953`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -417,7 +474,7 @@ Cell[BoxData[
  SqrtBox[
   RowBox[{"gam", " ", "R", " ", "Te"}]]], "Output",
  CellChangeTimes->{3.590753451212161*^9, 3.590753505765711*^9, 
-  3.5907537586125555`*^9, 3.590807251215987*^9}]
+  3.5907537586125555`*^9, 3.590807251215987*^9, 3.626164443921999*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -671,8 +728,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{1220, 898},
-WindowMargins->{{Automatic, 325}, {Automatic, 8}},
+WindowSize->{1008, 690},
+WindowMargins->{{Automatic, 80}, {Automatic, 72}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
   CharacterEncoding -> "WindowsANSI"]
@@ -688,50 +745,54 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[557, 20, 248, 4, 41, "Input"],
-Cell[808, 26, 749, 15, 41, "Input"],
 Cell[CellGroupData[{
-Cell[1582, 45, 194, 2, 75, "Section"],
-Cell[1779, 49, 1605, 35, 202, "Input"],
+Cell[579, 22, 194, 2, 75, "Section"],
+Cell[776, 26, 248, 4, 41, "Input"],
+Cell[1027, 32, 749, 15, 41, "Input"],
+Cell[1779, 49, 3030, 44, 243, "Text"],
 Cell[CellGroupData[{
-Cell[3409, 88, 97, 1, 36, "Subsection"],
-Cell[3509, 91, 678, 13, 82, "Input"],
-Cell[4190, 106, 458, 11, 82, "Input"],
-Cell[4651, 119, 2891, 59, 242, "Input"],
-Cell[7545, 180, 2778, 60, 282, "Input"],
-Cell[10326, 242, 142, 3, 41, "Input"],
-Cell[10471, 247, 1451, 27, 231, "Input"],
-Cell[CellGroupData[{
-Cell[11947, 278, 44, 0, 41, "Input"],
-Cell[11994, 280, 574, 15, 57, "Output"]
-}, Open  ]],
-Cell[12583, 298, 298, 7, 60, "Input"],
-Cell[12884, 307, 273, 6, 41, "Input"],
-Cell[13160, 315, 892, 18, 82, "Input"],
-Cell[CellGroupData[{
-Cell[14077, 337, 559, 10, 59, "Input"],
-Cell[14639, 349, 275, 6, 62, "Output"]
+Cell[4834, 97, 1605, 35, 202, "Input"],
+Cell[6442, 134, 195, 5, 40, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[14951, 360, 252, 5, 59, "Input"],
-Cell[15206, 367, 199, 4, 59, "Output"]
+Cell[6674, 144, 97, 1, 36, "Subsection"],
+Cell[6774, 147, 678, 13, 82, "Input"],
+Cell[7455, 162, 458, 11, 82, "Input"],
+Cell[7916, 175, 2951, 59, 242, "Input"],
+Cell[10870, 236, 2778, 60, 282, "Input"],
+Cell[13651, 298, 142, 3, 41, "Input"],
+Cell[13796, 303, 1451, 27, 231, "Input"],
+Cell[CellGroupData[{
+Cell[15272, 334, 44, 0, 41, "Input"],
+Cell[15319, 336, 598, 15, 57, "Output"]
+}, Open  ]],
+Cell[15932, 354, 373, 8, 60, "Input"],
+Cell[16308, 364, 273, 6, 41, "Input"],
+Cell[16584, 372, 892, 18, 82, "Input"],
+Cell[CellGroupData[{
+Cell[17501, 394, 559, 10, 59, "Input"],
+Cell[18063, 406, 310, 6, 62, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[15442, 376, 224, 4, 41, "Input"],
-Cell[15669, 382, 241, 5, 57, "Output"]
+Cell[18410, 417, 252, 5, 59, "Input"],
+Cell[18665, 424, 223, 4, 59, "Output"]
 }, Open  ]],
-Cell[15925, 390, 988, 17, 41, "Input"],
 Cell[CellGroupData[{
-Cell[16938, 411, 79, 2, 45, "Input"],
-Cell[17020, 415, 188, 4, 43, "Output"]
+Cell[18925, 433, 224, 4, 41, "Input"],
+Cell[19152, 439, 279, 5, 57, "Output"]
 }, Open  ]],
-Cell[17223, 422, 1466, 27, 151, "Input"],
-Cell[18692, 451, 3009, 60, 181, "Input"],
-Cell[21704, 513, 768, 13, 41, "Input"],
-Cell[22475, 528, 726, 14, 87, "Input"],
-Cell[23204, 544, 138, 3, 41, "Input"],
-Cell[23345, 549, 4793, 116, 394, "Input"],
-Cell[28141, 667, 107, 2, 41, "Input"]
+Cell[19446, 447, 988, 17, 41, "Input"],
+Cell[CellGroupData[{
+Cell[20459, 468, 79, 2, 45, "Input"],
+Cell[20541, 472, 210, 4, 43, "Output"]
+}, Open  ]],
+Cell[20766, 479, 1466, 27, 151, "Input"],
+Cell[22235, 508, 3009, 60, 181, "Input"],
+Cell[25247, 570, 768, 13, 41, "Input"],
+Cell[26018, 585, 726, 14, 87, "Input"],
+Cell[26747, 601, 138, 3, 41, "Input"],
+Cell[26888, 606, 4793, 116, 394, "Input"],
+Cell[31684, 724, 107, 2, 41, "Input"]
 }, Open  ]]
 }, Open  ]]
 }

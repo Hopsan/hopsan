@@ -5,6 +5,10 @@
             <icon scale="1" path="HydraulicCentrifugalPump.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicCentrifugalPump.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <text>Centrifugal pump with intertia. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>HydraulicCentrifugalPumpJ.nb</link>
+        </help>       
         <ports>
             <port x="0" y="0.45" enabled="true" a="180" name="P1" autoplaced="true"/>
             <port x="0" y="0.6" enabled="true" a="180" name="Pmr1" autoplaced="true"/>

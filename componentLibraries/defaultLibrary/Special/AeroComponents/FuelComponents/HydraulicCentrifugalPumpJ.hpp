@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicCentrifugalPumpJ.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 8 Apr 2014 15:50:57
+//! @date Mon 15 Dec 2014 15:15:03
 //! @brief Centrifugal pump
 //! @ingroup HydraulicComponents
 //!
@@ -383,7 +383,7 @@ delayedPart[2][1];
           p2=stateVark[3];
           tormr1=stateVark[4];
           //Expressions
-          q2 = q2e*(onNegative(q2e) + onPositive(p1));
+          q2 = q2e*onPositive(p1);
           q1 = -q2;
           Pin = -(tormr1*wmr1);
           Pout = (-p1 + p2)*q2;

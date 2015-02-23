@@ -5,6 +5,10 @@
             <icon scale="1" path="AeroFuelTank.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="AeroFuelTank.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <text>Simple fuel tank model. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>AeroFuelTank.nb</link>
+        </help>       
         <ports>
             <port x="0.5" y="0" a="90" name="massflow"/>
             <port x="0.333333" y="1" a="90" name="massfuel"/>

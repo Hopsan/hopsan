@@ -7,9 +7,6 @@
     pComponentFactory->registerCreatorFunction("AeroAtmosphere", AeroAtmosphere::Creator);
     pComponentFactory->registerCreatorFunction("AeroWind", AeroWind::Creator);
     pComponentFactory->registerCreatorFunction("AeroTurbFilter", AeroTurbFilter::Creator);
-    pComponentFactory->registerCreatorFunction("AeroTurbXfilter", AeroTurbXfilter::Creator);
-    pComponentFactory->registerCreatorFunction("AeroTurbYfilter", AeroTurbYfilter::Creator);
-    pComponentFactory->registerCreatorFunction("AeroTurbZfilter", AeroTurbZfilter::Creator);
     pComponentFactory->registerCreatorFunction("AeroJetEngine", AeroJetEngine::Creator);
     pComponentFactory->registerCreatorFunction("AeroFuelTank", AeroFuelTank::Creator);
     pComponentFactory->registerCreatorFunction("AeroPropeller", AeroPropeller::Creator);
