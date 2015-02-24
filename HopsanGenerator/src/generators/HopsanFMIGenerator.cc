@@ -1604,7 +1604,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     {
         linkCommand.append(" "+objFile);
     }
-    linkCommand.append("-o "+modelName+".so");
+    linkCommand.append(" -o "+modelName+".so");
     linkCommand.append(" 2>&1");
     printMessage("Compiler command: \""+linkCommand+"\"\n");
 
