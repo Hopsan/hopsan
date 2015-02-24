@@ -500,10 +500,10 @@ def copyFiles():
     #Export "HopsanCore" SVN directory to "include" in temporary directory
     svnExport("HopsanCore", tempDir+r'\HopsanCore')
 
-    #Export "HopsanCore" spcific dependencies SVN directory to "include" in temporary directory
-    svnExport(r'Dependencies\katex',                tempDir+r'\Dependencies')
-    svnExport(r'Dependencies\IndexingCSVParser',    tempDir+r'\Dependencies')
-    svnExport(r'Dependencies\rapidxml-1.13',        tempDir+r'\Dependencies')
+    #Export needed dependencies SVN directories to "include" in the release
+    svnExport(r'Dependencies\katex',                tempDir+r'\Dependencies\katex')
+    svnExport(r'Dependencies\IndexingCSVParser',    tempDir+r'\Dependencies\IndexingCSVParser')
+    svnExport(r'Dependencies\rapidxml-1.13',        tempDir+r'\Dependencies\rapidxml-1.13')
  
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
     callXcopy(r'HopsanCore\include\svnrevnum.h', tempDir+r'\HopsanCore\include')
