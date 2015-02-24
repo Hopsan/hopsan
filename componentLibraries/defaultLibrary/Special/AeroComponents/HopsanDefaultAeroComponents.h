@@ -8,9 +8,6 @@
 #include "AeroAtmosphere.hpp"
 #include "AeroWind.hpp"
 #include "AeroTurbFilter.hpp"
-#include "AeroTurbXfilter.hpp"
-#include "AeroTurbYfilter.hpp"
-#include "AeroTurbZfilter.hpp"
 #include "AeroJetEngine.hpp"
 #include "AeroFuelTank.hpp"
 #include "AeroPropeller.hpp"
@@ -25,5 +22,7 @@
 #include "FuelComponents/HydraulicCentrifugalPump.hpp"
 #include "FuelComponents/HydraulicCentrifugalPumpJ.hpp"
 #include "FuelComponents/HydraulicFuelTankG.hpp"
+
+#include "PneumaticTurboMachineJ.hpp"
 
 #endif // HOPSANDEFAULTAEROCOMPONENTS_H
