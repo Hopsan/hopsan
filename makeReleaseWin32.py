@@ -483,6 +483,7 @@ def copyFiles():
     callMkdir(tempDir+r'\doc\user\html')
     callMkdir(tempDir+r'\doc\graphics')
     callMkdir(tempDir+r'\ThirdParty')
+    callMkdir(tempDir+r'\Dependencies')
 
     # Common export dirs
     tempDirBin=tempDir+r'\bin'
@@ -498,6 +499,11 @@ def copyFiles():
 
     #Export "HopsanCore" SVN directory to "include" in temporary directory
     svnExport("HopsanCore", tempDir+r'\HopsanCore')
+
+    #Export "HopsanCore" spcific dependencies SVN directory to "include" in temporary directory
+    svnExport(r'Dependencies\katex',                tempDir+r'\Dependencies')
+    svnExport(r'Dependencies\IndexingCSVParser',    tempDir+r'\Dependencies')
+    svnExport(r'Dependencies\rapidxml-1.13',        tempDir+r'\Dependencies')
  
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
     callXcopy(r'HopsanCore\include\svnrevnum.h', tempDir+r'\HopsanCore\include')

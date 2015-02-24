@@ -442,7 +442,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                         else if (line.startsWith("<p><img"))
                         {
                             size_t b = line.indexOf("src=")+4;
-                            QString image = line.left(b+1)+mdFi.absolutePath()+"/"+line.right(line.size()-b-1);
+                            QString image = line.left(b+1)+"file:///"+mdFi.absolutePath()+"/"+line.right(line.size()-b-1);
                             imageMap.insert( ln, image );
                         }
                         ++ln;
@@ -457,8 +457,8 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                         htmlStream << "<html>\n";
                         htmlStream << "  <head>\n";
                         htmlStream << "    <meta charset=\"UTF-8\">\n";
-                        htmlStream << "      " << QString("<script src=\"%1katex/katex.min.js\" type=\"text/javascript\"></script>\n").arg(gpDesktopHandler->getExecPath()+"../HopsanGUI/Dependencies/");
-                        htmlStream << "      " << QString("<link href=\"%1katex/katex.min.css\" rel=\"stylesheet\" type=\"text/css\">\n").arg(gpDesktopHandler->getExecPath()+"../HopsanGUI/Dependencies/");
+                        htmlStream << "      " << QString("<script src=\"file:///%1katex/katex.min.js\" type=\"text/javascript\"></script>\n").arg(gpDesktopHandler->getExecPath()+"../Dependencies/");
+                        htmlStream << "      " << QString("<link href=\"file:///%1katex/katex.min.css\" rel=\"stylesheet\" type=\"text/css\">\n").arg(gpDesktopHandler->getExecPath()+"../Dependencies/");
                         htmlStream << "  </head>\n";
 
                         inHtmlStream.seek(0);
