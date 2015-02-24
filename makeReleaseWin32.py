@@ -4,9 +4,17 @@ import subprocess
 import os
 import ctypes
 import stat
+import shutil
 from time import sleep
 
-devversion="0.7."
+global gDevVersion
+global do64BitRelease
+global gARCH
+global qtRuntimeBins
+global qtPluginBins
+global mingwBins
+
+gDevVersion='0.7.x'
 tempDir=r'C:\temp_release'
 scriptFile="HopsanReleaseInnoSetupScript.iss"
 dependecyBinFile32=r'hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z'
@@ -19,13 +27,20 @@ innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno S
 # Libs
 qtlibDirList = [r'C:\Qt\4.8.5']
 qtlib64DirList = [r'C:\Qt\Qt64-4.8.5']
-tbblibDirList = [r'.\HopsanCore\Dependencies\tbb30_20110704oss', r'.\HopsanCore\Dependencies\tbb41_20130613oss']
-tbblib64DirList = [r'.\HopsanCore\Dependencies\tbb30_20110704oss_64', r'.\HopsanCore\Dependencies\tbb41_20130613oss_64']
+tbblibDirList = [r'.\HopsanCore\Dependencies\tbb41_20130613oss']
+tbblib64DirList = [r'.\HopsanCore\Dependencies\tbb41_20130613oss_x64']
+
+# Runtime binaries
+qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
+                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
+                 'icuin53.dll', 'icuuc53.dll', 'icudt53.dll', 'Qt5PrintSupport.dll']
+qtPluginBins  = [r'iconengines/qsvgicon.dll', r'imageformats/qjpeg.dll', r'imageformats/qsvg.dll']
+mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll'] 
 
 # Compilers and build tools
 qtcreatorDirList = [r'C:\Qt\qtcreator-2.8.1']
-mingwDirList = [r'C:\Qt\MinGW-gcc440_1\mingw\bin', r'C:\Qt\mingw\bin', r'C:\mingw\bin']
-mingw64DirList = [r'C:\Qt\mingw64\bin']
+#mingwDirList = [r'C:\Qt\MinGW-gcc440_1\mingw\bin', r'C:\Qt\mingw\bin', r'C:\mingw\bin']
+#mingw64DirList = [r'C:\Qt\mingw64\bin']
 msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
 msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
@@ -34,34 +49,6 @@ hopsanDir=os.getcwd()
 
 STD_OUTPUT_HANDLE= -11
 
-escape_dict={'\a':r'\a',
-           '\b':r'\b',
-           '\c':r'\c',
-           '\f':r'\f',
-           '\n':r'\n',
-           '\r':r'\r',
-           '\t':r'\t',
-           '\v':r'\v',
-           '\'':r'\'',
-           '\"':r'\"',
-           '\0':r'\0',
-           '\1':r'\1',
-           '\2':r'\2',
-           '\3':r'\3',
-           '\4':r'\4',
-           '\5':r'\5',
-           '\6':r'\6',
-           '\7':r'\7',
-           '\8':r'\8',
-           '\9':r'\9'}
-
-def makeRaw(text):
-    """Returns a raw string representation of text"""
-    new_string=''
-    for char in text:
-        try: new_string+=escape_dict[char]
-        except KeyError: new_string+=char
-    return new_string
 
 def quotePath(path):
     """Appends quotes around string if quotes are not already present"""
@@ -72,11 +59,11 @@ def quotePath(path):
     return path
 
 class bcolors:
-  WHITE = 0x07
-  GREEN= 0x0A
-  RED = 0x0C
-  YELLOW = 0x0E
-  BLUE = 0x0B
+    WHITE = 0x07
+    GREEN= 0x0A
+    RED = 0x0C
+    YELLOW = 0x0E
+    BLUE = 0x0B
 
 std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
 
@@ -200,7 +187,26 @@ def call7z(args):
 
 def callSed(sedCommand):
     callEXE(hopsanDir+r'\ThirdParty\sed-4.2.1\sed.exe', sedCommand);
-    
+
+def copyFileToDir(srcDir, srcFile, dstDir):
+    if not srcDir[-1] == '/':
+        srcDir=srcDir+'/'
+    if not dstDir[-1] == '/':
+        dstDir=dstDir+'/'
+    src=srcDir+srcFile
+    #print(src)
+    if fileExists(src):
+        src_dirname = os.path.dirname(srcFile)
+        if not src_dirname == '':
+            #print(src_dirname)
+            dstDir=dstDir+src_dirname
+        #print(dstDir)
+        if not os.path.exists(dstDir):
+            print('Creating dst: '+dstDir)
+            os.makedirs(dstDir)
+        shutil.copy2(src, dstDir)
+    else:
+        print('Error: Source file '+src+' does not exist!')
 
 def makeMSVCDirName(version, arch):
     return "MSVC"+version+"_"+arch
@@ -216,7 +222,7 @@ def verifyPaths():
     global msvc2010Dir
     global jomDir
     global qmakeDir
-    global mingwDir
+    #global mingwDir
     global tbbDir
     global dependecyBinFile
 
@@ -224,14 +230,14 @@ def verifyPaths():
    
     
     if do64BitRelease:
-        qtlibsdirs=qtlib64DirList
+        qtlibsdirs=qmakeDir
         tbbdirs=tbblib64DirList
-        mingwdirs=mingw64DirList
+        mingwdirs=mingwDir
         dependecyBinFile=dependecyBinFile64
     else:
-        qtlibsdirs=qtlibDirList
+        qtlibsdirs=qmakeDir
         tbbdirs=tbblibDirList
-        mingwdirs=mingwDirList
+        mingwdirs=mingwDir
         dependecyBinFile=dependecyBinFile32
 
     #Check if Qt path exists
@@ -246,11 +252,11 @@ def verifyPaths():
         isOk = False
         
     jomDir=creatorDir+r'\bin'
-    qmakeDir=qtDir+r'\bin'
+    qmakeDir=qmakeDir
 
-    mingwDir=selectPathFromList(mingwdirs, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
-    if mingwDir == "":
-        isOk = False
+    #mingwDir=selectPathFromList(mingwdirs, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
+    #if mingwDir == "":
+    #    isOk = False
 
     #Make sure Visual Studio 2008 is installed in correct location
     msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
@@ -263,8 +269,8 @@ def verifyPaths():
         isOk = False
     
     #Make sure the 3d party dependency file exists
-    if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
-        isOk = False
+    #if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
+    #    isOk = False
         
     #Make sure TBB is installed in correct location
     tbbDir=selectPathFromList(tbbdirs, "Cannot find correct TBB version", "Found correct TBB version!")
@@ -294,7 +300,7 @@ def askForVersion():
         print "Building DEV release"
         print runCmd("getSvnRevision.bat")[0]
         revnum = raw_input('Enter the revnum shown above: ')
-        version = devversion+"x_r"+revnum
+        version = gDevVersion+"_r"+revnum
         dodevrelease=True
 
     return (version,dodevrelease)
@@ -428,10 +434,7 @@ def buildRelease():
     callMkdir(hopsanBuildDir)
     
     # Generate compile script, setup compiler and compile
-    if do64BitRelease:
-        mkspec="win32-g++-4.6"
-    else:
-        mkspec="win32-g++"
+    mkspec="win32-g++"
     f = open('compileWithMinGW.bat', 'w')
     f.write(r'echo off'+"\n")
     f.write(r'REM This file has been automatically generated by the python build script. Do NOT commit it to svn!'+"\n")
@@ -516,7 +519,7 @@ def copyFiles():
     
     #Export "exampleComponentLib" SVN directory to temporary directory
     svnExport(r'componentLibraries\exampleComponentLib', tempDir+r'\componentLibraries\exampleComponentLib')
-
+    
     #Export "autoLibs" SVN directory to temporary directory
     svnExport(r'componentLibraries\autoLibs', tempDir+r'\componentLibraries\autoLibs')
    
@@ -637,7 +640,23 @@ def cleanUp():
         callRd(hopsanDir+r'\bin_last_build')
         callMove(hopsanDir+r'\bin', hopsanDir+r'\bin_last_build')
         callMove(hopsanDir+r'\bin_build_backup', hopsanDir+r'\bin')
+
+def extractHopsanBuildPath(version, arch, pathName):
+    # Ok this wil run the script for every variable we call, but it is fast so who cares
+    p = subprocess.Popen([r'Dependencies\setHopsanBuildPaths.bat', version, arch], shell=True, stdout = subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode == 0: # is 0 if success
+        for line in stdout.splitlines():
+            if line.startswith(pathName):
+                substr = line.split(':',1)
+                if len(substr) == 2:  
+                    #print(substr)
+                    #print(substr[1])
+                    return substr[1].strip()
+    else:
+        return 'Failed to run setHopsanBuildPaths.bat script'
     
+    return keyValue+' path Not Found!'
     
 #################################
 # Execution of file begins here #
@@ -654,13 +673,24 @@ print "\\------------------------------------------------------------/"
 print "\n"
 
 success=True
-global do64BitRelease
+
+gARCH='x86'
 do64BitRelease = askYesNoQuestion("Do you want to build a 64Bit release? (y/n): ")
+if do64BitRelease:
+    gARCH='x64'
+
+mingwDir = extractHopsanBuildPath('0.7.x', gARCH, 'MinGW')
+qmakeDir = extractHopsanBuildPath('0.7.x', gARCH, 'QMake')
+print('MinGW path: '+mingwDir)
+print('Qmake path: '+qmakeDir)
+
+raw_input("Press any key to continue...")
 
 if not verifyPaths():
     success = False
-    cleanUp()
+    #cleanUp()
     printError("Compilation script failed while verifying paths.")
+success=True
 
 if success:
     global dodevrelease
@@ -692,10 +722,17 @@ if success:
         success = False
         cleanUp()
         printError("Compilation script failed in compilation error.")
+    
 
 if success:
     #Unpack depedency bin files to bin folder without asking stupid questions, we do this in the build step to have a run-able compiled version before running tests
-    call7z(r'x '+quotePath(hopsanDir+"\\"+dependecyBinFile)+r' -o'+quotePath(hopsanDir+r'\bin')+r' -y')
+    #call7z(r'x '+quotePath(hopsanDir+"\\"+dependecyBinFile)+r' -o'+quotePath(hopsanDir+r'\bin')+r' -y')
+    for f in qtRuntimeBins:
+        copyFileToDir(qmakeDir, f, hopsanDir+r'\bin')
+    for f in qtPluginBins:
+        copyFileToDir(qmakeDir+r'/../plugins', f, hopsanDir+r'\bin')
+    for f in mingwBins:
+        copyFileToDir(mingwDir, f, hopsanDir+r'\bin')
 
 if success:
     if not createCleanOutputDirectory():
