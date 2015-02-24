@@ -1453,8 +1453,11 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     printMessage("Compiling C files");
     printMessage("------------------------------------------------------------------------");
 
-    //! @todo what about 64-bit, should be same include files but you never know if cmake has changed them
-    QString fmiLibDir="FMILibrary-2.0.1/";
+#ifdef _WIN64 || __x86_64__
+    QString fmiLibDir="/HopsanGenerator/Dependencies/FMILibrary-2.0.1_64/";
+#else
+    QString fmiLibDir="/HopsanGenerator/Dependencies/FMILibrary-2.0.1/";
+#endif
 
 #ifdef _WIN32
     QFile compileCBatchFile;
