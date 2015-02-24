@@ -826,11 +826,3 @@ InterfaceVarSpec::InterfaceVarSpec(QString dataName, int dataId, InterfaceVarSpe
     this->dataId = dataId;
     this->causality = causality;
 }
-
-
-QString replaceFilenameSuffix(QString fname, const QString &rNewSuffix)
-{
-    int b = fname.lastIndexOf(".");
-    fname.replace(b, fname.size()-b, rNewSuffix);
-    return fname;
-}

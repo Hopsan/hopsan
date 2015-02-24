@@ -1561,8 +1561,8 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     objectFiles << "fmu_hopsan.o";
     Q_FOREACH(const QString &srcFile, getHopsanCoreSourceFiles())
     {
-        QString oFile = replaceFilenameSuffix(srcFile, ".o");
-        objectFiles << oFile;
+        QFileInfo fi(srcFile);
+        objectFiles << fi.baseName()+".o";
     }
 
     if(!assertFilesExist(savePath, objectFiles))

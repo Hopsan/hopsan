@@ -173,7 +173,6 @@ QString extractTaggedSection(QString str, QString tag);
 void replaceTaggedSection(QString &str, QString tag, QString replacement);
 QString replaceTag(QString str, QString tag, QString replacement);
 QString replaceTags(QString str, QStringList tags, QStringList replacements);
-QString replaceFilenameSuffix(QString fname, const QString &rNewSuffix);
 
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
 
