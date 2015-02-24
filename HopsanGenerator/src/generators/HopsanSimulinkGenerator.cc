@@ -79,20 +79,29 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         printErrorMessage("Failed to open HopsanSimulinkCompile.m for writing.");
         return;
     }
-
-    QFile compileScriptTemplateFile(":templates/simulinkCompileScriptTemplate.m");
-    assert(compileScriptTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
-    QString compileScriptCode;
-    QTextStream t(&compileScriptTemplateFile);
-    compileScriptCode = t.readAll();
-    compileScriptTemplateFile.close();
-    assert(!compileScriptCode.isEmpty());
-
-    compileScriptCode.replace("<<<modelname>>>", name);
-
     QTextStream compileScriptStream(&compileScriptFile);
-    compileScriptStream << compileScriptCode;
+    QTextLineStream compileScriptLStream(compileScriptStream);
+
+    compileScriptLStream << "disp('Compiling S-function from Hopsan model...');";
+#ifdef _WIN32
+    compileScriptStream << "mex -DWIN32 -DSTATICCORE -DBUILTINDEFAULTCOMPONENTLIB";
+#else
+    compileScriptStream << "mex -DSTATICCORE -DBUILTINDEFAULTCOMPONENTLIB";
+#endif
+    Q_FOREACH(const QString &s, getHopsanCoreIncludePaths())
+    {
+        compileScriptStream << QString(" -I%1").arg(s);
+    }
+    Q_FOREACH(const QString &s, getHopsanCoreSourceFiles())
+    {
+        compileScriptStream << " " << s;
+    }
+    compileScriptStream  << QString(" %1.cpp").arg(name);
+    compileScriptLStream << " -ldl";
+    compileScriptLStream << "disp('Finished.')";
+
     compileScriptFile.close();
+
 
     printMessage("Writing "+name+"PortLabels.m...");
 

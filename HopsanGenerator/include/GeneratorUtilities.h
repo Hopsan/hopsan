@@ -207,6 +207,7 @@ public:
         mpQTextSream = &rTextStream;
     }
     friend QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input);
+    friend QTextLineStream& operator <<(QTextLineStream &rLineStream, const QString &input);
 
 private:
     QTextStream* mpQTextSream;

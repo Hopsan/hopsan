@@ -202,6 +202,12 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
     return rLineStream;
 }
 
+QTextLineStream& operator <<(QTextLineStream &rLineStream, const QString &input)
+{
+    (*rLineStream.mpQTextSream) << input << endl;
+    return rLineStream;
+}
+
 
 
 bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLFlags, QString extraIncludes)

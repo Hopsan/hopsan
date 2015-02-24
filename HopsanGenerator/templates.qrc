@@ -12,7 +12,6 @@
         <file>templates/labviewCodegenTemplate.c</file>
         <file>templates/labviewHowToTemplate.txt</file>
         <file>templates/fmuCoSimComponentTemplate.hpp</file>
-        <file>templates/simulinkCompileScriptTemplate.m</file>
         <file>templates/fmi2ComponentTemplate.hpp</file>
         <file>templates/fmi2MeComponentTemplate.hpp</file>
         <file>templates/fmu_hopsan.c</file>

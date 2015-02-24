@@ -20,7 +20,14 @@ echo "Copy installing Hopsan from $srcDir to $dstDir"
 # Copy whole directories
 # ======================
 mkdir -p                                                   $dstDir/HopsanCore
-cp -a    $srcDir/HopsanCore/include                        $dstDir/HopsanCore/include
+cp -a    $srcDir/HopsanCore/include                        $dstDir/HopsanCore
+cp -a    $srcDir/HopsanCore/src                            $dstDir/HopsanCore
+cp -a    $srcDir/HopsanCore/Dependencies                   $dstDir/HopsanCore
+
+mkdir -p                                                   $dstDir/Dependencies
+cp -a    $srcDir/Dependencies/IndexingCSVParser            $dstDir/Dependencies
+cp -a    $srcDir/Dependencies/libcsv_parser++-1.0.0        $dstDir/Dependencies
+cp -a    $srcDir/Dependencies/rapidxml-1.13                $dstDir/Dependencies
 
 mkdir -p                                                   $dstDir/componentLibraries
 cp -a    $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries
@@ -34,7 +41,7 @@ mkdir -p                                                   $dstDir/doc/user
 cp -a    $srcDir/doc/user/html                             $dstDir/doc/user
 cp -a    $srcDir/doc/graphics                              $dstDir/doc
 
-cp -a    $srcDir/Scripts                                   $dstDir/Scripts
+cp -a    $srcDir/Scripts                                   $dstDir
 
 # Copy compiled libs and exec files
 # =================================
