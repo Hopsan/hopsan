@@ -338,20 +338,20 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     this->copySourceFilesToDir(savePath);
     this->copyDefaultComponentCodeToDir(savePath);
 
-    //! @todo should not overwrite this wile if it already exists
-    QFile externalLibsFile;
-    externalLibsFile.setFileName(savePath + "/externalLibs.txt");
-    if(!externalLibsFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open externalLibs.txt for writing.");
-        return;
-    }
-    QTextStream externalLibsFileStream(&externalLibsFile);
-    externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
-    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
-    externalLibsFile.close();
+//    //! @todo should not overwrite this wile if it already exists
+//    QFile externalLibsFile;
+//    externalLibsFile.setFileName(savePath + "/externalLibs.txt");
+//    if(!externalLibsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        printErrorMessage("Failed to open externalLibs.txt for writing.");
+//        return;
+//    }
+//    QTextStream externalLibsFileStream(&externalLibsFile);
+//    externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
+//    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
+//    externalLibsFile.close();
 
-    if(!assertFilesExist(savePath, QStringList() << modelFile << "externalLibs.txt" <<
+    if(!assertFilesExist(savePath, QStringList() << modelFile << /*"externalLibs.txt" <<*/
                      /*"HopsanCore.dll" << "HopsanCore.lib" << "HopsanCore.exp" <<*/ name+".cpp" <<
                      "HopsanSimulinkCompile.m" << name+"PortLabels.m"))
     {
