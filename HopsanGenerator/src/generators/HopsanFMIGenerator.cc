@@ -1453,10 +1453,10 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     printMessage("Compiling C files");
     printMessage("------------------------------------------------------------------------");
 
-#ifdef _WIN64 || __x86_64__
-    QString fmiLibDir="/HopsanGenerator/Dependencies/FMILibrary-2.0.1_64/";
+#ifdef _WIN64
+    QString fmiLibDir="Dependencies/FMILibrary-2.0.1_x64/";
 #else
-    QString fmiLibDir="/HopsanGenerator/Dependencies/FMILibrary-2.0.1/";
+    QString fmiLibDir="Dependencies/FMILibrary-2.0.1/";
 #endif
 
 #ifdef _WIN32
