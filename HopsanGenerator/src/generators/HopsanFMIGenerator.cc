@@ -1465,17 +1465,13 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
     compileBatchCStream << mGccPath+"gcc.exe -c fmu"+vStr+"_model_cs.c "
-                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default "
-                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/Test/FMI"+vStr+" "
-                    "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/build-fmil\n";
+                    "-I"+mBinPath+".."+fmiLibDir+"install/include\n";
     compileCBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileC.bat");
 #elif linux
     QString gccCommand = "cd \""+savePath+"\" && gcc -fPIC -c fmu"+vStr+"_model_cs.c "
-                         "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default "
-                         "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/Test/FMI"+vStr+" "
-                         "-I"+mBinPath+"../Dependencies/FMILibrary-2.0.1/build-fmil\n";
+                         "-I"+mBinPath+".."+fmiLibDir+"install/include\n";
     gccCommand +=" 2>&1";
     FILE *fp;
     char line[130];
