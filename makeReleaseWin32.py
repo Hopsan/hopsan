@@ -578,7 +578,7 @@ def createInstallFiles():
     
     #Create zip package
     print "Creating zip package..."
-    call7z(r'a -tzip '+zipFile+r' '+tempDir+r'\*')
+    call7z(r'a -tzip '+zipFile+r' '+tempDir)
     callMove(zipFile, hopsanDirOutput)
     if not fileExists(hopsanDirOutput+r'/'+zipFile):
         printError("Failed to create zip package.")
@@ -587,7 +587,7 @@ def createInstallFiles():
         
     #Execute Inno compile script
     print "Generating install executable..."
-    innocmd=r' /o"'+hopsanDirOutput+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+version+r'" /dMyArchitecture="'+innoArch+r'" '+scriptFile  
+    innocmd=r' /o"'+hopsanDirOutput+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+version+r'" /dMyArchitecture="'+innoArch+r'" /dMyFilesSource="'+tempDir+r'" '+scriptFile  
     #print innocmd
     callEXE(innoDir+r'\iscc.exe', innocmd)
     if not fileExists(hopsanDirOutput+r'/'+exeFile):
@@ -690,8 +690,6 @@ qmakeDir = extractHopsanBuildPath('0.7.x', gARCH, 'QMake')
 print('MinGW path: '+mingwDir)
 print('Qmake path: '+qmakeDir)
 
-raw_input("Press any key to continue...")
-
 if not verifyPaths():
     success = False
     #cleanUp()
@@ -722,7 +720,13 @@ if success:
     if not renameBinFolder():
         success = False
         cleanUp()
-    
+
+if do64BitRelease:
+    tempDir += r'\Hopsan-'+version+r'-win64'
+else:
+    tempDir += r'\Hopsan-'+version+r'-win32'
+print("Using TempDir: "+tempDir)
+        
 if success:
     if not buildRelease():
         success = False
