@@ -283,7 +283,6 @@ HEADERS += \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp \
     Signal/Non-Linearities/SignalSaturation.hpp \
-    Special/AeroComponents/HopsanDefaultAerocomponents.h \
     Hydraulic/MachineParts/HydraulicPumpPiston.hpp \
     Hydraulic/Valves/HydraulicPilotControlledCheckValve.hpp \
     Hydraulic/Valves/HydraulicPilotClosableCheckValve.hpp \
@@ -364,7 +363,8 @@ HEADERS += \
     Hydraulic/Restrictors/HydraulicCheckValvePreLoaded.hpp \
     Hydraulic/Restrictors/HydraulicCheckValve.hpp \
     Signal/Non-Linearities/SignalSampleAndHold.hpp \
-    Signal/Logic/SignalCounter.hpp
+    Signal/Logic/SignalCounter.hpp \
+    Special/AeroComponents/HopsanDefaultAeroComponents.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

@@ -1537,7 +1537,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     {
        gppCommand.append(" -I"+incPath);
     }
-    gppCommand.append("" 2>&1");
+    gppCommand.append(" 2>&1");
     printMessage("Compiler command: \""+gppCommand+"\"\n");
 
     fp = popen(  (const char *) gppCommand.toStdString().c_str(), "r");
@@ -1559,7 +1559,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     Q_FOREACH(const QString &srcFile, getHopsanCoreSourceFiles())
     {
         QString oFile = replaceFilenameSuffix(srcFile, ".o");
-        compileCppBatchStream << oFile;
+        objectFiles << oFile;
     }
 
     if(!assertFilesExist(savePath, objectFiles))
