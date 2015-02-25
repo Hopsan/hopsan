@@ -17,6 +17,7 @@
         <groupmessagesbytag>true</groupmessagesbytag>
         <generationlimit>100</generationlimit>
         <cachelogdata>true</cachelogdata>
+        <autobackup>true</autobackup>
         <autolimitgenerations>false</autolimitgenerations>
         <ploexportversion>1</ploexportversion>
 	<showhiddennodedatavariables>false</showhiddennodedatavariables>

@@ -116,6 +116,7 @@ protected:
     void logAllPoints();
 
     bool mOrgProgressBarSetting;
+    bool mOrgLimitDataGenerationsSetting;
 };
 
 #endif // OPTIMIZATIONWORKER_H
