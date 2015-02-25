@@ -1107,7 +1107,6 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
     Q_FOREACH(const QString &file, includeFiles)
     {
         if(!copyFile(mHopsanRootPath+file, path+file)) return false;
-        QFile::setPermissions(path+file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
     }
 
     return true;
@@ -1134,7 +1133,6 @@ bool HopsanGenerator::copySourceFilesToDir(QString tgtPath) const
     Q_FOREACH(const QString &file, srcFiles)
     {
         if(!copyFile(mHopsanRootPath+file, tgtPath+file)) return false;
-        QFile::setPermissions(tgtPath+file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
     }
 
     return true;
@@ -1214,7 +1212,11 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
     // Remove target file if it already exists
     if(QFile::exists(target))
     {
-        QFile::remove(target);
+        if (!QFile::remove(target))
+        {
+            printErrorMessage("The file already exists, and it could not be overwritten: "+target);
+            return false;
+        }
     }
     // Create directory if it does not exist before copying
     QDir tgtDir = QFileInfo(target).dir();
@@ -1225,9 +1227,10 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
     // Now copy the files
     if(!sourceFile.copy(target))
     {
-        printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target+".");
+        printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target);
         return false;
     }
+    QFile::setPermissions(target, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser);
     printMessage("Copying " + sourceFileInfo.fileName());
     return true;
 }

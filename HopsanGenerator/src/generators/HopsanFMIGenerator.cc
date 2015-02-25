@@ -1471,10 +1471,10 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
     compileBatchCStream << mGccPath+"gcc.exe -c fmu"+vStr+"_model_cs.c " <<
-                           "-I"+mHopsanRootPath+fmiLibDir+"install/include\n";
+                           QString("-I\"%1install/include\"").arg(mHopsanRootPath+fmiLibDir) << "\n";
     compileCBatchFile.close();
 
-    callProcess("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compileC.bat");
+    callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
 #elif linux
     QString gccCommand = "cd \""+savePath+"\" && gcc -fPIC -c fmu"+vStr+"_model_cs.c "+
                          "-I"+mHopsanRootPath+fmiLibDir+"install/include\n";
@@ -1524,7 +1524,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     // Add HopsanCore (and necessary dependency) include paths
     Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
     {
-       compileCppBatchStream << " -I"+incPath;
+       compileCppBatchStream << QString(" -I\"%1\"").arg(incPath);
     }
     compileCppBatchFile.close();
 
@@ -1590,7 +1590,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
         linkBatchStream << " " << objFile;
     }
     //! @todo should not hardcode .dll should use define from Common.prf
-    linkBatchStream << "-o "+modelName+".dll\n";
+    linkBatchStream << " -o "+modelName+".dll\n";
     linkBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & link.bat");
