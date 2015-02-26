@@ -1475,7 +1475,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
-#elif linux
+#elif __linux__
     QString gccCommand = "cd \""+savePath+"\" && gcc -fPIC -c fmu"+vStr+"_model_cs.c "+
                          "-I"+mHopsanRootPath+fmiLibDir+"install/include\n";
     gccCommand +=" 2>&1";
@@ -1529,7 +1529,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCppBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileCpp.bat");
-#elif linux
+#elif __linux__
     QString gppCommand = "cd \""+savePath+"\" && g++ -fPIC -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB "+"fmu_hopsan.c ";
     Q_FOREACH(const QString &srcFile, getHopsanCoreSourceFiles())
     {
@@ -1597,7 +1597,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
 
     if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
         return false;
-#elif linux
+#elif __linux__
     QString linkCommand = "cd \""+savePath+"\" && g++ -fPIC  -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' "
             "fmu"+vStr+"_model_cs.o";
     Q_FOREACH(const QString &objFile, objectFiles)
@@ -1645,12 +1645,12 @@ void HopsanFMIGenerator::sortFiles(const QString &savePath, const QString &model
         QFile modelDllFile(savePath + "/" + modelName + ".dll");
         modelDllFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".dll");
     }
-#elif linux && __i386__
+#elif __linux__ && __i386__
     saveDir.mkpath("fmu/binaries/linux32");
     saveDir.mkpath("fmu/resources");
     QFile modelSoFile(savePath + "/" + modelName + ".so");
     modelSoFile.copy(savePath + "/fmu/binaries/linux32/" + modelName + ".so");
-#elif linux && __x86_64__
+#elif __linux__ && __x86_64__
     saveDir.mkpath("fmu/binaries/linux64");
     saveDir.mkpath("fmu/resources");
     QFile modelSoFile(savePath + "/" + modelName + ".so");
@@ -1669,10 +1669,10 @@ void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &m
     QString program = mBinPath + "../ThirdParty/7z/7z";
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
-#elif linux && __i386__
+#elif __linux__ && __i386__
     QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux32/"+modelName+".so";
     callProcess("zip", arguments, savePath+"/fmu");
-#elif linux && __x86_64__
+#elif __linux__ && __x86_64__
     QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux64/"+modelName+".so";
     callProcess("zip", arguments, savePath+"/fmu");
 #endif

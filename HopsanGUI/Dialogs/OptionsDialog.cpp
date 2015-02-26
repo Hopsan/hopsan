@@ -675,7 +675,7 @@ void OptionsDialog::setCompiler64Path(QString path)
 void OptionsDialog::setCompilerPath(QString path, bool x64)
 {
     bool exists;
-#ifdef linux
+#ifdef __linux__
     if(path.endsWith("/gcc"))
     {
         path.chop(4);

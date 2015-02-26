@@ -325,7 +325,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         output = output+ gccErrorList.at(i);
         //output = output.remove(output.size()-1, 1);
     }
-#elif linux
+#elif __linux__
     QString gccCommand = "cd \""+wdPath+"\" && gcc "+cflags+" ";
     gccCommand.append(srcFiles+" -fpermissive -o "+o+".so "+inclPaths+" "+lflags);
     //qDebug() << "Command = " << gccCommand;
@@ -357,7 +357,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         output.append("Compilation failed.");
         return false;
     }
-#elif linux
+#elif __linux__
     if(!targetDir.exists(o + ".so"))
     {
         qDebug() << targetDir.absolutePath();

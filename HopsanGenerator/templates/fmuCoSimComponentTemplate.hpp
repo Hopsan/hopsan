@@ -235,7 +235,7 @@ namespace hopsan {
 #ifdef _WIN32
             SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies\n");
             h = LoadLibraryA(path.c_str());
-#elif linux
+#elif __linux__
             h = dlopen(path.c_str(), RTLD_LAZY);
             std::cout << dlerror();
 #endif
