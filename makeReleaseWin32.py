@@ -504,6 +504,14 @@ def copyFiles():
     svnExport(r'Dependencies\katex',                tempDir+r'\Dependencies\katex')
     svnExport(r'Dependencies\IndexingCSVParser',    tempDir+r'\Dependencies\IndexingCSVParser')
     svnExport(r'Dependencies\rapidxml-1.13',        tempDir+r'\Dependencies\rapidxml-1.13')
+	
+	#Copy the FMILibrary include files
+    if do64BitRelease:
+        FMILibraryDir=r'\Dependencies\FMILibrary-2.0.1_x64'
+    else:
+        FMILibraryDir=r'\Dependencies\FMILibrary-2.0.1'
+    callMkdir(tempDir+FMILibraryDir+"\\install\\")
+    callXcopy(FMILibraryDir+r'\install', tempDir+FMILibraryDir+"\\install\\") #Dst must end with \
  
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
     callXcopy(r'HopsanCore\include\svnrevnum.h', tempDir+r'\HopsanCore\include')
