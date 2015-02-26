@@ -294,7 +294,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     }
     QTextStream clBatchStream(&clBatchFile);
     clBatchStream << "set PATH=" << gccPath << ";%PATH%\n";
-    clBatchStream << gccPath+"/g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
+    clBatchStream << "g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
     clBatchStream << " -o " << o+".dll" << " " << lflags <<"\n";
     clBatchFile.close();
 #endif

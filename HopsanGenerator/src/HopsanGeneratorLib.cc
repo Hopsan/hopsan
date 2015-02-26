@@ -180,8 +180,8 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
     //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default/");
     //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/install/include/");
 
-    QString inc = "-I"+pGenerator->getHopsanRootPath()+fmiLibDir+"install/include/";
-    QString lib = "-L"+pGenerator->getHopsanRootPath()+fmiLibDir+"install/lib";
+    QString inc = QString("-I\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/include/");
+    QString lib = QString("-L\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/lib");
 #ifdef _WIN32
     lib.append(" -llibfmilib_shared");
 #else
