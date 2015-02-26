@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicCentrifugalPump.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 8 Apr 2014 15:50:51
+//! @date Thu 26 Feb 2015 16:53:07
 //! @brief Centrifugal pump
 //! @ingroup HydraulicComponents
 //!
@@ -133,16 +133,17 @@ public:
             addInputVariable("omegap","Speed","rad/s",157.,&mpomegap);
 
         //Add inputParammeters to the component
-            addInputVariable("kl", "Flow loss koeff.", "", 1.,&mpkl);
-            addInputVariable("b", "outlet axial width", "m", 0.02,&mpb);
-            addInputVariable("d", "Diameter", "m", 0.26,&mpd);
+            addInputVariable("kl", "Flow loss koeff.", "", 0.1,&mpkl);
+            addInputVariable("b", "outlet axial width", "m", 0.03,&mpb);
+            addInputVariable("d", "Diameter", "m", 0.3,&mpd);
             addInputVariable("beta2", "Outlet flow angle", "rad", \
-1.59,&mpbeta2);
-            addInputVariable("Ap", "outlet flow area", "m2", 0.0004,&mpAp);
+1.57,&mpbeta2);
+            addInputVariable("Ap", "outlet flow area", "m2", 0.001,&mpAp);
             addInputVariable("rho", "Fluid density", "kg/m2", 860,&mprho);
             addInputVariable("Kcp", "Leakage coeff", "m3/s/Pa", \
-1.e-9,&mpKcp);
-            addInputVariable("Bp", "Visc friction coeff", "N/m/s", 1.,&mpBp);
+1.e-11,&mpKcp);
+            addInputVariable("Bp", "Visc friction coeff", "Nm/rad/s", \
+0.1,&mpBp);
         //Add outputVariables to the component
             addOutputVariable("q2e","uncorrected flow","m3/s",0.,&mpq2e);
             addOutputVariable("torp","torque","Nm",0.,&mptorp);
@@ -236,6 +237,16 @@ public:
         //Read inputVariables from nodes
         omegap = (*mpomegap);
 
+        //Read inputParameters from nodes
+        kl = (*mpkl);
+        b = (*mpb);
+        d = (*mpd);
+        beta2 = (*mpbeta2);
+        Ap = (*mpAp);
+        rho = (*mprho);
+        Kcp = (*mpKcp);
+        Bp = (*mpBp);
+
         //LocalExpressions
 
         //Initializing variable vector for Newton-Raphson
@@ -251,9 +262,10 @@ public:
          //Differential-algebraic system of equation parts
 
           //Assemble differential-algebraic equations
-          systemEquations[0] =q2 - (onNegative(q2) + onPositive(p1))*(Kcp*(p1 \
-- p2) + Ap*signedSquareL((2*(p1 - p2 + (omegap*rho*(0.25*b*Power(d,2)*omegap \
-- 0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.));
+          systemEquations[0] =q2 - limit(onNegative(q2) + \
+onPositive(p1),0,1)*(Kcp*(p1 - p2) + Ap*signedSquareL((2*(p1 - p2 + \
+(omegap*rho*(0.25*b*Power(d,2)*omegap - \
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.));
           systemEquations[1] =(Power(Ap,2)*(Bp*omegap*(0.001 + 1.*omegap) + \
 1.*Kcp*Power(p1,2) - 2.*Kcp*p1*p2 + 1.*Kcp*Power(p2,2) - 1.*p1*q2 + 1.*p2*q2) \
 + kl*(-0.5*Kcp*p1 + 0.5*Kcp*p2 + \
@@ -265,17 +277,17 @@ public:
           jacobianMatrix[0][0] = 1 + \
 (0.31831*Ap*omegap*rho*Cot(beta2)*dxSignedSquareL((2*(p1 - p2 + \
 (omegap*rho*(0.25*b*Power(d,2)*omegap - \
-0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.)*(onNegative(q2) + \
-onPositive(p1)))/(b*kl);
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.)*limit(onNegative(q2) + \
+onPositive(p1),0,1))/(b*kl);
           jacobianMatrix[0][1] = 0;
           jacobianMatrix[0][2] = -((Kcp + (2*Ap*dxSignedSquareL((2*(p1 - p2 + \
 (omegap*rho*(0.25*b*Power(d,2)*omegap - \
-0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho))*(onNegative(q2) + \
-onPositive(p1)));
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho))*limit(onNegative(q2\
+) + onPositive(p1),0,1));
           jacobianMatrix[0][3] = -((-Kcp - (2*Ap*dxSignedSquareL((2*(p1 - p2 \
 + (omegap*rho*(0.25*b*Power(d,2)*omegap - \
-0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho))*(onNegative(q2) + \
-onPositive(p1)));
+0.159155*q2*rho*Cot(beta2)))/b))/(kl*rho),10.))/(kl*rho))*limit(onNegative(q2\
+) + onPositive(p1),0,1));
           jacobianMatrix[1][0] = (Power(Ap,2)*(0. - 1.*p1 + 1.*p2) + \
 2*kl*(-0.5*Kcp*p1 + 0.5*Kcp*p2 + 0.5*q2)*q2*rho + \
 0.5*kl*Power(q2,2)*rho)/(Power(Ap,2)*(-0.001 - 1.*omegap));
