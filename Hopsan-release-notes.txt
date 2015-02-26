@@ -25,6 +25,27 @@
 ******************************
     Version History
 ******************************
+0.6.11  (2015-02-??)
+- Feature: Support for FMI 2.0 import and export
+- Feature: Compiler path settings in Hopsan for FMU export/import, compiler no longer need to be in system PATH
+
+- Enhancement: The number of log generations is automatically limited during optimization
+- Enhancement: Log data is not longer cached to User/Documents (very slow if you have a network drive personal storage), instead Temp location is used
+
+- Bug fixed: Time scale dialog shows wrong unit for imported PLO data
+- Bug fixed: Imported PLO data will now get the correct custom time unit scale based on the plot scale in the PLO file
+             (if it matches one of the time units registered in Hopsan)
+- Bug fixed: The minimize and maximize buttons are no longer present on plot windows
+- Bug fixed: Subsystems exported as components will not be able to retain their icon if you move the model they are included in (only fixed for new exports)
+- Bug fixed: Animation crash if you have an algebraic loop when entering entering animation loop
+- Bug fixed: Animation crash if you have a connector in progress when entering animation mode
+- Bug fixed: When a parameter was entered incorrectly the dialog box that pops up will (sometimes) crash Hopsan when you press the close button
+- Bug fixed: If you are creating a connector from a subsystem port and enter that subsystem then exit it again, Hopsan will crash
+- Bug fixed: Hopsan crash if a connector is being removed (not canceled) while it is being created
+- Bug fixed: When registering alias in logdatahandler Hopsan will crash if fullname not available in the current generation
+- Bug fixed: Simulink export does not work on linux
+
+------------------------------
 0.6.10  (2015-02-16)
 - Feature: Added flag to HCOM echo command for ignoring error messages
 - Feature: Added support for componentLibraries/autoLibs/ folder, from where component libraries are automatically loaded at startup
