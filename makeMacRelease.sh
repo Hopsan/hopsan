@@ -35,9 +35,10 @@ mkdir -p HopsanGUI.app/Contents/Resources/MSVC2008_x64
 mkdir -p HopsanGUI.app/Contents/Resources/MSVC2010_x64
 cp -prf ../componentLibraries/defaultLibrary/libdefaultComponentLibrary.dylib HopsanGUI.app/Contents/Frameworks/componentLibraries/defaultLibrary
 cp -prf ../componentLibraries/defaultLibrary/defaultComponentLibrary.xml HopsanGUI.app/Contents/Resources/
-cp -prf Hopsan-release-notes.txt HopsanGUI.app/Contents/Resources/
-cp -prf hopsandefaults HopsanGUI.app/Contents/Resources/
-cp -prf licenseHeader HopsanGUI.app/Contents/Resources/
+
+cp -prf ../Hopsan-release-notes.txt HopsanGUI.app/Contents/Resources/
+cp -prf ../hopsandefaults HopsanGUI.app/Contents/Resources/
+cp -prf ../licenseHeader HopsanGUI.app/Contents/Resources/
 
 echo HopsanGUI.app built!
 
