@@ -1464,10 +1464,9 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCBatchFile.setFileName(savePath + "/compileC.bat");
     if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open compile1.bat for writing.");
+        printErrorMessage("Failed to open compileC.bat for writing.");
         return false;
     }
-    printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
     compileBatchCStream << mGccPath+"gcc.exe -c fmu"+vStr+"_model_cs.c " <<
@@ -1476,26 +1475,20 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
 #elif __linux__
-    QString gccCommand = "cd \""+savePath+"\" && gcc -fPIC -c fmu"+vStr+"_model_cs.c "+
-                         "-I"+mHopsanRootPath+fmiLibDir+"install/include\n";
-    gccCommand +=" 2>&1";
-    FILE *fp;
-    char line[130];
-    printMessage("Compiler command: \""+gccCommand+"\"\n");
-
-    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
-    if ( !fp )
+    QFile compileCBatchFile;
+    compileCBatchFile.setFileName(savePath + "/compileC.sh");
+    if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Could not execute '" + gccCommand + "'! err=%d\n");
+        printErrorMessage("Failed to open compileC.sh for writing.");
         return false;
     }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage(QString::fromUtf8(line));
-        }
-    }
+    //Write the compilation script file
+    QTextStream compileBatchCStream(&compileCBatchFile);
+    compileBatchCStream << "gcc -fPIC -c fmu"+vStr+"_model_cs.c "+
+                           "-I"+mHopsanRootPath+fmiLibDir+"install/include\n";
+    compileCBatchFile.close();
+
+    callProcess("/bin/sh", QStringList() << "compileC.sh", savePath);
 #endif
     if(!assertFilesExist(savePath, QStringList() << "fmu"+vStr+"_model_cs.o"))
         return false;
@@ -1510,7 +1503,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCppBatchFile.setFileName(savePath + "/compileCpp.bat");
     if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open compile1.bat for writing.");
+        printErrorMessage("Failed to open compileCpp.bat for writing.");
         return false;
     }
     printMessage("Compiling "+modelName+".dll...");
@@ -1530,32 +1523,28 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileCpp.bat");
 #elif __linux__
-    QString gppCommand = "cd \""+savePath+"\" && g++ -fPIC -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB "+"fmu_hopsan.c ";
+    QFile compileCppBatchFile;
+    compileCppBatchFile.setFileName(savePath + "/compileCpp.sh");
+    if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open compileCpp.sh for writing.");
+        return false;
+    }
+    //Write the compilation script file
+    QTextStream compileCppBatchStream(&compileCppBatchFile);
+    compileCppBatchStream << mGccPath+"g++ -fPIC -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB " << "fmu_hopsan.c";
     Q_FOREACH(const QString &srcFile, getHopsanCoreSourceFiles())
     {
-        gppCommand.append(" "+srcFile);
+        compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
     Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
     {
-       gppCommand.append(" -I"+incPath);
+       compileCppBatchStream << QString(" -I\"%1\"").arg(incPath);
     }
-    gppCommand.append(" 2>&1");
-    printMessage("Compiler command: \""+gppCommand+"\"\n");
+    compileCppBatchFile.close();
 
-    fp = popen(  (const char *) gppCommand.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + gppCommand + "'! err=%d\n");
-        return false;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage(QString::fromUtf8(line));
-        }
-    }
+    callProcess("/bin/sh", QStringList() << "compileCpp.sh", savePath);
 #endif
     QStringList objectFiles;
     objectFiles << "fmu_hopsan.o";
@@ -1580,7 +1569,6 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
         printErrorMessage("Failed to open link.bat for writing.");
         return false;
     }
-    printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
     linkBatchStream << mGccPath+"g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' " <<
@@ -1598,29 +1586,25 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
         return false;
 #elif __linux__
-    QString linkCommand = "cd \""+savePath+"\" && g++ -fPIC  -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' "
-            "fmu"+vStr+"_model_cs.o";
-    Q_FOREACH(const QString &objFile, objectFiles)
+    QFile linkBatchFile;
+    linkBatchFile.setFileName(savePath + "/link.sh");
+    if(!linkBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        linkCommand.append(" "+objFile);
-    }
-    linkCommand.append(" -o "+modelName+".so");
-    linkCommand.append(" 2>&1");
-    printMessage("Compiler command: \""+linkCommand+"\"\n");
-
-    fp = popen(  (const char *) linkCommand.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + linkCommand + "'! err=%d\n");
+        printErrorMessage("Failed to open link.sh for writing.");
         return false;
     }
-    else
+    //Write the compilation script file
+    QTextStream linkBatchStream(&linkBatchFile);
+    linkBatchStream << mGccPath+"g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " <<
+                       "fmu"+vStr+"_model_cs.o";
+    Q_FOREACH(const QString &objFile, objectFiles)
     {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage(QString::fromUtf8(line));
-        }
+        linkBatchStream << " " << objFile;
     }
+    linkBatchStream << " -o "+modelName+".so\n";
+    linkBatchFile.close();
+
+    callProcess("/bin/sh", QStringList() << "link.sh", savePath);
 
     return assertFilesExist(savePath, QStringList() << modelName+".so");
 
