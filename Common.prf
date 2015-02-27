@@ -22,6 +22,7 @@ DEFINES *= DLL_EXT=$${DLL_EXT}
 #Define the lib prefix for the different platforms, (not you can NOT change the prefix here)
 unix:LIB_PREFIX = lib
 win32:LIB_PREFIX =
+macx:LIB_PREFIX = lib
 DEFINES *= DLL_PREFIX=$${LIB_PREFIX}
 
 

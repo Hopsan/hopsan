@@ -34,7 +34,8 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
     chmod u+x ./configure.sh
     ./configure.sh --shared
 elif [ "$OSTYPE" == "darwin14" ]; then
-    echo "Not implemented for MAC yet"
+    chmod u+x ./configure.sh
+    ./configure.sh --shared
 else
     echo "Unknown OS for Discount build"
 fi
