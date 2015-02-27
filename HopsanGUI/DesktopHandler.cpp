@@ -102,9 +102,15 @@ DesktopHandler::DesktopHandler()
     mUseCustomTempPath = false;
     mUseCustomDocumentsPath = false;
 #if QT_VERSION >= 0x050000
+#ifdef __APPLE__
+    mDefaultConfigPath = getStandardLocation(QStandardPaths::ConfigLocation) + "Hopsan/";
+    mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation); // in the future use AppDataLocation instead
+    mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "Hopsan/";
+#else
     mDefaultConfigPath = getStandardLocation(QStandardPaths::ConfigLocation);
     mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation);
     mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "Hopsan/";
+#endif
     mDefaultDocumentsPath = getStandardLocation(QStandardPaths::DocumentsLocation) + "Hopsan/";
 #else
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
@@ -116,6 +122,17 @@ DesktopHandler::DesktopHandler()
     mBackupPath = mDefaultDocumentsPath+"Backup/";
     mModelsPath = mDefaultDocumentsPath+"Models/";
     mScriptsPath = mDefaultDocumentsPath+"Scripts/";
+#ifdef __APPLE__
+    mMainPath = getStandardLocation(QStandardPaths::HomeLocation);
+    mHelpPath = mExecPath+"../Resources/doc/user/html/";
+    mComponentsPath = mExecPath+"../Frameworks/componentLibraries/defaultLibrary/";
+    mAutoLibsPath = mExecPath+"../Frameworks/componentLibraries/autoLibs/";
+    mCoreIncludePath = mExecPath+"../Resources/HopsanCore/include/";
+    mMSVC2008X86Path = mExecPath+"../Resources/MSVC2008_x86/";
+    mMSVC2010X86Path = mExecPath+"../Resources/MSVC2010_x86/";
+    mMSVC2008X64Path = mExecPath+"../Resources/MSVC2008_x64/";
+    mMSVC2010X64Path = mExecPath+"../Resources/MSVC2010_x64/";
+#else
     mMainPath = mExecPath+"../";
     mHelpPath = mExecPath+"../doc/user/html/";
     mComponentsPath = mExecPath+"../componentLibraries/defaultLibrary/";
@@ -125,6 +142,7 @@ DesktopHandler::DesktopHandler()
     mMSVC2010X86Path = mExecPath+"MSVC2010_x86/";
     mMSVC2008X64Path = mExecPath+"MSVC2008_x64/";
     mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
+#endif
     mFMUPath = mDefaultDocumentsPath+"import/FMU/";
     mLogDataPath = mDefaultTempPath + "LogData/";
 }
