@@ -1,7 +1,8 @@
 #Determine debug extension, and debug output on/off
 CONFIG(debug, debug|release) {
-    !macx:DEBUG_EXT = _d
-    macx:DEBUG_EXT =
+#    !macx:DEBUG_EXT = _d
+#    macx:DEBUG_EXT =
+    DEBUG_EXT = _d
     DEFINES *= DEBUGCOMPILING
 } else {
     DEBUG_EXT =
