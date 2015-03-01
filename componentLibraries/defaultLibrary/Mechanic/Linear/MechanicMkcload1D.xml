@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="MechanicMkcload1D" displayname="MechanicMkcload1D">
+	<icons>
+      <icon scale="1" path="MechanicMkcload1D.svg" iconrotation="" type="user"/>
+      <icon scale="1" path="MechanicMkcload1D.svg" iconrotation="" type="iso"/>
+    </icons>
+    <help>
+       <text>A one dimmensional model of an mass with spring and viscous and coulomb friction. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+       <link>MechanicMkcload1D.nb</link>
+    </help>       
+    <ports>
+      <port x="0" y="0.5" enabled="true" a="180" name="Pm1" autoplaced="true"/>
+      <port x="1" y="0.5" enabled="true" a="0" name="Pm2" autoplaced="true"/>      
+	  <port x="0.5" y="1" enabled="true" a="90" name="fs" autoplaced="true"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>
