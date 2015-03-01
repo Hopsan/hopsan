@@ -1,0 +1,365 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     14783,        356]
+NotebookOptionsPosition[     13931,        325]
+NotebookOutlinePosition[     14309,        341]
+CellTagsIndexPosition[     14266,        338]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["ShaftG", "Section",
+ CellChangeTimes->{{3.52260439790625*^9, 3.522604398390625*^9}, 
+   3.632745651760815*^9}],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG.mx"}]], "Input",
+ CellChangeTimes->{{3.5772037650720577`*^9, 3.5772037650780582`*^9}, {
+  3.611474457184202*^9, 3.611474523938877*^9}, {3.6114745588913717`*^9, 
+  3.61147456057154*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"path", "=", 
+   RowBox[{"ToFileName", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", 
+      "\"\<ComponentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
+      "\"\<Mechanic\>\"", ",", "\"\<Rotational\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5757727777685804`*^9, 3.575772792541806*^9}, {
+   3.5757728423954945`*^9, 3.5757728498367076`*^9}, {3.57577333888545*^9, 
+   3.5757733706315055`*^9}, 3.5757734316206255`*^9, 3.6031909973287797`*^9, 
+   3.6057717887213297`*^9, {3.605771829393656*^9, 3.605771830929744*^9}, 
+   3.6058530990363216`*^9, {3.621138851005574*^9, 3.621138863716845*^9}, {
+   3.626686112671085*^9, 3.6266861209310846`*^9}, {3.6273758738899097`*^9, 
+   3.627375907312579*^9}, {3.6278060251438417`*^9, 3.627806031567667*^9}}],
+
+Cell[TextData[{
+ "Shaft with torsional spring implemented using bilateral delay lines. \
+Geometric parameters are used.\n\n",
+ Cell[GraphicsData["Metafile", "\<\
+CF5dJ6E]HGAYHf4PEfU^I6mgLb15CDHPAVmbKF5d0@0000H@0@000?@0003YoOoo1okoodd200010P00
+00000000002:1`006P400215CDH0004040H001T000030000@`0006`000000000EPD00003003R0@00
+3`40000000000000000006IJ1`1E8P@0B@1^06/0L`1S0640L01U0200<00^03@0>00^0380801b03T0
+>00a03T0800X0440M@1W0200<@0d0200<P0`0340<@0Y0000J@1^06/0L`1S0640L01U02d0H`1/06T0
+L01R06l0H@1b06@0;@1U07P0L01_0780M00^06D0K@1V000000000140000<0000200000T0000@0000
+RPL001X1000;0000400003H000070000AP0002P0000L0000Df=bIFE^?C4c=SIh=cHhL7P/83@h<WPb
+=c5]KDH0002D0`00R0<004AbHGMYKVLm<2h`N3Hh>34h>34`<CTi<SHc=cPg>C4a=S0g<CHd<CDd<3@e
+=cP`>34b<CTc=cTi=c@i<cHi<3Pg<CPe<CHi>3Hb=30d>3Df<cDg>38c>CHg<38`=cPd<S0e>3@g=34`
+<S<f>C0c=cPg>CTd<3Lh<3@f=C@i>38g<3Ph<cHh>C@d<S<c=3Li>C4i=30b>34h=C4e=CHi=C@f<3Hc
+<3<b<3Hd<S8`=3Hi<c0b>CPc=SPd<S<d<S@g=C<e>3Ti>3Dh=c4g<c0g=c<g=C@i>3@d<C4f<S@a>3Pf
+=CLg>3Di>C0g=cPc<CHa=30d<c@d=3@`<CD`<34a=SPi=C@g=S4f=SPi<3Hi=c@f<c4g<CHb>C4d<3<f
+=SHh=S@e<CDb>C@c<C0i>3Hh>C8a=S4c=CDd<cHi=3Pa<C0`<34c=SLe>3@i=CD`=3Lg>3@i<C0c=3H`
+=SDe>3Pe=CDd=3Hf=C0g>C<a=STh=CHe<3<a<SHc>C4d=c0i=STe<3Hb>3<e=SHh=STd<SL`=STh>30g
+<SPi<S4i<C8g=STe=3Ld>3T`>C4i>3Hb>CP`<cTh=CPb=S@b=SDh>CHg>30h<C4h=3<d<cTe<S0h=S@i
+<C<f=CDc<S0g<cPf>C<f>3<i=38d=c8a<C<g=c@h=CLb<SPh=SD`<3H`<3<b<3Lb=SPe=S<b=3Hh>3Te
+<cD`>C0a>3@c=c4d=C4c>CDg<cPb<SDd>CHd<c0e=STi=c8`<CDg>3Db<cLb>3Da<34e=S<h=c8g=3Pd
+>3Ph>C0h=S<c>3Ti>38c<C8d=c@g>34c=S4f=CHf=C<`=S4`=S<h<34d<SPh=3Tc<CDa<SDg=CPg=c8d
+<S<d=3Tf=cPc<C4i=S@f=CLa<3L`<CL`=C8i<C4b=S@e<cPa=3@g=SHe=SDh=C4i=S4g=CDi<CHf<3Ta
+>30i>3Li>3Pe=cLi=cHe<c8h=30e<SLa>CDc<3@`=3L`=3Da<3<i=SLf<CDd=SDe<CLf>C@i<c4`<38e
+<CTa<CLa=S<g=3Hi<S8b<3Hf=3De=CTi>C<h>3Ti<3Db=C8`>3Tc=cPc<S8g=38d=cHc=C8d<3Hf=c8c
+<CLe<3Hi<3@g=CDb<S4h=C0c>CLe<c0b<cHd<c@d<CTa=38i=SDa>C@g<3Le>CLd>3<g>CLg=3Hg=3Dh
+=SPb>3P^<71h;20`;S1h<2h`KFdW00006000004000000000oooo0000000U000030000040000C0000
+30000080001O0000>0000080000h0000000003P000000000024102D0000000000000000000000000
+000002D0000<00000P0003X0000<0000kP0003/0000800006`000100001g1`004`0003H0000@0000
+4`0001<0000f0000400001<000070@00=P000100001g1`001`4003d000080000?00000P0000o0000
+60000>Wmool7o_ooC@800042000U000030000000080X000030000040000U0000300000L0080X0000
+30000080000>000050000000000@00005000
+\>"], "Graphics",
+  ImageSize->{187.54545206274875`, 25.69115781681489},
+  ImageMargins->0]
+}], "Text",
+ CellChangeTimes->{{3.6327763221227007`*^9, 3.632776327868029*^9}, {
+  3.6327771299759073`*^9, 3.6327771407735248`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Mechanic\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<RotShaftG\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "brief", "=", 
+   "\"\<Rotational shaft with torsional spring, geometric par\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentC\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.5137112151875*^9, 3.513711217109375*^9}, {
+   3.51378596903125*^9, 3.513785980671875*^9}, 3.515394539753217*^9, {
+   3.515775693875*^9, 3.5157757050625*^9}, {3.517048046727305*^9, 
+   3.51704806093043*^9}, 3.51707206725*^9, {3.5176530686834764`*^9, 
+   3.51765311057437*^9}, {3.517673126703125*^9, 3.517673126796875*^9}, {
+   3.5177214423487377`*^9, 3.517721453114225*^9}, {3.5177222281793466`*^9, 
+   3.517722236008023*^9}, {3.5192815953125*^9, 3.5192816093125*^9}, {
+   3.5209603410625*^9, 3.52096034128125*^9}, {3.54985636715625*^9, 
+   3.5498563754375*^9}, 3.5758034074886527`*^9, {3.6065788085193233`*^9, 
+   3.606578811761509*^9}, 3.612446592273651*^9, {3.6327456582711873`*^9, 
+   3.632745671287932*^9}, 3.632746018513792*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "2015", ",", "2", ",", "12", ",", "17", ",", "37", ",", 
+   "10.8244504`8.786980816627686"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.627806244144229*^9, 3.62780656199576*^9, {3.6327460254781904`*^9, 
+   3.6327460502786093`*^9}, 3.6327470289795876`*^9, 3.632747183495425*^9, 
+   3.632747830830451*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "dy", ",", ".02", ",", "double", ",", "\"\<Nm/rad\>\"", ",", 
+       "\"\<Spring constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "di", ",", "0.", ",", "double", ",", "\"\<Nm/rad\>\"", ",", 
+       "\"\<Spring constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "len", ",", "0.1", ",", "double", ",", "\"\<Nm/rad\>\"", ",", 
+       "\"\<Spring constant\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"G", ",", 
+       RowBox[{"79.3", "*", 
+        SuperscriptBox["10", "9"]}], ",", "double", ",", "\"\<N/mm\>\"", ",", 
+       "\"\<Sheer modulus\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "alpha", ",", "0.9", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<damping factor\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.519318796546875*^9, 3.519318804953125*^9}, {
+   3.54978019078125*^9, 3.549780199734375*^9}, 3.54985607496875*^9, {
+   3.549856275109375*^9, 3.549856289484375*^9}, {3.571932894868863*^9, 
+   3.571932896694066*^9}, {3.632745681904539*^9, 3.6327457339315147`*^9}, {
+   3.632745790773766*^9, 3.6327458590546713`*^9}, 3.6327460427961807`*^9, {
+   3.63274779059715*^9, 3.632747809787247*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"pi", "=", 
+   RowBox[{"N", "[", 
+    RowBox[{"Pi", ",", "6"}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.6327459017831154`*^9, 3.6327459110666466`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"initialExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Ks", "==", 
+      RowBox[{
+       FractionBox["G", 
+        RowBox[{"32", " ", "len"}]], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         SuperscriptBox["dy", "4"], "-", 
+         SuperscriptBox["di", "4"]}], ")"}], "pi"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"fak", "==", 
+      FractionBox["1", 
+       RowBox[{"1", "-", "alpha"}]]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Zexpr", "==", 
+      RowBox[{"Ks", " ", "fak", " ", "mTimestep"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"cmr1", "==", 
+      RowBox[{"tormr1", "-", 
+       RowBox[{"Zexpr", " ", "wmr1"}]}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"cmr2", "==", 
+      RowBox[{"tormr2", "-", 
+       RowBox[{"Zexpr", " ", "wmr2"}]}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"cmr1f", "==", "tormr1"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"cmr2f", "==", "tormr2"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.519281698359375*^9, 3.5192817149375*^9}, {
+   3.5719328762892303`*^9, 3.571932891156057*^9}, {3.627806535651013*^9, 
+   3.62780653611104*^9}, 3.62780657814986*^9, 3.632747100619685*^9, 
+   3.632747155137803*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"constantParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "alpha", ",", "0.3", ",", "double", ",", "\"\<\>\"", ",", 
+      "\"\<numerical damping\>\""}], "}"}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{
+  3.549780219859375*^9, {3.5719329023256764`*^9, 3.571932903339678*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"MechanicRotCnode", "[", 
+      RowBox[{"mr1", ",", "0.", ",", "0.", ",", "\"\<mechanical node 1\>\""}],
+       "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"MechanicRotCnode", "[", 
+      RowBox[{"mr2", ",", "0.", ",", "0.", ",", "\"\<mechanical node 2\>\""}],
+       "]"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.519281679328125*^9, 3.519281686671875*^9}, {
+  3.51931795584375*^9, 3.519318001453125*^9}, {3.519318130546875*^9, 
+  3.519318136109375*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"localExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Ks", "==", 
+      RowBox[{
+       FractionBox["G", 
+        RowBox[{"32", " ", "len"}]], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         SuperscriptBox["dy", "4"], "-", 
+         SuperscriptBox["di", "4"]}], ")"}], "pi"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"fak", "==", 
+      FractionBox["1", 
+       RowBox[{"1", "-", "alpha"}]]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Zexpr", "==", 
+      RowBox[{"Ks", " ", "fak", " ", "mTimestep"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"cmr10", "==", 
+      RowBox[{"cmr2", "+", 
+       RowBox[{"2", " ", "Zexpr", " ", "wmr2"}]}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"cmr20", "==", 
+      RowBox[{"cmr1", "+", 
+       RowBox[{"2", " ", "Zexpr", " ", "wmr1"}]}]}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.47858332371875*^9, 3.478583443984375*^9}, {
+   3.478596512125*^9, 3.478596630296875*^9}, {3.47859673825*^9, 
+   3.4785967756875*^9}, {3.478596964234375*^9, 3.478596992640625*^9}, 
+   3.478597029796875*^9, {3.478600289875*^9, 3.47860030565625*^9}, {
+   3.51582105284556*^9, 3.51582105678306*^9}, {3.5159004728175173`*^9, 
+   3.515900475551874*^9}, {3.5159009659499717`*^9, 3.515900975043605*^9}, {
+   3.5159024812862654`*^9, 3.5159025043018904`*^9}, {3.5167064051243*^9, 
+   3.516706412796175*^9}, {3.516818175265625*^9, 3.51681819540625*^9}, {
+   3.516818378453125*^9, 3.516818390015625*^9}, {3.5192897721875*^9, 
+   3.51928977840625*^9}, {3.519317548234375*^9, 3.51931754925*^9}, {
+   3.51931775690625*^9, 3.51931776296875*^9}, {3.571932929937725*^9, 
+   3.5719329376597385`*^9}, {3.632746964701911*^9, 3.632747000511959*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"cmr1", "==", "cmr1f"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"cmr2", "==", "cmr2f"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"cmr1f", "==", 
+      RowBox[{
+       RowBox[{"alpha", " ", "cmr1f"}], " ", "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"1", "-", "alpha"}], ")"}], " ", "cmr10"}]}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"cmr2f", "==", 
+      RowBox[{
+       RowBox[{"alpha", " ", "cmr2f"}], " ", "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"1", "-", "alpha"}], ")"}], " ", "cmr20"}]}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Zcmr1", "==", "Zexpr"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Zcmr2", "==", "Zexpr"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.47858332371875*^9, 3.478583443984375*^9}, {
+   3.478596512125*^9, 3.478596630296875*^9}, {3.47859673825*^9, 
+   3.4785967756875*^9}, {3.478596964234375*^9, 3.478596992640625*^9}, 
+   3.478597029796875*^9, {3.478600289875*^9, 3.47860030565625*^9}, {
+   3.51582105284556*^9, 3.51582105678306*^9}, {3.5159004728175173`*^9, 
+   3.515900475551874*^9}, {3.5159009659499717`*^9, 3.515900975043605*^9}, {
+   3.5159024812862654`*^9, 3.5159025043018904`*^9}, {3.5167064051243*^9, 
+   3.516706412796175*^9}, {3.516818200453125*^9, 3.5168182011875*^9}, {
+   3.516818238359375*^9, 3.5168182486875*^9}, {3.51681829715625*^9, 
+   3.516818360484375*^9}, 3.516818397609375*^9, {3.519289677296875*^9, 
+   3.519289711046875*^9}, {3.5193175181875*^9, 3.5193175199375*^9}, {
+   3.519317920234375*^9, 3.519317921890625*^9}, {3.571932940186943*^9, 
+   3.57193295539697*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+},
+WindowSize->{750, 738},
+WindowMargins->{{57, Automatic}, {Automatic, 117}},
+Magnification->1.100000023841858,
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 116, 2, 77, "Section"],
+Cell[698, 26, 248, 4, 32, "Input"],
+Cell[949, 32, 848, 16, 53, "Input"],
+Cell[1800, 50, 2529, 36, 96, "Text"],
+Cell[CellGroupData[{
+Cell[4354, 90, 1686, 37, 213, "Input"],
+Cell[6043, 129, 345, 8, 32, "Output"]
+}, Open  ]],
+Cell[6403, 140, 1436, 32, 160, "Input"],
+Cell[7842, 174, 193, 5, 32, "Input"],
+Cell[8038, 181, 1287, 32, 243, "Input"],
+Cell[9328, 215, 386, 10, 73, "Input"],
+Cell[9717, 227, 595, 13, 73, "Input"],
+Cell[10315, 242, 1789, 39, 203, "Input"],
+Cell[12107, 283, 1742, 36, 173, "Input"],
+Cell[13852, 321, 63, 1, 32, "Input"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

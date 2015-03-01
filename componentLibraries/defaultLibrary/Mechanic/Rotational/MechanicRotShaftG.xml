@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="MechanicRotShaftG.hpp" typename="MechanicRotShaftG" displayname="MechanicRotShaftG">
+        <icons>
+            <icon scale="1" path="MechanicRotShaftG.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="MechanicRotShaftG.svg" iconrotation="ON" type="iso"/>
+        </icons>
+		<help>
+            <text>Flexibel shaft with geometric parameters. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>MechanicRotShaftG.nb</link>
+        </help>       
+
+        <ports>
+            <port x="0" y="0.5" enabled="true" a="180" name="Pmr1" autoplaced="true"/>
+            <port x="1" y="0.5" enabled="true" a="0" name="Pmr2" autoplaced="true"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

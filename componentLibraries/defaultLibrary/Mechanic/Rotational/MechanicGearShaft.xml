@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="MechanicGearShaft" displayname="MechanicGearShaft">
+   <icons>
+      <icon scale="1" path="MechanicGearShaft.svg" iconrotation="" type="user"/>
+      <icon scale="1" path="MechanicGearShaft.svg" iconrotation="" type="iso"/>
+    </icons>
+    <ports>
+      <port x="0.2" y="0" enabled="true" a="270" name="gearRatio" autoplaced="true"/>
+      <port x="0" y="0.5" enabled="true" a="180" name="Pmr1" autoplaced="true"/>
+      <port x="1" y="0.5" enabled="true" a="0" name="Pmr2" autoplaced="true"/>
+    </ports>
+    <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+  </modelobject>
+</hopsanobjectappearance>
