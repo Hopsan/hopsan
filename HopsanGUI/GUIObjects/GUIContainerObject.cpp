@@ -1167,7 +1167,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
 {
     bool success=false;
 
-    if (pConnector->isDangling())
+    if (pConnector->isDangling() && !pConnector->isBroken())
     {
         cancelCreatingConnector();
         return;
