@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Hopsan2DJoint.hpp" typename="Hopsan2DJoint" displayname="2D Joint (test)">
+        <icons>
+            <icon scale="1" path="joint.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port name="k" x="0.0" y="0.5" a="180" hidden="false"/>
+            <port name="P1" x="0.333333" y="0.0" a="270"/>
+            <port name="P2" x="0.666667" y="0.0" a="270"/>
+        </ports>
+        <animation>
+            <icon userpath="joint_hidden.svg"/>
+            <movable idx="1">
+                <icon userpath="joint_hidden.svg"/>
+                <data port="P1" dataname="PositionX"/>
+                <movement x="-45" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable idx="2">
+                <icon userpath="joint.svg"/>
+                <data port="P1" dataname="PositionY"/>
+                <movement x="0" y="45" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <relative idx="1"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable idx="3">
+                <icon userpath="joint_hidden.svg"/>
+                <data port="P2" dataname="PositionX"/>
+                <movement x="-45" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable idx="4">
+                <icon userpath="joint.svg"/>
+                <data port="P2" dataname="PositionY"/>
+                <movement x="0" y="45" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <relative idx="3"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

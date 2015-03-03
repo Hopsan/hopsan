@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Hopsan2DBodyTest.hpp" typename="Hopsan2DBodyTest" displayname="2D Body (test)">
+        <icons>
+            <icon scale="1" path="body.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port name="M" x="0.0" y="0.2" a="180" hidden="false"/>
+            <port name="J" x="0.0" y="0.4" a="180" hidden="false"/>
+            <port name="B" x="0.0" y="0.6" a="180" hidden="false"/>
+            <port name="Brot" x="0.0" y="0.8" a="180" hidden="false"/>
+            <port name="dx1" x="1.0" y="0.1" a="0" hidden="false"/>
+            <port name="dy1" x="1.0" y="0.2" a="0" hidden="false"/>
+            <port name="dx2" x="1.0" y="0.3" a="0" hidden="false"/>
+            <port name="dy2" x="1.0" y="0.4" a="0" hidden="false"/>
+            <port name="xcx" x="1.0" y="0.5" a="0" hidden="false"/>
+            <port name="vcx" x="1.0" y="0.6" a="0" hidden="false"/>
+            <port name="xcy" x="1.0" y="0.7" a="0" hidden="false"/>
+            <port name="vcy" x="1.0" y="0.8" a="0" hidden="false"/>
+            <port name="angleC" x="1.0" y="0.9" a="0" hidden="false"/>
+            <port name="omegaC" x="1.0" y="0.10" a="0" hidden="false"/>
+            <port name="P1x" x="0.142857" y="0.0" a="270"/>
+            <port name="P1y" x="0.285714" y="0.0" a="270"/>
+            <port name="P1r" x="0.428571" y="0.0" a="270"/>
+            <port name="P2x" x="0.571429" y="0.0" a="270"/>
+            <port name="P2y" x="0.714286" y="0.0" a="270"/>
+            <port name="P2r" x="0.857143" y="0.0" a="270"/>
+        </ports>
+        <animation>
+            <icon userpath="body_hidden.svg"/>
+            <movable idx="1">
+                <icon userpath="body.svg"/>
+                <data port="xcx" dataname="Value" idx="0"/>
+                <movement x="-45" y="0" a="0" idx="0"/>
+                <data port="xcy" dataname="Value" idx="1"/>
+                <movement x="0" y="45" a="0" idx="1"/>
+                <data port="angleC" dataname="Value" idx="2"/>
+                <movement x="0" y="0" a="57.3" idx="2"/>
+                <start x="0" y="0" a="0"/>
+                <relative idx="2"/>
+                <transformorigin x="45" y="6.25"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

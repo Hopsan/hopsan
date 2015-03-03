@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Hopsan2DForceTorqueSource.hpp" typename="Hopsan2DForceTorqueSource" displayname="Force and Torque Source (test)">
+        <icons>
+            <icon scale="1" path="forcetorquesource.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port name="P1" x="0.1762" y="0.6667" a="270"/>
+        </ports>
+        <animation/>
+    </modelobject>
+</hopsanobjectappearance>
