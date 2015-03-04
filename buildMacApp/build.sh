@@ -15,7 +15,8 @@ if [ "$1" == "--debug" ]; then
 echo "DEBUG build"
 QMAKE_OPTIONS="-r -spec macx-clang CONFIG+=debug CONFIG+=x86_64"
 LIBTAG="_d"
-DEPLOY="-always-overwrite -use-debug-libs"
+#DEPLOY="-always-overwrite -use-debug-libs"
+DEPLOY="-always-overwrite"
 else
 echo "RELEASE build"
 QMAKE_OPTIONS="-r -spec macx-clang CONFIG+=x86_64"
@@ -28,10 +29,12 @@ make -j4 -w
 
 cd bin
 
-macdeployqt $DEPLOY HopsanGUI$LIBTAG.app
+macdeployqt HopsanGUI$LIBTAG.app $DEPLOY
 
 cp -prf libHopsanCore$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
+cp -prf libHopsanGenerator$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prf libSymHop$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
+
 cp -prf ../Dependencies/qwt-6.1.2/lib/libqwt.6.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/doc/user/html

@@ -137,7 +137,7 @@ DesktopHandler::DesktopHandler()
     mMSVC2008X86Path = mResourcesPath+"MSVC2008_x86/";
     mMSVC2010X86Path = mResourcesPath+"MSVC2010_x86/";
     mMSVC2008X64Path = mResourcesPath+"MSVC2008_x64/";
-    mMSVC2010X64Path = mResourcesPath+"MSVC2010_x64/";
+    mMSVC2010X64Path = mResourcesPath+" MSVC2010_x64/";
 #else
     mMainPath = mExecPath+"../";
     mHelpPath = mExecPath+"../doc/user/html/";

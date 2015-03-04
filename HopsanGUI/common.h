@@ -57,8 +57,13 @@
 #define LIBEXT ".dll"
 #define LIBPREFIX ""
 #else
+#ifdef __APPLE__
+#define LIBEXT ".dylib"
+#define LIBPREFIX "lib"
+#else
 #define LIBEXT ".so"
 #define LIBPREFIX "lib"
+#endif
 #endif
 
 //! @todo all of these don't have to be common

@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
-        TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
+        TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
 
         // Parse the argv array.
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
             externalComponentLibraries.push_back(extLibPathsOption.getValue()[i]);
         }
 
-        // Load the actual external lib .dll/.so files
+        // Load the actual external lib .dll/.so/.dylib files
         for (size_t i=0; i<externalComponentLibraries.size(); ++i)
         {
             bool rc = gHopsanCore.loadExternalComponentLib(externalComponentLibraries[i].c_str());
