@@ -274,6 +274,7 @@ inline double nonZero(const double x)
     {
         return -limit;
     }
+//! @todo There is one return value missing here. return x? (magse)
 }
 
 }

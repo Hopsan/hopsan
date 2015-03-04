@@ -56,6 +56,7 @@ public:
     const QString &getMSVC2010X64Path() const;
     const QString &getFMUPath() const;
     const QString &getLogDataPath() const;
+    const QString &getResourcesPath() const;
 private:
     QString mExecPath;
 
@@ -86,6 +87,7 @@ private:
     QString mMSVC2010X64Path;
     QString mFMUPath;
     QString mLogDataPath;
+    QString mResourcesPath; // Primarilly used for handling the Resources dir in a Apple App bundle
 };
 
 #endif // DESKTOPHANDLER_H

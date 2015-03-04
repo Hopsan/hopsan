@@ -106,12 +106,17 @@ DesktopHandler::DesktopHandler()
     mDefaultConfigPath = getStandardLocation(QStandardPaths::ConfigLocation) + "Hopsan/";
     mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation); // in the future use AppDataLocation instead
     mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "Hopsan/";
+    mResourcesPath = mExecPath + "../Resources/";
 #else
     mDefaultConfigPath = getStandardLocation(QStandardPaths::ConfigLocation);
     mDefaultDataPath = getStandardLocation(QStandardPaths::DataLocation);
     mDefaultTempPath = getStandardLocation(QStandardPaths::TempLocation) + "Hopsan/";
+    mResourcesPath = mDefaultConfigPath;
 #endif
     mDefaultDocumentsPath = getStandardLocation(QStandardPaths::DocumentsLocation) + "Hopsan/";
+#else
+#ifdef __APPLE__
+#error "QT<5.0 not supported on Apple platform (magse)"
 #else
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
     mDefaultConfigPath = mDefaultDataPath;
@@ -119,19 +124,20 @@ DesktopHandler::DesktopHandler()
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
     mDefaultDocumentsPath.replace("\\", "/");
 #endif
+#endif
     mBackupPath = mDefaultDocumentsPath+"Backup/";
     mModelsPath = mDefaultDocumentsPath+"Models/";
     mScriptsPath = mDefaultDocumentsPath+"Scripts/";
 #ifdef __APPLE__
     mMainPath = getStandardLocation(QStandardPaths::HomeLocation);
-    mHelpPath = mExecPath+"../Resources/doc/user/html/";
+    mHelpPath = mResourcesPath+"/doc/user/html/";
     mComponentsPath = mExecPath+"../Frameworks/componentLibraries/defaultLibrary/";
     mAutoLibsPath = mExecPath+"../Frameworks/componentLibraries/autoLibs/";
-    mCoreIncludePath = mExecPath+"../Resources/HopsanCore/include/";
-    mMSVC2008X86Path = mExecPath+"../Resources/MSVC2008_x86/";
-    mMSVC2010X86Path = mExecPath+"../Resources/MSVC2010_x86/";
-    mMSVC2008X64Path = mExecPath+"../Resources/MSVC2008_x64/";
-    mMSVC2010X64Path = mExecPath+"../Resources/MSVC2010_x64/";
+    mCoreIncludePath = mResourcesPath+"HopsanCore/include/";
+    mMSVC2008X86Path = mResourcesPath+"MSVC2008_x86/";
+    mMSVC2010X86Path = mResourcesPath+"MSVC2010_x86/";
+    mMSVC2008X64Path = mResourcesPath+"MSVC2008_x64/";
+    mMSVC2010X64Path = mResourcesPath+"MSVC2010_x64/";
 #else
     mMainPath = mExecPath+"../";
     mHelpPath = mExecPath+"../doc/user/html/";
@@ -355,4 +361,9 @@ const QString &DesktopHandler::getFMUPath() const
 const QString &DesktopHandler::getLogDataPath() const
 {
     return mLogDataPath;
+}
+
+const QString &DesktopHandler::getResourcesPath() const
+{
+    return mResourcesPath;
 }

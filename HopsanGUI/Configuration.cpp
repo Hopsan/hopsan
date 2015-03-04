@@ -338,7 +338,11 @@ void Configuration::loadFromXml()
 void Configuration::loadDefaultsFromXml()
 {
     //Read from hopsandefaults.xml
+#ifdef __APPLE__
+    QFile file(gpDesktopHandler->getResourcesPath() + "hopsandefaults");
+#else
     QFile file(gpDesktopHandler->getMainPath() + "hopsandefaults");
+#endif
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),

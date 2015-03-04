@@ -154,7 +154,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             double t1, a1, w1, x, v;
-            double f2, x2, v2, f3, x3, v3, a, w;
+            double f2, x2, v2, f3, x3=0, v3, a, w;
 
             //Get variable values from nodes
             const double r = mR;

@@ -9,6 +9,10 @@
 #$Id$                                                                                                                   
 #  
 
+rm -fr ../trunk/bin/*
+
+# Building Dependencies
+
 cd Dependencies
 
 . unpackPatchAndBuildQwt.sh --force
@@ -16,29 +20,19 @@ cd Dependencies
 
 cd ..
 
-qmake -r
-make -j4 -w
 
-cd bin
+# Building for RELEASE
 
-macdeployqt HopsanGUI.app
-cp -prf libHopsanCore.1.dylib HopsanGUI.app/Contents/Frameworks/
-cp -prf libSymHop.1.dylib HopsanGUI.app/Contents/Frameworks/
-cp -prf ../Dependencies/qwt-6.1.2/lib/libqwt.6.dylib HopsanGUI.app/Contents/Frameworks/
-mkdir -p HopsanGUI.app/Contents/Frameworks/componentLibraries/defaultLibrary
-mkdir -p HopsanGUI.app/Contents/Frameworks/componentLibraries/autoLibs
-mkdir -p HopsanGUI.app/Contents/Resources/doc/user/html
-mkdir -p HopsanGUI.app/Contents/Resources/HopsanCore/include
-mkdir -p HopsanGUI.app/Contents/Resources/MSVC2008_x86
-mkdir -p HopsanGUI.app/Contents/Resources/MSVC2010_x86
-mkdir -p HopsanGUI.app/Contents/Resources/MSVC2008_x64
-mkdir -p HopsanGUI.app/Contents/Resources/MSVC2010_x64
-cp -prf ../componentLibraries/defaultLibrary/libdefaultComponentLibrary.dylib HopsanGUI.app/Contents/Frameworks/componentLibraries/defaultLibrary
-cp -prf ../componentLibraries/defaultLibrary/defaultComponentLibrary.xml HopsanGUI.app/Contents/Resources/
+. ./buildMacApp/build.sh --release
 
-cp -prf ../Hopsan-release-notes.txt HopsanGUI.app/Contents/Resources/
-cp -prf ../hopsandefaults HopsanGUI.app/Contents/Resources/
-cp -prf ../licenseHeader HopsanGUI.app/Contents/Resources/
+echo RELEASE built
 
-echo HopsanGUI.app built!
+# Building for DEBUG
+
+. ./buildMacApp/build.sh --debug
+
+echo DEBUG built
+
+du -sh ./bin/HopsanGUI.app
+du -sh ./bin/HopsanGUI_d.app
 
