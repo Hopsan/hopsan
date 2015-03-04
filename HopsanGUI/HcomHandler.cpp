@@ -5989,7 +5989,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
         }
 
         // Remove indentation
-        while(lines[l].startsWith(" "))
+        while(lines[l].startsWith(" ") || lines[l].startsWith("\t"))
         {
             lines[l] = lines[l].right(lines[l].size()-1);
         }
