@@ -18,8 +18,8 @@ if [ "$1" == "--debug" ]; then
 echo "DEBUG build"
 QMAKE_OPTIONS="-r -spec macx-clang CONFIG+=debug CONFIG+=x86_64"
 LIBTAG="_d"
-#DEPLOY="-always-overwrite -use-debug-libs"
-DEPLOY="-always-overwrite"
+DEPLOY="-always-overwrite -use-debug-libs"
+#DEPLOY="-always-overwrite"
 else
 echo "RELEASE build"
 QMAKE_OPTIONS="-r -spec macx-clang CONFIG+=x86_64"
@@ -54,7 +54,6 @@ mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibr
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/autoLibs
 cp -prfX ../componentLibraries/defaultLibrary/libdefaultComponentLibrary$LIBTAG.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
-#cp -prfX ../componentLibraries/defaultLibrary/defaultComponentLibrary.xml HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
 cp -prfX ../componentLibraries/exampleComponentLib/[HMSeh]* HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib/
 
 cp -prfX ../Hopsan-release-notes.txt HopsanGUI$LIBTAG.app/Contents/Resources/
@@ -76,4 +75,6 @@ mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/doc/user
 cp -prfX ../$buildRoot/stage/doc/user/html HopsanGUI$LIBTAG.app/Contents/Resources/doc/user
 
 cd ..
+
+#rm -fr $buildRoot/stage
 
