@@ -68,8 +68,8 @@ namespace hopsan {
             addConstant("m", "Mass", "kg",                      100.0, mMass);
             addInputVariable("B", "Viscous Friction", "Ns/m",   10.0, &mpB);
             addInputVariable("k", "Spring Coefficient", "N/m", 0.0, &mpK);
-            addInputVariable("x_min", "Minimum Position of Port P2", "m", 0.0, &mpXMin);
-            addInputVariable("x_max", "Maximum Position of Port P2", "m", 1.0, &mpXMax);
+            addInputVariable("x_min", "Minimum Position of Port P2", "m", -1.0e+300, &mpXMin);
+            addInputVariable("x_max", "Maximum Position of Port P2", "m", 1.0e+300, &mpXMax);
         }
 
 
@@ -91,11 +91,11 @@ namespace hopsan {
             mpP2_me = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
 
             //Initialization
-            double f1, x1, v1, f2, x2, v2;
+            double f1, x1, /*v1,*/ f2, x2, v2;
             f1 = (*mpP1_f);
             f2 = (*mpP2_f);
             x1 = (*mpP1_x);
-            v1 = (*mpP1_v);
+            //v1 = (*mpP1_v);
             x2 = (*mpP2_x);
             v2 = (*mpP2_v);
 

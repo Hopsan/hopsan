@@ -40,19 +40,19 @@ namespace hopsan {
 
     private:
         double m;
-        double *mpB, *mpFs, *mpFk, *xMin, *xMax;                                                                        //Changeable parameters
-        double wx, u0, f, be, fe;                                                                              //Local Variables
-        double mLength;                                                                                     //This length is not accessible by the user, it is set from the start values by the c-components in the ends
-        std::vector<double*> mvpN_f1, mvpN_x1, mvpN_v1, mvpN_me1, mvpN_c1, mvpN_Zx1, mvpN_f2, mvpN_x2, mvpN_v2, mvpN_me2, mvpN_c2, mvpN_Zx2;
-        std::vector<double> x1, x2, mvpStartX1, mvpStartX2;
+        double *mpB, *mpFs, *mpFk, *xMin, *xMax;                                        //Changeable parameters
+        double wx, u0, f, be, fe;                                                       //Local Variables
+        double mLength;                                                                 //This length is not accessible by the user, it is set from the start values by the c-components in the ends
+        std::vector<double> x1, x2, mvStartX1, mvStartX2;
         size_t mNumPorts1, mNumPorts2;
-        double f1, v1, c1, Zx1, f2, v2, c2, Zx2;                                                    //Node data variables
-                                                           //External functions
         double mNum[3];
         double mDen[3];
         DoubleIntegratorWithDampingAndCoulombFriction mIntegrator;
 
-        Port *mpP1, *mpP2;                                                                                  //Ports
+        // Ports and node data variables
+        Port *mpP1, *mpP2;
+        std::vector<double*> mvpP1_f, mvpP1_x, mvpP1_v, mvpP1_me, mvpP1_c, mvpP1_Zx;
+        std::vector<double*> mvpP2_f, mvpP2_x, mvpP2_v, mvpP2_me, mvpP2_c, mvpP2_Zx;
 
     public:
         static Component *Creator()
@@ -72,8 +72,8 @@ namespace hopsan {
             addInputVariable("b", "Viscous Friction Coefficient", "Ns/m", 10, &mpB);
             addInputVariable("f_s", "Static Friction Force", "N", 50,  &mpFs);
             addInputVariable("f_k", "Kinetic Friction Force", "N", 45,  &mpFk);
-            addInputVariable("x_min", "Lower Limit of Position of Port P2", "m", 0,  &xMin);
-            addInputVariable("x_max", "Upper Limit of Position of Port P2   ", "m", 1,  &xMax);
+            addInputVariable("x_min", "Lower Limit of Position of Port P2", "m", -1.0e+300,  &xMin);
+            addInputVariable("x_max", "Upper Limit of Position of Port P2", "m", 1.0e+300,  &xMax);
         }
 
 
@@ -82,85 +82,70 @@ namespace hopsan {
             mNumPorts1 = mpP1->getNumPorts();
             mNumPorts2 = mpP2->getNumPorts();
 
-            mvpN_f1.resize(mNumPorts1);
-            mvpN_x1.resize(mNumPorts1);
-            mvpN_v1.resize(mNumPorts1);
-            mvpN_me1.resize(mNumPorts1);
-            mvpN_c1.resize(mNumPorts1);
-            mvpN_Zx1.resize(mNumPorts1);
+            mvpP1_f.resize(mNumPorts1);
+            mvpP1_x.resize(mNumPorts1);
+            mvpP1_v.resize(mNumPorts1);
+            mvpP1_me.resize(mNumPorts1);
+            mvpP1_c.resize(mNumPorts1);
+            mvpP1_Zx.resize(mNumPorts1);
 
-            mvpN_f2.resize(mNumPorts2);
-            mvpN_x2.resize(mNumPorts2);
-            mvpN_v2.resize(mNumPorts2);
-            mvpN_me2.resize(mNumPorts2);
-            mvpN_c2.resize(mNumPorts2);
-            mvpN_Zx2.resize(mNumPorts2);
+            mvpP2_f.resize(mNumPorts2);
+            mvpP2_x.resize(mNumPorts2);
+            mvpP2_v.resize(mNumPorts2);
+            mvpP2_me.resize(mNumPorts2);
+            mvpP2_c.resize(mNumPorts2);
+            mvpP2_Zx.resize(mNumPorts2);
 
             x1.resize(mNumPorts1);
             x2.resize(mNumPorts2);
-            mvpStartX1.resize(mNumPorts1);
-            mvpStartX2.resize(mNumPorts2);
+            mvStartX1.resize(mNumPorts1);
+            mvStartX2.resize(mNumPorts2);
 
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                mvpN_f1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::FORCE);
-                mvpN_x1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::Position);
-                mvpN_v1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::Velocity);
-                mvpN_me1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::EquivalentMass);
-                mvpN_c1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::WaveVariable);
-                mvpN_Zx1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::CharImpedance);
+                mvpP1_f[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::FORCE);
+                mvpP1_x[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::Position);
+                mvpP1_v[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::Velocity);
+                mvpP1_me[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::EquivalentMass);
+                mvpP1_c[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::WaveVariable);
+                mvpP1_Zx[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::CharImpedance);
             }
 
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                mvpN_f2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::Force);
-                mvpN_x2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::Position);
-                mvpN_v2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::Velocity);
-                mvpN_me2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::EquivalentMass);
-                mvpN_c2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::WaveVariable);
-                mvpN_Zx2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::CharImpedance);
+                mvpP2_f[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::Force);
+                mvpP2_x[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::Position);
+                mvpP2_v[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::Velocity);
+                mvpP2_me[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::EquivalentMass);
+                mvpP2_c[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::WaveVariable);
+                mvpP2_Zx[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::CharImpedance);
             }
 
+            double f1, v1, f2, v2;
 
             //Initialization
             f1 = 0;
+            v1 = (*mvpP1_v[0]);
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                f1 += (*mvpN_f1[i]);
-            }
-
-            f2 = 0;
-            for (size_t i=0; i<mNumPorts2; ++i)
-            {
-                f2 += (*mvpN_f2[i]);
-            }
-
-            for (size_t i=0; i<mNumPorts1; ++i)
-            {
-                x1[i] = (*mvpN_x1[i]);
-                mvpStartX1[i]= (*mvpN_x1[i]);
-            }
-
-            for (size_t i=0; i<mNumPorts2; ++i)
-            {
-                x2[i] = (*mvpN_x2[i]);
-                mvpStartX2[i] = (*mvpN_x2[i]);
-            }
-
-            v1 = (*mvpN_v1[0]);
-            for(size_t i=0; i<mNumPorts1; ++i)
-            {
-                if(v1 != (*mvpN_v1[i]))
+                f1 += (*mvpP1_f[i]);
+                x1[i] = (*mvpP1_x[i]);
+                mvStartX1[i]= (*mvpP1_x[i]);
+                if(v1 != (*mvpP1_v[i]))
                 {
                     addErrorMessage("Velocities in multiport does not match, {"+getName()+"::"+mpP1->getName());
                     stopSimulation();
                 }
             }
 
-            v2 = (*mvpN_v2[0]);
-            for(size_t i=0; i<mNumPorts2; ++i)
+            f2 = 0;
+            v2 = (*mvpP2_v[0]);
+            for (size_t i=0; i<mNumPorts2; ++i)
             {
-                if(v2 != (*mvpN_v2[i]))
+                f2 += (*mvpP2_f[i]);
+                x2[i] = (*mvpP2_x[i]);
+                mvStartX2[i] = (*mvpP2_x[i]);
+                if(v2 != (*mvpP2_v[i]))
                 {
                     addWarningMessage("Velocities in multiport does not match, {"+getName()+"::"+mpP2->getName());
                     stopSimulation();
@@ -180,37 +165,34 @@ namespace hopsan {
 
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                (*mvpN_me1[i]) = m;
+                (*mvpP1_me[i]) = m;
             }
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                (*mvpN_me2[i]) = m;
+                (*mvpP2_me[i]) = m;
             }
         }
 
 
         void simulateOneTimestep()
         {
+            double v1, c1, Zx1, v2, c2, Zx2;
+
             //Get variable values from nodes
             c1 = 0;
-            for (size_t i=0; i<mNumPorts1; ++i)
-            {
-                c1 += (*mvpN_c1[i]);
-            }
             Zx1 = 0;
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                Zx1 += (*mvpN_Zx1[i]);
+                c1 += (*mvpP1_c[i]);
+                Zx1 += (*mvpP1_Zx[i]);
             }
+
             c2 = 0;
-            for (size_t i=0; i<mNumPorts2; ++i)
-            {
-                c2 += (*mvpN_c2[i]);
-            }
             Zx2 = 0;
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                Zx2 += (*mvpN_Zx2[i]);
+                c2 += (*mvpP2_c[i]);
+                Zx2 += (*mvpP2_Zx[i]);
             }
 
             mIntegrator.setFriction((*mpFs)/m, (*mpFk)/m);
@@ -238,37 +220,17 @@ namespace hopsan {
             //Write new values to nodes
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                (*mvpN_f1[i]) = (*mvpN_c1[i]) + (*mvpN_Zx1[i])*v1;
+                (*mvpP1_f[i]) = (*mvpP1_c[i]) + (*mvpP1_Zx[i])*v1;
+                (*mvpP1_x[i]) = mvStartX1[i]+mvStartX2[0]-x_nom;
+                (*mvpP1_v[i]) = v1;
+                (*mvpP1_me[i]) = m;
             }
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                (*mvpN_f2[i]) = (*mvpN_c2[i]) + (*mvpN_Zx2[i])*v2;
-            }
-
-            for (size_t i=0; i<mNumPorts1; ++i)
-            {
-                (*mvpN_x1[i]) = mvpStartX1[i]+mvpStartX2[0]-x_nom;
-            }
-            for (size_t i=0; i<mNumPorts2; ++i)
-            {
-                (*mvpN_x2[i]) = mvpStartX2[i]-mvpStartX2[0]+x_nom;
-            }
-
-            for (size_t i=0; i<mNumPorts1; ++i)
-            {
-                (*mvpN_v1[i]) = v1;
-            }
-            for (size_t i=0; i<mNumPorts2; ++i)
-            {
-                (*mvpN_v2[i]) = v2;
-            }
-            for (size_t i=0; i<mNumPorts1; ++i)
-            {
-                (*mvpN_me1[i]) = m;
-            }
-            for (size_t i=0; i<mNumPorts2; ++i)
-            {
-                (*mvpN_me2[i]) = m;
+                (*mvpP2_f[i]) = (*mvpP2_c[i]) + (*mvpP2_Zx[i])*v2;
+                (*mvpP2_x[i]) = mvStartX2[i]-mvStartX2[0]+x_nom;
+                (*mvpP2_v[i]) = v2;
+                (*mvpP2_me[i]) = m;
             }
         }
     };

@@ -43,15 +43,14 @@ namespace hopsan {
         double *mpB, *mpFs, *mpFk, *xMin, *xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
         double mLength;                                                                                     //This length is not accessible by the user, it is set from the start values by the c-components in the ends
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1;    //Node data pointers
-        double *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;
-        double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
-                                                           //External functions
         double mNum[3];
         double mDen[3];
         DoubleIntegratorWithDampingAndCoulombFriction mIntegrator;
 
-        Port *mpP1, *mpP2;                                                                                  //Ports
+        // Ports and node data pointers
+        Port *mpP1, *mpP2;
+        double *mpP1_f, *mpP1_x, *mpP1_v, *mpP1_c, *mpP1_Zx, *mpP1_me;
+        double *mpP2_f, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zx, *mpP2_me;
 
     public:
         static Component *Creator()
@@ -71,48 +70,50 @@ namespace hopsan {
             addInputVariable("b", "Viscous Friction Coefficient", "Ns/m", 10, &mpB);
             addInputVariable("f_s", "Static Friction Force", "N", 50,  &mpFs);
             addInputVariable("f_k", "Kinetic Friction Force", "N", 45,  &mpFk);
-            addInputVariable("x_min", "Lower Limit of Position of Port P2", "m", 0,  &xMin);
-            addInputVariable("x_max", "Upper Limit of Position of Port P2", "m", 1,  &xMax);
+            addInputVariable("x_min", "Lower Limit of Position of Port P2", "m", -1.0e+300,  &xMin);
+            addInputVariable("x_max", "Upper Limit of Position of Port P2", "m", 1.0e+300,  &xMax);
         }
 
 
         void initialize()
         {
             //Assign node data pointers
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
-            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
+            mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+            mpP1_me = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
 
-            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
-            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
-            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
+            mpP2_f = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpP2_x = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+            mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpP2_Zx = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
+            mpP2_me = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
 
-            f1 = (*mpND_f1);
-            x1 = (*mpND_x1);
-            v1 = (*mpND_v1);
-            c1 = (*mpND_c1);
+            double f1, x1, /*v1, c1,*/ f2, x2, v2/*, c2*/;
 
-            f2 = (*mpND_f2);
-            x2 = (*mpND_x2);
-            v2 = (*mpND_v2);
-            c2 = (*mpND_c2);
+            f1 = (*mpP1_f);
+            x1 = (*mpP1_x);
+            //v1 = (*mpP1_v);
+            //c1 = (*mpP1_c);
+
+            f2 = (*mpP2_f);
+            x2 = (*mpP2_x);
+            v2 = (*mpP2_v);
+            //c2 = (*mpP2_c);
 
             mLength = x1+x2;
 
             //Initialize integrator
             mIntegrator.initialize(mTimestep, 0, (*mpFs)/m, (*mpFk)/m, f1-f2, x2, v2);
 
-            (*mpND_me1) = m;
-            (*mpND_me2) = m;
+            (*mpP1_me) = m;
+            (*mpP2_me) = m;
 
             //Print debug message if start velocities doe not match
-            if((*mpND_v1) != -(*mpND_v2))
+            if((*mpP1_v) != -(*mpP2_v))
             {
                 this->addDebugMessage("Start velocities does not match, {"+getName()+"::"+mpP1->getName()+
                                       "} and {"+getName()+"::"+mpP2->getName()+"}.");
@@ -122,13 +123,15 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;
+
             //Get variable values from nodes
-            x1 = (*mpND_x1);
-            c1 = (*mpND_c1);
-            Zx1 = (*mpND_Zx1);
-            x2 = (*mpND_x2);
-            c2 = (*mpND_c2);
-            Zx2 = (*mpND_Zx2);
+            x1 = (*mpP1_x);
+            c1 = (*mpP1_c);
+            Zx1 = (*mpP1_Zx);
+            x2 = (*mpP2_x);
+            c2 = (*mpP2_c);
+            Zx2 = (*mpP2_Zx);
 
             mIntegrator.setFriction((*mpFs)/m, (*mpFk)/m);
 
@@ -156,12 +159,12 @@ namespace hopsan {
             f2 = c2 + Zx2*v2;
 
             //Write new values to nodes
-            (*mpND_f1) = f1;
-            (*mpND_x1) = x1;
-            (*mpND_v1) = v1;
-            (*mpND_f2) = f2;
-            (*mpND_x2) = x2;
-            (*mpND_v2) = v2;
+            (*mpP1_f) = f1;
+            (*mpP1_x) = x1;
+            (*mpP1_v) = v1;
+            (*mpP2_f) = f2;
+            (*mpP2_x) = x2;
+            (*mpP2_v) = v2;
         }
     };
 }
