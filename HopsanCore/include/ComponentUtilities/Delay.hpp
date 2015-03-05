@@ -29,34 +29,34 @@
 
 namespace hopsan {
 
-//! @brief Delay template class, implementing a circle buffer
+//! @brief Delay template class, implementing a circular buffer containing values of specified type
 //! @ingroup ComponentUtilityClasses
 template<typename T>
-class Delay_
+class DelayTemplate
 {
 public:
-    Delay_()
+    DelayTemplate()
     {
         mpArray = 0;
         mSize = 0;
     }
 
-    ~Delay_()
+    ~DelayTemplate()
     {
         clear();
     }
 
-    //! @brief Initialize Delay buffer size based on timeDelay and timestep, Td/Ts must be multiple of 1 and >= 1
+    //! @brief Initialize delay buffer size based on timeDelay and timestep, Td/Ts must be multiple of 1 and >= 1
     //! @param [in] timeDelay The total time delay for a value to come out on the other side of the circle buffer
     //! @param [in] Ts The timestep between each call
     //! @param [in] initValue The initial value of all buffer elements
     void initialize(const double timeDelay, const double Ts, const T initValue)
     {
         //We let truncation round downwards, +0.5 to be sure we don't fall bellow integer value in float
-        this->initialize( int(timeDelay/Ts+0.5), initValue);
+        initialize( int(timeDelay/Ts+0.5), initValue);
     }
 
-    //! @brief Initialize Delay size based on known number of delay steps
+    //! @brief Initialize delay size based on known number of delay steps
     //! @param [in] delaySteps The number of delay steps, must be >= 1
     //! @param [in] initValue The initial value of all buffer elements
     void initialize(const int delaySteps, const T initValue)
@@ -86,8 +86,8 @@ public:
 
     //! @brief Updates delay with a new value, "pop old", "push new". You should likely run this at the end of each time step
     //! @param [in] newValue The new value to insert into delay buffer
-    //! @return The oldest value in the delay buffer (After update this value will have been overwritten in the buffer)
-    T update(const T newValue)
+    //! @return The oldest value in the delay buffer (After update, this value has been overwritten in the buffer)
+    inline T update(const T newValue)
     {
         // First get the oldest value
         T oldestValue = mpArray[mOldest];
@@ -111,24 +111,24 @@ public:
         return oldestValue;
     }
 
-    //! @brief Get the oldest value inte the buffer
+    //! @brief Get the oldest value in the buffer
     //! @return The oldest value in the buffer
-    T getOldest() const
+    inline T getOldest() const
     {
         return mpArray[mOldest];
     }
 
-    //! @brief Get the newest value inte the buffer
+    //! @brief Get the newest value in the buffer
     //! @return The newest value in the buffer
-    T getNewest() const
+    inline T getNewest() const
     {
         return mpArray[mNewest];
     }
 
     //! @brief Returns a specific value, 0=newest, 1=nextnewest, 2=nextnextnewest and so on, no range check is performed
     //! @param [in] i Index of value to return
-    //! @return Value of specified index
-    T getIdx(const size_t i) const
+    //! @return Value at specified index
+    inline T getIdx(const size_t i) const
     {
         if ( (int(mNewest)-int(i)) < 0 )
         {
@@ -142,8 +142,8 @@ public:
 
     //! @brief Returns a specific value, 0=oldest, 1=nextoldest, 2=nextnextoldest and so on, no range check is performed
     //! @param [in] i Index of value to return
-    //! @return Value of specified index
-    T getOldIdx(const size_t i) const
+    //! @return Value at specified index
+    inline T getOldIdx(const size_t i) const
     {
         if (mOldest+i >= mSize)
         {
@@ -155,9 +155,9 @@ public:
         }
     }
 
-    //! @brief Get the size of the delay (the number of delaySteps)
-    //! @return The size of the delay (the number of delaySteps)
-    size_t getSize() const
+    //! @brief Get the size of the delay buffer (the number of buffer elements)
+    //! @return The size of the delay buffer
+    inline size_t getSize() const
     {
         return mSize;
     }
@@ -180,7 +180,7 @@ private:
 };
 
 //! @ingroup ComponentUtilityClasses
-typedef Delay_<double> Delay; //!< @todo Maybe we should only have template class and let users choose data type themselves
+typedef DelayTemplate<double> Delay;
 
 }
 
