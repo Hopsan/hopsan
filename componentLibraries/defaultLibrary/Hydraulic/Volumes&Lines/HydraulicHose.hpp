@@ -27,7 +27,6 @@
 #ifndef HYDRAULICHOSE_HPP_INCLUDED
 #define HYDRAULICHOSE_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -42,23 +41,29 @@ namespace hopsan {
 
     private:
 
-        double *mpRho, *mpVisc, *mpD, *mpL;
-        double betae, wallVisc;
-        double NTMAX, kappa;
-        int NTIME, NTIME1;
+        // Member variables
+        double kappa;
         double Rtot, RL1d, RL2d, Rw, a, TL, NT, TN, area, areaC, Zc0, alfa, den, BC0, BC1, AC1;
         double RQ10, RQ20, RQF1D, RQF2D, RQEF1D, RQEF2D, C1F1, C2F1, RQ1, RL1, RQ2, RL2, RL;
         double W1, W2, W3, W4, C1F, C2F, RQF1, RQF2, RQEF1, RQEF2;
-        double c1i[1001];       //1001 because 1000 with starting at 1 (stupid Fortran thing)
-        double c2i[1001];
         FirstOrderTransferFunction FilterC1F, FilterC2F, FilterC1F1, FilterC2F1;
         double numC1F[2], denC1F[2];
         double numC2F[2], denC2F[2];
         double numC1F1[2], denC1F1[2];
         double numC2F1[2], denC2F1[2];
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+        // Cyclic memmory
+        //! @todo The memory size should not be hardcoded
+        int NTIME, NTIME1, NTMAX;
+        double c1i[1001];       //1001 because 1000 with starting at 1 (stupid Fortran thing)
+        double c2i[1001];
 
+        // Constants
+        double betae, wallVisc;
+
+        // Ports and I/O Varibales
+        double *mpRho, *mpVisc, *mpD, *mpL;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc;
         Port *mpP1, *mpP2;
 
     public:
@@ -86,24 +91,24 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
                 //Declare local variables
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, rho, visc, d, l;
 
                 //Read variables from nodes
-            p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
+            p1 = (*mpP1_p);
+            q1 = (*mpP1_q);
+            p2 = (*mpP2_p);
+            q2 = (*mpP2_q);
             rho = (*mpRho);
             visc = (*mpVisc);
             d = (*mpD);
@@ -113,10 +118,10 @@ namespace hopsan {
             kappa = 1.25;
 
                 // Line resistance
-            Rtot = 128*visc*l/(pi*d*d*d*d);
+            Rtot = 128.0*visc*l/(pi*d*d*d*d);
             RL1d = Rtot;
             RL2d = Rtot;
-            Rw = 128*wallVisc*l/(pi*d*d*d*d);
+            Rw = 128.0*wallVisc*l/(pi*d*d*d*d);
 
                 // Speed of sound in the line
             a=sqrt(betae/rho);
@@ -127,7 +132,7 @@ namespace hopsan {
 
             TN = NT*mTimestep;
 
-            area = pi*d*d/4;
+            area = pi*d*d/4.0;
             areaC = area*TL/TN;
             Zc0= rho*a/areaC;
             if(NT < 1) NT = 1;
@@ -135,10 +140,10 @@ namespace hopsan {
 
             alfa  = Rtot/(Zc0*TN);
 
-            den = (2*kappa*NT + 1);
-            BC0 = 1/den;
-            BC1 = 1/den;
-            AC1 = -(2*kappa*NT - 1)/den;
+            den = (2.0*kappa*NT + 1.0);
+            BC0 = 1.0/den;
+            BC1 = 1.0/den;
+            AC1 = -(2.0*kappa*NT - 1.0)/den;
 
             Zc1 = Zc0 + BC0*Rtot;
             Zc2 = Zc0 + BC0*Rtot;
@@ -153,8 +158,8 @@ namespace hopsan {
 
             RQ10 = Rtot*q1;
             RQ20 = Rtot*q2;
-            RQF1D = RQ10*(1 - BC0);
-            RQF2D = RQ20*(1 - BC0);
+            RQF1D = RQ10*(1.0 - BC0);
+            RQF2D = RQ20*(1.0 - BC0);
             RQEF1D = 0.0;
             RQEF2D = 0.0;
 
@@ -170,10 +175,10 @@ namespace hopsan {
             FilterC2F1.initialize(mTimestep, numC2F1, denC2F1, c2i[NTIME], C2F1);
 
             //Write new values to nodes
-            (*mpND_c1) = c1;
-            (*mpND_Zc1) = Zc1;
-            (*mpND_c2) = c2;
-            (*mpND_Zc2) = Zc2;
+            (*mpP1_c) = c1;
+            (*mpP1_Zc) = Zc1;
+            (*mpP2_c) = c2;
+            (*mpP2_Zc) = Zc2;
         }
 
 
@@ -184,11 +189,11 @@ namespace hopsan {
 
                 //Read variables from nodes
             //p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            c1 = (*mpND_c1);
+            q1 = (*mpP1_q);
+            c1 = (*mpP1_c);
             //p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
-            c2 = (*mpND_c2);
+            q2 = (*mpP2_q);
+            c2 = (*mpP2_c);
             rho = (*mpRho);
             visc = (*mpVisc);
             d = (*mpD);
@@ -196,10 +201,16 @@ namespace hopsan {
 
                 //Cyclic memory
             NTIME = NTIME+1;
-            if(NTIME > NTMAX) NTIME=1;
+            if(NTIME > NTMAX)
+            {
+                NTIME=1;
+            }
 
             NTIME1 = NTIME-1*NT + 1;
-            if(NTIME1 < 1) NTIME1 = NTIME1 + NTMAX;
+            if(NTIME1 < 1)
+            {
+                NTIME1 = NTIME1 + NTMAX;
+            }
 
                 //-------- Line model -----------
             RQ1 = rq(RL1,q1,d,l,rho,visc);
@@ -217,7 +228,7 @@ namespace hopsan {
             c2i[NTIME] = c2 + 2.0*Zc0*q2;
 
                 // Low pass filtering of transmitted signals
-            W1 = 1/(kappa*TN);
+            W1 = 1.0/(kappa*TN);
             W2 = W1*exp(RL/(2.0*Zc0));
             W3 = Rw/(2.0*Zc0*TN);
             W4 = W3*exp(Rw/(2.0*Zc0));
@@ -271,10 +282,10 @@ namespace hopsan {
             c2 = C1F1 + RQF2 + BC0*(-RL2*q2) + RQEF2;
 
                 // Write new values to nodes
-            (*mpND_c1) = c1;
-            (*mpND_Zc1) = Zc1;
-            (*mpND_c2) = c2;
-            (*mpND_Zc2) = Zc2;
+            (*mpP1_c) = c1;
+            (*mpP1_Zc) = Zc1;
+            (*mpP2_c) = c2;
+            (*mpP2_Zc) = Zc2;
 
         }
 
